@@ -40,7 +40,11 @@ const defaultEntityListResponse: CatalogListResponse<Entity> = {
   items: [
     {
       apiVersion: 'backstage.io/v1beta1',
-      metadata: { name: 'service-with-owner' },
+      metadata: {
+        name: 'service-with-owner',
+        description: 'service with an owner',
+        tags: ['a-tag'],
+      },
       kind: 'Component',
       spec: {
         type: 'service',
@@ -57,7 +61,9 @@ const defaultEntityListResponse: CatalogListResponse<Entity> = {
     {
       apiVersion: 'backstage.io/v1beta1',
       metadata: {
-        name: 'service-without-owner',
+        name: 'service-with-incomplete-data',
+        description: '',
+        tags: [],
       },
       kind: 'Component',
       spec: {
@@ -78,6 +84,16 @@ const defaultEntityListResponse: CatalogListResponse<Entity> = {
         owner: 'user:my-user',
       },
     },
+    {
+      apiVersion: 'backstage.io/v1beta1',
+      metadata: {
+        name: 'user-a',
+      },
+      kind: 'User',
+      spec: {
+        memberOf: 'group-a',
+      },
+    },
   ],
 };
 
@@ -95,65 +111,138 @@ describe('entityFactRetriever', () => {
     getEntitiesMock.mockClear();
   });
 
-  describe('hasSpecWithOwner', () => {
+  describe('hasOwner', () => {
     describe('where the entity has an owner in the spec', () => {
-      it('returns true for hasSpecWithOwner', async () => {
+      it('returns true for hasOwner', async () => {
         const facts = await entityFactRetriever.handler(handlerContext);
         expect(
           facts.find(it => it.entity.name === 'service-with-owner'),
         ).toMatchObject({
           facts: {
-            hasSpecWithOwner: true,
+            hasOwner: true,
           },
         });
       });
     });
-    describe('where the entity does not have an owner in the spec', () => {
-      it('returns false for hasSpecWithOwner', async () => {
+    describe('where the entity has an empty value for owner in the spec', () => {
+      it('returns false for hasOwner', async () => {
         const facts = await entityFactRetriever.handler(handlerContext);
         expect(
-          facts.find(it => it.entity.name === 'service-without-owner'),
+          facts.find(it => it.entity.name === 'service-with-incomplete-data'),
         ).toMatchObject({
           facts: {
-            hasSpecWithOwner: false,
+            hasOwner: false,
+          },
+        });
+      });
+    });
+
+    describe('where the entity doesn not have an owner in the spec', () => {
+      it('returns false for hasOwner', async () => {
+        const facts = await entityFactRetriever.handler(handlerContext);
+        expect(facts.find(it => it.entity.name === 'user-a')).toMatchObject({
+          facts: {
+            hasOwner: false,
           },
         });
       });
     });
   });
-  describe('hasSpecWithGroupOwner', () => {
+  describe('hasGroupOwner', () => {
     describe('where the entity has an group as owner in the spec', () => {
-      it('returns true for hasSpecWithGroupOwner', async () => {
+      it('returns true for hasGroupOwner', async () => {
         const facts = await entityFactRetriever.handler(handlerContext);
         expect(
           facts.find(it => it.entity.name === 'service-with-owner'),
         ).toMatchObject({
           facts: {
-            hasSpecWithGroupOwner: true,
+            hasGroupOwner: true,
           },
         });
       });
     });
     describe('where the entity has a user as owner in the spec', () => {
-      it('returns false for hasSpecWithGroupOwner', async () => {
+      it('returns false for hasGroupOwner', async () => {
         const facts = await entityFactRetriever.handler(handlerContext);
         expect(
           facts.find(it => it.entity.name === 'service-with-user-owner'),
         ).toMatchObject({
           facts: {
-            hasSpecWithGroupOwner: false,
+            hasGroupOwner: false,
           },
         });
       });
     });
-    describe('where the entity does not have an owner in the spec', () => {
-      it('returns false for hasSpecWithGroupOwner', async () => {
+    describe('where the entity has an empty value for owner in the spec', () => {
+      it('returns false for hasGroupOwner', async () => {
         const facts = await entityFactRetriever.handler(handlerContext);
         expect(
-          facts.find(it => it.entity.name === 'service-without-owner'),
+          facts.find(it => it.entity.name === 'service-with-incomplete-data'),
         ).toMatchObject({
           facts: {
-            hasSpecWithGroupOwner: false,
+            hasGroupOwner: false,
+          },
+        });
+      });
+    });
+  });
+  describe('hasDescription', () => {
+    describe('where the entity has a description', () => {
+      it('returns true for hasDescription', async () => {
+        const facts = await entityFactRetriever.handler(handlerContext);
+        expect(
+          facts.find(it => it.entity.name === 'service-with-owner'),
+        ).toMatchObject({
+          facts: {
+            hasDescription: true,
+          },
+        });
+      });
+    });
+    describe('where the entity does not have a description', () => {
+      it('returns false for hasDescription', async () => {
+        const facts = await entityFactRetriever.handler(handlerContext);
+        expect(facts.find(it => it.entity.name === 'user-a')).toMatchObject({
+          facts: {
+            hasDescription: false,
+          },
+        });
+      });
+    });
+    describe('where the entity has an empty value for description', () => {
+      it('returns false for hasDescription', async () => {
+        const facts = await entityFactRetriever.handler(handlerContext);
+        expect(
+          facts.find(it => it.entity.name === 'service-with-incomplete-data'),
+        ).toMatchObject({
+          facts: {
+            hasDescription: false,
+          },
+        });
+      });
+    });
+  });
+  describe('hasTags', () => {
+    describe('where the entity has tags', () => {
+      it('returns true for hasTags', async () => {
+        const facts = await entityFactRetriever.handler(handlerContext);
+        expect(
+          facts.find(it => it.entity.name === 'service-with-owner'),
+        ).toMatchObject({
+          facts: {
+            hasTags: true,
+          },
+        });
+      });
+    });
+    describe('where the entity has no tags', () => {
+      it('returns false for hasTags', async () => {
+        const facts = await entityFactRetriever.handler(handlerContext);
+        expect(
+          facts.find(it => it.entity.name === 'service-with-incomplete-data'),
+        ).toMatchObject({
+          facts: {
+            hasTags: false,
           },
         });
       });

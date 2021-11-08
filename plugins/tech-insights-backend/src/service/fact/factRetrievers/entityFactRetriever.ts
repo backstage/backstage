@@ -16,53 +16,31 @@
 
 import { FactRetrieverContext } from '@backstage/plugin-tech-insights-node';
 import { CatalogClient } from '@backstage/catalog-client';
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
-
-const applicableEntityKinds = [
-  'component',
-  'api',
-  'template',
-  'domain',
-  'resource',
-  'system',
-];
-
-const entityKindFilter = { field: 'kind', values: applicableEntityKinds };
+import { Entity } from '@backstage/catalog-model';
+import isEmpty from 'lodash/isEmpty';
 
 export const entityFactRetriever = {
   id: 'entityRetriever',
   version: '0.0.1',
-  entityFilter: [
-    {
-      field: 'kind',
-      values: applicableEntityKinds,
-    },
-  ],
   schema: {
-    hasSpecWithOwner: {
+    hasOwner: {
       type: 'boolean',
       description: 'The spec.owner field is set',
     },
-    hasSpecWithGroupOwner: {
+    hasGroupOwner: {
       type: 'boolean',
       description: 'The spec.owner field is set and refers to a group',
     },
-    hasOwnedByRelation: {
+    hasDescription: {
       type: 'boolean',
       description: 'The entity has an owned_by relation',
-    },
-    hasOwnedByRelationWithGroupTarget: {
-      type: 'boolean',
-      description: 'The entity has an owned_by relation which targets a group',
     },
   },
   handler: async ({ discovery }: FactRetrieverContext) => {
     const catalogClient = new CatalogClient({
       discoveryApi: discovery,
     });
-    const entities = await catalogClient.getEntities({
-      filter: entityKindFilter,
-    });
+    const entities = await catalogClient.getEntities();
 
     return entities.items.map((it: Entity) => {
       return {
@@ -72,21 +50,12 @@ export const entityFactRetriever = {
           name: it.metadata.name,
         },
         facts: {
-          hasSpecWithOwner: Boolean(it.spec?.owner),
-          hasSpecWithGroupOwner: Boolean(
+          hasOwner: Boolean(it.spec?.owner),
+          hasGroupOwner: Boolean(
             it.spec?.owner && (it.spec?.owner as string).startsWith('group:'),
           ),
-          hasOwnedByRelation: Boolean(
-            it.relations &&
-              it.relations.find(({ type }) => type === RELATION_OWNED_BY),
-          ),
-          hasOwnedByRelationWithGroupTarget: Boolean(
-            it.relations &&
-              it.relations.find(
-                ({ type, target }) =>
-                  type === RELATION_OWNED_BY && target.kind === 'group',
-              ),
-          ),
+          hasDescription: Boolean(it.metadata?.description),
+          hasTags: !isEmpty(it.metadata?.tags),
         },
       };
     });
