@@ -43,6 +43,20 @@ export class DatabaseHandler {
     this.database = options.database;
   }
 
+  private columns = [
+    'members.entity_ref',
+    'metadata.entity_ref',
+    'metadata.name',
+    'metadata.announcement',
+    'metadata.status',
+    'metadata.updated_at',
+    'metadata.community',
+    'metadata.size',
+    'metadata.start_date',
+    'metadata.end_date',
+    'metadata.responsible',
+  ];
+
   async getMembers(entityRef: string) {
     return await this.database
       .select('*')
@@ -72,25 +86,25 @@ export class DatabaseHandler {
       'coalesce(count(members.entity_ref), 0) as members_count',
     );
 
-    const columns = [
-      'members.entity_ref',
-      'metadata.entity_ref',
-      'metadata.name',
-      'metadata.announcement',
-      'metadata.status',
-      'metadata.updated_at',
-      'metadata.community',
-    ];
-
     return await this.database('metadata')
-      .select([...columns, coalesce])
+      .select([...this.columns, coalesce])
       .where({ 'metadata.entity_ref': entityRef })
-      .groupBy(columns)
+      .groupBy(this.columns)
       .leftJoin('members', 'metadata.entity_ref', '=', 'members.entity_ref');
   }
 
   async insertMetadata(bazaarProject: any) {
-    const { name, entityRef, community, announcement, status } = bazaarProject;
+    const {
+      name,
+      entityRef,
+      community,
+      announcement,
+      status,
+      size,
+      startDate,
+      endDate,
+      responsible,
+    } = bazaarProject;
 
     await this.database
       .insert({
@@ -100,12 +114,25 @@ export class DatabaseHandler {
         announcement: announcement,
         status: status,
         updated_at: new Date().toISOString(),
+        size,
+        start_date: startDate,
+        end_date: endDate,
+        responsible,
       })
       .into('metadata');
   }
 
   async updateMetadata(bazaarProject: any) {
-    const { entityRef, community, announcement, status } = bazaarProject;
+    const {
+      entityRef,
+      community,
+      announcement,
+      status,
+      size,
+      startDate,
+      endDate,
+      responsible,
+    } = bazaarProject;
 
     return await this.database('metadata')
       .where({ entity_ref: entityRef })
@@ -114,6 +141,10 @@ export class DatabaseHandler {
         community: community,
         status: status,
         updated_at: new Date().toISOString(),
+        size,
+        start_date: startDate,
+        end_date: endDate,
+        responsible,
       });
   }
 
@@ -128,18 +159,9 @@ export class DatabaseHandler {
       'coalesce(count(members.entity_ref), 0) as members_count',
     );
 
-    const columns = [
-      'members.entity_ref',
-      'metadata.entity_ref',
-      'metadata.name',
-      'metadata.announcement',
-      'metadata.status',
-      'metadata.updated_at',
-      'metadata.community',
-    ];
     return await this.database('metadata')
-      .select([...columns, coalesce])
-      .groupBy(columns)
+      .select([...this.columns, coalesce])
+      .groupBy(this.columns)
       .leftJoin('members', 'metadata.entity_ref', '=', 'members.entity_ref');
   }
 }

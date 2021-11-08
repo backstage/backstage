@@ -25,6 +25,8 @@ export type Member = {
 
 export type Status = 'ongoing' | 'proposed';
 
+export type Size = 'small' | 'medium' | 'large';
+
 export type BazaarProject = {
   name: string;
   entityRef: EntityRef;
@@ -33,10 +35,18 @@ export type BazaarProject = {
   announcement: string;
   updatedAt?: string;
   membersCount: number;
+  size: Size;
+  startDate?: string | null;
+  endDate?: string | null;
+  responsible: string;
 };
 
 export type FormValues = {
   announcement: string;
   community: string;
   status: string;
+  size: Size;
+  startDate?: string | null;
+  endDate?: string | null;
+  responsible: string;
 };

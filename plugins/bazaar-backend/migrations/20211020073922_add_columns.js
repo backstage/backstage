@@ -16,24 +16,27 @@
 
 exports.up = async function up(knex) {
   await knex.schema.alterTable('metadata', table => {
-    table.renameColumn('entity_ref', 'ref');
     table
       .text('size')
       .defaultTo('medium')
       .notNullable()
       .comment('The estimated magnitude of the project');
     table
-      .text('timeboxed')
-      .defaultTo('no')
-      .notNullable()
-      .comment('Possible deadline of the project');
+      .text('start_date')
+      .comment('Optional start date of the project (ISO 8601 format)');
+    table
+      .text('end_date')
+      .comment('Optional end date of the project (ISO 8601 format)');
     table.text('responsible').comment('Contact person of the project');
   });
 };
 
 exports.down = async function down(knex) {
   await knex.schema.alterTable('metadata', table => {
-    table.renameColumn('ref', 'entity_ref');
-    table.dropColumn('size').dropColumn('timeboxed').dropColumn('responsible');
+    table
+      .dropColumn('size')
+      .dropColumn('start_date')
+      .dropColumn('end_date')
+      .dropColumn('responsible');
   });
 };
