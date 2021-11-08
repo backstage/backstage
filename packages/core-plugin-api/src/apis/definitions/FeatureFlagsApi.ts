@@ -62,6 +62,12 @@ export type FeatureFlagsSaveOptions = {
 };
 
 /**
+ * @deprecated unused empty type.
+ * @public
+ */
+export type UserFlags = {};
+
+/**
  * API interface for the Feature Flags API that allows for toggling of features within Backstage.
  */
 export interface FeatureFlagsApi {
