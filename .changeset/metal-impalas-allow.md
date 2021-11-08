@@ -6,7 +6,7 @@
 
 2. The `LocalPublish` publisher can now be created using `fromConfig`:
 
-```
---- const publisher = new LocalPublish(config, logger, discovery);
-+++ const publisher = LocalPublish.fromConfig(config, logger, discovery);
+```diff
+- const publisher = new LocalPublish(config, logger, discovery);
++ const publisher = LocalPublish.fromConfig(config, logger, discovery);
 ```
