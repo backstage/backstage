@@ -46,6 +46,8 @@ import { codeCoverageApiRef } from '../../api';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
+import { DateTime } from 'luxon';
+
 type Coverage = 'line' | 'branch';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -71,7 +73,9 @@ const getTrendIcon = (trend: number, classes: ClassNameMap) => {
 
 // convert timestamp to human friendly form
 function formatDateToHuman(timeStamp: string | number) {
-  return new Date(timeStamp).toUTCString();
+  return DateTime.fromMillis(Number(timeStamp)).toLocaleString(
+    DateTime.DATETIME_MED,
+  );
 }
 
 export const CoverageHistoryChart = () => {
