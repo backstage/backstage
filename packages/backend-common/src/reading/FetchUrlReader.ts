@@ -24,7 +24,7 @@ import {
   SearchResponse,
   UrlReader,
 } from './types';
-import { normalize as normalizePath } from 'path';
+import path from 'path';
 
 /**
  * A UrlReader that does a plain fetch of the URL.
@@ -52,8 +52,10 @@ export class FetchUrlReader implements UrlReader {
           const paths = allowConfig.getOptionalStringArray('paths');
           const checkPath = paths
             ? (url: URL) => {
-                const targetPath = normalizePath(url.pathname);
-                return paths.some(path => targetPath.startsWith(path));
+                const targetPath = path.posix.normalize(url.pathname);
+                return paths.some(allowedPath =>
+                  targetPath.startsWith(allowedPath),
+                );
               }
             : (_url: URL) => true;
           const host = allowConfig.getString('host');
