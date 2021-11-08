@@ -17,11 +17,19 @@
 import { ApiRef, createApiRef } from '../system';
 import { Observable } from '@backstage/types';
 
+/**
+ * Observed event changes emitted by the StorageApi.
+ * @public
+ */
 export type StorageValueChange<T = any> = {
   key: string;
   newValue?: T;
 };
 
+/**
+ * The storage API allows for storage of information in the browser.
+ * @public
+ */
 export interface StorageApi {
   /**
    * Create a bucket to store data in.
@@ -59,6 +67,10 @@ export interface StorageApi {
   observe$<T>(key: string): Observable<StorageValueChange<T>>;
 }
 
+/**
+ * Provides access to the StorageApi.
+ * @public
+ */
 export const storageApiRef: ApiRef<StorageApi> = createApiRef({
   id: 'core.storage',
 });

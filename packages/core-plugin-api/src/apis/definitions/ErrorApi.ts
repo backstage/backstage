@@ -20,6 +20,7 @@ import { Observable } from '@backstage/types';
 /**
  * Mirrors the JavaScript Error class, for the purpose of
  * providing documentation and optional fields.
+ * @public
  */
 type Error = {
   name: string;
@@ -29,6 +30,7 @@ type Error = {
 
 /**
  * Provides additional information about an error that was posted to the application.
+ * @public
  */
 export type ErrorContext = {
   // If set to true, this error should not be displayed to the user. Defaults to false.
@@ -37,6 +39,8 @@ export type ErrorContext = {
 
 /**
  * The error API is used to report errors to the app, and display them to the user.
+ * @public
+ * @remarks
  *
  * Plugins can use this API as a method of displaying errors to the user, but also
  * to report errors for collection by error reporting services.
@@ -62,6 +66,10 @@ export type ErrorApi = {
   error$(): Observable<{ error: Error; context?: ErrorContext }>;
 };
 
+/**
+ * Provides access to the Error API.
+ * @public
+ */
 export const errorApiRef: ApiRef<ErrorApi> = createApiRef({
   id: 'core.error',
 });

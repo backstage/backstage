@@ -18,6 +18,8 @@ import { ApiRef, createApiRef } from '../system';
 
 /**
  * The feature flags API is used to toggle functionality to users across plugins and Backstage.
+ * @public
+ * @remarks
  *
  * Plugins can use this API to register feature flags that they have available
  * for users to enable/disable, and this API will centralize the current user's
@@ -27,12 +29,15 @@ import { ApiRef, createApiRef } from '../system';
  * or unstable upcoming features. Although there will be a common interface for users
  * to enable and disable feature flags, this API acts as another way to enable/disable.
  */
-
 export type FeatureFlag = {
   name: string;
   pluginId: string;
 };
 
+/**
+ * FeatureFlagState is the current state of a feature flag for the current user.
+ * @public
+ */
 export enum FeatureFlagState {
   None = 0,
   Active = 1,
@@ -40,6 +45,7 @@ export enum FeatureFlagState {
 
 /**
  * Options to use when saving feature flags.
+ * @public
  */
 export type FeatureFlagsSaveOptions = {
   /**
@@ -55,8 +61,9 @@ export type FeatureFlagsSaveOptions = {
   merge?: boolean;
 };
 
-export type UserFlags = {};
-
+/**
+ * API interface for the Feature Flags API that allows for toggling of features within Backstage.
+ */
 export interface FeatureFlagsApi {
   /**
    * Registers a new feature flag. Once a feature flag has been registered it
@@ -80,6 +87,10 @@ export interface FeatureFlagsApi {
   save(options: FeatureFlagsSaveOptions): void;
 }
 
+/**
+ * Provides access to the FeatureFlagsApi.
+ * @public
+ */
 export const featureFlagsApiRef: ApiRef<FeatureFlagsApi> = createApiRef({
   id: 'core.featureflags',
 });

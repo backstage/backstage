@@ -23,6 +23,7 @@ import { ApiRef, createApiRef } from '../system';
  *
  * This should be shown to the user so that they can be informed about what login is being requested
  * before a popup is shown.
+ * @public
  */
 export type AuthProvider = {
   /**
@@ -39,6 +40,7 @@ export type AuthProvider = {
 /**
  * Describes how to handle auth requests. Both how to show them to the user, and what to do when
  * the user accesses the auth request.
+ * @public
  */
 export type AuthRequesterOptions<AuthResponse> = {
   /**
@@ -55,6 +57,8 @@ export type AuthRequesterOptions<AuthResponse> = {
 
 /**
  * Function used to trigger new auth requests for a set of scopes.
+ * @public
+ * @remarks
  *
  * The returned promise will resolve to the same value returned by the onAuthRequest in the
  * AuthRequesterOptions. Or rejected, if the request is rejected.
@@ -73,6 +77,7 @@ export type AuthRequester<AuthResponse> = (
  *
  * Any new requests for the same provider are merged into the existing pending request, meaning
  * there will only ever be a single pending request for a given provider.
+ * @public
  */
 export type PendingAuthRequest = {
   /**
@@ -95,6 +100,7 @@ export type PendingAuthRequest = {
 
 /**
  * Provides helpers for implemented OAuth login flows within Backstage.
+ * @public
  */
 export type OAuthRequestApi = {
   /**
@@ -127,6 +133,10 @@ export type OAuthRequestApi = {
   authRequest$(): Observable<PendingAuthRequest[]>;
 };
 
+/**
+ * Provides access to the OAuthRequestApi.
+ * @public
+ */
 export const oauthRequestApiRef: ApiRef<OAuthRequestApi> = createApiRef({
   id: 'core.oauthrequest',
 });

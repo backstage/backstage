@@ -19,9 +19,14 @@ import { Config } from '@backstage/config';
 /**
  * The Config API is used to provide a mechanism to access the
  * runtime configuration of the system.
+ * @public
  */
 export type ConfigApi = Config;
 
+/**
+ * Provides access to the Config API.
+ * @public
+ */
 export const configApiRef: ApiRef<ConfigApi> = createApiRef({
   id: 'core.config',
 });

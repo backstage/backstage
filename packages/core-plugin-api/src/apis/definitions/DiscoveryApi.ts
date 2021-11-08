@@ -19,6 +19,7 @@ import { ApiRef, createApiRef } from '../system';
  * The discovery API is used to provide a mechanism for plugins to
  * discover the endpoint to use to talk to their backend counterpart.
  *
+ * @remarks
  * The purpose of the discovery API is to allow for many different deployment
  * setups and routing methods through a central configuration, instead
  * of letting each individual plugin manage that configuration.
@@ -26,6 +27,7 @@ import { ApiRef, createApiRef } from '../system';
  * Implementations of the discovery API can be a simple as a URL pattern
  * using the pluginId, but could also have overrides for individual plugins,
  * or query a separate discovery service.
+ * @public
  */
 export type DiscoveryApi = {
   /**
@@ -41,6 +43,10 @@ export type DiscoveryApi = {
   getBaseUrl(pluginId: string): Promise<string>;
 };
 
+/**
+ * Provides access to the DiscoveryApi.
+ * @public
+ */
 export const discoveryApiRef: ApiRef<DiscoveryApi> = createApiRef({
   id: 'core.discovery',
 });
