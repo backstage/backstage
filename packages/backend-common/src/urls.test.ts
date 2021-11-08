@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-/**
- * Config loading functionality used by Backstage backend, and CLI
- *
- * @packageDocumentation
- */
+import { isValidUrl } from './urls';
 
-export { readEnvConfig, loadConfigSchema, mergeConfigSchemas } from './lib';
-export type {
-  ConfigSchema,
-  ConfigSchemaProcessingOptions,
-  ConfigVisibility,
-  LoadConfigSchemaOptions,
-  TransformFunc,
-} from './lib';
-export { loadConfig } from './loader';
-export type {
-  ConfigTarget,
-  LoadConfigOptions,
-  LoadConfigOptionsWatch,
-  LoadConfigOptionsRemote,
-} from './loader';
+describe('isValidUrl', () => {
+  it('should return true for url', () => {
+    const validUrl = isValidUrl('http://some.valid.url');
+    expect(validUrl).toBe(true);
+  });
+
+  it('should return false for absolute path', () => {
+    const validUrl = isValidUrl('/some/absolute/path');
+    expect(validUrl).toBe(false);
+  });
+
+  it('should return false for relative path', () => {
+    const validUrl = isValidUrl('../some/relative/path');
+    expect(validUrl).toBe(false);
+  });
+});

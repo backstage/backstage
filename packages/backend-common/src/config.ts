@@ -22,9 +22,12 @@ import {
   loadConfigSchema,
   loadConfig,
   ConfigSchema,
+  ConfigTarget,
 } from '@backstage/config-loader';
 import { AppConfig, Config, ConfigReader } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
+
+import { isValidUrl } from './urls';
 
 import { setRootLoggerRedactionList } from './logging/rootLogger';
 
@@ -178,7 +181,10 @@ export async function loadBackendConfig(options: {
   argv: string[];
 }): Promise<Config> {
   const args = parseArgs(options.argv);
-  const configPaths: string[] = [args.config ?? []].flat();
+
+  const configTargets: ConfigTarget[] = [args.config ?? []]
+    .flat()
+    .map(arg => (isValidUrl(arg) ? { url: arg } : { path: resolvePath(arg) }));
 
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
@@ -196,7 +202,8 @@ export async function loadBackendConfig(options: {
   const config = new ObservableConfigProxy(options.logger);
   const configs = await loadConfig({
     configRoot: paths.targetRoot,
-    configPaths: configPaths.map(opt => resolvePath(opt)),
+    configPaths: [],
+    configTargets: configTargets,
     watch: {
       onChange(newConfigs) {
         options.logger.info(
