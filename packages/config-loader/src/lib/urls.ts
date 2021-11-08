@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,12 @@
  * limitations under the License.
  */
 
-/**
- * Config loading functionality used by Backstage backend, and CLI
- *
- * @packageDocumentation
- */
-
-export { readEnvConfig, loadConfigSchema, mergeConfigSchemas } from './lib';
-export type {
-  ConfigSchema,
-  ConfigSchemaProcessingOptions,
-  ConfigVisibility,
-  LoadConfigSchemaOptions,
-  TransformFunc,
-} from './lib';
-export { loadConfig } from './loader';
-export type {
-  ConfigTarget,
-  LoadConfigOptions,
-  LoadConfigOptionsWatch,
-  LoadConfigOptionsRemote,
-} from './loader';
+export function isValidUrl(url: string): boolean {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
