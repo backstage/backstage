@@ -79,7 +79,7 @@ const columns: TableColumn[] = [
     width: 'auto',
     render: (row: Partial<PullRequest>) =>
       DateTime.fromISO(
-        row.creationDate ? row.creationDate.toString() : new Date().toString(),
+        (row.creationDate ?? new Date()).toString(),
       ).toRelative(),
   },
 ];
