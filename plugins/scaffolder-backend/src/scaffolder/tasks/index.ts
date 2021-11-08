@@ -13,7 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 export { DatabaseTaskStore } from './DatabaseTaskStore';
-export { StorageTaskBroker } from './StorageTaskBroker';
+export { TaskManager } from './StorageTaskBroker';
+export type { TaskState } from './StorageTaskBroker';
 export { TaskWorker } from './TaskWorker';
+export type { CreateWorkerOptions } from './TaskWorker';
+export type {
+  TaskSecrets,
+  TaskSpec,
+  CompletedTaskState,
+  TaskStoreEmitOptions,
+  TaskStoreListEventsOptions,
+  SerializedTask,
+  SerializedTaskEvent,
+  TaskSpecV1beta2,
+  TaskSpecV1beta3,
+  Status,
+  TaskEventType,
+  TaskBroker,
+  TaskContext,
+  TaskStore,
+  DispatchResult,
+} from './types';

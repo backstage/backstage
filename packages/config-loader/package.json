@@ -43,7 +43,8 @@
     "json-schema-traverse": "^1.0.0",
     "typescript-json-schema": "^0.51.0",
     "yaml": "^1.9.2",
-    "yup": "^0.32.9"
+    "yup": "^0.32.9",
+    "node-fetch": "2.6.5"
   },
   "devDependencies": {
     "@types/jest": "^26.0.7",
@@ -51,7 +52,8 @@
     "@types/mock-fs": "^4.10.0",
     "@types/node": "^14.14.32",
     "@types/yup": "^0.29.13",
-    "mock-fs": "^5.1.0"
+    "mock-fs": "^5.1.0",
+    "msw": "^0.29.0"
   },
   "files": [
     "dist"

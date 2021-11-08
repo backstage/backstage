@@ -22,6 +22,7 @@ import {
   ChildProcess,
 } from 'child_process';
 import { promisify } from 'util';
+import puppeteer from 'puppeteer';
 
 const execFile = promisify(execFileCb);
 
@@ -125,7 +126,7 @@ export async function waitForExit(child: ChildProcess) {
 }
 
 export async function waitForPageWithText(
-  browser: any,
+  page: puppeteer.Page,
   path: string,
   text: string,
   { intervalMs = 1000, maxFindAttempts = 50 } = {},
@@ -137,18 +138,25 @@ export async function waitForPageWithText(
       console.log(`Attempting to load page at ${path}, waiting ${waitTimeMs}`);
       await new Promise(resolve => setTimeout(resolve, waitTimeMs));
 
-      await browser.visit(path);
+      await page.goto(`http://localhost:3000${path}`, {
+        waitUntil: 'networkidle0',
+      });
 
-      await new Promise(resolve => setTimeout(resolve, waitTimeMs));
-
-      const escapedText = text.replace(/"|\\/g, '\\$&');
-      browser.assert.evaluate(
-        `Array.from(document.querySelectorAll("*")).some(el => el.textContent === "${escapedText}")`,
-        true,
-        `expected to find text ${text}`,
+      const match = await page.evaluate(
+        textContent =>
+          Array.from(document.querySelectorAll('*')).some(
+            el => el.textContent === textContent,
+          ),
+        text,
       );
+
+      if (!match) {
+        throw new Error(`Expected to find text ${text}`);
+      }
+
       break;
     } catch (error) {
+      console.log(error);
       assertError(error);
 
       findAttempts++;
