@@ -37,4 +37,8 @@ export { useOwnUser } from './useOwnUser';
 export { useRelatedEntities } from './useRelatedEntities';
 export { useStarredEntities } from './useStarredEntities';
 export { useStarredEntity } from './useStarredEntity';
-export * from './useEntityOwnership';
+export {
+  loadCatalogOwnerRefs,
+  useEntityOwnership,
+  loadIdentityOwnerRefs,
+} from './useEntityOwnership';
