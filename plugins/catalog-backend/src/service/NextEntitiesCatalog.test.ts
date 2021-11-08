@@ -284,9 +284,7 @@ describe('NextEntitiesCatalog', () => {
           key: 'spec.test',
           matchValueExists: true,
         };
-        const request = {
-          filter: { anyOf: [{ allOf: [testFilter] }] },
-        };
+        const request = { filter: testFilter };
         const { entities } = await catalog.entities(request);
 
         expect(entities.length).toBe(1);
@@ -344,14 +342,10 @@ describe('NextEntitiesCatalog', () => {
         };
         const request = {
           filter: {
-            anyOf: [
+            allOf: [
+              testFilter1,
               {
-                allOf: [
-                  testFilter1,
-                  {
-                    anyOf: [{ allOf: [testFilter2] }, { allOf: [testFilter3] }],
-                  },
-                ],
+                anyOf: [testFilter2, testFilter3],
               },
             ],
           },

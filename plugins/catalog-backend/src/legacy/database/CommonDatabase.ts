@@ -46,11 +46,11 @@ import {
   DbPageInfo,
   Transaction,
 } from './types';
-import {
-  EntityPagination,
-  EntityFilter,
-  EntitiesSearchFilter,
-} from '../../catalog/types';
+import { EntityPagination, EntitiesSearchFilter } from '../../catalog/types';
+
+type LegacyEntityFilter = {
+  anyOf: { allOf: EntitiesSearchFilter[] }[];
+};
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -221,10 +221,23 @@ export class CommonDatabase implements Database {
 
     let entitiesQuery = tx<DbEntitiesRow>('entities');
 
-    for (const singleFilter of request?.filter?.anyOf ?? []) {
+    if (
+      request?.filter &&
+      (request.filter.hasOwnProperty('key') ||
+        request.filter.hasOwnProperty('allOf'))
+    ) {
+      throw new Error(
+        'Filters for the legacy CommonDatabase must obey the { anyOf: [{ allOf: [] }] } format.',
+      );
+    }
+    for (const singleFilter of (request?.filter as LegacyEntityFilter)?.anyOf ??
+      []) {
       entitiesQuery = entitiesQuery.orWhere(function singleFilterFn() {
         for (const filter of singleFilter.allOf) {
-          if (isEntityFilter(filter)) {
+          if (
+            filter.hasOwnProperty('anyOf') ||
+            filter.hasOwnProperty('allOf')
+          ) {
             throw new Error(
               'Nested filters are not supported in the legacy CommonDatabase',
             );
@@ -611,10 +624,4 @@ function deduplicateRelations(
     rows,
     r => `${r.source_full_name}:${r.target_full_name}:${r.type}`,
   );
-}
-
-function isEntityFilter(
-  filter: EntitiesSearchFilter | EntityFilter,
-): filter is EntityFilter {
-  return filter.hasOwnProperty('anyOf');
 }

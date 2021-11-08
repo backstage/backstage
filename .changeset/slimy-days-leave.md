@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-Allow nested EntityFilters
+Allow singleton and flexibly nested EntityFilters

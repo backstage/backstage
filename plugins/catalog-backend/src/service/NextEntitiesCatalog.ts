@@ -107,30 +107,56 @@ function addCondition(
   );
 }
 
-function isEntityFilter(
+function isEntitiesSearchFilter(
   filter: EntitiesSearchFilter | EntityFilter,
-): filter is EntityFilter {
+): filter is EntitiesSearchFilter {
+  return filter.hasOwnProperty('key');
+}
+
+function isAndEntityFilter(
+  filter: { allOf: EntityFilter[] } | EntityFilter,
+): filter is { allOf: EntityFilter[] } {
+  return filter.hasOwnProperty('allOf');
+}
+
+function isOrEntityFilter(
+  filter: { anyOf: EntityFilter[] } | EntityFilter,
+): filter is { anyOf: EntityFilter[] } {
   return filter.hasOwnProperty('anyOf');
 }
 
 function parseFilter(
-  filters: EntityFilter,
+  filter: EntityFilter,
   query: Knex.QueryBuilder,
   db: Knex,
 ): Knex.QueryBuilder {
-  let cumulativeQuery = query;
-  for (const singleFilter of filters?.anyOf ?? []) {
-    cumulativeQuery = cumulativeQuery.orWhere(function singleFilterFn() {
-      for (const filter of singleFilter.allOf) {
-        if (isEntityFilter(filter)) {
-          this.andWhere(subQuery => parseFilter(filter, subQuery, db));
-        } else {
-          addCondition(this, db, filter);
-        }
-      }
+  if (isEntitiesSearchFilter(filter)) {
+    return query.where(function filterFunction() {
+      addCondition(this, db, filter);
     });
   }
-  return cumulativeQuery;
+
+  if (isOrEntityFilter(filter)) {
+    let cumulativeQuery = query;
+    for (const subFilter of filter.anyOf ?? []) {
+      cumulativeQuery = cumulativeQuery.orWhere(subQuery =>
+        parseFilter(subFilter, subQuery, db),
+      );
+    }
+    return cumulativeQuery;
+  }
+
+  if (isAndEntityFilter(filter)) {
+    let cumulativeQuery = query;
+    for (const subFilter of filter.allOf ?? []) {
+      cumulativeQuery = cumulativeQuery.andWhere(subQuery =>
+        parseFilter(subFilter, subQuery, db),
+      );
+    }
+    return cumulativeQuery;
+  }
+
+  return query;
 }
 
 export class NextEntitiesCatalog implements EntitiesCatalog {
