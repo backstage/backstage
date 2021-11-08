@@ -23,7 +23,7 @@ import { PluginEndpointDiscovery } from '../discovery';
 // TODO: (b2b-auth) rename this class
 export class AuthIdentityTokenManager implements TokenManager {
   private identityClient: IdentityClient;
-  private key: JWK.OctKey;
+  private key?: JWK.OctKey;
 
   constructor(discovery: PluginEndpointDiscovery, config: Config) {
     this.identityClient = new IdentityClient({
@@ -31,11 +31,17 @@ export class AuthIdentityTokenManager implements TokenManager {
       issuer: 'auth-identity-token-manager',
     });
 
-    const secret = config.getConfig('backend.auth').getString('secret');
-    this.key = JWK.asKey({ kty: 'oct', k: secret });
+    const secret = config.getOptionalString('backend.auth.secret');
+    if (secret) {
+      this.key = JWK.asKey({ kty: 'oct', k: secret });
+    }
   }
 
   async getServerToken(): Promise<{ token: string }> {
+    if (!this.key) {
+      throw new Error('No server token defined in config');
+    }
+
     const jwt = JWT.sign({ sub: 'backstage-server' }, this.key, {
       algorithm: 'HS256',
     });
@@ -54,6 +60,9 @@ export class AuthIdentityTokenManager implements TokenManager {
     }
 
     try {
+      if (!this.key) {
+        throw new Error('No server token defined in config');
+      }
       maybeServer = JWT.verify(token, this.key);
     } catch (error) {
       // invalid token
