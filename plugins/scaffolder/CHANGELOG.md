@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder
 
+## 0.12.0
+
+### Minor Changes
+
+- 5263e13238: Ability to add custom components in scaffolder frontend
+
 ## 0.11.9
 
 ### Patch Changes
