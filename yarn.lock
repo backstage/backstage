@@ -2684,11 +2684,6 @@
   resolved "https://registry.npmjs.org/@date-io/core/-/core-2.10.7.tgz#0fe1fa0ef02c827919e23c2802a4b25589ac522d"
   integrity sha512-EG/1qDiQvd12RoNJ6H+sZcHVswC/3uMx/ySvfaJ24vB30rLjkgHggEXbgMbfgki7wMuiQ/zXI8QlmF1k3kWRGQ==
 
-"@date-io/core@^2.10.11":
-  version "2.10.11"
-  resolved "https://registry.npmjs.org/@date-io/core/-/core-2.10.11.tgz#b1a3d57730f3eaaab54d5658be4a71727297e357"
-  integrity sha512-keXQnwH0LM8wyvu+j5Z2KGK56D+eItjy7DnwuWl/oV+DM2UEYl0z5WhdPMpfswSyt/kjuPOzcVF/7u/skMLaoA==
-
 "@date-io/date-fns@^1.3.13":
   version "1.3.13"
   resolved "https://registry.npmjs.org/@date-io/date-fns/-/date-fns-1.3.13.tgz#7798844041640ab393f7e21a7769a65d672f4735"
@@ -2696,12 +2691,12 @@
   dependencies:
     "@date-io/core" "^1.3.13"
 
-"@date-io/luxon@2.x":
-  version "2.10.11"
-  resolved "https://registry.npmjs.org/@date-io/luxon/-/luxon-2.10.11.tgz#d0981b9fdf5e5f17f8ce59265a3ac6c335565fac"
-  integrity sha512-SS6SIkp0Y9GFwpQycCTUAyW3OZTW05CWI1DJu10hUzcg8SmjJfhjs7hQY3TOeW+JT6VtXGTVGwbWPUBJsNkhZg==
+"@date-io/luxon@1.x":
+  version "1.3.13"
+  resolved "https://registry.npmjs.org/@date-io/luxon/-/luxon-1.3.13.tgz#68f0134bb38ef486b2ed6df01981f814c633e28a"
+  integrity sha512-9wUrJCNSMZJeYAiH+dbb45oGpnHeFP7TOH/Lt26If47gjFCkjvyINzWx+K5AGsnlP0Qosxc7hkF1yLi6ecutxw==
   dependencies:
-    "@date-io/core" "^2.10.11"
+    "@date-io/core" "^1.3.13"
 
 "@discoveryjs/json-ext@^0.5.3":
   version "0.5.5"
