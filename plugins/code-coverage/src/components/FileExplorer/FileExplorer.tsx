@@ -232,7 +232,7 @@ export const FileExplorer = () => {
       title: 'Coverage',
       type: 'numeric',
       field: 'coverage',
-      render: (row: CoverageTableRow) => `${row.coverage}%`,
+      render: (row: CoverageTableRow) => `${row.coverage.toFixed(2)}%`,
     },
     {
       title: 'Missing lines',
