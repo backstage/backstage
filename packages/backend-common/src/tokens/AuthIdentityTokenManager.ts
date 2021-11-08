@@ -29,13 +29,13 @@ export class AuthIdentityTokenManager implements TokenManager {
       discovery: discovery,
       issuer: 'auth-identity-token-manager',
     });
-    // TODO: (b2b-auth) how do we get this to be the right JWK type
-    this.key = JWK.asKey(Buffer.from(secret)) as JWK.OctKey;
+    this.key = JWK.asKey({ kty: 'oct', k: secret });
   }
 
   async getServerToken(): Promise<{ token: string }> {
-    // TODO: (b2b-auth) figure out how to use HMAC as the alg
-    const jwt = JWT.sign({ sub: 'backstage-server' }, this.key);
+    const jwt = JWT.sign({ sub: 'backstage-server' }, this.key, {
+      algorithm: 'HS256',
+    });
     return { token: jwt };
   }
 
