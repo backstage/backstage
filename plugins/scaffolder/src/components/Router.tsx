@@ -27,6 +27,7 @@ import {
   FIELD_EXTENSION_WRAPPER_KEY,
   FIELD_EXTENSION_KEY,
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
+  customComponents,
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
 
@@ -50,6 +51,7 @@ export const Router = ({ TemplateCardComponent }: RouterProps) => {
   );
 
   const fieldExtensions = [
+    ...customComponents(),
     ...customFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
       ({ name }) =>

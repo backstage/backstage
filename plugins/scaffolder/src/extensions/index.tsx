@@ -49,3 +49,5 @@ attachComponentData(
 export type { CustomFieldValidator, FieldExtensionOptions };
 
 export { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from './default';
+
+export { list as customComponents } from '../components/fields/register'

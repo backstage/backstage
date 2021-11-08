@@ -18,3 +18,4 @@ export * from './EntityPicker';
 export * from './OwnerPicker';
 export * from './RepoUrlPicker';
 export * from './TextValuePicker';
+export * from './register';
