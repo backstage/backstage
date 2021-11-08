@@ -15,6 +15,7 @@
  */
 
 import { JWK, JWT } from 'jose';
+import { Config } from '@backstage/config';
 import { TokenManager } from './types';
 import { IdentityClient } from '../identity';
 import { PluginEndpointDiscovery } from '../discovery';
@@ -24,11 +25,13 @@ export class AuthIdentityTokenManager implements TokenManager {
   private identityClient: IdentityClient;
   private key: JWK.OctKey;
 
-  constructor(discovery: PluginEndpointDiscovery, secret: string) {
+  constructor(discovery: PluginEndpointDiscovery, config: Config) {
     this.identityClient = new IdentityClient({
       discovery: discovery,
       issuer: 'auth-identity-token-manager',
     });
+
+    const secret = config.getConfig('backend.auth').getString('secret');
     this.key = JWK.asKey({ kty: 'oct', k: secret });
   }
 

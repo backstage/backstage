@@ -66,7 +66,7 @@ function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
-  const tokenManager = new AuthIdentityTokenManager(discovery, 'secret-tehe');
+  const tokenManager = new AuthIdentityTokenManager(discovery, config);
 
   root.info(`Created UrlReader ${reader}`);
 
