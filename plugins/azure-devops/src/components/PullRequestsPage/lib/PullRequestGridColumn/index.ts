@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  azureDevOpsPlugin,
-  EntityAzurePipelinesContent,
-  isAzureDevOpsAvailable,
-  AzurePullRequestsPage,
-} from './plugin';
-
-export * from './components/AzurePullRequestsIcon';
+export { PullRequestGridColumn } from './PullRequestGridColumn';

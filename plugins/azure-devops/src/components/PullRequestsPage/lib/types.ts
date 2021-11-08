@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-export {
-  azureDevOpsPlugin,
-  EntityAzurePipelinesContent,
-  isAzureDevOpsAvailable,
-  AzurePullRequestsPage,
-} from './plugin';
+import { PullRequest } from '../../../api/types';
 
-export * from './components/AzurePullRequestsIcon';
+export interface PullRequestGroup {
+  title: string;
+  pullRequests: PullRequest[];
+  simplified?: boolean;
+}
