@@ -27,7 +27,7 @@
     "@backstage/errors": "^0.1.3",
     "@backstage/plugin-catalog-react": "^0.6.1",
     "@backstage/theme": "^0.2.12",
-    "@date-io/luxon": "2.x",
+    "@date-io/luxon": "1.x",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
