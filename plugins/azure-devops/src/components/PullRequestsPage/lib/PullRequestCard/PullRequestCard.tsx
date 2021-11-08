@@ -16,6 +16,7 @@
 
 import { Card, CardContent, CardHeader, Link } from '@material-ui/core';
 
+import { AutoCompleteIcon } from '../AutoCompleteIcon';
 import { Avatar } from '@backstage/core-components';
 import { PullRequest } from '../../../../api/types';
 import React from 'react';
@@ -35,6 +36,11 @@ const useStyles = makeStyles(
     content: {
       display: 'flex',
       flexDirection: 'row',
+    },
+    cardHeaderAction: {
+      display: 'flex',
+      alignSelf: 'center',
+      margin: 0,
     },
   }),
   { name: 'PullRequestCard' },
@@ -75,8 +81,12 @@ export const PullRequestCard = ({
       <CardHeader
         avatar={avatar}
         title={title}
+        action={
+          <AutoCompleteIcon hasAutoComplete={pullRequest.hasAutoComplete} />
+        }
         classes={{
           ...(simplified && { root: classes.cardHeaderSimplified }),
+          action: classes.cardHeaderAction,
         }}
       />
 
