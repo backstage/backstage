@@ -16,8 +16,17 @@
 
 //  NEEDS WORK
 import { Button, LinearProgress, Tooltip, Typography } from '@material-ui/core';
-import { DataGrid, GridColDef, GridCellParams } from '@material-ui/data-grid';
-import React from 'react';
+import MaterialTable from 'material-table';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import Clear from '@material-ui/icons/Clear';
+import FilterList from '@material-ui/icons/FilterList';
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import Search from '@material-ui/icons/Search';
+import React, { forwardRef } from 'react';
+
 import { useAsync } from 'react-use';
 import { gcpApiRef, Project } from '../../api';
 
@@ -59,18 +68,6 @@ const PageContents = () => {
 
   const { loading, error, value } = useAsync(() => api.listProjects());
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
-  const handleChangePage = (newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (pageSize: number) => {
-    setRowsPerPage(pageSize);
-    setPage(0);
-  };
-
   if (loading) {
     return <LinearProgress />;
   } else if (error) {
@@ -81,78 +78,83 @@ const PageContents = () => {
     );
   }
 
-  function renderLink(params: GridCellParams) {
+  function renderLink(id: string) {
     return (
-      <Link
-        to={`project?projectId=${encodeURIComponent(params.value!.toString())}`}
-      >
+      <Link to={`project?projectId=${encodeURIComponent(id)}`}>
         <Typography color="primary">
-          <LongText text={params.value!.toString()} max={60} />
+          <LongText text={id} max={60} />
         </Typography>
       </Link>
     );
   }
 
-  const columns: GridColDef[] = [
-    {
-      align: 'left',
-      field: 'name',
-      flex: 1,
-      headerAlign: 'left',
-      headerName: 'Name',
-    },
-    {
-      align: 'left',
-      field: 'projectNumber',
-      flex: 0.6,
-      headerAlign: 'left',
-      headerName: 'Project Number',
-    },
-    {
-      align: 'left',
-      field: 'projectID',
-      flex: 1,
-      headerAlign: 'left',
-      headerName: 'Project ID',
-      renderCell: renderLink,
-    },
-    {
-      align: 'left',
-      field: 'state',
-      flex: 0.6,
-      headerAlign: 'left',
-      headerName: 'State',
-    },
-    {
-      align: 'left',
-      field: 'creationTime',
-      flex: 0.7,
-      headerAlign: 'left',
-      headerName: 'Creation Time',
-    },
-  ];
-
-  const rows =
-    value?.map((project: Project) => ({
-      id: project.projectId,
-      name: project.name,
-      projectNumber: project?.projectNumber || 'Error',
-      projectID: project.projectId,
-      state: project?.lifecycleState || 'Error',
-      creationTime: project?.createTime || 'Error',
-    })) || [];
-
   return (
     <div style={{ height: '95%', width: '100%' }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        page={page}
-        pageSize={rowsPerPage}
-        rowsPerPageOptions={[10, 25, 50, 100]}
-        onPageChange={handleChangePage}
-        onPageSizeChange={handleChangeRowsPerPage}
-        disableSelectionOnClick
+      <MaterialTable
+        icons={{
+          Filter: forwardRef((props, ref) => (
+            <FilterList {...props} ref={ref} />
+          )),
+          FirstPage: forwardRef((props, ref) => (
+            <FirstPage {...props} ref={ref} />
+          )),
+          LastPage: forwardRef((props, ref) => (
+            <LastPage {...props} ref={ref} />
+          )),
+          NextPage: forwardRef((props, ref) => (
+            <ChevronRight {...props} ref={ref} />
+          )),
+          PreviousPage: forwardRef((props, ref) => (
+            <ChevronLeft {...props} ref={ref} />
+          )),
+          ResetSearch: forwardRef((props, ref) => (
+            <Clear {...props} ref={ref} />
+          )),
+          Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+          SortArrow: forwardRef((props, ref) => (
+            <ArrowDownward {...props} ref={ref} />
+          )),
+        }}
+        columns={[
+          {
+            field: 'name',
+            title: 'Name',
+            defaultSort: 'asc',
+          },
+          {
+            field: 'projectNumber',
+            title: 'Project Number',
+          },
+          {
+            field: 'projectID',
+            title: 'Project ID',
+            render: (rowData: { id: string }) => renderLink(rowData.id),
+          },
+          {
+            field: 'state',
+            title: 'State',
+          },
+          {
+            field: 'creationTime',
+            title: 'Creation Time',
+          },
+        ]}
+        data={
+          value?.map((project: Project) => ({
+            id: project.projectId,
+            name: project.name,
+            projectNumber: project?.projectNumber || 'Error',
+            projectID: project.projectId,
+            state: project?.lifecycleState || 'Error',
+            creationTime: project?.createTime || 'Error',
+          })) || []
+        }
+        options={{
+          filtering: true,
+          pageSize: 5,
+          pageSizeOptions: [5, 10, 25, 50, 100],
+          showTitle: false,
+        }}
       />
     </div>
   );
