@@ -26,6 +26,9 @@ import {
 // Should match the pattern in react-router
 const PARAM_PATTERN = /^\w+$/;
 
+/**
+ * @internal
+ */
 export class SubRouteRefImpl<Params extends AnyParams>
   implements SubRouteRef<Params>
 {
@@ -45,18 +48,34 @@ export class SubRouteRefImpl<Params extends AnyParams>
   }
 }
 
-// These utility types help us infer a Param object type from a string path
-// For example, `/foo/:bar/:baz` inferred to `{ bar: string, baz: string }`
-type ParamPart<S extends string> = S extends `:${infer Param}` ? Param : never;
-type ParamNames<S extends string> = S extends `${infer Part}/${infer Rest}`
-  ? ParamPart<Part> | ParamNames<Rest>
-  : ParamPart<S>;
-type PathParams<S extends string> = { [name in ParamNames<S>]: string };
+/**
+ * Used in {@link PathParams} type declaration.
+ * @public
+ */
+export type ParamPart<S extends string> = S extends `:${infer Param}`
+  ? Param
+  : never;
 
 /**
- * Merges a param object type with with an optional params type into a params object
+ * Used in {@link PathParams} type declaration.
+ * @public
  */
-type MergeParams<
+export type ParamNames<S extends string> =
+  S extends `${infer Part}/${infer Rest}`
+    ? ParamPart<Part> | ParamNames<Rest>
+    : ParamPart<S>;
+/**
+ * This utility type helps us infer a Param object type from a string path
+ * For example, `/foo/:bar/:baz` inferred to `{ bar: string, baz: string }`
+ * @public
+ */
+export type PathParams<S extends string> = { [name in ParamNames<S>]: string };
+
+/**
+ * Merges a param object type with with an optional params type into a params object.
+ * @public
+ */
+export type MergeParams<
   P1 extends { [param in string]: string },
   P2 extends AnyParams,
 > = (P1[keyof P1] extends never ? {} : P1) & (P2 extends undefined ? {} : P2);
@@ -64,14 +83,22 @@ type MergeParams<
 /**
  * Creates a SubRouteRef type given the desired parameters and parent route parameters.
  * The parameters types are merged together while ensuring that there is no overlap between the two.
+ *
+ * @public
  */
-type MakeSubRouteRef<
+export type MakeSubRouteRef<
   Params extends { [param in string]: string },
   ParentParams extends AnyParams,
 > = keyof Params & keyof ParentParams extends never
   ? SubRouteRef<OptionalParams<MergeParams<Params, ParentParams>>>
   : never;
 
+/**
+ * Create a {@link SubRouteRef} from a route descriptor.
+ *
+ * @param config - Description of the route reference to be created.
+ * @public
+ */
 export function createSubRouteRef<
   Path extends string,
   ParentParams extends AnyParams = never,

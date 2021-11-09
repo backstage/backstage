@@ -18,7 +18,8 @@ import { Box, Typography } from '@material-ui/core';
 import {
   BuildResult,
   BuildStatus,
-} from 'azure-devops-node-api/interfaces/BuildInterfaces';
+  RepoBuild,
+} from '@backstage/plugin-azure-devops-common';
 import {
   Link,
   ResponseErrorPanel,
@@ -34,7 +35,6 @@ import {
 
 import { DateTime } from 'luxon';
 import React from 'react';
-import { RepoBuild } from '../../api/types';
 
 export const getBuildResultComponent = (result: number | undefined) => {
   switch (result) {

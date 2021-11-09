@@ -46,9 +46,7 @@
   "resolutions": {
     "**/@graphql-codegen/cli/**/ws": "^7.4.6",
     "**/@roadiehq/**/@backstage/plugin-catalog": "*",
-    "**/@roadiehq/**/@backstage/catalog-model": "*",
-    "graphql-language-service-interface": "2.8.2",
-    "graphql-language-service-parser": "1.9.0"
+    "**/@roadiehq/**/@backstage/catalog-model": "*"
   },
   "version": "1.0.0",
   "dependencies": {

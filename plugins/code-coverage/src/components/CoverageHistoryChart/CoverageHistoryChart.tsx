@@ -158,7 +158,11 @@ export const CoverageHistoryChart = () => {
             margin={{ right: 48, top: 32 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="timestamp" tickFormatter={formatDateToHuman} />
+            <XAxis
+              dataKey="timestamp"
+              tickFormatter={formatDateToHuman}
+              reversed
+            />
             <YAxis dataKey="line.percentage" />
             <YAxis dataKey="branch.percentage" />
             <Tooltip labelFormatter={formatDateToHuman} />

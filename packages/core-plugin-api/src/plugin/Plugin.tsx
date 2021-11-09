@@ -24,6 +24,9 @@ import {
 } from './types';
 import { AnyApiFactory } from '../apis';
 
+/**
+ * @internal
+ */
 export class PluginImpl<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
@@ -80,6 +83,12 @@ export class PluginImpl<
   }
 }
 
+/**
+ * Creates Backstage Plugin from config.
+ *
+ * @param config - Plugin configuration.
+ * @public
+ */
 export function createPlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},

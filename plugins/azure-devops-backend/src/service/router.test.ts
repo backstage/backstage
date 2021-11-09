@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
-import express from 'express';
-import request from 'supertest';
-import { AzureDevOpsApi } from '../api';
-import { createRouter } from './router';
-import { PullRequest, RepoBuild } from '../api/types';
 import {
-  GitRepository,
-  PullRequestStatus,
-} from 'azure-devops-node-api/interfaces/GitInterfaces';
-import {
-  Build,
   BuildResult,
   BuildStatus,
-} from 'azure-devops-node-api/interfaces/BuildInterfaces';
+  PullRequest,
+  PullRequestStatus,
+  RepoBuild,
+} from '@backstage/plugin-azure-devops-common';
+
+import { AzureDevOpsApi } from '../api';
+import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import { ConfigReader } from '@backstage/config';
+import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import { createRouter } from './router';
+import express from 'express';
+import { getVoidLogger } from '@backstage/backend-common';
+import request from 'supertest';
 
 describe('createRouter', () => {
   let azureDevOpsApi: jest.Mocked<AzureDevOpsApi>;

@@ -27,6 +27,42 @@ export enum BuildStatus {
   Postponed = 8,
 }
 
+// Warning: (ae-missing-release-tag) "PullRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PullRequest = {
+  pullRequestId?: number;
+  repoName?: string;
+  title?: string;
+  uniqueName?: string;
+  createdBy?: string;
+  creationDate?: Date;
+  sourceRefName?: string;
+  targetRefName?: string;
+  status?: PullRequestStatus;
+  isDraft?: boolean;
+  link: string;
+};
+
+// Warning: (ae-missing-release-tag) "PullRequestOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PullRequestOptions = {
+  top: number;
+  status: PullRequestStatus;
+};
+
+// Warning: (ae-missing-release-tag) "PullRequestStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export enum PullRequestStatus {
+  Abandoned = 2,
+  Active = 1,
+  All = 4,
+  Completed = 3,
+  NotSet = 0,
+}
+
 // Warning: (ae-missing-release-tag) "RepoBuild" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -41,6 +77,13 @@ export type RepoBuild = {
   finishTime?: Date;
   source: string;
   uniqueName?: string;
+};
+
+// Warning: (ae-missing-release-tag) "RepoBuildOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type RepoBuildOptions = {
+  top?: number;
 };
 
 // (No @packageDocumentation comment for this package)
