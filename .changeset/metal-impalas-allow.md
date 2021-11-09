@@ -2,9 +2,12 @@
 '@backstage/techdocs-common': patch
 ---
 
-1. Techdocs publishers constructors now use parameter objects when being instantiated
+1. Techdocs publisher constructors now use parameter objects when being
+   instantiated
 
-2. The `LocalPublish` publisher can now be created using `fromConfig`:
+2. Internal refactor of `LocalPublish` publisher to use `fromConfig` for
+   creation to be aligned with other publishers; this does not impact
+   `LocalPublish` usage.
 
 ```diff
 - const publisher = new LocalPublish(config, logger, discovery);
