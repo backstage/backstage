@@ -252,7 +252,7 @@ export async function readMicrosoftGraphOrganization(
 }
 
 function extractGroupName(group: MicrosoftGraph.Group): string {
-  if (group.securityEnabled && !group.mailEnabled) {
+  if (group.securityEnabled) {
     return group.displayName as string;
   }
   return (group.mailNickname || group.displayName) as string;
