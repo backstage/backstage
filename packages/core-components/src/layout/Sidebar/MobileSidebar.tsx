@@ -15,13 +15,11 @@
  */
 
 import { BackstageTheme } from '@backstage/theme';
-import {
-  BottomNavigation,
-  Box,
-  IconButton,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import BottomNavigation from '@material-ui/core/BottomNavigation';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
 import React, { createContext, useEffect, useState } from 'react';

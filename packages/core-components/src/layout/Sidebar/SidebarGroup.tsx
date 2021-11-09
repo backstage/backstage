@@ -16,12 +16,11 @@
  */
 
 import { BackstageTheme } from '@backstage/theme';
-import {
-  BottomNavigationAction,
+import BottomNavigationAction, {
   BottomNavigationActionProps,
-  makeStyles,
-  useMediaQuery,
-} from '@material-ui/core';
+} from '@material-ui/core/BottomNavigationAction';
+import { makeStyles } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link } from '../../components';

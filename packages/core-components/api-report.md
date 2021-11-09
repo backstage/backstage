@@ -8,11 +8,9 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { BottomNavigationActionProps } from '@material-ui/core';
-import { Breadcrumbs as Breadcrumbs_2 } from '@material-ui/core';
-import { ButtonProps } from '@material-ui/core';
-import { ButtonTypeMap } from '@material-ui/core';
-import { CardHeaderProps } from '@material-ui/core';
+import { BottomNavigationActionProps } from '@material-ui/core/BottomNavigationAction';
+import { ButtonProps as ButtonProps_2 } from '@material-ui/core/Button';
+import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
@@ -784,7 +782,7 @@ export type SelectInputBaseClassKey = 'root' | 'input';
 export function Sidebar({
   children,
   ...props
-}: React_2.PropsWithChildren<Props_21>): JSX.Element;
+}: React_2.PropsWithChildren<Props_18>): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SIDEBAR_INTRO_LOCAL_STORAGE" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
