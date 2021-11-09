@@ -45,7 +45,7 @@
     "@backstage/search-common": "^0.2.1",
     "@backstage/integration": "^0.6.9",
     "@google-cloud/storage": "^5.6.0",
-    "@trendyol-js/openstack-swift-sdk": "^0.0.4",
+    "@trendyol-js/openstack-swift-sdk": "^0.0.5",
     "@types/express": "^4.17.6",
     "aws-sdk": "^2.840.0",
     "express": "^4.17.1",
