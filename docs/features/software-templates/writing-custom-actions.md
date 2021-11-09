@@ -8,42 +8,9 @@ If you're wanting to extend the functionality of the Scaffolder, you can do so
 by writing custom actions which can be used along side our
 [built-in actions](./builtin-actions.md).
 
-
-> Note: When adding custom actions, the actions array will **replace the built-in actions too**, 
-<<<<<<< HEAD
-> so if you want to have those as well as your new one.
-> See below to include `builtInActions` during registration of your action.
-
-=======
-> so if you want to have those as well as your new one, you'll need to do the following:
-
-```ts
-import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
-import { ScmIntegrations } from '@backstage/integration';
-
-const integrations = ScmIntegrations.fromConfig(config);
-
-const builtInActions = createBuiltinActions({
-  containerRunner,
-  integrations,
-  config,
-  catalogClient,
-  reader,
-});
-
-const actions = [...builtInActions, createNewFileAction()];
-
-return await createRouter({
-  containerRunner,
-  logger,
-  config,
-  database,
-  catalogClient,
-  reader,
-  actions,
-});
-```
->>>>>>> a72c8bf39a (More consistent formatting of the Note block)
+> Note: When adding custom actions, the actions array will **replace the
+> built-in actions too**. To ensure you can continue to include he builtin
+> actions, see below to include them during registration of your action.
 
 ### Writing your Custom Action
 
