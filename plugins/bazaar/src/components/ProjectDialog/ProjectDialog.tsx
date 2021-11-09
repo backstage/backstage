@@ -173,17 +173,18 @@ export const ProjectDialog = ({
             options={['small', 'medium', 'large']}
           />
 
-          <DoubleDateSelector setValue={setValue} control={control} />
-
           <InputField
             error={errors.responsible}
             control={control}
             rules={{
-              required: false,
+              required: true,
             }}
             inputType="responsible"
+            helperText="please enter a contact person"
             placeholder="Contact person of the project"
           />
+
+          <DoubleDateSelector setValue={setValue} control={control} />
 
           <InputField
             error={errors.community}

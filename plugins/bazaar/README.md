@@ -82,12 +82,12 @@ The following fields are mandatory:
 - announcement - present your idea and what skills you are looking for
 - status - whether or not the project has started
 - size - small, medium or large
+- responsible - main contact person of the project
 
 The other fields are:
 
 - start date
 - end date
-- responsible - main contact person of the project
 - community link - link where the project members can chat, e.g. Teams or Discord link
 
 When the project is added, you will see the Bazaar information in the Bazaar card on the entity page. There you can join a project, edit or delete it.
