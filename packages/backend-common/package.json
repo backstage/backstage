@@ -34,7 +34,6 @@
     "@backstage/config-loader": "^0.8.0",
     "@backstage/errors": "^0.1.4",
     "@backstage/integration": "^0.6.9",
-    "@backstage/plugin-auth-backend": "^0.4.5",
     "@backstage/types": "^0.1.1",
     "@google-cloud/storage": "^5.8.0",
     "@lerna/project": "^4.0.0",

@@ -16,8 +16,8 @@
 
 import fetch from 'cross-fetch';
 import { JWK, JWT, JWKS, JSONWebKey } from 'jose';
-import { BackstageIdentity } from '@backstage/plugin-auth-backend';
-import { PluginEndpointDiscovery } from '../discovery';
+import { BackstageIdentity } from '../providers';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 const CLOCK_MARGIN_S = 10;
 
@@ -27,7 +27,6 @@ const CLOCK_MARGIN_S = 10;
  *
  * @experimental This is not a stable API yet
  */
-
 export class IdentityClient {
   private readonly discovery: PluginEndpointDiscovery;
   private readonly issuer: string;

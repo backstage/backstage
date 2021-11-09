@@ -25,7 +25,6 @@ export { loadBackendConfig } from './config';
 export * from './database';
 export * from './discovery';
 export * from './hot';
-export * from './identity';
 export * from './logging';
 export * from './middleware';
 export * from './paths';
