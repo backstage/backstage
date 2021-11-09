@@ -125,6 +125,7 @@ export const createSamlProvider = (
       callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
       entryPoint: config.getString('entryPoint'),
       logoutUrl: config.getOptionalString('logoutUrl'),
+      audience: config.getOptionalString('audience'),
       issuer: config.getString('issuer'),
       cert: config.getString('cert'),
       privateCert: config.getOptionalString('privateKey'),
