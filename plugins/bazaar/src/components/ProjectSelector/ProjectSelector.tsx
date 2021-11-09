@@ -45,7 +45,7 @@ export const ProjectSelector = ({
             isFormInvalid && value === '' ? 'Please select a project' : ''
           }
           {...params}
-          label="Select a project"
+          label="Select a project *"
         />
       )}
       onChange={(_, data) => onChange(data!)}

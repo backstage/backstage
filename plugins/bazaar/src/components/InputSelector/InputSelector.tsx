@@ -25,7 +25,7 @@ import { FormValues } from '../../types';
 type Props = {
   options: string[];
   control: Control<FormValues, object>;
-  name: 'announcement' | 'status';
+  name: 'status' | 'size';
   error?: FieldError | undefined;
 };
 
@@ -42,14 +42,17 @@ export const InputSelector = ({ name, options, control, error }: Props) => {
       render={({ field }) => (
         <FormControl fullWidth>
           <InputLabel
+            required
             htmlFor="demo-simple-select-outlined"
             id="demo-simple-select-outlined-label"
+            style={{
+              marginTop: '0.25rem',
+            }}
           >
             {label}
           </InputLabel>
           <Select
             {...field}
-            required
             labelId="demo-simple-select-outlined-label"
             id="demo-simple-select-outlined"
             label={label}

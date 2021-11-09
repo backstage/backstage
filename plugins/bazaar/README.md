@@ -58,7 +58,7 @@ const overviewContent = (
       <EntityAboutCard variant="gridItem" />
     </Grid>
 
-+   <Grid item sm={4}>
++   <Grid item sm={6}>
 +     <EntityBazaarInfoCard />
 +   </Grid>
 
@@ -75,11 +75,22 @@ The latest modified Bazaar projects are displayed in the Bazaar landing page, lo
 
 ### Workflow
 
-To add a project to the Bazaar, you need to create a project with one of the templates in Backstage. Click the add project-button, choose the project and fill in the form. You will be asked to add an announcement for new team members. The purpose of the announcement is for you to present your ideas and what skills you are looking for. Further you need to provide the status of the project.
+To add a project to the Bazaar, you need to create a project with one of the templates in Backstage. Click the add project-button, choose the project and fill in the form.
+
+The following fields are mandatory:
+
+- announcement - present your idea and what skills you are looking for
+- status - whether or not the project has started
+- size - small, medium or large
+
+The other fields are:
+
+- start date
+- end date
+- responsible - main contact person of the project
+- community link - link where the project members can chat, e.g. Teams or Discord link
 
 When the project is added, you will see the Bazaar information in the Bazaar card on the entity page. There you can join a project, edit or delete it.
-
-![workflow](media/bazaar_demo.gif)
 
 ### Database
 
@@ -92,6 +103,10 @@ The metadata related to the Bazaar is stored in a database. Right now there are 
 - announcement - announcement of the project and its current need of skills/team member
 - status - status of the project, 'proposed' or 'ongoing'
 - updated_at - date when the Bazaar information was last modified (ISO 8601 format)
+- size - small, medium or large
+- start_date - date when the project is estimated to start (ISO 8601 format)
+- end_date - date when the project is estimated to end (ISO 8601 format)
+- responsible - main contact person of the project
 
 **members**:
 
@@ -107,12 +122,8 @@ The metadata related to the Bazaar is stored in a database. Right now there are 
 
 - Bazaar landing page
 
-  - Add a tab 'My page', where your personal data is displayed. For example: your projects and its latest activities, projects or tags you are following etc.
-  - Make it possible to sort the project based on the number of members
-
-- Bazaar card
-
-  - Make it possible to follow tags/projects
+  - Add a tab 'My page', where your personal data is displayed. For example: your projects and its latest activities etc.
+  - Make it possible to sort the project based on e.g. the number of members
 
 - Bazaar tab on the EntityPage
 

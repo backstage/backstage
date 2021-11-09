@@ -19,13 +19,18 @@ import { Controller, Control, FieldError } from 'react-hook-form';
 import { TextField } from '@material-ui/core';
 import { FormValues } from '../../types';
 
+type Rules = {
+  required: boolean;
+  pattern?: any;
+};
+
 type Props = {
-  inputType: 'announcement' | 'community';
+  inputType: 'announcement' | 'community' | 'responsible';
   error?: FieldError | undefined;
   control: Control<FormValues, object>;
   helperText?: string;
   placeholder?: string;
-  rules?: Object;
+  rules?: Rules | undefined;
 };
 
 export const InputField = ({
@@ -47,6 +52,7 @@ export const InputField = ({
       render={({ field }) => (
         <TextField
           {...field}
+          required={rules?.required}
           margin="dense"
           multiline
           id="title"

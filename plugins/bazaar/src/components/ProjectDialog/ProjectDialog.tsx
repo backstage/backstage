@@ -26,10 +26,16 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import CloseIcon from '@material-ui/icons/Close';
 import { Button, Dialog, Typography, IconButton } from '@material-ui/core';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import {
+  useForm,
+  SubmitHandler,
+  UseFormReset,
+  UseFormGetValues,
+} from 'react-hook-form';
 import { InputField } from '../InputField/InputField';
 import { InputSelector } from '../InputSelector/InputSelector';
 import { FormValues } from '../../types';
+import { DoubleDateSelector } from '../DoubleDateSelector/DoubleDateSelector';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -87,7 +93,10 @@ const DialogActions = withStyles((theme: Theme) => ({
 }))(MuiDialogActions);
 
 type Props = {
-  handleSave: (getValues: any, reset: any) => SubmitHandler<FormValues>;
+  handleSave: (
+    getValues: UseFormGetValues<FormValues>,
+    reset: UseFormReset<FormValues>,
+  ) => SubmitHandler<FormValues>;
   isAddForm: boolean;
   title: string;
   defaultValues: FormValues;
@@ -111,6 +120,7 @@ export const ProjectDialog = ({
     control,
     getValues,
     formState: { errors },
+    setValue,
   } = useForm<FormValues>({
     mode: 'onChange',
     defaultValues: defaultValues,
@@ -137,7 +147,6 @@ export const ProjectDialog = ({
         <DialogTitle id="customized-dialog-title" onClose={handleCloseAndClear}>
           {title}
         </DialogTitle>
-
         <DialogContent dividers>
           {isAddForm && projectSelector}
 
@@ -152,22 +161,40 @@ export const ProjectDialog = ({
             placeholder="Describe who you are and what skills you are looking for"
           />
 
+          <InputSelector
+            control={control}
+            name="status"
+            options={['proposed', 'ongoing']}
+          />
+
+          <InputSelector
+            control={control}
+            name="size"
+            options={['small', 'medium', 'large']}
+          />
+
+          <DoubleDateSelector setValue={setValue} control={control} />
+
+          <InputField
+            error={errors.responsible}
+            control={control}
+            rules={{
+              required: false,
+            }}
+            inputType="responsible"
+            placeholder="Contact person of the project"
+          />
+
           <InputField
             error={errors.community}
             control={control}
             rules={{
               required: false,
-              pattern: RegExp('^(https?)://[^s$.?#].[^s]*$'),
+              pattern: RegExp('^(https?)://'),
             }}
             inputType="community"
             helperText="please enter a link starting with http/https"
             placeholder="Community link to e.g. Teams or Discord"
-          />
-
-          <InputSelector
-            control={control}
-            name="status"
-            options={['proposed', 'ongoing']}
           />
         </DialogContent>
 
