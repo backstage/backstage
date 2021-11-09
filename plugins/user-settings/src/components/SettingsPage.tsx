@@ -22,16 +22,16 @@ import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
 type Props = {
   providerSettings?: JSX.Element;
+  userProfileCard?: JSX.Element;
 };
 
-export const SettingsPage = ({ providerSettings }: Props) => {
+export const SettingsPage = ({ providerSettings, userProfileCard }: Props) => {
   return (
     <Page themeId="home">
       <Header title="Settings" />
-
       <TabbedLayout>
         <TabbedLayout.Route path="general" title="General">
-          <UserSettingsGeneral />
+          <UserSettingsGeneral userProfileCard={userProfileCard} />
         </TabbedLayout.Route>
         <TabbedLayout.Route
           path="auth-providers"
