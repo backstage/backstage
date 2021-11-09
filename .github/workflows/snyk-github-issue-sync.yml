@@ -11,6 +11,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Create Snyk report
         uses: snyk/actions/node@master
+        continue-on-error: true # Snyk CLI exits with error when vulnerabilities are found
         with:
           args: >
             --yarn-workspaces
