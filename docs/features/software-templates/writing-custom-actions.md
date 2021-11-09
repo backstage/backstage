@@ -8,11 +8,9 @@ If you're wanting to extend the functionality of the Scaffolder, you can do so
 by writing custom actions which can be used along side our
 [built-in actions](./builtin-actions.md).
 
----
-**NOTE**
 
-When adding custom actions, the actions array will **replace the built-in actions too**, so if you
-want to have those as well as your new one, you'll need to do the following:
+> Note: When adding custom actions, the actions array will **replace the built-in actions too**, 
+> so if you want to have those as well as your new one, you'll need to do the following:
 
 ```ts
 import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
@@ -40,7 +38,6 @@ return await createRouter({
   actions,
 });
 ```
----
 
 ### Writing your Custom Action
 
