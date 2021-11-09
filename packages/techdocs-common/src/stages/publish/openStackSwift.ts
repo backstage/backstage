@@ -24,7 +24,11 @@ import { SwiftClient } from '@trendyol-js/openstack-swift-sdk';
 import { NotFound } from '@trendyol-js/openstack-swift-sdk/lib/types';
 import { Stream, Readable } from 'stream';
 import { Logger } from 'winston';
-import { getFileTreeRecursively, getHeadersForFileExtension, lowerCaseEntityTripletInStoragePath } from './helpers';
+import {
+  getFileTreeRecursively,
+  getHeadersForFileExtension,
+  lowerCaseEntityTripletInStoragePath,
+} from './helpers';
 import {
   PublisherBase,
   PublishRequest,
@@ -77,7 +81,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
     } catch (error) {
       throw new Error(
         "Since techdocs.publisher.type is set to 'openStackSwift' in your app config, " +
-        'techdocs.publisher.openStackSwift.containerName is required.',
+          'techdocs.publisher.openStackSwift.containerName is required.',
       );
     }
 
@@ -115,9 +119,9 @@ export class OpenStackSwiftPublish implements PublisherBase {
       }
       this.logger.error(
         `Could not retrieve metadata about the OpenStack Swift container ${this.containerName}. ` +
-        'Make sure the container exists. Also make sure that authentication is setup either by ' +
-        'explicitly defining credentials and region in techdocs.publisher.openStackSwift in app config or ' +
-        'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
+          'Make sure the container exists. Also make sure that authentication is setup either by ' +
+          'explicitly defining credentials and region in techdocs.publisher.openStackSwift in app config or ' +
+          'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
       );
       return {
         isAvailable: false,
@@ -290,7 +294,6 @@ export class OpenStackSwiftPublish implements PublisherBase {
     }
   }
 
-
   async migrateDocsCase({
     removeOriginal = false,
     concurrency = 25,
@@ -317,7 +320,12 @@ export class OpenStackSwiftPublish implements PublisherBase {
 
           try {
             this.logger.verbose(`Migrating ${file} to ${newPath}`);
-            await this.storageClient.copy(this.containerName, file, this.containerName, newPath);
+            await this.storageClient.copy(
+              this.containerName,
+              file,
+              this.containerName,
+              newPath,
+            );
             if (removeOriginal) {
               await this.storageClient.delete(this.containerName, file);
             }
@@ -331,17 +339,20 @@ export class OpenStackSwiftPublish implements PublisherBase {
   }
 
   /**
- * Returns a list of all object keys from the configured container.
- */
+   * Returns a list of all object keys from the configured container.
+   */
   protected async getAllObjectsFromContainer(
     { prefix } = { prefix: '' },
   ): Promise<string[]> {
     let objects: string[] = [];
-    let allObjects: any;
     const OSS_MAX_LIMIT = Math.pow(2, 31) - 1;
 
-    allObjects = await this.storageClient.list(this.containerName, prefix, OSS_MAX_LIMIT)
-    objects = allObjects.map((object: any) => object = object.name)
+    const allObjects = await this.storageClient.list(
+      this.containerName,
+      prefix,
+      OSS_MAX_LIMIT,
+    );
+    objects = allObjects.map((object: any) => object.name);
 
     return objects;
   }

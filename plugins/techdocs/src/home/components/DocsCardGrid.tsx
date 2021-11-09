@@ -39,7 +39,7 @@ export const DocsCardGrid = ({
     'techdocs.legacyUseCaseSensitiveTripletPaths',
   )
     ? (str: string) => str
-    : (str: string) => str.toLocaleLowerCase("en-US");
+    : (str: string) => str.toLocaleLowerCase('en-US');
 
   if (!entities) return null;
   return (
