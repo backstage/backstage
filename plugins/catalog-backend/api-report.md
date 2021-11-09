@@ -870,11 +870,14 @@ export type EntityAncestryResponse = {
 // Warning: (ae-missing-release-tag) "EntityFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export type EntityFilter = {
-  anyOf: {
-    allOf: EntitiesSearchFilter[];
-  }[];
-};
+export type EntityFilter =
+  | {
+      allOf: EntityFilter[];
+    }
+  | {
+      anyOf: EntityFilter[];
+    }
+  | EntitiesSearchFilter;
 
 // Warning: (ae-missing-release-tag) "EntityPagination" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

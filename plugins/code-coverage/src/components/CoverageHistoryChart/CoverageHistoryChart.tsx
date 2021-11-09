@@ -46,6 +46,8 @@ import { codeCoverageApiRef } from '../../api';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
+import { DateTime } from 'luxon';
+
 type Coverage = 'line' | 'branch';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -68,6 +70,13 @@ const getTrendIcon = (trend: number, classes: ClassNameMap) => {
       return <TrendingFlatIcon />;
   }
 };
+
+// convert timestamp to human friendly form
+function formatDateToHuman(timeStamp: string | number) {
+  return DateTime.fromMillis(Number(timeStamp)).toLocaleString(
+    DateTime.DATETIME_MED,
+  );
+}
 
 export const CoverageHistoryChart = () => {
   const { entity } = useEntity();
@@ -149,10 +158,10 @@ export const CoverageHistoryChart = () => {
             margin={{ right: 48, top: 32 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="timestamp" />
+            <XAxis dataKey="timestamp" tickFormatter={formatDateToHuman} />
             <YAxis dataKey="line.percentage" />
             <YAxis dataKey="branch.percentage" />
-            <Tooltip />
+            <Tooltip labelFormatter={formatDateToHuman} />
             <Legend />
             <Line
               type="monotone"

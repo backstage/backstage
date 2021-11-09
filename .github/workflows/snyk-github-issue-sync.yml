@@ -1,0 +1,23 @@
+name: 'Snyk Github Issue Sync'
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+
+jobs:
+  sync:
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create Snyk report
+        uses: snyk/actions/node@master
+        with:
+          args: >
+            --yarn-workspaces
+            --org=backstage-dgh
+            --strict-out-of-sync=false
+            --json-file-output=snyk.json
+          json: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Update Github issues
+        run: yarn ts-node scripts/snyk-github-issue-sync.ts
