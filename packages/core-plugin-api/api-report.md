@@ -142,7 +142,7 @@ export type ApiRefConfig = {
   description?: string;
 };
 
-// @public
+// @public @deprecated
 export type ApiRefsToTypes<
   T extends {
     [key in string]: ApiRef<unknown>;
@@ -151,7 +151,7 @@ export type ApiRefsToTypes<
   [key in keyof T]: ApiRefType<T[key]>;
 };
 
-// @public
+// @public @deprecated
 export type ApiRefType<T> = T extends ApiRef<infer U> ? U : never;
 
 // @public
