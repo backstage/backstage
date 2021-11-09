@@ -56,7 +56,7 @@ export const DocsTable = ({
     'techdocs.legacyUseCaseSensitiveTripletPaths',
   )
     ? (str: string) => str
-    : (str: string) => str.toLocaleLowerCase();
+    : (str: string) => str.toLocaleLowerCase("en-US");
 
   if (!entities) return null;
 
