@@ -168,12 +168,26 @@ function convertColumns<T extends object>(
 ): TableColumn<T>[] {
   return columns.map(column => {
     const headerStyle: React.CSSProperties = {};
-    const cellStyle: React.CSSProperties =
-      typeof column.cellStyle === 'object' ? column.cellStyle : {};
+
+    let cellStyle = column.cellStyle || {};
 
     if (column.highlight) {
       headerStyle.color = theme.palette.textContrast;
-      cellStyle.fontWeight = theme.typography.fontWeightBold;
+
+      if (typeof cellStyle === 'object') {
+        (cellStyle as React.CSSProperties).fontWeight =
+          theme.typography.fontWeightBold;
+      } else {
+        const cellStyleFn = cellStyle as (
+          data: any,
+          rowData: T,
+          column?: Column<T>,
+        ) => React.CSSProperties;
+        cellStyle = (data, rowData, rowColumn) => {
+          const style = cellStyleFn(data, rowData, rowColumn);
+          return { ...style, fontWeight: theme.typography.fontWeightBold };
+        };
+      }
     }
 
     return {
