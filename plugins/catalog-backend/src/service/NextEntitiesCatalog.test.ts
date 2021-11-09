@@ -282,13 +282,47 @@ describe('NextEntitiesCatalog', () => {
 
         const testFilter = {
           key: 'spec.test',
-          matchValueExists: true,
         };
         const request = { filter: testFilter };
         const { entities } = await catalog.entities(request);
 
         expect(entities.length).toBe(1);
         expect(entities[0]).toEqual(entity2);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should return correct entity for negation filter',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+        const entity1: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'one' },
+          spec: {},
+        };
+        const entity2: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'two' },
+          spec: {
+            test: 'test value',
+          },
+        };
+        await addEntityToSearch(knex, entity1);
+        await addEntityToSearch(knex, entity2);
+        const catalog = new NextEntitiesCatalog(knex);
+
+        const testFilter = {
+          not: {
+            key: 'spec.test',
+          },
+        };
+        const request = { filter: testFilter };
+        const { entities } = await catalog.entities(request);
+
+        expect(entities.length).toBe(1);
+        expect(entities[0]).toEqual(entity1);
       },
     );
 
@@ -328,24 +362,27 @@ describe('NextEntitiesCatalog', () => {
 
         const testFilter1 = {
           key: 'metadata.org',
-          matchValueExists: true,
-          matchValueIn: ['b'],
+          values: ['b'],
         };
         const testFilter2 = {
           key: 'metadata.desc',
-          matchValueExists: true,
         };
         const testFilter3 = {
           key: 'metadata.color',
-          matchValueExists: true,
-          matchValueIn: ['blue'],
+          values: ['blue'],
+        };
+        const testFilter4 = {
+          not: {
+            key: 'metadata.color',
+            values: ['red'],
+          },
         };
         const request = {
           filter: {
             allOf: [
               testFilter1,
               {
-                anyOf: [testFilter2, testFilter3],
+                anyOf: [testFilter2, testFilter3, testFilter4],
               },
             ],
           },

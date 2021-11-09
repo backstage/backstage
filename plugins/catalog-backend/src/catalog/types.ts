@@ -25,6 +25,7 @@ import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
 export type EntityFilter =
   | { allOf: EntityFilter[] }
   | { anyOf: EntityFilter[] }
+  | { not: EntityFilter }
   | EntitiesSearchFilter;
 
 /**
@@ -39,7 +40,7 @@ export type EntityPagination = {
 /**
  * Matches rows in the entities_search table.
  */
-export type EntitiesValuesFilter = {
+export type EntitiesSearchFilter = {
   /**
    * The key to match on.
    *
@@ -50,27 +51,11 @@ export type EntitiesValuesFilter = {
   /**
    * Match on plain equality of values.
    *
-   * Match on
-   * values that are equal to any of the given array items. Matches are always
-   * case insensitive.
+   * Match on values that are equal to any of the given array items. Matches are
+   * always case insensitive.
    */
-  values: string[];
-
-  negate?: boolean;
+  values?: string[];
 };
-
-export type EntitiesKeyFilter = {
-  /**
-   * The key to match on.
-   *
-   * Matches are always case insensitive.
-   */
-  key: string;
-
-  negate?: boolean;
-};
-
-export type EntitiesSearchFilter = EntitiesValuesFilter | EntitiesKeyFilter;
 
 export type PageInfo =
   | {
