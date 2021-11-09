@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,4 @@
  * limitations under the License.
  */
 
-export type {
-  AnyParams,
-  RouteRef,
-  SubRouteRef,
-  ExternalRouteRef,
-  OptionalParams,
-  ParamKeys,
-  RouteFunc,
-} from './types';
-export { createRouteRef } from './RouteRef';
-export { createSubRouteRef } from './SubRouteRef';
-export type {
-  MakeSubRouteRef,
-  MergeParams,
-  ParamNames,
-  ParamPart,
-  PathParams,
-} from './SubRouteRef';
-export { createExternalRouteRef } from './ExternalRouteRef';
-export { useRouteRef } from './useRouteRef';
-export { useRouteRefParams } from './useRouteRefParams';
+export * from './types';

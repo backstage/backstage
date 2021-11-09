@@ -22,7 +22,7 @@
   "dependencies": {
     "@backstage/config": "^0.1.8",
     "@backstage/search-common": "^0.2.0",
-    "@elastic/elasticsearch": "^7.13.0",
+    "@elastic/elasticsearch": "7.13.0",
     "@acuris/aws-es-connection": "^2.2.0",
     "aws-sdk": "^2.948.0",
     "elastic-builder": "^2.16.0",

@@ -19,11 +19,21 @@ import { ProfileInfo } from '../apis/definitions';
 import { IconComponent } from '../icons';
 import { BackstagePlugin } from '../plugin/types';
 
+/**
+ * Props for the BootErrorPage.
+ *
+ * @public
+ */
 export type BootErrorPageProps = {
   step: 'load-config' | 'load-chunk';
   error: Error;
 };
 
+/**
+ * Data and handlers associated with the user sign in event.
+ *
+ * @public
+ */
 export type SignInResult = {
   /**
    * User ID that will be returned by the IdentityApi
@@ -43,6 +53,11 @@ export type SignInResult = {
   signOut?: () => Promise<void>;
 };
 
+/**
+ * Props for the SignInPage.
+ *
+ * @public
+ */
 export type SignInPageProps = {
   /**
    * Set the sign-in result for the app. This should only be called once.
@@ -50,12 +65,22 @@ export type SignInPageProps = {
   onResult(result: SignInResult): void;
 };
 
+/**
+ * Props for the ErrorBoundaryFallback.
+ *
+ * @public
+ */
 export type ErrorBoundaryFallbackProps = {
   plugin?: BackstagePlugin;
   error: Error;
   resetError: () => void;
 };
 
+/**
+ * Basic app components.
+ *
+ * @public
+ */
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
@@ -75,6 +100,11 @@ export type AppComponents = {
   SignInPage?: ComponentType<SignInPageProps>;
 };
 
+/**
+ * Provides plugins and components registered in the app.
+ *
+ * @public
+ */
 export type AppContext = {
   /**
    * Get a list of all plugins that are installed in the app.

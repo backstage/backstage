@@ -82,16 +82,22 @@ function selectChildren(
  * A querying interface tailored to traversing a set of selected React elements
  * and extracting data.
  *
+ * @remarks
+ *
  * Methods prefixed with `selectBy` are used to narrow the set of selected elements.
  *
  * Methods prefixed with `find` return concrete data using a deep traversal of the set.
  *
  * Methods prefixed with `get` return concrete data using a shallow traversal of the set.
+ *
+ * @public
  */
 export interface ElementCollection {
   /**
    * Narrows the set of selected components by doing a deep traversal and
    * only including those that have defined component data for the given `key`.
+   *
+   * @remarks
    *
    * Whether an element in the tree has component data set for the given key
    * is determined by whether `getComponentData` returns undefined.
@@ -104,6 +110,8 @@ export interface ElementCollection {
    * If `withStrictError` is set, the resulting selection must be a full match, meaning
    * there may be no elements that were excluded in the selection. If the selection
    * is not a clean match, an error will be throw with `withStrictError` as the message.
+   *
+   * @param query - Filtering query.
    */
   selectByComponentData(query: {
     key: string;
@@ -113,6 +121,8 @@ export interface ElementCollection {
   /**
    * Finds all elements using the same criteria as `selectByComponentData`, but
    * returns the actual component data of each of those elements instead.
+   *
+   * @param query - Lookup query.
    */
   findComponentData<T>(query: { key: string }): T[];
 
@@ -163,7 +173,11 @@ class Collection implements ElementCollection {
 /**
  * useElementFilter is a utility that helps you narrow down and retrieve data
  * from a React element tree, typically operating on the `children` property
- * passed in to a component. A common use-case is to construct declarative APIs
+ * passed in to a component.
+ *
+ * @remarks
+ *
+ * A common use-case is to construct declarative APIs
  * where a React component defines its behavior based on its children, such as
  * the relationship between `Routes` and `Route` in `react-router`.
  *
@@ -175,6 +189,8 @@ class Collection implements ElementCollection {
  * with added memoization based on the input `node`. If further memoization
  * dependencies are used in the filter function, they should be added to the
  * third `dependencies` argument, just like `useMemo`, `useEffect`, etc.
+ *
+ * @public
  */
 export function useElementFilter<T>(
   node: ReactNode,
