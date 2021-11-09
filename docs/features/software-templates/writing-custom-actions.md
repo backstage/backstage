@@ -10,34 +10,9 @@ by writing custom actions which can be used along side our
 
 
 > Note: When adding custom actions, the actions array will **replace the built-in actions too**, 
-> so if you want to have those as well as your new one, you'll need to do the following:
+> so if you want to have those as well as your new one.
+> See below to include `builtInActions` during registration of your action.
 
-```ts
-import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
-import { ScmIntegrations } from '@backstage/integration';
-
-const integrations = ScmIntegrations.fromConfig(config);
-
-const builtInActions = createBuiltinActions({
-  containerRunner,
-  integrations,
-  config,
-  catalogClient,
-  reader,
-});
-
-const actions = [...builtInActions, createNewFileAction()];
-
-return await createRouter({
-  containerRunner,
-  logger,
-  config,
-  database,
-  catalogClient,
-  reader,
-  actions,
-});
-```
 
 ### Writing your Custom Action
 
@@ -145,7 +120,17 @@ There's another property you can pass here, which is an array of `actions` which
 will set the available actions that the scaffolder has access to.
 
 ```ts
-const actions = [createNewFileAction()];
+const integrations = ScmIntegrations.fromConfig(config);
+
+const builtInActions = createBuiltinActions({
+  containerRunner,
+  integrations,
+  config,
+  catalogClient,
+  reader,
+});
+
+const actions = [...builtInActions, createNewFileAction()];
 return await createRouter({
   containerRunner,
   logger,
