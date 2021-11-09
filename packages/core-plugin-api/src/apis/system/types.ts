@@ -35,6 +35,7 @@ export type AnyApiRef = ApiRef<unknown>;
  * Transforms ApiRef type into its inner API type.
  *
  * @public
+ * @deprecated unused type.
  */
 export type ApiRefType<T> = T extends ApiRef<infer U> ? U : never;
 
@@ -51,6 +52,7 @@ export type TypesToApiRefs<T> = { [key in keyof T]: ApiRef<T[key]> };
  * Reverse type transform of {@link TypesToApiRefs}.
  *
  * @public
+ * @deprecated unused type.
  */
 export type ApiRefsToTypes<T extends { [key in string]: ApiRef<unknown> }> = {
   [key in keyof T]: ApiRefType<T[key]>;
