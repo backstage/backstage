@@ -15,11 +15,30 @@
  */
 
 import { useApi, identityApiRef } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { useAsyncRetry } from 'react-use';
 
 export const useUserProfile = () => {
   const identityApi = useApi(identityApiRef);
   const userId = identityApi.getUserId();
-  const profile = identityApi.getProfile();
+  const identityProviderProfile = identityApi.getProfile();
+
+  const catalogApi = useApi(catalogApiRef);
+
+  const { value: entity } = useAsyncRetry(
+    () =>
+      catalogApi.getEntityByName({
+        kind: 'User',
+        namespace: 'default',
+        name: userId,
+      }),
+    [catalogApi, userId],
+  );
+
+  // TODO: decide how to handle asynchronous loading.
+  // Right now the information from the identity provider
+  // are returned as fallback when catalog info are not available
+  const profile = { ...identityProviderProfile, ...entity?.spec?.profile };
   const displayName = profile.displayName ?? userId;
 
   return { profile, displayName };
