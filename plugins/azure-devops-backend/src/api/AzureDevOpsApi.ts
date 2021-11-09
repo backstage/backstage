@@ -15,17 +15,19 @@
  */
 
 import {
-  Build,
   BuildResult,
   BuildStatus,
-  GitPullRequest,
-  GitPullRequestSearchCriteria,
-  GitRepository,
   PullRequest,
   PullRequestOptions,
   RepoBuild,
-} from './types';
+} from '@backstage/plugin-azure-devops-common';
+import {
+  GitPullRequest,
+  GitPullRequestSearchCriteria,
+  GitRepository,
+} from 'azure-devops-node-api/interfaces/GitInterfaces';
 
+import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { Logger } from 'winston';
 import { WebApi } from 'azure-devops-node-api';
 

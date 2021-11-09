@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { AzureDevOpsApi } from './AzureDevOpsApi';
-import { RepoBuild, RepoBuildOptions } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import {
+  RepoBuild,
+  RepoBuildOptions,
+} from '@backstage/plugin-azure-devops-common';
+
+import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { ResponseError } from '@backstage/errors';
 
 export class AzureDevOpsClient implements AzureDevOpsApi {

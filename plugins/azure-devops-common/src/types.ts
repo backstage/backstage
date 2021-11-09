@@ -80,3 +80,49 @@ export type RepoBuild = {
   source: string;
   uniqueName?: string;
 };
+
+export type RepoBuildOptions = {
+  top?: number;
+};
+
+export enum PullRequestStatus {
+  /**
+   * Status not set. Default state.
+   */
+  NotSet = 0,
+  /**
+   * Pull request is active.
+   */
+  Active = 1,
+  /**
+   * Pull request is abandoned.
+   */
+  Abandoned = 2,
+  /**
+   * Pull request is completed.
+   */
+  Completed = 3,
+  /**
+   * Used in pull request search criteria to include all statuses.
+   */
+  All = 4,
+}
+
+export type PullRequest = {
+  pullRequestId?: number;
+  repoName?: string;
+  title?: string;
+  uniqueName?: string;
+  createdBy?: string;
+  creationDate?: Date;
+  sourceRefName?: string;
+  targetRefName?: string;
+  status?: PullRequestStatus;
+  isDraft?: boolean;
+  link: string;
+};
+
+export type PullRequestOptions = {
+  top: number;
+  status: PullRequestStatus;
+};
