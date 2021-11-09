@@ -47,6 +47,23 @@ import {
 const BATCH_CONCURRENCY = 3;
 
 export class AzureBlobStoragePublish implements PublisherBase {
+  private readonly storageClient: BlobServiceClient;
+  private readonly containerName: string;
+  private readonly legacyPathCasing: boolean;
+  private readonly logger: Logger;
+
+  constructor(options: {
+    storageClient: BlobServiceClient;
+    containerName: string;
+    legacyPathCasing: boolean;
+    logger: Logger;
+  }) {
+    this.storageClient = options.storageClient;
+    this.containerName = options.containerName;
+    this.legacyPathCasing = options.legacyPathCasing;
+    this.logger = options.logger;
+  }
+
   static fromConfig(config: Config, logger: Logger): PublisherBase {
     let containerName = '';
     try {
@@ -95,24 +112,12 @@ export class AzureBlobStoragePublish implements PublisherBase {
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
 
-    return new AzureBlobStoragePublish(
-      storageClient,
-      containerName,
-      legacyPathCasing,
-      logger,
-    );
-  }
-
-  constructor(
-    private readonly storageClient: BlobServiceClient,
-    private readonly containerName: string,
-    private readonly legacyPathCasing: boolean,
-    private readonly logger: Logger,
-  ) {
-    this.storageClient = storageClient;
-    this.containerName = containerName;
-    this.legacyPathCasing = legacyPathCasing;
-    this.logger = logger;
+    return new AzureBlobStoragePublish({
+      storageClient: storageClient,
+      containerName: containerName,
+      legacyPathCasing: legacyPathCasing,
+      logger: logger,
+    });
   }
 
   async getReadiness(): Promise<ReadinessResponse> {

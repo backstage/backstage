@@ -63,7 +63,11 @@ describe('local publisher', () => {
 
     const mockConfig = new ConfigReader({});
 
-    const publisher = new LocalPublish(mockConfig, logger, testDiscovery);
+    const publisher = LocalPublish.fromConfig(
+      mockConfig,
+      logger,
+      testDiscovery,
+    );
     const mockEntity = createMockEntity();
     const lowerMockEntity = createMockEntity(undefined, true);
 
@@ -90,7 +94,11 @@ describe('local publisher', () => {
       },
     });
 
-    const publisher = new LocalPublish(mockConfig, logger, testDiscovery);
+    const publisher = LocalPublish.fromConfig(
+      mockConfig,
+      logger,
+      testDiscovery,
+    );
     const mockEntity = createMockEntity();
     const lowerMockEntity = createMockEntity(undefined, true);
 
@@ -106,7 +114,11 @@ describe('local publisher', () => {
 
   describe('docsRouter', () => {
     const mockConfig = new ConfigReader({});
-    const publisher = new LocalPublish(mockConfig, logger, testDiscovery);
+    const publisher = LocalPublish.fromConfig(
+      mockConfig,
+      logger,
+      testDiscovery,
+    );
     let app: express.Express;
 
     beforeEach(() => {
@@ -166,7 +178,7 @@ describe('local publisher', () => {
           legacyUseCaseSensitiveTripletPaths: true,
         },
       });
-      const legacyPublisher = new LocalPublish(
+      const legacyPublisher = LocalPublish.fromConfig(
         legacyConfig,
         logger,
         testDiscovery,
