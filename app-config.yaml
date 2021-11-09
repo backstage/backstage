@@ -23,7 +23,7 @@ app:
             title: '#backstage'
 
 backend:
-  auth:
+  authorization:
     secret: ${BACKEND_SECRET}
   baseUrl: http://localhost:7000
   listen:

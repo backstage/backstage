@@ -1,10 +1,10 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import {
-  AuthIdentityTokenManager,
   PluginCacheManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
+  TokenManager,
   UrlReader,
 } from '@backstage/backend-common';
 
@@ -15,5 +15,5 @@ export type PluginEnvironment = {
   config: Config;
   reader: UrlReader;
   discovery: PluginEndpointDiscovery;
-  tokenManager: AuthIdentityTokenManager;
+  tokenManager: TokenManager;
 };

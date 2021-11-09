@@ -33,7 +33,7 @@ import {
   SingleHostDiscovery,
   UrlReaders,
   useHotMemoize,
-  AuthIdentityTokenManager,
+  ServerTokenManager,
   IdentityClient,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
@@ -66,7 +66,7 @@ function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
-  const tokenManager = new AuthIdentityTokenManager(discovery, config);
+  const tokenManager = new ServerTokenManager(config);
 
   root.info(`Created UrlReader ${reader}`);
 
@@ -158,7 +158,10 @@ async function main() {
         IdentityClient.getBearerToken(req.headers.authorization) ||
         req.cookies.token;
 
-      await authEnv.tokenManager.validateToken(token);
+      const isServerToken = await authEnv.tokenManager.isServerToken(token);
+      if (!isServerToken) {
+        await identity.authenticate(token);
+      }
 
       if (!req.headers.authorization) {
         // Authorization header may be forwarded by plugin requests
