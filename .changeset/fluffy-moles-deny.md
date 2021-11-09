@@ -1,5 +1,4 @@
 ---
-'@backstage/core-plugin-api': patch
 '@backstage/plugin-allure': patch
 '@backstage/plugin-api-docs': patch
 '@backstage/plugin-azure-devops': patch
