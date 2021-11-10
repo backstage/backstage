@@ -23,6 +23,7 @@ app:
             title: '#backstage'
 
 backend:
+  # Used for enabling authorization, secret is shared by all backend plugins
   authorization:
     secret: ${BACKEND_SECRET}
   baseUrl: http://localhost:7000

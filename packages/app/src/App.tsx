@@ -86,52 +86,6 @@ import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
 import { techDocsPage } from './components/techdocs/TechDocsPage';
-import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
-
-// Parses supplied JWT token and returns the payload
-function parseJwt(token: string): { exp: number } {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(
-    atob(base64)
-      .split('')
-      .map(function (c) {
-        return `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`;
-      })
-      .join(''),
-  );
-
-  return JSON.parse(jsonPayload);
-}
-
-// Returns milliseconds until the supplied JWT token expires
-function msUntilExpiry(token: string): number {
-  const payload = parseJwt(token);
-  const remaining =
-    new Date(payload.exp * 1000).getTime() - new Date().getTime();
-  return remaining;
-}
-
-// Calls the specified url regularly using an auth token to set a token cookie
-// to authorize regular HTTP requests when loading techdocs
-async function setTokenCookie(url: string, getIdToken: () => Promise<string>) {
-  const token = await getIdToken();
-  await fetch(url, {
-    mode: 'cors',
-    credentials: 'include',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  // Call this function again a few minutes before the token expires
-  const ms = msUntilExpiry(token) - 4 * 60 * 1000;
-  setTimeout(
-    () => {
-      setTokenCookie(url, getIdToken);
-    },
-    ms > 0 ? ms : 10000,
-  );
-}
 
 const app = createApp({
   apis,
@@ -142,24 +96,12 @@ const app = createApp({
   },
   components: {
     SignInPage: props => {
-      const discoveryApi = useApi(discoveryApiRef);
       return (
         <SignInPage
           {...props}
           providers={['guest', 'custom', ...providers]}
           title="Select a sign-in method"
           align="center"
-          onResult={async result => {
-            // When logged in, set a token cookie
-            if (typeof result.getIdToken !== 'undefined') {
-              setTokenCookie(
-                await discoveryApi.getBaseUrl('cookie'),
-                result.getIdToken,
-              );
-            }
-            // Forward results
-            props.onResult(result);
-          }}
         />
       );
     },
