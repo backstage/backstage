@@ -23,12 +23,16 @@ const configWithSecret = new ConfigReader({
 
 describe('ServerTokenManager', () => {
   describe('getServerToken', () => {
-    it('should always return a token', async () => {
+    it('should return a token if secret in config exists', async () => {
       const tokenManager = new ServerTokenManager(configWithSecret);
       expect((await tokenManager.getServerToken()).token).toBeDefined();
+    });
 
-      const emptyTokenManager = new ServerTokenManager(emptyConfig);
-      expect((await emptyTokenManager.getServerToken()).token).toBeDefined();
+    it('should return a token if secret in config does not exist', async () => {
+      const tokenManagerWithEmptyConfig = new ServerTokenManager(emptyConfig);
+      expect(
+        (await tokenManagerWithEmptyConfig.getServerToken()).token,
+      ).toBeDefined();
     });
   });
 
