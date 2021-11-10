@@ -31,6 +31,21 @@ export interface UserEntityV1alpha1 extends Entity {
       displayName?: string;
       email?: string;
       picture?: string;
+      pronouns?: string;
+      jobTitle?: string;
+      startDateISO?: string;
+      manager?: string;
+      timezoneISO?: string;
+      location?: string;
+      directMessageURL?: string;
+      externalHandles?: {
+        facebook?: string;
+        github?: string;
+        instagram?: string;
+        spotify?: string;
+        twitter?: string;
+        youtube?: string;
+      };
     };
     memberOf: string[];
   };

@@ -13,7 +13,22 @@
         "profile": {
           "displayName": "Jenny Doe",
           "email": "jenny-doe@example.com",
-          "picture": "https://example.com/staff/jenny-with-party-hat.jpeg"
+          "picture": "https://example.com/staff/jenny-with-party-hat.jpeg",
+          "pronouns": "They/them",
+          "jobTitle": "Senior Fullstack Engineer",
+          "startDateISO": "2021-11-10",
+          "manager": "Sarah Parker",
+          "timezoneISO": "America/New_York",
+          "location": "Working from home",
+          "directMessageURL": "https://app.slack.com/client/[WORKPLACE_ID]/[USER_ID]",
+          "externalHandles": {
+            "facebook": "zuck",
+            "github": "mojombo",
+            "instagram": "kevin",
+            "spotify": "daniel",
+            "twitter": "jack",
+            "youtube": "jawed"
+          }
         },
         "memberOf": ["team-b", "employees"]
       }
@@ -60,6 +75,92 @@
                     "https://example.com/staff/jenny-with-party-hat.jpeg"
                   ],
                   "minLength": 1
+                },
+                "pronouns": {
+                  "type": "string",
+                  "description": "The pronouns of the user.",
+                  "examples": ["They/them", "He/him", "She/her"],
+                  "minLength": 1
+                },
+                "jobTitle": {
+                  "type": "string",
+                  "description": "The job title of the user.",
+                  "examples": ["Senior Fullstack Engineer", "Product Manager"],
+                  "minLength": 1
+                },
+                "startDateISO": {
+                  "type": "string",
+                  "description": "The employment start date of the user in ISO format.",
+                  "examples": ["2021-11-10"],
+                  "minLength": 1
+                },
+                "manager": {
+                  "type": "string",
+                  "description": "The direct line manager of the user.",
+                  "examples": ["Sarah Parker"],
+                  "minLength": 1
+                },
+                "timezoneISO": {
+                  "type": "string",
+                  "description": "The primary timezone of the user.",
+                  "examples": ["America/New_York"],
+                  "minLength": 1
+                },
+                "location": {
+                  "type": "string",
+                  "description": "The primary working location of the user.",
+                  "examples": ["Working from home", "New York"],
+                  "minLength": 1
+                },
+                "directMessageURL": {
+                  "type": "string",
+                  "description": "A link to directly message the user.",
+                  "examples": [
+                    "https://app.slack.com/client/[WORKPLACE_ID]/[USER_ID]"
+                  ],
+                  "minLength": 1
+                },
+                "externalHandles": {
+                  "type": "object",
+                  "description": "A key value list of public profile social handles that can be consistently linked to.",
+                  "properties": {
+                    "facebook": {
+                      "type": "string",
+                      "description": "Facebook handle of the user.",
+                      "examples": ["zuck"],
+                      "minLength": 1
+                    },
+                    "github": {
+                      "type": "string",
+                      "description": "Github handle of the user.",
+                      "examples": ["mojombo"],
+                      "minLength": 1
+                    },
+                    "instagram": {
+                      "type": "string",
+                      "description": "Instagram handle of the user.",
+                      "examples": ["kevin"],
+                      "minLength": 1
+                    },
+                    "spotify": {
+                      "type": "string",
+                      "description": "Spotify handle of the user.",
+                      "examples": ["daniel"],
+                      "minLength": 1
+                    },
+                    "twitter": {
+                      "type": "string",
+                      "description": "Twitter handle of the user.",
+                      "examples": ["jack"],
+                      "minLength": 1
+                    },
+                    "youtube": {
+                      "type": "string",
+                      "description": "Youtube handle of the user.",
+                      "examples": ["jawed"],
+                      "minLength": 1
+                    }
+                  }
                 }
               }
             },
