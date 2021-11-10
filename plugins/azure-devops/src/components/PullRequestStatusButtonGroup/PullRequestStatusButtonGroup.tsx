@@ -16,7 +16,7 @@
 
 import { Button, ButtonGroup } from '@material-ui/core';
 
-import { PullRequestStatus } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import { PullRequestStatus } from '@backstage/plugin-azure-devops-common';
 import React from 'react';
 
 export const PullRequestStatusButtonGroup = ({
