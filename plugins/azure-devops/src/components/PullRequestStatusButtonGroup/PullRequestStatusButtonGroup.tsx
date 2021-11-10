@@ -24,7 +24,7 @@ export const PullRequestStatusButtonGroup = ({
   setPullRequestsStatusState,
 }: {
   pullRequestStatusState: PullRequestStatus;
-  setPullRequestsStatusState: any;
+  setPullRequestsStatusState: (pullRequestStatus: PullRequestStatus) => void;
 }) => {
   return (
     <ButtonGroup aria-label="outlined button group">
