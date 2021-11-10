@@ -21,7 +21,7 @@ export type AuthorizeResponse =
     }
   | {
       result: AuthorizeResult.CONDITIONAL;
-      conditions: PermissionCriteria;
+      conditions: PermissionCriteria<unknown>;
     };
 
 // @public
@@ -70,21 +70,21 @@ export class PermissionClient {
 }
 
 // @public
-export type PermissionCondition<TParams extends unknown> = {
+export type PermissionCondition<TParams> = {
   rule: string;
   params: TParams;
 };
 
 // @public
-export type PermissionCriteria =
+export type PermissionCriteria<TQuery> =
   | {
-      allOf: PermissionCriteria[];
+      allOf: PermissionCriteria<TQuery>[];
     }
   | {
-      anyOf: PermissionCriteria[];
+      anyOf: PermissionCriteria<TQuery>[];
     }
   | {
-      not: PermissionCriteria;
+      not: PermissionCriteria<TQuery>;
     }
-  | PermissionCondition<unknown>;
+  | PermissionCondition<TQuery>;
 ```

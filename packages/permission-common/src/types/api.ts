@@ -54,7 +54,7 @@ export type AuthorizeRequest = {
  * claims from a identity token.
  * @public
  */
-export type PermissionCondition<TParams extends unknown> = {
+export type PermissionCondition<TParams> = {
   rule: string;
   params: TParams;
 };
@@ -63,11 +63,11 @@ export type PermissionCondition<TParams extends unknown> = {
  * Composes several {@link PermissionCondition}s as criteria with a nested AND/OR structure.
  * @public
  */
-export type PermissionCriteria =
-  | { allOf: PermissionCriteria[] }
-  | { anyOf: PermissionCriteria[] }
-  | { not: PermissionCriteria }
-  | PermissionCondition<unknown>;
+export type PermissionCriteria<TQuery> =
+  | { allOf: PermissionCriteria<TQuery>[] }
+  | { anyOf: PermissionCriteria<TQuery>[] }
+  | { not: PermissionCriteria<TQuery> }
+  | PermissionCondition<TQuery>;
 
 /**
  * An authorization response from {@link PermissionClient#authorize}.
@@ -77,5 +77,5 @@ export type AuthorizeResponse =
   | { result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }
   | {
       result: AuthorizeResult.CONDITIONAL;
-      conditions: PermissionCriteria;
+      conditions: PermissionCriteria<unknown>;
     };
