@@ -20,7 +20,6 @@ import {
   renderWithEffects,
   withLogCollector,
 } from '@backstage/test-utils';
-import { lightTheme } from '@backstage/theme';
 import { render, screen } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
@@ -127,7 +126,7 @@ describe('Integration Test', () => {
   const HiddenComponent = plugin2.provide(
     createRoutableExtension({
       name: 'HiddenComponent',
-      component: () => Promise.resolve((_: { path?: string }) => <div />),
+      component: () => Promise.resolve(() => <div />),
       mountPoint: plugin2RouteRef,
     }),
   );
@@ -136,7 +135,7 @@ describe('Integration Test', () => {
     createRoutableExtension({
       name: 'ExposedComponent',
       component: () =>
-        Promise.resolve((_: PropsWithChildren<{ path?: string }>) => {
+        Promise.resolve(() => {
           const link1 = useRouteRef(plugin1RouteRef);
           const link2 = useRouteRef(plugin2RouteRef);
           const subLink1 = useRouteRef(subRouteRef1);
@@ -197,12 +196,13 @@ describe('Integration Test', () => {
           id: 'light',
           title: 'Light Theme',
           variant: 'light',
-          theme: lightTheme,
+          Provider: ({ children }) => <>{children}</>,
         },
       ],
       icons,
       plugins: [],
       components,
+      configLoader: async () => [],
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
           extRouteRef1: plugin1RouteRef,
@@ -220,8 +220,8 @@ describe('Integration Test', () => {
       <Provider>
         <Router>
           <Routes>
-            <ExposedComponent path="/" />
-            <HiddenComponent path="/foo/:x" />
+            <Route path="/" element={<ExposedComponent />} />
+            <Route path="/foo/:x" element={<HiddenComponent />} />
           </Routes>
         </Router>
       </Provider>,
@@ -251,12 +251,13 @@ describe('Integration Test', () => {
           id: 'light',
           title: 'Light Theme',
           variant: 'light',
-          theme: lightTheme,
+          Provider: ({ children }) => <>{children}</>,
         },
       ],
       icons,
       plugins: [],
       components,
+      configLoader: async () => [],
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
           extRouteRef1: plugin1RouteRef,
@@ -272,8 +273,8 @@ describe('Integration Test', () => {
       <Provider>
         <Router>
           <Routes>
-            <ExposedComponent path="/" />
-            <HiddenComponent path="/foo" />
+            <Route path="/" element={<ExposedComponent />} />
+            <Route path="/foo" element={<HiddenComponent />} />
           </Routes>
         </Router>
       </Provider>,
@@ -308,7 +309,7 @@ describe('Integration Test', () => {
           id: 'light',
           title: 'Light Theme',
           variant: 'light',
-          theme: lightTheme,
+          Provider: ({ children }) => <>{children}</>,
         },
       ],
       icons,
@@ -319,6 +320,7 @@ describe('Integration Test', () => {
         }),
       ],
       components,
+      configLoader: async () => [],
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
           extRouteRef1: plugin1RouteRef,
@@ -334,8 +336,8 @@ describe('Integration Test', () => {
       <Provider>
         <Router>
           <Routes>
-            <ExposedComponent path="/" />
-            <HiddenComponent path="/foo" />
+            <Route path="/" element={<ExposedComponent />} />
+            <Route path="/foo" element={<HiddenComponent />} />
           </Routes>
         </Router>
       </Provider>,
@@ -358,12 +360,13 @@ describe('Integration Test', () => {
           id: 'light',
           title: 'Light Theme',
           variant: 'light',
-          theme: lightTheme,
+          Provider: ({ children }) => <>{children}</>,
         },
       ],
       icons,
       plugins: [],
       components,
+      configLoader: async () => [],
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
           extRouteRef1: plugin1RouteRef,
@@ -380,7 +383,7 @@ describe('Integration Test', () => {
         <Router>
           <Routes>
             <Route path="/" element={<NavigateComponent />} />
-            <Route path="/foo" element={<HiddenComponent path="/foo" />} />
+            <Route path="/foo" element={<HiddenComponent />} />
           </Routes>
         </Router>
       </Provider>,
@@ -418,12 +421,13 @@ describe('Integration Test', () => {
           id: 'light',
           title: 'Light Theme',
           variant: 'light',
-          theme: lightTheme,
+          Provider: ({ children }) => <>{children}</>,
         },
       ],
       icons,
       plugins: [],
       components,
+      configLoader: async () => [],
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
           extRouteRef1: plugin1RouteRef,
@@ -440,9 +444,9 @@ describe('Integration Test', () => {
           <Provider>
             <Router>
               <Routes>
-                <ExposedComponent path="/test/:thing">
-                  <HiddenComponent path="/some/:thing" />
-                </ExposedComponent>
+                <Route path="/test/:thing" element={<ExposedComponent />}>
+                  <Route path="/some/:thing" element={<HiddenComponent />} />
+                </Route>
               </Routes>
             </Router>
           </Provider>,
