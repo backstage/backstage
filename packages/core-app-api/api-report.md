@@ -165,7 +165,7 @@ export type AppContext = {
   getComponents(): AppComponents;
 };
 
-// @public (undocumented)
+// @public
 export type AppIcons = {
   'kind:api': IconComponent;
   'kind:component': IconComponent;
@@ -183,6 +183,9 @@ export type AppIcons = {
   github: IconComponent;
   group: IconComponent;
   help: IconComponent;
+  scaffolder: IconComponent;
+  search: IconComponent;
+  techdocs: IconComponent;
   user: IconComponent;
   warning: IconComponent;
 };

@@ -41,6 +41,9 @@ const mockIcons = {
 
   brokenImage: () => <span />,
   catalog: () => <span />,
+  scaffolder: () => <span />,
+  techdocs: () => <span />,
+  search: () => <span />,
   chat: () => <span />,
   dashboard: () => <span />,
   docs: () => <span />,

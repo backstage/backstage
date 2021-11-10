@@ -18,6 +18,9 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import MuiApartmentIcon from '@material-ui/icons/Apartment';
 import MuiBrokenImageIcon from '@material-ui/icons/BrokenImage';
 import MuiCategoryIcon from '@material-ui/icons/Category';
+import MuiCreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
+import MuiSubjectIcon from '@material-ui/icons/Subject';
+import MuiSearchIcon from '@material-ui/icons/Search';
 import MuiChatIcon from '@material-ui/icons/Chat';
 import MuiDashboardIcon from '@material-ui/icons/Dashboard';
 import MuiDocsIcon from '@material-ui/icons/Description';
@@ -36,6 +39,9 @@ export const icons = {
   brokenImage: MuiBrokenImageIcon as IconComponent,
   // To be confirmed: see https://github.com/backstage/backstage/issues/4970
   catalog: MuiMenuBookIcon as IconComponent,
+  scaffolder: MuiCreateNewFolderIcon as IconComponent,
+  techdocs: MuiSubjectIcon as IconComponent,
+  search: MuiSearchIcon as IconComponent,
   chat: MuiChatIcon as IconComponent,
   dashboard: MuiDashboardIcon as IconComponent,
   docs: MuiDocsIcon as IconComponent,

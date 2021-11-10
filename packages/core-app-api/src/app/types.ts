@@ -27,7 +27,6 @@ import {
   PluginOutput,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
-import { AppIcons } from './icons';
 
 /**
  * Props for the `BootErrorPage` component of {@link AppComponents}.
@@ -109,6 +108,36 @@ export type AppComponents = {
    * and which point the AppRouter and all of its children will be rendered instead.
    */
   SignInPage?: ComponentType<SignInPageProps>;
+};
+
+/**
+ * A set of well-known icons that should be available within an app.
+ *
+ * @public
+ */
+export type AppIcons = {
+  'kind:api': IconComponent;
+  'kind:component': IconComponent;
+  'kind:domain': IconComponent;
+  'kind:group': IconComponent;
+  'kind:location': IconComponent;
+  'kind:system': IconComponent;
+  'kind:user': IconComponent;
+
+  brokenImage: IconComponent;
+  catalog: IconComponent;
+  chat: IconComponent;
+  dashboard: IconComponent;
+  docs: IconComponent;
+  email: IconComponent;
+  github: IconComponent;
+  group: IconComponent;
+  help: IconComponent;
+  scaffolder: IconComponent;
+  search: IconComponent;
+  techdocs: IconComponent;
+  user: IconComponent;
+  warning: IconComponent;
 };
 
 /**
