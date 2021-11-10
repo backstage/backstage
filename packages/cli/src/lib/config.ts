@@ -28,6 +28,7 @@ type Options = {
   fromPackage?: string;
   mockEnv?: boolean;
   withFilteredKeys?: boolean;
+  fullVisibility?: boolean;
 };
 
 export async function loadCliConfig(options: Options) {
@@ -70,7 +71,9 @@ export async function loadCliConfig(options: Options) {
 
   try {
     const frontendAppConfigs = schema.process(appConfigs, {
-      visibility: ['frontend'],
+      visibility: options.fullVisibility
+        ? ['frontend', 'backend', 'secret']
+        : ['frontend'],
       withFilteredKeys: options.withFilteredKeys,
     });
     const frontendConfig = ConfigReader.fromConfigs(frontendAppConfigs);

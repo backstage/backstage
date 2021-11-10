@@ -172,6 +172,7 @@ export function registerCommands(program: CommanderStatic) {
       'Only load config schema that applies to the given package',
     )
     .option('--lax', 'Do not require environment variables to be set')
+    .option('--frontend', 'Only validate the frontend configuration')
     .option(...configOption)
     .description(
       'Validate that the given configuration loads and matches schema',
