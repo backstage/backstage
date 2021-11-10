@@ -18,7 +18,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { InfoCard, InfoCardVariants } from '../../layout/InfoCard';
 import { BottomLinkProps } from '../../layout/BottomLink';
-import { Gauge, GetColor } from './Gauge';
+import { Gauge, GaugePropsGetColor } from './Gauge';
 
 type Props = {
   title: string;
@@ -28,7 +28,7 @@ type Props = {
   progress: number;
   inverse?: boolean;
   deepLink?: BottomLinkProps;
-  getColor?: GetColor;
+  getColor?: GaugePropsGetColor;
 };
 
 /** @public */

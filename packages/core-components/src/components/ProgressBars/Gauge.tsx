@@ -15,7 +15,7 @@
  */
 
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
+import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { Circle } from 'rc-progress';
 import React from 'react';
 
@@ -52,17 +52,17 @@ export type GaugeProps = {
   inverse?: boolean;
   unit?: string;
   max?: number;
-  getColor?: GetColor;
+  getColor?: GaugePropsGetColor;
 };
 
-type GetColorArgs = {
-  palette: BackstageTheme['palette'];
+export type GaugePropsGetColorOptions = {
+  palette: BackstagePalette;
   value: number;
   inverse?: boolean;
   max?: number;
 };
 
-export type GetColor = (args: GetColorArgs) => string;
+export type GaugePropsGetColor = (args: GaugePropsGetColorOptions) => string;
 
 const defaultGaugeProps = {
   fractional: true,
@@ -71,7 +71,7 @@ const defaultGaugeProps = {
   max: 100,
 };
 
-export const getProgressColor: GetColor = ({
+export const getProgressColor: GaugePropsGetColor = ({
   palette,
   value,
   inverse,

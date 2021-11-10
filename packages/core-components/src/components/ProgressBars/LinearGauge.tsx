@@ -20,14 +20,14 @@ import Tooltip from '@material-ui/core/Tooltip';
 // @ts-ignore
 import { Line } from 'rc-progress';
 import { BackstageTheme } from '@backstage/theme';
-import { getProgressColor, GetColor } from './Gauge';
+import { getProgressColor, GaugePropsGetColor } from './Gauge';
 
 type Props = {
   /**
    * Progress value between 0.0 - 1.0.
    */
   value: number;
-  getColor?: GetColor;
+  getColor?: GaugePropsGetColor;
 };
 
 export function LinearGauge(props: Props) {
