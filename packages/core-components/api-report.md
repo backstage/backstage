@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
+import { BackstagePalette } from '@backstage/theme';
 import { BackstageTheme } from '@backstage/theme';
 import { ButtonProps as ButtonProps_2 } from '@material-ui/core/Button';
 import { CardHeaderProps } from '@material-ui/core/CardHeader';
@@ -368,8 +369,6 @@ export function FeatureCalloutCircular(
 // @public (undocumented)
 export type FiltersContainerClassKey = 'root' | 'title';
 
-// Warning: (ae-forgotten-export) The symbol "GaugeProps" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export function Gauge(props: GaugeProps): JSX.Element;
 
@@ -383,6 +382,27 @@ export type GaugeCardClassKey = 'root';
 
 // @public (undocumented)
 export type GaugeClassKey = 'root' | 'overlay' | 'circle' | 'colorUnknown';
+
+// @public (undocumented)
+export type GaugeProps = {
+  value: number;
+  fractional?: boolean;
+  inverse?: boolean;
+  unit?: string;
+  max?: number;
+  getColor?: GaugePropsGetColor;
+};
+
+// @public (undocumented)
+export type GaugePropsGetColor = (args: GaugePropsGetColorOptions) => string;
+
+// @public (undocumented)
+export type GaugePropsGetColorOptions = {
+  palette: BackstagePalette;
+  value: number;
+  inverse?: boolean;
+  max?: number;
+};
 
 // @public (undocumented)
 export function GitHubIcon(props: IconComponentProps): JSX.Element;

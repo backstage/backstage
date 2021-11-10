@@ -46,6 +46,7 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageGauge' },
 );
 
+/** @public */
 export type GaugeProps = {
   value: number;
   fractional?: boolean;
@@ -55,6 +56,7 @@ export type GaugeProps = {
   getColor?: GaugePropsGetColor;
 };
 
+/** @public */
 export type GaugePropsGetColorOptions = {
   palette: BackstagePalette;
   value: number;
@@ -62,6 +64,7 @@ export type GaugePropsGetColorOptions = {
   max?: number;
 };
 
+/** @public */
 export type GaugePropsGetColor = (args: GaugePropsGetColorOptions) => string;
 
 const defaultGaugeProps = {
