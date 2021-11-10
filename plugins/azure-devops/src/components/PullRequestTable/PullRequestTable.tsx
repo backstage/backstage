@@ -47,16 +47,16 @@ const columns: TableColumn[] = [
     render: (row: Partial<PullRequest>) => (
       <Box display="flex" alignItems="center">
         <Link to={row.link ?? ''}>{row.title}</Link>
-        <Box paddingLeft={1}>
-          {row.isDraft && (
+        {row.isDraft && (
+          <Box paddingLeft={1}>
             <Chip
               label="Draft"
               variant="outlined"
               color="secondary"
               size="small"
             />
-          )}
-        </Box>
+          </Box>
+        )}
       </Box>
     ),
   },
