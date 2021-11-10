@@ -28,10 +28,10 @@ export const EntityAzurePipelinesContent: ({
   defaultLimit?: number | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityAzureReposContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "EntityAzurePullRequestsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityAzureReposContent: ({
+export const EntityAzurePullRequestsContent: ({
   defaultLimit,
 }: {
   defaultLimit?: number | undefined;

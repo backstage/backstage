@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { AzureReposIcon } from './AzureReposIcon';
+export { AzurePullRequestsIcon } from './AzurePullRequestsIcon';

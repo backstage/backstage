@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { EntityPageAzureRepos } from './EntityPageAzureRepos';
+export { EntityPageAzurePullRequests } from './EntityPageAzurePullRequests';

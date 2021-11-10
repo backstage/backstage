@@ -18,7 +18,7 @@ import { SvgIcon, SvgIconProps } from '@material-ui/core';
 
 import React from 'react';
 
-export const AzureReposIcon = (props: SvgIconProps) => (
+export const AzurePullRequestsIcon = (props: SvgIconProps) => (
   <SvgIcon {...props} viewBox="0 0 512 512">
     <circle
       fill="none"

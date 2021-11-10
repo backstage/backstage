@@ -27,7 +27,7 @@ import {
 } from '@backstage/plugin-azure-devops-common';
 import React, { useState } from 'react';
 
-import { AzureReposIcon } from '../AzureReposIcon';
+import { AzurePullRequestsIcon } from '../AzurePullRequestsIcon';
 import { DateTime } from 'luxon';
 import { PullRequestStatusButtonGroup } from '../PullRequestStatusButtonGroup';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -46,7 +46,7 @@ const columns: TableColumn[] = [
     width: 'auto',
     render: (row: Partial<PullRequest>) => (
       <Box display="flex" alignItems="center">
-        <Link to={row.link || ''}>{row.title}</Link>
+        <Link to={row.link ?? ''}>{row.title}</Link>
         <Box paddingLeft={1}>
           {row.isDraft && (
             <Chip
@@ -121,7 +121,7 @@ export const PullRequestTable = ({ defaultLimit }: PullRequestTableProps) => {
       }}
       title={
         <Box display="flex" alignItems="center">
-          <AzureReposIcon style={{ fontSize: 30 }} />
+          <AzurePullRequestsIcon style={{ fontSize: 30 }} />
           <Box mr={1} />
           Azure Repos - Pull Requests ({items ? items.length : 0})
           <Box position="absolute" right={320} top={20}>

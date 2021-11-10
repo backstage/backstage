@@ -35,7 +35,7 @@ import {
 } from '@backstage/plugin-api-docs';
 import {
   EntityAzurePipelinesContent,
-  EntityAzureReposContent,
+  EntityAzurePullRequestsContent,
   isAzureDevOpsAvailable,
 } from '@backstage/plugin-azure-devops';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
@@ -268,7 +268,7 @@ const errorsContent = (
 const pullRequestsContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isAzureDevOpsAvailable}>
-      <EntityAzureReposContent defaultLimit={25} />
+      <EntityAzurePullRequestsContent defaultLimit={25} />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case>

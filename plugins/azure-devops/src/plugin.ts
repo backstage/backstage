@@ -57,12 +57,12 @@ export const EntityAzurePipelinesContent = azureDevOpsPlugin.provide(
   }),
 );
 
-export const EntityAzureReposContent = azureDevOpsPlugin.provide(
+export const EntityAzurePullRequestsContent = azureDevOpsPlugin.provide(
   createRoutableExtension({
-    name: 'EntityAzureReposContent',
+    name: 'EntityAzurePullRequestsContent',
     component: () =>
-      import('./components/EntityPageAzureRepos').then(
-        m => m.EntityPageAzureRepos,
+      import('./components/EntityPageAzurePullRequests').then(
+        m => m.EntityPageAzurePullRequests,
       ),
     mountPoint: azureDevOpsRouteRef,
   }),
