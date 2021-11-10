@@ -22,7 +22,7 @@ import {
 /**
  * Creates a new Backstage App.
  *
- * @deprecated Use createApp from @backstage/app-defaults instead
+ * @deprecated Use {@link @backstage/app-defaults#createApp} from `@backstage/app-defaults` instead
  * @param options - A set of options for creating the app
  * @public
  */

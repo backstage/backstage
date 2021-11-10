@@ -20,6 +20,7 @@ import { AppOptions, BackstageApp } from './types';
 /**
  * Creates a new Backstage App where the full set of options are required.
  *
+ * @public
  * @param options - A set of options for creating the app
  * @returns
  */

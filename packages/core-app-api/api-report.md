@@ -313,16 +313,11 @@ export type BootErrorPageProps = {
 
 export { ConfigReader };
 
-// Warning: (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
-// Warning: (ae-forgotten-export) The symbol "AppManager" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated
-export function createApp(options?: OptionalAppOptions): AppManager;
+export function createApp(options?: OptionalAppOptions): BackstageApp;
 
-// Warning: (ae-missing-release-tag) "createSpecializedApp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export function createSpecializedApp(options: AppOptions): AppManager;
+export function createSpecializedApp(options: AppOptions): BackstageApp;
 
 // @public
 export const defaultConfigLoader: AppConfigLoader;

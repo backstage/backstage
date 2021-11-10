@@ -5,15 +5,15 @@
 ```ts
 import { AppComponents } from '@backstage/core-app-api';
 import { AppIcons } from '@backstage/core-app-api';
-import { AppManager } from '@backstage/core-app-api/src/app/AppManager';
 import { AppOptions } from '@backstage/core-app-api';
 import { AppTheme } from '@backstage/core-plugin-api';
+import { BackstageApp } from '@backstage/core-app-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 
 // @public
 export function createApp(
   options?: Omit<AppOptions, keyof OptionalAppOptions> & OptionalAppOptions,
-): AppManager;
+): BackstageApp;
 
 // @public
 export type OptionalAppOptions = {
