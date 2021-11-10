@@ -54,7 +54,7 @@ export type AuthorizeRequest = {
  * claims from a identity token.
  * @public
  */
-export type PermissionCondition<TParams extends any[] = any> = {
+export type PermissionCondition<TParams extends unknown> = {
   rule: string;
   params: TParams;
 };
@@ -67,7 +67,7 @@ export type PermissionCriteria =
   | { allOf: PermissionCriteria[] }
   | { anyOf: PermissionCriteria[] }
   | { not: PermissionCriteria }
-  | PermissionCondition<any>;
+  | PermissionCondition<unknown>;
 
 /**
  * An authorization response from {@link PermissionClient#authorize}.

@@ -22,5 +22,4 @@ export type {
   PermissionCriteria,
 } from './api';
 export type { DiscoveryApi } from './discovery';
-export { PermissionAction } from './permission';
 export type { PermissionAttributes, Permission } from './permission';

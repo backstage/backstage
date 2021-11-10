@@ -15,23 +15,12 @@
  */
 
 /**
- * The basic operation being performed in relation to this permission, expressed as a CRUD action.
- * @public
- */
-export enum PermissionAction {
-  Create = 'create',
-  Read = 'read',
-  Update = 'update',
-  Delete = 'delete',
-}
-
-/**
  * The attributes related to a given permission; these should be generic and widely applicable to
  * all permissions in the system.
  * @public
  */
 export type PermissionAttributes = {
-  action?: PermissionAction;
+  action?: 'create' | 'read' | 'update' | 'delete';
 };
 
 /**

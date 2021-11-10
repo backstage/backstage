@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Permission, PermissionAction } from '../types';
+import { Permission } from '../types';
 
 /**
  * Check if a given permission is related to a create action.
  * @public
  */
 export function isCreatePermission(permission: Permission) {
-  return permission.attributes.action === PermissionAction.Create;
+  return permission.attributes.action === 'create';
 }
 
 /**
@@ -29,7 +29,7 @@ export function isCreatePermission(permission: Permission) {
  * @public
  */
 export function isReadPermission(permission: Permission) {
-  return permission.attributes.action === PermissionAction.Read;
+  return permission.attributes.action === 'read';
 }
 
 /**
@@ -37,7 +37,7 @@ export function isReadPermission(permission: Permission) {
  * @public
  */
 export function isUpdatePermission(permission: Permission) {
-  return permission.attributes.action === PermissionAction.Update;
+  return permission.attributes.action === 'update';
 }
 
 /**
@@ -45,5 +45,5 @@ export function isUpdatePermission(permission: Permission) {
  * @public
  */
 export function isDeletePermission(permission: Permission) {
-  return permission.attributes.action === PermissionAction.Delete;
+  return permission.attributes.action === 'delete';
 }

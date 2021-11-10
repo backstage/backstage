@@ -56,20 +56,8 @@ export type Permission = {
 };
 
 // @public
-export enum PermissionAction {
-  // (undocumented)
-  Create = 'create',
-  // (undocumented)
-  Delete = 'delete',
-  // (undocumented)
-  Read = 'read',
-  // (undocumented)
-  Update = 'update',
-}
-
-// @public
 export type PermissionAttributes = {
-  action?: PermissionAction;
+  action?: 'create' | 'read' | 'update' | 'delete';
 };
 
 // @public
@@ -82,7 +70,7 @@ export class PermissionClient {
 }
 
 // @public
-export type PermissionCondition<TParams extends any[] = any> = {
+export type PermissionCondition<TParams extends unknown> = {
   rule: string;
   params: TParams;
 };
@@ -98,5 +86,5 @@ export type PermissionCriteria =
   | {
       not: PermissionCriteria;
     }
-  | PermissionCondition<any>;
+  | PermissionCondition<unknown>;
 ```
