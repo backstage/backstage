@@ -6,6 +6,13 @@ API requests from frontend plugins include an authorization header with a Backst
 
 **NOTE**: Enabling this means that Backstage will stop working for guests, as no token is issued for them.
 
+Since the middleware always expects a valid token, API requests from backend plugins will need one as well. Backends have no concept of a Backstage identity so instead they use a token generated using a shared key from the `app-config.yaml`.
+You can generate a unique key for your app in a terminal, and set the `BACKEND_SECRET` environment variable to the resulting value.
+
+```bash
+node -p 'require("crypto").randomBytes(24).toString("base64")'
+```
+
 As techdocs HTML pages load assets without an Authorization header the code below also sets a token cookie when the user logs in (and when the token is about to expire).
 
 ```typescript
@@ -60,7 +67,13 @@ async function main() {
       const token =
         IdentityClient.getBearerToken(req.headers.authorization) ||
         req.cookies['token'];
-      req.user = await identity.authenticate(token);
+
+      // Authenticate all requests originating from backends by default
+      const isServerToken = await authEnv.tokenManager.isServerToken(token);
+      if (!isServerToken) {
+        req.user = await identity.authenticate(token);
+      }
+
       if (!req.headers.authorization) {
         // Authorization header may be forwarded by plugin requests
         req.headers.authorization = `Bearer ${token}`;
@@ -260,4 +273,10 @@ export const plugin = createPlugin({
         }),
     ],
 });
+```
+
+In the (probably unlikely) case that you need to authenticate from a backend plugin, the plugin environment contains a `tokenManager` that will provide a server token to use in the request:
+
+```
+const { token } = await this.tokenManager.getServerToken();
 ```
