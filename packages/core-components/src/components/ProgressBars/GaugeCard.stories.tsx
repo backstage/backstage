@@ -111,8 +111,8 @@ export const StaticColor = () => (
     </Grid>
     <Grid item>
       <GaugeCard
-        getColor={({ palette }) => palette.error}
-        title="palette.error"
+        getColor={({ palette }) => palette.status.error}
+        title="palette.status.error"
         progress={0.5}
       />
     </Grid>

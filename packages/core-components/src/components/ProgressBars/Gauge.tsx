@@ -62,9 +62,7 @@ type GetColorArgs = {
   max?: number;
 };
 
-export type GetColor = (
-  args: GetColorArgs,
-) => string | BackstageTheme['palette']['error'];
+export type GetColor = (args: GetColorArgs) => string;
 
 const defaultGaugeProps = {
   fractional: true,
