@@ -16,8 +16,10 @@
 
 import React, { PropsWithChildren } from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, ThemeProvider } from '@material-ui/core';
+import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import { sidebarConfig } from '../Sidebar';
+
+export type PageClassKey = 'root';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {

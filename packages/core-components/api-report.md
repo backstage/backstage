@@ -779,21 +779,16 @@ export type SelectInputBaseClassKey = 'root' | 'input';
 // Warning: (ae-missing-release-tag) "Sidebar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function Sidebar({
+export const Sidebar: ({
   children,
   ...props
-}: React_2.PropsWithChildren<Props_18>): JSX.Element;
+}: React_2.PropsWithChildren<Props_18>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SIDEBAR_INTRO_LOCAL_STORAGE" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const SIDEBAR_INTRO_LOCAL_STORAGE =
   '@backstage/core/sidebar-intro-dismissed';
-
-// Warning: (ae-missing-release-tag) "SidebarClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type SidebarClassKey = 'root' | 'drawer' | 'drawerOpen';
 
 // Warning: (ae-missing-release-tag) "sidebarConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

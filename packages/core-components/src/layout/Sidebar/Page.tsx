@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import React, {
   createContext,
   PropsWithChildren,
@@ -24,6 +24,8 @@ import React, {
 import { sidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
+
+export type SidebarPageClassKey = 'root';
 
 const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
   theme => ({

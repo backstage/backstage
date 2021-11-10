@@ -80,11 +80,7 @@ import {
   CardActionsTopRightClassKey,
   ItemCardGridClassKey,
   ItemCardHeaderClassKey,
-  PageClassKey,
-  SidebarClassKey,
   SidebarIntroClassKey,
-  SidebarItemClassKey,
-  SidebarPageClassKey,
   CustomProviderClassKey,
   SignInPageClassKey,
   TabbedCardClassKey,
@@ -153,11 +149,7 @@ type BackstageComponentsNameToClassKey = {
   BackstageInfoCardCardActionsTopRight: CardActionsTopRightClassKey;
   BackstageItemCardGrid: ItemCardGridClassKey;
   BackstageItemCardHeader: ItemCardHeaderClassKey;
-  BackstagePage: PageClassKey;
-  BackstageSidebar: SidebarClassKey;
   BackstageSidebarIntro: SidebarIntroClassKey;
-  BackstageSidebarItem: SidebarItemClassKey;
-  BackstageSidebarPage: SidebarPageClassKey;
   BackstageCustomProvider: CustomProviderClassKey;
   BackstageSignInPage: SignInPageClassKey;
   BackstageTabbedCard: TabbedCardClassKey;
