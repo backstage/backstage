@@ -46,7 +46,7 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageGauge' },
 );
 
-type Props = {
+export type GaugeProps = {
   value: number;
   fractional?: boolean;
   inverse?: boolean;
@@ -66,7 +66,7 @@ export type GetColor = (
   args: GetColorArgs,
 ) => string | BackstageTheme['palette']['error'];
 
-const defaultProps = {
+const defaultGaugeProps = {
   fractional: true,
   inverse: false,
   unit: '%',
@@ -83,7 +83,7 @@ export const getProgressColor: GetColor = ({
     return '#ddd';
   }
 
-  const actualMax = max ? max : defaultProps.max;
+  const actualMax = max ? max : defaultGaugeProps.max;
   const actualValue = inverse ? actualMax - value : value;
 
   if (actualValue < actualMax / 3) {
@@ -96,12 +96,12 @@ export const getProgressColor: GetColor = ({
 };
 
 /** @public */
-export function Gauge(props: Props) {
+export function Gauge(props: GaugeProps) {
   const { getColor = getProgressColor } = props;
   const classes = useStyles(props);
   const { palette } = useTheme<BackstageTheme>();
   const { value, fractional, inverse, unit, max } = {
-    ...defaultProps,
+    ...defaultGaugeProps,
     ...props,
   };
 
