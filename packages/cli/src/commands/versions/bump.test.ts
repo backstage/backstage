@@ -20,7 +20,7 @@ import { resolve as resolvePath } from 'path';
 import { paths } from '../../lib/paths';
 import { mapDependencies } from '../../lib/versioning';
 import * as runObj from '../../lib/run';
-import bump from './bump';
+import bump, { bumpBackstageJsonVersion } from './bump';
 import { withLogCollector } from '@backstage/test-utils';
 
 // Remove log coloring to simplify log matching
@@ -141,7 +141,7 @@ describe('bump', () => {
       'Version bump complete!',
     ]);
 
-    expect(runObj.runPlain).toHaveBeenCalledTimes(3);
+    expect(runObj.runPlain).toHaveBeenCalledTimes(4);
     expect(runObj.runPlain).toHaveBeenCalledWith(
       'yarn',
       'info',
@@ -243,5 +243,66 @@ describe('bump', () => {
         '@backstage/theme': '^2.0.0', // not bumped
       },
     });
+  });
+});
+
+describe('bumpBackstageJsonVersion', () => {
+  afterEach(() => {
+    mockFs.restore();
+    jest.resetAllMocks();
+  });
+
+  it('should bump version in .backstage.json', async () => {
+    mockFs({
+      '/.backstage.json': JSON.stringify({ version: '0.0.1' }),
+    });
+    paths.targetDir = '/';
+    const latest = '1.4.1';
+    jest
+      .spyOn(paths, 'resolveTargetRoot')
+      .mockImplementation((...path) => resolvePath('/', ...path));
+    jest.spyOn(runObj, 'runPlain').mockImplementation(async (...[, , , name]) =>
+      JSON.stringify({
+        type: 'inspect',
+        data: {
+          name,
+          'dist-tags': {
+            latest,
+          },
+        },
+      }),
+    );
+    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+
+    await bumpBackstageJsonVersion();
+
+    const json = await fs.readJson('/.backstage.json');
+    expect(json).toEqual({ version: '1.4.1' });
+  });
+
+  it("should create .backstage.json if doesn't exist", async () => {
+    mockFs({});
+    paths.targetDir = '/';
+    const latest = '1.4.1';
+    jest
+      .spyOn(paths, 'resolveTargetRoot')
+      .mockImplementation((...path) => resolvePath('/', ...path));
+    jest.spyOn(runObj, 'runPlain').mockImplementation(async (...[, , , name]) =>
+      JSON.stringify({
+        type: 'inspect',
+        data: {
+          name,
+          'dist-tags': {
+            latest,
+          },
+        },
+      }),
+    );
+    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+
+    await bumpBackstageJsonVersion();
+
+    const json = await fs.readJson('/.backstage.json');
+    expect(json).toEqual({ version: '1.4.1' });
   });
 });

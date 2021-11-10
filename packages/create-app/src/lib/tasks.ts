@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BACKSTAGE_JSON } from '@backstage/cli-common';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import handlebars from 'handlebars';
@@ -126,11 +127,10 @@ export async function templatingTask(
       });
     }
   }
-  const backstageVersionFileName = '.backstage-version';
-  await Task.forItem('creating', backstageVersionFileName, () =>
+  await Task.forItem('creating', BACKSTAGE_JSON, () =>
     fs.writeFile(
-      join(destinationDir, backstageVersionFileName),
-      `${version}\n`,
+      join(destinationDir, BACKSTAGE_JSON),
+      `{\n  "version": ${JSON.stringify(version)}\n}\n`,
     ),
   );
 }

@@ -27,6 +27,7 @@ import {
   Lockfile,
 } from '../../lib/versioning';
 import { includedFilter, forbiddenDuplicatesFilter } from './lint';
+import { BACKSTAGE_JSON } from '@backstage/cli-common';
 
 const DEP_TYPES = [
   'dependencies',
@@ -183,6 +184,10 @@ export default async () => {
     });
 
     console.log();
+
+    await bumpBackstageJsonVersion();
+
+    console.log();
     console.log(
       `Running ${chalk.blue('yarn install')} to install new versions`,
     );
@@ -269,6 +274,41 @@ function createVersionFinder() {
     found.set(name, latest);
     return latest;
   };
+}
+
+export async function bumpBackstageJsonVersion() {
+  const backstageJsonPath = paths.resolveTargetRoot(BACKSTAGE_JSON);
+  const backstageJson = await fs.readJSON(backstageJsonPath).catch(e => {
+    if (e.code === 'ENOENT') {
+      // gracefully continue in case the file doesn't exist
+      return;
+    }
+    throw e;
+  });
+
+  const info = await fetchPackageInfo('@backstage/create-app');
+  const { latest } = info['dist-tags'];
+
+  if (backstageJson?.version === latest) {
+    return;
+  }
+
+  console.log(
+    chalk.yellow(
+      typeof backstageJson === 'undefined'
+        ? 'Creating .backstage.json'
+        : 'Bumping version in .backstage.json',
+    ),
+  );
+
+  await fs.writeJson(
+    backstageJsonPath,
+    { ...backstageJson, version: latest },
+    {
+      spaces: 2,
+      encoding: 'utf8',
+    },
+  );
 }
 
 async function workerThreads<T>(
