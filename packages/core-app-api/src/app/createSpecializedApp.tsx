@@ -15,7 +15,7 @@
  */
 
 import { AppManager } from './AppManager';
-import { AppOptions } from './types';
+import { AppOptions, BackstageApp } from './types';
 
 /**
  * Creates a new Backstage App where the full set of options are required.
@@ -23,6 +23,6 @@ import { AppOptions } from './types';
  * @param options - A set of options for creating the app
  * @returns
  */
-export function createSpecializedApp(options: AppOptions) {
+export function createSpecializedApp(options: AppOptions): BackstageApp {
   return new AppManager(options);
 }
