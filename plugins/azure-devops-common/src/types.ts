@@ -126,3 +126,128 @@ export type PullRequestOptions = {
   top: number;
   status: PullRequestStatus;
 };
+
+export interface DashboardPullRequest {
+  pullRequestId: number | undefined;
+  title: string | undefined;
+  description: string | undefined;
+  repository: Repository | undefined;
+  createdBy: CreatedBy | undefined;
+  hasAutoComplete: boolean;
+  policies: Policy[] | undefined;
+  reviewers: Reviewer[] | undefined;
+  creationDate: string | undefined;
+  status: PullRequestStatus | undefined;
+  isDraft: boolean | undefined;
+  link: string | undefined;
+}
+
+export interface Reviewer {
+  id: string | undefined;
+  displayName: string | undefined;
+  imageUrl: string | undefined;
+  isRequired: boolean | undefined;
+  isContainer: boolean | undefined;
+  voteStatus: PullRequestVoteStatus;
+}
+
+export interface Policy {
+  id: number | undefined;
+  type: PolicyType;
+  status: PolicyEvaluationStatus | undefined;
+  text: string | undefined;
+  link: string | undefined;
+}
+
+export interface CreatedBy {
+  id: string | undefined;
+  displayName: string | undefined;
+  uniqueName: string | undefined;
+  imageUrl: string | undefined;
+}
+
+export interface Repository {
+  id: string | undefined;
+  name: string | undefined;
+  url: string | undefined;
+}
+
+export interface Team {
+  id: string | undefined;
+  name: string | undefined;
+  memberIds: string[] | undefined;
+}
+
+/**
+ * Status of a policy which is running against a specific pull request.
+ */
+export enum PolicyEvaluationStatus {
+  /**
+   * The policy is either queued to run, or is waiting for some event before progressing.
+   */
+  Queued = 0,
+  /**
+   * The policy is currently running.
+   */
+  Running = 1,
+  /**
+   * The policy has been fulfilled for this pull request.
+   */
+  Approved = 2,
+  /**
+   * The policy has rejected this pull request.
+   */
+  Rejected = 3,
+  /**
+   * The policy does not apply to this pull request.
+   */
+  NotApplicable = 4,
+  /**
+   * The policy has encountered an unexpected error.
+   */
+  Broken = 5,
+}
+
+export enum PolicyType {
+  Build = 'Build',
+  Status = 'Status',
+  MinimumReviewers = 'MinimumReviewers',
+  Comments = 'Comments',
+  RequiredReviewers = 'RequiredReviewers',
+  MergeStrategy = 'MergeStrategy',
+}
+
+export const PolicyTypeId = {
+  /**
+   * This policy will require a successful build has been performed before updating protected refs.
+   */
+  Build: '0609b952-1397-4640-95ec-e00a01b2c241',
+  /**
+   * This policy will require a successful status to be posted before updating protected refs.
+   */
+  Status: 'cbdc66da-9728-4af8-aada-9a5a32e4a226',
+  /**
+   * This policy will ensure that a minimum number of reviewers have approved a pull request before completion.
+   */
+  MinimumReviewers: 'fa4e907d-c16b-4a4c-9dfa-4906e5d171dd',
+  /**
+   * Check if the pull request has any active comments.
+   */
+  Comments: 'c6a1889d-b943-4856-b76f-9e46bb6b0df2',
+  /**
+   * This policy will ensure that required reviewers are added for modified files matching specified patterns.
+   */
+  RequiredReviewers: 'fd2167ab-b0be-447a-8ec8-39368250530e',
+  /**
+   * This policy ensures that pull requests use a consistent merge strategy.
+   */
+  MergeStrategy: 'fa4e907d-c16b-4a4c-9dfa-4916e5d171ab',
+};
+
+export enum PullRequestVoteStatus {
+  Approved = 10,
+  ApprovedWithSuggestions = 5,
+  NoVote = 0,
+  WaitingForAuthor = -5,
+  Rejected = -10,
+}

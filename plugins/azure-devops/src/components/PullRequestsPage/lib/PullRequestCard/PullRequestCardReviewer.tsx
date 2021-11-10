@@ -16,8 +16,7 @@
 
 import { Avatar } from '@backstage/core-components';
 import React from 'react';
-import { Reviewer } from '../../../../api/types';
-import { Tooltip } from '@material-ui/core';
+import { Reviewer } from '@backstage/plugin-azure-devops-common';
 
 type PullRequestCardReviewerProps = {
   reviewer: Reviewer;
@@ -26,16 +25,14 @@ type PullRequestCardReviewerProps = {
 export const PullRequestCardReviewer = ({
   reviewer,
 }: PullRequestCardReviewerProps) => (
-  <Tooltip title={reviewer.displayName}>
-    <Avatar
-      displayName={reviewer.displayName}
-      picture={reviewer.imageUrl}
-      customStyles={{
-        width: '2.5rem',
-        height: '2.5rem',
-        fontSize: '1rem',
-        border: '0.3rem solid silver',
-      }}
-    />
-  </Tooltip>
+  <Avatar
+    displayName={reviewer.displayName}
+    picture={reviewer.imageUrl}
+    customStyles={{
+      width: '2.5rem',
+      height: '2.5rem',
+      fontSize: '1rem',
+      border: '0.3rem solid silver',
+    }}
+  />
 );

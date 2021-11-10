@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-import { PullRequest } from '../../../api/types';
+import {
+  DashboardPullRequest,
+  Team,
+} from '@backstage/plugin-azure-devops-common';
 
 export interface PullRequestGroup {
   title: string;
-  pullRequests: PullRequest[];
+  pullRequests: DashboardPullRequest[];
+  simplified?: boolean;
+}
+
+export type PullRequestFilter = (pullRequest: DashboardPullRequest) => boolean;
+
+export type TeamFilter = (team: Team) => boolean;
+
+export interface PullRequestGroupConfig {
+  title: string;
+  filter: PullRequestFilter;
   simplified?: boolean;
 }

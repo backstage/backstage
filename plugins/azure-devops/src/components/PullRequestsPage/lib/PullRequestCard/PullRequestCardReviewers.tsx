@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import {
+  PullRequestVoteStatus,
+  Reviewer,
+} from '@backstage/plugin-azure-devops-common';
+
 import { PullRequestCardReviewer } from './PullRequestCardReviewer';
 import React from 'react';
-import { Reviewer } from '../../../../api/types';
 import { styled } from '@material-ui/core/styles';
 
 const PullRequestCardReviewersContainer = styled('div')({
@@ -34,8 +38,14 @@ export const PullRequestCardReviewers = ({
   reviewers,
 }: PullRequestCardReviewersProps) => (
   <PullRequestCardReviewersContainer>
-    {reviewers.map(reviewer => (
+    {reviewers.filter(reviewerFilter).map(reviewer => (
       <PullRequestCardReviewer reviewer={reviewer} />
     ))}
   </PullRequestCardReviewersContainer>
 );
+
+function reviewerFilter(reviewer: Reviewer): boolean {
+  return reviewer.voteStatus === PullRequestVoteStatus.NoVote
+    ? !!reviewer.isRequired
+    : !reviewer.isContainer;
+}

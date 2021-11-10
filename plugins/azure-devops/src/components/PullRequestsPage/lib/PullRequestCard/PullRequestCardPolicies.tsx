@@ -15,31 +15,35 @@
  */
 
 import {
+  Policy,
+  PolicyEvaluationStatus,
+  PolicyType,
+} from '@backstage/plugin-azure-devops-common';
+import {
   PolicyInProgressIcon,
   PolicyIssueIcon,
   PolicyRequiredIcon,
   PullRequestCardPolicy,
 } from './PullRequestCardPolicy';
 
-import { Policy } from '../../../../api/types';
 import React from 'react';
 
 function getPullRequestCardPolicy(policy: Policy): JSX.Element | null {
   switch (policy.type) {
-    case 'Build':
+    case PolicyType.Build:
       switch (policy.status) {
-        case 'Running':
+        case PolicyEvaluationStatus.Running:
           return (
             <PullRequestCardPolicy
               policy={policy}
               icon={<PolicyInProgressIcon />}
             />
           );
-        case 'Rejected':
+        case PolicyEvaluationStatus.Rejected:
           return (
             <PullRequestCardPolicy policy={policy} icon={<PolicyIssueIcon />} />
           );
-        case 'Queued':
+        case PolicyEvaluationStatus.Queued:
           return (
             <PullRequestCardPolicy
               policy={policy}
@@ -49,12 +53,12 @@ function getPullRequestCardPolicy(policy: Policy): JSX.Element | null {
         default:
           return null;
       }
-    case 'MinimumReviewers':
+    case PolicyType.MinimumReviewers:
       return (
         <PullRequestCardPolicy policy={policy} icon={<PolicyRequiredIcon />} />
       );
-    case 'Status':
-    case 'Comments':
+    case PolicyType.Status:
+    case PolicyType.Comments:
       return (
         <PullRequestCardPolicy policy={policy} icon={<PolicyIssueIcon />} />
       );

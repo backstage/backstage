@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+import {
+  DashboardPullRequest,
+  PolicyEvaluationStatus,
+  PolicyType,
+  PullRequestStatus,
+  PullRequestVoteStatus,
+} from '@backstage/plugin-azure-devops-common';
+
 import { MemoryRouter } from 'react-router';
-import { PullRequest } from '../../../../api/types';
 import { PullRequestCard } from './PullRequestCard';
-import { PullRequestStatus } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import React from 'react';
 
 export default {
@@ -25,16 +31,17 @@ export default {
   component: PullRequestCard,
 };
 
-const pullRequest: PullRequest = {
+const pullRequest: DashboardPullRequest = {
   pullRequestId: 1,
   title:
     "feat(EXUX-4091): 🛂 Added the admin role authorization to the backend API's",
   description:
     'This PR contains the following updates:\n\n| Package | Type | Update | Change |\n|---|---|---|---|\n| [@typescript-eslint/eslint-plugin](https://github.com/typescript-eslint/typescript-eslint) | devDependencies | major | [`4.33.0` -> `5.0.0`](https://renovatebot.com/diffs/npm/@typescript-eslint%2feslint-plugin/4.33.0/5.0.0) |\n| [@typescript-eslint/parser](https://github.com/typescript-eslint/typescrip',
-  link: '',
+  link: undefined,
   repository: {
+    id: undefined,
     name: 'backstage',
-    url: '',
+    url: undefined,
   },
   createdBy: {
     id: '',
@@ -44,31 +51,56 @@ const pullRequest: PullRequest = {
       'https://dev.azure.com/exclaimerltd/_api/_common/identityImage?id=e6c0634b-68d2-6e6f-aa7d-adccada23216',
   },
   reviewers: [
-    { displayName: 'Marley', imageUrl: '' },
-    { displayName: 'User 1', imageUrl: '' },
-    { displayName: 'User 2', imageUrl: '' },
+    {
+      id: undefined,
+      displayName: 'Marley',
+      imageUrl: '',
+      isRequired: true,
+      isContainer: false,
+      voteStatus: PullRequestVoteStatus.Approved,
+    },
+    {
+      id: undefined,
+      displayName: 'User 1',
+      imageUrl: '',
+      isRequired: false,
+      isContainer: false,
+      voteStatus: PullRequestVoteStatus.WaitingForAuthor,
+    },
+    {
+      id: undefined,
+      displayName: 'User 2',
+      imageUrl: '',
+      isRequired: true,
+      isContainer: false,
+      voteStatus: PullRequestVoteStatus.NoVote,
+    },
   ],
   policies: [
     {
-      type: 'Build',
-      status: 'Running',
+      id: undefined,
+      type: PolicyType.Build,
+      status: PolicyEvaluationStatus.Running,
       text: 'Build: UI (running)',
+      link: undefined,
     },
     {
-      type: 'MinimumReviewers',
+      id: undefined,
+      type: PolicyType.MinimumReviewers,
       text: 'Minimum number of reviewers (2)',
-      status: '',
+      status: undefined,
+      link: undefined,
     },
     {
-      type: 'Comments',
+      id: undefined,
+      type: PolicyType.Comments,
       text: 'Comment requirements',
-      status: '',
+      status: undefined,
+      link: undefined,
     },
   ],
   hasAutoComplete: true,
   creationDate: new Date(Date.now() - 10000000).toISOString(),
-  sourceRefName: '',
-  targetRefName: '',
   status: PullRequestStatus.Active,
   isDraft: false,
 };

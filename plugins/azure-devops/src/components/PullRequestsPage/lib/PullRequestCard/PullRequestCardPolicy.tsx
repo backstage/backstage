@@ -18,7 +18,7 @@ import { styled, withStyles } from '@material-ui/core/styles';
 
 import CancelIcon from '@material-ui/icons/Cancel';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
-import { Policy } from '../../../../api/types';
+import { Policy } from '@backstage/plugin-azure-devops-common';
 import React from 'react';
 import WatchLaterIcon from '@material-ui/icons/WatchLater';
 
@@ -57,7 +57,7 @@ const PullRequestCardPolicyContainer = styled('div')({
 
 type PullRequestCardPolicyProps = {
   policy: Policy;
-  icon: React.ReactNode;
+  icon: JSX.Element;
 };
 
 export const PullRequestCardPolicy = ({

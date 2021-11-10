@@ -18,8 +18,8 @@ import { Card, CardContent, CardHeader, Link } from '@material-ui/core';
 
 import { AutoCompleteIcon } from '../AutoCompleteIcon';
 import { Avatar } from '@backstage/core-components';
+import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import { DateTime } from 'luxon';
-import { PullRequest } from '../../../../api/types';
 import { PullRequestCardPolicies } from './PullRequestCardPolicies';
 import { PullRequestCardReviewers } from './PullRequestCardReviewers';
 import React from 'react';
@@ -53,7 +53,7 @@ const useStyles = makeStyles(
 );
 
 type PullRequestCardProps = {
-  pullRequest: PullRequest;
+  pullRequest: DashboardPullRequest;
   simplified?: boolean;
 };
 
@@ -75,21 +75,23 @@ export const PullRequestCard = ({
   const subheader = (
     <span>
       <Link
-        href={pullRequest.repository.url}
+        href={pullRequest.repository?.url}
         color="inherit"
         target="_blank"
         rel="noopener noreferrer"
       >
-        {pullRequest.repository.name}
+        {pullRequest.repository?.name}
       </Link>{' '}
-      · {DateTime.fromISO(pullRequest.creationDate.toString()).toRelative()}
+      ·{' '}
+      {pullRequest.creationDate &&
+        DateTime.fromISO(pullRequest.creationDate).toRelative()}
     </span>
   );
 
   const avatar = (
     <Avatar
-      displayName={pullRequest.createdBy.displayName}
-      picture={pullRequest.createdBy.imageUrl}
+      displayName={pullRequest.createdBy?.displayName}
+      picture={pullRequest.createdBy?.imageUrl}
       customStyles={{ width: '2.5rem', height: '2.5rem', fontSize: '1rem' }}
     />
   );
@@ -97,7 +99,10 @@ export const PullRequestCard = ({
   const classes = useStyles();
 
   return (
-    <Card classes={{ root: classes.card }}>
+    <Card
+      classes={{ root: classes.card }}
+      data-pull-request-id={pullRequest.pullRequestId}
+    >
       <CardHeader
         avatar={avatar}
         title={title}
@@ -113,12 +118,16 @@ export const PullRequestCard = ({
 
       {!simplified && (
         <CardContent className={classes.content}>
-          <PullRequestCardPolicies
-            policies={pullRequest.policies}
-            className={classes.policies}
-          />
+          {pullRequest.policies && (
+            <PullRequestCardPolicies
+              policies={pullRequest.policies}
+              className={classes.policies}
+            />
+          )}
 
-          <PullRequestCardReviewers reviewers={pullRequest.reviewers} />
+          {pullRequest.reviewers && (
+            <PullRequestCardReviewers reviewers={pullRequest.reviewers} />
+          )}
         </CardContent>
       )}
     </Card>
