@@ -68,8 +68,16 @@ export const apis = [
         `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
       ),
   }),
-  createApiFactory(alertApiRef, new AlertApiForwarder()),
-  createApiFactory(analyticsApiRef, new NoOpAnalyticsApi()),
+  createApiFactory({
+    api: alertApiRef,
+    deps: {},
+    factory: () => new AlertApiForwarder(),
+  }),
+  createApiFactory({
+    api: analyticsApiRef,
+    deps: {},
+    factory: () => new NoOpAnalyticsApi(),
+  }),
   createApiFactory({
     api: errorApiRef,
     deps: { alertApi: alertApiRef },
@@ -84,7 +92,11 @@ export const apis = [
     deps: { errorApi: errorApiRef },
     factory: ({ errorApi }) => WebStorage.create({ errorApi }),
   }),
-  createApiFactory(oauthRequestApiRef, new OAuthRequestManager()),
+  createApiFactory({
+    api: oauthRequestApiRef,
+    deps: {},
+    factory: () => new OAuthRequestManager(),
+  }),
   createApiFactory({
     api: googleAuthApiRef,
     deps: {
