@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PullRequestOptions, PullRequestStatus } from '../api/types';
+import {
+  PullRequestOptions,
+  PullRequestStatus,
+} from '@backstage/plugin-azure-devops-common';
 import { WebApi, getPersonalAccessTokenHandler } from 'azure-devops-node-api';
 
 import { AzureDevOpsApi } from '../api';
