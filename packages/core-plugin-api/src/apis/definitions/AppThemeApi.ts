@@ -42,7 +42,7 @@ export type AppTheme = {
 
   /**
    * The specialized MaterialUI theme instance.
-   * @deprecated use Provider instead, see https://backstage.io/docs/deprecations/TODO
+   * @deprecated use Provider instead, see https://backstage.io/docs/api/deprecations#app-theme
    */
   theme: BackstageTheme;
 

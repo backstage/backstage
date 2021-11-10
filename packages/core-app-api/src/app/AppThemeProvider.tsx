@@ -98,7 +98,7 @@ export function AppThemeProvider({ children }: PropsWithChildren<{}>) {
   console.warn(
     "DEPRECATION WARNING: A provided app theme is using the deprecated 'theme' property " +
       'and should be migrated to use a Provider instead. ' +
-      'See https://backstage.io/docs/deprecations/TODO for more info.',
+      'See https://backstage.io/docs/api/deprecations#app-theme for more info.',
   );
 
   return (
