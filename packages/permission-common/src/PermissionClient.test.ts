@@ -17,9 +17,9 @@
 import { RestContext, rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { PermissionClient } from './PermissionClient';
-import { AuthorizeResult, Identified, AuthorizeRequestJSON } from './types/api';
+import { AuthorizeRequest, AuthorizeResult, Identified } from './types/api';
 import { DiscoveryApi } from './types/discovery';
-import { Permission } from './Permission';
+import { Permission } from './types/permission';
 
 const server = setupServer();
 const token = 'fake-token';
@@ -32,11 +32,11 @@ const discoveryApi: DiscoveryApi = {
 };
 const client: PermissionClient = new PermissionClient({ discoveryApi });
 
-const mockPermission = Permission.create({
+const mockPermission: Permission = {
   name: 'test.permission',
   attributes: {},
   resourceType: 'test-resource',
-});
+};
 
 const mockAuthorizeRequest = {
   permission: mockPermission,
@@ -50,7 +50,7 @@ describe('PermissionClient', () => {
 
   describe('authorize', () => {
     const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
-      const responses = req.body.map((a: Identified<AuthorizeRequestJSON>) => ({
+      const responses = req.body.map((a: Identified<AuthorizeRequest>) => ({
         id: a.id,
         result: AuthorizeResult.ALLOW,
       }));

@@ -21,7 +21,6 @@ import {
   AuthorizeResult,
   AuthorizeRequest,
   AuthorizeResponse,
-  AuthorizeRequestJSON,
   Identified,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
@@ -65,11 +64,10 @@ export class PermissionClient {
     requests: AuthorizeRequest[],
     options?: AuthorizeRequestOptions,
   ): Promise<AuthorizeResponse[]> {
-    const identifiedRequests: Identified<AuthorizeRequestJSON>[] = requests.map(
+    const identifiedRequests: Identified<AuthorizeRequest>[] = requests.map(
       request => ({
         id: uuid.v4(),
-        permission: request.permission.toJSON(),
-        resourceRef: request.resourceRef,
+        ...request,
       }),
     );
 
@@ -102,7 +100,7 @@ export class PermissionClient {
   }
 
   private assertValidResponses(
-    requests: Identified<AuthorizeRequestJSON>[],
+    requests: Identified<AuthorizeRequest>[],
     json: any,
   ): asserts json is Identified<AuthorizeResponse>[] {
     const responses = Array.isArray(json) ? json : [];

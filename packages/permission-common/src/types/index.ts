@@ -23,4 +23,4 @@ export type {
 } from './api';
 export type { DiscoveryApi } from './discovery';
 export { PermissionAction } from './permission';
-export type { PermissionAttributes, PermissionJSON } from './permission';
+export type { PermissionAttributes, Permission } from './permission';

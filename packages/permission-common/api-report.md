@@ -37,33 +37,23 @@ export type DiscoveryApi = {
 };
 
 // @public
-export class Permission {
-  constructor(
-    name: string,
-    attributes: PermissionAttributes,
-    resourceType?: string | undefined,
-  );
-  // (undocumented)
-  readonly attributes: PermissionAttributes;
-  // (undocumented)
-  static create({ name, attributes, resourceType }: PermissionJSON): Permission;
-  // (undocumented)
-  is(permission: Permission): boolean;
-  // (undocumented)
-  get isCreate(): boolean;
-  // (undocumented)
-  get isDelete(): boolean;
-  // (undocumented)
-  get isRead(): boolean;
-  // (undocumented)
-  get isUpdate(): boolean;
-  // (undocumented)
-  readonly name: string;
-  // (undocumented)
-  readonly resourceType?: string | undefined;
-  // (undocumented)
-  toJSON(): PermissionJSON;
-}
+export function isCreatePermission(permission: Permission): boolean;
+
+// @public
+export function isDeletePermission(permission: Permission): boolean;
+
+// @public
+export function isReadPermission(permission: Permission): boolean;
+
+// @public
+export function isUpdatePermission(permission: Permission): boolean;
+
+// @public
+export type Permission = {
+  name: string;
+  attributes: PermissionAttributes;
+  resourceType?: string;
+};
 
 // @public
 export enum PermissionAction {
@@ -105,12 +95,8 @@ export type PermissionCriteria =
   | {
       anyOf: PermissionCriteria[];
     }
+  | {
+      not: PermissionCriteria;
+    }
   | PermissionCondition<any>;
-
-// @public
-export type PermissionJSON = {
-  name: string;
-  attributes: PermissionAttributes;
-  resourceType?: string;
-};
 ```

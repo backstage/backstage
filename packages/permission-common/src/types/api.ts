@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Permission } from '../Permission';
-import { PermissionJSON } from './permission';
+import { Permission } from './permission';
 
 export type Identified<T> = T & { id: string };
 
@@ -47,11 +46,6 @@ export type AuthorizeRequest = {
   resourceRef?: string;
 };
 
-export type AuthorizeRequestJSON = {
-  permission: PermissionJSON;
-  resourceRef?: string;
-};
-
 /**
  * A condition returned with a CONDITIONAL authorization response.
  *
@@ -72,6 +66,7 @@ export type PermissionCondition<TParams extends any[] = any> = {
 export type PermissionCriteria =
   | { allOf: PermissionCriteria[] }
   | { anyOf: PermissionCriteria[] }
+  | { not: PermissionCriteria }
   | PermissionCondition<any>;
 
 /**

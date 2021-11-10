@@ -35,10 +35,17 @@ export type PermissionAttributes = {
 };
 
 /**
- * JSON serializable representation of a {@link Permission}.
+ * A permission that can be checked through authorization.
+ *
+ * Permissions are the "what" part of authorization, the action to be performed. This may be reading
+ * an entity from the catalog, executing a software template, or any other action a plugin author
+ * may wish to protect.
+ *
+ * To evaluate authorization, a permission is paired with a Backstage identity (the "who") and
+ * evaluated using an authorization policy.
  * @public
  */
-export type PermissionJSON = {
+export type Permission = {
   name: string;
   attributes: PermissionAttributes;
   resourceType?: string;
