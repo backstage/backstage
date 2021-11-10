@@ -20,18 +20,19 @@ import Tooltip from '@material-ui/core/Tooltip';
 // @ts-ignore
 import { Line } from 'rc-progress';
 import { BackstageTheme } from '@backstage/theme';
-import { getProgressColor } from './Gauge';
+import { getProgressColor, GaugePropsGetColor } from './Gauge';
 
 type Props = {
   /**
    * Progress value between 0.0 - 1.0.
    */
   value: number;
+  getColor?: GaugePropsGetColor;
 };
 
 export function LinearGauge(props: Props) {
-  const { value } = props;
-  const theme = useTheme<BackstageTheme>();
+  const { value, getColor = getProgressColor } = props;
+  const { palette } = useTheme<BackstageTheme>();
   if (isNaN(value)) {
     return null;
   }
@@ -39,7 +40,12 @@ export function LinearGauge(props: Props) {
   if (percent > 100) {
     percent = 100;
   }
-  const strokeColor = getProgressColor(theme.palette, percent, false, 100);
+  const strokeColor = getColor({
+    palette,
+    value: percent,
+    inverse: false,
+    max: 100,
+  });
   return (
     <Tooltip title={`${percent}%`}>
       <span>
