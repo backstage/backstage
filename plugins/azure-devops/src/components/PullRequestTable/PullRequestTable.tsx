@@ -21,12 +21,14 @@ import {
   Table,
   TableColumn,
 } from '@backstage/core-components';
+import {
+  PullRequest,
+  PullRequestStatus,
+} from '@backstage/plugin-azure-devops-common';
 import React, { useState } from 'react';
 
 import { AzureReposIcon } from '../AzureReposIcon';
 import { DateTime } from 'luxon';
-import { PullRequest } from '../../api/types';
-import { PullRequestStatus } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { PullRequestStatusButtonGroup } from '../PullRequestStatusButtonGroup';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { usePullRequests } from '../../hooks/usePullRequests';

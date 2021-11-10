@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import { PullRequest, PullRequestOptions } from '../api/types';
+import {
+  PullRequest,
+  PullRequestOptions,
+  PullRequestStatus,
+} from '@backstage/plugin-azure-devops-common';
 
 import { AZURE_DEVOPS_DEFAULT_TOP } from '../constants';
 import { Entity } from '@backstage/catalog-model';
-import { PullRequestStatus } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
