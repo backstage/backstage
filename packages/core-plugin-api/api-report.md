@@ -800,9 +800,6 @@ export function useElementFilter<T>(
 ): T;
 
 // @public
-export type UserFlags = {};
-
-// @public
 export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
   routeRef: ExternalRouteRef<Params, Optional>,
 ): Optional extends true ? RouteFunc<Params> | undefined : RouteFunc<Params>;
