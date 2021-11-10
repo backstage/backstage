@@ -59,8 +59,6 @@ import {
   atlassianAuthApiRef,
 } from '@backstage/core-plugin-api';
 
-import OAuth2Icon from '@material-ui/icons/AcUnit';
-
 export const apis = [
   createApiFactory({
     api: discoveryApiRef,
@@ -226,7 +224,7 @@ export const apis = [
         provider: {
           id: 'oidc',
           title: 'Your Identity Provider',
-          icon: OAuth2Icon,
+          icon: () => null,
         },
         environment: configApi.getOptionalString('auth.environment'),
       }),
