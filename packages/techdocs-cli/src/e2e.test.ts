@@ -56,13 +56,10 @@ describe('end-to-end', () => {
 
   it('can serve in backstage', async () => {
     jest.setTimeout(10000);
-    const proc = await executeTechDocsCliCommand(
-      ['serve', '--no-docker', '--mkdocs-port=8888'],
-      {
-        cwd: FIXTURE_DIR,
-        killAfter: 8000,
-      },
-    );
+    const proc = await executeTechDocsCliCommand(['serve', '--no-docker'], {
+      cwd: FIXTURE_DIR,
+      killAfter: 8000,
+    });
 
     expect(proc.combinedStdOutErr).toContain('Starting mkdocs server');
     expect(proc.combinedStdOutErr).toContain('Serving docs in Backstage at');
