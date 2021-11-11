@@ -56,7 +56,7 @@ const generateTestData = (rows = 10): RepoBuild[] => {
       title: `backstage ci - 1.0.0-preview-${rows - i}`,
       status,
       result,
-      queueTime: new Date(Date.now() - i * 60000),
+      queueTime: new Date(Date.now() - i * 60000).toISOString(),
       source: 'refs/heads/main',
       link: '',
     });
