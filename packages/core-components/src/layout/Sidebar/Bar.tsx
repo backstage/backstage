@@ -23,16 +23,10 @@ import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
 import { MobileSidebar } from './MobileSidebar';
 
-export type SidebarClassKey = 'root' | 'drawer' | 'drawerOpen';
+export type SidebarClassKey = 'drawer' | 'drawerOpen';
 
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
-    root: {
-      zIndex: 1000,
-      position: 'relative',
-      overflow: 'visible',
-      width: theme.spacing(7) + 1,
-    },
     drawer: {
       display: 'flex',
       flexFlow: 'column nowrap',
@@ -41,7 +35,7 @@ const useStyles = makeStyles<BackstageTheme>(
       left: 0,
       top: 0,
       bottom: 0,
-      padding: 0,
+      zIndex: 1000,
       background: theme.palette.navigation.background,
       overflowX: 'hidden',
       msOverflowStyle: 'none',
