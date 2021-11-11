@@ -30,6 +30,7 @@
     "lerna": "lerna",
     "storybook": "yarn workspace storybook start",
     "build-storybook": "yarn workspace storybook build-storybook",
+    "techdocs-cli:dev": "packages/techdocs-cli/bin/techdocs-cli",
     "prepare": "husky install",
     "lock:check": "yarn-lock-check"
   },

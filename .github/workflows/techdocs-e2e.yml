@@ -1,0 +1,42 @@
+name: Techdocs E2E Test
+
+on:
+  pull_request:
+    paths-ignore:
+      - '.changeset/**'
+      - 'contrib/**'
+      - 'docs/**'
+      - 'microsite/**'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=4096
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+
+      - name: install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: generate types
+        run: yarn tsc
+
+      - name: build techdocs-cli
+        working-directory: packages/techdocs-cli
+        run: yarn build
+
+      - name: Install mkdocs & techdocs-core
+        run: python -m pip install mkdocs-techdocs-core
+
+      - name: techdocs-cli e2e test
+        working-directory: packages/techdocs-cli
+        run: yarn test:e2e

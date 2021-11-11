@@ -105,6 +105,7 @@
           "features/techdocs/configuration",
           "features/techdocs/using-cloud-storage",
           "features/techdocs/configuring-ci-cd",
+          "features/techdocs/cli",
           "features/techdocs/how-to-guides",
           "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
