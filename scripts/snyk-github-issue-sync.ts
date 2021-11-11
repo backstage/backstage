@@ -82,9 +82,9 @@ const fetchSnykGithubIssueMap = async (): Promise<Record<string, number>> => {
 const generateIssueBody = (vulnerability: Vulnerability) => `
 ## Affecting Packages/Plugins
 
-${Array.from(vulnerability.packages).map(
-  ({ name, target }) => `* [${name}](${target})\n`,
-)}
+${Array.from(vulnerability.packages)
+  .map(({ name, target }) => `* [${name}](${target})`)
+  .join('\n')}
 
 ${vulnerability.description}
 `;
