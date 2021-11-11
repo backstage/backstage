@@ -37,7 +37,6 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
-    "material-table": "^1.69.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^6.0.0-beta.0",
