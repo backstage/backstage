@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
+import {
+  Policy,
+  PolicyEvaluationStatus,
+  PolicyType,
+} from '@backstage/plugin-azure-devops-common';
 import { styled, withStyles } from '@material-ui/core/styles';
 
 import CancelIcon from '@material-ui/icons/Cancel';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
-import { Policy } from '@backstage/plugin-azure-devops-common';
 import React from 'react';
 import WatchLaterIcon from '@material-ui/icons/WatchLater';
 
-export const PolicyRequiredIcon = withStyles(
+const PolicyRequiredIcon = withStyles(
   theme => ({
     root: {
       color: theme.palette.info.main,
@@ -31,7 +35,7 @@ export const PolicyRequiredIcon = withStyles(
   { name: 'PolicyRequiredIcon' },
 )(WatchLaterIcon);
 
-export const PolicyIssueIcon = withStyles(
+const PolicyIssueIcon = withStyles(
   theme => ({
     root: {
       color: theme.palette.error.main,
@@ -40,7 +44,7 @@ export const PolicyIssueIcon = withStyles(
   { name: 'PolicyIssueIcon' },
 )(CancelIcon);
 
-export const PolicyInProgressIcon = withStyles(
+const PolicyInProgressIcon = withStyles(
   theme => ({
     root: {
       color: theme.palette.info.main,
@@ -48,6 +52,29 @@ export const PolicyInProgressIcon = withStyles(
   }),
   { name: 'PolicyInProgressIcon' },
 )(GroupWorkIcon);
+
+function getPolicyIcon(policy: Policy): JSX.Element | null {
+  switch (policy.type) {
+    case PolicyType.Build:
+      switch (policy.status) {
+        case PolicyEvaluationStatus.Running:
+          return <PolicyInProgressIcon />;
+        case PolicyEvaluationStatus.Rejected:
+          return <PolicyIssueIcon />;
+        case PolicyEvaluationStatus.Queued:
+          return <PolicyRequiredIcon />;
+        default:
+          return null;
+      }
+    case PolicyType.MinimumReviewers:
+      return <PolicyRequiredIcon />;
+    case PolicyType.Status:
+    case PolicyType.Comments:
+      return <PolicyIssueIcon />;
+    default:
+      return null;
+  }
+}
 
 const PullRequestCardPolicyContainer = styled('div')({
   display: 'flex',
@@ -57,14 +84,12 @@ const PullRequestCardPolicyContainer = styled('div')({
 
 type PullRequestCardPolicyProps = {
   policy: Policy;
-  icon: JSX.Element;
 };
 
 export const PullRequestCardPolicy = ({
   policy,
-  icon,
 }: PullRequestCardPolicyProps) => (
   <PullRequestCardPolicyContainer>
-    {icon} <span>{policy.text}</span>
+    {getPolicyIcon(policy)} <span>{policy.text}</span>
   </PullRequestCardPolicyContainer>
 );

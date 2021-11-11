@@ -14,58 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  Policy,
-  PolicyEvaluationStatus,
-  PolicyType,
-} from '@backstage/plugin-azure-devops-common';
-import {
-  PolicyInProgressIcon,
-  PolicyIssueIcon,
-  PolicyRequiredIcon,
-  PullRequestCardPolicy,
-} from './PullRequestCardPolicy';
-
+import { Policy } from '@backstage/plugin-azure-devops-common';
+import { PullRequestCardPolicy } from './PullRequestCardPolicy';
 import React from 'react';
-
-function getPullRequestCardPolicy(policy: Policy): JSX.Element | null {
-  switch (policy.type) {
-    case PolicyType.Build:
-      switch (policy.status) {
-        case PolicyEvaluationStatus.Running:
-          return (
-            <PullRequestCardPolicy
-              policy={policy}
-              icon={<PolicyInProgressIcon />}
-            />
-          );
-        case PolicyEvaluationStatus.Rejected:
-          return (
-            <PullRequestCardPolicy policy={policy} icon={<PolicyIssueIcon />} />
-          );
-        case PolicyEvaluationStatus.Queued:
-          return (
-            <PullRequestCardPolicy
-              policy={policy}
-              icon={<PolicyRequiredIcon />}
-            />
-          );
-        default:
-          return null;
-      }
-    case PolicyType.MinimumReviewers:
-      return (
-        <PullRequestCardPolicy policy={policy} icon={<PolicyRequiredIcon />} />
-      );
-    case PolicyType.Status:
-    case PolicyType.Comments:
-      return (
-        <PullRequestCardPolicy policy={policy} icon={<PolicyIssueIcon />} />
-      );
-    default:
-      return null;
-  }
-}
 
 type PullRequestCardProps = {
   policies: Policy[];
@@ -76,5 +27,9 @@ export const PullRequestCardPolicies = ({
   policies,
   className,
 }: PullRequestCardProps) => (
-  <div className={className}>{policies.map(getPullRequestCardPolicy)}</div>
+  <div className={className}>
+    {policies.map(policy => (
+      <PullRequestCardPolicy policy={policy} />
+    ))}
+  </div>
 );
