@@ -29,7 +29,11 @@ import type { PermissionCriteria } from '@backstage/permission-common';
  * check was performed.
  * @public
  */
-export type PermissionRule<TResource, TQuery, TParams extends any[] = any> = {
+export type PermissionRule<
+  TResource,
+  TQuery,
+  TParams extends unknown[] = unknown[],
+> = {
   name: string;
   description: string;
 
