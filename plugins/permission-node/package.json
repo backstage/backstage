@@ -22,7 +22,8 @@
     "@backstage/permission-common": "^0.1.0",
     "@backstage/plugin-auth-backend": "^0.4.6",
     "@types/express": "*",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "zod": "^3.11.6"
   },
   "devDependencies": {
     "@backstage/cli": "^0.8.1"
