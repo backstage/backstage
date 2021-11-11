@@ -114,7 +114,10 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
           alignItems="center"
         >
           <Grid item>
-            <Link to={`${getSearchLink()}?query=${value}`}>
+            <Link
+              onClick={toggleModal}
+              to={`${getSearchLink()}?query=${value}`}
+            >
               <span className={classes.viewResultsLink}>View Full Results</span>
               <Launch color="primary" />
             </Link>
