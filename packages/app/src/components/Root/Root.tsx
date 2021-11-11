@@ -26,7 +26,7 @@ import {
   SidebarSpace,
 } from '@backstage/core-components';
 import { GraphiQLIcon } from '@backstage/plugin-graphiql';
-import { SidebarSearch } from '@backstage/plugin-search';
+import { SidebarSearchModal } from '@backstage/plugin-search';
 import { Shortcuts } from '@backstage/plugin-shortcuts';
 import {
   Settings as SidebarSettings,
@@ -86,7 +86,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
     <Sidebar>
       <SidebarLogo />
       <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-        <SidebarSearch />
+        <SidebarSearchModal />
       </SidebarGroup>
       <SidebarDivider />
       <SidebarGroup priority={0} label="Menu" icon={<MenuIcon />}>

@@ -169,6 +169,7 @@ describe('Integration Test', () => {
 
   const NavigateComponent = plugin1.provide(
     createRoutableExtension({
+      name: 'NavigateComponent',
       component: () =>
         Promise.resolve((_: PropsWithChildren<{ path?: string }>) => {
           return <Navigate to="/foo" />;

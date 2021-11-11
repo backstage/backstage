@@ -1,5 +1,20 @@
 # example-backend
 
+## 0.2.52
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/plugin-jenkins-backend@0.1.7
+  - @backstage/plugin-search-backend-module-elasticsearch@0.0.5
+  - @backstage/plugin-scaffolder-backend@0.15.12
+  - @backstage/plugin-azure-devops-backend@0.2.0
+  - @backstage/catalog-client@0.5.1
+  - @backstage/plugin-auth-backend@0.4.7
+  - @backstage/plugin-catalog-backend@0.17.3
+  - @backstage/plugin-scaffolder-backend-module-rails@0.1.7
+
 ## 0.2.50
 
 ### Patch Changes

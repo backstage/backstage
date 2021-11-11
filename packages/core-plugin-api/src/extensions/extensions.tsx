@@ -55,7 +55,7 @@ export function createRoutableExtension<
   mountPoint: RouteRef;
   name?: string;
 }): Extension<T> {
-  const { component, mountPoint } = options;
+  const { component, mountPoint, name } = options;
   return createReactExtension({
     component: {
       lazy: () =>
@@ -85,7 +85,7 @@ export function createRoutableExtension<
             };
 
             const componentName =
-              options.name ||
+              name ||
               (InnerComponent as { displayName?: string }).displayName ||
               InnerComponent.name ||
               'LazyComponent';
@@ -108,7 +108,7 @@ export function createRoutableExtension<
     data: {
       'core.mountPoint': mountPoint,
     },
-    name: options.name,
+    name,
   });
 }
 
@@ -152,7 +152,14 @@ export function createReactExtension<
   data?: Record<string, unknown>;
   name?: string;
 }): Extension<T> {
-  const { data = {} } = options;
+  const { data = {}, name } = options;
+  if (!name) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Declaring extensions without name is DEPRECATED. ' +
+        'Make sure that all usages of createReactExtension, createComponentExtension and createRoutableExtension provide a name.',
+    );
+  }
 
   let Component: T;
   if ('lazy' in options.component) {
@@ -164,7 +171,7 @@ export function createReactExtension<
     Component = options.component.sync;
   }
   const componentName =
-    options.name ||
+    name ||
     (Component as { displayName?: string }).displayName ||
     Component.name ||
     'Component';
@@ -186,7 +193,7 @@ export function createReactExtension<
               <AnalyticsContext
                 attributes={{
                   pluginId: plugin.getId(),
-                  ...(options.name && { extension: options.name }),
+                  ...(name && { extension: name }),
                   ...(mountPoint && { routeRef: mountPoint.id }),
                 }}
               >

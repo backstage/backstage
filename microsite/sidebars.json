@@ -151,7 +151,10 @@
       {
         "type": "subcategory",
         "label": "GitLab",
-        "ids": ["integrations/gitlab/locations"]
+        "ids": [
+          "integrations/gitlab/locations",
+          "integrations/gitlab/discovery"
+        ]
       },
       {
         "type": "subcategory",
