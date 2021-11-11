@@ -70,6 +70,7 @@ export const PullRequestGridColumn = ({
     <PullRequestCardContainer>
       {pullRequestGroup.pullRequests.map(pullRequest => (
         <PullRequestCard
+          key={pullRequest.pullRequestId}
           pullRequest={pullRequest}
           simplified={pullRequestGroup.simplified}
         />

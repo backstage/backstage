@@ -40,8 +40,11 @@ export const PullRequestGrid = ({
 }: PullRequestGridProps) => {
   return (
     <GridDiv>
-      {pullRequestGroups.map(pullRequestGroup => (
-        <PullRequestGridColumn pullRequestGroup={pullRequestGroup} />
+      {pullRequestGroups.map((pullRequestGroup, index) => (
+        <PullRequestGridColumn
+          key={index}
+          pullRequestGroup={pullRequestGroup}
+        />
       ))}
     </GridDiv>
   );

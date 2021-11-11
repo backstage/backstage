@@ -36,7 +36,7 @@ export const PullRequestCardReviewers = ({
 }: PullRequestCardReviewersProps) => (
   <PullRequestCardReviewersContainer>
     {reviewers.filter(reviewerFilter).map(reviewer => (
-      <PullRequestCardReviewer reviewer={reviewer} />
+      <PullRequestCardReviewer key={reviewer.id} reviewer={reviewer} />
     ))}
   </PullRequestCardReviewersContainer>
 );

@@ -29,7 +29,7 @@ export const PullRequestCardPolicies = ({
 }: PullRequestCardProps) => (
   <div className={className}>
     {policies.map(policy => (
-      <PullRequestCardPolicy policy={policy} />
+      <PullRequestCardPolicy key={policy.id} policy={policy} />
     ))}
   </div>
 );
