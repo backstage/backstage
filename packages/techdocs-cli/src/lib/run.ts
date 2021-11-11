@@ -49,7 +49,6 @@ export const run = async (
 
   const childProcess = spawn(name, args, {
     stdio: stdio,
-    shell: true,
     ...options,
     env,
   });
@@ -72,6 +71,14 @@ export async function waitForSignal(
 ): Promise<void> {
   const promises: Array<Promise<void>> = [];
 
+  for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+    process.on(signal, () => {
+      childProcesses.forEach(childProcess => {
+        childProcess.kill();
+      });
+    });
+  }
+
   childProcesses.forEach(childProcess => {
     if (typeof childProcess.exitCode === 'number') {
       if (childProcess.exitCode) {
@@ -80,24 +87,10 @@ export async function waitForSignal(
       return;
     }
 
-    for (const signal of ['SIGINT', 'SIGTERM'] as const) {
-      process.on(signal, () => {
-        childProcess.kill(signal);
-        // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
-        process.exit();
-      });
-    }
-
     promises.push(
       new Promise<void>((resolve, reject) => {
-        childProcess.once('error', error => reject(error));
-        childProcess.once('exit', code => {
-          if (code) {
-            reject(new Error(`Non zero exit code from child process`));
-          } else {
-            resolve();
-          }
-        });
+        childProcess.once('error', reject);
+        childProcess.once('exit', resolve);
       }),
     );
   });
