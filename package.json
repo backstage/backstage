@@ -46,7 +46,8 @@
   "resolutions": {
     "**/@graphql-codegen/cli/**/ws": "^7.4.6",
     "**/@roadiehq/**/@backstage/plugin-catalog": "*",
-    "**/@roadiehq/**/@backstage/catalog-model": "*"
+    "**/@roadiehq/**/@backstage/catalog-model": "*",
+    "**/sqlite3/**/node-gyp": "*"
   },
   "version": "1.0.0",
   "dependencies": {
