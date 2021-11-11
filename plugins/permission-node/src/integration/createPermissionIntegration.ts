@@ -116,7 +116,9 @@ export const createPermissionIntegration = <
         '/permissions/apply-conditions',
         async (
           req,
-          res: Response<Omit<AuthorizeResult, AuthorizeResult.CONDITIONAL>>,
+          res: Response<{
+            result: Omit<AuthorizeResult, AuthorizeResult.CONDITIONAL>;
+          }>,
         ) => {
           // TODO(authorization-framework): validate input
           const body = req.body as ApplyConditionsRequest;
