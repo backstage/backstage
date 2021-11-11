@@ -325,7 +325,7 @@ describe('DatabaseManager', () => {
         backend: {
           database: {
             client: 'pg',
-            usePluginSchemas: true,
+            pluginDivisionMode: 'schema',
             connection: {
               host: 'localhost',
               user: 'foo',
@@ -360,7 +360,7 @@ describe('DatabaseManager', () => {
           backend: {
             database: {
               client: 'sqlite3',
-              usePluginSchemas: true,
+              pluginDivisionMode: 'schema',
               connection: {
                 host: 'localhost',
                 user: 'foo',
@@ -385,13 +385,13 @@ describe('DatabaseManager', () => {
       expect(overrides).not.toHaveProperty('searchPath');
     });
 
-    it('plugin does not provide schema override if usePluginSchemas is not provided', async () => {
+    it('plugin does not provide schema override if pluginDivisionMode is set to database', async () => {
       const testManager = DatabaseManager.fromConfig(
         new ConfigReader({
           backend: {
             database: {
               client: 'pg',
-              usePluginSchemas: false,
+              pluginDivisionMode: 'database',
               connection: 'some-file-path',
             },
           },
@@ -407,7 +407,7 @@ describe('DatabaseManager', () => {
       expect(overrides).not.toHaveProperty('searchPath');
     });
 
-    it('plugin does not provide schema override if usePluginSchemas is false', async () => {
+    it('plugin does not provide schema override if pluginDivisionMode is not set', async () => {
       const testManager = DatabaseManager.fromConfig(
         new ConfigReader({
           backend: {
@@ -433,13 +433,13 @@ describe('DatabaseManager', () => {
       expect(overrides).not.toHaveProperty('searchPath');
     });
 
-    it('usePluginSchemas ensures that each plugin schema exists', async () => {
+    it('pluginDivisionMode ensures that each plugin schema exists', async () => {
       const testManager = DatabaseManager.fromConfig(
         new ConfigReader({
           backend: {
             database: {
               client: 'pg',
-              usePluginSchemas: true,
+              pluginDivisionMode: 'schema',
               connection: {
                 host: 'localhost',
                 user: 'foo',
@@ -459,13 +459,13 @@ describe('DatabaseManager', () => {
       expect(schemaName).toEqual('testdbname');
     });
 
-    it('usePluginSchemas allows connection overrides for plugins', async () => {
+    it('pluginDivisionMode allows connection overrides for plugins', async () => {
       const testManager = DatabaseManager.fromConfig(
         new ConfigReader({
           backend: {
             database: {
               client: 'pg',
-              usePluginSchemas: true,
+              pluginDivisionMode: 'schema',
               connection: {
                 host: 'localhost',
                 user: 'foo',

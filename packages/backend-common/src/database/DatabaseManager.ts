@@ -83,9 +83,9 @@ export class DatabaseManager {
    *
    * This method provides the effective database name which is determined using global
    * and plugin specific database config. If no explicit database name is configured
-   * and usePluginSchemas is not enabled, this method will provide a generated name
-   * which is the pluginId prefixed with 'backstage_plugin_'. If `usePluginSchemas` is
-   * enabled, it will fallback to using the default database for the knex instance.
+   * and `pluginDivisionMode` is not `schema`, this method will provide a generated name
+   * which is the pluginId prefixed with 'backstage_plugin_'. If `pluginDivisionMode` is
+   * `schema`, it will fallback to using the default database for the knex instance.
    *
    * @param pluginId Lookup the database name for given plugin
    * @returns String representing the plugin's database name
@@ -102,8 +102,8 @@ export class DatabaseManager {
 
     const databaseName = (connection as Knex.ConnectionConfig)?.database;
 
-    // usePluginSchemas enabled should use overridden databaseName if supplied or fallback to default knex database
-    if (this.getUsePluginSchemasConfig()) {
+    // `pluginDivisionMode` as `schema` should use overridden databaseName if supplied or fallback to default knex database
+    if (this.getPluginDivisionModeConfig() === 'schema') {
       return databaseName;
     }
 
@@ -145,8 +145,8 @@ export class DatabaseManager {
     );
   }
 
-  private getUsePluginSchemasConfig(): boolean {
-    return this.config.getOptionalBoolean('usePluginSchemas') ?? false;
+  private getPluginDivisionModeConfig(): string {
+    return this.config.getOptionalString('pluginDivisionMode') ?? 'database';
   }
 
   /**
@@ -156,7 +156,7 @@ export class DatabaseManager {
    * has not been overridden, the global connection config will be included with plugin
    * specific config as the base. Values from the plugin connection take precedence over the
    * base. Base database name is omitted for all supported databases excluding SQLite unless
-   * `usePluginSchemas` is enabled.
+   * `pluginDivisionMode` is set to `schema`.
    */
   private getConnectionConfig(
     pluginId: string,
@@ -167,11 +167,11 @@ export class DatabaseManager {
       this.config.get('connection'),
       this.config.getString('client'),
     );
-    // Databases cannot be shared unless the usePluginSchemas is enabled. The
-    // `database` property from the base connection is omitted unless usePluginSchemas
-    // is enabled. SQLite3's `filename` property is an exception as this is used as a
+    // Databases cannot be shared unless the `pluginDivisionMode` is set to `schema`. The
+    // `database` property from the base connection is omitted unless `pluginDivisionMode`
+    // is set to `schema`. SQLite3's `filename` property is an exception as this is used as a
     // directory elsewhere so we preserve `filename`.
-    if (!this.getUsePluginSchemasConfig()) {
+    if (this.getPluginDivisionModeConfig() !== 'schema') {
       baseConnection = omit(baseConnection, 'database');
     }
 
@@ -221,12 +221,9 @@ export class DatabaseManager {
    * @returns Partial Knex.Config with database name override
    */
   private getDatabaseOverrides(pluginId: string): Knex.Config {
-    const databaseNameOverride = this.getDatabaseName(pluginId);
-    return databaseNameOverride
-      ? createNameOverride(
-          this.getClientType(pluginId).client,
-          databaseNameOverride,
-        )
+    const databaseName = this.getDatabaseName(pluginId);
+    return databaseName
+      ? createNameOverride(this.getClientType(pluginId).client, databaseName)
       : {};
   }
 
@@ -253,7 +250,7 @@ export class DatabaseManager {
     }
 
     let schemaOverrides;
-    if (this.getUsePluginSchemasConfig()) {
+    if (this.getPluginDivisionModeConfig() === 'schema') {
       try {
         schemaOverrides = this.getSchemaOverrides(pluginId);
         await ensureSchemaExists(pluginConfig, pluginId);
