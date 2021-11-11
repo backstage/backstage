@@ -31,13 +31,15 @@ const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
   theme => ({
     root: {
       width: '100%',
-      minHeight: '100%',
       transition: 'padding-left 0.1s ease-out',
       [theme.breakpoints.up('sm')]: {
         paddingLeft: ({ isPinned }) =>
           isPinned
             ? sidebarConfig.drawerWidthOpen
             : sidebarConfig.drawerWidthClosed,
+      },
+      [theme.breakpoints.down('xs')]: {
+        paddingBottom: sidebarConfig.mobileSidebarHeight,
       },
     },
   }),
