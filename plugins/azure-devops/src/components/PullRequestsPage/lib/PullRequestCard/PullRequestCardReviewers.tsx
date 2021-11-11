@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  PullRequestVoteStatus,
-  Reviewer,
-} from '@backstage/plugin-azure-devops-common';
-
 import { PullRequestCardReviewer } from './PullRequestCardReviewer';
 import React from 'react';
+import { Reviewer } from '@backstage/plugin-azure-devops-common';
+import { reviewerFilter } from '../utils';
 import { styled } from '@material-ui/core/styles';
 
 const PullRequestCardReviewersContainer = styled('div')({
@@ -43,9 +40,3 @@ export const PullRequestCardReviewers = ({
     ))}
   </PullRequestCardReviewersContainer>
 );
-
-function reviewerFilter(reviewer: Reviewer): boolean {
-  return reviewer.voteStatus === PullRequestVoteStatus.NoVote
-    ? !!reviewer.isRequired
-    : !reviewer.isContainer;
-}
