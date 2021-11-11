@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Provides the default wiring of a Backstage App
+ *
+ * @packageDocumentation
+ */
+
 export { createApp } from './createApp';
-export { createSpecializedApp } from './createSpecializedApp';
-export { defaultConfigLoader } from './defaultConfigLoader';
-export * from './types';
+export type { OptionalAppOptions } from './createApp';

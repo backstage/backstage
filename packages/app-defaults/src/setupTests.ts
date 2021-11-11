@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-export { createApp } from './createApp';
-export { createSpecializedApp } from './createSpecializedApp';
-export { defaultConfigLoader } from './defaultConfigLoader';
-export * from './types';
+import '@testing-library/jest-dom';

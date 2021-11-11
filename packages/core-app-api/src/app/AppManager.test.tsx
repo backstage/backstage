@@ -20,11 +20,9 @@ import {
   renderWithEffects,
   withLogCollector,
 } from '@backstage/test-utils';
-import { lightTheme } from '@backstage/theme';
 import { render, screen } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import { defaultAppIcons } from './icons';
 import {
   configApiRef,
   createApiFactory,
@@ -37,8 +35,8 @@ import {
   createRoutableExtension,
   analyticsApiRef,
 } from '@backstage/core-plugin-api';
-import { generateBoundRoutes, PrivateAppImpl } from './App';
-import { AppThemeProvider } from './AppThemeProvider';
+import { generateBoundRoutes, AppManager } from './AppManager';
+import { AppComponents, AppIcons } from './types';
 
 describe('generateBoundRoutes', () => {
   it('runs happy path', () => {
@@ -128,7 +126,7 @@ describe('Integration Test', () => {
   const HiddenComponent = plugin2.provide(
     createRoutableExtension({
       name: 'HiddenComponent',
-      component: () => Promise.resolve((_: { path?: string }) => <div />),
+      component: () => Promise.resolve(() => <div />),
       mountPoint: plugin2RouteRef,
     }),
   );
@@ -137,7 +135,7 @@ describe('Integration Test', () => {
     createRoutableExtension({
       name: 'ExposedComponent',
       component: () =>
-        Promise.resolve((_: PropsWithChildren<{ path?: string }>) => {
+        Promise.resolve(() => {
           const link1 = useRouteRef(plugin1RouteRef);
           const link2 = useRouteRef(plugin2RouteRef);
           const subLink1 = useRouteRef(subRouteRef1);
@@ -178,17 +176,19 @@ describe('Integration Test', () => {
     }),
   );
 
-  const components = {
+  const components: AppComponents = {
     NotFoundErrorPage: () => null,
     BootErrorPage: () => null,
     Progress: () => null,
     Router: BrowserRouter,
     ErrorBoundaryFallback: () => null,
-    ThemeProvider: AppThemeProvider,
+    ThemeProvider: ({ children }) => <>{children}</>,
   };
 
+  const icons = {} as AppIcons;
+
   it('runs happy paths', async () => {
-    const app = new PrivateAppImpl({
+    const app = new AppManager({
       apis: [noOpAnalyticsApi],
       defaultApis: [],
       themes: [
@@ -196,12 +196,13 @@ describe('Integration Test', () => {
           id: 'light',
           title: 'Light Theme',
           variant: 'light',
-          theme: lightTheme,
+          Provider: ({ children }) => <>{children}</>,
         },
       ],
-      icons: defaultAppIcons,
+      icons,
       plugins: [],
       components,
+      configLoader: async () => [],
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
           extRouteRef1: plugin1RouteRef,
@@ -219,8 +220,8 @@ describe('Integration Test', () => {
       <Provider>
         <Router>
           <Routes>
-            <ExposedComponent path="/" />
-            <HiddenComponent path="/foo/:x" />
+            <Route path="/" element={<ExposedComponent />} />
+            <Route path="/foo/:x" element={<HiddenComponent />} />
           </Routes>
         </Router>
       </Provider>,
@@ -242,7 +243,7 @@ describe('Integration Test', () => {
   });
 
   it('runs happy paths without optional routes', async () => {
-    const app = new PrivateAppImpl({
+    const app = new AppManager({
       apis: [noOpAnalyticsApi],
       defaultApis: [],
       themes: [
@@ -250,12 +251,13 @@ describe('Integration Test', () => {
           id: 'light',
           title: 'Light Theme',
           variant: 'light',
-          theme: lightTheme,
+          Provider: ({ children }) => <>{children}</>,
         },
       ],
-      icons: defaultAppIcons,
+      icons,
       plugins: [],
       components,
+      configLoader: async () => [],
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
           extRouteRef1: plugin1RouteRef,
@@ -271,8 +273,8 @@ describe('Integration Test', () => {
       <Provider>
         <Router>
           <Routes>
-            <ExposedComponent path="/" />
-            <HiddenComponent path="/foo" />
+            <Route path="/" element={<ExposedComponent />} />
+            <Route path="/foo" element={<HiddenComponent />} />
           </Routes>
         </Router>
       </Provider>,
@@ -299,7 +301,7 @@ describe('Integration Test', () => {
       }),
     ];
 
-    const app = new PrivateAppImpl({
+    const app = new AppManager({
       apis,
       defaultApis: [],
       themes: [
@@ -307,10 +309,10 @@ describe('Integration Test', () => {
           id: 'light',
           title: 'Light Theme',
           variant: 'light',
-          theme: lightTheme,
+          Provider: ({ children }) => <>{children}</>,
         },
       ],
-      icons: defaultAppIcons,
+      icons,
       plugins: [
         createPlugin({
           id: 'test',
@@ -318,6 +320,7 @@ describe('Integration Test', () => {
         }),
       ],
       components,
+      configLoader: async () => [],
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
           extRouteRef1: plugin1RouteRef,
@@ -333,8 +336,8 @@ describe('Integration Test', () => {
       <Provider>
         <Router>
           <Routes>
-            <ExposedComponent path="/" />
-            <HiddenComponent path="/foo" />
+            <Route path="/" element={<ExposedComponent />} />
+            <Route path="/foo" element={<HiddenComponent />} />
           </Routes>
         </Router>
       </Provider>,
@@ -349,7 +352,7 @@ describe('Integration Test', () => {
   it('should track route changes via analytics api', async () => {
     const mockAnalyticsApi = new MockAnalyticsApi();
     const apis = [createApiFactory(analyticsApiRef, mockAnalyticsApi)];
-    const app = new PrivateAppImpl({
+    const app = new AppManager({
       apis,
       defaultApis: [],
       themes: [
@@ -357,12 +360,13 @@ describe('Integration Test', () => {
           id: 'light',
           title: 'Light Theme',
           variant: 'light',
-          theme: lightTheme,
+          Provider: ({ children }) => <>{children}</>,
         },
       ],
-      icons: defaultAppIcons,
+      icons,
       plugins: [],
       components,
+      configLoader: async () => [],
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
           extRouteRef1: plugin1RouteRef,
@@ -379,7 +383,7 @@ describe('Integration Test', () => {
         <Router>
           <Routes>
             <Route path="/" element={<NavigateComponent />} />
-            <Route path="/foo" element={<HiddenComponent path="/foo" />} />
+            <Route path="/foo" element={<HiddenComponent />} />
           </Routes>
         </Router>
       </Provider>,
@@ -409,7 +413,7 @@ describe('Integration Test', () => {
   });
 
   it('should throw some error when the route has duplicate params', () => {
-    const app = new PrivateAppImpl({
+    const app = new AppManager({
       apis: [],
       defaultApis: [],
       themes: [
@@ -417,12 +421,13 @@ describe('Integration Test', () => {
           id: 'light',
           title: 'Light Theme',
           variant: 'light',
-          theme: lightTheme,
+          Provider: ({ children }) => <>{children}</>,
         },
       ],
-      icons: defaultAppIcons,
+      icons,
       plugins: [],
       components,
+      configLoader: async () => [],
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
           extRouteRef1: plugin1RouteRef,
@@ -439,9 +444,9 @@ describe('Integration Test', () => {
           <Provider>
             <Router>
               <Routes>
-                <ExposedComponent path="/test/:thing">
-                  <HiddenComponent path="/some/:thing" />
-                </ExposedComponent>
+                <Route path="/test/:thing" element={<ExposedComponent />}>
+                  <Route path="/some/:thing" element={<HiddenComponent />} />
+                </Route>
               </Routes>
             </Router>
           </Provider>,

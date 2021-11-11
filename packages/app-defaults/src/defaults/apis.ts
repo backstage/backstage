@@ -34,7 +34,7 @@ import {
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
-} from '../apis';
+} from '@backstage/core-app-api';
 
 import {
   createApiFactory,
@@ -59,9 +59,7 @@ import {
   atlassianAuthApiRef,
 } from '@backstage/core-plugin-api';
 
-import OAuth2Icon from '@material-ui/icons/AcUnit';
-
-export const defaultApis = [
+export const apis = [
   createApiFactory({
     api: discoveryApiRef,
     deps: { configApi: configApiRef },
@@ -70,8 +68,16 @@ export const defaultApis = [
         `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
       ),
   }),
-  createApiFactory(alertApiRef, new AlertApiForwarder()),
-  createApiFactory(analyticsApiRef, new NoOpAnalyticsApi()),
+  createApiFactory({
+    api: alertApiRef,
+    deps: {},
+    factory: () => new AlertApiForwarder(),
+  }),
+  createApiFactory({
+    api: analyticsApiRef,
+    deps: {},
+    factory: () => new NoOpAnalyticsApi(),
+  }),
   createApiFactory({
     api: errorApiRef,
     deps: { alertApi: alertApiRef },
@@ -86,7 +92,11 @@ export const defaultApis = [
     deps: { errorApi: errorApiRef },
     factory: ({ errorApi }) => WebStorage.create({ errorApi }),
   }),
-  createApiFactory(oauthRequestApiRef, new OAuthRequestManager()),
+  createApiFactory({
+    api: oauthRequestApiRef,
+    deps: {},
+    factory: () => new OAuthRequestManager(),
+  }),
   createApiFactory({
     api: googleAuthApiRef,
     deps: {
@@ -226,7 +236,7 @@ export const defaultApis = [
         provider: {
           id: 'oidc',
           title: 'Your Identity Provider',
-          icon: OAuth2Icon,
+          icon: () => null,
         },
         environment: configApi.getOptionalString('auth.environment'),
       }),
