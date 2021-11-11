@@ -23,10 +23,13 @@ import {
   SidebarItem,
   SidebarPage,
   SidebarScrollWrapper,
-  SidebarSpace
+  SidebarSpace,
 } from '@backstage/core-components';
 import { SidebarSearchModal } from '@backstage/plugin-search';
-import { Settings as SidebarSettings, UserSettingsSignInAvatar } from '@backstage/plugin-user-settings';
+import {
+  Settings as SidebarSettings,
+  UserSettingsSignInAvatar,
+} from '@backstage/plugin-user-settings';
 import { Link, makeStyles } from '@material-ui/core';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import ExtensionIcon from '@material-ui/icons/Extension';
@@ -78,7 +81,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
     <Sidebar>
       <SidebarLogo />
       <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-      <SidebarSearchModal />
+        <SidebarSearchModal />
       </SidebarGroup>
       <SidebarDivider />
       <SidebarGroup priority={0} label="Menu" icon={<MenuIcon />}>
