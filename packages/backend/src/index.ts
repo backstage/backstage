@@ -140,7 +140,7 @@ async function main() {
 
   await service.start().catch(err => {
     logger.error(err);
-    process.exit(1);
+    throw err;
   });
 }
 

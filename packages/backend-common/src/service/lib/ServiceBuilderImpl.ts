@@ -176,25 +176,29 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       : createHttpServer(app, logger);
 
     return new Promise((resolve, reject) => {
-      app.on('error', e => {
-        logger.error(`Failed to start up on port ${port}, ${e}`);
+      function handleStartupError(e: unknown) {
+        server.close();
         reject(e);
+      }
+
+      app.on('error', handleStartupError);
+      server.on('error', handleStartupError);
+
+      server.listen(port, host, () => {
+        app.off('error', handleStartupError);
+        server.off('error', handleStartupError);
+
+        const stoppableServer = stoppable(server, 0);
+
+        useHotCleanup(this.module, () =>
+          stoppableServer.stop((e: any) => {
+            if (e) console.error(e);
+          }),
+        );
+
+        logger.info(`Listening on ${host}:${port}`);
+        resolve(stoppableServer);
       });
-
-      const stoppableServer = stoppable(
-        server.listen(port, host, () => {
-          logger.info(`Listening on ${host}:${port}`);
-        }),
-        0,
-      );
-
-      useHotCleanup(this.module, () =>
-        stoppableServer.stop((e: any) => {
-          if (e) console.error(e);
-        }),
-      );
-
-      resolve(stoppableServer);
     });
   }
 
