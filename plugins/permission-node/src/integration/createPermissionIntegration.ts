@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
+import express, { Response, Router } from 'express';
 import {
   AuthorizeResult,
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/permission-common';
-import express, { Response, Router } from 'express';
 import { PermissionRule } from '../types';
 import { conditionFor } from './conditionFor';
+import { applyConditions, mapConditions } from './util';
 
 /**
  * A request to load the referenced resource and apply conditions, to finalize a conditional
@@ -49,13 +50,6 @@ type QueryType<TRules> = TRules extends Record<
   ? TQuery
   : never;
 
-// TODO(permission-node): this is no longer correct
-function isPermissionCriteria(
-  criteria: unknown,
-): criteria is PermissionCriteria<unknown> {
-  return Object.prototype.hasOwnProperty.call(criteria, 'anyOf');
-}
-
 export const createPermissionIntegration = <
   TResource,
   TRules extends { [key: string]: PermissionRule<TResource, any> },
@@ -76,15 +70,13 @@ export const createPermissionIntegration = <
 }): {
   createPermissionIntegrationRouter: (...params: TGetResourceParams) => Router;
   toQuery: (
-    conditions: PermissionCriteria<PermissionCondition<QueryType<TRules>>>,
+    conditions: PermissionCriteria<PermissionCondition>,
   ) => PermissionCriteria<QueryType<TRules>>;
   conditions: Conditions<TRules>;
-  createConditions: (
-    conditions: PermissionCriteria<PermissionCondition<QueryType<TRules>>>,
-  ) => {
+  createConditions: (conditions: PermissionCriteria<PermissionCondition>) => {
     pluginId: string;
     resourceType: string;
-    conditions: PermissionCriteria<PermissionCondition<QueryType<TRules>>>;
+    conditions: PermissionCriteria<PermissionCondition>;
   };
   registerPermissionRule: (
     rule: PermissionRule<TResource, QueryType<TRules>>,
@@ -92,9 +84,7 @@ export const createPermissionIntegration = <
 } => {
   const rulesMap = new Map(Object.values(rules).map(rule => [rule.name, rule]));
 
-  const getRule = (
-    name: string,
-  ): PermissionRule<TResource, QueryType<TRules>> => {
+  const getRule = (name: string) => {
     const rule = rulesMap.get(name);
 
     if (!rule) {
@@ -110,10 +100,9 @@ export const createPermissionIntegration = <
     ) => {
       const router = Router();
 
-      router.use('/permissions/', express.json());
-
       router.post(
         '/permissions/apply-conditions',
+        express.json(),
         async (
           req,
           res: Response<{
@@ -136,22 +125,10 @@ export const createPermissionIntegration = <
             return res.status(400).end();
           }
 
-          const resolveCriteria = (
-            criteria: PermissionCriteria<
-              PermissionCondition<QueryType<TRules>>
-            >,
-          ): boolean => {
-            return criteria.anyOf.some(({ allOf }) =>
-              allOf.every(child =>
-                isPermissionCriteria(child)
-                  ? resolveCriteria(child)
-                  : getRule(child.rule).apply(resource, ...child.params),
-              ),
-            );
-          };
-
           return res.status(200).json({
-            result: resolveCriteria(body.conditions)
+            result: applyConditions(body.conditions, ({ rule, params }) =>
+              getRule(rule).apply(resource, ...params),
+            )
               ? AuthorizeResult.ALLOW
               : AuthorizeResult.DENY,
           });
@@ -161,27 +138,10 @@ export const createPermissionIntegration = <
       return router;
     },
     toQuery: (
-      conditions: PermissionCriteria<PermissionCondition<QueryType<TRules>>>,
+      conditions: PermissionCriteria<PermissionCondition>,
     ): PermissionCriteria<QueryType<TRules>> => {
-      const mapCriteria = (
-        criteria: PermissionCriteria<PermissionCondition<QueryType<TRules>>>,
-        mapFn: (
-          condition: PermissionCondition<QueryType<TRules>>,
-        ) => QueryType<TRules> | PermissionCriteria<QueryType<TRules>>,
-      ): PermissionCriteria<QueryType<TRules>> => {
-        return {
-          anyOf: criteria.anyOf.map(({ allOf }) => ({
-            allOf: allOf.map(child =>
-              isPermissionCriteria(child)
-                ? mapCriteria(child, mapFn)
-                : mapFn(child),
-            ),
-          })),
-        };
-      };
-
-      return mapCriteria(conditions, condition =>
-        getRule(condition.rule).toQuery(...condition.params),
+      return mapConditions(conditions, ({ rule, params }) =>
+        getRule(rule).toQuery(...params),
       );
     },
     conditions: Object.entries(rules).reduce(
@@ -192,7 +152,7 @@ export const createPermissionIntegration = <
       {} as Conditions<TRules>,
     ),
     createConditions: (
-      conditions: PermissionCriteria<PermissionCondition<QueryType<TRules>>>,
+      conditions: PermissionCriteria<PermissionCondition>,
     ) => ({
       pluginId,
       resourceType,
