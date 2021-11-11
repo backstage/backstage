@@ -17,7 +17,7 @@
 import { PermissionRule } from '../types';
 
 export const conditionFor =
-  <TParams extends any[]>(rule: PermissionRule<any, any, TParams>) =>
+  <TParams extends any[]>(rule: PermissionRule<unknown, unknown, TParams>) =>
   (...params: TParams) => ({
     rule: rule.name,
     params,
