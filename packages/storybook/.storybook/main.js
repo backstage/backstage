@@ -15,8 +15,7 @@ module.exports = ({ args }) => {
       '../../../plugins/search/src/**/*.stories.tsx',
     ];
   } else {
-    const rootDir = path.resolve(__dirname, '../../..');
-    stories = args.map(arg => path.join(rootDir, arg, 'src/**/*.stories.tsx'));
+    stories = args.map(arg => `../../../${arg}/src/**/*.stories.tsx`);
   }
 
   return {
