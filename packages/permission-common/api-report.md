@@ -86,5 +86,5 @@ export type PermissionCriteria<TQuery> =
   | {
       not: PermissionCriteria<TQuery>;
     }
-  | PermissionCondition<TQuery>;
+  | PermissionCondition<unknown[]>;
 ```
