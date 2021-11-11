@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+export { AuthorizeResult } from './api';
 export type {
   AuthorizeRequest,
   AuthorizeResponse,
-  AuthorizeResult,
   PermissionCondition,
   PermissionCriteria,
 } from './api';
