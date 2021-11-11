@@ -22,6 +22,7 @@
   "scripts": {
     "start": "nodemon --",
     "build": "./scripts/build.sh",
+    "build:dev": "TECHDOCS_CLI_DEV_MODE=true yarn build",
     "clean": "backstage-cli clean",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test --testPathIgnorePatterns src/e2e.test.ts",

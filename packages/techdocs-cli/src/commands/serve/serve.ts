@@ -98,9 +98,10 @@ export default async function serve(cmd: Command) {
     'techdocs-preview-bundle',
   );
 
+  const port = isDevMode ? backstageBackendPort : backstagePort;
   const httpServer = new HTTPServer(
     techdocsPreviewBundlePath,
-    isDevMode ? backstageBackendPort : backstagePort,
+    port,
     cmd.mkdocsPort,
     cmd.verbose,
   );
@@ -114,11 +115,9 @@ export default async function serve(cmd: Command) {
     })
     .then(() => {
       // The last three things default/component/local/ don't matter. They can be anything.
-      openBrowser(
-        `http://localhost:${backstagePort}/docs/default/component/local/`,
-      );
+      openBrowser(`http://localhost:${port}/docs/default/component/local/`);
       logger.info(
-        `Serving docs in Backstage at http://localhost:${backstagePort}/docs/default/component/local/\nOpening browser.`,
+        `Serving docs in Backstage at http://localhost:${port}/docs/default/component/local/\nOpening browser.`,
       );
     });
 

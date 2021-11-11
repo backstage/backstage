@@ -27,7 +27,11 @@ TECHDOCS_PREVIEW_DEST=dist/techdocs-preview-bundle
 
 # Build the embedded-techdocs-app
 pushd $EMBEDDED_TECHDOCS_APP_PATH >/dev/null
-yarn build
+if [[ $TECHDOCS_CLI_DEV_MODE == "true" ]]; then
+  yarn build:dev
+else
+  yarn build
+fi
 popd >/dev/null
 
 cp -r $TECHDOCS_PREVIEW_SOURCE $TECHDOCS_PREVIEW_DEST

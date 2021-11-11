@@ -30,7 +30,8 @@
     "lerna": "lerna",
     "storybook": "yarn workspace storybook start",
     "build-storybook": "yarn workspace storybook build-storybook",
-    "techdocs-cli:dev": "TECHDOCS_CLI_DEV_MODE=true packages/techdocs-cli/bin/techdocs-cli",
+    "techdocs-cli": "yarn workspace @techdocs/cli build && packages/techdocs-cli/bin/techdocs-cli",
+    "techdocs-cli:dev": "yarn workspace @techdocs/cli build:dev && TECHDOCS_CLI_DEV_MODE=true packages/techdocs-cli/bin/techdocs-cli",
     "prepare": "husky install",
     "lock:check": "yarn-lock-check"
   },

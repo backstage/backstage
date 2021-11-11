@@ -1,7 +1,12 @@
 # NOTE: This file is used for testing techdocs-cli locally
 
+app:
+  title: Techdocs Preview App
+  baseUrl: http://localhost:3000
+
 backend:
   baseUrl: http://localhost:7000
 
 techdocs:
+  builder: 'external'
   requestUrl: http://localhost:7000/api

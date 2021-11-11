@@ -40,6 +40,7 @@
   "scripts": {
     "start": "backstage-cli app:serve --config ./app-config.yaml --config ./app-config.dev.yaml",
     "build": "backstage-cli app:build --config ./app-config.yaml",
+    "build:dev": "backstage-cli app:build --config ./app-config.dev.yaml",
     "clean": "backstage-cli clean",
     "test": "backstage-cli test",
     "lint": "backstage-cli lint",
