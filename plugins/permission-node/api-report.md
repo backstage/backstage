@@ -111,6 +111,6 @@ export type PolicyResult =
 
 // Warnings were encountered during analysis:
 //
-// src/integration/createPermissionIntegration.d.ts:38:5 - (ae-forgotten-export) The symbol "QueryType" needs to be exported by the entry point index.d.ts
-// src/integration/createPermissionIntegration.d.ts:39:5 - (ae-forgotten-export) The symbol "Conditions" needs to be exported by the entry point index.d.ts
+// src/integration/createPermissionIntegration.d.ts:28:5 - (ae-forgotten-export) The symbol "QueryType" needs to be exported by the entry point index.d.ts
+// src/integration/createPermissionIntegration.d.ts:29:5 - (ae-forgotten-export) The symbol "Conditions" needs to be exported by the entry point index.d.ts
 ```

@@ -15,6 +15,7 @@
  */
 
 import express, { Response, Router } from 'express';
+import { z } from 'zod';
 import {
   AuthorizeResult,
   PermissionCondition,
@@ -23,6 +24,26 @@ import {
 import { PermissionRule } from '../types';
 import { conditionFor } from './conditionFor';
 import { applyConditions, mapConditions } from './util';
+
+const permissionCriteriaSchema: z.ZodSchema<
+  PermissionCriteria<PermissionCondition>
+> = z.lazy(() =>
+  z.union([
+    z.object({ anyOf: z.array(permissionCriteriaSchema) }),
+    z.object({ allOf: z.array(permissionCriteriaSchema) }),
+    z.object({ not: permissionCriteriaSchema }),
+    z.object({
+      rule: z.string(),
+      params: z.array(z.unknown()),
+    }),
+  ]),
+);
+
+const applyConditionsRequestSchema = z.object({
+  resourceRef: z.string(),
+  resourceType: z.string(),
+  conditions: permissionCriteriaSchema,
+});
 
 /**
  * A request to load the referenced resource and apply conditions, to finalize a conditional
@@ -105,15 +126,25 @@ export const createPermissionIntegration = <
         express.json(),
         async (
           req,
-          res: Response<{
-            result: Omit<AuthorizeResult, AuthorizeResult.CONDITIONAL>;
-          }>,
+          res: Response<
+            | {
+                result: Omit<AuthorizeResult, AuthorizeResult.CONDITIONAL>;
+              }
+            | string
+          >,
         ) => {
-          // TODO(authorization-framework): validate input
-          const body = req.body as ApplyConditionsRequest;
+          const parseResult = applyConditionsRequestSchema.safeParse(req.body);
+
+          if (!parseResult.success) {
+            return res.status(400).send(`Invalid request body.`);
+          }
+
+          const { data: body } = parseResult;
 
           if (body.resourceType !== resourceType) {
-            throw new Error(`Unexpected resource type: ${body.resourceType}`);
+            return res
+              .status(400)
+              .send(`Unexpected resource type: ${body.resourceType}.`);
           }
 
           const resource = await getResource(
@@ -122,7 +153,9 @@ export const createPermissionIntegration = <
           );
 
           if (!resource) {
-            return res.status(400).end();
+            return res
+              .status(400)
+              .send(`Resource for ref ${body.resourceRef} not found.`);
           }
 
           return res.status(200).json({
