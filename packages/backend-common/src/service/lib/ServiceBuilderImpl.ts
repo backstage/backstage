@@ -174,6 +174,13 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     const server: http.Server = httpsSettings
       ? await createHttpsServer(app, httpsSettings, logger)
       : createHttpServer(app, logger);
+    const stoppableServer = stoppable(server, 0);
+
+    useHotCleanup(this.module, () =>
+      stoppableServer.stop((e: any) => {
+        if (e) console.error(e);
+      }),
+    );
 
     return new Promise((resolve, reject) => {
       function handleStartupError(e: unknown) {
@@ -181,21 +188,10 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         reject(e);
       }
 
-      app.on('error', handleStartupError);
       server.on('error', handleStartupError);
 
       server.listen(port, host, () => {
-        app.off('error', handleStartupError);
         server.off('error', handleStartupError);
-
-        const stoppableServer = stoppable(server, 0);
-
-        useHotCleanup(this.module, () =>
-          stoppableServer.stop((e: any) => {
-            if (e) console.error(e);
-          }),
-        );
-
         logger.info(`Listening on ${host}:${port}`);
         resolve(stoppableServer);
       });
