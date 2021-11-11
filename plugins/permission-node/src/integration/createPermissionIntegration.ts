@@ -31,7 +31,7 @@ import { conditionFor } from './conditionFor';
 export type ApplyConditionsRequest = {
   resourceRef: string;
   resourceType: string;
-  conditions: PermissionCriteria<PermissionCondition<unknown>>;
+  conditions: PermissionCriteria<PermissionCondition>;
 };
 
 type Condition<TRule> = TRule extends PermissionRule<any, any, infer TParams>

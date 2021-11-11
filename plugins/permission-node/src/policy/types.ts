@@ -48,7 +48,7 @@ export type ConditionalPolicyResult = {
   conditions: {
     pluginId: string;
     resourceType: string;
-    conditions: PermissionCriteria<PermissionCondition<unknown>>;
+    conditions: PermissionCriteria<PermissionCondition>;
   };
 };
 
