@@ -15,15 +15,18 @@
  */
 
 import DoneAllIcon from '@material-ui/icons/DoneAll';
-import { withStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 
-export const AutoCompleteIcon = withStyles(
-  theme => ({
-    root: (props: { hasAutoComplete: boolean }) => ({
-      color: props.hasAutoComplete
-        ? theme.palette.success.main
-        : theme.palette.grey[400],
-    }),
+const useStyles = makeStyles(theme => ({
+  root: (props: { hasAutoComplete: boolean }) => ({
+    color: props.hasAutoComplete
+      ? theme.palette.success.main
+      : theme.palette.grey[400],
   }),
-  { name: 'AutoCompleteIcon' },
-)(DoneAllIcon);
+}));
+
+export const AutoCompleteIcon = (props: { hasAutoComplete: boolean }) => {
+  const classes = useStyles(props);
+  return <DoneAllIcon className={classes.root} />;
+};
