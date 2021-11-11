@@ -128,54 +128,54 @@ export type PullRequestOptions = {
 };
 
 export interface DashboardPullRequest {
-  pullRequestId: number | undefined;
-  title: string | undefined;
-  description: string | undefined;
-  repository: Repository | undefined;
-  createdBy: CreatedBy | undefined;
+  pullRequestId?: number;
+  title?: string;
+  description?: string;
+  repository?: Repository;
+  createdBy?: CreatedBy;
   hasAutoComplete: boolean;
-  policies: Policy[] | undefined;
-  reviewers: Reviewer[] | undefined;
-  creationDate: string | undefined;
-  status: PullRequestStatus | undefined;
-  isDraft: boolean | undefined;
-  link: string | undefined;
+  policies?: Policy[];
+  reviewers?: Reviewer[];
+  creationDate?: string;
+  status?: PullRequestStatus;
+  isDraft?: boolean;
+  link?: string;
 }
 
 export interface Reviewer {
-  id: string | undefined;
-  displayName: string | undefined;
-  imageUrl: string | undefined;
-  isRequired: boolean | undefined;
-  isContainer: boolean | undefined;
+  id?: string;
+  displayName?: string;
+  imageUrl?: string;
+  isRequired?: boolean;
+  isContainer?: boolean;
   voteStatus: PullRequestVoteStatus;
 }
 
 export interface Policy {
-  id: number | undefined;
+  id?: number;
   type: PolicyType;
-  status: PolicyEvaluationStatus | undefined;
-  text: string | undefined;
-  link: string | undefined;
+  status?: PolicyEvaluationStatus;
+  text?: string;
+  link?: string;
 }
 
 export interface CreatedBy {
-  id: string | undefined;
-  displayName: string | undefined;
-  uniqueName: string | undefined;
-  imageUrl: string | undefined;
+  id?: string;
+  displayName?: string;
+  uniqueName?: string;
+  imageUrl?: string;
 }
 
 export interface Repository {
-  id: string | undefined;
-  name: string | undefined;
-  url: string | undefined;
+  id?: string;
+  name?: string;
+  url?: string;
 }
 
 export interface Team {
-  id: string | undefined;
-  name: string | undefined;
-  memberIds: string[] | undefined;
+  id?: string;
+  name?: string;
+  memberIds?: string[];
 }
 
 /**
