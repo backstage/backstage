@@ -17,11 +17,15 @@
 import {
   ExtensionsV1beta1Ingress,
   V1ConfigMap,
+  V1CronJob,
+  V1DaemonSet,
   V1Deployment,
   V1HorizontalPodAutoscaler,
+  V1Job,
   V1Pod,
   V1ReplicaSet,
   V1Service,
+  V1StatefulSet,
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
@@ -84,7 +88,11 @@ export type FetchResponse =
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
   | IngressesFetchResponse
-  | CustomResourceFetchResponse;
+  | CustomResourceFetchResponse
+  | CronJobFetchResponse
+  | JobFetchResponse
+  | DaemonSetFetchResponse
+  | StatefulSetFetchResponse;
 
 export interface PodFetchResponse {
   type: 'pods';
@@ -124,6 +132,26 @@ export interface IngressesFetchResponse {
 export interface CustomResourceFetchResponse {
   type: 'customresources';
   resources: Array<any>;
+}
+
+export interface CronJobFetchResponse {
+  type: 'ingresses';
+  resources: Array<V1CronJob>;
+}
+
+export interface JobFetchResponse {
+  type: 'ingresses';
+  resources: Array<V1Job>;
+}
+
+export interface DaemonSetFetchResponse {
+  type: 'ingresses';
+  resources: Array<V1DaemonSet>;
+}
+
+export interface StatefulSetFetchResponse {
+  type: 'ingresses';
+  resources: Array<V1StatefulSet>;
 }
 
 export interface KubernetesFetchError {

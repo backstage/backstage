@@ -74,6 +74,30 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     plural: 'ingresses',
     objectType: 'ingresses',
   },
+  {
+    group: 'batch',
+    apiVersion: 'v1',
+    plural: 'cronjobs',
+    objectType: 'cronjobs',
+  },
+  {
+    group: 'batch',
+    apiVersion: 'v1',
+    plural: 'jobs',
+    objectType: 'jobs',
+  },
+  {
+    group: 'apps',
+    apiVersion: 'v1',
+    plural: 'daemonsets',
+    objectType: 'daemonsets',
+  },
+  {
+    group: 'apps',
+    apiVersion: 'v1',
+    plural: 'statefulsets',
+    objectType: 'statefulsets',
+  },
 ];
 
 export interface KubernetesFanOutHandlerOptions

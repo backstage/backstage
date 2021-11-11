@@ -68,7 +68,11 @@ export type KubernetesObjectTypes =
   | 'replicasets'
   | 'horizontalpodautoscalers'
   | 'ingresses'
-  | 'customresources';
+  | 'customresources'
+  | 'cronjobs'
+  | 'jobs'
+  | 'daemonsets'
+  | 'statefulsets';
 
 // Used to load cluster details from different sources
 export interface KubernetesClustersSupplier {
