@@ -1,5 +1,14 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.7
+
+### Patch Changes
+
+- e8a1c1afe2: Don't require a validation pattern for the Jenkins base URL.
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/catalog-client@0.5.1
+
 ## 0.1.6
 
 ### Patch Changes

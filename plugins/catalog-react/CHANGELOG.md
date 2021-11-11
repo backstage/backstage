@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-react
 
+## 0.6.3
+
+### Patch Changes
+
+- 03b47a476d: export `loadIdentityOwnerRefs` and `loadCatalogOwnerRefs` all the way
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/catalog-client@0.5.1
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/core-app-api@0.1.20
+
 ## 0.6.2
 
 ### Patch Changes
