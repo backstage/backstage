@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, KeyboardEvent, useState } from 'react';
+import React, { useEffect, KeyboardEvent, useState, useRef } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { useDebounce } from 'react-use';
 import { InputBase, InputAdornment, IconButton } from '@material-ui/core';
@@ -40,6 +40,11 @@ export const SearchBarBase = ({
   placeholder: overridePlaceholder,
 }: PresenterProps) => {
   const configApi = useApi(configApiRef);
+  const inputRef = useRef<HTMLInputElement>();
+
+  useEffect(() => {
+    inputRef?.current?.focus();
+  }, []);
 
   const onKeyDown = React.useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -60,6 +65,7 @@ export const SearchBarBase = ({
 
   return (
     <InputBase
+      inputRef={inputRef}
       data-testid="search-bar-next"
       fullWidth
       placeholder={placeholder}
