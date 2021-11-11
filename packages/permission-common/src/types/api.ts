@@ -67,7 +67,7 @@ export type PermissionCriteria<TQuery> =
   | { allOf: PermissionCriteria<TQuery>[] }
   | { anyOf: PermissionCriteria<TQuery>[] }
   | { not: PermissionCriteria<TQuery> }
-  | PermissionCondition<unknown[]>;
+  | TQuery;
 
 /**
  * An authorization response from {@link PermissionClient#authorize}.
