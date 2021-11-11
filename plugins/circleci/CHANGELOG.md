@@ -1,5 +1,16 @@
 # @backstage/plugin-circleci
 
+## 0.2.28
+
+### Patch Changes
+
+- e849f9cc0a: Use `<Progress>` instead of `<LinearProgress />` in combination with `Suspense`.
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
 ## 0.2.27
 
 ### Patch Changes
