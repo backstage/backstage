@@ -68,7 +68,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
     setValue(prevValue => (prevValue !== term ? term : prevValue));
   }, [term]);
 
-  useDebounce(() => setTerm(value), 1000, [value]);
+  useDebounce(() => setTerm(value), 500, [value]);
 
   const handleQuery = (newValue: string) => {
     setValue(newValue);
