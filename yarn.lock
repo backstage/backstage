@@ -23148,10 +23148,10 @@ printj@~1.1.0:
   resolved "https://registry.npmjs.org/printj/-/printj-1.1.2.tgz#d90deb2975a8b9f600fb3a1c94e3f4c53c78a222"
   integrity sha512-zA2SmoLaxZyArQTOPj5LXecR+RagfPSU5Kw1qP+jkWeNlrq+eJZyY2oS68SU1Z/7/myXM4lo9716laOFAVStCQ==
 
-prismjs@^1.21.0, prismjs@^1.22.0, prismjs@~1.24.0:
-  version "1.24.1"
-  resolved "https://registry.npmjs.org/prismjs/-/prismjs-1.24.1.tgz#c4d7895c4d6500289482fa8936d9cdd192684036"
-  integrity sha512-mNPsedLuk90RVJioIky8ANZEwYm5w9LcvCXrxHlwf4fNVSn8jEipMybMkWUyyF0JhnC+C4VcOVSBuHRKs1L5Ow==
+prismjs@^1.21.0, prismjs@^1.22.0, prismjs@~1.25.0:
+  version "1.25.0"
+  resolved "https://registry.npmjs.org/prismjs/-/prismjs-1.25.0.tgz#6f822df1bdad965734b310b315a23315cf999756"
+  integrity sha512-WCjJHl1KEWbnkQom1+SzftbtXMKQoezOCYs5rECqMN+jP+apI7ftoflyqigqzopSO3hMhTEb0mFClA8lkolgEg==
 
 private@^0.1.8:
   version "0.1.8"
@@ -24448,13 +24448,13 @@ reflect-metadata@^0.1.13:
   integrity sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==
 
 refractor@^3.1.0, refractor@^3.2.0:
-  version "3.4.0"
-  resolved "https://registry.npmjs.org/refractor/-/refractor-3.4.0.tgz#62bd274b06c942041f390c371b676eb67cb0a678"
-  integrity sha512-dBeD02lC5eytm9Gld2Mx0cMcnR+zhSnsTfPpWqFaMgUMJfC9A6bcN3Br/NaXrnBJcuxnLFR90k1jrkaSyV8umg==
+  version "3.5.0"
+  resolved "https://registry.npmjs.org/refractor/-/refractor-3.5.0.tgz#334586f352dda4beaf354099b48c2d18e0819aec"
+  integrity sha512-QwPJd3ferTZ4cSPPjdP5bsYHMytwWYnAN5EEnLtGvkqp/FCCnGsBgxrm9EuIDnjUC3Uc/kETtvVi7fSIVC74Dg==
   dependencies:
     hastscript "^6.0.0"
     parse-entities "^2.0.0"
-    prismjs "~1.24.0"
+    prismjs "~1.25.0"
 
 regenerate-unicode-properties@^8.2.0:
   version "8.2.0"
