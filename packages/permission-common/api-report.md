@@ -70,7 +70,7 @@ export class PermissionClient {
 }
 
 // @public
-export type PermissionCondition<TParams> = {
+export type PermissionCondition<TParams extends unknown[] = unknown[]> = {
   rule: string;
   params: TParams;
 };

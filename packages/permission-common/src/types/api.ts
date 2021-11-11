@@ -54,7 +54,7 @@ export type AuthorizeRequest = {
  * claims from a identity token.
  * @public
  */
-export type PermissionCondition<TParams> = {
+export type PermissionCondition<TParams extends unknown[] = unknown[]> = {
   rule: string;
   params: TParams;
 };
