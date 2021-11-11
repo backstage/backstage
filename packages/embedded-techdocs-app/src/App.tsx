@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { Navigate, Route } from 'react-router';
-import { createApp, FlatRoutes } from '@backstage/core-app-api';
+import { createApp } from '@backstage/app-defaults';
+import { FlatRoutes } from '@backstage/core-app-api';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
 
 import {
