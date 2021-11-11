@@ -16,9 +16,9 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { GraphQlDefinitionWidget } from './GraphQlDefinitionWidget';
+import { GraphQlDefinition } from './GraphQlDefinition';
 
-describe('<GraphQlDefinitionWidget />', () => {
+describe('<GraphQlDefinition />', () => {
   it('renders graphql schema', async () => {
     const definition = `
 """Hello World!"""
@@ -53,7 +53,7 @@ type Film {
     };
 
     const { getByText } = await renderInTestApp(
-      <GraphQlDefinitionWidget definition={definition} />,
+      <GraphQlDefinition definition={definition} />,
     );
 
     expect(getByText(/Film/i)).toBeInTheDocument();

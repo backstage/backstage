@@ -16,9 +16,9 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { AsyncApiDefinitionWidget } from './AsyncApiDefinitionWidget';
+import { AsyncApiDefinition } from './AsyncApiDefinition';
 
-describe('<AsyncApiDefinitionWidget />', () => {
+describe('<AsyncApiDefinition />', () => {
   it('renders asyncapi spec', async () => {
     const definition = `
 asyncapi: 2.0.0
@@ -40,7 +40,7 @@ components:
             type: string
     `;
     const { getByText, getAllByText } = await renderInTestApp(
-      <AsyncApiDefinitionWidget definition={definition} />,
+      <AsyncApiDefinition definition={definition} />,
     );
 
     expect(getByText(/Account Service/i)).toBeInTheDocument();
@@ -51,7 +51,7 @@ components:
 
   it('renders error if definition is missing', async () => {
     const { getByText } = await renderInTestApp(
-      <AsyncApiDefinitionWidget definition="" />,
+      <AsyncApiDefinition definition="" />,
     );
     expect(getByText(/Error/i)).toBeInTheDocument();
     expect(getByText(/Document can't be null or falsey/i)).toBeInTheDocument();

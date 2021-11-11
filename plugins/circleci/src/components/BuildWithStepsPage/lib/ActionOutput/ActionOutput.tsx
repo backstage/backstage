@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Progress } from '@backstage/core-components';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  LinearProgress,
   Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -85,7 +85,7 @@ export const ActionOutput = ({
         {messages.length === 0 ? (
           'Nothing here...'
         ) : (
-          <Suspense fallback={<LinearProgress />}>
+          <Suspense fallback={<Progress />}>
             <div style={{ height: '20vh', width: '100%' }}>
               <LazyLog text={messages.join('\n')} extraLines={1} enableSearch />
             </div>
