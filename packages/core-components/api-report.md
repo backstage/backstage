@@ -1090,17 +1090,23 @@ export const SidebarDivider: React_2.ComponentType<
     }
 >;
 
-// Warning: (ae-forgotten-export) The symbol "SidebarGroupProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SidebarGroup" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const SidebarGroup: ({
-  to,
-  label,
-  icon,
-  value,
   children,
+  ...props
 }: React_2.PropsWithChildren<SidebarGroupProps>) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "SidebarGroupProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface SidebarGroupProps extends BottomNavigationActionProps {
+  // (undocumented)
+  priority?: number;
+  // (undocumented)
+  to?: string;
+}
 
 // Warning: (ae-missing-release-tag) "SidebarIntro" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

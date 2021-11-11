@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import { sidebarConfig } from '../Sidebar';
+import React, { PropsWithChildren } from 'react';
 
 export type PageClassKey = 'root';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<BackstageTheme>(() => ({
   root: {
     display: 'grid',
     gridTemplateAreas:
       "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
     gridTemplateRows: 'max-content auto 1fr',
     gridTemplateColumns: 'auto 1fr auto',
-    [theme.breakpoints.up('sm')]: {
-      height: '100vh',
-    },
-    [theme.breakpoints.down('xs')]: {
-      height: `calc(100vh - ${sidebarConfig.mobileSidebarHeight}px)`,
-    },
+    height: '100vh',
     overflowY: 'auto',
   },
 }));

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useElementFilter } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import Box from '@material-ui/core/Box';
@@ -22,6 +23,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
+import { orderBy } from 'lodash';
 import React, { createContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import { sidebarConfig } from './config';
@@ -68,27 +70,18 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-const sortSidebarGroupsForPriority = (
-  childA: React.ReactElement,
-  childB: React.ReactElement,
-) => {
-  const priorityADefined = childA.props.priority !== undefined;
-  const priorityBDefined = childB.props.priority !== undefined;
-  if (priorityADefined && !priorityBDefined) {
-    return -1;
-  } else if (priorityBDefined && !priorityADefined) {
-    return 1;
-  } else if (priorityADefined && priorityBDefined) {
-    return childA.props.priority - childB.props.priority;
-  }
-  return 0;
-};
+const sortSidebarGroupsForPriority = (children: React.ReactElement[]) =>
+  orderBy(
+    children,
+    ({ props: { priority } }) => (priority ? priority : -1),
+    'desc',
+  );
 
 const OverlayMenu = ({
   children,
-  label,
+  label = 'Menu',
   onClose,
-}: React.PropsWithChildren<{ label: string; onClose: () => void }>) => {
+}: React.PropsWithChildren<{ label?: string; onClose: () => void }>) => {
   const classes = useStyles();
 
   return (
@@ -117,22 +110,19 @@ export const MobileSidebar = ({ children }: React.PropsWithChildren<{}>) => {
   const location = useLocation();
   const [selectedMenuItemIndex, setSelectedMenuItemIndex] =
     useState<number>(-1);
-  let shouldSortSidebarGroups = false;
 
   useEffect(() => {
     setSelectedMenuItemIndex(-1);
   }, [location.pathname]);
 
-  // Filter children for SidebarGroups & set `shouldSortSidebarGroups` if priorities are set for one or more SidebarGroups
-  let sidebarGroups = React.Children.map(children, child => {
-    if (React.isValidElement(child) && child.type === SidebarGroup) {
-      if (child.props.priority !== undefined) {
-        shouldSortSidebarGroups = true;
-      }
-      return child;
-    }
-    return null;
-  });
+  // Filter children for SidebarGroups
+  let sidebarGroups = useElementFilter(children, elements =>
+    elements
+      .getElements()
+      .filter(
+        child => React.isValidElement(child) && child.type === SidebarGroup,
+      ),
+  );
 
   if (!sidebarGroups) {
     // If Sidebar has no children the MobileSidebar won't be rendered
@@ -141,13 +131,11 @@ export const MobileSidebar = ({ children }: React.PropsWithChildren<{}>) => {
     // If Sidebar has no SidebarGroup as a children a default
     // SidebarGroup with the complete Sidebar content will be created
     sidebarGroups.push(
-      <SidebarGroup label="Menu" icon={<MenuIcon />}>
-        {children}
-      </SidebarGroup>,
+      <SidebarGroup icon={<MenuIcon />}>{children}</SidebarGroup>,
     );
-  } else if (shouldSortSidebarGroups) {
-    // If a SidebarGroup has a given priority the SidebarGroups are sorted for prioirty
-    sidebarGroups = sidebarGroups.sort(sortSidebarGroupsForPriority);
+  } else {
+    // Sort SidebarGroups for the given Priority
+    sidebarGroups = sortSidebarGroupsForPriority(sidebarGroups);
   }
 
   const shouldShowGroupChildren =

@@ -64,7 +64,7 @@ const useStyles = makeStyles<BackstageTheme>(
     },
     title: {
       color: theme.palette.bursts.fontColor,
-      wordBreak: 'break-all',
+      // ?
       fontSize: 'calc(24px + 6 * ((100vw - 320px) / 680))',
       marginBottom: 0,
     },

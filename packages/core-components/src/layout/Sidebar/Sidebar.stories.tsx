@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// We don't want to export RoutingProvider from core-app-api, but it's way easier to
-// use here. This hack only works in storybook stories.
-// TODO: Export a nicer to user routing provider, perhaps from test-utils
-// eslint-disable-next-line monorepo/no-internal-import
-import { RoutingProvider } from '@backstage/core-app-api/src/routing/RoutingProvider';
 import { createRouteRef } from '@backstage/core-plugin-api';
+import { wrapInTestApp } from '@backstage/test-utils';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import MenuIcon from '@material-ui/icons/Menu';
 import React, { ComponentType } from 'react';
-import { MemoryRouter, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import {
   Sidebar,
   SidebarDivider,
@@ -50,35 +45,27 @@ export default {
   title: 'Layout/Sidebar',
   component: Sidebar,
   decorators: [
-    (Story: ComponentType<{}>) => (
-      <MemoryRouter>
-        <RoutingProvider
-          routeBindings={new Map()}
-          routeObjects={[]}
-          routeParents={new Map()}
-          routePaths={new Map([[routeRef, '/']])}
-        >
-          <Story />
-        </RoutingProvider>
-      </MemoryRouter>
-    ),
+    (Story: ComponentType<{}>) =>
+      wrapInTestApp(<Story />, { mountedRoutes: { '/': routeRef } }),
   ],
 };
 
-export const SampleSidebar = () => (
-  <SidebarPage>
-    <Sidebar>
-      <SidebarGroup label="Menu" icon={MenuIcon}>
-        <SidebarSearchField onSearch={() => {}} />
-        <SidebarDivider />
-        <SidebarItem icon={HomeOutlinedIcon} to="/" text="Home" />
-        <SidebarItem icon={ExtensionIcon} to="/one" text="Plugins" />
-        <SidebarItem icon={AddCircleOutlineIcon} to="/two" text="Create..." />
-        <SidebarDivider />
-        <SidebarIntro />
-        <SidebarSpace />
-      </SidebarGroup>
-    </Sidebar>
-    <Location />
-  </SidebarPage>
-);
+export const SampleSidebar = () => {
+  return (
+    <SidebarPage>
+      <Sidebar>
+        <SidebarGroup label="Menu" icon={MenuIcon}>
+          <SidebarSearchField onSearch={() => {}} />
+          <SidebarDivider />
+          <SidebarItem icon={HomeOutlinedIcon} to="/" text="Home" />
+          <SidebarItem icon={ExtensionIcon} to="/one" text="Plugins" />
+          <SidebarItem icon={AddCircleOutlineIcon} to="/two" text="Create..." />
+          <SidebarDivider />
+          <SidebarIntro />
+          <SidebarSpace />
+        </SidebarGroup>
+      </Sidebar>
+      <Location />
+    </SidebarPage>
+  );
+};

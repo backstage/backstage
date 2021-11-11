@@ -27,7 +27,7 @@ import { Link } from '../../components';
 import { sidebarConfig } from './config';
 import { MobileSidebarContext } from './MobileSidebar';
 
-interface SidebarGroupProps extends BottomNavigationActionProps {
+export interface SidebarGroupProps extends BottomNavigationActionProps {
   to?: string;
   priority?: number;
 }
@@ -50,20 +50,11 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const SidebarGroup = ({
-  to,
-  label,
-  icon,
-  value,
-  children,
-}: React.PropsWithChildren<SidebarGroupProps>) => {
+const MobileSidebarGroup = ({ to, label, icon, value }: SidebarGroupProps) => {
   const classes = useStyles();
   const location = useLocation();
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
     useContext(MobileSidebarContext);
-  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.down('xs'),
-  );
 
   const onChange = (_: React.ChangeEvent<{}>, value: number) => {
     if (value === selectedMenuItemIndex) {
@@ -79,7 +70,7 @@ export const SidebarGroup = ({
       !(selectedMenuItemIndex >= 0) &&
       to === location.pathname);
 
-  return isMobileScreen ? (
+  return (
     // Material UI issue: https://github.com/mui-org/material-ui/issues/27820
     // @ts-ignore
     <BottomNavigationAction
@@ -92,7 +83,16 @@ export const SidebarGroup = ({
       selected={selected}
       classes={classes}
     />
-  ) : (
-    <>{children}</>
   );
+};
+
+export const SidebarGroup = ({
+  children,
+  ...props
+}: React.PropsWithChildren<SidebarGroupProps>) => {
+  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.down('xs'),
+  );
+
+  return isMobileScreen ? <MobileSidebarGroup {...props} /> : <>{children}</>;
 };
