@@ -155,7 +155,13 @@ describe('AzureBlobStoragePublish', () => {
   describe('publish', () => {
     it('should publish a directory', async () => {
       const publisher = createPublisherFromConfig();
-      expect(await publisher.publish({ entity, directory })).toBeUndefined();
+      expect(await publisher.publish({ entity, directory })).toMatchObject({
+        objects: expect.arrayContaining([
+          'default/component/backstage/404.html',
+          `default/component/backstage/index.html`,
+          `default/component/backstage/assets/main.css`,
+        ]),
+      });
     });
 
     it('should publish a directory as well when legacy casing is used', async () => {
@@ -164,9 +170,9 @@ describe('AzureBlobStoragePublish', () => {
       });
       expect(await publisher.publish({ entity, directory })).toMatchObject({
         objects: expect.arrayContaining([
-          'test-namespace/TestKind/test-component-name/404.html',
-          `test-namespace/TestKind/test-component-name/index.html`,
-          `test-namespace/TestKind/test-component-name/assets/main.css`,
+          'default/Component/backstage/404.html',
+          `default/Component/backstage/index.html`,
+          `default/Component/backstage/assets/main.css`,
         ]),
       });
     });
