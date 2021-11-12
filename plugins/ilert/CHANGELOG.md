@@ -1,5 +1,16 @@
 # @backstage/plugin-ilert
 
+## 0.1.16
+
+### Patch Changes
+
+- fa325fd89d: Change the version of `@date-io/luxon` from 2.x to 1.x to make it compatible with material-ui-pickers
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
 ## 0.1.15
 
 ### Patch Changes

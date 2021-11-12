@@ -23,9 +23,9 @@ import {
 
 // react-lazylog is based on a react-virtualized component which doesn't
 // write the content to the dom, so we mock it.
-jest.mock('react-lazylog', () => {
+jest.mock('react-lazylog/build/LazyLog', () => {
   return {
-    LazyLog: ({ text }: { text: string }) => {
+    default: ({ text }: { text: string }) => {
       return <p>{text}</p>;
     },
   };
@@ -46,18 +46,20 @@ describe('<TechDocsBuildLogs />', () => {
 });
 
 describe('<TechDocsBuildLogsDrawerContent />', () => {
-  it('should render with empty log', () => {
+  it('should render with empty log', async () => {
     const onClose = jest.fn();
     const rendered = render(
       <TechDocsBuildLogsDrawerContent buildLog={[]} onClose={onClose} />,
     );
     expect(rendered.getByText(/Build Details/i)).toBeInTheDocument();
-    expect(rendered.getByText(/Waiting for logs.../i)).toBeInTheDocument();
+    expect(
+      await rendered.findByText(/Waiting for logs.../i),
+    ).toBeInTheDocument();
 
     expect(onClose).toBeCalledTimes(0);
   });
 
-  it('should render with empty logs', () => {
+  it('should render logs', async () => {
     const onClose = jest.fn();
     const rendered = render(
       <TechDocsBuildLogsDrawerContent
@@ -66,11 +68,8 @@ describe('<TechDocsBuildLogsDrawerContent />', () => {
       />,
     );
     expect(rendered.getByText(/Build Details/i)).toBeInTheDocument();
-    expect(
-      rendered.queryByText(/Waiting for logs.../i),
-    ).not.toBeInTheDocument();
-    expect(rendered.getByText(/Line 1/i)).toBeInTheDocument();
-    expect(rendered.getByText(/Line 2/i)).toBeInTheDocument();
+    expect(await rendered.findByText(/Line 1/i)).toBeInTheDocument();
+    expect(await rendered.findByText(/Line 2/i)).toBeInTheDocument();
 
     expect(onClose).toBeCalledTimes(0);
   });
@@ -80,7 +79,7 @@ describe('<TechDocsBuildLogsDrawerContent />', () => {
     const rendered = render(
       <TechDocsBuildLogsDrawerContent buildLog={[]} onClose={onClose} />,
     );
-    rendered.getByRole('button').click();
+    rendered.getByTitle('Close the drawer').click();
 
     expect(onClose).toBeCalledTimes(1);
   });

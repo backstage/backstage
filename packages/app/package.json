@@ -4,6 +4,7 @@
   "private": true,
   "bundled": true,
   "dependencies": {
+    "@backstage/app-defaults": "^0.1.0",
     "@backstage/catalog-model": "^0.9.5",
     "@backstage/cli": "^0.8.0",
     "@backstage/core-app-api": "^0.1.18",
