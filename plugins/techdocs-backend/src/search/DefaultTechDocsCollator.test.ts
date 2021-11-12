@@ -17,6 +17,7 @@
 import {
   PluginEndpointDiscovery,
   getVoidLogger,
+  TokenManager,
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
@@ -87,6 +88,7 @@ const expectedEntities: Entity[] = [
 
 describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+  let mockTokenManager: jest.Mocked<TokenManager>;
   let collator: DefaultTechDocsCollator;
 
   const worker = setupServer();
@@ -96,6 +98,10 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
       getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
       getExternalBaseUrl: jest.fn(),
     };
+    mockTokenManager = {
+      getServerToken: jest.fn().mockResolvedValue({ token: '' }),
+      validateServerToken: jest.fn().mockResolvedValue(true),
+    };
     const mockConfig = new ConfigReader({
       techdocs: {
         legacyUseCaseSensitiveTripletPaths: true,
@@ -103,6 +109,7 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
     });
     collator = DefaultTechDocsCollator.fromConfig(mockConfig, {
       discovery: mockDiscoveryApi,
+      tokenManager: mockTokenManager,
       logger,
       legacyPathCasing: true,
     });
@@ -147,6 +154,7 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
 
 describe('DefaultTechDocsCollator', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+  let mockTokenManager: jest.Mocked<TokenManager>;
   let collator: DefaultTechDocsCollator;
 
   const worker = setupServer();
@@ -156,8 +164,13 @@ describe('DefaultTechDocsCollator', () => {
       getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
       getExternalBaseUrl: jest.fn(),
     };
+    mockTokenManager = {
+      getServerToken: jest.fn().mockResolvedValue({ token: '' }),
+      validateServerToken: jest.fn().mockResolvedValue(true),
+    };
     collator = DefaultTechDocsCollator.fromConfig(new ConfigReader({}), {
       discovery: mockDiscoveryApi,
+      tokenManager: mockTokenManager,
       logger,
     });
 
@@ -195,6 +208,7 @@ describe('DefaultTechDocsCollator', () => {
     // Provide an alternate location template.
     collator = new DefaultTechDocsCollator({
       discovery: mockDiscoveryApi,
+      tokenManager: mockTokenManager,
       locationTemplate: '/software/:name',
       logger,
     });
