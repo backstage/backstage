@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/permission-common",
+  "name": "@backstage/plugin-permission-common",
   "description": "Isomorphic types and client for Backstage permissions and authorization",
   "version": "0.1.0",
   "main": "src/index.ts",
@@ -13,7 +13,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/permission-common"
+    "directory": "plugins/permission-common"
   },
   "keywords": [
     "backstage",

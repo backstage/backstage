@@ -1,4 +1,4 @@
-# @backstage/permission-common
+# @backstage/plugin-permission-common
 
 > NOTE: THIS PACKAGE IS EXPERIMENTAL, HERE BE DRAGONS
 
