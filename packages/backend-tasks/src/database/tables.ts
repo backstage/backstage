@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-export * from './SingleConnection';
-export * from './DatabaseManager';
+export const DB_MIGRATIONS_TABLE = 'backstage_backend_tasks__knex_migrations';
+export const DB_TASKS_TABLE = 'backstage_backend_tasks__tasks';
 
-/*
- * Undocumented API surface from connection is being reduced for future deprecation.
- * Avoid exporting additional symbols.
- */
-export {
-  createDatabaseClient,
-  createDatabase,
-  ensureDatabaseExists,
-} from './connection';
-
-export type { PluginDatabaseManager } from './types';
-export { isDatabaseConflictError } from './util';
+export type DbTasksRow = {
+  id: string;
+  settings_json: string;
+  next_run_start_at: Date;
+  current_run_ticket?: string;
+  current_run_started_at?: Date | string;
+  current_run_expires_at?: Date | string;
+};

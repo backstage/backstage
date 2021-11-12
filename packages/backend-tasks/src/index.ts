@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-export * from './SingleConnection';
-export * from './DatabaseManager';
-
-/*
- * Undocumented API surface from connection is being reduced for future deprecation.
- * Avoid exporting additional symbols.
+/**
+ * Common distributed task management library for Backstage backends
+ *
+ * @packageDocumentation
  */
-export {
-  createDatabaseClient,
-  createDatabase,
-  ensureDatabaseExists,
-} from './connection';
 
-export type { PluginDatabaseManager } from './types';
-export { isDatabaseConflictError } from './util';
+export * from './tasks';

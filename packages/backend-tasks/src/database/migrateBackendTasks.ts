@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-export * from './SingleConnection';
-export * from './DatabaseManager';
+import { resolvePackagePath } from '@backstage/backend-common';
+import { Knex } from 'knex';
+import { DB_MIGRATIONS_TABLE } from './tables';
 
-/*
- * Undocumented API surface from connection is being reduced for future deprecation.
- * Avoid exporting additional symbols.
- */
-export {
-  createDatabaseClient,
-  createDatabase,
-  ensureDatabaseExists,
-} from './connection';
+const migrationsDir = resolvePackagePath(
+  '@backstage/backend-tasks',
+  'migrations',
+);
 
-export type { PluginDatabaseManager } from './types';
-export { isDatabaseConflictError } from './util';
+export async function migrateBackendTasks(knex: Knex): Promise<void> {
+  await knex.migrate.latest({
+    directory: migrationsDir,
+    tableName: DB_MIGRATIONS_TABLE,
+  });
+}

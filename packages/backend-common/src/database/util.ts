@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-export * from './SingleConnection';
-export * from './DatabaseManager';
-
-/*
- * Undocumented API surface from connection is being reduced for future deprecation.
- * Avoid exporting additional symbols.
+/**
+ * Tries to deduce whether a thrown error is a database conflict.
+ *
+ * @public
+ * @param e - A thrown error
+ * @returns True if the error looks like it was a conflict error thrown by a
+ *          known database engine
  */
-export {
-  createDatabaseClient,
-  createDatabase,
-  ensureDatabaseExists,
-} from './connection';
+export function isDatabaseConflictError(e: unknown) {
+  const message = (e as any)?.message;
 
-export type { PluginDatabaseManager } from './types';
-export { isDatabaseConflictError } from './util';
+  return (
+    typeof message === 'string' &&
+    (/SQLITE_CONSTRAINT: UNIQUE/.test(message) ||
+      /unique constraint/.test(message))
+  );
+}
