@@ -65,6 +65,8 @@ export type TechDocsMetadata = {
   site_name: string;
   site_description: string;
   etag: string;
+  build_timestamp: number;
+  files?: string[];
 };
 
 export type MigrateRequest = {
