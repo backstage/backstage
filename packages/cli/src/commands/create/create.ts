@@ -21,6 +21,7 @@ import { Command } from 'commander';
 import { FactoryRegistry } from '../../lib/create/FactoryRegistry';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
+import { Task } from '../../lib/tasks';
 
 function parseOptions(optionStrings: string[]): Record<string, string> {
   const options: Record<string, string> = {};
@@ -77,7 +78,11 @@ export default async (cmd: Command) => {
     return dir;
   }
 
+  let modified = false;
   try {
+    Task.log();
+    Task.log(`Creating new ${factory.name}`);
+
     await factory.create(options, {
       isMonoRepo,
       defaultVersion,
@@ -85,7 +90,30 @@ export default async (cmd: Command) => {
       npmRegistry: cmdOpts.npmRegistry,
       private: Boolean(cmdOpts.private),
       createTemporaryDirectory,
+      markAsModified() {
+        modified = true;
+      },
     });
+
+    Task.log();
+    Task.log(`🎉  Successfully created ${factory.name}`);
+    Task.log();
+  } catch (error) {
+    assertError(error);
+    Task.error(error.message);
+
+    if (modified) {
+      Task.log('It seems that something went wrong in the creation process 🤔');
+      Task.log();
+      Task.log(
+        'We have left the changes that were made intact in case you want to',
+      );
+      Task.log(
+        'continue manually, but you can also revert the changes and try again.',
+      );
+
+      Task.error(`🔥  Failed to create ${factory.name}!`);
+    }
   } finally {
     for (const dir of tempDirs) {
       try {

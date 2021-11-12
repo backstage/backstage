@@ -30,6 +30,9 @@ export interface CreateContext {
 
   /** Creates a temporary directory. This will always be deleted after creation is done. */
   createTemporaryDirectory(name: string): Promise<string>;
+
+  /** Signal that the creation process got to a point where permanent modifications were made */
+  markAsModified(): void;
 }
 
 export type AnyOptions = Record<string, string>;
