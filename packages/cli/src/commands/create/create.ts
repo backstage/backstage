@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import { Command } from 'commander';
 import { FactoryRegistry } from '../../lib/create/FactoryRegistry';
+import { paths } from '../../lib/paths';
+import { assertError } from '@backstage/errors';
 
 function parseOptions(optionStrings: string[]): Record<string, string> {
   const options: Record<string, string> = {};
@@ -35,13 +38,41 @@ function parseOptions(optionStrings: string[]): Record<string, string> {
 }
 
 export default async (cmd: Command) => {
-  const factory = await FactoryRegistry.interactiveSelect(cmd.opts().select);
+  const cmdOpts = cmd.opts();
 
-  const providedOptions = parseOptions(cmd.opts().option);
+  const factory = await FactoryRegistry.interactiveSelect(cmdOpts.select);
+
+  const providedOptions = parseOptions(cmdOpts.option);
   const options = await FactoryRegistry.populateOptions(
     factory,
     providedOptions,
   );
 
-  await factory.create(options);
+  const rootPackageJson = await fs.readJson(
+    paths.resolveTargetRoot('package.json'),
+  );
+  const isMonoRepo = Boolean(rootPackageJson.workspaces);
+
+  let defaultVersion = '0.1.0';
+  try {
+    const rootLernaJson = await fs.readJson(
+      paths.resolveTargetRoot('lerna.json'),
+    );
+    if (rootLernaJson.version) {
+      defaultVersion = rootLernaJson.version;
+    }
+  } catch (error) {
+    assertError(error);
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+  }
+
+  await factory.create(options, {
+    isMonoRepo,
+    defaultVersion,
+    scope: cmdOpts.scope.replace(/^@/, ''),
+    npmRegistry: cmdOpts.npmRegistry,
+    private: Boolean(cmdOpts.private),
+  });
 };

@@ -16,6 +16,19 @@
 
 import { DistinctQuestion } from 'inquirer';
 
+export interface CreateContext {
+  /** The package scope to use for new packages */
+  scope?: string;
+  /** The NPM registry to use for new packages */
+  npmRegistry?: string;
+  /** Whether new packages should be marked as private */
+  private: boolean;
+  /** Whether we are creating something in a monorepo or not */
+  isMonoRepo: boolean;
+  /** The default version to use for new packages */
+  defaultVersion: string;
+}
+
 export type AnyOptions = Record<string, string>;
 
 export interface Factory<Options extends AnyOptions> {
@@ -23,7 +36,7 @@ export interface Factory<Options extends AnyOptions> {
   description: string;
   optionsDiscovery?(): Promise<Partial<Options>>;
   optionsPrompts?: ReadonlyArray<DistinctQuestion<Options> & { name: string }>;
-  create(options: Options): Promise<void>;
+  create(options: Options, context?: CreateContext): Promise<void>;
 }
 
 export type AnyFactory = Factory<AnyOptions>;

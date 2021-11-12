@@ -16,7 +16,7 @@
 
 import { paths } from '../../../lib/paths';
 import { getCodeownersFilePath, parseOwnerIds } from '../../../lib/codeowners';
-import { createFactory } from '../types';
+import { createFactory, CreateContext } from '../types';
 
 type Options = {
   id: string;
@@ -63,9 +63,11 @@ export const frontendPlugin = createFactory<Options>({
       },
     },
   ],
-  async create(options: Options) {
+  async create(options: Options, context: CreateContext) {
     console.log(
-      `Creating ${this.name} with options ${JSON.stringify(options)}`,
+      `Creating ${this.name} with options ${JSON.stringify(
+        options,
+      )} and context ${JSON.stringify(context)}`,
     );
   },
 });

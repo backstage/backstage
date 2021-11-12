@@ -91,6 +91,12 @@ export function registerCommands(program: CommanderStatic) {
       (opt, arr: string[]) => [...arr, opt],
       [],
     )
+    .option('--scope <scope>', 'The scope to use for new packages')
+    .option(
+      '--npm-registry <URL>',
+      'The package registry to use for new packages',
+    )
+    .option('--no-private', 'Do not mark new packages as private')
     .action(lazy(() => import('./create/create').then(m => m.default)));
 
   program
