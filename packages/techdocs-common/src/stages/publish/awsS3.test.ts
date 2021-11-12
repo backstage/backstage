@@ -171,7 +171,13 @@ describe('AwsS3Publish', () => {
         bucketRootPath: 'backstage-data/techdocs',
         legacyUseCaseSensitiveTripletPaths: true,
       });
-      expect(await publisher.publish({ entity, directory })).toBeUndefined();
+      expect(await publisher.publish({ entity, directory })).toMatchObject({
+        objects: expect.arrayContaining([
+          'test-namespace/TestKind/test-component-name/404.html',
+          `test-namespace/TestKind/test-component-name/index.html`,
+          `test-namespace/TestKind/test-component-name/assets/main.css`,
+        ]),
+      });
     });
 
     it('should publish a directory when sse is specified', async () => {
