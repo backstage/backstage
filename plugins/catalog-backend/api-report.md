@@ -31,6 +31,7 @@ import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
+import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
 
@@ -736,8 +737,10 @@ export class DefaultCatalogCollator implements DocumentCollator {
     locationTemplate,
     filter,
     catalogClient,
+    tokenManager,
   }: {
     discovery: PluginEndpointDiscovery;
+    tokenManager: TokenManager;
     locationTemplate?: string;
     filter?: CatalogEntitiesRequest['filter'];
     catalogClient?: CatalogApi;
@@ -760,11 +763,14 @@ export class DefaultCatalogCollator implements DocumentCollator {
     _config: Config,
     options: {
       discovery: PluginEndpointDiscovery;
+      tokenManager: TokenManager;
       filter?: CatalogEntitiesRequest['filter'];
     },
   ): DefaultCatalogCollator;
   // (undocumented)
   protected locationTemplate: string;
+  // (undocumented)
+  protected tokenManager: TokenManager;
   // (undocumented)
   readonly type: string;
 }

@@ -526,6 +526,22 @@ export type SearchResponseFile = {
   content(): Promise<Buffer>;
 };
 
+// Warning: (ae-missing-release-tag) "ServerTokenManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class ServerTokenManager implements TokenManager {
+  // (undocumented)
+  static fromConfig(config: Config): ServerTokenManager;
+  // (undocumented)
+  getServerToken(): Promise<{
+    token: string;
+  }>;
+  // (undocumented)
+  static noop(): ServerTokenManager;
+  // (undocumented)
+  validateServerToken(token: string): Promise<boolean>;
+}
+
 // @public (undocumented)
 export type ServiceBuilder = {
   loadConfig(config: Config): ServiceBuilder;
@@ -581,6 +597,18 @@ export function statusCheckHandler(
 // @public (undocumented)
 export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
+}
+
+// Warning: (ae-missing-release-tag) "TokenManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface TokenManager {
+  // (undocumented)
+  getServerToken: () => Promise<{
+    token: string;
+  }>;
+  // (undocumented)
+  validateServerToken: (token: string) => Promise<boolean>;
 }
 
 // @public
