@@ -22,7 +22,7 @@ import { OAuthHandlers } from './types';
 const mockResponseData = {
   providerInfo: {
     accessToken: 'ACCESS_TOKEN',
-    idToken: 'ID_TOKEN',
+    token: 'ID_TOKEN',
     expiresInSeconds: 10,
     scope: 'email',
   },
@@ -216,7 +216,7 @@ describe('OAuthAdapter', () => {
       ...mockResponseData,
       backstageIdentity: {
         id: mockResponseData.backstageIdentity.id,
-        idToken: 'my-id-token',
+        token: 'my-id-token',
       },
     });
   });
