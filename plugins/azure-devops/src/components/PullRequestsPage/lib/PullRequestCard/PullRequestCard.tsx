@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Card, CardContent, CardHeader, Link } from '@material-ui/core';
+import { Avatar, Link } from '@backstage/core-components';
+import { Card, CardContent, CardHeader } from '@material-ui/core';
 
 import { AutoCompleteIcon } from '../AutoCompleteIcon';
-import { Avatar } from '@backstage/core-components';
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import { DateTime } from 'luxon';
 import { PullRequestCardPolicies } from './PullRequestCardPolicies';
@@ -62,24 +62,14 @@ export const PullRequestCard = ({
   simplified,
 }: PullRequestCardProps) => {
   const title = (
-    <Link
-      href={pullRequest.link}
-      title={pullRequest.description}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <Link to={pullRequest.link ?? ''} title={pullRequest.description}>
       {pullRequest.title}
     </Link>
   );
 
   const subheader = (
     <span>
-      <Link
-        href={pullRequest.repository?.url}
-        color="inherit"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <Link to={pullRequest.repository?.url ?? ''} color="inherit">
         {pullRequest.repository?.name}
       </Link>{' '}
       ·{' '}
