@@ -6,6 +6,10 @@ organization:
   name: My Company
 
 backend:
+  # Used for enabling authorization, secret is shared by all backend plugins
+  # See authenticate-api-requests.md in the contrib docs for information on the format
+  # authorization:
+  #  secret: ${BACKEND_SECRET}
   baseUrl: http://localhost:7000
   listen:
     port: 7000

@@ -19,27 +19,45 @@ import { Config } from '@backstage/config';
 import { TokenManager } from './types';
 
 export class ServerTokenManager implements TokenManager {
-  private key: JWK.OctKey;
+  private key: JWK.OctKey | JWK.NoneKey;
 
-  constructor(config: Config) {
-    const secret =
-      config.getOptionalString('backend.authorization.secret') ?? 'no-secret';
-    this.key = JWK.asKey({ kty: 'oct', k: secret });
+  static noop() {
+    return new ServerTokenManager();
   }
 
-  async isServerToken(token: string): Promise<boolean> {
+  static fromConfig(config: Config) {
+    const secret = config.getOptionalString('backend.authorization.secret');
+    if (!secret) {
+      throw new Error('No backend auth secret set in app-config');
+    }
+    return new ServerTokenManager(secret);
+  }
+
+  private constructor(secret: string = '') {
+    this.key = secret ? JWK.asKey({ kty: 'oct', k: secret }) : JWK.None;
+  }
+
+  async getServerToken(): Promise<{ token: string }> {
+    if (this.key === JWK.None) {
+      return { token: '' };
+    }
+
+    const jwt = JWT.sign({ sub: 'backstage-server' }, this.key, {
+      algorithm: 'HS256',
+    });
+    return { token: jwt };
+  }
+
+  async validateServerToken(token: string): Promise<boolean> {
+    if (this.key === JWK.None) {
+      return true;
+    }
+
     try {
       JWT.verify(token, this.key);
       return true;
     } catch (e) {
       return false;
     }
-  }
-
-  async getServerToken(): Promise<{ token: string }> {
-    const jwt = JWT.sign({ sub: 'backstage-server' }, this.key, {
-      algorithm: 'HS256',
-    });
-    return { token: jwt };
   }
 }

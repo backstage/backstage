@@ -15,6 +15,6 @@
  */
 
 export interface TokenManager {
-  isServerToken: (token: string) => Promise<boolean>;
   getServerToken: () => Promise<{ token: string }>;
+  validateServerToken: (token: string) => Promise<boolean>;
 }

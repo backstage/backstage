@@ -20,6 +20,15 @@ export interface Config {
   };
 
   backend: {
+    /** Backend configuration for when request authentication is enabled */
+    authorization?: {
+      /**
+       * Secret shared by all backends for generating tokens
+       * Format is base64 24-bit key
+       */
+      secret?: string;
+    };
+
     baseUrl: string; // defined in core, but repeated here without doc
 
     /** Address that the backend should listen to. */

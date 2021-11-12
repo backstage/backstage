@@ -22,32 +22,49 @@ const configWithSecret = new ConfigReader({
 });
 
 describe('ServerTokenManager', () => {
+  it('should throw if secret in config does not exist', () => {
+    expect(() => ServerTokenManager.fromConfig(emptyConfig)).toThrowError();
+  });
+
   describe('getServerToken', () => {
     it('should return a token if secret in config exists', async () => {
-      const tokenManager = new ServerTokenManager(configWithSecret);
+      const tokenManager = ServerTokenManager.fromConfig(configWithSecret);
       expect((await tokenManager.getServerToken()).token).toBeDefined();
     });
 
-    it('should return a token if secret in config does not exist', async () => {
-      const tokenManagerWithEmptyConfig = new ServerTokenManager(emptyConfig);
-      expect(
-        (await tokenManagerWithEmptyConfig.getServerToken()).token,
-      ).toBeDefined();
+    it('should return an empty string if using a noop TokenManager', async () => {
+      const tokenManager = ServerTokenManager.noop();
+      expect((await tokenManager.getServerToken()).token).toBe('');
     });
   });
 
-  describe('isServerToken', () => {
+  describe('validateServerToken', () => {
     it('should return true if token is valid', async () => {
-      const tokenManager = new ServerTokenManager(configWithSecret);
+      const tokenManager = ServerTokenManager.fromConfig(configWithSecret);
       const { token } = await tokenManager.getServerToken();
-      const isServerToken = await tokenManager.isServerToken(token);
-      expect(isServerToken).toBe(true);
+      const isValidServerToken = await tokenManager.validateServerToken(token);
+      expect(isValidServerToken).toBe(true);
     });
 
     it('should return false if token is invalid', async () => {
-      const tokenManager = new ServerTokenManager(configWithSecret);
-      const isServerToken = await tokenManager.isServerToken('random-string');
-      expect(isServerToken).toBe(false);
+      const tokenManager = ServerTokenManager.fromConfig(configWithSecret);
+      const isValidServerToken = await tokenManager.validateServerToken(
+        'random-string',
+      );
+      expect(isValidServerToken).toBe(false);
+    });
+
+    it('should always return true if using noop TokenManager', async () => {
+      const tokenManager = ServerTokenManager.noop();
+      const { token } = await tokenManager.getServerToken();
+      const isValidServerToken0 = await tokenManager.validateServerToken(token);
+      const isValidServerToken1 = await tokenManager.validateServerToken(
+        'random-string',
+      );
+      const isValidServerToken2 = await tokenManager.validateServerToken('');
+      expect(isValidServerToken0).toBe(true);
+      expect(isValidServerToken1).toBe(true);
+      expect(isValidServerToken2).toBe(true);
     });
   });
 });

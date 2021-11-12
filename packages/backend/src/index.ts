@@ -61,7 +61,7 @@ function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
-  const tokenManager = new ServerTokenManager(config);
+  const tokenManager = ServerTokenManager.noop();
 
   root.info(`Created UrlReader ${reader}`);
 

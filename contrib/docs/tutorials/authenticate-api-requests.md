@@ -69,8 +69,10 @@ async function main() {
         req.cookies['token'];
 
       // Authenticate all requests originating from backends by default
-      const isServerToken = await authEnv.tokenManager.isServerToken(token);
-      if (!isServerToken) {
+      const isValidServerToken = await authEnv.tokenManager.validateServerToken(
+        token,
+      );
+      if (!isValidServerToken) {
         req.user = await identity.authenticate(token);
       }
 
@@ -275,7 +277,25 @@ export const plugin = createPlugin({
 });
 ```
 
-In the (probably unlikely) case that you need to authenticate from a backend plugin, the plugin environment contains a `tokenManager` that will provide a server token to use in the request:
+In the (probably unlikely) case that you need to authenticate from a backend plugin, the plugin environment contains a `tokenManager` that will provide a server token to use in the request. It is a noop `tokenManager` by default -- you'll need to instantiate a new one using the secret from your config instead:
+
+```diff
+// packages/backend/src/index.ts
+
+function makeCreateEnv(config: Config) {
+  const root = getRootLogger();
+  const reader = UrlReaders.default({ logger: root, config });
+  const discovery = SingleHostDiscovery.fromConfig(config);
+
+  root.info(`Created UrlReader ${reader}`);
+
+  const cacheManager = CacheManager.fromConfig(config);
+  const databaseManager = DatabaseManager.fromConfig(config);
+- const tokenManager = ServerTokenManager.noop();
++ const tokenManager = ServerTokenManager.fromConfig(config);
+```
+
+With this `tokenManager`, you can then generate a server token for requests:
 
 ```
 const { token } = await this.tokenManager.getServerToken();
