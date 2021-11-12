@@ -15,7 +15,7 @@
  */
 
 import { Command } from 'commander';
-import { FactoryRegistry } from './FactoryRegistry';
+import { FactoryRegistry } from '../../lib/create/FactoryRegistry';
 
 function parseOptions(optionStrings: string[]): Record<string, string> {
   const options: Record<string, string> = {};
