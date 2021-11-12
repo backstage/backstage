@@ -17,7 +17,6 @@
 import fs from 'fs-extra';
 import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
-import chalk from 'chalk';
 import { paths } from '../../paths';
 import {
   addCodeownersEntry,
@@ -25,10 +24,9 @@ import {
   parseOwnerIds,
 } from '../../codeowners';
 import { createFactory, CreateContext } from '../types';
-import { Lockfile } from '../../versioning';
-import { addPackageDependency, Task, templatingTask } from '../../tasks';
-import { createPackageVersionProvider } from '../../version';
+import { addPackageDependency, Task } from '../../tasks';
 import { ownerPrompt, pluginIdPrompt } from './common/prompts';
+import { executePluginPackageTemplate } from './common/tasks';
 
 type Options = {
   id: string;
@@ -49,59 +47,23 @@ export const frontendPlugin = createFactory<Options>({
     const name = ctx.scope ? `@${ctx.scope}/plugin-${id}` : `plugin-${id}`;
     const extensionName = `${upperFirst(camelCase(id))}Page`;
 
-    const pluginDir = ctx.isMonoRepo
+    const targetDir = ctx.isMonoRepo
       ? paths.resolveTargetRoot('plugins', id)
       : paths.resolveTargetRoot(`backstage-plugin-${id}`);
 
-    let lockfile: Lockfile | undefined;
-    try {
-      lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
-    } catch (error) {
-      console.warn(`No yarn.lock available, ${error}`);
-    }
-
-    Task.section('Validating prerequisites');
-    const shortPluginDir = pluginDir.replace(`${paths.targetRoot}/`, '');
-    await Task.forItem('availability', shortPluginDir, async () => {
-      if (await fs.pathExists(pluginDir)) {
-        throw new Error(
-          `A plugin with the same ID already exists at ${chalk.cyan(
-            shortPluginDir,
-          )}. Please try again with a different ID.`,
-        );
-      }
-    });
-
-    const tempDir = await Task.forItem('creating', 'temp dir', async () => {
-      return await ctx.createTemporaryDirectory(`backstage-plugin-${id}`);
-    });
-
-    Task.section('Executing plugin template');
-    await templatingTask(
-      paths.resolveOwn('templates/default-plugin'),
-      tempDir,
-      {
+    await executePluginPackageTemplate(ctx, {
+      targetDir,
+      templateName: 'default-plugin',
+      values: {
         id,
+        name,
+        extensionName,
         pluginVar: `${camelCase(id)}Plugin`,
         pluginVersion: ctx.defaultVersion,
-        extensionName,
-        name,
         privatePackage: ctx.private,
         npmRegistry: ctx.npmRegistry,
       },
-      createPackageVersionProvider(lockfile),
-    );
-
-    Task.section('Installing plugin');
-    await Task.forItem('moving', shortPluginDir, async () => {
-      await fs.move(tempDir, pluginDir).catch(error => {
-        throw new Error(
-          `Failed to move plugin from ${tempDir} to ${pluginDir}, ${error.message}`,
-        );
-      });
     });
-
-    ctx.markAsModified();
 
     if (await fs.pathExists(paths.resolveTargetRoot('packages/app'))) {
       await Task.forItem('app', 'adding dependency', async () => {
@@ -163,9 +125,9 @@ export const frontendPlugin = createFactory<Options>({
       }
     }
 
-    await Task.forCommand('yarn install', { cwd: pluginDir, optional: true });
+    await Task.forCommand('yarn install', { cwd: targetDir, optional: true });
     await Task.forCommand('yarn lint --fix', {
-      cwd: pluginDir,
+      cwd: targetDir,
       optional: true,
     });
   },
