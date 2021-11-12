@@ -15,3 +15,4 @@
  */
 
 export { frontendPlugin } from './frontendPlugin';
+export { backendPlugin } from './backendPlugin';
