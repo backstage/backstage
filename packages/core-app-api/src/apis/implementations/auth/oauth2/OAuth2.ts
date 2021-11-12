@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import OAuth2Icon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
@@ -51,7 +50,7 @@ export type OAuth2Response = {
 const DEFAULT_PROVIDER = {
   id: 'oauth2',
   title: 'Your Identity Provider',
-  icon: OAuth2Icon,
+  icon: () => null,
 };
 
 /**

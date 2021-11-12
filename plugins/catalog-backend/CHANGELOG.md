@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog-backend
 
+## 0.17.3
+
+### Patch Changes
+
+- 86bef79ad1: Allow singleton and flexibly nested EntityFilters
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/catalog-client@0.5.1
+
+## 0.17.2
+
+### Patch Changes
+
+- b9ce1ce2c1: Allow custom LocationAnalyzer in NextCatalogBuilder
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/backend-common@0.9.8
+  - @backstage/catalog-model@0.9.6
+  - @backstage/search-common@0.2.1
+
 ## 0.17.1
 
 ### Patch Changes

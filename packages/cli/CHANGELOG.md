@@ -1,5 +1,32 @@
 # @backstage/cli
 
+## 0.8.2
+
+### Patch Changes
+
+- dd355bca46: Switched to dynamically determining the packages that are unsafe to repack when executing the CLI within the Backstage main repo.
+- b393c4d4be: Fixed the `config:check` command that was incorrectly only validating frontend configuration. Also added a `--frontend` flag to the command which maintains that behavior.
+- 0611f3b3e2: Reading app config from a remote server
+- ec64d9590c: Make `ExitCodeError` call `super` early to avoid compiler warnings
+- 8af66229e7: Bumped `@spotify/eslint-config-react` from `v10` to `v12`, dropping support for Node.js v12.
+- a197708da9: Bumped `@spotify/eslint-config-typescript` from `v10` to `v12`, dropping support for Node.js v12.
+- Updated dependencies
+  - @backstage/config-loader@0.7.2
+
+## 0.8.1
+
+### Patch Changes
+
+- f1e96dc5b1: Update usage of msw in default plugin template
+- b0dc1fd241: bump `@spotify/eslint-config-base` from 9.0.2 to 12.0.0
+- c5bb1df55d: Bump `msw` to `v0.35.0` to resolve [CVE-2021-32796](https://github.com/advisories/GHSA-5fg8-2547-mr8q).
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/cli-common@0.1.5
+  - @backstage/errors@0.1.4
+  - @backstage/config-loader@0.7.1
+
 ## 0.8.0
 
 ### Minor Changes

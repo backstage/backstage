@@ -21,7 +21,7 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=8192
 
     name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
@@ -40,6 +40,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
+      - name: setup chrome
+        uses: browser-actions/setup-chrome@latest
       - name: yarn install
         run: yarn install --frozen-lockfile
 

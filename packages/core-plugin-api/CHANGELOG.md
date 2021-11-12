@@ -1,5 +1,25 @@
 # @backstage/core-plugin-api
 
+## 0.1.13
+
+### Patch Changes
+
+- 4a336fd292: Deprecate use of extensions without name. Adds a warning to the developer console to prompt integrators to provide names for extensions.
+- 8b4284cd5c: Improve API documentation for @backstage/core-plugin-api
+- e059aea7b9: Deprecate unused ApiRef types
+- Updated dependencies
+  - @backstage/theme@0.2.13
+
+## 0.1.12
+
+### Patch Changes
+
+- 41c49884d2: Start using the new `@backstage/types` package. Initially, this means using the `Observable` and `Json*` types from there. The types also remain in their old places but deprecated, and will be removed in a future release.
+- 925a967f36: Replace usage of test-utils-core with test-utils
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+
 ## 0.1.11
 
 ### Patch Changes

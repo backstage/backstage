@@ -27,7 +27,8 @@ const AnalyticsReactContext =
 /**
  * A "private" (to this package) hook that enables context inheritance and a
  * way to read Analytics Context values at event capture-time.
- * @private
+ *
+ * @internal
  */
 export const useAnalyticsContext = (): AnalyticsContextValue => {
   const theContext = useContext(AnalyticsReactContext);
@@ -54,8 +55,12 @@ export const useAnalyticsContext = (): AnalyticsContextValue => {
  * Provides components in the child react tree an Analytics Context, ensuring
  * all analytics events captured within the context have relevant attributes.
  *
+ * @remarks
+ *
  * Analytics contexts are additive, meaning the context ultimately emitted with
  * an event is the combination of all contexts in the parent tree.
+ *
+ * @public
  */
 export const AnalyticsContext = ({
   attributes,
@@ -84,6 +89,7 @@ export const AnalyticsContext = ({
  *
  * @param Component - Component to be wrapped with analytics context attributes
  * @param values - Analytics context key/value pairs.
+ * @internal
  */
 export function withAnalyticsContext<P>(
   Component: React.ComponentType<P>,

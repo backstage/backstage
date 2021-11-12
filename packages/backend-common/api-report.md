@@ -211,6 +211,12 @@ export type ErrorHandlerOptions = {
   logClientErrors?: boolean;
 };
 
+// @public
+export type FromReadableArrayOptions = Array<{
+  data: Readable;
+  path: string;
+}>;
+
 // @public (undocumented)
 export function getRootLogger(): winston.Logger;
 
@@ -369,6 +375,9 @@ export class GitlabUrlReader implements UrlReader {
 export { isChildPath };
 
 // @public
+export function isDatabaseConflictError(e: unknown): boolean;
+
+// @public
 export function loadBackendConfig(options: {
   logger: Logger_2;
   argv: string[];
@@ -419,15 +428,13 @@ export type ReadTreeResponse = {
   etag: string;
 };
 
-// @public (undocumented)
+// @public
 export type ReadTreeResponseDirOptions = {
   targetDir?: string;
 };
 
 // @public (undocumented)
 export interface ReadTreeResponseFactory {
-  // Warning: (ae-forgotten-export) The symbol "FromReadableArrayOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   fromReadableArray(
     options: FromReadableArrayOptions,
@@ -442,7 +449,7 @@ export interface ReadTreeResponseFactory {
   ): Promise<ReadTreeResponse>;
 }
 
-// @public (undocumented)
+// @public
 export type ReadTreeResponseFactoryOptions = {
   stream: Readable;
   subpath?: string;
@@ -580,7 +587,7 @@ export type UrlReader = {
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 };
 
-// @public (undocumented)
+// @public
 export type UrlReaderPredicateTuple = {
   predicate: (url: URL) => boolean;
   reader: UrlReader;

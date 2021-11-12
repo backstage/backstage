@@ -14,20 +14,77 @@
  * limitations under the License.
  */
 
-import { Task, TaskBroker, WorkflowRunner } from './types';
-import { LegacyWorkflowRunner } from './LegacyWorkflowRunner';
+import { TaskContext, TaskBroker, WorkflowRunner } from './types';
+import { HandlebarsWorkflowRunner } from './HandlebarsWorkflowRunner';
+import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
+import { Logger } from 'winston';
+import { TemplateActionRegistry } from '../actions';
+import { ScmIntegrations } from '@backstage/integration';
 import { assertError } from '@backstage/errors';
 
-type Options = {
+/**
+ * TaskWorkerOptions
+ *
+ * @public
+ */
+export type TaskWorkerOptions = {
   taskBroker: TaskBroker;
   runners: {
-    legacyWorkflowRunner: LegacyWorkflowRunner;
+    legacyWorkflowRunner: HandlebarsWorkflowRunner;
     workflowRunner: WorkflowRunner;
   };
 };
 
+/**
+ * CreateWorkerOptions
+ *
+ * @public
+ */
+export type CreateWorkerOptions = {
+  taskBroker: TaskBroker;
+  actionRegistry: TemplateActionRegistry;
+  integrations: ScmIntegrations;
+  workingDirectory: string;
+  logger: Logger;
+};
+
+/**
+ * TaskWorker
+ *
+ * @public
+ */
 export class TaskWorker {
-  constructor(private readonly options: Options) {}
+  private constructor(private readonly options: TaskWorkerOptions) {}
+
+  static async create(options: CreateWorkerOptions): Promise<TaskWorker> {
+    const {
+      taskBroker,
+      logger,
+      actionRegistry,
+      integrations,
+      workingDirectory,
+    } = options;
+
+    const legacyWorkflowRunner = new HandlebarsWorkflowRunner({
+      logger,
+      actionRegistry,
+      integrations,
+      workingDirectory,
+    });
+
+    const workflowRunner = new NunjucksWorkflowRunner({
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
+    });
+
+    return new TaskWorker({
+      taskBroker: taskBroker,
+      runners: { legacyWorkflowRunner, workflowRunner },
+    });
+  }
+
   start() {
     (async () => {
       for (;;) {
@@ -37,7 +94,7 @@ export class TaskWorker {
     })();
   }
 
-  async runOneTask(task: Task) {
+  async runOneTask(task: TaskContext) {
     try {
       const { output } =
         task.spec.apiVersion === 'scaffolder.backstage.io/v1beta3'

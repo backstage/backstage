@@ -16,6 +16,11 @@
 
 import { JsonValue, JsonObject } from '@backstage/types';
 
+/**
+ * Status
+ *
+ * @public
+ */
 export type Status =
   | 'open'
   | 'processing'
@@ -23,9 +28,19 @@ export type Status =
   | 'cancelled'
   | 'completed';
 
+/**
+ * CompletedTaskState
+ *
+ * @public
+ */
 export type CompletedTaskState = 'failed' | 'completed';
 
-export type DbTaskRow = {
+/**
+ * SerializedTask
+ *
+ * @public
+ */
+export type SerializedTask = {
   id: string;
   spec: TaskSpec;
   status: Status;
@@ -34,8 +49,19 @@ export type DbTaskRow = {
   secrets?: TaskSecrets;
 };
 
+/**
+ * TaskEventType
+ *
+ * @public
+ */
 export type TaskEventType = 'completion' | 'log';
-export type DbTaskEventRow = {
+
+/**
+ * SerializedTaskEvent
+ *
+ * @public
+ */
+export type SerializedTaskEvent = {
   id: number;
   taskId: string;
   body: JsonObject;
@@ -43,6 +69,11 @@ export type DbTaskEventRow = {
   createdAt: string;
 };
 
+/**
+ * TaskSpecV1beta2
+ *
+ * @public
+ */
 export interface TaskSpecV1beta2 {
   apiVersion: 'backstage.io/v1beta2';
   baseUrl?: string;
@@ -64,6 +95,12 @@ export interface TaskStep {
   input?: JsonObject;
   if?: string | boolean;
 }
+
+/**
+ * TaskSpecV1beta3
+ *
+ * @public
+ */
 export interface TaskSpecV1beta3 {
   apiVersion: 'scaffolder.backstage.io/v1beta3';
   baseUrl?: string;
@@ -72,17 +109,37 @@ export interface TaskSpecV1beta3 {
   output: { [name: string]: JsonValue };
 }
 
+/**
+ * TaskSpec
+ *
+ * @public
+ */
 export type TaskSpec = TaskSpecV1beta2 | TaskSpecV1beta3;
 
+/**
+ * TaskSecrets
+ *
+ * @public
+ */
 export type TaskSecrets = {
   token: string | undefined;
 };
 
+/**
+ * DispatchResult
+ *
+ * @public
+ */
 export type DispatchResult = {
   taskId: string;
 };
 
-export interface Task {
+/**
+ * Task
+ *
+ * @public
+ */
+export interface TaskContext {
   spec: TaskSpec;
   secrets?: TaskSecrets;
   done: boolean;
@@ -91,8 +148,13 @@ export interface Task {
   getWorkspaceName(): Promise<string>;
 }
 
+/**
+ * TaskBroker
+ *
+ * @public
+ */
 export interface TaskBroker {
-  claim(): Promise<Task>;
+  claim(): Promise<TaskContext>;
   dispatch(spec: TaskSpec, secrets?: TaskSecrets): Promise<DispatchResult>;
   vacuumTasks(timeoutS: { timeoutS: number }): Promise<void>;
   observe(
@@ -102,28 +164,44 @@ export interface TaskBroker {
     },
     callback: (
       error: Error | undefined,
-      result: { events: DbTaskEventRow[] },
+      result: { events: SerializedTaskEvent[] },
     ) => void,
-  ): () => void;
+  ): { unsubscribe: () => void };
+  get(taskId: string): Promise<SerializedTask>;
 }
 
+/**
+ * TaskStoreEmitOptions
+ *
+ * @public
+ */
 export type TaskStoreEmitOptions = {
   taskId: string;
   body: JsonObject;
 };
 
-export type TaskStoreGetEventsOptions = {
+/**
+ * TaskStoreListEventsOptions
+ *
+ * @public
+ */
+export type TaskStoreListEventsOptions = {
   taskId: string;
   after?: number | undefined;
 };
 
+/**
+ * TaskStore
+ *
+ * @public
+ */
 export interface TaskStore {
   createTask(
     task: TaskSpec,
     secrets?: TaskSecrets,
   ): Promise<{ taskId: string }>;
-  getTask(taskId: string): Promise<DbTaskRow>;
-  claimTask(): Promise<DbTaskRow | undefined>;
+  getTask(taskId: string): Promise<SerializedTask>;
+  claimTask(): Promise<SerializedTask | undefined>;
   completeTask(options: {
     taskId: string;
     status: Status;
@@ -138,10 +216,10 @@ export interface TaskStore {
   listEvents({
     taskId,
     after,
-  }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }>;
+  }: TaskStoreListEventsOptions): Promise<{ events: SerializedTaskEvent[] }>;
 }
 
 export type WorkflowResponse = { output: { [key: string]: JsonValue } };
 export interface WorkflowRunner {
-  execute(task: Task): Promise<WorkflowResponse>;
+  execute(task: TaskContext): Promise<WorkflowResponse>;
 }

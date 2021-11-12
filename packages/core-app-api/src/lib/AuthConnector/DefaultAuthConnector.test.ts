@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import ProviderIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from './DefaultAuthConnector';
 import MockOAuthApi from '../../apis/implementations/OAuthRequestApi/MockOAuthApi';
 import * as loginPopup from '../loginPopup';
 import { UrlPatternDiscovery } from '../../apis';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 
@@ -29,7 +28,7 @@ const defaultOptions = {
   provider: {
     id: 'my-provider',
     title: 'My Provider',
-    icon: ProviderIcon,
+    icon: () => null,
   },
   oauthRequestApi: new MockOAuthApi(),
   sessionTransform: ({ expiresInSeconds, ...res }: any) => ({
@@ -41,7 +40,7 @@ const defaultOptions = {
 
 describe('DefaultAuthConnector', () => {
   const server = setupServer();
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   afterEach(() => {
     jest.resetAllMocks();

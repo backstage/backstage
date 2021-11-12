@@ -14,19 +14,30 @@
  * limitations under the License.
  */
 
-import { loadConfig, loadConfigSchema } from '@backstage/config-loader';
+import {
+  ConfigTarget,
+  loadConfig,
+  loadConfigSchema,
+} from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import { paths } from './paths';
+import { isValidUrl } from './urls';
 
 type Options = {
   args: string[];
   fromPackage?: string;
   mockEnv?: boolean;
   withFilteredKeys?: boolean;
+  fullVisibility?: boolean;
 };
 
 export async function loadCliConfig(options: Options) {
-  const configPaths = options.args.map(arg => paths.resolveTarget(arg));
+  const configTargets: ConfigTarget[] = [];
+  options.args.forEach(arg => {
+    if (!isValidUrl(arg)) {
+      configTargets.push({ path: paths.resolveTarget(arg) });
+    }
+  });
 
   // Consider all packages in the monorepo when loading in config
   const { Project } = require('@lerna/project');
@@ -48,7 +59,8 @@ export async function loadCliConfig(options: Options) {
       ? async name => process.env[name] || 'x'
       : undefined,
     configRoot: paths.targetRoot,
-    configPaths,
+    configPaths: [],
+    configTargets: configTargets,
   });
 
   // printing to stderr to not clobber stdout in case the cli command
@@ -59,7 +71,9 @@ export async function loadCliConfig(options: Options) {
 
   try {
     const frontendAppConfigs = schema.process(appConfigs, {
-      visibility: ['frontend'],
+      visibility: options.fullVisibility
+        ? ['frontend', 'backend', 'secret']
+        : ['frontend'],
       withFilteredKeys: options.withFilteredKeys,
     });
     const frontendConfig = ConfigReader.fromConfigs(frontendAppConfigs);

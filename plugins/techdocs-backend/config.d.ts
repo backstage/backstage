@@ -83,12 +83,12 @@ export interface Config {
                * User access key id
                * @visibility secret
                */
-              accessKeyId: string;
+              accessKeyId?: string;
               /**
                * User secret access key
                * @visibility secret
                */
-              secretAccessKey: string;
+              secretAccessKey?: string;
               /**
                * ARN of role to be assumed
                * @visibility backend

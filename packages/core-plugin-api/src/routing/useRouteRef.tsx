@@ -25,6 +25,9 @@ import {
   SubRouteRef,
 } from './types';
 
+/**
+ * @internal
+ */
 export interface RouteResolver {
   resolve<Params extends AnyParams>(
     anyRouteRef:
@@ -35,12 +38,47 @@ export interface RouteResolver {
   ): RouteFunc<Params> | undefined;
 }
 
+/**
+ * React hook for constructing URLs to routes.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#routing-system}
+ *
+ * @param routeRef - The ref to route that should be converted to URL.
+ * @returns A function that will in turn return the concrete URL of the `routeRef`.
+ * @public
+ */
 export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
   routeRef: ExternalRouteRef<Params, Optional>,
 ): Optional extends true ? RouteFunc<Params> | undefined : RouteFunc<Params>;
+
+/**
+ * React hook for constructing URLs to routes.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#routing-system}
+ *
+ * @param routeRef - The ref to route that should be converted to URL.
+ * @returns A function that will in turn return the concrete URL of the `routeRef`.
+ * @public
+ */
 export function useRouteRef<Params extends AnyParams>(
   routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): RouteFunc<Params>;
+
+/**
+ * React hook for constructing URLs to routes.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#routing-system}
+ *
+ * @param routeRef - The ref to route that should be converted to URL.
+ * @returns A function that will in turn return the concrete URL of the `routeRef`.
+ * @public
+ */
 export function useRouteRef<Params extends AnyParams>(
   routeRef:
     | RouteRef<Params>

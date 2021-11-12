@@ -198,6 +198,7 @@ export const useTechDocsReaderDom = (): Element | null => {
           .md-footer-nav__link { width: 20rem;}
           .md-content { margin-left: 20rem; max-width: calc(100% - 20rem * 2 - 3rem); }
           .md-typeset { font-size: 1rem; }
+          .md-typeset h1, .md-typeset h2, .md-typeset h3 { font-weight: bold; }
           .md-nav { font-size: 1rem; }
           .md-grid { max-width: 90vw; margin: 0 }
           .md-typeset table:not([class]) {

@@ -59,8 +59,10 @@ export function basicIntegrations<T extends ScmIntegration>(
 }
 
 /**
- * Default implementation of ScmIntegration.resolveUrl, that only works with
- * URL pathname based providers.
+ * Default implementation of {@link ScmIntegration} `resolveUrl`, that only
+ * works with URL pathname based providers.
+ *
+ * @public
  */
 export function defaultScmResolveUrl(options: {
   url: string;

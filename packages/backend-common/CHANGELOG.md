@@ -1,5 +1,28 @@
 # @backstage/backend-common
 
+## 0.9.9
+
+### Patch Changes
+
+- 8c4cad0bf2: AWSS3UrlReader now throws a `NotModifiedError` (exported from @backstage/backend-common) when s3 returns a 304 response.
+- 0611f3b3e2: Reading app config from a remote server
+- Updated dependencies
+  - @backstage/config-loader@0.7.2
+
+## 0.9.8
+
+### Patch Changes
+
+- 96cfa561eb: Adjusted some API exports
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- 1be8d2abdb: Any set configurations which have been tagged with a visibility 'secret', are now redacted from log lines.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/cli-common@0.1.5
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/config-loader@0.7.1
+
 ## 0.9.7
 
 ### Patch Changes

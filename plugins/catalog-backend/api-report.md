@@ -870,11 +870,14 @@ export type EntityAncestryResponse = {
 // Warning: (ae-missing-release-tag) "EntityFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export type EntityFilter = {
-  anyOf: {
-    allOf: EntitiesSearchFilter[];
-  }[];
-};
+export type EntityFilter =
+  | {
+      allOf: EntityFilter[];
+    }
+  | {
+      anyOf: EntityFilter[];
+    }
+  | EntitiesSearchFilter;
 
 // Warning: (ae-missing-release-tag) "EntityPagination" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1295,6 +1298,7 @@ export class NextCatalogBuilder {
   setEntityDataParser(parser: CatalogProcessorParser): NextCatalogBuilder;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setFieldFormatValidators(validators: Partial<Validators>): NextCatalogBuilder;
+  setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): NextCatalogBuilder;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setPlaceholderResolver(

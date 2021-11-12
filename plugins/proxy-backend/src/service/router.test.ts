@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  getVoidLogger,
-  loadBackendConfig,
-  SingleHostDiscovery,
-} from '@backstage/backend-common';
+import { getVoidLogger, SingleHostDiscovery } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import { Request, Response } from 'express';
 import * as http from 'http';
 import { createProxyMiddleware, Options } from 'http-proxy-middleware';
@@ -35,7 +32,14 @@ const mockCreateProxyMiddleware = createProxyMiddleware as jest.MockedFunction<
 describe('createRouter', () => {
   it('works', async () => {
     const logger = getVoidLogger();
-    const config = await loadBackendConfig({ logger, argv: [] });
+    const config = new ConfigReader({
+      backend: {
+        baseUrl: 'https://example.com:7000',
+        listen: {
+          port: 7000,
+        },
+      },
+    });
     const discovery = SingleHostDiscovery.fromConfig(config);
     const router = await createRouter({
       config,

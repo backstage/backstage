@@ -15,6 +15,7 @@ import { Context } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { IconButton } from '@material-ui/core';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
@@ -658,10 +659,20 @@ export class EntityTypeFilter implements EntityFilter {
   readonly value: string | string[];
 }
 
+// Warning: (ae-missing-release-tag) "EntityTypeFilterProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type EntityTypeFilterProps = {
+  initialFilter?: string;
+  hidden?: boolean;
+};
+
 // Warning: (ae-missing-release-tag) "EntityTypePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityTypePicker: () => JSX.Element | null;
+export const EntityTypePicker: (
+  props: EntityTypeFilterProps,
+) => JSX.Element | null;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
@@ -725,6 +736,17 @@ export function getEntitySourceLocation(
 //
 // @public
 export function isOwnerOf(owner: Entity, owned: Entity): boolean;
+
+// @public
+export function loadCatalogOwnerRefs(
+  catalogApi: CatalogApi,
+  identityOwnerRefs: string[],
+): Promise<string[]>;
+
+// @public
+export function loadIdentityOwnerRefs(
+  identityApi: IdentityApi,
+): Promise<string[]>;
 
 // Warning: (ae-missing-release-tag) "MockEntityListContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -813,8 +835,6 @@ export function useEntityListProvider<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters>;
 
-// Warning: (ae-missing-release-tag) "useEntityOwnership" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function useEntityOwnership(): {
   loading: boolean;

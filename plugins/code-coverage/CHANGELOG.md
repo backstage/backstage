@@ -1,5 +1,31 @@
 # @backstage/plugin-code-coverage
 
+## 0.1.17
+
+### Patch Changes
+
+- a5512851a0: Change represented test date from epoch to something more human friendly. Round test coverage to 2 decimal places.
+- 5a85b802f3: Make dates in X-Axis sort in ascending order
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
+## 0.1.16
+
+### Patch Changes
+
+- 767fe912b2: Addresses bug when file path contains multiple directories with the same name.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/errors@0.1.4
+  - @backstage/core-components@0.7.2
+  - @backstage/plugin-catalog-react@0.6.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/core-plugin-api@0.1.12
+
 ## 0.1.15
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.1.4
+
+### Patch Changes
+
+- 290fbb3ec2: Add missing API docs to scaffolder action plugins
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/plugin-scaffolder-backend@0.15.12
+
+## 0.1.3
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/backend-common@0.9.8
+  - @backstage/plugin-scaffolder-backend@0.15.11
+
 ## 0.1.2
 
 ### Patch Changes

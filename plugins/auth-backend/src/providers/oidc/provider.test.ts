@@ -15,7 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import express from 'express';
 import { Session } from 'express-session';
 import { JWK, JWT } from 'jose';
@@ -52,7 +52,7 @@ const clientMetadata = {
 
 describe('OidcAuthProvider', () => {
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
 
   beforeEach(() => {
     jest.clearAllMocks();

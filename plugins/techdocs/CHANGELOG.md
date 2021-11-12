@@ -1,5 +1,36 @@
 # @backstage/plugin-techdocs
 
+## 0.12.5
+
+### Patch Changes
+
+- fe5738fe1c: Lazy load `LazyLog` as it is rarely used.
+- 53c9ad7e04: Update font weight for headings in TechDocs
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/plugin-search@0.4.17
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
+## 0.12.4
+
+### Patch Changes
+
+- a9a8c6f7c5: Reader will now scroll to the top of the page when navigating between pages
+- 106a5dc3ad: Restore original casing for `kind`, `namespace` and `name` in `DefaultTechDocsCollator`.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/core-components@0.7.2
+  - @backstage/integration-react@0.1.13
+  - @backstage/plugin-catalog-react@0.6.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/plugin-search@0.4.16
+  - @backstage/core-plugin-api@0.1.12
+
 ## 0.12.3
 
 ### Patch Changes

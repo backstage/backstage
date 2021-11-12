@@ -14,36 +14,39 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import express from 'express';
-import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import { CatalogEntityClient } from '../lib/catalog';
-import { validate } from 'jsonschema';
-import {
-  DatabaseTaskStore,
-  StorageTaskBroker,
-  TaskWorker,
-} from '../scaffolder/tasks';
-import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
-import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   ContainerRunner,
   PluginDatabaseManager,
   UrlReader,
 } from '@backstage/backend-common';
-import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
-import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-
+import { Entity, TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateAction } from '../scaffolder/actions';
-import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
-import { LegacyWorkflowRunner } from '../scaffolder/tasks/LegacyWorkflowRunner';
-import { DefaultWorkflowRunner } from '../scaffolder/tasks/DefaultWorkflowRunner';
-import { TaskSpec } from '../scaffolder/tasks/types';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import express from 'express';
+import Router from 'express-promise-router';
+import { validate } from 'jsonschema';
+import { Logger } from 'winston';
+import { CatalogEntityClient } from '../lib/catalog';
+import {
+  createBuiltinActions,
+  DatabaseTaskStore,
+  TaskBroker,
+  TaskSpec,
+  TaskWorker,
+  TemplateAction,
+  TemplateActionRegistry,
+} from '../scaffolder';
+import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
+import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 
+/**
+ * RouterOptions
+ *
+ * @public
+ */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
@@ -53,6 +56,7 @@ export interface RouterOptions {
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
   containerRunner: ContainerRunner;
+  taskBroker?: TaskBroker;
 }
 
 function isSupportedTemplate(
@@ -85,34 +89,27 @@ export async function createRouter(
   const workingDirectory = await getWorkingDirectory(config, logger);
   const entityClient = new CatalogEntityClient(catalogClient);
   const integrations = ScmIntegrations.fromConfig(config);
+  let taskBroker: TaskBroker;
 
-  const databaseTaskStore = await DatabaseTaskStore.create(
-    await database.getClient(),
-  );
-  const taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+  if (!options.taskBroker) {
+    const databaseTaskStore = await DatabaseTaskStore.create({
+      database: await database.getClient(),
+    });
+    taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+  } else {
+    taskBroker = options.taskBroker;
+  }
+
   const actionRegistry = new TemplateActionRegistry();
-  const legacyWorkflowRunner = new LegacyWorkflowRunner({
-    logger,
-    actionRegistry,
-    integrations,
-    workingDirectory,
-  });
-
-  const workflowRunner = new DefaultWorkflowRunner({
-    actionRegistry,
-    integrations,
-    logger,
-    workingDirectory,
-  });
 
   const workers = [];
   for (let i = 0; i < (taskWorkers || 1); i++) {
-    const worker = new TaskWorker({
+    const worker = await TaskWorker.create({
       taskBroker,
-      runners: {
-        legacyWorkflowRunner,
-        workflowRunner,
-      },
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
     });
     workers.push(worker);
   }
@@ -250,7 +247,9 @@ export async function createRouter(
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const { taskId } = req.params;
-      const after = Number(req.query.after) || undefined;
+      const after =
+        req.query.after !== undefined ? Number(req.query.after) : undefined;
+
       logger.debug(`Event stream observing taskId '${taskId}' opened`);
 
       // Mandatory headers and http status to keep connection open
@@ -261,7 +260,7 @@ export async function createRouter(
       });
 
       // After client opens connection send all events as string
-      const unsubscribe = taskBroker.observe(
+      const { unsubscribe } = taskBroker.observe(
         { taskId, after },
         (error, { events }) => {
           if (error) {
@@ -281,7 +280,8 @@ export async function createRouter(
               // to automatically reconnect because it lost connection.
             }
           }
-          res.flush();
+          // res.flush() is only available with the compression middleware
+          res.flush?.();
           if (shouldUnsubscribe) unsubscribe();
         },
       );
@@ -290,6 +290,43 @@ export async function createRouter(
       req.on('close', () => {
         unsubscribe();
         logger.debug(`Event stream observing taskId '${taskId}' closed`);
+      });
+    })
+    .get('/v2/tasks/:taskId/events', async (req, res) => {
+      const { taskId } = req.params;
+      const after = Number(req.query.after) || undefined;
+
+      let unsubscribe = () => {};
+
+      // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
+      const timeout = setTimeout(() => {
+        unsubscribe();
+        res.json([]);
+      }, 30_000);
+
+      // Get all known events after an id (always includes the completion event) and return the first callback
+      ({ unsubscribe } = taskBroker.observe(
+        { taskId, after },
+        (error, { events }) => {
+          // stop the timeout
+          clearTimeout(timeout);
+          unsubscribe();
+
+          if (error) {
+            logger.error(
+              `Received error from log when observing taskId '${taskId}', ${error}`,
+            );
+          }
+
+          res.json(events);
+        },
+      ));
+
+      // When client closes connection we update the clients list
+      // avoiding the disconnected one
+      req.on('close', () => {
+        unsubscribe();
+        clearTimeout(timeout);
       });
     });
 

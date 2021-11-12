@@ -20,12 +20,12 @@ import { createTemplateAction, TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
-import { LegacyWorkflowRunner } from './LegacyWorkflowRunner';
-import { Task, TaskSpec } from './types';
+import { HandlebarsWorkflowRunner } from './HandlebarsWorkflowRunner';
+import { TaskContext, TaskSpec } from './types';
 import { RepoSpec } from '../actions/builtin/publish/util';
 
 describe('LegacyWorkflowRunner', () => {
-  let runner: LegacyWorkflowRunner;
+  let runner: HandlebarsWorkflowRunner;
   const logger = getVoidLogger();
   let actionRegistry = new TemplateActionRegistry();
 
@@ -37,7 +37,7 @@ describe('LegacyWorkflowRunner', () => {
     }),
   );
 
-  const createMockTaskWithSpec = (spec: TaskSpec): Task => ({
+  const createMockTaskWithSpec = (spec: TaskSpec): TaskContext => ({
     spec,
     complete: async () => {},
     done: false,
@@ -60,7 +60,7 @@ describe('LegacyWorkflowRunner', () => {
       },
     });
 
-    runner = new LegacyWorkflowRunner({
+    runner = new HandlebarsWorkflowRunner({
       actionRegistry,
       integrations,
       workingDirectory: '/tmp',
