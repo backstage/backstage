@@ -15,7 +15,7 @@ export type GitlabMergeRequestActionInput = {
 	title: string;
 	description: string;
 	destinationBranch: string;
-	destinationDir: string;
+	targetPath: string;
   };
 
 export const createPublishGitlabMergeRequestAction = (options: {
@@ -27,12 +27,13 @@ export const createPublishGitlabMergeRequestAction = (options: {
 	  id: 'publish:gitlab-merge-request',
 	  schema: {
 		input: {
-		  required: ['projectid', 'repoUrl', 'destinationDir'],
+		  required: ['projectid', 'repoUrl', 'targetPath'],
 		  type: 'object',
 		  properties: {
 			repoUrl: {
 				type: 'string',
 				title: 'Repository Location',
+				description: `Accepts the format 'gitlab.com/group_name/project_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
 			},
 			projectid: {
 			  type: 'string',
@@ -54,9 +55,10 @@ export const createPublishGitlabMergeRequestAction = (options: {
 				title: 'Destination Branch name',
 				description: 'The description of the merge request',
 			},
-			destinationDir: {
+			targetPath: {
 				type: 'string',
-				title: 'Backstage destinationDir name',
+				title: 'Repository Subdirectory',
+				description: 'Subdirectory of repository to apply changes to',
 			}
 		  },
 		},
@@ -70,6 +72,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
 			  mergeRequestURL: {
 				title: 'MergeRequest(MR) URL',
 				type: 'string',
+				description: 'Link to the merge request in GitLab',
 			  },
 			},
 		  },
@@ -105,7 +108,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
 		});
 
 		const fileRoot = ctx.workspacePath;
-		const localFilePaths = await globby([ctx.input.destinationDir + '/**'], {
+		const localFilePaths = await globby([ctx.input.targetPath + '/**'], {
 			cwd: fileRoot,
 			gitignore: true,
 			dot: true,
@@ -124,7 +127,6 @@ export const createPublishGitlabMergeRequestAction = (options: {
 		}
 
 
-		//TODO: add timestamp to the new branch name create-branchname-timestamp
 		let defaultBranch: any = await api.Projects.show(ctx.input.projectid).then((projectJSON) => {
 			return projectJSON?.default_branch;
 		});
@@ -140,7 +142,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
 		try {
 			await api.Commits.create(ctx.input.projectid, destinationBranch, ctx.input.title, actions);
 		} catch(e) {
-			throw new InputError(`Commiting the changes to ` + destinationBranch + ` failed ` + e);
+			throw new InputError(`Committing the changes to ` + destinationBranch + ` failed ` + e);
 		}
 
 		try {
@@ -151,7 +153,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
 			ctx.output('mergeRequestUrl', mergeRequestUrl);
 		}
 		catch(e) {
-			throw new InputError(`Creation of the MergeRequest in Gitlab failed.` + e);
+			throw new InputError(`Merge request creation failed` + e);
 		}
 	},
 	});
