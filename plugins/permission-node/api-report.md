@@ -99,7 +99,7 @@ export type PermissionRule<
   name: string;
   description: string;
   apply(resource: TResource, ...params: TParams): boolean;
-  toQuery(...params: TParams): TQuery | PermissionCriteria<TQuery>;
+  toQuery(...params: TParams): PermissionCriteria<TQuery>;
 };
 
 // @public

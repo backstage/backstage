@@ -49,5 +49,5 @@ export type PermissionRule<
    * can be used for loading a collection of resources efficiently with conditional criteria already
    * applied.
    */
-  toQuery(...params: TParams): TQuery | PermissionCriteria<TQuery>;
+  toQuery(...params: TParams): PermissionCriteria<TQuery>;
 };
