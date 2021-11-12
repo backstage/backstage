@@ -152,7 +152,7 @@ describe('createRouter', () => {
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
         status: BuildStatus.Completed,
         result: BuildResult.PartiallySucceeded,
-        queueTime: undefined,
+        queueTime: '2020-09-12T06:10:23.932Z',
         source: 'refs/heads/develop (f4f78b31)',
       };
 
@@ -162,7 +162,7 @@ describe('createRouter', () => {
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=2',
         status: BuildStatus.InProgress,
         result: BuildResult.None,
-        queueTime: undefined,
+        queueTime: '2020-09-12T06:10:23.932Z',
         source: 'refs/heads/develop (13c988d4)',
       };
 
@@ -172,7 +172,7 @@ describe('createRouter', () => {
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=3',
         status: BuildStatus.Completed,
         result: BuildResult.Succeeded,
-        queueTime: undefined,
+        queueTime: '2020-09-12T06:10:23.932Z',
         source: 'refs/heads/develop (9bedf678)',
       };
 
@@ -205,7 +205,7 @@ describe('createRouter', () => {
         repoName: 'super-feature-repo',
         title: 'My Awesome New Feature',
         createdBy: 'Jane Doe',
-        creationDate: undefined,
+        creationDate: '2020-09-12T06:10:23.932Z',
         sourceRefName: 'refs/heads/topic/super-awesome-feature',
         targetRefName: 'refs/heads/main',
         status: PullRequestStatus.Active,
@@ -218,7 +218,7 @@ describe('createRouter', () => {
         repoName: 'super-feature-repo',
         title: 'Refactoring My Awesome New Feature',
         createdBy: 'Jane Doe',
-        creationDate: undefined,
+        creationDate: '2020-09-12T06:10:23.932Z',
         sourceRefName: 'refs/heads/topic/refactor-super-awesome-feature',
         targetRefName: 'refs/heads/main',
         status: PullRequestStatus.Active,
@@ -231,7 +231,7 @@ describe('createRouter', () => {
         repoName: 'super-feature-repo',
         title: 'Bug Fix for My Awesome New Feature',
         createdBy: 'Jane Doe',
-        creationDate: undefined,
+        creationDate: '2020-09-12T06:10:23.932Z',
         sourceRefName: 'refs/heads/topic/fix-super-awesome-feature',
         targetRefName: 'refs/heads/main',
         status: PullRequestStatus.Active,
