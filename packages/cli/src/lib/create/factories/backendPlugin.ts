@@ -28,6 +28,7 @@ import { createFactory, CreateContext } from '../types';
 import { Lockfile } from '../../versioning';
 import { addPackageDependency, Task, templatingTask } from '../../tasks';
 import { createPackageVersionProvider } from '../../version';
+import { ownerPrompt, pluginIdPrompt } from './common/prompts';
 
 type Options = {
   id: string;
@@ -41,39 +42,7 @@ export const backendPlugin = createFactory<Options>({
   optionsDiscovery: async () => ({
     codeOwnersPath: await getCodeownersFilePath(paths.targetRoot),
   }),
-  optionsPrompts: [
-    {
-      type: 'input',
-      name: 'id',
-      message: 'Enter an ID for the plugin [required]',
-      validate: (value: string) => {
-        if (!value) {
-          return 'Please enter an ID for the plugin';
-        } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
-          return 'Plugin IDs must be lowercase and contain only letters, digits, and dashes.';
-        }
-        return true;
-      },
-    },
-    {
-      type: 'input',
-      name: 'owner',
-      message: 'Enter an owner of the plugin to add to CODEOWNERS [optional]',
-      when: opts => Boolean(opts.codeOwnersPath),
-      validate: (value: string) => {
-        if (!value) {
-          return true;
-        }
-
-        const ownerIds = parseOwnerIds(value);
-        if (!ownerIds) {
-          return 'The owner must be a space separated list of team names (e.g. @org/team-name), usernames (e.g. @username), or the email addresses (e.g. user@example.com).';
-        }
-
-        return true;
-      },
-    },
-  ],
+  optionsPrompts: [pluginIdPrompt(), ownerPrompt()],
   async create(options: Options, ctx: CreateContext) {
     const id = `${options.id}-backend`;
     const name = ctx.scope ? `@${ctx.scope}/plugin-${id}` : `plugin-${id}`;

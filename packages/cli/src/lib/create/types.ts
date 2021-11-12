@@ -37,18 +37,20 @@ export interface CreateContext {
 
 export type AnyOptions = Record<string, string>;
 
-export interface Factory<Options extends AnyOptions> {
+export type Prompt<TOptions> = DistinctQuestion<TOptions> & { name: string };
+
+export interface Factory<TOptions extends AnyOptions> {
   name: string;
   description: string;
-  optionsDiscovery?(): Promise<Partial<Options>>;
-  optionsPrompts?: ReadonlyArray<DistinctQuestion<Options> & { name: string }>;
-  create(options: Options, context?: CreateContext): Promise<void>;
+  optionsDiscovery?(): Promise<Partial<TOptions>>;
+  optionsPrompts?: ReadonlyArray<Prompt<TOptions>>;
+  create(options: TOptions, context?: CreateContext): Promise<void>;
 }
 
 export type AnyFactory = Factory<AnyOptions>;
 
-export function createFactory<Options extends AnyOptions>(
-  config: Factory<Options>,
+export function createFactory<TOptions extends AnyOptions>(
+  config: Factory<TOptions>,
 ): AnyFactory {
   return config as AnyFactory;
 }
