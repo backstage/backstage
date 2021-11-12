@@ -18,8 +18,14 @@ import { FactRetrieverContext } from '@backstage/plugin-tech-insights-node';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import isEmpty from 'lodash/isEmpty';
+import camelCase from 'lodash/camelCase';
+import { get } from 'lodash';
 
-export const entityFactRetriever = {
+export const createEntityFactRetriever = ({
+  annotations = [],
+}: {
+  annotations?: string[];
+}) => ({
   id: 'entityRetriever',
   version: '0.0.1',
   schema: {
@@ -35,6 +41,15 @@ export const entityFactRetriever = {
       type: 'boolean',
       description: 'The entity has an owned_by relation',
     },
+    ...annotations.reduce((acc: object, it: string) => {
+      return {
+        ...acc,
+        [camelCase(`hasAnnotation-${it}`)]: {
+          type: 'boolean',
+          description: `The entity has the annotation: ${it} `,
+        },
+      };
+    }, {}),
   },
   handler: async ({ discovery }: FactRetrieverContext) => {
     const catalogClient = new CatalogClient({
@@ -42,22 +57,32 @@ export const entityFactRetriever = {
     });
     const entities = await catalogClient.getEntities();
 
-    return entities.items.map((it: Entity) => {
+    return entities.items.map((entity: Entity) => {
       return {
         entity: {
-          namespace: it.metadata.namespace!!,
-          kind: it.kind,
-          name: it.metadata.name,
+          namespace: entity.metadata.namespace!!,
+          kind: entity.kind,
+          name: entity.metadata.name,
         },
         facts: {
-          hasOwner: Boolean(it.spec?.owner),
+          hasOwner: Boolean(entity.spec?.owner),
           hasGroupOwner: Boolean(
-            it.spec?.owner && (it.spec?.owner as string).startsWith('group:'),
+            entity.spec?.owner &&
+              (entity.spec?.owner as string).startsWith('group:'),
           ),
-          hasDescription: Boolean(it.metadata?.description),
-          hasTags: !isEmpty(it.metadata?.tags),
+          hasDescription: Boolean(entity.metadata?.description),
+          hasTags: !isEmpty(entity.metadata?.tags),
+          ...annotations.reduce(
+            (acc: object, annotation: string) => ({
+              ...acc,
+              [camelCase(`hasAnnotation-${annotation}`)]: Boolean(
+                get(entity, ['metadata', 'annotations', annotation]),
+              ),
+            }),
+            {},
+          ),
         },
       };
     });
   },
-};
+});

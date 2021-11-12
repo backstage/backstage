@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { entityFactRetriever } from './entityFactRetriever';
+import { createEntityFactRetriever } from './entityFactRetriever';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   PluginEndpointDiscovery,
@@ -44,6 +44,9 @@ const defaultEntityListResponse: CatalogListResponse<Entity> = {
         name: 'service-with-owner',
         description: 'service with an owner',
         tags: ['a-tag'],
+        annotations: {
+          'backstage.io/techdocs-ref': 'dir:.',
+        },
       },
       kind: 'Component',
       spec: {
@@ -102,6 +105,10 @@ const handlerContext = {
   logger: getVoidLogger(),
   config: ConfigReader.fromConfigs([]),
 };
+
+const entityFactRetriever = createEntityFactRetriever({
+  annotations: ['backstage.io/techdocs-ref'],
+});
 
 describe('entityFactRetriever', () => {
   beforeEach(() => {
@@ -244,6 +251,35 @@ describe('entityFactRetriever', () => {
           facts: {
             hasTags: false,
           },
+        });
+      });
+    });
+  });
+
+  describe('dynamic annotation facts', () => {
+    describe('where the retriever is configured to check for the techdocs annotation', () => {
+      describe('where the entity has the techdocs annotation', () => {
+        it('returns true for hasAnnotationBackstageIoTechdocsRef', async () => {
+          const facts = await entityFactRetriever.handler(handlerContext);
+          expect(
+            facts.find(it => it.entity.name === 'service-with-owner'),
+          ).toMatchObject({
+            facts: {
+              hasAnnotationBackstageIoTechdocsRef: true,
+            },
+          });
+        });
+      });
+      describe('where the entity is missing the techdocs annotation', () => {
+        it('returns false for hasAnnotationBackstageIoTechdocsRef', async () => {
+          const facts = await entityFactRetriever.handler(handlerContext);
+          expect(
+            facts.find(it => it.entity.name === 'service-with-incomplete-data'),
+          ).toMatchObject({
+            facts: {
+              hasAnnotationBackstageIoTechdocsRef: false,
+            },
+          });
         });
       });
     });
