@@ -37,7 +37,8 @@
   "dependencies": {
     "@backstage/errors": "^0.1.2",
     "cross-fetch": "^3.0.6",
-    "uuid": "^8.0.0"
+    "uuid": "^8.0.0",
+    "zod": "^3.11.6"
   },
   "devDependencies": {
     "@backstage/cli": "^0.8.0",
