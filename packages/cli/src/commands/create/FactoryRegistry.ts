@@ -53,24 +53,36 @@ export class FactoryRegistry {
     factory: AnyFactory,
     provided: Record<string, string>,
   ): Promise<Record<string, string>> {
-    const [hasAnswers, needsAnswers] = partition(
-      factory.options,
-      option => option.name in provided,
-    );
+    let currentOptions = provided;
 
-    for (const option of hasAnswers) {
-      const value = provided[option.name];
-
-      if (option.validate) {
-        const result = option.validate(value);
-        if (result !== true) {
-          throw new Error(`Invalid option '${option.name}'. ${result}`);
-        }
-      }
+    if (factory.optionsDiscovery) {
+      const discoveredOptions = await factory.optionsDiscovery();
+      currentOptions = {
+        ...currentOptions,
+        ...(discoveredOptions as Record<string, string>),
+      };
     }
 
-    const answers = await inquirer.prompt(needsAnswers);
+    if (factory.optionsPrompts) {
+      const [hasAnswers, needsAnswers] = partition(
+        factory.optionsPrompts,
+        option => option.name in currentOptions,
+      );
 
-    return { ...provided, ...answers };
+      for (const option of hasAnswers) {
+        const value = provided[option.name];
+
+        if (option.validate) {
+          const result = option.validate(value);
+          if (result !== true) {
+            throw new Error(`Invalid option '${option.name}'. ${result}`);
+          }
+        }
+      }
+
+      currentOptions = await inquirer.prompt(needsAnswers, currentOptions);
+    }
+
+    return currentOptions;
   }
 }

@@ -21,7 +21,8 @@ export type AnyOptions = Record<string, string>;
 export interface Factory<Options extends AnyOptions> {
   name: string;
   description: string;
-  options: ReadonlyArray<DistinctQuestion<Options> & { name: string }>;
+  optionsDiscovery?(): Promise<Partial<Options>>;
+  optionsPrompts?: ReadonlyArray<DistinctQuestion<Options> & { name: string }>;
   create(options: Options): Promise<void>;
 }
 
