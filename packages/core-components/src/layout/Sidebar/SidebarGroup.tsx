@@ -88,11 +88,18 @@ const MobileSidebarGroup = ({ to, label, icon, value }: SidebarGroupProps) => {
 
 export const SidebarGroup = ({
   children,
-  ...props
+  to,
+  label,
+  icon,
+  value,
 }: React.PropsWithChildren<SidebarGroupProps>) => {
   const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('xs'),
   );
 
-  return isMobileScreen ? <MobileSidebarGroup {...props} /> : <>{children}</>;
+  return isMobileScreen ? (
+    <MobileSidebarGroup to={to} label={label} icon={icon} value={value} />
+  ) : (
+    <>{children}</>
+  );
 };

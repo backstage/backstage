@@ -148,10 +148,7 @@ const DesktopSidebar = ({
   );
 };
 
-export const Sidebar = ({
-  children,
-  ...props
-}: React.PropsWithChildren<Props>) => {
+export const Sidebar = ({ children }: React.PropsWithChildren<Props>) => {
   const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('xs'),
   );
@@ -162,7 +159,7 @@ export const Sidebar = ({
         isOpen: true,
       }}
     >
-      <MobileSidebar {...props}>{children}</MobileSidebar>
+      <MobileSidebar>{children}</MobileSidebar>
     </SidebarContext.Provider>
   ) : (
     <DesktopSidebar>{children}</DesktopSidebar>

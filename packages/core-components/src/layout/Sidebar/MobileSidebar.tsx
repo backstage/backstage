@@ -124,7 +124,7 @@ export const MobileSidebar = ({ children }: React.PropsWithChildren<{}>) => {
       ),
   );
 
-  if (!sidebarGroups) {
+  if (!children) {
     // If Sidebar has no children the MobileSidebar won't be rendered
     return null;
   } else if (!sidebarGroups.length) {

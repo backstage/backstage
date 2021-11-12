@@ -801,7 +801,6 @@ export type SelectInputBaseClassKey = 'root' | 'input';
 // @public (undocumented)
 export const Sidebar: ({
   children,
-  ...props
 }: React_2.PropsWithChildren<Props_17>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SIDEBAR_INTRO_LOCAL_STORAGE" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1115,7 +1114,10 @@ export const SidebarDivider: React_2.ComponentType<
 // @public (undocumented)
 export const SidebarGroup: ({
   children,
-  ...props
+  to,
+  label,
+  icon,
+  value,
 }: React_2.PropsWithChildren<SidebarGroupProps>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SidebarGroupProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

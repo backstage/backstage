@@ -20,17 +20,20 @@ import React, { PropsWithChildren } from 'react';
 
 export type PageClassKey = 'root';
 
-const useStyles = makeStyles<BackstageTheme>(() => ({
-  root: {
-    display: 'grid',
-    gridTemplateAreas:
-      "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
-    gridTemplateRows: 'max-content auto 1fr',
-    gridTemplateColumns: 'auto 1fr auto',
-    height: '100%',
-    overflowY: 'auto',
-  },
-}));
+const useStyles = makeStyles<BackstageTheme>(
+  () => ({
+    root: {
+      display: 'grid',
+      gridTemplateAreas:
+        "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
+      gridTemplateRows: 'max-content auto 1fr',
+      gridTemplateColumns: 'auto 1fr auto',
+      height: '100%',
+      overflowY: 'auto',
+    },
+  }),
+  { name: 'BackstagePage' },
+);
 
 type Props = {
   themeId: string;
