@@ -32,12 +32,11 @@ describe('runMkdocsServer', () => {
     it('should run docker directly by default', async () => {
       await runMkdocsServer({});
 
-      const quotedCwd = `"${process.cwd()}":/content`;
       expect(run).toHaveBeenCalledWith(
         'docker',
         expect.arrayContaining([
           'run',
-          quotedCwd,
+          `${process.cwd()}:/content`,
           '8000:8000',
           'serve',
           '--dev-addr',

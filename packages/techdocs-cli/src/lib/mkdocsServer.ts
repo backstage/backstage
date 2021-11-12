@@ -37,7 +37,7 @@ export const runMkdocsServer = async (options: {
         '-w',
         '/content',
         '-v',
-        `"${process.cwd()}":/content`,
+        `${process.cwd()}:/content`,
         '-p',
         `${port}:${port}`,
         dockerImage,
