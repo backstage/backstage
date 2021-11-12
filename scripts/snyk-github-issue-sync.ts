@@ -1,3 +1,4 @@
+#!/usr/bin/env yarn ts-node --transpile-only
 /*
  * Copyright 2021 The Backstage Authors
  *
