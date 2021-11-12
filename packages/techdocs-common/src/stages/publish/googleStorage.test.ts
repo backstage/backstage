@@ -88,6 +88,7 @@ describe('GoogleGCSPublish', () => {
     site_name: 'backstage',
     site_description: 'site_content',
     etag: 'etag',
+    build_timestamp: 612741599,
   };
 
   const directory = getEntityRootDir(entity);
