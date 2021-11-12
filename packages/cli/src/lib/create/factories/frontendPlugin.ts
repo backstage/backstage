@@ -97,7 +97,7 @@ export const frontendPlugin = createFactory<Options>({
             revLines.splice(lastImportIndex, 0, importLine);
           }
 
-          const componentLine = `<Route path="/${id}" element={<${extensionName} />}/>`;
+          const componentLine = `<Route path="/${id}" element={<${extensionName} />} />`;
           if (!content.includes(componentLine)) {
             const [indentation] =
               revLines[lastRouteIndex + 1].match(/^\s*/) ?? [];

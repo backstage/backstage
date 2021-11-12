@@ -31,16 +31,16 @@ const TASK_NAME_MAX_LENGTH = 14;
 
 export class Task {
   static log(name: string = '') {
-    process.stdout.write(`${chalk.green(name)}\n`);
+    process.stderr.write(`${chalk.green(name)}\n`);
   }
 
   static error(message: string = '') {
-    process.stdout.write(`\n${chalk.red(message)}\n\n`);
+    process.stderr.write(`\n${chalk.red(message)}\n\n`);
   }
 
   static section(name: string) {
     const title = chalk.green(`${name}:`);
-    process.stdout.write(`\n ${title}\n`);
+    process.stderr.write(`\n ${title}\n`);
   }
 
   static exit(code: number = 0) {
@@ -81,7 +81,7 @@ export class Task {
     } catch (error) {
       assertError(error);
       if (error.stderr) {
-        process.stdout.write(error.stderr as Buffer);
+        process.stderr.write(error.stderr as Buffer);
       }
       if (error.stdout) {
         process.stdout.write(error.stdout as Buffer);
