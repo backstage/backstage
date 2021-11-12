@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import os from 'os';
 import fs from 'fs-extra';
+import { join as joinPath } from 'path';
 import { Command } from 'commander';
 import { FactoryRegistry } from '../../lib/create/FactoryRegistry';
 import { paths } from '../../lib/paths';
@@ -68,11 +70,31 @@ export default async (cmd: Command) => {
     }
   }
 
-  await factory.create(options, {
-    isMonoRepo,
-    defaultVersion,
-    scope: cmdOpts.scope.replace(/^@/, ''),
-    npmRegistry: cmdOpts.npmRegistry,
-    private: Boolean(cmdOpts.private),
-  });
+  const tempDirs = new Array<string>();
+  async function createTemporaryDirectory(name: string): Promise<string> {
+    const dir = await fs.mkdtemp(joinPath(os.tmpdir(), name));
+    tempDirs.push(dir);
+    return dir;
+  }
+
+  try {
+    await factory.create(options, {
+      isMonoRepo,
+      defaultVersion,
+      scope: cmdOpts.scope.replace(/^@/, ''),
+      npmRegistry: cmdOpts.npmRegistry,
+      private: Boolean(cmdOpts.private),
+      createTemporaryDirectory,
+    });
+  } finally {
+    for (const dir of tempDirs) {
+      try {
+        await fs.remove(dir);
+      } catch (error) {
+        console.error(
+          `Failed to remove temporary directory '${dir}', ${error}`,
+        );
+      }
+    }
+  }
 };
