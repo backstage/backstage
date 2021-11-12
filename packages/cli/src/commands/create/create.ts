@@ -86,7 +86,7 @@ export default async (cmd: Command) => {
     await factory.create(options, {
       isMonoRepo,
       defaultVersion,
-      scope: cmdOpts.scope.replace(/^@/, ''),
+      scope: cmdOpts.scope?.replace(/^@/, ''),
       npmRegistry: cmdOpts.npmRegistry,
       private: Boolean(cmdOpts.private),
       createTemporaryDirectory,
