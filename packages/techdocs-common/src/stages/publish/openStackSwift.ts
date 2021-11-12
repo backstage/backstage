@@ -54,6 +54,20 @@ const bufferToStream = (buffer: Buffer): Readable => {
 };
 
 export class OpenStackSwiftPublish implements PublisherBase {
+  private readonly storageClient: SwiftClient;
+  private readonly containerName: string;
+  private readonly logger: Logger;
+
+  constructor(options: {
+    storageClient: SwiftClient;
+    containerName: string;
+    logger: Logger;
+  }) {
+    this.storageClient = options.storageClient;
+    this.containerName = options.containerName;
+    this.logger = options.logger;
+  }
+
   static fromConfig(config: Config, logger: Logger): PublisherBase {
     let containerName = '';
     try {
@@ -78,17 +92,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
       secret: openStackSwiftConfig.getString('credentials.secret'),
     });
 
-    return new OpenStackSwiftPublish(storageClient, containerName, logger);
-  }
-
-  constructor(
-    private readonly storageClient: SwiftClient,
-    private readonly containerName: string,
-    private readonly logger: Logger,
-  ) {
-    this.storageClient = storageClient;
-    this.containerName = containerName;
-    this.logger = logger;
+    return new OpenStackSwiftPublish({ storageClient, containerName, logger });
   }
 
   /*

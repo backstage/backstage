@@ -1,5 +1,20 @@
 # @backstage/plugin-azure-devops
 
+## 0.1.3
+
+### Patch Changes
+
+- b85acc8c35: refactor(`@backstage/plugin-azure-devops`): Consume types from `@backstage/plugin-azure-devops-common`.
+  Stop re-exporting types from `@backstage/plugin-azure-devops-backend`.
+  Added new types to `@backstage/plugin-azure-devops-common`.
+- 84ace9a29c: Simplified queue time calculation in `BuildTable`.
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/plugin-azure-devops-common@0.0.2
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
 ## 0.1.2
 
 ### Patch Changes

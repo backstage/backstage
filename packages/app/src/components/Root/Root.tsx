@@ -29,7 +29,7 @@ import LogoIcon from './LogoIcon';
 import { NavLink } from 'react-router-dom';
 import { GraphiQLIcon } from '@backstage/plugin-graphiql';
 import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
-import { SidebarSearch } from '@backstage/plugin-search';
+import { SidebarSearchModal } from '@backstage/plugin-search';
 import { Shortcuts } from '@backstage/plugin-shortcuts';
 import {
   Sidebar,
@@ -80,7 +80,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
-      <SidebarSearch />
+      <SidebarSearchModal />
       <SidebarDivider />
       {/* Global nav, not org-specific */}
       <SidebarItem icon={HomeIcon} to="catalog" text="Home" />

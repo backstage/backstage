@@ -25,6 +25,7 @@ export default async (cmd: Command) => {
     args: cmd.config,
     fromPackage: cmd.package,
     mockEnv: cmd.lax,
+    fullVisibility: !cmd.frontend,
   });
   const visibility = getVisibilityOption(cmd);
   const data = serializeConfigData(appConfigs, schema, visibility);
