@@ -77,6 +77,8 @@ import {
   SignInPageProps,
   SignInResult,
 } from './types';
+import { AppThemeProvider } from './AppThemeProvider';
+import { defaultConfigLoader } from './defaultConfigLoader';
 
 export function generateBoundRoutes(bindRoutes: AppOptions['bindRoutes']) {
   const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
@@ -121,17 +123,6 @@ function getBasePath(configApi: Config) {
   return pathname;
 }
 
-type FullAppOptions = {
-  apis: Iterable<AnyApiFactory>;
-  icons: NonNullable<AppOptions['icons']>;
-  plugins: BackstagePlugin<any, any>[];
-  components: AppComponents;
-  themes: AppTheme[];
-  configLoader?: AppConfigLoader;
-  defaultApis: Iterable<AnyApiFactory>;
-  bindRoutes?: AppOptions['bindRoutes'];
-};
-
 function useConfigLoader(
   configLoader: AppConfigLoader | undefined,
   components: AppComponents,
@@ -151,7 +142,7 @@ function useConfigLoader(
     noConfigNode = <BootErrorPage step="load-config" error={config.error} />;
   }
 
-  const { ThemeProvider } = components;
+  const { ThemeProvider = AppThemeProvider } = components;
 
   // Before the config is loaded we can't use a router, so exit early
   if (noConfigNode) {
@@ -170,7 +161,7 @@ function useConfigLoader(
 }
 
 class AppContextImpl implements AppContext {
-  constructor(private readonly app: PrivateAppImpl) {}
+  constructor(private readonly app: AppManager) {}
 
   getPlugins(): BackstagePlugin<any, any>[] {
     return this.app.getPlugins();
@@ -185,7 +176,7 @@ class AppContextImpl implements AppContext {
   }
 }
 
-export class PrivateAppImpl implements BackstageApp {
+export class AppManager implements BackstageApp {
   private apiHolder?: ApiHolder;
   private configApi?: ConfigApi;
 
@@ -201,14 +192,16 @@ export class PrivateAppImpl implements BackstageApp {
   private readonly identityApi = new AppIdentity();
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
 
-  constructor(options: FullAppOptions) {
-    this.apis = options.apis;
+  constructor(options: AppOptions) {
+    this.apis = options.apis ?? [];
     this.icons = options.icons;
-    this.plugins = new Set(options.plugins);
+    this.plugins = new Set(
+      (options.plugins as BackstagePlugin<any, any>[]) ?? [],
+    );
     this.components = options.components;
-    this.themes = options.themes;
-    this.configLoader = options.configLoader;
-    this.defaultApis = options.defaultApis;
+    this.themes = options.themes as AppTheme[];
+    this.configLoader = options.configLoader ?? defaultConfigLoader;
+    this.defaultApis = options.defaultApis ?? [];
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
   }
@@ -307,7 +300,7 @@ export class PrivateAppImpl implements BackstageApp {
         return loadedConfig.node;
       }
 
-      const { ThemeProvider } = this.components;
+      const { ThemeProvider = AppThemeProvider } = this.components;
 
       return (
         <ApiProvider apis={this.getApiHolder()}>

@@ -7288,9 +7288,9 @@
     pretty-format "^26.0.0"
 
 "@types/jquery@^3.3.34":
-  version "3.5.5"
-  resolved "https://registry.npmjs.org/@types/jquery/-/jquery-3.5.5.tgz#2c63f47c9c8d96693d272f5453602afd8338c903"
-  integrity sha512-6RXU9Xzpc6vxNrS6FPPapN1SxSHgQ336WC6Jj/N8q30OiaBZ00l1GBgeP7usjVZPivSkGUfL1z/WW6TX989M+w==
+  version "3.5.8"
+  resolved "https://registry.npmjs.org/@types/jquery/-/jquery-3.5.8.tgz#83bfbcdf4e625c5471590f92703c06aadb052a09"
+  integrity sha512-cXk6NwqjDYg+UI9p2l3x0YmPa4m7RrXqmbK4IpVVpRJiYXU/QTo+UZrn54qfE1+9Gao4qpYqUnxm5ZCy2FTXAw==
   dependencies:
     "@types/sizzle" "*"
 
@@ -7560,9 +7560,9 @@
   integrity sha512-4QQmOF5KlwfxJ5IGXFIudkeLCdMABz03RcUXu+LCb24zmln8QW6aDjuGl4d4XPVLf2j+FnjelHTP7dvceAFbhA==
 
 "@types/nunjucks@^3.1.4":
-  version "3.1.5"
-  resolved "https://registry.npmjs.org/@types/nunjucks/-/nunjucks-3.1.5.tgz#e0782333b75b4ff9ac9213aa160ca8c5132eaf57"
-  integrity sha512-0zEdmQNNvQ+xyV9kqQvAV93UVroTwhE78toVUDT0GBnGcW2jQBZnB4al9qq2LqI5qHOqROy/DvvAY/UwrbvV1A==
+  version "3.2.0"
+  resolved "https://registry.npmjs.org/@types/nunjucks/-/nunjucks-3.2.0.tgz#2303629c91cdd39de103af979046d4a8590351e4"
+  integrity sha512-1FM36Hm3EdidJmWlZZafkg/kZME0UZ/0vQ46JE8R7R0JqQafah0r+d4i6d/MJg5DnKxEeAOAeifEVkzo7fEvGg==
 
 "@types/oauth@*":
   version "0.9.1"
@@ -20895,6 +20895,11 @@ node-abi@^2.21.0:
   dependencies:
     semver "^5.4.1"
 
+node-abort-controller@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/node-abort-controller/-/node-abort-controller-3.0.1.tgz#f91fa50b1dee3f909afabb7e261b1e1d6b0cb74e"
+  integrity sha512-/ujIVxthRs+7q6hsdjHMaj8hRG9NuWmwrz+JdRwZ14jdFoKSkm+vDsCbF9PLpnSqjaWQJuTmVtcWHNLr+vrOFw==
+
 node-addon-api@^3.0.0:
   version "3.2.1"
   resolved "https://registry.npmjs.org/node-addon-api/-/node-addon-api-3.2.1.tgz#81325e0a2117789c0128dab65e7e38f07ceba161"
@@ -29434,6 +29439,11 @@ zip-stream@^4.1.0:
     archiver-utils "^2.1.0"
     compress-commons "^4.1.0"
     readable-stream "^3.6.0"
+
+zod@^3.9.5:
+  version "3.11.6"
+  resolved "https://registry.npmjs.org/zod/-/zod-3.11.6.tgz#e43a5e0c213ae2e02aefe7cb2b1a6fa3d7f1f483"
+  integrity sha512-daZ80A81I3/9lIydI44motWe6n59kRBfNzTuS2bfzVh1nAXi667TOTWWtatxyG+fwgNUiagSj/CWZwRRbevJIg==
 
 zwitch@^1.0.0:
   version "1.0.5"

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import GitlabIcon from '@material-ui/icons/AcUnit';
 import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
@@ -22,7 +21,7 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'gitlab',
   title: 'GitLab',
-  icon: GitlabIcon,
+  icon: () => null,
 };
 
 /**

@@ -164,6 +164,7 @@ nav:
   - API Reference:
       - Guides:
           - Utility APIs: 'api/utility-apis.md'
+      - Deprecations: 'api/deprecations.md'
   - Tutorials:
       - Future developer journey: 'tutorials/journey.md'
       - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'
