@@ -29,7 +29,7 @@ function parseOptions(optionStrings: string[]): Record<string, string> {
   for (const str of optionStrings) {
     const [key] = str.split('=', 1);
     const value = str.slice(key.length + 1);
-    if (!key || !value) {
+    if (!key || str[key.length] !== '=') {
       throw new Error(
         `Invalid option '${str}', must be of the format <key>=<value>`,
       );
