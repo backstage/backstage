@@ -18,11 +18,7 @@ import fs from 'fs-extra';
 import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
 import { paths } from '../../paths';
-import {
-  addCodeownersEntry,
-  getCodeownersFilePath,
-  parseOwnerIds,
-} from '../../codeowners';
+import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
 import { createFactory, CreateContext } from '../types';
 import { addPackageDependency, Task } from '../../tasks';
 import { ownerPrompt, pluginIdPrompt } from './common/prompts';
@@ -114,15 +110,8 @@ export const frontendPlugin = createFactory<Options>({
       });
     }
 
-    if (options.codeOwnersPath && options.owner) {
-      const ownerIds = parseOwnerIds(options.owner);
-      if (ownerIds && ownerIds.length > 0) {
-        await addCodeownersEntry(
-          options.codeOwnersPath,
-          `/plugins/${id}`,
-          ownerIds,
-        );
-      }
+    if (options.owner) {
+      await addCodeownersEntry(`/plugins/${id}`, options.owner);
     }
 
     await Task.forCommand('yarn install', { cwd: targetDir, optional: true });

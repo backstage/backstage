@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import path from 'path';
+import { paths } from '../paths';
 
 const TEAM_ID_RE = /^@[-\w]+\/[-\w]+$/;
 const USER_ID_RE = /^@[-\w]+$/;
@@ -30,14 +31,14 @@ type CodeownersEntry = {
 export async function getCodeownersFilePath(
   rootDir: string,
 ): Promise<string | undefined> {
-  const paths = [
+  const possiblePaths = [
     path.join(rootDir, '.github', 'CODEOWNERS'),
     path.join(rootDir, '.gitlab', 'CODEOWNERS'),
     path.join(rootDir, 'docs', 'CODEOWNERS'),
     path.join(rootDir, 'CODEOWNERS'),
   ];
 
-  for (const p of paths) {
+  for (const p of possiblePaths) {
     if (await fs.pathExists(p)) {
       return p;
     }
@@ -70,11 +71,24 @@ export function parseOwnerIds(
 }
 
 export async function addCodeownersEntry(
-  codeownersFilePath: string,
   ownedPath: string,
-  ownerIds: string[],
-): Promise<void> {
-  const allLines = (await fs.readFile(codeownersFilePath, 'utf8')).split('\n');
+  ownerStr: string,
+  codeownersFilePath?: string,
+): Promise<boolean> {
+  const ownerIds = parseOwnerIds(ownerStr);
+  if (!ownerIds || ownerIds.length === 0) {
+    return false;
+  }
+
+  let filePath = codeownersFilePath;
+  if (!filePath) {
+    filePath = await getCodeownersFilePath(paths.targetRoot);
+    if (!filePath) {
+      return false;
+    }
+  }
+
+  const allLines = (await fs.readFile(filePath, 'utf8')).split('\n');
 
   // Only keep comments from the top of the file
   const commentLines = [];
@@ -117,5 +131,7 @@ export async function addCodeownersEntry(
 
   const newLines = [...commentLines, '', ...newDeclarationLines, ''];
 
-  await fs.writeFile(codeownersFilePath, newLines.join('\n'), 'utf8');
+  await fs.writeFile(filePath, newLines.join('\n'), 'utf8');
+
+  return true;
 }
