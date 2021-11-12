@@ -12,7 +12,9 @@ import { AzureIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import cors from 'cors';
+import { DateTime } from 'luxon';
 import Docker from 'dockerode';
+import { Duration } from 'luxon';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -144,6 +146,27 @@ export const coloredFormat: winston.Logform.Format;
 export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
 }
+
+// @public
+export interface Context {
+  readonly abortPromise: Promise<void>;
+  readonly abortSignal: AbortSignal;
+  readonly deadline: DateTime | undefined;
+  value<T = unknown>(key: string | symbol): T | undefined;
+  with(...decorators: ContextDecorator[]): Context;
+  withAbort(): {
+    ctx: Context;
+    abort: () => void;
+  };
+  withTimeout(timeout: Duration): Context;
+  withValue<T = unknown>(
+    key: string | symbol,
+    value: T | ((previous: T | undefined) => T),
+  ): Context;
+}
+
+// @public
+export type ContextDecorator = (ctx: Context) => Context;
 
 // @public @deprecated
 export const createDatabase: typeof createDatabaseClient;
@@ -455,6 +478,25 @@ export function resolvePackagePath(name: string, ...paths: string[]): string;
 
 // @public
 export function resolveSafeChildPath(base: string, path: string): string;
+
+// @public
+export class RootContext implements Context {
+  get abortPromise(): Promise<void>;
+  get abortSignal(): AbortSignal_2;
+  static create(): Context;
+  get deadline(): DateTime | undefined;
+  value<T = unknown>(key: string | symbol): T | undefined;
+  with(...items: ContextDecorator[]): Context;
+  withAbort(): {
+    ctx: Context;
+    abort: () => void;
+  };
+  withTimeout(timeout: Duration): Context;
+  withValue<T = unknown>(
+    key: string | symbol,
+    value: T | ((previous: T | undefined) => T),
+  ): Context;
+}
 
 // @public
 export type RunContainerOptions = {
