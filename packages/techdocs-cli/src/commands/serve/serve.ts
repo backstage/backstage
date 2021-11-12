@@ -77,8 +77,8 @@ export default async function serve(cmd: Command) {
 
   // Wait until mkdocs server has started so that Backstage starts with docs loaded
   // Takes 1-5 seconds
-  for (let attempt = 0; attempt < 10; attempt++) {
-    await new Promise(r => setTimeout(r, 1000));
+  for (let attempt = 0; attempt < 30; attempt++) {
+    await new Promise(r => setTimeout(r, 3000));
     if (mkdocsServerHasStarted) {
       break;
     }

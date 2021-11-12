@@ -30,8 +30,8 @@
     "lerna": "lerna",
     "storybook": "yarn workspace storybook start",
     "build-storybook": "yarn workspace storybook build-storybook",
-    "techdocs-cli": "yarn workspace @techdocs/cli build && packages/techdocs-cli/bin/techdocs-cli",
-    "techdocs-cli:dev": "yarn workspace @techdocs/cli build:dev && TECHDOCS_CLI_DEV_MODE=true packages/techdocs-cli/bin/techdocs-cli",
+    "techdocs-cli": "node scripts/techdocs-cli.js",
+    "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
     "prepare": "husky install",
     "lock:check": "yarn-lock-check"
   },
@@ -63,6 +63,7 @@
     "@spotify/prettier-config": "^11.0.0",
     "@types/webpack": "^5.28.0",
     "command-exists": "^1.2.9",
+    "cross-env": "^7.0.0",
     "concurrently": "^6.0.0",
     "eslint-plugin-notice": "^0.9.10",
     "fs-extra": "9.1.0",

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2020 The Backstage Authors
+# Copyright 2021 The Backstage Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,26 +16,29 @@
 
 set -e
 
-# Build the TechDocs CLI
-npx backstage-cli -- build --outputs cjs
+SCRIPT_DIR=$(dirname $0)
+TECHDOCS_CLI_DIR="$SCRIPT_DIR"/..
+TECHDOCS_CLI_EMBEDDED_APP_DIR="$TECHDOCS_CLI_DIR"/../embedded-techdocs-app
 
-# Make sure to do `yarn run build` in packages/embedded-techdocs before building here.
+compile_and_build_cli() {
+  echo "📄 Compiling..."
+  yarn workspace @techdocs/cli tsc > /dev/null
+  echo "📦️ Building..."
+  pushd $TECHDOCS_CLI_DIR > /dev/null
+  npx backstage-cli build --outputs cjs > /dev/null
+  popd > /dev/null
+}
 
-EMBEDDED_TECHDOCS_APP_PATH=../embedded-techdocs-app
-TECHDOCS_PREVIEW_SOURCE=$EMBEDDED_TECHDOCS_APP_PATH/dist
-TECHDOCS_PREVIEW_DEST=dist/techdocs-preview-bundle
+build_and_embed_app() {
+  echo "🚚 Embedding app..."
+  if [ "$TECHDOCS_CLI_DEV_MODE" = "true" ] ; then
+    yarn workspace embedded-techdocs-app build:dev > /dev/null
+  else
+    yarn workspace embedded-techdocs-app build > /dev/null
+  fi
+  cp -r "$TECHDOCS_CLI_EMBEDDED_APP_DIR"/dist "$TECHDOCS_CLI_DIR"/dist/techdocs-preview-bundle > /dev/null
+}
 
-# Build the embedded-techdocs-app
-pushd $EMBEDDED_TECHDOCS_APP_PATH >/dev/null
-if [[ $TECHDOCS_CLI_DEV_MODE == "true" ]]; then
-  yarn build:dev
-else
-  yarn build
-fi
-popd >/dev/null
-
-cp -r $TECHDOCS_PREVIEW_SOURCE $TECHDOCS_PREVIEW_DEST
-
-# Write to console
-echo "[techdocs-cli]: Built the dist/ folder"
-echo "[techdocs-cli]: Imported @backstage/plugin-techdocs dist/ folder into techdocs-preview-bundle/"
+compile_and_build_cli
+build_and_embed_app
+echo "🏁 Ready!"

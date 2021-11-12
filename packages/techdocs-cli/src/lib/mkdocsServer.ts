@@ -40,6 +40,7 @@ export const runMkdocsServer = async (options: {
         `${process.cwd()}:/content`,
         '-p',
         `${port}:${port}`,
+        '-it',
         dockerImage,
         'serve',
         '--dev-addr',

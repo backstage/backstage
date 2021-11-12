@@ -22,7 +22,7 @@ const FIXTURE_DIR = path.resolve(PROJECT_ROOT_DIR, 'src/fixture');
 
 describe('end-to-end', () => {
   it('shows help text', async () => {
-    jest.setTimeout(10000);
+    jest.setTimeout(30000);
     const proc = await executeTechDocsCliCommand(['--help']);
 
     expect(proc.combinedStdOutErr).toContain('Usage: techdocs-cli [options]');
@@ -30,10 +30,10 @@ describe('end-to-end', () => {
   });
 
   it('can generate', async () => {
-    jest.setTimeout(10000);
+    jest.setTimeout(30000);
     const proc = await executeTechDocsCliCommand(['generate', '--no-docker'], {
       cwd: FIXTURE_DIR,
-      killAfter: 8000,
+      killAfter: 16000,
     });
 
     expect(proc.combinedStdOutErr).toContain('Successfully generated docs');
@@ -41,12 +41,12 @@ describe('end-to-end', () => {
   });
 
   it('can serve in mkdocs', async () => {
-    jest.setTimeout(10000);
+    jest.setTimeout(30000);
     const proc = await executeTechDocsCliCommand(
       ['serve:mkdocs', '--no-docker'],
       {
         cwd: FIXTURE_DIR,
-        killAfter: 8000,
+        killAfter: 16000,
       },
     );
 
@@ -55,10 +55,10 @@ describe('end-to-end', () => {
   });
 
   it('can serve in backstage', async () => {
-    jest.setTimeout(10000);
+    jest.setTimeout(30000);
     const proc = await executeTechDocsCliCommand(['serve', '--no-docker'], {
       cwd: FIXTURE_DIR,
-      killAfter: 8000,
+      killAfter: 16000,
     });
 
     expect(proc.combinedStdOutErr).toContain('Starting mkdocs server');
