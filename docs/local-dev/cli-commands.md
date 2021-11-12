@@ -512,7 +512,8 @@ Usage: backstage-cli config:check [options]
 
 Options:
   --package &lt;name&gt;  Only load config schema that applies to the given package
-  --lax                   Do not require environment variables to be set
+  --lax             Do not require environment variables to be set
+  --frontend        Only validate the frontend configuration
   --config &lt;path&gt;   Config files to load instead of app-config.yaml (default: [])
   -h, --help        display help for command
 ```

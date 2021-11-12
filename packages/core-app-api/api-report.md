@@ -45,6 +45,7 @@ import { Observable } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { OptionalAppOptions } from '@backstage/app-defaults';
 import { PendingAuthRequest } from '@backstage/core-plugin-api';
 import { PluginOutput } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
@@ -150,7 +151,7 @@ export type AppComponents = {
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
-  ThemeProvider: ComponentType<{}>;
+  ThemeProvider?: ComponentType<{}>;
   SignInPage?: ComponentType<SignInPageProps>;
 };
 
@@ -165,14 +166,40 @@ export type AppContext = {
 };
 
 // @public
+export type AppIcons = {
+  'kind:api': IconComponent;
+  'kind:component': IconComponent;
+  'kind:domain': IconComponent;
+  'kind:group': IconComponent;
+  'kind:location': IconComponent;
+  'kind:system': IconComponent;
+  'kind:user': IconComponent;
+  brokenImage: IconComponent;
+  catalog: IconComponent;
+  chat: IconComponent;
+  dashboard: IconComponent;
+  docs: IconComponent;
+  email: IconComponent;
+  github: IconComponent;
+  group: IconComponent;
+  help: IconComponent;
+  scaffolder: IconComponent;
+  search: IconComponent;
+  techdocs: IconComponent;
+  user: IconComponent;
+  warning: IconComponent;
+};
+
+// @public
 export type AppOptions = {
   apis?: Iterable<AnyApiFactory>;
-  icons?: Partial<AppIcons> & {
+  defaultApis?: Iterable<AnyApiFactory>;
+  icons: AppIcons & {
     [key in string]: IconComponent;
   };
   plugins?: BackstagePluginWithAnyOutput[];
-  components?: Partial<AppComponents>;
-  themes?: AppTheme[];
+  components: AppComponents;
+  themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 };
@@ -286,10 +313,11 @@ export type BootErrorPageProps = {
 
 export { ConfigReader };
 
-// Warning: (ae-forgotten-export) The symbol "PrivateAppImpl" needs to be exported by the entry point index.d.ts
-//
+// @public @deprecated
+export function createApp(options?: OptionalAppOptions): BackstageApp;
+
 // @public
-export function createApp(options?: AppOptions): PrivateAppImpl;
+export function createSpecializedApp(options: AppOptions): BackstageApp;
 
 // @public
 export const defaultConfigLoader: AppConfigLoader;
@@ -608,5 +636,4 @@ export class WebStorage implements StorageApi {
 // Warnings were encountered during analysis:
 //
 // src/apis/system/ApiProvider.d.ts:15:5 - (ae-forgotten-export) The symbol "ApiProviderProps" needs to be exported by the entry point index.d.ts
-// src/app/types.d.ts:152:5 - (ae-forgotten-export) The symbol "AppIcons" needs to be exported by the entry point index.d.ts
 ```
