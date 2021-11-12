@@ -117,7 +117,9 @@ export async function templatingTask(
         const destination = destinationFile.replace(/\.hbs$/, '');
 
         const template = await fs.readFile(file);
-        const compiled = handlebars.compile(template.toString());
+        const compiled = handlebars.compile(template.toString(), {
+          strict: true,
+        });
         const contents = compiled(
           { name: basename(destination), ...context },
           {
