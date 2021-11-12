@@ -15,6 +15,7 @@
  */
 
 import { CacheClient, getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import { CacheInvalidationError, TechDocsCache } from './TechDocsCache';
 
 const cached = (str: string): string => {
@@ -31,7 +32,7 @@ describe('TechDocsCache', () => {
       set: jest.fn(),
       delete: jest.fn(),
     };
-    CacheUnderTest = new TechDocsCache({
+    CacheUnderTest = TechDocsCache.fromConfig(new ConfigReader({}), {
       cache: MockClient,
       logger: getVoidLogger(),
     });
@@ -55,13 +56,35 @@ describe('TechDocsCache', () => {
       expect(actual).toBe(undefined);
     });
 
-    it('returns undefined if no response after 1s', async () => {
+    it('returns undefined if no response after 1s by default', async () => {
       const expectedPath = 'some/index.html';
       MockClient.get.mockImplementationOnce(() => {
         return new Promise(resolve => {
           setTimeout(() => resolve(cached('value')), 1500);
         });
       });
+      const actual = await CacheUnderTest.get(expectedPath);
+      expect(actual).toBe(undefined);
+    });
+
+    it('returns undefined if no response after configured readTimeout', async () => {
+      const expectedPath = 'some/index.html';
+      MockClient.get.mockImplementationOnce(() => {
+        return new Promise(resolve => {
+          setTimeout(() => resolve(cached('value')), 20);
+        });
+      });
+
+      CacheUnderTest = TechDocsCache.fromConfig(
+        new ConfigReader({
+          techdocs: { cache: { readTimeout: 10 } },
+        }),
+        {
+          cache: MockClient,
+          logger: getVoidLogger(),
+        },
+      );
+
       const actual = await CacheUnderTest.get(expectedPath);
       expect(actual).toBe(undefined);
     });

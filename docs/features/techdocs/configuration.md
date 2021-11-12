@@ -144,6 +144,12 @@ techdocs:
     # to storage using the techdocs-cli, allowing long TTLs (e.g. 1 month/year)
     ttl: 3600000
 
+    # (Optional) The time (in milliseconds) that the TechDocs backend will wait
+    # for a cache service to respond before continuing on as though the cached
+    # object was not found (e.g. when the cache sercice is unavailable). The
+    # default value is 1000
+    readTimeout: 500
+
   # (Optional and Legacy) TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc.
   # You don't have to specify this anymore.
 

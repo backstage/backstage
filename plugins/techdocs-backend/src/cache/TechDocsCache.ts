@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import { CacheClient } from '@backstage/backend-common';
+import { assertError } from '@backstage/errors';
+import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 
 export class CacheInvalidationError extends Error {
@@ -28,10 +30,29 @@ export class CacheInvalidationError extends Error {
 export class TechDocsCache {
   protected readonly cache: CacheClient;
   protected readonly logger: Logger;
+  protected readonly readTimeout: number;
 
-  constructor({ cache, logger }: { cache: CacheClient; logger: Logger }) {
+  private constructor({
+    cache,
+    logger,
+    readTimeout,
+  }: {
+    cache: CacheClient;
+    logger: Logger;
+    readTimeout: number;
+  }) {
     this.cache = cache;
     this.logger = logger;
+    this.readTimeout = readTimeout;
+  }
+
+  static fromConfig(
+    config: Config,
+    { cache, logger }: { cache: CacheClient; logger: Logger },
+  ) {
+    const readTimeout =
+      config.getOptionalNumber('techdocs.cache.readTimeout') || 1000;
+    return new TechDocsCache({ cache, logger, readTimeout });
   }
 
   async get(path: string): Promise<Buffer | undefined> {
@@ -40,7 +61,7 @@ export class TechDocsCache {
       // temporarily unreachable.
       const response = (await Promise.race([
         this.cache.get(path),
-        new Promise(cancelAfter => setTimeout(cancelAfter, 1000)),
+        new Promise(cancelAfter => setTimeout(cancelAfter, this.readTimeout)),
       ])) as string | undefined;
 
       if (response !== undefined) {
@@ -51,6 +72,7 @@ export class TechDocsCache {
       this.logger.debug(`Cache miss: ${path}`);
       return response;
     } catch (e) {
+      assertError(e);
       this.logger.warn(`Error getting cache entry ${path}: ${e.message}`);
       this.logger.debug(e.stack);
       return undefined;

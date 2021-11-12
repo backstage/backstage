@@ -241,6 +241,15 @@ export interface Config {
        * createRouter method in your backend.
        */
       ttl: number;
+
+      /**
+       * The time (in milliseconds) that the TechDocs backend will wait for
+       * a cache service to respond before continuing on as though the cached
+       * object was not found (e.g. when the cache sercice is unavailable).
+       *
+       * Defaults to 1000 milliseconds.
+       */
+      readTimeout?: number;
     };
 
     /**

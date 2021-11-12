@@ -91,7 +91,7 @@ export async function createRouter(
   const defaultTtl = config.getOptionalNumber('techdocs.cache.ttl');
   if (isOutOfTheBoxOption(options) && options.cache && defaultTtl) {
     const cacheClient = options.cache.getClient({ defaultTtl });
-    cache = new TechDocsCache({ cache: cacheClient, logger });
+    cache = TechDocsCache.fromConfig(config, { cache: cacheClient, logger });
   }
 
   const scmIntegrations = ScmIntegrations.fromConfig(config);
