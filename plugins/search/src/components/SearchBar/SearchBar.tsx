@@ -30,9 +30,11 @@ type PresenterProps = {
   onSubmit?: () => void;
   className?: string;
   placeholder?: string;
+  focused?: boolean;
 };
 
 export const SearchBarBase = ({
+  focused,
   value,
   onChange,
   onSubmit,
@@ -43,8 +45,10 @@ export const SearchBarBase = ({
   const inputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
-    inputRef?.current?.focus();
-  }, []);
+    if (focused) {
+      inputRef?.current?.focus();
+    }
+  }, [focused]);
 
   const onKeyDown = React.useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -93,12 +97,14 @@ export const SearchBarBase = ({
 };
 
 type Props = {
+  focused?: boolean;
   className?: string;
   debounceTime?: number;
   placeholder?: string;
 };
 
 export const SearchBar = ({
+  focused,
   className,
   debounceTime = 0,
   placeholder,
@@ -120,6 +126,7 @@ export const SearchBar = ({
 
   return (
     <SearchBarBase
+      focused={focused}
       className={className}
       value={value}
       onChange={handleQuery}

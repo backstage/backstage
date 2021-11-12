@@ -62,3 +62,20 @@ export const CustomPlaceholder = () => {
     </MemoryRouter>
   );
 };
+
+export const Focused = () => {
+  return (
+    <MemoryRouter>
+      {/* @ts-ignore (defaultValue requires more than what is used here) */}
+      <SearchContext.Provider value={defaultValue}>
+        <Grid container direction="row">
+          <Grid item xs={12}>
+            <Paper style={{ padding: '8px 0' }}>
+              <SearchBar focused />
+            </Paper>
+          </Grid>
+        </Grid>
+      </SearchContext.Provider>
+    </MemoryRouter>
+  );
+};
