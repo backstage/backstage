@@ -17,7 +17,7 @@
 import {
   PermissionCondition,
   PermissionCriteria,
-} from '@backstage/permission-common';
+} from '@backstage/plugin-permission-common';
 import { applyConditions, mapConditions } from './util';
 
 describe('integration utils', () => {

@@ -20,7 +20,7 @@ import {
   AuthorizeResult,
   PermissionCondition,
   PermissionCriteria,
-} from '@backstage/permission-common';
+} from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
 import { conditionFor } from './conditionFor';
 import { applyConditions, mapConditions } from './util';

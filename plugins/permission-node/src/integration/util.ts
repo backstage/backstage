@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PermissionCriteria } from '@backstage/permission-common';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 const isAndCriteria = (
   filter: PermissionCriteria<unknown>,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AuthorizeResult } from '@backstage/permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import express, { Express, Router } from 'express';
 import request from 'supertest';
 import { createPermissionIntegration } from './createPermissionIntegration';

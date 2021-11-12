@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PermissionCriteria } from '@backstage/permission-common';
+import type { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 /**
  * A conditional rule that can be provided in an {@link AuthorizeResult} response to an
