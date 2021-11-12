@@ -97,6 +97,11 @@ export class PermissionClient {
     requests: AuthorizeRequest[],
     options?: AuthorizeRequestOptions,
   ): Promise<AuthorizeResponse[]> {
+    // TODO(permissions): it would be great to provide some kind of typing guarantee that
+    // conditional responses will only ever be returned for requests containing a resourceType
+    // but no resourceRef. That way clients who aren't prepared to handle filtering according
+    // to conditions can be guaranteed that they won't unexpectedly get a CONDITIONAL response.
+
     const identifiedRequests: Identified<AuthorizeRequest>[] = requests.map(
       request => ({
         id: uuid.v4(),
