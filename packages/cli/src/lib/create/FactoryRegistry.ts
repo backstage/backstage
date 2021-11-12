@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { AnyFactory } from './types';
 import * as factories from './factories';
@@ -80,7 +81,22 @@ export class FactoryRegistry {
         }
       }
 
-      currentOptions = await inquirer.prompt(needsAnswers, currentOptions);
+      currentOptions = await inquirer.prompt(
+        needsAnswers.map(option => ({
+          ...option,
+          message: option.message && chalk.blue(option.message),
+          validate:
+            option.validate &&
+            (async (...args) => {
+              const result = await option.validate!(...args);
+              if (typeof result === 'string') {
+                return chalk.red(result);
+              }
+              return result;
+            }),
+        })),
+        currentOptions,
+      );
     }
 
     return currentOptions;
