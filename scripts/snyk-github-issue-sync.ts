@@ -34,7 +34,7 @@ const argv = minimist(process.argv.slice(2));
 const GH_OWNER = 'backstage';
 const GH_REPO = 'backstage';
 const SNYK_GH_LABEL = 'snyk-vulnerability';
-const SNYK_ID_REGEX = /\[([A-Z0-9-:]+)]/i;
+const SNYK_ID_REGEX = /\[([^\]]+)]/i;
 
 const isDryRun = 'dryrun' in argv;
 
