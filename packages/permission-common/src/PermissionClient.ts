@@ -17,13 +17,46 @@
 import { ResponseError } from '@backstage/errors';
 import fetch from 'cross-fetch';
 import * as uuid from 'uuid';
+import { z } from 'zod';
 import {
   AuthorizeResult,
   AuthorizeRequest,
   AuthorizeResponse,
   Identified,
+  PermissionCriteria,
+  PermissionCondition,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
+
+const permissionCriteriaSchema: z.ZodSchema<
+  PermissionCriteria<PermissionCondition>
+> = z.lazy(() =>
+  z
+    .object({
+      rule: z.string(),
+      params: z.array(z.unknown()),
+    })
+    .or(z.object({ anyOf: z.array(permissionCriteriaSchema) }))
+    .or(z.object({ allOf: z.array(permissionCriteriaSchema) }))
+    .or(z.object({ not: permissionCriteriaSchema })),
+);
+
+const responseSchema = z.array(
+  z
+    .object({
+      id: z.string(),
+      result: z
+        .literal(AuthorizeResult.ALLOW)
+        .or(z.literal(AuthorizeResult.DENY)),
+    })
+    .or(
+      z.object({
+        id: z.string(),
+        result: z.literal(AuthorizeResult.CONDITIONAL),
+        conditions: permissionCriteriaSchema,
+      }),
+    ),
+);
 
 /**
  * Options for authorization requests; currently only an optional auth token.
@@ -103,14 +136,7 @@ export class PermissionClient {
     requests: Identified<AuthorizeRequest>[],
     json: any,
   ): asserts json is Identified<AuthorizeResponse>[] {
-    const responses = Array.isArray(json) ? json : [];
-    const authorizedResponses: Identified<AuthorizeResponse>[] =
-      responses.filter(
-        (r: any): r is Identified<AuthorizeResponse> =>
-          typeof r === 'object' &&
-          typeof r.id === 'string' &&
-          r.result in AuthorizeResult,
-      );
+    const authorizedResponses = responseSchema.parse(json);
     const responseIds = authorizedResponses.map(r => r.id);
     const hasAllRequestIds = requests.every(r => responseIds.includes(r.id));
     if (!hasAllRequestIds) {

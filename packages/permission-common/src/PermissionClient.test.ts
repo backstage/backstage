@@ -115,7 +115,7 @@ describe('PermissionClient', () => {
       ).rejects.toThrowError(/request failed with 401/i);
     });
 
-    it('should reject invalid responses', async () => {
+    it('should reject responses with missing ids', async () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (_req, res, { json }: RestContext) => {
           return res(json([{ id: 'wrong-id', result: AuthorizeResult.ALLOW }]));
@@ -124,6 +124,22 @@ describe('PermissionClient', () => {
       await expect(
         client.authorize([mockAuthorizeRequest], { token }),
       ).rejects.toThrowError(/Unexpected authorization response/i);
+    });
+
+    it('should reject invalid responses', async () => {
+      mockAuthorizeHandler.mockImplementationOnce(
+        (req, res, { json }: RestContext) => {
+          const responses = req.body.map((a: Identified<AuthorizeRequest>) => ({
+            id: a.id,
+            outcome: AuthorizeResult.ALLOW,
+          }));
+
+          return res(json(responses));
+        },
+      );
+      await expect(
+        client.authorize([mockAuthorizeRequest], { token }),
+      ).rejects.toThrowError(/invalid input/i);
     });
   });
 });
