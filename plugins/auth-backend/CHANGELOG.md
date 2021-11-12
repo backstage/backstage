@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend
 
+## 0.4.7
+
+### Patch Changes
+
+- 5ee31f860b: Only use settings that have a value when creating a new FirestoreKeyStore instance
+- 3e0e2f09d5: Added forwarding of the `audience` option for the SAML provider, making it possible to enable `audience` verification.
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/test-utils@0.1.21
+  - @backstage/catalog-client@0.5.1
+
 ## 0.4.6
 
 ### Patch Changes

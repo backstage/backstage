@@ -15,7 +15,6 @@
  */
 
 import MockOAuthApi from './MockOAuthApi';
-import PowerIcon from '@material-ui/icons/Power';
 
 describe('MockOAuthApi', () => {
   it('should trigger all requests', async () => {
@@ -24,13 +23,13 @@ describe('MockOAuthApi', () => {
 
     const authHandler1 = jest.fn().mockImplementation(() => authResult);
     const requester1 = mock.createAuthRequester({
-      provider: { icon: PowerIcon, title: 'Test' },
+      provider: { icon: () => null, title: 'Test' },
       onAuthRequest: authHandler1,
     });
 
     const authHandler2 = jest.fn().mockResolvedValue('other');
     const requester2 = mock.createAuthRequester({
-      provider: { icon: PowerIcon, title: 'Test' },
+      provider: { icon: () => null, title: 'Test' },
       onAuthRequest: authHandler2,
     });
 
@@ -67,13 +66,13 @@ describe('MockOAuthApi', () => {
 
     const authHandler1 = jest.fn();
     const requester1 = mock.createAuthRequester({
-      provider: { icon: PowerIcon, title: 'Test' },
+      provider: { icon: () => null, title: 'Test' },
       onAuthRequest: authHandler1,
     });
 
     const authHandler2 = jest.fn();
     const requester2 = mock.createAuthRequester({
-      provider: { icon: PowerIcon, title: 'Test' },
+      provider: { icon: () => null, title: 'Test' },
       onAuthRequest: authHandler2,
     });
 

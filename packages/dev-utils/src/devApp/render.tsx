@@ -47,7 +47,8 @@ import {
   BackstagePlugin,
 } from '@backstage/core-plugin-api';
 
-import { createApp, FlatRoutes } from '@backstage/core-app-api';
+import { createApp } from '@backstage/app-defaults';
+import { FlatRoutes } from '@backstage/core-app-api';
 
 const GatheringRoute: (props: {
   path: string;
