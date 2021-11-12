@@ -80,8 +80,9 @@ const columns: TableColumn[] = [
     field: 'creationDate',
     width: 'auto',
     render: (row: Partial<PullRequest>) =>
-      DateTime.fromISO(
-        (row.creationDate ?? new Date()).toString(),
+      (row.creationDate
+        ? DateTime.fromISO(row.creationDate)
+        : DateTime.now()
       ).toRelative(),
   },
 ];
