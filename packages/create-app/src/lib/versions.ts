@@ -30,6 +30,7 @@ Rollup will extract the value of the version field in each package at build time
 leaving any imports in place.
 */
 
+import { version as appDefaults } from '../../../app-defaults/package.json';
 import { version as backendCommon } from '../../../backend-common/package.json';
 import { version as catalogClient } from '../../../catalog-client/package.json';
 import { version as catalogModel } from '../../../catalog-model/package.json';
@@ -68,6 +69,7 @@ import { version as pluginTechdocsBackend } from '../../../../plugins/techdocs-b
 import { version as pluginUserSettings } from '../../../../plugins/user-settings/package.json';
 
 export const packageVersions = {
+  '@backstage/app-defaults': appDefaults,
   '@backstage/backend-common': backendCommon,
   '@backstage/catalog-client': catalogClient,
   '@backstage/catalog-model': catalogModel,

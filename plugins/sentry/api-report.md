@@ -9,6 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -34,7 +35,11 @@ export class MockSentryApi implements SentryApi {
 //
 // @public (undocumented)
 export class ProductionSentryApi implements SentryApi {
-  constructor(discoveryApi: DiscoveryApi, organization: string);
+  constructor(
+    discoveryApi: DiscoveryApi,
+    organization: string,
+    identityApi?: IdentityApi | undefined,
+  );
   // (undocumented)
   fetchIssues(
     project: string,

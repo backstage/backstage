@@ -1,0 +1,61 @@
+name: 'Snyk Github Issue Sync'
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Beginning of yarn setup, keep in sync between all workflows, see ci.yml
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+      - name: cache all node_modules
+        id: cache-modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
+      - name: find location of global yarn cache
+        id: yarn-cache
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: cache global yarn cache
+        uses: actions/cache@v2
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: yarn install
+        run: yarn install --frozen-lockfile
+      # End of yarn setup
+
+      - name: Create Snyk report
+        uses: snyk/actions/node@master
+        continue-on-error: true # Snyk CLI exits with error when vulnerabilities are found
+        with:
+          args: >
+            --yarn-workspaces
+            --org=backstage-dgh
+            --strict-out-of-sync=false
+            --json-file-output=snyk.json
+          json: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Update Github issues
+        run: yarn ts-node scripts/snyk-github-issue-sync.ts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

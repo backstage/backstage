@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import GithubIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { GithubSession } from './types';
 import {
@@ -48,7 +47,7 @@ export type GithubAuthResponse = {
 const DEFAULT_PROVIDER = {
   id: 'github',
   title: 'GitHub',
-  icon: GithubIcon,
+  icon: () => null,
 };
 
 /**

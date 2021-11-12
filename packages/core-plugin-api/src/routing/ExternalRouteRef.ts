@@ -22,6 +22,9 @@ import {
   OptionalParams,
 } from './types';
 
+/**
+ * @internal
+ */
 export class ExternalRouteRefImpl<
   Params extends AnyParams,
   Optional extends boolean,
@@ -42,6 +45,16 @@ export class ExternalRouteRefImpl<
   }
 }
 
+/**
+ * Creates a route descriptor, to be later bound to a concrete route by the app. Used to implement cross-plugin route references.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#routing-system}.
+ *
+ * @param options - Description of the route reference to be created.
+ * @public
+ */
 export function createExternalRouteRef<
   Params extends { [param in ParamKey]: string },
   Optional extends boolean = false,

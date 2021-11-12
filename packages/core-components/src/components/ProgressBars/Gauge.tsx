@@ -15,7 +15,7 @@
  */
 
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
+import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { Circle } from 'rc-progress';
 import React from 'react';
 
@@ -46,32 +46,45 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageGauge' },
 );
 
-type Props = {
+/** @public */
+export type GaugeProps = {
   value: number;
   fractional?: boolean;
   inverse?: boolean;
   unit?: string;
   max?: number;
+  getColor?: GaugePropsGetColor;
 };
 
-const defaultProps = {
+/** @public */
+export type GaugePropsGetColorOptions = {
+  palette: BackstagePalette;
+  value: number;
+  inverse?: boolean;
+  max?: number;
+};
+
+/** @public */
+export type GaugePropsGetColor = (args: GaugePropsGetColorOptions) => string;
+
+const defaultGaugeProps = {
   fractional: true,
   inverse: false,
   unit: '%',
   max: 100,
 };
 
-export function getProgressColor(
-  palette: BackstageTheme['palette'],
-  value: number,
-  inverse?: boolean,
-  max?: number,
-) {
+export const getProgressColor: GaugePropsGetColor = ({
+  palette,
+  value,
+  inverse,
+  max,
+}) => {
   if (isNaN(value)) {
     return '#ddd';
   }
 
-  const actualMax = max ? max : defaultProps.max;
+  const actualMax = max ? max : defaultGaugeProps.max;
   const actualValue = inverse ? actualMax - value : value;
 
   if (actualValue < actualMax / 3) {
@@ -81,14 +94,15 @@ export function getProgressColor(
   }
 
   return palette.status.ok;
-}
+};
 
 /** @public */
-export function Gauge(props: Props) {
+export function Gauge(props: GaugeProps) {
+  const { getColor = getProgressColor } = props;
   const classes = useStyles(props);
-  const theme = useTheme<BackstageTheme>();
+  const { palette } = useTheme<BackstageTheme>();
   const { value, fractional, inverse, unit, max } = {
-    ...defaultProps,
+    ...defaultGaugeProps,
     ...props,
   };
 
@@ -102,7 +116,7 @@ export function Gauge(props: Props) {
         percent={asPercentage}
         strokeWidth={12}
         trailWidth={12}
-        strokeColor={getProgressColor(theme.palette, asActual, inverse, max)}
+        strokeColor={getColor({ palette, value: asActual, inverse, max })}
         className={classes.circle}
       />
       <div className={classes.overlay}>

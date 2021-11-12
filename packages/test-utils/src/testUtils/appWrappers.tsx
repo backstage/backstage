@@ -18,7 +18,10 @@ import React, { ComponentType, ReactNode, ReactElement } from 'react';
 import { MemoryRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 import { lightTheme } from '@backstage/theme';
-import { createApp } from '@backstage/core-app-api';
+import { ThemeProvider } from '@material-ui/core/styles';
+import { CssBaseline } from '@material-ui/core';
+import MockIcon from '@material-ui/icons/AcUnit';
+import { createSpecializedApp } from '@backstage/core-app-api';
 import {
   BootErrorPageProps,
   RouteRef,
@@ -28,7 +31,33 @@ import {
 } from '@backstage/core-plugin-api';
 import { RenderResult } from '@testing-library/react';
 import { renderWithEffects } from './testingLibrary';
+import { defaultApis } from './defaultApis';
 import { mockApis } from './mockApis';
+
+const mockIcons = {
+  'kind:api': MockIcon,
+  'kind:component': MockIcon,
+  'kind:domain': MockIcon,
+  'kind:group': MockIcon,
+  'kind:location': MockIcon,
+  'kind:system': MockIcon,
+  'kind:user': MockIcon,
+
+  brokenImage: MockIcon,
+  catalog: MockIcon,
+  scaffolder: MockIcon,
+  techdocs: MockIcon,
+  search: MockIcon,
+  chat: MockIcon,
+  dashboard: MockIcon,
+  docs: MockIcon,
+  email: MockIcon,
+  github: MockIcon,
+  group: MockIcon,
+  help: MockIcon,
+  user: MockIcon,
+  warning: MockIcon,
+};
 
 const ErrorBoundaryFallback = ({ error }: { error: Error }) => {
   throw new Error(`Reached ErrorBoundaryFallback Page with error, ${error}`);
@@ -90,8 +119,9 @@ export function wrapInTestApp(
   const { routeEntries = ['/'] } = options;
   const boundRoutes = new Map<ExternalRouteRef, RouteRef>();
 
-  const app = createApp({
+  const app = createSpecializedApp({
     apis: mockApis,
+    defaultApis,
     // Bit of a hack to make sure that the default config loader isn't used
     // as that would force every single test to wait for config loading.
     configLoader: false as unknown as undefined,
@@ -104,13 +134,18 @@ export function wrapInTestApp(
         <MemoryRouter initialEntries={routeEntries} children={children} />
       ),
     },
+    icons: mockIcons,
     plugins: [],
     themes: [
       {
         id: 'light',
-        theme: lightTheme,
         title: 'Test App Theme',
         variant: 'light',
+        Provider: ({ children }) => (
+          <ThemeProvider theme={lightTheme}>
+            <CssBaseline>{children}</CssBaseline>
+          </ThemeProvider>
+        ),
       },
     ],
     bindRoutes: ({ bind }) => {

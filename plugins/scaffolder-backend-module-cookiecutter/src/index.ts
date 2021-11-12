@@ -15,7 +15,7 @@
  */
 
 /**
- * A module for the scaffolder backend that lets you template projects using cookiecutter
+ * A module for the scaffolder backend that lets you template projects using {@link https://cookiecutter.readthedocs.io/ | cookiecutter}.
  *
  * @packageDocumentation
  */

@@ -350,21 +350,30 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
   );
 }
 
-export const SidebarSpace = styled('div')({
-  flex: 1,
-});
+export const SidebarSpace = styled('div')(
+  {
+    flex: 1,
+  },
+  { name: 'BackstageSidebarSpace' },
+);
 
-export const SidebarSpacer = styled('div')({
-  height: 8,
-});
+export const SidebarSpacer = styled('div')(
+  {
+    height: 8,
+  },
+  { name: 'BackstageSidebarSpacer' },
+);
 
-export const SidebarDivider = styled('hr')({
-  height: 1,
-  width: '100%',
-  background: '#383838',
-  border: 'none',
-  margin: '12px 0px',
-});
+export const SidebarDivider = styled('hr')(
+  {
+    height: 1,
+    width: '100%',
+    background: '#383838',
+    border: 'none',
+    margin: '12px 0px',
+  },
+  { name: 'BackstageSidebarDivider' },
+);
 
 const styledScrollbar = (theme: Theme): CreateCSSProperties => ({
   overflowY: 'auto',

@@ -46,9 +46,7 @@
   "resolutions": {
     "**/@graphql-codegen/cli/**/ws": "^7.4.6",
     "**/@roadiehq/**/@backstage/plugin-catalog": "*",
-    "**/@roadiehq/**/@backstage/catalog-model": "*",
-    "graphql-language-service-interface": "2.8.2",
-    "graphql-language-service-parser": "1.9.0"
+    "**/@roadiehq/**/@backstage/catalog-model": "*"
   },
   "version": "1.0.0",
   "dependencies": {
@@ -58,9 +56,10 @@
     "@microsoft/tsdoc": "^0.13.2"
   },
   "devDependencies": {
-    "@types/webpack": "^5.28.0",
     "@changesets/cli": "^2.14.0",
+    "@octokit/rest": "^18.12.0",
     "@spotify/prettier-config": "^11.0.0",
+    "@types/webpack": "^5.28.0",
     "command-exists": "^1.2.9",
     "concurrently": "^6.0.0",
     "eslint-plugin-notice": "^0.9.10",
@@ -68,8 +67,10 @@
     "husky": "^6.0.0",
     "lerna": "^4.0.0",
     "lint-staged": "^11.1.2",
+    "minimist": "^1.2.5",
     "prettier": "^2.2.1",
     "shx": "^0.3.2",
+    "ts-node": "^10.4.0",
     "yarn-lock-check": "^1.0.5"
   },
   "prettier": "@spotify/prettier-config",

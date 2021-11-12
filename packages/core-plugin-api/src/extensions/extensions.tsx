@@ -22,7 +22,12 @@ import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin/types';
 import { PluginErrorBoundary } from './PluginErrorBoundary';
 
-type ComponentLoader<T> =
+/**
+ * Lazy or synchronous retrieving of extension components.
+ *
+ * @public
+ */
+export type ComponentLoader<T> =
   | {
       lazy: () => Promise<T>;
     }
@@ -30,9 +35,19 @@ type ComponentLoader<T> =
       sync: T;
     };
 
-// We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
-// ComponentType inserts children as an optional prop whether the inner component accepts it or not,
-// making it impossible to make the usage of children type safe.
+/**
+ * Extension for components that can have its own URL route (top-level pages, tabs etc.).
+ *
+ * @remarks
+ *
+ * We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
+ * ComponentType inserts children as an optional prop whether the inner component accepts it or not,
+ * making it impossible to make the usage of children type safe.
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#extensions}.
+ *
+ * @public
+ */
 export function createRoutableExtension<
   T extends (props: any) => JSX.Element | null,
 >(options: {
@@ -40,7 +55,7 @@ export function createRoutableExtension<
   mountPoint: RouteRef;
   name?: string;
 }): Extension<T> {
-  const { component, mountPoint } = options;
+  const { component, mountPoint, name } = options;
   return createReactExtension({
     component: {
       lazy: () =>
@@ -70,7 +85,7 @@ export function createRoutableExtension<
             };
 
             const componentName =
-              options.name ||
+              name ||
               (InnerComponent as { displayName?: string }).displayName ||
               InnerComponent.name ||
               'LazyComponent';
@@ -93,13 +108,23 @@ export function createRoutableExtension<
     data: {
       'core.mountPoint': mountPoint,
     },
-    name: options.name,
+    name,
   });
 }
 
-// We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
-// ComponentType inserts children as an optional prop whether the inner component accepts it or not,
-// making it impossible to make the usage of children type safe.
+/**
+ * Plain React component extension.
+ *
+ * @remarks
+ *
+ * We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
+ * ComponentType inserts children as an optional prop whether the inner component accepts it or not,
+ * making it impossible to make the usage of children type safe.
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#extensions}.
+ *
+ * @public
+ */
 export function createComponentExtension<
   T extends (props: any) => JSX.Element | null,
 >(options: { component: ComponentLoader<T>; name?: string }): Extension<T> {
@@ -107,9 +132,19 @@ export function createComponentExtension<
   return createReactExtension({ component, name });
 }
 
-// We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
-// ComponentType inserts children as an optional prop whether the inner component accepts it or not,
-// making it impossible to make the usage of children type safe.
+/**
+ * Used by {@link createComponentExtension} and {@link createRoutableExtension}.
+ *
+ * @remarks
+ *
+ * We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
+ * ComponentType inserts children as an optional prop whether the inner component accepts it or not,
+ * making it impossible to make the usage of children type safe.
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#extensions}.
+ *
+ * @public
+ */
 export function createReactExtension<
   T extends (props: any) => JSX.Element | null,
 >(options: {
@@ -117,7 +152,14 @@ export function createReactExtension<
   data?: Record<string, unknown>;
   name?: string;
 }): Extension<T> {
-  const { data = {} } = options;
+  const { data = {}, name } = options;
+  if (!name) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Declaring extensions without name is DEPRECATED. ' +
+        'Make sure that all usages of createReactExtension, createComponentExtension and createRoutableExtension provide a name.',
+    );
+  }
 
   let Component: T;
   if ('lazy' in options.component) {
@@ -129,7 +171,7 @@ export function createReactExtension<
     Component = options.component.sync;
   }
   const componentName =
-    options.name ||
+    name ||
     (Component as { displayName?: string }).displayName ||
     Component.name ||
     'Component';
@@ -151,7 +193,7 @@ export function createReactExtension<
               <AnalyticsContext
                 attributes={{
                   pluginId: plugin.getId(),
-                  ...(options.name && { extension: options.name }),
+                  ...(name && { extension: name }),
                   ...(mountPoint && { routeRef: mountPoint.id }),
                 }}
               >

@@ -254,7 +254,7 @@ describe('createPublishGithubPullRequestAction', () => {
     });
   });
 
-  describe('with executable file', () => {
+  describe('with executable file mode 755', () => {
     let input: GithubPullRequestActionInput;
     let ctx: ActionContext<GithubPullRequestActionInput>;
 
@@ -268,9 +268,9 @@ describe('createPublishGithubPullRequestAction', () => {
 
       mockFs({
         [workspacePath]: {
-          'file.txt': mockFs.file({
-            content: 'Hello there!',
-            mode: 33277, // File mode: 100755
+          'hello.sh': mockFs.file({
+            content: 'echo Hello there!',
+            mode: 0o100755,
           }),
         },
       });
@@ -297,8 +297,76 @@ describe('createPublishGithubPullRequestAction', () => {
           {
             commit: 'Create my new app',
             files: {
-              'file.txt': {
-                content: Buffer.from('Hello there!').toString('base64'),
+              'hello.sh': {
+                content: Buffer.from('echo Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100755',
+              },
+            },
+          },
+        ],
+      });
+    });
+
+    it('creates outputs for the url', async () => {
+      await instance.handler(ctx);
+
+      expect(ctx.output).toHaveBeenCalledWith(
+        'remoteUrl',
+        'https://github.com/myorg/myrepo/pull/123',
+      );
+    });
+    afterEach(() => {
+      mockFs.restore();
+      jest.resetAllMocks();
+    });
+  });
+
+  describe('with executable file mode 775', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+      };
+
+      mockFs({
+        [workspacePath]: {
+          'hello.sh': mockFs.file({
+            content: 'echo Hello there!',
+            mode: 0o100775,
+          }),
+        },
+      });
+
+      ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+    });
+    it('creates a pull request', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app',
+            files: {
+              'hello.sh': {
+                content: Buffer.from('echo Hello there!').toString('base64'),
                 encoding: 'base64',
                 mode: '100755',
               },
