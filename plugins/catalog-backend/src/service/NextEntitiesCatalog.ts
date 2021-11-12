@@ -131,29 +131,25 @@ function parseFilter(
   db: Knex,
 ): Knex.QueryBuilder {
   if (isEntitiesSearchFilter(filter)) {
-    return query.where(function filterFunction() {
+    return query.andWhere(function filterFunction() {
       addCondition(this, db, filter);
     });
   }
 
   if (isOrEntityFilter(filter)) {
-    let cumulativeQuery = query;
-    for (const subFilter of filter.anyOf ?? []) {
-      cumulativeQuery = cumulativeQuery.orWhere(subQuery =>
-        parseFilter(subFilter, subQuery, db),
-      );
-    }
-    return cumulativeQuery;
+    return query.andWhere(function filterFunction() {
+      for (const subFilter of filter.anyOf ?? []) {
+        this.orWhere(subQuery => parseFilter(subFilter, subQuery, db));
+      }
+    });
   }
 
   if (isAndEntityFilter(filter)) {
-    let cumulativeQuery = query;
-    for (const subFilter of filter.allOf ?? []) {
-      cumulativeQuery = cumulativeQuery.andWhere(subQuery =>
-        parseFilter(subFilter, subQuery, db),
-      );
-    }
-    return cumulativeQuery;
+    return query.andWhere(function filterFunction() {
+      for (const subFilter of filter.allOf ?? []) {
+        this.andWhere(subQuery => parseFilter(subFilter, subQuery, db));
+      }
+    });
   }
 
   return query;
