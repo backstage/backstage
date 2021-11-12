@@ -1,22 +1,30 @@
 const path = require('path');
 const WebpackPluginFailBuildOnWarning = require('./webpack-plugin-fail-build-on-warning');
 
+/**
+ * This set of stories are the ones that we publish to backstage.io.
+ */
+const BACKSTAGE_CORE_STORIES = [
+  'packages/core-components',
+  'plugins/org',
+  'plugins/search',
+];
+
 module.exports = ({ args }) => {
   // Calling storybook with no args causes our default list of stories to be used.
   // This set of stories are the ones that we publish to backstage.io
   //
   // If it's called with args, each arg should be the path to a package that we will
   // show the stories from, for example `yarn storybook plugins/catalog`.
-  let stories;
-  if (args.length === 0) {
-    stories = [
-      '../../core-components/src/**/*.stories.tsx',
-      '../../../plugins/org/src/**/*.stories.tsx',
-      '../../../plugins/search/src/**/*.stories.tsx',
-    ];
-  } else {
-    stories = args.map(arg => `../../../${arg}/src/**/*.stories.tsx`);
-  }
+
+  const rootPath = '../../..';
+  const storiesSrcGlob = 'src/**/*.stories.tsx';
+
+  const getStoriesPath = package =>
+    path.posix.join(rootPath, package, storiesSrcGlob);
+
+  const packages = args.length === 0 ? BACKSTAGE_CORE_STORIES : args;
+  const stories = packages.map(getStoriesPath);
 
   return {
     stories,
