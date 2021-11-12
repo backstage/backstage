@@ -55,7 +55,7 @@ export function isValidSingleOwnerId(id: string): boolean {
 }
 
 export function parseOwnerIds(
-  spaceSeparatedOwnerIds: string,
+  spaceSeparatedOwnerIds: string | undefined,
 ): string[] | undefined {
   if (!spaceSeparatedOwnerIds || typeof spaceSeparatedOwnerIds !== 'string') {
     return undefined;
