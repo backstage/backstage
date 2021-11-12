@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
+import { resolve as resolvePath } from 'path';
 import { paths } from '../../../paths';
 import { Task, templatingTask } from '../../../tasks';
 import { Lockfile } from '../../../versioning';
@@ -62,6 +63,13 @@ export async function executePluginPackageTemplate(
     options.values,
     createPackageVersionProvider(lockfile),
   );
+
+  // Format package.json if it exists
+  const targetPkgJsonPath = resolvePath(targetDir, 'package.json');
+  if (await fs.pathExists(targetPkgJsonPath)) {
+    const pkgJson = await fs.readJson(targetPkgJsonPath);
+    await fs.writeJson(targetPkgJsonPath, pkgJson, { spaces: 2 });
+  }
 
   Task.section('Installing');
   await Task.forItem('moving', shortPluginDir, async () => {
