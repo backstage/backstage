@@ -180,7 +180,14 @@ export class DocsSynchronizer {
     const namespace = entity.metadata?.namespace || ENTITY_DEFAULT_NAMESPACE;
     const kind = entity.kind;
     const name = entity.metadata.name;
-    const entityTripletPath = `${namespace}/${kind}/${name}`;
+    const legacyPathCasing =
+      this.config.getOptionalBoolean(
+        'techdocs.legacyUseCaseSensitiveTripletPaths',
+      ) || false;
+    const tripletPath = `${namespace}/${kind}/${name}`;
+    const entityTripletPath = `${
+      legacyPathCasing ? tripletPath : tripletPath.toLocaleLowerCase()
+    }`;
     try {
       const [sourceMetadata, cachedMetadata] = await Promise.all([
         this.publisher.fetchTechDocsMetadata({ namespace, kind, name }),
@@ -211,6 +218,7 @@ export class DocsSynchronizer {
         finish({ updated: false });
       }
     } catch (e) {
+      assertError(e);
       // In case of error, log and allow the user to go about their business.
       this.logger.error(
         `Error syncing cache for ${entityTripletPath}: ${e.message}`,

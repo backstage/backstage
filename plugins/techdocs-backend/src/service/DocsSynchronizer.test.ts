@@ -66,12 +66,12 @@ describe('DocsSynchronizer', () => {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
   };
-  const cache: jest.Mocked<TechDocsCache> = ({
+  const cache: jest.Mocked<TechDocsCache> = {
     get: jest.fn(),
     set: jest.fn(),
     invalidate: jest.fn(),
     invalidateMultiple: jest.fn(),
-  } as unknown) as jest.Mocked<TechDocsCache>;
+  } as unknown as jest.Mocked<TechDocsCache>;
 
   let docsSynchronizer: DocsSynchronizer;
   const mockResponseHandler: jest.Mocked<DocsSynchronizerSyncOpts> = {
@@ -264,6 +264,36 @@ describe('DocsSynchronizer', () => {
       });
 
       await docsSynchronizer.doCacheSync({
+        responseHandler: mockResponseHandler,
+        discovery,
+        token: undefined,
+        entity,
+      });
+
+      expect(mockResponseHandler.finish).toBeCalledWith({ updated: true });
+      expect(cache.invalidateMultiple).toHaveBeenCalledWith([
+        'default/component/test/index.html',
+      ]);
+    });
+
+    it('should invalidate expected files when source/cached metadata differ with legacy casing', async () => {
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      (publisher.fetchTechDocsMetadata as jest.Mock).mockResolvedValue({
+        build_timestamp: 456,
+        files: ['index.html'],
+      });
+
+      const docsSynchronizerWithLegacy = new DocsSynchronizer({
+        publisher,
+        config: new ConfigReader({
+          techdocs: { legacyUseCaseSensitiveTripletPaths: true },
+        }),
+        logger: getVoidLogger(),
+        scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+        cache,
+      });
+
+      await docsSynchronizerWithLegacy.doCacheSync({
         responseHandler: mockResponseHandler,
         discovery,
         token: undefined,

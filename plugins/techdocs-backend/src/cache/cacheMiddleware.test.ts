@@ -46,12 +46,12 @@ describe('createCacheMiddleware', () => {
   let app: express.Express;
 
   beforeEach(async () => {
-    cache = ({
+    cache = {
       get: jest.fn().mockResolvedValue(undefined),
       set: jest.fn().mockResolvedValue(undefined),
       invalidate: jest.fn().mockResolvedValue(undefined),
       invalidateMultiple: jest.fn().mockResolvedValue(undefined),
-    } as unknown) as jest.Mocked<TechDocsCache>;
+    } as unknown as jest.Mocked<TechDocsCache>;
     const router = await createCacheMiddleware({
       logger: getVoidLogger(),
       cache,
