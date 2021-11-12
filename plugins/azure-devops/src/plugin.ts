@@ -16,7 +16,7 @@
 
 import {
   azurePipelinesEntityContentRouteRef,
-  azurePrsRootRouteRef,
+  azurePullRequestDashboardRouteRef,
 } from './routes';
 import {
   createApiFactory,
@@ -45,7 +45,7 @@ export const azureDevOpsPlugin = createPlugin({
     }),
   ],
   routes: {
-    azurePrsRoot: azurePrsRootRouteRef,
+    azurePullRequestDashboard: azurePullRequestDashboardRouteRef,
     azurePipelinesEntityContent: azurePipelinesEntityContentRouteRef,
   },
 });
@@ -55,7 +55,7 @@ export const AzurePullRequestsPage = azureDevOpsPlugin.provide(
     name: 'AzurePullRequestsPage',
     component: () =>
       import('./components/PullRequestsPage').then(m => m.PullRequestsPage),
-    mountPoint: azurePrsRootRouteRef,
+    mountPoint: azurePullRequestDashboardRouteRef,
   }),
 );
 

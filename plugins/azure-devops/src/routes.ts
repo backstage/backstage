@@ -16,7 +16,7 @@
 
 import { createRouteRef } from '@backstage/core-plugin-api';
 
-export const azurePrsRootRouteRef = createRouteRef({
+export const azurePullRequestDashboardRouteRef = createRouteRef({
   path: '',
   title: 'Azure Pull Requests',
 });

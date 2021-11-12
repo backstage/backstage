@@ -15,7 +15,7 @@ import { SvgIconProps } from '@material-ui/core';
 // @public (undocumented)
 export const azureDevOpsPlugin: BackstagePlugin<
   {
-    azurePrsRoot: RouteRef<undefined>;
+    azurePullRequestDashboard: RouteRef<undefined>;
     azurePipelinesEntityContent: RouteRef<undefined>;
   },
   {}
