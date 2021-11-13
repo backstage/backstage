@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import chalk from 'chalk';
 import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
 import { paths } from '../../paths';
@@ -42,6 +43,9 @@ export const frontendPlugin = createFactory<Options>({
 
     const name = ctx.scope ? `@${ctx.scope}/plugin-${id}` : `plugin-${id}`;
     const extensionName = `${upperFirst(camelCase(id))}Page`;
+
+    Task.log();
+    Task.log(`Creating backend plugin ${chalk.cyan(name)}`);
 
     const targetDir = ctx.isMonoRepo
       ? paths.resolveTargetRoot('plugins', id)

@@ -80,9 +80,6 @@ export default async (cmd: Command) => {
 
   let modified = false;
   try {
-    Task.log();
-    Task.log(`Creating new ${factory.name}`);
-
     await factory.create(options, {
       isMonoRepo,
       defaultVersion,

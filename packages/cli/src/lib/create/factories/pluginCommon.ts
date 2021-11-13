@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import chalk from 'chalk';
 import { paths } from '../../paths';
 import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
 import { createFactory, CreateContext } from '../types';
@@ -37,6 +38,9 @@ export const pluginCommon = createFactory<Options>({
   async create(options: Options, ctx: CreateContext) {
     const id = `${options.id}-common`;
     const name = ctx.scope ? `@${ctx.scope}/plugin-${id}` : `plugin-${id}`;
+
+    Task.log();
+    Task.log(`Creating backend plugin ${chalk.cyan(name)}`);
 
     const targetDir = ctx.isMonoRepo
       ? paths.resolveTargetRoot('plugins', id)

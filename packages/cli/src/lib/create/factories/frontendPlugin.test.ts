@@ -103,6 +103,8 @@ describe('frontendPlugin factory', () => {
     expect(modified).toBe(true);
 
     expect(output).toEqual([
+      '',
+      'Creating backend plugin plugin-test',
       'Checking Prerequisites:',
       'availability  plugins/test ✔',
       'creating      temp dir ✔',

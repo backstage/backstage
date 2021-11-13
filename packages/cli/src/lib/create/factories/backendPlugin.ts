@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import chalk from 'chalk';
 import camelCase from 'lodash/camelCase';
 import { paths } from '../../paths';
 import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
@@ -39,6 +40,9 @@ export const backendPlugin = createFactory<Options>({
   async create(options: Options, ctx: CreateContext) {
     const id = `${options.id}-backend`;
     const name = ctx.scope ? `@${ctx.scope}/plugin-${id}` : `plugin-${id}`;
+
+    Task.log();
+    Task.log(`Creating backend plugin ${chalk.cyan(name)}`);
 
     const targetDir = ctx.isMonoRepo
       ? paths.resolveTargetRoot('plugins', id)

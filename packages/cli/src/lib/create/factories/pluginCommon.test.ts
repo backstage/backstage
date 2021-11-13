@@ -85,6 +85,8 @@ describe('pluginCommon factory', () => {
     expect(modified).toBe(true);
 
     expect(output).toEqual([
+      '',
+      'Creating backend plugin plugin-test-common',
       'Checking Prerequisites:',
       'availability  plugins/test-common ✔',
       'creating      temp dir ✔',
