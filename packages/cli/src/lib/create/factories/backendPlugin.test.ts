@@ -16,35 +16,17 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
-import { resolve as resolvePath } from 'path';
-import { WriteStream } from 'tty';
 import { paths } from '../../paths';
 import { Task } from '../../tasks';
 import { FactoryRegistry } from '../FactoryRegistry';
+import { createMockOutputStream, mockPaths } from './common/testUtils';
 import { backendPlugin } from './backendPlugin';
-
-function createMockOutputStream() {
-  const output = new Array<string>();
-  return [
-    output,
-    {
-      cursorTo: () => {},
-      clearLine: () => {},
-      moveCursor: () => {},
-      write: (msg: string) =>
-        // Clean up colors and whitespace
-        // eslint-disable-next-line no-control-regex
-        output.push(msg.replace(/\x1B\[\d\dm/g, '').trim()),
-    } as unknown as WriteStream & { fd: any },
-  ] as const;
-}
 
 describe('backendPlugin factory', () => {
   beforeEach(() => {
-    jest.spyOn(paths, 'targetRoot', 'get').mockReturnValue('/root');
-    jest
-      .spyOn(paths, 'resolveTargetRoot')
-      .mockImplementation((...ps) => resolvePath('/root', ...ps));
+    mockPaths({
+      targetRoot: '/root',
+    });
   });
 
   afterEach(() => {
