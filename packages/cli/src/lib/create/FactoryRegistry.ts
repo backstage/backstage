@@ -16,9 +16,38 @@
 
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import { AnyFactory } from './types';
+import { AnyFactory, Prompt } from './types';
 import * as factories from './factories';
 import partition from 'lodash/partition';
+
+function applyPromptMessageTransforms<T>(
+  prompt: Prompt<T>,
+  transforms: {
+    message: (msg: string) => string;
+    error: (msg: string) => string;
+  },
+): Prompt<T> {
+  return {
+    ...prompt,
+    message:
+      prompt.message &&
+      (async answers => {
+        if (typeof prompt.message === 'function') {
+          return transforms.message(await prompt.message(answers));
+        }
+        return transforms.message(await prompt.message!);
+      }),
+    validate:
+      prompt.validate &&
+      (async (...args) => {
+        const result = await prompt.validate!(...args);
+        if (typeof result === 'string') {
+          return transforms.error(result);
+        }
+        return result;
+      }),
+  };
+}
 
 export class FactoryRegistry {
   private static factoryMap = new Map<string, AnyFactory>(
@@ -82,19 +111,12 @@ export class FactoryRegistry {
       }
 
       currentOptions = await inquirer.prompt(
-        needsAnswers.map(option => ({
-          ...option,
-          message: option.message && chalk.blue(option.message),
-          validate:
-            option.validate &&
-            (async (...args) => {
-              const result = await option.validate!(...args);
-              if (typeof result === 'string') {
-                return chalk.red(result);
-              }
-              return result;
-            }),
-        })),
+        needsAnswers.map(option =>
+          applyPromptMessageTransforms(option, {
+            message: chalk.blue,
+            error: chalk.red,
+          }),
+        ),
         currentOptions,
       );
     }
