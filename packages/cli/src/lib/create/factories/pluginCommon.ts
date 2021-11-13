@@ -36,15 +36,18 @@ export const pluginCommon = createFactory<Options>({
   }),
   optionsPrompts: [pluginIdPrompt(), ownerPrompt()],
   async create(options: Options, ctx: CreateContext) {
-    const id = `${options.id}-common`;
-    const name = ctx.scope ? `@${ctx.scope}/plugin-${id}` : `plugin-${id}`;
+    const { id } = options;
+    const suffix = `${id}-common`;
+    const name = ctx.scope
+      ? `@${ctx.scope}/plugin-${suffix}`
+      : `plugin-${suffix}`;
 
     Task.log();
     Task.log(`Creating backend plugin ${chalk.cyan(name)}`);
 
     const targetDir = ctx.isMonoRepo
-      ? paths.resolveTargetRoot('plugins', id)
-      : paths.resolveTargetRoot(`backstage-plugin-${id}`);
+      ? paths.resolveTargetRoot('plugins', suffix)
+      : paths.resolveTargetRoot(`backstage-plugin-${suffix}`);
 
     await executePluginPackageTemplate(ctx, {
       targetDir,
@@ -59,7 +62,7 @@ export const pluginCommon = createFactory<Options>({
     });
 
     if (options.owner) {
-      await addCodeownersEntry(`/plugins/${id}`, options.owner);
+      await addCodeownersEntry(`/plugins/${suffix}`, options.owner);
     }
 
     await Task.forCommand('yarn install', { cwd: targetDir, optional: true });

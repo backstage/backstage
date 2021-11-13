@@ -29,6 +29,11 @@ describe('pluginCommon factory', () => {
     });
   });
 
+  afterEach(() => {
+    mockFs.restore();
+    jest.resetAllMocks();
+  });
+
   it('should create a common plugin package', async () => {
     mockFs({
       '/root': {
@@ -72,7 +77,7 @@ describe('pluginCommon factory', () => {
       'templating    README.md.hbs ✔',
       'templating    package.json.hbs ✔',
       'copying       tsconfig.json ✔',
-      'copying       index.ts ✔',
+      'templating    index.ts.hbs ✔',
       'copying       setupTests.ts ✔',
       'Installing:',
       'moving        plugins/test-common ✔',
@@ -83,7 +88,7 @@ describe('pluginCommon factory', () => {
     ).resolves.toEqual(
       expect.objectContaining({
         name: 'plugin-test-common',
-        description: 'Common functionalities for the test-common plugin',
+        description: 'Common functionalities for the test plugin',
         private: true,
         version: '1.0.0',
       }),
