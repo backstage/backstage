@@ -15,7 +15,12 @@
  */
 
 import {
+  Build,
+  BuildDefinitionReference,
+} from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import {
   BuildResult,
+  BuildRun,
   BuildStatus,
   DashboardPullRequest,
   Policy,
@@ -35,7 +40,6 @@ import {
   getArtifactId,
 } from '../utils';
 
-import { Build, BuildDefinitionReference } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { Logger } from 'winston';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
 import { TeamMember } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
@@ -60,46 +64,19 @@ export class AzureDevOpsApi {
     return client.getRepository(repoName, projectName);
   }
 
-  public async getBuildDefinitions(
-    projectName: string,
-    definitionName: string,
-  ): Promise<BuildDefinitionReference[]> {
-    this.logger?.debug(
-      `Calling Azure DevOps REST API, getting Build Definitions for ${definitionName} in Project ${projectName}`,
-    );
-
-    const client = await this.webApi.getBuildApi();
-    return client.getDefinitions(
-      projectName,
-      definitionName,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-    );
-  }
-
   public async getBuildList(
     projectName: string,
-    definitions?: number[],
-    repoId?: string,
-    top?: number,
+    repoId: string,
+    top: number,
   ): Promise<Build[]> {
+    this.logger?.debug(
+      `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository Id ${repoId} for Project ${projectName}`,
+    );
+
     const client = await this.webApi.getBuildApi();
     return client.getBuilds(
       projectName,
-      definitions,
+      undefined,
       undefined,
       undefined,
       undefined,
@@ -118,7 +95,7 @@ export class AzureDevOpsApi {
       undefined,
       undefined,
       repoId,
-      repoId ? 'TfsGit' : undefined,
+      'TfsGit',
     );
   }
 
@@ -134,36 +111,7 @@ export class AzureDevOpsApi {
     const gitRepository = await this.getGitRepository(projectName, repoName);
     const buildList = await this.getBuildList(
       projectName,
-      undefined,
       gitRepository.id as string,
-      top,
-    );
-
-    const repoBuilds: RepoBuild[] = buildList.map(build => {
-      return mappedRepoBuild(build);
-    });
-
-    return repoBuilds;
-  }
-
-  public async getDefinitionBuilds(
-    projectName: string,
-    definitionName: string,
-    top: number,
-  ) {
-    this.logger?.debug(
-      `Calling Azure DevOps REST API, getting up to ${top} Builds for ${definitionName} in Project ${projectName}`,
-    );
-
-    const buildDefinitions = await this.getBuildDefinitions(
-      projectName,
-      definitionName,
-    );
-    const definitions = buildDefinitions.map(bd => bd.id) as number[];
-    const buildList = await this.getBuildList(
-      projectName,
-      definitions,
-      undefined,
       top,
     );
 
@@ -313,6 +261,101 @@ export class AzureDevOpsApi {
     return teamMembers
       .map(teamMember => teamMember.identity?.id)
       .filter((id): id is string => Boolean(id));
+  public async getBuildDefinitions(
+    projectName: string,
+    definitionName: string,
+  ): Promise<BuildDefinitionReference[]> {
+    this.logger?.debug(
+      `Calling Azure DevOps REST API, getting Build Definitions for ${definitionName} in Project ${projectName}`,
+    );
+
+    const client = await this.webApi.getBuildApi();
+    return client.getDefinitions(
+      projectName,
+      definitionName,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    );
+  }
+
+  public async getBuilds(
+    projectName: string,
+    top: number,
+    repoId?: string,
+    definitions?: number[],
+  ): Promise<Build[]> {
+    this.logger?.debug(
+      `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository Id ${repoId} for Project ${projectName}`,
+    );
+
+    const client = await this.webApi.getBuildApi();
+    return client.getBuilds(
+      projectName,
+      definitions,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      top,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      repoId,
+      repoId ? 'TfsGit' : undefined,
+    );
+  }
+
+  public async getBuildRuns(
+    projectName: string,
+    top: number,
+    repoName?: string,
+    definitionName?: string,
+  ) {
+    let repoId: string | undefined;
+    let definitions: number[] | undefined;
+
+    if (repoName) {
+      const gitRepository = await this.getGitRepository(projectName, repoName);
+      repoId = gitRepository.id;
+    }
+
+    if (definitionName) {
+      const buildDefinitions = await this.getBuildDefinitions(
+        projectName,
+        definitionName,
+      );
+      definitions = buildDefinitions.map(bd => bd.id) as number[];
+    }
+
+    const builds = await this.getBuilds(projectName, top, repoId, definitions);
+
+    const buildRuns: BuildRun[] = builds.map(build => {
+      return mappedBuildRun(build);
+    });
+
+    return buildRuns;
   }
 }
 
@@ -349,5 +392,22 @@ export function mappedPullRequest(
     status: pullRequest.status,
     isDraft: pullRequest.isDraft,
     link: `${linkBaseUrl}/${pullRequest.pullRequestId}`,
+  };
+}
+
+export function mappedBuildRun(build: Build): BuildRun {
+  return {
+    id: build.id,
+    title: [build.definition?.name, build.buildNumber]
+      .filter(Boolean)
+      .join(' - '),
+    link: build._links?.web.href ?? '',
+    status: build.status ?? BuildStatus.None,
+    result: build.result ?? BuildResult.None,
+    queueTime: build.queueTime?.toISOString(),
+    startTime: build.startTime?.toISOString(),
+    finishTime: build.finishTime?.toISOString(),
+    source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
+    uniqueName: build.requestedFor?.uniqueName ?? 'N/A',
   };
 }

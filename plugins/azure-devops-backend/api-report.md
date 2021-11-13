@@ -4,6 +4,8 @@
 
 ```ts
 import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import { BuildDefinitionReference } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import { BuildRun } from '@backstage/plugin-azure-devops-common';
 import { Config } from '@backstage/config';
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import express from 'express';
@@ -25,9 +27,8 @@ export class AzureDevOpsApi {
   // (undocumented)
   getBuildList(
     projectName: string,
-    definitions?: number[],
-    repoId?: string,
-    top?: number,
+    repoId: string,
+    top: number,
   ): Promise<Build[]>;
   // (undocumented)
   getDashboardPullRequests(
