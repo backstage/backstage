@@ -65,10 +65,10 @@ export async function executePluginPackageTemplate(
   );
 
   // Format package.json if it exists
-  const targetPkgJsonPath = resolvePath(targetDir, 'package.json');
-  if (await fs.pathExists(targetPkgJsonPath)) {
-    const pkgJson = await fs.readJson(targetPkgJsonPath);
-    await fs.writeJson(targetPkgJsonPath, pkgJson, { spaces: 2 });
+  const pkgJsonPath = resolvePath(tempDir, 'package.json');
+  if (await fs.pathExists(pkgJsonPath)) {
+    const pkgJson = await fs.readJson(pkgJsonPath);
+    await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
   }
 
   Task.section('Installing');
