@@ -39,7 +39,9 @@ export const backendPlugin = createFactory<Options>({
   optionsPrompts: [pluginIdPrompt(), ownerPrompt()],
   async create(options: Options, ctx: CreateContext) {
     const id = `${options.id}-backend`;
-    const name = ctx.scope ? `@${ctx.scope}/plugin-${id}` : `plugin-${id}`;
+    const name = ctx.scope
+      ? `@${ctx.scope}/plugin-${id}`
+      : `backstage-plugin-${id}`;
 
     Task.log();
     Task.log(`Creating backend plugin ${chalk.cyan(name)}`);

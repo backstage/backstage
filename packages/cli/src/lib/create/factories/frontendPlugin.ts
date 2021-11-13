@@ -41,7 +41,9 @@ export const frontendPlugin = createFactory<Options>({
   async create(options: Options, ctx: CreateContext) {
     const { id } = options;
 
-    const name = ctx.scope ? `@${ctx.scope}/plugin-${id}` : `plugin-${id}`;
+    const name = ctx.scope
+      ? `@${ctx.scope}/plugin-${id}`
+      : `backstage-plugin-${id}`;
     const extensionName = `${upperFirst(camelCase(id))}Page`;
 
     Task.log();

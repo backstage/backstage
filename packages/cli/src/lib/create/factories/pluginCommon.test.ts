@@ -68,7 +68,7 @@ describe('pluginCommon factory', () => {
 
     expect(output).toEqual([
       '',
-      'Creating backend plugin plugin-test-common',
+      'Creating backend plugin backstage-plugin-test-common',
       'Checking Prerequisites:',
       'availability  plugins/test-common ✔',
       'creating      temp dir ✔',
@@ -87,7 +87,7 @@ describe('pluginCommon factory', () => {
       fs.readJson('/root/plugins/test-common/package.json'),
     ).resolves.toEqual(
       expect.objectContaining({
-        name: 'plugin-test-common',
+        name: 'backstage-plugin-test-common',
         description: 'Common functionalities for the test plugin',
         private: true,
         version: '1.0.0',

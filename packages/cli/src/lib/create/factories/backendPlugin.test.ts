@@ -73,7 +73,7 @@ describe('backendPlugin factory', () => {
 
     expect(output).toEqual([
       '',
-      'Creating backend plugin plugin-test-backend',
+      'Creating backend plugin backstage-plugin-test-backend',
       'Checking Prerequisites:',
       'availability  plugins/test-backend ✔',
       'creating      temp dir ✔',
@@ -97,7 +97,7 @@ describe('backendPlugin factory', () => {
       fs.readJson('/root/packages/backend/package.json'),
     ).resolves.toEqual({
       dependencies: {
-        'plugin-test-backend': '^1.0.0',
+        'backstage-plugin-test-backend': '^1.0.0',
       },
     });
 

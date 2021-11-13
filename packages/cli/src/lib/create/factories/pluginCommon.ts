@@ -40,7 +40,7 @@ export const pluginCommon = createFactory<Options>({
     const suffix = `${id}-common`;
     const name = ctx.scope
       ? `@${ctx.scope}/plugin-${suffix}`
-      : `plugin-${suffix}`;
+      : `backstage-plugin-${suffix}`;
 
     Task.log();
     Task.log(`Creating backend plugin ${chalk.cyan(name)}`);

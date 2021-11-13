@@ -86,7 +86,7 @@ describe('frontendPlugin factory', () => {
 
     expect(output).toEqual([
       '',
-      'Creating backend plugin plugin-test',
+      'Creating backend plugin backstage-plugin-test',
       'Checking Prerequisites:',
       'availability  plugins/test ✔',
       'creating      temp dir ✔',
@@ -117,14 +117,14 @@ describe('frontendPlugin factory', () => {
       fs.readJson('/root/packages/app/package.json'),
     ).resolves.toEqual({
       dependencies: {
-        'plugin-test': '^1.0.0',
+        'backstage-plugin-test': '^1.0.0',
       },
     });
 
     await expect(fs.readFile('/root/packages/app/src/App.tsx', 'utf8')).resolves
       .toBe(`
 import { createApp } from '@backstage/app-defaults';
-import { TestPage } from 'plugin-test';
+import { TestPage } from 'backstage-plugin-test';
 
 const router = (
   <FlatRoutes>
