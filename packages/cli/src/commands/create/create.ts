@@ -51,10 +51,20 @@ export default async (cmd: Command) => {
     providedOptions,
   );
 
-  const rootPackageJson = await fs.readJson(
-    paths.resolveTargetRoot('package.json'),
-  );
-  const isMonoRepo = Boolean(rootPackageJson.workspaces);
+  let isMonoRepo = false;
+  try {
+    const rootPackageJson = await fs.readJson(
+      paths.resolveTargetRoot('package.json'),
+    );
+    if (rootPackageJson.workspaces) {
+      isMonoRepo = true;
+    }
+  } catch (error) {
+    assertError(error);
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+  }
 
   let defaultVersion = '0.1.0';
   try {
