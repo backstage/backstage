@@ -14,34 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
-import {
-  makeStyles,
-  Grid,
-  Typography,
-  ListItem,
-  ListItemText,
-} from '@material-ui/core';
-import { Content, Page, InfoCard, GaugeCard } from '@backstage/core-components';
+import React from 'react';
+import { makeStyles, List, ListItem, ListItemText } from '@material-ui/core';
 import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import {
-  CheckResponse,
-  CheckResult,
-  BooleanCheckResult,
-  FactResponse,
-} from '@backstage/plugin-tech-insights-common';
-import ArrowDownardRounded from '@material-ui/icons/ArrowDownwardRounded';
-import IconButton from '@material-ui/core/IconButton';
-import ArrowUpwardOutlined from '@material-ui/icons/ArrowUpwardOutlined';
-import { BackstageTheme } from '@backstage/theme';
+import { CheckResult } from '@backstage/plugin-tech-insights-common';
 
 const useStyles = makeStyles(() => ({
-  listItem: {
-    display: 'flex',
-    paddingLeft: '0',
-    flexWrap: 'wrap',
-  },
   listItemText: {
     paddingRight: '1rem',
     flex: '0 1 auto',
@@ -67,16 +46,17 @@ export const BooleanCheck = ({ checkResult }: Prop) => {
   const classes = useStyles();
 
   return (
-    <ListItem className={classes.listItem}>
+    <List>
       {checkResult!.map(check => (
-        <>
+        <ListItem>
           <ListItemText
             primary={check.check.name}
+            secondary={check.check.description}
             className={classes.listItemText}
           />
           {renderResult(classes, check.result)}
-        </>
+        </ListItem>
       ))}
-    </ListItem>
+    </List>
   );
 };

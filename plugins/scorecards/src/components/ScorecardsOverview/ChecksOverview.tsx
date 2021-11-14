@@ -19,30 +19,15 @@ import { makeStyles, Grid, Typography } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';
 import { Content, Page, InfoCard } from '@backstage/core-components';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { BackstageTheme } from '@backstage/theme';
 import { scorecardsApiRef } from '../../api/ScorecardsApi';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
-  listItem: {
-    display: 'flex',
-    paddingLeft: '0',
-    flexWrap: 'wrap',
-  },
-  listItemText: {
-    paddingRight: '1rem',
-    flex: '0 1 auto',
-  },
+const useStyles = makeStyles(() => ({
   contentScorecards: {
     paddingLeft: 0,
     paddingRight: 0,
   },
-  details: {
-    width: '100%',
-    padding: '1rem',
-    backgroundColor: theme.palette.background.default,
-  },
-  icon: {
-    marginLeft: 'auto',
+  subheader: {
+    fontWeight: 'bold',
   },
 }));
 
@@ -62,21 +47,15 @@ export const ChecksOverview = ({ checks }: Checks) => {
     return (
       <Page themeId="home">
         <Content className={classes.contentScorecards}>
-          <Grid container direction="row">
-            <Grid item xs={12}>
-              <InfoCard title={checkRenderType.title}>
-                <Grid container direction="row">
-                  <Grid item>
-                    <Typography variant="h6">Check name</Typography>
-                  </Grid>
-                </Grid>
-                <Grid container direction="row">
-                  <Grid item xs={9}>
-                    {checkRenderType.component}
-                  </Grid>
-                </Grid>
-              </InfoCard>
-            </Grid>
+          <Grid item xs={12}>
+            <InfoCard title={checkRenderType.title}>
+              <Typography className={classes.subheader} variant="body1">
+                {checkRenderType.description}
+              </Typography>
+              <Grid item xs={11}>
+                {checkRenderType.component}
+              </Grid>
+            </InfoCard>
           </Grid>
         </Content>
       </Page>

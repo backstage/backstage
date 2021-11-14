@@ -21,6 +21,7 @@ import { BooleanCheck } from './BooleanCheck';
 export type CheckResultRenderer = {
   type: string;
   title: string;
+  description: string;
   component: React.ReactElement;
 };
 
@@ -31,6 +32,7 @@ export function defaultCheckResultRenderers(
     {
       type: 'json-rules-engine',
       title: 'Boolean scorecard',
+      description: 'This card represents an overview of boolean checks:',
       component: <BooleanCheck checkResult={value} />,
     },
   ];
