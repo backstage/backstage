@@ -14,39 +14,41 @@
  * limitations under the License.
  */
 
-import React, {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useMemo,
-} from 'react';
-import { BackstagePlugin } from '../plugin';
+import React, { PropsWithChildren, useMemo } from 'react';
+import {
+  createVersionedContext,
+  createVersionedValueMap,
+  useVersionedContext,
+} from '@backstage/version-bridge';
 
 export interface PluginInfo {
-  plugin: BackstagePlugin<any, any>;
+  pluginId: string;
   extensionName?: string;
   routeRef?: string;
 }
 
 export type PluginProviderProps = PluginInfo;
 
-const context = createContext<PluginInfo | undefined>(undefined);
+const CONTEXT_KEY = 'plugin-context';
+type VersionedContextType = { 1: PluginInfo };
+
+const context = createVersionedContext<VersionedContextType>(CONTEXT_KEY);
 
 export function PluginProvider(props: PropsWithChildren<PluginProviderProps>) {
-  const { plugin, extensionName, routeRef, children } = props;
+  const { pluginId, extensionName, routeRef, children } = props;
 
-  const value = useMemo(
-    (): PluginInfo => ({ plugin, extensionName, routeRef }),
-    [plugin, extensionName, routeRef],
+  const versionedValue = useMemo(
+    () => createVersionedValueMap({ 1: { pluginId, extensionName, routeRef } }),
+    [pluginId, extensionName, routeRef],
   );
 
-  return <context.Provider value={value} children={children} />;
+  return <context.Provider value={versionedValue} children={children} />;
 }
 
 /**
  * Gets information about the plugin the current component is part of.
  * May be `undefined` if the component is mounted outside a plugin scope.
  */
-export function usePlugin(): PluginInfo | undefined {
-  return useContext(context);
+export function usePluginInfo(): PluginInfo | undefined {
+  return useVersionedContext<VersionedContextType>(CONTEXT_KEY)?.atVersion(1);
 }

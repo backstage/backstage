@@ -23,5 +23,5 @@ export {
 export type { ComponentLoader } from './extensions';
 export { useElementFilter } from './useElementFilter';
 export type { ElementCollection } from './useElementFilter';
-export { usePlugin } from './PluginProvider';
+export { usePluginInfo } from './PluginProvider';
 export type { PluginInfo } from './PluginProvider';
