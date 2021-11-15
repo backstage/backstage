@@ -117,7 +117,7 @@ through the proxy.
 Learn more about [the different components](overview/what-is-backstage.md) that
 make up Backstage.
 
-### Why can't I dynamically install plugins without modifications the app?
+### Why can't I dynamically install plugins without modifications to the app?
 
 This decision is part of the core architecture and development flow of
 Backstage. Plugins have a lot of freedom in what they provide and how they are
