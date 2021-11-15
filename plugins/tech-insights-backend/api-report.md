@@ -24,6 +24,14 @@ export const buildTechInsightsContext: <
   options: TechInsightsOptions<CheckType, CheckResultType>,
 ) => Promise<TechInsightsContext<CheckType, CheckResultType>>;
 
+// Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "createCatalogFactRetriever" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createCatalogFactRetriever: ({
+  annotations,
+}?: Options) => FactRetriever;
+
 // @public
 export function createFactRetrieverRegistration(
   cadence: string,
