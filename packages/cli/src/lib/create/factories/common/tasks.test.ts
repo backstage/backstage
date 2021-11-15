@@ -88,14 +88,14 @@ some-package@^1.1.0:
     expect(modified).toBe(true);
     expect(output).toEqual([
       'Checking Prerequisites:',
-      'availability  /target ✔',
-      'creating      temp dir ✔',
+      'availability  /target',
+      'creating      temp dir',
       'Executing Template:',
-      'templating    package.json.hbs ✔',
-      'copying       not-templated.txt ✔',
-      'templating    templated.txt.hbs ✔',
+      'templating    package.json.hbs',
+      'copying       not-templated.txt',
+      'templating    templated.txt.hbs',
       'Installing:',
-      'moving        /target ✔',
+      'moving        /target',
     ]);
     await expect(fs.readFile('/target/package.json', 'utf8')).resolves.toBe(`{
   "name": "my-testing-plugin",

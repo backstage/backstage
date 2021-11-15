@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable no-control-regex */
+
 import { WriteStream } from 'tty';
 import { resolve as resolvePath } from 'path';
 import { paths } from '../../../paths';
@@ -59,10 +61,15 @@ export function createMockOutputStream() {
       cursorTo: () => {},
       clearLine: () => {},
       moveCursor: () => {},
-      write: (msg: string) =>
-        // Clean up colors and whitespace
-        // eslint-disable-next-line no-control-regex
-        output.push(msg.replace(/\x1B\[\d\dm/g, '').trim()),
+      write: (msg: string) => {
+        let clean = msg;
+        // Remove terminal color escape sequences
+        clean = clean.replace(/\x1B\[\d\dm/g, '');
+        // Remove any non-ascii
+        clean = clean.replace(/[^\x00-\x7F]+/g, '');
+        clean = clean.trim();
+        output.push(clean);
+      },
     } as unknown as WriteStream & { fd: any },
   ] as const;
 }
