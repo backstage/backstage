@@ -136,6 +136,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
               entityTitle: entity.metadata.title,
               componentType: entity.spec?.type?.toString() || 'other',
               lifecycle: (entity.spec?.lifecycle as string) || '',
+              types: [this.type],
               owner:
                 entity.relations?.find(r => r.type === RELATION_OWNED_BY)
                   ?.target?.name || '',
