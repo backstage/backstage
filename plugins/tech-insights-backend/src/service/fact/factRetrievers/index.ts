@@ -13,16 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './service/router';
-export type { RouterOptions } from './service/router';
-
-export { buildTechInsightsContext } from './service/techInsightsContextBuilder';
-export type {
-  TechInsightsOptions,
-  TechInsightsContext,
-} from './service/techInsightsContextBuilder';
-
-export type { PersistenceContext } from './service/persistence/persistenceContext';
-export { createFactRetrieverRegistration } from './service/fact/createFactRetriever';
-export * from './service/fact/factRetrievers';
+export * from './catalogFactRetriever';

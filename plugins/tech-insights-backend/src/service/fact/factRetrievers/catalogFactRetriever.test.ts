@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createEntityFactRetriever } from './entityFactRetriever';
+import { createCatalogFactRetriever } from './catalogFactRetriever';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   PluginEndpointDiscovery,
@@ -52,7 +52,7 @@ const defaultEntityListResponse: CatalogListResponse<Entity> = {
       spec: {
         type: 'service',
         lifecycle: 'test',
-        owner: 'group:team-a',
+        owner: 'team-a',
       },
       relations: [
         {
@@ -106,7 +106,7 @@ const handlerContext = {
   config: ConfigReader.fromConfigs([]),
 };
 
-const entityFactRetriever = createEntityFactRetriever({
+const entityFactRetriever = createCatalogFactRetriever({
   annotations: ['backstage.io/techdocs-ref'],
 });
 

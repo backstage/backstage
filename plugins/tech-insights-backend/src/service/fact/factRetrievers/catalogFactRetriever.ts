@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-import { FactRetrieverContext } from '@backstage/plugin-tech-insights-node';
+import {
+  FactRetriever,
+  FactRetrieverContext,
+} from '@backstage/plugin-tech-insights-node';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import isEmpty from 'lodash/isEmpty';
 import camelCase from 'lodash/camelCase';
 import { get } from 'lodash';
 
-export const createEntityFactRetriever = ({
-  annotations = [],
-}: {
+type Options = {
   annotations?: string[];
-}) => ({
+};
+
+export const createCatalogFactRetriever = (
+  { annotations = [] }: Options = { annotations: [] },
+): FactRetriever => ({
   id: 'entityRetriever',
   version: '0.0.1',
   schema: {
@@ -39,18 +44,18 @@ export const createEntityFactRetriever = ({
     },
     hasDescription: {
       type: 'boolean',
-      description: 'The entity has an owned_by relation',
+      description: 'The entity has a description in metadata',
     },
     hasTags: {
       type: 'boolean',
       description: 'The entity has tags in metadata',
     },
-    ...annotations.reduce((acc: object, it: string) => {
+    ...annotations.reduce((acc: object, annotation: string) => {
       return {
         ...acc,
-        [camelCase(`hasAnnotation-${it}`)]: {
+        [camelCase(`hasAnnotation-${annotation}`)]: {
           type: 'boolean',
-          description: `The entity has the annotation: ${it} `,
+          description: `The entity has the annotation: ${annotation} `,
         },
       };
     }, {}),
@@ -72,7 +77,7 @@ export const createEntityFactRetriever = ({
           hasOwner: Boolean(entity.spec?.owner),
           hasGroupOwner: Boolean(
             entity.spec?.owner &&
-              (entity.spec?.owner as string).startsWith('group:'),
+              !(entity.spec?.owner as string).startsWith('user:'),
           ),
           hasDescription: Boolean(entity.metadata?.description),
           hasTags: !isEmpty(entity.metadata?.tags),
