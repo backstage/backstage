@@ -1,9 +1,11 @@
 ---
-'@backstage/cli': patch
-'@backstage/cli-common': patch
 '@backstage/create-app': patch
 ---
 
-Add .backstage-version file
+Create backstage.json file
 
-`@backstage/create-app` will create a new `.backstage.json` file containing the version of `@backstage/create-app` used for creating the application.
+`@backstage/create-app` will create a new `backstage.json` file. At this point, the file will contain a `version` property, representing the version of `@backstage/create-app` used for creating the application. If the backstage's application has been bootstrapped using an older version of `@backstage/create-app`, the `backstage.json` file can be created and kept in sync, together with all the changes of the latest version of backstage, by running the following script:
+
+```bash
+yarn backstage-cli versions:bump
+```

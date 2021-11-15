@@ -170,5 +170,7 @@ export function findPaths(searchDir: string): Paths {
 
 /**
  * The name of the backstage's config file
+ *
+ * @public
  */
-export const BACKSTAGE_JSON = '.backstage.json';
+export const BACKSTAGE_JSON = 'backstage.json';

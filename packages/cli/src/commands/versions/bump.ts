@@ -296,8 +296,8 @@ export async function bumpBackstageJsonVersion() {
   console.log(
     chalk.yellow(
       typeof backstageJson === 'undefined'
-        ? 'Creating .backstage.json'
-        : 'Bumping version in .backstage.json',
+        ? `Creating ${BACKSTAGE_JSON}`
+        : `Bumping version in ${BACKSTAGE_JSON}`,
     ),
   );
 

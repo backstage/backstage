@@ -252,9 +252,9 @@ describe('bumpBackstageJsonVersion', () => {
     jest.resetAllMocks();
   });
 
-  it('should bump version in .backstage.json', async () => {
+  it('should bump version in backstage.json', async () => {
     mockFs({
-      '/.backstage.json': JSON.stringify({ version: '0.0.1' }),
+      '/backstage.json': JSON.stringify({ version: '0.0.1' }),
     });
     paths.targetDir = '/';
     const latest = '1.4.1';
@@ -276,11 +276,11 @@ describe('bumpBackstageJsonVersion', () => {
 
     await bumpBackstageJsonVersion();
 
-    const json = await fs.readJson('/.backstage.json');
+    const json = await fs.readJson('/backstage.json');
     expect(json).toEqual({ version: '1.4.1' });
   });
 
-  it("should create .backstage.json if doesn't exist", async () => {
+  it("should create backstage.json if doesn't exist", async () => {
     mockFs({});
     paths.targetDir = '/';
     const latest = '1.4.1';
@@ -302,7 +302,7 @@ describe('bumpBackstageJsonVersion', () => {
 
     await bumpBackstageJsonVersion();
 
-    const json = await fs.readJson('/.backstage.json');
+    const json = await fs.readJson('/backstage.json');
     expect(json).toEqual({ version: '1.4.1' });
   });
 });
