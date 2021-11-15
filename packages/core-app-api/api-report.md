@@ -31,7 +31,6 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
-import { ErrorContext } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FeatureFlagsApi } from '@backstage/core-plugin-api';
@@ -332,7 +331,7 @@ export class ErrorAlerter implements ErrorApi {
     context?: ErrorApiErrorContext | undefined;
   }>;
   // (undocumented)
-  post(error: Error, context?: ErrorContext): void;
+  post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
 }
 
 // @public
@@ -340,10 +339,10 @@ export class ErrorApiForwarder implements ErrorApi {
   // (undocumented)
   error$(): Observable<{
     error: Error;
-    context?: ErrorContext;
+    context?: ErrorApiErrorContext;
   }>;
   // (undocumented)
-  post(error: Error, context?: ErrorContext): void;
+  post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
 }
 
 // @public
@@ -604,7 +603,7 @@ export type SignInResult = {
 
 // @public
 export class UnhandledErrorForwarder {
-  static forward(errorApi: ErrorApi, errorContext: ErrorContext): void;
+  static forward(errorApi: ErrorApi, errorContext: ErrorApiErrorContext): void;
 }
 
 // @public
