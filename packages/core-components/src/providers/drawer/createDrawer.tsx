@@ -25,7 +25,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Drawer, DrawerProps } from '@material-ui/core';
+import Drawer, { DrawerProps } from '@material-ui/core/Drawer';
 
 export interface DrawerComponentProps<T> {
   value: T;
@@ -53,7 +53,7 @@ export function createDrawer<T>(
   Component: ComponentType<DrawerComponentProps<T>>,
   wrapperProps?: DrawerWrapperProps,
 ): ConstructedDrawer<T> {
-  const context = createContext<DrawerHook<T>>(undefined as any);
+  const context = createContext<DrawerHook<T> | undefined>(undefined);
 
   function Provider(props: PropsWithChildren<DrawerProviderProps>) {
     const { children, ...drawerProps } = props;
@@ -87,7 +87,15 @@ export function createDrawer<T>(
   }
 
   function useDrawer(): DrawerHook<T> {
-    return useContext(context);
+    const drawer = useContext(context);
+
+    if (drawer === undefined) {
+      throw new Error(
+        'No Drawer found. useDrawer must not be called outisde a Drawer Provider.',
+      );
+    }
+
+    return drawer;
   }
 
   return { Provider, useDrawer };
