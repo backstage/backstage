@@ -1,5 +1,31 @@
 # @techdocs/cli
 
+## 0.8.5
+
+### Patch Changes
+
+- Reunified the [techdocs-cli](https://github.com/backstage/techdocs-cli) monorepo code back into the main [backstage](https://github.com/backstage/backstage) repo
+
+  See [7288](https://github.com/backstage/backstage/issues/7288)). The changes include some internal refactoring that do not affect functionality beyond the local development setup.
+
+## 0.8.4
+
+### Patch Changes
+
+- 8333394: The [change](https://github.com/backstage/techdocs-cli/commit/b25014cec313d46ce1c9b4f324cc09047a00fc1f) updated the `@backstage/techdocs-common` from version `0.9.0` to `0.10.2` and one of the intermediate versions, the [0.10.0](https://github.com/backstage/backstage/blob/cac4afb95fdbd130a66e53a1b0430a1e62787a7f/packages/techdocs-common/CHANGELOG.md#patch-changes-2), introduced the use of search in context that requires an implementation for the Search API.
+
+  Created a custom techdocs page to disable search in the Reader component, preventing it from using the Search API, as we don't want to provide search in preview mode.
+
+## 0.8.3
+
+### Patch Changes
+
+- edbb988: Upgrades the techdocs common page to the latest version 0.10.2.
+
+  See [@backstage/techdocs-common changelog](https://github.com/backstage/backstage/blob/cac4afb95fdbd130a66e53a1b0430a1e62787a7f/packages/techdocs-common/CHANGELOG.md#L3).
+
+- db4ebfc: Add an `etag` flag to the `generate` command that is stored in the `techdocs_metadata.json` file.
+
 ## 0.8.2
 
 ### Patch Changes
