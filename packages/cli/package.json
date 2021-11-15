@@ -81,7 +81,7 @@
     "inquirer": "^7.0.4",
     "jest": "^26.0.1",
     "jest-css-modules": "^2.1.0",
-    "json-schema": "^0.3.0",
+    "json-schema": "^0.4.0",
     "jest-transform-yaml": "^0.1.1",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^2.4.2",
