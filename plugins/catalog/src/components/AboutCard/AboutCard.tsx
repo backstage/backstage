@@ -18,8 +18,6 @@ import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
   LOCATION_ANNOTATION,
-  RELATION_CONSUMES_API,
-  RELATION_PROVIDES_API,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -36,7 +34,6 @@ import {
 import {
   catalogApiRef,
   getEntityMetadataEditUrl,
-  getEntityRelations,
   getEntitySourceLocation,
   useEntity,
 } from '@backstage/plugin-catalog-react';
@@ -51,7 +48,6 @@ import {
 import CachedIcon from '@material-ui/icons/Cached';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
-import ExtensionIcon from '@material-ui/icons/Extension';
 import React, { useCallback } from 'react';
 import { viewTechDocRouteRef } from '../../routes';
 import { AboutContent } from './AboutContent';
@@ -95,16 +91,6 @@ export function AboutCard({ variant }: AboutCardProps) {
     scmIntegrationsApi,
   );
   const entityMetadataEditUrl = getEntityMetadataEditUrl(entity);
-  const providesApiRelations = getEntityRelations(
-    entity,
-    RELATION_PROVIDES_API,
-  );
-  const consumesApiRelations = getEntityRelations(
-    entity,
-    RELATION_CONSUMES_API,
-  );
-  const hasApis =
-    providesApiRelations.length > 0 || consumesApiRelations.length > 0;
 
   const viewInSource: IconLinkVerticalProps = {
     label: 'View Source',
@@ -125,13 +111,6 @@ export function AboutCard({ variant }: AboutCardProps) {
         kind: entity.kind,
         name: entity.metadata.name,
       }),
-  };
-  const viewApi: IconLinkVerticalProps = {
-    title: hasApis ? '' : 'No APIs available',
-    label: 'View API',
-    disabled: !hasApis,
-    icon: <ExtensionIcon />,
-    href: 'api',
   };
 
   let cardClass = '';
@@ -181,9 +160,7 @@ export function AboutCard({ variant }: AboutCardProps) {
             </IconButton>
           </>
         }
-        subheader={
-          <HeaderIconLinkRow links={[viewInSource, viewInTechDocs, viewApi]} />
-        }
+        subheader={<HeaderIconLinkRow links={[viewInSource, viewInTechDocs]} />}
       />
       <Divider />
       <CardContent className={cardContentClass}>
