@@ -704,14 +704,6 @@ export type RouteFunc<Params extends AnyParams> = (
 ) => string;
 
 // @public
-export type RouteOptions = {
-  exact?: boolean;
-};
-
-// @public
-export type RoutePath = string;
-
-// @public
 export type RouteRef<Params extends AnyParams = any> = {
   $$routeRefType: 'absolute';
   params: ParamKeys<Params>;
