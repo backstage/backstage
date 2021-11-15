@@ -21,7 +21,10 @@ export default async function createPlugin({
   // particular collator gathers entities from the software catalog.
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: DefaultCatalogCollator.fromConfig(config, { discovery, tokenManager }),
+    collator: DefaultCatalogCollator.fromConfig(config, {
+      discovery,
+      tokenManager,
+    }),
   });
 
   // The scheduler controls when documents are gathered from collators and sent
