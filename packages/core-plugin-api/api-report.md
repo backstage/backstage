@@ -404,21 +404,29 @@ export interface ElementCollection {
   }): ElementCollection;
 }
 
-// @public
-type Error_2 = {
-  name: string;
-  message: string;
-  stack?: string;
-};
+// @public @deprecated (undocumented)
+type Error_2 = ErrorApiError;
 export { Error_2 as Error };
 
 // @public
 export type ErrorApi = {
-  post(error: Error_2, context?: ErrorContext): void;
+  post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
   error$(): Observable_2<{
-    error: Error_2;
-    context?: ErrorContext;
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
   }>;
+};
+
+// @public
+export type ErrorApiError = {
+  name: string;
+  message: string;
+  stack?: string;
+};
+
+// @public
+export type ErrorApiErrorContext = {
+  hidden?: boolean;
 };
 
 // @public
@@ -431,10 +439,8 @@ export type ErrorBoundaryFallbackProps = {
   resetError: () => void;
 };
 
-// @public
-export type ErrorContext = {
-  hidden?: boolean;
-};
+// @public @deprecated (undocumented)
+export type ErrorContext = ErrorApiErrorContext;
 
 // @public
 export type Extension<T> = {
