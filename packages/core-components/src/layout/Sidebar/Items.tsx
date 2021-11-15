@@ -487,7 +487,7 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
   return (
     <div className={classes.searchRoot}>
       <SidebarItem
-        icon={SearchIcon}
+        icon={Icon}
         to={props.to}
         onClick={handleItemClick}
         disableHighlight
