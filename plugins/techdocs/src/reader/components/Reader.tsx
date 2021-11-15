@@ -76,8 +76,12 @@ const TechDocsReaderContext = createContext<TechDocsReaderValue>(
   {} as TechDocsReaderValue,
 );
 
-const TechDocsReaderProvider = ({ children }: PropsWithChildren<{}>) => {
-  const { namespace = '', kind = '', name = '', '*': path } = useParams();
+const TechDocsReaderProvider = ({
+  children,
+  entityRef,
+}: PropsWithChildren<{ entityRef: EntityName }>) => {
+  const { '*': path } = useParams();
+  const { kind, namespace, name } = entityRef;
   const value = useReaderState(kind, namespace, name, path);
   return (
     <TechDocsReaderContext.Provider value={value}>
@@ -96,10 +100,10 @@ const TechDocsReaderProvider = ({ children }: PropsWithChildren<{}>) => {
  * @internal
  */
 export const withTechDocsReaderProvider =
-  <T extends {}>(Component: ComponentType<T>) =>
+  <T extends {}>(Component: ComponentType<T>, entityRef: EntityName) =>
   (props: T) =>
     (
-      <TechDocsReaderProvider>
+      <TechDocsReaderProvider entityRef={entityRef}>
         <Component {...props} />
       </TechDocsReaderProvider>
     );
@@ -128,12 +132,12 @@ export const useTechDocsReader = () => useContext(TechDocsReaderContext);
  * todo: Make public or stop exporting (see others: "altReaderExperiments")
  * @internal
  */
-export const useTechDocsReaderDom = (): Element | null => {
+export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
   const navigate = useNavigate();
   const theme = useTheme<BackstageTheme>();
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
-  const { namespace = '', kind = '', name = '' } = useParams();
+  const { namespace = '', kind = '', name = '' } = entityRef;
   const { state, path, content: rawPage } = useTechDocsReader();
 
   const [sidebars, setSidebars] = useState<HTMLElement[]>();
@@ -400,7 +404,7 @@ const TheReader = ({
   withSearch = true,
 }: Props) => {
   const classes = useStyles();
-  const dom = useTechDocsReaderDom();
+  const dom = useTechDocsReaderDom(entityRef);
   const shadowDomRef = useRef<HTMLDivElement>(null);
 
   const onReadyRef = useRef<() => void>(onReady);
@@ -440,7 +444,7 @@ export const Reader = ({
   onReady = () => {},
   withSearch = true,
 }: Props) => (
-  <TechDocsReaderProvider>
+  <TechDocsReaderProvider entityRef={entityRef}>
     <TheReader
       entityRef={entityRef}
       onReady={onReady}
