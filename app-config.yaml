@@ -23,9 +23,9 @@ app:
             title: '#backstage'
 
 backend:
-  baseUrl: http://localhost:7000
+  baseUrl: http://localhost:7001
   listen:
-    port: 7000
+    port: 7001
   database:
     client: sqlite3
     connection: ':memory:'

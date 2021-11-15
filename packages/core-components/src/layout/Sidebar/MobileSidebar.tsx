@@ -73,7 +73,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 const sortSidebarGroupsForPriority = (children: React.ReactElement[]) =>
   orderBy(
     children,
-    ({ props: { priority } }) => (priority ? priority : -1),
+    ({ props: { priority } }) => (Number.isInteger(priority) ? priority : -1),
     'desc',
   );
 
