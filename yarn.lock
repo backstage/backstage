@@ -13688,9 +13688,9 @@ eslint-module-utils@^2.1.1, eslint-module-utils@^2.6.0:
     pkg-dir "^2.0.0"
 
 eslint-plugin-cypress@^2.10.3:
-  version "2.11.3"
-  resolved "https://registry.npmjs.org/eslint-plugin-cypress/-/eslint-plugin-cypress-2.11.3.tgz#54ee4067aa8192aa62810cd35080eb577e191ab7"
-  integrity sha512-hOoAid+XNFtpvOzZSNWP5LDrQBEJwbZwjib4XJ1KcRYKjeVj0mAmPmucG4Egli4j/aruv+Ow/acacoloWWCl9Q==
+  version "2.12.1"
+  resolved "https://registry.npmjs.org/eslint-plugin-cypress/-/eslint-plugin-cypress-2.12.1.tgz#9aeee700708ca8c058e00cdafe215199918c2632"
+  integrity sha512-c2W/uPADl5kospNDihgiLc7n87t5XhUbFDoTl6CfVkmG+kDAb5Ux10V9PoLPu9N+r7znpc+iQlcmAqT1A/89HA==
   dependencies:
     globals "^11.12.0"
 
