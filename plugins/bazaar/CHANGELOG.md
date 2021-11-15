@@ -1,5 +1,16 @@
 # @backstage/plugin-bazaar
 
+## 0.1.3
+
+### Patch Changes
+
+- 4a336fd292: Name extension to remove deprecation warning
+- Updated dependencies
+  - @backstage/cli@0.8.2
+  - @backstage/core-components@0.7.3
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
 ## 0.1.2
 
 ### Patch Changes

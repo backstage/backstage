@@ -101,3 +101,8 @@ export const parseRepoUrl = (
 
   return { host, owner, repo, organization, workspace, project };
 };
+export const isExecutable = (fileMode: number) => {
+  const executeBitMask = 0o000111;
+  const res = fileMode & executeBitMask;
+  return res > 0;
+};

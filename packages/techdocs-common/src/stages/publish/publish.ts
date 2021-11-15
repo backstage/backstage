@@ -61,10 +61,10 @@ export class Publisher {
         return OpenStackSwiftPublish.fromConfig(config, logger);
       case 'local':
         logger.info('Creating Local publisher for TechDocs');
-        return new LocalPublish(config, logger, discovery);
+        return LocalPublish.fromConfig(config, logger, discovery);
       default:
         logger.info('Creating Local publisher for TechDocs');
-        return new LocalPublish(config, logger, discovery);
+        return LocalPublish.fromConfig(config, logger, discovery);
     }
   }
 }

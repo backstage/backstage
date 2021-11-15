@@ -2,8 +2,6 @@
 
 # [Backstage](https://backstage.io)
 
-> 🏖 All of the maintainers will be taking a wellness break Nov. 1–5. The repo and Discord may be quieter than usual, but not to worry. We’ll have coverage plans in place and be back in full force, rested and restored, on Nov. 8. 🏖
-
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CNCF Status](https://img.shields.io/badge/cncf%20status-sandbox-blue.svg)](https://www.cncf.io/projects)
 [![Main CI Build](https://github.com/backstage/backstage/workflows/Main%20Master%20Build/badge.svg)](https://github.com/backstage/backstage/actions?query=workflow%3A%22Main+Master+Build%22)

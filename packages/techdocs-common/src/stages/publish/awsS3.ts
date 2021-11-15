@@ -57,6 +57,26 @@ const streamToBuffer = (stream: Readable): Promise<Buffer> => {
 };
 
 export class AwsS3Publish implements PublisherBase {
+  private readonly storageClient: aws.S3;
+  private readonly bucketName: string;
+  private readonly legacyPathCasing: boolean;
+  private readonly logger: Logger;
+  private readonly bucketRootPath: string;
+
+  constructor(options: {
+    storageClient: aws.S3;
+    bucketName: string;
+    legacyPathCasing: boolean;
+    logger: Logger;
+    bucketRootPath: string;
+  }) {
+    this.storageClient = options.storageClient;
+    this.bucketName = options.bucketName;
+    this.legacyPathCasing = options.legacyPathCasing;
+    this.logger = options.logger;
+    this.bucketRootPath = options.bucketRootPath;
+  }
+
   static fromConfig(config: Config, logger: Logger): PublisherBase {
     let bucketName = '';
     try {
@@ -112,13 +132,13 @@ export class AwsS3Publish implements PublisherBase {
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
 
-    return new AwsS3Publish(
+    return new AwsS3Publish({
       storageClient,
       bucketName,
+      bucketRootPath,
       legacyPathCasing,
       logger,
-      bucketRootPath,
-    );
+    });
   }
 
   private static buildCredentials(
@@ -150,20 +170,6 @@ export class AwsS3Publish implements PublisherBase {
     }
 
     return explicitCredentials;
-  }
-
-  constructor(
-    private readonly storageClient: aws.S3,
-    private readonly bucketName: string,
-    private readonly legacyPathCasing: boolean,
-    private readonly logger: Logger,
-    private readonly bucketRootPath: string,
-  ) {
-    this.storageClient = storageClient;
-    this.bucketName = bucketName;
-    this.legacyPathCasing = legacyPathCasing;
-    this.logger = logger;
-    this.bucketRootPath = bucketRootPath;
   }
 
   /**
@@ -306,7 +312,7 @@ export class AwsS3Publish implements PublisherBase {
           ? entityTriplet
           : lowerCaseEntityTriplet(entityTriplet);
 
-        const entityRootDir = path.join(this.bucketRootPath, entityDir);
+        const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
 
         const stream = this.storageClient
           .getObject({
@@ -357,7 +363,7 @@ export class AwsS3Publish implements PublisherBase {
         : lowerCaseEntityTripletInStoragePath(decodedUriNoRoot);
 
       // Re-prepend the root path to the relative file path
-      const filePath = path.join(this.bucketRootPath, filePathNoRoot);
+      const filePath = path.posix.join(this.bucketRootPath, filePathNoRoot);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
@@ -396,7 +402,7 @@ export class AwsS3Publish implements PublisherBase {
         ? entityTriplet
         : lowerCaseEntityTriplet(entityTriplet);
 
-      const entityRootDir = path.join(this.bucketRootPath, entityDir);
+      const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
 
       await this.storageClient
         .headObject({

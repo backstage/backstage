@@ -49,7 +49,9 @@ const Component: ProviderComponent = ({ config, onResult }) => {
         userId: identity!.id,
         profile: profile!,
         getIdToken: () => {
-          return authApi.getBackstageIdentity().then(i => i!.idToken);
+          return authApi
+            .getBackstageIdentity()
+            .then(i => i!.token ?? i!.idToken);
         },
         signOut: async () => {
           await authApi.signOut();

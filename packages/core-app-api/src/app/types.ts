@@ -27,7 +27,6 @@ import {
   PluginOutput,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
-import { AppIcons } from './icons';
 
 /**
  * Props for the `BootErrorPage` component of {@link AppComponents}.
@@ -97,7 +96,7 @@ export type AppComponents = {
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
-  ThemeProvider: ComponentType<{}>;
+  ThemeProvider?: ComponentType<{}>;
 
   /**
    * An optional sign-in page that will be rendered instead of the AppRouter at startup.
@@ -109,6 +108,36 @@ export type AppComponents = {
    * and which point the AppRouter and all of its children will be rendered instead.
    */
   SignInPage?: ComponentType<SignInPageProps>;
+};
+
+/**
+ * A set of well-known icons that should be available within an app.
+ *
+ * @public
+ */
+export type AppIcons = {
+  'kind:api': IconComponent;
+  'kind:component': IconComponent;
+  'kind:domain': IconComponent;
+  'kind:group': IconComponent;
+  'kind:location': IconComponent;
+  'kind:system': IconComponent;
+  'kind:user': IconComponent;
+
+  brokenImage: IconComponent;
+  catalog: IconComponent;
+  chat: IconComponent;
+  dashboard: IconComponent;
+  docs: IconComponent;
+  email: IconComponent;
+  github: IconComponent;
+  group: IconComponent;
+  help: IconComponent;
+  scaffolder: IconComponent;
+  search: IconComponent;
+  techdocs: IconComponent;
+  user: IconComponent;
+  warning: IconComponent;
 };
 
 /**
@@ -196,14 +225,23 @@ export type BackstagePluginWithAnyOutput = Omit<
 export type AppOptions = {
   /**
    * A collection of ApiFactories to register in the application to either
-   * add add new ones, or override factories provided by default or by plugins.
+   * add new ones, or override factories provided by default or by plugins.
    */
   apis?: Iterable<AnyApiFactory>;
 
   /**
+   * A collection of ApiFactories to register in the application as default APIs.
+   * Theses APIs can not be overridden by plugin factories, but can be overridden
+   * by plugin APIs provided through the
+   * A collection of ApiFactories to register in the application to either
+   * add new ones, or override factories provided by default or by plugins.
+   */
+  defaultApis?: Iterable<AnyApiFactory>;
+
+  /**
    * Supply icons to override the default ones.
    */
-  icons?: Partial<AppIcons> & { [key in string]: IconComponent };
+  icons: AppIcons & { [key in string]: IconComponent };
 
   /**
    * A list of all plugins to include in the app.
@@ -213,7 +251,7 @@ export type AppOptions = {
   /**
    * Supply components to the app to override the default ones.
    */
-  components?: Partial<AppComponents>;
+  components: AppComponents;
 
   /**
    * Themes provided as a part of the app. By default two themes are included, one
@@ -226,18 +264,26 @@ export type AppOptions = {
    *   id: 'light',
    *   title: 'Light Theme',
    *   variant: 'light',
-   *   theme: lightTheme,
    *   icon: <LightIcon />,
+   *   Provider: ({ children }) => (
+   *     <ThemeProvider theme={lightTheme}>
+   *       <CssBaseline>{children}</CssBaseline>
+   *     </ThemeProvider>
+   *   ),
    * }, {
    *   id: 'dark',
    *   title: 'Dark Theme',
    *   variant: 'dark',
-   *   theme: darkTheme,
    *   icon: <DarkIcon />,
+   *   Provider: ({ children }) => (
+   *     <ThemeProvider theme={darkTheme}>
+   *       <CssBaseline>{children}</CssBaseline>
+   *     </ThemeProvider>
+   *   ),
    * }]
    * ```
    */
-  themes?: AppTheme[];
+  themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
 
   /**
    * A function that loads in App configuration that will be accessible via

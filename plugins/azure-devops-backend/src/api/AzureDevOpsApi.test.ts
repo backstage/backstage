@@ -16,17 +16,21 @@
 
 import {
   Build,
+  DefinitionReference,
+} from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import {
   BuildResult,
   BuildStatus,
-  GitPullRequest,
-  GitRepository,
   PullRequest,
   PullRequestStatus,
   RepoBuild,
-} from './types';
+} from '@backstage/plugin-azure-devops-common';
+import {
+  GitPullRequest,
+  GitRepository,
+} from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { mappedPullRequest, mappedRepoBuild } from './AzureDevOpsApi';
 
-import { DefinitionReference } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { IdentityRef } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 
 describe('AzureDevOpsApi', () => {
@@ -44,7 +48,7 @@ describe('AzureDevOpsApi', () => {
 
       const inputIdentityRef: IdentityRef = {
         displayName: 'Jane Doe',
-        uniqueName: 'DOMAINjdoe',
+        uniqueName: 'DOMAIN\\jdoe',
       };
 
       const inputBuild: Build = {
@@ -52,9 +56,9 @@ describe('AzureDevOpsApi', () => {
         buildNumber: 'Build-1',
         status: BuildStatus.Completed,
         result: BuildResult.Succeeded,
-        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
-        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
-        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
         sourceBranch: 'refs/heads/develop',
         sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
         definition: inputBuildDefinition,
@@ -68,11 +72,11 @@ describe('AzureDevOpsApi', () => {
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
         status: BuildStatus.Completed,
         result: BuildResult.Succeeded,
-        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
-        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
-        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
         source: 'refs/heads/develop (f4f78b31)',
-        uniqueName: 'DOMAINjdoe',
+        uniqueName: 'DOMAIN\\jdoe',
       };
 
       expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
@@ -89,7 +93,7 @@ describe('AzureDevOpsApi', () => {
 
       const inputIdentityRef: IdentityRef = {
         displayName: 'Jane Doe',
-        uniqueName: 'DOMAINjdoe',
+        uniqueName: 'DOMAIN\\jdoe',
       };
 
       const inputBuild: Build = {
@@ -97,9 +101,9 @@ describe('AzureDevOpsApi', () => {
         buildNumber: 'Build-1',
         status: BuildStatus.Completed,
         result: BuildResult.Succeeded,
-        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
-        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
-        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
         sourceBranch: 'refs/heads/develop',
         sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
         definition: undefined,
@@ -113,11 +117,11 @@ describe('AzureDevOpsApi', () => {
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
         status: BuildStatus.Completed,
         result: BuildResult.Succeeded,
-        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
-        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
-        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
         source: 'refs/heads/develop (f4f78b31)',
-        uniqueName: 'DOMAINjdoe',
+        uniqueName: 'DOMAIN\\jdoe',
       };
 
       expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
@@ -134,7 +138,7 @@ describe('AzureDevOpsApi', () => {
 
       const inputIdentityRef: IdentityRef = {
         displayName: 'Jane Doe',
-        uniqueName: 'DOMAINjdoe',
+        uniqueName: 'DOMAIN\\jdoe',
       };
 
       const inputBuild: Build = {
@@ -142,9 +146,9 @@ describe('AzureDevOpsApi', () => {
         buildNumber: 'Build-1',
         status: undefined,
         result: BuildResult.Succeeded,
-        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
-        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
-        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
         sourceBranch: 'refs/heads/develop',
         sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
         definition: undefined,
@@ -158,11 +162,11 @@ describe('AzureDevOpsApi', () => {
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
         status: BuildStatus.None,
         result: BuildResult.Succeeded,
-        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
-        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
-        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
         source: 'refs/heads/develop (f4f78b31)',
-        uniqueName: 'DOMAINjdoe',
+        uniqueName: 'DOMAIN\\jdoe',
       };
 
       expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
@@ -179,7 +183,7 @@ describe('AzureDevOpsApi', () => {
 
       const inputIdentityRef: IdentityRef = {
         displayName: 'Jane Doe',
-        uniqueName: 'DOMAINjdoe',
+        uniqueName: 'DOMAIN\\jdoe',
       };
 
       const inputBuild: Build = {
@@ -187,9 +191,9 @@ describe('AzureDevOpsApi', () => {
         buildNumber: 'Build-1',
         status: BuildStatus.InProgress,
         result: undefined,
-        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
-        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
-        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
         sourceBranch: 'refs/heads/develop',
         sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
         definition: undefined,
@@ -203,11 +207,11 @@ describe('AzureDevOpsApi', () => {
         link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
         status: BuildStatus.InProgress,
         result: BuildResult.None,
-        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
-        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
-        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
         source: 'refs/heads/develop (f4f78b31)',
-        uniqueName: 'DOMAINjdoe',
+        uniqueName: 'DOMAIN\\jdoe',
       };
 
       expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
@@ -218,7 +222,7 @@ describe('AzureDevOpsApi', () => {
     it('should return empty string for link', () => {
       const inputIdentityRef: IdentityRef = {
         displayName: 'Jane Doe',
-        uniqueName: 'DOMAINjdoe',
+        uniqueName: 'DOMAIN\\jdoe',
       };
 
       const inputBuild: Build = {
@@ -226,9 +230,9 @@ describe('AzureDevOpsApi', () => {
         buildNumber: 'Build-1',
         status: BuildStatus.InProgress,
         result: undefined,
-        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
-        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
-        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
         sourceBranch: 'refs/heads/develop',
         sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
         definition: undefined,
@@ -242,11 +246,11 @@ describe('AzureDevOpsApi', () => {
         link: '',
         status: BuildStatus.InProgress,
         result: BuildResult.None,
-        queueTime: new Date('2020-09-12T06:10:23.9325232Z'),
-        startTime: new Date('2020-09-12T06:15:23.9325232Z'),
-        finishTime: new Date('2020-09-12T06:20:23.9325232Z'),
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
         source: 'refs/heads/develop (f4f78b31)',
-        uniqueName: 'DOMAINjdoe',
+        uniqueName: 'DOMAIN\\jdoe',
       };
 
       expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
@@ -261,7 +265,7 @@ describe('AzureDevOpsApi', () => {
 
       const inputIdentityRef: IdentityRef = {
         displayName: 'Jane Doe',
-        uniqueName: 'DOMAINjdoe',
+        uniqueName: 'DOMAIN\\jdoe',
       };
 
       const inputPullRequest: GitPullRequest = {
@@ -269,7 +273,7 @@ describe('AzureDevOpsApi', () => {
         repository: inputGitRepository,
         title: 'My Awesome New Feature',
         createdBy: inputIdentityRef,
-        creationDate: new Date('2020-09-12T06:10:23.9325232Z'),
+        creationDate: new Date('2020-09-12T06:10:23.932Z'),
         sourceRefName: 'refs/heads/topic/super-awesome-feature',
         targetRefName: 'refs/heads/main',
         status: PullRequestStatus.Active,
@@ -283,9 +287,9 @@ describe('AzureDevOpsApi', () => {
         pullRequestId: 7181,
         repoName: 'super-feature-repo',
         title: 'My Awesome New Feature',
-        uniqueName: 'DOMAINjdoe',
+        uniqueName: 'DOMAIN\\jdoe',
         createdBy: 'Jane Doe',
-        creationDate: new Date('2020-09-12T06:10:23.9325232Z'),
+        creationDate: '2020-09-12T06:10:23.932Z',
         sourceRefName: 'refs/heads/topic/super-awesome-feature',
         targetRefName: 'refs/heads/main',
         status: PullRequestStatus.Active,

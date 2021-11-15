@@ -15,17 +15,19 @@
  */
 
 import {
-  Build,
   BuildResult,
   BuildStatus,
-  GitPullRequest,
-  GitPullRequestSearchCriteria,
-  GitRepository,
   PullRequest,
   PullRequestOptions,
   RepoBuild,
-} from './types';
+} from '@backstage/plugin-azure-devops-common';
+import {
+  GitPullRequest,
+  GitPullRequestSearchCriteria,
+  GitRepository,
+} from 'azure-devops-node-api/interfaces/GitInterfaces';
 
+import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { Logger } from 'winston';
 import { WebApi } from 'azure-devops-node-api';
 
@@ -147,9 +149,9 @@ export function mappedRepoBuild(build: Build): RepoBuild {
     link: build._links?.web.href ?? '',
     status: build.status ?? BuildStatus.None,
     result: build.result ?? BuildResult.None,
-    queueTime: build.queueTime,
-    startTime: build.startTime,
-    finishTime: build.finishTime,
+    queueTime: build.queueTime?.toISOString(),
+    startTime: build.startTime?.toISOString(),
+    finishTime: build.finishTime?.toISOString(),
     source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
     uniqueName: build.requestedFor?.uniqueName ?? 'N/A',
   };
@@ -165,7 +167,7 @@ export function mappedPullRequest(
     title: pullRequest.title,
     uniqueName: pullRequest.createdBy?.uniqueName ?? 'N/A',
     createdBy: pullRequest.createdBy?.displayName ?? 'N/A',
-    creationDate: pullRequest.creationDate,
+    creationDate: pullRequest.creationDate?.toISOString(),
     sourceRefName: pullRequest.sourceRefName,
     targetRefName: pullRequest.targetRefName,
     status: pullRequest.status,

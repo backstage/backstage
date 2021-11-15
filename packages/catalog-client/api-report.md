@@ -7,7 +7,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { Location as Location_2 } from '@backstage/catalog-model';
 
-// @public (undocumented)
+// @public
 export type AddLocationRequest = {
   type?: string;
   target: string;
@@ -15,126 +15,106 @@ export type AddLocationRequest = {
   presence?: 'optional' | 'required';
 };
 
-// @public (undocumented)
+// @public
 export type AddLocationResponse = {
   location: Location_2;
   entities: Entity[];
   exists?: boolean;
 };
 
-// @public (undocumented)
+// @public
 export const CATALOG_FILTER_EXISTS: unique symbol;
 
-// @public (undocumented)
+// @public
 export interface CatalogApi {
-  // (undocumented)
   addLocation(
     location: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
-  // (undocumented)
   getEntities(
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
-  // (undocumented)
   getEntityAncestors(
     request: CatalogEntityAncestorsRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogEntityAncestorsResponse>;
-  // (undocumented)
   getEntityByName(
     name: EntityName,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
-  // (undocumented)
   getLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  // (undocumented)
   getLocationById(
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  // (undocumented)
   getOriginLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  // (undocumented)
   refreshEntity(
     entityRef: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
-  // (undocumented)
   removeEntityByUid(
     uid: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
-  // (undocumented)
   removeLocationById(
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
 }
 
-// @public (undocumented)
+// @public
 export class CatalogClient implements CatalogApi {
   constructor(options: { discoveryApi: DiscoveryApi });
-  // (undocumented)
   addLocation(
     { type, target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
-  // (undocumented)
   getEntities(
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
-  // (undocumented)
   getEntityAncestors(
     request: CatalogEntityAncestorsRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogEntityAncestorsResponse>;
-  // (undocumented)
   getEntityByName(
     compoundName: EntityName,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
-  // (undocumented)
   getLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  // (undocumented)
   getLocationById(
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  // (undocumented)
   getOriginLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  // (undocumented)
   refreshEntity(
     entityRef: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
-  // (undocumented)
   removeEntityByUid(
     uid: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
-  // (undocumented)
   removeLocationById(
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
 }
 
-// @public (undocumented)
+// @public
 export type CatalogEntitiesRequest = {
   filter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
@@ -143,12 +123,12 @@ export type CatalogEntitiesRequest = {
   fields?: string[] | undefined;
 };
 
-// @public (undocumented)
+// @public
 export type CatalogEntityAncestorsRequest = {
   entityRef: string;
 };
 
-// @public (undocumented)
+// @public
 export type CatalogEntityAncestorsResponse = {
   root: EntityName;
   items: {
@@ -157,12 +137,12 @@ export type CatalogEntityAncestorsResponse = {
   }[];
 };
 
-// @public (undocumented)
+// @public
 export type CatalogListResponse<T> = {
   items: T[];
 };
 
-// @public (undocumented)
+// @public
 export type CatalogRequestOptions = {
   token?: string;
 };

@@ -39,8 +39,9 @@ export type Subscription = CoreSubscription;
 /**
  * Observable sequence of values and errors, see TC39.
  *
- * https://github.com/tc39/proposal-observable
+ * @remarks
  *
+ * {@link https://github.com/tc39/proposal-observable}
  * This is used as a common return type for observable values and can be created
  * using many different observable implementations, such as zen-observable or RxJS 5.
  *

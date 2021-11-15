@@ -448,11 +448,13 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
   to?: string;
+  icon?: IconComponent;
 };
 
 export function SidebarSearchField(props: SidebarSearchFieldProps) {
   const [input, setInput] = useState('');
   const classes = useStyles();
+  const Icon = props.icon ? props.icon : SearchIcon;
 
   const search = () => {
     props.onSearch(input);
@@ -510,21 +512,30 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
   );
 }
 
-export const SidebarSpace = styled('div')({
-  flex: 1,
-});
+export const SidebarSpace = styled('div')(
+  {
+    flex: 1,
+  },
+  { name: 'BackstageSidebarSpace' },
+);
 
-export const SidebarSpacer = styled('div')({
-  height: 8,
-});
+export const SidebarSpacer = styled('div')(
+  {
+    height: 8,
+  },
+  { name: 'BackstageSidebarSpacer' },
+);
 
-export const SidebarDivider = styled('hr')({
-  height: 1,
-  width: '100%',
-  background: '#383838',
-  border: 'none',
-  margin: '12px 0px',
-});
+export const SidebarDivider = styled('hr')(
+  {
+    height: 1,
+    width: '100%',
+    background: '#383838',
+    border: 'none',
+    margin: '12px 0px',
+  },
+  { name: 'BackstageSidebarDivider' },
+);
 
 const styledScrollbar = (theme: Theme): CreateCSSProperties => ({
   overflowY: 'auto',

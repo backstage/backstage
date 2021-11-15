@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -23,6 +23,7 @@
   "scripts": {
     "build": "backstage-cli build --outputs cjs",
     "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
     "clean": "backstage-cli clean",
     "start": "nodemon --"
   },
@@ -40,6 +41,7 @@
     "@types/fs-extra": "^9.0.1",
     "@types/inquirer": "^7.3.1",
     "@types/recursive-readdir": "^2.2.0",
+    "mock-fs": "^5.1.1",
     "ts-node": "^10.0.0"
   },
   "peerDependencies": {

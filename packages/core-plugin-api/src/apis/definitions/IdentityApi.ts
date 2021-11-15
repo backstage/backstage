@@ -18,6 +18,8 @@ import { ProfileInfo } from './auth';
 
 /**
  * The Identity API used to identify and get information about the signed in user.
+ *
+ * @public
  */
 export type IdentityApi = {
   /**
@@ -49,6 +51,11 @@ export type IdentityApi = {
   signOut(): Promise<void>;
 };
 
+/**
+ * The {@link ApiRef} of {@link IdentityApi}.
+ *
+ * @public
+ */
 export const identityApiRef: ApiRef<IdentityApi> = createApiRef({
   id: 'core.identity',
 });

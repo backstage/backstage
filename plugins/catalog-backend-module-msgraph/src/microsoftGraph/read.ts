@@ -251,6 +251,13 @@ export async function readMicrosoftGraphOrganization(
   return { rootGroup };
 }
 
+function extractGroupName(group: MicrosoftGraph.Group): string {
+  if (group.securityEnabled) {
+    return group.displayName as string;
+  }
+  return (group.mailNickname || group.displayName) as string;
+}
+
 export async function defaultGroupTransformer(
   group: MicrosoftGraph.Group,
   groupPhoto?: string,
@@ -259,7 +266,7 @@ export async function defaultGroupTransformer(
     return undefined;
   }
 
-  const name = normalizeEntityName(group.mailNickname || group.displayName);
+  const name = normalizeEntityName(extractGroupName(group));
   const entity: GroupEntity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Group',

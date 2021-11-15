@@ -71,6 +71,7 @@ export const ComponentTab = homePlugin.provide(
  */
 export const WelcomeTitle = homePlugin.provide(
   createComponentExtension({
+    name: 'WelcomeTitle',
     component: {
       lazy: () =>
         import('./homePageComponents/WelcomeTitle').then(m => m.WelcomeTitle),
@@ -80,6 +81,7 @@ export const WelcomeTitle = homePlugin.provide(
 
 export const HomePageRandomJoke = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
+    name: 'HomePageRandomJoke',
     title: 'Random Joke',
     components: () => import('./homePageComponents/RandomJoke'),
   }),

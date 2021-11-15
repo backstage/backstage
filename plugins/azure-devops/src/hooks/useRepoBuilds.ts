@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { RepoBuild, RepoBuildOptions } from '../api/types';
+import {
+  RepoBuild,
+  RepoBuildOptions,
+} from '@backstage/plugin-azure-devops-common';
 
 import { AZURE_DEVOPS_DEFAULT_TOP } from '../constants';
 import { Entity } from '@backstage/catalog-model';
