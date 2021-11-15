@@ -96,11 +96,11 @@ const useStyles = makeStyles<BackstageTheme>(
       },
       highlightable: {
         '&:hover': {
-          background: theme.palette.navigation.navItem.hoverBackground, // TODO: consider
+          background: theme.palette.navigation.navItem.hoverBackground,
         },
       },
       highlighted: {
-        background: theme.palette.navigation.navItem.hoverBackground, // TODO: consider
+        background: theme.palette.navigation.navItem.hoverBackground,
       },
       label: {
         // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
@@ -384,7 +384,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   const openContent = (
     <>
-      <div data-testid="login-button" className={clsx(classes.iconContainer)}>
+      <div data-testid="login-button" className={classes.iconContainer}>
         {itemIcon}
       </div>
       {text && (
