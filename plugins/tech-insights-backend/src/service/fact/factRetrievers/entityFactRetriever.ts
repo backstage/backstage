@@ -41,6 +41,10 @@ export const createEntityFactRetriever = ({
       type: 'boolean',
       description: 'The entity has an owned_by relation',
     },
+    hasTags: {
+      type: 'boolean',
+      description: 'The entity has tags in metadata',
+    },
     ...annotations.reduce((acc: object, it: string) => {
       return {
         ...acc,
