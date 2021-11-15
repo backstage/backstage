@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import Auth0Icon from '@material-ui/icons/AcUnit';
 import { auth0AuthApiRef } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
@@ -22,7 +21,7 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'auth0',
   title: 'Auth0',
-  icon: Auth0Icon,
+  icon: () => null,
 };
 
 /**

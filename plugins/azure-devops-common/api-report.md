@@ -36,7 +36,7 @@ export type PullRequest = {
   title?: string;
   uniqueName?: string;
   createdBy?: string;
-  creationDate?: Date;
+  creationDate?: string;
   sourceRefName?: string;
   targetRefName?: string;
   status?: PullRequestStatus;
@@ -72,9 +72,9 @@ export type RepoBuild = {
   link?: string;
   status?: BuildStatus;
   result?: BuildResult;
-  queueTime?: Date;
-  startTime?: Date;
-  finishTime?: Date;
+  queueTime?: string;
+  startTime?: string;
+  finishTime?: string;
   source: string;
   uniqueName?: string;
 };

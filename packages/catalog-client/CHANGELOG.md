@@ -1,5 +1,11 @@
 # @backstage/catalog-client
 
+## 0.5.1
+
+### Patch Changes
+
+- 39e92897e4: Improved API documentation for catalog-client.
+
 ## 0.5.0
 
 ### Minor Changes

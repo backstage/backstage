@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import SamlIcon from '@material-ui/icons/AcUnit';
 import { DirectAuthConnector } from '../../../../lib/AuthConnector';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
@@ -42,7 +41,7 @@ export type SamlAuthResponse = {
 const DEFAULT_PROVIDER = {
   id: 'saml',
   title: 'SAML',
-  icon: SamlIcon,
+  icon: () => null,
 };
 
 /**
