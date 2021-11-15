@@ -256,7 +256,8 @@
         "type": "subcategory",
         "label": "API Reference",
         "ids": ["reference/index"]
-      }
+      },
+      "api/deprecations"
     ],
     "Tutorials": [
       "tutorials/journey",

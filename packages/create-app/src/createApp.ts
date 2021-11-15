@@ -14,85 +14,21 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { promisify } from 'util';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import inquirer, { Answers, Question } from 'inquirer';
-import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import { findPaths } from '@backstage/cli-common';
 import os from 'os';
-import { Task, templatingTask } from './lib/tasks';
-
-const exec = promisify(execCb);
-
-async function checkAppExists(rootDir: string, name: string) {
-  await Task.forItem('checking', name, async () => {
-    const destination = resolvePath(rootDir, name);
-
-    if (await fs.pathExists(destination)) {
-      const existing = chalk.cyan(destination.replace(`${rootDir}/`, ''));
-      throw new Error(
-        `A directory with the same name already exists: ${existing}\nPlease try again with a different app name`,
-      );
-    }
-  });
-}
-
-async function checkPathExists(path: string) {
-  await Task.forItem('checking', path, async () => {
-    try {
-      await fs.mkdirs(path);
-    } catch (error) {
-      // will fail if a file already exists at given `path`
-      throw new Error(`Failed to create app directory: ${error.message}`);
-    }
-  });
-}
-
-async function createTemporaryAppFolder(tempDir: string) {
-  await Task.forItem('creating', 'temporary directory', async () => {
-    try {
-      await fs.mkdir(tempDir);
-    } catch (error) {
-      throw new Error(`Failed to create temporary app directory, ${error}`);
-    }
-  });
-}
-
-async function buildApp(appDir: string) {
-  const runCmd = async (cmd: string) => {
-    await Task.forItem('executing', cmd, async () => {
-      process.chdir(appDir);
-
-      await exec(cmd).catch(error => {
-        process.stdout.write(error.stderr);
-        process.stdout.write(error.stdout);
-        throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
-      });
-    });
-  };
-
-  await runCmd('yarn install');
-  await runCmd('yarn tsc');
-}
-
-async function moveApp(tempDir: string, destination: string, id: string) {
-  await Task.forItem('moving', id, async () => {
-    await fs
-      .move(tempDir, destination)
-      .catch(error => {
-        throw new Error(
-          `Failed to move app from ${tempDir} to ${destination}: ${error.message}`,
-        );
-      })
-      .finally(() => {
-        // remove temporary files on both success and failure
-        fs.removeSync(tempDir);
-      });
-  });
-}
+import {
+  Task,
+  buildAppTask,
+  checkAppExistsTask,
+  checkPathExistsTask,
+  createTemporaryAppFolderTask,
+  moveAppTask,
+  templatingTask,
+} from './lib/tasks';
 
 export default async (cmd: Command): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
@@ -143,7 +79,7 @@ export default async (cmd: Command): Promise<void> => {
       // Template directly to specified path
 
       Task.section('Checking that supplied path exists');
-      await checkPathExists(appDir);
+      await checkPathExistsTask(appDir);
 
       Task.section('Preparing files');
       await templatingTask(templateDir, cmd.path, answers);
@@ -151,21 +87,21 @@ export default async (cmd: Command): Promise<void> => {
       // Template to temporary location, and then move files
 
       Task.section('Checking if the directory is available');
-      await checkAppExists(paths.targetDir, answers.name);
+      await checkAppExistsTask(paths.targetDir, answers.name);
 
       Task.section('Creating a temporary app directory');
-      await createTemporaryAppFolder(tempDir);
+      await createTemporaryAppFolderTask(tempDir);
 
       Task.section('Preparing files');
       await templatingTask(templateDir, tempDir, answers);
 
       Task.section('Moving to final location');
-      await moveApp(tempDir, appDir, answers.name);
+      await moveAppTask(tempDir, appDir, answers.name);
     }
 
     if (!cmd.skipInstall) {
       Task.section('Building the app');
-      await buildApp(appDir);
+      await buildAppTask(appDir);
     }
 
     Task.log();

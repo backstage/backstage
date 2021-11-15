@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import OneLoginIcon from '@material-ui/icons/AcUnit';
 import {
   oneloginAuthApiRef,
   OAuthRequestApi,
@@ -33,7 +32,7 @@ type CreateOptions = {
 const DEFAULT_PROVIDER = {
   id: 'onelogin',
   title: 'onelogin',
-  icon: OneLoginIcon,
+  icon: () => null,
 };
 
 const OIDC_SCOPES: Set<String> = new Set([

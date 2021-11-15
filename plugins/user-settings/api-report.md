@@ -37,10 +37,11 @@ export const ProviderSettingsItem: ({
 // @public (undocumented)
 export const Router: ({ providerSettings }: Props) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "SettingsProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Settings" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Settings: () => JSX.Element;
+export const Settings: (props: SettingsProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "UserSettingsAppearanceCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

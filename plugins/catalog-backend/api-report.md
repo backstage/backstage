@@ -1290,6 +1290,7 @@ export class NextCatalogBuilder {
     locationService: LocationService;
     router: Router;
   }>;
+  getDefaultProcessors(): CatalogProcessor[];
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceEntityPolicies(policies: EntityPolicy[]): NextCatalogBuilder;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

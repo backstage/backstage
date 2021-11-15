@@ -28,6 +28,10 @@ import {
   StructuredMetadataTable,
   SupportButton,
 } from '@backstage/core-components';
+import { Link as RouterLink } from 'react-router-dom';
+
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { rootRouteRef } from '../../routes';
 
 export const Project = () => {
   const [projectName, setProjectName] = useState('');
@@ -79,18 +83,20 @@ export const Project = () => {
               </SimpleStepperStep>
             </SimpleStepper>
             <Button
+              component={RouterLink}
               variant="text"
               data-testid="cancel-button"
               color="primary"
-              href="/gcp-projects"
+              to="/gcp-projects"
             >
               Cancel
             </Button>
             <Button
+              component={RouterLink}
               variant="contained"
               color="primary"
               disabled={disabled}
-              href={`newProject?projectName=${encodeURIComponent(
+              to={`newProject?projectName=${encodeURIComponent(
                 projectName,
               )},projectId=${encodeURIComponent(projectId)}`}
             >
@@ -110,18 +116,21 @@ const labels = (
   </>
 );
 
-export const NewProjectPage = () => (
-  <Page themeId="service">
-    <Header title="New GCP Project" type="tool">
-      {labels}
-    </Header>
-    <Content>
-      <ContentHeader title="">
-        <SupportButton>
-          This plugin allows you to view and interact with your gcp projects.
-        </SupportButton>
-      </ContentHeader>
-      <Project />
-    </Content>
-  </Page>
-);
+export const NewProjectPage = () => {
+  const docsRootLink = useRouteRef(rootRouteRef)();
+  return (
+    <Page themeId="tool">
+      <Header title="New GCP Project" type="GCP" typeLink={docsRootLink}>
+        {labels}
+      </Header>
+      <Content>
+        <ContentHeader title="">
+          <SupportButton>
+            This plugin allows you to view and interact with your gcp projects.
+          </SupportButton>
+        </ContentHeader>
+        <Project />
+      </Content>
+    </Page>
+  );
+};

@@ -355,11 +355,13 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
   to?: string;
+  icon?: IconComponent;
 };
 
 export function SidebarSearchField(props: SidebarSearchFieldProps) {
   const [input, setInput] = useState('');
   const classes = useStyles();
+  const Icon = props.icon ? props.icon : SearchIcon;
 
   const search = () => {
     props.onSearch(input);
@@ -391,7 +393,7 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
 
   return (
     <div className={classes.searchRoot}>
-      <SidebarItem icon={SearchIcon} to={props.to} onClick={handleItemClick}>
+      <SidebarItem icon={Icon} to={props.to} onClick={handleItemClick}>
         <TextField
           placeholder="Search"
           value={input}
