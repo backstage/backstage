@@ -25,6 +25,7 @@ export interface Config {
       /**
        * Secret shared by all backends for generating tokens
        * Format is base64 24-bit key
+       * @visibility secret
        */
       secret?: string;
     };
