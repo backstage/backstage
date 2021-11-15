@@ -37,7 +37,7 @@
     "@lerna/package-graph": "^4.0.0",
     "@lerna/project": "^4.0.0",
     "@octokit/request": "^5.4.12",
-    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-yaml": "^3.0.0",
