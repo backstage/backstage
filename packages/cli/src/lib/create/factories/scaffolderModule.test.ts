@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
+import { sep, resolve as resolvePath } from 'path';
 import { paths } from '../../paths';
 import { Task } from '../../tasks';
 import { FactoryRegistry } from '../FactoryRegistry';
@@ -70,7 +71,7 @@ describe('scaffolderModule factory', () => {
       '',
       'Creating module backstage-plugin-scaffolder-backend-module-test',
       'Checking Prerequisites:',
-      'availability  plugins/scaffolder-backend-module-test',
+      `availability  plugins${sep}scaffolder-backend-module-test`,
       'creating      temp dir',
       'Executing Template:',
       'copying       .eslintrc.js',
@@ -83,7 +84,7 @@ describe('scaffolderModule factory', () => {
       'copying       example.ts',
       'copying       index.ts',
       'Installing:',
-      'moving        plugins/scaffolder-backend-module-test',
+      `moving        plugins${sep}scaffolder-backend-module-test`,
     ]);
 
     await expect(
@@ -99,11 +100,11 @@ describe('scaffolderModule factory', () => {
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: '/root/plugins/scaffolder-backend-module-test',
+      cwd: resolvePath('/root/plugins/scaffolder-backend-module-test'),
       optional: true,
     });
     expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: '/root/plugins/scaffolder-backend-module-test',
+      cwd: resolvePath('/root/plugins/scaffolder-backend-module-test'),
       optional: true,
     });
   });

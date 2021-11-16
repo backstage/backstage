@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
+import { sep, resolve as resolvePath } from 'path';
 import { paths } from '../../paths';
 import { Task } from '../../tasks';
 import { FactoryRegistry } from '../FactoryRegistry';
@@ -75,7 +76,7 @@ describe('backendPlugin factory', () => {
       '',
       'Creating backend plugin backstage-plugin-test-backend',
       'Checking Prerequisites:',
-      'availability  plugins/test-backend',
+      `availability  plugins${sep}test-backend`,
       'creating      temp dir',
       'Executing Template:',
       'copying       .eslintrc.js',
@@ -89,7 +90,7 @@ describe('backendPlugin factory', () => {
       'copying       router.ts',
       'templating    standaloneServer.ts.hbs',
       'Installing:',
-      'moving        plugins/test-backend',
+      `moving        plugins${sep}test-backend`,
       'backend       adding dependency',
     ]);
 
@@ -103,11 +104,11 @@ describe('backendPlugin factory', () => {
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: '/root/plugins/test-backend',
+      cwd: resolvePath('/root/plugins/test-backend'),
       optional: true,
     });
     expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: '/root/plugins/test-backend',
+      cwd: resolvePath('/root/plugins/test-backend'),
       optional: true,
     });
   });
