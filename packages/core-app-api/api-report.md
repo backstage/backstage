@@ -219,10 +219,6 @@ export type AppOptions = {
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 };
 
-// Warning: (ae-forgotten-export) The symbol "PartialKeys" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "TargetRouteMap" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "KeysWithType" needs to be exported by the entry point index.d.ts
-//
 // @public
 export type AppRouteBinder = <
   ExternalRoutes extends {
