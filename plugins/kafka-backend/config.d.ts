@@ -33,8 +33,9 @@ export interface Config {
         | {
             ca: string[];
             /** @visibility secret */
-            key: string;
+            key?: string;
             cert: string;
+            rejectUnauthorized?: boolean;
           }
         | boolean;
       /**
