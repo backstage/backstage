@@ -48,6 +48,19 @@ describe('rootLogger', () => {
     );
   });
 
+  it('redacts but ignores empty and one-character secrets', () => {
+    const logger = createRootLogger();
+    jest.spyOn(logger, 'write');
+    setRootLoggerRedactionList(['SECRET-1', 'SECRET_2', 'Q', '']);
+    logger.info('Logging SECRET-1 and SECRET_2 and Q');
+
+    expect(logger.write).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Logging [REDACTED] and [REDACTED] and Q',
+      }),
+    );
+  });
+
   describe('createRootLogger', () => {
     it('creates a new logger', () => {
       const oldLogger = getRootLogger();
