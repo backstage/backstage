@@ -34,9 +34,9 @@ describe('createRouter', () => {
     const logger = getVoidLogger();
     const config = new ConfigReader({
       backend: {
-        baseUrl: 'https://example.com:7000',
+        baseUrl: 'https://example.com:7007',
         listen: {
-          port: 7000,
+          port: 7007,
         },
       },
     });

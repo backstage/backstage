@@ -138,11 +138,11 @@ techdocs:
   # (Optional and Legacy) TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc.
   # You don't have to specify this anymore.
 
-  requestUrl: http://localhost:7000/api/techdocs
+  requestUrl: http://localhost:7007/api/techdocs
 
   # (Optional and Legacy) Just another route in techdocs-backend where TechDocs requests the static files from. This URL uses an HTTP middleware
   # to serve files from either a local directory or an External storage provider.
   # You don't have to specify this anymore.
 
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  storageUrl: http://localhost:7007/api/techdocs/static/docs
 ```
