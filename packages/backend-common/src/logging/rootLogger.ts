@@ -34,7 +34,11 @@ export function setRootLogger(newLogger: winston.Logger) {
 }
 
 export function setRootLoggerRedactionList(redactionList: string[]) {
-  const filtered = redactionList.filter(Boolean);
+  // Exclude secrets that are empty or just one character in length. These
+  // typically mean that you are running local dev or tests, or using the
+  // --lax flag which sets things to just 'x'. So exclude those.
+  const filtered = redactionList.filter(r => r.length > 1);
+
   if (filtered.length) {
     redactionRegExp = new RegExp(
       `(${filtered.map(escapeRegExp).join('|')})`,
