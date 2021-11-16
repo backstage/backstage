@@ -327,7 +327,7 @@ describe('NextEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'should return correct entity for nested filter',
+      'should return correct entities for nested filter',
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
         const entity1: Entity = {
@@ -392,6 +392,47 @@ describe('NextEntitiesCatalog', () => {
         expect(entities.length).toBe(2);
         expect(entities).toContainEqual(entity2);
         expect(entities).toContainEqual(entity4);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should return correct entities for complex negation filter',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+        const entity1: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'one', org: 'a', desc: 'description' },
+          spec: {},
+        };
+        const entity2: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'two', org: 'b', desc: 'description' },
+          spec: {},
+        };
+        await addEntityToSearch(knex, entity1);
+        await addEntityToSearch(knex, entity2);
+        const catalog = new NextEntitiesCatalog(knex);
+
+        const testFilter1 = {
+          key: 'metadata.org',
+          values: ['b'],
+        };
+        const testFilter2 = {
+          key: 'metadata.desc',
+        };
+        const request = {
+          filter: {
+            not: {
+              allOf: [testFilter1, testFilter2],
+            },
+          },
+        };
+        const { entities } = await catalog.entities(request);
+
+        expect(entities.length).toBe(1);
+        expect(entities).toContainEqual(entity1);
       },
     );
   });

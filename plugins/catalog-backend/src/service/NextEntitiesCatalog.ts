@@ -110,12 +110,6 @@ function isEntitiesSearchFilter(
   return filter.hasOwnProperty('key');
 }
 
-function isAndEntityFilter(
-  filter: { allOf: EntityFilter[] } | EntityFilter,
-): filter is { allOf: EntityFilter[] } {
-  return filter.hasOwnProperty('allOf');
-}
-
 function isOrEntityFilter(
   filter: { anyOf: EntityFilter[] } | EntityFilter,
 ): filter is { anyOf: EntityFilter[] } {
@@ -141,26 +135,20 @@ function parseFilter(
   }
 
   if (isNegationEntityFilter(filter)) {
-    return parseFilter(filter.not, query, db, true);
+    return parseFilter(filter.not, query, db, !negate);
   }
 
-  if (isOrEntityFilter(filter)) {
-    return query.andWhere(function filterFunction() {
+  return query[negate ? 'andWhereNot' : 'andWhere'](function filterFunction() {
+    if (isOrEntityFilter(filter)) {
       for (const subFilter of filter.anyOf ?? []) {
-        this.orWhere(subQuery => parseFilter(subFilter, subQuery, db, negate));
+        this.orWhere(subQuery => parseFilter(subFilter, subQuery, db));
       }
-    });
-  }
-
-  if (isAndEntityFilter(filter)) {
-    return query.andWhere(function filterFunction() {
+    } else {
       for (const subFilter of filter.allOf ?? []) {
-        this.andWhere(subQuery => parseFilter(subFilter, subQuery, db, negate));
+        this.andWhere(subQuery => parseFilter(subFilter, subQuery, db));
       }
-    });
-  }
-
-  return query;
+    }
+  });
 }
 
 export class NextEntitiesCatalog implements EntitiesCatalog {
