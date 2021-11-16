@@ -44,7 +44,7 @@ const useStyles = makeStyles<BackstageTheme>(
       gridArea: 'pageHeader',
       padding: theme.spacing(3),
       width: '100%',
-      boxShadow: theme.shadows[4], // '0 0 8px 3px rgba(20, 20, 20, 0.3)',
+      boxShadow: theme.shadows[4],
       position: 'relative',
       zIndex: 100,
       display: 'flex',
