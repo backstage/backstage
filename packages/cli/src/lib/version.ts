@@ -42,6 +42,7 @@ import { version as corePluginApi } from '@backstage/core-plugin-api/package.jso
 import { version as devUtils } from '@backstage/dev-utils/package.json';
 import { version as testUtils } from '@backstage/test-utils/package.json';
 import { version as theme } from '@backstage/theme/package.json';
+import { version as scaffolderBackend } from '@backstage/plugin-scaffolder-backend/package.json';
 
 export const packageVersions: Record<string, string> = {
   '@backstage/backend-common': backendCommon,
@@ -53,6 +54,7 @@ export const packageVersions: Record<string, string> = {
   '@backstage/dev-utils': devUtils,
   '@backstage/test-utils': testUtils,
   '@backstage/theme': theme,
+  '@backstage/plugin-scaffolder-backend': scaffolderBackend,
 };
 
 export function findVersion() {

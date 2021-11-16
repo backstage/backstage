@@ -19,7 +19,12 @@ import fs from 'fs-extra';
 import handlebars from 'handlebars';
 import ora from 'ora';
 import recursive from 'recursive-readdir';
-import { basename, dirname, resolve as resolvePath } from 'path';
+import {
+  basename,
+  dirname,
+  resolve as resolvePath,
+  relative as relativePath,
+} from 'path';
 import { exec as execCb } from 'child_process';
 import { packageVersions } from './versions';
 import { promisify } from 'util';
@@ -85,7 +90,10 @@ export async function templatingTask(
   });
 
   for (const file of files) {
-    const destinationFile = file.replace(templateDir, destinationDir);
+    const destinationFile = resolvePath(
+      destinationDir,
+      relativePath(templateDir, file),
+    );
     await fs.ensureDir(dirname(destinationFile));
 
     if (file.endsWith('.hbs')) {
