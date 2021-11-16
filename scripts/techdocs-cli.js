@@ -19,7 +19,7 @@ const { execSync } = require('child_process');
 
 const args = process.argv.slice(2);
 
-execSync(`yarn workspace @techdocs/cli build`, { stdio: 'inherit' });
+execSync(`yarn -s workspace @techdocs/cli build`, { stdio: 'inherit' });
 execSync(`yarn workspace @techdocs/cli link`, { stdio: 'ignore' });
 execSync(`techdocs-cli ${args.join(' ')}`, { stdio: 'inherit' });
 execSync(`yarn workspace @techdocs/cli unlink`, { stdio: 'ignore' });

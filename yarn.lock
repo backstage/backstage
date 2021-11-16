@@ -14667,6 +14667,15 @@ find-my-way@^2.2.2:
     safe-regex2 "^2.0.0"
     semver-store "^0.3.0"
 
+find-process@^1.4.5:
+  version "1.4.5"
+  resolved "https://registry.npmjs.org/find-process/-/find-process-1.4.5.tgz#6a0e4c87a32ca927c05cbed7b9078d62ffaac1a4"
+  integrity sha512-v11rJYYISUWn+s8qZzgGnBvlzRKf3bOtlGFM8H0kw56lGQtOmLuLCzuclA5kehA2j7S5sioOWdI4woT3jDavAw==
+  dependencies:
+    chalk "^4.0.0"
+    commander "^5.1.0"
+    debug "^4.1.1"
+
 find-root@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/find-root/-/find-root-1.1.0.tgz#abcfc8ba76f708c42a97b3d685b7e9450bfb9ce4"

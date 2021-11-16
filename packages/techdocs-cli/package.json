@@ -24,8 +24,9 @@
     "build": "./scripts/build.sh",
     "clean": "backstage-cli clean",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test --testPathIgnorePatterns src/e2e.test.ts",
-    "test:e2e": "backstage-cli test --testPathPattern src/e2e.test.ts --runInBand"
+    "test": "backstage-cli test --testPathIgnorePatterns=src/e2e.test.ts",
+    "test:e2e": "backstage-cli test src/e2e.test.ts",
+    "test:e2e:ci": "backstage-cli test --watchAll=false --ci src/e2e.test.ts"
   },
   "bin": {
     "techdocs-cli": "bin/techdocs-cli"
@@ -41,6 +42,7 @@
     "@types/serve-handler": "^6.1.0",
     "@types/webpack-env": "^1.15.3",
     "embedded-techdocs-app": "0.0.0",
+    "find-process": "^1.4.5",
     "nodemon": "^2.0.2",
     "ts-node": "^10.0.0"
   },

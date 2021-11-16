@@ -39,4 +39,4 @@ jobs:
 
       - name: techdocs-cli e2e test
         working-directory: packages/techdocs-cli
-        run: yarn test:e2e
+        run: yarn test:e2e:ci

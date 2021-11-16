@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { execSync, spawn } from 'child_process';
+import { execSync, spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import path from 'path';
+
+import findProcess from 'find-process';
 
 const executeCommand = (
   command: string,
   args: string[],
-  options?: Object,
+  options?: SpawnOptionsWithoutStdio,
 ): Promise<{
   exit: number;
   stdout: string;
@@ -29,10 +31,9 @@ const executeCommand = (
   return new Promise(resolve => {
     const stdout: Buffer[] = [];
     const stderr: Buffer[] = [];
-    const proc =
-      process.platform === 'win32'
-        ? spawn('cmd', ['/s', '/c', command, ...args], options)
-        : spawn(command, args, options);
+
+    const shell = process.platform === 'win32';
+    const proc = spawn(command, args, { ...options, shell });
 
     proc.stdout?.on('data', data => {
       stdout.push(Buffer.from(data));
@@ -52,8 +53,24 @@ const executeCommand = (
   });
 };
 
+const timeout = 25000;
+
+jest.setTimeout(timeout * 2);
+
 describe('end-to-end', () => {
   const cwd = path.resolve(__dirname, 'fixture');
+
+  afterEach(async () => {
+    // On Windows the pid of a spawned process may be wrong
+    // Because of this, we should be kill the MKDocs after the test
+    // (e.g. https://github.com/nodejs/node/issues/4289#issuecomment-854270414)
+    if (process.platform === 'win32') {
+      const procs = await findProcess('name', 'mkdocs', true);
+      procs.forEach((proc: { pid: number }) => {
+        process.kill(proc.pid);
+      });
+    }
+  });
 
   beforeAll(() => {
     execSync('yarn workspace @techdocs/cli link', { stdio: 'ignore' });
@@ -64,29 +81,26 @@ describe('end-to-end', () => {
   });
 
   it('shows help text', async () => {
-    jest.setTimeout(30000);
     const proc = await executeCommand('techdocs-cli', ['--help']);
     expect(proc.stdout).toContain('Usage: techdocs-cli [options]');
     expect(proc.exit).toEqual(0);
   });
 
   it('can generate', async () => {
-    jest.setTimeout(30000);
     const proc = await executeCommand(
       'techdocs-cli',
       ['generate', '--no-docker'],
-      { cwd, timeout: 25000 },
+      { cwd, timeout },
     );
     expect(proc.stdout).toContain('Successfully generated docs');
     expect(proc.exit).toEqual(0);
   });
 
   it('can serve in mkdocs', async () => {
-    jest.setTimeout(30000);
     const proc = await executeCommand(
       'techdocs-cli',
       ['serve:mkdocs', '--no-docker'],
-      { cwd, timeout: 25000 },
+      { cwd, timeout },
     );
     expect(proc.stdout).toContain('Starting mkdocs server');
     expect(proc.exit).toEqual(0);
@@ -97,7 +111,7 @@ describe('end-to-end', () => {
     const proc = await executeCommand(
       'techdocs-cli',
       ['serve', '--no-docker'],
-      { cwd, timeout: 25000 },
+      { cwd, timeout },
     );
     expect(proc.stdout).toContain('Starting mkdocs server');
     expect(proc.stdout).toContain('Serving docs in Backstage at');
