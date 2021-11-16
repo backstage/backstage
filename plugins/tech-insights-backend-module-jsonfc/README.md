@@ -24,7 +24,7 @@ and modify the `techInsights.ts` file to contain a reference to the FactCheckers
 +   logger,
 +}),
 
- const builder = new DefaultTechInsightsBuilder({
+ const builder = buildTechInsightsContext({
    logger,
    config,
    database,
