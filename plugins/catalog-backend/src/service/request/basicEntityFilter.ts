@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntitiesValuesFilter, EntityFilter } from '../../catalog';
+import { EntitiesSearchFilter, EntityFilter } from '../../catalog';
 
 /**
  * Forms a full EntityFilter based on a single key-value(s) object.
@@ -22,7 +22,7 @@ import { EntitiesValuesFilter, EntityFilter } from '../../catalog';
 export function basicEntityFilter(
   items: Record<string, string | string[]>,
 ): EntityFilter {
-  const filtersByKey: Record<string, EntitiesValuesFilter> = {};
+  const filtersByKey: Record<string, EntitiesSearchFilter> = {};
 
   for (const [key, value] of Object.entries(items)) {
     const values = [value].flat();

@@ -15,11 +15,7 @@
  */
 
 import { InputError } from '@backstage/errors';
-import {
-  EntitiesSearchFilter,
-  EntitiesValuesFilter,
-  EntityFilter,
-} from '../../catalog';
+import { EntitiesSearchFilter, EntityFilter } from '../../catalog';
 import { parseStringsParam } from './common';
 
 /**
@@ -80,9 +76,8 @@ export function parseEntityFilterString(
       key in filtersByKey ? filtersByKey[key] : (filtersByKey[key] = { key });
 
     if (value !== undefined) {
-      const valuesFilter = f as EntitiesValuesFilter;
-      valuesFilter.values = valuesFilter.values || [];
-      valuesFilter.values.push(value);
+      f.values = f.values || [];
+      f.values.push(value);
     }
   }
 
