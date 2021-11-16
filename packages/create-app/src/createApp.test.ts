@@ -25,7 +25,7 @@ jest.mock('./lib/tasks');
 
 beforeAll(() => {
   mockFs({
-    'package.json': '', // required by `findPaths(__dirname)`
+    [`${__dirname}/package.json`]: '', // required by `findPaths(__dirname)`
     'templates/': mockFs.load(path.resolve(__dirname, '../templates/')),
   });
 });
