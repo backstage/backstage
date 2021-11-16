@@ -18,8 +18,9 @@ import React, { ReactNode } from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import { ApiRef, ApiHolder } from '@backstage/core-plugin-api';
 
+/** @ignore */
 type TestApiProviderPropsApiPair<TApi> = TApi extends infer TImpl
-  ? [ApiRef<TApi>, Partial<TImpl>]
+  ? readonly [ApiRef<TApi>, Partial<TImpl>]
   : never;
 
 /** @ignore */
@@ -33,22 +34,58 @@ type TestApiProviderPropsApiPairs<TApiPairs> = {
  * @public
  */
 export type TestApiProviderProps<TApiPairs extends any[]> = {
-  apis: [...TestApiProviderPropsApiPairs<TApiPairs>];
+  apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>];
   children: ReactNode;
 };
 
-/** @internal */
-class TestApiRegistry implements ApiHolder {
-  constructor(private readonly apis: Map<string, unknown>) {}
+/**
+ * The `TestApiRegistry` is an {@link @backstage/core-plugin-api#ApiHolder} implementation
+ * that is particularly well suited for development and test environments such as
+ * unit tests, storybooks, and isolated plugin development setups.
+ *
+ * @public
+ */
+export class TestApiRegistry implements ApiHolder {
+  /**
+   * Creates a new {@link TestApiRegistry} with a list of API implementation pairs.
+   *
+   * Similar to the {@link TestApiProvider}, there is no need to provide a full
+   * implementation of each API, it's enough to implement the methods that are tested.
+   *
+   * @example
+   * ```ts
+   * const apis = TestApiRegistry.with(
+   *   [configApiRef, new ConfigReader({})],
+   *   [identityApiRef, { getUserId: () => 'tester' }],
+   * );
+   * ```
+   *
+   * @public
+   * @param apis - A list of pairs mapping an ApiRef to its respective implementation.
+   */
+  static with<TApiPairs extends any[]>(
+    ...apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>]
+  ) {
+    return new TestApiRegistry(
+      new Map(apis.map(([api, impl]) => [api.id, impl])),
+    );
+  }
 
+  private constructor(private readonly apis: Map<string, unknown>) {}
+
+  /** {@inheritdoc @backstage/core-plugin-api#ApiHolder.get} */
   get<T>(api: ApiRef<T>): T | undefined {
     return this.apis.get(api.id) as T | undefined;
   }
 }
 
 /**
- * An API provider that lets you provide any number of API implementations in
- * a test, without necessarily having to implement the full APIs.
+ * The `TestApiProvider` is a Utility API context provider that is particularly
+ * well suited for development and test environments such as unit tests, storybooks,
+ * and isolated plugin development setups.
+ *
+ * It lets you provide any number of API implementations, without necessarily
+ * having to fully implement each of the APIs.
  *
  * A migration from `ApiRegistry` and `ApiProvider` might look like this, from:
  *
@@ -84,11 +121,6 @@ export const TestApiProvider = <T extends any[]>({
   children,
 }: TestApiProviderProps<T>) => {
   return (
-    <ApiProvider
-      apis={
-        new TestApiRegistry(new Map(apis.map(([api, impl]) => [api.id, impl])))
-      }
-      children={children}
-    />
+    <ApiProvider apis={TestApiRegistry.with(...apis)} children={children} />
   );
 };

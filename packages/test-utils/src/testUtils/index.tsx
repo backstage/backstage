@@ -22,5 +22,5 @@ export * from './msw';
 export * from './Keyboard';
 export * from './logCollector';
 export * from './testingLibrary';
-export { TestApiProvider } from './TestApiProvider';
+export { TestApiProvider, TestApiRegistry } from './TestApiProvider';
 export type { TestApiProviderProps } from './TestApiProvider';

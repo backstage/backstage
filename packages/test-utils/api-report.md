@@ -5,6 +5,7 @@
 ```ts
 import { AnalyticsApi } from '@backstage/core-plugin-api';
 import { AnalyticsEvent } from '@backstage/core-plugin-api';
+import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ErrorApi } from '@backstage/core-plugin-api';
@@ -184,9 +185,18 @@ export const TestApiProvider: <T extends any[]>({
 
 // @public
 export type TestApiProviderProps<TApiPairs extends any[]> = {
-  apis: [...TestApiProviderPropsApiPairs<TApiPairs>];
+  apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>];
   children: ReactNode;
 };
+
+// @public
+export class TestApiRegistry implements ApiHolder {
+  // (undocumented)
+  get<T>(api: ApiRef<T>): T | undefined;
+  static with<TApiPairs extends any[]>(
+    ...apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>]
+  ): TestApiRegistry;
+}
 
 // @public
 export type TestAppOptions = {
