@@ -22,7 +22,11 @@ import {
   AnyApiFactory,
 } from '@backstage/core-plugin-api';
 
-type ApiFactoryScope =
+/**
+ * Scope type when registering API factories.
+ * @public
+ */
+export type ApiFactoryScope =
   | 'default' // Default factories registered by core and plugins
   | 'app' // Factories registered in the app, overriding default ones
   | 'static'; // APIs that can't be overridden, e.g. config
