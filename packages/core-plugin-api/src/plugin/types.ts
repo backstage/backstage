@@ -18,23 +18,6 @@ import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
 import { AnyApiFactory } from '../apis/system';
 
 /**
- * Route configuration.
- *
- * @public
- */
-export type RouteOptions = {
-  // Whether the route path must match exactly, defaults to true.
-  exact?: boolean;
-};
-
-/**
- * Type alias for paths.
- *
- * @public
- */
-export type RoutePath = string;
-
-/**
  * Replace with using {@link RouteRef}s.
  *
  * @public
