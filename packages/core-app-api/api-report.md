@@ -95,7 +95,6 @@ export class ApiFactoryRegistry implements ApiFactoryHolder {
     | undefined;
   // (undocumented)
   getAllApis(): Set<AnyApiRef>;
-  // Warning: (ae-forgotten-export) The symbol "ApiFactoryScope" needs to be exported by the entry point index.d.ts
   register<
     Api,
     Impl extends Api,
@@ -104,6 +103,9 @@ export class ApiFactoryRegistry implements ApiFactoryHolder {
     },
   >(scope: ApiFactoryScope, factory: ApiFactory<Api, Impl, Deps>): boolean;
 }
+
+// @public
+export type ApiFactoryScope = 'default' | 'app' | 'static';
 
 // @public
 export const ApiProvider: {
@@ -116,6 +118,12 @@ export const ApiProvider: {
     >;
     children: PropTypes.Requireable<PropTypes.ReactNodeLike>;
   };
+};
+
+// @public
+export type ApiProviderProps = {
+  apis: ApiHolder;
+  children: ReactNode;
 };
 
 // @public
@@ -245,8 +253,6 @@ export class AppThemeSelector implements AppThemeApi {
 
 // @public
 export class AtlassianAuth {
-  // Warning: (ae-forgotten-export) The symbol "OAuthApiCreateOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static create({
     discoveryApi,
@@ -267,6 +273,15 @@ export class Auth0Auth {
     defaultScopes,
   }: OAuthApiCreateOptions): typeof auth0AuthApiRef.T;
 }
+
+// @public
+export type AuthApiCreateOptions = {
+  discoveryApi: DiscoveryApi;
+  environment?: string;
+  provider?: AuthProvider & {
+    id: string;
+  };
+};
 
 // @public
 export type BackstageApp = {
@@ -385,6 +400,8 @@ export type FlatRoutesProps = {
 // @public
 export class GithubAuth implements OAuthApi, SessionApi {
   // Warning: (ae-forgotten-export) The symbol "SessionManager" needs to be exported by the entry point index.d.ts
+  //
+  // @deprecated
   constructor(sessionManager: SessionManager<GithubSession>);
   // (undocumented)
   static create({
@@ -486,12 +503,11 @@ export class OAuth2
     BackstageIdentityApi,
     SessionApi
 {
+  // @deprecated
   constructor(options: {
     sessionManager: SessionManager<OAuth2Session>;
     scopeTransform: (scopes: string[]) => string[];
   });
-  // Warning: (ae-forgotten-export) The symbol "CreateOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static create({
     discoveryApi,
@@ -500,7 +516,7 @@ export class OAuth2
     oauthRequestApi,
     defaultScopes,
     scopeTransform,
-  }: CreateOptions): OAuth2;
+  }: OAuth2CreateOptions): OAuth2;
   // (undocumented)
   getAccessToken(
     scope?: string | string[],
@@ -523,6 +539,11 @@ export class OAuth2
 }
 
 // @public
+export type OAuth2CreateOptions = OAuthApiCreateOptions & {
+  scopeTransform?: (scopes: string[]) => string[];
+};
+
+// @public
 export type OAuth2Session = {
   providerInfo: {
     idToken: string;
@@ -532,6 +553,12 @@ export type OAuth2Session = {
   };
   profile: ProfileInfo;
   backstageIdentity: BackstageIdentity;
+};
+
+// @public
+export type OAuthApiCreateOptions = AuthApiCreateOptions & {
+  oauthRequestApi: OAuthRequestApi;
+  defaultScopes?: string[];
 };
 
 // @public
@@ -556,25 +583,31 @@ export class OktaAuth {
 
 // @public
 export class OneLoginAuth {
-  // Warning: (ae-forgotten-export) The symbol "CreateOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static create({
     discoveryApi,
     environment,
     provider,
     oauthRequestApi,
-  }: CreateOptions_2): typeof oneloginAuthApiRef.T;
+  }: OneLoginAuthCreateOptions): typeof oneloginAuthApiRef.T;
 }
+
+// @public
+export type OneLoginAuthCreateOptions = {
+  discoveryApi: DiscoveryApi;
+  oauthRequestApi: OAuthRequestApi;
+  environment?: string;
+  provider?: AuthProvider & {
+    id: string;
+  };
+};
 
 // @public
 export class SamlAuth
   implements ProfileInfoApi, BackstageIdentityApi, SessionApi
 {
-  // Warning: (ae-forgotten-export) The symbol "SamlSession" needs to be exported by the entry point index.d.ts
+  // @deprecated
   constructor(sessionManager: SessionManager<SamlSession>);
-  // Warning: (ae-forgotten-export) The symbol "AuthApiCreateOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static create({
     discoveryApi,
@@ -594,6 +627,13 @@ export class SamlAuth
   // (undocumented)
   signOut(): Promise<void>;
 }
+
+// @public
+export type SamlSession = {
+  userId: string;
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentity;
+};
 
 // @public
 export type SignInPageProps = {
@@ -639,8 +679,4 @@ export class WebStorage implements StorageApi {
   // (undocumented)
   set<T>(key: string, data: T): Promise<void>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/apis/system/ApiProvider.d.ts:15:5 - (ae-forgotten-export) The symbol "ApiProviderProps" needs to be exported by the entry point index.d.ts
 ```

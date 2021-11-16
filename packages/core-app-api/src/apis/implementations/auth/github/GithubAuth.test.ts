@@ -21,7 +21,7 @@ describe('GithubAuth', () => {
     const getSession = jest
       .fn()
       .mockResolvedValue({ providerInfo: { accessToken: 'access-token' } });
-    const githubAuth = new GithubAuth({ getSession } as any);
+    const githubAuth = new (GithubAuth as any)({ getSession }) as GithubAuth;
 
     expect(await githubAuth.getAccessToken()).toBe('access-token');
     expect(getSession).toBeCalledTimes(1);
