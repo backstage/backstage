@@ -21,7 +21,7 @@ import { coloredFormat } from './formats';
 import { escapeRegExp } from '../util/escapeRegExp';
 
 let rootLogger: winston.Logger;
-let redactionRegExp: RegExp;
+let redactionRegExp: RegExp | undefined;
 
 /** @public */
 export function getRootLogger(): winston.Logger {
@@ -34,11 +34,14 @@ export function setRootLogger(newLogger: winston.Logger) {
 }
 
 export function setRootLoggerRedactionList(redactionList: string[]) {
-  if (redactionList.length) {
+  const filtered = redactionList.filter(Boolean);
+  if (filtered.length) {
     redactionRegExp = new RegExp(
-      `(${redactionList.map(escapeRegExp).join('|')})`,
+      `(${filtered.map(escapeRegExp).join('|')})`,
       'g',
     );
+  } else {
+    redactionRegExp = undefined;
   }
 }
 
