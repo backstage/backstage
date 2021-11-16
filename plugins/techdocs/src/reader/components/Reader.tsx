@@ -214,6 +214,16 @@ export const useTechDocsReaderDom = (): Element | null => {
           .md-typeset .admonition, .md-typeset details {
             font-size: 1rem;
           }
+          
+          /* style the checkmarks of the task list */
+          .md-typeset .task-list-control .task-list-indicator::before {
+            background-color: ${theme.palette.action.disabledBackground};
+          }
+          .md-typeset .task-list-control [type="checkbox"]:checked + .task-list-indicator:before {
+            background-color: ${theme.palette.success.main};
+          }
+          /**/
+
           @media screen and (max-width: 76.1875em) {
             .md-nav {
               background-color: ${theme.palette.background.default};
@@ -293,8 +303,8 @@ export const useTechDocsReaderDom = (): Element | null => {
               --md-details-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>');
             }
             :host {
-              --md-tasklist-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2A10 10 0 002 12a10 10 0 0010 10 10 10 0 0010-10A10 10 0 0012 2z"/></svg>');
-              --md-tasklist-icon--checked: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>');
+              --md-tasklist-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>');
+              --md-tasklist-icon--checked: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>');
             }
         `,
         }),
@@ -305,9 +315,11 @@ export const useTechDocsReaderDom = (): Element | null => {
       namespace,
       scmIntegrationsApi,
       techdocsStorageApi,
+      theme.palette.action.disabledBackground,
       theme.palette.background.default,
       theme.palette.background.paper,
       theme.palette.primary.main,
+      theme.palette.success.main,
       theme.palette.text.primary,
       theme.typography.fontFamily,
     ],
