@@ -100,7 +100,6 @@ function addCondition(
         }
       }
     });
-  // Explicitly evaluate matchValueExists as a boolean since it may be undefined
   queryBuilder.andWhere('entity_id', negate ? 'not in' : 'in', matchQuery);
 }
 

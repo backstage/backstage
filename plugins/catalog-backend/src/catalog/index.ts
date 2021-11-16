@@ -23,8 +23,6 @@ export type {
   EntityUpsertResponse,
   PageInfo,
   EntitiesSearchFilter,
-  EntitiesKeyFilter,
-  EntitiesValuesFilter,
   EntityFilter,
   EntityPagination,
 } from './types';
