@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.0.5
+
+### Patch Changes
+
+- 36350bf8b3: Pinning version of elastic search client to 7.13.0 to prevent breaking change towards third party ElasticSearch clusters on 7.14.0.
+
 ## 0.0.4
 
 ### Patch Changes

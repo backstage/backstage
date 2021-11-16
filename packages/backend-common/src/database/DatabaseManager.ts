@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Knex } from 'knex';
 import { omit } from 'lodash';
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import {
   createDatabaseClient,
-  ensureDatabaseExists,
   createNameOverride,
+  ensureDatabaseExists,
   normalizeConnection,
 } from './connection';
 import { PluginDatabaseManager } from './types';
@@ -165,7 +166,7 @@ export class DatabaseManager {
     );
 
     return {
-      // include base connection if client type has not been overriden
+      // include base connection if client type has not been overridden
       ...(overridden ? {} : baseConnection),
       ...connection,
     };

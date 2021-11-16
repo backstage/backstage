@@ -18,11 +18,19 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import handlebars from 'handlebars';
 import ora from 'ora';
-import { basename, dirname } from 'path';
 import recursive from 'recursive-readdir';
+import {
+  basename,
+  dirname,
+  resolve as resolvePath,
+  relative as relativePath,
+} from 'path';
+import { exec as execCb } from 'child_process';
 import { packageVersions } from './versions';
+import { promisify } from 'util';
 
 const TASK_NAME_MAX_LENGTH = 14;
+const exec = promisify(execCb);
 
 export class Task {
   static log(name: string = '') {
@@ -65,6 +73,13 @@ export class Task {
   }
 }
 
+/**
+ * Generate a templated backstage project
+ *
+ * @param templateDir - location containing template files
+ * @param destinationDir - location to save templated project
+ * @param context - template parameters
+ */
 export async function templatingTask(
   templateDir: string,
   destinationDir: string,
@@ -75,7 +90,10 @@ export async function templatingTask(
   });
 
   for (const file of files) {
-    const destinationFile = file.replace(templateDir, destinationDir);
+    const destinationFile = resolvePath(
+      destinationDir,
+      relativePath(templateDir, file),
+    );
     await fs.ensureDir(dirname(destinationFile));
 
     if (file.endsWith('.hbs')) {
@@ -115,4 +133,106 @@ export async function templatingTask(
       });
     }
   }
+}
+
+/**
+ * Verify that application target does not already exist
+ *
+ * @param rootDir - The directory to create application folder `name`
+ * @param name - The specified name of the application
+ * @Throws Error - If directory with name of `destination` already exists
+ */
+export async function checkAppExistsTask(rootDir: string, name: string) {
+  await Task.forItem('checking', name, async () => {
+    const destination = resolvePath(rootDir, name);
+
+    if (await fs.pathExists(destination)) {
+      const existing = chalk.cyan(destination.replace(`${rootDir}/`, ''));
+      throw new Error(
+        `A directory with the same name already exists: ${existing}\nPlease try again with a different app name`,
+      );
+    }
+  });
+}
+
+/**
+ * Verify that application `path` exists, otherwise create the directory
+ *
+ * @param {string} path - target to create directory
+ * @throws {Error} if `path` is a file, or `fs.mkdir` fails
+ */
+export async function checkPathExistsTask(path: string) {
+  await Task.forItem('checking', path, async () => {
+    try {
+      await fs.mkdirs(path);
+    } catch (error) {
+      // will fail if a file already exists at given `path`
+      throw new Error(`Failed to create app directory: ${error.message}`);
+    }
+  });
+}
+
+/**
+ * Create a folder to store templated files
+ *
+ * @param {string} tempDir - target temporary directory
+ * @throws {Error} if `fs.mkdir` fails
+ */
+export async function createTemporaryAppFolderTask(tempDir: string) {
+  await Task.forItem('creating', 'temporary directory', async () => {
+    try {
+      await fs.mkdir(tempDir);
+    } catch (error) {
+      throw new Error(`Failed to create temporary app directory, ${error}`);
+    }
+  });
+}
+
+/**
+ * Run `yarn install` and `run tsc` in application directory
+ *
+ * @param {string} appDir - location of application to build
+ */
+export async function buildAppTask(appDir: string) {
+  const runCmd = async (cmd: string) => {
+    await Task.forItem('executing', cmd, async () => {
+      process.chdir(appDir);
+      await exec(cmd).catch(error => {
+        process.stdout.write(error.stderr);
+        process.stdout.write(error.stdout);
+        throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
+      });
+    });
+  };
+
+  await runCmd('yarn install');
+  await runCmd('yarn tsc');
+}
+
+/**
+ * Move temporary directory to destination application folder
+ *
+ * @param {string} tempDir source path to copy files from
+ * @param {string} destination target path to copy files
+ * @param {string} id
+ * @throws {Error} if `fs.move` fails
+ */
+export async function moveAppTask(
+  tempDir: string,
+  destination: string,
+  id: string,
+) {
+  await Task.forItem('moving', id, async () => {
+    await fs
+      .move(tempDir, destination)
+      .catch(error => {
+        throw new Error(
+          `Failed to move app from ${tempDir} to ${destination}: ${error.message}`,
+        );
+      })
+      .finally(() => {
+        // remove temporary files on both success and failure
+        fs.removeSync(tempDir);
+      });
+  });
 }

@@ -23,7 +23,8 @@
     "lint:all": "lerna run lint --",
     "lint:type-deps": "node scripts/check-type-dependencies.js",
     "docker-build": "yarn tsc && yarn workspace example-backend build --build-dependencies && yarn workspace example-backend build-image",
-    "create-plugin": "backstage-cli create-plugin --scope backstage --no-private",
+    "backstage-create": "backstage-cli create --scope backstage --no-private",
+    "create-plugin": "yarn backstage-create --select plugin",
     "remove-plugin": "backstage-cli remove-plugin",
     "release": "changeset version && yarn diff --yes && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' && yarn install",
     "prettier:check": "prettier --check .",
@@ -50,7 +51,7 @@
   },
   "version": "1.0.0",
   "dependencies": {
-    "@microsoft/api-documenter": "^7.13.47",
+    "@microsoft/api-documenter": "^7.13.68",
     "@microsoft/api-extractor": "^7.18.7",
     "@microsoft/api-extractor-model": "^7.13.5",
     "@microsoft/tsdoc": "^0.13.2"

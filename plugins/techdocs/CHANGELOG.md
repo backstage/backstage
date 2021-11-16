@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs
 
+## 0.12.5
+
+### Patch Changes
+
+- fe5738fe1c: Lazy load `LazyLog` as it is rarely used.
+- 53c9ad7e04: Update font weight for headings in TechDocs
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/plugin-search@0.4.17
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
 ## 0.12.4
 
 ### Patch Changes

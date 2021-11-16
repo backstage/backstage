@@ -5,11 +5,14 @@
 ```ts
 /// <reference types="react" />
 
+import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
+import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { Observable as Observable_2 } from '@backstage/types';
 import { Observer as Observer_2 } from '@backstage/types';
+import { ProfileInfo as ProfileInfo_2 } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
@@ -161,13 +164,14 @@ export type AppComponents = {
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
+  ThemeProvider?: ComponentType<{}>;
   SignInPage?: ComponentType<SignInPageProps>;
 };
 
 // @public
 export type AppContext = {
-  getPlugins(): BackstagePlugin<any, any>[];
-  getSystemIcon(key: string): IconComponent | undefined;
+  getPlugins(): BackstagePlugin_2<any, any>[];
+  getSystemIcon(key: string): IconComponent_2 | undefined;
   getComponents(): AppComponents;
 };
 
@@ -178,6 +182,7 @@ export type AppTheme = {
   variant: 'light' | 'dark';
   theme: BackstageTheme;
   icon?: React.ReactElement;
+  Provider?(props: { children: ReactNode }): JSX.Element | null;
 };
 
 // @public
@@ -399,21 +404,29 @@ export interface ElementCollection {
   }): ElementCollection;
 }
 
-// @public
-type Error_2 = {
-  name: string;
-  message: string;
-  stack?: string;
-};
+// @public @deprecated (undocumented)
+type Error_2 = ErrorApiError;
 export { Error_2 as Error };
 
 // @public
 export type ErrorApi = {
-  post(error: Error_2, context?: ErrorContext): void;
+  post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
   error$(): Observable_2<{
-    error: Error_2;
-    context?: ErrorContext;
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
   }>;
+};
+
+// @public
+export type ErrorApiError = {
+  name: string;
+  message: string;
+  stack?: string;
+};
+
+// @public
+export type ErrorApiErrorContext = {
+  hidden?: boolean;
 };
 
 // @public
@@ -421,15 +434,13 @@ export const errorApiRef: ApiRef<ErrorApi>;
 
 // @public
 export type ErrorBoundaryFallbackProps = {
-  plugin?: BackstagePlugin;
+  plugin?: BackstagePlugin_2;
   error: Error;
   resetError: () => void;
 };
 
-// @public
-export type ErrorContext = {
-  hidden?: boolean;
-};
+// @public @deprecated (undocumented)
+export type ErrorContext = ErrorApiErrorContext;
 
 // @public
 export type Extension<T> = {
@@ -741,7 +752,7 @@ export type SignInPageProps = {
 // @public
 export type SignInResult = {
   userId: string;
-  profile: ProfileInfo;
+  profile: ProfileInfo_2;
   getIdToken?: () => Promise<string>;
   signOut?: () => Promise<void>;
 };
@@ -798,9 +809,6 @@ export function useElementFilter<T>(
   filterFn: (arg: ElementCollection) => T,
   dependencies?: any[],
 ): T;
-
-// @public
-export type UserFlags = {};
 
 // @public
 export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
