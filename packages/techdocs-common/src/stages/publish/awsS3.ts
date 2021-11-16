@@ -70,13 +70,14 @@ export class AwsS3Publish implements PublisherBase {
     legacyPathCasing: boolean;
     logger: Logger;
     bucketRootPath: string;
+    sse?: 'aws:kms' | 'AES256';
   }) {
     this.storageClient = options.storageClient;
     this.bucketName = options.bucketName;
     this.legacyPathCasing = options.legacyPathCasing;
     this.logger = options.logger;
     this.bucketRootPath = options.bucketRootPath;
-    this.sse = sse;
+    this.sse = options.sse;
   }
 
   static fromConfig(config: Config, logger: Logger): PublisherBase {
