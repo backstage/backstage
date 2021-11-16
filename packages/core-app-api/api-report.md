@@ -212,6 +212,10 @@ export type AppOptions = {
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 };
 
+// Warning: (ae-forgotten-export) The symbol "PartialKeys" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "TargetRouteMap" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "KeysWithType" needs to be exported by the entry point index.d.ts
+//
 // @public
 export type AppRouteBinder = <
   ExternalRoutes extends {
@@ -454,16 +458,6 @@ export class GoogleAuth {
 }
 
 // @public
-export type KeysWithType<
-  Obj extends {
-    [key in string]: any;
-  },
-  Type,
-> = {
-  [key in keyof Obj]: Obj[key] extends Type ? key : never;
-}[keyof Obj];
-
-// @public
 export class LocalStorageFeatureFlags implements FeatureFlagsApi {
   // (undocumented)
   getRegisteredFlags(): FeatureFlag[];
@@ -602,14 +596,6 @@ export type OneLoginAuthCreateOptions = {
 };
 
 // @public
-export type PartialKeys<
-  Map extends {
-    [name in string]: any;
-  },
-  Keys extends keyof Map,
-> = Partial<Pick<Map, Keys>> & Required<Omit<Map, Keys>>;
-
-// @public
 export class SamlAuth
   implements ProfileInfoApi, BackstageIdentityApi, SessionApi
 {
@@ -653,20 +639,6 @@ export type SignInResult = {
   profile: ProfileInfo;
   getIdToken?: () => Promise<string>;
   signOut?: () => Promise<void>;
-};
-
-// @public
-export type TargetRouteMap<
-  ExternalRoutes extends {
-    [name: string]: ExternalRouteRef;
-  },
-> = {
-  [name in keyof ExternalRoutes]: ExternalRoutes[name] extends ExternalRouteRef<
-    infer Params,
-    any
-  >
-    ? RouteRef<Params> | SubRouteRef<Params>
-    : never;
 };
 
 // @public
