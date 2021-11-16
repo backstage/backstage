@@ -197,7 +197,14 @@ export type AppOptions = {
   icons: AppIcons & {
     [key in string]: IconComponent;
   };
-  plugins?: BackstagePluginWithAnyOutput[];
+  plugins?: (Omit<BackstagePlugin<any, any>, 'output'> & {
+    output(): (
+      | PluginOutput
+      | {
+          type: string;
+        }
+    )[];
+  })[];
   components: AppComponents;
   themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
@@ -269,7 +276,7 @@ export type BackstageApp = {
   getRouter(): ComponentType<{}>;
 };
 
-// @public
+// @public @deprecated
 export type BackstagePluginWithAnyOutput = Omit<
   BackstagePlugin<any, any>,
   'output'
