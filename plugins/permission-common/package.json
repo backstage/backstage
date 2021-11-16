@@ -21,8 +21,10 @@
   ],
   "license": "Apache-2.0",
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
+  "configSchema": "config.d.ts",
   "scripts": {
     "build": "backstage-cli build",
     "lint": "backstage-cli lint",

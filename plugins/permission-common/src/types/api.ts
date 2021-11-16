@@ -16,6 +16,11 @@
 
 import { Permission } from './permission';
 
+/**
+ * A request with a UUID identifier, so that batched responses can be matched up with the original
+ * requests.
+ * @public
+ */
 export type Identified<T> = T & { id: string };
 
 /**
@@ -77,5 +82,5 @@ export type AuthorizeResponse =
   | { result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }
   | {
       result: AuthorizeResult.CONDITIONAL;
-      conditions: PermissionCriteria<unknown>;
+      conditions: PermissionCriteria<PermissionCondition>;
     };

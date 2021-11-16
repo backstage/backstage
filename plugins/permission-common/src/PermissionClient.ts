@@ -71,10 +71,12 @@ export type AuthorizeRequestOptions = {
  * @public
  */
 export class PermissionClient {
+  private readonly enabled: boolean;
   private readonly discoveryApi: DiscoveryApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi }) {
+  constructor(options: { discoveryApi: DiscoveryApi; enabled?: boolean }) {
     this.discoveryApi = options.discoveryApi;
+    this.enabled = options.enabled ?? false;
   }
 
   /**
@@ -101,6 +103,10 @@ export class PermissionClient {
     // conditional responses will only ever be returned for requests containing a resourceType
     // but no resourceRef. That way clients who aren't prepared to handle filtering according
     // to conditions can be guaranteed that they won't unexpectedly get a CONDITIONAL response.
+
+    if (!this.enabled) {
+      return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
+    }
 
     const identifiedRequests: Identified<AuthorizeRequest>[] = requests.map(
       request => ({

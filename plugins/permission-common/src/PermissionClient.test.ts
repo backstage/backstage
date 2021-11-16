@@ -30,7 +30,10 @@ const discoveryApi: DiscoveryApi = {
     return mockBaseUrl;
   },
 };
-const client: PermissionClient = new PermissionClient({ discoveryApi });
+const client: PermissionClient = new PermissionClient({
+  discoveryApi,
+  enabled: true,
+});
 
 const mockPermission: Permission = {
   name: 'test.permission',
@@ -140,6 +143,25 @@ describe('PermissionClient', () => {
       await expect(
         client.authorize([mockAuthorizeRequest], { token }),
       ).rejects.toThrowError(/invalid input/i);
+    });
+
+    it('should allow all when authorization is not enabled', async () => {
+      mockAuthorizeHandler.mockImplementationOnce(
+        (req, res, { json }: RestContext) => {
+          const responses = req.body.map((a: Identified<AuthorizeRequest>) => ({
+            id: a.id,
+            outcome: AuthorizeResult.DENY,
+          }));
+
+          return res(json(responses));
+        },
+      );
+      const disabled = new PermissionClient({ discoveryApi, enabled: false });
+      const response = await disabled.authorize([mockAuthorizeRequest]);
+      expect(response[0]).toEqual(
+        expect.objectContaining({ result: AuthorizeResult.ALLOW }),
+      );
+      expect(mockAuthorizeHandler).not.toBeCalled();
     });
   });
 });

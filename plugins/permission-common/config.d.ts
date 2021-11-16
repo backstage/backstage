@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-export { AuthorizeResult } from './api';
-export type {
-  AuthorizeRequest,
-  AuthorizeResponse,
-  Identified,
-  PermissionCondition,
-  PermissionCriteria,
-} from './api';
-export type { DiscoveryApi } from './discovery';
-export type { PermissionAttributes, Permission } from './permission';
+export interface Config {
+  /** Configuration options for Backstage permissions and authorization */
+  permission?: {
+    /**
+     * Whether authorization is enabled in Backstage. Defaults to false, which means authorization
+     * requests will be automatically allowed without invoking the authorization policy.
+     * @visibility frontend
+     */
+    enabled?: boolean;
+  };
+}
