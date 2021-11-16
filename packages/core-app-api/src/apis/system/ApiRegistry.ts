@@ -36,6 +36,7 @@ class ApiRegistryBuilder {
  * A registry for utility APIs.
  *
  * @public
+ * @deprecated Will be removed, use {@link @backstage/test-utils#TestApiProvider} instead.
  */
 export class ApiRegistry implements ApiHolder {
   static builder() {
