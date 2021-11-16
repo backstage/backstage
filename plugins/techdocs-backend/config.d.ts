@@ -121,6 +121,14 @@ export interface Config {
              * @visibility backend
              */
             s3ForcePathStyle?: boolean;
+
+            /**
+             * (Optional) AWS Server Side Encryption
+             * Defaults to undefined.
+             * If not set, encrypted buckets will fail to publish.
+             * https://docs.aws.amazon.com/AmazonS3/latest/userguide/specifying-s3-encryption.html
+             */
+            sse?: 'aws:kms' | 'AES256';
           };
         }
       | {
