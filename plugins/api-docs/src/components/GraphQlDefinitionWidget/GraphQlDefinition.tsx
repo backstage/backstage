@@ -52,6 +52,7 @@ export const GraphQlDefinition = ({ definition }: Props) => {
     <div className={classes.root}>
       <div className={classes.graphiQlWrapper}>
         <GraphiQL
+          headerEditorEnabled={true}
           fetcher={() => Promise.resolve(null) as any}
           schema={schema}
           docExplorerOpen
