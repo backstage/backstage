@@ -263,7 +263,6 @@ export default async (cmd: Command) => {
   const pluginDir = isMonoRepo
     ? paths.resolveTargetRoot('plugins', pluginId)
     : paths.resolveTargetRoot(pluginId);
-  const ownerIds = parseOwnerIds(answers.owner);
   const { version: pluginVersion } = isMonoRepo
     ? await fs.readJson(paths.resolveTargetRoot('lerna.json'))
     : { version: '0.1.0' };
@@ -318,12 +317,8 @@ export default async (cmd: Command) => {
       await addPluginExtensionToApp(pluginId, extensionName, name);
     }
 
-    if (ownerIds && ownerIds.length) {
-      await addCodeownersEntry(
-        codeownersPath!,
-        `/plugins/${pluginId}`,
-        ownerIds,
-      );
+    if (answers.owner) {
+      await addCodeownersEntry(`/plugins/${pluginId}`, answers.owner);
     }
 
     Task.log();
