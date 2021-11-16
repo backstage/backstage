@@ -61,7 +61,7 @@ export function aggregationFor(
   const days = DateTime.fromISO(endDate).diff(
     DateTime.fromISO(inclusiveStartDateOf(duration, inclusiveEndDate)),
     'days',
-  );
+  ).days;
 
   function nextDelta(): number {
     const varianceFromBaseline = 0.15;
