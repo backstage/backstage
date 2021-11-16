@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
+import { sep, resolve as resolvePath } from 'path';
 import { paths } from '../../paths';
 import { Task } from '../../tasks';
 import { FactoryRegistry } from '../FactoryRegistry';
@@ -70,17 +71,17 @@ describe('pluginCommon factory', () => {
       '',
       'Creating backend plugin backstage-plugin-test-common',
       'Checking Prerequisites:',
-      'availability  plugins/test-common ✔',
-      'creating      temp dir ✔',
+      `availability  plugins${sep}test-common`,
+      'creating      temp dir',
       'Executing Template:',
-      'copying       .eslintrc.js ✔',
-      'templating    README.md.hbs ✔',
-      'templating    package.json.hbs ✔',
-      'copying       tsconfig.json ✔',
-      'templating    index.ts.hbs ✔',
-      'copying       setupTests.ts ✔',
+      'copying       .eslintrc.js',
+      'templating    README.md.hbs',
+      'templating    package.json.hbs',
+      'copying       tsconfig.json',
+      'templating    index.ts.hbs',
+      'copying       setupTests.ts',
       'Installing:',
-      'moving        plugins/test-common ✔',
+      `moving        plugins${sep}test-common`,
     ]);
 
     await expect(
@@ -96,11 +97,11 @@ describe('pluginCommon factory', () => {
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: '/root/plugins/test-common',
+      cwd: resolvePath('/root/plugins/test-common'),
       optional: true,
     });
     expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: '/root/plugins/test-common',
+      cwd: resolvePath('/root/plugins/test-common'),
       optional: true,
     });
   });

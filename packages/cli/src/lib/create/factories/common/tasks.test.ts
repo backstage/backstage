@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
+import { sep } from 'path';
 import { createMockOutputStream, mockPaths } from './testUtils';
 import { CreateContext } from '../../types';
 import { executePluginPackageTemplate } from './tasks';
@@ -88,14 +89,14 @@ some-package@^1.1.0:
     expect(modified).toBe(true);
     expect(output).toEqual([
       'Checking Prerequisites:',
-      'availability  /target ✔',
-      'creating      temp dir ✔',
+      `availability  ..${sep}target`,
+      'creating      temp dir',
       'Executing Template:',
-      'templating    package.json.hbs ✔',
-      'copying       not-templated.txt ✔',
-      'templating    templated.txt.hbs ✔',
+      'templating    package.json.hbs',
+      'copying       not-templated.txt',
+      'templating    templated.txt.hbs',
       'Installing:',
-      'moving        /target ✔',
+      `moving        ..${sep}target`,
     ]);
     await expect(fs.readFile('/target/package.json', 'utf8')).resolves.toBe(`{
   "name": "my-testing-plugin",

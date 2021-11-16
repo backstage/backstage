@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
+import { sep, resolve as resolvePath } from 'path';
 import { paths } from '../../paths';
 import { Task } from '../../tasks';
 import { FactoryRegistry } from '../FactoryRegistry';
@@ -88,29 +89,29 @@ describe('frontendPlugin factory', () => {
       '',
       'Creating backend plugin backstage-plugin-test',
       'Checking Prerequisites:',
-      'availability  plugins/test ✔',
-      'creating      temp dir ✔',
+      `availability  plugins${sep}test`,
+      'creating      temp dir',
       'Executing Template:',
-      'copying       .eslintrc.js ✔',
-      'templating    README.md.hbs ✔',
-      'templating    package.json.hbs ✔',
-      'copying       tsconfig.json ✔',
-      'templating    index.tsx.hbs ✔',
-      'templating    index.ts.hbs ✔',
-      'templating    plugin.test.ts.hbs ✔',
-      'templating    plugin.ts.hbs ✔',
-      'templating    routes.ts.hbs ✔',
-      'copying       setupTests.ts ✔',
-      'templating    ExampleComponent.test.tsx.hbs ✔',
-      'templating    ExampleComponent.tsx.hbs ✔',
-      'copying       index.ts ✔',
-      'templating    ExampleFetchComponent.test.tsx.hbs ✔',
-      'templating    ExampleFetchComponent.tsx.hbs ✔',
-      'copying       index.ts ✔',
+      'copying       .eslintrc.js',
+      'templating    README.md.hbs',
+      'templating    package.json.hbs',
+      'copying       tsconfig.json',
+      'templating    index.tsx.hbs',
+      'templating    index.ts.hbs',
+      'templating    plugin.test.ts.hbs',
+      'templating    plugin.ts.hbs',
+      'templating    routes.ts.hbs',
+      'copying       setupTests.ts',
+      'templating    ExampleComponent.test.tsx.hbs',
+      'templating    ExampleComponent.tsx.hbs',
+      'copying       index.ts',
+      'templating    ExampleFetchComponent.test.tsx.hbs',
+      'templating    ExampleFetchComponent.tsx.hbs',
+      'copying       index.ts',
       'Installing:',
-      'moving        plugins/test ✔',
-      'app           adding dependency ✔',
-      'app           adding import ✔',
+      `moving        plugins${sep}test`,
+      'app           adding dependency',
+      'app           adding import',
     ]);
 
     await expect(
@@ -136,11 +137,11 @@ const router = (
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: '/root/plugins/test',
+      cwd: resolvePath('/root/plugins/test'),
       optional: true,
     });
     expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: '/root/plugins/test',
+      cwd: resolvePath('/root/plugins/test'),
       optional: true,
     });
   });
@@ -205,11 +206,11 @@ const router = (
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: '/root/plugins/test',
+      cwd: resolvePath('/root/plugins/test'),
       optional: true,
     });
     expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: '/root/plugins/test',
+      cwd: resolvePath('/root/plugins/test'),
       optional: true,
     });
   });

@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, relative as relativePath } from 'path';
 import { paths } from '../../../paths';
 import { Task, templatingTask } from '../../../tasks';
 import { Lockfile } from '../../../versioning';
@@ -41,7 +41,7 @@ export async function executePluginPackageTemplate(
   }
 
   Task.section('Checking Prerequisites');
-  const shortPluginDir = targetDir.replace(`${paths.targetRoot}/`, '');
+  const shortPluginDir = relativePath(paths.targetRoot, targetDir);
   await Task.forItem('availability', shortPluginDir, async () => {
     if (await fs.pathExists(targetDir)) {
       throw new Error(
