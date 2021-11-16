@@ -22,7 +22,7 @@ do this by creating a file called `packages/backend/src/plugins/techInsights.ts`
 ```ts
 import {
   createRouter,
-  DefaultTechInsightsBuilder,
+  buildTechInsightsContext,
 } from '@backstage/plugin-tech-insights-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -33,7 +33,7 @@ export default async function createPlugin({
   discovery,
   database,
 }: PluginEnvironment): Promise<Router> {
-  const builder = new DefaultTechInsightsBuilder({
+  const builder = buildTechInsightsContext({
     logger,
     config,
     database,
