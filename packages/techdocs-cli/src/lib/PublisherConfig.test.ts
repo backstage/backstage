@@ -68,6 +68,7 @@ describe('getValidPublisherConfig', () => {
       const config = {
         publisherType: 'awsS3',
         storageName: 'someStorageName',
+        awsBucketRootPath: 'backstage-data/techdocs',
       } as unknown as Command;
 
       const actualConfig = PublisherConfig.getValidConfig(config);
@@ -75,6 +76,9 @@ describe('getValidPublisherConfig', () => {
       expect(
         actualConfig.getString('techdocs.publisher.awsS3.bucketName'),
       ).toBe('someStorageName');
+      expect(
+        actualConfig.getString('techdocs.publisher.awsS3.bucketRootPath'),
+      ).toBe('backstage-data/techdocs');
     });
   });
 
@@ -127,6 +131,7 @@ describe('getValidPublisherConfig', () => {
       const config = {
         publisherType: 'googleGcs',
         storageName: 'someStorageName',
+        gcsBucketRootPath: 'backstage-data/techdocs',
       } as unknown as Command;
 
       const actualConfig = PublisherConfig.getValidConfig(config);
@@ -136,6 +141,9 @@ describe('getValidPublisherConfig', () => {
       expect(
         actualConfig.getString('techdocs.publisher.googleGcs.bucketName'),
       ).toBe('someStorageName');
+      expect(
+        actualConfig.getString('techdocs.publisher.googleGcs.bucketRootPath'),
+      ).toBe('backstage-data/techdocs');
     });
   });
 });

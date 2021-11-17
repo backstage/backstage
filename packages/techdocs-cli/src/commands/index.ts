@@ -91,6 +91,10 @@ export function registerCommands(program: CommanderStatic) {
       'Optional AWS S3 option to force path style.',
     )
     .option(
+      '--awsBucketRootPath',
+      'Optional sub-directory to store files in Amazon S3',
+    )
+    .option(
       '--osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>',
       '(Required for OpenStack) specify when --publisher-type openStackSwift',
     )
@@ -176,6 +180,10 @@ export function registerCommands(program: CommanderStatic) {
     .option(
       '--osSwiftUrl <OPENSTACK SWIFT SWIFTURL>',
       '(Required for OpenStack) specify when --publisher-type openStackSwift',
+    )
+    .option(
+      '--gcsBucketRootPath',
+      'Optional sub-directory to store files in Google cloud storage',
     )
     .option(
       '--directory <PATH>',
