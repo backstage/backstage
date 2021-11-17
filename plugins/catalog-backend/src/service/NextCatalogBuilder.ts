@@ -80,6 +80,7 @@ import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { LocationService } from './types';
+import { connectEntityProviders } from '../processing/connectEntityProviders';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -364,7 +365,6 @@ export class NextCatalogBuilder {
 
     const processingEngine = new DefaultCatalogProcessingEngine(
       logger,
-      entityProviders,
       processingDatabase,
       orchestrator,
       stitcher,
@@ -389,6 +389,8 @@ export class NextCatalogBuilder {
       logger,
       config,
     });
+
+    await connectEntityProviders(processingDatabase, entityProviders);
 
     return {
       entitiesCatalog,
