@@ -39,8 +39,8 @@ export function usePullRequests(
   const top = defaultLimit ?? AZURE_DEVOPS_DEFAULT_TOP;
   const status = requestedStatus ?? PullRequestStatus.Active;
   const options: PullRequestOptions = {
-    top: top,
-    status: status,
+    top,
+    status,
   };
 
   const api = useApi(azureDevOpsApiRef);
@@ -48,7 +48,7 @@ export function usePullRequests(
 
   const { value, loading, error } = useAsync(() => {
     return api.getPullRequests(project, repo, options);
-  }, [api, project, repo, entity, requestedStatus]);
+  }, [api, project, repo, top, status]);
 
   return {
     items: value?.items,

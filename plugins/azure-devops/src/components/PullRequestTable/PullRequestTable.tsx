@@ -127,8 +127,8 @@ export const PullRequestTable = ({ defaultLimit }: PullRequestTableProps) => {
           Azure Repos - Pull Requests ({items ? items.length : 0})
           <Box position="absolute" right={320} top={20}>
             <PullRequestStatusButtonGroup
-              pullRequestStatusState={pullRequestStatusState}
-              setPullRequestsStatusState={setPullRequestStatusState}
+              status={pullRequestStatusState}
+              setStatus={setPullRequestStatusState}
             />
           </Box>
         </Box>

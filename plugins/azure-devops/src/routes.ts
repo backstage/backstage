@@ -17,9 +17,9 @@
 import { createRouteRef } from '@backstage/core-plugin-api';
 
 export const azurePipelinesEntityContentRouteRef = createRouteRef({
-  title: 'Azure Pipelines Entity Content',
+  id: 'azure-pipelines-entity-content',
 });
 
 export const azurePullRequestsEntityContentRouteRef = createRouteRef({
-  title: 'Azure Pull Requests Entity Content',
+  id: 'azure-pull-requests-entity-content',
 });

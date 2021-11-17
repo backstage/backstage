@@ -20,46 +20,34 @@ import { PullRequestStatus } from '@backstage/plugin-azure-devops-common';
 import React from 'react';
 
 export const PullRequestStatusButtonGroup = ({
-  pullRequestStatusState,
-  setPullRequestsStatusState,
+  status,
+  setStatus,
 }: {
-  pullRequestStatusState: PullRequestStatus;
-  setPullRequestsStatusState: (pullRequestStatus: PullRequestStatus) => void;
+  status: PullRequestStatus;
+  setStatus: (pullRequestStatus: PullRequestStatus) => void;
 }) => {
   return (
     <ButtonGroup aria-label="outlined button group">
       <Button
-        color={
-          pullRequestStatusState === PullRequestStatus.Active
-            ? 'primary'
-            : 'default'
-        }
+        color={status === PullRequestStatus.Active ? 'primary' : 'default'}
         onClick={() => {
-          setPullRequestsStatusState(PullRequestStatus.Active);
+          setStatus(PullRequestStatus.Active);
         }}
       >
         Active
       </Button>
       <Button
-        color={
-          pullRequestStatusState === PullRequestStatus.Completed
-            ? 'primary'
-            : 'default'
-        }
+        color={status === PullRequestStatus.Completed ? 'primary' : 'default'}
         onClick={() => {
-          setPullRequestsStatusState(PullRequestStatus.Completed);
+          setStatus(PullRequestStatus.Completed);
         }}
       >
         Completed
       </Button>
       <Button
-        color={
-          pullRequestStatusState === PullRequestStatus.Abandoned
-            ? 'primary'
-            : 'default'
-        }
+        color={status === PullRequestStatus.Abandoned ? 'primary' : 'default'}
         onClick={() => {
-          setPullRequestsStatusState(PullRequestStatus.Abandoned);
+          setStatus(PullRequestStatus.Abandoned);
         }}
       >
         Abandoned
