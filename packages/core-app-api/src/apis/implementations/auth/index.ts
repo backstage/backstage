@@ -25,3 +25,4 @@ export * from './microsoft';
 export * from './onelogin';
 export * from './bitbucket';
 export * from './atlassian';
+export type { OAuthApiCreateOptions, AuthApiCreateOptions } from './types';
