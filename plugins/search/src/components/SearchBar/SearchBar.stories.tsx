@@ -71,7 +71,9 @@ export const Focused = () => {
         <Grid container direction="row">
           <Grid item xs={12}>
             <Paper style={{ padding: '8px 0' }}>
-              <SearchBar focused />
+              {/* decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus */}
+              {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+              <SearchBar autoFocus />
             </Paper>
           </Grid>
         </Grid>

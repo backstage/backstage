@@ -99,7 +99,6 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
       <DialogTitle>
         <Paper className={classes.container}>
           <SearchBarBase
-            focused
             className={classes.input}
             value={value}
             onChange={handleQuery}
