@@ -30,7 +30,7 @@ export const rootRouteRef = createRouteRef({
 });
 
 export const rootNextRouteRef = createRouteRef({
-  id: 'search-next',
+  id: 'search:next',
 });
 
 export const searchPlugin = createPlugin({

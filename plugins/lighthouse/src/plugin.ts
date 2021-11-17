@@ -29,15 +29,15 @@ export const rootRouteRef = createRouteRef({
 });
 
 export const viewAuditRouteRef = createRouteRef({
-  id: 'lighthouse-audit',
+  id: 'lighthouse:audit',
 });
 
 export const createAuditRouteRef = createRouteRef({
-  id: 'lighthouse-create-audit',
+  id: 'lighthouse:create-audit',
 });
 
 export const entityContentRouteRef = createRouteRef({
-  id: 'lighthouse-entity-content',
+  id: 'lighthouse:entity-content',
 });
 
 export const lighthousePlugin = createPlugin({

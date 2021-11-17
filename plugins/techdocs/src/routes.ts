@@ -17,14 +17,14 @@
 import { createRouteRef } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  id: 'techdocs-index-page',
+  id: 'techdocs:index-page',
 });
 
 export const rootDocsRouteRef = createRouteRef({
-  id: 'techdocs-reader-page',
+  id: 'techdocs:reader-page',
   params: ['namespace', 'kind', 'name'],
 });
 
 export const rootCatalogDocsRouteRef = createRouteRef({
-  id: 'catalog-techdocs-reader-view',
+  id: 'techdocs:catalog-reader-view',
 });
