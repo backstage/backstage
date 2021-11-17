@@ -23,7 +23,7 @@ import { EntityScorecardContent } from '@backstage/plugin-scorecards';
 <Route path="/scorecards" element={<EntityScorecardContent />} />;
 ```
 
-3. Add Scorecards overview page to the EntityPage:
+### Add Scorecards overview page to the EntityPage:
 
 ```tsx
 // packages/app/src/components/catalog/EntityPage.tsx
