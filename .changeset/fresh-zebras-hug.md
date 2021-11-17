@@ -1,6 +1,5 @@
 ---
-"@backstage/plugin-kafka-backend": patch
-"@backstage/plugin-kafka": patch
+'@backstage/plugin-kafka-backend': patch
 ---
 
 Update Kafka configuration types
