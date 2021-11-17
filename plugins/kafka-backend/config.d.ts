@@ -31,10 +31,11 @@ export interface Config {
        */
       ssl?:
         | {
-            ca: string[];
+            ca?: string[];
             /** @visibility secret */
-            key: string;
-            cert: string;
+            key?: string;
+            cert?: string;
+            rejectUnauthorized?: boolean;
           }
         | boolean;
       /**
