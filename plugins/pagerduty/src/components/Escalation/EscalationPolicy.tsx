@@ -18,12 +18,11 @@ import React from 'react';
 import { List, ListSubheader } from '@material-ui/core';
 import { EscalationUsersEmptyState } from './EscalationUsersEmptyState';
 import { EscalationUser } from './EscalationUser';
-import { useAsync } from 'react-use';
 import { pagerDutyApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 
 import { useApi } from '@backstage/core-plugin-api';
-import { Progress } from '@backstage/core-components';
+import { useAsyncDefaults } from '@backstage/core-components';
 
 type Props = {
   policyId: string;
@@ -32,38 +31,37 @@ type Props = {
 export const EscalationPolicy = ({ policyId }: Props) => {
   const api = useApi(pagerDutyApiRef);
 
-  const {
-    value: users,
-    loading,
-    error,
-  } = useAsync(async () => {
-    const oncalls = await api.getOnCallByPolicyId(policyId);
-    const usersItem = oncalls
-      .sort((a, b) => a.escalation_level - b.escalation_level)
-      .map(oncall => oncall.user);
+  const asyncState = useAsyncDefaults(
+    async () => {
+      const oncalls = await api.getOnCallByPolicyId(policyId);
+      const usersItem = oncalls
+        .sort((a, b) => a.escalation_level - b.escalation_level)
+        .map(oncall => oncall.user);
 
-    return usersItem;
-  });
+      return usersItem;
+    },
+    [],
+    {
+      error: ({ error }) => (
+        <Alert severity="error">
+          Error encountered while fetching information. {error.message}
+        </Alert>
+      ),
+    },
+  );
 
-  if (error) {
-    return (
-      <Alert severity="error">
-        Error encountered while fetching information. {error.message}
-      </Alert>
-    );
+  if (asyncState.fallback) {
+    return asyncState.fallback;
   }
+  const users = asyncState.value;
 
-  if (loading) {
-    return <Progress />;
-  }
-
-  if (!users?.length) {
+  if (!users.length) {
     return <EscalationUsersEmptyState />;
   }
 
   return (
     <List dense subheader={<ListSubheader>ON CALL</ListSubheader>}>
-      {users!.map((user, index) => (
+      {users.map((user, index) => (
         <EscalationUser key={index} user={user} />
       ))}
     </List>

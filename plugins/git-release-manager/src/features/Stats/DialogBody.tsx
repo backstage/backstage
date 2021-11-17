@@ -34,7 +34,7 @@ import { Row } from './Row/Row';
 import { useGetStats } from './hooks/useGetStats';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { Warn } from './Warn';
-import { Progress } from '@backstage/core-components';
+import { useAsyncState } from '@backstage/core-components';
 
 const useStyles = makeStyles({
   table: {
@@ -47,21 +47,21 @@ export function DialogBody() {
   const { stats } = useGetStats();
   const { project } = useProjectContext();
 
-  if (stats.error) {
-    return (
-      <Alert severity="error">Unexpected error: {stats.error.message}</Alert>
-    );
+  const asyncState = useAsyncState(stats, {
+    error: ({ error }) => (
+      <Alert severity="error">Unexpected error: {error.message}</Alert>
+    ),
+  });
+  if (asyncState.fallback) {
+    return asyncState.fallback;
   }
+  const { value } = asyncState;
 
-  if (stats.loading) {
-    return <Progress />;
-  }
-
-  if (!stats.value) {
+  if (!value) {
     return <Alert severity="error">Couldn't find any stats :(</Alert>;
   }
 
-  const { allReleases, allTags } = stats.value;
+  const { allReleases, allTags } = value;
   const { mappedReleases } = getMappedReleases({ allReleases, project });
   const { releaseStats } = getReleaseStats({
     mappedReleases,

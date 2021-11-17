@@ -60,7 +60,7 @@ import {
   isAlertSnoozed,
 } from '../../utils/alerts';
 
-import { Progress } from '@backstage/core-components';
+import { useAsyncState } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 export const CostInsightsPage = () => {
@@ -174,12 +174,13 @@ export const CostInsightsPage = () => {
     lastCompleteBillingDate,
   ]);
 
-  if (loadingInitial) {
-    return <Progress />;
-  }
+  const { fallback } = useAsyncState({
+    loading: loadingInitial,
+    error: error || undefined,
+  });
 
-  if (error) {
-    return <MaterialAlert severity="error">{error.message}</MaterialAlert>;
+  if (fallback) {
+    return fallback;
   }
 
   // Loaded but no groups found for the user

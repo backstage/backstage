@@ -18,13 +18,15 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { makeStyles, Paper } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
-import { useAsync } from 'react-use';
 import { codeCoverageApiRef } from '../../api';
 import { FileEntry } from '../../types';
 import { CodeRow } from './CodeRow';
 import { highlightLines } from './Highlighter';
 
-import { Progress, ResponseErrorPanel } from '@backstage/core-components';
+import {
+  ResponseErrorPanel,
+  useAsyncDefaults,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 type Props = {
@@ -77,7 +79,7 @@ const FormattedLines = ({
 export const FileContent = ({ filename, coverage }: Props) => {
   const { entity } = useEntity();
   const codeCoverageApi = useApi(codeCoverageApiRef);
-  const { loading, error, value } = useAsync(
+  const { value, fallback } = useAsyncDefaults(
     async () =>
       await codeCoverageApi.getFileContentFromEntity(
         {
@@ -88,15 +90,15 @@ export const FileContent = ({ filename, coverage }: Props) => {
         filename,
       ),
     [entity],
+    {
+      error: ({ error }) => <ResponseErrorPanel error={error} />,
+    },
   );
 
   const classes = useStyles();
 
-  if (loading) {
-    return <Progress />;
-  }
-  if (error) {
-    return <ResponseErrorPanel error={error} />;
+  if (fallback) {
+    return fallback;
   }
   if (!value) {
     return (

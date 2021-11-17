@@ -18,7 +18,6 @@ import { Entity } from '@backstage/catalog-model';
 import { Card, CardHeader, Divider, CardContent } from '@material-ui/core';
 import { Incidents } from '../Incident';
 import { EscalationPolicy } from '../Escalation';
-import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { pagerDutyApiRef, UnauthorizedError } from '../../api';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
@@ -32,11 +31,11 @@ import { ChangeEvents } from '../ChangeEvents';
 
 import { useApi } from '@backstage/core-plugin-api';
 import {
-  Progress,
   HeaderIconLinkRow,
   IconLinkVerticalProps,
   TabbedCard,
   CardTab,
+  useAsyncDefaults,
 } from '@backstage/core-components';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
@@ -62,39 +61,37 @@ export const PagerDutyCard = () => {
     setRefreshChangeEvents(x => !x);
   }, []);
 
-  const {
-    value: service,
-    loading,
-    error,
-  } = useAsync(async () => {
-    const services = await api.getServiceByIntegrationKey(
-      integrationKey as string,
-    );
+  const asyncState = useAsyncDefaults(
+    async () => {
+      const services = await api.getServiceByIntegrationKey(
+        integrationKey as string,
+      );
 
-    return {
-      id: services[0].id,
-      name: services[0].name,
-      url: services[0].html_url,
-      policyId: services[0].escalation_policy.id,
-      policyLink: services[0].escalation_policy.html_url,
-    };
-  });
+      return {
+        id: services[0].id,
+        name: services[0].name,
+        url: services[0].html_url,
+        policyId: services[0].escalation_policy.id,
+        policyLink: services[0].escalation_policy.html_url,
+      };
+    },
+    [],
+    {
+      error: ({ error }) =>
+        error instanceof UnauthorizedError ? (
+          <MissingTokenError />
+        ) : (
+          <Alert severity="error">
+            Error encountered while fetching information. {error.message}
+          </Alert>
+        ),
+    },
+  );
 
-  if (error instanceof UnauthorizedError) {
-    return <MissingTokenError />;
+  if (asyncState.fallback) {
+    return asyncState.fallback;
   }
-
-  if (error) {
-    return (
-      <Alert severity="error">
-        Error encountered while fetching information. {error.message}
-      </Alert>
-    );
-  }
-
-  if (loading) {
-    return <Progress />;
-  }
+  const service = asyncState.value;
 
   const serviceLink: IconLinkVerticalProps = {
     label: 'Service Directory',
@@ -111,7 +108,7 @@ export const PagerDutyCard = () => {
 
   const escalationPolicyLink: IconLinkVerticalProps = {
     label: 'Escalation Policy',
-    href: service!.policyLink,
+    href: service.policyLink,
     icon: <DateRangeIcon />,
   };
 
@@ -131,18 +128,18 @@ export const PagerDutyCard = () => {
           <TabbedCard>
             <CardTab label="Incidents">
               <Incidents
-                serviceId={service!.id}
+                serviceId={service.id}
                 refreshIncidents={refreshIncidents}
               />
             </CardTab>
             <CardTab label="Change Events">
               <ChangeEvents
-                serviceId={service!.id}
+                serviceId={service.id}
                 refreshEvents={refreshChangeEvents}
               />
             </CardTab>
           </TabbedCard>
-          <EscalationPolicy policyId={service!.policyId} />
+          <EscalationPolicy policyId={service.policyId} />
         </CardContent>
       </Card>
       <TriggerDialog

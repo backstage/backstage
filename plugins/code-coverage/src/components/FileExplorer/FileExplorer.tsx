@@ -26,15 +26,14 @@ import {
 import DescriptionIcon from '@material-ui/icons/Description';
 import { Alert } from '@material-ui/lab';
 import React, { Fragment, useEffect, useState } from 'react';
-import { useAsync } from 'react-use';
 import { codeCoverageApiRef } from '../../api';
 import { FileEntry } from '../../types';
 import { FileContent } from './FileContent';
 import {
-  Progress,
   ResponseErrorPanel,
   Table,
   TableColumn,
+  useAsyncDefaults,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -139,13 +138,17 @@ export const FileExplorer = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [curFile, setCurFile] = useState('');
   const codeCoverageApi = useApi(codeCoverageApiRef);
-  const { loading, error, value } = useAsync(
+  const { value, fallback } = useAsyncDefaults(
     async () =>
       await codeCoverageApi.getCoverageForEntity({
         kind: entity.kind,
         namespace: entity.metadata.namespace || 'default',
         name: entity.metadata.name,
       }),
+    [],
+    {
+      error: ({ error }) => <ResponseErrorPanel error={error} />,
+    },
   );
 
   useEffect(() => {
@@ -155,10 +158,8 @@ export const FileExplorer = () => {
     if (data.files) setTableData(data.files);
   }, [value]);
 
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <ResponseErrorPanel error={error} />;
+  if (fallback) {
+    return fallback;
   }
   if (!value) {
     return (

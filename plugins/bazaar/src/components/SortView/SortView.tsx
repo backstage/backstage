@@ -19,7 +19,7 @@ import {
   Content,
   ContentHeader,
   SupportButton,
-  Progress,
+  useAsyncState,
 } from '@backstage/core-components';
 import { AddProjectDialog } from '../AddProjectDialog';
 import { AlertBanner } from '../AlertBanner';
@@ -31,7 +31,6 @@ import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
-import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles({
   container: {
@@ -106,6 +105,9 @@ export const SortView = () => {
     return dbProjects;
   });
 
+  const asyncCatalogEntitiesState = useAsyncState(catalogEntities);
+  const asyncBazaarProjectsState = useAsyncState(bazaarProjects);
+
   useEffect(() => {
     fetchCatalogEntities();
     fetchBazaarProjects();
@@ -122,13 +124,12 @@ export const SortView = () => {
     }
   }, [bazaarProjects, catalogEntities]);
 
-  if (catalogEntities.loading || bazaarProjects.loading) return <Progress />;
-
-  if (catalogEntities.error)
-    return <Alert severity="error">{catalogEntities.error.message}</Alert>;
-
-  if (bazaarProjects.error)
-    return <Alert severity="error">{bazaarProjects.error.message}</Alert>;
+  if (asyncCatalogEntitiesState.fallback) {
+    return asyncCatalogEntitiesState.fallback;
+  }
+  if (asyncBazaarProjectsState.fallback) {
+    return asyncBazaarProjectsState.fallback;
+  }
 
   return (
     <Content noPadding>

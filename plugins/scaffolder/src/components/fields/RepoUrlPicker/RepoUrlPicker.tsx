@@ -17,7 +17,6 @@ import React, { useCallback, useEffect } from 'react';
 import { FieldProps } from '@rjsf/core';
 import { scaffolderApiRef } from '../../../api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import { useAsync } from 'react-use';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
@@ -25,7 +24,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
 import { useApi } from '@backstage/core-plugin-api';
-import { Progress } from '@backstage/core-components';
+import { useAsyncDefaults } from '@backstage/core-components';
 
 function splitFormData(url: string | undefined) {
   let host = undefined;
@@ -96,9 +95,10 @@ export const RepoUrlPicker = ({
   const integrationApi = useApi(scmIntegrationsApiRef);
   const allowedHosts = uiSchema['ui:options']?.allowedHosts as string[];
 
-  const { value: integrations, loading } = useAsync(async () => {
+  const integrationsState = useAsyncDefaults(async () => {
     return await scaffolderApi.getIntegrationsList({ allowedHosts });
   });
+  const integrations = integrationsState.value;
 
   const { host, owner, repo, organization, workspace, project } =
     splitFormData(formData);
@@ -217,8 +217,8 @@ export const RepoUrlPicker = ({
     project,
   ]);
 
-  if (loading) {
-    return <Progress />;
+  if (integrationsState.fallback) {
+    return integrationsState.fallback;
   }
 
   return (

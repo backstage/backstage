@@ -30,7 +30,6 @@ import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import { Alert } from '@material-ui/lab';
 import { ClassNameMap } from '@material-ui/styles';
 import React from 'react';
-import { useAsync } from 'react-use';
 import {
   CartesianGrid,
   Legend,
@@ -43,7 +42,10 @@ import {
 } from 'recharts';
 import { codeCoverageApiRef } from '../../api';
 
-import { Progress, ResponseErrorPanel } from '@backstage/core-components';
+import {
+  ResponseErrorPanel,
+  useAsyncDefaults,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { DateTime } from 'luxon';
@@ -81,26 +83,25 @@ function formatDateToHuman(timeStamp: string | number) {
 export const CoverageHistoryChart = () => {
   const { entity } = useEntity();
   const codeCoverageApi = useApi(codeCoverageApiRef);
-  const {
-    loading: loadingHistory,
-    error: errorHistory,
-    value: valueHistory,
-  } = useAsync(
+  const { value: valueHistory, fallback } = useAsyncDefaults(
     async () =>
       await codeCoverageApi.getCoverageHistoryForEntity({
         kind: entity.kind,
         namespace: entity.metadata.namespace || 'default',
         name: entity.metadata.name,
       }),
+    [],
+    {
+      error: ({ error }) => <ResponseErrorPanel error={error} />,
+    },
   );
   const classes = useStyles();
 
-  if (loadingHistory) {
-    return <Progress />;
+  if (fallback) {
+    return fallback;
   }
-  if (errorHistory) {
-    return <ResponseErrorPanel error={errorHistory} />;
-  } else if (!valueHistory) {
+
+  if (!valueHistory) {
     return <Alert severity="warning">No history found.</Alert>;
   }
 

@@ -15,11 +15,10 @@
  */
 
 import React from 'react';
-import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { Box } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';
-import { ContentHeader, Progress } from '@backstage/core-components';
+import { ContentHeader, useAsyncDefaults } from '@backstage/core-components';
 
 import {
   ComponentConfig,
@@ -82,19 +81,15 @@ export function GitReleaseManager(props: GitReleaseManagerProps) {
         isProvidedViaProps: false,
       };
 
-  const userResponse = useAsync(() =>
+  const userResponse = useAsyncDefaults(() =>
     pluginApiClient.getUser({ owner: project.owner, repo: project.repo }),
   );
 
-  if (userResponse.error) {
-    return <Alert severity="error">{userResponse.error.message}</Alert>;
+  if (userResponse.fallback) {
+    return userResponse.fallback;
   }
 
-  if (userResponse.loading) {
-    return <Progress />;
-  }
-
-  if (!userResponse.value?.user.username) {
+  if (!userResponse.value.user.username) {
     return <Alert severity="error">Unable to retrieve username</Alert>;
   }
 

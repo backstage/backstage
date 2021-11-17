@@ -32,16 +32,15 @@ import {
 import { Box, makeStyles, Typography, useTheme } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
-import { useAsync } from 'react-use';
 import { BackstageTheme } from '@backstage/theme';
 
 import {
   DependencyGraph,
   DependencyGraphTypes,
   InfoCard,
-  Progress,
   ResponseErrorPanel,
   Link,
+  useAsyncDefaults,
 } from '@backstage/core-components';
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
@@ -169,23 +168,25 @@ export function SystemDiagramCard() {
   const systemEdges = new Array<{ from: string; to: string; label: string }>();
 
   const catalogApi = useApi(catalogApiRef);
-  const {
-    loading,
-    error,
-    value: catalogResponse,
-  } = useAsync(() => {
-    return catalogApi.getEntities({
-      filter: {
-        kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
-        'spec.system': [
-          currentSystemName,
-          `${
-            entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
-          }/${currentSystemName}`,
-        ],
-      },
-    });
-  }, [catalogApi, currentSystemName]);
+  const { value: catalogResponse, fallback } = useAsyncDefaults(
+    () => {
+      return catalogApi.getEntities({
+        filter: {
+          kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
+          'spec.system': [
+            currentSystemName,
+            `${
+              entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
+            }/${currentSystemName}`,
+          ],
+        },
+      });
+    },
+    [catalogApi, currentSystemName],
+    {
+      error: ({ error }) => <ResponseErrorPanel error={error} />,
+    },
+  );
 
   // pick out the system itself
   systemNodes.push({
@@ -264,10 +265,8 @@ export function SystemDiagramCard() {
     }
   }
 
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <ResponseErrorPanel error={error} />;
+  if (fallback) {
+    return fallback;
   }
 
   return (

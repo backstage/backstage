@@ -16,7 +16,6 @@
 import { Divider, Grid, makeStyles, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
-import { useAsync } from 'react-use';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
 import { Filters, FiltersButton, FiltersState } from './Filters';
@@ -25,9 +24,9 @@ import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
   EmptyState,
   Link,
-  Progress,
   Table,
   TableColumn,
+  useAsyncDefaults,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -138,28 +137,37 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
   const [filteredResults, setFilteredResults] = useState<SearchResults>([]);
 
-  const {
-    loading,
-    error,
-    value: results,
-  } = useAsync(async () => {
-    const entities = await catalogApi.getEntities();
-    return entities.items.map((entity: Entity) => ({
-      name: entity.metadata.name,
-      description: entity.metadata.description,
-      owner:
-        typeof entity.spec?.owner === 'string' ? entity.spec?.owner : undefined,
-      kind: entity.kind,
-      lifecycle:
-        typeof entity.spec?.lifecycle === 'string'
-          ? entity.spec?.lifecycle
-          : undefined,
-      url: `/catalog/${
-        entity.metadata.namespace?.toLocaleLowerCase('en-US') ||
-        ENTITY_DEFAULT_NAMESPACE
-      }/${entity.kind.toLocaleLowerCase('en-US')}/${entity.metadata.name}`,
-    }));
-  }, []);
+  const asyncState = useAsyncDefaults(
+    async () => {
+      const entities = await catalogApi.getEntities();
+      return entities.items.map((entity: Entity) => ({
+        name: entity.metadata.name,
+        description: entity.metadata.description,
+        owner:
+          typeof entity.spec?.owner === 'string'
+            ? entity.spec?.owner
+            : undefined,
+        kind: entity.kind,
+        lifecycle:
+          typeof entity.spec?.lifecycle === 'string'
+            ? entity.spec?.lifecycle
+            : undefined,
+        url: `/catalog/${
+          entity.metadata.namespace?.toLocaleLowerCase('en-US') ||
+          ENTITY_DEFAULT_NAMESPACE
+        }/${entity.kind.toLocaleLowerCase('en-US')}/${entity.metadata.name}`,
+      }));
+    },
+    [],
+    {
+      error: ({ error }) => (
+        <Alert severity="error">
+          Error encountered while fetching search results. {error.toString()}
+        </Alert>
+      ),
+    },
+  );
+  const results = asyncState.value;
 
   useEffect(() => {
     if (results) {
@@ -200,16 +208,11 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
       setFilteredResults(withFilters);
     }
   }, [selectedFilters, searchQuery, results]);
-  if (loading) {
-    return <Progress />;
+
+  if (asyncState.fallback) {
+    return asyncState.fallback;
   }
-  if (error) {
-    return (
-      <Alert severity="error">
-        Error encountered while fetching search results. {error.toString()}
-      </Alert>
-    );
-  }
+
   if (!results || results.length === 0) {
     return <EmptyState missing="data" title="Sorry, no results were found" />;
   }

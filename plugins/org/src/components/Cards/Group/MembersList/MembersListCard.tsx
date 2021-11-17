@@ -36,13 +36,12 @@ import {
 import Pagination from '@material-ui/lab/Pagination';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
-import { useAsync } from 'react-use';
 
 import {
   Avatar,
   InfoCard,
-  Progress,
   ResponseErrorPanel,
+  useAsyncDefaults,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -128,35 +127,34 @@ export const MembersListCard = (_props: {
   };
   const pageSize = 50;
 
-  const {
-    loading,
-    error,
-    value: members,
-  } = useAsync(async () => {
-    const membersList = await catalogApi.getEntities({
-      filter: { kind: 'User' },
-    });
-    const groupMembersList = (membersList.items as UserEntity[]).filter(
-      member =>
-        member?.relations?.some(
-          r =>
-            r.type === RELATION_MEMBER_OF &&
-            r.target.name.toLocaleLowerCase('en-US') ===
-              groupName.toLocaleLowerCase('en-US') &&
-            r.target.namespace.toLocaleLowerCase('en-US') ===
-              groupNamespace.toLocaleLowerCase('en-US'),
-        ),
-    );
-    return groupMembersList;
-  }, [catalogApi, groupEntity]);
+  const asyncState = useAsyncDefaults(
+    async () => {
+      const membersList = await catalogApi.getEntities({
+        filter: { kind: 'User' },
+      });
+      const groupMembersList = (membersList.items as UserEntity[]).filter(
+        member =>
+          member?.relations?.some(
+            r =>
+              r.type === RELATION_MEMBER_OF &&
+              r.target.name.toLocaleLowerCase('en-US') ===
+                groupName.toLocaleLowerCase('en-US') &&
+              r.target.namespace.toLocaleLowerCase('en-US') ===
+                groupNamespace.toLocaleLowerCase('en-US'),
+          ),
+      );
+      return groupMembersList;
+    },
+    [catalogApi, groupEntity],
+    { error: ({ error }) => <ResponseErrorPanel error={error} /> },
+  );
 
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <ResponseErrorPanel error={error} />;
+  if (asyncState.fallback) {
+    return asyncState.fallback;
   }
+  const members = asyncState.value;
 
-  const nbPages = Math.ceil((members?.length || 0) / pageSize);
+  const nbPages = Math.ceil((members.length || 0) / pageSize);
   const paginationLabel = nbPages < 2 ? '' : `, page ${page} of ${nbPages}`;
 
   const pagination = (
@@ -172,12 +170,12 @@ export const MembersListCard = (_props: {
   return (
     <Grid item>
       <InfoCard
-        title={`Members (${members?.length || 0}${paginationLabel})`}
+        title={`Members (${members.length || 0}${paginationLabel})`}
         subheader={`of ${displayName}`}
         {...(nbPages <= 1 ? {} : { actions: pagination })}
       >
         <Grid container spacing={3}>
-          {members && members.length > 0 ? (
+          {members.length > 0 ? (
             members
               .slice(pageSize * (page - 1), pageSize * page)
               .map(member => (

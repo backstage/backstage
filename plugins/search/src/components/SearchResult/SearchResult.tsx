@@ -16,8 +16,8 @@
 
 import {
   EmptyState,
-  Progress,
   ResponseErrorPanel,
+  useAsyncState,
 } from '@backstage/core-components';
 import { SearchResult } from '@backstage/search-common';
 import React from 'react';
@@ -28,23 +28,23 @@ type Props = {
 };
 
 export const SearchResultComponent = ({ children }: Props) => {
-  const {
-    result: { loading, error, value },
-  } = useSearch();
+  const { result } = useSearch();
 
-  if (loading) {
-    return <Progress />;
-  }
-  if (error) {
-    return (
+  const asyncState = useAsyncState(result, {
+    error: ({ error }) => (
       <ResponseErrorPanel
         title="Error encountered while fetching search results"
         error={error}
       />
-    );
-  }
+    ),
+  });
 
-  if (!value?.results.length) {
+  if (asyncState.fallback) {
+    return asyncState.fallback;
+  }
+  const { value } = asyncState;
+
+  if (!value.results.length) {
     return <EmptyState missing="data" title="Sorry, no results were found" />;
   }
 

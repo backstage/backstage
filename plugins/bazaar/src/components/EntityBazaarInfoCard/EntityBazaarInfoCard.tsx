@@ -31,10 +31,10 @@ import {
   Link,
 } from '@material-ui/core';
 import {
-  Progress,
   HeaderIconLinkRow,
   IconLinkVerticalProps,
   Avatar,
+  useAsyncState,
 } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { AboutField } from '@backstage/plugin-catalog';
@@ -50,7 +50,6 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useApi, identityApiRef } from '@backstage/core-plugin-api';
 import { Member, BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
-import { Alert } from '@material-ui/lab';
 import { useAsyncFn } from 'react-use';
 
 const useStyles = makeStyles({
@@ -127,6 +126,9 @@ export const EntityBazaarInfoCard = () => {
     return null;
   });
 
+  const asyncMembersState = useAsyncState(members);
+  const asyncBazaarProjectState = useAsyncState(bazaarProject);
+
   useEffect(() => {
     fetchMembers();
     fetchBazaarProject();
@@ -190,13 +192,10 @@ export const EntityBazaarInfoCard = () => {
 
   if (!isBazaar) {
     return null;
-  } else if (bazaarProject.loading || members.loading) {
-    return <Progress />;
-  } else if (bazaarProject.error) {
-    return <Alert severity="error">{bazaarProject?.error?.message}</Alert>;
-  } else if (members.error) {
-    return <Alert severity="error">{members?.error?.message}</Alert>;
+  } else if (asyncMembersState.fallback ?? asyncBazaarProjectState.fallback) {
+    return asyncMembersState.fallback ?? asyncBazaarProjectState.fallback;
   }
+
   return (
     <Card>
       {bazaarProject?.value && (

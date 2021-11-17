@@ -24,22 +24,21 @@ import {
 } from '../annotationHelpers';
 import {
   MissingAnnotationEmptyState,
-  Progress,
+  useAsyncDefaults,
 } from '@backstage/core-components';
-import { useAsync } from 'react-use';
 import { Entity } from '@backstage/catalog-model';
 
 const AllureReport = (props: { entity: Entity }) => {
   const allureApi = useApi(allureApiRef);
 
   const allureProjectId = getAllureProjectId(props.entity);
-  const { value, loading } = useAsync(async () => {
+  const { value, fallback } = useAsyncDefaults(async () => {
     const url = await allureApi.getReportUrl(allureProjectId);
     return url;
   });
 
-  if (loading) {
-    return <Progress />;
+  if (fallback) {
+    return fallback;
   }
   return (
     <iframe

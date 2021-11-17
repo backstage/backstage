@@ -23,7 +23,7 @@ import { pagerDutyApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 
 import { useApi } from '@backstage/core-plugin-api';
-import { Progress } from '@backstage/core-components';
+import { useAsyncState } from '@backstage/core-components';
 
 type Props = {
   serviceId: string;
@@ -33,33 +33,33 @@ type Props = {
 export const Incidents = ({ serviceId, refreshIncidents }: Props) => {
   const api = useApi(pagerDutyApiRef);
 
-  const [{ value: incidents, loading, error }, getIncidents] = useAsyncFn(
+  const [state, getIncidents] = useAsyncFn(
     async () => await api.getIncidentsByServiceId(serviceId),
   );
+  const asyncState = useAsyncState(state, {
+    error: ({ error }) => (
+      <Alert severity="error">
+        Error encountered while fetching information. {error.message}
+      </Alert>
+    ),
+  });
 
   useEffect(() => {
     getIncidents();
   }, [refreshIncidents, getIncidents]);
 
-  if (error) {
-    return (
-      <Alert severity="error">
-        Error encountered while fetching information. {error.message}
-      </Alert>
-    );
+  if (asyncState.fallback) {
+    return asyncState.fallback;
   }
+  const incidents = asyncState.value;
 
-  if (loading) {
-    return <Progress />;
-  }
-
-  if (!incidents?.length) {
+  if (!incidents.length) {
     return <IncidentsEmptyState />;
   }
 
   return (
     <List dense subheader={<ListSubheader>INCIDENTS</ListSubheader>}>
-      {incidents!.map((incident, index) => (
+      {incidents.map((incident, index) => (
         <IncidentListItem key={incident.id + index} incident={incident} />
       ))}
     </List>

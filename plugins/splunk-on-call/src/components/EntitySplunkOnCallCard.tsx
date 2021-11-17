@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React, { useCallback, useState } from 'react';
-import { useAsync } from 'react-use';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
@@ -41,7 +40,7 @@ import {
   HeaderIconLinkRow,
   IconLinkVerticalProps,
   MissingAnnotationEmptyState,
-  Progress,
+  useAsyncDefaults,
 } from '@backstage/core-components';
 
 export const SPLUNK_ON_CALL_TEAM = 'splunk.com/on-call-team';
@@ -92,48 +91,46 @@ export const EntitySplunkOnCallCard = () => {
     setShowDialog(x => !x);
   }, []);
 
-  const {
-    value: usersAndTeam,
-    loading,
-    error,
-  } = useAsync(async () => {
-    const allUsers = await api.getUsers();
-    const usersHashMap = allUsers.reduce(
-      (map: Record<string, User>, obj: User) => {
-        if (obj.username) {
-          map[obj.username] = obj;
-        }
-        return map;
-      },
-      {},
-    );
-    const teams = await api.getTeams();
-    const foundTeam = teams.find(teamValue => teamValue.name === team);
-    return { usersHashMap, foundTeam };
-  });
+  const asyncState = useAsyncDefaults(
+    async () => {
+      const allUsers = await api.getUsers();
+      const usersHashMap = allUsers.reduce(
+        (map: Record<string, User>, obj: User) => {
+          if (obj.username) {
+            map[obj.username] = obj;
+          }
+          return map;
+        },
+        {},
+      );
+      const teams = await api.getTeams();
+      const foundTeam = teams.find(teamValue => teamValue.name === team);
+      return { usersHashMap, foundTeam };
+    },
+    [],
+    {
+      error: ({ error }) =>
+        error instanceof UnauthorizedError ? (
+          <MissingApiKeyOrApiIdError />
+        ) : (
+          <Alert severity="error">
+            Error encountered while fetching information. {error.message}
+          </Alert>
+        ),
+    },
+  );
 
-  if (error instanceof UnauthorizedError) {
-    return <MissingApiKeyOrApiIdError />;
+  if (asyncState.fallback) {
+    return asyncState.fallback;
   }
-
-  if (error) {
-    return (
-      <Alert severity="error">
-        Error encountered while fetching information. {error.message}
-      </Alert>
-    );
-  }
-
-  if (loading) {
-    return <Progress />;
-  }
+  const usersAndTeam = asyncState.value;
 
   const Content = () => {
     if (!team) {
       return <MissingTeamAnnotation />;
     }
 
-    if (!usersAndTeam?.foundTeam) {
+    if (!usersAndTeam.foundTeam) {
       return <InvalidTeamAnnotation teamName={team} />;
     }
 
@@ -144,7 +141,7 @@ export const EntitySplunkOnCallCard = () => {
     return (
       <>
         <Incidents team={team} refreshIncidents={refreshIncidents} />
-        {usersAndTeam?.usersHashMap && team && (
+        {usersAndTeam.usersHashMap && team && (
           <EscalationPolicy team={team} users={usersAndTeam.usersHashMap} />
         )}
         <TriggerDialog

@@ -25,7 +25,7 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from '@material-ui/core';
-import { Progress } from '@backstage/core-components';
+import { useAsyncState } from '@backstage/core-components';
 
 type BitriseArtifactsComponentComponentProps = {
   build: BitriseBuildResult;
@@ -34,16 +34,16 @@ type BitriseArtifactsComponentComponentProps = {
 export const BitriseArtifactsComponent = (
   props: BitriseArtifactsComponentComponentProps,
 ) => {
-  const { value, loading, error } = useBitriseArtifacts(
-    props.build.appSlug,
-    props.build.buildSlug,
+  const asyncState = useAsyncState(
+    useBitriseArtifacts(props.build.appSlug, props.build.buildSlug),
   );
 
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
-  } else if (!value || !value.length) {
+  if (asyncState.fallback) {
+    return asyncState.fallback;
+  }
+  const { value } = asyncState;
+
+  if (!value || !value.length) {
     return <Alert severity="info">No artifacts</Alert>;
   }
 

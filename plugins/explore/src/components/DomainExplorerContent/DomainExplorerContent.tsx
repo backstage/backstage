@@ -17,7 +17,6 @@ import { DomainEntity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button } from '@material-ui/core';
 import React from 'react';
-import { useAsync } from 'react-use';
 import { DomainCard } from '../DomainCard';
 
 import {
@@ -25,8 +24,8 @@ import {
   ContentHeader,
   EmptyState,
   ItemCardGrid,
-  Progress,
   SupportButton,
+  useAsyncDefaults,
   WarningPanel,
 } from '@backstage/core-components';
 
@@ -34,30 +33,29 @@ import { useApi } from '@backstage/core-plugin-api';
 
 const Body = () => {
   const catalogApi = useApi(catalogApiRef);
-  const {
-    value: entities,
-    loading,
-    error,
-  } = useAsync(async () => {
-    const response = await catalogApi.getEntities({
-      filter: { kind: 'domain' },
-    });
-    return response.items as DomainEntity[];
-  }, [catalogApi]);
+  const asyncState = useAsyncDefaults(
+    async () => {
+      const response = await catalogApi.getEntities({
+        filter: { kind: 'domain' },
+      });
+      return response.items as DomainEntity[];
+    },
+    [catalogApi],
+    {
+      error: ({ error }) => (
+        <WarningPanel severity="error" title="Could not load domains.">
+          {error.message}
+        </WarningPanel>
+      ),
+    },
+  );
 
-  if (loading) {
-    return <Progress />;
+  if (asyncState.fallback) {
+    return asyncState.fallback;
   }
+  const entities = asyncState.value;
 
-  if (error) {
-    return (
-      <WarningPanel severity="error" title="Could not load domains.">
-        {error.message}
-      </WarningPanel>
-    );
-  }
-
-  if (!entities?.length) {
+  if (!entities.length) {
     return (
       <EmptyState
         missing="info"

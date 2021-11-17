@@ -24,8 +24,8 @@ import {
   DependencyGraph,
   DependencyGraphTypes,
   Link,
-  Progress,
   ResponseErrorPanel,
+  useAsyncDefaults,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -39,7 +39,6 @@ import { makeStyles, Typography, useTheme } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import classNames from 'classnames';
 import React from 'react';
-import { useAsync } from 'react-use';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   graph: {
@@ -160,23 +159,24 @@ export function GroupsDiagram() {
   const catalogApi = useApi(catalogApiRef);
   const organizationName =
     configApi.getOptionalString('organization.name') ?? 'Backstage';
-  const {
-    loading,
-    error,
-    value: catalogResponse,
-  } = useAsync(() => {
-    return catalogApi.getEntities({
-      filter: {
-        kind: ['Group'],
-      },
-    });
-  }, [catalogApi]);
+  const asyncState = useAsyncDefaults(
+    () => {
+      return catalogApi.getEntities({
+        filter: {
+          kind: ['Group'],
+        },
+      });
+    },
+    [catalogApi],
+    {
+      error: ({ error }) => <ResponseErrorPanel error={error} />,
+    },
+  );
 
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <ResponseErrorPanel error={error} />;
+  if (asyncState.fallback) {
+    return asyncState.fallback;
   }
+  const catalogResponse = asyncState.value;
 
   // the root of this diagram is the organization
   nodes.push({
@@ -185,7 +185,7 @@ export function GroupsDiagram() {
     name: organizationName,
   });
 
-  for (const catalogItem of catalogResponse?.items || []) {
+  for (const catalogItem of catalogResponse.items || []) {
     const currentItemId = stringifyEntityRef(catalogItem);
 
     nodes.push({

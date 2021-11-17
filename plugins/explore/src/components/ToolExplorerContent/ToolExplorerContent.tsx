@@ -16,7 +16,6 @@
 
 import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import React from 'react';
-import { useAsync } from 'react-use';
 import { ToolCard } from '../ToolCard';
 
 import {
@@ -24,8 +23,8 @@ import {
   ContentHeader,
   EmptyState,
   ItemCardGrid,
-  Progress,
   SupportButton,
+  useAsyncDefaults,
   WarningPanel,
 } from '@backstage/core-components';
 
@@ -33,23 +32,22 @@ import { useApi } from '@backstage/core-plugin-api';
 
 const Body = () => {
   const exploreToolsConfigApi = useApi(exploreToolsConfigRef);
-  const {
-    value: tools,
-    loading,
-    error,
-  } = useAsync(async () => {
-    return await exploreToolsConfigApi.getTools();
-  }, [exploreToolsConfigApi]);
+  const asyncState = useAsyncDefaults(
+    async () => {
+      return await exploreToolsConfigApi.getTools();
+    },
+    [exploreToolsConfigApi],
+    {
+      error: <WarningPanel title="Failed to load tools" />,
+    },
+  );
 
-  if (loading) {
-    return <Progress />;
+  if (asyncState.fallback) {
+    return asyncState.fallback;
   }
+  const tools = asyncState.value;
 
-  if (error) {
-    return <WarningPanel title="Failed to load tools" />;
-  }
-
-  if (!tools?.length) {
+  if (!tools.length) {
     return (
       <EmptyState
         missing="info"

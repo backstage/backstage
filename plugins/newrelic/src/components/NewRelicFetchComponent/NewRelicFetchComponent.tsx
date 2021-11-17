@@ -15,11 +15,13 @@
  */
 
 import React from 'react';
-import Alert from '@material-ui/lab/Alert';
-import { useAsync } from 'react-use';
 import { newRelicApiRef, NewRelicApplications } from '../../api';
 
-import { Progress, Table, TableColumn } from '@backstage/core-components';
+import {
+  Table,
+  TableColumn,
+  useAsyncDefaults,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 export const NewRelicAPMTable = ({ applications }: NewRelicApplications) => {
@@ -64,20 +66,18 @@ export const NewRelicAPMTable = ({ applications }: NewRelicApplications) => {
 const NewRelicFetchComponent = () => {
   const api = useApi(newRelicApiRef);
 
-  const { value, loading, error } = useAsync(async () => {
+  const asyncState = useAsyncDefaults(async () => {
     const data = await api.getApplications();
     return data.applications.filter(application => {
       return application.hasOwnProperty('application_summary');
     });
   }, []);
 
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+  if (asyncState.fallback) {
+    return asyncState.fallback;
   }
 
-  return <NewRelicAPMTable applications={value || []} />;
+  return <NewRelicAPMTable applications={asyncState.value} />;
 };
 
 export default NewRelicFetchComponent;

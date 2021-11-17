@@ -34,11 +34,11 @@ import classNames from 'classnames';
 
 import { useApi } from '@backstage/core-plugin-api';
 import {
-  Progress,
   Content,
   Header,
   Page,
   ErrorPage,
+  useAsyncState,
 } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
@@ -70,21 +70,23 @@ const useStyles = makeStyles(theme => ({
 export const ActionsPage = () => {
   const api = useApi(scaffolderApiRef);
   const classes = useStyles();
-  const { loading, value, error } = useAsync(async () => {
-    return api.listActions();
-  });
 
-  if (loading) {
-    return <Progress />;
-  }
+  const asyncState = useAsyncState(
+    useAsync(async () => {
+      return api.listActions();
+    }),
+    {
+      error: (
+        <ErrorPage
+          statusMessage="Failed to load installed actions"
+          status="500"
+        />
+      ),
+    },
+  );
 
-  if (error) {
-    return (
-      <ErrorPage
-        statusMessage="Failed to load installed actions"
-        status="500"
-      />
-    );
+  if (asyncState.fallback) {
+    return asyncState.fallback;
   }
 
   const formatRows = (input: JSONSchema) => {
@@ -151,7 +153,7 @@ export const ActionsPage = () => {
     );
   };
 
-  const items = value?.map(action => {
+  const items = asyncState.value.map(action => {
     if (action.id.startsWith('legacy:')) {
       return undefined;
     }
