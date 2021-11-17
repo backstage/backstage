@@ -18,9 +18,9 @@ yarn add @backstage/plugin-scorecards
 ```tsx
 // In packages/app/src/App.tsx
 
-import { ScorecardsPage } from '@backstage/plugin-scorecards';
+import { EntityScorecardContent } from '@backstage/plugin-scorecards';
 
-<Route path="/scorecards" element={<ScorecardsPage />} />;
+<Route path="/scorecards" element={<EntityScorecardContent />} />;
 ```
 
 3. Add Scorecards overview page to the EntityPage:
@@ -28,7 +28,7 @@ import { ScorecardsPage } from '@backstage/plugin-scorecards';
 ```tsx
 // packages/app/src/components/catalog/EntityPage.tsx
 
-import { ScorecardsPage } from '@backstage/plugin-scorecards';
+import { EntityScorecardContent } from '@backstage/plugin-scorecards';
 
 const serviceEntityPage = (
   <EntityLayoutWrapper>
@@ -40,7 +40,7 @@ const serviceEntityPage = (
     </EntityLayout.Route>
     ...
     <EntityLayout.Route path="/scorecards" title="Scorecards">
-      <ScorecardsPage />
+      <EntityScorecardContent />
     </EntityLayout.Route>
     ...
   </EntityLayoutWrapper>

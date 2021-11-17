@@ -15,12 +15,12 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { scorecardsPlugin, ScorecardsPage } from '../src/plugin';
+import { scorecardsPlugin, EntityScorecardContent } from '../src/plugin';
 
 createDevApp()
   .registerPlugin(scorecardsPlugin)
   .addPage({
-    element: <ScorecardsPage />,
+    element: <EntityScorecardContent />,
     title: 'Root Page',
     path: '/scorecards',
   })
