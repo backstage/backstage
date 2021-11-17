@@ -31,7 +31,7 @@ export const rootRouteRef = createRouteRef({
 });
 
 export const buildRouteRef = createSubRouteRef({
-  id: 'jenkins/build',
+  id: 'jenkins/builds',
   path: '/builds/:jobFullName/:buildNumber',
   parent: rootRouteRef,
 });

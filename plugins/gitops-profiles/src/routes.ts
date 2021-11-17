@@ -21,7 +21,7 @@ export const gitOpsClusterListRoute = createRouteRef({
 });
 
 export const gitOpsClusterDetailsRoute = createRouteRef({
-  id: 'gitops-cluster/:owner/:repo',
+  id: 'gitops-cluster-details',
   params: ['owner', 'repo'],
 });
 

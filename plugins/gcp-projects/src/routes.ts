@@ -20,8 +20,8 @@ export const rootRouteRef = createRouteRef({
   id: 'gcp-projects',
 });
 export const projectRouteRef = createRouteRef({
-  id: 'gcp-projects/project',
+  id: 'gcp-projects-project',
 });
 export const newProjectRouteRef = createRouteRef({
-  id: 'gcp-projects/new',
+  id: 'gcp-projects-new',
 });
