@@ -14,9 +14,11 @@ import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
+import { ComponentType } from 'react';
 import { Context } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
+import { DependencyList } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -55,6 +57,45 @@ enum Alignment {
   DOWN_RIGHT = 'DR',
   UP_LEFT = 'UL',
   UP_RIGHT = 'UR',
+}
+
+// Warning: (ae-missing-release-tag) "AsyncFallbackOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface AsyncFallbackOptions {
+  // (undocumented)
+  error?:
+    | JSX.Element
+    | ComponentType<{
+        error: Error;
+      }>;
+  // (undocumented)
+  progress?: JSX.Element | ComponentType<{}>;
+}
+
+// Warning: (ae-missing-release-tag) "AsyncFallbackResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AsyncFallbackResult<T> =
+  | {
+      fallback: undefined;
+      value: T;
+    }
+  | {
+      fallback: JSX.Element;
+      value: undefined;
+    };
+
+// Warning: (ae-missing-release-tag) "AsyncState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface AsyncState<T> {
+  // (undocumented)
+  error?: Error | undefined;
+  // (undocumented)
+  loading?: boolean | undefined;
+  // (undocumented)
+  value?: T | undefined;
 }
 
 // @public
@@ -2269,6 +2310,28 @@ export function TrendLine(
       title?: string;
     },
 ): JSX.Element | null;
+
+// Warning: (ae-missing-release-tag) "useAsyncDefaults" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function useAsyncDefaults<T>(
+  fn: (...args: []) => Promise<T>,
+  deps?: DependencyList,
+  opts?: AsyncFallbackOptions,
+): AsyncFallbackResult<T>;
+
+// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// Warning: (tsdoc-html-tag-missing-string) The HTML element has an invalid attribute: Expecting an HTML string starting with a single-quote or double-quote character
+// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// Warning: (ae-missing-release-tag) "useAsyncState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function useAsyncState<T>(
+  state: AsyncState<T>,
+  opts?: AsyncFallbackOptions,
+): AsyncFallbackResult<T>;
 
 // Warning: (ae-forgotten-export) The symbol "SetQueryParams" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useQueryParamState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

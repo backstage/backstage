@@ -21,3 +21,9 @@ export type {
   SupportItem,
   SupportItemLink,
 } from './useSupportConfig';
+export { useAsyncState, useAsyncDefaults } from './useAsyncState';
+export type {
+  AsyncFallbackOptions,
+  AsyncFallbackResult,
+  AsyncState,
+} from './useAsyncState';
