@@ -17,8 +17,15 @@ export type ApplyConditionsRequest = {
   conditions: PermissionCriteria<PermissionCondition>;
 };
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-permission-node" does not have an export "AuthorizeResult"
-//
+// @public
+export type Condition<TRule> = TRule extends PermissionRule<
+  any,
+  any,
+  infer TParams
+>
+  ? (...params: TParams) => PermissionCondition<TParams>
+  : never;
+
 // @public
 export type ConditionalPolicyResult = {
   result: AuthorizeResult.CONDITIONAL;
@@ -29,9 +36,7 @@ export type ConditionalPolicyResult = {
   };
 };
 
-// Warning: (ae-missing-release-tag) "conditionFor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const conditionFor: <TParams extends any[]>(
   rule: PermissionRule<unknown, unknown, TParams>,
 ) => (...params: TParams) => {
@@ -39,9 +44,14 @@ export const conditionFor: <TParams extends any[]>(
   params: TParams;
 };
 
-// Warning: (ae-missing-release-tag) "createPermissionIntegration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type Conditions<
+  TRules extends Record<string, PermissionRule<any, any>>,
+> = {
+  [Name in keyof TRules]: Condition<TRules[Name]>;
+};
+
+// @public
 export const createPermissionIntegration: <
   TResource,
   TRules extends {
@@ -79,8 +89,6 @@ export const createPermissionIntegration: <
 
 // @public
 export interface PermissionPolicy {
-  // Warning: (ae-forgotten-export) The symbol "PolicyAuthorizeRequest" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   handle(
     request: PolicyAuthorizeRequest,
@@ -88,8 +96,6 @@ export interface PermissionPolicy {
   ): Promise<PolicyResult>;
 }
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-permission-node" does not have an export "AuthorizeResult"
-//
 // @public
 export type PermissionRule<
   TResource,
@@ -103,14 +109,20 @@ export type PermissionRule<
 };
 
 // @public
+export type PolicyAuthorizeRequest = Omit<AuthorizeRequest, 'resourceRef'>;
+
+// @public
 export type PolicyResult =
   | {
       result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
     }
   | ConditionalPolicyResult;
 
-// Warnings were encountered during analysis:
-//
-// src/integration/createPermissionIntegration.d.ts:28:5 - (ae-forgotten-export) The symbol "QueryType" needs to be exported by the entry point index.d.ts
-// src/integration/createPermissionIntegration.d.ts:29:5 - (ae-forgotten-export) The symbol "Conditions" needs to be exported by the entry point index.d.ts
+// @public
+export type QueryType<TRules> = TRules extends Record<
+  string,
+  PermissionRule<any, infer TQuery, any>
+>
+  ? TQuery
+  : never;
 ```

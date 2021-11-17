@@ -56,21 +56,65 @@ export type ApplyConditionsRequest = {
   conditions: PermissionCriteria<PermissionCondition>;
 };
 
-type Condition<TRule> = TRule extends PermissionRule<any, any, infer TParams>
+/**
+ * An authorization condition, which is a function to evaluate a given {@link PermissionRule} with
+ * a specific set of parameters.
+ * @see createPermissionIntegration
+ * @public
+ */
+export type Condition<TRule> = TRule extends PermissionRule<
+  any,
+  any,
+  infer TParams
+>
   ? (...params: TParams) => PermissionCondition<TParams>
   : never;
 
-type Conditions<TRules extends Record<string, PermissionRule<any, any>>> = {
+/**
+ * A collection of keyed {@link Condition} functions produced from {@link PermissionRule}.
+ * @see createPermissionIntegration
+ * @public
+ */
+export type Conditions<
+  TRules extends Record<string, PermissionRule<any, any>>,
+> = {
   [Name in keyof TRules]: Condition<TRules[Name]>;
 };
 
-type QueryType<TRules> = TRules extends Record<
+/**
+ * The plugin-specific type which authorization conditions are translated into, for plugin use in
+ * filtering resources.
+ * @public
+ */
+export type QueryType<TRules> = TRules extends Record<
   string,
   PermissionRule<any, infer TQuery, any>
 >
   ? TQuery
   : never;
 
+/**
+ * Create a permission and authorization integration for a plugin that supports _conditional
+ * authorization_ for resources.
+ *
+ * To make this concrete, we can use the Backstage software catalog as an example. The catalog has
+ * conditional rules around access to specific _entities_ in the catalog. The _type_ of resource is
+ * captured here as `resourceType`, a string identifier (`catalog-entity` in this example) that can
+ * be provided with permission definitions. This is merely a _type_ to verify that conditions in an
+ * authorization policy are constructed correctly, not a reference to a specific resource.
+ *
+ * The `rules` are a map of {@link PermissionRule} that introduce conditional filtering logic for
+ * resources; for the catalog, these are things like `isEntityOwner` or `hasAnnotation`. Rules
+ * describe how to filter a list of resources, and the `conditions` returned allow these rules to be
+ * applied with specific parameters (such as 'group:default/team-a', or 'backstage.io/edit-url').
+ *
+ * The `getResource` argument should load a resource by reference. For the catalog, this is an
+ * {@link @backstage/catalog-model#EntityRef}. For other plugins, this can be any serialized format.
+ * This is used to construct the `createPermissionIntegrationRouter`, a function to add an
+ * authorization route to your backend plugin. This route will be called by the `permission-backend`
+ * when authorization conditions relating to this plugin need to be evaluated.
+ * @public
+ */
 export const createPermissionIntegration = <
   TResource,
   TRules extends { [key: string]: PermissionRule<TResource, any> },

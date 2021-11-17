@@ -17,5 +17,6 @@
 export type {
   ConditionalPolicyResult,
   PermissionPolicy,
+  PolicyAuthorizeRequest,
   PolicyResult,
 } from './types';

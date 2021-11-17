@@ -25,9 +25,9 @@ import { BackstageIdentity } from '@backstage/plugin-auth-backend';
 /**
  * An authorization request to be evaluated by the {@link PermissionPolicy}.
  *
- * This differs from {@link AuthorizeRequest} in that `resourceRef` should never be provided. This
- * forces policies to be written in a way that's compatible with filtering collections of resources
- * at data load time.
+ * This differs from {@link @backstage/permission-common#AuthorizeRequest} in that `resourceRef`
+ * should never be provided. This forces policies to be written in a way that's compatible with
+ * filtering collections of resources at data load time.
  * @public
  */
 export type PolicyAuthorizeRequest = Omit<AuthorizeRequest, 'resourceRef'>;
@@ -39,8 +39,8 @@ export type PolicyAuthorizeRequest = Omit<AuthorizeRequest, 'resourceRef'>;
  * conditions hold when evaluated. The conditions will be evaluated by the corresponding plugin
  * which knows about the referenced permission rules.
  *
- * Similar to {@link AuthorizeResult}, but with the plugin and resource identifiers needed to
- * evaluate the returned conditions.
+ * Similar to {@link @backstage/permission-common#AuthorizeResult}, but with the plugin and resource
+ * identifiers needed to evaluate the returned conditions.
  * @public
  */
 export type ConditionalPolicyResult = {
