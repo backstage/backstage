@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { createCatalogFactRetriever } from './catalogFactRetriever';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   PluginEndpointDiscovery,
@@ -22,6 +21,7 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { CatalogListResponse } from '@backstage/catalog-client';
+import { entityMetadataFactRetriever } from './entityMetadataFactRetriever';
 
 const getEntitiesMock = jest.fn();
 jest.mock('@backstage/catalog-client', () => {
@@ -106,11 +106,9 @@ const handlerContext = {
   config: ConfigReader.fromConfigs([]),
 };
 
-const entityFactRetriever = createCatalogFactRetriever({
-  annotations: ['backstage.io/techdocs-ref'],
-});
+const entityFactRetriever = entityMetadataFactRetriever;
 
-describe('entityFactRetriever', () => {
+describe('entityMetadataFactRetriever', () => {
   beforeEach(() => {
     getEntitiesMock.mockResolvedValue(defaultEntityListResponse);
   });
@@ -118,81 +116,6 @@ describe('entityFactRetriever', () => {
     getEntitiesMock.mockClear();
   });
 
-  describe('hasOwner', () => {
-    describe('where the entity has an owner in the spec', () => {
-      it('returns true for hasOwner', async () => {
-        const facts = await entityFactRetriever.handler(handlerContext);
-        expect(
-          facts.find(it => it.entity.name === 'service-with-owner'),
-        ).toMatchObject({
-          facts: {
-            hasOwner: true,
-          },
-        });
-      });
-    });
-    describe('where the entity has an empty value for owner in the spec', () => {
-      it('returns false for hasOwner', async () => {
-        const facts = await entityFactRetriever.handler(handlerContext);
-        expect(
-          facts.find(it => it.entity.name === 'service-with-incomplete-data'),
-        ).toMatchObject({
-          facts: {
-            hasOwner: false,
-          },
-        });
-      });
-    });
-
-    describe('where the entity doesn not have an owner in the spec', () => {
-      it('returns false for hasOwner', async () => {
-        const facts = await entityFactRetriever.handler(handlerContext);
-        expect(facts.find(it => it.entity.name === 'user-a')).toMatchObject({
-          facts: {
-            hasOwner: false,
-          },
-        });
-      });
-    });
-  });
-  describe('hasGroupOwner', () => {
-    describe('where the entity has an group as owner in the spec', () => {
-      it('returns true for hasGroupOwner', async () => {
-        const facts = await entityFactRetriever.handler(handlerContext);
-        expect(
-          facts.find(it => it.entity.name === 'service-with-owner'),
-        ).toMatchObject({
-          facts: {
-            hasGroupOwner: true,
-          },
-        });
-      });
-    });
-    describe('where the entity has a user as owner in the spec', () => {
-      it('returns false for hasGroupOwner', async () => {
-        const facts = await entityFactRetriever.handler(handlerContext);
-        expect(
-          facts.find(it => it.entity.name === 'service-with-user-owner'),
-        ).toMatchObject({
-          facts: {
-            hasGroupOwner: false,
-          },
-        });
-      });
-    });
-    describe('where the entity has an empty value for owner in the spec', () => {
-      it('returns false for hasGroupOwner', async () => {
-        const facts = await entityFactRetriever.handler(handlerContext);
-        expect(
-          facts.find(it => it.entity.name === 'service-with-incomplete-data'),
-        ).toMatchObject({
-          facts: {
-            hasGroupOwner: false,
-          },
-        });
-      });
-    });
-  });
   describe('hasDescription', () => {
     describe('where the entity has a description', () => {
       it('returns true for hasDescription', async () => {
@@ -251,35 +174,6 @@ describe('entityFactRetriever', () => {
           facts: {
             hasTags: false,
           },
-        });
-      });
-    });
-  });
-
-  describe('dynamic annotation facts', () => {
-    describe('where the retriever is configured to check for the techdocs annotation', () => {
-      describe('where the entity has the techdocs annotation', () => {
-        it('returns true for hasAnnotationBackstageIoTechdocsRef', async () => {
-          const facts = await entityFactRetriever.handler(handlerContext);
-          expect(
-            facts.find(it => it.entity.name === 'service-with-owner'),
-          ).toMatchObject({
-            facts: {
-              hasAnnotationBackstageIoTechdocsRef: true,
-            },
-          });
-        });
-      });
-      describe('where the entity is missing the techdocs annotation', () => {
-        it('returns false for hasAnnotationBackstageIoTechdocsRef', async () => {
-          const facts = await entityFactRetriever.handler(handlerContext);
-          expect(
-            facts.find(it => it.entity.name === 'service-with-incomplete-data'),
-          ).toMatchObject({
-            facts: {
-              hasAnnotationBackstageIoTechdocsRef: false,
-            },
-          });
         });
       });
     });

@@ -17,7 +17,9 @@ import {
   createRouter,
   buildTechInsightsContext,
   createFactRetrieverRegistration,
-  createCatalogFactRetriever,
+  entityOwnershipFactRetriever,
+  entityMetadataFactRetriever,
+  techdocsFactRetriever,
 } from '@backstage/plugin-tech-insights-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -40,8 +42,10 @@ export default async function createPlugin({
     factRetrievers: [
       createFactRetrieverRegistration(
         '* * * * *', // Example cron, every minute
-        createCatalogFactRetriever(),
+        entityOwnershipFactRetriever,
       ),
+      createFactRetrieverRegistration('* * * * *', entityMetadataFactRetriever),
+      createFactRetrieverRegistration('* * * * *', techdocsFactRetriever),
     ],
     factCheckerFactory: new JsonRulesEngineFactCheckerFactory({
       checks: [
@@ -50,14 +54,33 @@ export default async function createPlugin({
           type: JSON_RULE_ENGINE_CHECK_TYPE,
           name: 'simpleTestCheck',
           description: 'Simple Check For Testing',
-          factIds: ['testRetriever'],
+          factIds: [
+            'entityMetadataFactRetriever',
+            'techdocsFactRetriever',
+            'entityOwnershipFactRetriever',
+          ],
           rule: {
             conditions: {
               all: [
                 {
-                  fact: 'examplenumberfact',
-                  operator: 'lessThan',
-                  value: 5,
+                  fact: 'hasGroupOwner',
+                  operator: 'equal',
+                  value: true,
+                },
+                {
+                  fact: 'hasTitle',
+                  operator: 'equal',
+                  value: true,
+                },
+                {
+                  fact: 'hasDescription',
+                  operator: 'equal',
+                  value: true,
+                },
+                {
+                  fact: 'hasAnnotationBackstageIoTechdocsRef',
+                  operator: 'equal',
+                  value: true,
                 },
               ],
             },

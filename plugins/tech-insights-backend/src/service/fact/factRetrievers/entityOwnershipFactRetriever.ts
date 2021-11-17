@@ -20,19 +20,21 @@ import {
 } from '@backstage/plugin-tech-insights-node';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import isEmpty from 'lodash/isEmpty';
-import camelCase from 'lodash/camelCase';
-import { get } from 'lodash';
 
-type Options = {
-  annotations?: string[];
-};
-
-export const createCatalogFactRetriever = (
-  { annotations = [] }: Options = { annotations: [] },
-): FactRetriever => ({
-  id: 'entityRetriever',
+/**
+ * Generates facts which indicate the quality of data in the spec.owner field.
+ *
+ * @public
+ */
+export const entityOwnershipFactRetriever: FactRetriever = {
+  id: 'entityOwnershipFactRetriever',
   version: '0.0.1',
+  entityFilter: [
+    {
+      field: 'kind',
+      values: ['component', 'domain', 'system', 'api', 'resource', 'template'],
+    },
+  ],
   schema: {
     hasOwner: {
       type: 'boolean',
@@ -42,23 +44,6 @@ export const createCatalogFactRetriever = (
       type: 'boolean',
       description: 'The spec.owner field is set and refers to a group',
     },
-    hasDescription: {
-      type: 'boolean',
-      description: 'The entity has a description in metadata',
-    },
-    hasTags: {
-      type: 'boolean',
-      description: 'The entity has tags in metadata',
-    },
-    ...annotations.reduce((acc: object, annotation: string) => {
-      return {
-        ...acc,
-        [camelCase(`hasAnnotation-${annotation}`)]: {
-          type: 'boolean',
-          description: `The entity has the annotation: ${annotation} `,
-        },
-      };
-    }, {}),
   },
   handler: async ({ discovery }: FactRetrieverContext) => {
     const catalogClient = new CatalogClient({
@@ -79,19 +64,8 @@ export const createCatalogFactRetriever = (
             entity.spec?.owner &&
               !(entity.spec?.owner as string).startsWith('user:'),
           ),
-          hasDescription: Boolean(entity.metadata?.description),
-          hasTags: !isEmpty(entity.metadata?.tags),
-          ...annotations.reduce(
-            (acc: object, annotation: string) => ({
-              ...acc,
-              [camelCase(`hasAnnotation-${annotation}`)]: Boolean(
-                get(entity, ['metadata', 'annotations', annotation]),
-              ),
-            }),
-            {},
-          ),
         },
       };
     });
   },
-});
+};
