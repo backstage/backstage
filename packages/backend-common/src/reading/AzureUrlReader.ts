@@ -55,21 +55,34 @@ export class AzureUrlReader implements UrlReader {
   ) {}
 
   async read(url: string): Promise<Buffer> {
+    const response = await this.readUrl(url);
+    return response.buffer();
+  }
+
+  async readUrl(
+    url: string,
+    options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
+    // TODO: etag is not implemented yet.
+    const { signal } = options ?? {};
+
     const builtUrl = getAzureFileFetchUrl(url);
 
     let response: Response;
     try {
-      response = await fetch(
-        builtUrl,
-        getAzureRequestOptions(this.integration.config),
-      );
+      response = await fetch(builtUrl, {
+        ...getAzureRequestOptions(this.integration.config),
+        ...(signal && { signal }),
+      });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 
     // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
     if (response.ok && response.status !== 203) {
-      return Buffer.from(await response.arrayBuffer());
+      return {
+        buffer: async () => Buffer.from(await response.arrayBuffer()),
+      };
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
@@ -79,19 +92,12 @@ export class AzureUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  async readUrl(
-    url: string,
-    _options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
-    // TODO etag is not implemented yet.
-    const buffer = await this.read(url);
-    return { buffer: async () => buffer };
-  }
-
   async readTree(
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
+    const { etag, filter, signal } = options ?? {};
+
     // TODO: Support filepath based reading tree feature like other providers
 
     // Get latest commit SHA
@@ -109,16 +115,16 @@ export class AzureUrlReader implements UrlReader {
     }
 
     const commitSha = (await commitsAzureResponse.json()).value[0].commitId;
-    if (options?.etag && options.etag === commitSha) {
+    if (etag && etag === commitSha) {
       throw new NotModifiedError();
     }
 
-    const archiveAzureResponse = await fetch(
-      getAzureDownloadUrl(url),
-      getAzureRequestOptions(this.integration.config, {
+    const archiveAzureResponse = await fetch(getAzureDownloadUrl(url), {
+      ...getAzureRequestOptions(this.integration.config, {
         Accept: 'application/zip',
       }),
-    );
+      ...(signal && { signal }),
+    });
     if (!archiveAzureResponse.ok) {
       const message = `Failed to read tree from ${url}, ${archiveAzureResponse.status} ${archiveAzureResponse.statusText}`;
       if (archiveAzureResponse.status === 404) {
@@ -139,7 +145,7 @@ export class AzureUrlReader implements UrlReader {
     return await this.deps.treeResponseFactory.fromZipArchive({
       stream: archiveAzureResponse.body as unknown as Readable,
       etag: commitSha,
-      filter: options?.filter,
+      filter,
       subpath,
     });
   }
@@ -158,6 +164,7 @@ export class AzureUrlReader implements UrlReader {
 
     const tree = await this.readTree(treeUrl.toString(), {
       etag: options?.etag,
+      signal: options?.signal,
       filter: p => (matcher ? matcher.match(p) : true),
     });
     const files = await tree.files();

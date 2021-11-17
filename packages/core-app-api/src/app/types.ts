@@ -152,6 +152,8 @@ export type AppConfigLoader = () => Promise<AppConfig[]>;
 
 /**
  * Extracts a union of the keys in a map whose value extends the given type
+ *
+ * @ignore
  */
 type KeysWithType<Obj extends { [key in string]: any }, Type> = {
   [key in keyof Obj]: Obj[key] extends Type ? key : never;
@@ -159,6 +161,8 @@ type KeysWithType<Obj extends { [key in string]: any }, Type> = {
 
 /**
  * Takes a map Map required values and makes all keys matching Keys optional
+ *
+ * @ignore
  */
 type PartialKeys<
   Map extends { [name in string]: any },
@@ -167,6 +171,8 @@ type PartialKeys<
 
 /**
  * Creates a map of target routes with matching parameters based on a map of external routes.
+ *
+ * @ignore
  */
 type TargetRouteMap<
   ExternalRoutes extends { [name: string]: ExternalRouteRef },

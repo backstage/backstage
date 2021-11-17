@@ -121,6 +121,10 @@ export const EntityBazaarInfoCard = () => {
           status: metadata.status,
           updatedAt: metadata.updated_at,
           membersCount: metadata.members_count,
+          size: metadata.size,
+          startDate: metadata.start_date,
+          endDate: metadata.end_date,
+          responsible: metadata.responsible,
         } as BazaarProject;
       }
     }
@@ -259,7 +263,7 @@ export const EntityBazaarInfoCard = () => {
           </MenuList>
         </Popover>
         <Grid container>
-          <Grid item xs={12}>
+          <Grid item xs={10}>
             <AboutField label="Announcement">
               {bazaarProject?.value?.announcement
                 ? bazaarProject?.value?.announcement
@@ -278,17 +282,11 @@ export const EntityBazaarInfoCard = () => {
             </AboutField>
           </Grid>
 
-          <Grid item xs={6}>
-            <AboutField label="Status">
-              <StatusTag status={bazaarProject?.value?.status || 'proposed'} />
-            </AboutField>
-          </Grid>
-
-          <Grid item xs={6}>
+          <Grid style={{ marginRight: '0rem' }}>
             {' '}
             <AboutField label="Latest members">
               {members?.value?.length ? (
-                members.value.slice(0, 3).map((member: Member) => {
+                members.value.slice(0, 7).map((member: Member) => {
                   return (
                     <div key={member.userId}>
                       <Avatar
@@ -299,6 +297,7 @@ export const EntityBazaarInfoCard = () => {
                           fontSize: '8px',
                           float: 'left',
                           marginRight: '0.3rem',
+                          marginBottom: '0.25rem',
                         }}
                         picture={member.picture}
                       />
@@ -315,6 +314,44 @@ export const EntityBazaarInfoCard = () => {
               ) : (
                 <div />
               )}
+            </AboutField>
+          </Grid>
+
+          <Grid item xs={2}>
+            <AboutField label="Status">
+              <StatusTag status={bazaarProject?.value?.status || 'proposed'} />
+            </AboutField>
+          </Grid>
+
+          <Grid item xs={2}>
+            <AboutField label="size">
+              <Typography variant="body2">
+                {bazaarProject?.value?.size}
+              </Typography>
+            </AboutField>
+          </Grid>
+
+          <Grid item xs={2}>
+            <AboutField label="Start date">
+              <Typography variant="body2">
+                {bazaarProject?.value?.startDate?.substring(0, 10) || ''}
+              </Typography>
+            </AboutField>
+          </Grid>
+
+          <Grid item xs={2}>
+            <AboutField label="End date">
+              <Typography variant="body2">
+                {bazaarProject?.value?.endDate?.substring(0, 10) || ''}
+              </Typography>
+            </AboutField>
+          </Grid>
+
+          <Grid item xs={2}>
+            <AboutField label="Responsible">
+              <Typography variant="body2">
+                {bazaarProject?.value?.responsible || ''}
+              </Typography>
             </AboutField>
           </Grid>
         </Grid>
