@@ -18,12 +18,12 @@ import { render, waitFor, fireEvent, act } from '@testing-library/react';
 import { PagerDutyCard } from '../PagerDutyCard';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../../api';
 import { Service, User } from '../types';
 
-import { alertApiRef, createApiRef } from '@backstage/core-plugin-api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { alertApiRef } from '@backstage/core-plugin-api';
+import { ApiProvider } from '@backstage/core-app-api';
 
 const mockPagerDutyApi: Partial<PagerDutyClient> = {
   getServiceByIntegrationKey: async () => [],
@@ -31,16 +31,10 @@ const mockPagerDutyApi: Partial<PagerDutyClient> = {
   getIncidentsByServiceId: async () => [],
 };
 
-const apis = ApiRegistry.from([
+const apis = TestApiRegistry.from(
   [pagerDutyApiRef, mockPagerDutyApi],
-  [
-    alertApiRef,
-    createApiRef({
-      id: 'core.alert',
-      description: 'Used to report alerts and forward them to the app',
-    }),
-  ],
-]);
+  [alertApiRef, {}],
+);
 const entity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
   kind: 'Component',

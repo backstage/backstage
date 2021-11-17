@@ -29,7 +29,7 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import fixture1 from '../src/__fixtures__/1-deployments.json';
 import fixture2 from '../src/__fixtures__/2-deployments.json';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -80,32 +80,26 @@ createDevApp()
     path: '/fixture-1',
     title: 'Fixture 1',
     element: (
-      <ApiProvider
-        apis={ApiRegistry.with(
-          kubernetesApiRef,
-          new MockKubernetesClient(fixture1),
-        )}
+      <TestApiProvider
+        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture1)]]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityKubernetesContent />
         </EntityProvider>
-      </ApiProvider>
+      </TestApiProvider>
     ),
   })
   .addPage({
     path: '/fixture-2',
     title: 'Fixture 2',
     element: (
-      <ApiProvider
-        apis={ApiRegistry.with(
-          kubernetesApiRef,
-          new MockKubernetesClient(fixture2),
-        )}
+      <TestApiProvider
+        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture2)]]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityKubernetesContent />
         </EntityProvider>
-      </ApiProvider>
+      </TestApiProvider>
     ),
   })
   .registerPlugin(kubernetesPlugin)

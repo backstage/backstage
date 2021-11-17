@@ -17,8 +17,8 @@ import React from 'react';
 import { ScaffolderApi, scaffolderApiRef } from '../../api';
 import { ActionsPage } from './ActionsPage';
 import { rootRouteRef } from '../../routes';
-import { renderInTestApp } from '@backstage/test-utils';
-import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { ApiProvider } from '@backstage/core-app-api';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   scaffold: jest.fn(),
@@ -29,7 +29,7 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   listActions: jest.fn(),
 };
 
-const apis = ApiRegistry.from([[scaffolderApiRef, scaffolderApiMock]]);
+const apis = TestApiRegistry.from([scaffolderApiRef, scaffolderApiMock]);
 
 describe('TemplatePage', () => {
   beforeEach(() => jest.resetAllMocks());

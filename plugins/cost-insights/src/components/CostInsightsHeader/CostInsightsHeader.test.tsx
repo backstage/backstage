@@ -15,10 +15,10 @@
  */
 
 import { CostInsightsHeader } from './CostInsightsHeader';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import React from 'react';
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 
 describe('<CostInsightsHeader/>', () => {
@@ -29,7 +29,7 @@ describe('<CostInsightsHeader/>', () => {
     }),
   };
 
-  const apis = ApiRegistry.from([[identityApiRef, identityApi]]);
+  const apis = TestApiRegistry.from([identityApiRef, identityApi]);
 
   it('Shows nothing to do when no alerts exist', async () => {
     const rendered = await renderInTestApp(

@@ -15,9 +15,8 @@
  */
 import React from 'react';
 import { OverviewTrends } from './OverviewTrends';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { xcmetricsApiRef } from '../../api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import userEvent from '@testing-library/user-event';
 
 jest.mock('../../api/XcmetricsClient');
@@ -26,11 +25,9 @@ const client = require('../../api/XcmetricsClient');
 describe('OverviewTrends', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <OverviewTrends />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
     expect(rendered.getByText('Trends for')).toBeInTheDocument();
     expect(rendered.getAllByText('Build Count').length).toEqual(3);
@@ -42,20 +39,18 @@ describe('OverviewTrends', () => {
     api.getBuildCounts = jest.fn().mockResolvedValue([]);
 
     const rendered = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, api)}>
+      <TestApiProvider apis={[[xcmetricsApiRef, api]]}>
         <OverviewTrends />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
     expect(rendered.getByText('--')).toBeInTheDocument();
   });
 
   it('should change number of days when select is changed', async () => {
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <OverviewTrends />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     userEvent.click(rendered.getByText('14 days'));
@@ -76,9 +71,9 @@ describe('OverviewTrends', () => {
       .mockRejectedValue({ message: buildTimesError });
 
     const rendered = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, api)}>
+      <TestApiProvider apis={[[xcmetricsApiRef, api]]}>
         <OverviewTrends />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
     expect(rendered.getByText(buildCountError)).toBeInTheDocument();
     expect(rendered.getByText(buildTimesError)).toBeInTheDocument();

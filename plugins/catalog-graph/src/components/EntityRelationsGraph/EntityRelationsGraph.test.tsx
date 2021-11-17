@@ -21,9 +21,8 @@ import {
   RELATION_PART_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import React, { FunctionComponent } from 'react';
 import { EntityRelationsGraph } from './EntityRelationsGraph';
@@ -158,10 +157,11 @@ describe('<EntityRelationsGraph/>', () => {
       refreshEntity: jest.fn(),
       getEntityAncestors: jest.fn(),
     };
-    const apis = ApiRegistry.with(catalogApiRef, catalog);
 
     Wrapper = ({ children }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider apis={[[catalogApiRef, catalog]]}>
+        {children}
+      </TestApiProvider>
     );
   });
 
