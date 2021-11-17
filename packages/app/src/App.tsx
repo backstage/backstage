@@ -84,6 +84,7 @@ import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/cust
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
+
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 
 const app = createApp({
