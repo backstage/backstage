@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, KeyboardEvent, useState, useRef } from 'react';
+import React, { useEffect, KeyboardEvent, useState } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { useDebounce } from 'react-use';
 import { InputBase, InputAdornment, IconButton } from '@material-ui/core';
