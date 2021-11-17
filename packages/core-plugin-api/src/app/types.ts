@@ -14,80 +14,15 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
-import { ProfileInfo } from '../apis/definitions';
-import { IconComponent } from '../icons';
-import { BackstagePlugin } from '../plugin/types';
-
-export type BootErrorPageProps = {
-  step: 'load-config' | 'load-chunk';
-  error: Error;
-};
-
-export type SignInResult = {
-  /**
-   * User ID that will be returned by the IdentityApi
-   */
-  userId: string;
-
-  profile: ProfileInfo;
-
-  /**
-   * Function used to retrieve an ID token for the signed in user.
-   */
-  getIdToken?: () => Promise<string>;
-
-  /**
-   * Sign out handler that will be called if the user requests to sign out.
-   */
-  signOut?: () => Promise<void>;
-};
-
-export type SignInPageProps = {
-  /**
-   * Set the sign-in result for the app. This should only be called once.
-   */
-  onResult(result: SignInResult): void;
-};
-
-export type ErrorBoundaryFallbackProps = {
-  plugin?: BackstagePlugin;
-  error: Error;
-  resetError: () => void;
-};
-
-export type AppComponents = {
-  NotFoundErrorPage: ComponentType<{}>;
-  BootErrorPage: ComponentType<BootErrorPageProps>;
-  Progress: ComponentType<{}>;
-  Router: ComponentType<{}>;
-  ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
-
-  /**
-   * An optional sign-in page that will be rendered instead of the AppRouter at startup.
-   *
-   * If a sign-in page is set, it will always be shown before the app, and it is up
-   * to the sign-in page to handle e.g. saving of login methods for subsequent visits.
-   *
-   * The sign-in page will be displayed until it has passed up a result to the parent,
-   * and which point the AppRouter and all of its children will be rendered instead.
-   */
-  SignInPage?: ComponentType<SignInPageProps>;
-};
-
-export type AppContext = {
-  /**
-   * Get a list of all plugins that are installed in the app.
-   */
-  getPlugins(): BackstagePlugin<any, any>[];
-
-  /**
-   * Get a common or custom icon for this app.
-   */
-  getSystemIcon(key: string): IconComponent | undefined;
-
-  /**
-   * Get the components registered for various purposes in the app.
-   */
-  getComponents(): AppComponents;
-};
+// This is a bit of a hack that we use to avoid having to redeclare these types
+// within this package or have an explicit dependency on core-app-api.
+// These types end up being inlined and duplicated into this package at build time.
+// eslint-disable-next-line no-restricted-imports
+export type {
+  BootErrorPageProps,
+  SignInResult,
+  SignInPageProps,
+  ErrorBoundaryFallbackProps,
+  AppComponents,
+  AppContext,
+} from '../../../core-app-api/src/app/types';

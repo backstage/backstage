@@ -1,5 +1,14 @@
 # @backstage/backend-common
 
+## 0.9.9
+
+### Patch Changes
+
+- 8c4cad0bf2: AWSS3UrlReader now throws a `NotModifiedError` (exported from @backstage/backend-common) when s3 returns a 304 response.
+- 0611f3b3e2: Reading app config from a remote server
+- Updated dependencies
+  - @backstage/config-loader@0.7.2
+
 ## 0.9.8
 
 ### Patch Changes

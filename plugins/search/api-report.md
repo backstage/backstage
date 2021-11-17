@@ -126,6 +126,24 @@ export const SearchFilterNext: {
   Select(props: Omit<Props_2, 'component'> & Component): JSX.Element;
 };
 
+// Warning: (ae-missing-release-tag) "SearchModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const SearchModal: ({
+  open,
+  toggleModal,
+}: SearchModalProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "SearchModalProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface SearchModalProps {
+  // (undocumented)
+  open?: boolean;
+  // (undocumented)
+  toggleModal: () => void;
+}
+
 // Warning: (ae-missing-release-tag) "SearchPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -178,6 +196,11 @@ export const SearchType: ({
 //
 // @public (undocumented)
 export const SidebarSearch: () => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "SidebarSearchModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const SidebarSearchModal: () => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SearchContextValue" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

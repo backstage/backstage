@@ -75,6 +75,7 @@ export interface Config {
         logoutUrl?: string;
         issuer: string;
         cert: string;
+        audience?: string;
         privateKey?: string;
         authnContext?: string[];
         identifierFormat?: string;

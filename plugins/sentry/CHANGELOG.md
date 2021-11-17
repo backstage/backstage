@@ -1,5 +1,16 @@
 # @backstage/plugin-sentry
 
+## 0.3.28
+
+### Patch Changes
+
+- 33d7bd0baa: fix: sentry-plugin can forward identity token to backend (for case when it requires authorization)
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
 ## 0.3.27
 
 ### Patch Changes

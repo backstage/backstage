@@ -28,20 +28,23 @@ export {
   SearchContextProvider,
   SearchFilter,
   SearchFilterNext,
+  SearchModal,
   SearchPage as Router,
   SearchResultPager,
   SearchType,
   SidebarSearch,
   useSearch,
 } from './components';
+export type { SearchModalProps } from './components';
 export type { FiltersState } from './components';
 export {
   DefaultResultListItem,
+  HomePageSearchBar,
   SearchBarNext,
   SearchPage,
   SearchPageNext,
   searchPlugin as plugin,
   searchPlugin,
   SearchResult,
-  HomePageSearchBar,
+  SidebarSearchModal,
 } from './plugin';

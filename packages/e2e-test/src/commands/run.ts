@@ -20,7 +20,8 @@ import fetch from 'cross-fetch';
 import handlebars from 'handlebars';
 import killTree from 'tree-kill';
 import { resolve as resolvePath, join as joinPath } from 'path';
-import Browser from 'zombie';
+import puppeteer from 'puppeteer';
+
 import {
   spawnPiped,
   runPlain,
@@ -350,17 +351,21 @@ async function testAppServe(pluginName: string, appDir: string) {
       GITHUB_TOKEN: 'abc',
     },
   });
-  Browser.localhost('localhost', 3000);
 
   let successful = false;
+
+  let browser;
   try {
     for (let attempts = 1; ; attempts++) {
       try {
-        const browser = new Browser();
+        browser = await puppeteer.launch();
+        const page = await browser.newPage();
 
-        await waitForPageWithText(browser, '/', 'My Company Catalog');
+        await page.goto('http://localhost:3000', { waitUntil: 'networkidle0' });
+
+        await waitForPageWithText(page, '/', 'My Company Catalog');
         await waitForPageWithText(
-          browser,
+          page,
           `/${pluginName}`,
           `Welcome to ${pluginName}!`,
         );
@@ -372,13 +377,15 @@ async function testAppServe(pluginName: string, appDir: string) {
         if (attempts >= 20) {
           throw new Error(`App serve test failed, ${error}`);
         }
-        console.log(`App serve failed, trying again, ${error}`);
+        print(`App serve failed, trying again, ${error}`);
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
   } finally {
     // Kill entire process group, otherwise we'll end up with hanging serve processes
-    killTree(startApp.pid);
+    await new Promise<void>((res, rej) =>
+      killTree(startApp.pid, err => (err ? rej(err) : res())),
+    );
   }
 
   try {
@@ -438,9 +445,26 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
   });
   let successful = false;
 
+  const stdErrorHasErrors = (input: string) => {
+    const lines = input.split('\n').filter(Boolean);
+    return (
+      lines.filter(
+        l =>
+          !l.includes('Use of deprecated folder mapping') &&
+          !l.includes('Update this package.json to use a subpath') &&
+          !l.includes(
+            '(Use `node --trace-deprecation ...` to show where the warning was created)',
+          ),
+      ).length !== 0
+    );
+  };
+
   try {
-    await waitFor(() => stdout.includes('Listening on ') || stderr !== '');
-    if (stderr !== '') {
+    await waitFor(
+      () => stdout.includes('Listening on ') || stdErrorHasErrors(stderr),
+    );
+    if (stdErrorHasErrors(stderr)) {
+      print(`Expected stderr to be clean, got ${stderr}`);
       // Skipping the whole block
       throw new Error(stderr);
     }
@@ -453,11 +477,14 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
     print('Entities fetched successfully');
     successful = true;
   } catch (error) {
+    print('');
     throw new Error(`Backend failed to startup: ${error}`);
   } finally {
     print('Stopping the child process');
     // Kill entire process group, otherwise we'll end up with hanging serve processes
-    killTree(child.pid);
+    await new Promise<void>((res, rej) =>
+      killTree(child.pid, err => (err ? rej(err) : res())),
+    );
   }
 
   try {

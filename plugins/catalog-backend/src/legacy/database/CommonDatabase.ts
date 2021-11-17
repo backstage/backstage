@@ -46,7 +46,11 @@ import {
   DbPageInfo,
   Transaction,
 } from './types';
-import { EntityPagination } from '../../catalog/types';
+import { EntityPagination, EntitiesSearchFilter } from '../../catalog/types';
+
+type LegacyEntityFilter = {
+  anyOf: { allOf: EntitiesSearchFilter[] }[];
+};
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -217,13 +221,28 @@ export class CommonDatabase implements Database {
 
     let entitiesQuery = tx<DbEntitiesRow>('entities');
 
-    for (const singleFilter of request?.filter?.anyOf ?? []) {
+    if (
+      request?.filter &&
+      (request.filter.hasOwnProperty('key') ||
+        request.filter.hasOwnProperty('allOf'))
+    ) {
+      throw new Error(
+        'Filters for the legacy CommonDatabase must obey the { anyOf: [{ allOf: [] }] } format.',
+      );
+    }
+    for (const singleFilter of (request?.filter as LegacyEntityFilter)?.anyOf ??
+      []) {
       entitiesQuery = entitiesQuery.orWhere(function singleFilterFn() {
-        for (const {
-          key,
-          matchValueIn,
-          matchValueExists,
-        } of singleFilter.allOf) {
+        for (const filter of singleFilter.allOf) {
+          if (
+            filter.hasOwnProperty('anyOf') ||
+            filter.hasOwnProperty('allOf')
+          ) {
+            throw new Error(
+              'Nested filters are not supported in the legacy CommonDatabase',
+            );
+          }
+          const { key, matchValueIn, matchValueExists } = filter;
           // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
           // make a lot of sense. However, it had abysmal performance on sqlite
           // when datasets grew large, so we're using IN instead.

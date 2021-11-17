@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.1.4
+
+### Patch Changes
+
+- 290fbb3ec2: Add missing API docs to scaffolder action plugins
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/plugin-scaffolder-backend@0.15.12
+
 ## 0.1.3
 
 ### Patch Changes

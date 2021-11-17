@@ -1,5 +1,16 @@
 # @backstage/plugin-kafka
 
+## 0.2.20
+
+### Patch Changes
+
+- 91f8644f17: Use IdentityApi to provide Auth Token for KafkaBackendClient Api calls
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
 ## 0.2.19
 
 ### Patch Changes

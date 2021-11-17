@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { RepoBuild, RepoBuildOptions } from './types';
+import {
+  RepoBuild,
+  RepoBuildOptions,
+} from '@backstage/plugin-azure-devops-common';
+
 import { createApiRef } from '@backstage/core-plugin-api';
 
 export const azureDevOpsApiRef = createApiRef<AzureDevOpsApi>({

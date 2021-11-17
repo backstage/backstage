@@ -5,10 +5,6 @@
 ```ts
 import { TemplateAction } from '@backstage/plugin-scaffolder-backend';
 
-// Warning: (ae-missing-release-tag) "createRunYeomanAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createRunYeomanAction(): TemplateAction<any>;
-
-// (No @packageDocumentation comment for this package)
 ```

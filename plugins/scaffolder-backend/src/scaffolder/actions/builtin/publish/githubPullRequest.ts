@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import path from 'path';
-import { parseRepoUrl } from './util';
+import { parseRepoUrl, isExecutable } from './util';
 
 import {
   GithubCredentialsProvider,
@@ -202,10 +202,11 @@ export const createPublishGithubPullRequestAction = ({
             .readFileSync(absPath)
             .toString('base64');
           const fileStat = fs.statSync(absPath);
-          const isExecutable = fileStat.mode === 33277; // aka. 100755
           // See the properties of tree items
           // in https://docs.github.com/en/rest/reference/git#trees
-          const githubTreeItemMode = isExecutable ? '100755' : '100644';
+          const githubTreeItemMode = isExecutable(fileStat.mode)
+            ? '100755'
+            : '100644';
           // Always use base64 encoding to avoid doubling a binary file in size
           // due to interpreting a binary file as utf-8 and sending github
           // the utf-8 encoded content.

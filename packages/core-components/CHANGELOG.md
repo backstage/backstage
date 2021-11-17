@@ -1,5 +1,39 @@
 # @backstage/core-components
 
+## 0.7.3
+
+### Patch Changes
+
+- c11a37710a: Added a warning variant to `DismissableBanner` component. If you are using a
+  custom theme, you will need to add the optional `palette.banner.warning` color,
+  otherwise this variant will fall back to the `palette.banner.error` color.
+- 5826c17b7d: Allow for `cellStyle` property on `TableColumn` to be a function as well as `React.CSSProperties` as per the Material UI Table component
+- e0861b92ff: Add new way to override color selection to progress bar/gauge components.
+
+  `Gauge`, `LinearGauge` and `GaugeCard` all accept a `getColor` prop,
+  which is a function of the type:
+
+  ```ts
+  export type GaugePropsGetColor = (args: {
+    palette: Palette;
+    value: number;
+    inverse?: boolean;
+    max?: number;
+  }) => string;
+  ```
+
+  Return a standard CSS color string (e.g. "red", "#f02020"), and the gauge will
+  be set to that color.
+
+  If the prop is omitted, the default implementation is unchanged from previous
+  versions.
+
+- 021986e8a3: fixed route resolving (issue #7741) when user cannot select a tab in any of the tabbed pages (like the Catalog page) if it shares the same initial letters as a preceding tab. (i.e. where tab with a path of /ci is followed by a path of /ci-2, user cannot select /ci-2 as /ci will always be selected first).
+- a39a2105ef: Add Theme Overrides for Sidebar
+- Updated dependencies
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+
 ## 0.7.2
 
 ### Patch Changes

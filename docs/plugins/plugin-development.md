@@ -65,6 +65,7 @@ export const examplePlugin = createPlugin({
 // Each extension should also be exported from your plugin package.
 export const ExamplePage = examplePlugin.provide(
   createRoutableExtension({
+    name: 'ExamplePage',
     // The component needs to be lazy-loaded. It's what will actually be rendered in the end.
     component: () =>
       import('./components/ExampleComponent').then(m => m.ExampleComponent),

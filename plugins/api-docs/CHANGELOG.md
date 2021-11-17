@@ -1,5 +1,18 @@
 # @backstage/plugin-api-docs
 
+## 0.6.13
+
+### Patch Changes
+
+- 044c38e739: Lazy load all API definition widgets. The widgets use libraries like
+  `swagger-ui`, `graphiql`, and `@asyncapi/react-component` which are quite heavy
+  weight. To improve initial load times, the widgets are only loaded once used.
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
 ## 0.6.12
 
 ### Patch Changes

@@ -1,5 +1,56 @@
 # @backstage/create-app
 
+## 0.4.3
+
+### Patch Changes
+
+- 5dcea2586c: Integrated `SidebarSearchModal` component into default-app to use the `SearchModal`.
+
+  The `SidebarSearchModal` component can also be used in other generated apps:
+
+  ```diff
+  import {
+  -  SidebarSearch,
+  +  SidebarSearchModal
+  } from '@backstage/plugin-search';
+  ...
+   <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+  -     <SidebarSearch />
+  +     <SidebarSearchModal />
+        <SidebarDivider />
+  ...
+  ```
+
+  If you only want to use the `SearchModal` you can import it from `'@backstage/plugin-search'`:
+
+  ```js
+  import { SearchModal } from '@backstage/plugin-search';
+  ```
+
+- 5725f87e4c: Updated the app template to no longer include the `--no-private` flag for the `create-plugin` command.
+
+  To apply this change to an existing application, remove the `--no-private` flag from the `create-plugin` command in the root `package.json`:
+
+  ```diff
+     "prettier:check": "prettier --check .",
+  -  "create-plugin": "backstage-cli create-plugin --scope internal --no-private",
+  +  "create-plugin": "backstage-cli create-plugin --scope internal",
+     "remove-plugin": "backstage-cli remove-plugin"
+  ```
+
+- 1921f70aa7: Removed the version pinning of the packages `graphql-language-service-interface` and `graphql-language-service-parser`. This should no longer be necessary.
+
+  You can apply the same change in your repository by ensuring that the following does _NOT_ appear in your root `package.json`.
+
+  ```json
+  "resolutions": {
+    "graphql-language-service-interface": "2.8.2",
+    "graphql-language-service-parser": "1.9.0"
+    },
+  ```
+
 ## 0.4.2
 
 ## 0.4.1

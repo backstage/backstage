@@ -125,8 +125,8 @@ input schema.
         input:
 -         address: '{{ json parameters.address }}'
 +         address: ${{ parameters.address }}
--         number: '{{ parameters.number }}'
-+         number: ${{ parameters.number }} # this will now make sure that the type of number is a number 🙏
+-         test: '{{ parameters.test }}'
++         test: ${{ parameters.test }} # this will now make sure that the type of test is a number 🙏
 ```
 
 ## `parseRepoUrl` is now a `filter`

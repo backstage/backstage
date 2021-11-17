@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes
 
+## 0.4.19
+
+### Patch Changes
+
+- 9f3dd76bc7: fix: kubernetes plugin shall pass id token on get clusters request if possible
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
 ## 0.4.18
 
 ### Patch Changes

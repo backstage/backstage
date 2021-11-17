@@ -23,6 +23,17 @@ export type ConfigSchemaProcessingOptions = {
   withFilteredKeys?: boolean;
 };
 
+// Warning: (ae-missing-release-tag) "ConfigTarget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ConfigTarget =
+  | {
+      path: string;
+    }
+  | {
+      url: string;
+    };
+
 // @public
 export type ConfigVisibility = 'frontend' | 'backend' | 'secret';
 
@@ -33,12 +44,26 @@ export function loadConfig(options: LoadConfigOptions): Promise<AppConfig[]>;
 export type LoadConfigOptions = {
   configRoot: string;
   configPaths: string[];
+  configTargets: ConfigTarget[];
   env?: string;
   experimentalEnvFunc?: (name: string) => Promise<string | undefined>;
-  watch?: {
-    onChange: (configs: AppConfig[]) => void;
-    stopSignal?: Promise<void>;
-  };
+  remote?: LoadConfigOptionsRemote;
+  watch?: LoadConfigOptionsWatch;
+};
+
+// Warning: (ae-missing-release-tag) "LoadConfigOptionsRemote" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type LoadConfigOptionsRemote = {
+  reloadIntervalSeconds: number;
+};
+
+// Warning: (ae-missing-release-tag) "LoadConfigOptionsWatch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type LoadConfigOptionsWatch = {
+  onChange: (configs: AppConfig[]) => void;
+  stopSignal?: Promise<void>;
 };
 
 // @public
@@ -71,4 +96,8 @@ export type TransformFunc<T extends number | string | boolean> = (
     visibility: ConfigVisibility;
   },
 ) => T | undefined;
+
+// Warnings were encountered during analysis:
+//
+// src/loader.d.ts:33:5 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/config-loader" does not have an export "configTargets"
 ```

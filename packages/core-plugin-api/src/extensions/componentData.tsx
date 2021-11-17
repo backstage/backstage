@@ -41,6 +41,18 @@ type MaybeComponentNode = ReactNode & {
   type?: ComponentWithData;
 };
 
+/**
+ * Stores data related to a component in a global store.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#component-data}.
+ *
+ * @param component - The component to attach the data to.
+ * @param type - The key under which the data will be stored.
+ * @param data - Arbitrary value.
+ * @public
+ */
 export function attachComponentData<P>(
   component: ComponentType<P>,
   type: string,
@@ -70,6 +82,18 @@ export function attachComponentData<P>(
   container.map.set(type, data);
 }
 
+/**
+ * Retrieves data attached to a component.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#component-data}.
+ *
+ * @param node - React component to look up.
+ * @param type - Key of the data to retrieve.
+ * @returns Data stored using {@link attachComponentData}.
+ * @public
+ */
 export function getComponentData<T>(
   node: ReactNode,
   type: string,

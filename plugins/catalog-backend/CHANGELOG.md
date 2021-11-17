@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend
 
+## 0.17.3
+
+### Patch Changes
+
+- 86bef79ad1: Allow singleton and flexibly nested EntityFilters
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/catalog-client@0.5.1
+
 ## 0.17.2
 
 ### Patch Changes

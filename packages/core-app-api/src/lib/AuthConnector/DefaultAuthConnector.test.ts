@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import ProviderIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from './DefaultAuthConnector';
 import MockOAuthApi from '../../apis/implementations/OAuthRequestApi/MockOAuthApi';
 import * as loginPopup from '../loginPopup';
@@ -29,7 +28,7 @@ const defaultOptions = {
   provider: {
     id: 'my-provider',
     title: 'My Provider',
-    icon: ProviderIcon,
+    icon: () => null,
   },
   oauthRequestApi: new MockOAuthApi(),
   sessionTransform: ({ expiresInSeconds, ...res }: any) => ({

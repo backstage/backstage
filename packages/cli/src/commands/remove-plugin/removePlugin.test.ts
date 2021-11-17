@@ -177,9 +177,9 @@ describe('removePlugin', () => {
         fse.readFileSync(mockedCodeownersPath, 'utf8'),
       );
       await addCodeownersEntry(
-        testFilePath!,
         path.join('plugins', testPluginName),
-        ['@thisIsAtestTeam', 'test@gmail.com'],
+        '@thisIsAtestTeam test@gmail.com',
+        testFilePath,
       );
       await removePluginFromCodeOwners(testFilePath, testPluginName);
       expect(testFileContent).toBe(codeOwnersFileContent);

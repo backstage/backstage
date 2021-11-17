@@ -109,6 +109,25 @@ const routes = (
 );
 ```
 
+### Using the Search Modal
+
+In `Root.tsx`, add the `SidebarSearchModal` component:
+
+```bash
+import { SidebarSearchModal } from '@backstage/plugin-search';
+
+export const Root = ({ children }: PropsWithChildren<{}>) => (
+  <SidebarPage>
+    <Sidebar>
+      <SidebarLogo />
+      <SidebarSearchModal />
+      <SidebarDivider />
+...
+```
+
+For more information about using `Root.tsx`, please see
+[the changelog](https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md#0315).
+
 ## Adding Search to the Backend
 
 Add the following plugins into your backend app:

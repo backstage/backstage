@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
+import { Progress } from '@backstage/core-components';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import {
   Accordion,
   AccordionSummary,
   CircularProgress,
   Fade,
-  LinearProgress,
   makeStyles,
   Modal,
   Theme,
@@ -27,15 +30,11 @@ import {
   Typography,
   Zoom,
 } from '@material-ui/core';
-
-import React, { Suspense } from 'react';
-import { useDownloadWorkflowRunLogs } from './useDownloadWorkflowRunLogs';
-import { useProjectName } from '../useProjectName';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DescriptionIcon from '@material-ui/icons/Description';
-import { Entity } from '@backstage/catalog-model';
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import React, { Suspense } from 'react';
+import { useProjectName } from '../useProjectName';
+import { useDownloadWorkflowRunLogs } from './useDownloadWorkflowRunLogs';
 
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 const LinePart = React.lazy(() => import('react-lazylog/build/LinePart'));
@@ -72,7 +71,7 @@ const DisplayLog = ({
   className: string;
 }) => {
   return (
-    <Suspense fallback={<LinearProgress />}>
+    <Suspense fallback={<Progress />}>
       <div className={className}>
         <LazyLog
           text={jobLogs ?? 'No Values Found'}

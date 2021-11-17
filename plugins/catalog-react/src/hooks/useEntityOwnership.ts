@@ -49,9 +49,16 @@ function extendUserId(id: string): string {
   }
 }
 
-// Takes the relevant parts of the Backstage identity, and translates them into
-// a list of entity refs on string form that represent the user's ownership
-// connections.
+/**
+ * Takes the relevant parts of the Backstage identity, and translates them into
+ * a list of entity refs on string form that represent the user's ownership
+ * connections.
+ *
+ * @public
+ *
+ * @param identityApi - The IdentityApi implementation
+ * @returns IdentityOwner refs as a string array
+ */
 export async function loadIdentityOwnerRefs(
   identityApi: IdentityApi,
 ): Promise<string[]> {
@@ -81,9 +88,17 @@ export async function loadIdentityOwnerRefs(
   return result;
 }
 
-// Takes the relevant parts of the User entity corresponding to the Backstage
-// identity, and translates them into a list of entity refs on string form that
-// represent the user's ownership connections.
+/**
+ * Takes the relevant parts of the User entity corresponding to the Backstage
+ * identity, and translates them into a list of entity refs on string form that
+ * represent the user's ownership connections.
+ *
+ * @public
+ *
+ * @param catalogApi - The Catalog API implementation
+ * @param identityOwnerRefs - List of identity owner refs as strings
+ * @returns OwnerRefs as a string array
+ */
 export async function loadCatalogOwnerRefs(
   catalogApi: CatalogApi,
   identityOwnerRefs: string[],
@@ -113,6 +128,10 @@ export async function loadCatalogOwnerRefs(
  * owner of a given entity. When the hook is initially mounted, the loading
  * flag will be true and the results returned from the function will always be
  * false.
+ *
+ * @public
+ *
+ * @returns a function that checks if the signed in user owns an entity
  */
 export function useEntityOwnership(): {
   loading: boolean;

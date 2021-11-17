@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { ErrorApi, ErrorContext } from '@backstage/core-plugin-api';
+import {
+  ErrorApi,
+  ErrorApiError,
+  ErrorApiErrorContext,
+} from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 
 /**
@@ -27,12 +31,12 @@ export type MockErrorApiOptions = {
 };
 
 /**
- * ErrorWithContext contains error and ErrorContext
+ * ErrorWithContext contains error and ErrorApiErrorContext
  * @public
  */
 export type ErrorWithContext = {
-  error: Error;
-  context?: ErrorContext;
+  error: ErrorApiError;
+  context?: ErrorApiErrorContext;
 };
 
 type Waiter = {
@@ -59,7 +63,7 @@ export class MockErrorApi implements ErrorApi {
 
   constructor(private readonly options: MockErrorApiOptions = {}) {}
 
-  post(error: Error, context?: ErrorContext) {
+  post(error: ErrorApiError, context?: ErrorApiErrorContext) {
     if (this.options.collect) {
       this.errors.push({ error, context });
 
@@ -76,7 +80,10 @@ export class MockErrorApi implements ErrorApi {
     throw new Error(`MockErrorApi received unexpected error, ${error}`);
   }
 
-  error$(): Observable<{ error: Error; context?: ErrorContext }> {
+  error$(): Observable<{
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
+  }> {
     return nullObservable;
   }
 

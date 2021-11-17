@@ -14,33 +14,33 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import express from 'express';
-import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import { CatalogEntityClient } from '../lib/catalog';
-import { validate } from 'jsonschema';
-import {
-  DatabaseTaskStore,
-  TemplateActionRegistry,
-  TaskWorker,
-  TemplateAction,
-  createBuiltinActions,
-} from '../scaffolder';
-import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   ContainerRunner,
   PluginDatabaseManager,
   UrlReader,
 } from '@backstage/backend-common';
-import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
-import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-
+import { Entity, TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { TaskBroker, TaskSpec } from '../scaffolder/tasks/types';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import express from 'express';
+import Router from 'express-promise-router';
+import { validate } from 'jsonschema';
+import { Logger } from 'winston';
+import { CatalogEntityClient } from '../lib/catalog';
+import {
+  createBuiltinActions,
+  DatabaseTaskStore,
+  TaskBroker,
+  TaskSpec,
+  TaskWorker,
+  TemplateAction,
+  TemplateActionRegistry,
+} from '../scaffolder';
+import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
+import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 
 /**
  * RouterOptions
@@ -247,7 +247,9 @@ export async function createRouter(
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const { taskId } = req.params;
-      const after = Number(req.query.after) || undefined;
+      const after =
+        req.query.after !== undefined ? Number(req.query.after) : undefined;
+
       logger.debug(`Event stream observing taskId '${taskId}' opened`);
 
       // Mandatory headers and http status to keep connection open
@@ -278,7 +280,8 @@ export async function createRouter(
               // to automatically reconnect because it lost connection.
             }
           }
-          res.flush();
+          // res.flush() is only available with the compression middleware
+          res.flush?.();
           if (shouldUnsubscribe) unsubscribe();
         },
       );
@@ -287,6 +290,43 @@ export async function createRouter(
       req.on('close', () => {
         unsubscribe();
         logger.debug(`Event stream observing taskId '${taskId}' closed`);
+      });
+    })
+    .get('/v2/tasks/:taskId/events', async (req, res) => {
+      const { taskId } = req.params;
+      const after = Number(req.query.after) || undefined;
+
+      let unsubscribe = () => {};
+
+      // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
+      const timeout = setTimeout(() => {
+        unsubscribe();
+        res.json([]);
+      }, 30_000);
+
+      // Get all known events after an id (always includes the completion event) and return the first callback
+      ({ unsubscribe } = taskBroker.observe(
+        { taskId, after },
+        (error, { events }) => {
+          // stop the timeout
+          clearTimeout(timeout);
+          unsubscribe();
+
+          if (error) {
+            logger.error(
+              `Received error from log when observing taskId '${taskId}', ${error}`,
+            );
+          }
+
+          res.json(events);
+        },
+      ));
+
+      // When client closes connection we update the clients list
+      // avoiding the disconnected one
+      req.on('close', () => {
+        unsubscribe();
+        clearTimeout(timeout);
       });
     });
 

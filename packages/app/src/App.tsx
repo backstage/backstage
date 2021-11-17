@@ -26,7 +26,8 @@ import {
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
-import { createApp, FlatRoutes } from '@backstage/core-app-api';
+import { createApp } from '@backstage/app-defaults';
+import { FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
@@ -94,7 +95,6 @@ const app = createApp({
     // Custom icon example
     alert: AlarmIcon,
   },
-
   components: {
     SignInPage: props => {
       return (

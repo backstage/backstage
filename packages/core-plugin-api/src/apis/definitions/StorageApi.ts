@@ -17,48 +17,60 @@
 import { ApiRef, createApiRef } from '../system';
 import { Observable } from '@backstage/types';
 
+/**
+ * Describes a value change event.
+ *
+ * @public
+ */
 export type StorageValueChange<T = any> = {
   key: string;
   newValue?: T;
 };
 
+/**
+ * Provides key-value persistence API.
+ *
+ * @public
+ */
 export interface StorageApi {
   /**
    * Create a bucket to store data in.
-   * @param {String} name Namespace for the storage to be stored under,
+   * @param name - Namespace for the storage to be stored under,
    *                      will inherit previous namespaces too
    */
   forBucket(name: string): StorageApi;
 
   /**
    * Get the current value for persistent data, use observe$ to be notified of updates.
-   *
-   * @param {String} key Unique key associated with the data.
-   * @return {Object} data The data that should is stored.
+   * @param key - Unique key associated with the data.
    */
   get<T>(key: string): T | undefined;
 
   /**
    * Remove persistent data.
-   *
-   * @param {String} key Unique key associated with the data.
+   * @param key - Unique key associated with the data.
    */
   remove(key: string): Promise<void>;
 
   /**
    * Save persistent data, and emit messages to anyone that is using observe$ for this key
-   *
-   * @param {String} key Unique key associated with the data.
+   * @param key - Unique key associated with the data.
+   * @param data - The data to be stored under the key.
    */
   set(key: string, data: any): Promise<void>;
 
   /**
    * Observe changes on a particular key in the bucket
-   * @param {String} key Unique key associated with the data
+   * @param key - Unique key associated with the data
    */
   observe$<T>(key: string): Observable<StorageValueChange<T>>;
 }
 
+/**
+ * The {@link ApiRef} of {@link StorageApi}.
+ *
+ * @public
+ */
 export const storageApiRef: ApiRef<StorageApi> = createApiRef({
   id: 'core.storage',
 });

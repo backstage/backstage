@@ -1,5 +1,15 @@
 # @backstage/core-plugin-api
 
+## 0.1.13
+
+### Patch Changes
+
+- 4a336fd292: Deprecate use of extensions without name. Adds a warning to the developer console to prompt integrators to provide names for extensions.
+- 8b4284cd5c: Improve API documentation for @backstage/core-plugin-api
+- e059aea7b9: Deprecate unused ApiRef types
+- Updated dependencies
+  - @backstage/theme@0.2.13
+
 ## 0.1.12
 
 ### Patch Changes

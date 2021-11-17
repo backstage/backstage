@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-yeoman",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -21,13 +21,13 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.11",
-    "@backstage/plugin-scaffolder-backend": "^0.15.11",
+    "@backstage/plugin-scaffolder-backend": "^0.15.12",
     "@backstage/types": "^0.1.1",
     "winston": "^3.2.1",
     "yeoman-environment": "^3.6.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.9.8",
+    "@backstage/backend-common": "^0.9.9",
     "@types/jest": "^26.0.7"
   },
   "files": [

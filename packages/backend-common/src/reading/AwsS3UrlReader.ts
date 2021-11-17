@@ -27,7 +27,7 @@ import {
 } from './types';
 import getRawBody from 'raw-body';
 import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
-import { ForwardedError } from '@backstage/errors';
+import { ForwardedError, NotModifiedError } from '@backstage/errors';
 import { ListObjectsV2Output, ObjectList } from 'aws-sdk/clients/s3';
 
 const parseURL = (
@@ -163,6 +163,10 @@ export class AwsS3UrlReader implements UrlReader {
         etag: etag,
       };
     } catch (e) {
+      if (e.statusCode === 304) {
+        throw new NotModifiedError();
+      }
+
       throw new ForwardedError('Could not retrieve file from S3', e);
     }
   }

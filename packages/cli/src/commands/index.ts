@@ -76,6 +76,30 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./backend/dev').then(m => m.default)));
 
   program
+    .command('create')
+    .storeOptionsAsProperties(false)
+    .description(
+      'Open up an interactive guide to creating new things in your app',
+    )
+    .option(
+      '--select <name>',
+      'Select the thing you want to be creating upfront',
+    )
+    .option(
+      '--option <name>=<value>',
+      'Pre-fill options for the creation process',
+      (opt, arr: string[]) => [...arr, opt],
+      [],
+    )
+    .option('--scope <scope>', 'The scope to use for new packages')
+    .option(
+      '--npm-registry <URL>',
+      'The package registry to use for new packages',
+    )
+    .option('--no-private', 'Do not mark new packages as private')
+    .action(lazy(() => import('./create/create').then(m => m.default)));
+
+  program
     .command('create-plugin')
     .option(
       '--backend',
@@ -172,6 +196,7 @@ export function registerCommands(program: CommanderStatic) {
       'Only load config schema that applies to the given package',
     )
     .option('--lax', 'Do not require environment variables to be set')
+    .option('--frontend', 'Only validate the frontend configuration')
     .option(...configOption)
     .description(
       'Validate that the given configuration loads and matches schema',

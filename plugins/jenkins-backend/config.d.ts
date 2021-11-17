@@ -17,7 +17,6 @@ export interface Config {
   jenkins?: {
     /**
      * Default instance baseUrl, can be specified on a named instance called "default"
-     * @pattern "^https?://"
      */
     baseUrl?: string;
     /**
@@ -39,9 +38,6 @@ export interface Config {
        */
       name: string;
 
-      /**
-       * @pattern "^https?://"
-       */
       baseUrl: string;
       username: string;
       /** @visibility secret */

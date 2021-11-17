@@ -1,5 +1,16 @@
 # @backstage/core-app-api
 
+## 0.1.20
+
+### Patch Changes
+
+- 78c512ce8f: I have added default icons for the catalog, scaffolder, techdocs, and search.
+- 8b4284cd5c: Improve API documentation for @backstage/core-plugin-api
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+
 ## 0.1.19
 
 ### Patch Changes

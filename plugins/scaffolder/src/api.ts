@@ -15,17 +15,18 @@
  */
 
 import { EntityName } from '@backstage/catalog-model';
-import { JsonObject, JsonValue, Observable } from '@backstage/types';
-import { ResponseError } from '@backstage/errors';
-import { ScmIntegrationRegistry } from '@backstage/integration';
-import { Field, FieldValidation } from '@rjsf/core';
-import ObservableImpl from 'zen-observable';
-import { ListActionsResponse, ScaffolderTask, Status } from './types';
 import {
   createApiRef,
   DiscoveryApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
+import { ResponseError } from '@backstage/errors';
+import { ScmIntegrationRegistry } from '@backstage/integration';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
+import { Field, FieldValidation } from '@rjsf/core';
+import qs from 'qs';
+import ObservableImpl from 'zen-observable';
+import { ListActionsResponse, ScaffolderTask, Status } from './types';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   id: 'plugin.scaffolder.service',
@@ -94,15 +95,18 @@ export class ScaffolderClient implements ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
+  private readonly useLongPollingLogs: boolean;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
+    useLongPollingLogs?: boolean;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.identityApi = options.identityApi;
     this.scmIntegrationsApi = options.scmIntegrationsApi;
+    this.useLongPollingLogs = options.useLongPollingLogs ?? false;
   }
 
   async getIntegrationsList(options: { allowedHosts: string[] }) {
@@ -189,7 +193,15 @@ export class ScaffolderClient implements ScaffolderApi {
     return await response.json();
   }
 
-  streamLogs({
+  streamLogs(opts: { taskId: string; after?: number }): Observable<LogEvent> {
+    if (this.useLongPollingLogs) {
+      return this.streamLogsPolling(opts);
+    }
+
+    return this.streamLogsEventStream(opts);
+  }
+
+  private streamLogsEventStream({
     taskId,
     after,
   }: {
@@ -236,6 +248,46 @@ export class ScaffolderClient implements ScaffolderApi {
           subscriber.error(error);
         },
       );
+    });
+  }
+
+  private streamLogsPolling({
+    taskId,
+    after: inputAfter,
+  }: {
+    taskId: string;
+    after?: number;
+  }): Observable<LogEvent> {
+    let after = inputAfter;
+
+    return new ObservableImpl(subscriber => {
+      this.discoveryApi.getBaseUrl('scaffolder').then(async baseUrl => {
+        while (!subscriber.closed) {
+          const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
+            taskId,
+          )}/events?${qs.stringify({ after })}`;
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            // wait for one second to not run into an
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            continue;
+          }
+
+          const logs = (await response.json()) as LogEvent[];
+
+          for (const event of logs) {
+            after = Number(event.id);
+
+            subscriber.next(event);
+
+            if (event.type === 'completion') {
+              subscriber.complete();
+              return;
+            }
+          }
+        }
+      });
     });
   }
 

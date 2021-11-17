@@ -17,7 +17,7 @@
 import {
   BuildResult,
   BuildStatus,
-} from 'azure-devops-node-api/interfaces/BuildInterfaces';
+} from '@backstage/plugin-azure-devops-common';
 import { getBuildResultComponent, getBuildStateComponent } from './BuildTable';
 
 import { renderInTestApp } from '@backstage/test-utils';

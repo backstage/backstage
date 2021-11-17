@@ -52,6 +52,7 @@ configmaps
 configs
 const
 cookiecutter
+cron
 css
 Datadog
 dataflow
@@ -162,6 +163,8 @@ Monorepo
 monorepos
 msgraph
 msw
+mutex
+mutexes
 mysql
 namespace
 namespaced

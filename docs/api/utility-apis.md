@@ -199,7 +199,7 @@ export a class that `implements` the target API, for example:
 
 ```ts
 export class IgnoringErrorApi implements ErrorApi {
-  post(error: Error, context?: ErrorContext) {
+  post(error: ErrorApiError, context?: ErrorApiErrorContext) {
     // ignore error
   }
 }
