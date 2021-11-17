@@ -118,6 +118,9 @@ There's another property you can pass here, which is an array of `actions` which
 will set the available actions that the scaffolder has access to.
 
 ```ts
+import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
+import { ScmIntegrations } from '@backstage/integration';
+
 const integrations = ScmIntegrations.fromConfig(config);
 
 const builtInActions = createBuiltinActions({
