@@ -192,6 +192,7 @@ const SKIPPED_PACKAGES = [
   join('packages', 'codemods'),
   join('packages', 'create-app'),
   join('packages', 'e2e-test'),
+  join('packages', 'embedded-techdocs-app'),
   join('packages', 'storybook'),
   join('packages', 'techdocs-cli'),
 ];
