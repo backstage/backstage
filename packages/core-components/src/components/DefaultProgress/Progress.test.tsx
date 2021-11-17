@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
-import { LinearProgressProps } from '@material-ui/core/LinearProgress';
-import { useApp } from '@backstage/core-plugin-api';
+import React from 'react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { act } from 'react-dom/test-utils';
 
-export function Progress(props: PropsWithChildren<LinearProgressProps>) {
-  const { Progress: CustomProgress } = useApp().getComponents();
-  return <CustomProgress {...props} />;
-}
+import { DefaultProgress } from './Progress';
+
+describe('<Progress />', () => {
+  it('renders without exploding', async () => {
+    jest.useFakeTimers();
+    const { getByTestId, queryByTestId } = await renderInTestApp(
+      <DefaultProgress />,
+    );
+    expect(queryByTestId('progress')).not.toBeInTheDocument();
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
+    expect(getByTestId('progress')).toBeInTheDocument();
+    jest.useRealTimers();
+  });
+});

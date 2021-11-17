@@ -9,6 +9,7 @@ import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/core-plugin-api
 import { BackstageTheme } from '@backstage/theme';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
+import { CSSProperties } from 'react';
 import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { Observable as Observable_2 } from '@backstage/types';
 import { Observer as Observer_2 } from '@backstage/types';
@@ -161,7 +162,10 @@ export type ApiRefType<T> = T extends ApiRef<infer U> ? U : never;
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
-  Progress: ComponentType<{}>;
+  Progress: ComponentType<{
+    className?: string;
+    style?: CSSProperties;
+  }>;
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
   ThemeProvider?: ComponentType<{}>;

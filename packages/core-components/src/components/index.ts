@@ -20,6 +20,7 @@ export * from './Button';
 export * from './CodeSnippet';
 export * from './CopyTextButton';
 export * from './CreateButton';
+export * from './DefaultProgress';
 export * from './DependencyGraph';
 export * from './DismissableBanner';
 export * from './EmptyState';

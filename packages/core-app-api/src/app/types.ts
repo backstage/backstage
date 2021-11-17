@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
+import { ComponentType, CSSProperties } from 'react';
 import {
   AnyApiFactory,
   AppTheme,
@@ -93,7 +93,7 @@ export type ErrorBoundaryFallbackProps = {
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
-  Progress: ComponentType<{}>;
+  Progress: ComponentType<{ className?: string; style?: CSSProperties }>;
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
   ThemeProvider?: ComponentType<{}>;

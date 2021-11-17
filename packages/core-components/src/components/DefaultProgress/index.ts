@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
-import { LinearProgressProps } from '@material-ui/core/LinearProgress';
-import { useApp } from '@backstage/core-plugin-api';
-
-export function Progress(props: PropsWithChildren<LinearProgressProps>) {
-  const { Progress: CustomProgress } = useApp().getComponents();
-  return <CustomProgress {...props} />;
-}
+export { DefaultProgress } from './Progress';

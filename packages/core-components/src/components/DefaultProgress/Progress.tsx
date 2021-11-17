@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
-import { LinearProgressProps } from '@material-ui/core/LinearProgress';
-import { useApp } from '@backstage/core-plugin-api';
+import React, { useState, useEffect, PropsWithChildren } from 'react';
+import LinearProgress, {
+  LinearProgressProps,
+} from '@material-ui/core/LinearProgress';
 
-export function Progress(props: PropsWithChildren<LinearProgressProps>) {
-  const { Progress: CustomProgress } = useApp().getComponents();
-  return <CustomProgress {...props} />;
+export function DefaultProgress(props: PropsWithChildren<LinearProgressProps>) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const handle = setTimeout(() => setIsVisible(true), 250);
+    return () => clearTimeout(handle);
+  }, []);
+
+  return isVisible ? (
+    <LinearProgress {...props} data-testid="progress" />
+  ) : (
+    <div style={{ display: 'none' }} />
+  );
 }
