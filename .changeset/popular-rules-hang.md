@@ -6,6 +6,6 @@
 '@backstage/plugin-tech-insights-common': patch
 ---
 
-Removed unecessary check in @backstage/plugin-tech-insights-backend
+Removed unnecessary check in @backstage/plugin-tech-insights-backend.
 
-Added new property 'result' in every CheckResult in @backstage/plugin-tech-insights-common
+Added new property 'result' in every CheckResult in @backstage/plugin-tech-insights-common.
