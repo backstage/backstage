@@ -6714,10 +6714,10 @@
   resolved "https://registry.npmjs.org/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@trendyol-js/openstack-swift-sdk@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.npmjs.org/@trendyol-js/openstack-swift-sdk/-/openstack-swift-sdk-0.0.4.tgz#570c6ab950319156c175ace005b4fb4d9f895d47"
-  integrity sha512-9YKOjov+V+yzptei6+B9QPuC5pOMTBTg/NQpb1ZbxvlOaYpWU4HHpSH2BkIFYZ8vYyAfzFNG1T2rjpQ2ZQDUtQ==
+"@trendyol-js/openstack-swift-sdk@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.npmjs.org/@trendyol-js/openstack-swift-sdk/-/openstack-swift-sdk-0.0.5.tgz#65be3c42b8dbafc57f2f2a46c327e2ad51e5a70e"
+  integrity sha512-KS5nz0cvd35UUyMzhZm+btGV4prtA1KNE7CCMOGBdVxoMGl06Qidli3HgHoc2I9jLPmky1SPp5yzQUwrsyWa0g==
   dependencies:
     agentkeepalive "^4.1.4"
     axios "^0.21.1"
