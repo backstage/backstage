@@ -8096,9 +8096,9 @@
   integrity sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==
 
 "@types/unzipper@^0.10.3":
-  version "0.10.3"
-  resolved "https://registry.npmjs.org/@types/unzipper/-/unzipper-0.10.3.tgz#9eea872fb1fa460da76f253878b6275af588f464"
-  integrity sha512-01mQdTLp3/KuBVDhP82FNBf+enzVOjJ9dGsCWa5z8fcYAFVgA9bqIQ2NmsgNFzN/DhD0PUQj4n5p7k6I9mq80g==
+  version "0.10.4"
+  resolved "https://registry.npmjs.org/@types/unzipper/-/unzipper-0.10.4.tgz#db5be3e1f7d37fdfae290024ffe4f46bdcfa47f2"
+  integrity sha512-mryXpAwwQadmfjKWoR7NXnELZVlU90xTON1v3Pq2AcOmuAPFkPh09E0X8fpbx2zofoR5zmOIxGqmWOhD0qXE7g==
   dependencies:
     "@types/node" "*"
 
