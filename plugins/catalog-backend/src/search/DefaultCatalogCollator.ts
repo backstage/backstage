@@ -15,7 +15,7 @@
  */
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, UserEntity } from '@backstage/catalog-model';
 import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
 import { Config } from '@backstage/config';
 import {
@@ -81,6 +81,23 @@ export class DefaultCatalogCollator implements DocumentCollator {
     return formatted.toLowerCase();
   }
 
+  protected isUserEntity(entity: Entity): entity is UserEntity {
+    return entity.kind === 'User';
+  }
+
+  protected getDocumentText(entity: Entity): string {
+    let documentText = entity.metadata.description || '';
+    if (this.isUserEntity(entity)) {
+      if (entity.spec?.profile?.displayName && entity.metadata.description) {
+        // combine displayName and description
+        documentText = `${entity.spec?.profile?.displayName} : ${entity.metadata.description}`;
+      } else {
+        documentText = entity.spec?.profile?.displayName || documentText;
+      }
+    }
+    return documentText;
+  }
+
   async execute() {
     const response = await this.catalogClient.getEntities({
       filter: this.filter,
@@ -93,7 +110,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
           kind: entity.kind,
           name: entity.metadata.name,
         }),
-        text: entity.metadata.description || '',
+        text: this.getDocumentText(entity),
         componentType: entity.spec?.type?.toString() || 'other',
         namespace: entity.metadata.namespace || 'default',
         kind: entity.kind,
