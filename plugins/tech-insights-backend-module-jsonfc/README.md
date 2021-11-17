@@ -59,7 +59,7 @@ export const exampleCheck: TechInsightJsonRuleCheck = {
   name: 'demodatacheck', // A human readable name of this check to be displayed in the UI
   type: JSON_RULE_ENGINE_CHECK_TYPE, // Type identifier of the check. Used to run logic against, determine persistence option to use and render correct components on the UI
   description: 'A fact check for demoing purposes', // A description to be displayed in the UI
-  factRefs: ['demo-poc.factretriever'], // References to fact containers that this check uses. See documentation on FactRetrievers for more information on these
+  factIds: ['documentation-number-factretriever'], // References to fact ids that this check uses. See documentation on FactRetrievers for more information on these
   rule: {
     // The actual rule
     conditions: {
