@@ -25,6 +25,7 @@ export interface CheckResponse {
 export type CheckResult = {
   facts: FactResponse;
   check: CheckResponse;
+  result: any;
 };
 
 // @public
