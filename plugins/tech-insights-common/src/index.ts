@@ -112,6 +112,7 @@ export type FactResponse = {
 export type CheckResult = {
   facts: FactResponse;
   check: CheckResponse;
+  result: any;
 };
 
 /**
