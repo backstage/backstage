@@ -30,10 +30,7 @@ export const entityOwnershipFactRetriever: FactRetriever = {
   id: 'entityOwnershipFactRetriever',
   version: '0.0.1',
   entityFilter: [
-    {
-      field: 'kind',
-      values: ['component', 'domain', 'system', 'api', 'resource', 'template'],
-    },
+    { kind: ['component', 'domain', 'system', 'api', 'resource', 'template'] },
   ],
   schema: {
     hasOwner: {
@@ -45,11 +42,11 @@ export const entityOwnershipFactRetriever: FactRetriever = {
       description: 'The spec.owner field is set and refers to a group',
     },
   },
-  handler: async ({ discovery }: FactRetrieverContext) => {
+  handler: async ({ discovery, entityFilter }: FactRetrieverContext) => {
     const catalogClient = new CatalogClient({
       discoveryApi: discovery,
     });
-    const entities = await catalogClient.getEntities();
+    const entities = await catalogClient.getEntities({ filter: entityFilter });
 
     return entities.items.map((entity: Entity) => {
       return {
