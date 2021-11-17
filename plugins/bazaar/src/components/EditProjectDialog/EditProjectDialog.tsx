@@ -18,8 +18,9 @@ import React, { useState, useEffect } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
-import { BazaarProject, FormValues } from '../../types';
+import { BazaarProject, FormValues, Size, Status } from '../../types';
 import { bazaarApiRef } from '../../api';
+import { UseFormGetValues } from 'react-hook-form';
 
 type Props = {
   entity: Entity;
@@ -41,6 +42,10 @@ export const EditProjectDialog = ({
     announcement: bazaarProject.announcement,
     community: bazaarProject.community,
     status: bazaarProject.status,
+    size: bazaarProject.size,
+    startDate: bazaarProject?.startDate ?? null,
+    endDate: bazaarProject?.endDate ?? null,
+    responsible: bazaarProject.responsible,
   });
 
   const bazaarApi = useApi(bazaarApiRef);
@@ -50,19 +55,27 @@ export const EditProjectDialog = ({
       announcement: bazaarProject.announcement,
       community: bazaarProject.community,
       status: bazaarProject.status,
+      size: bazaarProject.size,
+      startDate: bazaarProject?.startDate ?? null,
+      endDate: bazaarProject?.endDate ?? null,
+      responsible: bazaarProject.responsible,
     });
   }, [bazaarProject]);
 
-  const handleSave: any = async (getValues: any, _: any) => {
+  const handleSave: any = async (getValues: UseFormGetValues<FormValues>) => {
     const formValues = getValues();
 
     const updateResponse = await bazaarApi.updateMetadata({
       name: entity.metadata.name,
       entityRef: stringifyEntityRef(entity),
       announcement: formValues.announcement,
-      status: formValues.status,
+      status: formValues.status as Status,
       community: formValues.community,
       membersCount: bazaarProject.membersCount,
+      size: formValues.size as Size,
+      startDate: formValues?.startDate ?? null,
+      endDate: formValues?.endDate ?? null,
+      responsible: formValues.responsible,
     });
 
     if (updateResponse.status === 'ok') fetchBazaarProject();
