@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { ErrorApi, ErrorContext } from '@backstage/core-plugin-api';
+import {
+  ErrorApi,
+  ErrorApiError,
+  ErrorApiErrorContext,
+} from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { PublishSubject } from '../../../lib/subjects';
 
@@ -26,14 +30,14 @@ import { PublishSubject } from '../../../lib/subjects';
 export class ErrorApiForwarder implements ErrorApi {
   private readonly subject = new PublishSubject<{
     error: Error;
-    context?: ErrorContext;
+    context?: ErrorApiErrorContext;
   }>();
 
-  post(error: Error, context?: ErrorContext) {
+  post(error: ErrorApiError, context?: ErrorApiErrorContext) {
     this.subject.next({ error, context });
   }
 
-  error$(): Observable<{ error: Error; context?: ErrorContext }> {
+  error$(): Observable<{ error: Error; context?: ErrorApiErrorContext }> {
     return this.subject;
   }
 }

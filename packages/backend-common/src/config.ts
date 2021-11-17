@@ -200,7 +200,7 @@ export async function loadBackendConfig(options: {
   });
 
   const config = new ObservableConfigProxy(options.logger);
-  const configs = await loadConfig({
+  const { appConfigs } = await loadConfig({
     configRoot: paths.targetRoot,
     configPaths: [],
     configTargets: configTargets,
@@ -227,14 +227,16 @@ export async function loadBackendConfig(options: {
   });
 
   options.logger.info(
-    `Loaded config from ${configs.map(c => c.context).join(', ')}`,
+    `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
   );
 
-  config.setConfig(ConfigReader.fromConfigs(configs));
+  config.setConfig(ConfigReader.fromConfigs(appConfigs));
 
   // Subscribe to config changes and update the redaction list for logging
-  updateRedactionList(schema, configs, options.logger);
-  config.subscribe(() => updateRedactionList(schema, configs, options.logger));
+  updateRedactionList(schema, appConfigs, options.logger);
+  config.subscribe(() =>
+    updateRedactionList(schema, appConfigs, options.logger),
+  );
 
   return config;
 }

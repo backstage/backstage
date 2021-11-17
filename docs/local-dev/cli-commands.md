@@ -41,6 +41,7 @@ lint                     Lint a package
 test                     Run tests, forwarding args to Jest, defaulting to watch mode
 clean                    Delete cache directories
 
+create                   Open up an interactive guide to creating new things in your app
 create-plugin            Creates a new plugin in the current repository
 remove-plugin            Removes plugin in the current repository
 
@@ -275,6 +276,44 @@ Options:
   --inspect        Enable debugger
   --config &lt;path&gt;  Config files to load instead of app-config.yaml (default: [])
   -h, --help       display help for command
+```
+
+## create
+
+Scope: `root`
+
+The `create` command opens up an interactive guide for you to create new things
+in your app. If you do not pass in any options it is completely interactive, but
+it is possible to pre-select what you want to create using the `--select` flag,
+and provide options using `--options`, for example:
+
+```bash
+backstage-cli create --select plugin --option id=foo
+```
+
+This command is typically added as script in the root `package.json` to be
+executed with `yarn backstage-create`, using options that are appropriate for
+the organization that owns the app repo. For example you may have it set up like
+this:
+
+```json
+{
+  "scripts": {
+    "backstage-create": "backstage-cli create --scope internal --no-private --npm-registry https://acme.org/npm"
+  }
+}
+```
+
+```text
+Usage: backstage-cli create [options]
+
+Options:
+  --select <name>          Select the thing you want to be creating upfront
+  --option <name>=<value>  Pre-fill options for the creation process (default: [])
+  --scope <scope>          The scope to use for new packages
+  --npm-registry <URL>     The package registry to use for new packages
+  --no-private             Do not mark new packages as private
+  -h, --help               display help for command
 ```
 
 ## create-plugin

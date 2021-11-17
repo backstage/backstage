@@ -130,6 +130,14 @@ export interface Config {
          * The host may also contain a port, for example `example.com:8080`.
          */
         host: string;
+
+        /**
+         * An optional list of paths. In case they are present only targets matching
+         * any of them will are allowed. You can use trailing slashes to make sure only
+         * subdirectories are allowed, for example `/mydir/` will allow targets with
+         * paths like `/mydir/a` but will block paths like `/mydir2`.
+         */
+        paths?: string[];
       }>;
     };
 

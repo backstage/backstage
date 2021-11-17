@@ -106,18 +106,19 @@ export async function createDistWorkspace(
 
   if (options.buildDependencies) {
     const exclude = options.buildExcludes ?? [];
-    const scopeArgs = targets
-      .filter(target => !exclude.includes(target.name))
-      .flatMap(target => ['--scope', target.name]);
 
-    const lernaArgs =
-      options.parallel && Number.isInteger(options.parallel)
-        ? ['--concurrency', options.parallel.toString()]
-        : [];
+    const toBuild = targets.filter(target => !exclude.includes(target.name));
+    if (toBuild.length > 0) {
+      const scopeArgs = toBuild.flatMap(target => ['--scope', target.name]);
+      const lernaArgs =
+        options.parallel && Number.isInteger(options.parallel)
+          ? ['--concurrency', options.parallel.toString()]
+          : [];
 
-    await run('yarn', ['lerna', ...lernaArgs, 'run', ...scopeArgs, 'build'], {
-      cwd: paths.targetRoot,
-    });
+      await run('yarn', ['lerna', ...lernaArgs, 'run', ...scopeArgs, 'build'], {
+        cwd: paths.targetRoot,
+      });
+    }
   }
 
   await moveToDistWorkspace(targetDir, targets);

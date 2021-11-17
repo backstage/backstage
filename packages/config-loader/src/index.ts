@@ -34,4 +34,5 @@ export type {
   LoadConfigOptions,
   LoadConfigOptionsWatch,
   LoadConfigOptionsRemote,
+  LoadConfigResult,
 } from './loader';

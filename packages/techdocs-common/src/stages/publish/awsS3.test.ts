@@ -45,10 +45,12 @@ const createPublisherFromConfig = ({
   bucketName = 'bucketName',
   bucketRootPath = '/',
   legacyUseCaseSensitiveTripletPaths = false,
+  sse,
 }: {
   bucketName?: string;
   bucketRootPath?: string;
   legacyUseCaseSensitiveTripletPaths?: boolean;
+  sse?: string;
 } = {}) => {
   const mockConfig = new ConfigReader({
     techdocs: {
@@ -62,6 +64,7 @@ const createPublisherFromConfig = ({
           },
           bucketName,
           bucketRootPath,
+          sse,
         },
       },
       legacyUseCaseSensitiveTripletPaths,
@@ -167,6 +170,13 @@ describe('AwsS3Publish', () => {
       const publisher = createPublisherFromConfig({
         bucketRootPath: 'backstage-data/techdocs',
         legacyUseCaseSensitiveTripletPaths: true,
+      });
+      expect(await publisher.publish({ entity, directory })).toBeUndefined();
+    });
+
+    it('should publish a directory when sse is specified', async () => {
+      const publisher = createPublisherFromConfig({
+        sse: 'aws:kms',
       });
       expect(await publisher.publish({ entity, directory })).toBeUndefined();
     });

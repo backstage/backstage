@@ -30,8 +30,15 @@ import {
   ExtractorConfig,
   CompilerState,
   ExtractorLogLevel,
+  ExtractorMessage,
 } from '@microsoft/api-extractor';
-import { DocNode, IDocNodeContainerParameters } from '@microsoft/tsdoc';
+import { Program } from 'typescript';
+import {
+  DocNode,
+  IDocNodeContainerParameters,
+  TSDocTagSyntaxKind,
+} from '@microsoft/tsdoc';
+import { TSDocConfigFile } from '@microsoft/tsdoc-config';
 import { ApiPackage, ApiModel } from '@microsoft/api-extractor-model';
 import {
   IMarkdownDocumenterOptions,
@@ -42,6 +49,7 @@ import { DocTableRow } from '@microsoft/api-documenter/lib/nodes/DocTableRow';
 import { DocHeading } from '@microsoft/api-documenter/lib/nodes/DocHeading';
 import { CustomMarkdownEmitter } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
+import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 
 const tmpDir = resolvePath(__dirname, '../node_modules/.cache/api-extractor');
 
@@ -79,11 +87,96 @@ const {
   ApiReportGenerator,
 } = require('@microsoft/api-extractor/lib/generators/ApiReportGenerator');
 
+function patchFileMessageFetcher(
+  router: any,
+  transform: (messages: ExtractorMessage[], ast?: AstDeclaration) => void,
+) {
+  const {
+    fetchAssociatedMessagesForReviewFile,
+    fetchUnassociatedMessagesForReviewFile,
+  } = router;
+
+  router.fetchAssociatedMessagesForReviewFile =
+    function patchedFetchAssociatedMessagesForReviewFile(ast) {
+      const messages = fetchAssociatedMessagesForReviewFile.call(this, ast);
+      return transform(messages, ast);
+    };
+  router.fetchUnassociatedMessagesForReviewFile =
+    function patchedFetchUnassociatedMessagesForReviewFile() {
+      const messages = fetchUnassociatedMessagesForReviewFile.call(this);
+      return transform(messages);
+    };
+}
+
 const originalGenerateReviewFileContent =
   ApiReportGenerator.generateReviewFileContent;
 ApiReportGenerator.generateReviewFileContent =
-  function decoratedGenerateReviewFileContent(...args) {
-    const content = originalGenerateReviewFileContent.apply(this, args);
+  function decoratedGenerateReviewFileContent(collector, ...moreArgs) {
+    const program = collector.program as Program;
+
+    // The purpose of this override is to allow the @ignore tag to be used to ignore warnings
+    // of the form "Warning: (ae-forgotten-export) The symbol "FooBar" needs to be exported by the entry point index.d.ts"
+    patchFileMessageFetcher(
+      collector.messageRouter,
+      (messages: ExtractorMessage[]) => {
+        return messages.filter(message => {
+          if (message.messageId !== 'ae-forgotten-export') {
+            return true;
+          }
+
+          // Symbol name has to be extracted from the message :(
+          // There's frequently no AST for these exports because type literals
+          // aren't traversed by the generator.
+          const symbolMatch = message.text.match(/The symbol "([^"]+)"/);
+          if (!symbolMatch) {
+            throw new Error(
+              `Failed to extract symbol name from message "${message.text}"`,
+            );
+          }
+          const [, symbolName] = symbolMatch;
+
+          const sourceFile = program.getSourceFile(message.sourceFilePath);
+          if (!sourceFile) {
+            throw new Error(
+              `Failed to find source file in program at path "${message.sourceFilePath}"`,
+            );
+          }
+
+          // NOTE: we limit the @internal functionality to only apply to types that are declared
+          //       in the same module as where they're being referenced from. This limitation makes
+          //       the implementation here simpler but could be revisited if needed.
+
+          // The local name of the symbol within the file, rather than the exported name
+          const localName = (sourceFile as any).identifiers?.get(symbolName);
+          if (!localName) {
+            return true;
+          }
+          // The local AST node of the export that we're missing
+          const local = (sourceFile as any).locals?.get(localName);
+          if (!local) {
+            return true;
+          }
+
+          // If any of the TSDoc comments contain a @ignore tag, we ignore this message
+          const isIgnored = local.declarations.some(declaration => {
+            const tags = [declaration.jsDoc]
+              .flat()
+              .filter(Boolean)
+              .flatMap((tagNode: any) => tagNode.tags);
+
+            return tags.some(tag => tag?.tagName.text === 'ignore');
+          });
+
+          return !isIgnored;
+        });
+      },
+    );
+
+    const content = originalGenerateReviewFileContent.call(
+      this,
+      collector,
+      ...moreArgs,
+    );
     return prettier.format(content, {
       ...require('@spotify/prettier-config'),
       parser: 'markdown',
@@ -99,6 +192,7 @@ const SKIPPED_PACKAGES = [
   join('packages', 'codemods'),
   join('packages', 'create-app'),
   join('packages', 'e2e-test'),
+  join('packages', 'embedded-techdocs-app'),
   join('packages', 'storybook'),
   join('packages', 'techdocs-cli'),
 ];
@@ -132,6 +226,18 @@ async function findPackageDirs() {
   }
 
   return packageDirs;
+}
+
+async function getTsDocConfig() {
+  const tsdocConfigFile = await TSDocConfigFile.loadFile(
+    require.resolve('@microsoft/api-extractor/extends/tsdoc-base.json'),
+  );
+  tsdocConfigFile.addTagDefinition({
+    tagName: '@ignore',
+    syntaxKind: TSDocTagSyntaxKind.ModifierTag,
+  });
+  tsdocConfigFile.setSupportForTag('@ignore', true);
+  return tsdocConfigFile;
 }
 
 function logApiReportInstructions() {
@@ -236,6 +342,7 @@ async function runApiExtraction({
       },
       configObjectFullPath: projectFolder,
       packageJsonFullPath: resolvePath(projectFolder, 'package.json'),
+      tsdocConfigFile: await getTsDocConfig(),
     });
 
     // The `packageFolder` needs to point to the location within `dist-types` in order for relative
