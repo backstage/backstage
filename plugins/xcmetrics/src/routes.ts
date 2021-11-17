@@ -16,7 +16,7 @@
 import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  title: 'XCMetrics',
+  id: 'xcmetrics',
 });
 
 export const buildsRouteRef = createSubRouteRef({
