@@ -17,6 +17,7 @@
 import { Readable } from 'stream';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
+import { AbortSignal } from 'node-abort-controller';
 
 /**
  * A generic interface for fetching plain data from URLs.
@@ -101,6 +102,15 @@ export type ReadUrlOptions = {
    * of the response along with a new ETag.
    */
   etag?: string;
+
+  /**
+   * An abort signal to pass down to the underlying request.
+   *
+   * @remarks
+   *
+   * Not all reader implementations may take this field into account.
+   */
+  signal?: AbortSignal;
 };
 
 /**
@@ -165,6 +175,15 @@ export type ReadTreeOptions = {
    * rest of the response along with a new ETag.
    */
   etag?: string;
+
+  /**
+   * An abort signal to pass down to the underlying request.
+   *
+   * @remarks
+   *
+   * Not all reader implementations may take this field into account.
+   */
+  signal?: AbortSignal;
 };
 
 /**
@@ -291,6 +310,15 @@ export type SearchOptions = {
    * search will return the rest of SearchResponse along with a new etag.
    */
   etag?: string;
+
+  /**
+   * An abort signal to pass down to the underlying request.
+   *
+   * @remarks
+   *
+   * Not all reader implementations may take this field into account.
+   */
+  signal?: AbortSignal;
 };
 
 /**

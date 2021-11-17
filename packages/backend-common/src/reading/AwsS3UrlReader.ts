@@ -18,6 +18,7 @@ import aws, { Credentials, S3 } from 'aws-sdk';
 import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import {
   ReaderFactory,
+  ReadTreeOptions,
   ReadTreeResponse,
   ReadTreeResponseFactory,
   ReadUrlOptions,
@@ -92,7 +93,7 @@ export class AwsS3UrlReader implements UrlReader {
   ) {}
 
   /**
-   * If accesKeyId and secretAccessKey are missing, the standard credentials provider chain will be used:
+   * If accessKeyId and secretAccessKey are missing, the standard credentials provider chain will be used:
    * https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/auth/DefaultAWSCredentialsProviderChain.html
    */
   private static buildCredentials(
@@ -154,9 +155,10 @@ export class AwsS3UrlReader implements UrlReader {
         };
       }
 
-      const response = this.deps.s3.getObject(params);
-      const buffer = await getRawBody(response.createReadStream());
-      const etag = (await response.promise()).ETag;
+      const request = this.deps.s3.getObject(params);
+      options?.signal?.addEventListener('abort', () => request.abort());
+      const buffer = await getRawBody(request.createReadStream());
+      const etag = (await request.promise()).ETag;
 
       return {
         buffer: async () => buffer,
@@ -171,7 +173,10 @@ export class AwsS3UrlReader implements UrlReader {
     }
   }
 
-  async readTree(url: string): Promise<ReadTreeResponse> {
+  async readTree(
+    url: string,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
     try {
       const { path, bucket, region } = parseURL(url);
       const allObjects: ObjectList = [];
@@ -180,13 +185,13 @@ export class AwsS3UrlReader implements UrlReader {
       let output: ListObjectsV2Output;
       do {
         aws.config.update({ region: region });
-        output = await this.deps.s3
-          .listObjectsV2({
-            Bucket: bucket,
-            ContinuationToken: continuationToken,
-            Prefix: path,
-          })
-          .promise();
+        const request = this.deps.s3.listObjectsV2({
+          Bucket: bucket,
+          ContinuationToken: continuationToken,
+          Prefix: path,
+        });
+        options?.signal?.addEventListener('abort', () => request.abort());
+        output = await request.promise();
         if (output.Contents) {
           output.Contents.forEach(contents => {
             allObjects.push(contents);

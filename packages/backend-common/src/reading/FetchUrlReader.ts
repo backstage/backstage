@@ -86,6 +86,7 @@ export class FetchUrlReader implements UrlReader {
         headers: {
           ...(options?.etag && { 'If-None-Match': options.etag }),
         },
+        signal: options?.signal,
       });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
