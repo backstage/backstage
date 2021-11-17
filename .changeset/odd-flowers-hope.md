@@ -1,16 +1,15 @@
 ---
-'example-backend': patch
 '@backstage/backend-common': patch
 '@backstage/create-app': patch
 '@backstage/plugin-catalog-backend': minor
 '@backstage/plugin-techdocs-backend': minor
 ---
 
-Create a TokenManager interface and ServerTokenManager implementation to generate and validate server tokens for authenticated backend-to-backend API requests.
+Create a TokenManager interface and ServerTokenManager implementation to generate and validate server tokens for authenticated backend-to-backend API requests. Incorporate usage of the tokenManager into the backend created using `create-app`.
 
 **BREAKING** `DefaultCatalogCollator` and `DefaultTechDocsCollator` now require a `tokenManager` to be passed in the `options` argument.
 
-In your backend, update the `PluginEnvironment` to include a `tokenManager`:
+In existing backends, update the `PluginEnvironment` to include a `tokenManager`:
 
 ```diff
 // packages/backend/src/types.ts
