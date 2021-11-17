@@ -16,8 +16,11 @@
 
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import { MockAnalyticsApi, wrapInTestApp } from '@backstage/test-utils';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import {
+  MockAnalyticsApi,
+  TestApiProvider,
+  wrapInTestApp,
+} from '@backstage/test-utils';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { isExternalUri, Link } from './Link';
 import { Route, Routes } from 'react-router';
@@ -48,11 +51,11 @@ describe('<Link />', () => {
 
     const { getByText } = render(
       wrapInTestApp(
-        <ApiProvider apis={ApiRegistry.from([[analyticsApiRef, analyticsApi]])}>
+        <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
           <Link to="/test" onClick={customOnClick}>
             {linkText}
           </Link>
-        </ApiProvider>,
+        </TestApiProvider>,
       ),
     );
 
