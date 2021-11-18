@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+
 import { BackstageIdentity } from '@backstage/plugin-auth-backend';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   PermissionPolicy,
   PolicyAuthorizeRequest,
   PolicyResult,
-} from './types';
+} from '@backstage/plugin-permission-node';
 
 export class AllowAllPermissionPolicy implements PermissionPolicy {
   async handle(

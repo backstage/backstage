@@ -20,4 +20,3 @@ export type {
   PolicyAuthorizeRequest,
   PolicyResult,
 } from './types';
-export { AllowAllPermissionPolicy } from './AllowAllPermissionPolicy';

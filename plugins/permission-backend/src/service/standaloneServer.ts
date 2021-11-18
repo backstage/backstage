@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
-import { AllowAllPermissionPolicy } from '@backstage/plugin-permission-node';
+import { AllowAllPermissionPolicy } from './AllowAllPermissionPolicy';
 import { createRouter } from './router';
 
 export interface ServerOptions {

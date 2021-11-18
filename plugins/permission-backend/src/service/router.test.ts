@@ -16,7 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { AllowAllPermissionPolicy } from '@backstage/plugin-permission-node';
+import { AllowAllPermissionPolicy } from './AllowAllPermissionPolicy';
 import express from 'express';
 import request from 'supertest';
 
