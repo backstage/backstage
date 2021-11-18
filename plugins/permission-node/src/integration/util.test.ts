@@ -25,21 +25,21 @@ describe('integration utils', () => {
     criteria: PermissionCriteria<PermissionCondition>;
     expectedResult: {
       applyConditions: boolean;
-      mapConditions: PermissionCriteria<{ query: string; params: unknown[] }>;
+      mapConditions: PermissionCriteria<string>;
     };
   }[] = [
     {
       criteria: { rule: 'test-rule-1', params: [] },
       expectedResult: {
         applyConditions: true,
-        mapConditions: { query: 'test-rule-1', params: [] },
+        mapConditions: 'test-rule-1',
       },
     },
     {
       criteria: { rule: 'test-rule-2', params: [] },
       expectedResult: {
         applyConditions: false,
-        mapConditions: { query: 'test-rule-2', params: [] },
+        mapConditions: 'test-rule-2',
       },
     },
     {
@@ -52,10 +52,7 @@ describe('integration utils', () => {
       expectedResult: {
         applyConditions: true,
         mapConditions: {
-          anyOf: [
-            { query: 'test-rule-1', params: ['a', 'b'] },
-            { query: 'test-rule-2', params: ['c', 'd'] },
-          ],
+          anyOf: ['test-rule-1:a,b', 'test-rule-2:c,d'],
         },
       },
     },
@@ -69,10 +66,7 @@ describe('integration utils', () => {
       expectedResult: {
         applyConditions: false,
         mapConditions: {
-          allOf: [
-            { query: 'test-rule-1', params: ['e', 'f'] },
-            { query: 'test-rule-2', params: ['g', 'h'] },
-          ],
+          allOf: ['test-rule-1:e,f', 'test-rule-2:g,h'],
         },
       },
     },
@@ -83,7 +77,7 @@ describe('integration utils', () => {
       expectedResult: {
         applyConditions: true,
         mapConditions: {
-          not: { query: 'test-rule-2', params: ['i'] },
+          not: 'test-rule-2:i',
         },
       },
     },
@@ -111,17 +105,11 @@ describe('integration utils', () => {
         mapConditions: {
           allOf: [
             {
-              anyOf: [
-                { query: 'test-rule-1', params: ['j'] },
-                { query: 'test-rule-2', params: ['k'] },
-              ],
+              anyOf: ['test-rule-1:j', 'test-rule-2:k'],
             },
             {
               not: {
-                allOf: [
-                  { query: 'test-rule-1', params: ['l'] },
-                  { query: 'test-rule-2', params: ['m'] },
-                ],
+                allOf: ['test-rule-1:l', 'test-rule-2:m'],
               },
             },
           ],
@@ -152,17 +140,11 @@ describe('integration utils', () => {
         mapConditions: {
           allOf: [
             {
-              anyOf: [
-                { query: 'test-rule-1', params: ['j'] },
-                { query: 'test-rule-2', params: ['k'] },
-              ],
+              anyOf: ['test-rule-1:j', 'test-rule-2:k'],
             },
             {
               not: {
-                allOf: [
-                  { query: 'test-rule-1', params: ['l'] },
-                  { not: { query: 'test-rule-2', params: ['m'] } },
-                ],
+                allOf: ['test-rule-1:l', { not: 'test-rule-2:m' }],
               },
             },
           ],
@@ -194,7 +176,10 @@ describe('integration utils', () => {
   });
 
   describe('mapConditions', () => {
-    const mapFn = jest.fn(({ rule, params }) => ({ query: rule, params }));
+    const mapFn = jest.fn(
+      ({ rule, params }) =>
+        `${rule}${params.length ? `:${params.join(',')}` : ''}`,
+    );
 
     it('invokes mapFn to transform conditions', () => {
       mapConditions({ rule: 'test-rule-1', params: ['foo', 'bar'] }, mapFn);
