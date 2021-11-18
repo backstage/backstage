@@ -27,7 +27,7 @@ export const isEntityKind = {
   toQuery(kinds: string[]): EntitiesSearchFilter {
     return {
       key: 'kind',
-      matchValueIn: kinds.map(kind => kind.toLocaleLowerCase('en-US')),
+      values: kinds.map(kind => kind.toLocaleLowerCase('en-US')),
     };
   },
 };

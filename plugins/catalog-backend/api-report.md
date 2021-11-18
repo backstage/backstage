@@ -26,9 +26,9 @@ import { Location as Location_2 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Organizations } from 'aws-sdk';
-import { PermissionClient } from '@backstage/permission-common';
-import { PermissionCondition } from '@backstage/permission-common';
-import { PermissionCriteria } from '@backstage/permission-common';
+import { PermissionClient } from '@backstage/plugin-permission-common';
+import { PermissionCondition } from '@backstage/plugin-permission-common';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -540,11 +540,11 @@ export const conditions: {
 //
 // @public (undocumented)
 export const createConditions: (
-  conditions: PermissionCriteria<PermissionCondition<any>>,
+  conditions: PermissionCriteria<PermissionCondition<unknown[]>>,
 ) => {
   pluginId: string;
   resourceType: string;
-  conditions: PermissionCriteria<PermissionCondition<any>>;
+  conditions: PermissionCriteria<PermissionCondition<unknown[]>>;
 };
 
 // Warning: (ae-missing-release-tag) "CreateDatabaseOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

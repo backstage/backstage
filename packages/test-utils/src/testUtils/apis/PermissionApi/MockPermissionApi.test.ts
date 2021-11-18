@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { AuthorizeResult, Permission } from '@backstage/permission-common';
+import {
+  AuthorizeResult,
+  Permission,
+} from '@backstage/plugin-permission-common';
 import { MockPermissionApi } from './MockPermissionApi';
 
 describe('MockPermissionApi', () => {
