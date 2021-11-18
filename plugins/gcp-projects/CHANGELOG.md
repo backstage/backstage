@@ -1,5 +1,30 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.9
+
+### Patch Changes
+
+- 741bcb168e: UI updates to GCP-projects plugin
+
+  Adds the following to the project list page:
+
+  - pagination
+  - filtering
+  - sorting
+  - rows per page
+  - show/hide columns
+
+  Makes breadcrumb a link back to project list for the project details and new project views.
+
+  In project list page, updates New project button to use RouterLink instead of `href` to avoid login prompt.
+
+  In project details view, links to project details and logs now work, clicking on these will open the project or logs in GCP in new tab.
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
 ## 0.3.8
 
 ### Patch Changes

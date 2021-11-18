@@ -89,6 +89,7 @@ export class PublisherConfig {
         ...(cmd.awsRoleArn && { credentials: { roleArn: cmd.awsRoleArn } }),
         ...(cmd.awsEndpoint && { endpoint: cmd.awsEndpoint }),
         ...(cmd.awsS3ForcePathStyle && { s3ForcePathStyle: true }),
+        ...(cmd.awsS3sse && { sse: cmd.awsS3sse }),
       },
     };
   }

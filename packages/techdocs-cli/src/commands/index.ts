@@ -161,6 +161,7 @@ export function registerCommands(program: CommanderStatic) {
       '--awsEndpoint <AWS ENDPOINT>',
       'Optional AWS endpoint to send requests to.',
     )
+    .option('--awsS3sse <AWS SSE>', 'Optional AWS S3 Server Side Encryption.')
     .option(
       '--awsS3ForcePathStyle',
       'Optional AWS S3 option to force path style.',

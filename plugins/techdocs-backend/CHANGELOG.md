@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.10.8
+
+### Patch Changes
+
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 9e64a7ac1e: Allow amazon web services s3 buckets to pass an server side encryption configuration so they can publish to encrypted buckets
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+  - @backstage/techdocs-common@0.10.7
+
 ## 0.10.7
 
 ### Patch Changes

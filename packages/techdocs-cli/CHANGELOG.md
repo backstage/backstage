@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 0.8.6
+
+### Patch Changes
+
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 1578ad341b: Add support for specifying bucketRootPath for AWS and GCS publishers
+- f2694e3750: Adds ability to use encrypted S3 buckets by utilizing the SSE option in the AWS SDK
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+  - @backstage/techdocs-common@0.10.7
+
 ## 0.8.5
 
 ### Patch Changes

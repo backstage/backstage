@@ -1,5 +1,28 @@
 # @backstage/cli
 
+## 0.9.0
+
+### Minor Changes
+
+- 25f637f39f: Tweaked style insertion logic to make sure that JSS stylesheets always receive the highest priority.
+
+### Patch Changes
+
+- 677bfc2dd0: Keep backstage.json in sync
+
+  The `versions:bump` script now takes care about updating the `version` property inside `backstage.json` file. The file is created if is not present.
+
+- 8809b6c0dd: Update the json-schema dependency version.
+- fdfd2f8a62: remove double config dep
+- 1e99c73c75: Update internal usage of `configLoader.loadConfig` that now returns an object instead of an array of configs.
+- 6dcfe227a2: Added a scaffolder backend module template for the `create` command.
+- 4ca3542fdd: Fixed a bug where calling `backstage-cli backend:bundle --build-dependencies` with no dependencies to be built would cause all monorepo packages to be built instead.
+- 867ea81d15: bump `@rollup/plugin-commonjs` from 17.1.0 to 21.0.1
+- 16d06f6ac3: Introduces new `backstage-cli create` command to replace `create-plugin` and make space for creating a wider array of things. The create command also adds a new template for creating isomorphic common plugin packages.
+- Updated dependencies
+  - @backstage/config-loader@0.8.0
+  - @backstage/cli-common@0.1.6
+
 ## 0.8.2
 
 ### Patch Changes
