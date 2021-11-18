@@ -1,5 +1,11 @@
 # @backstage/core-app-api
 
+## 0.1.22
+
+### Patch Changes
+
+- Reverted the `createApp` TypeScript type to match the one before version `0.1.21`, as it was an accidental breaking change.
+
 ## 0.1.21
 
 ### Patch Changes
