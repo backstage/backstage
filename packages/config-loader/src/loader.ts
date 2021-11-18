@@ -27,7 +27,7 @@ import {
   isValidUrl,
   readEnvConfig,
 } from './lib';
-import fetch from 'node-fetch';
+import fetch from 'cross-fetch';
 
 export type ConfigTarget = { path: string } | { url: string };
 
