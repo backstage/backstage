@@ -17,7 +17,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import handlebars from 'handlebars';
-import ora from 'ora';
 import { promisify } from 'util';
 import { basename, dirname } from 'path';
 import recursive from 'recursive-readdir';
@@ -52,6 +51,7 @@ export class Task {
     item: string,
     taskFunc: () => Promise<T>,
   ): Promise<T> {
+    const ora = await import('ora').then(m => m.default);
     const paddedTask = chalk.green(task.padEnd(TASK_NAME_MAX_LENGTH));
 
     const spinner = ora({

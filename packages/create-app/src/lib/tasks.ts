@@ -18,7 +18,6 @@ import { BACKSTAGE_JSON } from '@backstage/cli-common';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import handlebars from 'handlebars';
-import ora from 'ora';
 import recursive from 'recursive-readdir';
 import {
   basename,
@@ -57,6 +56,7 @@ export class Task {
     item: string,
     taskFunc: () => Promise<void>,
   ): Promise<void> {
+    const ora = await import('ora').then(m => m.default);
     const paddedTask = chalk.green(task.padEnd(TASK_NAME_MAX_LENGTH));
 
     const spinner = ora({
