@@ -98,6 +98,14 @@ export class DefaultLocationService implements LocationService {
       });
 
       if (processed.ok) {
+        const { metadata, kind } = processed.completedEntity;
+        if (
+          entities.some(
+            e => e.metadata.name === metadata.name && e.kind === kind,
+          )
+        ) {
+          throw new Error(`Duplicate nested entity: ${metadata.name}`);
+        }
         unprocessedEntities.push(...processed.deferredEntities);
         entities.push(processed.completedEntity);
       } else {

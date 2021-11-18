@@ -148,6 +148,57 @@ describe('DefaultLocationServiceTest', () => {
       expect(result.exists).toBe(true);
     });
 
+    it('should fail when there are duplicate entities using dry run', async () => {
+      store.listLocations.mockResolvedValueOnce([]);
+      orchestrator.process.mockResolvedValueOnce({
+        ok: true,
+        state: {},
+        completedEntity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            name: 'foo',
+          },
+        },
+        deferredEntities: [
+          {
+            entity: {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Location',
+              metadata: {
+                name: 'foo',
+              },
+            },
+            locationKey: 'file:///tmp/mock.yaml',
+          },
+        ],
+        relations: [],
+        errors: [],
+      });
+
+      orchestrator.process.mockResolvedValueOnce({
+        ok: true,
+        state: {},
+        completedEntity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            name: 'foo',
+          },
+        },
+        deferredEntities: [],
+        relations: [],
+        errors: [],
+      });
+
+      await expect(
+        locationService.createLocation(
+          { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
+          true,
+        ),
+      ).rejects.toThrowError('Duplicate nested entity: foo');
+    });
+
     it('should return exists false when the location does not exist beforehand', async () => {
       orchestrator.process.mockResolvedValueOnce({
         ok: true,
