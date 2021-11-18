@@ -1,19 +1,45 @@
+---
+id: authenticate-api-requests
+title: Authenticating API Requests
+description: Guide for authenticating API requests within Backstage
+---
+
+> This document has been moved over from the community contributed docs
+> directory and will continue to evolve as request authentication/authorization
+> becomes a first-class citizen of Backstage. The approach described here is now
+> fully supported and functional end-to-end, but will eventually be replaced in
+> favor of a built-in framework that will broadly support authentication and
+> authorization needs within Backstage.
+
 # Authenticate API requests
 
-The Backstage backend APIs are by default available without authentication. To avoid evil-doers from accessing or modifying data, one might use a network protection mechanism such as a firewall or an authenticating reverse proxy. For Backstage instances that are available on the Internet one can instead use the experimental IdentityClient as outlined below.
+The Backstage backend APIs are by default available without authentication. To
+avoid evil-doers from accessing or modifying data, one might use a network
+protection mechanism such as a firewall or an authenticating reverse proxy. For
+Backstage instances that are available on the Internet one can instead use the
+experimental IdentityClient as outlined below.
 
-API requests from frontend plugins include an authorization header with a Backstage identity token acquired when the user logs in. By adding a middleware that verifies said token to be valid and signed by Backstage, non-authenticated requests can be blocked with a 401 Unauthorized response.
+API requests from frontend plugins include an authorization header with a
+Backstage identity token acquired when the user logs in. By adding a middleware
+that verifies said token to be valid and signed by Backstage, non-authenticated
+requests can be blocked with a 401 Unauthorized response.
 
-**NOTE**: Enabling this means that Backstage will stop working for guests, as no token is issued for them.
+**NOTE**: Enabling this means that Backstage will stop working for guests, as no
+token is issued for them.
 
-Since the middleware always expects a valid token, API requests from backend plugins will need one as well. Backends have no concept of a Backstage identity so instead they use a token generated using a shared key from the `app-config.yaml`.
-You can generate a unique key for your app in a terminal, and set the `BACKEND_SECRET` environment variable to the resulting value.
+Since the middleware always expects a valid token, API requests from backend
+plugins will need one as well. Backends have no concept of a Backstage identity
+so instead they use a token generated using a shared key from the
+`app-config.yaml`. You can generate a unique key for your app in a terminal, and
+set the `BACKEND_SECRET` environment variable to the resulting value.
 
 ```bash
 node -p 'require("crypto").randomBytes(24).toString("base64")'
 ```
 
-As techdocs HTML pages load assets without an Authorization header the code below also sets a token cookie when the user logs in (and when the token is about to expire).
+As techdocs HTML pages load assets without an Authorization header the code
+below also sets a token cookie when the user logs in (and when the token is
+about to expire).
 
 ```typescript
 // packages/backend/src/index.ts from a create-app deployment
@@ -197,9 +223,10 @@ const app = createApp({
 // ...
 ```
 
-**NOTE**: Most Backstage frontend plugins come with the support for the `IdentityApi`.
-In case you already have a dozen of internal ones, you may need to update those too.
-Assuming you follow the common plugin structure, the changes to your front-end may look like:
+**NOTE**: Most Backstage frontend plugins come with the support for the
+`IdentityApi`. In case you already have a dozen of internal ones, you may need
+to update those too. Assuming you follow the common plugin structure, the
+changes to your front-end may look like:
 
 ```diff
 // plugins/internal-plugin/src/api.ts
@@ -277,7 +304,10 @@ export const plugin = createPlugin({
 });
 ```
 
-In the (probably unlikely) case that you need to authenticate from a backend plugin, the plugin environment contains a `tokenManager` that will provide a server token to use in the request. It is a noop `tokenManager` by default -- you'll need to instantiate a new one using the secret from your config instead:
+In the (probably unlikely) case that you need to authenticate from a backend
+plugin, the plugin environment contains a `tokenManager` that will provide a
+server token to use in the request. It is a noop `tokenManager` by default --
+you'll need to instantiate a new one using the secret from your config instead:
 
 ```diff
 // packages/backend/src/index.ts
