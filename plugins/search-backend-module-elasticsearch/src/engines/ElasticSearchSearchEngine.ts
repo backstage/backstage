@@ -30,6 +30,12 @@ import esb from 'elastic-builder';
 import { isEmpty, isNaN as nan, isNumber } from 'lodash';
 import { Logger } from 'winston';
 
+export type ElasticSearchClientOptions = ConstructorParameters<
+  typeof Client
+>[0] & {
+  provider?: 'aws' | 'elastic' | 'generic';
+};
+
 export type ConcreteElasticSearchQuery = {
   documentTypes?: string[];
   elasticSearchQuery: Object;
@@ -68,105 +74,56 @@ function isBlank(str: string) {
  * @public
  */
 export class ElasticSearchSearchEngine implements SearchEngine {
+  private readonly elasticSearchClient: Client = this.newClient(
+    options => new Client(options),
+  );
   constructor(
-    private readonly elasticSearchClient: Client,
+    private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
     private readonly aliasPostfix: string,
     private readonly indexPrefix: string,
     private readonly logger: Logger,
   ) {}
 
-  static async fromConfig(options: ElasticSearchOptions) {
-    const {
-      logger,
-      config,
-      aliasPostfix = `search`,
-      indexPrefix = ``,
-    } = options;
+  static async fromConfig({
+    logger,
+    config,
+    aliasPostfix = `search`,
+    indexPrefix = ``,
+  }: ElasticSearchOptions) {
+    const options = await createElasticSearchClientOptions(
+      config.getConfig('search.elasticsearch'),
+    );
+    if (options.provider === 'elastic') {
+      logger.info('Initializing Elastic.co ElasticSearch search engine.');
+    } else if (options.provider === 'aws') {
+      logger.info('Initializing AWS ElasticSearch search engine.');
+    } else {
+      logger.info('Initializing ElasticSearch search engine.');
+    }
 
     return new ElasticSearchSearchEngine(
-      await ElasticSearchSearchEngine.constructElasticSearchClient(
-        logger,
-        config.getConfig('search.elasticsearch'),
-      ),
+      options,
       aliasPostfix,
       indexPrefix,
       logger,
     );
   }
 
-  private static async constructElasticSearchClient(
-    logger: Logger,
-    config?: Config,
-  ) {
-    if (!config) {
-      throw new Error('No elastic search config found');
-    }
-
-    const clientOptionsConfig = config.getOptionalConfig('clientOptions');
-    const sslConfig = clientOptionsConfig?.getOptionalConfig('ssl');
-
-    if (config.getOptionalString('provider') === 'elastic') {
-      logger.info('Initializing Elastic.co ElasticSearch search engine.');
-      const authConfig = config.getConfig('auth');
-      return new Client({
-        cloud: {
-          id: config.getString('cloudId'),
-        },
-        auth: {
-          username: authConfig.getString('username'),
-          password: authConfig.getString('password'),
-        },
-        ...(sslConfig
-          ? {
-              ssl: {
-                rejectUnauthorized:
-                  sslConfig?.getOptionalBoolean('rejectUnauthorized'),
-              },
-            }
-          : {}),
-      });
-    }
-    if (config.getOptionalString('provider') === 'aws') {
-      logger.info('Initializing AWS ElasticSearch search engine.');
-      const awsCredentials = await awsGetCredentials();
-      const AWSConnection = createAWSConnection(awsCredentials);
-      return new Client({
-        node: config.getString('node'),
-        ...AWSConnection,
-        ...(sslConfig
-          ? {
-              ssl: {
-                rejectUnauthorized:
-                  sslConfig?.getOptionalBoolean('rejectUnauthorized'),
-              },
-            }
-          : {}),
-      });
-    }
-    logger.info('Initializing ElasticSearch search engine.');
-    const authConfig = config.getOptionalConfig('auth');
-    const auth =
-      authConfig &&
-      (authConfig.has('apiKey')
-        ? {
-            apiKey: authConfig.getString('apiKey'),
-          }
-        : {
-            username: authConfig.getString('username'),
-            password: authConfig.getString('password'),
-          });
-    return new Client({
-      node: config.getString('node'),
-      auth,
-      ...(sslConfig
-        ? {
-            ssl: {
-              rejectUnauthorized:
-                sslConfig?.getOptionalBoolean('rejectUnauthorized'),
-            },
-          }
-        : {}),
-    });
+  /**
+   * Re-use the configuration of this search engine in order to construct other
+   * elastic search clients. This is useful if you want to create a client that
+   * talks to the same search cluster as your search engine, but you want to
+   * provide queries and receive results using a completely different format
+   * such as Relay pagination, or faceted search.
+   *
+   * ```javascript
+   * import { Client } from '@elastic/elastic-search';
+   *
+   * let client = engine.newClient(options => new Client(options));
+   * ```
+   */
+  newClient<T>(create: (options: ElasticSearchClientOptions) => T): T {
+    return create(this.elasticSearchClientOptions);
   }
 
   protected translator(query: SearchQuery): ConcreteElasticSearchQuery {
@@ -348,4 +305,77 @@ export function decodePageCursor(pageCursor?: string): { page: number } {
 
 export function encodePageCursor({ page }: { page: number }): string {
   return Buffer.from(`${page}`, 'utf-8').toString('base64');
+}
+
+async function createElasticSearchClientOptions(
+  config?: Config,
+): Promise<ElasticSearchClientOptions> {
+  if (!config) {
+    throw new Error('No elastic search config found');
+  }
+  const clientOptionsConfig = config.getOptionalConfig('clientOptions');
+  const sslConfig = clientOptionsConfig?.getOptionalConfig('ssl');
+
+  if (config.getOptionalString('provider') === 'elastic') {
+    const authConfig = config.getConfig('auth');
+    return {
+      provider: 'elastic',
+      cloud: {
+        id: config.getString('cloudId'),
+      },
+      auth: {
+        username: authConfig.getString('username'),
+        password: authConfig.getString('password'),
+      },
+      ...(sslConfig
+        ? {
+            ssl: {
+              rejectUnauthorized:
+                sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+            },
+          }
+        : {}),
+    };
+  }
+  if (config.getOptionalString('provider') === 'aws') {
+    const awsCredentials = await awsGetCredentials();
+    const AWSConnection = createAWSConnection(awsCredentials);
+    return {
+      provider: 'aws',
+      node: config.getString('node'),
+      ...AWSConnection,
+      ...(sslConfig
+        ? {
+            ssl: {
+              rejectUnauthorized:
+                sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+            },
+          }
+        : {}),
+    };
+  }
+  const authConfig = config.getOptionalConfig('auth');
+  const auth =
+    authConfig &&
+    (authConfig.has('apiKey')
+      ? {
+          apiKey: authConfig.getString('apiKey'),
+        }
+      : {
+          username: authConfig.getString('username'),
+          password: authConfig.getString('password'),
+        });
+  return {
+    provider: 'generic',
+    node: config.getString('node'),
+    auth,
+    ...(sslConfig
+      ? {
+          ssl: {
+            rejectUnauthorized:
+              sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+          },
+        }
+      : {}),
+  };
 }
