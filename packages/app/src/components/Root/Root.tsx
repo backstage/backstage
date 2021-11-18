@@ -29,7 +29,7 @@ import LogoIcon from './LogoIcon';
 import { NavLink } from 'react-router-dom';
 import { GraphiQLIcon } from '@backstage/plugin-graphiql';
 import { WithPermission } from '@backstage/plugin-permission';
-import { ScaffolderPermission } from '@backstage/plugin-scaffolder';
+import { scaffolderRoutePermission } from '@backstage/plugin-scaffolder';
 import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import { Shortcuts } from '@backstage/plugin-shortcuts';
@@ -88,7 +88,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
       <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
       <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
-      <WithPermission permission={ScaffolderPermission.ROUTES}>
+      <WithPermission permission={scaffolderRoutePermission}>
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
       </WithPermission>
       {/* End global nav */}

@@ -17,7 +17,7 @@
 import {
   AuthorizeRequest,
   AuthorizeResponse,
-} from '@backstage/permission-common';
+} from '@backstage/plugin-permission-common';
 import { ApiRef, createApiRef } from '../system';
 
 export type PermissionApi = {

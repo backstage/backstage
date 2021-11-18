@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-import { createPermissions, CRUDAction } from '@backstage/permission-common';
+import { Permission } from '@backstage/plugin-permission-common';
 
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
 
-export const CatalogPermission = createPermissions({
-  ENTITY_READ: {
-    name: 'catalog.entity.read',
-    attributes: {
-      CRUD_ACTION: CRUDAction.READ,
-    },
-    resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+export const catalogEntityReadPermission: Permission = {
+  name: 'catalog.entity.read',
+  attributes: {
+    action: 'read',
   },
-  ENTITY_UNREGISTER: {
-    name: 'catalog.entity.unregister',
-    attributes: {
-      CRUD_ACTION: CRUDAction.DELETE,
-    },
-    resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+};
+
+export const catalogEntityUnregisterPermission: Permission = {
+  name: 'catalog.entity.unregister',
+  attributes: {
+    action: 'delete',
   },
-});
+  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+};

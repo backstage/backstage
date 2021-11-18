@@ -25,6 +25,5 @@ export const hasAnnotation = {
     !!resource.metadata.annotations?.hasOwnProperty(annotation[0]),
   toQuery: (annotation: string): EntitiesSearchFilter => ({
     key: annotation,
-    matchValueExists: true,
   }),
 };

@@ -97,6 +97,9 @@ proxy:
     headers:
       Authorization: ${ILERT_AUTH_HEADER}
 
+permission:
+  enabled: true
+
 organization:
   name: My Company
 

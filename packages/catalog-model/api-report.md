@@ -6,7 +6,7 @@
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
-import { Permission } from '@backstage/permission-common';
+import { Permission } from '@backstage/plugin-permission-common';
 import { SerializedError } from '@backstage/errors';
 import * as yup from 'yup';
 
@@ -36,16 +36,15 @@ export { ApiEntityV1alpha1 };
 // @public
 export const apiEntityV1alpha1Validator: KindValidator;
 
-// Warning: (ae-missing-release-tag) "CatalogPermission" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "catalogEntityReadPermission" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const CatalogPermission: Record<
-  'ENTITY_READ' | 'ENTITY_UNREGISTER',
-  Permission
-> & {
-  get: (key: 'ENTITY_READ' | 'ENTITY_UNREGISTER') => Permission;
-  includes: (permission: Permission) => boolean;
-};
+export const catalogEntityReadPermission: Permission;
+
+// Warning: (ae-missing-release-tag) "catalogEntityUnregisterPermission" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const catalogEntityUnregisterPermission: Permission;
 
 // @public
 export class CommonValidatorFunctions {
