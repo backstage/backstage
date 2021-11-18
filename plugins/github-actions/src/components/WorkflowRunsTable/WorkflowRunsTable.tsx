@@ -48,13 +48,16 @@ const generatedColumns: TableColumn[] = [
     field: 'message',
     highlight: true,
     render: (row: Partial<WorkflowRun>) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const routeLink = useRouteRef(buildRouteRef);
-      return (
-        <Link component={RouterLink} to={routeLink({ id: row.id! })}>
-          {row.message}
-        </Link>
-      );
+      const LinkWrapper: React.FC<{}> = () => {
+        const routeLink = useRouteRef(buildRouteRef);
+        return (
+          <Link component={RouterLink} to={routeLink({ id: row.id! })}>
+            {row.message}
+          </Link>
+        );
+      };
+
+      return <LinkWrapper />;
     },
   },
   {

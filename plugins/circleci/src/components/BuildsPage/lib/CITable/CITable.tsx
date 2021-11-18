@@ -146,19 +146,22 @@ const generatedColumns: TableColumn[] = [
     highlight: true,
     width: '20%',
     render: (row: Partial<CITableBuildInfo>) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const routeLink = useRouteRef(circleCIBuildRouteRef);
+      const LinkWrapper: React.FC<{}> = () => {
+        const routeLink = useRouteRef(circleCIBuildRouteRef);
 
-      return (
-        <Link
-          component={RouterLink}
-          to={`${routeLink({
-            buildId: row.id!,
-          })}`}
-        >
-          {row.buildName ? row.buildName : row?.workflow?.name}
-        </Link>
-      );
+        return (
+          <Link
+            component={RouterLink}
+            to={`${routeLink({
+              buildId: row.id!,
+            })}`}
+          >
+            {row.buildName ? row.buildName : row?.workflow?.name}
+          </Link>
+        );
+      };
+
+      return <LinkWrapper />;
     },
   },
   {

@@ -56,17 +56,20 @@ const generatedColumns: TableColumn[] = [
     highlight: true,
     width: '200px',
     render: (row: Partial<WorkflowRun>) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const routeLink = useRouteRef(buildRouteRef);
-      return (
-        <Link
-          component={RouterLink}
-          data-testid="cell-source"
-          to={routeLink({ id: row.id! })}
-        >
-          {row.message}
-        </Link>
-      );
+      const LinkWrapper: React.FC<{}> = () => {
+        const routeLink = useRouteRef(buildRouteRef);
+        return (
+          <Link
+            component={RouterLink}
+            data-testid="cell-source"
+            to={routeLink({ id: row.id! })}
+          >
+            {row.message}
+          </Link>
+        );
+      };
+
+      return <LinkWrapper />;
     },
   },
   {
