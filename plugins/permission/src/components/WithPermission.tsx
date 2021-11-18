@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Permission } from '@backstage/permission-common';
+import { Permission } from '@backstage/plugin-permission-common';
 import React, { PropsWithChildren } from 'react';
 import { usePermission } from '../hooks';
 
