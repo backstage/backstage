@@ -1,5 +1,15 @@
 # @backstage/core-components
 
+## 0.7.4
+
+### Patch Changes
+
+- 274a4fc633: Add Props Icon for Sidebar Item SidebarSearchField and Settings
+- 682945e233: Changing the `Header` styles to use more theme variables. With this the title `font-size` will not change on resizing the window.
+- 892c1d9202: Update OAuthAdapter to create identity.token from identity.idToken if it does not exist, and prevent overwrites to identity.toke. Update login page commonProvider to prefer .token over .idToken
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.0
+
 ## 0.7.3
 
 ### Patch Changes

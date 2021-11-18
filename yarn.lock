@@ -2172,7 +2172,7 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@backstage/catalog-client@^0.3.16", "@backstage/catalog-client@^0.3.18":
+"@backstage/catalog-client@^0.3.18":
   version "0.3.19"
   resolved "https://registry.npmjs.org/@backstage/catalog-client/-/catalog-client-0.3.19.tgz#109b0fde1cc2d9a306635f3775fc8f6174172b14"
   integrity sha512-0ydcC/1ISNgR8SggOUnMNNHtsRwrKN5GX+AXgTVdZk4qpz1MqG1+fzrNld9V7KVvXdsbGDZAl/b5a7/FJEpCqg==
@@ -2358,6 +2358,24 @@
     react-text-truncate "^0.16.0"
     react-use "^17.2.4"
     remark-gfm "^1.0.0"
+    zen-observable "^0.8.15"
+
+"@backstage/core-plugin-api@^0.1.10", "@backstage/core-plugin-api@^0.1.3", "@backstage/core-plugin-api@^0.1.4", "@backstage/core-plugin-api@^0.1.6", "@backstage/core-plugin-api@^0.1.8":
+  version "0.1.13"
+  resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-0.1.13.tgz#583c0fe3440450c304f13dcc85eac3bd80f357d7"
+  integrity sha512-BWEqleTXR7m7nsCyt6cEnc+Gx/VT4vLdNr9fc1kXfzSAA7cUT4VKjlVmm5kdyih3BSQ4+0k7Pm/NIf0jfa7rlg==
+  dependencies:
+    "@backstage/config" "^0.1.11"
+    "@backstage/theme" "^0.2.13"
+    "@backstage/types" "^0.1.1"
+    "@backstage/version-bridge" "^0.1.0"
+    "@material-ui/core" "^4.12.2"
+    "@types/react" "*"
+    history "^5.0.0"
+    prop-types "^15.7.2"
+    react "^16.12.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
     zen-observable "^0.8.15"
 
 "@backstage/plugin-catalog-react@^0.4.0":

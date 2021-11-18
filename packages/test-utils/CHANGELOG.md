@@ -1,5 +1,15 @@
 # @backstage/test-utils
 
+## 0.1.22
+
+### Patch Changes
+
+- 0b1de52732: Migrated to using new `ErrorApiError` and `ErrorApiErrorContext` names.
+- 2dd2a7b2cc: Migrated to using `createSpecializedApp`.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/core-app-api@0.1.21
+
 ## 0.1.21
 
 ### Patch Changes
