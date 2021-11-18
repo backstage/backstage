@@ -27,6 +27,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigReader } from '@backstage/config';
+import { createApp as createApp_2 } from '@backstage/app-defaults';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
@@ -45,7 +46,6 @@ import { Observable } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
-import { OptionalAppOptions } from '@backstage/app-defaults';
 import { PendingAuthRequest } from '@backstage/core-plugin-api';
 import { PluginOutput } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
@@ -332,7 +332,9 @@ export type BootErrorPageProps = {
 export { ConfigReader };
 
 // @public @deprecated
-export function createApp(options?: OptionalAppOptions): BackstageApp;
+export function createApp(
+  options?: Parameters<typeof createApp_2>[0],
+): BackstageApp & AppContext;
 
 // @public
 export function createSpecializedApp(options: AppOptions): BackstageApp;
