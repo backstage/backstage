@@ -73,7 +73,11 @@ export class TestApiRegistry implements ApiHolder {
 
   private constructor(private readonly apis: Map<string, unknown>) {}
 
-  /** {@inheritdoc @backstage/core-plugin-api#ApiHolder.get} */
+  /**
+   * Returns an implementation of the API.
+   *
+   * @public
+   */
   get<T>(api: ApiRef<T>): T | undefined {
     return this.apis.get(api.id) as T | undefined;
   }
