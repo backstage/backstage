@@ -5,8 +5,8 @@ app:
   baseUrl: http://localhost:3000
 
 backend:
-  baseUrl: http://localhost:7000
+  baseUrl: http://localhost:7007
 
 techdocs:
   builder: 'external'
-  requestUrl: http://localhost:7000/api
+  requestUrl: http://localhost:7007/api

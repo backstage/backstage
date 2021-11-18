@@ -1149,9 +1149,9 @@
   // app-config.yaml
 
   backend:
-    baseUrl: http://localhost:7007
+    baseUrl: http://localhost:7000
     listen:
-      port: 7007
+      port: 7000
     database:
       client: sqlite3
       connection: ':memory:'
@@ -2238,9 +2238,9 @@ For more information and the background to this change, see the [composability s
       {
         data: {
           app: { title: 'Test' },
-          backend: { baseUrl: 'http://localhost:7007' },
+          backend: { baseUrl: 'http://localhost:7000' },
           techdocs: {
-            storageUrl: 'http://localhost:7007/api/techdocs/static/docs',
+            storageUrl: 'http://localhost:7000/api/techdocs/static/docs',
           },
         },
         context: 'test',
@@ -3444,12 +3444,12 @@ For more information and the background to this change, see the [composability s
   ```yaml
   app:
     # Should be the same as backend.baseUrl when using the `app-backend` plugin
-    baseUrl: http://localhost:7007
+    baseUrl: http://localhost:7000
 
   backend:
-    baseUrl: http://localhost:7007
+    baseUrl: http://localhost:7000
     listen:
-      port: 7007
+      port: 7000
   ```
 
   In order to load in the new configuration at runtime, the command in the `Dockerfile` at the repo root was changed to the following:
