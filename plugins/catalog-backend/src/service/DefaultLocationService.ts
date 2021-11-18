@@ -54,6 +54,34 @@ export class DefaultLocationService implements LocationService {
     return this.store.deleteLocation(id);
   }
 
+  private async getUnprocessedEntities(
+    unprocessed: DeferredEntity[],
+    entities: Entity[],
+  ): Promise<Entity[]> {
+    const currentEntity = unprocessed.pop();
+    if (!currentEntity) {
+      return [];
+    }
+    const processed = await this.orchestrator.process({
+      entity: currentEntity.entity,
+      state: {}, // we process without the existing cache
+    });
+
+    if (processed.ok) {
+      const { metadata, kind } = processed.completedEntity;
+      if (
+        entities.some(e => e.metadata.name === metadata.name && e.kind === kind)
+      ) {
+        throw new Error(`Duplicate nested entity: ${metadata.name}`);
+      }
+      return await this.getUnprocessedEntities(
+        [...unprocessed, ...processed.deferredEntities],
+        [...entities, processed.completedEntity],
+      );
+    }
+    throw Error(processed.errors.map(String).join(', '));
+  }
+
   private async dryRunCreateLocation(
     spec: LocationSpec,
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
@@ -86,24 +114,10 @@ export class DefaultLocationService implements LocationService {
     const unprocessedEntities: DeferredEntity[] = [
       { entity, locationKey: `${spec.type}:${spec.target}` },
     ];
-    const entities: Entity[] = [];
-    while (unprocessedEntities.length) {
-      const currentEntity = unprocessedEntities.pop();
-      if (!currentEntity) {
-        continue;
-      }
-      const processed = await this.orchestrator.process({
-        entity: currentEntity.entity,
-        state: {}, // we process without the existing cache
-      });
-
-      if (processed.ok) {
-        unprocessedEntities.push(...processed.deferredEntities);
-        entities.push(processed.completedEntity);
-      } else {
-        throw Error(processed.errors.map(String).join(', '));
-      }
-    }
+    const entities: Entity[] = await this.getUnprocessedEntities(
+      unprocessedEntities,
+      [],
+    );
 
     return {
       exists: await existsPromise,
