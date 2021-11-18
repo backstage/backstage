@@ -284,8 +284,8 @@ to publish to. And it can be any host that is listed in your `integrations`
 config in `app-config.yaml`.
 
 The `RepoUrlPicker` is a custom field that we provide part of the
-`plugin-scaffolder`. It's currently not possible to create your own fields yet,
-but contributions are welcome! :)
+`plugin-scaffolder`. You can provide your own custom fields by
+[writing your own Custom Field Extensions](./writing-custom-field-extensions.md)
 
 #### The Owner Picker
 
