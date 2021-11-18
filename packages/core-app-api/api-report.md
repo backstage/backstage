@@ -17,8 +17,8 @@ import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '@backstage/core-plugin-api';
 import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
 import { auth0AuthApiRef } from '@backstage/core-plugin-api';
-import { AuthorizeRequest } from '@backstage/permission-common';
-import { AuthorizeResponse } from '@backstage/permission-common';
+import { AuthorizeRequest } from '@backstage/plugin-permission-common';
+import { AuthorizeResponse } from '@backstage/plugin-permission-common';
 import { AuthProvider } from '@backstage/core-plugin-api';
 import { AuthRequester } from '@backstage/core-plugin-api';
 import { AuthProviderInfo } from '@backstage/core-plugin-api';
@@ -463,7 +463,11 @@ export class GoogleAuth {
 //
 // @public (undocumented)
 export class IdentityPermissionApi implements PermissionApi {
-  constructor(discoveryApi: DiscoveryApi, identityApi: IdentityApi);
+  constructor(
+    discoveryApi: DiscoveryApi,
+    identityApi: IdentityApi,
+    configApi: ConfigApi,
+  );
   // (undocumented)
   authorize(
     requests: Array<AuthorizeRequest>,

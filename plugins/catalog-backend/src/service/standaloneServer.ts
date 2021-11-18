@@ -23,7 +23,7 @@ import {
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
-import { PermissionClient } from '@backstage/permission-common';
+import { PermissionClient } from '@backstage/plugin-permission-common';
 import { DatabaseManager } from '../legacy/database';
 import { CatalogBuilder } from '../legacy/service/CatalogBuilder';
 import { createRouter } from '../legacy/service';
@@ -47,6 +47,7 @@ export async function startStandaloneServer(
   const discoveryApi = SingleHostDiscovery.fromConfig(config);
   const permissions = new PermissionClient({
     discoveryApi,
+    enabled: config.getBoolean('permission.enabled'),
   });
 
   logger.debug('Creating application...');

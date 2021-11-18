@@ -15,7 +15,10 @@
  */
 
 import React from 'react';
-import { AuthorizeResult, Permission } from '@backstage/permission-common';
+import {
+  AuthorizeResult,
+  Permission,
+} from '@backstage/plugin-permission-common';
 import { render } from '@testing-library/react';
 import { WithPermission } from './WithPermission';
 import { usePermission, AsyncPermissionResult } from '../hooks/usePermission';

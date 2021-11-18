@@ -301,8 +301,12 @@ export const apis = [
   }),
   createApiFactory({
     api: permissionApiRef,
-    deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-    factory: ({ discoveryApi, identityApi }) =>
-      new IdentityPermissionApi(discoveryApi, identityApi),
+    deps: {
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ configApi, discoveryApi, identityApi }) =>
+      new IdentityPermissionApi(discoveryApi, identityApi, configApi),
   }),
 ];
