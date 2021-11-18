@@ -24,7 +24,6 @@ export default async function createPlugin({
     collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
   });
 
-
   // collator gathers entities from techdocs.
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
