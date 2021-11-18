@@ -190,11 +190,7 @@ export function createReactExtension<
 
         return (
           <PluginErrorBoundary app={app} plugin={plugin}>
-            <PluginProvider
-              pluginId={plugin.getId()}
-              extensionName={name}
-              routeRef={mountPoint?.id}
-            >
+            <PluginProvider pluginId={plugin.getId()} extensionName={name}>
               <Suspense fallback={<Progress />}>
                 <AnalyticsContext
                   attributes={{

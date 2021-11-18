@@ -24,7 +24,6 @@ import {
 export interface PluginInfo {
   pluginId: string;
   extensionName?: string;
-  routeRef?: string;
 }
 
 export type PluginProviderProps = PluginInfo;
@@ -35,11 +34,11 @@ type VersionedContextType = { 1: PluginInfo };
 const context = createVersionedContext<VersionedContextType>(CONTEXT_KEY);
 
 export function PluginProvider(props: PropsWithChildren<PluginProviderProps>) {
-  const { pluginId, extensionName, routeRef, children } = props;
+  const { pluginId, extensionName, children } = props;
 
   const versionedValue = useMemo(
-    () => createVersionedValueMap({ 1: { pluginId, extensionName, routeRef } }),
-    [pluginId, extensionName, routeRef],
+    () => createVersionedValueMap({ 1: { pluginId, extensionName } }),
+    [pluginId, extensionName],
   );
 
   return <context.Provider value={versionedValue} children={children} />;
