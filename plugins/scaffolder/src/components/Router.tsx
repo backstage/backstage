@@ -30,7 +30,7 @@ import {
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
 import { PermissionedRoute } from '@backstage/plugin-permission';
-import { ScaffolderPermission } from '../permissions';
+import { scaffolderRoutePermission } from '../permissions';
 
 type RouterProps = {
   TemplateCardComponent?:
@@ -65,7 +65,7 @@ export const Router = ({ TemplateCardComponent }: RouterProps) => {
     <Routes>
       <PermissionedRoute
         path="/"
-        permission={ScaffolderPermission.ROUTES}
+        permission={scaffolderRoutePermission}
         element={
           <ScaffolderPage TemplateCardComponent={TemplateCardComponent} />
         }

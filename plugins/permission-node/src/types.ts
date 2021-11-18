@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PermissionCriteria } from '@backstage/permission-common';
+import type { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 export type PermissionRule<TResource, TQuery, TParams extends any[] = any> = {
   name: string;

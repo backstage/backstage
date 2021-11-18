@@ -29,15 +29,15 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/core-plugin-api": "^0.1.10",
-    "@backstage/permission-common": "^0.1.0",
+    "@backstage/core-plugin-api": "^0.2.0",
+    "@backstage/plugin-permission-common": "^0.1.0",
     "cross-fetch": "^3.0.6",
     "react": "^16.13.1",
     "react-router": "6.0.0-beta.0",
     "react-use": "^17.2.4"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.8.0",
+    "@backstage/cli": "^0.9.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@types/jest": "^26.0.7"

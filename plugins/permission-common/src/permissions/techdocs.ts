@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { CRUDAction } from './attributes';
-import { createPermissions } from './util';
+import { Permission } from '../types';
 
 /*
  * TODO(authorization-framework): TechDocs does not have an isomorphic package; techdocs-common is
@@ -24,11 +23,9 @@ import { createPermissions } from './util';
  * troubling realization that any plugin desiring authorization will need a -common package, in
  * the current setup.
  */
-export const TechDocsPermission = createPermissions({
-  DOCS_READ: {
-    name: 'techdocs.doc.read',
-    attributes: {
-      CRUD_ACTION: CRUDAction.READ,
-    },
+export const techdocsReadPermission: Permission = {
+  name: 'techdocs.doc.read',
+  attributes: {
+    action: 'read',
   },
-});
+};

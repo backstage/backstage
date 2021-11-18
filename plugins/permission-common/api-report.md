@@ -92,4 +92,9 @@ export type PermissionCriteria<TQuery> =
       not: PermissionCriteria<TQuery>;
     }
   | TQuery;
+
+// Warning: (ae-missing-release-tag) "techdocsReadPermission" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const techdocsReadPermission: Permission;
 ```

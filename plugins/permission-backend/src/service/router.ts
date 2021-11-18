@@ -30,16 +30,13 @@ import {
 import { Config } from '@backstage/config';
 import { ConflictError, ResponseError } from '@backstage/errors';
 import {
-  Permission,
   AuthorizeResult,
   AuthorizeResponse,
   AuthorizeRequest,
-  AuthorizeRequestJSON,
   Identified,
   PermissionCondition,
   PermissionCriteria,
-  DefinitiveAuthorizeResult,
-} from '@backstage/permission-common';
+} from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequest,
   PermissionPolicy,
@@ -61,7 +58,7 @@ const applyConditions = async (
   },
   discoveryApi: PluginEndpointDiscovery,
   authHeader?: string,
-): Promise<DefinitiveAuthorizeResult> => {
+): Promise<{ result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }> => {
   const endpoint = `${await discoveryApi.getBaseUrl(
     conditions.pluginId,
   )}/permissions/apply-conditions`;
@@ -86,7 +83,7 @@ const applyConditions = async (
   }
 
   // TODO(authorization-framework) validate response
-  return (await response.json()) as DefinitiveAuthorizeResult;
+  return await response.json();
 };
 
 const handleRequest = async (
@@ -98,9 +95,9 @@ const handleRequest = async (
 ): Promise<Identified<AuthorizeResponse>> => {
   const response = await policy.handle(request, user);
 
-  if (response.result === AuthorizeResult.MAYBE) {
+  if (response.result === AuthorizeResult.CONDITIONAL) {
     // Sanity check that any resource provided matches the one expected by the permission
-    if (!request.permission.supportsType(response.conditions.resourceType)) {
+    if (request.permission.resourceType !== response.conditions.resourceType) {
       throw new ConflictError(
         `Invalid resource conditions returned from permission handler for permission ${request.permission.name}`,
       );
@@ -125,7 +122,7 @@ const handleRequest = async (
 
     return {
       id,
-      result: AuthorizeResult.MAYBE,
+      result: AuthorizeResult.CONDITIONAL,
       conditions: response.conditions.conditions,
     };
   }
@@ -153,7 +150,7 @@ export async function createRouter(
   router.post(
     '/authorize',
     async (
-      req: Request<Identified<AuthorizeRequestJSON>[]>,
+      req: Request<Identified<AuthorizeRequest>[]>,
       res: Response<Identified<AuthorizeResponse>[]>,
     ) => {
       // TODO(mtlewis/orkohunter): Payload too large errors happen when internal backends (techdocs, search, etc.) try
@@ -164,11 +161,7 @@ export async function createRouter(
       const token = IdentityClient.getBearerToken(req.header('authorization'));
       const user = token ? await identity.authenticate(token) : undefined;
 
-      const body: Identified<AuthorizeRequestJSON>[] = req.body;
-      const authorizeRequests = body.map(({ permission, ...rest }) => ({
-        ...rest,
-        permission: Permission.fromJSON(permission),
-      }));
+      const authorizeRequests: Identified<AuthorizeRequest>[] = req.body;
 
       // TODO(timbonicus/joeporpeglia): wire up frontend to supply id, accept array of permission requests
       res.json(

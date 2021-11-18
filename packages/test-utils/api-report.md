@@ -5,9 +5,9 @@
 ```ts
 import { AnalyticsApi } from '@backstage/core-plugin-api';
 import { AnalyticsEvent } from '@backstage/core-plugin-api';
-import { AuthorizeRequest } from '@backstage/permission-common';
-import { AuthorizeResponse } from '@backstage/permission-common';
-import { AuthorizeResult } from '@backstage/permission-common';
+import { AuthorizeRequest } from '@backstage/plugin-permission-common';
+import { AuthorizeResponse } from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { ComponentType } from 'react';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';

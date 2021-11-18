@@ -15,8 +15,9 @@
  */
 
 export type {
-  PermissionPolicy,
   ConditionalPolicyResult,
+  PermissionPolicy,
+  PolicyAuthorizeRequest,
   PolicyResult,
 } from './types';
 export { AllowAllPermissionPolicy } from './AllowAllPermissionPolicy';

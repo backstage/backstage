@@ -22,7 +22,7 @@ import {
   PluginEndpointDiscovery,
   UrlReader,
 } from '@backstage/backend-common';
-import { PermissionClient } from '@backstage/permission-common';
+import { PermissionClient } from '@backstage/plugin-permission-common';
 
 export type PluginEnvironment = {
   logger: Logger;

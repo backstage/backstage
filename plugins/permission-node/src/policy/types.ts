@@ -15,16 +15,17 @@
  */
 
 import {
+  AuthorizeRequest,
   AuthorizeResult,
-  DefinitiveAuthorizeResult,
-  OpaqueAuthorizeRequest,
   PermissionCondition,
   PermissionCriteria,
-} from '@backstage/permission-common';
+} from '@backstage/plugin-permission-common';
 import { BackstageIdentity } from '@backstage/plugin-auth-backend';
 
+export type PolicyAuthorizeRequest = Omit<AuthorizeRequest, 'resourceRef'>;
+
 export type ConditionalPolicyResult = {
-  result: AuthorizeResult.MAYBE;
+  result: AuthorizeResult.CONDITIONAL;
   conditions: {
     pluginId: string;
     resourceType: string;
@@ -32,11 +33,13 @@ export type ConditionalPolicyResult = {
   };
 };
 
-export type PolicyResult = DefinitiveAuthorizeResult | ConditionalPolicyResult;
+export type PolicyResult =
+  | { result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }
+  | ConditionalPolicyResult;
 
 export interface PermissionPolicy {
   handle(
-    request: OpaqueAuthorizeRequest,
+    request: PolicyAuthorizeRequest,
     user?: BackstageIdentity,
   ): Promise<PolicyResult>;
 }

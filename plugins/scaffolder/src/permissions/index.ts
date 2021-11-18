@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import { createPermissions } from '@backstage/permission-common';
+import { Permission } from '@backstage/plugin-permission-common';
 
-export const ScaffolderPermission = createPermissions({
-  ROUTES: {
-    name: 'backstage.scaffolder.routes',
-    attributes: {
-      ROUTE_VISIBILITY: true,
-    },
-  },
-});
+export const scaffolderRoutePermission: Permission = {
+  name: 'backstage.scaffolder.routes',
+  attributes: {},
+};
