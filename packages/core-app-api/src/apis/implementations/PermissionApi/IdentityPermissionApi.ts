@@ -15,6 +15,7 @@
  */
 
 import {
+  ConfigApi,
   DiscoveryApi,
   IdentityApi,
   PermissionApi,
@@ -23,7 +24,7 @@ import {
   AuthorizeRequest,
   AuthorizeResponse,
   PermissionClient,
-} from '@backstage/permission-common';
+} from '@backstage/plugin-permission-common';
 
 export class IdentityPermissionApi implements PermissionApi {
   private readonly permissionClient: PermissionClient;
@@ -31,8 +32,12 @@ export class IdentityPermissionApi implements PermissionApi {
   constructor(
     discoveryApi: DiscoveryApi,
     private readonly identityApi: IdentityApi,
+    configApi: ConfigApi,
   ) {
-    this.permissionClient = new PermissionClient({ discoveryApi });
+    this.permissionClient = new PermissionClient({
+      discoveryApi,
+      enabled: configApi.getBoolean('permission.enabled'),
+    });
   }
 
   async authorize(

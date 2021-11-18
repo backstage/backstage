@@ -5,8 +5,8 @@
 ```ts
 /// <reference types="react" />
 
-import { AuthorizeRequest } from '@backstage/permission-common';
-import { AuthorizeResponse } from '@backstage/permission-common';
+import { AuthorizeRequest } from '@backstage/plugin-permission-common';
+import { AuthorizeResponse } from '@backstage/plugin-permission-common';
 import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { ComponentType } from 'react';

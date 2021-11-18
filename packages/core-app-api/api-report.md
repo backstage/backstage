@@ -24,6 +24,7 @@ import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
+import { ConfigApi } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { createApp as createApp_2 } from '@backstage/app-defaults';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
@@ -430,7 +431,11 @@ export class GoogleAuth {
 //
 // @public (undocumented)
 export class IdentityPermissionApi implements PermissionApi {
-  constructor(discoveryApi: DiscoveryApi, identityApi: IdentityApi);
+  constructor(
+    discoveryApi: DiscoveryApi,
+    identityApi: IdentityApi,
+    configApi: ConfigApi,
+  );
   // (undocumented)
   authorize(
     requests: Array<AuthorizeRequest>,
