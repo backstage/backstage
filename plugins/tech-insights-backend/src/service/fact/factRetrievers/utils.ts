@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import camelCase from 'lodash/camelCase';
+import { Entity } from '@backstage/catalog-model';
+import { get } from 'lodash';
 
-export * from './service/router';
-export type { RouterOptions } from './service/router';
+export const generateAnnotationFactName = (annotation: string) =>
+  camelCase(`hasAnnotation-${annotation}`);
 
-export { buildTechInsightsContext } from './service/techInsightsContextBuilder';
-export type {
-  TechInsightsOptions,
-  TechInsightsContext,
-} from './service/techInsightsContextBuilder';
-
-export type { PersistenceContext } from './service/persistence/persistenceContext';
-export { createFactRetrieverRegistration } from './service/fact/createFactRetriever';
-export * from './service/fact/factRetrievers';
+export const entityHasAnnotation = (entity: Entity, annotation: string) =>
+  Boolean(get(entity, ['metadata', 'annotations', annotation]));

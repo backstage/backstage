@@ -108,7 +108,10 @@ export class FactRetrieverEngine {
       this.logger.info(
         `Retrieving facts for fact retriever ${factRetriever.id}`,
       );
-      const facts = await factRetriever.handler(this.factRetrieverContext);
+      const facts = await factRetriever.handler({
+        ...this.factRetrieverContext,
+        entityFilter: factRetriever.entityFilter,
+      });
       if (this.logger.isDebugEnabled()) {
         this.logger.debug(
           `Retrieved ${facts.length} facts for fact retriever ${
