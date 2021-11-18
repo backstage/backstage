@@ -92,30 +92,33 @@ const generatedColumns: TableColumn[] = [
     field: 'fullName',
     highlight: true,
     render: (row: Partial<Project>) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const routeLink = useRouteRef(buildRouteRef);
-      if (!row.fullName || !row.lastBuild?.number) {
-        return (
-          <>
-            {row.fullName ||
-              row.fullDisplayName ||
-              row.displayName ||
-              'Unknown'}
-          </>
-        );
-      }
+      const LinkWrapper = () => {
+        const routeLink = useRouteRef(buildRouteRef);
+        if (!row.fullName || !row.lastBuild?.number) {
+          return (
+            <>
+              {row.fullName ||
+                row.fullDisplayName ||
+                row.displayName ||
+                'Unknown'}
+            </>
+          );
+        }
 
-      return (
-        <Link
-          component={RouterLink}
-          to={routeLink({
-            jobFullName: encodeURIComponent(row.fullName),
-            buildNumber: String(row.lastBuild?.number),
-          })}
-        >
-          {row.fullDisplayName}
-        </Link>
-      );
+        return (
+          <Link
+            component={RouterLink}
+            to={routeLink({
+              jobFullName: encodeURIComponent(row.fullName),
+              buildNumber: String(row.lastBuild?.number),
+            })}
+          >
+            {row.fullDisplayName}
+          </Link>
+        );
+      };
+
+      return <LinkWrapper />;
     },
   },
   {
