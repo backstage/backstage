@@ -68,7 +68,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
     setValue(prevValue => (prevValue !== term ? term : prevValue));
   }, [term]);
 
-  useDebounce(() => setTerm(value), 1000, [value]);
+  useDebounce(() => setTerm(value), 500, [value]);
 
   const handleQuery = (newValue: string) => {
     setValue(newValue);
@@ -114,7 +114,10 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
           alignItems="center"
         >
           <Grid item>
-            <Link to={`${getSearchLink()}?query=${value}`}>
+            <Link
+              onClick={toggleModal}
+              to={`${getSearchLink()}?query=${value}`}
+            >
               <span className={classes.viewResultsLink}>View Full Results</span>
               <Launch color="primary" />
             </Link>

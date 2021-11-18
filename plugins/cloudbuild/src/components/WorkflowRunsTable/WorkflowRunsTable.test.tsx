@@ -18,6 +18,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { WorkflowRunsTableView } from './WorkflowRunsTable';
 import { WorkflowRun } from '../useWorkflowRuns';
+import { rootRouteRef } from '../../routes';
 
 describe('<WorkflowRunsTableView />', () => {
   let runs: WorkflowRun[] = [];
@@ -56,6 +57,7 @@ describe('<WorkflowRunsTableView />', () => {
         runs={runs}
         total={runs.length}
       />,
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     expect(getByTestId('cell-source')).toHaveAttribute('href', '/run_id_1');
@@ -74,6 +76,7 @@ describe('<WorkflowRunsTableView />', () => {
         runs={runs}
         total={runs.length}
       />,
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     expect(getByTestId('cell-created')).toHaveTextContent(
@@ -94,6 +97,7 @@ describe('<WorkflowRunsTableView />', () => {
         runs={runs}
         total={runs.length}
       />,
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     const rerunActionElement = getByTestId('action-rerun');

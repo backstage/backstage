@@ -16,6 +16,8 @@
 
 import {
   DashboardPullRequest,
+  PullRequest,
+  PullRequestOptions,
   RepoBuild,
   RepoBuildOptions,
   Team,
@@ -35,6 +37,12 @@ export interface AzureDevOpsApi {
     repoName: string,
     options?: RepoBuildOptions,
   ): Promise<{ items: RepoBuild[] }>;
+
+  getPullRequests(
+    projectName: string,
+    repoName: string,
+    options?: PullRequestOptions,
+  ): Promise<{ items: PullRequest[] }>;
 
   getDashboardPullRequests(
     projectName: string,

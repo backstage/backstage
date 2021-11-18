@@ -16,11 +16,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { SubmitHandler } from 'react-hook-form';
+import { UseFormReset, UseFormGetValues } from 'react-hook-form';
 import { useApi } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
 import { ProjectSelector } from '../ProjectSelector';
-import { BazaarProject, FormValues, Status } from '../../types';
+import { BazaarProject, FormValues, Size, Status } from '../../types';
 import { bazaarApiRef } from '../../api';
 
 type Props = {
@@ -52,6 +52,10 @@ export const AddProjectDialog = ({
     community: '',
     announcement: '',
     status: 'proposed' as Status,
+    size: 'medium' as Size,
+    responsible: '',
+    startDate: null,
+    endDate: null,
   };
 
   const handleListItemClick = (entity: Entity) => {
@@ -63,9 +67,9 @@ export const AddProjectDialog = ({
     handleClose();
   };
 
-  const handleSave: SubmitHandler<FormValues> = async (
-    getValues: any,
-    reset: any,
+  const handleSave: any = async (
+    getValues: UseFormGetValues<FormValues>,
+    reset: UseFormReset<FormValues>,
   ) => {
     const formValues = getValues();
 
@@ -77,6 +81,10 @@ export const AddProjectDialog = ({
         status: formValues.status,
         community: formValues.community,
         membersCount: 0,
+        size: formValues.size,
+        startDate: formValues.startDate ?? null,
+        endDate: formValues.endDate ?? null,
+        responsible: formValues.responsible,
       } as BazaarProject);
 
       fetchBazaarProjects();

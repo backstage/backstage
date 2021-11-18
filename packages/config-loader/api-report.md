@@ -38,7 +38,9 @@ export type ConfigTarget =
 export type ConfigVisibility = 'frontend' | 'backend' | 'secret';
 
 // @public
-export function loadConfig(options: LoadConfigOptions): Promise<AppConfig[]>;
+export function loadConfig(
+  options: LoadConfigOptions,
+): Promise<LoadConfigResult>;
 
 // @public
 export type LoadConfigOptions = {
@@ -64,6 +66,11 @@ export type LoadConfigOptionsRemote = {
 export type LoadConfigOptionsWatch = {
   onChange: (configs: AppConfig[]) => void;
   stopSignal?: Promise<void>;
+};
+
+// @public
+export type LoadConfigResult = {
+  appConfigs: AppConfig[];
 };
 
 // @public

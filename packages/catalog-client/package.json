@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^0.9.5",
-    "@backstage/errors": "^0.1.3",
+    "@backstage/errors": "^0.1.4",
     "cross-fetch": "^3.0.6"
   },
   "devDependencies": {

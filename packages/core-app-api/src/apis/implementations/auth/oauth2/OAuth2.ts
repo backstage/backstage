@@ -32,7 +32,11 @@ import { Observable } from '@backstage/types';
 import { OAuth2Session } from './types';
 import { OAuthApiCreateOptions } from '../types';
 
-type CreateOptions = OAuthApiCreateOptions & {
+/**
+ * OAuth2 create options.
+ * @public
+ */
+export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
 };
 
@@ -73,7 +77,7 @@ export default class OAuth2
     oauthRequestApi,
     defaultScopes = [],
     scopeTransform = x => x,
-  }: CreateOptions) {
+  }: OAuth2CreateOptions) {
     const connector = new DefaultAuthConnector({
       discoveryApi,
       environment,
@@ -114,6 +118,9 @@ export default class OAuth2
   private readonly sessionManager: SessionManager<OAuth2Session>;
   private readonly scopeTransform: (scopes: string[]) => string[];
 
+  /**
+   * @deprecated will be made private in the future. Use create method instead.
+   */
   constructor(options: {
     sessionManager: SessionManager<OAuth2Session>;
     scopeTransform: (scopes: string[]) => string[];

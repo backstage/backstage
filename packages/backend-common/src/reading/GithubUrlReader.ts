@@ -110,6 +110,7 @@ export class GithubUrlReader implements UrlReader {
           ...(options?.etag && { 'If-None-Match': options.etag }),
           Accept: 'application/vnd.github.v3.raw',
         },
+        signal: options?.signal,
       });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
@@ -164,7 +165,7 @@ export class GithubUrlReader implements UrlReader {
       repoDetails.repo.archive_url,
       commitSha,
       filepath,
-      { headers },
+      { headers, signal: options?.signal },
       options,
     );
   }
@@ -188,7 +189,7 @@ export class GithubUrlReader implements UrlReader {
       repoDetails.repo.archive_url,
       commitSha,
       filepath,
-      { headers },
+      { headers, signal: options?.signal },
     );
 
     return { files, etag: commitSha };

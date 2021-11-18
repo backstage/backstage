@@ -103,7 +103,6 @@ describe('Refresh integration', () => {
 
     const engine = new DefaultCatalogProcessingEngine(
       defaultLogger,
-      [],
       db,
       {
         async process(request: EntityProcessingRequest) {

@@ -52,7 +52,7 @@
     "git-url-parse": "^11.6.0",
     "humanize-duration": "^3.25.1",
     "immer": "^9.0.1",
-    "json-schema": "^0.3.0",
+    "json-schema": "^0.4.0",
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
     "qs": "^6.9.4",

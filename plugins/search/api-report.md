@@ -80,6 +80,7 @@ export const searchApiRef: ApiRef<SearchApi>;
 //
 // @public (undocumented)
 export const SearchBar: ({
+  autoFocus,
   className,
   debounceTime,
   placeholder,
@@ -89,10 +90,12 @@ export const SearchBar: ({
 //
 // @public @deprecated (undocumented)
 export const SearchBarNext: ({
+  autoFocus,
   className,
   debounceTime,
   placeholder,
 }: {
+  autoFocus?: boolean | undefined;
   className?: string | undefined;
   debounceTime?: number | undefined;
   placeholder?: string | undefined;

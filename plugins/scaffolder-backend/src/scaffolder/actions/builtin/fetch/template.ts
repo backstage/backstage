@@ -241,6 +241,11 @@ export function createFetchTemplateAction(options: {
           localOutputPath = templater.renderString(localOutputPath, context);
         }
         const outputPath = resolvePath(outputDir, localOutputPath);
+        // variables have been expanded to make an empty file name
+        // this is due to a conditional like if values.my_condition then file-name.txt else empty string so skip
+        if (outputDir === outputPath) {
+          continue;
+        }
 
         if (!renderContents && !extension) {
           ctx.logger.info(

@@ -21,7 +21,7 @@ import { coloredFormat } from './formats';
 import { escapeRegExp } from '../util/escapeRegExp';
 
 let rootLogger: winston.Logger;
-let redactionRegExp: RegExp;
+let redactionRegExp: RegExp | undefined;
 
 /** @public */
 export function getRootLogger(): winston.Logger {
@@ -34,11 +34,18 @@ export function setRootLogger(newLogger: winston.Logger) {
 }
 
 export function setRootLoggerRedactionList(redactionList: string[]) {
-  if (redactionList.length) {
+  // Exclude secrets that are empty or just one character in length. These
+  // typically mean that you are running local dev or tests, or using the
+  // --lax flag which sets things to just 'x'. So exclude those.
+  const filtered = redactionList.filter(r => r.length > 1);
+
+  if (filtered.length) {
     redactionRegExp = new RegExp(
-      `(${redactionList.map(escapeRegExp).join('|')})`,
+      `(${filtered.map(escapeRegExp).join('|')})`,
       'g',
     );
+  } else {
+    redactionRegExp = undefined;
   }
 }
 

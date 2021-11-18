@@ -25,6 +25,4 @@ export type {
   PluginConfig,
   PluginHooks,
   PluginOutput,
-  RouteOptions,
-  RoutePath,
 } from './types';

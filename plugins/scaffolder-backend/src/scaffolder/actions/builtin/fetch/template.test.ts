@@ -144,6 +144,7 @@ describe('fetch:template', () => {
             name: 'test-project',
             count: 1234,
             itemList: ['first', 'second', 'third'],
+            showDummyFile: false,
           },
         });
 
@@ -163,6 +164,10 @@ describe('fetch:template', () => {
               },
               '.${{ values.name }}': '${{ values.itemList | dump }}',
               'a-binary-file.png': aBinaryFile,
+              '{% if values.showDummyFile %}dummy-file.txt{% else %}{% endif %}':
+                'dummy file',
+              '${{ "dummy-file2.txt" if values.showDummyFile else "" }}':
+                'some dummy file',
             },
           });
 
@@ -179,6 +184,18 @@ describe('fetch:template', () => {
             fetchUrl: context.input.url,
           }),
         );
+      });
+
+      it('skips empty filename', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/dummy-file.txt`),
+        ).resolves.toEqual(false);
+      });
+
+      it('skips empty filename syntax #2', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/dummy-file2.txt`),
+        ).resolves.toEqual(false);
       });
 
       it('copies files with no templating in names or content successfully', async () => {

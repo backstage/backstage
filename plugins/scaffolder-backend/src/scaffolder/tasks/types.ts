@@ -70,6 +70,15 @@ export type SerializedTaskEvent = {
 };
 
 /**
+ * TemplateMetadata
+ *
+ * @public
+ */
+export type TemplateMetadata = {
+  name: string;
+};
+
+/**
  * TaskSpecV1beta2
  *
  * @public
@@ -86,6 +95,7 @@ export interface TaskSpecV1beta2 {
     if?: string | boolean;
   }>;
   output: { [name: string]: string };
+  metadata?: TemplateMetadata;
 }
 
 export interface TaskStep {
@@ -107,6 +117,7 @@ export interface TaskSpecV1beta3 {
   parameters: JsonObject;
   steps: TaskStep[];
   output: { [name: string]: JsonValue };
+  metadata?: TemplateMetadata;
 }
 
 /**

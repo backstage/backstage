@@ -22,7 +22,11 @@ import {
 } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 
-type CreateOptions = {
+/**
+ * OneLogin auth provider create options.
+ * @public
+ */
+export type OneLoginAuthCreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
@@ -58,7 +62,7 @@ export default class OneLoginAuth {
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
-  }: CreateOptions): typeof oneloginAuthApiRef.T {
+  }: OneLoginAuthCreateOptions): typeof oneloginAuthApiRef.T {
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

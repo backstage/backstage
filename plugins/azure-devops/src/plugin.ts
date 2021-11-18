@@ -17,6 +17,7 @@
 import {
   azurePipelinesEntityContentRouteRef,
   azurePullRequestDashboardRouteRef,
+  azurePullRequestsEntityContentRouteRef,
 } from './routes';
 import {
   createApiFactory,
@@ -44,10 +45,6 @@ export const azureDevOpsPlugin = createPlugin({
         new AzureDevOpsClient({ discoveryApi, identityApi }),
     }),
   ],
-  routes: {
-    azurePullRequestDashboard: azurePullRequestDashboardRouteRef,
-    azurePipelinesEntityContent: azurePipelinesEntityContentRouteRef,
-  },
 });
 
 export const AzurePullRequestsPage = azureDevOpsPlugin.provide(
@@ -67,5 +64,16 @@ export const EntityAzurePipelinesContent = azureDevOpsPlugin.provide(
         m => m.EntityPageAzurePipelines,
       ),
     mountPoint: azurePipelinesEntityContentRouteRef,
+  }),
+);
+
+export const EntityAzurePullRequestsContent = azureDevOpsPlugin.provide(
+  createRoutableExtension({
+    name: 'EntityAzurePullRequestsContent',
+    component: () =>
+      import('./components/EntityPageAzurePullRequests').then(
+        m => m.EntityPageAzurePullRequests,
+      ),
+    mountPoint: azurePullRequestsEntityContentRouteRef,
   }),
 );
