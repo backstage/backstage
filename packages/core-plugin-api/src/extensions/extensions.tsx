@@ -189,13 +189,13 @@ export function createReactExtension<
           | undefined;
 
         return (
-          <PluginProvider
-            pluginId={plugin.getId()}
-            extensionName={name}
-            routeRef={mountPoint?.id}
-          >
-            <Suspense fallback={<Progress />}>
-              <PluginErrorBoundary app={app} plugin={plugin}>
+          <PluginErrorBoundary app={app} plugin={plugin}>
+            <PluginProvider
+              pluginId={plugin.getId()}
+              extensionName={name}
+              routeRef={mountPoint?.id}
+            >
+              <Suspense fallback={<Progress />}>
                 <AnalyticsContext
                   attributes={{
                     pluginId: plugin.getId(),
@@ -205,9 +205,9 @@ export function createReactExtension<
                 >
                   <Component {...props} />
                 </AnalyticsContext>
-              </PluginErrorBoundary>
-            </Suspense>
-          </PluginProvider>
+              </Suspense>
+            </PluginProvider>
+          </PluginErrorBoundary>
         );
       };
 
