@@ -53,7 +53,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.8.1",
     "@backstage/test-utils": "^0.1.20",
-    "@types/dockerode": "^3.3.1",
+    "@types/dockerode": "^3.3.0",
     "msw": "^0.35.0",
     "supertest": "^6.1.3"
   },

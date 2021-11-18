@@ -7074,7 +7074,7 @@
     "@types/node" "*"
     "@types/ssh2" "*"
 
-"@types/dockerode@^3.2.1", "@types/dockerode@^3.2.5":
+"@types/dockerode@^3.2.5", "@types/dockerode@^3.3.0":
   version "3.3.0"
   resolved "https://registry.npmjs.org/@types/dockerode/-/dockerode-3.3.0.tgz#d6afcc1de31e211ee900da3a48ef4f1a496cf05a"
   integrity sha512-3Mc0b2gnypJB8Gwmr+8UVPkwjpf4kg1gVxw8lAI4Y/EzpK50LixU1wBSPN9D+xqiw2Ubb02JO8oM0xpwzvi2mg==
@@ -13109,7 +13109,7 @@ docker-modem@^3.0.0:
     split-ca "^1.0.1"
     ssh2 "^1.4.0"
 
-dockerode@^3.2.1, dockerode@^3.3.1:
+dockerode@^3.3.1:
   version "3.3.1"
   resolved "https://registry.npmjs.org/dockerode/-/dockerode-3.3.1.tgz#74f66e239e092e7910e2beae6322d35c44b08cdc"
   integrity sha512-AS2mr8Lp122aa5n6d99HkuTNdRV1wkkhHwBdcnY6V0+28D3DSYwhxAk85/mM9XwD3RMliTxyr63iuvn5ZblFYQ==
@@ -27256,7 +27256,7 @@ test-exclude@^6.0.0:
     glob "^7.1.4"
     minimatch "^3.0.4"
 
-testcontainers@^7.10.0:
+testcontainers@^7.23.0:
   version "7.23.0"
   resolved "https://registry.npmjs.org/testcontainers/-/testcontainers-7.23.0.tgz#7d73a5e219a970fb75ff6a23a28dace8b7f3f232"
   integrity sha512-90H1iijeIjOLp7WVNYKTNkM1sd+dlW5019ns45hSPcOET43WebEZQVJl8/Ag9vwSZD2mjomMum9a/EXk/st4sQ==
