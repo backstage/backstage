@@ -146,7 +146,7 @@ const generatedColumns: TableColumn[] = [
     highlight: true,
     width: '20%',
     render: (row: Partial<CITableBuildInfo>) => {
-      const LinkWrapper: React.FC<{}> = () => {
+      const LinkWrapper = () => {
         const routeLink = useRouteRef(circleCIBuildRouteRef);
 
         return (

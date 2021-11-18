@@ -56,7 +56,7 @@ const generatedColumns: TableColumn[] = [
     highlight: true,
     width: '200px',
     render: (row: Partial<WorkflowRun>) => {
-      const LinkWrapper: React.FC<{}> = () => {
+      const LinkWrapper = () => {
         const routeLink = useRouteRef(buildRouteRef);
         return (
           <Link

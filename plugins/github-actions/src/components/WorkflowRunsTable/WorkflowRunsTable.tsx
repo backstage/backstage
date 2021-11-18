@@ -48,7 +48,7 @@ const generatedColumns: TableColumn[] = [
     field: 'message',
     highlight: true,
     render: (row: Partial<WorkflowRun>) => {
-      const LinkWrapper: React.FC<{}> = () => {
+      const LinkWrapper = () => {
         const routeLink = useRouteRef(buildRouteRef);
         return (
           <Link component={RouterLink} to={routeLink({ id: row.id! })}>

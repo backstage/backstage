@@ -92,7 +92,7 @@ const generatedColumns: TableColumn[] = [
     field: 'fullName',
     highlight: true,
     render: (row: Partial<Project>) => {
-      const LinkWrapper: React.FC<{}> = () => {
+      const LinkWrapper = () => {
         const routeLink = useRouteRef(buildRouteRef);
         if (!row.fullName || !row.lastBuild?.number) {
           return (
