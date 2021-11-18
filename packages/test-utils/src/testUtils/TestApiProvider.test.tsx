@@ -98,7 +98,7 @@ describe('TestApiRegistry', () => {
   it('should be created with APIs', () => {
     const x = { a: 'a', b: 3 };
     const y = 'y';
-    const registry = TestApiRegistry.with([xApiRef, x], [yApiRef, y]);
+    const registry = TestApiRegistry.from([xApiRef, x], [yApiRef, y]);
 
     expect(registry.get(xApiRef)).toBe(x);
     expect(registry.get(yApiRef)).toBe(y);
@@ -106,7 +106,7 @@ describe('TestApiRegistry', () => {
 
   it('should allow partial implementations', () => {
     const x = { a: 'a' };
-    const registry = TestApiRegistry.with([xApiRef, x]);
+    const registry = TestApiRegistry.from([xApiRef, x]);
 
     expect(registry.get(xApiRef)).toBe(x);
     expect(registry.get(yApiRef)).toBeUndefined();
@@ -115,7 +115,7 @@ describe('TestApiRegistry', () => {
   it('should require partial implementations to match types', () => {
     const x = { a: 2 };
     // @ts-expect-error
-    const registry = TestApiRegistry.with([xApiRef, x]);
+    const registry = TestApiRegistry.from([xApiRef, x]);
 
     expect(registry.get(xApiRef)).toBe(x);
     expect(registry.get(yApiRef)).toBeUndefined();
@@ -125,7 +125,7 @@ describe('TestApiRegistry', () => {
     const x1 = { a: 'a' };
     const x2 = { a: 's' };
     const x3 = { a: 'd' };
-    const registry = TestApiRegistry.with(
+    const registry = TestApiRegistry.from(
       [xApiRef, x1],
       [xApiRef, x2],
       [xApiRef, x3],

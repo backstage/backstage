@@ -54,7 +54,7 @@ const apis = ApiRegistry.from([
 Would be migrated to this:
 
 ```ts
-const apis = TestApiRegistry.with(
+const apis = TestApiRegistry.from(
   [identityApiRef, mockIdentityApi],
   [configApiRef, new ConfigReader({})],
 );

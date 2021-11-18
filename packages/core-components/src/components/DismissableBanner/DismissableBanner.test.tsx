@@ -35,7 +35,7 @@ describe('<DismissableBanner />', () => {
   };
 
   beforeEach(() => {
-    apis = TestApiRegistry.with([storageApiRef, createWebStorage()]);
+    apis = TestApiRegistry.from([storageApiRef, createWebStorage()]);
   });
 
   it('renders the message and the popover', async () => {

@@ -193,7 +193,7 @@ export type TestApiProviderProps<TApiPairs extends any[]> = {
 export class TestApiRegistry implements ApiHolder {
   // (undocumented)
   get<T>(api: ApiRef<T>): T | undefined;
-  static with<TApiPairs extends any[]>(
+  static from<TApiPairs extends any[]>(
     ...apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>]
   ): TestApiRegistry;
 }
