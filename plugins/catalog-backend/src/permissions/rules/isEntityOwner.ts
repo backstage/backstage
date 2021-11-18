@@ -35,6 +35,6 @@ export const isEntityOwner = {
   },
   toQuery: (claims: string[]): EntitiesSearchFilter => ({
     key: 'spec.owner',
-    matchValueIn: claims,
+    values: claims,
   }),
 };

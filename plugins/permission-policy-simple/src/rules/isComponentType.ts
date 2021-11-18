@@ -15,7 +15,7 @@
  */
 
 import { ComponentEntityV1alpha1, Entity } from '@backstage/catalog-model';
-import { PermissionCriteria } from '@backstage/permission-common';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { EntitiesSearchFilter } from '@backstage/plugin-catalog-backend';
 
 // TODO(authorization-framework): is this the right model for composing multiple

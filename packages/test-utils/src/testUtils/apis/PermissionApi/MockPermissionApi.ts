@@ -19,7 +19,7 @@ import {
   AuthorizeRequest,
   AuthorizeResponse,
   AuthorizeResult,
-} from '@backstage/permission-common';
+} from '@backstage/plugin-permission-common';
 
 /**
  * Mock implementation of {@link core-plugin-api#PermissionApi}. Supply a

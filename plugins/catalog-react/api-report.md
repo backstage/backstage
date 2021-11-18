@@ -19,7 +19,7 @@ import { IconButton } from '@material-ui/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
-import { Permission } from '@backstage/permission-common';
+import { Permission } from '@backstage/plugin-permission-common';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';

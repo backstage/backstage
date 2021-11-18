@@ -102,6 +102,9 @@ proxy:
     headers:
       Authorization: ${AIRFLOW_BASIC_AUTH_HEADER}
 
+permission:
+  enabled: true
+
 organization:
   name: My Company
 

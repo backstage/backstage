@@ -21,8 +21,8 @@ import { NotFoundError, ResponseError } from '@backstage/errors';
 import {
   AuthorizeResult,
   PermissionClient,
-  TechDocsPermission,
-} from '@backstage/permission-common';
+  techdocsReadPermission,
+} from '@backstage/plugin-permission-common';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
@@ -137,7 +137,10 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     this.configApi = configApi;
     this.discoveryApi = discoveryApi;
     this.identityApi = identityApi;
-    this.permissionApi = new PermissionClient({ discoveryApi });
+    this.permissionApi = new PermissionClient({
+      discoveryApi,
+      enabled: configApi.getBoolean('permission.enabled'),
+    });
   }
 
   async getApiOrigin(): Promise<string> {
@@ -176,7 +179,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     // TODO(authorization-framework): this might need more thought - we should make sure
     // that we're not relying _only_ on frontend permissions to protect access to docs.
     const authorizeRequest = {
-      permission: TechDocsPermission.DOCS_READ,
+      permission: techdocsReadPermission,
       resourceRef: stringifyEntityRef(entityId),
     };
     const [{ result }] = await this.permissionApi.authorize(
