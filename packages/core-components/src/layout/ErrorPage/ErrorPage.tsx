@@ -16,13 +16,13 @@
 
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { MicDrop } from './MicDrop';
 import { useNavigate } from 'react-router';
 import { useSupportConfig } from '../../hooks';
+import { Link } from '../../components/Link';
 
 interface IErrorPageProps {
   status: string;
@@ -80,11 +80,11 @@ export function ErrorPage(props: IErrorPageProps) {
           Looks like someone dropped the mic!
         </Typography>
         <Typography variant="h6">
-          <Link data-testid="go-back-link" onClick={() => navigate(-1)}>
+          <Link to=".." data-testid="go-back-link">
             Go back
           </Link>
           ... or please{' '}
-          <Link href={support.url} rel="noopener noreferrer">
+          <Link to={support.url} rel="noopener noreferrer">
             contact support
           </Link>{' '}
           if you think this is a bug.

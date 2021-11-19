@@ -17,7 +17,6 @@
 import React from 'react';
 import {
   Avatar,
-  Link,
   Typography,
   Box,
   IconButton,
@@ -37,6 +36,7 @@ import {
   StatusRunning,
   Table,
   TableColumn,
+  Link,
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
@@ -121,7 +121,7 @@ const SourceInfo = ({ build }: { build: CITableBuildInfo }) => {
         <Typography variant="button">{source?.branchName}</Typography>
         <Typography variant="body1">
           {source?.commit?.url !== undefined ? (
-            <Link href={source?.commit?.url} target="_blank">
+            <Link to={source?.commit?.url} target="_blank">
               {source?.commit.shortHash}
             </Link>
           ) : (
@@ -169,7 +169,7 @@ const generatedColumns: TableColumn[] = [
     field: 'buildName',
     highlight: true,
     render: (row: Partial<CITableBuildInfo>) => (
-      <Link href={row?.buildUrl} target="_blank">
+      <Link to={row?.buildUrl!} target="_blank">
         <Box display="flex" alignItems="center">
           <LaunchIcon fontSize="small" color="disabled" />
           <Box mr={1} />

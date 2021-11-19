@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import { Progress, Table, TableColumn } from '@backstage/core-components';
+import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Box, IconButton, Link, Tooltip, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
-import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
+import { default as React, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { JenkinsRunStatus } from '../Status';
-import { useBuilds } from '../../../useBuilds';
-import { buildRouteRef } from '../../../../plugin';
-import { Progress, Table, TableColumn } from '@backstage/core-components';
 import { Project } from '../../../../api/JenkinsApi';
-import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
+import { buildRouteRef } from '../../../../plugin';
+import { useBuilds } from '../../../useBuilds';
+import { JenkinsRunStatus } from '../Status';
 
 const FailCount = ({ count }: { count: number }): JSX.Element | null => {
   if (count !== 0) {
@@ -127,7 +127,7 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<Project>) => (
       <>
         <p>
-          <Link href={row.lastBuild?.source?.url || ''} target="_blank">
+          <Link to={row.lastBuild?.source?.url || ''} target="_blank">
             {row.lastBuild?.source?.branchName}
           </Link>
         </p>
@@ -154,7 +154,7 @@ const generatedColumns: TableColumn[] = [
         <>
           <p>
             {row.lastBuild?.tests && (
-              <Link href={row.lastBuild?.tests.testUrl || ''} target="_blank">
+              <Link to={row.lastBuild?.tests.testUrl || ''} target="_blank">
                 {row.lastBuild?.tests.passed} / {row.lastBuild?.tests.total}{' '}
                 passed
                 <FailSkippedWidget
