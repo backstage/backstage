@@ -60,7 +60,7 @@ export class DefaultLocationService implements LocationService {
   ): Promise<Entity[]> {
     const currentEntity = unprocessed.pop();
     if (!currentEntity) {
-      return [];
+      return entities;
     }
     const processed = await this.orchestrator.process({
       entity: currentEntity.entity,
