@@ -15,8 +15,8 @@
  */
 
 export { Sidebar, SidebarExpandButton } from './Bar';
-export { SubmenuItem } from './SubmenuItem';
-export type { SubmenuItemProps, DropDownItem } from './SubmenuItem';
+export { SidebarSubItem } from './SidebarSubItem';
+export type { SidebarSubItemProps, DropDownItem } from './SidebarSubItem';
 export type { SidebarClassKey } from './Bar';
 export { SidebarPage, SidebarPinStateContext } from './Page';
 export type { SidebarPinStateContextType, SidebarPageClassKey } from './Page';

@@ -30,7 +30,7 @@ import {
   SidebarSearchField,
   SidebarSpace,
 } from '.';
-import { SubmenuItem } from './SubmenuItem';
+import { SidebarSubItem } from './SidebarSubItem';
 import { CatalogSidebarLogo } from './icons/CatalogSidebarLogo';
 import { APIsIcon } from './icons/APIsIcon';
 import { ServicesIcon } from './icons/ServicesIcon';
@@ -74,12 +74,16 @@ export const SampleScalableSidebar = () => (
       hasSubMenu
       submenuTitle="Catalog"
     >
-      <SubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
-      <SubmenuItem title="APIs" to="/2" icon={APIsIcon} />
-      <SubmenuItem title="Services" to="/3" icon={ServicesIcon} />
-      <SubmenuItem title="Libraries" to="/4" icon={LibraryBooksOutlinedIcon} />
-      <SubmenuItem title="Websites" to="/5" icon={WebOutlinedIcon} />
-      <SubmenuItem
+      <SidebarSubItem title="Tools" to="/1" icon={BuildRoundedIcon} />
+      <SidebarSubItem title="APIs" to="/2" icon={APIsIcon} />
+      <SidebarSubItem title="Services" to="/3" icon={ServicesIcon} />
+      <SidebarSubItem
+        title="Libraries"
+        to="/4"
+        icon={LibraryBooksOutlinedIcon}
+      />
+      <SidebarSubItem title="Websites" to="/5" icon={WebOutlinedIcon} />
+      <SidebarSubItem
         title="Misc"
         to="/6"
         icon={MiscIcon}

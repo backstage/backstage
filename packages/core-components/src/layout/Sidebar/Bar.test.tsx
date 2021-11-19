@@ -24,7 +24,7 @@ import { CatalogSidebarLogo } from './icons/CatalogSidebarLogo';
 import { MiscIcon } from './icons/MiscIcon';
 import { Sidebar, SidebarExpandButton } from './Bar';
 import { SidebarItem, SidebarSearchField } from './Items';
-import { SubmenuItem } from './SubmenuItem';
+import { SidebarSubItem } from './SidebarSubItem';
 
 async function renderScalableSidebar() {
   await renderInTestApp(
@@ -37,8 +37,8 @@ async function renderScalableSidebar() {
         hasSubMenu
         submenuTitle="Catalog"
       >
-        <SubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
-        <SubmenuItem
+        <SidebarSubItem title="Tools" to="/1" icon={BuildRoundedIcon} />
+        <SidebarSubItem
           title="Misc"
           to="/6"
           icon={MiscIcon}

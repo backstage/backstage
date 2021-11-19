@@ -100,7 +100,7 @@ export type DropDownItem = {
  *
  * @public
  */
-export type SubmenuItemProps = {
+export type SidebarSubItemProps = {
   title: string;
   to: string;
   icon: IconComponent;
@@ -112,12 +112,12 @@ export type SubmenuItemProps = {
  *
  * @public
  */
-export const SubmenuItem = ({
+export const SidebarSubItem = ({
   title,
   to,
   icon: Icon,
   dropdownItems,
-}: SubmenuItemProps) => {
+}: SidebarSubItemProps) => {
   const classes = useStyles();
   const { pathname: locationPathname } = useLocation();
   const { pathname: toPathname } = useResolvedPath(to);
