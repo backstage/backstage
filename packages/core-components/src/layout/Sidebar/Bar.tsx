@@ -176,6 +176,12 @@ export function Sidebar(props: PropsWithChildren<Props>) {
   );
 }
 
+/**
+ * A button which allows you to expand the sidebar when clicked.
+ * Use optionally to replace sidebar's expand-on-hover feature with expand-on-click.
+ *
+ * @public
+ */
 export const SidebarExpandButton = () => {
   const classes = useStyles();
   const { isOpen, handleOpen, handleClose } = useContext(SidebarContext);

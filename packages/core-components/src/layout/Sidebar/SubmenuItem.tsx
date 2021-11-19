@@ -91,6 +91,11 @@ type SubmenuItemProps = {
   dropdownItems?: DropDownItem[];
 };
 
+/**
+ * Item used inside a submenu within the sidebar.
+ *
+ * @public
+ */
 export const SubmenuItem = ({
   title,
   to,

@@ -1105,9 +1105,7 @@ export const SidebarDivider: React_2.ComponentType<
     }
 >;
 
-// Warning: (ae-missing-release-tag) "SidebarExpandButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const SidebarExpandButton: () => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "SidebarIntro" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -2090,9 +2088,8 @@ export type StructuredMetadataTableListClassKey = 'root';
 export type StructuredMetadataTableNestedListClassKey = 'root';
 
 // Warning: (ae-forgotten-export) The symbol "SubmenuItemProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SubmenuItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export const SubmenuItem: ({
   title,
   to,
