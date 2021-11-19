@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import { ResponseError } from '@backstage/errors';
 import fetch from 'cross-fetch';
 import * as uuid from 'uuid';
@@ -74,9 +75,9 @@ export class PermissionClient {
   private readonly enabled: boolean;
   private readonly discoveryApi: DiscoveryApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi; enabled?: boolean }) {
+  constructor(options: { discoveryApi: DiscoveryApi; configApi: Config }) {
     this.discoveryApi = options.discoveryApi;
-    this.enabled = options.enabled ?? false;
+    this.enabled = options.configApi.getBoolean('permission.enabled');
   }
 
   /**
