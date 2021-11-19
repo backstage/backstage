@@ -175,6 +175,20 @@ export const bitbucketUserIdSignInResolver: SignInResolver<BitbucketOAuthResult>
 // @public (undocumented)
 export const bitbucketUsernameSignInResolver: SignInResolver<BitbucketOAuthResult>;
 
+// Warning: (ae-missing-release-tag) "CatalogIdentityClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class CatalogIdentityClient {
+  constructor(options: { catalogApi: CatalogApi; tokenIssuer: TokenIssuer });
+  // Warning: (ae-forgotten-export) The symbol "UserQuery" needs to be exported by the entry point index.d.ts
+  findUser(query: UserQuery): Promise<UserEntity>;
+  // Warning: (ae-forgotten-export) The symbol "MemberClaimQuery" needs to be exported by the entry point index.d.ts
+  resolveCatalogMembership({
+    entityRefs,
+    logger,
+  }: MemberClaimQuery): Promise<string[]>;
+}
+
 // Warning: (ae-missing-release-tag) "createAtlassianProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -270,6 +284,12 @@ export const encodeState: (state: OAuthState) => string;
 //
 // @public (undocumented)
 export const ensuresXRequestedWith: (req: express.Request) => boolean;
+
+// Warning: (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "getEntityClaims" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function getEntityClaims(entity: UserEntity): TokenParams['claims'];
 
 // Warning: (ae-missing-release-tag) "GithubOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -578,7 +598,6 @@ export type WebMessageResponse =
 
 // Warnings were encountered during analysis:
 //
-// src/identity/types.d.ts:25:5 - (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
 // src/providers/atlassian/provider.d.ts:37:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
 // src/providers/atlassian/provider.d.ts:42:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
