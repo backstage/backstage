@@ -15,188 +15,72 @@
  */
 
 import {
-  PermissionCondition,
-  PermissionCriteria,
-} from '@backstage/plugin-permission-common';
-import { applyConditions, mapConditions } from './util';
+  createGetRule,
+  isAndCriteria,
+  isNotCriteria,
+  isOrCriteria,
+} from './util';
 
-describe('integration utils', () => {
-  const testCases: {
-    criteria: PermissionCriteria<PermissionCondition>;
-    expectedResult: {
-      applyConditions: boolean;
-      mapConditions: PermissionCriteria<string>;
+describe('permission integration utils', () => {
+  describe('createGetRule', () => {
+    let getRule: ReturnType<typeof createGetRule>;
+
+    const testRule1 = {
+      name: 'test-rule-1',
+      description: 'Test rule 1',
+      apply: jest.fn(),
+      toQuery: jest.fn(),
     };
-  }[] = [
-    {
-      criteria: { rule: 'test-rule-1', params: [] },
-      expectedResult: {
-        applyConditions: true,
-        mapConditions: 'test-rule-1',
-      },
-    },
-    {
-      criteria: { rule: 'test-rule-2', params: [] },
-      expectedResult: {
-        applyConditions: false,
-        mapConditions: 'test-rule-2',
-      },
-    },
-    {
-      criteria: {
-        anyOf: [
-          { rule: 'test-rule-1', params: ['a', 'b'] },
-          { rule: 'test-rule-2', params: ['c', 'd'] },
-        ],
-      },
-      expectedResult: {
-        applyConditions: true,
-        mapConditions: {
-          anyOf: ['test-rule-1:a,b', 'test-rule-2:c,d'],
-        },
-      },
-    },
-    {
-      criteria: {
-        allOf: [
-          { rule: 'test-rule-1', params: ['e', 'f'] },
-          { rule: 'test-rule-2', params: ['g', 'h'] },
-        ],
-      },
-      expectedResult: {
-        applyConditions: false,
-        mapConditions: {
-          allOf: ['test-rule-1:e,f', 'test-rule-2:g,h'],
-        },
-      },
-    },
-    {
-      criteria: {
-        not: { rule: 'test-rule-2', params: ['i'] },
-      },
-      expectedResult: {
-        applyConditions: true,
-        mapConditions: {
-          not: 'test-rule-2:i',
-        },
-      },
-    },
-    {
-      criteria: {
-        allOf: [
-          {
-            anyOf: [
-              { rule: 'test-rule-1', params: ['j'] },
-              { rule: 'test-rule-2', params: ['k'] },
-            ],
-          },
-          {
-            not: {
-              allOf: [
-                { rule: 'test-rule-1', params: ['l'] },
-                { rule: 'test-rule-2', params: ['m'] },
-              ],
-            },
-          },
-        ],
-      },
-      expectedResult: {
-        applyConditions: true,
-        mapConditions: {
-          allOf: [
-            {
-              anyOf: ['test-rule-1:j', 'test-rule-2:k'],
-            },
-            {
-              not: {
-                allOf: ['test-rule-1:l', 'test-rule-2:m'],
-              },
-            },
-          ],
-        },
-      },
-    },
-    {
-      criteria: {
-        allOf: [
-          {
-            anyOf: [
-              { rule: 'test-rule-1', params: ['j'] },
-              { rule: 'test-rule-2', params: ['k'] },
-            ],
-          },
-          {
-            not: {
-              allOf: [
-                { rule: 'test-rule-1', params: ['l'] },
-                { not: { rule: 'test-rule-2', params: ['m'] } },
-              ],
-            },
-          },
-        ],
-      },
-      expectedResult: {
-        applyConditions: false,
-        mapConditions: {
-          allOf: [
-            {
-              anyOf: ['test-rule-1:j', 'test-rule-2:k'],
-            },
-            {
-              not: {
-                allOf: ['test-rule-1:l', { not: 'test-rule-2:m' }],
-              },
-            },
-          ],
-        },
-      },
-    },
-  ];
 
-  describe('applyConditions', () => {
-    const applyFn = jest.fn(condition => condition.rule === 'test-rule-1');
+    const testRule2 = {
+      name: 'test-rule-2',
+      description: 'Test rule 2',
+      apply: jest.fn(),
+      toQuery: jest.fn(),
+    };
 
-    it('invokes applyFn with rules to determine result', () => {
-      applyConditions({ rule: 'test-rule-1', params: ['foo', 'bar'] }, applyFn);
-
-      expect(applyFn).toHaveBeenCalledWith({
-        rule: 'test-rule-1',
-        params: ['foo', 'bar'],
-      });
+    beforeEach(() => {
+      getRule = createGetRule([testRule1, testRule2]);
     });
 
-    it.each(testCases)(
-      'works with criteria %#',
-      ({ criteria, expectedResult }) => {
-        expect(applyConditions(criteria, applyFn)).toEqual(
-          expectedResult.applyConditions,
-        );
-      },
-    );
+    it('returns the rule matching the supplied name', () => {
+      expect(getRule('test-rule-1')).toBe(testRule1);
+    });
+
+    it('throws if there is no rule for the supplied name', () => {
+      expect(() => getRule('test-rule-3')).toThrowError(
+        /unexpected permission rule/i,
+      );
+    });
   });
 
-  describe('mapConditions', () => {
-    const mapFn = jest.fn(
-      ({ rule, params }) =>
-        `${rule}${params.length ? `:${params.join(',')}` : ''}`,
-    );
-
-    it('invokes mapFn to transform conditions', () => {
-      mapConditions({ rule: 'test-rule-1', params: ['foo', 'bar'] }, mapFn);
-
-      expect(mapFn).toHaveBeenCalledWith({
-        rule: 'test-rule-1',
-        params: ['foo', 'bar'],
-      });
+  describe('isOrCriteria', () => {
+    it('returns true if input has a top-level "anyOf" property', () => {
+      expect(isOrCriteria({ anyOf: { not: { allOf: [] } } })).toEqual(true);
     });
 
-    it.each(testCases)(
-      'works with criteria %#',
-      ({ criteria, expectedResult }) => {
-        expect(mapConditions(criteria, mapFn)).toEqual(
-          expectedResult.mapConditions,
-        );
-      },
-    );
+    it('returns false if input does not have a top-level "anyOf" property', () => {
+      expect(isOrCriteria({ allOf: { not: { anyOf: [] } } })).toEqual(false);
+    });
+  });
+
+  describe('isAndCriteria', () => {
+    it('returns true if input has a top-level "allOf" property', () => {
+      expect(isAndCriteria({ allOf: { not: { anyOf: [] } } })).toEqual(true);
+    });
+
+    it('returns false if input does not have a top-level "allOf" property', () => {
+      expect(isAndCriteria({ anyOf: { not: { allOf: [] } } })).toEqual(false);
+    });
+  });
+
+  describe('isNotCriteria', () => {
+    it('returns true if input has a top-level "not" property', () => {
+      expect(isNotCriteria({ not: { allOf: [{ anyOf: [] }] } })).toEqual(true);
+    });
+
+    it('returns false if input does not have a top-level "not" property', () => {
+      expect(isNotCriteria({ anyOf: { not: { allOf: [] } } })).toEqual(false);
+    });
   });
 });

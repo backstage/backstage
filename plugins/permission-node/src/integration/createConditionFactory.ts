@@ -17,19 +17,20 @@
 import { PermissionRule } from '../types';
 
 /**
- * Creates a condition function for a given authorization rule and parameter type.
+ * Creates a condition factory function for a given authorization rule and parameter types.
  *
  * For example, an isEntityOwner rule for catalog entities might take an array of entityRef strings.
  * The rule itself defines _how_ to check a given resource, whereas a condition also includes _what_
  * to verify.
  *
- * Plugin authors should generally use the {@link createPermissionIntegration} helper, which creates
- * conditions for the rules supplied. However, a different plugin can also add rules to this
- * integration (using the returned `registerPermissionRule` from this function), and create the
- * condition to be used in an {@link PermissionPolicy} using this method directly.
+ * Plugin authors should generally use the {@link createConditionExports} in order to efficiently
+ * create multiple condition factories. This helper should generally only be used to construct
+ * condition factories for third-party rules that aren't part of the backend plugin with which
+ * they're intended to integrate with.
+ *
  * @public
  */
-export const conditionFor =
+export const createConditionFactory =
   <TParams extends any[]>(rule: PermissionRule<unknown, unknown, TParams>) =>
   (...params: TParams) => ({
     rule: rule.name,

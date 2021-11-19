@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { conditionFor } from './conditionFor';
+import { createConditionFactory } from './createConditionFactory';
 
-describe('conditionFor', () => {
+describe('createConditionFactory', () => {
   const testRule = {
     name: 'test-rule',
     description: 'test-description',
@@ -25,12 +25,12 @@ describe('conditionFor', () => {
   };
 
   it('returns a function', () => {
-    expect(conditionFor(testRule)).toEqual(expect.any(Function));
+    expect(createConditionFactory(testRule)).toEqual(expect.any(Function));
   });
 
   describe('return value', () => {
     it('constructs a condition with the rule name and supplied params', () => {
-      const conditionFactory = conditionFor(testRule);
+      const conditionFactory = createConditionFactory(testRule);
       expect(conditionFactory('a', 'b', 1, 2)).toEqual({
         rule: 'test-rule',
         params: ['a', 'b', 1, 2],

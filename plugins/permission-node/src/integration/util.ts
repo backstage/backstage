@@ -15,54 +15,35 @@
  */
 
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '../types';
 
-const isAndCriteria = (
+export const isAndCriteria = (
   filter: PermissionCriteria<unknown>,
 ): filter is { allOf: PermissionCriteria<unknown>[] } =>
   Object.prototype.hasOwnProperty.call(filter, 'allOf');
 
-const isOrCriteria = (
+export const isOrCriteria = (
   filter: PermissionCriteria<unknown>,
 ): filter is { anyOf: PermissionCriteria<unknown>[] } =>
   Object.prototype.hasOwnProperty.call(filter, 'anyOf');
 
-const isNotCriteria = (
+export const isNotCriteria = (
   filter: PermissionCriteria<unknown>,
 ): filter is { not: PermissionCriteria<unknown> } =>
   Object.prototype.hasOwnProperty.call(filter, 'not');
 
-export const mapConditions = <TQueryIn, TQueryOut>(
-  criteria: PermissionCriteria<TQueryIn>,
-  mapFn: (condition: TQueryIn) => TQueryOut,
-): PermissionCriteria<TQueryOut> => {
-  if (isAndCriteria(criteria)) {
-    return {
-      allOf: criteria.allOf.map(child => mapConditions(child, mapFn)),
-    };
-  } else if (isOrCriteria(criteria)) {
-    return {
-      anyOf: criteria.anyOf.map(child => mapConditions(child, mapFn)),
-    };
-  } else if (isNotCriteria(criteria)) {
-    return {
-      not: mapConditions(criteria.not, mapFn),
-    };
-  }
+export const createGetRule = <TResource, TQuery>(
+  rules: PermissionRule<TResource, TQuery>[],
+) => {
+  const rulesMap = new Map(Object.values(rules).map(rule => [rule.name, rule]));
 
-  return mapFn(criteria);
-};
+  return (name: string): PermissionRule<TResource, TQuery> => {
+    const rule = rulesMap.get(name);
 
-export const applyConditions = <TQuery>(
-  criteria: PermissionCriteria<TQuery>,
-  applyFn: (condition: TQuery) => boolean,
-): boolean => {
-  if (isAndCriteria(criteria)) {
-    return criteria.allOf.every(child => applyConditions(child, applyFn));
-  } else if (isOrCriteria(criteria)) {
-    return criteria.anyOf.some(child => applyConditions(child, applyFn));
-  } else if (isNotCriteria(criteria)) {
-    return !applyConditions(criteria.not, applyFn);
-  }
+    if (!rule) {
+      throw new Error(`Unexpected permission rule: ${name}`);
+    }
 
-  return applyFn(criteria);
+    return rule;
+  };
 };

@@ -14,5 +14,7 @@
  * limitations under the License.
  */
 
-export * from './conditionFor';
-export * from './createPermissionIntegration';
+export * from './createConditionFactory';
+export * from './createConditionExports';
+export * from './createConditionTransformer';
+export * from './createPermissionIntegrationRouter';

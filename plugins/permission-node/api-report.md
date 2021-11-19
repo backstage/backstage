@@ -37,14 +37,6 @@ export type ConditionalPolicyResult = {
 };
 
 // @public
-export const conditionFor: <TParams extends any[]>(
-  rule: PermissionRule<unknown, unknown, TParams>,
-) => (...params: TParams) => {
-  rule: string;
-  params: TParams;
-};
-
-// @public
 export type Conditions<
   TRules extends Record<string, PermissionRule<any, any>>,
 > = {
@@ -52,40 +44,57 @@ export type Conditions<
 };
 
 // @public
-export const createPermissionIntegration: <
+export type ConditionTransformer<TQuery> = (
+  conditions: PermissionCriteria<PermissionCondition>,
+) => PermissionCriteria<TQuery>;
+
+// @public
+export const createConditionExports: <
   TResource,
-  TRules extends {
-    [key: string]: PermissionRule<TResource, any, unknown[]>;
-  },
-  TGetResourceParams extends any[] = [],
+  TRules extends Record<string, PermissionRule<TResource, any, unknown[]>>,
 >({
   pluginId,
   resourceType,
   rules,
-  getResource,
 }: {
   pluginId: string;
   resourceType: string;
   rules: TRules;
-  getResource: (
-    resourceRef: string,
-    ...params: TGetResourceParams
-  ) => Promise<TResource | undefined>;
 }) => {
-  createPermissionIntegrationRouter: (...params: TGetResourceParams) => Router;
-  toQuery: (
-    conditions: PermissionCriteria<PermissionCondition>,
-  ) => PermissionCriteria<QueryType<TRules>>;
   conditions: Conditions<TRules>;
   createConditions: (conditions: PermissionCriteria<PermissionCondition>) => {
     pluginId: string;
     resourceType: string;
     conditions: PermissionCriteria<PermissionCondition>;
   };
-  registerPermissionRule: (
-    rule: PermissionRule<TResource, QueryType<TRules>, unknown[]>,
-  ) => void;
 };
+
+// @public
+export const createConditionFactory: <TParams extends any[]>(
+  rule: PermissionRule<unknown, unknown, TParams>,
+) => (...params: TParams) => {
+  rule: string;
+  params: TParams;
+};
+
+// @public
+export const createConditionTransformer: <
+  TQuery,
+  TRules extends PermissionRule<any, TQuery, unknown[]>[],
+>(
+  permissionRules: [...TRules],
+) => ConditionTransformer<TQuery>;
+
+// @public
+export const createPermissionIntegrationRouter: <TResource>({
+  resourceType,
+  rules,
+  getResource,
+}: {
+  resourceType: string;
+  rules: PermissionRule<TResource, any, unknown[]>[];
+  getResource: (resourceRef: string) => Promise<TResource | undefined>;
+}) => Router;
 
 // @public
 export interface PermissionPolicy {
@@ -117,12 +126,4 @@ export type PolicyResult =
       result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
     }
   | ConditionalPolicyResult;
-
-// @public
-export type QueryType<TRules> = TRules extends Record<
-  string,
-  PermissionRule<any, infer TQuery, any>
->
-  ? TQuery
-  : never;
 ```
