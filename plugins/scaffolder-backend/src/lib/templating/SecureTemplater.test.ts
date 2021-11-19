@@ -43,16 +43,35 @@ describe('SecureTemplater', () => {
     );
   });
 
-  it('should make jsonify available when requested', async () => {
-    const templaterWith = new SecureTemplater({ jsonify: true });
-    await templaterWith.initializeIfNeeded();
-    const templaterWithout = new SecureTemplater();
-    await templaterWithout.initializeIfNeeded();
+  it('should make cookiecutter compatibility available when requested', async () => {
+    const templater = new SecureTemplater();
+    await templater.initializeIfNeeded();
 
-    expect(templaterWith.render('${{ 1 | jsonify }}', {})).toBe('1');
-    expect(() => templaterWithout.render('${{ 1 | jsonify }}', {})).toThrow(
+    // Same two tests repeated to make sure switching back and forth works
+    expect(
+      templater.render('${{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
+    ).toBe('1');
+    expect(
+      templater.render('${{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
+    ).toBe('1');
+    expect(() => templater.render('${{ 1 | jsonify }}', {})).toThrow(
       '(unknown path)\n  Error: filter not found: jsonify',
     );
+    expect(
+      templater.render('${{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
+    ).toBe('1');
+    expect(() => templater.render('${{ 1 | jsonify }}', {})).toThrow(
+      '(unknown path)\n  Error: filter not found: jsonify',
+    );
+    expect(() => templater.render('${{ 1 | jsonify }}', {})).toThrow(
+      '(unknown path)\n  Error: filter not found: jsonify',
+    );
+    expect(() => templater.render('${{ 1 | jsonify }}', {})).toThrow(
+      '(unknown path)\n  Error: filter not found: jsonify',
+    );
+    expect(
+      templater.render('${{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
+    ).toBe('1');
   });
 
   it('should make parseRepoUrl available when requested', async () => {

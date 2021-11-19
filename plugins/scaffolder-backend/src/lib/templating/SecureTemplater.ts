@@ -20,8 +20,9 @@ import fs from 'fs-extra';
 import { RepoSpec } from '../../scaffolder/actions/builtin/publish/util';
 
 const mkScript = (nunjucksSource: string) => `
-const render = (() => {
+const { render, renderCompat } = (() => {
   const module = {};
+  const process = { env: {} };
   const require = (pkg) => { if (pkg === 'events') { return function (){}; }};
 
   ${nunjucksSource}
@@ -34,10 +35,6 @@ const render = (() => {
     },
   });
 
-  if (typeof jsonify !== 'undefined' && jsonify) {
-    env.addFilter('jsonify', env.getFilter('dump'));
-  }
-
   if (typeof parseRepoUrl !== 'undefined') {
     env.addFilter('parseRepoUrl', repoUrl => {
       return JSON.parse(parseRepoUrl(repoUrl))
@@ -48,53 +45,82 @@ const render = (() => {
     });
   }
 
-  return function render(str, values) {
+  let uninstallCompat = undefined;
+
+  function render(str, values) {
     try {
+      if (uninstallCompat) {
+        uninstallCompat();
+        uninstallCompat = undefined;
+        delete env.filters.jsonify;
+      }
       return env.renderString(str, JSON.parse(values));
     } catch (error) {
       // Make sure errors don't leak anything
       throw new Error(String(error.message));
     }
   }
+
+  function renderCompat(str, values) {
+    try {
+      if (!uninstallCompat) {
+        uninstallCompat = module.exports.installJinjaCompat();
+        env.filters.jsonify = env.filters.dump;
+      }
+      return env.renderString(str, JSON.parse(values));
+    } catch (error) {
+      // Make sure errors don't leak anything
+      throw new Error(String(error.message));
+    }
+  }
+
+  return { render, renderCompat };
 })();
 `;
 
+export interface SecureTemplaterRenderOptions {
+  /* Enables jinja compatibility and the "jsonify" filter */
+  cookiecutterCompat?: boolean;
+}
+
 export interface SecureTemplaterOptions {
-  jsonify?: true;
   parseRepoUrl?(repoUrl: string): RepoSpec;
 }
 
 export class SecureTemplater {
   #vm?: VM;
 
-  #jsonify?: true;
   #parseRepoUrl?: (repoUrl: string) => RepoSpec;
 
   constructor(options?: SecureTemplaterOptions) {
-    this.#jsonify = options?.jsonify;
     this.#parseRepoUrl = options?.parseRepoUrl;
   }
 
-  render(template: string, values: unknown): string {
+  render(
+    template: string,
+    values: unknown,
+    options?: SecureTemplaterRenderOptions,
+  ): string {
     if (!this.#vm) {
       throw new Error('SecureTemplater has not been initialized');
     }
     this.#vm.setGlobal('templateStr', template);
     this.#vm.setGlobal('templateValues', JSON.stringify(values));
-    const result = this.#vm.run(`render(templateStr, templateValues)`);
-    return result;
+
+    if (options?.cookiecutterCompat) {
+      return this.#vm.run(`renderCompat(templateStr, templateValues)`);
+    }
+
+    return this.#vm.run(`render(templateStr, templateValues)`);
   }
 
   async initializeIfNeeded() {
     if (!this.#vm) {
       let sandbox = undefined;
-      if (this.#jsonify) {
-        sandbox = { jsonify: true };
-      }
+
       if (this.#parseRepoUrl) {
         const parseRepoUrl = this.#parseRepoUrl;
         sandbox = {
-          ...sandbox,
           parseRepoUrl: (url: string) => JSON.stringify(parseRepoUrl(url)),
         };
       }
