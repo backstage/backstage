@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Grid, Typography } from '@material-ui/core';
+import { Grid, Paper, Typography } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
 import { Progress } from '@backstage/core-components';
 import { NewRelicDashboardApiRef } from '../../../api';
 import Alert from '@material-ui/lab/Alert';
+import Link from '@material-ui/core/Link';
 
 type Props = {
   guid: String;
   name: String;
   permalink: string;
-  duration: String;
+  duration: Number;
 };
 
 export const DashboardSnapshot = ({
@@ -49,29 +50,33 @@ export const DashboardSnapshot = ({
     return <Alert severity="error">{error.message}</Alert>;
   }
   return (
-    <Grid container spacing={3} direction="column">
-      <Grid item>
-        <Typography variant="h3">{name}</Typography>
-      </Grid>
+    <Paper>
+      <Grid style={{ width: '100%' }} container spacing={3} direction="column">
+        <Grid item xs={12} style={{ marginTop: '20px' }}>
+          <Link target="_blank" href={permalink}>
+            <Typography variant="h4">{name}</Typography>
+          </Link>
+        </Grid>
 
-      <Grid item xs={8}>
-        <a target="_blank" href={permalink}>
-          <img
-            alt={`${name} Dashbord`}
-            style={{ border: 'solid 1px black' }}
-            src={value?.getDashboardSnapshot?.data?.dashboardCreateSnapshotUrl?.replace(
-              /...$/,
-              'png',
-            )}
-          />
-        </a>
-        {/* {JSON.stringify(
+        <Grid item xs={12}>
+          <a target="_blank" href={permalink}>
+            <img
+              alt={`${name} Dashbord`}
+              style={{ border: 'solid 1px black' }}
+              src={`?${value?.getDashboardSnapshot?.data?.dashboardCreateSnapshotUrl?.replace(
+                /...$/,
+                'png',
+              )}`}
+            />
+          </a>
+          {/* {JSON.stringify(
           value.getDashboardSnapshot.data.dashboardCreateSnapshotUrl.replace(
             /...$/,
             'png',
           ),
         )} */}
+        </Grid>
       </Grid>
-    </Grid>
+    </Paper>
   );
 };

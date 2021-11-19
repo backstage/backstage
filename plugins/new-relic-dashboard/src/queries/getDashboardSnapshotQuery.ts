@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 export const getDashboardSnapshotQuery =
-  'mutation($guid: EntityGuid!) {\n  dashboardCreateSnapshotUrl(guid: $guid , params: {timeWindow: {duration: $duration}})\n}';
+  'mutation($guid: EntityGuid! , ,$duration: Milliseconds) {\n  dashboardCreateSnapshotUrl(guid: $guid , params: {timeWindow: {duration: $duration}})\n}';

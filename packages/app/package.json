@@ -30,6 +30,7 @@
     "@backstage/plugin-kafka": "^0.2.19",
     "@backstage/plugin-kubernetes": "^0.4.17",
     "@backstage/plugin-lighthouse": "^0.2.29",
+    "@backstage/plugin-new-relic-dashboard": "^0.1.0",
     "@backstage/plugin-newrelic": "^0.3.8",
     "@backstage/plugin-org": "^0.3.27",
     "@backstage/plugin-pagerduty": "0.3.17",

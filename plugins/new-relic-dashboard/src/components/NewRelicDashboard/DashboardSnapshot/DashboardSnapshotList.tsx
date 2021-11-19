@@ -27,6 +27,7 @@ interface TabPanelProps {
   index: number;
   value1: number;
 }
+
 function TabPanel(props: TabPanelProps) {
   const { children, value1, index, ...other } = props;
 
@@ -38,7 +39,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value1 === index && children}
+      {children}
     </div>
   );
 }
@@ -111,47 +112,47 @@ export const DashboardSnapshotList = ({ guid }: Props) => {
             },
           )}
         </Grid> */}
-      </Grid>
-      <Tabs
-        selectionFollowsFocus
-        indicatorColor="primary"
-        textColor="inherit"
-        variant="scrollable"
-        scrollButtons="auto"
-        aria-label="scrollable auto tabs example"
-        onChange={handleChange}
-        value={value1}
-      >
+        <Tabs
+          selectionFollowsFocus
+          indicatorColor="primary"
+          textColor="inherit"
+          variant="scrollable"
+          scrollButtons="auto"
+          aria-label="scrollable auto tabs example"
+          onChange={handleChange}
+          value={value1}
+        >
+          {value.getDashboardEntity.data.actor.entitySearch.results.entities?.map(
+            (Entity: any, index: any) => {
+              return (
+                <Tab
+                  label={Entity.name}
+                  className={styles.defaultTab}
+                  classes={{
+                    selected: styles.selected,
+                    root: styles.tabRoot,
+                  }}
+                  {...a11yProps(index)}
+                />
+              );
+            },
+          )}
+        </Tabs>
         {value.getDashboardEntity.data.actor.entitySearch.results.entities?.map(
           (Entity: any, index: any) => {
             return (
-              <Tab
-                label={Entity.name}
-                className={styles.defaultTab}
-                classes={{
-                  selected: styles.selected,
-                  root: styles.tabRoot,
-                }}
-                {...a11yProps(index)}
-              />
+              <TabPanel value1={value1} index={index}>
+                <DashboardSnapshot
+                  name={Entity.name}
+                  permalink={Entity.permalink}
+                  guid={Entity.guid}
+                  duration={2000000000}
+                />
+              </TabPanel>
             );
           },
         )}
-      </Tabs>
-      {value.getDashboardEntity.data.actor.entitySearch.results.entities?.map(
-        (Entity: any, index: any) => {
-          return (
-            <TabPanel value1={value1} index={index}>
-              <DashboardSnapshot
-                name={Entity.name}
-                permalink={Entity.permalink}
-                guid={Entity.guid}
-                duration="2000000000"
-              />
-            </TabPanel>
-          );
-        },
-      )}
+      </Grid>
     </>
   );
 };
