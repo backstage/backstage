@@ -25,7 +25,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import {
   PermissionPolicy,
-  conditionFor,
+  createConditionFactory,
   PolicyResult,
 } from '@backstage/plugin-permission-node';
 import {
@@ -36,7 +36,7 @@ import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/catalog-model';
 import { isComponentType as isComponentTypeRule } from './rules';
 
 const { isEntityOwner, isEntityKind } = catalogConditions;
-const isComponentType = conditionFor(isComponentTypeRule);
+const isComponentType = createConditionFactory(isComponentTypeRule);
 
 export class SimplePermissionPolicy implements PermissionPolicy {
   async handle(

@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity } from '@backstage/catalog-model';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { EntitiesSearchFilter } from '../catalog/types';
 
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/catalog-model';
-import { createConditionExports } from '@backstage/plugin-permission-node';
-import { hasAnnotation, isEntityKind, isEntityOwner } from './rules';
-
-export const { conditions, createConditions } = createConditionExports({
-  pluginId: 'catalog',
-  // TODO(authorization-framework): what if a single plugin has
-  // multiple resource types?
-  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-  rules: { hasAnnotation, isEntityKind, isEntityOwner },
-});
+export type CatalogPermissionRule = PermissionRule<
+  Entity,
+  EntitiesSearchFilter
+>;
