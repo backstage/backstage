@@ -69,9 +69,13 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     alignItems: 'end',
   },
   dropdownItem: {
-    width: '72%',
-    margin: '10px 0 10px 0',
+    width: '100%',
+    padding: '10px 0 10px 0',
+  },
+  textContent: {
     color: theme.palette.navigation.color,
+    display: 'flex',
+    justifyContent: 'center',
   },
 }));
 
@@ -144,7 +148,9 @@ export const SubmenuItem = ({
                 onClick={closeSubmenu}
                 key={key}
               >
-                {object.title}
+                <Typography variant="subtitle2" className={classes.textContent}>
+                  {object.title}
+                </Typography>
               </Link>
             ))}
           </div>
