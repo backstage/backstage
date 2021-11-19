@@ -83,6 +83,8 @@ import { Logger } from 'winston';
 import { PermissionClient } from '@backstage/plugin-permission-common';
 import { LocationService } from './types';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
+import { CatalogPermissionRule } from '../permissions/types';
+import * as catalogPermissionRules from '../permissions/rules';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -127,6 +129,7 @@ export class NextCatalogBuilder {
       maxSeconds: 150,
     });
   private locationAnalyzer: LocationAnalyzer | undefined = undefined;
+  private permissionRules: CatalogPermissionRule[];
 
   constructor(env: CatalogEnvironment) {
     this.env = env;
@@ -138,6 +141,7 @@ export class NextCatalogBuilder {
     this.processors = [];
     this.processorsReplace = false;
     this.parser = undefined;
+    this.permissionRules = Object.values(catalogPermissionRules);
   }
 
   /**
@@ -319,6 +323,10 @@ export class NextCatalogBuilder {
     return this;
   }
 
+  addPermissionRules(...permissionRules: CatalogPermissionRule[]) {
+    this.permissionRules.push(...permissionRules);
+  }
+
   /**
    * Wires up and returns all of the component parts of the catalog
    */
@@ -357,7 +365,11 @@ export class NextCatalogBuilder {
       parser,
       policy,
     });
-    const entitiesCatalog = new NextEntitiesCatalog(dbClient, permissions);
+    const entitiesCatalog = new NextEntitiesCatalog(
+      dbClient,
+      permissions,
+      this.permissionRules,
+    );
     const stitcher = new Stitcher(dbClient, logger);
 
     const locationStore = new DefaultLocationStore(dbClient);
@@ -387,6 +399,7 @@ export class NextCatalogBuilder {
     });
     const router = await createNextRouter({
       entitiesCatalog,
+      permissionRules: this.permissionRules,
       locationAnalyzer,
       locationService,
       refreshService,
