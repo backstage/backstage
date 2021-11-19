@@ -41,4 +41,58 @@ describe('SecureTemplater', () => {
       '(unknown path) [Line 1, Column 13]\n  expected name as lookup value, got .',
     );
   });
+
+  it('should make jsonify available when requested', async () => {
+    const templaterWith = new SecureTemplater({ jsonify: true });
+    const templaterWithout = new SecureTemplater();
+
+    await expect(templaterWith.render('${{ 1 | jsonify }}', {})).resolves.toBe(
+      '1',
+    );
+    await expect(
+      templaterWithout.render('${{ 1 | jsonify }}', {}),
+    ).rejects.toThrow('(unknown path)\n  Error: filter not found: jsonify');
+  });
+
+  it('should make parseRepoUrl available when requested', async () => {
+    const parseRepoUrl = jest.fn(() => ({
+      repo: 'my-repo',
+      owner: 'my-owner',
+      host: 'my-host.com',
+    }));
+    const templaterWith = new SecureTemplater({
+      parseRepoUrl,
+    });
+    const templaterWithout = new SecureTemplater();
+
+    const ctx = {
+      repoUrl: 'https://my-host.com/my-owner/my-repo',
+    };
+
+    await expect(
+      templaterWith.render('${{ repoUrl | parseRepoUrl | dump }}', ctx),
+    ).resolves.toBe(
+      JSON.stringify({
+        repo: 'my-repo',
+        owner: 'my-owner',
+        host: 'my-host.com',
+      }),
+    );
+    await expect(
+      templaterWith.render('${{ repoUrl | projectSlug }}', ctx),
+    ).resolves.toBe('my-owner/my-repo');
+    await expect(
+      templaterWithout.render('${{ repoUrl | parseRepoUrl | dump }}', ctx),
+    ).rejects.toThrow(
+      '(unknown path)\n  Error: filter not found: parseRepoUrl',
+    );
+    await expect(
+      templaterWithout.render('${{ repoUrl | projectSlug }}', ctx),
+    ).rejects.toThrow('(unknown path)\n  Error: filter not found: projectSlug');
+
+    expect(parseRepoUrl.mock.calls).toEqual([
+      ['https://my-host.com/my-owner/my-repo'],
+      ['https://my-host.com/my-owner/my-repo'],
+    ]);
+  });
 });

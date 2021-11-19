@@ -17,6 +17,7 @@
 import { VM } from 'vm2';
 import { resolvePackagePath } from '@backstage/backend-common';
 import fs from 'fs-extra';
+import { RepoSpec } from '../../scaffolder/actions/builtin/publish/util';
 
 const mkScript = (nunjucksSource: string) => `
 const render = (() => {
@@ -33,14 +34,46 @@ const render = (() => {
     },
   });
 
+  if (typeof jsonify !== 'undefined' && jsonify) {
+    env.addFilter('jsonify', env.getFilter('dump'));
+  }
+
+  if (typeof parseRepoUrl !== 'undefined') {
+    env.addFilter('parseRepoUrl', repoUrl => {
+      return JSON.parse(parseRepoUrl(repoUrl))
+    });
+    env.addFilter('projectSlug', repoUrl => {
+      const { owner, repo } = JSON.parse(parseRepoUrl(repoUrl));
+      return owner + '/' + repo;
+    });
+  }
+
   return function render(str, values) {
-    return env.renderString(str, JSON.parse(values));
+    try {
+      return env.renderString(str, JSON.parse(values));
+    } catch (error) {
+      // Make sure errors don't leak anything
+      throw new Error(String(error.message));
+    }
   }
 })();
 `;
 
+export interface SecureTemplaterOptions {
+  jsonify?: true;
+  parseRepoUrl?(repoUrl: string): RepoSpec;
+}
+
 export class SecureTemplater {
   #vm?: VM;
+
+  #jsonify?: true;
+  #parseRepoUrl?: (repoUrl: string) => RepoSpec;
+
+  constructor(options?: SecureTemplaterOptions) {
+    this.#jsonify = options?.jsonify;
+    this.#parseRepoUrl = options?.parseRepoUrl;
+  }
 
   async render(template: string, values: unknown) {
     const vm = await this.getVm();
@@ -52,9 +85,19 @@ export class SecureTemplater {
 
   private async getVm() {
     if (!this.#vm) {
-      this.#vm = new VM({
-        timeout: 1000,
-      });
+      let sandbox = undefined;
+      if (this.#jsonify) {
+        sandbox = { jsonify: true };
+      }
+      if (this.#parseRepoUrl) {
+        const parseRepoUrl = this.#parseRepoUrl;
+        sandbox = {
+          ...sandbox,
+          parseRepoUrl: (url: string) => JSON.stringify(parseRepoUrl(url)),
+        };
+      }
+
+      this.#vm = new VM({ timeout: 1000, sandbox });
 
       const nunjucksSource = await fs.readFile(
         resolvePackagePath(
