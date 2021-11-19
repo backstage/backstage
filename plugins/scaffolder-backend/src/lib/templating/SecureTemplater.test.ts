@@ -19,39 +19,40 @@ import { SecureTemplater } from './SecureTemplater';
 describe('SecureTemplater', () => {
   it('should render some templates', async () => {
     const templater = new SecureTemplater();
-    await expect(
-      templater.render('${{ test }}', { test: 'my-value' }),
-    ).resolves.toBe('my-value');
+    await templater.initializeIfNeeded();
+    expect(templater.render('${{ test }}', { test: 'my-value' })).toBe(
+      'my-value',
+    );
 
-    await expect(
-      templater.render('${{ test | dump }}', { test: 'my-value' }),
-    ).resolves.toBe('"my-value"');
+    expect(templater.render('${{ test | dump }}', { test: 'my-value' })).toBe(
+      '"my-value"',
+    );
 
-    await expect(
+    expect(
       templater.render('${{ test | replace("my-", "our-") }}', {
         test: 'my-value',
       }),
-    ).resolves.toBe('our-value');
+    ).toBe('our-value');
 
-    await expect(
+    expect(() =>
       templater.render('${{ invalid...syntax }}', {
         test: 'my-value',
       }),
-    ).rejects.toThrow(
+    ).toThrow(
       '(unknown path) [Line 1, Column 13]\n  expected name as lookup value, got .',
     );
   });
 
   it('should make jsonify available when requested', async () => {
     const templaterWith = new SecureTemplater({ jsonify: true });
+    await templaterWith.initializeIfNeeded();
     const templaterWithout = new SecureTemplater();
+    await templaterWithout.initializeIfNeeded();
 
-    await expect(templaterWith.render('${{ 1 | jsonify }}', {})).resolves.toBe(
-      '1',
+    expect(templaterWith.render('${{ 1 | jsonify }}', {})).toBe('1');
+    expect(() => templaterWithout.render('${{ 1 | jsonify }}', {})).toThrow(
+      '(unknown path)\n  Error: filter not found: jsonify',
     );
-    await expect(
-      templaterWithout.render('${{ 1 | jsonify }}', {}),
-    ).rejects.toThrow('(unknown path)\n  Error: filter not found: jsonify');
   });
 
   it('should make parseRepoUrl available when requested', async () => {
@@ -60,35 +61,33 @@ describe('SecureTemplater', () => {
       owner: 'my-owner',
       host: 'my-host.com',
     }));
-    const templaterWith = new SecureTemplater({
-      parseRepoUrl,
-    });
+    const templaterWith = new SecureTemplater({ parseRepoUrl });
+    await templaterWith.initializeIfNeeded();
     const templaterWithout = new SecureTemplater();
+    await templaterWithout.initializeIfNeeded();
 
     const ctx = {
       repoUrl: 'https://my-host.com/my-owner/my-repo',
     };
 
-    await expect(
+    expect(
       templaterWith.render('${{ repoUrl | parseRepoUrl | dump }}', ctx),
-    ).resolves.toBe(
+    ).toBe(
       JSON.stringify({
         repo: 'my-repo',
         owner: 'my-owner',
         host: 'my-host.com',
       }),
     );
-    await expect(
-      templaterWith.render('${{ repoUrl | projectSlug }}', ctx),
-    ).resolves.toBe('my-owner/my-repo');
-    await expect(
-      templaterWithout.render('${{ repoUrl | parseRepoUrl | dump }}', ctx),
-    ).rejects.toThrow(
-      '(unknown path)\n  Error: filter not found: parseRepoUrl',
+    expect(templaterWith.render('${{ repoUrl | projectSlug }}', ctx)).toBe(
+      'my-owner/my-repo',
     );
-    await expect(
+    expect(() =>
+      templaterWithout.render('${{ repoUrl | parseRepoUrl | dump }}', ctx),
+    ).toThrow('(unknown path)\n  Error: filter not found: parseRepoUrl');
+    expect(() =>
       templaterWithout.render('${{ repoUrl | projectSlug }}', ctx),
-    ).rejects.toThrow('(unknown path)\n  Error: filter not found: projectSlug');
+    ).toThrow('(unknown path)\n  Error: filter not found: projectSlug');
 
     expect(parseRepoUrl.mock.calls).toEqual([
       ['https://my-host.com/my-owner/my-repo'],

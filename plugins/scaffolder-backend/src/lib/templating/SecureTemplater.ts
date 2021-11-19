@@ -75,15 +75,17 @@ export class SecureTemplater {
     this.#parseRepoUrl = options?.parseRepoUrl;
   }
 
-  async render(template: string, values: unknown) {
-    const vm = await this.getVm();
-    vm.setGlobal('templateStr', template);
-    vm.setGlobal('templateValues', JSON.stringify(values));
-    const result = vm.run(`render(templateStr, templateValues)`);
+  render(template: string, values: unknown): string {
+    if (!this.#vm) {
+      throw new Error('SecureTemplater has not been initialized');
+    }
+    this.#vm.setGlobal('templateStr', template);
+    this.#vm.setGlobal('templateValues', JSON.stringify(values));
+    const result = this.#vm.run(`render(templateStr, templateValues)`);
     return result;
   }
 
-  private async getVm() {
+  async initializeIfNeeded() {
     if (!this.#vm) {
       let sandbox = undefined;
       if (this.#jsonify) {
