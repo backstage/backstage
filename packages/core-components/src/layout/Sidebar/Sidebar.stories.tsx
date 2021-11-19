@@ -83,7 +83,6 @@ export const SampleScalableSidebar = () => (
         title="Misc"
         to="/6"
         icon={MiscIcon}
-        hasDropDown
         dropdownItems={[
           {
             title: 'Lorem Ipsum',

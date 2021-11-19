@@ -301,6 +301,12 @@ export type DismissbleBannerClassKey = DismissableBannerClassKey;
 // @public (undocumented)
 export function DocsIcon(props: IconComponentProps): JSX.Element;
 
+// @public
+export type DropDownItem = {
+  title: string;
+  to: string;
+};
+
 // @public (undocumented)
 export function EmailIcon(props: IconComponentProps): JSX.Element;
 
@@ -2087,16 +2093,21 @@ export type StructuredMetadataTableListClassKey = 'root';
 // @public (undocumented)
 export type StructuredMetadataTableNestedListClassKey = 'root';
 
-// Warning: (ae-forgotten-export) The symbol "SubmenuItemProps" needs to be exported by the entry point index.d.ts
-//
 // @public
 export const SubmenuItem: ({
   title,
   to,
-  hasDropDown,
   icon: Icon,
   dropdownItems,
 }: SubmenuItemProps) => JSX.Element;
+
+// @public
+export type SubmenuItemProps = {
+  title: string;
+  to: string;
+  icon: IconComponent;
+  dropdownItems?: DropDownItem[];
+};
 
 // Warning: (ae-forgotten-export) The symbol "SubvalueCellProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SubvalueCell" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

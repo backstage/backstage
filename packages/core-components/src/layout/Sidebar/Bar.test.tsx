@@ -42,7 +42,6 @@ async function renderScalableSidebar() {
           title="Misc"
           to="/6"
           icon={MiscIcon}
-          hasDropDown
           dropdownItems={[
             {
               title: 'dropdown item 1',

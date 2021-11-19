@@ -192,7 +192,7 @@ const ItemWithSubmenu = ({
   // Menu item is active if any of its children have active paths
   Children.forEach(children, element => {
     if (!React.isValidElement(element)) return;
-    if (element.props.hasDropDown && element.props.dropdownItems) {
+    if (element.props.dropdownItems) {
       element.props.dropdownItems.map((item: { to: string }) =>
         toPathnames.push(item.to),
       );

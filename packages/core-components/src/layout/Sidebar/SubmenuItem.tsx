@@ -79,14 +79,30 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-type DropDownItem = {
+/**
+ * Clickable item displayed when submenu item is clicked.
+ * title: Text content of item
+ * to: Path to navigate to when item is clicked
+ *
+ * @public
+ */
+export type DropDownItem = {
   title: string;
   to: string;
 };
-type SubmenuItemProps = {
+/**
+ * Holds submenu item content.
+ *
+ * title: Text content of submenu item
+ * to: Path to navigate to when item is clicked
+ * icon: Icon displayed on the left of text content
+ * dropdownItems: Optional array of dropdown items displayed when submenu item is clicked.
+ *
+ * @public
+ */
+export type SubmenuItemProps = {
   title: string;
   to: string;
-  hasDropDown?: boolean;
   icon: IconComponent;
   dropdownItems?: DropDownItem[];
 };
@@ -99,7 +115,6 @@ type SubmenuItemProps = {
 export const SubmenuItem = ({
   title,
   to,
-  hasDropDown = false,
   icon: Icon,
   dropdownItems,
 }: SubmenuItemProps) => {
@@ -117,7 +132,7 @@ export const SubmenuItem = ({
   const handleClickDropdown = () => {
     setShowDropDown(!showDropDown);
   };
-  if (hasDropDown && dropdownItems !== undefined) {
+  if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
       const resolvedPath = resolvePath(item.to);
       isActive = locationPathname === resolvedPath.pathname;
@@ -142,7 +157,7 @@ export const SubmenuItem = ({
             <ArrowDropDownIcon className={classes.dropdownArrow} />
           )}
         </button>
-        {hasDropDown && showDropDown && (
+        {dropdownItems && showDropDown && (
           <div className={classes.dropdown}>
             {dropdownItems.map((object, key) => (
               <Link
