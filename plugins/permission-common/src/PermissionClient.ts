@@ -77,7 +77,8 @@ export class PermissionClient {
 
   constructor(options: { discoveryApi: DiscoveryApi; configApi: Config }) {
     this.discoveryApi = options.discoveryApi;
-    this.enabled = options.configApi.getBoolean('permission.enabled');
+    this.enabled =
+      options.configApi.getOptionalBoolean('permission.enabled') ?? false;
   }
 
   /**
