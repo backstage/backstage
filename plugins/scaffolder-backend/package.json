@@ -69,7 +69,8 @@
     "octokit-plugin-create-pull-request": "^3.10.0",
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
-    "yaml": "^1.10.0"
+    "yaml": "^1.10.0",
+    "vm2": "^3.9.5"
   },
   "devDependencies": {
     "@backstage/cli": "^0.9.0",
