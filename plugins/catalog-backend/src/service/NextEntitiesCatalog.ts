@@ -24,6 +24,10 @@ import {
   AuthorizeResult,
   PermissionClient,
 } from '@backstage/plugin-permission-common';
+import {
+  ConditionTransformer,
+  createConditionTransformer,
+} from '@backstage/plugin-permission-node';
 import { Knex } from 'knex';
 import {
   EntitiesCatalog,
@@ -34,7 +38,6 @@ import {
   EntityFilter,
   EntitiesSearchFilter,
 } from '../catalog/types';
-import { toQuery } from '../permissions';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateReferencesRow,
@@ -42,6 +45,7 @@ import {
   DbSearchRow,
   DbPageInfo,
 } from '../database/tables';
+import { CatalogPermissionRule } from '../permissions/types';
 
 function parsePagination(input?: EntityPagination): {
   limit?: number;
@@ -160,10 +164,15 @@ function parseFilter(
 }
 
 export class NextEntitiesCatalog implements EntitiesCatalog {
+  private readonly transformConditions: ConditionTransformer<EntitiesSearchFilter>;
+
   constructor(
     private readonly database: Knex,
     private readonly permissionApi: PermissionClient,
-  ) {}
+    permissionRules: CatalogPermissionRule[],
+  ) {
+    this.transformConditions = createConditionTransformer(permissionRules);
+  }
 
   async entities(
     request?: EntitiesRequest,
@@ -191,7 +200,9 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
         };
       } else if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
         entitiesQuery = parseFilter(
-          toQuery(authorizeResponse.conditions),
+          this.transformConditions(
+            authorizeResponse.conditions,
+          ),
           entitiesQuery,
           db,
         );
