@@ -17,19 +17,23 @@
 import { errorHandler } from '@backstage/backend-common';
 import {
   analyzeLocationSchema,
+  Entity,
   locationSpecSchema,
+  parseEntityRef,
+  RESOURCE_TYPE_CATALOG_ENTITY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { IdentityClient } from '@backstage/plugin-auth-backend';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
 import { EntitiesCatalog } from '../catalog';
 import { LocationAnalyzer } from '../ingestion/types';
-import { createPermissionIntegrationRouter } from '../permissions';
+import { CatalogPermissionRule } from '../permissions/types';
 import {
   basicEntityFilter,
   parseEntityFilterParams,
@@ -39,8 +43,33 @@ import {
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
 import { RefreshService, RefreshOptions, LocationService } from './types';
 
+const getEntity = async (
+  resourceRef: string,
+  entitiesCatalog: EntitiesCatalog,
+): Promise<Entity | undefined> => {
+  const parsed = parseEntityRef(resourceRef);
+
+  const { entities } = await entitiesCatalog.entities(
+    {
+      filter: basicEntityFilter({
+        kind: parsed.kind,
+        'metadata.namespace': parsed.namespace,
+        'metadata.name': parsed.name,
+      }),
+    },
+    false,
+  );
+
+  if (!entities.length) {
+    return undefined;
+  }
+
+  return entities[0];
+};
+
 export interface NextRouterOptions {
   entitiesCatalog?: EntitiesCatalog;
+  permissionRules: CatalogPermissionRule[];
   locationAnalyzer?: LocationAnalyzer;
   locationService: LocationService;
   refreshService?: RefreshService;
@@ -53,6 +82,7 @@ export async function createNextRouter(
 ): Promise<express.Router> {
   const {
     entitiesCatalog,
+    permissionRules,
     locationAnalyzer,
     locationService,
     refreshService,
@@ -79,7 +109,13 @@ export async function createNextRouter(
 
   if (entitiesCatalog) {
     router
-      .use(createPermissionIntegrationRouter(entitiesCatalog))
+      .use(
+        createPermissionIntegrationRouter({
+          resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+          getResource: resourceRef => getEntity(resourceRef, entitiesCatalog),
+          rules: permissionRules,
+        }),
+      )
       .get('/entities', async (req, res) => {
         const { entities, pageInfo } = await entitiesCatalog.entities({
           authorizationToken: IdentityClient.getBearerToken(
