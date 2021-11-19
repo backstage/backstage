@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ScmIntegrations } from '@backstage/integration';
 import {
   TaskContext,
@@ -23,7 +24,6 @@ import {
   WorkflowRunner,
 } from './types';
 import * as winston from 'winston';
-import nunjucks from 'nunjucks';
 import fs from 'fs-extra';
 import path from 'path';
 import { JsonObject, JsonValue } from '@backstage/types';
@@ -33,6 +33,7 @@ import { isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
 import { parseRepoUrl } from '../actions/builtin/publish/util';
 import { TemplateActionRegistry } from '../actions';
+import { SecureTemplater } from '../../lib/templating/SecureTemplater';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -84,36 +85,35 @@ const createStepLogger = ({
 };
 
 export class NunjucksWorkflowRunner implements WorkflowRunner {
-  private readonly nunjucks: nunjucks.Environment;
-
-  private readonly nunjucksOptions: nunjucks.ConfigureOptions = {
-    autoescape: false,
-    tags: {
-      variableStart: '${{',
-      variableEnd: '}}',
-    },
-  };
+  private readonly templater: SecureTemplater;
 
   constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
-    this.nunjucks = nunjucks.configure(this.nunjucksOptions);
+    const { integrations } = options;
 
-    // TODO(blam): let's work out how we can deprecate these.
-    // We shouldn't really need to be exposing these now we can deal with
-    // objects in the params block.
-    // Maybe we can expose a new RepoUrlPicker with secrets for V3 that provides an object already.
-    this.nunjucks.addFilter('parseRepoUrl', repoUrl => {
-      return parseRepoUrl(repoUrl, this.options.integrations);
-    });
-
-    this.nunjucks.addFilter('projectSlug', repoUrl => {
-      const { owner, repo } = parseRepoUrl(repoUrl, this.options.integrations);
-      return `${owner}/${repo}`;
+    this.templater = new SecureTemplater({
+      // TODO(blam): let's work out how we can deprecate this.
+      // We shouldn't really need to be exposing these now we can deal with
+      // objects in the params block.
+      // Maybe we can expose a new RepoUrlPicker with secrets for V3 that provides an object already.
+      parseRepoUrl(url: string) {
+        return parseRepoUrl(url, integrations);
+      },
     });
   }
 
   private isSingleTemplateString(input: string) {
     const { parser, nodes } = require('nunjucks');
-    const parsed = parser.parse(input, {}, this.nunjucksOptions);
+    const parsed = parser.parse(
+      input,
+      {},
+      {
+        autoescape: false,
+        tags: {
+          variableStart: '${{',
+          variableEnd: '}}',
+        },
+      },
+    );
 
     return (
       parsed.children.length === 1 &&
@@ -134,10 +134,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               );
 
               // Run the templating
-              const templated = this.nunjucks.renderString(
-                wrappedDumped,
-                context,
-              );
+              const templated = this.templater.render(wrappedDumped, context);
 
               // If there's an empty string returned, then it's undefined
               if (templated === '') {
@@ -154,7 +151,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           }
 
           // Fallback to default behaviour
-          const templated = this.nunjucks.renderString(value, context);
+          const templated = this.templater.render(value, context);
 
           if (templated === '') {
             return undefined;
@@ -184,6 +181,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       await task.emitLog(
         `Starting up task with ${task.spec.steps.length} steps`,
       );
+      await this.templater.initializeIfNeeded();
 
       const context: TemplateContext = {
         parameters: task.spec.parameters,
