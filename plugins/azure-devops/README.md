@@ -98,12 +98,12 @@ To get the Azure Repos component working you'll need to do the following two ste
    yarn add @backstage/plugin-azure-devops
    ```
 
-2. Second we need to add the `EntityAzurePipelinesContent` extension to the entity page in your app:
+2. Second we need to add the `EntityAzurePullRequestsContent` extension to the entity page in your app:
 
    ```tsx
    // In packages/app/src/components/catalog/EntityPage.tsx
    import {
-     EntityAzurePipelinesContent,
+     EntityAzurePullRequestsContent,
      isAzureDevOpsAvailable,
    } from '@backstage/plugin-azure-devops';
 
@@ -112,7 +112,7 @@ To get the Azure Repos component working you'll need to do the following two ste
      <EntityLayout>
        // ...
        <EntityLayout.Route if={isAzureDevOpsAvailable} path="/pull-requests" title="Pull Requests">
-         <EntityAzurePipelinesContent defaultLimit={25} />
+         <EntityAzurePullRequestsContent defaultLimit={25} />
        </EntityLayout.Route>
        // ...
      </EntityLayout>
@@ -122,7 +122,7 @@ To get the Azure Repos component working you'll need to do the following two ste
 
 - You'll need to add the `EntityLayout.Route` above from step 2 to all the entity sections you want to see Pull Requests in. For example if you wanted to see Pull Requests when looking at Website entities then you would need to add this to the `websiteEntityPage` section.
 - The `if` prop is optional on the `EntityLayout.Route`, you can remove it if you always want to see the tab even if the entity being viewed does not have the needed annotation
-- The `defaultLimit` property on the `EntityAzurePipelinesContent` will set the max number of Pull Requests you would like to see, if not set this will default to 10
+- The `defaultLimit` property on the `EntityAzurePullRequestsContent` will set the max number of Pull Requests you would like to see, if not set this will default to 10
 
 ## Limitations
 
