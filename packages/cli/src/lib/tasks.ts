@@ -51,7 +51,7 @@ export class Task {
     item: string,
     taskFunc: () => Promise<T>,
   ): Promise<T> {
-    const ora = await import('ora').then(m => m.default);
+    const { default: ora } = await import('ora');
     const paddedTask = chalk.green(task.padEnd(TASK_NAME_MAX_LENGTH));
 
     const spinner = ora({
