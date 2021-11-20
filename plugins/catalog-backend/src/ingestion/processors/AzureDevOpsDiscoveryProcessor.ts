@@ -18,6 +18,7 @@ import { LocationSpec } from '@backstage/catalog-model';
 import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
 import {
+  AzureIntegrationConfig,
   getAzureRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -26,7 +27,18 @@ import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 /**
- * TODO
+ * Extracts repositories out of an Azure DevOps org.
+ *
+ * The following will create locations for all projects which have a catalog-info.yaml
+ * on the default branch. The first is shorthand for the second.
+ *
+ *    target: "https://dev.azure.com/org/project"
+ *    or
+ *    target: https://dev.azure.com/org/project?path=/catalog-info.yaml
+ *
+ * You may also explicitly specify a single repo:
+ *
+ *    target: https://dev.azure.com/org/project/_git/repo
  **/
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
@@ -62,13 +74,49 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
       );
     }
 
-    // TODO: extract this from configured URL
-    const { org, project } = { org: 'myOrg', project: 'myProject' };
+    const { baseUrl, org, project, repo, catalogPath } = parseUrl(
+      location.target,
+    );
+    this.logger.info(
+      `Reading Azure DevOps repositories from ${location.target}`,
+    );
 
-    // TODO:  What's the search URL for self hosted DevOps?
+    const files = await this.search(
+      azureConfig,
+      org,
+      project,
+      repo,
+      catalogPath,
+    );
+    for (const file of files) {
+      emit(
+        results.location(
+          {
+            type: 'url',
+            target: `${baseUrl}/${org}/${project}/_git/${file.repository.name}?path=${file.path}`,
+          },
+          // Not all locations may actually exist, since the user defined them as a wildcard pattern.
+          // Thus, we emit them as optional and let the downstream processor find them while not outputting
+          // an error if it couldn't.
+          true,
+        ),
+      );
+    }
+
+    return true;
+  }
+
+  // search returns all files that matches the given search path.
+  async search(
+    azureConfig: AzureIntegrationConfig,
+    org: string,
+    project: string,
+    repo: string,
+    path: string,
+  ): Promise<CodeSearchResultItem[]> {
+    // TODO:  What's the search URL for onpremises DevOps?
     const searchUrl = `https://almsearch.dev.azure.com/${org}/${project}/_apis/search/codesearchresults?api-version=6.0-preview.1`;
     const opts = getAzureRequestOptions(azureConfig);
-
     const response = await fetch(searchUrl, {
       method: 'POST',
       headers: {
@@ -76,53 +124,81 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        searchText: 'catalog-info.yaml',
+        searchText: `path:${path} repo:${repo || '*'}`,
         $top: 1000,
       }),
     });
 
-    // TODO: more logging
-    if (response.status === 200) {
-      const responseBody: AzureDevOpsCodeSearchResults = await response.json();
-
-      // TODO: should we support different file names?
-      const matches = responseBody.results.filter(
-        r => r.fileName === 'catalog-info.yaml',
+    if (response.status !== 200) {
+      this.logger.warn(
+        `Azure DevOps search failed with response status ${response.status}`,
       );
-
-      for (const match of matches) {
-        emit(
-          results.location(
-            {
-              type: 'url',
-              // TODO: Do we need to support non-default branches?
-              target: `${location.target}/_git/${match.repository.name}?path=${match.path}`,
-            },
-            // Not all locations may actually exist, since the user defined them as a wildcard pattern.
-            // Thus, we emit them as optional and let the downstream processor find them while not outputting
-            // an error if it couldn't.
-            true,
-          ),
-        );
-      }
+      return [];
     }
 
-    return true;
+    const responseBody: CodeSearchResponse = await response.json();
+    this.logger.info(`Azure DevOps search found ${responseBody.count} files`);
+
+    return responseBody.results;
   }
 }
 
-interface AzureDevOpsCodeSearchResults {
+/**
+ * parseUrl extracts segments from the Azure DevOps URL.
+ **/
+export function parseUrl(urlString: string): {
+  baseUrl: string;
+  org: string;
+  project: string;
+  repo: string;
+  catalogPath: string;
+} {
+  const url = new URL(urlString);
+  const path = url.pathname.substr(1).split('/');
+
+  const catalogPath = url.searchParams.get('path') || '/catalog-info.yaml';
+
+  if (path.length === 2 && path[0].length && path[1].length) {
+    return {
+      baseUrl: url.origin,
+      org: decodeURIComponent(path[0]),
+      project: decodeURIComponent(path[1]),
+      repo: '',
+      catalogPath,
+    };
+  } else if (
+    path.length === 4 &&
+    path[0].length &&
+    path[1].length &&
+    path[2].length &&
+    path[3].length
+  ) {
+    return {
+      baseUrl: url.origin,
+      org: decodeURIComponent(path[0]),
+      project: decodeURIComponent(path[1]),
+      repo: decodeURIComponent(path[3]),
+      catalogPath,
+    };
+  }
+
+  throw new Error(`Failed to parse ${urlString}`);
+}
+
+interface CodeSearchResponse {
   count: number;
-  results: Array<{
-    fileName: string;
-    path: string;
-    project: {
-      id: string;
-      name: string;
-    };
-    repository: {
-      id: string;
-      name: string;
-    };
-  }>;
+  results: CodeSearchResultItem[];
+}
+
+interface CodeSearchResultItem {
+  fileName: string;
+  path: string;
+  project: {
+    id: string;
+    name: string;
+  };
+  repository: {
+    id: string;
+    name: string;
+  };
 }
