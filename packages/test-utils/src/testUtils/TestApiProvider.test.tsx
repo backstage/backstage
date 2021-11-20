@@ -16,9 +16,8 @@
 
 import React from 'react';
 import { createApiRef, useApiHolder } from '@backstage/core-plugin-api';
-import { TestApiProvider } from './TestApiProvider';
+import { TestApiProvider, TestApiRegistry } from './TestApiProvider';
 import { render, screen } from '@testing-library/react';
-import { TestApiRegistry } from '.';
 
 const xApiRef = createApiRef<{ a: string; b: number }>({
   id: 'x',

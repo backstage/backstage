@@ -54,7 +54,7 @@ export class TestApiRegistry implements ApiHolder {
    *
    * @example
    * ```ts
-   * const apis = TestApiRegistry.with(
+   * const apis = TestApiRegistry.from(
    *   [configApiRef, new ConfigReader({})],
    *   [identityApiRef, { getUserId: () => 'tester' }],
    * );
