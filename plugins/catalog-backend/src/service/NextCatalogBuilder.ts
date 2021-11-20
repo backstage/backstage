@@ -44,6 +44,7 @@ import {
   CatalogProcessorParser,
   CodeOwnersProcessor,
   FileReaderProcessor,
+  AzureDevOpsDiscoveryProcessor,
   GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
   GitLabDiscoveryProcessor,
@@ -291,6 +292,7 @@ export class NextCatalogBuilder {
     return [
       new FileReaderProcessor(),
       BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
+      AzureDevOpsDiscoveryProcessor.fromConfig(config, { logger }),
       GithubDiscoveryProcessor.fromConfig(config, { logger }),
       GithubOrgReaderProcessor.fromConfig(config, { logger }),
       GitLabDiscoveryProcessor.fromConfig(config, { logger }),
