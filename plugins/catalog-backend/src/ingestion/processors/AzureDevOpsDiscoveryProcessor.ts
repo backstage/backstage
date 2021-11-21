@@ -15,16 +15,12 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
-import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
-import {
-  AzureIntegrationConfig,
-  getAzureRequestOptions,
-  ScmIntegrations,
-} from '@backstage/integration';
+import { ScmIntegrations } from '@backstage/integration';
 import { Logger } from 'winston';
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { codeSearch } from './azure';
 
 /**
  * Extracts repositories out of an Azure DevOps org.
@@ -81,13 +77,16 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
       `Reading Azure DevOps repositories from ${location.target}`,
     );
 
-    const files = await this.search(
+    const files = await codeSearch(
       azureConfig,
       org,
       project,
       repo,
       catalogPath,
     );
+
+    this.logger.info(`Found ${files.length} files in Azure DevOps.`);
+
     for (const file of files) {
       emit(
         results.location(
@@ -104,42 +103,6 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
     }
 
     return true;
-  }
-
-  // search returns all files that matches the given search path.
-  async search(
-    azureConfig: AzureIntegrationConfig,
-    org: string,
-    project: string,
-    repo: string,
-    path: string,
-  ): Promise<CodeSearchResultItem[]> {
-    // TODO:  What's the search URL for onpremises DevOps?
-    const searchUrl = `https://almsearch.dev.azure.com/${org}/${project}/_apis/search/codesearchresults?api-version=6.0-preview.1`;
-    const opts = getAzureRequestOptions(azureConfig);
-    const response = await fetch(searchUrl, {
-      method: 'POST',
-      headers: {
-        ...opts.headers,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        searchText: `path:${path} repo:${repo || '*'}`,
-        $top: 1000,
-      }),
-    });
-
-    if (response.status !== 200) {
-      this.logger.warn(
-        `Azure DevOps search failed with response status ${response.status}`,
-      );
-      return [];
-    }
-
-    const responseBody: CodeSearchResponse = await response.json();
-    this.logger.info(`Azure DevOps search found ${responseBody.count} files`);
-
-    return responseBody.results;
   }
 }
 
@@ -183,22 +146,4 @@ export function parseUrl(urlString: string): {
   }
 
   throw new Error(`Failed to parse ${urlString}`);
-}
-
-interface CodeSearchResponse {
-  count: number;
-  results: CodeSearchResultItem[];
-}
-
-interface CodeSearchResultItem {
-  fileName: string;
-  path: string;
-  project: {
-    id: string;
-    name: string;
-  };
-  repository: {
-    id: string;
-    name: string;
-  };
 }

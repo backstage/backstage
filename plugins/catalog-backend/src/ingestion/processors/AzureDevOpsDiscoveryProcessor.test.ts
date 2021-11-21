@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-import { parseUrl } from './AzureDevOpsDiscoveryProcessor';
+import { getVoidLogger } from '@backstage/backend-common';
+import { LocationSpec } from '@backstage/catalog-model';
+import { ConfigReader } from '@backstage/config';
+import { codeSearch } from './azure';
+import {
+  AzureDevOpsDiscoveryProcessor,
+  parseUrl,
+} from './AzureDevOpsDiscoveryProcessor';
+
+jest.mock('./azure');
+const mockCodeSearch = codeSearch as jest.MockedFunction<typeof codeSearch>;
 
 describe('AzureDevOpsDiscoveryProcessor', () => {
   describe('parseUrl', () => {
@@ -59,5 +69,209 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
     });
   });
 
-  // TODO: add tests for AzureDevOpsDiscoveryProcessor
+  describe('reject unrelated entries', () => {
+    it('rejects unknown types', async () => {
+      const processor = AzureDevOpsDiscoveryProcessor.fromConfig(
+        new ConfigReader({
+          integrations: {
+            azure: [{ host: 'dev.azure.com', token: 'blob' }],
+          },
+        }),
+        { logger: getVoidLogger() },
+      );
+      const location: LocationSpec = {
+        type: 'not-azure-discovery',
+        target: 'https://dev.azure.com',
+      };
+      await expect(
+        processor.readLocation(location, false, () => {}),
+      ).resolves.toBeFalsy();
+    });
+  });
+
+  it('rejects unknown targets', async () => {
+    const processor = AzureDevOpsDiscoveryProcessor.fromConfig(
+      new ConfigReader({
+        integrations: {
+          github: [
+            { host: 'dev.azure.com', token: 'blob' },
+            { host: 'azure.myorg.com', token: 'blob' },
+          ],
+        },
+      }),
+      { logger: getVoidLogger() },
+    );
+    const location: LocationSpec = {
+      type: 'azure-discovery',
+      target: 'https://not.azure.com/org/project',
+    };
+    await expect(
+      processor.readLocation(location, false, () => {}),
+    ).rejects.toThrow(
+      /There is no Azure integration that matches https:\/\/not.azure.com\/org\/project. Please add a configuration entry for it under integrations.azure/,
+    );
+  });
+
+  describe('handles repositories', () => {
+    const processor = AzureDevOpsDiscoveryProcessor.fromConfig(
+      new ConfigReader({
+        integrations: {
+          github: [{ host: 'dev.azure.com', token: 'blob' }],
+        },
+      }),
+      { logger: getVoidLogger() },
+    );
+
+    beforeEach(() => {
+      mockCodeSearch.mockClear();
+    });
+
+    it('output all locations found on from code search', async () => {
+      const location: LocationSpec = {
+        type: 'azure-discovery',
+        target: 'https://dev.azure.com/shopify/engineering',
+      };
+      mockCodeSearch.mockResolvedValueOnce([
+        {
+          fileName: 'catalog-info.yaml',
+          path: '/catalog-info.yaml',
+          repository: {
+            name: 'backstage',
+          },
+        },
+        {
+          fileName: 'catalog-info.yaml',
+          path: '/src/catalog-info.yaml',
+          repository: {
+            name: 'ios-app',
+          },
+        },
+      ]);
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(mockCodeSearch).toHaveBeenCalledWith(
+        { host: 'dev.azure.com' },
+        'shopify',
+        'engineering',
+        '',
+        '/catalog-info.yaml',
+      );
+      expect(emitter).toHaveBeenCalledTimes(2);
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://dev.azure.com/shopify/engineering/_git/backstage?path=/catalog-info.yaml',
+        },
+        optional: true,
+      });
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://dev.azure.com/shopify/engineering/_git/ios-app?path=/src/catalog-info.yaml',
+        },
+        optional: true,
+      });
+    });
+
+    it('output single locations from code search', async () => {
+      const location: LocationSpec = {
+        type: 'azure-discovery',
+        target: 'https://dev.azure.com/shopify/engineering/_git/backstage',
+      };
+      mockCodeSearch.mockResolvedValueOnce([
+        {
+          fileName: 'catalog-info.yaml',
+          path: '/catalog-info.yaml',
+          repository: {
+            name: 'backstage',
+          },
+        },
+      ]);
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(mockCodeSearch).toHaveBeenCalledWith(
+        { host: 'dev.azure.com' },
+        'shopify',
+        'engineering',
+        'backstage',
+        '/catalog-info.yaml',
+      );
+      expect(emitter).toHaveBeenCalledTimes(1);
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://dev.azure.com/shopify/engineering/_git/backstage?path=/catalog-info.yaml',
+        },
+        optional: true,
+      });
+    });
+
+    it('output single locations with different file name from code search', async () => {
+      const location: LocationSpec = {
+        type: 'azure-discovery',
+        target:
+          'https://dev.azure.com/shopify/engineering?path=/src/*/catalog.yaml',
+      };
+      mockCodeSearch.mockResolvedValueOnce([
+        {
+          fileName: 'catalog.yaml',
+          path: '/src/main/catalog.yaml',
+          repository: {
+            name: 'backstage',
+          },
+        },
+      ]);
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(mockCodeSearch).toHaveBeenCalledWith(
+        { host: 'dev.azure.com' },
+        'shopify',
+        'engineering',
+        '',
+        '/src/*/catalog.yaml',
+      );
+      expect(emitter).toHaveBeenCalledTimes(1);
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://dev.azure.com/shopify/engineering/_git/backstage?path=/src/main/catalog.yaml',
+        },
+        optional: true,
+      });
+    });
+
+    it('output nothing when code search does not find anything', async () => {
+      const location: LocationSpec = {
+        type: 'azure-discovery',
+        target: 'https://dev.azure.com/shopify/engineering/_git/backstage',
+      };
+      mockCodeSearch.mockResolvedValueOnce([]);
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(mockCodeSearch).toHaveBeenCalledWith(
+        { host: 'dev.azure.com' },
+        'shopify',
+        'engineering',
+        'backstage',
+        '/catalog-info.yaml',
+      );
+      expect(emitter).not.toHaveBeenCalled();
+    });
+  });
 });
