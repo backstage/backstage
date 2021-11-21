@@ -33,23 +33,69 @@ const deprecatedPattern = /@deprecated|DEPRECATION/;
 class ReleaseProvider {
   cache = new Map();
 
-  async lookup(commitSha) {
-    if (this.cache.has(commitSha)) {
-      return this.cache.get(commitSha);
+  constructor(rootPath) {
+    this.rootPath = rootPath;
+  }
+
+  async lookup(commitSha, packageDir) {
+    const key = commitSha + packageDir;
+
+    if (this.cache.has(key)) {
+      return this.cache.get(key);
     }
 
-    const { stdout: tagOutput } = await execFile(
-      'git',
-      ['tag', '--contains', commitSha],
-      { shell: true },
+    const pkgJsonPath = relativePath(
+      this.rootPath,
+      resolvePath(this.rootPath, packageDir, 'package.json'),
     );
+    const releasePromise = Promise.resolve().then(async () => {
+      // Find all tags that contain the commit
+      const { stdout: tagOutput } = await execFile(
+        'git',
+        ['tag', '--contains', commitSha],
+        { shell: true },
+      );
 
-    const [release] = tagOutput
-      .split('\n')
-      .filter(l => l.startsWith('release-'));
+      // Filter out just the releases
+      const releases = tagOutput
+        .split('\n')
+        .filter(l => l.startsWith('release-'));
 
-    this.cache.set(commitSha, release);
-    return release;
+      // Then find the earliest release that affected our package
+      for (const release of releases) {
+        let oldVersion;
+        let newVersion;
+
+        try {
+          const { stdout: content } = await execFile(
+            'git',
+            ['show', `${release}^:${pkgJsonPath}`],
+            { shell: true },
+          );
+          oldVersion = JSON.parse(content).version;
+        } catch {
+          /* */
+        }
+        try {
+          const { stdout: content } = await execFile(
+            'git',
+            ['show', `${release}:${pkgJsonPath}`],
+            { shell: true },
+          );
+          newVersion = JSON.parse(content).version;
+        } catch {
+          /* */
+        }
+
+        if (oldVersion !== newVersion) {
+          return release;
+        }
+      }
+      return undefined;
+    });
+
+    this.cache.set(key, releasePromise);
+    return releasePromise;
   }
 }
 
@@ -65,7 +111,7 @@ async function main() {
 
   const fileQueue = [];
   const deprecationQueue = [];
-  const releaseProvider = new ReleaseProvider();
+  const releaseProvider = new ReleaseProvider(rootPath);
   const deprecations = [];
 
   await Promise.all(
@@ -81,13 +127,18 @@ async function main() {
             const files = await globby(['**/*.{js,jsx,ts,tsx}'], {
               cwd: srcDir,
             });
-            fileQueue.push(...files.map(file => resolvePath(srcDir, file)));
+            fileQueue.push(
+              ...files.map(file => ({
+                packageDir,
+                file: resolvePath(srcDir, file),
+              })),
+            );
           }
         }
 
         // Parse files and search for deprecations
         while (fileQueue.length) {
-          const file = fileQueue.pop();
+          const { packageDir, file } = fileQueue.pop();
           const content = await fs.readFile(file, 'utf8');
           if (!deprecatedPattern.test(content)) {
             continue;
@@ -97,6 +148,7 @@ async function main() {
           for (const [index, line] of lines.entries()) {
             if (deprecatedPattern.test(line)) {
               deprecationQueue.push({
+                packageDir,
                 file,
                 lineNumber: index + 1,
                 lineContent: line,
@@ -109,7 +161,7 @@ async function main() {
         while (deprecationQueue.length) {
           const deprecation = deprecationQueue.pop();
 
-          const { file, lineNumber: n, lineContent } = deprecation;
+          const { file, packageDir, lineNumber: n, lineContent } = deprecation;
           const { stdout: blameOutput } = await execFile(
             'git',
             ['blame', '--porcelain', `-L ${n},${n}`, file],
@@ -128,7 +180,7 @@ async function main() {
           const [commit] = blameOutput.split(' ', 1);
           const { author, ['author-time']: authorTime } = blameInfo;
 
-          const release = await releaseProvider.lookup(commit);
+          const release = await releaseProvider.lookup(commit, packageDir);
 
           deprecations.push({
             file: relativePath(rootPath, file),
