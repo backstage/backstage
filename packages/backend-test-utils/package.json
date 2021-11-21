@@ -36,7 +36,7 @@
     "knex": "^0.95.1",
     "mysql2": "^2.2.5",
     "pg": "^8.3.0",
-    "sqlite3": "^5.0.1",
+    "sqlite3": "git://github.com/mapbox/node-sqlite3.git#918052b538b0effe6c4a44c74a16b2749c08a0d2",
     "testcontainers": "^7.23.0",
     "uuid": "^8.0.0"
   },
