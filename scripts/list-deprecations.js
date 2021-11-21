@@ -100,14 +100,19 @@ class ReleaseProvider {
 }
 
 async function main() {
+  let packageDirQueue = process.argv.slice(2);
+
   const rootPath = resolvePath(__dirname, '..');
-  const packageDirQueue = await Promise.all([
-    fs.readdir(resolvePath(rootPath, 'packages')),
-    fs.readdir(resolvePath(rootPath, 'plugins')),
-  ]).then(([packages, plugins]) => [
-    ...packages.map(dir => `packages/${dir}`),
-    ...plugins.map(dir => `plugins/${dir}`),
-  ]);
+
+  if (packageDirQueue.length === 0) {
+    packageDirQueue = await Promise.all([
+      fs.readdir(resolvePath(rootPath, 'packages')),
+      fs.readdir(resolvePath(rootPath, 'plugins')),
+    ]).then(([packages, plugins]) => [
+      ...packages.map(dir => `packages/${dir}`),
+      ...plugins.map(dir => `plugins/${dir}`),
+    ]);
+  }
 
   const fileQueue = [];
   const deprecationQueue = [];
