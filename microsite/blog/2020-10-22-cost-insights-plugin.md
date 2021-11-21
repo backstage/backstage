@@ -1,5 +1,5 @@
 ---
-title: New Cost Insights plugin: The engineer’s solution to taming cloud costs
+title: 'New Cost Insights plugin: The engineer’s solution to taming cloud costs'
 author: Janisa Anandamohan, Spotify
 authorURL: https://twitter.com/janisa_a
 ---
