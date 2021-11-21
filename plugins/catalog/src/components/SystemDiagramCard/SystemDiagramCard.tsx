@@ -16,12 +16,13 @@
 
 import {
   Entity,
-  RELATION_DEPENDS_ON,
-  RELATION_PROVIDES_API,
-  RELATION_PART_OF,
-  stringifyEntityRef,
   ENTITY_DEFAULT_NAMESPACE,
+  EntityName,
   parseEntityRef,
+  RELATION_DEPENDS_ON,
+  RELATION_PART_OF,
+  RELATION_PROVIDES_API,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -39,9 +40,9 @@ import {
   DependencyGraph,
   DependencyGraphTypes,
   InfoCard,
+  Link,
   Progress,
   ResponseErrorPanel,
-  Link,
 } from '@backstage/core-components';
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
@@ -199,20 +200,26 @@ export function SystemDiagramCard() {
   const catalogItemDomain = getEntityRelations(entity, RELATION_PART_OF, {
     kind: 'Domain',
   });
-  catalogItemDomain.forEach(foundDomain =>
+  catalogItemDomain.forEach(foundDomain => {
     systemNodes.push({
       id: stringifyEntityRef(foundDomain),
       kind: foundDomain.kind,
       name: readableEntityName(foundDomain),
-    }),
-  );
-  catalogItemDomain.forEach(foundDomain =>
+    });
     systemEdges.push({
       from: currentSystemNode,
       to: stringifyEntityRef(foundDomain),
       label: 'part of',
-    }),
-  );
+    });
+  });
+
+  const isPartOfSystem = (e: EntityName): boolean =>
+    !!catalogResponse?.items?.find(
+      item =>
+        item.kind.toLocaleLowerCase() === e.kind &&
+        item.metadata.namespace === e.namespace &&
+        item.metadata.name === e.name,
+    );
 
   if (catalogResponse && catalogResponse.items) {
     for (const catalogItem of catalogResponse.items) {
@@ -222,45 +229,55 @@ export function SystemDiagramCard() {
         name: readableEntityName(catalogItem),
       });
 
+      systemEdges.push({
+        from: stringifyEntityRef(catalogItem),
+        to: currentSystemNode,
+        label: 'part of',
+      });
+
       // Check relations of the entity assigned to this system to see
       // if it relates to other entities.
-      // Note those relations may, or may not, be explicitly
-      // assigned to the system.
       const catalogItemRelations_partOf = getEntityRelations(
         catalogItem,
         RELATION_PART_OF,
       );
-      catalogItemRelations_partOf.forEach(foundRelation =>
-        systemEdges.push({
-          from: stringifyEntityRef(catalogItem),
-          to: stringifyEntityRef(foundRelation),
-          label: 'part of',
-        }),
-      );
+      catalogItemRelations_partOf
+        .filter(isPartOfSystem)
+        .forEach(foundRelation => {
+          systemEdges.push({
+            from: stringifyEntityRef(catalogItem),
+            to: stringifyEntityRef(foundRelation),
+            label: 'part of',
+          });
+        });
 
       const catalogItemRelations_providesApi = getEntityRelations(
         catalogItem,
         RELATION_PROVIDES_API,
       );
-      catalogItemRelations_providesApi.forEach(foundRelation =>
-        systemEdges.push({
-          from: stringifyEntityRef(catalogItem),
-          to: stringifyEntityRef(foundRelation),
-          label: 'provides',
-        }),
-      );
+      catalogItemRelations_providesApi
+        .filter(isPartOfSystem)
+        .forEach(foundRelation => {
+          systemEdges.push({
+            from: stringifyEntityRef(catalogItem),
+            to: stringifyEntityRef(foundRelation),
+            label: 'provides',
+          });
+        });
 
       const catalogItemRelations_dependsOn = getEntityRelations(
         catalogItem,
         RELATION_DEPENDS_ON,
       );
-      catalogItemRelations_dependsOn.forEach(foundRelation =>
-        systemEdges.push({
-          from: stringifyEntityRef(catalogItem),
-          to: stringifyEntityRef(foundRelation),
-          label: 'depends on',
-        }),
-      );
+      catalogItemRelations_dependsOn
+        .filter(isPartOfSystem)
+        .forEach(foundRelation => {
+          systemEdges.push({
+            from: stringifyEntityRef(catalogItem),
+            to: stringifyEntityRef(foundRelation),
+            label: 'depends on',
+          });
+        });
     }
   }
 

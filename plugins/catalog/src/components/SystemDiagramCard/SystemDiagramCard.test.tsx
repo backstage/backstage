@@ -15,12 +15,17 @@
  */
 
 import {
-  catalogApiRef,
   CatalogApi,
+  catalogApiRef,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { Entity, RELATION_PART_OF } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_DEPENDS_ON,
+  RELATION_PART_OF,
+  RELATION_PROVIDES_API,
+} from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { SystemDiagramCard } from './SystemDiagramCard';
@@ -89,6 +94,36 @@ describe('<SystemDiagramCard />', () => {
                 type: 'service',
                 system: 'system',
               },
+              relations: [
+                {
+                  target: {
+                    kind: 'API',
+                    namespace: 'namespace',
+                    name: 'api',
+                  },
+                  type: RELATION_PROVIDES_API,
+                },
+                {
+                  target: {
+                    kind: 'Resource',
+                    namespace: 'namespace',
+                    name: 'resource',
+                  },
+                  type: RELATION_DEPENDS_ON,
+                },
+              ],
+            },
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Resource',
+              metadata: {
+                name: 'resource',
+                namespace: 'namespace',
+              },
+              spec: {
+                owner: 'not-tools@example.com',
+                system: 'system',
+              },
             },
           ] as Entity[],
         }),
@@ -113,7 +148,7 @@ describe('<SystemDiagramCard />', () => {
       ],
     };
 
-    const { getByText } = await renderInTestApp(
+    const { queryByText } = await renderInTestApp(
       <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
         <EntityProvider entity={entity}>
           <SystemDiagramCard />
@@ -126,9 +161,11 @@ describe('<SystemDiagramCard />', () => {
       },
     );
 
-    expect(getByText('System Diagram')).toBeInTheDocument();
-    expect(getByText('namespace/system')).toBeInTheDocument();
-    expect(getByText('namespace/entity')).toBeInTheDocument();
+    expect(queryByText(/System Diagram/)).toBeInTheDocument();
+    expect(queryByText(/namespace\/system/)).toBeInTheDocument();
+    expect(queryByText(/namespace\/entity/)).toBeInTheDocument();
+    expect(queryByText(/namespace\/resource/)).toBeInTheDocument();
+    expect(queryByText(/namespace\/api/)).not.toBeInTheDocument();
   });
 
   it('should truncate long domains, systems or entities', async () => {
