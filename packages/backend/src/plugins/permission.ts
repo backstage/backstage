@@ -22,10 +22,10 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const { logger, config } = env;
+  const { logger, discovery } = env;
   return await createRouter({
     logger,
-    config,
+    discovery,
     policy: new SimplePermissionPolicy(),
   });
 }
