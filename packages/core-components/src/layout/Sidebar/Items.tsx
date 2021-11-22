@@ -221,7 +221,7 @@ const ItemWithSubmenu = ({
       color="secondary"
       variant="dot"
       overlap="circular"
-      className={isOpen ? undefined : classes.closedItemIcon}
+      className={isOpen ? '' : classes.closedItemIcon}
       invisible={!hasNotifications}
     >
       <Icon fontSize="small" />
@@ -251,7 +251,7 @@ const ItemWithSubmenu = ({
     >
       <div
         onMouseLeave={handleMouseLeave}
-        className={clsx(isHoveredOn ? classes.highlighted : undefined)}
+        className={clsx(isHoveredOn && classes.highlighted)}
       >
         <div
           onMouseEnter={handleMouseEnter}
@@ -259,9 +259,9 @@ const ItemWithSubmenu = ({
           className={clsx(
             classes.root,
             isOpen ? classes.open : classes.closed,
-            isActive ? classes.selected : undefined,
+            isActive && classes.selected,
             classes.highlightable,
-            isHoveredOn ? classes.highlighted : undefined,
+            isHoveredOn && classes.highlighted,
           )}
         >
           {isOpen ? openContent : closedContent}
@@ -372,7 +372,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       variant="dot"
       overlap="circular"
       invisible={!hasNotifications}
-      className={clsx(isOpen ? undefined : classes.closedItemIcon)}
+      className={clsx({ [classes.closeItemIcon]: !isOpen })}
     >
       <Icon fontSize="small" />
     </Badge>
@@ -403,7 +403,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       classes.root,
       isOpen ? classes.open : classes.closed,
       isButtonItem(props) && classes.buttonItem,
-      disableHighlight ? undefined : classes.highlightable,
+      { [classes.highlightable]: !disableHighlight },
     ),
   };
 
