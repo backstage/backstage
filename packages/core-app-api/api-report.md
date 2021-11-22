@@ -126,7 +126,7 @@ export type ApiProviderProps = {
   children: ReactNode;
 };
 
-// @public
+// @public @deprecated
 export class ApiRegistry implements ApiHolder {
   constructor(apis: Map<string, unknown>);
   // Warning: (ae-forgotten-export) The symbol "ApiRegistryBuilder" needs to be exported by the entry point index.d.ts
