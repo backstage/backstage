@@ -74,7 +74,7 @@ export const GraphiQLBrowser = ({ endpoints }: GraphiQLBrowserProps) => {
         <Divider />
         <div className={classes.graphiQlWrapper}>
           <GraphiQL
-            headerEditorEnabled={true}
+            headerEditorEnabled
             key={tabIndex}
             fetcher={fetcher}
             storage={storage}
