@@ -63,5 +63,14 @@ export interface Config {
       apiVersion: string;
       plural: string;
     }>;
+    apiVersionOverrides?: {
+      pods?: string;
+      services?: string;
+      configmaps?: string;
+      deployments?: string;
+      replicasets?: string;
+      horizontalpodautoscalers?: string;
+      ingresses?: string;
+    };
   };
 }
