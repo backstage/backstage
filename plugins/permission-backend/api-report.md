@@ -5,6 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import express from 'express';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 import { Logger as Logger_2 } from 'winston';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 
@@ -20,10 +21,10 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
+  identity?: IdentityClient;
+  // (undocumented)
   logger: Logger_2;
   // (undocumented)
   policy: PermissionPolicy;
 }
-
-// (No @packageDocumentation comment for this package)
 ```
