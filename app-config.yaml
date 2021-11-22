@@ -27,9 +27,9 @@ backend:
   # See authenticate-api-requests.md in the contrib docs for information on the format
   # authorization:
   #   secret: ${BACKEND_SECRET}
-  baseUrl: http://localhost:7000
+  baseUrl: http://localhost:7007
   listen:
-    port: 7000
+    port: 7007
   database:
     client: sqlite3
     connection: ':memory:'

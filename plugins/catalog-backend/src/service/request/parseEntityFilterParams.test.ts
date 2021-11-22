@@ -28,7 +28,7 @@ describe('parseEntityFilterParams', () => {
   it('supports single-string format', () => {
     const result = parseEntityFilterParams({ filter: 'a=1' })!;
     expect(result).toEqual({
-      anyOf: [{ allOf: [{ key: 'a', matchValueIn: ['1'] }] }],
+      anyOf: [{ allOf: [{ key: 'a', values: ['1'] }] }],
     });
   });
 
@@ -38,8 +38,8 @@ describe('parseEntityFilterParams', () => {
     });
     expect(result).toEqual({
       anyOf: [
-        { allOf: [{ key: 'a', matchValueIn: ['1'] }] },
-        { allOf: [{ key: 'b', matchValueIn: ['2'] }] },
+        { allOf: [{ key: 'a', values: ['1'] }] },
+        { allOf: [{ key: 'b', values: ['2'] }] },
       ],
     });
   });
@@ -50,11 +50,11 @@ describe('parseEntityFilterParams', () => {
     });
     expect(result).toEqual({
       anyOf: [
-        { allOf: [{ key: 'a', matchValueIn: ['1'] }] },
+        { allOf: [{ key: 'a', values: ['1'] }] },
         {
           allOf: [
-            { key: 'b', matchValueIn: ['2', '3'] },
-            { key: 'c', matchValueIn: ['4'] },
+            { key: 'b', values: ['2', '3'] },
+            { key: 'c', values: ['4'] },
           ],
         },
       ],
@@ -70,17 +70,17 @@ describe('parseEntityFilterString', () => {
   it('works for the happy path', () => {
     expect(parseEntityFilterString('')).toBeUndefined();
     expect(parseEntityFilterString('a=1,b=2,a=3,c,d=')).toEqual([
-      { key: 'a', matchValueIn: ['1', '3'] },
-      { key: 'b', matchValueIn: ['2'] },
-      { key: 'c', matchValueExists: true },
-      { key: 'd', matchValueIn: [''] },
+      { key: 'a', values: ['1', '3'] },
+      { key: 'b', values: ['2'] },
+      { key: 'c' },
+      { key: 'd', values: [''] },
     ]);
   });
 
   it('trims values', () => {
     expect(parseEntityFilterString(' a = 1 , b = 2 , a = 3 ')).toEqual([
-      { key: 'a', matchValueIn: ['1', '3'] },
-      { key: 'b', matchValueIn: ['2'] },
+      { key: 'a', values: ['1', '3'] },
+      { key: 'b', values: ['2'] },
     ]);
   });
 

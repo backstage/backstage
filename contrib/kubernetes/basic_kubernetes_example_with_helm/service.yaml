@@ -30,6 +30,6 @@ spec:
     component: backend
   ports:
     - name: backend
-      port: 7000
+      port: 7007
       protocol: TCP
       targetPort: backend

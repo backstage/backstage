@@ -20,7 +20,7 @@ Click Add Consumer.
 Settings for local development:
 
 - Application name: Backstage (or your custom app name)
-- Callback URL: `http://localhost:7000/api/auth/bitbucket`
+- Callback URL: `http://localhost:7007/api/auth/bitbucket`
 - Other are optional
 - (IMPORTANT) **Permissions: Account - Read, Workspace membership - Read**
 

@@ -38,6 +38,7 @@
     "url": "https://github.com/backstage/backstage/issues"
   },
   "dependencies": {
+    "@backstage/config": "^0.1.11",
     "@backstage/errors": "^0.1.2",
     "cross-fetch": "^3.0.6",
     "uuid": "^8.0.0",
