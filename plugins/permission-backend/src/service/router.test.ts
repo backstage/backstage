@@ -17,7 +17,6 @@
 import express from 'express';
 import request from 'supertest';
 import { getVoidLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 import {
   AuthorizeResult,
   Permission,
@@ -67,12 +66,10 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
-      config: new ConfigReader({
-        backend: {
-          baseUrl: 'http://localhost',
-          listen: { port: 7007 },
-        },
-      }),
+      discovery: {
+        getBaseUrl: jest.fn(),
+        getExternalBaseUrl: jest.fn(),
+      },
       policy,
     });
 

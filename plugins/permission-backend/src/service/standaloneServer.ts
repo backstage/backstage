@@ -17,6 +17,7 @@
 import {
   createServiceBuilder,
   loadBackendConfig,
+  SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -34,10 +35,11 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'permission-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
+  const discovery = SingleHostDiscovery.fromConfig(config);
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
-    config,
+    discovery,
     policy: new AllowAllPermissionPolicy(),
   });
 

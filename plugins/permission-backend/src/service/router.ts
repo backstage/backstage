@@ -16,7 +16,6 @@
 
 import {
   errorHandler,
-  SingleHostDiscovery,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import express, { Request, Response } from 'express';
@@ -26,7 +25,6 @@ import {
   BackstageIdentity,
   IdentityClient,
 } from '@backstage/plugin-auth-backend';
-import { Config } from '@backstage/config';
 import { ConflictError } from '@backstage/errors';
 import {
   AuthorizeResult,
@@ -39,7 +37,7 @@ import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
 export interface RouterOptions {
   logger: Logger;
-  config: Config;
+  discovery: PluginEndpointDiscovery;
   policy: PermissionPolicy;
 }
 
@@ -84,8 +82,8 @@ const handleRequest = async (
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { config, policy } = options;
-  const discovery = SingleHostDiscovery.fromConfig(config);
+  const { policy, discovery } = options;
+
   const identity = new IdentityClient({
     discovery,
     issuer: await discovery.getExternalBaseUrl('auth'),
