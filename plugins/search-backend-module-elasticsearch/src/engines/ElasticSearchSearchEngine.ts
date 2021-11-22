@@ -30,11 +30,9 @@ import esb from 'elastic-builder';
 import { isEmpty, isNaN as nan, isNumber } from 'lodash';
 import { Logger } from 'winston';
 
-export type ElasticSearchClientOptions = ConstructorParameters<
-  typeof Client
->[0] & {
-  provider?: 'aws' | 'elastic' | 'generic';
-};
+import type { ElasticSearchClientOptions } from './ElasticSearchClientOptions';
+
+export type { ElasticSearchClientOptions };
 
 export type ConcreteElasticSearchQuery = {
   documentTypes?: string[];
@@ -366,7 +364,6 @@ async function createElasticSearchClientOptions(
           password: authConfig.getString('password'),
         });
   return {
-    provider: 'generic',
     node: config.getString('node'),
     auth,
     ...(sslConfig

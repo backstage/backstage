@@ -55,7 +55,8 @@ describe('ElasticSearchSearchEngine', () => {
       '',
       getVoidLogger(),
     );
-    client = testSearchEngine.elasticSearchClient;
+    // eslint-disable-next-line dot-notation
+    client = testSearchEngine['elasticSearchClient'];
   });
 
   describe('queryTranslator', () => {
