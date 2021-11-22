@@ -46,7 +46,6 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   policy: PermissionPolicy;
-  identity?: IdentityClient;
 }
 
 // TODO(permission-backend): probably move this to a separate client
@@ -131,12 +130,10 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { config, policy } = options;
   const discovery = SingleHostDiscovery.fromConfig(config);
-  const identity =
-    options.identity ??
-    new IdentityClient({
-      discovery,
-      issuer: await discovery.getExternalBaseUrl('auth'),
-    });
+  const identity = new IdentityClient({
+    discovery,
+    issuer: await discovery.getExternalBaseUrl('auth'),
+  });
 
   const router = Router();
   router.use(express.json());

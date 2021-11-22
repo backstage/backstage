@@ -18,7 +18,6 @@ import express from 'express';
 import request from 'supertest';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { IdentityClient } from '@backstage/plugin-auth-backend';
 import {
   AuthorizeResult,
   Permission,
@@ -27,9 +26,26 @@ import { PermissionPolicy } from '@backstage/plugin-permission-node';
 
 import { createRouter } from './router';
 
-const identityApi: Partial<IdentityClient> = {
-  authenticate: jest.fn().mockImplementation(_ => ({ id: 'test-user' })),
-};
+jest.mock('@backstage/plugin-auth-backend', () => {
+  class MockIdentityClient {
+    authenticate = jest.fn(token =>
+      Promise.resolve(
+        token
+          ? {
+              id: 'test-user',
+              token,
+            }
+          : undefined,
+      ),
+    );
+
+    static getBearerToken = jest.fn(authHeader =>
+      authHeader ? `<token for "${authHeader}">` : undefined,
+    );
+  }
+
+  return { IdentityClient: MockIdentityClient };
+});
 
 const policy: PermissionPolicy = {
   handle: jest.fn().mockImplementation((_req, identity) => {
@@ -58,8 +74,8 @@ describe('createRouter', () => {
         },
       }),
       policy,
-      identity: identityApi as IdentityClient,
     });
+
     app = express().use(router);
   });
 
@@ -86,18 +102,20 @@ describe('createRouter', () => {
     });
 
     it('resolves identity from the Authorization header', async () => {
-      const token = 'token';
+      const token = 'test-token';
       const response = await request(app)
         .post('/authorize')
         .auth(token, { type: 'bearer' })
         .send([{ id: 123, permission }]);
 
       expect(response.status).toEqual(200);
-      expect(identityApi.authenticate).toHaveBeenCalledWith('token');
       expect(policy.handle).toHaveBeenCalledWith(
         { permission },
-        { id: 'test-user' },
+        { id: 'test-user', token: '<token for "Bearer test-token">' },
       );
+      expect(response.body).toEqual([
+        { id: 123, result: AuthorizeResult.ALLOW },
+      ]);
     });
   });
 });
