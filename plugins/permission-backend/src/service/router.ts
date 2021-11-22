@@ -35,6 +35,12 @@ import {
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
+/**
+ * Options required when constructing a new {@link express#Router} using
+ * {@link createRouter}.
+ *
+ * @public
+ */
 export interface RouterOptions {
   logger: Logger;
   discovery: PluginEndpointDiscovery;
@@ -79,6 +85,12 @@ const handleRequest = async (
   return { id, ...response };
 };
 
+/**
+ * Creates a new {@link express#Router} which provides the backend API
+ * for the permission system.
+ *
+ * @public
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

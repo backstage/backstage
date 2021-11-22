@@ -8,14 +8,10 @@ import { Logger as Logger_2 } from 'winston';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
-// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface RouterOptions {
   // (undocumented)
   discovery: PluginEndpointDiscovery;
