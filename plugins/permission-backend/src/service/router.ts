@@ -19,7 +19,6 @@ import {
   SingleHostDiscovery,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import fetch from 'cross-fetch';
 import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -28,19 +27,15 @@ import {
   IdentityClient,
 } from '@backstage/plugin-auth-backend';
 import { Config } from '@backstage/config';
-import { ConflictError, ResponseError } from '@backstage/errors';
+import { ConflictError } from '@backstage/errors';
 import {
   AuthorizeResult,
   AuthorizeResponse,
   AuthorizeRequest,
   Identified,
-  PermissionCondition,
-  PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import {
-  ApplyConditionsRequest,
-  PermissionPolicy,
-} from '@backstage/plugin-permission-node';
+import { PermissionPolicy } from '@backstage/plugin-permission-node';
+import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
 export interface RouterOptions {
   logger: Logger;
@@ -48,49 +43,11 @@ export interface RouterOptions {
   policy: PermissionPolicy;
 }
 
-// TODO(permission-backend): probably move this to a separate client
-const applyConditions = async (
-  resourceRef: string,
-  conditions: {
-    pluginId: string;
-    resourceType: string;
-    conditions: PermissionCriteria<PermissionCondition>;
-  },
-  discoveryApi: PluginEndpointDiscovery,
-  authHeader?: string,
-): Promise<{ result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }> => {
-  const endpoint = `${await discoveryApi.getBaseUrl(
-    conditions.pluginId,
-  )}/permissions/apply-conditions`;
-
-  const request: ApplyConditionsRequest = {
-    resourceRef,
-    resourceType: conditions.resourceType,
-    conditions: conditions.conditions,
-  };
-
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    body: JSON.stringify(request),
-    headers: {
-      ...(authHeader ? { authorization: authHeader } : {}),
-      'content-type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw await ResponseError.fromResponse(response);
-  }
-
-  // TODO(permission-backend): validate response
-  return await response.json();
-};
-
 const handleRequest = async (
   { id, resourceRef, ...request }: Identified<AuthorizeRequest>,
   user: BackstageIdentity | undefined,
   policy: PermissionPolicy,
-  discoveryApi: PluginEndpointDiscovery,
+  permissionIntegrationClient: PermissionIntegrationClient,
   authHeader?: string,
 ): Promise<Identified<AuthorizeResponse>> => {
   const response = await policy.handle(request, user);
@@ -106,10 +63,9 @@ const handleRequest = async (
     if (resourceRef) {
       return {
         id,
-        ...(await applyConditions(
+        ...(await permissionIntegrationClient.applyConditions(
           resourceRef,
           response.conditions,
-          discoveryApi,
           authHeader,
         )),
       };
@@ -133,6 +89,10 @@ export async function createRouter(
   const identity = new IdentityClient({
     discovery,
     issuer: await discovery.getExternalBaseUrl('auth'),
+  });
+
+  const permissionIntegrationClient = new PermissionIntegrationClient({
+    discovery,
   });
 
   const router = Router();
@@ -160,7 +120,7 @@ export async function createRouter(
               request,
               user,
               policy,
-              discovery,
+              permissionIntegrationClient,
               req.header('authorization'),
             ),
           ),
