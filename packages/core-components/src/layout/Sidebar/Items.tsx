@@ -28,7 +28,6 @@ import React, {
   Children,
   forwardRef,
   KeyboardEventHandler,
-  PropsWithChildren,
   ReactNode,
   useContext,
   useState,
@@ -170,27 +169,30 @@ const useStyles = makeStyles<BackstageTheme>(
 
 type ItemWithSubmenuProps = {
   label?: string;
-  title?: string;
   hasNotifications?: boolean;
   icon: IconComponent;
-  children: ReactNode;
+  submenu: ReactNode;
 };
 const ItemWithSubmenu = ({
   label,
-  title,
   hasNotifications = false,
   icon: Icon,
-  children,
-}: PropsWithChildren<ItemWithSubmenuProps>) => {
+  submenu,
+}: ItemWithSubmenuProps) => {
   const classes = useStyles();
   const [isHoveredOn, setIsHoveredOn] = useState(false);
-  const toPathnames: string[] = [];
+  let submenuItems: ReactNode;
+  Children.forEach(submenu, element => {
+    if (!React.isValidElement(element)) return;
+    submenuItems = element.props.children;
+  });
 
+  const toPathnames: string[] = [];
   let isActive;
   const { pathname: locationPathname } = useLocation();
 
-  // Menu item is active if any of its children have active paths
-  Children.forEach(children, element => {
+  // SidebarItem is active if any of submenu items have active paths
+  Children.forEach(submenuItems, element => {
     if (!React.isValidElement(element)) return;
     if (element.props.dropdownItems) {
       element.props.dropdownItems.map((item: { to: string }) =>
@@ -267,7 +269,7 @@ const ItemWithSubmenu = ({
             <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
           )}
         </div>
-        {isHoveredOn && <Submenu title={title}>{children}</Submenu>}
+        {isHoveredOn && submenu}
       </div>
     </ItemWithSubmenuContext.Provider>
   );
@@ -277,8 +279,6 @@ type SidebarItemBaseProps = {
   icon: IconComponent;
   text?: string;
   hasNotifications?: boolean;
-  hasSubMenu?: boolean;
-  submenuTitle?: string;
   disableHighlight?: boolean;
   children?: ReactNode;
   className?: string;
@@ -354,8 +354,6 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     icon: Icon,
     text,
     hasNotifications = false,
-    hasSubMenu = false,
-    submenuTitle,
     disableHighlight = false,
     onClick,
     children,
@@ -409,17 +407,28 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     ),
   };
 
-  // If submenu prop is true, return ItemWithSubmenu
-  if (hasSubMenu) {
+  let hasSubmenu = false;
+  let submenu: any;
+  const componentType = (
+    <Submenu>
+      <></>
+    </Submenu>
+  ).type;
+  Children.forEach(children, element => {
+    if (!React.isValidElement(element)) return;
+    if (element.type === componentType) {
+      submenu = element;
+      hasSubmenu = true;
+    }
+  });
+  if (hasSubmenu) {
     return (
       <ItemWithSubmenu
         label={text}
-        title={submenuTitle}
         icon={Icon}
         hasNotifications={hasNotifications}
-      >
-        {children}
-      </ItemWithSubmenu>
+        submenu={submenu}
+      />
     );
   }
 

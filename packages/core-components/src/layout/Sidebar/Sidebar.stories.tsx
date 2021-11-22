@@ -35,6 +35,7 @@ import { CatalogSidebarLogo } from './icons/CatalogSidebarLogo';
 import { APIsIcon } from './icons/APIsIcon';
 import { ServicesIcon } from './icons/ServicesIcon';
 import { MiscIcon } from './icons/MiscIcon';
+import { Submenu } from './Submenu';
 
 export default {
   title: 'Layout/Sidebar',
@@ -67,37 +68,33 @@ export const SampleScalableSidebar = () => (
   <Sidebar disableExpandOnHover>
     <SidebarSearchField onSearch={handleSearch} to="/search" />
     <SidebarDivider />
-    <SidebarItem
-      icon={CatalogSidebarLogo}
-      onClick={() => {}}
-      text="Catalog"
-      hasSubMenu
-      submenuTitle="Catalog"
-    >
-      <SidebarSubItem title="Tools" to="/1" icon={BuildRoundedIcon} />
-      <SidebarSubItem title="APIs" to="/2" icon={APIsIcon} />
-      <SidebarSubItem title="Services" to="/3" icon={ServicesIcon} />
-      <SidebarSubItem
-        title="Libraries"
-        to="/4"
-        icon={LibraryBooksOutlinedIcon}
-      />
-      <SidebarSubItem title="Websites" to="/5" icon={WebOutlinedIcon} />
-      <SidebarSubItem
-        title="Misc"
-        to="/6"
-        icon={MiscIcon}
-        dropdownItems={[
-          {
-            title: 'Lorem Ipsum',
-            to: '/7',
-          },
-          {
-            title: 'Lorem Ipsum',
-            to: '/8',
-          },
-        ]}
-      />
+    <SidebarItem icon={CatalogSidebarLogo} onClick={() => {}} text="Catalog">
+      <Submenu title="Catalog">
+        <SidebarSubItem title="Tools" to="/1" icon={BuildRoundedIcon} />
+        <SidebarSubItem title="APIs" to="/2" icon={APIsIcon} />
+        <SidebarSubItem title="Services" to="/3" icon={ServicesIcon} />
+        <SidebarSubItem
+          title="Libraries"
+          to="/4"
+          icon={LibraryBooksOutlinedIcon}
+        />
+        <SidebarSubItem title="Websites" to="/5" icon={WebOutlinedIcon} />
+        <SidebarSubItem
+          title="Misc"
+          to="/6"
+          icon={MiscIcon}
+          dropdownItems={[
+            {
+              title: 'Lorem Ipsum',
+              to: '/7',
+            },
+            {
+              title: 'Lorem Ipsum',
+              to: '/8',
+            },
+          ]}
+        />
+      </Submenu>
     </SidebarItem>
     <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
     <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
