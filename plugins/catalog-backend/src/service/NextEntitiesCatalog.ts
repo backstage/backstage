@@ -191,10 +191,7 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
         };
       } else if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
         entitiesQuery = parseFilter(
-          // TODO(mtlewis): remove casting once
-          // https://github.com/backstage/backstage/pull/7817
-          // is merged.
-          toQuery(authorizeResponse.conditions) as EntityFilter,
+          toQuery(authorizeResponse.conditions),
           entitiesQuery,
           db,
         );

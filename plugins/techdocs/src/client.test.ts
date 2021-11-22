@@ -37,6 +37,7 @@ describe('TechDocsStorageClient', () => {
   const mockBaseUrl = 'http://backstage:9191/api/techdocs';
   const configApi = {
     getOptionalString: () => 'http://backstage:9191/api/techdocs',
+    getOptionalBoolean: () => false,
   } as Partial<Config>;
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
   const identityApi: jest.Mocked<IdentityApi> = {

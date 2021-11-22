@@ -36,7 +36,7 @@ export class IdentityPermissionApi implements PermissionApi {
   ) {
     this.permissionClient = new PermissionClient({
       discoveryApi,
-      enabled: configApi.getBoolean('permission.enabled'),
+      configApi,
     });
   }
 
