@@ -97,62 +97,48 @@ export const DashboardSnapshotList = ({ guid }: Props) => {
     return <Alert severity="error">{error.message}</Alert>;
   }
   return (
-    <>
-      <Grid container direction="column">
-        {/* <Grid item xs={8}>
-          {value.getDashboardEntity.data.actor.entitySearch.results.entities?.map(
-            (Entity: any) => {
-              return (
-                <DashboardSnapshot
-                  name={Entity.name}
-                  permalink={Entity.permalink}
-                  guid={Entity.guid}
-                />
-              );
-            },
-          )}
-        </Grid> */}
-        <Tabs
-          selectionFollowsFocus
-          indicatorColor="primary"
-          textColor="inherit"
-          variant="scrollable"
-          scrollButtons="auto"
-          aria-label="scrollable auto tabs example"
-          onChange={handleChange}
-          value={value1}
-        >
-          {value.getDashboardEntity.data.actor.entitySearch.results.entities?.map(
-            (Entity: any, index: any) => {
-              return (
-                <Tab
-                  label={Entity.name}
-                  className={styles.defaultTab}
-                  classes={{
-                    selected: styles.selected,
-                    root: styles.tabRoot,
-                  }}
-                  {...a11yProps(index)}
-                />
-              );
-            },
-          )}
-        </Tabs>
+    <Grid container direction="column">
+      <Tabs
+        selectionFollowsFocus
+        indicatorColor="primary"
+        textColor="inherit"
+        variant="scrollable"
+        scrollButtons="auto"
+        aria-label="scrollable auto tabs example"
+        onChange={handleChange}
+        value={value1}
+        style={{ width: '100%' }}
+      >
         {value.getDashboardEntity.data.actor.entitySearch.results.entities?.map(
           (Entity: any, index: any) => {
             return (
-              <TabPanel value1={value1} index={index}>
-                <DashboardSnapshot
-                  name={Entity.name}
-                  permalink={Entity.permalink}
-                  guid={Entity.guid}
-                  duration={2000000000}
-                />
-              </TabPanel>
+              <Tab
+                label={Entity.name}
+                className={styles.defaultTab}
+                classes={{
+                  selected: styles.selected,
+                  root: styles.tabRoot,
+                }}
+                {...a11yProps(index)}
+              />
             );
           },
         )}
-      </Grid>
-    </>
+      </Tabs>
+      {value.getDashboardEntity.data.actor.entitySearch.results.entities?.map(
+        (Entity: any, index: any) => {
+          return (
+            <TabPanel value1={value1} index={index}>
+              <DashboardSnapshot
+                name={Entity.name}
+                permalink={Entity.permalink}
+                guid={Entity.guid}
+                duration={2000000000}
+              />
+            </TabPanel>
+          );
+        },
+      )}
+    </Grid>
   );
 };

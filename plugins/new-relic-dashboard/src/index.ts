@@ -15,7 +15,6 @@
  */
 export {
   newRelicDashboardPlugin,
-  NewRelicDashboardPage,
   EntityNewRelicDashboard,
   EntityPageNewRelicDashboard,
 } from './plugin';

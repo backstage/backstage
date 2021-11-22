@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ExampleComponent } from './ExampleComponent';
+import { NewRelicDashboard } from './NewRelicDashboard';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { rest } from 'msw';
@@ -39,7 +39,7 @@ describe('ExampleComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
-        <ExampleComponent />
+        <NewRelicDashboard />
       </ThemeProvider>,
     );
     expect(

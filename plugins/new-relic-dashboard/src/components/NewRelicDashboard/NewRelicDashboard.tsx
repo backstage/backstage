@@ -18,7 +18,7 @@ import { Grid } from '@material-ui/core';
 import { Page, Content } from '@backstage/core-components';
 import { useNewRelicDashboardEntity } from '../../hooks';
 import { DashboardEntityList } from './DashboardEntityList';
-import { DashboardSnapshotList } from './DashboardSnapshot';
+import { DashboardSnapshotList } from './DashboardSnapshotList';
 
 export const NewRelicDashboard = () => {
   const entity = useNewRelicDashboardEntity();
@@ -26,8 +26,12 @@ export const NewRelicDashboard = () => {
     <Page themeId="home">
       <Content>
         <Grid container spacing={6} direction="row" alignItems="stretch">
-          <DashboardEntityList />
-          <DashboardSnapshotList guid={String(entity.integrationKey)} />
+          <Grid item xs={12}>
+            <DashboardEntityList />
+          </Grid>
+          <Grid item xs={12}>
+            <DashboardSnapshotList guid={String(entity.integrationKey)} />
+          </Grid>
         </Grid>
       </Content>
     </Page>

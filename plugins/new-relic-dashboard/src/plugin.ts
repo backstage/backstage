@@ -41,15 +41,6 @@ export const newRelicDashboardPlugin = createPlugin({
   ],
 });
 
-export const NewRelicDashboardPage = newRelicDashboardPlugin.provide(
-  createRoutableExtension({
-    name: 'NewRelicDashboardPage',
-    component: () =>
-      import('./components/ExampleComponents').then(m => m.ExampleComponent),
-    mountPoint: rootRouteRef,
-  }),
-);
-
 export const EntityNewRelicDashboard = newRelicDashboardPlugin.provide(
   createRoutableExtension({
     component: () => import('./Router').then(m => m.Router),
