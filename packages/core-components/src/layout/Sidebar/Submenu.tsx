@@ -67,10 +67,22 @@ const useStyles = (props: { left: number }) =>
     },
   }));
 
-type SubmenuProps = {
+/**
+ * Holds a title for text Header of a Submenu and children
+ * components to be rendered inside Submenu
+ *
+ * @public
+ */
+export type SubmenuProps = {
   title?: string;
   children: ReactNode;
 };
+
+/**
+ * Used inside SidebarItem to display an expandable Submenu
+ *
+ * @public
+ */
 export const Submenu = ({
   title,
   children,

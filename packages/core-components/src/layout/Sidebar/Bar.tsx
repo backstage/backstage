@@ -148,6 +148,14 @@ export function Sidebar(props: PropsWithChildren<Props>) {
 
   const isOpen = (state === State.Open && !isSmallScreen) || isPinned;
 
+  const setOpen = (open: boolean) => {
+    if (open) {
+      handleOpen();
+    } else {
+      handleClose();
+    }
+  };
+
   return (
     <div
       className={classes.root}
@@ -160,8 +168,7 @@ export function Sidebar(props: PropsWithChildren<Props>) {
       <SidebarContext.Provider
         value={{
           isOpen,
-          handleOpen,
-          handleClose,
+          setOpen,
         }}
       >
         <div
@@ -184,18 +191,14 @@ export function Sidebar(props: PropsWithChildren<Props>) {
  */
 export const SidebarExpandButton = () => {
   const classes = useStyles();
-  const { isOpen, handleOpen, handleClose } = useContext(SidebarContext);
+  const { isOpen, setOpen } = useContext(SidebarContext);
   const { isPinned } = useContext(SidebarPinStateContext);
   const isSmallScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('md'),
   );
 
   const handleClick = () => {
-    if (isOpen) {
-      handleClose();
-    } else {
-      handleOpen();
-    }
+    setOpen(!isOpen);
   };
 
   if (isPinned || isSmallScreen) {

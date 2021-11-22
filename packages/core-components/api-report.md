@@ -838,8 +838,7 @@ export const SidebarContext: Context<SidebarContextType>;
 // @public (undocumented)
 export type SidebarContextType = {
   isOpen: boolean;
-  handleOpen: () => any;
-  handleClose: () => any;
+  setOpen: (open: boolean) => void;
 };
 
 // Warning: (ae-missing-release-tag) "SidebarDivider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -2108,6 +2107,18 @@ export type StructuredMetadataTableListClassKey = 'root';
 //
 // @public (undocumented)
 export type StructuredMetadataTableNestedListClassKey = 'root';
+
+// @public
+export const Submenu: ({
+  title,
+  children,
+}: PropsWithChildren<SubmenuProps>) => JSX.Element;
+
+// @public
+export type SubmenuProps = {
+  title?: string;
+  children: ReactNode;
+};
 
 // Warning: (ae-forgotten-export) The symbol "SubvalueCellProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SubvalueCell" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

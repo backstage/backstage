@@ -30,9 +30,7 @@ const apis = ApiRegistry.from([
 describe('Shortcuts', () => {
   it('displays an add button', async () => {
     await renderInTestApp(
-      <SidebarContext.Provider
-        value={{ isOpen: true, handleOpen: () => {}, handleClose: () => {} }}
-      >
+      <SidebarContext.Provider value={{ isOpen: true, setOpen: _open => {} }}>
         <ApiProvider apis={apis}>
           <Shortcuts />
         </ApiProvider>
