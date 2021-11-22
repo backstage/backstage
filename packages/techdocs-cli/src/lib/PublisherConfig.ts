@@ -55,9 +55,9 @@ export class PublisherConfig {
     return new ConfigReader({
       // This backend config is not used at all. Just something needed a create a mock discovery instance.
       backend: {
-        baseUrl: 'http://localhost:7000',
+        baseUrl: 'http://localhost:7007',
         listen: {
-          port: 7000,
+          port: 7007,
         },
       },
       techdocs: {

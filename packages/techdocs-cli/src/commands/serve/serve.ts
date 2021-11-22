@@ -36,7 +36,7 @@ export default async function serve(cmd: Command) {
   // a backstage app, we define app.baseUrl in the app-config.yaml.
   // Hence, it is complicated to make this configurable.
   const backstagePort = 3000;
-  const backstageBackendPort = 7000;
+  const backstageBackendPort = 7007;
 
   const mkdocsDockerAddr = `http://0.0.0.0:${cmd.mkdocsPort}`;
   const mkdocsLocalAddr = `http://127.0.0.1:${cmd.mkdocsPort}`;

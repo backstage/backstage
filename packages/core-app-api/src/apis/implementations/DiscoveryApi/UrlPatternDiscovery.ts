@@ -30,7 +30,7 @@ export class UrlPatternDiscovery implements DiscoveryApi {
    * interpolation done for the template is to replace instances of `{{pluginId}}`
    * with the ID of the plugin being requested.
    *
-   * Example pattern: `http://localhost:7000/api/{{ pluginId }}`
+   * Example pattern: `http://localhost:7007/api/{{ pluginId }}`
    */
   static compile(pattern: string): UrlPatternDiscovery {
     const parts = pattern.split(/\{\{\s*pluginId\s*\}\}/);

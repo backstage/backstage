@@ -16,8 +16,8 @@ app:
   baseUrl: http://localhost:3000
 
 backend:
-  listen: 0.0.0.0:7000
-  baseUrl: http://localhost:7000
+  listen: 0.0.0.0:7007
+  baseUrl: http://localhost:7007
 
 organization:
   name: CNCF

@@ -865,7 +865,7 @@
 
   Based on the config `techdocs.publisher.type`, the publisher could be either Local publisher or Google Cloud Storage publisher.
 
-  4. `techdocs.storageUrl` is now a required config. Should be `http://localhost:7000/api/techdocs/static/docs` in most setups.
+  4. `techdocs.storageUrl` is now a required config. Should be `http://localhost:7007/api/techdocs/static/docs` in most setups.
 
   5. Parts of `@backstage/plugin-techdocs-backend` have been moved to a new package `@backstage/techdocs-common` to generate docs. Also to publish docs
      to-and-fro between TechDocs and a storage (either local or external). However, a Backstage app does NOT need to import the `techdocs-common` package -
