@@ -1,7 +1,13 @@
 {{- $frontendUrl := urlParse .Values.appConfig.app.baseUrl}}
 {{- $backendUrl := urlParse .Values.appConfig.backend.baseUrl}}
 {{- $lighthouseUrl := urlParse .Values.appConfig.lighthouse.baseUrl}}
+
+{{/* Determine the api type for the ingress */}}
+{{- if lt .Capabilities.KubeVersion.Minor "19" }}
 apiVersion: networking.k8s.io/v1beta1
+{{- else if gt .Capabilities.KubeVersion.Minor "19" }}
+apiVersion: networking.k8s.io/v1
+{{- end }}
 kind: Ingress
 metadata:
   name: {{ include "backstage.fullname" . }}-ingress
