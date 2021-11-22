@@ -61,6 +61,16 @@ export type ApplyConditionsRequest = {
   conditions: PermissionCriteria<PermissionCondition>;
 };
 
+/**
+ * The result of applying the conditions, expressed as a definitive authorize
+ * result of ALLOW or DENY.
+ *
+ * @public
+ */
+export type ApplyConditionsResponse = {
+  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+};
+
 const applyConditions = <TResource>(
   criteria: PermissionCriteria<PermissionCondition>,
   resource: TResource,

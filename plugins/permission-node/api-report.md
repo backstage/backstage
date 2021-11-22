@@ -18,6 +18,11 @@ export type ApplyConditionsRequest = {
 };
 
 // @public
+export type ApplyConditionsResponse = {
+  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+};
+
+// @public
 export type Condition<TRule> = TRule extends PermissionRule<
   any,
   any,
