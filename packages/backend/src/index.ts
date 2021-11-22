@@ -66,7 +66,7 @@ function makeCreateEnv(config: Config) {
   const tokenManager = ServerTokenManager.noop();
   const permissions = new PermissionClient({
     discoveryApi: discovery,
-    enabled: config.getBoolean('permission.enabled'),
+    configApi: config,
   });
 
   root.info(`Created UrlReader ${reader}`);

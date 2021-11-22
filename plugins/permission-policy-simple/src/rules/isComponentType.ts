@@ -44,11 +44,11 @@ export const isComponentType = {
           allOf: [
             {
               key: 'kind',
-              matchValueIn: ['component'],
+              values: ['component'],
             },
             {
               key: 'spec.type',
-              matchValueIn: componentTypes.map(type =>
+              values: componentTypes.map(type =>
                 type.toLocaleLowerCase('en-US'),
               ),
             },

@@ -54,12 +54,16 @@ describe('CatalogBuilder', () => {
     readTree: jest.fn(),
     search: jest.fn(),
   };
+  const configReader = new ConfigReader({});
   const env: CatalogEnvironment = {
     logger: getVoidLogger(),
     database: { getClient: async () => db },
-    config: new ConfigReader({}),
+    config: configReader,
     reader,
-    permissions: new PermissionClient({ discoveryApi }),
+    permissions: new PermissionClient({
+      discoveryApi,
+      configApi: configReader,
+    }),
   };
 
   beforeEach(async () => {
