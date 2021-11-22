@@ -315,7 +315,8 @@ describe('NextEntitiesCatalog', () => {
         };
         await addEntityToSearch(knex, entity1);
         await addEntityToSearch(knex, entity2);
-        const catalog = new NextEntitiesCatalog(knex);
+        // TODO(authorization-framework: pass mock permission client, extend test suite to check authz behavior)
+        const catalog = new NextEntitiesCatalog(knex, {} as any);
 
         const testFilter = {
           not: {
@@ -323,7 +324,7 @@ describe('NextEntitiesCatalog', () => {
           },
         };
         const request = { filter: testFilter };
-        const { entities } = await catalog.entities(request);
+        const { entities } = await catalog.entities(request, false);
 
         expect(entities.length).toBe(1);
         expect(entities[0]).toEqual(entity1);
@@ -418,7 +419,8 @@ describe('NextEntitiesCatalog', () => {
         };
         await addEntityToSearch(knex, entity1);
         await addEntityToSearch(knex, entity2);
-        const catalog = new NextEntitiesCatalog(knex);
+        // TODO(authorization-framework: pass mock permission client, extend test suite to check authz behavior)
+        const catalog = new NextEntitiesCatalog(knex, {} as any);
 
         const testFilter1 = {
           key: 'metadata.org',
@@ -434,7 +436,7 @@ describe('NextEntitiesCatalog', () => {
             },
           },
         };
-        const { entities } = await catalog.entities(request);
+        const { entities } = await catalog.entities(request, false);
 
         expect(entities.length).toBe(1);
         expect(entities).toContainEqual(entity1);
