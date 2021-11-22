@@ -71,8 +71,9 @@ describe('PermissionIntegrationClient', () => {
     });
 
     it('should make a POST request to the correct endpoint', async () => {
-      await client.applyConditions('testResource1', {
+      await client.applyConditions({
         pluginId: 'test-plugin',
+        resourceRef: 'testResource1',
         resourceType: 'test-resource',
         conditions: mockConditions,
       });
@@ -81,8 +82,9 @@ describe('PermissionIntegrationClient', () => {
     });
 
     it('should include a request body', async () => {
-      await client.applyConditions('testResource1', {
+      await client.applyConditions({
         pluginId: 'test-plugin',
+        resourceRef: 'testResource1',
         resourceType: 'test-resource',
         conditions: mockConditions,
       });
@@ -101,8 +103,9 @@ describe('PermissionIntegrationClient', () => {
     });
 
     it('should return the response from the fetch request', async () => {
-      const response = await client.applyConditions('testResource1', {
+      const response = await client.applyConditions({
         pluginId: 'test-plugin',
+        resourceRef: 'testResource1',
         resourceType: 'test-resource',
         conditions: mockConditions,
       });
@@ -113,8 +116,9 @@ describe('PermissionIntegrationClient', () => {
     });
 
     it('should not include authorization headers if no token is supplied', async () => {
-      await client.applyConditions('testResource1', {
+      await client.applyConditions({
         pluginId: 'test-plugin',
+        resourceRef: 'testResource1',
         resourceType: 'test-resource',
         conditions: mockConditions,
       });
@@ -125,9 +129,9 @@ describe('PermissionIntegrationClient', () => {
 
     it('should include correctly-constructed authorization header if token is supplied', async () => {
       await client.applyConditions(
-        'testResource1',
         {
           pluginId: 'test-plugin',
+          resourceRef: 'testResource1',
           resourceType: 'test-resource',
           conditions: mockConditions,
         },
@@ -146,8 +150,9 @@ describe('PermissionIntegrationClient', () => {
       );
 
       await expect(
-        client.applyConditions('testResource1', {
+        client.applyConditions({
           pluginId: 'test-plugin',
+          resourceRef: 'testResource1',
           resourceType: 'test-resource',
           conditions: mockConditions,
         }),
@@ -162,8 +167,9 @@ describe('PermissionIntegrationClient', () => {
       );
 
       await expect(
-        client.applyConditions('testResource1', {
+        client.applyConditions({
           pluginId: 'test-plugin',
+          resourceRef: 'testResource1',
           resourceType: 'test-resource',
           conditions: mockConditions,
         }),

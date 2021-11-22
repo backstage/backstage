@@ -40,8 +40,13 @@ export class PermissionIntegrationClient {
   }
 
   async applyConditions(
-    resourceRef: string,
-    conditions: {
+    {
+      pluginId,
+      resourceRef,
+      resourceType,
+      conditions,
+    }: {
+      resourceRef: string;
       pluginId: string;
       resourceType: string;
       conditions: PermissionCriteria<PermissionCondition>;
@@ -49,13 +54,13 @@ export class PermissionIntegrationClient {
     authHeader?: string,
   ): Promise<ApplyConditionsResponse> {
     const endpoint = `${await this.discovery.getBaseUrl(
-      conditions.pluginId,
+      pluginId,
     )}/permissions/apply-conditions`;
 
     const request: ApplyConditionsRequest = {
       resourceRef,
-      resourceType: conditions.resourceType,
-      conditions: conditions.conditions,
+      resourceType,
+      conditions,
     };
 
     const response = await fetch(endpoint, {

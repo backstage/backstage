@@ -68,8 +68,10 @@ const handleRequest = async (
       return {
         id,
         ...(await permissionIntegrationClient.applyConditions(
-          resourceRef,
-          response.conditions,
+          {
+            resourceRef,
+            ...response.conditions,
+          },
           authHeader,
         )),
       };
