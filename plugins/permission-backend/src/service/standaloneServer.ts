@@ -20,8 +20,8 @@ import {
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
+import { AllowAllPermissionPolicy } from './AllowAllPermissionPolicy';
 import { createRouter } from './router';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 export interface ServerOptions {
   port: number;
@@ -38,9 +38,7 @@ export async function startStandaloneServer(
   const router = await createRouter({
     logger,
     config,
-    policy: {
-      handle: () => Promise.resolve({ result: AuthorizeResult.ALLOW }),
-    },
+    policy: new AllowAllPermissionPolicy(),
   });
 
   let service = createServiceBuilder(module)
