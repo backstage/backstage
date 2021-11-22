@@ -15,10 +15,30 @@
  */
 import { ClusterLinksFormatterOptions } from '../../../types/types';
 
-export function openshiftFormatter(
-  _options: ClusterLinksFormatterOptions,
-): URL {
-  throw new Error(
-    'OpenShift formatter is not yet implemented. Please, contribute!',
-  );
+const kindMappings: Record<string, string> = {
+  deployment: 'deployments',
+  ingress: 'ingresses',
+  service: 'services',
+  horizontalpodautoscaler: 'horizontalpodautoscalers',
+  persistentvolume: 'persistentvolumes',
+};
+
+export function openshiftFormatter(options: ClusterLinksFormatterOptions): URL {
+  const result = new URL(options.dashboardUrl.href);
+  const name = options.object.metadata?.name;
+  const namespace = options.object.metadata?.namespace;
+  const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
+  if (namespace) {
+    if (name && validKind) {
+      result.pathname = `k8s/ns/${namespace}/${validKind}/${name}`;
+    } else {
+      result.pathname = `k8s/cluster/projects/${namespace}`;
+    }
+  } else if (validKind) {
+    result.pathname = `k8s/cluster/${validKind}`;
+    if (name) {
+      result.pathname += `/${name}`;
+    }
+  }
+  return result;
 }

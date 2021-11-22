@@ -15,21 +15,108 @@
  */
 import { openshiftFormatter } from './openshift';
 
-describe('clusterLinks - OpenShift formatter', () => {
+function formatUrl(url: URL) {
+  return url.toString();
+}
+
+describe('clusterLinks - Openshift formatter', () => {
   it('should return an url on the workloads when there is a namespace only', () => {
-    expect(() =>
-      openshiftFormatter({
-        dashboardUrl: new URL('https://k8s.foo.com'),
-        object: {
-          metadata: {
-            name: 'foobar',
-            namespace: 'bar',
-          },
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com'),
+      object: {
+        metadata: {
+          namespace: 'bar',
         },
-        kind: 'Deployment',
-      }),
-    ).toThrowError(
-      'OpenShift formatter is not yet implemented. Please, contribute!',
+      },
+      kind: 'foo',
+    });
+    expect(formatUrl(url)).toBe('https://k8s.foo.com/k8s/cluster/projects/bar');
+  });
+  it('should return an url on the workloads when the kind is not recognizeed', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'UnknownKind',
+    });
+    expect(formatUrl(url)).toBe('https://k8s.foo.com/k8s/cluster/projects/bar');
+  });
+  it('should return an url on the deployment', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Deployment',
+    });
+    expect(formatUrl(url)).toBe(
+      'https://k8s.foo.com/k8s/ns/bar/deployments/foobar',
+    );
+  });
+  it('should return an url on the service', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Service',
+    });
+    expect(formatUrl(url)).toBe(
+      'https://k8s.foo.com/k8s/ns/bar/services/foobar',
+    );
+  });
+  it('should return an url on the ingress', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Ingress',
+    });
+    expect(formatUrl(url)).toBe(
+      'https://k8s.foo.com/k8s/ns/bar/ingresses/foobar',
+    );
+  });
+  it('should return an url on the deployment for a hpa', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'HorizontalPodAutoscaler',
+    });
+    expect(formatUrl(url)).toBe(
+      'https://k8s.foo.com/k8s/ns/bar/horizontalpodautoscalers/foobar',
+    );
+  });
+  it('should return an url on the PV', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+        },
+      },
+      kind: 'PersistentVolume',
+    });
+    expect(formatUrl(url)).toBe(
+      'https://k8s.foo.com/k8s/cluster/persistentvolumes/foobar',
     );
   });
 });
