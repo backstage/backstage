@@ -80,6 +80,9 @@ const handleRequest = async (
     return {
       id,
       result: AuthorizeResult.CONDITIONAL,
+      // TODO(mtlewis): this .conditions.conditions situation is a bit awkward. I think it's
+      // worth exploring a bit of reorganization of the ConditionalPolicyResult type so that
+      // the naming of property chains like this makes a bit more sense.
       conditions: response.conditions.conditions,
     };
   }
