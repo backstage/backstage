@@ -54,32 +54,36 @@ export class DefaultLocationService implements LocationService {
     return this.store.deleteLocation(id);
   }
 
-  private async getUnprocessedEntities(
-    unprocessed: DeferredEntity[],
-    entities: Entity[],
+  private async processEntities(
+    unprocessedEntities: DeferredEntity[],
   ): Promise<Entity[]> {
-    const currentEntity = unprocessed.pop();
-    if (!currentEntity) {
-      return entities;
-    }
-    const processed = await this.orchestrator.process({
-      entity: currentEntity.entity,
-      state: {}, // we process without the existing cache
-    });
-
-    if (processed.ok) {
-      const { metadata, kind } = processed.completedEntity;
-      if (
-        entities.some(e => e.metadata.name === metadata.name && e.kind === kind)
-      ) {
-        throw new Error(`Duplicate nested entity: ${metadata.name}`);
+    const entities: Entity[] = [];
+    while (unprocessedEntities.length) {
+      const currentEntity = unprocessedEntities.pop();
+      if (!currentEntity) {
+        continue;
       }
-      return await this.getUnprocessedEntities(
-        [...unprocessed, ...processed.deferredEntities],
-        [...entities, processed.completedEntity],
-      );
+      const processed = await this.orchestrator.process({
+        entity: currentEntity.entity,
+        state: {}, // we process without the existing cache
+      });
+
+      if (processed.ok) {
+        const { metadata, kind } = processed.completedEntity;
+        if (
+          entities.some(
+            e => e.metadata.name === metadata.name && e.kind === kind,
+          )
+        ) {
+          throw new Error(`Duplicate nested entity: ${metadata.name}`);
+        }
+        unprocessedEntities.push(...processed.deferredEntities);
+        entities.push(processed.completedEntity);
+      } else {
+        throw Error(processed.errors.map(String).join(', '));
+      }
     }
-    throw Error(processed.errors.map(String).join(', '));
+    return entities;
   }
 
   private async dryRunCreateLocation(
@@ -114,10 +118,7 @@ export class DefaultLocationService implements LocationService {
     const unprocessedEntities: DeferredEntity[] = [
       { entity, locationKey: `${spec.type}:${spec.target}` },
     ];
-    const entities: Entity[] = await this.getUnprocessedEntities(
-      unprocessedEntities,
-      [],
-    );
+    const entities: Entity[] = await this.processEntities(unprocessedEntities);
 
     return {
       exists: await existsPromise,
