@@ -82,7 +82,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
   }
 
   private isUserEntity(entity: Entity): entity is UserEntity {
-    return entity.kind.toUpperCase() === 'USER';
+    return entity.kind.toLocaleUpperCase('en-US') === 'USER';
   }
 
   private getDocumentText(entity: Entity): string {
