@@ -32,7 +32,6 @@ import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
-import { UserEntity } from '@backstage/catalog-model';
 import { Validators } from '@backstage/catalog-model';
 
 // Warning: (ae-missing-release-tag) "AddLocationResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -764,10 +763,6 @@ export class DefaultCatalogCollator implements DocumentCollator {
       filter?: CatalogEntitiesRequest['filter'];
     },
   ): DefaultCatalogCollator;
-  // (undocumented)
-  protected getDocumentText(entity: Entity): string;
-  // (undocumented)
-  protected isUserEntity(entity: Entity): entity is UserEntity;
   // (undocumented)
   protected locationTemplate: string;
   // (undocumented)

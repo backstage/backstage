@@ -81,16 +81,17 @@ export class DefaultCatalogCollator implements DocumentCollator {
     return formatted.toLowerCase();
   }
 
-  protected isUserEntity(entity: Entity): entity is UserEntity {
+  private isUserEntity(entity: Entity): entity is UserEntity {
     return entity.kind === 'User';
   }
 
-  protected getDocumentText(entity: Entity): string {
+  private getDocumentText(entity: Entity): string {
     let documentText = entity.metadata.description || '';
     if (this.isUserEntity(entity)) {
-      if (entity.spec?.profile?.displayName && entity.metadata.description) {
+      if (entity.spec?.profile?.displayName && documentText) {
         // combine displayName and description
-        documentText = `${entity.spec?.profile?.displayName} : ${entity.metadata.description}`;
+        const displayName = entity.spec?.profile?.displayName;
+        documentText = displayName.concat(' : ', documentText);
       } else {
         documentText = entity.spec?.profile?.displayName || documentText;
       }
