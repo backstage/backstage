@@ -76,6 +76,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     color: theme.palette.navigation.color,
     display: 'flex',
     justifyContent: 'center',
+    fontSize: '14px',
   },
 }));
 
@@ -168,7 +169,7 @@ export const SidebarSubItem = ({
                 onClick={closeSubmenu}
                 key={key}
               >
-                <Typography variant="subtitle2" className={classes.textContent}>
+                <Typography className={classes.textContent}>
                   {object.title}
                 </Typography>
               </Link>
