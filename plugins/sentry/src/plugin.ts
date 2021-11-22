@@ -25,8 +25,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '/sentry',
-  title: 'Sentry',
+  id: 'sentry',
 });
 
 export const sentryPlugin = createPlugin({

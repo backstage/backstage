@@ -24,8 +24,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '/pagerduty',
-  title: 'pagerduty',
+  id: 'pagerduty',
 });
 
 export const pagerDutyPlugin = createPlugin({

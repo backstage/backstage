@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend
 
+## 0.4.8
+
+### Patch Changes
+
+- 892c1d9202: Update OAuthAdapter to create identity.token from identity.idToken if it does not exist, and prevent overwrites to identity.toke. Update login page commonProvider to prefer .token over .idToken
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+  - @backstage/test-utils@0.1.22
+
 ## 0.4.7
 
 ### Patch Changes

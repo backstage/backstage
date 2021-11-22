@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'space-between',
     gap: theme.spacing(2),
-    margin: theme.spacing(4),
+    margin: theme.spacing(2, 0),
   },
 }));
 
@@ -44,9 +44,8 @@ export const SearchResultPager = () => {
         disabled={!fetchPreviousPage}
         onClick={fetchPreviousPage}
         startIcon={<ArrowBackIosIcon />}
-        size="small"
       >
-        Back
+        Previous
       </Button>
 
       <Button
@@ -54,7 +53,6 @@ export const SearchResultPager = () => {
         disabled={!fetchNextPage}
         onClick={fetchNextPage}
         endIcon={<ArrowForwardIosIcon />}
-        size="small"
       >
         Next
       </Button>

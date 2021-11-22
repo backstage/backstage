@@ -4,6 +4,9 @@
 
 ```ts
 // @public
+export const BACKSTAGE_JSON = 'backstage.json';
+
+// @public
 export function findPaths(searchDir: string): Paths;
 
 // @public

@@ -24,5 +24,5 @@ export const registerComponentRouteRef = createExternalRouteRef({
 });
 
 export const rootRouteRef = createRouteRef({
-  title: 'Create new entity',
+  id: 'scaffolder',
 });

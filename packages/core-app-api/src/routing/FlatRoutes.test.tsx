@@ -17,17 +17,18 @@
 import { render, RenderResult } from '@testing-library/react';
 import React, { ReactNode } from 'react';
 import { MemoryRouter, Route, Routes, useOutlet } from 'react-router-dom';
-import { ApiProvider, ApiRegistry, LocalStorageFeatureFlags } from '../apis';
+import { LocalStorageFeatureFlags } from '../apis';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { AppContext } from '../app';
 import { AppContextProvider } from '../app/AppContext';
 import { FlatRoutes } from './FlatRoutes';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
 const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-  <ApiProvider apis={ApiRegistry.with(featureFlagsApiRef, mockFeatureFlagsApi)}>
+  <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
     {children}
-  </ApiProvider>
+  </TestApiProvider>
 );
 
 function makeRouteRenderer(node: ReactNode) {
