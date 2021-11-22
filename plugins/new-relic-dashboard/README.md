@@ -21,7 +21,7 @@ proxy:
   '/newrelic/apm/api':
     target: https://api.newrelic.com/v2
     headers:
-      X-Api-Key: ${NEW_RELIC_REST_API_KEY}
+      X-Api-Key: ${NEW_RELIC_USER_KEY}
 ```
 
 2. Add the following to `EntityPage.tsx` to display New Relic Dashboard Tab
