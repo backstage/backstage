@@ -23,6 +23,8 @@ export interface Config {
       | 'deployments'
       | 'replicasets'
       | 'horizontalpodautoscalers'
+      | 'jobs'
+      | 'cronjobs'
       | 'ingresses'
     >;
     serviceLocatorMethod: {
