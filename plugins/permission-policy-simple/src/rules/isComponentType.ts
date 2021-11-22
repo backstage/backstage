@@ -39,20 +39,14 @@ export const isComponentType = {
   },
   toQuery(componentTypes: string[]): PermissionCriteria<EntitiesSearchFilter> {
     return {
-      anyOf: [
+      allOf: [
         {
-          allOf: [
-            {
-              key: 'kind',
-              values: ['component'],
-            },
-            {
-              key: 'spec.type',
-              values: componentTypes.map(type =>
-                type.toLocaleLowerCase('en-US'),
-              ),
-            },
-          ],
+          key: 'kind',
+          values: ['component'],
+        },
+        {
+          key: 'spec.type',
+          values: componentTypes.map(type => type.toLocaleLowerCase('en-US')),
         },
       ],
     };
