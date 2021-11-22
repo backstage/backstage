@@ -69,13 +69,13 @@ describe('Sidebar', () => {
     });
     it('Sidebar should not show expanded items when hovered on', async () => {
       userEvent.hover(screen.getByTestId('sidebar-root'));
-      expect(await screen.queryByText('Create...')).not.toBeInTheDocument();
+      expect(screen.queryByText('Create...')).not.toBeInTheDocument();
     });
   });
   describe('Submenu Items', () => {
     it('Extended sidebar with submenu content hidden by default', async () => {
-      expect(await screen.queryByText('Tools')).not.toBeInTheDocument();
-      expect(await screen.queryByText('Misc')).not.toBeInTheDocument();
+      expect(screen.queryByText('Tools')).not.toBeInTheDocument();
+      expect(screen.queryByText('Misc')).not.toBeInTheDocument();
     });
 
     it('Extended sidebar with submenu content visible when hover over submenu items', async () => {
@@ -87,8 +87,8 @@ describe('Sidebar', () => {
     it('Multicategory item in submenu shows drop down on click', async () => {
       userEvent.hover(screen.getByTestId('item-with-submenu'));
       userEvent.click(screen.getByText('Misc'));
-      expect(await screen.getByText('dropdown item 1')).toBeInTheDocument();
-      expect(await screen.getByText('dropdown item 2')).toBeInTheDocument();
+      expect(screen.getByText('dropdown item 1')).toBeInTheDocument();
+      expect(screen.getByText('dropdown item 2')).toBeInTheDocument();
     });
 
     it('Dropdown item in submenu renders a link when `to` value is provided', async () => {
