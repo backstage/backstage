@@ -18,7 +18,7 @@ To support OneLogin authentication, you must create an Application:
 3. Click Save
 4. Go to the Configuration tab for the Application and set:
    - `Login Url`: `http://localhost:3000`
-   - `Redirect URIs`: `http://localhost:7000/api/auth/onelogin/handler/frame`
+   - `Redirect URIs`: `http://localhost:7007/api/auth/onelogin/handler/frame`
 5. Click Save
 6. Go to the SSO tab for the Application and set:
    - `Token Endpoint` > `Authentication Method`: `POST`

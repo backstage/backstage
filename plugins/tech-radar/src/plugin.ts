@@ -25,7 +25,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 const rootRouteRef = createRouteRef({
-  title: 'Tech Radar',
+  id: 'tech-radar',
 });
 
 /**

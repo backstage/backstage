@@ -40,7 +40,7 @@ import {
 } from './config';
 import { createHttpServer, createHttpsServer } from './hostFactory';
 
-export const DEFAULT_PORT = 7000;
+export const DEFAULT_PORT = 7007;
 // '' is express default, which listens to all interfaces
 const DEFAULT_HOST = '';
 // taken from the helmet source code - don't seem to be exported

@@ -16,5 +16,6 @@
 export {
   azureDevOpsPlugin,
   EntityAzurePipelinesContent,
+  EntityAzurePullRequestsContent,
   isAzureDevOpsAvailable,
 } from './plugin';

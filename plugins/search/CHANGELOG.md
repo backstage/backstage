@@ -1,5 +1,17 @@
 # @backstage/plugin-search
 
+## 0.4.18
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- 704b267e1c: Smaller UX improvements to search components such as optional autoFocus prop to SearchBar components, decreased debounce value and closing modal on link click of SearchModal, terminology updates of SearchResultPager.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
 ## 0.4.17
 
 ### Patch Changes

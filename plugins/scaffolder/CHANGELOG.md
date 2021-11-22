@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder
 
+## 0.11.11
+
+### Patch Changes
+
+- 8809b6c0dd: Update the json-schema dependency version.
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/integration-react@0.1.14
+
 ## 0.11.10
 
 ### Patch Changes

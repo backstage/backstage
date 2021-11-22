@@ -536,9 +536,7 @@ describe('CommonDatabase', () => {
           filter: {
             anyOf: [
               {
-                allOf: [
-                  { key: 'metadata.annotations.foo', matchValueExists: true },
-                ],
+                allOf: [{ key: 'metadata.annotations.foo' }],
               },
             ],
           },
@@ -555,30 +553,6 @@ describe('CommonDatabase', () => {
           {
             locationId: undefined,
             entity: expect.objectContaining({ kind: 'k2' }),
-          },
-        ]),
-      );
-
-      const nonExistRows = await db.transaction(async tx =>
-        db.entities(tx, {
-          filter: {
-            anyOf: [
-              {
-                allOf: [
-                  { key: 'metadata.annotations.foo', matchValueExists: false },
-                ],
-              },
-            ],
-          },
-        }),
-      );
-
-      expect(nonExistRows.entities.length).toEqual(1);
-      expect(nonExistRows.entities).toEqual(
-        expect.arrayContaining([
-          {
-            locationId: undefined,
-            entity: expect.objectContaining({ kind: 'k3' }),
           },
         ]),
       );

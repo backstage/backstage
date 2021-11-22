@@ -21,7 +21,7 @@ To support Azure authentication, you must create an App Registration:
 4. Register an application
    - Name: Backstage (or your custom app name)
    - Redirect URI: Web >
-     `http://localhost:7000/api/auth/microsoft/handler/frame`
+     `http://localhost:7007/api/auth/microsoft/handler/frame`
 5. Navigate to **Certificates & secrets > New client secret** to create a secret
 
 ## Configuration

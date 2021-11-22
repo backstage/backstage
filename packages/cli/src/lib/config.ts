@@ -54,7 +54,7 @@ export async function loadCliConfig(options: Options) {
     packagePaths: [paths.resolveTargetRoot('package.json')],
   });
 
-  const appConfigs = await loadConfig({
+  const { appConfigs } = await loadConfig({
     experimentalEnvFunc: options.mockEnv
       ? async name => process.env[name] || 'x'
       : undefined,

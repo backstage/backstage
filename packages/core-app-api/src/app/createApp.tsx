@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  createApp as createDefaultApp,
-  OptionalAppOptions,
-} from '@backstage/app-defaults';
+import { createApp as createDefaultApp } from '@backstage/app-defaults';
+import { AppContext, BackstageApp } from './types';
 
 /**
  * Creates a new Backstage App.
@@ -26,7 +24,9 @@ import {
  * @param options - A set of options for creating the app
  * @public
  */
-export function createApp(options?: OptionalAppOptions) {
+export function createApp(
+  options?: Parameters<typeof createDefaultApp>[0],
+): BackstageApp & AppContext {
   // eslint-disable-next-line no-console
   console.warn(
     'DEPRECATION WARNING: The createApp function from @backstage/core-app-api will soon be removed, ' +
@@ -34,5 +34,5 @@ export function createApp(options?: OptionalAppOptions) {
       'If you do not wish to use a standard app configuration but instead supply all options yourself ' +
       ' you can use createSpecializedApp from @backstage/core-app-api instead.',
   );
-  return createDefaultApp(options);
+  return createDefaultApp(options) as BackstageApp & AppContext;
 }

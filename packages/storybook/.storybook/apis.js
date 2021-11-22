@@ -37,32 +37,32 @@ const identityApi = {
 };
 const oauthRequestApi = new OAuthRequestManager();
 const googleAuthApi = GoogleAuth.create({
-  apiOrigin: 'http://localhost:7000',
+  apiOrigin: 'http://localhost:7007',
   basePath: '/auth/',
   oauthRequestApi,
 });
 const githubAuthApi = GithubAuth.create({
-  apiOrigin: 'http://localhost:7000',
+  apiOrigin: 'http://localhost:7007',
   basePath: '/auth/',
   oauthRequestApi,
 });
 const gitlabAuthApi = GitlabAuth.create({
-  apiOrigin: 'http://localhost:7000',
+  apiOrigin: 'http://localhost:7007',
   basePath: '/auth/',
   oauthRequestApi,
 });
 const oktaAuthApi = OktaAuth.create({
-  apiOrigin: 'http://localhost:7000',
+  apiOrigin: 'http://localhost:7007',
   basePath: '/auth/',
   oauthRequestApi,
 });
 const auth0AuthApi = Auth0Auth.create({
-  apiOrigin: 'http://localhost:7000',
+  apiOrigin: 'http://localhost:7007',
   basePath: '/auth/',
   oauthRequestApi,
 });
 const oauth2Api = OAuth2.create({
-  apiOrigin: 'http://localhost:7000',
+  apiOrigin: 'http://localhost:7007',
   basePath: '/auth/',
   oauthRequestApi,
 });

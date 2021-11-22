@@ -46,7 +46,11 @@ function process(source, filePath) {
   }
 
   if (transforms) {
-    return transform(source, { transforms, filePath }).code;
+    return transform(source, {
+      transforms,
+      filePath,
+      disableESTransforms: true,
+    }).code;
   }
 
   return source;

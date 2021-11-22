@@ -21,8 +21,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const settingsRouteRef = createRouteRef({
-  path: '/settings',
-  title: 'Settings',
+  id: 'user-settings',
 });
 
 export const userSettingsPlugin = createPlugin({

@@ -1,5 +1,14 @@
 # @backstage/plugin-kafka-backend
 
+## 0.2.11
+
+### Patch Changes
+
+- 9145449220: Update Kafka configuration types
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+
 ## 0.2.10
 
 ### Patch Changes

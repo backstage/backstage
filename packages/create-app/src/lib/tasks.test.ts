@@ -195,9 +195,12 @@ describe('templatingTask', () => {
       name: 'SuperCoolBackstageInstance',
       dbTypeSqlite: true,
     };
-    await templatingTask(templateDir, destinationDir, context);
+    await templatingTask(templateDir, destinationDir, context, '1.0.0');
     expect(fs.existsSync('templatedApp/package.json')).toBe(true);
     expect(fs.existsSync('templatedApp/.dockerignore')).toBe(true);
+    await expect(fs.readJson('templatedApp/backstage.json')).resolves.toEqual({
+      version: '1.0.0',
+    });
     // catalog was populated with `context.name`
     expect(
       fs.readFileSync('templatedApp/catalog-info.yaml', 'utf-8'),
