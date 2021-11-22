@@ -28,14 +28,13 @@ import {
   Box,
   createStyles,
   Grid,
-  Link,
   makeStyles,
   Theme,
   Typography,
 } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import React from 'react';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
+import { generatePath } from 'react-router-dom';
 import { useAsync } from 'react-use';
 
 import {
@@ -43,6 +42,7 @@ import {
   InfoCard,
   Progress,
   ResponseErrorPanel,
+  Link,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -90,7 +90,6 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
           <Box pt={2} textAlign="center">
             <Typography variant="h5">
               <Link
-                component={RouterLink}
                 to={generatePath(
                   `/catalog/:namespace/user/${metaName}`,
                   entityRouteParams(member),
@@ -100,13 +99,7 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
               </Link>
             </Typography>
             {profile?.email && (
-              <Link
-                href={`mailto:${profile.email}`}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                {profile.email}
-              </Link>
+              <Link to={`mailto:${profile.email}`}>{profile.email}</Link>
             )}
           </Box>
         </Box>
