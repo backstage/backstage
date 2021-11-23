@@ -17,7 +17,7 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Routes, Route } from 'react-router';
-import { rootRouteRef, buildRouteRef } from '../routes';
+import { buildRouteRef } from '../routes';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowRunsTable } from './WorkflowRunsTable';
 import { GITHUB_ACTIONS_ANNOTATION } from './useProjectName';
@@ -41,12 +41,9 @@ export const Router = (_props: Props) => {
   }
   return (
     <Routes>
+      <Route path="/" element={<WorkflowRunsTable entity={entity} />} />
       <Route
-        path={`/${rootRouteRef.path}`}
-        element={<WorkflowRunsTable entity={entity} />}
-      />
-      <Route
-        path={`/${buildRouteRef.path}`}
+        path={`${buildRouteRef.path}`}
         element={<WorkflowRunDetails entity={entity} />}
       />
       )

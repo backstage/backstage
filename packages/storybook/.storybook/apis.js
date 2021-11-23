@@ -50,7 +50,7 @@ const oauthRequestApi = builder.add(
 builder.add(
   googleAuthApiRef,
   GoogleAuth.create({
-    apiOrigin: 'http://localhost:7000',
+    apiOrigin: 'http://localhost:7007',
     basePath: '/auth/',
     oauthRequestApi,
   }),
@@ -59,7 +59,7 @@ builder.add(
 builder.add(
   githubAuthApiRef,
   GithubAuth.create({
-    apiOrigin: 'http://localhost:7000',
+    apiOrigin: 'http://localhost:7007',
     basePath: '/auth/',
     oauthRequestApi,
   }),
@@ -68,7 +68,7 @@ builder.add(
 builder.add(
   gitlabAuthApiRef,
   GitlabAuth.create({
-    apiOrigin: 'http://localhost:7000',
+    apiOrigin: 'http://localhost:7007',
     basePath: '/auth/',
     oauthRequestApi,
   }),
@@ -77,7 +77,7 @@ builder.add(
 builder.add(
   oktaAuthApiRef,
   OktaAuth.create({
-    apiOrigin: 'http://localhost:7000',
+    apiOrigin: 'http://localhost:7007',
     basePath: '/auth/',
     oauthRequestApi,
   }),
@@ -86,7 +86,7 @@ builder.add(
 builder.add(
   auth0AuthApiRef,
   Auth0Auth.create({
-    apiOrigin: 'http://localhost:7000',
+    apiOrigin: 'http://localhost:7007',
     basePath: '/auth/',
     oauthRequestApi,
   }),
@@ -95,7 +95,7 @@ builder.add(
 builder.add(
   oauth2ApiRef,
   OAuth2.create({
-    apiOrigin: 'http://localhost:7000',
+    apiOrigin: 'http://localhost:7007',
     basePath: '/auth/',
     oauthRequestApi,
   }),

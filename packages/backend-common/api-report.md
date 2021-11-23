@@ -6,6 +6,7 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
+import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
@@ -48,7 +49,7 @@ export class AwsS3UrlReader implements UrlReader {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(url: string): Promise<ReadTreeResponse>;
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   // (undocumented)
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   // (undocumented)
@@ -72,7 +73,7 @@ export class AzureUrlReader implements UrlReader {
   // (undocumented)
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, _options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   // (undocumented)
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
   // (undocumented)
@@ -94,7 +95,7 @@ export class BitbucketUrlReader implements UrlReader {
   // (undocumented)
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, _options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   // (undocumented)
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
   // (undocumented)
@@ -418,6 +419,7 @@ export type ReadTreeOptions = {
     },
   ): boolean;
   etag?: string;
+  signal?: AbortSignal_2;
 };
 
 // @public
@@ -471,6 +473,7 @@ export type ReadTreeResponseFile = {
 // @public
 export type ReadUrlOptions = {
   etag?: string;
+  signal?: AbortSignal_2;
 };
 
 // @public
@@ -508,6 +511,7 @@ export type RunContainerOptions = {
 // @public
 export type SearchOptions = {
   etag?: string;
+  signal?: AbortSignal_2;
 };
 
 // @public

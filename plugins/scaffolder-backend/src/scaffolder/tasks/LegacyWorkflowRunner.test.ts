@@ -28,6 +28,7 @@ describe('LegacyWorkflowRunner', () => {
   let runner: HandlebarsWorkflowRunner;
   const logger = getVoidLogger();
   let actionRegistry = new TemplateActionRegistry();
+  let fakeActionHandler: jest.Mock;
 
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
@@ -59,6 +60,11 @@ describe('LegacyWorkflowRunner', () => {
         ctx.output('badOutput', false);
       },
     });
+    fakeActionHandler = jest.fn();
+    actionRegistry.register({
+      id: 'test-metadata-action',
+      handler: fakeActionHandler,
+    });
 
     runner = new HandlebarsWorkflowRunner({
       actionRegistry,
@@ -85,6 +91,30 @@ describe('LegacyWorkflowRunner', () => {
     await expect(() => runner.execute(task)).rejects.toThrow(
       /Template action with ID 'not-found-action' is not registered/,
     );
+  });
+
+  it('should pass metadata through', async () => {
+    const templateName = 'template name';
+    const task = createMockTaskWithSpec({
+      apiVersion: 'backstage.io/v1beta2',
+      steps: [
+        {
+          id: 'test',
+          name: 'name',
+          action: 'test-metadata-action',
+          input: { foo: 1 },
+        },
+      ],
+      output: {},
+      values: {},
+      metadata: { name: templateName },
+    });
+
+    await runner.execute(task);
+
+    expect(fakeActionHandler.mock.calls[0][0].metadata).toEqual({
+      name: templateName,
+    });
   });
 
   describe('templating', () => {

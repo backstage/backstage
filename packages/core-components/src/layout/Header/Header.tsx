@@ -44,7 +44,7 @@ const useStyles = makeStyles<BackstageTheme>(
       gridArea: 'pageHeader',
       padding: theme.spacing(3),
       width: '100%',
-      boxShadow: '0 0 8px 3px rgba(20, 20, 20, 0.3)',
+      boxShadow: theme.shadows[4],
       position: 'relative',
       zIndex: 100,
       display: 'flex',
@@ -65,12 +65,12 @@ const useStyles = makeStyles<BackstageTheme>(
     title: {
       color: theme.palette.bursts.fontColor,
       wordBreak: 'break-all',
-      fontSize: 'calc(24px + 6 * ((100vw - 320px) / 680))',
+      fontSize: theme.typography.h3.fontSize,
       marginBottom: 0,
     },
     subtitle: {
-      color: 'rgba(255, 255, 255, 0.8)',
-      lineHeight: '1.0em',
+      color: theme.palette.common.white,
+      opacity: 0.8,
       display: 'inline-block', // prevents margin collapse of adjacent siblings
       marginTop: theme.spacing(1),
     },
@@ -82,7 +82,6 @@ const useStyles = makeStyles<BackstageTheme>(
       color: theme.palette.bursts.fontColor,
     },
     breadcrumb: {
-      fontSize: 'calc(15px + 1 * ((100vw - 320px) / 680))',
       color: theme.palette.bursts.fontColor,
     },
     breadcrumbType: {

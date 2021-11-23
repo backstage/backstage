@@ -152,6 +152,8 @@ export type AppConfigLoader = () => Promise<AppConfig[]>;
 
 /**
  * Extracts a union of the keys in a map whose value extends the given type
+ *
+ * @ignore
  */
 type KeysWithType<Obj extends { [key in string]: any }, Type> = {
   [key in keyof Obj]: Obj[key] extends Type ? key : never;
@@ -159,6 +161,8 @@ type KeysWithType<Obj extends { [key in string]: any }, Type> = {
 
 /**
  * Takes a map Map required values and makes all keys matching Keys optional
+ *
+ * @ignore
  */
 type PartialKeys<
   Map extends { [name in string]: any },
@@ -167,6 +171,8 @@ type PartialKeys<
 
 /**
  * Creates a map of target routes with matching parameters based on a map of external routes.
+ *
+ * @ignore
  */
 type TargetRouteMap<
   ExternalRoutes extends { [name: string]: ExternalRouteRef },
@@ -200,6 +206,7 @@ export type AppRouteBinder = <
  *
  * @public
  * @remarks
+ * @deprecated Will be removed
  *
  * The `type: string` type is there to handle output from newer or older plugin
  * API versions that might not be supported by this version of the app API, but
@@ -246,7 +253,9 @@ export type AppOptions = {
   /**
    * A list of all plugins to include in the app.
    */
-  plugins?: BackstagePluginWithAnyOutput[];
+  plugins?: (Omit<BackstagePlugin<any, any>, 'output'> & {
+    output(): (PluginOutput | { type: string })[];
+  })[];
 
   /**
    * Supply components to the app to override the default ones.

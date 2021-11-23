@@ -63,8 +63,8 @@ type CustomOrigin = (
  * @example
  * ```json
  * {
- *   baseUrl: "http://localhost:7000",
- *   listen: "0.0.0.0:7000"
+ *   baseUrl: "http://localhost:7007",
+ *   listen: "0.0.0.0:7007"
  * }
  * ```
  */

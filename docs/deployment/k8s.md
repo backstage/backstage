@@ -351,7 +351,7 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: 7000
+              containerPort: 7007
           envFrom:
             - secretRef:
                 name: postgres-secrets
@@ -361,11 +361,11 @@ spec:
 # https://backstage.io/docs/plugins/observability#health-checks
 #          readinessProbe:
 #            httpGet:
-#              port: 7000
+#              port: 7007
 #              path: /healthcheck
 #          livenessProbe:
 #            httpGet:
-#              port: 7000
+#              port: 7007
 #              path: /healthcheck
 ```
 
@@ -449,7 +449,7 @@ spec:
 ```
 
 The `selector` here is telling the Service which pods to target, and the port
-mapping translates normal HTTP port 80 to the backend http port (7000) on the
+mapping translates normal HTTP port 80 to the backend http port (7007) on the
 pod.
 
 Apply this Service to the Kubernetes cluster:
@@ -464,10 +464,10 @@ reveal**_, you can forward a local port to the service:
 
 ```shell
 $ sudo kubectl port-forward --namespace=backstage svc/backstage 80:80
-Forwarding from 127.0.0.1:80 -> 7000
+Forwarding from 127.0.0.1:80 -> 7007
 ```
 
-This shows port 7000 since `port-forward` doesn't _really_ support services, so
+This shows port 7007 since `port-forward` doesn't _really_ support services, so
 it cheats by looking up the first pod for a service and connecting to the mapped
 pod port.
 
@@ -486,7 +486,7 @@ organization:
 backend:
   baseUrl: http://localhost
   listen:
-    port: 7000
+    port: 7007
   cors:
     origin: http://localhost
 ```

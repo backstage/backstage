@@ -37,6 +37,12 @@ export function createRouter<
 >(options: RouterOptions<CheckType, CheckResultType>): Promise<express.Router>;
 
 // @public
+export const entityMetadataFactRetriever: FactRetriever;
+
+// @public
+export const entityOwnershipFactRetriever: FactRetriever;
+
+// @public
 export type PersistenceContext = {
   techInsightsStore: TechInsightsStore;
 };
@@ -51,6 +57,9 @@ export interface RouterOptions<
   logger: Logger_2;
   persistenceContext: PersistenceContext;
 }
+
+// @public
+export const techdocsFactRetriever: FactRetriever;
 
 // @public (undocumented)
 export type TechInsightsContext<
