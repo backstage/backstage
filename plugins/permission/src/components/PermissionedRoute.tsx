@@ -20,19 +20,28 @@ import { useApp } from '@backstage/core-plugin-api';
 import { usePermission } from '../hooks';
 import { Permission } from '@backstage/plugin-permission-common';
 
+/**
+ * Returns a React Router Route which only renders the element when authorized. If unathorized, the Route will render a
+ * {@link NotFoundErrorPage}.
+ * @public
+ */
 export const PermissionedRoute = ({
   permission,
+  resourceRef,
   ...props
-}: ComponentProps<typeof Route> & { permission: Permission }) => {
-  const permissionResult = usePermission(permission);
+}: ComponentProps<typeof Route> & {
+  permission: Permission;
+  resourceRef?: string;
+}) => {
+  const permissionResult = usePermission(permission, resourceRef);
   const app = useApp();
   const { NotFoundErrorPage } = app.getComponents();
 
   let shownElement: ReactElement | null | undefined = <NotFoundErrorPage />;
 
-  if (permissionResult.isPending()) {
+  if (permissionResult.loading) {
     shownElement = null;
-  } else if (permissionResult.isAllowed()) {
+  } else if (permissionResult.allowed) {
     shownElement = props.element;
   }
 

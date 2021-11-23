@@ -15,45 +15,33 @@
  */
 
 import { useAsync } from 'react-use';
-import { permissionApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
+import { permissionApiRef } from '../apis';
 import {
   AuthorizeResult,
   Permission,
 } from '@backstage/plugin-permission-common';
 
-export class AsyncPermissionResult {
-  constructor(
-    private readonly allowed: boolean,
-    private readonly pending: boolean,
-  ) {}
+/** @public */
+export type AsyncPermissionResult = {
+  loading: boolean;
+  allowed: boolean;
+  error?: Error;
+};
 
-  static fromAuthorizeResult(authorizeResult: AuthorizeResult | undefined) {
-    return new AsyncPermissionResult(
-      authorizeResult === AuthorizeResult.ALLOW,
-      false,
-    );
-  }
-
-  static pending() {
-    return new AsyncPermissionResult(false, true);
-  }
-
-  isAllowed() {
-    return this.allowed;
-  }
-
-  isPending() {
-    return this.pending;
-  }
-}
-
+/**
+ * React hook utlity for authorization. Given a {@link Permission} and an optional resourceRef, it will return whether or
+ * not access is allowed (for the given resource, if resourceRef is provided). See {@link PermissionClient#authorize} for
+ * more details.
+ * @public
+ */
 export const usePermission = (
   permission: Permission,
   resourceRef?: string,
 ): AsyncPermissionResult => {
   const permissionApi = useApi(permissionApiRef);
 
-  const state = useAsync(async () => {
+  const { loading, error, value } = useAsync(async () => {
     const [{ result }] = await permissionApi.authorize([
       {
         permission,
@@ -64,7 +52,11 @@ export const usePermission = (
     return result;
   }, [permissionApi, permission]);
 
-  return state.loading
-    ? AsyncPermissionResult.pending()
-    : AsyncPermissionResult.fromAuthorizeResult(state.value);
+  if (loading) {
+    return { loading: true, allowed: false };
+  }
+  if (error) {
+    return { error, loading: false, allowed: false };
+  }
+  return { loading: false, allowed: value === AuthorizeResult.ALLOW };
 };

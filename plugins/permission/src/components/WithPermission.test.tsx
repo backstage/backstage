@@ -15,13 +15,10 @@
  */
 
 import React from 'react';
-import {
-  AuthorizeResult,
-  Permission,
-} from '@backstage/plugin-permission-common';
+import { Permission } from '@backstage/plugin-permission-common';
 import { render } from '@testing-library/react';
 import { WithPermission } from './WithPermission';
-import { usePermission, AsyncPermissionResult } from '../hooks/usePermission';
+import { usePermission } from '../hooks/usePermission';
 
 jest.mock('../hooks/usePermission', () => ({
   AsyncPermissionResult: jest.requireActual('../hooks/usePermission')
@@ -36,7 +33,7 @@ const mockUsePermission = usePermission as jest.MockedFunction<
 describe('WithPermission component', () => {
   describe('authorization pending', () => {
     beforeEach(() => {
-      mockUsePermission.mockReturnValue(AsyncPermissionResult.pending());
+      mockUsePermission.mockReturnValue({ loading: true, allowed: false });
     });
 
     it('does not render children', () => {
@@ -58,9 +55,7 @@ describe('WithPermission component', () => {
 
   describe('permission allowed', () => {
     beforeEach(() => {
-      mockUsePermission.mockReturnValue(
-        AsyncPermissionResult.fromAuthorizeResult(AuthorizeResult.ALLOW),
-      );
+      mockUsePermission.mockReturnValue({ loading: false, allowed: true });
     });
 
     it('renders children', () => {
@@ -82,9 +77,7 @@ describe('WithPermission component', () => {
 
   describe('permission denied', () => {
     beforeEach(() => {
-      mockUsePermission.mockReturnValue(
-        AsyncPermissionResult.fromAuthorizeResult(AuthorizeResult.DENY),
-      );
+      mockUsePermission.mockReturnValue({ loading: false, allowed: false });
     });
 
     it('does not render children', () => {
