@@ -19,7 +19,7 @@ import { AnyApiFactory } from '../apis/system';
 
 /**
  * Replace with using {@link RouteRef}s.
- *
+ * @deprecated
  * @public
  */
 export type FeatureFlagOutput = {
@@ -31,6 +31,7 @@ export type FeatureFlagOutput = {
  * {@link FeatureFlagOutput} type.
  *
  * @public
+ * @deprecated Use {@link BackstagePlugin.getFeatureFlags} instead.
  */
 export type PluginOutput = FeatureFlagOutput;
 
@@ -71,11 +72,28 @@ export type BackstagePlugin<
   ExternalRoutes extends AnyExternalRoutes = {},
 > = {
   getId(): string;
+  /**
+   * @deprecated use getFeatureFlags instead.
+   * */
   output(): PluginOutput[];
   getApis(): Iterable<AnyApiFactory>;
+  /**
+   * Returns all registered feature flags for this plugin.
+   */
+  getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
+};
+
+/**
+ * Plugin feature flag configuration.
+ *
+ * @public
+ */
+export type PluginFeatureFlagConfig = {
+  /** Feature flag name */
+  name: string;
 };
 
 /**
@@ -89,14 +107,17 @@ export type PluginConfig<
 > = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
+  /** @deprecated use featureFlags property instead for defining feature flags */
   register?(hooks: PluginHooks): void;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
+  featureFlags?: PluginFeatureFlagConfig[];
 };
 
 /**
  * Holds hooks registered by the plugin.
  *
+ * @deprecated - feature flags are now registered in plugin config under featureFlags
  * @public
  */
 export type PluginHooks = {
