@@ -1,6 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
+  annotations:
+      buildkite.com/project-slug: nutrien/digital-k8s
   name: artist-lookup
   description: Artist Lookup
   tags:
