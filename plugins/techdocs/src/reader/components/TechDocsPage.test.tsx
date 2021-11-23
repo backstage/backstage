@@ -21,7 +21,7 @@ import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { Header } from '@backstage/core-components';
 import {
   techdocsApiRef,
@@ -29,7 +29,7 @@ import {
   techdocsStorageApiRef,
   TechDocsStorageApi,
 } from '../../api';
-import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { searchApiRef } from '@backstage/plugin-search';
 
 jest.mock('react-router-dom', () => {
@@ -90,12 +90,12 @@ describe('<TechDocsPage />', () => {
           results: [],
         }),
     };
-    const apiRegistry = ApiRegistry.from([
+    const apiRegistry = TestApiRegistry.from(
       [scmIntegrationsApiRef, scmIntegrationsApi],
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
       [searchApiRef, searchApi],
-    ]);
+    );
 
     await act(async () => {
       const rendered = render(
@@ -147,12 +147,12 @@ describe('<TechDocsPage />', () => {
           results: [],
         }),
     };
-    const apiRegistry = ApiRegistry.from([
+    const apiRegistry = TestApiRegistry.from(
       [scmIntegrationsApiRef, scmIntegrationsApi],
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
       [searchApiRef, searchApi],
-    ]);
+    );
 
     await act(async () => {
       const rendered = render(

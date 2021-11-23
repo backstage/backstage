@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { XcmetricsLayout } from './XcmetricsLayout';
 import { xcmetricsApiRef } from '../../api';
 import userEvent from '@testing-library/user-event';
@@ -34,11 +33,9 @@ jest.mock('../BuildList', () => ({
 describe('XcmetricsLayout', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <XcmetricsLayout />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText('Overview')).toBeInTheDocument();
@@ -49,11 +46,9 @@ describe('XcmetricsLayout', () => {
 
   it('should show a list of builds when the Builds tab is selected', async () => {
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <XcmetricsLayout />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     userEvent.click(rendered.getByText('Builds'));

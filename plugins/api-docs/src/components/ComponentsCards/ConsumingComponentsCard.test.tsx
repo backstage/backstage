@@ -21,11 +21,10 @@ import {
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ConsumingComponentsCard } from './ConsumingComponentsCard';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<ConsumingComponentsCard />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
@@ -39,10 +38,10 @@ describe('<ConsumingComponentsCard />', () => {
   let Wrapper: React.ComponentType;
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(catalogApiRef, catalogApi);
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        {children}
+      </TestApiProvider>
     );
   });
 

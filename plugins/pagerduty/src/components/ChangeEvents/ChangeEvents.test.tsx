@@ -16,15 +16,15 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ChangeEvent } from '../types';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef } from '../../api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { ChangeEvents } from './ChangeEvents';
 
 const mockPagerDutyApi = {
-  getChangeEventsByServiceId: () => [],
+  getChangeEventsByServiceId: jest.fn(),
 };
-const apis = ApiRegistry.from([[pagerDutyApiRef, mockPagerDutyApi]]);
+const apis = TestApiRegistry.from([pagerDutyApiRef, mockPagerDutyApi]);
 
 describe('Incidents', () => {
   it('Renders an empty state when there are no change events', async () => {
