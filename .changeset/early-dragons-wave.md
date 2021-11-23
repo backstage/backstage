@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Bump rjsf
+Bump `react-jsonschema-form`
