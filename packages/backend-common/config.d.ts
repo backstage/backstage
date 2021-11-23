@@ -21,7 +21,7 @@ export interface Config {
 
   backend: {
     /** Backend configuration for when request authentication is enabled */
-    authorization?: {
+    auth?: {
       /**
        * Secret shared by all backends for generating tokens
        * Format is base64 24-bit key

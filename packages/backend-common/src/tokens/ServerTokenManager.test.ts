@@ -18,7 +18,7 @@ import { ServerTokenManager } from './ServerTokenManager';
 
 const emptyConfig = new ConfigReader({});
 const configWithSecret = new ConfigReader({
-  backend: { authorization: { secret: 'a-secret-key' } },
+  backend: { auth: { secret: 'a-secret-key' } },
 });
 
 describe('ServerTokenManager', () => {
