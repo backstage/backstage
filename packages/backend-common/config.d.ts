@@ -27,7 +27,7 @@ export interface Config {
        * Format is base64 24-bit key
        * @visibility secret
        */
-      secret?: string;
+      secret: string;
     };
 
     baseUrl: string; // defined in core, but repeated here without doc
