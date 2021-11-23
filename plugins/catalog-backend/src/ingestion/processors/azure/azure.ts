@@ -33,6 +33,9 @@ export interface CodeSearchResultItem {
   };
 }
 
+const isCloud = (host: string) => host === 'dev.azure.com';
+const PAGE_SIZE = 1000;
+
 // codeSearch returns all files that matches the given search path.
 export async function codeSearch(
   azureConfig: AzureIntegrationConfig,
@@ -41,27 +44,37 @@ export async function codeSearch(
   repo: string,
   path: string,
 ): Promise<CodeSearchResultItem[]> {
-  // TODO:  What's the search URL for onpremises DevOps?
-  const searchUrl = `https://almsearch.dev.azure.com/${org}/${project}/_apis/search/codesearchresults?api-version=6.0-preview.1`;
-  const opts = getAzureRequestOptions(azureConfig);
-  const response = await fetch(searchUrl, {
-    method: 'POST',
-    headers: {
-      ...opts.headers,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      searchText: `path:${path} repo:${repo || '*'}`,
-      $top: 1000,
-    }),
-  });
+  const searchBaseUrl = isCloud(azureConfig.host)
+    ? 'https://almsearch.dev.azure.com'
+    : `https://${azureConfig.host}`;
+  const searchUrl = `${searchBaseUrl}/${org}/${project}/_apis/search/codesearchresults?api-version=6.0-preview.1`;
 
-  if (response.status !== 200) {
-    throw new Error(
-      `Azure DevOps search failed with response status ${response.status}`,
-    );
-  }
+  let items: CodeSearchResultItem[] = [];
+  let hasMorePages = true;
 
-  const responseBody: CodeSearchResponse = await response.json();
-  return responseBody.results;
+  do {
+    const response = await fetch(searchUrl, {
+      ...getAzureRequestOptions(azureConfig, {
+        'Content-Type': 'application/json',
+      }),
+      method: 'POST',
+      body: JSON.stringify({
+        searchText: `path:${path} repo:${repo || '*'}`,
+        $skip: items.length,
+        $top: PAGE_SIZE,
+      }),
+    });
+
+    if (response.status !== 200) {
+      throw new Error(
+        `Azure DevOps search failed with response status ${response.status}`,
+      );
+    }
+
+    const body: CodeSearchResponse = await response.json();
+    items = [...items, ...body.results];
+    hasMorePages = body.count > items.length;
+  } while (hasMorePages);
+
+  return items;
 }

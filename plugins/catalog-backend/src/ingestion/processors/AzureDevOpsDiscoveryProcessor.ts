@@ -85,7 +85,9 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
       catalogPath,
     );
 
-    this.logger.info(`Found ${files.length} files in Azure DevOps.`);
+    this.logger.debug(
+      `Found ${files.length} files in Azure DevOps from ${location.target}.`,
+    );
 
     for (const file of files) {
       emit(

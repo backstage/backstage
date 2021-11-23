@@ -34,6 +34,7 @@ describe('azure', () => {
             expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
             expect(req.body).toEqual({
               searchText: 'path:/catalog-info.yaml repo:*',
+              $skip: 0,
               $top: 1000,
             });
             return res(ctx.json(response));
@@ -81,6 +82,7 @@ describe('azure', () => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
             searchText: 'path:/catalog-info.yaml repo:*',
+            $skip: 0,
             $top: 1000,
           });
           return res(ctx.json(response));
@@ -120,6 +122,7 @@ describe('azure', () => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
             searchText: 'path:/catalog-info.yaml repo:backstage',
+            $skip: 0,
             $top: 1000,
           });
           return res(ctx.json(response));
@@ -136,5 +139,94 @@ describe('azure', () => {
         '/catalog-info.yaml',
       ),
     ).resolves.toEqual(response.results);
+  });
+
+  it('can search using onpremise api', async () => {
+    const response: CodeSearchResponse = {
+      count: 1,
+      results: [
+        {
+          fileName: 'catalog-info.yaml',
+          path: '/catalog-info.yaml',
+          repository: {
+            name: 'backstage',
+          },
+        },
+      ],
+    };
+
+    server.use(
+      rest.post(
+        `https://azuredevops.mycompany.com/shopify/engineering/_apis/search/codesearchresults`,
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
+          expect(req.body).toEqual({
+            searchText: 'path:/catalog-info.yaml repo:*',
+            $skip: 0,
+            $top: 1000,
+          });
+          return res(ctx.json(response));
+        },
+      ),
+    );
+
+    await expect(
+      codeSearch(
+        { host: 'azuredevops.mycompany.com', token: 'ABC' },
+        'shopify',
+        'engineering',
+        '',
+        '/catalog-info.yaml',
+      ),
+    ).resolves.toEqual(response.results);
+  });
+
+  it('searches multiple pages if response contains many items', async () => {
+    const totalCount = 2401;
+    const generateItems = (count: number) => {
+      return Array.from(Array(count).keys()).map(_ => ({
+        fileName: 'catalog-info.yaml',
+        path: '/catalog-info.yaml',
+        repository: {
+          name: 'backstage',
+        },
+      }));
+    };
+
+    server.use(
+      rest.post(
+        `https://almsearch.dev.azure.com/shopify/engineering/_apis/search/codesearchresults`,
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
+          expect(req.body).toMatchObject({
+            searchText: 'path:/catalog-info.yaml repo:backstage',
+            $top: 1000,
+          });
+
+          const body = req.body as { $skip: number; $top: number };
+          const countItemsToReturn =
+            body.$top + body.$skip > totalCount
+              ? totalCount - body.$skip
+              : body.$top;
+
+          return res(
+            ctx.json({
+              count: totalCount,
+              results: generateItems(countItemsToReturn),
+            }),
+          );
+        },
+      ),
+    );
+
+    await expect(
+      codeSearch(
+        { host: 'dev.azure.com', token: 'ABC' },
+        'shopify',
+        'engineering',
+        'backstage',
+        '/catalog-info.yaml',
+      ),
+    ).resolves.toHaveLength(totalCount);
   });
 });
