@@ -54,6 +54,28 @@ describe('ServerTokenManager', () => {
       expect(isValidServerToken).toBe(false);
     });
 
+    it('should return true for server tokens created by a different instance using the same secret', async () => {
+      const tokenManager1 = ServerTokenManager.fromConfig(configWithSecret);
+      const tokenManager2 = ServerTokenManager.fromConfig(configWithSecret);
+
+      const { token } = await tokenManager1.getServerToken();
+
+      expect(await tokenManager2.validateServerToken(token)).toBe(true);
+    });
+
+    it('should return false for server tokens created by a different instance using a different secret', async () => {
+      const tokenManager1 = ServerTokenManager.fromConfig(
+        new ConfigReader({ backend: { auth: { secret: 'a1b2c3' } } }),
+      );
+      const tokenManager2 = ServerTokenManager.fromConfig(
+        new ConfigReader({ backend: { auth: { secret: 'd4e5f6' } } }),
+      );
+
+      const { token } = await tokenManager1.getServerToken();
+
+      expect(await tokenManager2.validateServerToken(token)).toBe(false);
+    });
+
     it('should always return true if using noop TokenManager', async () => {
       const tokenManager = ServerTokenManager.noop();
       const { token } = await tokenManager.getServerToken();
