@@ -51,6 +51,7 @@ describe('createNextRouter readonly disabled', () => {
       logger: getVoidLogger(),
       refreshService,
       config: new ConfigReader(undefined),
+      permissionRules: [],
     });
     app = express().use(router);
   });
@@ -336,6 +337,7 @@ describe('createNextRouter readonly enabled', () => {
           readonly: true,
         },
       }),
+      permissionRules: [],
     });
     app = express().use(router);
   });
