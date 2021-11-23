@@ -20,6 +20,7 @@ import {
   AccordionSummary,
   Divider,
   Grid,
+  Typography,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { V1CronJob, V1Job } from '@kubernetes/client-node';
@@ -75,11 +76,14 @@ const CronJobSummary = ({ cronJob }: CronJobSummaryProps) => {
           )}
         </Grid>
         <Grid item>
-          Schedule:{' '}
-          {cronJob.spec?.schedule
-            ? `${cronJob.spec.schedule} (
-          ${cronstrue.toString(cronJob.spec.schedule)})`
-            : '???'}
+          <Typography variant="body1">
+            Schedule:{' '}
+            {cronJob.spec?.schedule
+              ? `${cronJob.spec.schedule} (${cronstrue.toString(
+                  cronJob.spec.schedule,
+                )})`
+              : '???'}
+          </Typography>
         </Grid>
       </Grid>
     </Grid>

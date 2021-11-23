@@ -76,9 +76,11 @@ const JobSummary = ({ job }: JobSummaryProps) => {
           {job.status?.active && <StatusPending>Running</StatusPending>}
           {job.status?.failed && <StatusError>Failed</StatusError>}
         </Grid>
-        <Grid item>Start time: {job.status?.startTime}</Grid>
+        <Grid item>Start time: {job.status?.startTime?.toString()}</Grid>
         {job.status?.completionTime && (
-          <Grid item>Completion time: {job.status.completionTime}</Grid>
+          <Grid item>
+            Completion time: {job.status.completionTime.toString()}
+          </Grid>
         )}
       </Grid>
     </Grid>
