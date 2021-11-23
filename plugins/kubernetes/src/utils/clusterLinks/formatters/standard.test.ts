@@ -67,6 +67,51 @@ describe('clusterLinks - standard formatter', () => {
       'https://k8s.foo.com/#/deployment/bar/foobar?namespace=bar',
     );
   });
+  it('should return an url on the deployment with a prefix 1', () => {
+    const url = standardFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/some/prefix'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Deployment',
+    });
+    expect(formatUrl(url)).toBe(
+      'https://k8s.foo.com/some/prefix/#/deployment/bar/foobar?namespace=bar',
+    );
+  });
+  it('should return an url on the deployment with a prefix 2', () => {
+    const url = standardFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/some/prefix/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Deployment',
+    });
+    expect(formatUrl(url)).toBe(
+      'https://k8s.foo.com/some/prefix/#/deployment/bar/foobar?namespace=bar',
+    );
+  });
+  it('should return an url on the deployment properly url encoded', () => {
+    const url = standardFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar bar',
+        },
+      },
+      kind: 'Deployment',
+    });
+    expect(formatUrl(url)).toBe(
+      'https://k8s.foo.com/#/deployment/bar%20bar/foobar?namespace=bar%20bar',
+    );
+  });
   it('should return an url on the service', () => {
     const url = standardFormatter({
       dashboardUrl: new URL('https://k8s.foo.com/'),

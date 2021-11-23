@@ -24,21 +24,31 @@ const kindMappings: Record<string, string> = {
 };
 
 export function openshiftFormatter(options: ClusterLinksFormatterOptions): URL {
-  const result = new URL(options.dashboardUrl.href);
-  const name = options.object.metadata?.name;
-  const namespace = options.object.metadata?.namespace;
+  const basePath = new URL(options.dashboardUrl.href);
+  const name = encodeURIComponent(options.object.metadata?.name ?? '');
+  const namespace = encodeURIComponent(
+    options.object.metadata?.namespace ?? '',
+  );
   const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
+  if (!basePath.pathname.endsWith('/')) {
+    // a dashboard url with a path should end with a slash otherwise
+    // the new combined URL will replace the last segment with the appended path!
+    // https://foobar.com/abc/def + k8s/cluster/projects/test  --> https://foobar.com/abc/k8s/cluster/projects/test
+    // https://foobar.com/abc/def/ + k8s/cluster/projects/test --> https://foobar.com/abc/def/k8s/cluster/projects/test
+    basePath.pathname += '/';
+  }
+  let path = '';
   if (namespace) {
     if (name && validKind) {
-      result.pathname = `k8s/ns/${namespace}/${validKind}/${name}`;
+      path = `k8s/ns/${namespace}/${validKind}/${name}`;
     } else {
-      result.pathname = `k8s/cluster/projects/${namespace}`;
+      path = `k8s/cluster/projects/${namespace}`;
     }
   } else if (validKind) {
-    result.pathname = `k8s/cluster/${validKind}`;
+    path = `k8s/cluster/${validKind}`;
     if (name) {
-      result.pathname += `/${name}`;
+      path += `/${name}`;
     }
   }
-  return result;
+  return new URL(path, basePath);
 }

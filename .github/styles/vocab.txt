@@ -189,7 +189,7 @@ oidc
 Okta
 onboarding
 Onboarding
-Openshift
+OpenShift
 orgs
 pagerduty
 pageview
