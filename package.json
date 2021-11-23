@@ -30,6 +30,8 @@
     "prettier:check": "prettier --check .",
     "lerna": "lerna",
     "storybook": "yarn workspace storybook start",
+    "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
+    "snyk:test:package": "yarn snyk:test --include",
     "build-storybook": "yarn workspace storybook build-storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
