@@ -4,6 +4,7 @@
 
 ```ts
 import { DateTime } from 'luxon';
+import { JsonValue } from '@backstage/types';
 
 // @public
 export interface BooleanCheckResult extends CheckResult {
@@ -25,7 +26,7 @@ export interface CheckResponse {
 export type CheckResult = {
   facts: FactResponse;
   check: CheckResponse;
-  result: any;
+  result: JsonValue;
 };
 
 // @public

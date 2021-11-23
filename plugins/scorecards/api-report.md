@@ -8,13 +8,9 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "EntityScorecardContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityScorecardContent: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "scorecardsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const scorecardsPlugin: BackstagePlugin<
   {
