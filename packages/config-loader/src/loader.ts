@@ -99,6 +99,21 @@ export type LoadConfigResult = {
   appConfigs: AppConfig[];
 };
 
+
+/**
+ * 
+ * @param Reads config from url and returns back the text
+ * @returns 
+ */
+async function readConfigFromUrl(url: string): Promise<string> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Could not read config file at ${url}`);
+  }
+
+  return await response.text();
+};
+
 /**
  * Load configuration data.
  *
@@ -152,8 +167,7 @@ export async function loadConfig(
       }
 
       const dir = dirname(configPath);
-      const readFile = (path: string) =>
-        fs.readFile(resolvePath(dir, path), 'utf8');
+      const readFile = readFileHelper(dir);
 
       const input = yaml.parse(await readFile(configPath));
       const substitutionTransform = createSubstitutionTransform(env);
@@ -170,15 +184,6 @@ export async function loadConfig(
 
   const loadRemoteConfigFiles = async () => {
     const configs: AppConfig[] = [];
-
-    const readConfigFromUrl = async (url: string) => {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Could not read config file at ${url}`);
-      }
-
-      return await response.text();
-    };
 
     for (let i = 0; i < configUrls.length; i++) {
       const configUrl = configUrls[i];
@@ -307,3 +312,26 @@ export async function loadConfig(
       : [...fileConfigs, ...envConfigs],
   };
 }
+
+/**
+ * 
+ * @param dir 
+ * @returns 
+ */
+function readFileHelper(dir: string) {
+  return (pathOrUrl: string | URL, isUrl: boolean) => {
+    if(isUrl) {
+      const url: URL = pathOrUrl as URL;
+      if (url) { // protocol!
+        if (url.protocol === 'file:') {
+          // eslint-disable-next-line no-param-reassign
+          pathOrUrl = url.pathname; // Read as a regular file
+        } else {
+          return readConfigFromUrl(url.href);
+        }
+      }
+    }
+    return fs.readFile(resolvePath(dir, pathOrUrl as string), 'utf8')
+  }
+}
+

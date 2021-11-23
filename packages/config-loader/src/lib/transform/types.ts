@@ -18,7 +18,7 @@ import { JsonValue } from '@backstage/types';
 
 export type EnvFunc = (name: string) => Promise<string | undefined>;
 
-export type ReadFileFunc = (path: string) => Promise<string>;
+export type ReadFileFunc = (path: string | URL, isUrl?: boolean) => Promise<string>;
 
 export type TransformFunc = (
   value: JsonValue,

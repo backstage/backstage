@@ -147,17 +147,21 @@ Note however, that it's often more convenient to use
 ### File Includes
 
 This reads a string value from the entire contents of a text file. The file path
-is relative to the source config file. For example, the following reads the
+is relative to the source config file, or a complete remote url. For example, the following reads the
 contents of `my-secret.txt` relative to the config file itself:
 
 ```yaml
 $file: ./my-secret.txt
 ```
 
+```yaml
+$file: https://example.com/my-remote-value.txt
+```
+
 ### Including Files
 
 The `$include` keyword can be used to load configuration values from an external
-file. It's able to load and parse data from `.json`, `.yml`, and `.yaml` files.
+file or remote url. It's able to load and parse data from `.json`, `.yml`, and `.yaml` files or urls eg. https://example.com/my-remote-config.yaml.
 It's also possible to include a url fragment (`#`) to point to a value at the
 given path in the file, using a dot-separated list of keys.
 
@@ -175,6 +179,12 @@ Example `my-secrets.json` file:
     "key": "my-secret-key"
   }
 }
+```
+
+Example for remote url
+
+```yaml
+$include: https://example.com/my-remote-config.yaml
 ```
 
 ## Environment Variable Substitution

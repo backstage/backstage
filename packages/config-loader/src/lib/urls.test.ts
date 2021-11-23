@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isValidUrl } from './urls';
+import { isValidUrl, validUrlResult } from './urls';
 
 describe('isValidUrl', () => {
   it('should return true for url', () => {
@@ -30,5 +30,28 @@ describe('isValidUrl', () => {
   it('should return false for relative path', () => {
     const validUrl = isValidUrl('../some/relative/path');
     expect(validUrl).toBe(false);
+  });
+});
+
+
+describe('validUrlResult', () => {
+  it('should return url value for url', () => {
+    let url = validUrlResult('http://some.valid.url');
+    expect(url).not.toBeNull();
+    url = url as URL;
+    
+    const expected = new URL('http://some.valid.url');
+    expect(url).toEqual(expected);
+    expect(url.href).toBe(expected.href);
+  });
+
+  it('should return null for absolute path', () => {
+    const validUrl = validUrlResult('/some/absolute/path');
+    expect(validUrl).toBe(null);
+  });
+
+  it('should return null for relative path', () => {
+    const validUrl = validUrlResult('../some/relative/path');
+    expect(validUrl).toBe(null);
   });
 });

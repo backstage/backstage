@@ -53,6 +53,58 @@ describe('loadConfig', () => {
     },
   );
 
+  const includeHandler = rest.get(
+    `https://some.domain.io/include.yaml`,
+    (_req, res, ctx) => {
+      return res(
+        ctx.body(
+          `included:
+                    title: Hello from Include
+                    includeValue: 'inc123'
+                    escaped: \$\${Escaped}
+                  `,
+        ),
+      );
+    },
+  );
+
+  const fileHandler = rest.get(
+    `https://some.domain.io/file.yaml`,
+    (_req, res, ctx) => {
+      return res(
+        ctx.body(`Extension doesn't matter here`),
+      );
+    },
+  );
+
+  const include2Handler = rest.get(
+    `https://some.domain.io/include2.yaml`,
+    (_req, res, ctx) => {
+      return res(
+        ctx.body(
+          `included:
+                    title: Hello from Include2
+                    subInclude: 
+                      $include: sub-include.yaml
+                  `,
+        ),
+      );
+    },
+  );
+
+  const subIncludeHandler = rest.get(
+    `https://some.domain.io/sub-include.yaml`,
+    (_req, res, ctx) => {
+      return res(
+        ctx.body(
+          `subIncluded:
+                    title: Hello from Sub Include
+                  `,
+        ),
+      );
+    },
+  );
+
   beforeAll(() => server.listen());
 
   beforeEach(() => {
@@ -104,6 +156,18 @@ describe('loadConfig', () => {
       `,
       '/root/secrets/substituted.txt': '123abc',
       '/root/${ESCAPE_ME}.txt': 'notSubstituted',
+      '/root/app-config.substitute2.yaml': `
+        app:
+          someConfig:
+            $include: https://some.domain.io/include.yaml
+          noSubstitute:
+            $file: https://some.domain.io/file.yaml
+      `,
+      '/root/app-config.substitute3.yaml': `
+        app:
+          someConfig:
+            $include: https://some.domain.io/include2.yaml
+      `,
     });
   });
 
@@ -288,6 +352,70 @@ describe('loadConfig', () => {
                 secret: '123abc',
               },
               noSubstitute: 'notSubstituted',
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  it('loads substituted config via url', async () => {
+    server.use(includeHandler, fileHandler);
+
+    await expect(
+      loadConfig({
+        configRoot: '/root',
+        configPaths: [],
+        configTargets: [{ path: '/root/app-config.substitute2.yaml' }],
+        env: 'development',
+      }),
+    ).resolves.toEqual({
+      appConfigs: [
+        {
+          context: 'app-config.substitute2.yaml',
+          data: {
+            app: {
+              someConfig: {
+                included: {
+                    title: 'Hello from Include',
+                    includeValue: 'inc123',
+                    escaped: '${Escaped}'
+                }
+              },
+              noSubstitute: 'Extension doesn\'t matter here',
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  it('loads deep substituted config via url', async () => {
+    server.use(include2Handler, subIncludeHandler);
+
+    await expect(
+      loadConfig({
+        configRoot: '/root',
+        configPaths: [],
+        configTargets: [{ path: '/root/app-config.substitute3.yaml' }],
+        env: 'development',
+      }),
+    ).resolves.toEqual({
+      appConfigs: [
+        {
+          context: 'app-config.substitute3.yaml',
+          data: {
+            app: {
+              someConfig: {
+                included: {
+                  subInclude: {
+                    subIncluded: {
+                      title: 'Hello from Sub Include'
+                    }
+                  },
+                  title: "Hello from Include2"
+                },
+              }
             },
           },
         },

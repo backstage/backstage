@@ -15,10 +15,11 @@
  */
 
 import yaml from 'yaml';
-import { extname, dirname, resolve as resolvePath } from 'path';
+import { extname, dirname, resolve as resolvePath, join as joinPath } from 'path';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { isObject } from './utils';
 import { TransformFunc, EnvFunc, ReadFileFunc } from './types';
+import { validUrlResult } from '../urls';
 
 // Parsers for each type of included file
 const includeFileParser: {
@@ -72,7 +73,7 @@ export function createIncludeTransform(
     switch (includeKey) {
       case '$file':
         try {
-          const value = await readFile(resolvePath(baseDir, includeValue));
+          const { content: value } : { content: string } = await readValue(includeValue, readFile, includeValue , baseDir);
           return { applied: true, value };
         } catch (error) {
           throw new Error(`failed to read file ${includeValue}, ${error}`);
@@ -95,10 +96,9 @@ export function createIncludeTransform(
           );
         }
 
-        const path = resolvePath(baseDir, filePath);
-        const content = await readFile(path);
-        const newBaseDir = dirname(path);
+        const { path, content } : { path: string, content: string } = await readValue(includeValue, readFile, filePath, baseDir);
 
+        const newBaseDir = dirname(path);
         const parts = dataPath ? dataPath.split('.') : [];
 
         let value: JsonValue | undefined;
@@ -133,3 +133,24 @@ export function createIncludeTransform(
     }
   };
 }
+async function readValue(includeValue: string, readFile: ReadFileFunc, filePath: string, baseDir: string): Promise<{ path: string, content: string }> {
+  let content;
+  let path;
+  let urlValue = validUrlResult(includeValue);
+  if (urlValue) {
+    content = await readFile(urlValue, true);
+    path = filePath;
+  } else {
+    const baseUrlValue = validUrlResult(baseDir);
+    if(baseUrlValue) { // Base is a url
+      path = `${baseUrlValue.origin}${joinPath(baseUrlValue.pathname, filePath)}`;
+      urlValue = new URL(path);
+      content = await readFile(urlValue, true);
+    } else {
+      path = resolvePath(baseDir, filePath);
+      content = await readFile(path);
+    }
+  }
+  return { path, content };
+}
+

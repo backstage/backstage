@@ -15,11 +15,14 @@
  */
 
 export function isValidUrl(url: string): boolean {
+  return validUrlResult(url) ? true : false;
+}
+
+export function validUrlResult(url: string): URL | null {
   try {
     // eslint-disable-next-line no-new
-    new URL(url);
-    return true;
+    return new URL(url);
   } catch {
-    return false;
+    return null;
   }
 }
