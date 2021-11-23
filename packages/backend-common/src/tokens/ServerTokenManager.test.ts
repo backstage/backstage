@@ -26,39 +26,39 @@ describe('ServerTokenManager', () => {
     expect(() => ServerTokenManager.fromConfig(emptyConfig)).toThrowError();
   });
 
-  describe('getServerToken', () => {
+  describe('getToken', () => {
     it('should return a token if secret in config exists', async () => {
       const tokenManager = ServerTokenManager.fromConfig(configWithSecret);
-      expect((await tokenManager.getServerToken()).token).toBeDefined();
+      expect((await tokenManager.getToken()).token).toBeDefined();
     });
 
     it('should return an empty string if using a noop TokenManager', async () => {
       const tokenManager = ServerTokenManager.noop();
-      expect((await tokenManager.getServerToken()).token).toBe('');
+      expect((await tokenManager.getToken()).token).toBe('');
     });
   });
 
-  describe('validateServerToken', () => {
+  describe('validateToken', () => {
     it('should not throw if token is valid', async () => {
       const tokenManager = ServerTokenManager.fromConfig(configWithSecret);
-      const { token } = await tokenManager.getServerToken();
-      expect(() => tokenManager.validateServerToken(token)).not.toThrow();
+      const { token } = await tokenManager.getToken();
+      expect(() => tokenManager.validateToken(token)).not.toThrow();
     });
 
     it('should throw if token is invalid', () => {
       const tokenManager = ServerTokenManager.fromConfig(configWithSecret);
-      expect(() =>
-        tokenManager.validateServerToken('random-string'),
-      ).toThrowError(/invalid server token/i);
+      expect(() => tokenManager.validateToken('random-string')).toThrowError(
+        /invalid server token/i,
+      );
     });
 
     it('should validate server tokens created by a different instance using the same secret', async () => {
       const tokenManager1 = ServerTokenManager.fromConfig(configWithSecret);
       const tokenManager2 = ServerTokenManager.fromConfig(configWithSecret);
 
-      const { token } = await tokenManager1.getServerToken();
+      const { token } = await tokenManager1.getToken();
 
-      expect(() => tokenManager2.validateServerToken(token)).not.toThrow();
+      expect(() => tokenManager2.validateToken(token)).not.toThrow();
     });
 
     it('should throw for server tokens created using a different secret', async () => {
@@ -69,9 +69,9 @@ describe('ServerTokenManager', () => {
         new ConfigReader({ backend: { auth: { secret: 'd4e5f6' } } }),
       );
 
-      const { token } = await tokenManager1.getServerToken();
+      const { token } = await tokenManager1.getToken();
 
-      expect(() => tokenManager2.validateServerToken(token)).toThrowError(
+      expect(() => tokenManager2.validateToken(token)).toThrowError(
         /invalid server token/i,
       );
     });
@@ -85,19 +85,19 @@ describe('ServerTokenManager', () => {
     });
 
     it('should accept tokens it generates', async () => {
-      const { token } = await noopTokenManager.getServerToken();
+      const { token } = await noopTokenManager.getToken();
 
-      expect(() => noopTokenManager.validateServerToken(token)).not.toThrow();
+      expect(() => noopTokenManager.validateToken(token)).not.toThrow();
     });
 
     it('should accept arbitrary strings', async () => {
       expect(() =>
-        noopTokenManager.validateServerToken('random-string'),
+        noopTokenManager.validateToken('random-string'),
       ).not.toThrow();
     });
 
     it('should accept empty strings', async () => {
-      expect(() => noopTokenManager.validateServerToken('')).not.toThrow();
+      expect(() => noopTokenManager.validateToken('')).not.toThrow();
     });
   });
 });

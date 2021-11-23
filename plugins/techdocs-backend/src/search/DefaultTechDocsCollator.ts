@@ -94,7 +94,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   async execute() {
     const limit = pLimit(this.parallelismLimit);
     const techDocsBaseUrl = await this.discovery.getBaseUrl('techdocs');
-    const { token } = await this.tokenManager.getServerToken();
+    const { token } = await this.tokenManager.getToken();
     const entities = await this.catalogClient.getEntities(
       {
         fields: [

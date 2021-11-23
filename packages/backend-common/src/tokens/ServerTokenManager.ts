@@ -36,7 +36,7 @@ export class ServerTokenManager implements TokenManager {
     this.key = secret ? JWK.asKey({ kty: 'oct', k: secret }) : JWK.None;
   }
 
-  async getServerToken(): Promise<{ token: string }> {
+  async getToken(): Promise<{ token: string }> {
     if (this.key === JWK.None) {
       return { token: '' };
     }
@@ -47,7 +47,7 @@ export class ServerTokenManager implements TokenManager {
     return { token: jwt };
   }
 
-  validateServerToken(token: string): void {
+  validateToken(token: string): void {
     if (this.key === JWK.None) {
       return;
     }

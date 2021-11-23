@@ -95,8 +95,7 @@ async function main() {
         req.cookies['token'];
 
       // Authenticate all requests originating from backends by default
-      const isValidServerToken =
-        authEnv.tokenManager.validateServerToken(token);
+      const isValidServerToken = authEnv.tokenManager.validateToken(token);
       if (!isValidServerToken) {
         req.user = await identity.authenticate(token);
       }
@@ -327,5 +326,5 @@ function makeCreateEnv(config: Config) {
 With this `tokenManager`, you can then generate a server token for requests:
 
 ```
-const { token } = await this.tokenManager.getServerToken();
+const { token } = await this.tokenManager.getToken();
 ```

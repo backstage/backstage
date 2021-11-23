@@ -108,7 +108,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
   }
 
   async execute() {
-    const { token } = await this.tokenManager.getServerToken();
+    const { token } = await this.tokenManager.getToken();
     const response = await this.catalogClient.getEntities(
       {
         filter: this.filter,

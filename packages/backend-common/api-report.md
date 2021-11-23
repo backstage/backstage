@@ -533,13 +533,13 @@ export class ServerTokenManager implements TokenManager {
   // (undocumented)
   static fromConfig(config: Config): ServerTokenManager;
   // (undocumented)
-  getServerToken(): Promise<{
+  getToken(): Promise<{
     token: string;
   }>;
   // (undocumented)
   static noop(): ServerTokenManager;
   // (undocumented)
-  validateServerToken(token: string): void;
+  validateToken(token: string): void;
 }
 
 // @public (undocumented)
@@ -604,11 +604,11 @@ export interface StatusCheckHandlerOptions {
 // @public (undocumented)
 export interface TokenManager {
   // (undocumented)
-  getServerToken: () => Promise<{
+  getToken: () => Promise<{
     token: string;
   }>;
   // (undocumented)
-  validateServerToken: (token: string) => void;
+  validateToken: (token: string) => void;
 }
 
 // @public
