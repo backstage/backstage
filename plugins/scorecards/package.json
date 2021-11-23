@@ -31,7 +31,9 @@
     "react-use": "^17.2.4",
     "react-router-dom": "6.0.0-beta.0",
     "@backstage/plugin-catalog-react": "^0.6.2",
-    "@backstage/plugin-tech-insights-common": "^0.1.0"
+    "@backstage/plugin-tech-insights-common": "^0.1.0",
+    "@backstage/catalog-model": "^0.9.7",
+    "@backstage/errors": "^0.1.4"
   },
   "devDependencies": {
     "@backstage/cli": "^0.8.2",

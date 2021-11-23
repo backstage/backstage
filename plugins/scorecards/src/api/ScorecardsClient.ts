@@ -18,6 +18,9 @@ import { ScorecardsApi } from './ScorecardsApi';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Check } from './types';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { ResponseError } from '@backstage/errors';
+import { EntityName } from '@backstage/catalog-model';
+
 import {
   CheckResultRenderer,
   defaultCheckResultRenderers,
@@ -30,7 +33,6 @@ export type Options = {
 
 export class ScorecardsClient implements ScorecardsApi {
   private readonly discoveryApi: DiscoveryApi;
-  private baseUrl: string = '';
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
@@ -44,39 +46,27 @@ export class ScorecardsClient implements ScorecardsApi {
     return resultRenderers.find(d => d.type === type);
   }
 
-  getBaseUrl: () => Promise<string> = async () => {
-    if (!this.baseUrl) {
-      this.baseUrl = await this.discoveryApi.getBaseUrl('tech-insights');
-    }
-    return this.baseUrl;
-  };
-
   async getAllChecks(): Promise<Check[]> {
-    const url = await this.getBaseUrl();
-    const allChecks = await fetch(`${url}/checks`);
-    const payload = await allChecks.json();
-    if (!allChecks.ok) {
-      throw new Error(payload.errors[0]);
+    const url = await this.discoveryApi.getBaseUrl('tech-insights');
+    const response = await fetch(`${url}/checks`);
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
     }
-    return payload;
+    return await response.json();
   }
 
-  async runChecks({
-    namespace,
-    kind,
-    name,
-    checks,
-  }: {
-    namespace: string;
-    kind: string;
-    name: string;
-    checks: Check[];
-  }): Promise<CheckResult[]> {
-    const url = await this.getBaseUrl();
+  async runChecks(
+    entityParams: EntityName,
+    checks: Check[],
+  ): Promise<CheckResult[]> {
+    const url = await this.discoveryApi.getBaseUrl('tech-insights');
+    const { namespace, kind, name } = entityParams;
     const allChecks = checks ? checks : await this.getAllChecks();
     const checkIds = allChecks.map((check: Check) => check.id);
     const response = await fetch(
-      `${url}/checks/run/${namespace}/${kind}/${name}`,
+      `${url}/checks/run/${encodeURIComponent(namespace)}/${encodeURIComponent(
+        kind,
+      )}/${encodeURIComponent(name)}`,
       {
         method: 'POST',
         body: JSON.stringify({ checks: checkIds }),
@@ -85,7 +75,9 @@ export class ScorecardsClient implements ScorecardsApi {
         },
       },
     );
-    const result = await response.json();
-    return result;
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+    return await response.json();
   }
 }

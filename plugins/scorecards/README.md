@@ -13,16 +13,6 @@ cd packages/app
 yarn add @backstage/plugin-scorecards
 ```
 
-### Adding the plugin to your `packages/app`
-
-```tsx
-// In packages/app/src/App.tsx
-
-import { EntityScorecardContent } from '@backstage/plugin-scorecards';
-
-<Route path="/scorecards" element={<EntityScorecardContent />} />;
-```
-
 ### Add Scorecards overview page to the EntityPage:
 
 ```tsx

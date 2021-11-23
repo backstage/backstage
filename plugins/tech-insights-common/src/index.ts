@@ -15,6 +15,7 @@
  */
 
 import { DateTime } from 'luxon';
+import { JsonValue } from '@backstage/types';
 
 /**
  * @public
@@ -112,7 +113,7 @@ export type FactResponse = {
 export type CheckResult = {
   facts: FactResponse;
   check: CheckResponse;
-  result: any;
+  result: JsonValue;
 };
 
 /**

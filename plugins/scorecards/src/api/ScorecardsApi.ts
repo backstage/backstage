@@ -18,6 +18,7 @@ import { createApiRef } from '@backstage/core-plugin-api';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Check } from './types';
 import { CheckResultRenderer } from '../components/CheckResultRenderer';
+import { EntityName } from '@backstage/catalog-model';
 
 export const scorecardsApiRef = createApiRef<ScorecardsApi>({
   id: 'plugin.scorecards.service',
@@ -30,15 +31,5 @@ export interface ScorecardsApi {
     value: CheckResult[],
   ) => CheckResultRenderer | undefined;
   getAllChecks(): Promise<Check[]>;
-  runChecks({
-    namespace,
-    kind,
-    name,
-    checks,
-  }: {
-    namespace: string;
-    kind: string;
-    name: string;
-    checks?: Check[];
-  }): Promise<CheckResult[]>;
+  runChecks(entityParams: EntityName, checks?: Check[]): Promise<CheckResult[]>;
 }

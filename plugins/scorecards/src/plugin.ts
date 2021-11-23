@@ -23,6 +23,9 @@ import { rootRouteRef } from './routes';
 import { scorecardsApiRef } from './api/ScorecardsApi';
 import { ScorecardsClient } from './api';
 
+/**
+ * @public
+ */
 export const scorecardsPlugin = createPlugin({
   id: 'scorecards',
   apis: [
@@ -37,6 +40,9 @@ export const scorecardsPlugin = createPlugin({
   },
 });
 
+/**
+ * @public
+ */
 export const EntityScorecardContent = scorecardsPlugin.provide(
   createRoutableExtension({
     name: 'EntityScorecardContent',

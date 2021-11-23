@@ -1,7 +1,4 @@
 ---
-'example-app': patch
-'example-backend': patch
-'@backstage/plugin-scorecards': patch
 '@backstage/plugin-tech-insights-backend': patch
 '@backstage/plugin-tech-insights-common': patch
 ---
