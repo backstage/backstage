@@ -31,7 +31,11 @@ export default async function createPlugin({
   // collator gathers entities from techdocs.
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: DefaultTechDocsCollator.fromConfig(config, { discovery, logger, tokenManager }),
+    collator: DefaultTechDocsCollator.fromConfig(config, {
+      discovery,
+      logger,
+      tokenManager,
+    }),
   });
 
   // The scheduler controls when documents are gathered from collators and sent
