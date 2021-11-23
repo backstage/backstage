@@ -539,7 +539,7 @@ export class ServerTokenManager implements TokenManager {
   // (undocumented)
   static noop(): ServerTokenManager;
   // (undocumented)
-  validateServerToken(token: string): Promise<boolean>;
+  validateServerToken(token: string): void;
 }
 
 // @public (undocumented)
@@ -608,7 +608,7 @@ export interface TokenManager {
     token: string;
   }>;
   // (undocumented)
-  validateServerToken: (token: string) => Promise<boolean>;
+  validateServerToken: (token: string) => void;
 }
 
 // @public

@@ -100,7 +100,7 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
     };
     mockTokenManager = {
       getServerToken: jest.fn().mockResolvedValue({ token: '' }),
-      validateServerToken: jest.fn().mockResolvedValue(true),
+      validateServerToken: jest.fn(),
     };
     const mockConfig = new ConfigReader({
       techdocs: {
@@ -166,7 +166,7 @@ describe('DefaultTechDocsCollator', () => {
     };
     mockTokenManager = {
       getServerToken: jest.fn().mockResolvedValue({ token: '' }),
-      validateServerToken: jest.fn().mockResolvedValue(true),
+      validateServerToken: jest.fn(),
     };
     collator = DefaultTechDocsCollator.fromConfig(new ConfigReader({}), {
       discovery: mockDiscoveryApi,

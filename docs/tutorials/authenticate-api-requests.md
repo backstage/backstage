@@ -95,9 +95,8 @@ async function main() {
         req.cookies['token'];
 
       // Authenticate all requests originating from backends by default
-      const isValidServerToken = await authEnv.tokenManager.validateServerToken(
-        token,
-      );
+      const isValidServerToken =
+        authEnv.tokenManager.validateServerToken(token);
       if (!isValidServerToken) {
         req.user = await identity.authenticate(token);
       }

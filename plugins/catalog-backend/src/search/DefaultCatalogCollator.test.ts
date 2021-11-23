@@ -68,7 +68,7 @@ describe('DefaultCatalogCollator', () => {
     };
     mockTokenManager = {
       getServerToken: jest.fn().mockResolvedValue({ token: '' }),
-      validateServerToken: jest.fn().mockResolvedValue(true),
+      validateServerToken: jest.fn(),
     };
     collator = new DefaultCatalogCollator({
       discovery: mockDiscoveryApi,

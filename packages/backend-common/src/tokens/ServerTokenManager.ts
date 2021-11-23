@@ -16,6 +16,7 @@
 
 import { JWK, JWT } from 'jose';
 import { Config } from '@backstage/config';
+import { AuthenticationError } from '@backstage/errors';
 import { TokenManager } from './types';
 
 export class ServerTokenManager implements TokenManager {
@@ -46,16 +47,16 @@ export class ServerTokenManager implements TokenManager {
     return { token: jwt };
   }
 
-  async validateServerToken(token: string): Promise<boolean> {
+  validateServerToken(token: string): void {
     if (this.key === JWK.None) {
-      return true;
+      return;
     }
 
     try {
       JWT.verify(token, this.key);
-      return true;
+      return;
     } catch (e) {
-      return false;
+      throw new AuthenticationError('Invalid server token');
     }
   }
 }
