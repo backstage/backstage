@@ -19,6 +19,7 @@ import { makeStyles, List, ListItem, ListItemText } from '@material-ui/core';
 import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
+import { JsonValue } from '@backstage/types';
 
 const useStyles = makeStyles(() => ({
   listItemText: {
@@ -34,7 +35,7 @@ type Prop = {
   checkResult: CheckResult[];
 };
 
-const renderResult = (classes: any, result: Boolean) => {
+const renderResult = (classes: any, result: JsonValue) => {
   return result ? (
     <CheckCircleOutline className={classes.icon} color="primary" />
   ) : (

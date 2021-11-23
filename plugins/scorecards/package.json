@@ -33,7 +33,8 @@
     "@backstage/plugin-catalog-react": "^0.6.2",
     "@backstage/plugin-tech-insights-common": "^0.1.0",
     "@backstage/catalog-model": "^0.9.7",
-    "@backstage/errors": "^0.1.4"
+    "@backstage/errors": "^0.1.4",
+    "@backstage/types": "^0.1.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.8.2",
