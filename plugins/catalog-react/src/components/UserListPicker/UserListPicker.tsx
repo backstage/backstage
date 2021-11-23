@@ -176,12 +176,14 @@ export const UserListPicker = ({
     setEntitiesWithoutUserFilter(backendEntities.filter(filterFn));
   }, [filters, backendEntities]);
 
+  const totalOwnedUserEntities = entitiesWithoutUserFilter.filter(entity =>
+    ownedFilter.filterEntity(entity),
+  ).length;
+
   function getFilterCount(id: UserListFilterKind) {
     switch (id) {
       case 'owned':
-        return entitiesWithoutUserFilter.filter(entity =>
-          ownedFilter.filterEntity(entity),
-        ).length;
+        return totalOwnedUserEntities;
       case 'starred':
         return entitiesWithoutUserFilter.filter(entity =>
           starredFilter.filterEntity(entity),
@@ -189,6 +191,20 @@ export const UserListPicker = ({
       default:
         return entitiesWithoutUserFilter.length;
     }
+  }
+
+  function removeListItem(
+    arr: ButtonGroup[],
+    itemID: 'all' | 'owned' | 'starred',
+  ): ButtonGroup[] {
+    const index = arr[0].items.map(item => item.id).indexOf(itemID);
+    arr[0].items.splice(index, 1);
+    return arr;
+  }
+
+  // should we do the same for starred?
+  if (totalOwnedUserEntities < 1) {
+    removeListItem(filterGroups, 'owned');
   }
 
   return (
