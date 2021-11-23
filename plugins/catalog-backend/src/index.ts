@@ -29,8 +29,4 @@ export * from './processing';
 export * from './providers';
 export * from './service';
 
-export {
-  conditions,
-  createConditions,
-  registerPermissionRule,
-} from './permissions';
+export { conditions, createConditions } from './permissions';
