@@ -23,7 +23,6 @@ import {
 } from './types';
 import { OldIconComponent } from '../icons/types';
 
-// TODO(Rugvip): Remove this in the next breaking release, it's exported but unused
 /**
  * @deprecated
  * @internal
@@ -49,19 +48,43 @@ export class RouteRefImpl<Params extends AnyParams>
     private readonly id: string,
     readonly params: ParamKeys<Params>,
     private readonly config: {
+      /** @deprecated */
       path?: string;
+      /** @deprecated */
       icon?: OldIconComponent;
+      /** @deprecated */
       title?: string;
     },
-  ) {}
+  ) {
+    if (config.path) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[core-plugin-api] - routeRefs no longer decide their own path, please remove the path for ${this.toString()}. This will be removed in upcoming versions.`,
+      );
+    }
+
+    if (config.icon) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[core-plugin-api] - routeRefs no longer decide their own icon, please remove the icon for ${this.toString()}. This will be removed in upcoming versions.`,
+      );
+    }
+
+    if (config.title) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[core-plugin-api] - routeRefs no longer decide their own title, please remove the title for ${this.toString()}. This will be removed in upcoming versions.`,
+      );
+    }
+  }
+
+  /** @deprecated use `useRouteRef` instead */
+  get path() {
+    return this.config.path ?? '';
+  }
 
   get icon() {
     return this.config.icon;
-  }
-
-  // TODO(Rugvip): Remove this, routes are looked up via the registry instead
-  get path() {
-    return this.config.path ?? '';
   }
 
   get title() {

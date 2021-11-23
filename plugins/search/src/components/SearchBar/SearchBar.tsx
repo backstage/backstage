@@ -30,9 +30,11 @@ type PresenterProps = {
   onSubmit?: () => void;
   className?: string;
   placeholder?: string;
+  autoFocus?: boolean;
 };
 
 export const SearchBarBase = ({
+  autoFocus,
   value,
   onChange,
   onSubmit,
@@ -60,6 +62,9 @@ export const SearchBarBase = ({
 
   return (
     <InputBase
+      // decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus
+      // eslint-disable-next-line jsx-a11y/no-autofocus
+      autoFocus={autoFocus}
       data-testid="search-bar-next"
       fullWidth
       placeholder={placeholder}
@@ -87,12 +92,14 @@ export const SearchBarBase = ({
 };
 
 type Props = {
+  autoFocus?: boolean;
   className?: string;
   debounceTime?: number;
   placeholder?: string;
 };
 
 export const SearchBar = ({
+  autoFocus,
   className,
   debounceTime = 0,
   placeholder,
@@ -114,6 +121,9 @@ export const SearchBar = ({
 
   return (
     <SearchBarBase
+      // decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus
+      // eslint-disable-next-line jsx-a11y/no-autofocus
+      autoFocus={autoFocus}
       className={className}
       value={value}
       onChange={handleQuery}

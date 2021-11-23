@@ -471,7 +471,7 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
 
     print('Try to fetch entities from the backend');
     // Try fetch entities, should be ok
-    await fetch('http://localhost:7000/api/catalog/entities').then(res =>
+    await fetch('http://localhost:7007/api/catalog/entities').then(res =>
       res.json(),
     );
     print('Entities fetched successfully');

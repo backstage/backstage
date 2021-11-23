@@ -53,6 +53,9 @@ export type FactRetrieverContext = {
   config: Config;
   discovery: PluginEndpointDiscovery;
   logger: Logger_2;
+  entityFilter?:
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>;
 };
 
 // @public

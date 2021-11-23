@@ -95,6 +95,7 @@ async function getProjectConfig(targetPath, displayName) {
     ...(displayName && { displayName }),
     rootDir: path.resolve(targetPath, 'src'),
     coverageDirectory: path.resolve(targetPath, 'coverage'),
+    coverageProvider: 'v8',
     collectCoverageFrom: ['**/*.{js,jsx,ts,tsx}', '!**/*.d.ts'],
     moduleNameMapper: {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),

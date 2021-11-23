@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BACKSTAGE_JSON } from '@backstage/cli-common';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import handlebars from 'handlebars';
@@ -22,6 +23,7 @@ import recursive from 'recursive-readdir';
 import {
   basename,
   dirname,
+  join,
   resolve as resolvePath,
   relative as relativePath,
 } from 'path';
@@ -84,6 +86,7 @@ export async function templatingTask(
   templateDir: string,
   destinationDir: string,
   context: any,
+  version: string,
 ) {
   const files = await recursive(templateDir).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
@@ -133,6 +136,12 @@ export async function templatingTask(
       });
     }
   }
+  await Task.forItem('creating', BACKSTAGE_JSON, () =>
+    fs.writeFile(
+      join(destinationDir, BACKSTAGE_JSON),
+      `{\n  "version": ${JSON.stringify(version)}\n}\n`,
+    ),
+  );
 }
 
 /**

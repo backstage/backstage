@@ -19,11 +19,8 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 
-const NoIcon = () => null;
-
 export const exploreRouteRef = createRouteRef({
-  icon: NoIcon,
-  title: 'Explore',
+  id: 'explore',
 });
 
 export const catalogEntityRouteRef = createExternalRouteRef({

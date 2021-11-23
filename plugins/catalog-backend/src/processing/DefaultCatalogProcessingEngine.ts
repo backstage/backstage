@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  entityEnvelopeSchemaValidator,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { assertError, serializeError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
@@ -32,60 +28,8 @@ import {
 } from '../processing/types';
 import { Stitcher } from '../stitching/Stitcher';
 import { startTaskPipeline } from './TaskPipeline';
-import {
-  EntityProvider,
-  EntityProviderConnection,
-  EntityProviderMutation,
-} from '../providers/types';
 
 const CACHE_TTL = 5;
-
-class Connection implements EntityProviderConnection {
-  readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
-
-  constructor(
-    private readonly config: {
-      id: string;
-      processingDatabase: ProcessingDatabase;
-    },
-  ) {}
-
-  async applyMutation(mutation: EntityProviderMutation): Promise<void> {
-    const db = this.config.processingDatabase;
-
-    if (mutation.type === 'full') {
-      this.check(mutation.entities.map(e => e.entity));
-      await db.transaction(async tx => {
-        await db.replaceUnprocessedEntities(tx, {
-          sourceKey: this.config.id,
-          type: 'full',
-          items: mutation.entities,
-        });
-      });
-    } else if (mutation.type === 'delta') {
-      this.check(mutation.added.map(e => e.entity));
-      this.check(mutation.removed.map(e => e.entity));
-      await db.transaction(async tx => {
-        await db.replaceUnprocessedEntities(tx, {
-          sourceKey: this.config.id,
-          type: 'delta',
-          added: mutation.added,
-          removed: mutation.removed,
-        });
-      });
-    }
-  }
-
-  private check(entities: Entity[]) {
-    for (const entity of entities) {
-      try {
-        this.validateEntityEnvelope(entity);
-      } catch (e) {
-        throw new TypeError(`Malformed entity envelope, ${e}`);
-      }
-    }
-  }
-}
 
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   private readonly tracker = progressTracker();
@@ -93,7 +37,6 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
   constructor(
     private readonly logger: Logger,
-    private readonly entityProviders: EntityProvider[],
     private readonly processingDatabase: ProcessingDatabase,
     private readonly orchestrator: CatalogProcessingOrchestrator,
     private readonly stitcher: Stitcher,
@@ -104,15 +47,6 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   async start() {
     if (this.stopFunc) {
       throw new Error('Processing engine is already started');
-    }
-
-    for (const provider of this.entityProviders) {
-      await provider.connect(
-        new Connection({
-          id: provider.getProviderName(),
-          processingDatabase: this.processingDatabase,
-        }),
-      );
     }
 
     this.stopFunc = startTaskPipeline<RefreshStateItem>({

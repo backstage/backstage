@@ -36,6 +36,19 @@ export default async function createPlugin({
 }
 ```
 
+And then add to `packages/backend/src/index.ts`:
+
+```js
+// In packages/backend/src/index.ts
+import todo from './plugins/todo';
+// ...
+async function main() {
+  // ...
+  const todoEnv = useHotMemoize(module, () => createEnv('todo'));
+  // ...
+  apiRouter.use('/todo', await todo(todoEnv));
+```
+
 ## Scanned Files
 
 The included `TodoReaderService` and `TodoScmReader` works by reading source code of to the entity that is being viewed. The location source code is determined by the value of the [`backstage.io/source-location`

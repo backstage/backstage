@@ -16,7 +16,7 @@
 
 import express from 'express';
 import { Config } from '@backstage/config';
-import { InputError } from '@backstage/errors';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { readState } from './helpers';
 import { AuthProviderRouteHandlers } from '../../providers/types';
 
@@ -42,26 +42,26 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
   ) {}
 
   async start(req: express.Request, res: express.Response): Promise<void> {
-    const provider = this.getProviderForEnv(req, res);
-    await provider?.start(req, res);
+    const provider = this.getProviderForEnv(req);
+    await provider.start(req, res);
   }
 
   async frameHandler(
     req: express.Request,
     res: express.Response,
   ): Promise<void> {
-    const provider = this.getProviderForEnv(req, res);
-    await provider?.frameHandler(req, res);
+    const provider = this.getProviderForEnv(req);
+    await provider.frameHandler(req, res);
   }
 
   async refresh(req: express.Request, res: express.Response): Promise<void> {
-    const provider = this.getProviderForEnv(req, res);
-    await provider?.refresh?.(req, res);
+    const provider = this.getProviderForEnv(req);
+    await provider.refresh?.(req, res);
   }
 
   async logout(req: express.Request, res: express.Response): Promise<void> {
-    const provider = this.getProviderForEnv(req, res);
-    await provider?.logout?.(req, res);
+    const provider = this.getProviderForEnv(req);
+    await provider.logout?.(req, res);
   }
 
   private getRequestFromEnv(req: express.Request): string | undefined {
@@ -77,26 +77,20 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
     return env;
   }
 
-  private getProviderForEnv(
-    req: express.Request,
-    res: express.Response,
-  ): AuthProviderRouteHandlers | undefined {
+  private getProviderForEnv(req: express.Request): AuthProviderRouteHandlers {
     const env: string | undefined = this.getRequestFromEnv(req);
 
     if (!env) {
       throw new InputError(`Must specify 'env' query to select environment`);
     }
 
-    if (!this.handlers.has(env)) {
-      res.status(404).send(
-        `Missing configuration.
-    <br>
-    <br>
-    For this flow to work you need to supply a valid configuration for the "${env}" environment of provider.`,
+    const handler = this.handlers.get(env);
+    if (!handler) {
+      throw new NotFoundError(
+        `No configuration available for the '${env}' environment of this provider.`,
       );
-      return undefined;
     }
 
-    return this.handlers.get(env);
+    return handler;
   }
 }

@@ -16,23 +16,15 @@
 
 import { createRouteRef } from '@backstage/core-plugin-api';
 
-const NoIcon = () => null;
-
 export const gitOpsClusterListRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/gitops-clusters',
-  title: 'GitOps Clusters',
+  id: 'gitops-clusters',
 });
 
 export const gitOpsClusterDetailsRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/gitops-cluster/:owner/:repo',
-  title: 'GitOps Cluster details',
+  id: 'gitops-cluster:details',
   params: ['owner', 'repo'],
 });
 
 export const gitOpsClusterCreateRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/gitops-cluster-create',
-  title: 'GitOps Cluster create',
+  id: 'gitops-cluster:create',
 });

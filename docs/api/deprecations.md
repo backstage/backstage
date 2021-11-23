@@ -54,3 +54,10 @@ const darkTheme = {
   ),
 };
 ```
+
+Note that the existing `AppTheme` type still requires the `theme` property to be
+set since it's the type that's consumed in the `AppThemeApi`, and it would be a
+breaking change to make `theme` optional. This means that if you currently
+construct the themes that you pass on to `createApp` using `AppTheme` as an
+intermediate type, you will need to work around this in some way, for example by
+passing the themes to `createApp` more directly.

@@ -1,5 +1,19 @@
 # @backstage/plugin-azure-devops
 
+## 0.1.4
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- b5eac957f2: Added entity view for Azure Repo Pull Requests
+- 2b5ccd2964: Improved Date handling for the Azure DevOps set of plugins by using strings and letting the frontend handle the conversion to DateTime
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/plugin-azure-devops-common@0.1.0
+
 ## 0.1.3
 
 ### Patch Changes
