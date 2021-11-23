@@ -19,6 +19,12 @@ import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
 import { TokenManager } from './types';
 
+/**
+ * Creates and validates tokens for use during backend-to-backend
+ * authentication.
+ *
+ * @public
+ */
 export class ServerTokenManager implements TokenManager {
   private key: JWK.OctKey | JWK.NoneKey;
 

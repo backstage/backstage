@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Interface for creating and validating tokens.
+ *
+ * @public
+ */
 export interface TokenManager {
   getToken: () => Promise<{ token: string }>;
   validateToken: (token: string) => void;

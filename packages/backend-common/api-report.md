@@ -526,9 +526,7 @@ export type SearchResponseFile = {
   content(): Promise<Buffer>;
 };
 
-// Warning: (ae-missing-release-tag) "ServerTokenManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class ServerTokenManager implements TokenManager {
   // (undocumented)
   static fromConfig(config: Config): ServerTokenManager;
@@ -599,9 +597,7 @@ export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
 }
 
-// Warning: (ae-missing-release-tag) "TokenManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface TokenManager {
   // (undocumented)
   getToken: () => Promise<{
