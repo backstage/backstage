@@ -26,10 +26,8 @@ export class ServerTokenManager implements TokenManager {
   }
 
   static fromConfig(config: Config) {
-    const secret = config.getOptionalString('backend.authorization.secret');
-    if (!secret) {
-      throw new Error('No backend auth secret set in app-config');
-    }
+    const secret = config.getString('backend.authorization.secret');
+
     return new ServerTokenManager(secret);
   }
 
