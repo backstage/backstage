@@ -15,6 +15,7 @@
  */
 
 import { Logger } from 'winston';
+import { pickBy } from 'lodash';
 
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
@@ -64,16 +65,20 @@ export class KeyStores {
     if (provider === 'firestore') {
       const settings = ks?.getConfig(provider);
 
-      const keyStore = await FirestoreKeyStore.create({
-        projectId: settings?.getOptionalString('projectId'),
-        keyFilename: settings?.getOptionalString('keyFilename'),
-        host: settings?.getOptionalString('host'),
-        port: settings?.getOptionalNumber('port'),
-        ssl: settings?.getOptionalBoolean('ssl'),
-        path: settings?.getOptionalString('path'),
-        timeout: settings?.getOptionalNumber('timeout'),
-      });
-
+      const keyStore = await FirestoreKeyStore.create(
+        pickBy(
+          {
+            projectId: settings?.getOptionalString('projectId'),
+            keyFilename: settings?.getOptionalString('keyFilename'),
+            host: settings?.getOptionalString('host'),
+            port: settings?.getOptionalNumber('port'),
+            ssl: settings?.getOptionalBoolean('ssl'),
+            path: settings?.getOptionalString('path'),
+            timeout: settings?.getOptionalNumber('timeout'),
+          },
+          value => value !== undefined,
+        ),
+      );
       await FirestoreKeyStore.verifyConnection(keyStore, logger);
 
       return keyStore;

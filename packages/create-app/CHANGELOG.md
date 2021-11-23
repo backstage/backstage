@@ -1,5 +1,83 @@
 # @backstage/create-app
 
+## 0.4.4
+
+### Patch Changes
+
+- 4ebc9fd277: Create backstage.json file
+
+  `@backstage/create-app` will create a new `backstage.json` file. At this point, the file will contain a `version` property, representing the version of `@backstage/create-app` used for creating the application. If the backstage's application has been bootstrapped using an older version of `@backstage/create-app`, the `backstage.json` file can be created and kept in sync, together with all the changes of the latest version of backstage, by running the following script:
+
+  ```bash
+  yarn backstage-cli versions:bump
+  ```
+
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 014cbf8cb9: Migrated the app template use the new `@backstage/app-defaults` for the `createApp` import, since the `createApp` exported by `@backstage/app-core-api` will be removed in the future.
+
+  To migrate an existing application, add the latest version of `@backstage/app-defaults` as a dependency in `packages/app/package.json`, and make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+  -import { createApp, FlatRoutes } from '@backstage/core-app-api';
+  +import { createApp } from '@backstage/app-defaults';
+  +import { FlatRoutes } from '@backstage/core-app-api';
+  ```
+
+- 2163e83fa2: Refactor and add regression tests for create-app tasks
+- Updated dependencies
+  - @backstage/cli-common@0.1.6
+
+## 0.4.3
+
+### Patch Changes
+
+- 5dcea2586c: Integrated `SidebarSearchModal` component into default-app to use the `SearchModal`.
+
+  The `SidebarSearchModal` component can also be used in other generated apps:
+
+  ```diff
+  import {
+  -  SidebarSearch,
+  +  SidebarSearchModal
+  } from '@backstage/plugin-search';
+  ...
+   <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+  -     <SidebarSearch />
+  +     <SidebarSearchModal />
+        <SidebarDivider />
+  ...
+  ```
+
+  If you only want to use the `SearchModal` you can import it from `'@backstage/plugin-search'`:
+
+  ```js
+  import { SearchModal } from '@backstage/plugin-search';
+  ```
+
+- 5725f87e4c: Updated the app template to no longer include the `--no-private` flag for the `create-plugin` command.
+
+  To apply this change to an existing application, remove the `--no-private` flag from the `create-plugin` command in the root `package.json`:
+
+  ```diff
+     "prettier:check": "prettier --check .",
+  -  "create-plugin": "backstage-cli create-plugin --scope internal --no-private",
+  +  "create-plugin": "backstage-cli create-plugin --scope internal",
+     "remove-plugin": "backstage-cli remove-plugin"
+  ```
+
+- 1921f70aa7: Removed the version pinning of the packages `graphql-language-service-interface` and `graphql-language-service-parser`. This should no longer be necessary.
+
+  You can apply the same change in your repository by ensuring that the following does _NOT_ appear in your root `package.json`.
+
+  ```json
+  "resolutions": {
+    "graphql-language-service-interface": "2.8.2",
+    "graphql-language-service-parser": "1.9.0"
+    },
+  ```
+
 ## 0.4.2
 
 ## 0.4.1

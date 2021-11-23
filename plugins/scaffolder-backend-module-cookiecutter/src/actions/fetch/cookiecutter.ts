@@ -121,6 +121,15 @@ export class CookiecutterRunner {
   }
 }
 
+/**
+ * Creates a `fetch:cookiecutter` Scaffolder action.
+ *
+ * @remarks
+ *
+ * See {@link https://cookiecutter.readthedocs.io/} and {@link https://backstage.io/docs/features/software-templates/writing-custom-actions}.
+ * @param options - Templating configuration.
+ * @public
+ */
 export function createFetchCookiecutterAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;

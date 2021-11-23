@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import { ReactNode } from 'react';
 import { ApiRef, createApiRef } from '../system';
 import { BackstageTheme } from '@backstage/theme';
 import { Observable } from '@backstage/types';
 
 /**
  * Describes a theme provided by the app.
+ *
+ * @public
  */
 export type AppTheme = {
   /**
@@ -39,6 +42,7 @@ export type AppTheme = {
 
   /**
    * The specialized MaterialUI theme instance.
+   * @deprecated use Provider instead, see https://backstage.io/docs/api/deprecations#app-theme
    */
   theme: BackstageTheme;
 
@@ -46,11 +50,15 @@ export type AppTheme = {
    * An Icon for the theme mode setting.
    */
   icon?: React.ReactElement;
+
+  Provider?(props: { children: ReactNode }): JSX.Element | null;
 };
 
 /**
  * The AppThemeApi gives access to the current app theme, and allows switching
  * to other options that have been registered as a part of the App.
+ *
+ * @public
  */
 export type AppThemeApi = {
   /**
@@ -76,6 +84,11 @@ export type AppThemeApi = {
   setActiveThemeId(themeId?: string): void;
 };
 
+/**
+ * The {@link ApiRef} of {@link AppThemeApi}.
+ *
+ * @public
+ */
 export const appThemeApiRef: ApiRef<AppThemeApi> = createApiRef({
   id: 'core.apptheme',
 });

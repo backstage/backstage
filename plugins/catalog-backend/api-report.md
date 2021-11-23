@@ -846,8 +846,7 @@ export type EntitiesResponse = {
 // @public
 export type EntitiesSearchFilter = {
   key: string;
-  matchValueIn?: string[];
-  matchValueExists?: boolean;
+  values?: string[];
 };
 
 // Warning: (ae-missing-release-tag) "entity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -870,11 +869,17 @@ export type EntityAncestryResponse = {
 // Warning: (ae-missing-release-tag) "EntityFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export type EntityFilter = {
-  anyOf: {
-    allOf: EntitiesSearchFilter[];
-  }[];
-};
+export type EntityFilter =
+  | {
+      allOf: EntityFilter[];
+    }
+  | {
+      anyOf: EntityFilter[];
+    }
+  | {
+      not: EntityFilter;
+    }
+  | EntitiesSearchFilter;
 
 // Warning: (ae-missing-release-tag) "EntityPagination" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1287,6 +1292,7 @@ export class NextCatalogBuilder {
     locationService: LocationService;
     router: Router;
   }>;
+  getDefaultProcessors(): CatalogProcessor[];
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceEntityPolicies(policies: EntityPolicy[]): NextCatalogBuilder;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -1542,9 +1548,9 @@ export class UrlReaderProcessor implements CatalogProcessor {
 
 // Warnings were encountered during analysis:
 //
-// src/catalog/types.d.ts:97:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/catalog/types.d.ts:98:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/catalog/types.d.ts:99:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// src/catalog/types.d.ts:94:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// src/catalog/types.d.ts:95:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// src/catalog/types.d.ts:96:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:23:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
 // src/ingestion/types.d.ts:8:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/legacy/database/types.d.ts:98:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

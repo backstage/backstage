@@ -17,6 +17,11 @@
 import { useVersionedContext } from '@backstage/version-bridge';
 import { AppContext as AppContextV1 } from './types';
 
+/**
+ * React hook providing {@link AppContext}.
+ *
+ * @public
+ */
 export const useApp = (): AppContextV1 => {
   const versionedContext =
     useVersionedContext<{ 1: AppContextV1 }>('app-context');

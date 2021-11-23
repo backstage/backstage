@@ -21,17 +21,17 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import React from 'react';
 import { EntityProcessingErrorsPanel } from './EntityProcessingErrorsPanel';
 import { Entity, getEntityName } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 
 describe('<EntityProcessErrors />', () => {
-  const catalogClient: jest.Mocked<CatalogApi> = {
-    getEntityAncestors: jest.fn(),
-  } as any;
-  const apis = ApiRegistry.with(catalogApiRef, catalogClient);
+  const getEntityAncestors: jest.MockedFunction<
+    CatalogApi['getEntityAncestors']
+  > = jest.fn();
+  const apis = TestApiRegistry.from([catalogApiRef, { getEntityAncestors }]);
 
   it('renders EntityProcessErrors if the entity has errors', async () => {
     const entity: Entity = {
@@ -97,7 +97,7 @@ describe('<EntityProcessErrors />', () => {
       },
     };
 
-    catalogClient.getEntityAncestors.mockResolvedValue({
+    getEntityAncestors.mockResolvedValue({
       root: getEntityName(entity),
       items: [{ entity, parents: [] }],
     });
@@ -198,7 +198,7 @@ describe('<EntityProcessErrors />', () => {
         ],
       },
     };
-    catalogClient.getEntityAncestors.mockResolvedValue({
+    getEntityAncestors.mockResolvedValue({
       root: getEntityName(entity),
       items: [
         { entity, parents: [getEntityName(parent)] },

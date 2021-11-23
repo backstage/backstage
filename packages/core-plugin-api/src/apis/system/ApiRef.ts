@@ -16,6 +16,11 @@
 
 import type { ApiRef } from './types';
 
+/**
+ * API reference configuration - holds an ID of the referenced API.
+ *
+ * @public
+ */
 export type ApiRefConfig = {
   id: string;
   /**
@@ -57,6 +62,13 @@ class ApiRefImpl<T> implements ApiRef<T> {
   }
 }
 
+/**
+ * Creates a reference to an API.
+ *
+ * @param config - The descriptor of the API to reference.
+ * @returns An API reference.
+ * @public
+ */
 export function createApiRef<T>(config: ApiRefConfig): ApiRef<T> {
   return new ApiRefImpl<T>(config);
 }

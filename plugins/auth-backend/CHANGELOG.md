@@ -1,5 +1,27 @@
 # @backstage/plugin-auth-backend
 
+## 0.4.8
+
+### Patch Changes
+
+- 892c1d9202: Update OAuthAdapter to create identity.token from identity.idToken if it does not exist, and prevent overwrites to identity.toke. Update login page commonProvider to prefer .token over .idToken
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+  - @backstage/test-utils@0.1.22
+
+## 0.4.7
+
+### Patch Changes
+
+- 5ee31f860b: Only use settings that have a value when creating a new FirestoreKeyStore instance
+- 3e0e2f09d5: Added forwarding of the `audience` option for the SAML provider, making it possible to enable `audience` verification.
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/test-utils@0.1.21
+  - @backstage/catalog-client@0.5.1
+
 ## 0.4.6
 
 ### Patch Changes

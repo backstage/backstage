@@ -105,11 +105,11 @@ docker image build . -f packages/backend/Dockerfile --tag backstage
 To try out the image locally you can run the following:
 
 ```sh
-docker run -it -p 7000:7000 backstage
+docker run -it -p 7007:7007 backstage
 ```
 
 You should then start to get logs in your terminal, and then you can open your
-browser at `http://localhost:7000`
+browser at `http://localhost:7007`
 
 ## Multi-stage Build
 
@@ -208,11 +208,11 @@ docker image build -t backstage .
 To try out the image locally you can run the following:
 
 ```sh
-docker run -it -p 7000:7000 backstage
+docker run -it -p 7007:7007 backstage
 ```
 
 You should then start to get logs in your terminal, and then you can open your
-browser at `http://localhost:7000`
+browser at `http://localhost:7007`
 
 ## Separate Frontend
 

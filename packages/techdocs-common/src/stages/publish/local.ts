@@ -59,24 +59,37 @@ try {
  * called "static" at the root of techdocs-backend plugin.
  */
 export class LocalPublish implements PublisherBase {
-  private legacyPathCasing: boolean;
+  private readonly legacyPathCasing: boolean;
+  private readonly logger: Logger;
+  private readonly discovery: PluginEndpointDiscovery;
 
-  // TODO: Use a static fromConfig method to create a LocalPublish instance, similar to aws/gcs publishers.
-  // Move the logic of setting staticDocsDir based on config over to fromConfig,
-  // and set the value as a class parameter.
-  constructor(
-    // @ts-ignore
-    private readonly config: Config,
-    private readonly logger: Logger,
-    private readonly discovery: PluginEndpointDiscovery,
-  ) {
-    this.config = config;
-    this.logger = logger;
-    this.discovery = discovery;
-    this.legacyPathCasing =
+  // TODO: Move the logic of setting staticDocsDir based on config over to
+  // fromConfig, and set the value as a class parameter.
+  constructor(options: {
+    logger: Logger;
+    discovery: PluginEndpointDiscovery;
+    legacyPathCasing: boolean;
+  }) {
+    this.logger = options.logger;
+    this.discovery = options.discovery;
+    this.legacyPathCasing = options.legacyPathCasing;
+  }
+
+  static fromConfig(
+    config: Config,
+    logger: Logger,
+    discovery: PluginEndpointDiscovery,
+  ): PublisherBase {
+    const legacyPathCasing =
       config.getOptionalBoolean(
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
+
+    return new LocalPublish({
+      logger,
+      discovery,
+      legacyPathCasing,
+    });
   }
 
   async getReadiness(): Promise<ReadinessResponse> {

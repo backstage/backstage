@@ -21,11 +21,11 @@ import {
   createPlugin,
   createRouteRef,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '/sentry',
-  title: 'Sentry',
+  id: 'sentry',
 });
 
 export const sentryPlugin = createPlugin({
@@ -33,11 +33,16 @@ export const sentryPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: sentryApiRef,
-      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
-      factory: ({ configApi, discoveryApi }) =>
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ configApi, discoveryApi, identityApi }) =>
         new ProductionSentryApi(
           discoveryApi,
           configApi.getString('sentry.organization'),
+          identityApi,
         ),
     }),
   ],

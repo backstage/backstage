@@ -1,5 +1,36 @@
 # @backstage/techdocs-common
 
+## 0.10.7
+
+### Patch Changes
+
+- 0b60a051c9: Added OpenStack Swift case migration support.
+- 9e64a7ac1e: Allow amazon web services s3 buckets to pass an server side encryption configuration so they can publish to encrypted buckets
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+
+## 0.10.6
+
+### Patch Changes
+
+- a2d4389587: 1. Techdocs publisher constructors now use parameter objects when being
+  instantiated
+
+  2. Internal refactor of `LocalPublish` publisher to use `fromConfig` for
+     creation to be aligned with other publishers; this does not impact
+     `LocalPublish` usage.
+
+  ```diff
+  - const publisher = new LocalPublish(config, logger, discovery);
+  + const publisher = LocalPublish.fromConfig(config, logger, discovery);
+  ```
+
+- 6129c89a47: Default TechDocs container used at docs generation-time is now [v0.3.5](https://github.com/backstage/techdocs-container/releases/tag/v0.3.5).
+- f3c7eec64b: Updated to properly join URL segments under any OS for both AWS S3 and GCP
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+
 ## 0.10.5
 
 ### Patch Changes
@@ -834,7 +865,7 @@
 
   Based on the config `techdocs.publisher.type`, the publisher could be either Local publisher or Google Cloud Storage publisher.
 
-  4. `techdocs.storageUrl` is now a required config. Should be `http://localhost:7000/api/techdocs/static/docs` in most setups.
+  4. `techdocs.storageUrl` is now a required config. Should be `http://localhost:7007/api/techdocs/static/docs` in most setups.
 
   5. Parts of `@backstage/plugin-techdocs-backend` have been moved to a new package `@backstage/techdocs-common` to generate docs. Also to publish docs
      to-and-fro between TechDocs and a storage (either local or external). However, a Backstage app does NOT need to import the `techdocs-common` package -

@@ -17,8 +17,7 @@
 import React, { useState } from 'react';
 import { Content } from '@backstage/core-components';
 import { ProjectCard } from '../ProjectCard/ProjectCard';
-import { makeStyles, Grid } from '@material-ui/core';
-import Pagination from '@material-ui/lab/Pagination';
+import { makeStyles, Grid, TablePagination } from '@material-ui/core';
 import { BazaarProject } from '../../types';
 
 type Props = {
@@ -42,12 +41,18 @@ const useStyles = makeStyles({
 
 export const ProjectPreview = ({ bazaarProjects, sortingMethod }: Props) => {
   const classes = useStyles();
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-  const pageCount = Math.ceil(bazaarProjects.length / pageSize);
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const handlePageClick = (_: any, pageIndex: number) => {
-    setCurrentPage(pageIndex);
+  const handleChangePage = (_: any, newPage: number) => {
+    setPage(newPage + 1);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(1);
   };
 
   if (!bazaarProjects.length) {
@@ -72,37 +77,31 @@ export const ProjectPreview = ({ bazaarProjects, sortingMethod }: Props) => {
     <Content className={classes.content} noPadding>
       <Grid wrap="wrap" container spacing={3}>
         {bazaarProjects
-          .slice(pageSize * (currentPage - 1), pageSize * currentPage)
-          .map((bazaarProject: BazaarProject) => {
-            const entityRef = bazaarProject.entityRef;
-
+          .slice((page - 1) * rowsPerPage, rowsPerPage * page)
+          .map((bazaarProject: BazaarProject, i: number) => {
             return (
-              <Grid
-                key={(entityRef as string) || ''}
-                className={classes.item}
-                item
-                xs={3}
-              >
-                <ProjectCard
-                  bazaarProject={bazaarProject}
-                  key={Math.random()}
-                />
+              <Grid key={i} className={classes.item} item xs={3}>
+                <ProjectCard bazaarProject={bazaarProject} key={i} />
               </Grid>
             );
           })}
       </Grid>
-      <Pagination
-        showFirstButton
-        showLastButton
-        siblingCount={2}
+
+      <TablePagination
+        count={bazaarProjects?.length}
+        page={page - 1}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        backIconButtonProps={{ disabled: page === 1 }}
+        nextIconButtonProps={{
+          disabled: rowsPerPage * page >= bazaarProjects.length,
+        }}
         style={{
           marginTop: '1rem',
           marginLeft: 'auto',
           marginRight: '0',
         }}
-        count={pageCount}
-        page={currentPage}
-        onChange={handlePageClick}
       />
     </Content>
   );

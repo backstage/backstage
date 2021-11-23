@@ -37,7 +37,7 @@ guide to do a repository-based installation.
 - `docker` [installation](https://docs.docker.com/engine/install/)
 - `git` [installation](https://github.com/git-guides/install-git)
 - If the system is not directly accessible over your network, the following
-  ports need to be opened: 3000, 7000
+  ports need to be opened: 3000, 7007
 
 ### Create your Backstage App
 

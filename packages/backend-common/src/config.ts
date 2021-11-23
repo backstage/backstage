@@ -22,9 +22,12 @@ import {
   loadConfigSchema,
   loadConfig,
   ConfigSchema,
+  ConfigTarget,
 } from '@backstage/config-loader';
 import { AppConfig, Config, ConfigReader } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
+
+import { isValidUrl } from './urls';
 
 import { setRootLoggerRedactionList } from './logging/rootLogger';
 
@@ -178,7 +181,10 @@ export async function loadBackendConfig(options: {
   argv: string[];
 }): Promise<Config> {
   const args = parseArgs(options.argv);
-  const configPaths: string[] = [args.config ?? []].flat();
+
+  const configTargets: ConfigTarget[] = [args.config ?? []]
+    .flat()
+    .map(arg => (isValidUrl(arg) ? { url: arg } : { path: resolvePath(arg) }));
 
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
@@ -194,9 +200,10 @@ export async function loadBackendConfig(options: {
   });
 
   const config = new ObservableConfigProxy(options.logger);
-  const configs = await loadConfig({
+  const { appConfigs } = await loadConfig({
     configRoot: paths.targetRoot,
-    configPaths: configPaths.map(opt => resolvePath(opt)),
+    configPaths: [],
+    configTargets: configTargets,
     watch: {
       onChange(newConfigs) {
         options.logger.info(
@@ -220,14 +227,16 @@ export async function loadBackendConfig(options: {
   });
 
   options.logger.info(
-    `Loaded config from ${configs.map(c => c.context).join(', ')}`,
+    `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
   );
 
-  config.setConfig(ConfigReader.fromConfigs(configs));
+  config.setConfig(ConfigReader.fromConfigs(appConfigs));
 
   // Subscribe to config changes and update the redaction list for logging
-  updateRedactionList(schema, configs, options.logger);
-  config.subscribe(() => updateRedactionList(schema, configs, options.logger));
+  updateRedactionList(schema, appConfigs, options.logger);
+  config.subscribe(() =>
+    updateRedactionList(schema, appConfigs, options.logger),
+  );
 
   return config;
 }

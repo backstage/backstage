@@ -15,8 +15,21 @@
  */
 
 export function normalizeEntityName(name: string): string {
-  return name
+  let cleaned = name
     .trim()
     .toLocaleLowerCase()
     .replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+
+  // invalid to end with _
+  while (cleaned.endsWith('_')) {
+    cleaned = cleaned.substring(0, cleaned.length - 1);
+  }
+
+  // cleans up format for groups like 'my group (Reader)'
+  while (cleaned.includes('__')) {
+    // replaceAll from node.js >= 15
+    cleaned = cleaned.replace('__', '_');
+  }
+
+  return cleaned;
 }

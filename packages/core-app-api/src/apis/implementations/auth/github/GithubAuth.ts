@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import GithubIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { GithubSession } from './types';
 import {
@@ -48,7 +47,7 @@ export type GithubAuthResponse = {
 const DEFAULT_PROVIDER = {
   id: 'github',
   title: 'GitHub',
-  icon: GithubIcon,
+  icon: () => null,
 };
 
 /**
@@ -117,6 +116,9 @@ export default class GithubAuth implements OAuthApi, SessionApi {
     return new GithubAuth(sessionManagerMux);
   }
 
+  /**
+   * @deprecated will be made private in the future. Use create method instead.
+   */
   constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
 
   async signIn() {

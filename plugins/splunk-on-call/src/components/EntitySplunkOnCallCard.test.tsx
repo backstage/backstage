@@ -17,7 +17,7 @@ import React from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import {
   splunkOnCallApiRef,
   SplunkOnCallClient,
@@ -37,13 +37,8 @@ import {
   alertApiRef,
   ConfigApi,
   configApiRef,
-  createApiRef,
 } from '@backstage/core-plugin-api';
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 
 const mockSplunkOnCallApi: Partial<SplunkOnCallClient> = {
   getUsers: async () => [],
@@ -59,17 +54,11 @@ const configApi: ConfigApi = new ConfigReader({
   },
 });
 
-const apis = ApiRegistry.from([
+const apis = TestApiRegistry.from(
   [splunkOnCallApiRef, mockSplunkOnCallApi],
   [configApiRef, configApi],
-  [
-    alertApiRef,
-    createApiRef({
-      id: 'core.alert',
-      description: 'Used to report alerts and forward them to the app',
-    }),
-  ],
-]);
+  [alertApiRef, {}],
+);
 
 const mockEntity = {
   apiVersion: 'backstage.io/v1alpha1',

@@ -445,6 +445,92 @@ describe('read microsoft graph', () => {
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledWith('groupid', 120);
     });
+
+    it('should read security groups', async () => {
+      async function* getExampleGroups() {
+        yield {
+          id: 'groupid',
+          displayName: 'Group Name',
+          description: 'Group Description',
+          mail: 'group@example.com',
+          mailNickname: 'df546d53-4f5f-4462-b371-d4a855787047',
+          mailEnabled: false,
+          securityEnabled: true,
+        };
+      }
+
+      async function* getExampleGroupMembers(): AsyncIterable<GroupMember> {
+        yield {
+          '@odata.type': '#microsoft.graph.group',
+          id: 'childgroupid',
+        };
+        yield {
+          '@odata.type': '#microsoft.graph.user',
+          id: 'userid',
+        };
+      }
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { groups, rootGroup } = await readMicrosoftGraphGroups(
+        client,
+        'tenantid',
+        {
+          groupFilter: 'securityEnabled eq true',
+        },
+      );
+
+      const expectedRootGroup = group({
+        metadata: {
+          annotations: {
+            'graph.microsoft.com/tenant-id': 'tenantid',
+          },
+          name: 'organization_name',
+          description: 'Organization Name',
+        },
+        spec: {
+          type: 'root',
+          profile: {
+            displayName: 'Organization Name',
+          },
+          children: [],
+        },
+      });
+      expect(groups).toEqual([
+        expectedRootGroup,
+        group({
+          metadata: {
+            annotations: {
+              'graph.microsoft.com/group-id': 'groupid',
+            },
+            name: 'group_name',
+            description: 'Group Description',
+          },
+          spec: {
+            type: 'team',
+            profile: {
+              displayName: 'Group Name',
+              email: 'group@example.com',
+            },
+            children: [],
+          },
+        }),
+      ]);
+      expect(rootGroup).toEqual(expectedRootGroup);
+      expect(client.getGroups).toBeCalledWith({
+        filter: 'securityEnabled eq true',
+      });
+      expect(client.getGroupMembers).toBeCalledTimes(1);
+      expect(client.getGroupMembers).toBeCalledWith('groupid');
+    });
   });
 
   describe('resolveRelations', () => {

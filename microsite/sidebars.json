@@ -105,6 +105,7 @@
           "features/techdocs/configuration",
           "features/techdocs/using-cloud-storage",
           "features/techdocs/configuring-ci-cd",
+          "features/techdocs/cli",
           "features/techdocs/how-to-guides",
           "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
@@ -151,7 +152,10 @@
       {
         "type": "subcategory",
         "label": "GitLab",
-        "ids": ["integrations/gitlab/locations"]
+        "ids": [
+          "integrations/gitlab/locations",
+          "integrations/gitlab/discovery"
+        ]
       },
       {
         "type": "subcategory",
@@ -253,7 +257,8 @@
         "type": "subcategory",
         "label": "API Reference",
         "ids": ["reference/index"]
-      }
+      },
+      "api/deprecations"
     ],
     "Tutorials": [
       "tutorials/journey",
@@ -275,7 +280,8 @@
       "architecture-decisions/adrs-adr008",
       "architecture-decisions/adrs-adr009",
       "architecture-decisions/adrs-adr010",
-      "architecture-decisions/adrs-adr011"
+      "architecture-decisions/adrs-adr011",
+      "architecture-decisions/adrs-adr012"
     ],
     "FAQ": ["FAQ"]
   }

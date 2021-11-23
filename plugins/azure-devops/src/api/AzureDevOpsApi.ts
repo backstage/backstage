@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { RepoBuild, RepoBuildOptions } from './types';
+import {
+  PullRequest,
+  PullRequestOptions,
+  RepoBuild,
+  RepoBuildOptions,
+} from '@backstage/plugin-azure-devops-common';
+
 import { createApiRef } from '@backstage/core-plugin-api';
 
 export const azureDevOpsApiRef = createApiRef<AzureDevOpsApi>({
@@ -29,4 +35,10 @@ export interface AzureDevOpsApi {
     repoName: string,
     options?: RepoBuildOptions,
   ): Promise<{ items: RepoBuild[] }>;
+
+  getPullRequests(
+    projectName: string,
+    repoName: string,
+    options?: PullRequestOptions,
+  ): Promise<{ items: PullRequest[] }>;
 }

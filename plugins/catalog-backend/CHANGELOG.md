@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog-backend
 
+## 0.17.4
+
+### Patch Changes
+
+- 5d2a7303bd: This fixes a bug where locations couldn't be added unless the processing engine is started.
+  It's now possible to run the catalog backend without starting the processing engine and still allowing locations registrations.
+
+  This is done by refactor the `EntityProvider.connect` to happen outside the engine.
+
+- 06934f2f52: Adjust entity query construction to ensure sub-queries are always isolated from one another.
+- b90fc74d70: adds getDefaultProcessor method to CatalogBuilder
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+
+## 0.17.3
+
+### Patch Changes
+
+- 86bef79ad1: Allow singleton and flexibly nested EntityFilters
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/catalog-client@0.5.1
+
 ## 0.17.2
 
 ### Patch Changes

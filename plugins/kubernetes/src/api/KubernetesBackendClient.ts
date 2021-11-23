@@ -79,10 +79,14 @@ export class KubernetesBackendClient implements KubernetesApi {
   }
 
   async getClusters(): Promise<{ name: string; authProvider: string }[]> {
+    const idToken = await this.identityApi.getIdToken();
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}/clusters`;
 
     const response = await fetch(url, {
       method: 'GET',
+      headers: {
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
+      },
     });
 
     return (await this.handleResponse(response)).items;

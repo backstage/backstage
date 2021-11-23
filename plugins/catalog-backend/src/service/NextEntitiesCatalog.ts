@@ -23,6 +23,8 @@ import {
   EntitiesResponse,
   EntityAncestryResponse,
   EntityPagination,
+  EntityFilter,
+  EntitiesSearchFilter,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
@@ -73,6 +75,81 @@ function stringifyPagination(input: { limit: number; offset: number }) {
   return base64;
 }
 
+function addCondition(
+  queryBuilder: Knex.QueryBuilder,
+  db: Knex,
+  filter: EntitiesSearchFilter,
+  negate: boolean = false,
+) {
+  // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
+  // make a lot of sense. However, it had abysmal performance on sqlite
+  // when datasets grew large, so we're using IN instead.
+  const matchQuery = db<DbSearchRow>('search')
+    .select('entity_id')
+    .where({ key: filter.key.toLowerCase() })
+    .andWhere(function keyFilter() {
+      if (filter.values) {
+        if (filter.values.length === 1) {
+          this.where({ value: filter.values[0].toLowerCase() });
+        } else if (filter.values.length > 1) {
+          this.andWhere(
+            'value',
+            'in',
+            filter.values.map(v => v.toLowerCase()),
+          );
+        }
+      }
+    });
+  queryBuilder.andWhere('entity_id', negate ? 'not in' : 'in', matchQuery);
+}
+
+function isEntitiesSearchFilter(
+  filter: EntitiesSearchFilter | EntityFilter,
+): filter is EntitiesSearchFilter {
+  return filter.hasOwnProperty('key');
+}
+
+function isOrEntityFilter(
+  filter: { anyOf: EntityFilter[] } | EntityFilter,
+): filter is { anyOf: EntityFilter[] } {
+  return filter.hasOwnProperty('anyOf');
+}
+
+function isNegationEntityFilter(
+  filter: { not: EntityFilter } | EntityFilter,
+): filter is { not: EntityFilter } {
+  return filter.hasOwnProperty('not');
+}
+
+function parseFilter(
+  filter: EntityFilter,
+  query: Knex.QueryBuilder,
+  db: Knex,
+  negate: boolean = false,
+): Knex.QueryBuilder {
+  if (isEntitiesSearchFilter(filter)) {
+    return query.andWhere(function filterFunction() {
+      addCondition(this, db, filter, negate);
+    });
+  }
+
+  if (isNegationEntityFilter(filter)) {
+    return parseFilter(filter.not, query, db, !negate);
+  }
+
+  return query[negate ? 'andWhereNot' : 'andWhere'](function filterFunction() {
+    if (isOrEntityFilter(filter)) {
+      for (const subFilter of filter.anyOf ?? []) {
+        this.orWhere(subQuery => parseFilter(subFilter, subQuery, db));
+      }
+    } else {
+      for (const subFilter of filter.allOf ?? []) {
+        this.andWhere(subQuery => parseFilter(subFilter, subQuery, db));
+      }
+    }
+  });
+}
+
 export class NextEntitiesCatalog implements EntitiesCatalog {
   constructor(private readonly database: Knex) {}
 
@@ -80,41 +157,8 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
     const db = this.database;
 
     let entitiesQuery = db<DbFinalEntitiesRow>('final_entities');
-
-    for (const singleFilter of request?.filter?.anyOf ?? []) {
-      entitiesQuery = entitiesQuery.orWhere(function singleFilterFn() {
-        for (const {
-          key,
-          matchValueIn,
-          matchValueExists,
-        } of singleFilter.allOf) {
-          // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
-          // make a lot of sense. However, it had abysmal performance on sqlite
-          // when datasets grew large, so we're using IN instead.
-          const matchQuery = db<DbSearchRow>('search')
-            .select('entity_id')
-            .where(function keyFilter() {
-              this.andWhere({ key: key.toLowerCase() });
-              if (matchValueExists !== false && matchValueIn) {
-                if (matchValueIn.length === 1) {
-                  this.andWhere({ value: matchValueIn[0].toLowerCase() });
-                } else if (matchValueIn.length > 1) {
-                  this.andWhere(
-                    'value',
-                    'in',
-                    matchValueIn.map(v => v.toLowerCase()),
-                  );
-                }
-              }
-            });
-          // Explicitly evaluate matchValueExists as a boolean since it may be undefined
-          this.andWhere(
-            'entity_id',
-            matchValueExists === false ? 'not in' : 'in',
-            matchQuery,
-          );
-        }
-      });
+    if (request?.filter) {
+      entitiesQuery = parseFilter(request.filter, entitiesQuery, db);
     }
 
     // TODO: move final_entities to use entity_ref

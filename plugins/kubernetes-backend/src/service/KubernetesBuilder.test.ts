@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import { getVoidLogger, loadBackendConfig } from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
+import { Config, ConfigReader } from '@backstage/config';
+import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import express from 'express';
 import request from 'supertest';
-import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import {
   ClusterDetails,
   FetchResponseWrapper,
@@ -27,8 +27,8 @@ import {
   KubernetesServiceLocator,
   ObjectFetchParams,
 } from '../types/types';
-import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { KubernetesBuilder } from './KubernetesBuilder';
+import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 
 describe('KubernetesBuilder', () => {
   let app: express.Express;
@@ -37,7 +37,12 @@ describe('KubernetesBuilder', () => {
 
   beforeAll(async () => {
     const logger = getVoidLogger();
-    config = await loadBackendConfig({ logger, argv: [] });
+    config = new ConfigReader({
+      kubernetes: {
+        serviceLocatorMethod: { type: 'multiTenant' },
+        clusterLocatorMethods: [{ type: 'config', clusters: [] }],
+      },
+    });
 
     const clusters: ClusterDetails[] = [
       {

@@ -136,6 +136,7 @@ a component:
 ```ts
 export const FooPage = plugin.provide(
   createRoutableExtension({
+    name: 'FooPage',
     component: () => import('./components/FooPage').then(m => m.FooPage),
     mountPoint: fooPageRouteRef,
   }),
@@ -417,6 +418,7 @@ export const myPlugin = createPlugin({
 
 export const MyPage = myPlugin.provide(
   createRoutableExtension({
+    name: 'MyPage',
     component: () => import('./components/MyPage').then(m => m.MyPage),
     mountPoint: rootRouteRef,
   }),

@@ -15,7 +15,7 @@
  */
 
 import path from 'path';
-import { getRepoSourceDirectory } from './util';
+import { getRepoSourceDirectory, isExecutable } from './util';
 
 describe('getRepoSourceDirectory', () => {
   it('should return workspace root if no sub folder is given', () => {
@@ -53,5 +53,35 @@ describe('getRepoSourceDirectory', () => {
         path.join('/', 'absolute', 'secret'),
       ),
     ).toEqual(path.join('/', 'var', 'workspace', 'absolute', 'secret'));
+  });
+});
+
+describe('isExecutable', () => {
+  it('should return true for file mode 777', () => {
+    expect(isExecutable(0o100777)).toBe(true);
+  });
+  it('should return true for file mode 775', () => {
+    expect(isExecutable(0o100775)).toBe(true);
+  });
+  it('should return true for file mode 755', () => {
+    expect(isExecutable(0o100755)).toBe(true);
+  });
+  it('should return true for file mode 700', () => {
+    expect(isExecutable(0o100700)).toBe(true);
+  });
+  it('should return true for file mode 770', () => {
+    expect(isExecutable(0o100770)).toBe(true);
+  });
+  it('should return true for file mode 670', () => {
+    expect(isExecutable(0o100670)).toBe(true);
+  });
+  it('should return false for file mode 644', () => {
+    expect(isExecutable(0o100644)).toBe(false);
+  });
+  it('should return false for file mode 600', () => {
+    expect(isExecutable(0o100600)).toBe(false);
+  });
+  it('should return false for file mode 640', () => {
+    expect(isExecutable(0o100640)).toBe(false);
   });
 });

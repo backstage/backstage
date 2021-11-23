@@ -18,7 +18,9 @@
 /plugins/techdocs-backend                   @backstage/techdocs-core
 /plugins/ilert                              @backstage/reviewers @yacut
 /plugins/home                               @backstage/techdocs-core
+/packages/embedded-techdocs-app             @backstage/techdocs-core
 /packages/search-common                     @backstage/techdocs-core
+/packages/techdocs-cli                      @backstage/techdocs-core
 /packages/techdocs-common                   @backstage/techdocs-core
 /.changeset/cost-insights-*                 @backstage/reviewers @backstage/silver-lining
 /.changeset/search-*                        @backstage/techdocs-core

@@ -21,17 +21,14 @@ import React from 'react';
 import { isKind } from './conditions';
 import { EntitySwitch } from './EntitySwitch';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
-import {
-  LocalStorageFeatureFlags,
-  ApiProvider,
-  ApiRegistry,
-} from '@backstage/core-app-api';
+import { LocalStorageFeatureFlags } from '@backstage/core-app-api';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
 const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-  <ApiProvider apis={ApiRegistry.with(featureFlagsApiRef, mockFeatureFlagsApi)}>
+  <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
     {children}
-  </ApiProvider>
+  </TestApiProvider>
 );
 
 describe('EntitySwitch', () => {

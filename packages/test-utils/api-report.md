@@ -5,9 +5,12 @@
 ```ts
 import { AnalyticsApi } from '@backstage/core-plugin-api';
 import { AnalyticsEvent } from '@backstage/core-plugin-api';
+import { ApiHolder } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ErrorApi } from '@backstage/core-plugin-api';
-import { ErrorContext } from '@backstage/core-plugin-api';
+import { ErrorApiError } from '@backstage/core-plugin-api';
+import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { ReactElement } from 'react';
@@ -27,8 +30,8 @@ export type CollectedLogs<T extends LogFuncs> = {
 
 // @public
 export type ErrorWithContext = {
-  error: Error;
-  context?: ErrorContext;
+  error: ErrorApiError;
+  context?: ErrorApiErrorContext;
 };
 
 // @public @deprecated (undocumented)
@@ -109,13 +112,13 @@ export class MockErrorApi implements ErrorApi {
   constructor(options?: MockErrorApiOptions);
   // (undocumented)
   error$(): Observable<{
-    error: Error;
-    context?: ErrorContext;
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
   }>;
   // (undocumented)
   getErrors(): ErrorWithContext[];
   // (undocumented)
-  post(error: Error, context?: ErrorContext): void;
+  post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
   // (undocumented)
   waitForError(pattern: RegExp, timeoutMs?: number): Promise<ErrorWithContext>;
 }
@@ -173,6 +176,26 @@ export function setupRequestMockHandlers(worker: {
 
 // @public
 export type SyncLogCollector = () => void;
+
+// @public
+export const TestApiProvider: <T extends any[]>({
+  apis,
+  children,
+}: TestApiProviderProps<T>) => JSX.Element;
+
+// @public
+export type TestApiProviderProps<TApiPairs extends any[]> = {
+  apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>];
+  children: ReactNode;
+};
+
+// @public
+export class TestApiRegistry implements ApiHolder {
+  static from<TApiPairs extends any[]>(
+    ...apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>]
+  ): TestApiRegistry;
+  get<T>(api: ApiRef<T>): T | undefined;
+}
 
 // @public
 export type TestAppOptions = {

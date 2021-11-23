@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 import { RELATION_HAS_PART, RELATION_PART_OF } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { MockAnalyticsApi, renderInTestApp } from '@backstage/test-utils';
+import {
+  MockAnalyticsApi,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { catalogEntityRouteRef } from '../../routes';
@@ -90,10 +93,9 @@ describe('<CatalogGraphPage/>', () => {
       refreshEntity: jest.fn(),
       getEntityAncestors: jest.fn(),
     };
-    const apis = ApiRegistry.with(catalogApiRef, catalog);
 
     wrapper = (
-      <ApiProvider apis={apis}>
+      <TestApiProvider apis={[[catalogApiRef, catalog]]}>
         <CatalogGraphPage
           initialState={{
             showFilters: false,
@@ -101,7 +103,7 @@ describe('<CatalogGraphPage/>', () => {
             selectedKinds: ['b'],
           }}
         />
-      </ApiProvider>
+      </TestApiProvider>
     );
   });
 
@@ -172,9 +174,9 @@ describe('<CatalogGraphPage/>', () => {
   test('should capture analytics event when selecting other entity', async () => {
     const analyticsSpy = new MockAnalyticsApi();
     const { getByText, findAllByTestId } = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.from([[analyticsApiRef, analyticsSpy]])}>
+      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
         {wrapper}
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
@@ -195,9 +197,9 @@ describe('<CatalogGraphPage/>', () => {
   test('should capture analytics event when navigating to entity', async () => {
     const analyticsSpy = new MockAnalyticsApi();
     const { getByText, findAllByTestId } = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.from([[analyticsApiRef, analyticsSpy]])}>
+      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
         {wrapper}
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,

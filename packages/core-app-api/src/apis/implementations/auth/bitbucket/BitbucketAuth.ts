@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import BitbucketIcon from '@material-ui/icons/FormatBold';
 import {
   BackstageIdentity,
   bitbucketAuthApiRef,
@@ -37,7 +36,7 @@ export type BitbucketAuthResponse = {
 const DEFAULT_PROVIDER = {
   id: 'bitbucket',
   title: 'Bitbucket',
-  icon: BitbucketIcon,
+  icon: () => null,
 };
 
 /**

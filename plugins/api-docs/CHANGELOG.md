@@ -1,5 +1,30 @@
 # @backstage/plugin-api-docs
 
+## 0.6.14
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/plugin-catalog@0.7.3
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.6.13
+
+### Patch Changes
+
+- 044c38e739: Lazy load all API definition widgets. The widgets use libraries like
+  `swagger-ui`, `graphiql`, and `@asyncapi/react-component` which are quite heavy
+  weight. To improve initial load times, the widgets are only loaded once used.
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
 ## 0.6.12
 
 ### Patch Changes

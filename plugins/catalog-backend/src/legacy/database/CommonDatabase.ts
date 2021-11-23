@@ -46,7 +46,11 @@ import {
   DbPageInfo,
   Transaction,
 } from './types';
-import { EntityPagination } from '../../catalog/types';
+import { EntityPagination, EntitiesSearchFilter } from '../../catalog/types';
+
+type LegacyEntityFilter = {
+  anyOf: { allOf: EntitiesSearchFilter[] }[];
+};
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -217,13 +221,30 @@ export class CommonDatabase implements Database {
 
     let entitiesQuery = tx<DbEntitiesRow>('entities');
 
-    for (const singleFilter of request?.filter?.anyOf ?? []) {
+    if (
+      request?.filter &&
+      (request.filter.hasOwnProperty('key') ||
+        request.filter.hasOwnProperty('allOf') ||
+        request.filter.hasOwnProperty('not'))
+    ) {
+      throw new Error(
+        'Filters for the legacy CommonDatabase must obey the { anyOf: [{ allOf: [] }] } format.',
+      );
+    }
+    for (const singleFilter of (request?.filter as LegacyEntityFilter)?.anyOf ??
+      []) {
       entitiesQuery = entitiesQuery.orWhere(function singleFilterFn() {
-        for (const {
-          key,
-          matchValueIn,
-          matchValueExists,
-        } of singleFilter.allOf) {
+        for (const filter of singleFilter.allOf) {
+          if (
+            filter.hasOwnProperty('anyOf') ||
+            filter.hasOwnProperty('allOf') ||
+            filter.hasOwnProperty('not')
+          ) {
+            throw new Error(
+              'Nested filters are not supported in the legacy CommonDatabase',
+            );
+          }
+          const { key, values } = filter;
           // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
           // make a lot of sense. However, it had abysmal performance on sqlite
           // when datasets grew large, so we're using IN instead.
@@ -231,24 +252,19 @@ export class CommonDatabase implements Database {
             .select('entity_id')
             .where(function keyFilter() {
               this.andWhere({ key: key.toLowerCase() });
-              if (matchValueExists !== false && matchValueIn) {
-                if (matchValueIn.length === 1) {
-                  this.andWhere({ value: matchValueIn[0].toLowerCase() });
-                } else if (matchValueIn.length > 1) {
+              if (values) {
+                if (values.length === 1) {
+                  this.andWhere({ value: values[0].toLowerCase() });
+                } else if (values.length > 1) {
                   this.andWhere(
                     'value',
                     'in',
-                    matchValueIn.map(v => v.toLowerCase()),
+                    values.map(v => v.toLowerCase()),
                   );
                 }
               }
             });
-          // Explicitly evaluate matchValueExists as a boolean since it may be undefined
-          this.andWhere(
-            'id',
-            matchValueExists === false ? 'not in' : 'in',
-            matchQuery,
-          );
+          this.andWhere('id', 'in', matchQuery);
         }
       });
     }

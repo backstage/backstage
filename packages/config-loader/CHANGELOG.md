@@ -1,5 +1,33 @@
 # @backstage/config-loader
 
+## 0.8.0
+
+### Minor Changes
+
+- 1e99c73c75: Update `loadConfig` to return `LoadConfigResult` instead of an array of `AppConfig`.
+
+  This function is primarily used internally by other config loaders like `loadBackendConfig` which means no changes are required for most users.
+
+  If you use `loadConfig` directly you will need to update your usage from:
+
+  ```diff
+  - const appConfigs = await loadConfig(options)
+  + const { appConfigs } = await loadConfig(options)
+  ```
+
+### Patch Changes
+
+- 8809b6c0dd: Update the json-schema dependency version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.6
+
+## 0.7.2
+
+### Patch Changes
+
+- 0611f3b3e2: Reading app config from a remote server
+- 26c5659c97: Bump msw to the same version as the rest
+
 ## 0.7.1
 
 ### Patch Changes

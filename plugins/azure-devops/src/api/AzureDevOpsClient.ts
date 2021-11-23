@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { AzureDevOpsApi } from './AzureDevOpsApi';
-import { RepoBuild, RepoBuildOptions } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import {
+  PullRequest,
+  PullRequestOptions,
+  RepoBuild,
+  RepoBuildOptions,
+} from '@backstage/plugin-azure-devops-common';
+
+import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { ResponseError } from '@backstage/errors';
 
 export class AzureDevOpsClient implements AzureDevOpsApi {
@@ -31,14 +37,40 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     this.identityApi = options.identityApi;
   }
 
-  async getRepoBuilds(
+  public async getRepoBuilds(
     projectName: string,
     repoName: string,
     options?: RepoBuildOptions,
   ): Promise<{ items: RepoBuild[] }> {
-    const items = await this.get<RepoBuild[]>(
-      `repo-builds/${projectName}/${repoName}?top=${options?.top}`,
-    );
+    const queryString = new URLSearchParams();
+    if (options?.top) {
+      queryString.append('top', options.top.toString());
+    }
+    const urlSegment = `repo-builds/${encodeURIComponent(
+      projectName,
+    )}/${encodeURIComponent(repoName)}?${queryString}`;
+
+    const items = await this.get<RepoBuild[]>(urlSegment);
+    return { items };
+  }
+
+  public async getPullRequests(
+    projectName: string,
+    repoName: string,
+    options?: PullRequestOptions,
+  ): Promise<{ items: PullRequest[] }> {
+    const queryString = new URLSearchParams();
+    if (options?.top) {
+      queryString.append('top', options.top.toString());
+    }
+    if (options?.status) {
+      queryString.append('status', options.status.toString());
+    }
+    const urlSegment = `pull-requests/${encodeURIComponent(
+      projectName,
+    )}/${encodeURIComponent(repoName)}?${queryString}`;
+
+    const items = await this.get<PullRequest[]>(urlSegment);
     return { items };
   }
 

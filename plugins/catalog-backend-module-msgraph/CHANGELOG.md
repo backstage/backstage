@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.9
+
+### Patch Changes
+
+- 779d7a2304: Tweak logic for msgraph catalog ingesting for display names with security groups
+
+  Previously security groups that weren't mail enabled were imported with UUIDs, now they use the display name.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.3
+
 ## 0.2.8
 
 ### Patch Changes

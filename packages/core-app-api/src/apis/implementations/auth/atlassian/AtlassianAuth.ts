@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import AtlassianIcon from '@material-ui/icons/AcUnit';
 import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
@@ -22,7 +21,7 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'atlassian',
   title: 'Atlassian',
-  icon: AtlassianIcon,
+  icon: () => null,
 };
 
 /**

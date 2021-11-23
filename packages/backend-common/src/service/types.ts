@@ -34,7 +34,7 @@ export type ServiceBuilder = {
    *
    * If no port is specified, the service will first look for an environment
    * variable named PORT and use that if present, otherwise it picks a default
-   * port (7000).
+   * port (7007).
    *
    * @param port - The port to listen on
    */

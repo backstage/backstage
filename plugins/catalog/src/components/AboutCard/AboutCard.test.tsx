@@ -15,11 +15,7 @@
  */
 
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ConfigReader } from '@backstage/core-app-api';
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
@@ -30,7 +26,7 @@ import {
   CatalogApi,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { viewTechDocRouteRef } from '../../routes';
@@ -71,21 +67,25 @@ describe('<AboutCard />', () => {
         },
       ],
     };
-    const apis = ApiRegistry.with(
-      scmIntegrationsApiRef,
-      ScmIntegrationsApi.fromConfig(
-        new ConfigReader({
-          integrations: {},
-        }),
-      ),
-    ).with(catalogApiRef, catalogApi);
 
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {},
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <EntityProvider entity={entity}>
           <AboutCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -116,28 +116,32 @@ describe('<AboutCard />', () => {
         lifecycle: 'production',
       },
     };
-    const apis = ApiRegistry.with(
-      scmIntegrationsApiRef,
-      ScmIntegrationsApi.fromConfig(
-        new ConfigReader({
-          integrations: {
-            github: [
-              {
-                host: 'github.com',
-                token: '...',
-              },
-            ],
-          },
-        }),
-      ),
-    ).with(catalogApiRef, catalogApi);
 
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <EntityProvider entity={entity}>
           <AboutCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -167,28 +171,32 @@ describe('<AboutCard />', () => {
         lifecycle: 'production',
       },
     };
-    const apis = ApiRegistry.with(
-      scmIntegrationsApiRef,
-      ScmIntegrationsApi.fromConfig(
-        new ConfigReader({
-          integrations: {
-            github: [
-              {
-                host: 'github.com',
-                token: '...',
-              },
-            ],
-          },
-        }),
-      ),
-    ).with(catalogApiRef, catalogApi);
 
     const { getByTitle } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <EntityProvider entity={entity}>
           <AboutCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -216,17 +224,21 @@ describe('<AboutCard />', () => {
         lifecycle: 'production',
       },
     };
-    const apis = ApiRegistry.with(
-      scmIntegrationsApiRef,
-      ScmIntegrationsApi.fromConfig(new ConfigReader({})),
-    ).with(catalogApiRef, catalogApi);
 
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(new ConfigReader({})),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <EntityProvider entity={entity}>
           <AboutCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -253,17 +265,21 @@ describe('<AboutCard />', () => {
         lifecycle: 'production',
       },
     };
-    const apis = ApiRegistry.with(
-      scmIntegrationsApiRef,
-      ScmIntegrationsApi.fromConfig(new ConfigReader({})),
-    ).with(catalogApiRef, catalogApi);
 
     const { getByTitle } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(new ConfigReader({})),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <EntityProvider entity={entity}>
           <AboutCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -295,17 +311,21 @@ describe('<AboutCard />', () => {
         lifecycle: 'production',
       },
     };
-    const apis = ApiRegistry.with(
-      scmIntegrationsApiRef,
-      ScmIntegrationsApi.fromConfig(new ConfigReader({})),
-    ).with(catalogApiRef, catalogApi);
 
     const { queryByTitle } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(new ConfigReader({})),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <EntityProvider entity={entity}>
           <AboutCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -332,28 +352,32 @@ describe('<AboutCard />', () => {
         lifecycle: 'production',
       },
     };
-    const apis = ApiRegistry.with(
-      scmIntegrationsApiRef,
-      ScmIntegrationsApi.fromConfig(
-        new ConfigReader({
-          integrations: {
-            github: [
-              {
-                host: 'github.com',
-                token: '...',
-              },
-            ],
-          },
-        }),
-      ),
-    ).with(catalogApiRef, catalogApi);
 
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <EntityProvider entity={entity}>
           <AboutCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name': viewTechDocRouteRef,
@@ -381,28 +405,32 @@ describe('<AboutCard />', () => {
         lifecycle: 'production',
       },
     };
-    const apis = ApiRegistry.with(
-      scmIntegrationsApiRef,
-      ScmIntegrationsApi.fromConfig(
-        new ConfigReader({
-          integrations: {
-            github: [
-              {
-                host: 'github.com',
-                token: '...',
-              },
-            ],
-          },
-        }),
-      ),
-    ).with(catalogApiRef, catalogApi);
 
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <EntityProvider entity={entity}>
           <AboutCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -429,28 +457,32 @@ describe('<AboutCard />', () => {
         lifecycle: 'production',
       },
     };
-    const apis = ApiRegistry.with(
-      scmIntegrationsApiRef,
-      ScmIntegrationsApi.fromConfig(
-        new ConfigReader({
-          integrations: {
-            github: [
-              {
-                host: 'github.com',
-                token: '...',
-              },
-            ],
-          },
-        }),
-      ),
-    ).with(catalogApiRef, catalogApi);
 
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         <EntityProvider entity={entity}>
           <AboutCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,

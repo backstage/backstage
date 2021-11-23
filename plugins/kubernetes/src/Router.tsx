@@ -18,7 +18,6 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
-import { rootCatalogKubernetesRouteRef } from './plugin';
 import { KubernetesContent } from './components/KubernetesContent';
 import { Button } from '@material-ui/core';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
@@ -53,10 +52,7 @@ export const Router = (_props: Props) => {
   ) {
     return (
       <Routes>
-        <Route
-          path={`/${rootCatalogKubernetesRouteRef.path}`}
-          element={<KubernetesContent entity={entity} />}
-        />
+        <Route path="/" element={<KubernetesContent entity={entity} />} />
       </Routes>
     );
   }
