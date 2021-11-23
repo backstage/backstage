@@ -25,7 +25,6 @@ import {
   BackstageIdentity,
   IdentityClient,
 } from '@backstage/plugin-auth-backend';
-import { ConflictError } from '@backstage/errors';
 import {
   AuthorizeResult,
   AuthorizeResponse,
@@ -59,7 +58,7 @@ const handleRequest = async (
   if (response.result === AuthorizeResult.CONDITIONAL) {
     // Sanity check that any resource provided matches the one expected by the permission
     if (request.permission.resourceType !== response.conditions.resourceType) {
-      throw new ConflictError(
+      throw new Error(
         `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
       );
     }
