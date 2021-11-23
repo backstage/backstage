@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConfigReader } from '@backstage/core-app-api';
+import { ConfigReader } from '@backstage/config';
 import { ServerTokenManager } from './ServerTokenManager';
 
 const emptyConfig = new ConfigReader({});
