@@ -55,7 +55,13 @@ export const DashboardEntityList = () => {
     <Grid container spacing={3} direction="column">
       <Grid item xs={12}>
         <InfoCard title="New Relic Dashboard Pages" variant="gridItem">
-          {value.getDashboardEntity.data.actor.entitySearch.results.entities.map(
+          {value?.getDashboardEntity === undefined &&
+            'Unauthorized Request , please check API Key'}
+          {value?.getDashboardEntity?.data.actor.entitySearch.results.entities
+            .length <= 0 && (
+            <>No Dashboard Pages found with the specified Dashboard GUID</>
+          )}
+          {value?.getDashboardEntity?.data.actor.entitySearch.results.entities?.map(
             (entity: any) => {
               return (
                 <Box style={{ margin: '10px' }} display="flex">

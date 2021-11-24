@@ -109,7 +109,7 @@ export const DashboardSnapshotList = ({ guid }: Props) => {
         value={value1}
         style={{ width: '100%' }}
       >
-        {value.getDashboardEntity.data.actor.entitySearch.results.entities?.map(
+        {value?.getDashboardEntity?.data?.actor.entitySearch.results.entities?.map(
           (Entity: any, index: any) => {
             return (
               <Tab
@@ -125,7 +125,7 @@ export const DashboardSnapshotList = ({ guid }: Props) => {
           },
         )}
       </Tabs>
-      {value.getDashboardEntity.data.actor.entitySearch.results.entities?.map(
+      {value?.getDashboardEntity?.data?.actor.entitySearch.results.entities?.map(
         (Entity: any, index: any) => {
           return (
             <TabPanel value1={value1} index={index}>
