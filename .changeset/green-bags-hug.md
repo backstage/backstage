@@ -2,4 +2,4 @@
 '@backstage/plugin-kubernetes': patch
 ---
 
-Implement support for formatting Openshift dashboard url links
+Implement support for formatting OpenShift dashboard url links
