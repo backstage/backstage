@@ -19,6 +19,8 @@ import { PermissionRule } from '../types';
 /**
  * Creates a condition factory function for a given authorization rule and parameter types.
  *
+ * @remarks
+ *
  * For example, an isEntityOwner rule for catalog entities might take an array of entityRef strings.
  * The rule itself defines _how_ to check a given resource, whereas a condition also includes _what_
  * to verify.

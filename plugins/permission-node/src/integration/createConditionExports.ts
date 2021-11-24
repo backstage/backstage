@@ -49,7 +49,11 @@ export type Conditions<
 
 /**
  * Creates the recommended condition-related exports for a given plugin based on the built-in
- * {@link PermissionRule}s it supports. It returns a `conditions` object containing a
+ * {@link PermissionRule}s it supports.
+ *
+ * @remarks
+ *
+ * The function returns a `conditions` object containing a
  * {@link @backstage/plugin-permission-common#PermissionCondition} factory for each of the
  * supplied {@link PermissionRule}s, along with a `createConditions` function which builds the
  * wrapper object needed to enclose conditions when authoring {@link PermissionPolicy} implementations.

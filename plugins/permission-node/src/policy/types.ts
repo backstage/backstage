@@ -25,15 +25,20 @@ import { BackstageIdentity } from '@backstage/plugin-auth-backend';
 /**
  * An authorization request to be evaluated by the {@link PermissionPolicy}.
  *
+ * @remarks
+ *
  * This differs from {@link @backstage/permission-common#AuthorizeRequest} in that `resourceRef`
  * should never be provided. This forces policies to be written in a way that's compatible with
  * filtering collections of resources at data load time.
+ *
  * @public
  */
 export type PolicyAuthorizeRequest = Omit<AuthorizeRequest, 'resourceRef'>;
 
 /**
  * A conditional result to an authorization request, returned by the {@link PermissionPolicy}.
+ *
+ * @remarks
  *
  * This indicates that the policy allows authorization for the request, given that the returned
  * conditions hold when evaluated. The conditions will be evaluated by the corresponding plugin
@@ -54,6 +59,7 @@ export type ConditionalPolicyResult = {
 
 /**
  * The result of evaluating an authorization request with a {@link PermissionPolicy}.
+ *
  * @public
  */
 export type PolicyResult =
@@ -63,6 +69,8 @@ export type PolicyResult =
 /**
  * A policy to evaluate authorization requests for any permissioned action performed in Backstage.
  *
+ * @remarks
+ *
  * This takes as input a permission and an optional Backstage identity, and should return ALLOW if
  * the user is permitted to execute that action; otherwise DENY. For permissions relating to
  * resources, such a catalog entities, a conditional response can also be returned. This states
@@ -71,6 +79,7 @@ export type PolicyResult =
  * Conditions are a rule, and parameters to evaluate against that rule. For example, the rule might
  * be `isOwner` and the parameters a collection of entityRefs; if one of the entityRefs matches
  * the `owner` field on a catalog entity, this would resolve to ALLOW.
+ *
  * @public
  */
 export interface PermissionPolicy {

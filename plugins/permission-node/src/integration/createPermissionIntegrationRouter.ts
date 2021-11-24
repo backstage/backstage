@@ -97,6 +97,8 @@ const applyConditions = <TResource>(
  * conditional authorization for their resources should add the router created by this function
  * to their express app inside their `createRouter` implementation.
  *
+ * @remarks
+ *
  * To make this concrete, we can use the Backstage software catalog as an example. The catalog has
  * conditional rules around access to specific _entities_ in the catalog. The _type_ of resource is
  * captured here as `resourceType`, a string identifier (`catalog-entity` in this example) that can
