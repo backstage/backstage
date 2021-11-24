@@ -4,6 +4,7 @@
 
 ```ts
 import express from 'express';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 import { Logger as Logger_2 } from 'winston';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -15,6 +16,8 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 export interface RouterOptions {
   // (undocumented)
   discovery: PluginEndpointDiscovery;
+  // (undocumented)
+  identity: IdentityClient;
   // (undocumented)
   logger: Logger_2;
   // (undocumented)

@@ -44,6 +44,7 @@ export interface RouterOptions {
   logger: Logger;
   discovery: PluginEndpointDiscovery;
   policy: PermissionPolicy;
+  identity: IdentityClient;
 }
 
 const handleRequest = async (
@@ -98,12 +99,7 @@ const handleRequest = async (
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { policy, discovery } = options;
-
-  const identity = new IdentityClient({
-    discovery,
-    issuer: await discovery.getExternalBaseUrl('auth'),
-  });
+  const { policy, discovery, identity } = options;
 
   const permissionIntegrationClient = new PermissionIntegrationClient({
     discovery,

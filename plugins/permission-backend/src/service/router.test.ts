@@ -17,6 +17,7 @@
 import express from 'express';
 import request from 'supertest';
 import { getVoidLogger } from '@backstage/backend-common';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 import {
   AuthorizeResult,
   Permission,
@@ -24,27 +25,6 @@ import {
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 
 import { createRouter } from './router';
-
-jest.mock('@backstage/plugin-auth-backend', () => {
-  class MockIdentityClient {
-    authenticate = jest.fn(token =>
-      Promise.resolve(
-        token
-          ? {
-              id: 'test-user',
-              token,
-            }
-          : undefined,
-      ),
-    );
-
-    static getBearerToken = jest.fn(authHeader =>
-      authHeader ? `<token for "${authHeader}">` : undefined,
-    );
-  }
-
-  return { IdentityClient: MockIdentityClient };
-});
 
 const policy: PermissionPolicy = {
   handle: jest.fn().mockImplementation((_req, identity) => {
@@ -70,6 +50,18 @@ describe('createRouter', () => {
         getBaseUrl: jest.fn(),
         getExternalBaseUrl: jest.fn(),
       },
+      identity: {
+        authenticate: jest.fn(token => {
+          if (!token) {
+            throw new Error('No token supplied!');
+          }
+
+          return Promise.resolve({
+            id: 'test-user',
+            token,
+          });
+        }),
+      } as unknown as IdentityClient,
       policy,
     });
 
@@ -108,7 +100,7 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(policy.handle).toHaveBeenCalledWith(
         { permission },
-        { id: 'test-user', token: '<token for "Bearer test-token">' },
+        { id: 'test-user', token: 'test-token' },
       );
       expect(response.body).toEqual([
         { id: 123, result: AuthorizeResult.ALLOW },
