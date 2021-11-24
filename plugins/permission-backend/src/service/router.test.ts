@@ -18,26 +18,28 @@ import express from 'express';
 import request from 'supertest';
 import { getVoidLogger } from '@backstage/backend-common';
 import { IdentityClient } from '@backstage/plugin-auth-backend';
-import {
-  AuthorizeResult,
-  Permission,
-} from '@backstage/plugin-permission-common';
-import { PermissionPolicy } from '@backstage/plugin-permission-node';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { ApplyConditionsResponse } from '@backstage/plugin-permission-node';
+import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
 import { createRouter } from './router';
 
-const policy: PermissionPolicy = {
+const mockApplyConditions: jest.MockedFunction<
+  InstanceType<typeof PermissionIntegrationClient>['applyConditions']
+> = jest.fn();
+jest.mock('./PermissionIntegrationClient', () => ({
+  PermissionIntegrationClient: jest.fn(() => ({
+    applyConditions: mockApplyConditions,
+  })),
+}));
+
+const policy = {
   handle: jest.fn().mockImplementation((_req, identity) => {
     if (identity) {
       return { result: AuthorizeResult.ALLOW };
     }
     return { result: AuthorizeResult.DENY };
   }),
-};
-
-const permission: Permission = {
-  name: 'test.permission',
-  attributes: { action: 'read' },
 };
 
 describe('createRouter', () => {
@@ -81,12 +83,47 @@ describe('createRouter', () => {
     it('calls the permission policy', async () => {
       const response = await request(app)
         .post('/authorize')
-        .send([{ id: 123, permission }]);
+        .send([
+          {
+            id: '123',
+            permission: {
+              name: 'test.permission1',
+              attributes: {},
+            },
+          },
+          {
+            id: '234',
+            permission: {
+              name: 'test.permission2',
+              attributes: {},
+            },
+          },
+        ]);
 
       expect(response.status).toEqual(200);
-      expect(policy.handle).toHaveBeenCalledWith({ permission }, undefined);
+
+      expect(policy.handle).toHaveBeenCalledWith(
+        {
+          permission: {
+            name: 'test.permission1',
+            attributes: {},
+          },
+        },
+        undefined,
+      );
+      expect(policy.handle).toHaveBeenCalledWith(
+        {
+          permission: {
+            name: 'test.permission2',
+            attributes: {},
+          },
+        },
+        undefined,
+      );
+
       expect(response.body).toEqual([
-        { id: 123, result: AuthorizeResult.DENY },
+        { id: '123', result: AuthorizeResult.DENY },
+        { id: '234', result: AuthorizeResult.DENY },
       ]);
     });
 
@@ -95,16 +132,167 @@ describe('createRouter', () => {
       const response = await request(app)
         .post('/authorize')
         .auth(token, { type: 'bearer' })
-        .send([{ id: 123, permission }]);
+        .send([
+          {
+            id: '123',
+            permission: {
+              name: 'test.permission',
+              attributes: {},
+            },
+          },
+        ]);
 
       expect(response.status).toEqual(200);
       expect(policy.handle).toHaveBeenCalledWith(
-        { permission },
+        {
+          permission: {
+            name: 'test.permission',
+            attributes: {},
+          },
+        },
         { id: 'test-user', token: 'test-token' },
       );
       expect(response.body).toEqual([
-        { id: 123, result: AuthorizeResult.ALLOW },
+        { id: '123', result: AuthorizeResult.ALLOW },
       ]);
+    });
+
+    describe('conditional policy result', () => {
+      beforeEach(() => {
+        policy.handle.mockReturnValueOnce({
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            pluginId: 'test-plugin',
+            resourceType: 'test-resource-1',
+            conditions: {
+              anyOf: [{ rule: 'test-rule', params: ['abc'] }],
+            },
+          },
+        });
+      });
+
+      it('returns conditions if no resourceRef is supplied', async () => {
+        const response = await request(app)
+          .post('/authorize')
+          .send([
+            {
+              id: '123',
+              permission: {
+                name: 'test.permission',
+                resourceType: 'test-resource-1',
+                attributes: {},
+              },
+            },
+          ]);
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual([
+          {
+            id: '123',
+            result: AuthorizeResult.CONDITIONAL,
+            conditions: { anyOf: [{ rule: 'test-rule', params: ['abc'] }] },
+          },
+        ]);
+      });
+
+      it.each<ApplyConditionsResponse['result']>([
+        AuthorizeResult.ALLOW,
+        AuthorizeResult.DENY,
+      ])(
+        'applies conditions and returns %s if resourceRef is supplied',
+        async result => {
+          mockApplyConditions.mockResolvedValueOnce({
+            result,
+          });
+
+          const response = await request(app)
+            .post('/authorize')
+            .auth('test-token', { type: 'bearer' })
+            .send([
+              {
+                id: '123',
+                resourceRef: 'test/resource',
+                permission: {
+                  name: 'test.permission',
+                  resourceType: 'test-resource-1',
+                  attributes: {},
+                },
+              },
+            ]);
+
+          expect(mockApplyConditions).toHaveBeenCalledWith(
+            {
+              pluginId: 'test-plugin',
+              resourceType: 'test-resource-1',
+              resourceRef: 'test/resource',
+              conditions: { anyOf: [{ rule: 'test-rule', params: ['abc'] }] },
+            },
+            'Bearer test-token',
+          );
+
+          expect(response.status).toEqual(200);
+          expect(response.body).toEqual([
+            {
+              id: '123',
+              result,
+            },
+          ]);
+        },
+      );
+    });
+
+    it.each([
+      undefined,
+      '',
+      {},
+      [{ permission: { name: 'test.permission', attributes: {} } }],
+      [{ id: '123' }],
+      [{ id: '123', permission: { name: 'test.permission' } }],
+      [{ id: '123', permission: { attributes: { invalid: 'attribute' } } }],
+    ])('returns a 500 error for invalid request %#', async requestBody => {
+      const response = await request(app).post('/authorize').send(requestBody);
+
+      expect(response.status).toEqual(500);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          error: expect.objectContaining({
+            message: expect.stringMatching(/invalid/i),
+          }),
+        }),
+      );
+    });
+
+    it('returns a 500 error if the policy returns a different resourceType', async () => {
+      policy.handle.mockReturnValueOnce({
+        result: AuthorizeResult.CONDITIONAL,
+        conditions: {
+          pluginId: 'test-plugin',
+          resourceType: 'test-resource-2',
+          conditions: {},
+        },
+      });
+
+      const response = await request(app)
+        .post('/authorize')
+        .send([
+          {
+            id: '123',
+            permission: {
+              name: 'test.permission',
+              resourceType: 'test-resource-1',
+              attributes: {},
+            },
+          },
+        ]);
+
+      expect(response.status).toEqual(500);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          error: expect.objectContaining({
+            message: expect.stringMatching(/invalid resource conditions/i),
+          }),
+        }),
+      );
     });
   });
 });
