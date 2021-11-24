@@ -6,8 +6,10 @@
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionsV1beta1Ingress } from '@kubernetes/client-node';
 import { V1ConfigMap } from '@kubernetes/client-node';
+import { V1CronJob } from '@kubernetes/client-node';
 import { V1Deployment } from '@kubernetes/client-node';
 import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import { V1Job } from '@kubernetes/client-node';
 import { V1Pod } from '@kubernetes/client-node';
 import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
@@ -48,6 +50,16 @@ export interface ConfigMapFetchResponse {
   type: 'configmaps';
 }
 
+// Warning: (ae-missing-release-tag) "CronJobsFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CronJobsFetchResponse {
+  // (undocumented)
+  resources: Array<V1CronJob>;
+  // (undocumented)
+  type: 'cronjobs';
+}
+
 // Warning: (ae-missing-release-tag) "CustomResourceFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -78,6 +90,8 @@ export type FetchResponse =
   | DeploymentFetchResponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
+  | JobsFetchResponse
+  | CronJobsFetchResponse
   | IngressesFetchResponse
   | CustomResourceFetchResponse;
 
@@ -99,6 +113,16 @@ export interface IngressesFetchResponse {
   resources: Array<ExtensionsV1beta1Ingress>;
   // (undocumented)
   type: 'ingresses';
+}
+
+// Warning: (ae-missing-release-tag) "JobsFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface JobsFetchResponse {
+  // (undocumented)
+  resources: Array<V1Job>;
+  // (undocumented)
+  type: 'jobs';
 }
 
 // Warning: (ae-missing-release-tag) "KubernetesErrorTypes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
