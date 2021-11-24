@@ -19,7 +19,7 @@ import { JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
-import * as path from 'path';
+import path from 'path';
 
 export async function fetchContents({
   reader,
