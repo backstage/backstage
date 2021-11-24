@@ -17,7 +17,7 @@
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { DocumentCollator } from '@backstage/search-common';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import unescape from 'lodash/unescape';
 import { Logger } from 'winston';
 import pLimit from 'p-limit';
