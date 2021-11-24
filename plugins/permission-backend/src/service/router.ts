@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { z } from 'zod';
+import express, { Request, Response } from 'express';
+import Router from 'express-promise-router';
+import { Logger } from 'winston';
 import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import express, { Request, Response } from 'express';
-import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import {
   BackstageIdentity,
   IdentityClient,
@@ -33,6 +34,27 @@ import {
 } from '@backstage/plugin-permission-common';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
+
+const requestSchema: z.ZodSchema<Identified<AuthorizeRequest>[]> = z.array(
+  z.object({
+    id: z.string(),
+    resourceRef: z.string().optional(),
+    permission: z.object({
+      name: z.string(),
+      resourceType: z.string().optional(),
+      attributes: z.object({
+        action: z
+          .union([
+            z.literal('create'),
+            z.literal('read'),
+            z.literal('update'),
+            z.literal('delete'),
+          ])
+          .optional(),
+      }),
+    }),
+  }),
+);
 
 /**
  * Options required when constructing a new {@link express#Router} using
@@ -121,7 +143,7 @@ export async function createRouter(
       const token = IdentityClient.getBearerToken(req.header('authorization'));
       const user = token ? await identity.authenticate(token) : undefined;
 
-      const body: Identified<AuthorizeRequest>[] = req.body;
+      const body = requestSchema.parse(req.body);
 
       res.json(
         await Promise.all(
