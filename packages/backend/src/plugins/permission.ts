@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import { SimplePermissionPolicy } from '@backstage/plugin-permission-policy-simple';
 import { Router } from 'express';
@@ -27,5 +28,9 @@ export default async function createPlugin(
     logger,
     discovery,
     policy: new SimplePermissionPolicy(),
+    identity: new IdentityClient({
+      discovery,
+      issuer: await discovery.getExternalBaseUrl('auth'),
+    }),
   });
 }
