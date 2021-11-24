@@ -43,12 +43,15 @@ import {
   AppThemeApi,
   ConfigApi,
   featureFlagsApiRef,
+  IdentityApi,
   identityApiRef,
   BackstagePlugin,
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
 } from '@backstage/core-plugin-api';
+import { GuestUserIdentity } from '../apis/implementations/IdentityApi/GuestUserIdentity';
+import { LegacyUserIdentity } from '../apis/implementations/IdentityApi/LegacyUserIdentity';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
   childDiscoverer,
@@ -66,7 +69,7 @@ import { RoutingProvider } from '../routing/RoutingProvider';
 import { RouteTracker } from '../routing/RouteTracker';
 import { validateRoutes } from '../routing/validation';
 import { AppContextProvider } from './AppContext';
-import { AppIdentity } from './AppIdentity';
+import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
 import {
   AppComponents,
   AppConfigLoader,
@@ -189,7 +192,7 @@ export class AppManager implements BackstageApp {
   private readonly defaultApis: Iterable<AnyApiFactory>;
   private readonly bindRoutes: AppOptions['bindRoutes'];
 
-  private readonly identityApi = new AppIdentity();
+  private readonly appIdentityProxy = new AppIdentityProxy();
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
 
   constructor(options: AppOptions) {
@@ -344,14 +347,23 @@ export class AppManager implements BackstageApp {
       component: ComponentType<SignInPageProps>;
       children: ReactElement;
     }) => {
-      const [result, setResult] = useState<SignInResult>();
+      const [identityApi, setIdentityApi] = useState<IdentityApi>();
 
-      if (result) {
-        this.identityApi.setSignInResult(result);
-        return children;
+      const setLegacyResult = (result: SignInResult) => {
+        setIdentityApi(new LegacyUserIdentity(result));
+      };
+
+      if (!identityApi) {
+        return (
+          <Component
+            onResult={setLegacyResult}
+            onSignInSuccess={setIdentityApi}
+          />
+        );
       }
 
-      return <Component onResult={setResult} />;
+      this.appIdentityProxy.setTarget(identityApi);
+      return children;
     };
 
     const AppRouter = ({ children }: PropsWithChildren<{}>) => {
@@ -360,13 +372,7 @@ export class AppManager implements BackstageApp {
 
       // If the app hasn't configured a sign-in page, we just continue as guest.
       if (!SignInPageComponent) {
-        this.identityApi.setSignInResult({
-          userId: 'guest',
-          profile: {
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          },
-        });
+        this.appIdentityProxy.setTarget(new GuestUserIdentity());
 
         return (
           <RouterComponent>
@@ -430,7 +436,7 @@ export class AppManager implements BackstageApp {
     this.apiFactoryRegistry.register('static', {
       api: identityApiRef,
       deps: {},
-      factory: () => this.identityApi,
+      factory: () => this.appIdentityProxy,
     });
 
     // It's possible to replace the feature flag API, but since we must have at least
@@ -485,3 +491,56 @@ export class AppManager implements BackstageApp {
     }
   }
 }
+
+interface FooPropsV1 {
+  foo: () => undefined;
+}
+
+interface FooPropsV2 {
+  foo: () => undefined;
+  bar: () => undefined;
+}
+
+// type FooProps = {
+//   foo: () => undefined
+// } | {
+//   foo: () => undefined
+//   bar: () => undefined
+// }
+
+interface CreateDerpOptions {
+  components: {
+    Foo: (props: FooPropsV1 | FooPropsV2) => JSX.Element;
+  };
+}
+
+interface Derp {
+  getComponents(): {
+    Foo: (props: FooPropsV1) => JSX.Element;
+  };
+}
+
+function createDerp(options: CreateDerpOptions): Derp {
+  return { getComponents: () => options.components };
+}
+
+function CustomFoo(props: FooPropsV1) {
+  return <div>{props.foo()}</div>;
+}
+
+function NewCustomFoo(props: FooPropsV2) {
+  return (
+    <div>
+      {props.foo()} {props.bar()}
+    </div>
+  );
+}
+
+const derp = createDerp({
+  components: {
+    Foo: NewCustomFoo,
+  },
+});
+
+const { Foo } = derp.getComponents();
+const _foo = <Foo foo={() => undefined} />;

@@ -25,6 +25,7 @@ import {
   SubRouteRef,
   ExternalRouteRef,
   PluginOutput,
+  IdentityApi,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
 
@@ -42,6 +43,7 @@ export type BootErrorPageProps = {
  * The outcome of signing in on the sign-in page.
  *
  * @public
+ * @deprecated replaced by passing the {@link IdentityApi} to the {@link SignInPageProps.onSignInSuccess} instead.
  */
 export type SignInResult = {
   /**
@@ -70,8 +72,14 @@ export type SignInResult = {
 export type SignInPageProps = {
   /**
    * Set the sign-in result for the app. This should only be called once.
+   * @deprecated use {@link SignInPageProps.onSignInSuccess} instead.
    */
   onResult(result: SignInResult): void;
+
+  /**
+   * Set the IdentityApi on successful sign in. This should only be called once.
+   */
+  onSignInSuccess(identityApi: IdentityApi): void;
 };
 
 /**

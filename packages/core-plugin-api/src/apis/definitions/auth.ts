@@ -160,7 +160,31 @@ export type BackstageIdentityApi = {
    */
   getBackstageIdentity(
     options?: AuthRequestOptions,
-  ): Promise<BackstageIdentity | undefined>;
+  ): Promise<BackstageIdentityResponse | undefined>;
+};
+
+/**
+ * User identity information within Backstage.
+ *
+ * @public
+ */
+export type BackstageUserIdentity = {
+  /**
+   * The type of identity that this structure represents. In the frontend app
+   * this will currently always be 'user'.
+   */
+  type: 'user';
+
+  /**
+   * The entityRef of the user in the catalog.
+   * For example User:default/sandra
+   */
+  userEntityRef: string;
+
+  /**
+   * The user and group entities that the user claims ownership through
+   */
+  ownershipEntityRefs: string[];
 };
 
 /**
@@ -168,22 +192,30 @@ export type BackstageIdentityApi = {
  *
  * @public
  */
-export type BackstageIdentity = {
+export type BackstageIdentityResponse = {
   /**
    * The backstage user ID.
+   *
+   * @deprecated The identity is now provided via the `identity` field instead.
    */
   id: string;
-
-  /**
-   * @deprecated This is deprecated, use `token` instead.
-   */
-  idToken: string;
 
   /**
    * The token used to authenticate the user within Backstage.
    */
   token: string;
+
+  /**
+   * Identity information derived from the token.
+   */
+  identity: BackstageUserIdentity;
 };
+
+/**
+ * @public
+ * @deprecated use {@link BackstageIdentityResponse} instead.
+ */
+export type BackstageIdentity = BackstageIdentityResponse;
 
 /**
  * Profile information of the user.
