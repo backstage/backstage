@@ -57,11 +57,7 @@ export type ConditionTransformer<TQuery> = (
 export const createConditionExports: <
   TResource,
   TRules extends Record<string, PermissionRule<TResource, any, unknown[]>>,
->({
-  pluginId,
-  resourceType,
-  rules,
-}: {
+>(options: {
   pluginId: string;
   resourceType: string;
   rules: TRules;

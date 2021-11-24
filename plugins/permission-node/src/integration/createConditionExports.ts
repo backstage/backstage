@@ -63,11 +63,7 @@ export type Conditions<
 export const createConditionExports = <
   TResource,
   TRules extends Record<string, PermissionRule<TResource, any>>,
->({
-  pluginId,
-  resourceType,
-  rules,
-}: {
+>(options: {
   pluginId: string;
   resourceType: string;
   rules: TRules;
@@ -78,17 +74,23 @@ export const createConditionExports = <
     resourceType: string;
     conditions: PermissionCriteria<PermissionCondition>;
   };
-} => ({
-  conditions: Object.entries(rules).reduce(
-    (acc, [key, rule]) => ({
-      ...acc,
-      [key]: createConditionFactory(rule),
+} => {
+  const { pluginId, resourceType, rules } = options;
+
+  return {
+    conditions: Object.entries(rules).reduce(
+      (acc, [key, rule]) => ({
+        ...acc,
+        [key]: createConditionFactory(rule),
+      }),
+      {} as Conditions<TRules>,
+    ),
+    createConditions: (
+      conditions: PermissionCriteria<PermissionCondition>,
+    ) => ({
+      pluginId,
+      resourceType,
+      conditions,
     }),
-    {} as Conditions<TRules>,
-  ),
-  createConditions: (conditions: PermissionCriteria<PermissionCondition>) => ({
-    pluginId,
-    resourceType,
-    conditions,
-  }),
-});
+  };
+};
