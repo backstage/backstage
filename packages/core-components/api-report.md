@@ -1994,12 +1994,9 @@ export const SidebarSubmenu: ({
 }: PropsWithChildren<SidebarSubmenuProps>) => JSX.Element;
 
 // @public
-export const SidebarSubmenuItem: ({
-  title,
-  to,
-  icon: Icon,
-  dropdownItems,
-}: SidebarSubmenuItemProps) => JSX.Element;
+export const SidebarSubmenuItem: (
+  props: SidebarSubmenuItemProps,
+) => JSX.Element;
 
 // @public
 export type SidebarSubmenuItemProps = {

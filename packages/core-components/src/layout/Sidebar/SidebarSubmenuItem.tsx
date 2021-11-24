@@ -113,12 +113,8 @@ export type SidebarSubmenuItemProps = {
  *
  * @public
  */
-export const SidebarSubmenuItem = ({
-  title,
-  to,
-  icon: Icon,
-  dropdownItems,
-}: SidebarSubmenuItemProps) => {
+export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
+  const { title, to, icon: Icon, dropdownItems } = props;
   const classes = useStyles();
   const { pathname: locationPathname } = useLocation();
   const { pathname: toPathname } = useResolvedPath(to);
