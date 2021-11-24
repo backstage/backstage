@@ -25,4 +25,5 @@ export type {
   PluginConfig,
   PluginHooks,
   PluginOutput,
+  PluginFeatureFlagConfig,
 } from './types';

@@ -19,7 +19,7 @@ import { AnyApiFactory } from '../apis/system';
 
 /**
  * Replace with using {@link RouteRef}s.
- * @deprecated
+ * @deprecated will be removed
  * @public
  */
 export type FeatureFlagOutput = {
