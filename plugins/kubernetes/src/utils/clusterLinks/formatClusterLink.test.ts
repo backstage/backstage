@@ -78,21 +78,6 @@ describe('clusterLinks', () => {
           'https://k8s.foo.com/#/service/bar/foobar?namespace=bar',
         );
       });
-      it('should return an url on the deployment properly url encoded', () => {
-        const url = formatClusterLink({
-          dashboardUrl: 'https://k8s.foo.com/',
-          object: {
-            metadata: {
-              name: 'foobar',
-              namespace: 'bar bar',
-            },
-          },
-          kind: 'Deployment',
-        });
-        expect(url).toBe(
-          'https://k8s.foo.com/#/deployment/bar%20bar/foobar?namespace=bar+bar',
-        );
-      });
     });
 
     describe('standard app', () => {
