@@ -25,6 +25,8 @@
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "clean": "backstage-cli clean",
+    "prepack": "node scripts/prepack.js",
+    "postpack": "node scripts/postpack.js",
     "start": "nodemon --"
   },
   "dependencies": {
