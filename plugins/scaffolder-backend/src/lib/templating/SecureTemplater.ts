@@ -87,68 +87,55 @@ const { render, renderCompat } = (() => {
 })();
 `;
 
-export interface SecureTemplaterRenderOptions {
+export interface SecureTemplaterOptions {
+  /* Optional implementation of the parseRepoUrl filter */
+  parseRepoUrl?(repoUrl: string): RepoSpec;
+
   /* Enables jinja compatibility and the "jsonify" filter */
   cookiecutterCompat?: boolean;
 }
 
-export interface SecureTemplaterOptions {
-  parseRepoUrl?(repoUrl: string): RepoSpec;
-}
+export type SecureTemplateRenderer = (
+  template: string,
+  values: unknown,
+) => string;
 
 export class SecureTemplater {
-  #vm?: VM;
+  static async loadRenderer(options: SecureTemplaterOptions = {}) {
+    const { parseRepoUrl, cookiecutterCompat } = options;
+    let sandbox = undefined;
 
-  #parseRepoUrl?: (repoUrl: string) => RepoSpec;
-
-  constructor(options?: SecureTemplaterOptions) {
-    this.#parseRepoUrl = options?.parseRepoUrl;
-  }
-
-  render(
-    template: string,
-    values: unknown,
-    options?: SecureTemplaterRenderOptions,
-  ): string {
-    if (!this.#vm) {
-      throw new Error('SecureTemplater has not been initialized');
-    }
-    this.#vm.setGlobal('templateStr', template);
-    this.#vm.setGlobal('templateValues', JSON.stringify(values));
-
-    if (options?.cookiecutterCompat) {
-      return this.#vm.run(`renderCompat(templateStr, templateValues)`);
+    if (parseRepoUrl) {
+      sandbox = {
+        parseRepoUrl: (url: string) => JSON.stringify(parseRepoUrl(url)),
+      };
     }
 
-    return this.#vm.run(`render(templateStr, templateValues)`);
-  }
+    const vm = new VM({ timeout: 1000, sandbox });
 
-  async initializeIfNeeded() {
-    if (!this.#vm) {
-      let sandbox = undefined;
+    const nunjucksSource = await fs.readFile(
+      resolvePackagePath(
+        '@backstage/plugin-scaffolder-backend',
+        'assets/nunjucks.js.txt',
+      ),
+      'utf-8',
+    );
 
-      if (this.#parseRepoUrl) {
-        const parseRepoUrl = this.#parseRepoUrl;
-        sandbox = {
-          parseRepoUrl: (url: string) => JSON.stringify(parseRepoUrl(url)),
-        };
+    vm.run(mkScript(nunjucksSource));
+
+    const render: SecureTemplateRenderer = (template, values) => {
+      if (!vm) {
+        throw new Error('SecureTemplater has not been initialized');
+      }
+      vm.setGlobal('templateStr', template);
+      vm.setGlobal('templateValues', JSON.stringify(values));
+
+      if (cookiecutterCompat) {
+        return vm.run(`renderCompat(templateStr, templateValues)`);
       }
 
-      // Note that helpers in the sandbox can be rewritten with a script injection.
-      // In order to mitigate that each helper must be assigned to a constant variable
-      // inside the closure that houses the nunjucks implementation.
-      this.#vm = new VM({ timeout: 1000, sandbox });
-
-      const nunjucksSource = await fs.readFile(
-        resolvePackagePath(
-          '@backstage/plugin-scaffolder-backend',
-          'assets/nunjucks.js.txt',
-        ),
-        'utf-8',
-      );
-
-      this.#vm.run(mkScript(nunjucksSource));
-    }
-    return this.#vm;
+      return vm.run(`render(templateStr, templateValues)`);
+    };
+    return render;
   }
 }

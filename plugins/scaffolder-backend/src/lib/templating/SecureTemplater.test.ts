@@ -18,24 +18,21 @@ import { SecureTemplater } from './SecureTemplater';
 
 describe('SecureTemplater', () => {
   it('should render some templates', async () => {
-    const templater = new SecureTemplater();
-    await templater.initializeIfNeeded();
-    expect(templater.render('${{ test }}', { test: 'my-value' })).toBe(
-      'my-value',
-    );
+    const render = await SecureTemplater.loadRenderer();
+    expect(render('${{ test }}', { test: 'my-value' })).toBe('my-value');
 
-    expect(templater.render('${{ test | dump }}', { test: 'my-value' })).toBe(
+    expect(render('${{ test | dump }}', { test: 'my-value' })).toBe(
       '"my-value"',
     );
 
     expect(
-      templater.render('${{ test | replace("my-", "our-") }}', {
+      render('${{ test | replace("my-", "our-") }}', {
         test: 'my-value',
       }),
     ).toBe('our-value');
 
     expect(() =>
-      templater.render('${{ invalid...syntax }}', {
+      render('${{ invalid...syntax }}', {
         test: 'my-value',
       }),
     ).toThrow(
@@ -44,34 +41,28 @@ describe('SecureTemplater', () => {
   });
 
   it('should make cookiecutter compatibility available when requested', async () => {
-    const templater = new SecureTemplater();
-    await templater.initializeIfNeeded();
+    const renderWith = await SecureTemplater.loadRenderer({
+      cookiecutterCompat: true,
+    });
+    const renderWithout = await SecureTemplater.loadRenderer();
 
     // Same two tests repeated to make sure switching back and forth works
-    expect(
-      templater.render('{{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
-    ).toBe('1');
-    expect(
-      templater.render('{{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
-    ).toBe('1');
-    expect(() => templater.render('${{ 1 | jsonify }}', {})).toThrow(
+    expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
+    expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
+    expect(() => renderWithout('${{ 1 | jsonify }}', {})).toThrow(
       '(unknown path)\n  Error: filter not found: jsonify',
     );
-    expect(
-      templater.render('{{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
-    ).toBe('1');
-    expect(() => templater.render('${{ 1 | jsonify }}', {})).toThrow(
+    expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
+    expect(() => renderWithout('${{ 1 | jsonify }}', {})).toThrow(
       '(unknown path)\n  Error: filter not found: jsonify',
     );
-    expect(() => templater.render('${{ 1 | jsonify }}', {})).toThrow(
+    expect(() => renderWithout('${{ 1 | jsonify }}', {})).toThrow(
       '(unknown path)\n  Error: filter not found: jsonify',
     );
-    expect(() => templater.render('${{ 1 | jsonify }}', {})).toThrow(
+    expect(() => renderWithout('${{ 1 | jsonify }}', {})).toThrow(
       '(unknown path)\n  Error: filter not found: jsonify',
     );
-    expect(
-      templater.render('{{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
-    ).toBe('1');
+    expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
   });
 
   it('should make parseRepoUrl available when requested', async () => {
@@ -80,33 +71,29 @@ describe('SecureTemplater', () => {
       owner: 'my-owner',
       host: 'my-host.com',
     }));
-    const templaterWith = new SecureTemplater({ parseRepoUrl });
-    await templaterWith.initializeIfNeeded();
-    const templaterWithout = new SecureTemplater();
-    await templaterWithout.initializeIfNeeded();
+    const renderWith = await SecureTemplater.loadRenderer({ parseRepoUrl });
+    const renderWithout = await SecureTemplater.loadRenderer();
 
     const ctx = {
       repoUrl: 'https://my-host.com/my-owner/my-repo',
     };
 
-    expect(
-      templaterWith.render('${{ repoUrl | parseRepoUrl | dump }}', ctx),
-    ).toBe(
+    expect(renderWith('${{ repoUrl | parseRepoUrl | dump }}', ctx)).toBe(
       JSON.stringify({
         repo: 'my-repo',
         owner: 'my-owner',
         host: 'my-host.com',
       }),
     );
-    expect(templaterWith.render('${{ repoUrl | projectSlug }}', ctx)).toBe(
+    expect(renderWith('${{ repoUrl | projectSlug }}', ctx)).toBe(
       'my-owner/my-repo',
     );
     expect(() =>
-      templaterWithout.render('${{ repoUrl | parseRepoUrl | dump }}', ctx),
+      renderWithout('${{ repoUrl | parseRepoUrl | dump }}', ctx),
     ).toThrow('(unknown path)\n  Error: filter not found: parseRepoUrl');
-    expect(() =>
-      templaterWithout.render('${{ repoUrl | projectSlug }}', ctx),
-    ).toThrow('(unknown path)\n  Error: filter not found: projectSlug');
+    expect(() => renderWithout('${{ repoUrl | projectSlug }}', ctx)).toThrow(
+      '(unknown path)\n  Error: filter not found: projectSlug',
+    );
 
     expect(parseRepoUrl.mock.calls).toEqual([
       ['https://my-host.com/my-owner/my-repo'],
@@ -115,31 +102,48 @@ describe('SecureTemplater', () => {
   });
 
   it('should not allow helpers to be rewritten', async () => {
-    const templater = new SecureTemplater({
+    const render = await SecureTemplater.loadRenderer({
       parseRepoUrl: () => ({
         repo: 'my-repo',
         owner: 'my-owner',
         host: 'my-host.com',
       }),
     });
-    await templater.initializeIfNeeded();
 
     const ctx = {
       repoUrl: 'https://my-host.com/my-owner/my-repo',
     };
     expect(
-      templater.render(
+      render(
         '${{ ({}).constructor.constructor("parseRepoUrl = () => JSON.stringify(`inject`)")() }}',
         ctx,
       ),
     ).toBe('');
 
-    expect(templater.render('${{ repoUrl | parseRepoUrl | dump }}', ctx)).toBe(
+    expect(render('${{ repoUrl | parseRepoUrl | dump }}', ctx)).toBe(
       JSON.stringify({
         repo: 'my-repo',
         owner: 'my-owner',
         host: 'my-host.com',
       }),
+    );
+  });
+
+  it('allows pollution during a single template execution', async () => {
+    const render = await SecureTemplater.loadRenderer();
+
+    const ctx = {
+      x: 'foo',
+    };
+    expect(render('${{ x }}', ctx)).toBe('foo');
+    expect(
+      render(
+        '${{ ({}).constructor.constructor("Array.prototype.forEach = () => {}")() }}',
+        ctx,
+      ),
+    ).toBe('');
+    expect(() => render('${{ x }}', ctx)).toThrow(
+      `TypeError: Cannot read property 'length' of undefined`,
     );
   });
 });

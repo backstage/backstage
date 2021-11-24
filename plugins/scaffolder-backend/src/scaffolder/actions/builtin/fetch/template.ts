@@ -47,8 +47,6 @@ export function createFetchTemplateAction(options: {
 }) {
   const { reader, integrations } = options;
 
-  const templater = new SecureTemplater();
-
   return createTemplateAction<FetchTemplateInput>({
     id: 'fetch:template',
     description:
@@ -101,8 +99,6 @@ export function createFetchTemplateAction(options: {
     },
     async handler(ctx) {
       ctx.logger.info('Fetching template content from remote URL');
-
-      await templater.initializeIfNeeded();
 
       const workDir = await ctx.createTemporaryDirectory();
       const templateDir = resolvePath(workDir, 'template');
@@ -184,6 +180,10 @@ export function createFetchTemplateAction(options: {
         ctx.input.values,
       );
 
+      const renderTemplate = await SecureTemplater.loadRenderer({
+        cookiecutterCompat: ctx.input.cookiecutterCompat,
+      });
+
       for (const location of allEntriesInTemplate) {
         let renderFilename: boolean;
         let renderContents: boolean;
@@ -199,9 +199,7 @@ export function createFetchTemplateAction(options: {
           renderFilename = renderContents = !nonTemplatedEntries.has(location);
         }
         if (renderFilename) {
-          localOutputPath = templater.render(localOutputPath, context, {
-            cookiecutterCompat: ctx.input.cookiecutterCompat,
-          });
+          localOutputPath = renderTemplate(localOutputPath, context);
         }
         const outputPath = resolvePath(outputDir, localOutputPath);
         // variables have been expanded to make an empty file name
@@ -238,9 +236,7 @@ export function createFetchTemplateAction(options: {
             await fs.outputFile(
               outputPath,
               renderContents
-                ? templater.render(inputFileContents, context, {
-                    cookiecutterCompat: ctx.input.cookiecutterCompat,
-                  })
+                ? renderTemplate(inputFileContents, context)
                 : inputFileContents,
               { mode: statsObj.mode },
             );
