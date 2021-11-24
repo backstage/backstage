@@ -38,7 +38,7 @@
     "@backstage/integration": "^0.6.9",
     "@backstage/plugin-auth-backend": "^0.4.4",
     "@backstage/plugin-permission-common": "^0.1.0",
-    "@backstage/plugin-permission-node": "^0.1.0",
+    "@backstage/plugin-permission-node": "^0.0.0",
     "@backstage/search-common": "^0.2.1",
     "@backstage/types": "^0.1.1",
     "@octokit/graphql": "^4.5.8",
