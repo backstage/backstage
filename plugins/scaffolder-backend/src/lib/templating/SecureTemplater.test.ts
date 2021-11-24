@@ -113,4 +113,33 @@ describe('SecureTemplater', () => {
       ['https://my-host.com/my-owner/my-repo'],
     ]);
   });
+
+  it('should not allow helpers to be rewritten', async () => {
+    const templater = new SecureTemplater({
+      parseRepoUrl: () => ({
+        repo: 'my-repo',
+        owner: 'my-owner',
+        host: 'my-host.com',
+      }),
+    });
+    await templater.initializeIfNeeded();
+
+    const ctx = {
+      repoUrl: 'https://my-host.com/my-owner/my-repo',
+    };
+    expect(
+      templater.render(
+        '${{ ({}).constructor.constructor("parseRepoUrl = () => JSON.stringify(`inject`)")() }}',
+        ctx,
+      ),
+    ).toBe('');
+
+    expect(templater.render('${{ repoUrl | parseRepoUrl | dump }}', ctx)).toBe(
+      JSON.stringify({
+        repo: 'my-repo',
+        owner: 'my-owner',
+        host: 'my-host.com',
+      }),
+    );
+  });
 });

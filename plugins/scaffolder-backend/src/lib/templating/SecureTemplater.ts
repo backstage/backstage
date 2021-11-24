@@ -45,11 +45,13 @@ const { render, renderCompat } = (() => {
   compatEnv.addFilter('jsonify', compatEnv.getFilter('dump'));
 
   if (typeof parseRepoUrl !== 'undefined') {
+    const safeHelperRef = parseRepoUrl;
+
     env.addFilter('parseRepoUrl', repoUrl => {
-      return JSON.parse(parseRepoUrl(repoUrl))
+      return JSON.parse(safeHelperRef(repoUrl))
     });
     env.addFilter('projectSlug', repoUrl => {
-      const { owner, repo } = JSON.parse(parseRepoUrl(repoUrl));
+      const { owner, repo } = JSON.parse(safeHelperRef(repoUrl));
       return owner + '/' + repo;
     });
   }
@@ -132,6 +134,9 @@ export class SecureTemplater {
         };
       }
 
+      // Note that helpers in the sandbox can be rewritten with a script injection.
+      // In order to mitigate that each helper must be assigned to a constant variable
+      // inside the closure that houses the nunjucks implementation.
       this.#vm = new VM({ timeout: 1000, sandbox });
 
       const nunjucksSource = await fs.readFile(
