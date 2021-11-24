@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ConfigApi,
-  DiscoveryApi,
-  IdentityApi,
-} from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { PermissionApi } from './PermissionApi';
 import {
   AuthorizeRequest,
@@ -27,23 +23,15 @@ import {
 } from '@backstage/plugin-permission-common';
 
 /**
- * The default implementation of the PermissionApi, which simply initializes a {@link PermissionClient} and calls its
- * authorize method.
+ * The default implementation of the PermissionApi, which simply calls the authorize method of the given
+ * {@link @backstage/plugin-permission-common#PermissionClient}.
  * @public
  */
 export class IdentityPermissionApi implements PermissionApi {
-  private readonly permissionClient: PermissionClient;
-
   constructor(
-    discoveryApi: DiscoveryApi,
+    private readonly permissionClient: PermissionClient,
     private readonly identityApi: IdentityApi,
-    configApi: ConfigApi,
-  ) {
-    this.permissionClient = new PermissionClient({
-      discoveryApi,
-      configApi,
-    });
-  }
+  ) {}
 
   async authorize(
     requests: Array<AuthorizeRequest>,

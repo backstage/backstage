@@ -70,4 +70,18 @@ describe('PermissionedRoute', () => {
       ),
     ).rejects.toThrowError('Reached NotFound Page');
   });
+
+  it('Renders custom error page if not authorized', async () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: false });
+
+    const { getByText } = await renderInTestApp(
+      <PermissionedRoute
+        permission={permission}
+        element={<div>content</div>}
+        errorComponent={<h1>Custom Error</h1>}
+      />,
+    );
+
+    expect(getByText('Custom Error')).toBeTruthy();
+  });
 });
