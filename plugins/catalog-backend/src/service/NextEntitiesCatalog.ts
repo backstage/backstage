@@ -91,7 +91,7 @@ function addCondition(
       if (filter.values) {
         if (filter.values.length === 1) {
           this.where({ value: filter.values[0].toLowerCase() });
-        } else if (filter.values.length > 1) {
+        } else {
           this.andWhere(
             'value',
             'in',
