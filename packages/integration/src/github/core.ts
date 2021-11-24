@@ -73,8 +73,8 @@ export function getGitHubFileFetchUrl(
 export function getGitHubRequestOptions(
   config: GitHubIntegrationConfig,
   credentials: GithubCredentials,
-): RequestInit {
-  const headers: HeadersInit = {};
+): { headers: Record<string, string> } {
+  const headers: Record<string, string> = {};
 
   if (chooseEndpoint(config, credentials) === 'api') {
     headers.Accept = 'application/vnd.github.v3.raw';

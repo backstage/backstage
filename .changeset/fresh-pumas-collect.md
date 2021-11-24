@@ -3,6 +3,7 @@
 '@backstage/plugin-auth-backend': patch
 '@backstage/plugin-badges-backend': patch
 '@backstage/plugin-bitrise': patch
+'@backstage/plugin-catalog-backend': patch
 '@backstage/plugin-catalog-backend-module-msgraph': patch
 '@backstage/plugin-code-coverage-backend': patch
 '@backstage/plugin-fossa': patch
