@@ -19,6 +19,7 @@ import {
   LocationSpec,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
   CatalogProcessingOrchestrator,
@@ -69,13 +70,18 @@ export class DefaultLocationService implements LocationService {
       });
 
       if (processed.ok) {
-        const { metadata, kind } = processed.completedEntity;
         if (
           entities.some(
-            e => e.metadata.name === metadata.name && e.kind === kind,
+            e =>
+              stringifyEntityRef(e) ===
+              stringifyEntityRef(processed.completedEntity),
           )
         ) {
-          throw new Error(`Duplicate nested entity: ${metadata.name}`);
+          throw new Error(
+            `Duplicate nested entity: ${stringifyEntityRef(
+              processed.completedEntity,
+            )}`,
+          );
         }
         unprocessedEntities.push(...processed.deferredEntities);
         entities.push(processed.completedEntity);
