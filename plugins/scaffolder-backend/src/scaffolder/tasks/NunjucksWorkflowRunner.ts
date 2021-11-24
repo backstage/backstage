@@ -148,7 +148,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               return JSON.parse(templated);
             }
           } catch (ex) {
-            console.error(
+            this.options.logger.error(
               `Failed to parse template string: ${value} with error ${ex.message}`,
             );
           }

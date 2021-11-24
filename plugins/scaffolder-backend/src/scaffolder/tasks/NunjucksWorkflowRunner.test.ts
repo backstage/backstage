@@ -270,6 +270,31 @@ describe('DefaultWorkflowRunner', () => {
       );
     });
 
+    it('should not try and parse something that is not parsable', async () => {
+      jest.spyOn(logger, 'error');
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-mock-action',
+            input: {
+              foo: 'bob',
+            },
+          },
+        ],
+        output: {},
+        parameters: {
+          input: 'BACKSTAGE',
+        },
+      });
+
+      await runner.execute(task);
+
+      expect(logger.error).not.toHaveBeenCalled();
+    });
+
     it('should keep the original types for the input and not parse things that arent meant to be parsed', async () => {
       const task = createMockTaskWithSpec({
         apiVersion: 'scaffolder.backstage.io/v1beta3',
