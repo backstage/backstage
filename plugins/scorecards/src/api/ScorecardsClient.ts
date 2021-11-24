@@ -28,7 +28,6 @@ import {
 
 export type Options = {
   discoveryApi: DiscoveryApi;
-  proxyPath?: string;
 };
 
 export class ScorecardsClient implements ScorecardsApi {
