@@ -67,7 +67,7 @@ production build.
 
 ## Configuration Files
 
-It is possible to have multiple configuration files (bundled and/or remote),
+It is possible to have multiple configuration files (bundled and/or remote\*),
 both to support different environments, but also to define configuration that is
 local to specific packages. The configuration files to load are selected using a
 `--config <local-path|url>` flag, and it is possible to load any number of
@@ -75,7 +75,25 @@ files. Paths are relative to the working directory of the executed process, for
 example `package/backend`. This means that to select a config file in the repo
 root when running the backend, you would use `--config ../../my-config.yaml`,
 and for config file on a config server you would use
-`--config https://some.domain.io/app-config.yaml`
+`--config https://some.domain.io/app-config.yaml`<br/>
+
+**\*Note**: In order to use remote urls, ensure that the option 'remote' is
+passed in `loadBackendConfig(...)` call (See below) inside
+`packages/backend/src/index.ts`, with the option of
+reloadIntervalSeconds(required) as given below. This will allow the usage of
+remote configs and also, will ensure that this config is checked for any changes
+every 12 hours. (This can be any desired value in seconds, here 60 _ 60 _ 12 =
+12 hours!):
+
+```ts
+const config = await loadBackendConfig({
+  argv: process.argv,
+  logger,
+  remote: {
+    reloadIntervalSeconds: 60 * 60 * 12, // Check remote config changes every 12 hours. Change to your desired interval in seconds
+  },
+});
+```
 
 If no `config` flags are specified, the default behavior is to load
 `app-config.yaml` and, if it exists, `app-config.local.yaml` from the repo root.

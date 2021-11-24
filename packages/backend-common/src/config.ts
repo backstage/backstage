@@ -23,6 +23,7 @@ import {
   loadConfig,
   ConfigSchema,
   ConfigTarget,
+  LoadConfigOptionsRemote,
 } from '@backstage/config-loader';
 import { AppConfig, Config, ConfigReader } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
@@ -178,6 +179,7 @@ let currentCancelFunc: () => void;
 export async function loadBackendConfig(options: {
   logger: Logger;
   // process.argv or any other overrides
+  remote?: LoadConfigOptionsRemote;
   argv: string[];
 }): Promise<Config> {
   const args = parseArgs(options.argv);
@@ -204,6 +206,7 @@ export async function loadBackendConfig(options: {
     configRoot: paths.targetRoot,
     configPaths: [],
     configTargets: configTargets,
+    remote: options.remote,
     watch: {
       onChange(newConfigs) {
         options.logger.info(

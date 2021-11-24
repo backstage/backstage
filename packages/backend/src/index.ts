@@ -86,7 +86,11 @@ async function main() {
   const config = await loadBackendConfig({
     argv: process.argv,
     logger,
+    remote: {
+      reloadIntervalSeconds: 60 * 60 * 12, // Check remote config changes every 12 hours. Change to your desired interval in seconds
+    },
   });
+
   const createEnv = makeCreateEnv(config);
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
