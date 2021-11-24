@@ -301,12 +301,6 @@ export type DismissbleBannerClassKey = DismissableBannerClassKey;
 // @public (undocumented)
 export function DocsIcon(props: IconComponentProps): JSX.Element;
 
-// @public
-export type DropDownItem = {
-  title: string;
-  to: string;
-};
-
 // @public (undocumented)
 export function EmailIcon(props: IconComponentProps): JSX.Element;
 
@@ -1988,6 +1982,12 @@ export const SidebarSpacer: React_2.ComponentType<
 >;
 
 // @public
+export type SidebarSubItemDropDownItem = {
+  title: string;
+  to: string;
+};
+
+// @public
 export const SidebarSubmenu: ({
   title,
   children,
@@ -2006,7 +2006,7 @@ export type SidebarSubmenuItemProps = {
   title: string;
   to: string;
   icon: IconComponent;
-  dropdownItems?: DropDownItem[];
+  dropdownItems?: SidebarSubItemDropDownItem[];
 };
 
 // @public
