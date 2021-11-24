@@ -6,6 +6,7 @@ metadata:
       backstage.io/techdocs-ref: url:https://github.com/jsqcloud/backstage/tree/master
       github.com/project-slug: jsqcloud/backstage
       backstage.io/code-coverage: enabled
+      sentry.io/project-slug: au-digital-hub
   name: artist-lookup
   description: Artist Lookup
   tags:
