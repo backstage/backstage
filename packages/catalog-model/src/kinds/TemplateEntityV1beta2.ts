@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
-import type { Entity, EntityMeta } from '../entity/Entity';
+import { JsonObject } from '@backstage/types';
+import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Template.v1beta2.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
+/**
+ * Backstage catalog Template kind Entity. Templates are used by the Scaffolder plugin to create new Components.
+ *
+ * @public
+ */
 export interface TemplateEntityV1beta2 extends Entity {
   apiVersion: 'backstage.io/v1beta2';
   kind: 'Template';
-  metadata: EntityMeta & {
-    title?: string;
-  };
   spec: {
     type: string;
     parameters?: JsonObject | JsonObject[];
@@ -40,6 +42,10 @@ export interface TemplateEntityV1beta2 extends Entity {
   };
 }
 
-export const templateEntityV1beta2Validator = ajvCompiledJsonSchemaValidator(
-  schema,
-);
+/**
+ * {@link KindValidator} for {@link TemplateEntityV1beta2}.
+ *
+ * @public
+ */
+export const templateEntityV1beta2Validator =
+  ajvCompiledJsonSchemaValidator(schema);

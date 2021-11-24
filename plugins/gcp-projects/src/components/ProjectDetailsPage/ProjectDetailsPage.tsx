@@ -40,7 +40,8 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { rootRouteRef } from '../../routes';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -59,7 +60,11 @@ const DetailsPage = () => {
   const api = useApi(gcpApiRef);
   const classes = useStyles();
 
-  const { loading, error, value: details } = useAsync(
+  const {
+    loading,
+    error,
+    value: details,
+  } = useAsync(
     async () =>
       api.getProject(
         decodeURIComponent(location.search.split('projectId=')[1]),
@@ -76,6 +81,8 @@ const DetailsPage = () => {
       </WarningPanel>
     );
   }
+
+  const cloud_home_url = 'https://console.cloud.google.com';
 
   return (
     <Table component={Paper} className={classes.table}>
@@ -123,12 +130,24 @@ const DetailsPage = () => {
               >
                 {details?.name && (
                   <Button>
-                    <a href={details.name}>GCP</a>
+                    <a
+                      href={`${cloud_home_url}/home/dashboard?project=${details.name}&supportedpurview=project`}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      GCP
+                    </a>
                   </Button>
                 )}
                 {details?.name && (
                   <Button>
-                    <a href={details.name}>Logs</a>
+                    <a
+                      href={`${cloud_home_url}/logs/query?project=${details.name}&supportedpurview=project`}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      Logs
+                    </a>
                   </Button>
                 )}
               </ButtonGroup>
@@ -147,16 +166,20 @@ const labels = (
   </>
 );
 
-export const ProjectDetailsPage = () => (
-  <Page themeId="service">
-    <Header title="GCP Project Details" type="other">
-      {labels}
-    </Header>
-    <Content>
-      <ContentHeader title="">
-        <SupportButton>Support Button</SupportButton>
-      </ContentHeader>
-      <DetailsPage />
-    </Content>
-  </Page>
-);
+export const ProjectDetailsPage = () => {
+  const docsRootLink = useRouteRef(rootRouteRef)();
+
+  return (
+    <Page themeId="service">
+      <Header title="GCP Project Details" type="GCP" typeLink={docsRootLink}>
+        {labels}
+      </Header>
+      <Content>
+        <ContentHeader title="">
+          <SupportButton>Support Button</SupportButton>
+        </ContentHeader>
+        <DetailsPage />
+      </Content>
+    </Page>
+  );
+};

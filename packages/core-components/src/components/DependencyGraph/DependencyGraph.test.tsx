@@ -49,6 +49,28 @@ describe('<DependencyGraph />', () => {
     expect(queryAllByTestId(LABEL_TEST_ID)).toHaveLength(0);
   });
 
+  it('update render if already referenced nodes are added later', async () => {
+    const { getByText, queryAllByTestId, findAllByTestId, rerender } = render(
+      <DependencyGraph nodes={nodes.slice(0, 2)} edges={edges} />,
+    );
+
+    let renderedNodes = await findAllByTestId(NODE_TEST_ID);
+    expect(renderedNodes).toHaveLength(2);
+    expect(getByText(nodes[0].id)).toBeInTheDocument();
+    expect(getByText(nodes[1].id)).toBeInTheDocument();
+    expect(queryAllByTestId(EDGE_TEST_ID)).toHaveLength(2);
+    expect(queryAllByTestId(LABEL_TEST_ID)).toHaveLength(0);
+
+    rerender(<DependencyGraph nodes={nodes} edges={edges} />);
+
+    renderedNodes = await findAllByTestId(NODE_TEST_ID);
+    expect(renderedNodes).toHaveLength(3);
+    expect(getByText(nodes[0].id)).toBeInTheDocument();
+    expect(getByText(nodes[1].id)).toBeInTheDocument();
+    expect(queryAllByTestId(EDGE_TEST_ID)).toHaveLength(2);
+    expect(queryAllByTestId(LABEL_TEST_ID)).toHaveLength(0);
+  });
+
   it('renders edge labels if present', async () => {
     const labeledEdges = [
       { ...edges[0], label: 'first' },

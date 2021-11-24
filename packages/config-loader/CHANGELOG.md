@@ -1,5 +1,105 @@
 # @backstage/config-loader
 
+## 0.8.0
+
+### Minor Changes
+
+- 1e99c73c75: Update `loadConfig` to return `LoadConfigResult` instead of an array of `AppConfig`.
+
+  This function is primarily used internally by other config loaders like `loadBackendConfig` which means no changes are required for most users.
+
+  If you use `loadConfig` directly you will need to update your usage from:
+
+  ```diff
+  - const appConfigs = await loadConfig(options)
+  + const { appConfigs } = await loadConfig(options)
+  ```
+
+### Patch Changes
+
+- 8809b6c0dd: Update the json-schema dependency version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.6
+
+## 0.7.2
+
+### Patch Changes
+
+- 0611f3b3e2: Reading app config from a remote server
+- 26c5659c97: Bump msw to the same version as the rest
+
+## 0.7.1
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- ea21f7f567: bump `typescript-json-schema` from 0.50.1 to 0.51.0
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/cli-common@0.1.5
+  - @backstage/errors@0.1.4
+
+## 0.7.0
+
+### Minor Changes
+
+- 7e97d0b8c1: Removed the `EnvFunc` public export. Its only usage was to be passed in to `LoadConfigOptions.experimentalEnvFunc`. If you were using this type, add a definition in your own project instead with the signature `(name: string) => Promise<string | undefined>`.
+
+### Patch Changes
+
+- 223e8de6b4: Configuration schema errors are now filtered using the provided visibility option. This means that schema errors due to missing backend configuration will no longer break frontend builds.
+- 7e97d0b8c1: Add public tags and documentation
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/errors@0.1.3
+
+## 0.6.10
+
+### Patch Changes
+
+- 957e4b3351: Updated dependencies
+- Updated dependencies
+  - @backstage/cli-common@0.1.4
+
+## 0.6.9
+
+### Patch Changes
+
+- ee7a1a4b64: Add option to collect configuration schemas from explicit package paths in addition to by package name.
+- e68bd978e2: Allow collection of configuration schemas from multiple versions of the same package.
+
+## 0.6.8
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+  - @backstage/config@0.1.9
+
+## 0.6.7
+
+### Patch Changes
+
+- 0ade9d02b: Include `devDependencies` and `optionalDependencies` in the detection of Backstage packages when collecting configuration schema.
+- 9b8cec063: Add support for config file watching through a new group of `watch` options to `loadConfig`.
+- Updated dependencies
+  - @backstage/config@0.1.7
+
+## 0.6.6
+
+### Patch Changes
+
+- e9d3983ee: Add option to populate the `filteredKeys` property when processing configuration with a schema.
+- Updated dependencies
+  - @backstage/config@0.1.6
+
+## 0.6.5
+
+### Patch Changes
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+
 ## 0.6.4
 
 ### Patch Changes

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from './BottomLink';
 export * from './Content';
 export * from './ContentHeader';
 export * from './ErrorBoundary';

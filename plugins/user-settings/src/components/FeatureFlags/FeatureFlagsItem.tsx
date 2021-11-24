@@ -17,8 +17,8 @@
 import React from 'react';
 import {
   ListItem,
-  ListItemSecondaryAction,
   ListItemText,
+  ListItemIcon,
   Switch,
   Tooltip,
 } from '@material-ui/core';
@@ -31,20 +31,15 @@ type Props = {
 };
 
 export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => (
-  <ListItem>
+  <ListItem divider button onClick={() => toggleHandler(flag.name)}>
+    <ListItemIcon>
+      <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
+        <Switch color="primary" checked={enabled} name={flag.name} />
+      </Tooltip>
+    </ListItemIcon>
     <ListItemText
       primary={flag.name}
       secondary={`Registered in ${flag.pluginId} plugin`}
     />
-    <ListItemSecondaryAction>
-      <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
-        <Switch
-          color="primary"
-          checked={enabled}
-          onChange={() => toggleHandler(flag.name)}
-          name={flag.name}
-        />
-      </Tooltip>
-    </ListItemSecondaryAction>
   </ListItem>
 );

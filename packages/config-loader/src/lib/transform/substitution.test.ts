@@ -17,10 +17,12 @@
 import { createSubstitutionTransform } from './substitution';
 
 const env = jest.fn(async (name: string) => {
-  return ({
-    SECRET: 'my-secret',
-    TOKEN: 'my-token',
-  } as { [name: string]: string })[name];
+  return (
+    {
+      SECRET: 'my-secret',
+      TOKEN: 'my-token',
+    } as { [name: string]: string }
+  )[name];
 });
 
 const substituteTransform = createSubstitutionTransform(env);

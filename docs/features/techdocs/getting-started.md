@@ -33,14 +33,24 @@ In `packages/app/src/App.tsx`, import `TechDocsPage` and add the following to
 `FlatRoutes`:
 
 ```tsx
-import { TechDocsPage } from '@backstage/plugin-techdocs';
+import {
+  DefaultTechDocsHome,
+  TechDocsIndexPage,
+  TechDocsReaderPage,
+} from '@backstage/plugin-techdocs';
 
 // ...
 
 const AppRoutes = () => {
   <FlatRoutes>
     // ... other plugin routes
-    <Route path="/docs" element={<TechdocsPage />} />
+    <Route path="/docs" element={<TechDocsIndexPage />}>
+      <DefaultTechDocsHome />
+    </Route>
+    <Route
+      path="/docs/:namespace/:kind/:name/*"
+      element={<TechDocsReaderPage />}
+    />
   </FlatRoutes>;
 };
 ```
@@ -204,11 +214,11 @@ techdocs:
   builder: 'local'
   publisher:
     type: 'local'
-  generators:
-    techdocs: local
+  generator:
+    runIn: local
 ```
 
-Setting `generators.techdocs` to `local` means you will have to make sure your
+Setting `generator.runIn` to `local` means you will have to make sure your
 environment is compatible with techdocs.
 
 You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from

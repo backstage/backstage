@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import {
+  EmptyState,
+  Progress,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
 import { SearchResult } from '@backstage/search-common';
-import { Alert } from '@material-ui/lab';
+import React from 'react';
 import { useSearch } from '../SearchContext';
-
-import { EmptyState, Progress } from '@backstage/core-components';
 
 type Props = {
   children: (results: { results: SearchResult[] }) => JSX.Element;
 };
 
-const SearchResultComponent = ({ children }: Props) => {
+export const SearchResultComponent = ({ children }: Props) => {
   const {
     result: { loading, error, value },
   } = useSearch();
@@ -35,9 +37,10 @@ const SearchResultComponent = ({ children }: Props) => {
   }
   if (error) {
     return (
-      <Alert severity="error">
-        Error encountered while fetching search results. {error.toString()}
-      </Alert>
+      <ResponseErrorPanel
+        title="Error encountered while fetching search results"
+        error={error}
+      />
     );
   }
 
@@ -45,7 +48,7 @@ const SearchResultComponent = ({ children }: Props) => {
     return <EmptyState missing="data" title="Sorry, no results were found" />;
   }
 
-  return children({ results: value.results });
+  return <>{children({ results: value.results })}</>;
 };
 
 export { SearchResultComponent as SearchResult };

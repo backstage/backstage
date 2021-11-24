@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-import React, {
-  PropsWithChildren,
-  ReactElement,
-  useContext,
-  Context,
-} from 'react';
+import React, { PropsWithChildren, ReactElement } from 'react';
 import { MemoryRouter, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
-import { VersionedValue } from '../lib/versionedValues';
-import { getGlobalSingleton } from '../lib/globalObject';
+import { useVersionedContext } from '@backstage/version-bridge';
 import {
   childDiscoverer,
   routeElementDiscoverer,
@@ -89,7 +83,7 @@ const MockRouteSource = <T extends { [name in string]: string }>(props: {
   } catch (ex) {
     return (
       <div>
-        Error at {props.name}: {ex.message}
+        Error at {props.name}, {String(ex)}
       </div>
     );
   }
@@ -97,30 +91,35 @@ const MockRouteSource = <T extends { [name in string]: string }>(props: {
 
 const Extension1 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension1',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref1,
   }),
 );
 const Extension2 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension2',
     component: () => Promise.resolve(MockRouteSource),
     mountPoint: ref2,
   }),
 );
 const Extension3 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension3',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref3,
   }),
 );
 const Extension4 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension4',
     component: () => Promise.resolve(MockRouteSource),
     mountPoint: ref4,
   }),
 );
 const Extension5 = plugin.provide(
   createRoutableExtension({
+    name: 'Extension5',
     component: () => Promise.resolve(MockComponent),
     mountPoint: ref5,
   }),
@@ -152,6 +151,7 @@ function withRoutingProvider(
       routeParents={routeParents}
       routeObjects={routeObjects}
       routeBindings={new Map(routeBindings)}
+      basePath=""
     >
       {root}
     </RoutingProvider>
@@ -293,12 +293,12 @@ describe('discovery', () => {
 
     expect(
       rendered.getByText(
-        `Error at outsideWithParams: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
+        `Error at outsideWithParams, Error: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
       ),
     ).toBeInTheDocument();
     expect(
       rendered.getByText(
-        `Error at outsideNoParams: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
+        `Error at outsideNoParams, Error: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
       ),
     ).toBeInTheDocument();
   });
@@ -330,15 +330,13 @@ describe('discovery', () => {
 });
 
 describe('v1 consumer', () => {
-  const RoutingContext = getGlobalSingleton<
-    Context<VersionedValue<{ 1: RouteResolver }>>
-  >('routing-context');
-
   function useMockRouteRefV1(
     routeRef: AnyRouteRef,
     location: string,
   ): RouteFunc<any> | undefined {
-    const resolver = useContext(RoutingContext)?.atVersion(1);
+    const resolver = useVersionedContext<{
+      1: RouteResolver;
+    }>('routing-context')?.atVersion(1);
     if (!resolver) {
       throw new Error('no impl');
     }
@@ -367,6 +365,7 @@ describe('v1 consumer', () => {
             routeParents={new Map()}
             routeObjects={[]}
             routeBindings={new Map()}
+            basePath="/base"
             children={children}
           />
         ),
@@ -375,8 +374,8 @@ describe('v1 consumer', () => {
 
     expect(renderedHook.result.current).toBe(undefined);
     renderedHook.rerender({ routeRef: routeRef2 });
-    expect(renderedHook.result.current?.()).toBe('/foo');
+    expect(renderedHook.result.current?.()).toBe('/base/foo');
     renderedHook.rerender({ routeRef: routeRef3 });
-    expect(renderedHook.result.current?.({ x: 'my-x' })).toBe('/bar/my-x');
+    expect(renderedHook.result.current?.({ x: 'my-x' })).toBe('/base/bar/my-x');
   });
 });

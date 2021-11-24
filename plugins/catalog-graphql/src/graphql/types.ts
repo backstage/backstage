@@ -27,8 +27,7 @@ export type Exact<T extends { [key: string]: unknown }> = {
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = {
   [X in Exclude<keyof T, K>]?: T[X];
-} &
-  { [P in K]-?: NonNullable<T[P]> };
+} & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -219,7 +218,7 @@ export interface SubscriptionSubscriberObject<
   TKey extends string,
   TParent,
   TContext,
-  TArgs
+  TArgs,
 > {
   subscribe: SubscriptionSubscribeFn<
     { [key in TKey]: TResult },
@@ -245,7 +244,7 @@ export type SubscriptionObject<
   TKey extends string,
   TParent,
   TContext,
-  TArgs
+  TArgs,
 > =
   | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
   | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
@@ -255,7 +254,7 @@ export type SubscriptionResolver<
   TKey extends string,
   TParent = {},
   TContext = {},
-  TArgs = {}
+  TArgs = {},
 > =
   | ((
       ...args: any[]
@@ -279,7 +278,7 @@ export type DirectiveResolverFn<
   TResult = {},
   TParent = {},
   TContext = {},
-  TArgs = {}
+  TArgs = {},
 > = (
   next: NextResolverFn<TResult>,
   parent: TParent,
@@ -364,7 +363,7 @@ export interface JsonObjectScalarConfig
 
 export type EntityMetadataResolvers<
   ContextType = ModuleContext,
-  ParentType = ResolversParentTypes['EntityMetadata']
+  ParentType = ResolversParentTypes['EntityMetadata'],
 > = ResolversObject<{
   __resolveType: TypeResolveFn<
     'DefaultEntityMetadata' | 'ComponentMetadata' | 'TemplateMetadata',
@@ -393,7 +392,7 @@ export type EntityMetadataResolvers<
 
 export type DefaultEntityMetadataResolvers<
   ContextType = ModuleContext,
-  ParentType = ResolversParentTypes['DefaultEntityMetadata']
+  ParentType = ResolversParentTypes['DefaultEntityMetadata'],
 > = ResolversObject<{
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   annotations?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
@@ -418,7 +417,7 @@ export type DefaultEntityMetadataResolvers<
 
 export type ComponentMetadataResolvers<
   ContextType = ModuleContext,
-  ParentType = ResolversParentTypes['ComponentMetadata']
+  ParentType = ResolversParentTypes['ComponentMetadata'],
 > = ResolversObject<{
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   annotations?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
@@ -448,7 +447,7 @@ export type ComponentMetadataResolvers<
 
 export type TemplateMetadataResolvers<
   ContextType = ModuleContext,
-  ParentType = ResolversParentTypes['TemplateMetadata']
+  ParentType = ResolversParentTypes['TemplateMetadata'],
 > = ResolversObject<{
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   annotations?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
@@ -478,7 +477,7 @@ export type TemplateMetadataResolvers<
 
 export type TemplateEntitySpecResolvers<
   ContextType = ModuleContext,
-  ParentType = ResolversParentTypes['TemplateEntitySpec']
+  ParentType = ResolversParentTypes['TemplateEntitySpec'],
 > = ResolversObject<{
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   path?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -489,7 +488,7 @@ export type TemplateEntitySpecResolvers<
 
 export type ComponentEntitySpecResolvers<
   ContextType = ModuleContext,
-  ParentType = ResolversParentTypes['ComponentEntitySpec']
+  ParentType = ResolversParentTypes['ComponentEntitySpec'],
 > = ResolversObject<{
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -499,7 +498,7 @@ export type ComponentEntitySpecResolvers<
 
 export type LocationEntitySpecResolvers<
   ContextType = ModuleContext,
-  ParentType = ResolversParentTypes['LocationEntitySpec']
+  ParentType = ResolversParentTypes['LocationEntitySpec'],
 > = ResolversObject<{
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -509,7 +508,7 @@ export type LocationEntitySpecResolvers<
 
 export type DefaultEntitySpecResolvers<
   ContextType = ModuleContext,
-  ParentType = ResolversParentTypes['DefaultEntitySpec']
+  ParentType = ResolversParentTypes['DefaultEntitySpec'],
 > = ResolversObject<{
   raw?: Resolver<Maybe<ResolversTypes['JSONObject']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
@@ -517,7 +516,7 @@ export type DefaultEntitySpecResolvers<
 
 export type EntitySpecResolvers<
   ContextType = ModuleContext,
-  ParentType = ResolversParentTypes['EntitySpec']
+  ParentType = ResolversParentTypes['EntitySpec'],
 > = ResolversObject<{
   __resolveType: TypeResolveFn<
     | 'DefaultEntitySpec'
@@ -531,7 +530,7 @@ export type EntitySpecResolvers<
 
 export type CatalogEntityResolvers<
   ContextType = ModuleContext,
-  ParentType = ResolversParentTypes['CatalogEntity']
+  ParentType = ResolversParentTypes['CatalogEntity'],
 > = ResolversObject<{
   apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -546,7 +545,7 @@ export type CatalogEntityResolvers<
 
 export type CatalogQueryResolvers<
   ContextType = ModuleContext,
-  ParentType = ResolversParentTypes['CatalogQuery']
+  ParentType = ResolversParentTypes['CatalogQuery'],
 > = ResolversObject<{
   list?: Resolver<
     Array<ResolversTypes['CatalogEntity']>,
@@ -558,7 +557,7 @@ export type CatalogQueryResolvers<
 
 export type QueryResolvers<
   ContextType = ModuleContext,
-  ParentType = ResolversParentTypes['Query']
+  ParentType = ResolversParentTypes['Query'],
 > = ResolversObject<{
   catalog?: Resolver<ResolversTypes['CatalogQuery'], ParentType, ContextType>;
 }>;

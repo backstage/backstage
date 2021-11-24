@@ -29,29 +29,22 @@ type ProductInsightsCardLoadingProps = {
   dispatchLoading: (isLoading: boolean) => void;
 };
 
-export const mapFiltersToProps = (
-  product: string,
-): MapFiltersToProps<ProductInsightsCardFilterProps> => ({
-  pageFilters,
-  productFilters,
-  setProductFilters,
-}) => ({
-  ...pageFilters,
-  product: findAlways(productFilters, p => p.productType === product),
-  setProduct: (duration: Duration) =>
-    setProductFilters(
-      productFilters.map(period =>
-        period.productType === product ? { ...period, duration } : period,
+export const mapFiltersToProps =
+  (product: string): MapFiltersToProps<ProductInsightsCardFilterProps> =>
+  ({ pageFilters, productFilters, setProductFilters }) => ({
+    ...pageFilters,
+    product: findAlways(productFilters, p => p.productType === product),
+    setProduct: (duration: Duration) =>
+      setProductFilters(
+        productFilters.map(period =>
+          period.productType === product ? { ...period, duration } : period,
+        ),
       ),
-    ),
-});
+  });
 
-export const mapLoadingToProps = (
-  product: string,
-): MapLoadingToProps<ProductInsightsCardLoadingProps> => ({
-  state,
-  dispatch,
-}) => ({
-  loadingProduct: state[product],
-  dispatchLoading: (isLoading: boolean) => dispatch({ [product]: isLoading }),
-});
+export const mapLoadingToProps =
+  (product: string): MapLoadingToProps<ProductInsightsCardLoadingProps> =>
+  ({ state, dispatch }) => ({
+    loadingProduct: state[product],
+    dispatchLoading: (isLoading: boolean) => dispatch({ [product]: isLoading }),
+  });

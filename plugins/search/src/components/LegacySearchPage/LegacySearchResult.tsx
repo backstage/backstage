@@ -138,7 +138,11 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
   const [filteredResults, setFilteredResults] = useState<SearchResults>([]);
 
-  const { loading, error, value: results } = useAsync(async () => {
+  const {
+    loading,
+    error,
+    value: results,
+  } = useAsync(async () => {
     const entities = await catalogApi.getEntities();
     return entities.items.map((entity: Entity) => ({
       name: entity.metadata.name,
@@ -151,8 +155,9 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
           ? entity.spec?.lifecycle
           : undefined,
       url: `/catalog/${
-        entity.metadata.namespace?.toLowerCase() || ENTITY_DEFAULT_NAMESPACE
-      }/${entity.kind.toLowerCase()}/${entity.metadata.name}`,
+        entity.metadata.namespace?.toLocaleLowerCase('en-US') ||
+        ENTITY_DEFAULT_NAMESPACE
+      }/${entity.kind.toLocaleLowerCase('en-US')}/${entity.metadata.name}`,
     }));
   }, []);
 

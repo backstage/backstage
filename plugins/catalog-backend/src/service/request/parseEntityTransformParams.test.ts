@@ -60,8 +60,8 @@ describe('parseEntityTransformParams', () => {
     expect(
       parseEntityTransformParams({ fields: 'kind,metadata.name' })!(entity),
     ).toEqual({ kind: 'k', metadata: { name: 'n' } });
-    expect(
-      parseEntityTransformParams({ fields: 'metadata' })!(entity),
-    ).toEqual({ metadata: { name: 'n', tags: ['t1', 't2'] } });
+    expect(parseEntityTransformParams({ fields: 'metadata' })!(entity)).toEqual(
+      { metadata: { name: 'n', tags: ['t1', 't2'] } },
+    );
   });
 });

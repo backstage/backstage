@@ -18,10 +18,12 @@ import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import {
+  GroupTransformer,
   LdapClient,
   LdapProviderConfig,
   readLdapConfig,
   readLdapOrg,
+  UserTransformer,
 } from '../ldap';
 import {
   CatalogProcessor,
@@ -35,8 +37,17 @@ import {
 export class LdapOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: LdapProviderConfig[];
   private readonly logger: Logger;
+  private readonly groupTransformer?: GroupTransformer;
+  private readonly userTransformer?: UserTransformer;
 
-  static fromConfig(config: Config, options: { logger: Logger }) {
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger;
+      groupTransformer?: GroupTransformer;
+      userTransformer?: UserTransformer;
+    },
+  ) {
     const c = config.getOptionalConfig('catalog.processors.ldapOrg');
     return new LdapOrgReaderProcessor({
       ...options,
@@ -44,9 +55,16 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
     });
   }
 
-  constructor(options: { providers: LdapProviderConfig[]; logger: Logger }) {
+  constructor(options: {
+    providers: LdapProviderConfig[];
+    logger: Logger;
+    groupTransformer?: GroupTransformer;
+    userTransformer?: UserTransformer;
+  }) {
     this.providers = options.providers;
     this.logger = options.logger;
+    this.groupTransformer = options.groupTransformer;
+    this.userTransformer = options.userTransformer;
   }
 
   async readLocation(
@@ -81,6 +99,11 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
       client,
       provider.users,
       provider.groups,
+      {
+        groupTransformer: this.groupTransformer,
+        userTransformer: this.userTransformer,
+        logger: this.logger,
+      },
     );
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);

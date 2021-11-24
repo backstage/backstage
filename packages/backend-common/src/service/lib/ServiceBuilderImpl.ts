@@ -27,9 +27,9 @@ import { getRootLogger } from '../../logging';
 import {
   errorHandler,
   notFoundHandler,
-  requestLoggingHandler,
+  requestLoggingHandler as defaultRequestLoggingHandler,
 } from '../../middleware';
-import { ServiceBuilder } from '../types';
+import { RequestLoggingHandlerFactory, ServiceBuilder } from '../types';
 import {
   CspOptions,
   HttpsSettings,
@@ -40,7 +40,7 @@ import {
 } from './config';
 import { createHttpServer, createHttpsServer } from './hostFactory';
 
-export const DEFAULT_PORT = 7000;
+export const DEFAULT_PORT = 7007;
 // '' is express default, which listens to all interfaces
 const DEFAULT_HOST = '';
 // taken from the helmet source code - don't seem to be exported
@@ -65,6 +65,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private cspOptions: Record<string, string[] | false> | undefined;
   private httpsSettings: HttpsSettings | undefined;
   private routers: [string, Router][];
+  private requestLoggingHandler: RequestLoggingHandlerFactory | undefined;
   // Reference to the module where builder is created - needed for hot module
   // reloading
   private module: NodeModule;
@@ -144,23 +145,26 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
+  setRequestLoggingHandler(
+    requestLoggingHandler: RequestLoggingHandlerFactory,
+  ) {
+    this.requestLoggingHandler = requestLoggingHandler;
+    return this;
+  }
+
   async start(): Promise<http.Server> {
     const app = express();
-    const {
-      port,
-      host,
-      logger,
-      corsOptions,
-      httpsSettings,
-      helmetOptions,
-    } = this.getOptions();
+    const { port, host, logger, corsOptions, httpsSettings, helmetOptions } =
+      this.getOptions();
 
     app.use(helmet(helmetOptions));
     if (corsOptions) {
       app.use(cors(corsOptions));
     }
     app.use(compression());
-    app.use(requestLoggingHandler(logger));
+    app.use(
+      (this.requestLoggingHandler ?? defaultRequestLoggingHandler)(logger),
+    );
     for (const [root, route] of this.routers) {
       app.use(root, route);
     }
@@ -170,27 +174,27 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     const server: http.Server = httpsSettings
       ? await createHttpsServer(app, httpsSettings, logger)
       : createHttpServer(app, logger);
+    const stoppableServer = stoppable(server, 0);
+
+    useHotCleanup(this.module, () =>
+      stoppableServer.stop((e: any) => {
+        if (e) console.error(e);
+      }),
+    );
 
     return new Promise((resolve, reject) => {
-      app.on('error', e => {
-        logger.error(`Failed to start up on port ${port}, ${e}`);
+      function handleStartupError(e: unknown) {
+        server.close();
         reject(e);
+      }
+
+      server.on('error', handleStartupError);
+
+      server.listen(port, host, () => {
+        server.off('error', handleStartupError);
+        logger.info(`Listening on ${host}:${port}`);
+        resolve(stoppableServer);
       });
-
-      const stoppableServer = stoppable(
-        server.listen(port, host, () => {
-          logger.info(`Listening on ${host}:${port}`);
-        }),
-        0,
-      );
-
-      useHotCleanup(this.module, () =>
-        stoppableServer.stop((e: any) => {
-          if (e) console.error(e);
-        }),
-      );
-
-      resolve(stoppableServer);
     });
   }
 

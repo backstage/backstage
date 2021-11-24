@@ -69,14 +69,10 @@ export const ILertCard = () => {
     },
   ] = useIncidents(false, true, alertSource);
 
-  const [
-    isNewIncidentModalOpened,
-    setIsNewIncidentModalOpened,
-  ] = React.useState(false);
-  const [
-    isMaintenanceModalOpened,
-    setIsMaintenanceModalOpened,
-  ] = React.useState(false);
+  const [isNewIncidentModalOpened, setIsNewIncidentModalOpened] =
+    React.useState(false);
+  const [isMaintenanceModalOpened, setIsMaintenanceModalOpened] =
+    React.useState(false);
 
   if (error) {
     if (error instanceof AuthenticationError) {

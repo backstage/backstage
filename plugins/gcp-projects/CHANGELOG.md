@@ -1,5 +1,101 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.9
+
+### Patch Changes
+
+- 741bcb168e: UI updates to GCP-projects plugin
+
+  Adds the following to the project list page:
+
+  - pagination
+  - filtering
+  - sorting
+  - rows per page
+  - show/hide columns
+
+  Makes breadcrumb a link back to project list for the project details and new project views.
+
+  In project list page, updates New project button to use RouterLink instead of `href` to avoid login prompt.
+
+  In project details view, links to project details and logs now work, clicking on these will open the project or logs in GCP in new tab.
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.3.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.3.7
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+
+## 0.3.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
+## 0.3.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+
+## 0.3.4
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.4.0
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+
+## 0.3.1
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
 ## 0.3.0
 
 ### Minor Changes

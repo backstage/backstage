@@ -37,7 +37,9 @@ import {
   ReadUrlResponse,
   ReadUrlOptions,
 } from './types';
+import { trimEnd } from 'lodash';
 
+/** @public */
 export class GitlabUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -64,6 +66,7 @@ export class GitlabUrlReader implements UrlReader {
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
+    const { etag, signal } = options ?? {};
     const builtUrl = await getGitLabFileFetchUrl(url, this.integration.config);
 
     let response: Response;
@@ -71,8 +74,9 @@ export class GitlabUrlReader implements UrlReader {
       response = await fetch(builtUrl, {
         headers: {
           ...getGitLabRequestOptions(this.integration.config).headers,
-          ...(options?.etag && { 'If-None-Match': options.etag }),
+          ...(etag && { 'If-None-Match': etag }),
         },
+        ...(signal && { signal }),
       });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
@@ -84,7 +88,7 @@ export class GitlabUrlReader implements UrlReader {
 
     if (response.ok) {
       return {
-        buffer: async () => Buffer.from(await response.text()),
+        buffer: async () => Buffer.from(await response.arrayBuffer()),
         etag: response.headers.get('ETag') ?? undefined,
       };
     }
@@ -100,6 +104,7 @@ export class GitlabUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
+    const { etag, signal } = options ?? {};
     const { ref, full_name, filepath } = parseGitUrl(url);
 
     // Use GitLab API to get the default branch
@@ -138,7 +143,10 @@ export class GitlabUrlReader implements UrlReader {
           full_name,
         )}/repository/commits?${commitsReqParams.toString()}`,
       ).toString(),
-      getGitLabRequestOptions(this.integration.config),
+      {
+        ...getGitLabRequestOptions(this.integration.config),
+        ...(signal && { signal }),
+      },
     );
     if (!commitsGitlabResponse.ok) {
       const message = `Failed to read tree (branch) from ${url}, ${commitsGitlabResponse.status} ${commitsGitlabResponse.statusText}`;
@@ -150,7 +158,7 @@ export class GitlabUrlReader implements UrlReader {
 
     const commitSha = (await commitsGitlabResponse.json())[0].id;
 
-    if (options?.etag && options.etag === commitSha) {
+    if (etag && etag === commitSha) {
       throw new NotModifiedError();
     }
 
@@ -159,7 +167,10 @@ export class GitlabUrlReader implements UrlReader {
       `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
         full_name,
       )}/repository/archive?sha=${branch}`,
-      getGitLabRequestOptions(this.integration.config),
+      {
+        ...getGitLabRequestOptions(this.integration.config),
+        ...(signal && { signal }),
+      },
     );
     if (!archiveGitLabResponse.ok) {
       const message = `Failed to read tree (archive) from ${url}, ${archiveGitLabResponse.status} ${archiveGitLabResponse.statusText}`;
@@ -170,7 +181,7 @@ export class GitlabUrlReader implements UrlReader {
     }
 
     return await this.deps.treeResponseFactory.fromTarArchive({
-      stream: (archiveGitLabResponse.body as unknown) as Readable,
+      stream: archiveGitLabResponse.body as unknown as Readable,
       subpath: filepath,
       etag: commitSha,
       filter: options?.filter,
@@ -185,10 +196,11 @@ export class GitlabUrlReader implements UrlReader {
     // a future improvement, we could be smart and try to deduce that non-glob
     // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
     // to get just that part of the repo.
-    const treeUrl = url.replace(filepath, '').replace(/\/+$/, '');
+    const treeUrl = trimEnd(url.replace(filepath, ''), '/');
 
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,
+      signal: options?.signal,
       filter: path => matcher.match(stripFirstDirectoryFromPath(path)),
     });
     const files = await tree.files();

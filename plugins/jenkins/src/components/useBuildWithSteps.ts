@@ -18,38 +18,41 @@ import { useAsyncRetry } from 'react-use';
 import { jenkinsApiRef } from '../api';
 import { useAsyncPolling } from './useAsyncPolling';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { getEntityName } from '@backstage/catalog-model';
 
 const INTERVAL_AMOUNT = 1500;
-export function useBuildWithSteps(buildName: string) {
+
+/**
+ * Hook to expose a specific build.
+ * @param jobFullName the full name of the project (job with builds, not a folder). e.g. "department-A/team-1/project-foo/master"
+ * @param buildNumber the number of the build. e.g. "13"
+ */
+export function useBuildWithSteps({
+  jobFullName,
+  buildNumber,
+}: {
+  jobFullName: string;
+  buildNumber: string;
+}) {
   const api = useApi(jenkinsApiRef);
   const errorApi = useApi(errorApiRef);
+  const { entity } = useEntity();
 
   const getBuildWithSteps = useCallback(async () => {
     try {
-      const build = await api.getBuild(buildName);
-
-      const { jobName } = api.extractJobDetailsFromBuildName(buildName);
-      const job = await api.getJob(jobName);
-      const jobInfo = api.extractScmDetailsFromJob(job);
-
-      return Promise.resolve(api.mapJenkinsBuildToCITable(build, jobInfo));
+      const entityName = await getEntityName(entity);
+      return api.getBuild({ entity: entityName, jobFullName, buildNumber });
     } catch (e) {
       errorApi.post(e);
       return Promise.reject(e);
     }
-  }, [buildName, api, errorApi]);
+  }, [buildNumber, jobFullName, entity, api, errorApi]);
 
-  const restartBuild = async () => {
-    try {
-      await api.retry(buildName);
-    } catch (e) {
-      errorApi.post(e);
-    }
-  };
-
-  const { loading, value, retry } = useAsyncRetry(() => getBuildWithSteps(), [
-    getBuildWithSteps,
-  ]);
+  const { loading, value, retry } = useAsyncRetry(
+    () => getBuildWithSteps(),
+    [getBuildWithSteps],
+  );
 
   const { startPolling, stopPolling } = useAsyncPolling(
     getBuildWithSteps,
@@ -59,7 +62,6 @@ export function useBuildWithSteps(buildName: string) {
   return [
     { loading, value, retry },
     {
-      restartBuild,
       getBuildWithSteps,
       startPolling,
       stopPolling,

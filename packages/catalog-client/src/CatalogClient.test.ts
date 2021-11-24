@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
-import { CatalogListResponse } from './types/api';
+import { CATALOG_FILTER_EXISTS, CatalogListResponse } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 
 const server = setupServer();
@@ -83,7 +83,7 @@ describe('CatalogClient', () => {
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
           expect(req.url.search).toBe(
-            '?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2',
+            '?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2&filter=c',
           );
           return res(ctx.json([]));
         }),
@@ -100,6 +100,9 @@ describe('CatalogClient', () => {
             {
               a: '2',
             },
+            {
+              c: CATALOG_FILTER_EXISTS,
+            },
           ],
         },
         { token },
@@ -113,7 +116,7 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe('?filter=a=1,b=2,b=3,%C3%B6=%3D');
+          expect(req.url.search).toBe('?filter=a=1,b=2,b=3,%C3%B6=%3D,c');
           return res(ctx.json([]));
         }),
       );
@@ -124,6 +127,7 @@ describe('CatalogClient', () => {
             a: '1',
             b: ['2', '3'],
             ö: '=',
+            c: CATALOG_FILTER_EXISTS,
           },
         },
         { token },

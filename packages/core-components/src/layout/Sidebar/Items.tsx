@@ -16,13 +16,11 @@
 
 import { IconComponent } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import {
-  Badge,
-  makeStyles,
-  styled,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import { makeStyles, styled, Theme } from '@material-ui/core/styles';
+import Badge from '@material-ui/core/Badge';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
 import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
 import React, {
@@ -32,91 +30,115 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import { NavLink, NavLinkProps } from 'react-router-dom';
+import {
+  Link,
+  NavLinkProps,
+  useLocation,
+  useResolvedPath,
+} from 'react-router-dom';
 import { sidebarConfig, SidebarContext } from './config';
 
-const useStyles = makeStyles<BackstageTheme>(theme => {
-  const {
-    selectedIndicatorWidth,
-    drawerWidthClosed,
-    drawerWidthOpen,
-    iconContainerWidth,
-  } = sidebarConfig;
+export type SidebarItemClassKey =
+  | 'root'
+  | 'buttonItem'
+  | 'closed'
+  | 'open'
+  | 'label'
+  | 'iconContainer'
+  | 'searchRoot'
+  | 'searchField'
+  | 'searchFieldHTMLInput'
+  | 'searchContainer'
+  | 'secondaryAction'
+  | 'selected';
 
-  return {
-    root: {
-      color: theme.palette.navigation.color,
-      display: 'flex',
-      flexFlow: 'row nowrap',
-      alignItems: 'center',
-      height: 48,
-      cursor: 'pointer',
-    },
-    buttonItem: {
-      background: 'none',
-      border: 'none',
-      width: 'auto',
-      margin: 0,
-      padding: 0,
-      textAlign: 'inherit',
-      font: 'inherit',
-    },
-    closed: {
-      width: drawerWidthClosed,
-      justifyContent: 'center',
-    },
-    open: {
-      width: drawerWidthOpen,
-    },
-    label: {
-      // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
-      fontWeight: 'bold',
-      whiteSpace: 'nowrap',
-      lineHeight: 'auto',
-      flex: '3 1 auto',
-      width: '110px',
-      overflow: 'hidden',
-      'text-overflow': 'ellipsis',
-    },
-    iconContainer: {
-      boxSizing: 'border-box',
-      height: '100%',
-      width: iconContainerWidth,
-      marginRight: -theme.spacing(2),
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    searchRoot: {
-      marginBottom: 12,
-    },
-    searchField: {
-      color: '#b5b5b5',
-      fontWeight: 'bold',
-      fontSize: theme.typography.fontSize,
-    },
-    searchContainer: {
-      width: drawerWidthOpen - iconContainerWidth,
-    },
-    secondaryAction: {
-      width: theme.spacing(6),
-      textAlign: 'center',
-      marginRight: theme.spacing(1),
-    },
-    selected: {
-      '&$root': {
-        borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
-        color: theme.palette.navigation.selectedColor,
+const useStyles = makeStyles<BackstageTheme>(
+  theme => {
+    const {
+      selectedIndicatorWidth,
+      drawerWidthClosed,
+      drawerWidthOpen,
+      iconContainerWidth,
+    } = sidebarConfig;
+    return {
+      root: {
+        color: theme.palette.navigation.color,
+        display: 'flex',
+        flexFlow: 'row nowrap',
+        alignItems: 'center',
+        height: 48,
+        cursor: 'pointer',
       },
-      '&$closed': {
-        width: drawerWidthClosed - selectedIndicatorWidth,
+      buttonItem: {
+        background: 'none',
+        border: 'none',
+        width: 'auto',
+        margin: 0,
+        padding: 0,
+        textAlign: 'inherit',
+        font: 'inherit',
       },
-      '& $iconContainer': {
-        marginLeft: -selectedIndicatorWidth,
+      closed: {
+        width: drawerWidthClosed,
+        justifyContent: 'center',
       },
-    },
-  };
-});
+      open: {
+        width: drawerWidthOpen,
+      },
+      label: {
+        // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
+        fontWeight: 'bold',
+        whiteSpace: 'nowrap',
+        lineHeight: 'auto',
+        flex: '3 1 auto',
+        width: '110px',
+        overflow: 'hidden',
+        'text-overflow': 'ellipsis',
+      },
+      iconContainer: {
+        boxSizing: 'border-box',
+        height: '100%',
+        width: iconContainerWidth,
+        marginRight: -theme.spacing(2),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      searchRoot: {
+        marginBottom: 12,
+      },
+      searchField: {
+        color: '#b5b5b5',
+        fontWeight: 'bold',
+        fontSize: theme.typography.fontSize,
+      },
+      searchFieldHTMLInput: {
+        padding: `${theme.spacing(2)} 0 ${theme.spacing(2)}`,
+      },
+      searchContainer: {
+        width: drawerWidthOpen - iconContainerWidth,
+      },
+      secondaryAction: {
+        width: theme.spacing(6),
+        textAlign: 'center',
+        marginRight: theme.spacing(1),
+      },
+      selected: {
+        '&$root': {
+          borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
+          color: theme.palette.navigation.selectedColor,
+        },
+        '&$closed': {
+          width: drawerWidthClosed - selectedIndicatorWidth,
+        },
+        '& $iconContainer': {
+          marginLeft: -selectedIndicatorWidth,
+        },
+      },
+    };
+  },
+  { name: 'BackstageSidebarItem' },
+);
 
 type SidebarItemBaseProps = {
   icon: IconComponent;
@@ -143,6 +165,54 @@ function isButtonItem(
   return (props as SidebarItemLinkProps).to === undefined;
 }
 
+// TODO(Rugvip): Remove this once NavLink is updated in react-router-dom.
+//               This is needed because react-router doesn't handle the path comparison
+//               properly yet, matching for example /foobar with /foo.
+export const WorkaroundNavLink = React.forwardRef<
+  HTMLAnchorElement,
+  NavLinkProps
+>(function WorkaroundNavLinkWithRef(
+  {
+    to,
+    end,
+    style,
+    className,
+    activeStyle,
+    caseSensitive,
+    activeClassName = 'active',
+    'aria-current': ariaCurrentProp = 'page',
+    ...rest
+  },
+  ref,
+) {
+  let { pathname: locationPathname } = useLocation();
+  let { pathname: toPathname } = useResolvedPath(to);
+
+  if (!caseSensitive) {
+    locationPathname = locationPathname.toLocaleLowerCase('en-US');
+    toPathname = toPathname.toLocaleLowerCase('en-US');
+  }
+
+  let isActive = locationPathname === toPathname;
+  if (!isActive && !end) {
+    // This is the behavior that is different from the original NavLink
+    isActive = locationPathname.startsWith(`${toPathname}/`);
+  }
+
+  const ariaCurrent = isActive ? ariaCurrentProp : undefined;
+
+  return (
+    <Link
+      {...rest}
+      to={to}
+      ref={ref}
+      aria-current={ariaCurrent}
+      style={{ ...style, ...(isActive ? activeStyle : undefined) }}
+      className={clsx([className, isActive ? activeClassName : undefined])}
+    />
+  );
+});
+
 export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   const {
     icon: Icon,
@@ -163,7 +233,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     <Badge
       color="secondary"
       variant="dot"
-      overlap="circle"
+      overlap="circular"
       invisible={!hasNotifications}
     >
       <Icon fontSize="small" />
@@ -200,33 +270,36 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   if (isButtonItem(props)) {
     return (
-      <button {...childProps} ref={ref}>
+      <button aria-label={text} {...childProps} ref={ref}>
         {content}
       </button>
     );
   }
 
   return (
-    <NavLink
+    <WorkaroundNavLink
       {...childProps}
       activeClassName={classes.selected}
       to={props.to}
       ref={ref}
+      aria-label={text ? text : props.to}
       {...navLinkProps}
     >
       {content}
-    </NavLink>
+    </WorkaroundNavLink>
   );
 });
 
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
   to?: string;
+  icon?: IconComponent;
 };
 
-export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
+export function SidebarSearchField(props: SidebarSearchFieldProps) {
   const [input, setInput] = useState('');
   const classes = useStyles();
+  const Icon = props.icon ? props.icon : SearchIcon;
 
   const search = () => {
     props.onSearch(input);
@@ -235,6 +308,7 @@ export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
 
   const handleEnter: KeyboardEventHandler = ev => {
     if (ev.key === 'Enter') {
+      ev.preventDefault();
       search();
     }
   };
@@ -257,7 +331,7 @@ export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
 
   return (
     <div className={classes.searchRoot}>
-      <SidebarItem icon={SearchIcon} to={props.to} onClick={handleItemClick}>
+      <SidebarItem icon={Icon} to={props.to} onClick={handleItemClick}>
         <TextField
           placeholder="Search"
           value={input}
@@ -269,36 +343,42 @@ export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
             disableUnderline: true,
             className: classes.searchField,
           }}
+          inputProps={{
+            className: classes.searchFieldHTMLInput,
+          }}
         />
       </SidebarItem>
     </div>
   );
-};
+}
 
-export const SidebarSpace = styled('div')({
-  flex: 1,
-});
+export const SidebarSpace = styled('div')(
+  {
+    flex: 1,
+  },
+  { name: 'BackstageSidebarSpace' },
+);
 
-export const SidebarSpacer = styled('div')({
-  height: 8,
-});
+export const SidebarSpacer = styled('div')(
+  {
+    height: 8,
+  },
+  { name: 'BackstageSidebarSpacer' },
+);
 
-export const SidebarDivider = styled('hr')({
-  height: 1,
-  width: '100%',
-  background: '#383838',
-  border: 'none',
-  margin: '12px 0px',
-});
+export const SidebarDivider = styled('hr')(
+  {
+    height: 1,
+    width: '100%',
+    background: '#383838',
+    border: 'none',
+    margin: '12px 0px',
+  },
+  { name: 'BackstageSidebarDivider' },
+);
 
-export const SidebarScrollWrapper = styled('div')(({ theme }) => ({
-  flex: '0 1 auto',
-  overflowX: 'hidden',
-  // 5px space to the right of the scrollbar
-  width: 'calc(100% - 5px)',
-  // Display at least one item in the container
-  // Question: Can this be a config/theme variable - if so, which? :/
-  minHeight: '48px',
+const styledScrollbar = (theme: Theme): CreateCSSProperties => ({
+  overflowY: 'auto',
   '&::-webkit-scrollbar': {
     backgroundColor: theme.palette.background.default,
     width: '5px',
@@ -308,4 +388,20 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => ({
     backgroundColor: theme.palette.text.hint,
     borderRadius: '5px',
   },
-}));
+});
+
+export const SidebarScrollWrapper = styled('div')(({ theme }) => {
+  const scrollbarStyles = styledScrollbar(theme);
+  return {
+    flex: '0 1 auto',
+    overflowX: 'hidden',
+    // 5px space to the right of the scrollbar
+    width: 'calc(100% - 5px)',
+    // Display at least one item in the container
+    // Question: Can this be a config/theme variable - if so, which? :/
+    minHeight: '48px',
+    overflowY: 'hidden',
+    '@media (hover: none)': scrollbarStyles,
+    '&:hover': scrollbarStyles,
+  };
+});

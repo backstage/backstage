@@ -208,7 +208,7 @@ describe('CodeCoverageUtils', () => {
         };
         // @ts-ignore
         utils.validateRequestBody(mockRequest as Request);
-      } catch (error) {
+      } catch (error: any) {
         err = error;
       }
       expect(err?.message).toEqual('Content-Type missing');
@@ -226,7 +226,7 @@ describe('CodeCoverageUtils', () => {
 
         // @ts-ignore
         utils.validateRequestBody(mockRequest as Request);
-      } catch (error) {
+      } catch (error: any) {
         err = error;
       }
       expect(err?.message).toEqual('Illegal Content-Type');

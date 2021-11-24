@@ -24,17 +24,16 @@ export type BitbucketRepositoryParser = (options: {
   logger: Logger;
 }) => AsyncIterable<CatalogProcessorResult>;
 
-export const defaultRepositoryParser: BitbucketRepositoryParser = async function* defaultRepositoryParser({
-  target,
-}) {
-  yield results.location(
-    {
-      type: 'url',
-      target: target,
-    },
-    // Not all locations may actually exist, since the user defined them as a wildcard pattern.
-    // Thus, we emit them as optional and let the downstream processor find them while not outputting
-    // an error if it couldn't.
-    true,
-  );
-};
+export const defaultRepositoryParser: BitbucketRepositoryParser =
+  async function* defaultRepositoryParser({ target }) {
+    yield results.location(
+      {
+        type: 'url',
+        target: target,
+      },
+      // Not all locations may actually exist, since the user defined them as a wildcard pattern.
+      // Thus, we emit them as optional and let the downstream processor find them while not outputting
+      // an error if it couldn't.
+      true,
+    );
+  };

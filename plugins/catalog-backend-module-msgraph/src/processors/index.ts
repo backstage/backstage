@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export { MicrosoftGraphOrgEntityProvider } from './MicrosoftGraphOrgEntityProvider';
 export { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProcessor';

@@ -15,7 +15,6 @@
  */
 
 import {
-  SessionManager,
   MutableSessionManager,
   SessionScopesFunc,
   SessionShouldRefreshFunc,
@@ -40,7 +39,7 @@ type Options<T> = {
  *
  * Session is serialized to JSON with special support for following types: Set.
  */
-export class AuthSessionStore<T> implements SessionManager<T> {
+export class AuthSessionStore<T> implements MutableSessionManager<T> {
   private readonly manager: MutableSessionManager<T>;
   private readonly storageKey: string;
   private readonly sessionShouldRefreshFunc: SessionShouldRefreshFunc<T>;
@@ -61,6 +60,11 @@ export class AuthSessionStore<T> implements SessionManager<T> {
       sessionScopes,
       defaultScopes: new Set(),
     });
+  }
+
+  setSession(session: T | undefined): void {
+    this.manager.setSession(session);
+    this.saveSession(session);
   }
 
   async getSession(options: GetSessionOptions): Promise<T | undefined> {

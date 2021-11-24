@@ -21,6 +21,8 @@ const defaultKnownFields = ['apiVersion', 'kind', 'metadata', 'spec'];
 
 /**
  * Ensures that there are no foreign root fields in the entity.
+ *
+ * @public
  */
 export class NoForeignRootFieldsEntityPolicy implements EntityPolicy {
   private readonly knownFields: string[];

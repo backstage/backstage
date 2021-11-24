@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Box,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Chip,
-} from '@material-ui/core';
+
+import Box from '@material-ui/core/Box';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Chip from '@material-ui/core/Chip';
 import React, { ReactNode } from 'react';
 import { Button } from '../../components';
 import { ItemCardHeader } from './ItemCardHeader';
@@ -62,16 +61,9 @@ type ItemCardProps = {
  * @deprecated Use plain MUI <Card> and composable helpers instead.
  * @see https://material-ui.com/components/cards/
  */
-export const ItemCard = ({
-  description,
-  tags,
-  title,
-  type,
-  subtitle,
-  label,
-  onClick,
-  href,
-}: ItemCardProps) => {
+export function ItemCard(props: ItemCardProps) {
+  const { description, tags, title, type, subtitle, label, onClick, href } =
+    props;
   return (
     <Card>
       <CardMedia>
@@ -101,4 +93,4 @@ export const ItemCard = ({
       </CardActions>
     </Card>
   );
-};
+}

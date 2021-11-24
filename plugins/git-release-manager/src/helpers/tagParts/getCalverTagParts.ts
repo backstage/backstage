@@ -22,7 +22,8 @@ export type CalverTagParts = {
   patch: number;
 };
 
-export const calverRegexp = /(rc|version)-([0-9]{4}\.[0-9]{2}\.[0-9]{2})_([0-9]+)/;
+export const calverRegexp =
+  /(rc|version)-([0-9]{4}\.[0-9]{2}\.[0-9]{2})_([0-9]+)/;
 
 export function getCalverTagParts(tag: string) {
   const match = tag.match(calverRegexp);

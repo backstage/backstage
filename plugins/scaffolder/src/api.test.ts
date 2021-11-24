@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-import { ScmIntegrations } from '@backstage/integration';
-import { ScaffolderClient } from './api';
 import { ConfigReader } from '@backstage/core-app-api';
+import { ScmIntegrations } from '@backstage/integration';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { ScaffolderClient } from './api';
+
+const MockedEventSource = global.EventSource as jest.MockedClass<
+  typeof EventSource
+>;
+
+const server = setupServer();
 
 describe('api', () => {
-  const discoveryApi = {} as any;
+  setupRequestMockHandlers(server);
+  const mockBaseUrl = 'http://backstage/api';
+
+  const discoveryApi = { getBaseUrl: async () => mockBaseUrl };
   const identityApi = {} as any;
   const scmIntegrationsApi = ScmIntegrations.fromConfig(
     new ConfigReader({
@@ -32,10 +44,14 @@ describe('api', () => {
       },
     }),
   );
-  const apiClient = new ScaffolderClient({
-    scmIntegrationsApi,
-    discoveryApi,
-    identityApi,
+
+  let apiClient: ScaffolderClient;
+  beforeEach(() => {
+    apiClient = new ScaffolderClient({
+      scmIntegrationsApi,
+      discoveryApi,
+      identityApi,
+    });
   });
 
   it('should return default and custom integrations', async () => {
@@ -50,5 +66,241 @@ describe('api', () => {
     integrations.forEach(integration =>
       expect(allowedHosts).toContain(integration.host),
     );
+  });
+
+  describe('streamEvents', () => {
+    describe('eventsource', () => {
+      it('should work', async () => {
+        MockedEventSource.prototype.addEventListener.mockImplementation(
+          (type, fn) => {
+            if (typeof fn !== 'function') {
+              return;
+            }
+
+            if (type === 'log') {
+              fn({
+                data: '{"id":1,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}',
+              } as any);
+            } else if (type === 'completion') {
+              fn({
+                data: '{"id":2,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}',
+              } as any);
+            }
+          },
+        );
+
+        const next = jest.fn();
+
+        await new Promise<void>(complete => {
+          apiClient
+            .streamLogs({ taskId: 'a-random-task-id' })
+            .subscribe({ next, complete });
+        });
+
+        expect(MockedEventSource).toBeCalledWith(
+          'http://backstage/api/v2/tasks/a-random-task-id/eventstream',
+          { withCredentials: true },
+        );
+        expect(MockedEventSource.prototype.close).toBeCalled();
+
+        expect(next).toBeCalledTimes(2);
+        expect(next).toBeCalledWith({
+          id: 1,
+          taskId: 'a-random-id',
+          type: 'log',
+          createdAt: '',
+          body: { message: 'My log message' },
+        });
+        expect(next).toBeCalledWith({
+          id: 2,
+          taskId: 'a-random-id',
+          type: 'completion',
+          createdAt: '',
+          body: { message: 'Finished!' },
+        });
+      });
+    });
+
+    describe('longPolling', () => {
+      beforeEach(() => {
+        apiClient = new ScaffolderClient({
+          scmIntegrationsApi,
+          discoveryApi,
+          identityApi,
+          useLongPollingLogs: true,
+        });
+      });
+
+      it('should work', async () => {
+        server.use(
+          rest.get(
+            `${mockBaseUrl}/v2/tasks/:taskId/events`,
+            (req, res, ctx) => {
+              const { taskId } = req.params;
+              const after = req.url.searchParams.get('after');
+
+              if (taskId === 'a-random-task-id') {
+                if (!after) {
+                  return res(
+                    ctx.json([
+                      {
+                        id: 1,
+                        taskId: 'a-random-id',
+                        type: 'log',
+                        createdAt: '',
+                        body: { message: 'My log message' },
+                      },
+                    ]),
+                  );
+                } else if (after === '1') {
+                  return res(
+                    ctx.json([
+                      {
+                        id: 2,
+                        taskId: 'a-random-id',
+                        type: 'completion',
+                        createdAt: '',
+                        body: { message: 'Finished!' },
+                      },
+                    ]),
+                  );
+                }
+              }
+
+              return res(ctx.status(500));
+            },
+          ),
+        );
+
+        const next = jest.fn();
+
+        await new Promise<void>(complete =>
+          apiClient
+            .streamLogs({ taskId: 'a-random-task-id' })
+            .subscribe({ next, complete }),
+        );
+
+        expect(next).toBeCalledTimes(2);
+        expect(next).toBeCalledWith({
+          id: 1,
+          taskId: 'a-random-id',
+          type: 'log',
+          createdAt: '',
+          body: { message: 'My log message' },
+        });
+        expect(next).toBeCalledWith({
+          id: 2,
+          taskId: 'a-random-id',
+          type: 'completion',
+          createdAt: '',
+          body: { message: 'Finished!' },
+        });
+      });
+
+      it('should unsubscribe', async () => {
+        expect.assertions(3);
+
+        server.use(
+          rest.get(
+            `${mockBaseUrl}/v2/tasks/:taskId/events`,
+            (req, res, ctx) => {
+              const { taskId } = req.params;
+
+              const after = req.url.searchParams.get('after');
+
+              // use assertion to make sure it is not called after unsubscribing
+              expect(after).toBe(null);
+
+              if (taskId === 'a-random-task-id') {
+                return res(
+                  ctx.json([
+                    {
+                      id: 1,
+                      taskId: 'a-random-id',
+                      type: 'log',
+                      createdAt: '',
+                      body: { message: 'My log message' },
+                    },
+                  ]),
+                );
+              }
+
+              return res(ctx.status(500));
+            },
+          ),
+        );
+
+        const next = jest.fn();
+
+        await new Promise<void>(complete => {
+          const subscription = apiClient
+            .streamLogs({ taskId: 'a-random-task-id' })
+            .subscribe({
+              next: (...args) => {
+                next(...args);
+                subscription.unsubscribe();
+                complete();
+              },
+            });
+        });
+
+        expect(next).toBeCalledTimes(1);
+        expect(next).toBeCalledWith({
+          id: 1,
+          taskId: 'a-random-id',
+          type: 'log',
+          createdAt: '',
+          body: { message: 'My log message' },
+        });
+      });
+
+      it('should continue after error', async () => {
+        const called = jest.fn();
+
+        server.use(
+          rest.get(
+            `${mockBaseUrl}/v2/tasks/:taskId/events`,
+            (_req, res, ctx) => {
+              called();
+
+              if (called.mock.calls.length > 1) {
+                return res(
+                  ctx.json([
+                    {
+                      id: 2,
+                      taskId: 'a-random-id',
+                      type: 'completion',
+                      createdAt: '',
+                      body: { message: 'Finished!' },
+                    },
+                  ]),
+                );
+              }
+
+              return res(ctx.status(500));
+            },
+          ),
+        );
+
+        const next = jest.fn();
+
+        await new Promise<void>(complete =>
+          apiClient
+            .streamLogs({ taskId: 'a-random-task-id' })
+            .subscribe({ next, complete }),
+        );
+
+        expect(called).toBeCalledTimes(2);
+
+        expect(next).toBeCalledTimes(1);
+        expect(next).toBeCalledWith({
+          id: 2,
+          taskId: 'a-random-id',
+          type: 'completion',
+          createdAt: '',
+          body: { message: 'Finished!' },
+        });
+      });
+    });
   });
 });

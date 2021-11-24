@@ -189,12 +189,8 @@ export const makeRouter = async (
       throw new InputError(`Unsupported coverage type '${coverageType}`);
     }
 
-    const {
-      sourceLocation,
-      vcs,
-      scmFiles,
-      body,
-    } = await utils.processCoveragePayload(entityLookup, req);
+    const { sourceLocation, vcs, scmFiles, body } =
+      await utils.processCoveragePayload(entityLookup, req);
 
     const files = converter.convert(body, scmFiles);
     if (!files || files.length === 0) {

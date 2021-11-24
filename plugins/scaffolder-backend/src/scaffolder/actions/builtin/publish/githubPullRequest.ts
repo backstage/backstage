@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { readFile } from 'fs-extra';
+import fs from 'fs-extra';
 import path from 'path';
-import { parseRepoUrl } from './util';
+import { parseRepoUrl, isExecutable } from './util';
 
 import {
   GithubCredentialsProvider,
@@ -28,6 +28,9 @@ import { Octokit } from '@octokit/rest';
 import { InputError, CustomErrorBase } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import globby from 'globby';
+import { resolveSafeChildPath } from '@backstage/backend-common';
+
+export type Encoding = 'utf-8' | 'base64';
 
 class GithubResponseError extends CustomErrorBase {}
 
@@ -49,10 +52,7 @@ export type GithubPullRequestActionInput = {
   title: string;
   branchName: string;
   description: string;
-  owner?: string;
-  repo?: string;
-  repoUrl?: string;
-  host?: string;
+  repoUrl: string;
   targetPath?: string;
   sourcePath?: string;
 };
@@ -76,9 +76,8 @@ export const defaultClientFactory = async ({
     throw new InputError(`No integration for host ${host}`);
   }
 
-  const credentialsProvider = GithubCredentialsProvider.create(
-    integrationConfig,
-  );
+  const credentialsProvider =
+    GithubCredentialsProvider.create(integrationConfig);
 
   if (!credentialsProvider) {
     throw new InputError(
@@ -119,18 +118,13 @@ export const createPublishGithubPullRequestAction = ({
     id: 'publish:github:pull-request',
     schema: {
       input: {
-        required: ['owner', 'repo', 'title', 'description', 'branchName'],
+        required: ['repoUrl', 'title', 'description', 'branchName'],
         type: 'object',
         properties: {
-          owner: {
+          repoUrl: {
+            title: 'Repository Location',
+            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the repository name and 'owner' is an organization or username`,
             type: 'string',
-            title: 'Repository owner',
-            description: 'The owner of the target repository',
-          },
-          repo: {
-            type: 'string',
-            title: 'Repository',
-            description: 'The github repository to create the file in',
           },
           branchName: {
             type: 'string',
@@ -173,8 +167,6 @@ export const createPublishGithubPullRequestAction = ({
       },
     },
     async handler(ctx) {
-      let { owner, repo } = ctx.input;
-      let host = 'github.com';
       const {
         repoUrl,
         branchName,
@@ -184,22 +176,17 @@ export const createPublishGithubPullRequestAction = ({
         sourcePath,
       } = ctx.input;
 
-      if (repoUrl) {
-        const parsed = parseRepoUrl(repoUrl);
-        host = parsed.host;
-        owner = parsed.owner;
-        repo = parsed.repo;
-      }
+      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
-      if (!host || !owner || !repo) {
+      if (!owner) {
         throw new InputError(
-          'must provide either valid repo URL or owner and repo as parameters',
+          `No owner provided for host: ${host}, and repo ${repo}`,
         );
       }
 
       const client = await clientFactory({ integrations, host, owner, repo });
       const fileRoot = sourcePath
-        ? path.resolve(ctx.workspacePath, sourcePath)
+        ? resolveSafeChildPath(ctx.workspacePath, sourcePath)
         : ctx.workspacePath;
 
       const localFilePaths = await globby(['./**', './**/.*', '!.git'], {
@@ -209,7 +196,30 @@ export const createPublishGithubPullRequestAction = ({
       });
 
       const fileContents = await Promise.all(
-        localFilePaths.map(p => readFile(path.resolve(fileRoot, p))),
+        localFilePaths.map(filePath => {
+          const absPath = path.resolve(fileRoot, filePath);
+          const base64EncodedContent = fs
+            .readFileSync(absPath)
+            .toString('base64');
+          const fileStat = fs.statSync(absPath);
+          // See the properties of tree items
+          // in https://docs.github.com/en/rest/reference/git#trees
+          const githubTreeItemMode = isExecutable(fileStat.mode)
+            ? '100755'
+            : '100644';
+          // Always use base64 encoding to avoid doubling a binary file in size
+          // due to interpreting a binary file as utf-8 and sending github
+          // the utf-8 encoded content.
+          //
+          // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
+          // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
+          const encoding: Encoding = 'base64';
+          return {
+            encoding: encoding,
+            content: base64EncodedContent,
+            mode: githubTreeItemMode,
+          };
+        }),
       );
 
       const repoFilePaths = localFilePaths.map(repoFilePath => {
@@ -218,10 +228,7 @@ export const createPublishGithubPullRequestAction = ({
 
       const changes = [
         {
-          files: zipObject(
-            repoFilePaths,
-            fileContents.map(buf => buf.toString()),
-          ),
+          files: zipObject(repoFilePaths, fileContents),
           commit: title,
         },
       ];

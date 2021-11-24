@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, Typography } from '@material-ui/core';
+
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import React, { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router';
 import { InfoCard } from './InfoCard';

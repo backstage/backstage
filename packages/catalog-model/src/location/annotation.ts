@@ -14,8 +14,20 @@
  * limitations under the License.
  */
 
+/**
+ * Constant storing location annotation.
+ *
+ * @public */
 export const LOCATION_ANNOTATION = 'backstage.io/managed-by-location';
+/**
+ * Constant storing origin location annotation
+ *
+ * @public */
 export const ORIGIN_LOCATION_ANNOTATION =
   'backstage.io/managed-by-origin-location';
 
+/**
+ * Contant storing source location annotation
+ *
+ * @public */
 export const SOURCE_LOCATION_ANNOTATION = 'backstage.io/source-location';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Link } from '../Link';
 import { SubvalueCell, Table, TableColumn } from '.';
@@ -313,10 +313,6 @@ export const FilterTable = () => {
       column: 'Column 2',
       type: 'multiple-select',
     },
-    {
-      column: 'Numeric value',
-      type: 'checkbox-tree',
-    },
   ];
 
   return (
@@ -326,6 +322,52 @@ export const FilterTable = () => {
         data={testData10}
         columns={columns}
         filters={filters}
+      />
+    </div>
+  );
+};
+
+export const StyledTable = () => {
+  const classes = useStyles();
+  const columns: TableColumn[] = [
+    {
+      title: 'Column 1',
+      field: 'col1',
+      highlight: true,
+      cellStyle: (_, rowData: any & { tableData: { id: number } }) => {
+        return rowData.tableData.id % 2 === 0
+          ? {
+              color: '#6CD75F',
+            }
+          : {
+              color: '#DC3D5A',
+            };
+      },
+    },
+    {
+      title: 'Column 2',
+      field: 'col2',
+      cellStyle: { color: '#2FA5DC' },
+    },
+    {
+      title: 'Numeric value',
+      field: 'number',
+      type: 'numeric',
+    },
+    {
+      title: 'A Date',
+      field: 'date',
+      type: 'date',
+    },
+  ];
+
+  return (
+    <div className={classes.container}>
+      <Table
+        options={{ paging: false }}
+        data={testData10}
+        columns={columns}
+        title="Backstage Table"
       />
     </div>
   );

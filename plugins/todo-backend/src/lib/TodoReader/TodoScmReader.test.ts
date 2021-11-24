@@ -74,7 +74,13 @@ describe('TodoScmReader', () => {
       ],
     };
 
-    await expect(todoReader.readTodos({ url })).resolves.toEqual(expected);
+    // These two reads should only result in a single call to readTree
+    await expect(
+      Promise.all([
+        todoReader.readTodos({ url }),
+        todoReader.readTodos({ url }),
+      ]),
+    ).resolves.toEqual([expected, expected]);
 
     expect(reader.readTree).toHaveBeenCalledTimes(1);
     expect(reader.readTree).toHaveBeenCalledWith(

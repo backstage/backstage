@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { BitriseClientApi } from './bitriseApi.client';
@@ -24,7 +24,7 @@ import { UrlPatternDiscovery } from '@backstage/core-app-api';
 const server = setupServer();
 
 describe('BitriseClientApi', () => {
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   const mockBaseUrl = 'http://backstage:9191/api/proxy';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);

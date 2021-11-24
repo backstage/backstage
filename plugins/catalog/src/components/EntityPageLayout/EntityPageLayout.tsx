@@ -21,15 +21,15 @@ import {
 import {
   EntityContext,
   EntityRefLinks,
+  FavoriteEntity,
   getEntityRelations,
+  UnregisterEntityDialog,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
-import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
-import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 import { Tabbed } from './Tabbed';
 
 import {
@@ -54,7 +54,7 @@ const EntityPageTitle = ({
 }) => (
   <Box display="inline-flex" alignItems="center" height="1em">
     {title}
-    {entity && <FavouriteEntity entity={entity} />}
+    {entity && <FavoriteEntity entity={entity} />}
   </Box>
 );
 
@@ -112,14 +112,21 @@ type ExtraContextMenuItem = {
   onClick: () => void;
 };
 
+// unstable context menu option, eg: disable the unregister entity menu
+type contextMenuOptions = {
+  disableUnregister: boolean;
+};
+
 type EntityPageLayoutProps = {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  UNSTABLE_contextMenuOptions?: contextMenuOptions;
   children?: React.ReactNode;
 };
 
 export const EntityPageLayout = ({
   children,
   UNSTABLE_extraContextMenuItems,
+  UNSTABLE_contextMenuOptions,
 }: EntityPageLayoutProps) => {
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
@@ -152,6 +159,7 @@ export const EntityPageLayout = ({
             <EntityLabels entity={entity} />
             <EntityContextMenu
               UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+              UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
               onUnregisterEntity={showRemovalDialog}
             />
           </>

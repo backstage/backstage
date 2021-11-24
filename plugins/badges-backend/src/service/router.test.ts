@@ -66,12 +66,14 @@ describe('createRouter', () => {
       getLocationById: jest.fn(),
       removeLocationById: jest.fn(),
       removeEntityByUid: jest.fn(),
+      refreshEntity: jest.fn(),
+      getEntityAncestors: jest.fn(),
     };
 
     config = new ConfigReader({
       backend: {
         baseUrl: 'http://127.0.0.1',
-        listen: { port: 7000 },
+        listen: { port: 7007 },
       },
     });
     discovery = SingleHostDiscovery.fromConfig(config);

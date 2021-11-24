@@ -71,9 +71,8 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
           annotations: pickBy(
             {
               [LOCATION_ANNOTATION]: stringifyLocationReference(location),
-              [ORIGIN_LOCATION_ANNOTATION]: stringifyLocationReference(
-                originLocation,
-              ),
+              [ORIGIN_LOCATION_ANNOTATION]:
+                stringifyLocationReference(originLocation),
               [VIEW_URL_ANNOTATION]: viewUrl,
               [EDIT_URL_ANNOTATION]: editUrl,
               [SOURCE_LOCATION_ANNOTATION]: sourceLocation,

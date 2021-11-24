@@ -21,6 +21,11 @@ import {
   readGitLabIntegrationConfigs,
 } from './config';
 
+/**
+ * A GitLab based integration.
+ *
+ * @public
+ */
 export class GitLabIntegration implements ScmIntegration {
   static factory: ScmIntegrationsFactory<GitLabIntegration> = ({ config }) => {
     const configs = readGitLabIntegrationConfigs(

@@ -15,11 +15,10 @@
  */
 
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor, getByText } from '@testing-library/react';
 import React from 'react';
 import { DefaultExplorePage } from './DefaultExplorePage';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<DefaultExplorePage />', () => {
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
@@ -31,12 +30,14 @@ describe('<DefaultExplorePage />', () => {
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
     getEntityByName: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ApiProvider apis={ApiRegistry.with(catalogApiRef, catalogApi)}>
+    <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
       {children}
-    </ApiProvider>
+    </TestApiProvider>
   );
 
   beforeEach(() => {

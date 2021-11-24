@@ -59,14 +59,19 @@ const columns: TableColumn[] = [
 
 type SentryIssuesTableProps = {
   sentryIssues: SentryIssue[];
+  statsFor?: '24h' | '14d' | '';
 };
 
-const SentryIssuesTable = ({ sentryIssues }: SentryIssuesTableProps) => {
+const SentryIssuesTable = ({
+  sentryIssues,
+  statsFor,
+}: SentryIssuesTableProps) => {
   return (
     <Table
       columns={columns}
       options={{ padding: 'dense', paging: true, search: false, pageSize: 5 }}
       title="Sentry issues"
+      subtitle={statsFor ? `Last ${statsFor}` : undefined}
       data={sentryIssues}
     />
   );

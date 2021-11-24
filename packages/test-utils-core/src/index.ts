@@ -13,4 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './testUtils';
+
+export {};
+throw new Error(
+  'This module has been removed. Use @backstage/dev-utils instead',
+);

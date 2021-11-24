@@ -105,7 +105,7 @@ function GettingStartedCard() {
       divider
       actions={
         <>
-          <Grid container direction="row" justify="flex-end">
+          <Grid container direction="row" justifyContent="flex-end">
             <Grid item>
               <Button
                 component="a"
@@ -155,7 +155,7 @@ export default function LighthouseIntro({ onDismiss = () => {} }: Props) {
         <Grid item xs={12} sm={6} md={8}>
           <Grid
             container
-            justify="flex-end"
+            justifyContent="flex-end"
             alignItems="flex-end"
             className={classes.closeButtonContainer}
           >

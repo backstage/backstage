@@ -49,9 +49,10 @@ export type ProductInsightsCardProps = {
   onSelectAsync: (product: Product, duration: Duration) => Promise<Entity>;
 };
 
-const mapLoadingToProps: MapLoadingToProps<LoadingProps> = ({ dispatch }) => (
-  isLoading: boolean,
-) => dispatch({ [DefaultLoadingAction.CostInsightsProducts]: isLoading });
+const mapLoadingToProps: MapLoadingToProps<LoadingProps> =
+  ({ dispatch }) =>
+  (isLoading: boolean) =>
+    dispatch({ [DefaultLoadingAction.CostInsightsProducts]: isLoading });
 
 export const ProductInsightsCard = ({
   initialState,

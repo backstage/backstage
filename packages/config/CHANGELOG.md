@@ -1,5 +1,43 @@
 # @backstage/config
 
+## 0.1.11
+
+### Patch Changes
+
+- 10d267a1b7: Minor exports cleanup
+- 41c49884d2: Start using the new `@backstage/types` package. Initially, this means using the `Observable` and `Json*` types from there. The types also remain in their old places but deprecated, and will be removed in a future release.
+- 925a967f36: Replace usage of test-utils-core with test-utils
+
+## 0.1.10
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+
+## 0.1.9
+
+### Patch Changes
+
+- f88b2c7db: Documented `Config` interface and mark types as public.
+
+## 0.1.8
+
+### Patch Changes
+
+- 47113f1f1: Only warn once per key when trying to read visibility-filtered values
+
+## 0.1.7
+
+### Patch Changes
+
+- 90f25476a: Extended the `Config` interface to have an optional `subscribe` method that can be used be notified of updates to the configuration.
+
+## 0.1.6
+
+### Patch Changes
+
+- e9d3983ee: Add warning when trying to access configuration values that have been filtered out by visibility.
+
 ## 0.1.5
 
 ### Patch Changes

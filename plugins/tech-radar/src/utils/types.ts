@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { MovedState } from '../api';
 
 // Parameters for a ring; its index in an array determines how close to the center this ring is.
 export type Ring = {
@@ -44,12 +45,6 @@ export type Segment = {
   clipy: Function;
   random: Function;
 };
-
-export enum MovedState {
-  Down = -1,
-  NoChange = 0,
-  Up = 1,
-}
 
 export type Entry = {
   id: string;

@@ -15,3 +15,4 @@
  */
 
 export { LunrSearchEngine } from './LunrSearchEngine';
+export type { ConcreteLunrQuery } from './LunrSearchEngine';

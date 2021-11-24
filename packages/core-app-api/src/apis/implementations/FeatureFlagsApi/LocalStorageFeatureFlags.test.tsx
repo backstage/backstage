@@ -194,8 +194,7 @@ describe('FeatureFlags', () => {
     it('throws an error if length is greater than 150 characters', () => {
       expect(() =>
         featureFlags.registerFlag({
-          name:
-            'loremipsumdolorsitametconsecteturadipiscingelitnuncvitaeportaexaullamcorperturpismaurisutmattisnequemorbisediaculisauguevivamuspulvinarcursuseratblandithendreritquisqueuttinciduntmagnavestibulumblanditaugueat',
+          name: 'loremipsumdolorsitametconsecteturadipiscingelitnuncvitaeportaexaullamcorperturpismaurisutmattisnequemorbisediaculisauguevivamuspulvinarcursuseratblandithendreritquisqueuttinciduntmagnavestibulumblanditaugueat',
           pluginId: 'plugin-three',
         }),
       ).toThrow(/not exceed 150 characters/i);

@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { default as SamlAuth } from './SamlAuth';
+export type { SamlSession } from './types';

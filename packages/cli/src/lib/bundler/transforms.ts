@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import webpack, { Module, Plugin } from 'webpack';
+import webpack, { ModuleOptions, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
 
 type Transforms = {
-  loaders: Module['rules'];
-  plugins: Plugin[];
+  loaders: ModuleOptions['rules'];
+  plugins: WebpackPluginInstance[];
 };
 
 type TransformOptions = {
@@ -32,6 +32,23 @@ export const transforms = (options: TransformOptions): Transforms => {
 
   const extraTransforms = isDev ? ['react-hot-loader'] : [];
 
+  // This ensures that styles inserted from the style-loader and any
+  // async style chunks are always given lower priority than JSS styles.
+  // Note that this function is stringified and executed in the browser
+  // after transpilation, so stick to simple syntax
+  function insertBeforeJssStyles(element: any) {
+    const head = document.head;
+    // This makes sure that any style elements we insert get put before the
+    // dynamic styles from JSS, such as the ones from `makeStyles()`.
+    // TODO(Rugvip): This will likely break in material-ui v5, keep an eye on it.
+    const firstJssNode = head.querySelector('style[data-jss]');
+    if (!firstJssNode) {
+      head.appendChild(element);
+    } else {
+      head.insertBefore(element, firstJssNode);
+    }
+  }
+
   const loaders = [
     {
       test: /\.(tsx?)$/,
@@ -39,6 +56,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
         transforms: ['typescript', 'jsx', ...extraTransforms],
+        disableESTransforms: true,
         production: !isDev,
       },
     },
@@ -48,7 +66,14 @@ export const transforms = (options: TransformOptions): Transforms => {
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
         transforms: ['jsx', ...extraTransforms],
+        disableESTransforms: true,
         production: !isDev,
+      },
+    },
+    {
+      test: /\.m?js/,
+      resolve: {
+        fullySpecified: false,
       },
     },
     {
@@ -58,6 +83,7 @@ export const transforms = (options: TransformOptions): Transforms => {
           loader: require.resolve('@sucrase/webpack-loader'),
           options: {
             transforms: ['jsx', ...extraTransforms],
+            disableESTransforms: true,
             production: !isDev,
           },
         },
@@ -77,10 +103,16 @@ export const transforms = (options: TransformOptions): Transforms => {
         { and: [/\.svg/, { not: [/\.icon\.svg/] }] },
         /\.xml/,
       ],
-      loader: require.resolve('url-loader'),
-      options: {
-        limit: 10000,
-        name: 'static/[name].[hash:8].[ext]',
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash:8].[ext]',
+      },
+    },
+    {
+      test: /\.(eot|woff|woff2|ttf)$/i,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash][ext][query]',
       },
     },
     {
@@ -89,12 +121,22 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
     {
       include: /\.(md)$/,
-      use: require.resolve('raw-loader'),
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/[name].[hash][ext][query]',
+      },
     },
     {
       test: /\.css$/i,
       use: [
-        isDev ? require.resolve('style-loader') : MiniCssExtractPlugin.loader,
+        isDev
+          ? {
+              loader: require.resolve('style-loader'),
+              options: {
+                insert: insertBeforeJssStyles,
+              },
+            }
+          : MiniCssExtractPlugin.loader,
         {
           loader: require.resolve('css-loader'),
           options: {
@@ -105,7 +147,7 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
   ];
 
-  const plugins = new Array<Plugin>();
+  const plugins = new Array<WebpackPluginInstance>();
 
   if (isDev) {
     plugins.push(new webpack.HotModuleReplacementPlugin());
@@ -114,6 +156,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       new MiniCssExtractPlugin({
         filename: 'static/[name].[contenthash:8].css',
         chunkFilename: 'static/[name].[id].[contenthash:8].css',
+        insert: insertBeforeJssStyles, // Only applies to async chunks
       }),
     );
   }

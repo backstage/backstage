@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AppConfig, Config, JsonValue, JsonObject } from './types';
+import { JsonValue, JsonObject } from '@backstage/types';
+import { AppConfig, Config } from './types';
 import cloneDeep from 'lodash/cloneDeep';
 import mergeWith from 'lodash/mergeWith';
 
@@ -54,7 +55,26 @@ const errors = {
   },
 };
 
+/**
+ * An implementation of the `Config` interface that uses a plain JavaScript object
+ * for the backing data, with the ability of linking multiple readers together.
+ *
+ * @public
+ */
 export class ConfigReader implements Config {
+  /**
+   * A set of key paths that where removed from the config due to not being visible.
+   *
+   * This was added as a mutable private member to avoid changes to the public API.
+   * Its only purpose of this is to warn users of missing visibility when running
+   * the frontend in development mode.
+   */
+  private filteredKeys?: string[];
+  private notifiedFilteredKeys = new Set<string>();
+
+  /**
+   * Instantiates the config reader from a list of application config objects.
+   */
   static fromConfigs(configs: AppConfig[]): ConfigReader {
     if (configs.length === 0) {
       return new ConfigReader(undefined);
@@ -62,9 +82,14 @@ export class ConfigReader implements Config {
 
     // Merge together all configs into a single config with recursive fallback
     // readers, giving the first config object in the array the lowest priority.
-    return configs.reduce<ConfigReader>((previousReader, { data, context }) => {
-      return new ConfigReader(data, context, previousReader);
-    }, undefined!);
+    return configs.reduce<ConfigReader>(
+      (previousReader, { data, context, filteredKeys }) => {
+        const reader = new ConfigReader(data, context, previousReader);
+        reader.filteredKeys = filteredKeys;
+        return reader;
+      },
+      undefined!,
+    );
   }
 
   constructor(
@@ -74,6 +99,7 @@ export class ConfigReader implements Config {
     private readonly prefix: string = '',
   ) {}
 
+  /** {@inheritdoc Config.has} */
   has(key: string): boolean {
     const value = this.readValue(key);
     if (value !== undefined) {
@@ -82,12 +108,14 @@ export class ConfigReader implements Config {
     return this.fallback?.has(key) ?? false;
   }
 
+  /** {@inheritdoc Config.keys} */
   keys(): string[] {
     const localKeys = this.data ? Object.keys(this.data) : [];
     const fallbackKeys = this.fallback?.keys() ?? [];
     return [...new Set([...localKeys, ...fallbackKeys])];
   }
 
+  /** {@inheritdoc Config.get} */
   get<T = JsonValue>(key?: string): T {
     const value = this.getOptional(key);
     if (value === undefined) {
@@ -96,11 +124,28 @@ export class ConfigReader implements Config {
     return value as T;
   }
 
+  /** {@inheritdoc Config.getOptional} */
   getOptional<T = JsonValue>(key?: string): T | undefined {
     const value = this.readValue(key);
     const fallbackValue = this.fallback?.getOptional<T>(key);
 
     if (value === undefined) {
+      if (process.env.NODE_ENV === 'development') {
+        if (fallbackValue === undefined && key) {
+          const fullKey = this.fullKey(key);
+          if (
+            this.filteredKeys?.includes(fullKey) &&
+            !this.notifiedFilteredKeys.has(fullKey)
+          ) {
+            this.notifiedFilteredKeys.add(fullKey);
+            // eslint-disable-next-line no-console
+            console.warn(
+              `Failed to read configuration value at '${fullKey}' as it is not visible. ` +
+                'See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.',
+            );
+          }
+        }
+      }
       return fallbackValue;
     } else if (fallbackValue === undefined) {
       return value as T;
@@ -116,6 +161,7 @@ export class ConfigReader implements Config {
     ).value as T;
   }
 
+  /** {@inheritdoc Config.getConfig} */
   getConfig(key: string): ConfigReader {
     const value = this.getOptionalConfig(key);
     if (value === undefined) {
@@ -124,13 +170,13 @@ export class ConfigReader implements Config {
     return value;
   }
 
+  /** {@inheritdoc Config.getOptionalConfig} */
   getOptionalConfig(key: string): ConfigReader | undefined {
     const value = this.readValue(key);
     const fallbackConfig = this.fallback?.getOptionalConfig(key);
-    const prefix = this.fullKey(key);
 
     if (isObject(value)) {
-      return new ConfigReader(value, this.context, fallbackConfig, prefix);
+      return this.copy(value, key, fallbackConfig);
     }
     if (value !== undefined) {
       throw new TypeError(
@@ -140,6 +186,7 @@ export class ConfigReader implements Config {
     return fallbackConfig;
   }
 
+  /** {@inheritdoc Config.getConfigArray} */
   getConfigArray(key: string): ConfigReader[] {
     const value = this.getOptionalConfigArray(key);
     if (value === undefined) {
@@ -148,6 +195,7 @@ export class ConfigReader implements Config {
     return value;
   }
 
+  /** {@inheritdoc Config.getOptionalConfigArray} */
   getOptionalConfigArray(key: string): ConfigReader[] | undefined {
     const configs = this.readConfigValue<JsonObject[]>(key, values => {
       if (!Array.isArray(values)) {
@@ -163,20 +211,27 @@ export class ConfigReader implements Config {
     });
 
     if (!configs) {
+      if (process.env.NODE_ENV === 'development') {
+        const fullKey = this.fullKey(key);
+        if (
+          this.filteredKeys?.some(k => k.startsWith(fullKey)) &&
+          !this.notifiedFilteredKeys.has(key)
+        ) {
+          this.notifiedFilteredKeys.add(key);
+          // eslint-disable-next-line no-console
+          console.warn(
+            `Failed to read configuration array at '${key}' as it does not have any visible elements. ` +
+              'See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.',
+          );
+        }
+      }
       return undefined;
     }
 
-    return configs.map(
-      (obj, index) =>
-        new ConfigReader(
-          obj,
-          this.context,
-          undefined,
-          this.fullKey(`${key}[${index}]`),
-        ),
-    );
+    return configs.map((obj, index) => this.copy(obj, `${key}[${index}]`));
   }
 
+  /** {@inheritdoc Config.getNumber} */
   getNumber(key: string): number {
     const value = this.getOptionalNumber(key);
     if (value === undefined) {
@@ -185,6 +240,7 @@ export class ConfigReader implements Config {
     return value;
   }
 
+  /** {@inheritdoc Config.getOptionalNumber} */
   getOptionalNumber(key: string): number | undefined {
     const value = this.readConfigValue<string | number>(
       key,
@@ -204,6 +260,7 @@ export class ConfigReader implements Config {
     return number;
   }
 
+  /** {@inheritdoc Config.getBoolean} */
   getBoolean(key: string): boolean {
     const value = this.getOptionalBoolean(key);
     if (value === undefined) {
@@ -212,6 +269,7 @@ export class ConfigReader implements Config {
     return value;
   }
 
+  /** {@inheritdoc Config.getOptionalBoolean} */
   getOptionalBoolean(key: string): boolean | undefined {
     return this.readConfigValue(
       key,
@@ -219,6 +277,7 @@ export class ConfigReader implements Config {
     );
   }
 
+  /** {@inheritdoc Config.getString} */
   getString(key: string): string {
     const value = this.getOptionalString(key);
     if (value === undefined) {
@@ -227,6 +286,7 @@ export class ConfigReader implements Config {
     return value;
   }
 
+  /** {@inheritdoc Config.getOptionalString} */
   getOptionalString(key: string): string | undefined {
     return this.readConfigValue(
       key,
@@ -235,6 +295,7 @@ export class ConfigReader implements Config {
     );
   }
 
+  /** {@inheritdoc Config.getStringArray} */
   getStringArray(key: string): string[] {
     const value = this.getOptionalStringArray(key);
     if (value === undefined) {
@@ -243,6 +304,7 @@ export class ConfigReader implements Config {
     return value;
   }
 
+  /** {@inheritdoc Config.getOptionalStringArray} */
   getOptionalStringArray(key: string): string[] | undefined {
     return this.readConfigValue(key, values => {
       if (!Array.isArray(values)) {
@@ -261,6 +323,17 @@ export class ConfigReader implements Config {
     return `${this.prefix}${this.prefix ? '.' : ''}${key}`;
   }
 
+  private copy(data: JsonObject, key: string, fallback?: ConfigReader) {
+    const reader = new ConfigReader(
+      data,
+      this.context,
+      fallback,
+      this.fullKey(key),
+    );
+    reader.filteredKeys = this.filteredKeys;
+    return reader;
+  }
+
   private readConfigValue<T extends JsonValue>(
     key: string,
     validate: (
@@ -270,6 +343,21 @@ export class ConfigReader implements Config {
     const value = this.readValue(key);
 
     if (value === undefined) {
+      if (process.env.NODE_ENV === 'development') {
+        const fullKey = this.fullKey(key);
+        if (
+          this.filteredKeys?.includes(fullKey) &&
+          !this.notifiedFilteredKeys.has(fullKey)
+        ) {
+          this.notifiedFilteredKeys.add(fullKey);
+          // eslint-disable-next-line no-console
+          console.warn(
+            `Failed to read configuration value at '${fullKey}' as it is not visible. ` +
+              'See https://backstage.io/docs/conf/defining#visibility for instructions on how to make it visible.',
+          );
+        }
+      }
+
       return this.fallback?.readConfigValue(key, validate);
     }
     const result = validate(value);

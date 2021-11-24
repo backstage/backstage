@@ -17,7 +17,7 @@
 import React from 'react';
 import { Button, Typography, Box } from '@material-ui/core';
 
-import { ComponentConfigPromoteRc } from '../../types/types';
+import { ComponentConfig, PromoteRcOnSuccessArgs } from '../../types/types';
 import { Differ } from '../../components/Differ';
 import { GetLatestReleaseResult } from '../../api/GitReleaseClient';
 import { ResponseStepDialog } from '../../components/ResponseStepDialog/ResponseStepDialog';
@@ -26,7 +26,7 @@ import { usePromoteRc } from './hooks/usePromoteRc';
 
 interface PromoteRcBodyProps {
   rcRelease: NonNullable<GetLatestReleaseResult['latestRelease']>;
-  onSuccess?: ComponentConfigPromoteRc['onSuccess'];
+  onSuccess?: ComponentConfig<PromoteRcOnSuccessArgs>['onSuccess'];
 }
 
 export const PromoteRcBody = ({ rcRelease, onSuccess }: PromoteRcBodyProps) => {

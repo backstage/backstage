@@ -24,10 +24,26 @@ type RouteObject = {
   children?: RouteObject[];
 };
 
-type FlatRoutesProps = {
+/**
+ * Props for the {@link FlatRoutes} component.
+ *
+ * @public
+ */
+export type FlatRoutesProps = {
   children: ReactNode;
 };
 
+/**
+ * A wrapper around a set of routes.
+ *
+ * @remarks
+ *
+ * The root of the routing hierarchy in your app should use this component,
+ * instead of the one from `react-router-dom`. This ensures that all of the
+ * plugin route and utility API wiring happens under the hood.
+ *
+ * @public
+ */
 export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
   const app = useApp();
   const { NotFoundErrorPage } = app.getComponents();
@@ -49,8 +65,10 @@ export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
             element: child,
             children: child.props.children
               ? [
+                  // These are the children of each route, which we all add in under a catch-all
+                  // subroute in order to make them available to `useOutlet`
                   {
-                    path: '/*',
+                    path: path === '/' ? '/' : '/*', // The root path must require an exact match
                     element: child.props.children,
                   },
                 ]

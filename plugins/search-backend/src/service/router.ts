@@ -36,11 +36,13 @@ export async function createRouter({
       req: express.Request<any, unknown, unknown, SearchQuery>,
       res: express.Response<SearchResultSet>,
     ) => {
-      const { term, filters = {}, pageCursor = '' } = req.query;
+      const { term, filters = {}, types, pageCursor } = req.query;
       logger.info(
-        `Search request received: ${term}, ${JSON.stringify(
+        `Search request received: term="${term}", filters=${JSON.stringify(
           filters,
-        )}, ${pageCursor}`,
+        )}, types=${types ? types.join(',') : ''}, pageCursor=${
+          pageCursor ?? ''
+        }`,
       );
 
       try {

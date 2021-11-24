@@ -1,5 +1,48 @@
 # @backstage/plugin-app-backend
 
+## 0.3.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@0.8.0
+  - @backstage/backend-common@0.9.10
+
+## 0.3.18
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/backend-common@0.9.8
+  - @backstage/config-loader@0.7.1
+
+## 0.3.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@0.7.0
+  - @backstage/backend-common@0.9.7
+
+## 0.3.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/config@0.1.8
+
+## 0.3.15
+
+### Patch Changes
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+  - @backstage/config-loader@0.6.5
+
 ## 0.3.14
 
 ### Patch Changes

@@ -1,5 +1,125 @@
 # @backstage/plugin-user-settings
 
+## 0.3.11
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- 274a4fc633: Add Props Icon for Sidebar Item SidebarSearchField and Settings
+- Updated dependencies
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.3.10
+
+### Patch Changes
+
+- 63602a1753: Align grid height
+- 202f322927: Atlassian auth provider
+
+  - AtlassianAuth added to core-app-api
+  - Atlassian provider added to plugin-auth-backend
+  - Updated user-settings with Atlassian connection
+
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/core-plugin-api@0.1.11
+
+## 0.3.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.3.8
+
+### Patch Changes
+
+- 4c3eea7788: Bitbucket Cloud authentication - based on the existing GitHub authentication + changes around BB apis and updated scope.
+
+  - BitbucketAuth added to core-app-api.
+  - Bitbucket provider added to plugin-auth-backend.
+  - Cosmetic entry for Bitbucket connection in user-settings Authentication Providers tab.
+
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+
+## 0.3.7
+
+### Patch Changes
+
+- 79ebee7a6b: Add "data-testid" for e2e tests and fix techdocs entity not found error.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
+## 0.3.6
+
+### Patch Changes
+
+- 038b9763d1: Add search to FeatureFlags
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+
+## 0.3.5
+
+### Patch Changes
+
+- 6082b9178c: Fix import for `createPlugin` in example snippet
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.4.0
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+
+## 0.3.2
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
+## 0.3.1
+
+### Patch Changes
+
+- b5953c1df: Aligns switch left and allows clicking on rows
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+
+## 0.3.0
+
+### Minor Changes
+
+- 71afed7f3: Exported and renamed components from the `@backstage/plugin-user-settings` plugin , to be able to use it in the consumer side and customize the `SettingPage`
+
 ## 0.2.12
 
 ### Patch Changes

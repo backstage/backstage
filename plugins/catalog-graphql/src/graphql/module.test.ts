@@ -21,7 +21,7 @@ import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { ReaderEntity } from '../service/client';
 import { createLogger } from 'winston';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { gql } from 'apollo-server';
 
 describe('Catalog Module', () => {
@@ -33,7 +33,7 @@ describe('Catalog Module', () => {
     },
   });
 
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
 
   describe('Default Entity', () => {
     beforeEach(() => {

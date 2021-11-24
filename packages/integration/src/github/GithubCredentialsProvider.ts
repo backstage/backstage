@@ -23,7 +23,6 @@ import { DateTime } from 'luxon';
 type InstallationData = {
   installationId: number;
   suspended: boolean;
-  repositorySelection: 'selected' | 'all';
 };
 
 class Cache {
@@ -65,13 +64,17 @@ const HEADERS = {
  */
 class GithubAppManager {
   private readonly appClient: Octokit;
+  private readonly baseUrl?: string;
   private readonly baseAuthConfig: { appId: number; privateKey: string };
   private readonly cache = new Cache();
+  private readonly allowedInstallationOwners: string[] | undefined; // undefined allows all installations
 
   constructor(config: GithubAppConfig, baseUrl?: string) {
+    this.allowedInstallationOwners = config.allowedInstallationOwners;
+    this.baseUrl = baseUrl;
     this.baseAuthConfig = {
       appId: config.appId,
-      privateKey: config.privateKey,
+      privateKey: config.privateKey.replace(/\\n/gm, '\n'),
     };
     this.appClient = new Octokit({
       baseUrl,
@@ -85,34 +88,43 @@ class GithubAppManager {
     owner: string,
     repo?: string,
   ): Promise<{ accessToken: string }> {
-    const {
-      installationId,
-      suspended,
-      repositorySelection,
-    } = await this.getInstallationData(owner);
-    if (suspended) {
-      throw new Error(
-        `The GitHub application for ${[owner, repo]
-          .filter(Boolean)
-          .join('/')} is suspended`,
-      );
+    const { installationId, suspended } = await this.getInstallationData(owner);
+    if (this.allowedInstallationOwners) {
+      if (!this.allowedInstallationOwners?.includes(owner)) {
+        throw new Error(
+          `The GitHub application for ${owner} is not included in the allowed installation list (${installationId}).`,
+        );
+      }
     }
-    if (repositorySelection !== 'all' && !repo) {
-      throw new Error(
-        `The Backstage GitHub application used in the ${owner} organization must be installed for the entire organization to be able to issue credentials without a specified repository.`,
-      );
+    if (suspended) {
+      throw new Error(`The GitHub application for ${owner} is suspended`);
     }
 
-    const cacheKey = !repo ? owner : `${owner}/${repo}`;
-    const repositories = repositorySelection !== 'all' ? [repo!] : undefined;
+    const cacheKey = repo ? `${owner}/${repo}` : owner;
 
     // Go and grab an access token for the app scoped to a repository if provided, if not use the organisation installation.
     return this.cache.getOrCreateToken(cacheKey, async () => {
       const result = await this.appClient.apps.createInstallationAccessToken({
         installation_id: installationId,
         headers: HEADERS,
-        repositories,
       });
+      if (repo && result.data.repository_selection === 'selected') {
+        const installationClient = new Octokit({
+          baseUrl: this.baseUrl,
+          auth: result.data.token,
+        });
+        const repos = await installationClient.paginate(
+          installationClient.apps.listReposAccessibleToInstallation,
+        );
+        const hasRepo = repos.some(repository => {
+          return repository.name === repo;
+        });
+        if (!hasRepo) {
+          throw new Error(
+            `The Backstage GitHub application used in the ${owner} organization does not have access to a repository with the name ${repo}`,
+          );
+        }
+      }
       return {
         token: result.data.token,
         expiresAt: DateTime.fromISO(result.data.expires_at),
@@ -129,13 +141,14 @@ class GithubAppManager {
   private async getInstallationData(owner: string): Promise<InstallationData> {
     const allInstallations = await this.getInstallations();
     const installation = allInstallations.find(
-      inst => inst.account?.login === owner,
+      inst =>
+        inst.account?.login?.toLocaleLowerCase('en-US') ===
+        owner.toLocaleLowerCase('en-US'),
     );
     if (installation) {
       return {
         installationId: installation.id,
         suspended: Boolean(installation.suspended_by),
-        repositorySelection: installation.repository_selection,
       };
     }
     const notFoundError = new Error(
@@ -146,7 +159,11 @@ class GithubAppManager {
   }
 }
 
-// GithubAppCredentialsMux corresponds to a Github installation which internally could hold several GitHub Apps.
+/**
+ * Corresponds to a Github installation which internally could hold several GitHub Apps.
+ *
+ * @public
+ */
 export class GithubAppCredentialsMux {
   private readonly apps: GithubAppManager[];
 
@@ -198,15 +215,32 @@ export class GithubAppCredentialsMux {
   }
 }
 
+/**
+ * The type of credentials produced by the credential provider.
+ *
+ * @public
+ */
 export type GithubCredentialType = 'app' | 'token';
 
+/**
+ * A set of credentials information for a GitHub integration.
+ *
+ * @public
+ */
 export type GithubCredentials = {
   headers?: { [name: string]: string };
   token?: string;
   type: GithubCredentialType;
 };
 
-// TODO: Possibly move this to a backend only package so that it's not used in the frontend by mistake
+/**
+ * Handles the creation and caching of credentials for GitHub integrations.
+ *
+ * @public
+ * @remarks
+ *
+ * TODO: Possibly move this to a backend only package so that it's not used in the frontend by mistake
+ */
 export class GithubCredentialsProvider {
   static create(config: GitHubIntegrationConfig): GithubCredentialsProvider {
     return new GithubCredentialsProvider(
@@ -221,13 +255,24 @@ export class GithubCredentialsProvider {
   ) {}
 
   /**
-   * Returns GithubCredentials for requested url.
-   * Consecutive calls to this method with the same url will return cached credentials.
+   * Returns {@link GithubCredentials} for a given URL.
+   *
+   * @remarks
+   *
+   * Consecutive calls to this method with the same URL will return cached
+   * credentials.
+   *
    * The shortest lifetime for a token returned is 10 minutes.
-   * @param opts containing the organization or repository url
-   * @returns {Promise} of @type {GithubCredentials}.
+   *
    * @example
-   * const { token, headers } = await getCredentials({url: 'github.com/backstage/foobar'})
+   * ```ts
+   * const { token, headers } = await getCredentials({
+   *   url: 'github.com/backstage/foobar'
+   * })
+   * ```
+   *
+   * @param opts - The organization or repository URL
+   * @returns A promise of {@link GithubCredentials}.
    */
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
     const parsed = parseGitUrl(opts.url);
@@ -243,11 +288,7 @@ export class GithubCredentialsProvider {
     }
 
     return {
-      headers: token
-        ? {
-            Authorization: `Bearer ${token}`,
-          }
-        : undefined,
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       token,
       type,
     };

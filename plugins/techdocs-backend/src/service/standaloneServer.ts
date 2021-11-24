@@ -70,10 +70,9 @@ export async function startStandaloneServer(
   const containerRunner = new DockerContainerRunner({ dockerClient });
 
   const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator({
+  const techdocsGenerator = TechdocsGenerator.fromConfig(config, {
     logger,
     containerRunner,
-    config,
   });
   generators.register('techdocs', techdocsGenerator);
 

@@ -30,8 +30,7 @@ describe('showLoginPopup', () => {
     const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
 
     const payloadPromise = showLoginPopup({
-      url:
-        'my-origin/api/backend/auth/start?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fa%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fb',
+      url: 'my-origin/api/backend/auth/start?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fa%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fb',
       name: 'test-popup',
       origin: 'my-origin',
     });

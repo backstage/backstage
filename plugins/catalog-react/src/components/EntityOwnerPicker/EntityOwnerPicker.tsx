@@ -19,6 +19,7 @@ import {
   Box,
   Checkbox,
   FormControlLabel,
+  makeStyles,
   TextField,
   Typography,
 } from '@material-ui/core';
@@ -26,17 +27,44 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
-import { EntityOwnerFilter } from '../../types';
+import { EntityOwnerFilter } from '../../filters';
 import { getEntityRelations } from '../../utils';
 import { formatEntityRefTitle } from '../EntityRefLink';
+
+const useStyles = makeStyles(
+  {
+    input: {},
+  },
+  {
+    name: 'CatalogReactEntityOwnerPicker',
+  },
+);
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export const EntityOwnerPicker = () => {
-  const { updateFilters, backendEntities, filters } = useEntityListProvider();
+  const classes = useStyles();
+  const { updateFilters, backendEntities, filters, queryParameters } =
+    useEntityListProvider();
+
+  const queryParamOwners = [queryParameters.owners]
+    .flat()
+    .filter(Boolean) as string[];
+  const [selectedOwners, setSelectedOwners] = useState(
+    queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
+  );
+
+  useEffect(() => {
+    updateFilters({
+      owners: selectedOwners.length
+        ? new EntityOwnerFilter(selectedOwners)
+        : undefined,
+    });
+  }, [selectedOwners, updateFilters]);
+
   const availableOwners = useMemo(
     () =>
       [
@@ -55,20 +83,15 @@ export const EntityOwnerPicker = () => {
 
   if (!availableOwners.length) return null;
 
-  const onChange = (owners: string[]) => {
-    updateFilters({
-      owners: owners.length ? new EntityOwnerFilter(owners) : undefined,
-    });
-  };
-
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">Owner</Typography>
-      <Autocomplete<string>
+      <Autocomplete
         multiple
+        aria-label="Owner"
         options={availableOwners}
-        value={filters.owners?.values ?? []}
-        onChange={(_: object, value: string[]) => onChange(value)}
+        value={selectedOwners}
+        onChange={(_: object, value: string[]) => setSelectedOwners(value)}
         renderOption={(option, { selected }) => (
           <FormControlLabel
             control={
@@ -83,7 +106,9 @@ export const EntityOwnerPicker = () => {
         )}
         size="small"
         popupIcon={<ExpandMoreIcon data-testid="owner-picker-expand" />}
-        renderInput={params => <TextField {...params} variant="outlined" />}
+        renderInput={params => (
+          <TextField {...params} className={classes.input} variant="outlined" />
+        )}
       />
     </Box>
   );

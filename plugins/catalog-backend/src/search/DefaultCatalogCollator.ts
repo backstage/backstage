@@ -15,9 +15,14 @@
  */
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, UserEntity } from '@backstage/catalog-model';
 import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
-import fetch from 'cross-fetch';
+import { Config } from '@backstage/config';
+import {
+  CatalogApi,
+  CatalogClient,
+  CatalogEntitiesRequest,
+} from '@backstage/catalog-client';
 
 export interface CatalogEntityDocument extends IndexableDocument {
   componentType: string;
@@ -30,18 +35,39 @@ export interface CatalogEntityDocument extends IndexableDocument {
 export class DefaultCatalogCollator implements DocumentCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
+  protected filter?: CatalogEntitiesRequest['filter'];
+  protected readonly catalogClient: CatalogApi;
   public readonly type: string = 'software-catalog';
+
+  static fromConfig(
+    _config: Config,
+    options: {
+      discovery: PluginEndpointDiscovery;
+      filter?: CatalogEntitiesRequest['filter'];
+    },
+  ) {
+    return new DefaultCatalogCollator({
+      ...options,
+    });
+  }
 
   constructor({
     discovery,
     locationTemplate,
+    filter,
+    catalogClient,
   }: {
     discovery: PluginEndpointDiscovery;
     locationTemplate?: string;
+    filter?: CatalogEntitiesRequest['filter'];
+    catalogClient?: CatalogApi;
   }) {
     this.discovery = discovery;
     this.locationTemplate =
       locationTemplate || '/catalog/:namespace/:kind/:name';
+    this.filter = filter;
+    this.catalogClient =
+      catalogClient || new CatalogClient({ discoveryApi: discovery });
   }
 
   protected applyArgsToFormat(
@@ -55,27 +81,43 @@ export class DefaultCatalogCollator implements DocumentCollator {
     return formatted.toLowerCase();
   }
 
+  private isUserEntity(entity: Entity): entity is UserEntity {
+    return entity.kind.toLocaleUpperCase('en-US') === 'USER';
+  }
+
+  private getDocumentText(entity: Entity): string {
+    let documentText = entity.metadata.description || '';
+    if (this.isUserEntity(entity)) {
+      if (entity.spec?.profile?.displayName && documentText) {
+        // combine displayName and description
+        const displayName = entity.spec?.profile?.displayName;
+        documentText = displayName.concat(' : ', documentText);
+      } else {
+        documentText = entity.spec?.profile?.displayName || documentText;
+      }
+    }
+    return documentText;
+  }
+
   async execute() {
-    const baseUrl = await this.discovery.getBaseUrl('catalog');
-    const res = await fetch(`${baseUrl}/entities`);
-    const entities: Entity[] = await res.json();
-    return entities.map(
-      (entity: Entity): CatalogEntityDocument => {
-        return {
-          title: entity.metadata.name,
-          location: this.applyArgsToFormat(this.locationTemplate, {
-            namespace: entity.metadata.namespace || 'default',
-            kind: entity.kind,
-            name: entity.metadata.name,
-          }),
-          text: entity.metadata.description || '',
-          componentType: entity.spec?.type?.toString() || 'other',
+    const response = await this.catalogClient.getEntities({
+      filter: this.filter,
+    });
+    return response.items.map((entity: Entity): CatalogEntityDocument => {
+      return {
+        title: entity.metadata.title ?? entity.metadata.name,
+        location: this.applyArgsToFormat(this.locationTemplate, {
           namespace: entity.metadata.namespace || 'default',
           kind: entity.kind,
-          lifecycle: (entity.spec?.lifecycle as string) || '',
-          owner: (entity.spec?.owner as string) || '',
-        };
-      },
-    );
+          name: entity.metadata.name,
+        }),
+        text: this.getDocumentText(entity),
+        componentType: entity.spec?.type?.toString() || 'other',
+        namespace: entity.metadata.namespace || 'default',
+        kind: entity.kind,
+        lifecycle: (entity.spec?.lifecycle as string) || '',
+        owner: (entity.spec?.owner as string) || '',
+      };
+    });
   }
 }

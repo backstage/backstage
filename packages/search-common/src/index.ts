@@ -13,4 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Common functionalities for Search, to be shared between various search-enabled plugins
+ *
+ * @packageDocumentation
+ */
+
 export * from './types';

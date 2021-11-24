@@ -1,5 +1,127 @@
 # @backstage/core-plugin-api
 
+## 0.2.0
+
+### Minor Changes
+
+- 7e18ed7f29: Removed the unused `UserFlags` type.
+- 7df99cdb77: Remove exports of unused types(`RouteOptions` and `RoutePath`).
+
+### Patch Changes
+
+- 37ebea2d68: Add deprecation warnings around `title` `icon` and `path` as they are no longer controlled when creating `routeRefs`
+- 2dd2a7b2cc: Deprecated the `theme` property on `AppTheme`, replacing it with `Provider`. See https://backstage.io/docs/api/deprecations#app-theme for more details.
+- b6a4bacdc4: Deprecated the `Error` and `ErrorContext` types, replacing them with identical `ErrorApiError` and `ErrorApiErrorContext` types.
+
+## 0.1.13
+
+### Patch Changes
+
+- 4a336fd292: Deprecate use of extensions without name. Adds a warning to the developer console to prompt integrators to provide names for extensions.
+- 8b4284cd5c: Improve API documentation for @backstage/core-plugin-api
+- e059aea7b9: Deprecate unused ApiRef types
+- Updated dependencies
+  - @backstage/theme@0.2.13
+
+## 0.1.12
+
+### Patch Changes
+
+- 41c49884d2: Start using the new `@backstage/types` package. Initially, this means using the `Observable` and `Json*` types from there. The types also remain in their old places but deprecated, and will be removed in a future release.
+- 925a967f36: Replace usage of test-utils-core with test-utils
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+
+## 0.1.11
+
+### Patch Changes
+
+- 202f322927: Atlassian auth provider
+
+  - AtlassianAuth added to core-app-api
+  - Atlassian provider added to plugin-auth-backend
+  - Updated user-settings with Atlassian connection
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+
+## 0.1.10
+
+### Patch Changes
+
+- 829bc698f4: Introducing the Analytics API: a lightweight way for plugins to instrument key
+  events that could help inform a Backstage Integrator how their instance of
+  Backstage is being used. The API consists of the following:
+
+  - `useAnalytics()`, a hook to be used inside plugin components which retrieves
+    an Analytics Tracker.
+  - `tracker.captureEvent()`, a method on the tracker used to instrument key
+    events. The method expects an action (the event name) and a subject (a unique
+    identifier of the object the action is being taken on).
+  - `<AnalyticsContext />`, a way to declaratively attach additional information
+    to any/all events captured in the underlying React tree. There is also a
+    `withAnalyticsContext()` HOC utility.
+  - The `tracker.captureEvent()` method also accepts an `attributes` option for
+    providing additional run-time information about an event, as well as a
+    `value` option for capturing a numeric/metric value.
+
+  By default, captured events are not sent anywhere. In order to collect and
+  redirect events to an analytics system, the `analyticsApi` will need to be
+  implemented and instantiated by an App Integrator.
+
+- 4c3eea7788: Bitbucket Cloud authentication - based on the existing GitHub authentication + changes around BB apis and updated scope.
+
+  - BitbucketAuth added to core-app-api.
+  - Bitbucket provider added to plugin-auth-backend.
+  - Cosmetic entry for Bitbucket connection in user-settings Authentication Providers tab.
+
+## 0.1.9
+
+### Patch Changes
+
+- 98bd661240: Improve compatibility between different versions by defining the route reference type using a string key rather than a unique symbol. This change only applies to type checking and has no effect on the runtime value, where we still use the symbol.
+
+## 0.1.8
+
+### Patch Changes
+
+- 671015f132: Switch to using utilities from `@backstage/version-bridge'.
+
+## 0.1.7
+
+### Patch Changes
+
+- 3d238b028: Migrated component data attachment method to have better compatibility with component proxies such as `react-hot-loader`.
+- Updated dependencies
+  - @backstage/config@0.1.9
+
+## 0.1.6
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+
+## 0.1.5
+
+### Patch Changes
+
+- c4d8ff963: Switched frontend identity code to use `token` instead of the deprecated `idToken` field
+- Updated dependencies
+  - @backstage/config@0.1.6
+
+## 0.1.4
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/theme@0.2.9
+
 ## 0.1.3
 
 ### Patch Changes

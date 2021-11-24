@@ -23,9 +23,9 @@ app:
             title: '#backstage'
 
 backend:
-  baseUrl: http://localhost:7000
+  baseUrl: http://localhost:7007
   listen:
-    port: 7000
+    port: 7007
   database:
     client: sqlite3
     connection: ':memory:'
@@ -101,8 +101,10 @@ organization:
 # https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
 techdocs:
   builder: 'local' # Alternatives - 'external'
-  generators:
-    techdocs: 'docker' # Alternatives - 'local'
+  generator:
+    runIn: 'docker'
+    # dockerImage: my-org/techdocs # use a custom docker image
+    # pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
 
@@ -131,6 +133,9 @@ kafka:
       brokers:
         - localhost:9092
 
+allure:
+  baseUrl: http://localhost:5050/allure-docker-service
+
 integrations:
   github:
     - host: github.com
@@ -150,12 +155,21 @@ integrations:
     - host: bitbucket.org
       username: ${BITBUCKET_USERNAME}
       appPassword: ${BITBUCKET_APP_PASSWORD}
+    ### Example for how to add your bitbucket server instance using the API:
+    # - host: server.bitbucket.com
+    #   apiBaseUrl: server.bitbucket.com
+    #   username: ${BITBUCKET_SERVER_USERNAME}
+    #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
   azure:
     - host: dev.azure.com
       token: ${AZURE_TOKEN}
-#  googleGcs:
-#    clientEmail: 'example@example.com'
-#    privateKey: ${GCS_PRIVATE_KEY}
+  #  googleGcs:
+  #    clientEmail: 'example@example.com'
+  #    privateKey: ${GCS_PRIVATE_KEY}
+  awsS3:
+    - host: amazonaws.com
+      accessKeyId: ${AWS_ACCESS_KEY_ID}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 
 catalog:
   rules:
@@ -248,8 +262,16 @@ catalog:
     # Backstage example groups and users
     - type: file
       target: ../catalog-model/examples/acme-corp.yaml
-
+    # Backstage end-to-end tests of TechDocs
+    - type: file
+      target: ../../cypress/e2e-fixture.catalog.info.yaml
 scaffolder:
+  # Use to customize default commit author info used when new components are created
+  # defaultAuthor:
+  #   name: Scaffolder
+  #   email: scaffolder@backstage.io
+  # Use to customize the default commit message when new components are created
+  # defaultCommitMessage: 'Initial commit'
   github:
     token: ${GITHUB_TOKEN}
     visibility: public # or 'internal' or 'private'
@@ -270,6 +292,15 @@ scaffolder:
     visibility: public # or or 'private'
 
 auth:
+  ### Add auth.keyStore.provider to more granularly control how to store JWK data when running
+  # the auth-backend.
+  #
+  # keyStore:
+  #  provider: firestore
+  #  firestore:
+  #    projectId: my-project
+  #    path: my-sessions
+
   environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
   # session:
@@ -292,6 +323,7 @@ auth:
     saml:
       entryPoint: 'http://localhost:7001/'
       issuer: 'passport-saml'
+      cert: 'fake-cert-base64'
     okta:
       development:
         clientId: ${AUTH_OKTA_CLIENT_ID}
@@ -308,13 +340,20 @@ auth:
         #
         # scope: saml-login-selector openid profile email
     oidc:
+      # Note that you must define a session secret (see above) since the oidc provider requires session support.
+      # Note that by default, this provider will use the 'none' prompt which assumes that your are already logged on in the IDP.
+      # You should set prompt to:
+      # - auto: will let the IDP decide if you need to log on or if you can skip login when you have an active SSO session
+      # - login: will force the IDP to always present a login form to the user
       development:
         metadataUrl: ${AUTH_OIDC_METADATA_URL}
         clientId: ${AUTH_OIDC_CLIENT_ID}
         clientSecret: ${AUTH_OIDC_CLIENT_SECRET}
         authorizationUrl: ${AUTH_OIDC_AUTH_URL}
         tokenUrl: ${AUTH_OIDC_TOKEN_URL}
-        tokenSignedResponseAlg: ${AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG}
+        tokenSignedResponseAlg: ${AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG} # default='RS256'
+        scope: ${AUTH_OIDC_SCOPE} # default='openid profile email'
+        prompt: ${AUTH_OIDC_PROMPT} # default=none (allowed values: auto, none, consent, login)
     auth0:
       development:
         clientId: ${AUTH_AUTH0_CLIENT_ID}
@@ -330,6 +369,15 @@ auth:
         clientId: ${AUTH_ONELOGIN_CLIENT_ID}
         clientSecret: ${AUTH_ONELOGIN_CLIENT_SECRET}
         issuer: ${AUTH_ONELOGIN_ISSUER}
+    bitbucket:
+      development:
+        clientId: ${AUTH_BITBUCKET_CLIENT_ID}
+        clientSecret: ${AUTH_BITBUCKET_CLIENT_SECRET}
+    atlassian:
+      development:
+        clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
+        clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
+        scopes: ${AUTH_ATLASSIAN_SCOPES}
 costInsights:
   engineerCost: 200000
   products:
@@ -354,6 +402,31 @@ costInsights:
       default: true
     MSC:
       name: Monthly Subscribers
+  currencies:
+    engineers:
+      label: 'Engineers 🛠'
+      unit: 'engineer'
+    usd:
+      label: 'US Dollars 💵'
+      kind: 'USD'
+      unit: 'dollar'
+      prefix: '$'
+      rate: 1
+    carbonOffsetTons:
+      label: 'Carbon Offset Tons ♻️⚖️s'
+      kind: 'CARBON_OFFSET_TONS'
+      unit: 'carbon offset ton'
+      rate: 3.5
+    beers:
+      label: 'Beers 🍺'
+      kind: 'BEERS'
+      unit: 'beer'
+      rate: 4.5
+    pintsIceCream:
+      label: 'Pints of Ice Cream 🍦'
+      kind: 'PINTS_OF_ICE_CREAM'
+      unit: 'ice cream pint'
+      rate: 5.5
 homepage:
   clocks:
     - label: UTC
@@ -366,3 +439,14 @@ homepage:
       timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
+jenkins:
+  instances:
+    - name: default
+      baseUrl: https://jenkins.example.com
+      username: backstage-bot
+      apiKey: 123456789abcdef0123456789abcedf012
+
+azureDevOps:
+  host: dev.azure.com
+  token: my-token
+  organization: my-company

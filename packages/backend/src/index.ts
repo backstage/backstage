@@ -36,7 +36,9 @@ import {
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
+import { metricsInit, metricsHandler } from './metrics';
 import auth from './plugins/auth';
+import azureDevOps from './plugins/azure-devops';
 import catalog from './plugins/catalog';
 import codeCoverage from './plugins/codecoverage';
 import kubernetes from './plugins/kubernetes';
@@ -46,10 +48,12 @@ import scaffolder from './plugins/scaffolder';
 import proxy from './plugins/proxy';
 import search from './plugins/search';
 import techdocs from './plugins/techdocs';
+import techInsights from './plugins/techInsights';
 import todo from './plugins/todo';
 import graphql from './plugins/graphql';
 import app from './plugins/app';
 import badges from './plugins/badges';
+import jenkins from './plugins/jenkins';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(config: Config) {
@@ -71,6 +75,7 @@ function makeCreateEnv(config: Config) {
 }
 
 async function main() {
+  metricsInit();
   const logger = getRootLogger();
 
   logger.info(
@@ -91,6 +96,7 @@ async function main() {
   );
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
+  const azureDevOpsEnv = useHotMemoize(module, () => createEnv('azure-devops'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
   const searchEnv = useHotMemoize(module, () => createEnv('search'));
@@ -101,13 +107,19 @@ async function main() {
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
+  const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
+  const techInsightsEnv = useHotMemoize(module, () =>
+    createEnv('tech-insights'),
+  );
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
+  apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
   apiRouter.use('/auth', await auth(authEnv));
+  apiRouter.use('/azure-devops', await azureDevOps(azureDevOpsEnv));
   apiRouter.use('/search', await search(searchEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/todo', await todo(todoEnv));
@@ -116,11 +128,13 @@ async function main() {
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/graphql', await graphql(graphqlEnv));
   apiRouter.use('/badges', await badges(badgesEnv));
+  apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
     .loadConfig(config)
     .addRouter('', await healthcheck(healthcheckEnv))
+    .addRouter('', metricsHandler())
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));
 

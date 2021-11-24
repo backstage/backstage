@@ -1,5 +1,373 @@
 # @backstage/plugin-scaffolder
 
+## 0.11.11
+
+### Patch Changes
+
+- 8809b6c0dd: Update the json-schema dependency version.
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/integration-react@0.1.14
+
+## 0.11.10
+
+### Patch Changes
+
+- fe5738fe1c: Lazy load `LazyLog` as it is rarely used.
+- b45a34fb15: Adds a new endpoint for consuming logs from the Scaffolder that uses long polling instead of Server Sent Events.
+
+  This is useful if Backstage is accessed from an environment that doesn't support SSE correctly, which happens in combination with certain enterprise HTTP Proxy servers.
+
+  It is intended to switch the endpoint globally for the whole instance.
+  If you want to use it, you can provide a reconfigured API to the `scaffolderApiRef`:
+
+  ```tsx
+  // packages/app/src/apis.ts
+
+  // ...
+  import {
+    scaffolderApiRef,
+    ScaffolderClient,
+  } from '@backstage/plugin-scaffolder';
+
+  export const apis: AnyApiFactory[] = [
+    // ...
+
+    createApiFactory({
+      api: scaffolderApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+        scmIntegrationsApi: scmIntegrationsApiRef,
+      },
+      factory: ({ discoveryApi, identityApi, scmIntegrationsApi }) =>
+        new ScaffolderClient({
+          discoveryApi,
+          identityApi,
+          scmIntegrationsApi,
+          // use long polling instead of an eventsource
+          useLongPollingLogs: true,
+        }),
+    }),
+  ];
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/catalog-client@0.5.1
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
+## 0.11.9
+
+### Patch Changes
+
+- 5e10974af6: Surfacing all components of the ScaffolderPage outside of the plugin so you can customize the page
+- 5df2435892: Scaffolder: Enable back Template action buttons if template fails to execute
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/core-components@0.7.2
+  - @backstage/integration-react@0.1.13
+  - @backstage/plugin-catalog-react@0.6.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.11.8
+
+### Patch Changes
+
+- 0366c9b667: Introduce a `useStarredEntity` hook to check if a single entity is starred.
+  It provides a more efficient implementation compared to the `useStarredEntities` hook, because the rendering is only triggered if the selected entity is starred, not if _any_ entity is starred.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/integration@0.6.8
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+  - @backstage/integration-react@0.1.12
+
+## 0.11.7
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.11.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/integration-react@0.1.11
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.11.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+  - @backstage/integration-react@0.1.10
+
+## 0.11.4
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- 70fdfbf36a: Change the Categories filter to a dropdown component
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/integration-react@0.1.9
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.11.3
+
+### Patch Changes
+
+- c299e90a2: Disable all buttons in the final step when 'Create' button is clicked in template.
+- 3acf5988f: Fix display error when it fails to load a template (/create) page
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-client@0.3.19
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.11.2
+
+### Patch Changes
+
+- 34e14fdf7: Allow to pass custom TemplateCard to ScaffolderPage
+- 957ae8059: Use themeId in TemplateCard from theme object
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/integration-react@0.1.8
+
+## 0.11.1
+
+### Patch Changes
+
+- 5bab4fe2a: Previously when supplying custom scaffolder field extensions, it was necessary to also include the default ones if they were needed. Since the field extensions are keyed by name, there's no harm in leaving the default ones in place when adding custom ones - if templates don't refer to them they will be ignored, and if custom ones are introduced with the same name, the custom ones will take priority over the default ones.
+
+  Users configuring custom field extensions can remove the default ones from the scaffolder route after this change, and they'll still be available:
+
+  ```diff
+      <Route path="/create" element={<ScaffolderPage />}>
+        <ScaffolderFieldExtensions>
+  -        <EntityPickerFieldExtension />
+  -        <EntityNamePickerFieldExtension />
+  -        <RepoUrlPickerFieldExtension />
+  -        <OwnerPickerFieldExtension />
+          <LowerCaseValuePickerFieldExtension />
+        </ScaffolderFieldExtensions>
+      </Route>
+  ```
+
+- 24d0e1ea1: Set `id` in `<TextValuePicker>`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/config@0.1.7
+  - @backstage/core-components@0.3.2
+  - @backstage/integration@0.6.1
+  - @backstage/theme@0.2.10
+
+## 0.11.0
+
+### Minor Changes
+
+- e30646aeb: Add Bitbucket workspace and project fields to RepoUrlPicker to support Bitbucket cloud and server
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- 7894421f1: Added UI Schema support for array items for example, support EntityPicker within an array field
+- fa84fe44e: - Adds a new field `EntityNamePicker` that can be used in scaffolder templates to accept and validate an entity name. This field is registered by default, and can be used in templates by setting the `ui:field` property to `EntityNamePicker`. If you've customized your scaffolder field extensions, you can include this one by adding it when registering the scaffolder route:
+
+  ```diff
+  import {
+    ScaffolderFieldExtensions,
+  +   EntityNamePickerFieldExtension,
+  } from '@backstage/plugin-scaffolder';
+
+    <Route path="/create" element={<ScaffolderPage />}>
+      <ScaffolderFieldExtensions>
+        {/* ...custom field extensions... */}
+
+  +       <EntityNamePickerFieldExtension />
+      </ScaffolderFieldExtensions>
+    </Route>;
+  ```
+
+  - Adds a new generic field `TextValuePicker` to be used when writing custom field extensions that use a standard UI with custom validation. An example of doing this can be found in `packages/app/src/components/scaffolder/customScaffolderExtensions.tsx`.
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+  - @backstage/integration-react@0.1.7
+
+## 0.10.3
+
+### Patch Changes
+
+- 7b8aa8d0d: Move the `CreateComponentButton` from the catalog plugin to the `core-components` & rename it to `CreateButton` to be reused inside the api-docs plugin & scaffolder plugin, but also future plugins. Additionally, improve responsiveness of `CreateButton` & `SupportButton` by shrinking them to `IconButtons` on smaller screens.
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+  - @backstage/integration-react@0.1.6
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.10.2
+
+### Patch Changes
+
+- 0d5d0e2e6: chore: set the lifecycle as beta logo
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/integration-react@0.1.5
+  - @backstage/theme@0.2.9
+  - @backstage/catalog-client@0.3.18
+
+## 0.10.1
+
+### Patch Changes
+
+- 73951fc44: Add options to mask or hide values on review state
+- 976b61080: Updated the software templates list page (`ScaffolderPage`) to use the `useEntityListProvider` hook from #5643. This reduces the code footprint, making it easier to customize the display of this page, and consolidates duplicate approaches to querying the catalog with filters.
+
+  - The `useEntityTypeFilter` hook has been updated along with the underlying `EntityTypeFilter` to work with multiple values, to allow more flexibility for different user interfaces. It's unlikely that this change affects you; however, if you're using either of these directly, you'll need to update your usage.
+  - `SearchToolbar` was renamed to `EntitySearchBar` and moved to `catalog-react` to be usable by other entity list pages
+  - `UserListPicker` now has an `availableTypes` prop to restrict which user-related options to present
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
+## 0.10.0
+
+### Minor Changes
+
+- 60e830222: Support for `Template` kinds with version `backstage.io/v1alpha1` has now been removed. This means that the old method of running templates with `Preparers`, `Templaters` and `Publishers` has also been removed. If you had any logic in these abstractions, they should now be moved to `actions` instead, and you can find out more about those in the [documentation](https://backstage.io/docs/features/software-templates/writing-custom-actions)
+
+  If you need any help migrating existing templates, there's a [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2). Reach out to us on Discord in the #support channel if you're having problems.
+
+  The `scaffolder-backend` now no longer requires these `Preparers`, `Templaters`, and `Publishers` to be passed in, now all it needs is the `containerRunner`.
+
+  Please update your `packages/backend/src/plugins/scaffolder.ts` like the following
+
+  ```diff
+  - import {
+  -  DockerContainerRunner,
+  -  SingleHostDiscovery,
+  - } from '@backstage/backend-common';
+  + import { DockerContainerRunner } from '@backstage/backend-common';
+    import { CatalogClient } from '@backstage/catalog-client';
+  - import {
+  -   CookieCutter,
+  -   CreateReactAppTemplater,
+  -   createRouter,
+  -   Preparers,
+  -   Publishers,
+  -   Templaters,
+  - } from '@backstage/plugin-scaffolder-backend';
+  + import { createRouter } from '@backstage/plugin-scaffolder-backend';
+    import Docker from 'dockerode';
+    import { Router } from 'express';
+    import type { PluginEnvironment } from '../types';
+
+    export default async function createPlugin({
+      config,
+      database,
+      reader,
+  +   discovery,
+    }: PluginEnvironment): Promise<Router> {
+      const dockerClient = new Docker();
+      const containerRunner = new DockerContainerRunner({ dockerClient });
+
+  -   const cookiecutterTemplater = new CookieCutter({ containerRunner });
+  -   const craTemplater = new CreateReactAppTemplater({ containerRunner });
+  -   const templaters = new Templaters();
+
+  -   templaters.register('cookiecutter', cookiecutterTemplater);
+  -   templaters.register('cra', craTemplater);
+  -
+  -   const preparers = await Preparers.fromConfig(config, { logger });
+  -   const publishers = await Publishers.fromConfig(config, { logger });
+
+  -   const discovery = SingleHostDiscovery.fromConfig(config);
+      const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+      return await createRouter({
+  -     preparers,
+  -     templaters,
+  -     publishers,
+  +     containerRunner,
+        logger,
+        config,
+        database,
+
+  ```
+
+### Patch Changes
+
+- 02b962394: Added a `context` parameter to validator functions, letting them have access to
+  the API holder.
+
+  If you have implemented custom validators and use `createScaffolderFieldExtension`,
+  your `validation` function can now optionally accept a third parameter,
+  `context: { apiHolder: ApiHolder }`.
+
+- 6841e0113: fix minor version of git-url-parse as 11.5.x introduced a bug for Bitbucket Server
+- 0adfae5c8: add support for uiSchema on dependent form fields
+- bd764f78a: Pass through the `idToken` in `Authorization` Header for `listActions` request
+- Updated dependencies
+  - @backstage/integration@0.5.8
+  - @backstage/core-components@0.1.5
+  - @backstage/catalog-model@0.9.0
+  - @backstage/catalog-client@0.3.16
+  - @backstage/plugin-catalog-react@0.2.6
+
 ## 0.9.10
 
 ### Patch Changes

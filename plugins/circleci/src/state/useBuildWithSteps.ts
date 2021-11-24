@@ -62,9 +62,10 @@ export function useBuildWithSteps(buildId: number) {
     }
   };
 
-  const { loading, value, retry } = useAsyncRetry(() => getBuildWithSteps(), [
-    getBuildWithSteps,
-  ]);
+  const { loading, value, retry } = useAsyncRetry(
+    () => getBuildWithSteps(),
+    [getBuildWithSteps],
+  );
 
   const { startPolling, stopPolling } = useAsyncPolling(
     getBuildWithSteps,

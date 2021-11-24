@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { AwsS3IntegrationConfig } from './awsS3';
+import { AwsS3Integration } from './awsS3/AwsS3Integration';
 import { AzureIntegrationConfig } from './azure';
 import { AzureIntegration } from './azure/AzureIntegration';
 import { BitbucketIntegrationConfig } from './bitbucket';
@@ -26,6 +27,10 @@ import { basicIntegrations } from './helpers';
 import { ScmIntegrations } from './ScmIntegrations';
 
 describe('ScmIntegrations', () => {
+  const awsS3 = new AwsS3Integration({
+    host: 'awss3.local',
+  } as AwsS3IntegrationConfig);
+
   const azure = new AzureIntegration({
     host: 'azure.local',
   } as AzureIntegrationConfig);
@@ -43,6 +48,7 @@ describe('ScmIntegrations', () => {
   } as GitLabIntegrationConfig);
 
   const i = new ScmIntegrations({
+    awsS3: basicIntegrations([awsS3], item => item.config.host),
     azure: basicIntegrations([azure], item => item.config.host),
     bitbucket: basicIntegrations([bitbucket], item => item.config.host),
     github: basicIntegrations([github], item => item.config.host),
@@ -50,6 +56,7 @@ describe('ScmIntegrations', () => {
   });
 
   it('can get the specifics', () => {
+    expect(i.awsS3.byUrl('https://awss3.local')).toBe(awsS3);
     expect(i.azure.byUrl('https://azure.local')).toBe(azure);
     expect(i.bitbucket.byUrl('https://bitbucket.local')).toBe(bitbucket);
     expect(i.github.byUrl('https://github.local')).toBe(github);
@@ -58,16 +65,18 @@ describe('ScmIntegrations', () => {
 
   it('can list', () => {
     expect(i.list()).toEqual(
-      expect.arrayContaining([azure, bitbucket, github, gitlab]),
+      expect.arrayContaining([awsS3, azure, bitbucket, github, gitlab]),
     );
   });
 
   it('can select by url and host', () => {
+    expect(i.byUrl('https://awss3.local')).toBe(awsS3);
     expect(i.byUrl('https://azure.local')).toBe(azure);
     expect(i.byUrl('https://bitbucket.local')).toBe(bitbucket);
     expect(i.byUrl('https://github.local')).toBe(github);
     expect(i.byUrl('https://gitlab.local')).toBe(gitlab);
 
+    expect(i.byHost('awss3.local')).toBe(awsS3);
     expect(i.byHost('azure.local')).toBe(azure);
     expect(i.byHost('bitbucket.local')).toBe(bitbucket);
     expect(i.byHost('github.local')).toBe(github);

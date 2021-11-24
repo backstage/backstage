@@ -69,9 +69,8 @@ export const AuditListTable = ({ items }: { items: Website[] }) => {
       const auditStatus = response.lastAudit.status;
       if (auditStatus === 'COMPLETED' || auditStatus === 'FAILED') {
         const newWebsiteData = websiteState.slice(0);
-        newWebsiteData[
-          newWebsiteData.findIndex(w => w.url === response.url)
-        ] = response;
+        newWebsiteData[newWebsiteData.findIndex(w => w.url === response.url)] =
+          response;
         setWebsiteState(newWebsiteData);
       }
     });

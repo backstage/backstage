@@ -18,11 +18,8 @@ import { useElementFilter } from './useElementFilter';
 import { renderHook } from '@testing-library/react-hooks';
 import { attachComponentData } from './componentData';
 import { featureFlagsApiRef } from '../apis';
-import {
-  ApiProvider,
-  ApiRegistry,
-  LocalStorageFeatureFlags,
-} from '@backstage/core-app-api';
+import { LocalStorageFeatureFlags } from '@backstage/core-app-api';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const WRAPPING_COMPONENT_KEY = 'core.blob.testing';
 const INNER_COMPONENT_KEY = 'core.blob2.testing';
@@ -45,9 +42,9 @@ const FeatureFlagComponent = (_props: {
 attachComponentData(FeatureFlagComponent, 'core.featureFlagged', true);
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
 const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-  <ApiProvider apis={ApiRegistry.with(featureFlagsApiRef, mockFeatureFlagsApi)}>
+  <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
     {children}
-  </ApiProvider>
+  </TestApiProvider>
 );
 
 describe('useElementFilter', () => {
@@ -330,7 +327,7 @@ describe('useElementFilter', () => {
       },
     );
 
-    expect(result.error.message).toEqual('Could not find component');
+    expect(result.error?.message).toEqual('Could not find component');
   });
 
   it('should support fragments and text node iteration', () => {

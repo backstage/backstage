@@ -15,8 +15,6 @@
  */
 
 import React from 'react';
-import { fireEvent } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
 import { renderInTestApp } from '@backstage/test-utils';
 
 import { CodeSnippet } from './CodeSnippet';
@@ -33,6 +31,12 @@ const minProps = {
 };
 
 describe('<CodeSnippet />', () => {
+  // react-syntax-highlighter is large and can cause significant slowdowns
+  // This test makes sure we're loading things in asynchronously and not too broadly.
+  it('renders quickly', async () => {
+    await renderInTestApp(<CodeSnippet text="" language="javascript" />);
+  }, 1000);
+
   it('renders text without exploding', async () => {
     const { getByText } = await renderInTestApp(<CodeSnippet {...minProps} />);
     expect(getByText(/"Hello"/)).toBeInTheDocument();
@@ -55,20 +59,5 @@ describe('<CodeSnippet />', () => {
     expect(getByText('1')).toBeInTheDocument();
     expect(getByText('2')).toBeInTheDocument();
     expect(getByText('3')).toBeInTheDocument();
-  });
-
-  it('copy code using button', async () => {
-    jest.useFakeTimers();
-    document.execCommand = jest.fn();
-    const { getByTitle } = await renderInTestApp(
-      <CodeSnippet {...minProps} showCopyCodeButton />,
-    );
-    const button = getByTitle('Text copied to clipboard');
-    fireEvent.click(button);
-    act(() => {
-      jest.runAllTimers();
-    });
-    expect(document.execCommand).toHaveBeenCalled();
-    jest.useRealTimers();
   });
 });

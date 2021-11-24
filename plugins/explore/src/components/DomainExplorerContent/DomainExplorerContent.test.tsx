@@ -16,12 +16,11 @@
 
 import { DomainEntity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { catalogEntityRouteRef } from '../../routes';
 import { DomainExplorerContent } from './DomainExplorerContent';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<DomainExplorerContent />', () => {
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
@@ -33,12 +32,14 @@ describe('<DomainExplorerContent />', () => {
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
     getEntityByName: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ApiProvider apis={ApiRegistry.with(catalogApiRef, catalogApi)}>
+    <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
       {children}
-    </ApiProvider>
+    </TestApiProvider>
   );
 
   const mountedRoutes = {

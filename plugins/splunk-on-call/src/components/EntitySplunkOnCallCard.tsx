@@ -92,7 +92,11 @@ export const EntitySplunkOnCallCard = () => {
     setShowDialog(x => !x);
   }, []);
 
-  const { value: usersAndTeam, loading, error } = useAsync(async () => {
+  const {
+    value: usersAndTeam,
+    loading,
+    error,
+  } = useAsync(async () => {
     const allUsers = await api.getUsers();
     const usersHashMap = allUsers.reduce(
       (map: Record<string, User>, obj: User) => {

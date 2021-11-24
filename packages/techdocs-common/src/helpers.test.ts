@@ -19,13 +19,25 @@ import {
   SearchResponse,
   UrlReader,
 } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, getEntitySourceLocation } from '@backstage/catalog-model';
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
+import os from 'os';
+import path from 'path';
 import { Readable } from 'stream';
 import {
   getDocFilesFromRepository,
   getLocationForEntity,
   parseReferenceAnnotation,
+  transformDirLocation,
 } from './helpers';
+
+jest.mock('@backstage/catalog-model', () => ({
+  ...jest.requireActual('@backstage/catalog-model'),
+  getEntitySourceLocation: jest.fn(),
+}));
+
+const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
 const entityBase: Entity = {
   metadata: {
@@ -81,6 +93,10 @@ const mockEntityWithBadAnnotation: Entity = {
   },
 };
 
+const scmIntegrations = ScmIntegrations.fromConfig(new ConfigReader({}));
+
+afterEach(() => jest.resetAllMocks());
+
 describe('parseReferenceAnnotation', () => {
   it('should parse annotation', () => {
     const parsedLocationAnnotation = parseReferenceAnnotation(
@@ -109,10 +125,158 @@ describe('parseReferenceAnnotation', () => {
   });
 });
 
+describe('transformDirLocation', () => {
+  it.each`
+    techdocsRef           | target
+    ${'dir:.'}            | ${'https://my-url/folder/'}
+    ${'dir:./sub-folder'} | ${'https://my-url/folder/sub-folder'}
+  `(
+    'should transform "$techdocsRef" for url type locations',
+    ({ techdocsRef, target }) => {
+      (getEntitySourceLocation as jest.Mock).mockReturnValue({
+        type: 'url',
+        target: 'https://my-url/folder/',
+      });
+
+      const entity = {
+        apiVersion: '1',
+        kind: 'Component',
+        metadata: {
+          name: 'test',
+          annotations: {
+            'backstage.io/techdocs-ref': techdocsRef,
+          },
+        },
+      };
+
+      const result = transformDirLocation(
+        entity,
+        parseReferenceAnnotation('backstage.io/techdocs-ref', entity),
+        scmIntegrations,
+      );
+
+      expect(result).toEqual({ type: 'url', target });
+    },
+  );
+
+  it.each`
+    techdocsRef           | target
+    ${'dir:.'}            | ${path.join(rootDir, 'working-copy')}
+    ${'dir:./sub-folder'} | ${path.join(rootDir, 'working-copy', 'sub-folder')}
+  `(
+    'should transform "$techdocsRef" for file type locations',
+    ({ techdocsRef, target }) => {
+      (getEntitySourceLocation as jest.Mock).mockReturnValue({
+        type: 'file',
+        target: path.join(rootDir, 'working-copy', 'catalog-info.yaml'),
+      });
+
+      const entity = {
+        apiVersion: '1',
+        kind: 'Component',
+        metadata: {
+          name: 'test',
+          annotations: {
+            'backstage.io/techdocs-ref': techdocsRef,
+          },
+        },
+      };
+
+      const result = transformDirLocation(
+        entity,
+        parseReferenceAnnotation('backstage.io/techdocs-ref', entity),
+        scmIntegrations,
+      );
+
+      expect(result).toEqual({ type: 'dir', target });
+    },
+  );
+
+  it('should reject unsafe file location', () => {
+    (getEntitySourceLocation as jest.Mock).mockReturnValue({
+      type: 'file',
+      target: '/tmp/catalog-info.yaml',
+    });
+
+    const entity = {
+      apiVersion: '1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'backstage.io/techdocs-ref': 'dir:..',
+        },
+      },
+    };
+
+    expect(() =>
+      transformDirLocation(
+        entity,
+        parseReferenceAnnotation('backstage.io/techdocs-ref', entity),
+        scmIntegrations,
+      ),
+    ).toThrow(
+      /Relative path is not allowed to refer to a directory outside its parent/,
+    );
+  });
+
+  it('should reject other location types', () => {
+    (getEntitySourceLocation as jest.Mock).mockReturnValue({
+      type: 'other',
+      target: '/',
+    });
+
+    const entity = {
+      apiVersion: '1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'backstage.io/techdocs-ref': 'dir:.',
+        },
+      },
+    };
+
+    expect(() =>
+      transformDirLocation(
+        entity,
+        parseReferenceAnnotation('backstage.io/techdocs-ref', entity),
+        scmIntegrations,
+      ),
+    ).toThrow(/Unable to resolve location type other/);
+  });
+});
+
 describe('getLocationForEntity', () => {
+  it('should handle dir locations', () => {
+    (getEntitySourceLocation as jest.Mock).mockReturnValue({
+      type: 'url',
+      target: 'https://my-url/folder/',
+    });
+
+    const entity = {
+      apiVersion: '1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'backstage.io/techdocs-ref': 'dir:.',
+        },
+      },
+    };
+
+    const parsedLocationAnnotation = getLocationForEntity(
+      entity,
+      scmIntegrations,
+    );
+    expect(parsedLocationAnnotation.type).toBe('url');
+    expect(parsedLocationAnnotation.target).toBe('https://my-url/folder/');
+  });
+
   it('should get location for entity', () => {
     const parsedLocationAnnotation = getLocationForEntity(
       mockEntityWithAnnotation,
+      scmIntegrations,
     );
     expect(parsedLocationAnnotation.type).toBe('url');
     expect(parsedLocationAnnotation.target).toBe(

@@ -46,6 +46,7 @@ export const ilertPlugin = createPlugin({
 
 export const ILertPage = ilertPlugin.provide(
   createRoutableExtension({
+    name: 'ILertPage',
     component: () => import('./components').then(m => m.ILertPage),
     mountPoint: iLertRouteRef,
   }),
@@ -53,6 +54,7 @@ export const ILertPage = ilertPlugin.provide(
 
 export const EntityILertCard = ilertPlugin.provide(
   createComponentExtension({
+    name: 'EntityILertCard',
     component: {
       lazy: () => import('./components/ILertCard').then(m => m.ILertCard),
     },

@@ -4,8 +4,6 @@ title: Search Architecture
 description: Documentation on Search Architecture
 ---
 
-# Search Architecture
-
 > _This architecture has not been fully implemented yet. Find our milestones to
 > follow our progress and help contribute on the
 > [Search Roadmap](./README.md#project-roadmap)._

@@ -15,8 +15,9 @@
  */
 
 import { Config } from '@backstage/config';
+import { ForwardedError } from '@backstage/errors';
 import * as container from '@google-cloud/container';
-import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import { GKEClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 type GkeClusterLocatorOptions = {
   projectId: string;
@@ -49,7 +50,8 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
     );
   }
 
-  async getClusters(): Promise<ClusterDetails[]> {
+  // TODO pass caData into the object
+  async getClusters(): Promise<GKEClusterDetails[]> {
     const { projectId, region, skipTLSVerify } = this.options;
     const request = {
       parent: `projects/${projectId}/locations/${region}`,
@@ -65,8 +67,9 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
         skipTLSVerify,
       }));
     } catch (e) {
-      throw new Error(
-        `There was an error retrieving clusters from GKE for projectId=${projectId} region=${region} : [${e.message}]`,
+      throw new ForwardedError(
+        `There was an error retrieving clusters from GKE for projectId=${projectId} region=${region}`,
+        e,
       );
     }
   }

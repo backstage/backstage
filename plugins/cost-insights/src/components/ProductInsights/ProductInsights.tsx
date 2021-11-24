@@ -37,9 +37,10 @@ import { useApi } from '@backstage/core-plugin-api';
 
 type LoadingProps = (isLoading: boolean) => void;
 
-const mapLoadingToProps: MapLoadingToProps<LoadingProps> = ({ dispatch }) => (
-  isLoading: boolean,
-) => dispatch({ [DefaultLoadingAction.CostInsightsProducts]: isLoading });
+const mapLoadingToProps: MapLoadingToProps<LoadingProps> =
+  ({ dispatch }) =>
+  (isLoading: boolean) =>
+    dispatch({ [DefaultLoadingAction.CostInsightsProducts]: isLoading });
 
 type ProductInsightsProps = {
   group: string;

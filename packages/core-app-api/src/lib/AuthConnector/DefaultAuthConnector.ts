@@ -61,7 +61,8 @@ function defaultJoinScopes(scopes: Set<string>) {
  * via the OAuthRequestApi.
  */
 export class DefaultAuthConnector<AuthSession>
-  implements AuthConnector<AuthSession> {
+  implements AuthConnector<AuthSession>
+{
   private readonly discoveryApi: DiscoveryApi;
   private readonly environment: string;
   private readonly provider: AuthProvider & { id: string };
@@ -151,7 +152,10 @@ export class DefaultAuthConnector<AuthSession>
 
   private async showPopup(scopes: Set<string>): Promise<AuthSession> {
     const scope = this.joinScopesFunc(scopes);
-    const popupUrl = await this.buildUrl('/start', { scope });
+    const popupUrl = await this.buildUrl('/start', {
+      scope,
+      origin: location.origin,
+    });
 
     const payload = await showLoginPopup({
       url: popupUrl,

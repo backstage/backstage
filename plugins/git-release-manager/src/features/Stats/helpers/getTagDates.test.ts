@@ -17,10 +17,10 @@
 import {
   createMockCommit,
   createMockTag,
-  mockApiClient,
   mockSemverProject,
 } from '../../../test-helpers/test-helpers';
 import { getTagDates } from './getTagDates';
+import { mockApiClient } from '../../../test-helpers/mock-api-client';
 
 describe('getTagDates', () => {
   beforeEach(() => {

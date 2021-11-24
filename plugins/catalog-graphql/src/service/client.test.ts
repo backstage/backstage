@@ -16,11 +16,11 @@
 import { CatalogClient } from './client';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 
 describe('Catalog GraphQL Module', () => {
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
 
   const baseUrl = 'http://localhost:1234';
 

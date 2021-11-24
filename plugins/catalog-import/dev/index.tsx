@@ -29,7 +29,7 @@ import {
   EntityListComponent,
   ImportStepper,
 } from '../src';
-import { ImportComponentPage } from '../src/components/ImportComponentPage';
+import { ImportPage } from '../src/components/ImportPage';
 import { Content, Header, InfoCard, Page } from '@backstage/core-components';
 
 const getEntityNames = (url: string): EntityName[] => [
@@ -252,7 +252,7 @@ createDevApp()
   })
   .addPage({
     title: 'Catalog Import',
-    element: <ImportComponentPage />,
+    element: <ImportPage />,
   })
   .addPage({
     title: 'Catalog Import 2',

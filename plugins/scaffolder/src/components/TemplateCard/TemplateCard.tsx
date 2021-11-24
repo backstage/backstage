@@ -16,7 +16,7 @@
 import {
   Entity,
   RELATION_OWNED_BY,
-  TemplateEntityV1alpha1,
+  TemplateEntityV1beta2,
 } from '@backstage/catalog-model';
 import {
   ScmIntegrationIcon,
@@ -27,7 +27,7 @@ import {
   getEntityRelations,
   getEntitySourceLocation,
 } from '@backstage/plugin-catalog-react';
-import { BackstageTheme, pageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   Card,
@@ -93,7 +93,7 @@ const useDeprecationStyles = makeStyles(theme => ({
 }));
 
 export type TemplateCardProps = {
-  template: TemplateEntityV1alpha1;
+  template: TemplateEntityV1beta2;
   deprecated?: boolean;
 };
 
@@ -106,7 +106,7 @@ type TemplateProps = {
 };
 
 const getTemplateCardProps = (
-  template: TemplateEntityV1alpha1,
+  template: TemplateEntityV1beta2,
 ): TemplateProps & { key: string } => {
   return {
     key: template.metadata.uid!,
@@ -149,7 +149,9 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
     template as Entity,
     RELATION_OWNED_BY,
   );
-  const themeId = pageTheme[templateProps.type] ? templateProps.type : 'other';
+  const themeId = backstageTheme.getPageTheme({ themeId: templateProps.type })
+    ? templateProps.type
+    : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
   const href = generatePath(`${rootLink()}/templates/:templateName`, {

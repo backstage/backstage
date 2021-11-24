@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { Routes, Route, useOutlet } from 'react-router';
+import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
@@ -29,10 +30,16 @@ import {
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
 
-export const Router = () => {
+type RouterProps = {
+  TemplateCardComponent?:
+    | ComponentType<{ template: TemplateEntityV1beta2 }>
+    | undefined;
+};
+
+export const Router = ({ TemplateCardComponent }: RouterProps) => {
   const outlet = useOutlet();
 
-  const foundExtensions = useElementFilter(outlet, elements =>
+  const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
       .selectByComponentData({
         key: FIELD_EXTENSION_WRAPPER_KEY,
@@ -42,13 +49,24 @@ export const Router = () => {
       }),
   );
 
-  const fieldExtensions = foundExtensions.length
-    ? foundExtensions
-    : DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS;
+  const fieldExtensions = [
+    ...customFieldExtensions,
+    ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
+      ({ name }) =>
+        !customFieldExtensions.some(
+          customFieldExtension => customFieldExtension.name === name,
+        ),
+    ),
+  ];
 
   return (
     <Routes>
-      <Route path="/" element={<ScaffolderPage />} />
+      <Route
+        path="/"
+        element={
+          <ScaffolderPage TemplateCardComponent={TemplateCardComponent} />
+        }
+      />
       <Route
         path="/templates/:templateName"
         element={<TemplatePage customFieldExtensions={fieldExtensions} />}

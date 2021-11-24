@@ -54,6 +54,7 @@ describe('getCombinedClusterDetails', () => {
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
         skipTLSVerify: false,
+        caData: undefined,
       },
       {
         name: 'cluster2',
@@ -61,6 +62,7 @@ describe('getCombinedClusterDetails', () => {
         url: 'http://localhost:8081',
         authProvider: 'google',
         skipTLSVerify: false,
+        caData: undefined,
       },
     ]);
   });

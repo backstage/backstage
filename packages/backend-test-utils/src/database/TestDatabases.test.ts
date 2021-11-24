@@ -71,7 +71,7 @@ describe('TestDatabases', () => {
         await input.insert({ x: 'y' }).into('a');
 
         // Look for the mark
-        const database = 'backstage_plugin_db0';
+        const database = input.client.config.connection.database;
         const output = knexFactory({
           client: 'pg',
           connection: { host, port, user, password, database },
@@ -105,7 +105,7 @@ describe('TestDatabases', () => {
         await input.insert({ x: 'y' }).into('a');
 
         // Look for the mark
-        const database = 'backstage_plugin_db0';
+        const database = input.client.config.connection.database;
         const output = knexFactory({
           client: 'pg',
           connection: { host, port, user, password, database },
@@ -139,7 +139,7 @@ describe('TestDatabases', () => {
         await input.insert({ x: 'y' }).into('a');
 
         // Look for the mark
-        const database = 'backstage_plugin_db0';
+        const database = input.client.config.connection.database;
         const output = knexFactory({
           client: 'mysql2',
           connection: { host, port, user, password, database },

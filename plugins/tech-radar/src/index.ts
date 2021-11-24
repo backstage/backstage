@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that lets you display a Tech Radar for your organization
+ *
+ * @packageDocumentation
+ */
+
+import { RadarPage } from './components';
+
 export {
   techRadarPlugin,
   techRadarPlugin as plugin,
   TechRadarPage,
 } from './plugin';
 
-export { RadarPage as Router } from './components/RadarPage';
+export * from './components';
+
+/**
+ * @deprecated Use plugin extensions instead
+ */
+export const Router = RadarPage;
 
 /**
  * The TypeScript API for configuring Tech Radar.
  */
 export * from './api';
-
-/**
- * The React component for more advanced use cases.
- */
-export { default as TechRadarComponent } from './components/RadarComponent';

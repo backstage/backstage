@@ -22,7 +22,7 @@ import { injectConfig } from './config';
 jest.mock('fs-extra');
 
 const fsMock = fs as jest.Mocked<typeof fs>;
-const readFileMock = (fsMock.readFile as unknown) as jest.MockedFunction<
+const readFileMock = fsMock.readFile as unknown as jest.MockedFunction<
   (name: string) => Promise<string>
 >;
 

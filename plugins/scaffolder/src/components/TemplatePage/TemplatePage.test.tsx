@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderInTestApp, renderWithEffects } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  renderWithEffects,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import { fireEvent, within } from '@testing-library/react';
@@ -24,7 +28,7 @@ import { ScaffolderApi, scaffolderApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { TemplatePage } from './TemplatePage';
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
 
 jest.mock('react-router-dom', () => {
@@ -47,10 +51,10 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
 
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };
 
-const apis = ApiRegistry.from([
+const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
   [errorApiRef, errorApiMock],
-]);
+);
 
 describe('TemplatePage', () => {
   beforeEach(() => jest.resetAllMocks());
@@ -161,21 +165,17 @@ describe('TemplatePage', () => {
       ],
     });
 
-    const {
-      findByText,
-      findByLabelText,
-      findAllByRole,
-      findByRole,
-    } = await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <TemplatePage />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/create/actions': rootRouteRef,
+    const { findByText, findByLabelText, findAllByRole, findByRole } =
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <TemplatePage />
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create/actions': rootRouteRef,
+          },
         },
-      },
-    );
+      );
 
     expect(await findByText('Fill in some steps')).toBeInTheDocument();
 

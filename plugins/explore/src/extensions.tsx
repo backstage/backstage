@@ -23,6 +23,7 @@ import {
 
 export const ExplorePage = explorePlugin.provide(
   createRoutableExtension({
+    name: 'ExplorePage',
     component: () =>
       import('./components/ExplorePage').then(m => m.ExplorePage),
     mountPoint: exploreRouteRef,
@@ -31,6 +32,7 @@ export const ExplorePage = explorePlugin.provide(
 
 export const DomainExplorerContent = explorePlugin.provide(
   createComponentExtension({
+    name: 'DomainExplorerContent',
     component: {
       lazy: () =>
         import('./components/DomainExplorerContent').then(
@@ -42,6 +44,7 @@ export const DomainExplorerContent = explorePlugin.provide(
 
 export const GroupsExplorerContent = explorePlugin.provide(
   createComponentExtension({
+    name: 'GroupsExplorerContent',
     component: {
       lazy: () =>
         import('./components/GroupsExplorerContent').then(
@@ -53,6 +56,7 @@ export const GroupsExplorerContent = explorePlugin.provide(
 
 export const ToolExplorerContent = explorePlugin.provide(
   createComponentExtension({
+    name: 'ToolExplorerContent',
     component: {
       lazy: () =>
         import('./components/ToolExplorerContent').then(

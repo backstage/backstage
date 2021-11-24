@@ -27,7 +27,7 @@ point building on top of the previous one:
   and the new APIs can be used in parallel. This deprecation must have been
   released for at least two weeks before the deprecated API is removed in a
   minor version bump.
-- **3** - The time limit for the deprecation is 3 months instead of two weeks.
+- **3** - The time limit for the deprecation is 3 months instead of two days.
 
 TL;DR:
 
@@ -144,12 +144,6 @@ Stability: `2`
 Provides utilities for developing plugins in isolation.
 
 Stability: `0`. This package is largely broken and needs updates.
-
-### `docgen` [GitHub](https://github.com/backstage/backstage/tree/master/packages/docgen/)
-
-Internal CLI utility for generating API Documentation.
-
-Stability: `N/A`
 
 ### `e2e-test` [GitHub](https://github.com/backstage/backstage/tree/master/packages/e2e-test/)
 
@@ -285,7 +279,7 @@ Integrates GraphiQL as a tool to browse GraphQL API endpoints inside Backstage.
 
 Stability: `1`
 
-### `graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/graphql/)
+### `graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/graphql-backend/)
 
 A backend plugin that provides
 
@@ -312,14 +306,6 @@ configuration.
 
 Stability: `1`
 
-### `register-component` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/register-component/)
-
-A frontend plugin that allows the user to register entity locations in the
-catalog.
-
-Stability: `0`. This plugin is likely to be replaced by a generic entity import
-plugin instead.
-
 ### `scaffolder` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/scaffolder/)
 
 The frontend scaffolder plugin where one can browse templates and initiate
@@ -332,8 +318,7 @@ Stability: `1`
 The backend scaffolder plugin that provides an implementation for templates in
 the catalog.
 
-Stability: `1`. There is planned work to rework the scaffolder in
-https://github.com/backstage/backstage/issues/2771.
+Stability: `2`.
 
 ### `tech-radar` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/tech-radar/)
 

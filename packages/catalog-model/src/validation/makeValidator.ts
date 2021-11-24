@@ -27,9 +27,14 @@ const defaultValidators: Validators = {
   isValidLabelValue: KubernetesValidatorFunctions.isValidLabelValue,
   isValidAnnotationKey: KubernetesValidatorFunctions.isValidAnnotationKey,
   isValidAnnotationValue: KubernetesValidatorFunctions.isValidAnnotationValue,
-  isValidTag: CommonValidatorFunctions.isValidDnsLabel,
+  isValidTag: CommonValidatorFunctions.isValidTag,
 };
 
+/**
+ * Creates a {@link Validators} object from `overrides`, with default values taken from {@link KubernetesValidatorFunctions}
+ *
+ * @public
+ */
 export function makeValidator(overrides: Partial<Validators> = {}): Validators {
   return {
     ...defaultValidators,

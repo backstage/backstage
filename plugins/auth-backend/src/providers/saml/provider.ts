@@ -29,6 +29,7 @@ import {
 import { AuthProviderRouteHandlers, AuthProviderFactory } from '../types';
 import { postMessageResponse } from '../../lib/flow';
 import { TokenIssuer } from '../../identity/types';
+import { isError } from '@backstage/errors';
 
 type SamlInfo = {
   fullProfile: any;
@@ -93,12 +94,12 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
         },
       });
     } catch (error) {
+      const { name, message } = isError(error)
+        ? error
+        : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
       return postMessageResponse(res, this.appUrl, {
         type: 'authorization_response',
-        error: {
-          name: error.name,
-          message: error.message,
-        },
+        error: { name, message },
       });
     }
   }
@@ -124,24 +125,23 @@ export const createSamlProvider = (
       callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
       entryPoint: config.getString('entryPoint'),
       logoutUrl: config.getOptionalString('logoutUrl'),
+      audience: config.getOptionalString('audience'),
       issuer: config.getString('issuer'),
-      cert: config.getOptionalString('cert'),
+      cert: config.getString('cert'),
       privateCert: config.getOptionalString('privateKey'),
+      authnContext: config.getOptionalStringArray('authnContext'),
+      identifierFormat: config.getOptionalString('identifierFormat'),
       decryptionPvk: config.getOptionalString('decryptionPvk'),
       signatureAlgorithm: config.getOptionalString('signatureAlgorithm') as
         | SignatureAlgorithm
         | undefined,
       digestAlgorithm: config.getOptionalString('digestAlgorithm'),
+      acceptedClockSkewMs: config.getOptionalNumber('acceptedClockSkewMs'),
 
       tokenIssuer,
       appUrl: globalConfig.appUrl,
     };
 
-    // passport-saml will return an error if the `cert` key is set, and the value is empty.
-    // Since we read from config (such as environment variables) an empty string should be equal to being unset.
-    if (!opts.cert) {
-      delete opts.cert;
-    }
     return new SamlAuthProvider(opts);
   };
 };

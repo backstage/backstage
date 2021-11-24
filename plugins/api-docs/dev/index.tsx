@@ -15,34 +15,39 @@
  */
 
 import { ApiEntity, Entity } from '@backstage/catalog-model';
+import { Content, Header, Page } from '@backstage/core-components';
 import { createDevApp } from '@backstage/dev-utils';
+import { CatalogEntityPage } from '@backstage/plugin-catalog';
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import {
   apiDocsConfigRef,
+  apiDocsPlugin,
   ApiExplorerPage,
   defaultDefinitionWidgets,
   EntityApiDefinitionCard,
 } from '../src';
 import asyncapiApiEntity from './asyncapi-example-api.yaml';
 import graphqlApiEntity from './graphql-example-api.yaml';
+import invalidLanguageApiEntity from './invalid-language-example-api.yaml';
 import openapiApiEntity from './openapi-example-api.yaml';
 import otherApiEntity from './other-example-api.yaml';
-import { Content, Header, Page } from '@backstage/core-components';
 
-const mockEntities = ([
+const mockEntities = [
   openapiApiEntity,
   asyncapiApiEntity,
   graphqlApiEntity,
+  invalidLanguageApiEntity,
   otherApiEntity,
-] as unknown) as Entity[];
+] as unknown as Entity[];
 
 createDevApp()
+  .registerPlugin(apiDocsPlugin)
   .registerApi({
     api: catalogApiRef,
     deps: {},
     factory: () =>
-      (({
+      ({
         async getEntities() {
           return {
             items: mockEntities.slice(),
@@ -51,7 +56,7 @@ createDevApp()
         async getEntityByName(name: string) {
           return mockEntities.find(e => e.metadata.name === name);
         },
-      } as unknown) as typeof catalogApiRef.T),
+      } as unknown as typeof catalogApiRef.T),
   })
   .registerApi({
     api: apiDocsConfigRef,
@@ -65,6 +70,7 @@ createDevApp()
       };
     },
   })
+  .addPage({ element: <CatalogEntityPage /> })
   .addPage({ title: 'API Explorer', element: <ApiExplorerPage /> })
   .addPage({
     title: 'OpenAPI',
@@ -72,7 +78,7 @@ createDevApp()
       <Page themeId="home">
         <Header title="OpenAPI" />
         <Content>
-          <EntityProvider entity={(openapiApiEntity as any) as Entity}>
+          <EntityProvider entity={openapiApiEntity as any as Entity}>
             <EntityApiDefinitionCard />
           </EntityProvider>
         </Content>
@@ -85,7 +91,7 @@ createDevApp()
       <Page themeId="home">
         <Header title="AsyncAPI" />
         <Content>
-          <EntityProvider entity={(asyncapiApiEntity as any) as Entity}>
+          <EntityProvider entity={asyncapiApiEntity as any as Entity}>
             <EntityApiDefinitionCard />
           </EntityProvider>
         </Content>
@@ -98,7 +104,20 @@ createDevApp()
       <Page themeId="home">
         <Header title="GraphQL" />
         <Content>
-          <EntityProvider entity={(graphqlApiEntity as any) as Entity}>
+          <EntityProvider entity={graphqlApiEntity as any as Entity}>
+            <EntityApiDefinitionCard />
+          </EntityProvider>
+        </Content>
+      </Page>
+    ),
+  })
+  .addPage({
+    title: 'Invalid Language',
+    element: (
+      <Page themeId="home">
+        <Header title="Invalid Language" />
+        <Content>
+          <EntityProvider entity={invalidLanguageApiEntity as any as Entity}>
             <EntityApiDefinitionCard />
           </EntityProvider>
         </Content>
@@ -111,7 +130,7 @@ createDevApp()
       <Page themeId="home">
         <Header title="Other" />
         <Content>
-          <EntityProvider entity={(otherApiEntity as any) as Entity}>
+          <EntityProvider entity={otherApiEntity as any as Entity}>
             <EntityApiDefinitionCard />
           </EntityProvider>
         </Content>

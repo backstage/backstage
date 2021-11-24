@@ -18,7 +18,7 @@ import React from 'react';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { Box, Typography } from '@material-ui/core';
 
-import { ComponentConfigPromoteRc } from '../../types/types';
+import { ComponentConfig, PromoteRcOnSuccessArgs } from '../../types/types';
 import { GetLatestReleaseResult } from '../../api/GitReleaseClient';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { NoLatestRelease } from '../../components/NoLatestRelease';
@@ -27,7 +27,7 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 
 interface PromoteRcProps {
   latestRelease: GetLatestReleaseResult['latestRelease'];
-  onSuccess?: ComponentConfigPromoteRc['onSuccess'];
+  onSuccess?: ComponentConfig<PromoteRcOnSuccessArgs>['onSuccess'];
 }
 
 export const PromoteRc = ({ latestRelease, onSuccess }: PromoteRcProps) => {

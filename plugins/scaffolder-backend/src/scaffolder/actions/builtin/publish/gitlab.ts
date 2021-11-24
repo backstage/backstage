@@ -17,14 +17,16 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Gitlab } from '@gitbeaker/node';
-import { initRepoAndPush } from '../../../stages/publish/helpers';
+import { initRepoAndPush } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
+import { Config } from '@backstage/config';
 
 export function createPublishGitlabAction(options: {
   integrations: ScmIntegrationRegistry;
+  config: Config;
 }) {
-  const { integrations } = options;
+  const { integrations, config } = options;
 
   return createTemplateAction<{
     repoUrl: string;
@@ -82,7 +84,13 @@ export function createPublishGitlabAction(options: {
         defaultBranch = 'master',
       } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
+      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
+
+      if (!owner) {
+        throw new InputError(
+          `No owner provided for host: ${host}, and repo ${repo}`,
+        );
+      }
 
       const integrationConfig = integrations.gitlab.byHost(host);
 
@@ -119,7 +127,12 @@ export function createPublishGitlabAction(options: {
       });
 
       const remoteUrl = (http_url_to_repo as string).replace(/\.git$/, '');
-      const repoContentsUrl = `${remoteUrl}/-/blob/master`;
+      const repoContentsUrl = `${remoteUrl}/-/blob/${defaultBranch}`;
+
+      const gitAuthorInfo = {
+        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+      };
 
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
@@ -130,6 +143,10 @@ export function createPublishGitlabAction(options: {
           password: integrationConfig.config.token,
         },
         logger: ctx.logger,
+        commitMessage: config.getOptionalString(
+          'scaffolder.defaultCommitMessage',
+        ),
+        gitAuthorInfo,
       });
 
       ctx.output('remoteUrl', remoteUrl);

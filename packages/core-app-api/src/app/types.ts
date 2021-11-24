@@ -27,13 +27,22 @@ import {
   PluginOutput,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
-import { AppIcons } from './icons';
 
+/**
+ * Props for the `BootErrorPage` component of {@link AppComponents}.
+ *
+ * @public
+ */
 export type BootErrorPageProps = {
   step: 'load-config' | 'load-chunk';
   error: Error;
 };
 
+/**
+ * The outcome of signing in on the sign-in page.
+ *
+ * @public
+ */
 export type SignInResult = {
   /**
    * User ID that will be returned by the IdentityApi
@@ -53,6 +62,11 @@ export type SignInResult = {
   signOut?: () => Promise<void>;
 };
 
+/**
+ * Props for the `SignInPage` component of {@link AppComponents}.
+ *
+ * @public
+ */
 export type SignInPageProps = {
   /**
    * Set the sign-in result for the app. This should only be called once.
@@ -60,18 +74,29 @@ export type SignInPageProps = {
   onResult(result: SignInResult): void;
 };
 
+/**
+ * Props for the fallback error boundary.
+ *
+ * @public
+ */
 export type ErrorBoundaryFallbackProps = {
   plugin?: BackstagePlugin;
   error: Error;
   resetError: () => void;
 };
 
+/**
+ * A set of replaceable core components that are part of every Backstage app.
+ *
+ * @public
+ */
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
+  ThemeProvider?: ComponentType<{}>;
 
   /**
    * An optional sign-in page that will be rendered instead of the AppRouter at startup.
@@ -86,15 +111,49 @@ export type AppComponents = {
 };
 
 /**
+ * A set of well-known icons that should be available within an app.
+ *
+ * @public
+ */
+export type AppIcons = {
+  'kind:api': IconComponent;
+  'kind:component': IconComponent;
+  'kind:domain': IconComponent;
+  'kind:group': IconComponent;
+  'kind:location': IconComponent;
+  'kind:system': IconComponent;
+  'kind:user': IconComponent;
+
+  brokenImage: IconComponent;
+  catalog: IconComponent;
+  chat: IconComponent;
+  dashboard: IconComponent;
+  docs: IconComponent;
+  email: IconComponent;
+  github: IconComponent;
+  group: IconComponent;
+  help: IconComponent;
+  scaffolder: IconComponent;
+  search: IconComponent;
+  techdocs: IconComponent;
+  user: IconComponent;
+  warning: IconComponent;
+};
+
+/**
  * A function that loads in the App config that will be accessible via the ConfigApi.
  *
  * If multiple config objects are returned in the array, values in the earlier configs
  * will override later ones.
+ *
+ * @public
  */
 export type AppConfigLoader = () => Promise<AppConfig[]>;
 
 /**
  * Extracts a union of the keys in a map whose value extends the given type
+ *
+ * @ignore
  */
 type KeysWithType<Obj extends { [key in string]: any }, Type> = {
   [key in keyof Obj]: Obj[key] extends Type ? key : never;
@@ -102,17 +161,21 @@ type KeysWithType<Obj extends { [key in string]: any }, Type> = {
 
 /**
  * Takes a map Map required values and makes all keys matching Keys optional
+ *
+ * @ignore
  */
 type PartialKeys<
   Map extends { [name in string]: any },
-  Keys extends keyof Map
+  Keys extends keyof Map,
 > = Partial<Pick<Map, Keys>> & Required<Omit<Map, Keys>>;
 
 /**
  * Creates a map of target routes with matching parameters based on a map of external routes.
+ *
+ * @ignore
  */
 type TargetRouteMap<
-  ExternalRoutes extends { [name: string]: ExternalRouteRef }
+  ExternalRoutes extends { [name: string]: ExternalRouteRef },
 > = {
   [name in keyof ExternalRoutes]: ExternalRoutes[name] extends ExternalRouteRef<
     infer Params,
@@ -122,8 +185,14 @@ type TargetRouteMap<
     : never;
 };
 
+/**
+ * A function that can bind from external routes of a given plugin, to concrete
+ * routes of other plugins. See {@link createApp}.
+ *
+ * @public
+ */
 export type AppRouteBinder = <
-  ExternalRoutes extends { [name: string]: ExternalRouteRef }
+  ExternalRoutes extends { [name: string]: ExternalRouteRef },
 >(
   externalRoutes: ExternalRoutes,
   targetRoutes: PartialKeys<
@@ -132,42 +201,66 @@ export type AppRouteBinder = <
   >,
 ) => void;
 
-// Output from newer or older plugin API versions that might not be supported by
-// this version of the app API, but we don't want to break at the type checking level.
-// We only use this more permissive type for the `createApp` options, as we otherwise
-// want to stick to using the type for the outputs that we know about in this version
-// of the app api.
-type UnknownPluginOutput = {
-  type: string;
-};
+/**
+ * Internal helper type that represents a plugin with any type of output.
+ *
+ * @public
+ * @remarks
+ * @deprecated Will be removed
+ *
+ * The `type: string` type is there to handle output from newer or older plugin
+ * API versions that might not be supported by this version of the app API, but
+ * we don't want to break at the type checking level. We only use this more
+ * permissive type for the `createApp` options, as we otherwise want to stick
+ * to using the type for the outputs that we know about in this version of the
+ * app api.
+ *
+ * TODO(freben): This should be marked internal but that's not supported by the api report generation tools yet
+ */
 export type BackstagePluginWithAnyOutput = Omit<
   BackstagePlugin<any, any>,
   'output'
 > & {
-  output(): (PluginOutput | UnknownPluginOutput)[];
+  output(): (PluginOutput | { type: string })[];
 };
 
+/**
+ * The options accepted by {@link createApp}.
+ *
+ * @public
+ */
 export type AppOptions = {
   /**
    * A collection of ApiFactories to register in the application to either
-   * add add new ones, or override factories provided by default or by plugins.
+   * add new ones, or override factories provided by default or by plugins.
    */
   apis?: Iterable<AnyApiFactory>;
 
   /**
+   * A collection of ApiFactories to register in the application as default APIs.
+   * Theses APIs can not be overridden by plugin factories, but can be overridden
+   * by plugin APIs provided through the
+   * A collection of ApiFactories to register in the application to either
+   * add new ones, or override factories provided by default or by plugins.
+   */
+  defaultApis?: Iterable<AnyApiFactory>;
+
+  /**
    * Supply icons to override the default ones.
    */
-  icons?: Partial<AppIcons> & { [key in string]: IconComponent };
+  icons: AppIcons & { [key in string]: IconComponent };
 
   /**
    * A list of all plugins to include in the app.
    */
-  plugins?: BackstagePluginWithAnyOutput[];
+  plugins?: (Omit<BackstagePlugin<any, any>, 'output'> & {
+    output(): (PluginOutput | { type: string })[];
+  })[];
 
   /**
    * Supply components to the app to override the default ones.
    */
-  components?: Partial<AppComponents>;
+  components: AppComponents;
 
   /**
    * Themes provided as a part of the app. By default two themes are included, one
@@ -180,18 +273,26 @@ export type AppOptions = {
    *   id: 'light',
    *   title: 'Light Theme',
    *   variant: 'light',
-   *   theme: lightTheme,
    *   icon: <LightIcon />,
+   *   Provider: ({ children }) => (
+   *     <ThemeProvider theme={lightTheme}>
+   *       <CssBaseline>{children}</CssBaseline>
+   *     </ThemeProvider>
+   *   ),
    * }, {
    *   id: 'dark',
    *   title: 'Dark Theme',
    *   variant: 'dark',
-   *   theme: darkTheme,
    *   icon: <DarkIcon />,
+   *   Provider: ({ children }) => (
+   *     <ThemeProvider theme={darkTheme}>
+   *       <CssBaseline>{children}</CssBaseline>
+   *     </ThemeProvider>
+   *   ),
    * }]
    * ```
    */
-  themes?: AppTheme[];
+  themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
 
   /**
    * A function that loads in App configuration that will be accessible via
@@ -225,6 +326,11 @@ export type AppOptions = {
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 };
 
+/**
+ * The public API of the output of {@link createApp}.
+ *
+ * @public
+ */
 export type BackstageApp = {
   /**
    * Returns all plugins registered for the app.
@@ -249,6 +355,12 @@ export type BackstageApp = {
   getRouter(): ComponentType<{}>;
 };
 
+/**
+ * The central context providing runtime app specific state that plugin views
+ * want to consume.
+ *
+ * @public
+ */
 export type AppContext = {
   /**
    * Get a list of all plugins that are installed in the app.

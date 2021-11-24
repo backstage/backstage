@@ -5,8 +5,8 @@ sidebar_label: GitLab
 description: Adding GitLab OAuth as an authentication provider in Backstage
 ---
 
-The Backstage `core-api` package comes with a GitLab authentication provider
-that can authenticate users using GitLab OAuth.
+The Backstage `core-plugin-api` package comes with a GitLab authentication
+provider that can authenticate users using GitLab OAuth.
 
 ## Create an OAuth App on GitLab
 
@@ -17,7 +17,7 @@ should point to your Backstage backend auth handler.
 Settings for local development:
 
 - Name: Backstage (or your custom app name)
-- Redirect URI: `http://localhost:7000/api/auth/gitlab/handler/frame`
+- Redirect URI: `http://localhost:7007/api/auth/gitlab/handler/frame`
 - Scopes: read_user
 
 ## Configuration

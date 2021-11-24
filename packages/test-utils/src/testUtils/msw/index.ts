@@ -14,14 +14,31 @@
  * limitations under the License.
  */
 
+/**
+ * @deprecated use {@link setupRequestMockHandlers} instead which can be called directly with the worker.
+ * @public
+ */
 export const msw = {
   setupDefaultHandlers: (worker: {
     listen: (t: any) => void;
     close: () => void;
     resetHandlers: () => void;
   }) => {
-    beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
-    afterAll(() => worker.close());
-    afterEach(() => worker.resetHandlers());
+    setupRequestMockHandlers(worker);
   },
 };
+
+/**
+ * Sets up handlers for request mocking
+ * @public
+ * @param worker - service worker
+ */
+export function setupRequestMockHandlers(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}) {
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+  afterAll(() => worker.close());
+  afterEach(() => worker.resetHandlers());
+}

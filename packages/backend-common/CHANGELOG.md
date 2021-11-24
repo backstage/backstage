@@ -1,5 +1,275 @@
 # @backstage/backend-common
 
+## 0.9.10
+
+### Patch Changes
+
+- d7c1e0e34a: Added the `isDatabaseConflictError` function.
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 1e99c73c75: Update internal usage of `configLoader.loadConfig` that now returns an object instead of an array of configs.
+- 1daada3a06: Paths can be specified in backend.reading.allow to further restrict allowed targets
+- 7ad9a07b27: Adding config prop `pluginDivisionMode` to allow plugins using the `pg` client to create their own management schemas in the db. This allows `pg` client plugins to work in separate schemas in the same db.
+- 01f74aa878: Add `AbortSignal` support to `UrlReader`
+- a8732a1200: Make sure that server builder `start()` propagates errors (such as failing to bind to the required port) properly and doesn't resolve the promise prematurely.
+
+  After this change, the backend logger will be able to actually capture the error as it happens:
+
+  ```
+  2021-11-11T10:54:21.334Z backstage info Initializing http server
+  2021-11-11T10:54:21.335Z backstage error listen EADDRINUSE: address already in use :::7000 code=EADDRINUSE errno=-48 syscall=listen address=:: port=7000
+  ```
+
+- 26b5da1c1a: Do not redact empty or one-character strings. These imply that it's just a test or local dev, and unnecessarily ruin the log output.
+- Updated dependencies
+  - @backstage/config-loader@0.8.0
+  - @backstage/cli-common@0.1.6
+
+## 0.9.9
+
+### Patch Changes
+
+- 8c4cad0bf2: AWSS3UrlReader now throws a `NotModifiedError` (exported from @backstage/backend-common) when s3 returns a 304 response.
+- 0611f3b3e2: Reading app config from a remote server
+- Updated dependencies
+  - @backstage/config-loader@0.7.2
+
+## 0.9.8
+
+### Patch Changes
+
+- 96cfa561eb: Adjusted some API exports
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- 1be8d2abdb: Any set configurations which have been tagged with a visibility 'secret', are now redacted from log lines.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/cli-common@0.1.5
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/config-loader@0.7.1
+
+## 0.9.7
+
+### Patch Changes
+
+- be59619212: Add "rate limit exceeded" to error from GithubUrlReader if that is the cause of a read failure
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/config-loader@0.7.0
+  - @backstage/errors@0.1.3
+
+## 0.9.6
+
+### Patch Changes
+
+- 8f969d5a56: Correct error message typo
+- a31afc5b62: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- d7055285de: Add glob patterns support to config CORS options. It's possible to send patterns like:
+
+  ```yaml
+  backend:
+    cors:
+      origin:
+        - https://*.my-domain.com
+        - http://localhost:700[0-9]
+        - https://sub-domain-+([0-9]).my-domain.com
+  ```
+
+- Updated dependencies
+  - @backstage/config-loader@0.6.10
+  - @backstage/integration@0.6.7
+  - @backstage/cli-common@0.1.4
+
+## 0.9.5
+
+### Patch Changes
+
+- 8bb3c0a578: The `subscribe` method on the `Config` returned by `loadBackendConfig` is now forwarded through `getConfig` and `getOptionalConfig`.
+- 0c8a59e293: Fix an issue where filtering in search doesn't work correctly for Bitbucket.
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/config-loader@0.6.9
+
+## 0.9.4
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/config@0.1.10
+
+## 0.9.3
+
+### Patch Changes
+
+- fab79adde1: Add AWS S3 Discovery Processor. Add readTree() to AwsS3UrlReader. Add ReadableArrayResponse type that implements ReadTreeResponse to use in AwsS3UrlReader's readTree()
+- f7ad3a8925: Fix Azure `readTree` and `search` handling to properly support paths.
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/integration@0.6.4
+
+## 0.9.2
+
+### Patch Changes
+
+- 9e5ed27ec: Properly export all used types.
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+  - @backstage/config-loader@0.6.8
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+
+## 0.9.1
+
+### Patch Changes
+
+- 714a2a918: Export type that are needed to implement a new `UrlReader`
+- Updated dependencies
+  - @backstage/integration@0.6.3
+
+## 0.9.0
+
+### Minor Changes
+
+- a365f1faf: The `ZipArchiveResponse` class now accepts an optional `stripFirstDirectory` parameter. Note that its default value is `false`, which leads to a breaking change in behaviour to previous versions of the class. If you use this class explicitly and want to retain the old behaviour, add a `true` parameter value to its constructor.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
+## 0.8.10
+
+### Patch Changes
+
+- 8543d9890: Add an optional `info` parameter to the `readTree` filter option with a `size` property.
+- 4d909268c: Read responses in `UrlReader#read()` as array buffer instead of as text to allow reading non-text locations such as images.
+- 9b4604b38: Add support for watching configuration by implementing the `subscribe` method in the configuration returned by `loadBackendConfig`.
+- b8cb12009: Add AWS S3 URL Reader
+- Updated dependencies
+  - @backstage/config@0.1.7
+  - @backstage/config-loader@0.6.7
+  - @backstage/integration@0.6.1
+
+## 0.8.9
+
+### Patch Changes
+
+- f7ce7c565: Use a more informative error message when URL reading isn't allowed due to no reader matching the target URL.
+- ce1958021: Pass on credentials to the integrations package, so that it can properly pick the API route when using GitHub apps based auth
+- Updated dependencies
+  - @backstage/integration@0.6.0
+
+## 0.8.8
+
+### Patch Changes
+
+- 6aa7c3db7: bump node-tar version to the latest
+- Updated dependencies
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+  - @backstage/config-loader@0.6.6
+
+## 0.8.7
+
+### Patch Changes
+
+- f25357273: Implement the etag functionality in the `readUrl` method of `FetchUrlReader`.
+- bdd6ab5f1: It's possible to customize the request logging handler when building the service. For example in your `backend`
+
+  ```
+    const service = createServiceBuilder(module)
+      .loadConfig(config)
+      .setRequestLoggingHandler((logger?: Logger): RequestHandler => {
+        const actualLogger = (logger || getRootLogger()).child({
+          type: 'incomingRequest',
+        });
+        return expressWinston.logger({ ...
+  ```
+
+## 0.8.6
+
+### Patch Changes
+
+- 5f6f2fd96: Support a `ensureExists` config option to skip ensuring a configured database exists. This allows deployment scenarios where
+  limited permissions are given for provisioned databases without privileges to create new databases. If set to `false`, the
+  database connection will not be validated prior to use which means the backend will not attempt to create the database if it
+  doesn't exist. You can configure this in your app-config.yaml:
+
+  ```yaml
+  backend:
+    database:
+      ensureExists: false
+  ```
+
+  This defaults to `true` if unspecified. You can also configure this per plugin connection and will override the base option.
+
+- ad93bb035: Document the default behavior of `statusCheck` option in `createStatusCheckRouter`.
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/config-loader@0.6.5
+
+## 0.8.5
+
+### Patch Changes
+
+- 09d3eb684: Added a `readUrl` method to the `UrlReader` interface that allows for complex response objects and is intended to replace the `read` method. This new method is currently optional to implement which allows for a soft migration to `readUrl` instead of `read` in the future.
+
+  The main use case for `readUrl` returning an object instead of solely a read buffer is to allow for additional metadata such as ETag, which is a requirement for more efficient catalog processing.
+
+  The `GithubUrlReader` and `GitlabUrlReader` readers fully implement `readUrl`. The other existing readers implement the new method but do not propagate or return ETags.
+
+  While the `readUrl` method is not yet required, it will be in the future, and we already log deprecation warnings when custom `UrlReader` implementations that do not implement `readUrl` are used. We therefore recommend that any existing custom implementations are migrated to implement `readUrl`.
+
+  The old `read` and the new `readUrl` methods can easily be implemented using one another, but we recommend moving the chunk of the implementation to the new `readUrl` method as `read` is being removed, for example this:
+
+  ```ts
+  class CustomUrlReader implements UrlReader {
+    read(url: string): Promise<Buffer> {
+      const res = await fetch(url);
+
+      if (!res.ok) {
+        // error handling ...
+      }
+
+      return Buffer.from(await res.text());
+    }
+  }
+  ```
+
+  Can be migrated to something like this:
+
+  ```ts
+  class CustomUrlReader implements UrlReader {
+    read(url: string): Promise<Buffer> {
+      const res = await this.readUrl(url);
+      return res.buffer();
+    }
+
+    async readUrl(
+      url: string,
+      _options?: ReadUrlOptions,
+    ): Promise<ReadUrlResponse> {
+      const res = await fetch(url);
+
+      if (!res.ok) {
+        // error handling ...
+      }
+
+      const buffer = Buffer.from(await res.text());
+      return { buffer: async () => buffer };
+    }
+  }
+  ```
+
+  While there is no usage of the ETag capability yet in the main Backstage packages, you can already add it to your custom implementations. To do so, refer to the documentation of the `readUrl` method and surrounding types, and the existing implementation in `packages/backend-common/src/reading/GithubUrlReader.ts`.
+
+- 6841e0113: fix minor version of git-url-parse as 11.5.x introduced a bug for Bitbucket Server
+- c2db794f5: add defaultBranch property for publish GitHub action
+- Updated dependencies
+  - @backstage/integration@0.5.8
+
 ## 0.8.4
 
 ### Patch Changes

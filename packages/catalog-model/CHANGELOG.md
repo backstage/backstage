@@ -1,5 +1,131 @@
 # @backstage/catalog-model
 
+## 0.9.7
+
+### Patch Changes
+
+- 8809b6c0dd: Update the json-schema dependency version.
+
+## 0.9.6
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+
+## 0.9.5
+
+### Patch Changes
+
+- ab2df3be33: Improved documentation for exported symbols.
+- Updated dependencies
+  - @backstage/errors@0.1.3
+
+## 0.9.4
+
+### Patch Changes
+
+- 957e4b3351: Updated dependencies
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+
+## 0.9.3
+
+### Patch Changes
+
+- d42566c5c9: Loosen constraints on what's a valid catalog entity tag name (include + and #)
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/config@0.1.10
+
+## 0.9.2
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+
+## 0.9.1
+
+### Patch Changes
+
+- 13dc3735c: Add an optional `metadata.title` field to all entity kinds.
+
+  This used to be available on only the `Template` kind, and we have decided that the metadata block should be the same for all kinds. A title can be useful especially in large and complex catalogs where users have a tough time navigating or discerning among the entities.
+
+  It also carries some risk. You do not want to end up giving a title that collides with an actual name, which at best leads to confusion and at worst could be a liability. We do not perform any collision detection in the catalog. If you want to disallow this facility you may want to add a small processor that makes sure it's not set.
+
+  At the time of writing this message, only the scaffolder actually makes use of this field for display purposes.
+
+## 0.9.0
+
+### Minor Changes
+
+- 77db0c454: Changed the regex to validate names following the Kubernetes validation rule, this allow to be more permissive validating the name of the object in Backstage.
+- 60e830222: Support for `Template` kinds with version `backstage.io/v1alpha1` has now been removed. This means that the old method of running templates with `Preparers`, `Templaters` and `Publishers` has also been removed. If you had any logic in these abstractions, they should now be moved to `actions` instead, and you can find out more about those in the [documentation](https://backstage.io/docs/features/software-templates/writing-custom-actions)
+
+  If you need any help migrating existing templates, there's a [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2). Reach out to us on Discord in the #support channel if you're having problems.
+
+  The `scaffolder-backend` now no longer requires these `Preparers`, `Templaters`, and `Publishers` to be passed in, now all it needs is the `containerRunner`.
+
+  Please update your `packages/backend/src/plugins/scaffolder.ts` like the following
+
+  ```diff
+  - import {
+  -  DockerContainerRunner,
+  -  SingleHostDiscovery,
+  - } from '@backstage/backend-common';
+  + import { DockerContainerRunner } from '@backstage/backend-common';
+    import { CatalogClient } from '@backstage/catalog-client';
+  - import {
+  -   CookieCutter,
+  -   CreateReactAppTemplater,
+  -   createRouter,
+  -   Preparers,
+  -   Publishers,
+  -   Templaters,
+  - } from '@backstage/plugin-scaffolder-backend';
+  + import { createRouter } from '@backstage/plugin-scaffolder-backend';
+    import Docker from 'dockerode';
+    import { Router } from 'express';
+    import type { PluginEnvironment } from '../types';
+
+    export default async function createPlugin({
+      config,
+      database,
+      reader,
+  +   discovery,
+    }: PluginEnvironment): Promise<Router> {
+      const dockerClient = new Docker();
+      const containerRunner = new DockerContainerRunner({ dockerClient });
+
+  -   const cookiecutterTemplater = new CookieCutter({ containerRunner });
+  -   const craTemplater = new CreateReactAppTemplater({ containerRunner });
+  -   const templaters = new Templaters();
+
+  -   templaters.register('cookiecutter', cookiecutterTemplater);
+  -   templaters.register('cra', craTemplater);
+  -
+  -   const preparers = await Preparers.fromConfig(config, { logger });
+  -   const publishers = await Publishers.fromConfig(config, { logger });
+
+  -   const discovery = SingleHostDiscovery.fromConfig(config);
+      const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+      return await createRouter({
+  -     preparers,
+  -     templaters,
+  -     publishers,
+  +     containerRunner,
+        logger,
+        config,
+        database,
+
+  ```
+
 ## 0.8.4
 
 ### Patch Changes

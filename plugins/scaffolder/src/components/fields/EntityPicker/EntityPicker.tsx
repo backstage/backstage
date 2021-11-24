@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   formatEntityRefTitle,
@@ -23,7 +24,6 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { FieldProps } from '@rjsf/core';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { useApi } from '@backstage/core-plugin-api';
 
 export const EntityPicker = ({
   onChange,
@@ -32,6 +32,7 @@ export const EntityPicker = ({
   uiSchema,
   rawErrors,
   formData,
+  idSchema,
 }: FieldProps<string>) => {
   const allowedKinds = uiSchema['ui:options']?.allowedKinds as string[];
   const defaultKind = uiSchema['ui:options']?.defaultKind as string | undefined;
@@ -58,6 +59,7 @@ export const EntityPicker = ({
       error={rawErrors?.length > 0 && !formData}
     >
       <Autocomplete
+        id={idSchema?.$id}
         value={(formData as string) || ''}
         loading={loading}
         onChange={onSelect}

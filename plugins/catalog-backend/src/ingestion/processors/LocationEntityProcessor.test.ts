@@ -26,7 +26,7 @@ import { toAbsoluteUrl } from './LocationEntityProcessor';
 describe('LocationEntityProcessor', () => {
   describe('toAbsoluteUrl', () => {
     it('handles files', () => {
-      const integrations = ({} as unknown) as ScmIntegrationRegistry;
+      const integrations = {} as unknown as ScmIntegrationRegistry;
       const base: LocationSpec = {
         type: 'file',
         target: `some${path.sep}path${path.sep}catalog-info.yaml`,

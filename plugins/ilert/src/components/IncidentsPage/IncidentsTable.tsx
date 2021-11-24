@@ -253,8 +253,8 @@ export const IncidentsTable = ({
       }
       page={tableState.page}
       totalCount={incidentsCount}
-      onChangePage={onChangePage}
-      onChangeRowsPerPage={onChangeRowsPerPage}
+      onPageChange={onChangePage}
+      onRowsPerPageChange={onChangeRowsPerPage}
       // localization={{ header: { actions: undefined } }}
       columns={columns}
       data={incidents}

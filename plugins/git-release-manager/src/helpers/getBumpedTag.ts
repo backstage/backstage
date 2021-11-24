@@ -21,6 +21,14 @@ import { Project } from '../contexts/ProjectContext';
 import { SEMVER_PARTS } from '../constants/constants';
 import { SemverTagParts } from './tagParts/getSemverTagParts';
 
+/**
+ * Calculates the next version for the project
+ *
+ * For calendar versioning this means a bump in patch
+ *
+ * For semantic versioning this means either a minor or a patch bump
+ * depending on the value of `bumpLevel`
+ */
 export function getBumpedTag({
   project,
   tag,
@@ -74,6 +82,10 @@ function getBumpedSemverTag(
   };
 }
 
+/**
+ * Calculates the next semantic version, taking into account
+ * whether or not it's a minor or patch
+ */
 export function getBumpedSemverTagParts(
   tagParts: SemverTagParts,
   semverBumpLevel: keyof typeof SEMVER_PARTS,

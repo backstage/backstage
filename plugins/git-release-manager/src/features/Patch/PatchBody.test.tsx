@@ -18,7 +18,6 @@ import React from 'react';
 import { render, waitFor, screen } from '@testing-library/react';
 
 import {
-  mockApiClient,
   mockBumpedTag,
   mockCalverProject,
   mockReleaseBranch,
@@ -26,6 +25,7 @@ import {
   mockReleaseVersionCalver,
   mockTagParts,
 } from '../../test-helpers/test-helpers';
+import { mockApiClient } from '../../test-helpers/mock-api-client';
 import { PatchBody } from './PatchBody';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 

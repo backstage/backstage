@@ -42,7 +42,7 @@ export async function requireRequestBody(req: Request): Promise<unknown> {
 
 export async function validateRequestBody<T>(
   req: Request,
-  schema: yup.Schema<T>,
+  schema: yup.AnySchema<T>,
 ): Promise<T> {
   const body = await requireRequestBody(req);
 
@@ -52,7 +52,7 @@ export async function validateRequestBody<T>(
     throw new InputError(`Malformed request: ${e}`);
   }
 
-  return (body as unknown) as T;
+  return body as unknown as T;
 }
 
 export function disallowReadonlyMode(readonly: boolean) {

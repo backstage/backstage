@@ -17,7 +17,9 @@
 import { Entity, ComponentEntity } from '@backstage/catalog-model';
 
 function strCmp(a: string | undefined, b: string | undefined): boolean {
-  return Boolean(a && a?.toLowerCase() === b?.toLowerCase());
+  return Boolean(
+    a && a?.toLocaleLowerCase('en-US') === b?.toLocaleLowerCase('en-US'),
+  );
 }
 
 export function isKind(kind: string) {

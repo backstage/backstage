@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { resolve as resolvePath, isAbsolute } from 'path';
-import { UrlReader } from '@backstage/backend-common';
+import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
+import { JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { JsonValue } from '@backstage/config';
+import fs from 'fs-extra';
+import * as path from 'path';
 
 export async function fetchContents({
   reader,
@@ -52,12 +52,7 @@ export async function fetchContents({
   // We handle both file locations and url ones
   if (!fetchUrlIsAbsolute && baseUrl?.startsWith('file://')) {
     const basePath = baseUrl.slice('file://'.length);
-    if (isAbsolute(fetchUrl)) {
-      throw new InputError(
-        `Fetch URL may not be absolute for file locations, ${fetchUrl}`,
-      );
-    }
-    const srcDir = resolvePath(basePath, '..', fetchUrl);
+    const srcDir = resolveSafeChildPath(path.dirname(basePath), fetchUrl);
     await fs.copy(srcDir, outputPath);
   } else {
     let readUrl;

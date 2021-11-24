@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { deserializeError, serializeError } from './error';
+import { NotModifiedError } from '../errors';
+import { deserializeError, serializeError, stringifyError } from './error';
 
 class CustomError extends Error {
   readonly customField: any;
@@ -60,5 +61,31 @@ describe('serialization', () => {
     expect(withStack.stack).toEqual(before.stack);
     expect(withoutStack1.stack).not.toBeDefined();
     expect(withoutStack2.stack).not.toBeDefined();
+  });
+
+  it('stringifies all supported forms', () => {
+    expect(stringifyError({})).toEqual("unknown error '[object Object]'");
+    expect(
+      stringifyError({
+        toString() {
+          return 'str';
+        },
+      }),
+    ).toEqual("unknown error 'str'");
+    expect(
+      stringifyError({
+        name: 'not used',
+        message: 'not used',
+        toString() {
+          return 'str';
+        },
+      }),
+    ).toEqual('str');
+    expect(stringifyError({ name: 'N', message: 'm1' })).toEqual('N: m1');
+    expect(stringifyError(new NotModifiedError('m2'))).toEqual(
+      'NotModifiedError: m2',
+    );
+    expect(stringifyError(new Error('m3'))).toEqual('Error: m3');
+    expect(stringifyError(new TypeError('m4'))).toEqual('TypeError: m4');
   });
 });

@@ -15,16 +15,15 @@
  */
 import React from 'react';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { pagerDutyApiRef } from '../../api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TriggerButton } from './';
 
-import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import {
   alertApiRef,
-  createApiRef,
   IdentityApi,
   identityApiRef,
 } from '@backstage/core-plugin-api';
@@ -39,17 +38,11 @@ describe('TriggerButton', () => {
     triggerAlarm: mockTriggerAlarmFn,
   };
 
-  const apis = ApiRegistry.from([
-    [
-      alertApiRef,
-      createApiRef({
-        id: 'core.alert',
-        description: 'Used to report alerts and forward them to the app',
-      }),
-    ],
+  const apis = TestApiRegistry.from(
+    [alertApiRef, {}],
     [identityApiRef, mockIdentityApi],
     [pagerDutyApiRef, mockPagerDutyApi],
-  ]);
+  );
 
   it('renders the trigger button, opens and closes dialog', async () => {
     const entity: Entity = {

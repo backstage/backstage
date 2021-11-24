@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Error as LDAPError } from 'ldapjs';
+import { Error as LDAPError, SearchEntry } from 'ldapjs';
+import { LdapVendor } from './vendors';
 
 /**
  * Builds a string form of an LDAP Error structure.
@@ -23,4 +24,26 @@ import { Error as LDAPError } from 'ldapjs';
  */
 export function errorString(error: LDAPError) {
   return `${error.code} ${error.name}: ${error.message}`;
+}
+
+/**
+ * Maps a single-valued attribute to a consumer
+ *
+ * @param entry The LDAP source entry
+ * @param vendor The LDAP vendor
+ * @param attributeName The source attribute to map. If the attribute is undefined the mapping will be silently ignored.
+ * @param setter The function to be called with the decoded attribute from the source entry
+ */
+export function mapStringAttr(
+  entry: SearchEntry,
+  vendor: LdapVendor,
+  attributeName: string | undefined,
+  setter: (value: string) => void,
+) {
+  if (attributeName) {
+    const values = vendor.decodeStringAttribute(entry, attributeName);
+    if (values && values.length === 1) {
+      setter(values[0]);
+    }
+  }
 }

@@ -18,54 +18,65 @@
  * TODO favoriteable capability
  */
 
-import React, { ComponentType, Fragment, PropsWithChildren } from 'react';
-import { Typography, makeStyles } from '@material-ui/core';
+import React, { PropsWithChildren, ReactNode } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import { Helmet } from 'react-helmet';
 
-const useStyles = (props: ContentHeaderProps) =>
-  makeStyles(theme => ({
-    container: {
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      marginBottom: theme.spacing(1),
-      textAlign: props.textAlign,
-    },
-    leftItemsBox: {
-      flex: '1 1 auto',
-      marginBottom: theme.spacing(1),
-      minWidth: 0,
-      overflow: 'visible',
-    },
-    rightItemsBox: {
-      flex: '0 1 auto',
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-      marginLeft: theme.spacing(1),
-      marginBottom: theme.spacing(1),
-      minWidth: 0,
-      overflow: 'visible',
-    },
-    description: {},
-    title: {
-      display: 'inline-flex',
-    },
-  }));
+/** @public */
+export type ContentHeaderClassKey =
+  | 'container'
+  | 'leftItemsBox'
+  | 'rightItemsBox'
+  | 'description'
+  | 'title';
 
-type DefaultTitleProps = {
+const useStyles = (props: ContentHeaderProps) =>
+  makeStyles(
+    theme => ({
+      container: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        marginBottom: theme.spacing(2),
+        textAlign: props.textAlign,
+      },
+      leftItemsBox: {
+        flex: '1 1 auto',
+        minWidth: 0,
+        overflow: 'visible',
+      },
+      rightItemsBox: {
+        flex: '0 1 auto',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        marginLeft: theme.spacing(1),
+        minWidth: 0,
+        overflow: 'visible',
+      },
+      description: {},
+      title: {
+        display: 'inline-flex',
+        marginBottom: 0,
+      },
+    }),
+    { name: 'BackstageContentHeader' },
+  );
+
+type ContentHeaderTitleProps = {
   title?: string;
-  className: string;
+  className?: string;
 };
 
-const DefaultTitle = ({
+const ContentHeaderTitle = ({
   title = 'Unknown page',
   className,
-}: DefaultTitleProps) => (
+}: ContentHeaderTitleProps) => (
   <Typography
     variant="h4"
     component="h2"
@@ -77,28 +88,31 @@ const DefaultTitle = ({
 );
 
 type ContentHeaderProps = {
-  title?: DefaultTitleProps['title'];
-  titleComponent?: ComponentType;
+  title?: ContentHeaderTitleProps['title'];
+  titleComponent?: ReactNode;
   description?: string;
   textAlign?: 'left' | 'right' | 'center';
 };
 
-export const ContentHeader = ({
-  description,
-  title,
-  titleComponent: TitleComponent = undefined,
-  children,
-  textAlign = 'left',
-}: PropsWithChildren<ContentHeaderProps>) => {
+/** @public */
+export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
+  const {
+    description,
+    title,
+    titleComponent: TitleComponent = undefined,
+    children,
+    textAlign = 'left',
+  } = props;
   const classes = useStyles({ textAlign })();
 
   const renderedTitle = TitleComponent ? (
-    <TitleComponent />
+    TitleComponent
   ) : (
-    <DefaultTitle title={title} className={classes.title} />
+    <ContentHeaderTitle title={title} className={classes.title} />
   );
+
   return (
-    <Fragment>
+    <>
       <Helmet title={title} />
       <div className={classes.container}>
         <div className={classes.leftItemsBox}>
@@ -111,6 +125,6 @@ export const ContentHeader = ({
         </div>
         <div className={classes.rightItemsBox}>{children}</div>
       </div>
-    </Fragment>
+    </>
   );
-};
+}

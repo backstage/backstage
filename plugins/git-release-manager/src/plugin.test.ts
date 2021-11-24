@@ -21,6 +21,10 @@ describe('git-release-manager', () => {
     expect(Object.keys(plugin)).toMatchInlineSnapshot(`
       Array [
         "gitReleaseManagerApiRef",
+        "constants",
+        "helpers",
+        "components",
+        "testHelpers",
         "gitReleaseManagerPlugin",
         "GitReleaseManagerPage",
       ]

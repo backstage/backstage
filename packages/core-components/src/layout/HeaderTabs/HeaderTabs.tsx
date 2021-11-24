@@ -18,25 +18,43 @@
 // This is just a temporary solution to implementing tabs for now
 
 import React, { useState, useEffect } from 'react';
-import { makeStyles, Tabs, Tab as TabUI, TabProps } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import TabUI, { TabProps } from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 
-const useStyles = makeStyles(theme => ({
-  tabsWrapper: {
-    gridArea: 'pageSubheader',
-    backgroundColor: theme.palette.background.paper,
-    paddingLeft: theme.spacing(3),
-  },
-  defaultTab: {
-    padding: theme.spacing(3, 3),
-    ...theme.typography.caption,
-    textTransform: 'uppercase',
-    fontWeight: 'bold',
-    color: theme.palette.text.secondary,
-  },
-  selected: {
-    color: theme.palette.text.primary,
-  },
-}));
+/** @public */
+export type HeaderTabsClassKey =
+  | 'tabsWrapper'
+  | 'defaultTab'
+  | 'selected'
+  | 'tabRoot';
+
+const useStyles = makeStyles(
+  theme => ({
+    tabsWrapper: {
+      gridArea: 'pageSubheader',
+      backgroundColor: theme.palette.background.paper,
+      paddingLeft: theme.spacing(3),
+    },
+    defaultTab: {
+      padding: theme.spacing(3, 3),
+      ...theme.typography.caption,
+      textTransform: 'uppercase',
+      fontWeight: 'bold',
+      color: theme.palette.text.secondary,
+    },
+    selected: {
+      color: theme.palette.text.primary,
+    },
+    tabRoot: {
+      '&:hover': {
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
+      },
+    },
+  }),
+  { name: 'BackstageHeaderTabs' },
+);
 
 export type Tab = {
   id: string;
@@ -49,11 +67,10 @@ type HeaderTabsProps = {
   onChange?: (index: number) => void;
   selectedIndex?: number;
 };
-export const HeaderTabs = ({
-  tabs,
-  onChange,
-  selectedIndex,
-}: HeaderTabsProps) => {
+
+/** @public */
+export function HeaderTabs(props: HeaderTabsProps) {
+  const { tabs, onChange, selectedIndex } = props;
   const [selectedTab, setSelectedTab] = useState<number>(selectedIndex ?? 0);
   const styles = useStyles();
 
@@ -73,6 +90,7 @@ export const HeaderTabs = ({
   return (
     <div className={styles.tabsWrapper}>
       <Tabs
+        selectionFollowsFocus
         indicatorColor="primary"
         textColor="inherit"
         variant="scrollable"
@@ -84,14 +102,15 @@ export const HeaderTabs = ({
         {tabs.map((tab, index) => (
           <TabUI
             {...tab.tabProps}
+            data-testid={`header-tab-${index}`}
             label={tab.label}
             key={tab.id}
             value={index}
             className={styles.defaultTab}
-            classes={{ selected: styles.selected }}
+            classes={{ selected: styles.selected, root: styles.tabRoot }}
           />
         ))}
       </Tabs>
     </div>
   );
-};
+}

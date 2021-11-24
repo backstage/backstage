@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { mergeConfigSchemas } from '@backstage/config-loader';
 import { Command } from 'commander';
 import { JSONSchema7 as JSONSchema } from 'json-schema';

@@ -19,6 +19,8 @@ import * as winston from 'winston';
 
 /**
  * A logger that just throws away all messages.
+ *
+ * @public
  */
 export function getVoidLogger(): winston.Logger {
   return winston.createLogger({

@@ -80,19 +80,16 @@ export function useGetReleaseTimes() {
   }, [averageReleaseTime.length, releaseCommitPairs.length]);
 
   async function getAndSetReleaseTime({ pairIndex }: { pairIndex: number }) {
-    const { baseVersion, startCommit, endCommit } = releaseCommitPairs[
-      pairIndex
-    ];
+    const { baseVersion, startCommit, endCommit } =
+      releaseCommitPairs[pairIndex];
 
-    const {
-      startDate: startCommitCreatedAt,
-      endDate: endCommitCreatedAt,
-    } = await getTagDates({
-      pluginApiClient,
-      project,
-      startTag: startCommit,
-      endTag: endCommit,
-    });
+    const { startDate: startCommitCreatedAt, endDate: endCommitCreatedAt } =
+      await getTagDates({
+        pluginApiClient,
+        project,
+        startTag: startCommit,
+        endTag: endCommit,
+      });
 
     const releaseTime: ReleaseTime = {
       version: baseVersion,

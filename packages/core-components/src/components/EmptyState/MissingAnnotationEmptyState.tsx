@@ -15,8 +15,11 @@
  */
 
 import React from 'react';
-import { Button, makeStyles, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import { BackstageTheme } from '@backstage/theme';
+import { Link } from '../Link';
 import { EmptyState } from './EmptyState';
 import { CodeSnippet } from '../CodeSnippet';
 
@@ -36,15 +39,21 @@ type Props = {
   annotation: string;
 };
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  code: {
-    borderRadius: 6,
-    margin: `${theme.spacing(2)}px 0px`,
-    background: theme.palette.type === 'dark' ? '#444' : '#fff',
-  },
-}));
+export type MissingAnnotationEmptyStateClassKey = 'code';
 
-export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    code: {
+      borderRadius: 6,
+      margin: `${theme.spacing(2)}px 0px`,
+      background: theme.palette.type === 'dark' ? '#444' : '#fff',
+    },
+  }),
+  { name: 'BackstageMissingAnnotationEmptyState' },
+);
+
+export function MissingAnnotationEmptyState(props: Props) {
+  const { annotation } = props;
   const classes = useStyles();
   const description = (
     <>
@@ -73,9 +82,9 @@ export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
             />
           </div>
           <Button
-            variant="contained"
             color="primary"
-            href="https://backstage.io/docs/features/software-catalog/well-known-annotations"
+            component={Link}
+            to="https://backstage.io/docs/features/software-catalog/well-known-annotations"
           >
             Read more
           </Button>
@@ -83,4 +92,4 @@ export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
       }
     />
   );
-};
+}

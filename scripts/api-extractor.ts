@@ -23,15 +23,33 @@ import {
   dirname,
   join,
 } from 'path';
+import prettier from 'prettier';
 import fs from 'fs-extra';
 import {
   Extractor,
   ExtractorConfig,
   CompilerState,
   ExtractorLogLevel,
+  ExtractorMessage,
 } from '@microsoft/api-extractor';
+import { Program } from 'typescript';
+import {
+  DocNode,
+  IDocNodeContainerParameters,
+  TSDocTagSyntaxKind,
+} from '@microsoft/tsdoc';
+import { TSDocConfigFile } from '@microsoft/tsdoc-config';
 import { ApiPackage, ApiModel } from '@microsoft/api-extractor-model';
-import { MarkdownDocumenter } from '@microsoft/api-documenter/lib/documenters/MarkdownDocumenter';
+import {
+  IMarkdownDocumenterOptions,
+  MarkdownDocumenter,
+} from '@microsoft/api-documenter/lib/documenters/MarkdownDocumenter';
+import { DocTable } from '@microsoft/api-documenter/lib/nodes/DocTable';
+import { DocTableRow } from '@microsoft/api-documenter/lib/nodes/DocTableRow';
+import { DocHeading } from '@microsoft/api-documenter/lib/nodes/DocHeading';
+import { CustomMarkdownEmitter } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
+import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
+import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 
 const tmpDir = resolvePath(__dirname, '../node_modules/.cache/api-extractor');
 
@@ -49,38 +67,134 @@ const {
 } = require('@rushstack/node-core-library/lib/PackageJsonLookup');
 
 const old = PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor;
-PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor = function tryGetPackageJsonFilePathForPatch(
-  path: string,
+PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor =
+  function tryGetPackageJsonFilePathForPatch(path: string) {
+    if (
+      path.includes('@material-ui') &&
+      !dirname(path).endsWith('@material-ui')
+    ) {
+      return undefined;
+    }
+    return old.call(this, path);
+  };
+
+/**
+ * Another monkey patch where we apply prettier to the API reports. This has to be patched into
+ * the middle of the process as API Extractor does a comparison of the contents of the old
+ * and new files during generation. This inserts the formatting just before that comparison.
+ */
+const {
+  ApiReportGenerator,
+} = require('@microsoft/api-extractor/lib/generators/ApiReportGenerator');
+
+function patchFileMessageFetcher(
+  router: any,
+  transform: (messages: ExtractorMessage[], ast?: AstDeclaration) => void,
 ) {
-  if (
-    path.includes('@material-ui') &&
-    !dirname(path).endsWith('@material-ui')
-  ) {
-    return undefined;
-  }
-  return old.call(this, path);
-};
+  const {
+    fetchAssociatedMessagesForReviewFile,
+    fetchUnassociatedMessagesForReviewFile,
+  } = router;
+
+  router.fetchAssociatedMessagesForReviewFile =
+    function patchedFetchAssociatedMessagesForReviewFile(ast) {
+      const messages = fetchAssociatedMessagesForReviewFile.call(this, ast);
+      return transform(messages, ast);
+    };
+  router.fetchUnassociatedMessagesForReviewFile =
+    function patchedFetchUnassociatedMessagesForReviewFile() {
+      const messages = fetchUnassociatedMessagesForReviewFile.call(this);
+      return transform(messages);
+    };
+}
+
+const originalGenerateReviewFileContent =
+  ApiReportGenerator.generateReviewFileContent;
+ApiReportGenerator.generateReviewFileContent =
+  function decoratedGenerateReviewFileContent(collector, ...moreArgs) {
+    const program = collector.program as Program;
+
+    // The purpose of this override is to allow the @ignore tag to be used to ignore warnings
+    // of the form "Warning: (ae-forgotten-export) The symbol "FooBar" needs to be exported by the entry point index.d.ts"
+    patchFileMessageFetcher(
+      collector.messageRouter,
+      (messages: ExtractorMessage[]) => {
+        return messages.filter(message => {
+          if (message.messageId !== 'ae-forgotten-export') {
+            return true;
+          }
+
+          // Symbol name has to be extracted from the message :(
+          // There's frequently no AST for these exports because type literals
+          // aren't traversed by the generator.
+          const symbolMatch = message.text.match(/The symbol "([^"]+)"/);
+          if (!symbolMatch) {
+            throw new Error(
+              `Failed to extract symbol name from message "${message.text}"`,
+            );
+          }
+          const [, symbolName] = symbolMatch;
+
+          const sourceFile = program.getSourceFile(message.sourceFilePath);
+          if (!sourceFile) {
+            throw new Error(
+              `Failed to find source file in program at path "${message.sourceFilePath}"`,
+            );
+          }
+
+          // NOTE: we limit the @internal functionality to only apply to types that are declared
+          //       in the same module as where they're being referenced from. This limitation makes
+          //       the implementation here simpler but could be revisited if needed.
+
+          // The local name of the symbol within the file, rather than the exported name
+          const localName = (sourceFile as any).identifiers?.get(symbolName);
+          if (!localName) {
+            return true;
+          }
+          // The local AST node of the export that we're missing
+          const local = (sourceFile as any).locals?.get(localName);
+          if (!local) {
+            return true;
+          }
+
+          // If any of the TSDoc comments contain a @ignore tag, we ignore this message
+          const isIgnored = local.declarations.some(declaration => {
+            const tags = [declaration.jsDoc]
+              .flat()
+              .filter(Boolean)
+              .flatMap((tagNode: any) => tagNode.tags);
+
+            return tags.some(tag => tag?.tagName.text === 'ignore');
+          });
+
+          return !isIgnored;
+        });
+      },
+    );
+
+    const content = originalGenerateReviewFileContent.call(
+      this,
+      collector,
+      ...moreArgs,
+    );
+    return prettier.format(content, {
+      ...require('@spotify/prettier-config'),
+      parser: 'markdown',
+    });
+  };
 
 const PACKAGE_ROOTS = ['packages', 'plugins'];
 
 const SKIPPED_PACKAGES = [
-  'packages/app',
-  'packages/backend',
-  'packages/cli',
-  'packages/codemods',
-  'packages/create-app',
-  'packages/docgen',
-  'packages/e2e-test',
-  'packages/storybook',
-  'packages/techdocs-cli',
-
-  // TODO(Rugvip): Enable these once `import * as ...` and `import()` PRs have landed, #1796 & #1916.
-  'packages/core-components',
-  'plugins/catalog',
-  'plugins/catalog-backend',
-  'plugins/catalog-react',
-  'plugins/github-deployments',
-  'plugins/sentry-backend',
+  join('packages', 'app'),
+  join('packages', 'backend'),
+  join('packages', 'cli'),
+  join('packages', 'codemods'),
+  join('packages', 'create-app'),
+  join('packages', 'e2e-test'),
+  join('packages', 'embedded-techdocs-app'),
+  join('packages', 'storybook'),
+  join('packages', 'techdocs-cli'),
 ];
 
 async function findPackageDirs() {
@@ -90,7 +204,7 @@ async function findPackageDirs() {
   for (const packageRoot of PACKAGE_ROOTS) {
     const dirs = await fs.readdir(resolvePath(projectRoot, packageRoot));
     for (const dir of dirs) {
-      const fullPackageDir = resolvePath(packageRoot, dir);
+      const fullPackageDir = resolvePath(projectRoot, packageRoot, dir);
 
       const stat = await fs.stat(fullPackageDir);
       if (!stat.isDirectory()) {
@@ -112,6 +226,35 @@ async function findPackageDirs() {
   }
 
   return packageDirs;
+}
+
+async function getTsDocConfig() {
+  const tsdocConfigFile = await TSDocConfigFile.loadFile(
+    require.resolve('@microsoft/api-extractor/extends/tsdoc-base.json'),
+  );
+  tsdocConfigFile.addTagDefinition({
+    tagName: '@ignore',
+    syntaxKind: TSDocTagSyntaxKind.ModifierTag,
+  });
+  tsdocConfigFile.setSupportForTag('@ignore', true);
+  return tsdocConfigFile;
+}
+
+function logApiReportInstructions() {
+  console.log('');
+  console.log(
+    '*************************************************************************************',
+  );
+  console.log(
+    '* You have uncommitted changes to the public API of a package.                      *',
+  );
+  console.log(
+    '* To solve this, run `yarn build:api-reports` and commit all api-report.md changes. *',
+  );
+  console.log(
+    '*************************************************************************************',
+  );
+  console.log('');
 }
 
 interface ApiExtractionOptions {
@@ -136,16 +279,11 @@ async function runApiExtraction({
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
     const projectFolder = resolvePath(__dirname, '..', packageDir);
-    const packagePath = resolvePath(__dirname, `../${packageDir}/package.json`);
+    const packageFolder = resolvePath(__dirname, '../dist-types', packageDir);
 
     const extractorConfig = ExtractorConfig.prepare({
       configObject: {
-        mainEntryPointFilePath: resolvePath(
-          __dirname,
-          '../dist-types',
-          packageDir,
-          'src/index.d.ts',
-        ),
+        mainEntryPointFilePath: resolvePath(packageFolder, 'src/index.d.ts'),
         bundledPackages: [],
 
         compiler: {
@@ -176,7 +314,7 @@ async function runApiExtraction({
         },
 
         messages: {
-          // Silence warnings, as these will prevent the CI build to work
+          // Silence compiler warnings, as these will prevent the CI build to work
           compilerMessageReporting: {
             default: {
               logLevel: 'none' as ExtractorLogLevel.None,
@@ -186,14 +324,14 @@ async function runApiExtraction({
           },
           extractorMessageReporting: {
             default: {
-              logLevel: 'none' as ExtractorLogLevel.Warning,
-              // addToApiReportFile: true,
+              logLevel: 'warning' as ExtractorLogLevel.Warning,
+              addToApiReportFile: true,
             },
           },
           tsdocMessageReporting: {
             default: {
-              logLevel: 'none' as ExtractorLogLevel.Warning,
-              // addToApiReportFile: true,
+              logLevel: 'warning' as ExtractorLogLevel.Warning,
+              addToApiReportFile: true,
             },
           },
         },
@@ -203,8 +341,18 @@ async function runApiExtraction({
         projectFolder,
       },
       configObjectFullPath: projectFolder,
-      packageJsonFullPath: packagePath,
+      packageJsonFullPath: resolvePath(projectFolder, 'package.json'),
+      tsdocConfigFile: await getTsDocConfig(),
     });
+
+    // The `packageFolder` needs to point to the location within `dist-types` in order for relative
+    // paths to be logged. Unfortunately the `prepare` method above derives it from the `packageJsonFullPath`,
+    // which needs to point to the actual file, so we override `packageFolder` afterwards.
+    (
+      extractorConfig as {
+        packageFolder: string;
+      }
+    ).packageFolder = packageFolder;
 
     if (!compilerState) {
       compilerState = CompilerState.create(extractorConfig, {
@@ -243,20 +391,7 @@ async function runApiExtraction({
 
     if (!extractorResult.succeeded) {
       if (shouldLogInstructions) {
-        console.log('');
-        console.log(
-          '*************************************************************************************',
-        );
-        console.log(
-          '* You have uncommitted changes to the public API of a package.                      *',
-        );
-        console.log(
-          '* To solve this, run `yarn build:api-reports` and commit all api-report.md changes. *',
-        );
-        console.log(
-          '*************************************************************************************',
-        );
-        console.log('');
+        logApiReportInstructions();
 
         if (conflictingFile) {
           console.log('');
@@ -270,7 +405,8 @@ async function runApiExtraction({
 
           const content = await fs.readFile(conflictingFile, 'utf8');
           console.log(content);
-          console.log('');
+
+          logApiReportInstructions();
         }
       }
 
@@ -282,10 +418,13 @@ async function runApiExtraction({
   }
 }
 
-function isComponentMember(member: any) {
-  // React components are annotated with @component, and we want to skip those
-  return Boolean(member.docComment.match(/\n\s*\**\s*@component/m));
-}
+/*
+WARNING: Bring a blanket if you're gonna read the code below
+
+There's some weird shit going on here, and it's because we cba
+forking rushstash to modify the api-documenter markdown generation,
+which otherwise is the recommended way to do customizations.
+*/
 
 async function buildDocs({
   inputDir,
@@ -294,6 +433,8 @@ async function buildDocs({
   inputDir: string;
   outputDir: string;
 }) {
+  // We start by constructing our own model from the files so that
+  // we get a change to modify them, as the model is otherwise read-only.
   const parseFile = async (filename: string): Promise<any> => {
     console.log(`Reading ${filename}`);
     return fs.readJson(resolvePath(inputDir, filename));
@@ -308,9 +449,7 @@ async function buildDocs({
 
   const newModel = new ApiModel();
   for (const serialized of serializedPackages) {
-    serialized.members[0].members = serialized.members[0].members.filter(
-      member => !isComponentMember(member),
-    );
+    // Add any docs filtering logic here
 
     const pkg = ApiPackage.deserialize(
       serialized,
@@ -319,10 +458,193 @@ async function buildDocs({
     newModel.addMember(pkg);
   }
 
-  await fs.remove(outputDir);
-  await fs.ensureDir(outputDir);
+  // The doc AST need to be extended with custom nodes if we want to
+  // add any extra content.
+  // This one is for the YAML front matter that we need for the microsite.
+  class DocFrontMatter extends DocNode {
+    static kind = 'DocFrontMatter';
 
-  const documenter = new MarkdownDocumenter({
+    public readonly values: { [name: string]: unknown };
+
+    public constructor(
+      parameters: IDocNodeContainerParameters & {
+        values: { [name: string]: unknown };
+      },
+    ) {
+      super(parameters);
+      this.values = parameters.values;
+    }
+
+    /** @override */
+    public get kind(): string {
+      return DocFrontMatter.kind;
+    }
+  }
+
+  // This is where we actually write the markdown and where we can hook
+  // in the rendering of our own nodes.
+  class CustomCustomMarkdownEmitter extends CustomMarkdownEmitter {
+    // Until https://github.com/microsoft/rushstack/issues/2914 gets fixed or we change markdown renderer we need a fix
+    // to render pipe | character correctly.
+    protected getEscapedText(text: string): string {
+      return text
+        .replace(/\\/g, '\\\\') // first replace the escape character
+        .replace(/[*#[\]_`~]/g, x => `\\${x}`) // then escape any special characters
+        .replace(/---/g, '\\-\\-\\-') // hyphens only if it's 3 or more
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\|/g, '&#124;');
+    }
+    /** @override */
+    protected writeNode(
+      docNode: DocNode,
+      context: IMarkdownEmitterContext,
+      docNodeSiblings: boolean,
+    ): void {
+      switch (docNode.kind) {
+        case DocFrontMatter.kind: {
+          const node = docNode as DocFrontMatter;
+          context.writer.writeLine('---');
+          for (const [name, value] of Object.entries(node.values)) {
+            if (value) {
+              context.writer.writeLine(`${name}: ${value}`);
+            }
+          }
+          context.writer.writeLine('---');
+          context.writer.writeLine();
+          break;
+        }
+        default:
+          super.writeNode(docNode, context, docNodeSiblings);
+      }
+    }
+
+    /** @override */
+    emit(stringBuilder, docNode, options) {
+      // Hack to get rid of the leading comment of each file, since
+      // we want the front matter to come first
+      stringBuilder._chunks.length = 0;
+      return super.emit(stringBuilder, docNode, options);
+    }
+  }
+
+  class CustomMarkdownDocumenter extends (MarkdownDocumenter as any) {
+    constructor(options: IMarkdownDocumenterOptions) {
+      super(options);
+
+      // It's a strict model, we gotta register the allowed usage of our new node
+      this._tsdocConfiguration.docNodeManager.registerDocNodes(
+        '@backstage/docs',
+        [{ docNodeKind: DocFrontMatter.kind, constructor: DocFrontMatter }],
+      );
+      this._tsdocConfiguration.docNodeManager.registerAllowableChildren(
+        'Paragraph',
+        [DocFrontMatter.kind],
+      );
+
+      this._markdownEmitter = new CustomCustomMarkdownEmitter(newModel);
+    }
+
+    // We don't really get many chances to modify the generated AST
+    // so we hook in wherever we can. In this case we add the front matter
+    // just before writing the breadcrumbs at the top.
+    /** @override */
+    _writeBreadcrumb(output, apiItem) {
+      let title;
+      let description;
+
+      const name = apiItem.getScopedNameWithinPackage();
+      if (name) {
+        title = name;
+        description = `API reference for ${apiItem.getScopedNameWithinPackage()}`;
+      } else if (apiItem.kind === 'Model') {
+        title = 'Package Index';
+        description = 'Index of all Backstage Packages';
+      } else {
+        title = apiItem.name;
+        description = `API Reference for ${apiItem.name}`;
+      }
+
+      // Add our front matter
+      output.appendNodeInParagraph(
+        new DocFrontMatter({
+          configuration: this._tsdocConfiguration,
+          values: {
+            id: this._getFilenameForApiItem(apiItem).slice(0, -3),
+            title,
+            description,
+          },
+        }),
+      );
+
+      // Now write the actual breadcrumbs
+      super._writeBreadcrumb(output, apiItem);
+
+      // We wanna ignore the header that always gets written after the breadcrumb
+      // This otherwise becomes more or less a duplicate of the title in the front matter
+      const oldAppendNode = output.appendNode;
+      output.appendNode = () => {
+        output.appendNode = oldAppendNode;
+      };
+    }
+
+    _writeModelTable(output, apiModel): void {
+      const configuration = this._tsdocConfiguration;
+
+      const packagesTable = new DocTable({
+        configuration,
+        headerTitles: ['Package', 'Description'],
+      });
+
+      const pluginsTable = new DocTable({
+        configuration,
+        headerTitles: ['Package', 'Description'],
+      });
+
+      for (const apiMember of apiModel.members) {
+        const row = new DocTableRow({ configuration }, [
+          this._createTitleCell(apiMember),
+          this._createDescriptionCell(apiMember),
+        ]);
+
+        if (apiMember.kind === 'Package') {
+          this._writeApiItemPage(apiMember);
+
+          if (apiMember.name.startsWith('@backstage/plugin-')) {
+            pluginsTable.addRow(row);
+          } else {
+            packagesTable.addRow(row);
+          }
+        }
+      }
+
+      if (packagesTable.rows.length > 0) {
+        output.appendNode(
+          new DocHeading({
+            configuration: this._tsdocConfiguration,
+            title: 'Packages',
+          }),
+        );
+        output.appendNode(packagesTable);
+      }
+
+      if (pluginsTable.rows.length > 0) {
+        output.appendNode(
+          new DocHeading({
+            configuration: this._tsdocConfiguration,
+            title: 'Plugins',
+          }),
+        );
+        output.appendNode(pluginsTable);
+      }
+    }
+  }
+
+  // This is root of the documentation generation, but it's not directly
+  // responsible for generating markdown, it just constructs an AST that
+  // is the consumed by an emitter to actually write the files.
+  const documenter = new CustomMarkdownDocumenter({
     apiModel: newModel,
     documenterConfig: {
       outputTarget: 'markdown',
@@ -334,6 +656,9 @@ async function buildDocs({
     outputFolder: outputDir,
   });
 
+  // Clean up existing stuff and write ALL the docs!
+  await fs.remove(outputDir);
+  await fs.ensureDir(outputDir);
   documenter.generateFiles();
 }
 

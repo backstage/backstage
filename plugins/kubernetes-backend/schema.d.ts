@@ -16,6 +16,15 @@
 
 export interface Config {
   kubernetes?: {
+    objectTypes?: Array<
+      | 'pods'
+      | 'services'
+      | 'configmaps'
+      | 'deployments'
+      | 'replicasets'
+      | 'horizontalpodautoscalers'
+      | 'ingresses'
+    >;
     serviceLocatorMethod: {
       type: 'multiTenant';
     };

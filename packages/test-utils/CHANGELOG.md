@@ -1,5 +1,94 @@
 # @backstage/test-utils
 
+## 0.1.22
+
+### Patch Changes
+
+- 0b1de52732: Migrated to using new `ErrorApiError` and `ErrorApiErrorContext` names.
+- 2dd2a7b2cc: Migrated to using `createSpecializedApp`.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/core-app-api@0.1.21
+
+## 0.1.21
+
+### Patch Changes
+
+- 71fd5cd735: Update Keyboard deprecation with a link to the recommended successor
+- Updated dependencies
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/core-app-api@0.1.20
+
+## 0.1.20
+
+### Patch Changes
+
+- bb12aae352: Migrates all utility methods from `test-utils-core` into `test-utils` and delete exports from the old package.
+  This should have no impact since this package is considered internal and have no usages outside core packages.
+
+  Notable changes are that the testing tool `msw.setupDefaultHandlers()` have been deprecated in favour of `setupRequestMockHandlers()`.
+
+- c5bb1df55d: Bump `msw` to `v0.35.0` to resolve [CVE-2021-32796](https://github.com/advisories/GHSA-5fg8-2547-mr8q).
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/theme@0.2.12
+  - @backstage/core-app-api@0.1.19
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.1.19
+
+### Patch Changes
+
+- 54bbe25c34: Store the namespaced bucket storage for each instance that was created with `MockStorage.create()` instead of global variable.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.17
+  - @backstage/theme@0.2.11
+
+## 0.1.18
+
+### Patch Changes
+
+- e749a38e89: Added a mock implementation of the `AnalyticsApi`, which can be used to make
+  assertions about captured analytics events.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/core-app-api@0.1.16
+  - @backstage/test-utils-core@0.1.3
+
+## 0.1.17
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.8
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/test-utils-core@0.1.2
+
+## 0.1.16
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-app-api@0.1.6
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
+## 0.1.15
+
+### Patch Changes
+
+- 45b5fc3a8: Updated the layout of catalog and API index pages to handle smaller screen sizes. This adds responsive wrappers to the entity tables, and switches filters to a drawer when width-constrained. If you have created a custom catalog or API index page, you will need to update the page structure to match the updated [catalog customization](https://backstage.io/docs/features/software-catalog/catalog-customization) documentation.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.5
+
 ## 0.1.14
 
 ### Patch Changes

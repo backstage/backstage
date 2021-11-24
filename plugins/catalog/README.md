@@ -80,7 +80,7 @@ sidebar:
 export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
-+      <SidebarItem icon={HomeIcon} to="/catalog" text="Home" />
++      <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
       ...
     </Sidebar>
 ```

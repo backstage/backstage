@@ -24,14 +24,16 @@ import { tmpdir } from 'os';
 import tar, { CreateOptions } from 'tar';
 import { paths } from '../paths';
 import { run } from '../run';
-import { packageVersions } from '../version';
 import { ParallelOption } from '../parallel';
+import {
+  dependencies as cliDependencies,
+  devDependencies as cliDevDependencies,
+} from '../../../package.json';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
-  ...Object.keys(packageVersions),
-  '@backstage/cli-common',
-  '@backstage/config-loader',
+  ...Object.keys(cliDependencies),
+  ...Object.keys(cliDevDependencies),
 ];
 
 type LernaPackage = {
@@ -104,18 +106,19 @@ export async function createDistWorkspace(
 
   if (options.buildDependencies) {
     const exclude = options.buildExcludes ?? [];
-    const scopeArgs = targets
-      .filter(target => !exclude.includes(target.name))
-      .flatMap(target => ['--scope', target.name]);
 
-    const lernaArgs =
-      options.parallel && Number.isInteger(options.parallel)
-        ? ['--concurrency', options.parallel.toString()]
-        : [];
+    const toBuild = targets.filter(target => !exclude.includes(target.name));
+    if (toBuild.length > 0) {
+      const scopeArgs = toBuild.flatMap(target => ['--scope', target.name]);
+      const lernaArgs =
+        options.parallel && Number.isInteger(options.parallel)
+          ? ['--concurrency', options.parallel.toString()]
+          : [];
 
-    await run('yarn', ['lerna', ...lernaArgs, 'run', ...scopeArgs, 'build'], {
-      cwd: paths.targetRoot,
-    });
+      await run('yarn', ['lerna', ...lernaArgs, 'run', ...scopeArgs, 'build'], {
+        cwd: paths.targetRoot,
+      });
+    }
   }
 
   await moveToDistWorkspace(targetDir, targets);

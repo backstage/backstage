@@ -28,8 +28,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootCatalogKubernetesRouteRef = createRouteRef({
-  path: '*',
-  title: 'Kubernetes',
+  id: 'kubernetes',
 });
 
 export const kubernetesPlugin = createPlugin({
@@ -59,6 +58,7 @@ export const kubernetesPlugin = createPlugin({
 
 export const EntityKubernetesContent = kubernetesPlugin.provide(
   createRoutableExtension({
+    name: 'EntityKubernetesContent',
     component: () => import('./Router').then(m => m.Router),
     mountPoint: rootCatalogKubernetesRouteRef,
   }),

@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-import { AppThemeApi, AppTheme, Observable } from '@backstage/core-plugin-api';
+import { AppThemeApi, AppTheme } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { BehaviorSubject } from '../../../lib/subjects';
 
 const STORAGE_KEY = 'theme';
 
+/**
+ * Exposes the themes installed in the app, and permits switching the currently
+ * active theme.
+ *
+ * @public
+ */
 export class AppThemeSelector implements AppThemeApi {
   static createWithStorage(themes: AppTheme[]) {
     const selector = new AppThemeSelector(themes);

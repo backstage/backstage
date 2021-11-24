@@ -1,5 +1,164 @@
 # @backstage/plugin-kubernetes
 
+## 0.4.20
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.4.19
+
+### Patch Changes
+
+- 9f3dd76bc7: fix: kubernetes plugin shall pass id token on get clusters request if possible
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
+## 0.4.18
+
+### Patch Changes
+
+- 14df942bae: The Kubernetes plugin will now re-fetch the kubernetes objects every ten seconds (not current configurable), this allows users to track the progress of deployments without refreshing the browser.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/core-components@0.7.2
+  - @backstage/plugin-catalog-react@0.6.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.4.17
+
+### Patch Changes
+
+- 89bcf90b66: Refactor kubernetes fetcher to reduce boilerplate code
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.4.16
+
+### Patch Changes
+
+- c148c8854b: Support Rancher URL's with an existing path component
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+  - @backstage/plugin-kubernetes-common@0.1.5
+
+## 0.4.15
+
+### Patch Changes
+
+- e6aaf246c2: Enhanced deployment accordion to display the namespace of the deployment.
+- 6ba06efe08: Exported `KubernetesApi`, `kubernetesApiRef`, and `KubernetesAuthProvidersApi`.
+- 8d397ef27a: Added a check for the Kubernetes annotation on the entity
+- 6c0bd7fb75: Add dashboard support for Rancher
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.4.14
+
+### Patch Changes
+
+- 7a0c334707: Provide access to the Kubernetes dashboard when viewing a specific resource
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+  - @backstage/plugin-kubernetes-common@0.1.4
+
+## 0.4.13
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.4.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+
+## 0.4.11
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+
+## 0.4.10
+
+### Patch Changes
+
+- 260c053b9: Fix All Material UI Warnings
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.4.9
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- 7f24f4088: chore(deps): bump `@kubernetes/client-node` from 0.14.3 to 0.15.0
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+  - @backstage/plugin-kubernetes-common@0.1.3
+
+## 0.4.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.1.5
+  - @backstage/catalog-model@0.9.0
+  - @backstage/plugin-catalog-react@0.2.6
+  - @backstage/plugin-kubernetes-common@0.1.2
+
 ## 0.4.6
 
 ### Patch Changes

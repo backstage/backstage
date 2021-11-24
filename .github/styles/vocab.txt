@@ -1,5 +1,6 @@
 abc
 accessors
+Anddddd
 Apdex
 api
 Api
@@ -7,6 +8,7 @@ apis
 args
 asciidoc
 async
+Atlassian
 automations
 autoscaling
 Autoscaling
@@ -14,6 +16,7 @@ Avro
 backrub
 Bigtable
 Billett
+Bitbucket
 Bitrise
 Blackbox
 bool
@@ -49,6 +52,7 @@ configmaps
 configs
 const
 cookiecutter
+cron
 css
 Datadog
 dataflow
@@ -59,6 +63,7 @@ Debounce
 declaratively
 deduplicated
 deps
+dependabot
 destructured
 dev
 devops
@@ -66,7 +71,6 @@ devs
 discoverability
 Discoverability
 dls
-docgen
 Dockerfile
 dockerfiles
 Dockerize
@@ -74,6 +78,7 @@ dockerode
 Docusaurus
 env
 Env
+elasticsearch
 esbuild
 eslint
 etag
@@ -82,6 +87,8 @@ facto
 failover
 Fargate
 Figma
+firehydrant
+FireHydrant
 Firekube
 Fiverr
 gitbeaker
@@ -93,6 +100,7 @@ GraphQL
 graphviz
 Hackathons
 haproxy
+hardcoded
 Helidon
 Heroku
 hoc
@@ -137,6 +145,7 @@ maintainership
 makefile
 md
 memcache
+memoize
 memoized
 microservice
 microservices
@@ -155,6 +164,8 @@ Monorepo
 monorepos
 msgraph
 msw
+mutex
+mutexes
 mysql
 namespace
 namespaced
@@ -169,6 +180,7 @@ nohoist
 nonces
 noop
 npm
+nunjucks
 nvarchar
 nvm
 OAuth
@@ -209,8 +221,10 @@ repo
 Repo
 repos
 rerender
+rerenders
 Reusability
 reusability
+roadmaps
 rollbar
 Rollbar
 Rollup
@@ -219,6 +233,7 @@ Routable
 rst
 rsync
 ruleset
+runbook
 sam
 sanitization
 scaffolded
@@ -274,6 +289,7 @@ touchpoints
 transpilation
 transpiled
 truthy
+typeahead
 ui
 unbreak
 unmanaged
@@ -299,3 +315,4 @@ Zalando
 Zhou
 zoomable
 zsh
+Firestore

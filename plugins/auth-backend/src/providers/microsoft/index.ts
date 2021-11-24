@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export { createMicrosoftProvider } from './provider';
+export {
+  createMicrosoftProvider,
+  microsoftEmailSignInResolver,
+} from './provider';
 export type { MicrosoftProviderOptions } from './provider';

@@ -15,21 +15,22 @@
  */
 
 import { useApp } from '@backstage/core-plugin-api';
-import { HelpIcon } from '../../icons';
-import {
-  Box,
-  Button,
-  DialogActions,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-  makeStyles,
-  Popover,
-} from '@material-ui/core';
-import React, { Fragment, MouseEventHandler, useState } from 'react';
+import { BackstageTheme } from '@backstage/theme';
+import { makeStyles } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import DialogActions from '@material-ui/core/DialogActions';
+import IconButton from '@material-ui/core/IconButton';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Popover from '@material-ui/core/Popover';
+import Typography from '@material-ui/core/Typography';
+import React, { MouseEventHandler, useState } from 'react';
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
+import { HelpIcon } from '../../icons';
 import { Link } from '../Link';
 
 type SupportButtonProps = {
@@ -37,12 +38,17 @@ type SupportButtonProps = {
   children?: React.ReactNode;
 };
 
-const useStyles = makeStyles({
-  popoverList: {
-    minWidth: 260,
-    maxWidth: 400,
+export type SupportButtonClassKey = 'popoverList';
+
+const useStyles = makeStyles(
+  {
+    popoverList: {
+      minWidth: 260,
+      maxWidth: 400,
+    },
   },
-});
+  { name: 'BackstageSupportButton' },
+);
 
 const SupportIcon = ({ icon }: { icon: string | undefined }) => {
   const app = useApp();
@@ -51,9 +57,7 @@ const SupportIcon = ({ icon }: { icon: string | undefined }) => {
 };
 
 const SupportLink = ({ link }: { link: SupportItemLink }) => (
-  <Link to={link.url} target="_blank" rel="noreferrer noopener">
-    {link.title ?? link.url}
-  </Link>
+  <Link to={link.url}>{link.title ?? link.url}</Link>
 );
 
 const SupportListItem = ({ item }: { item: SupportItem }) => {
@@ -77,12 +81,16 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
   );
 };
 
-export const SupportButton = ({ title, children }: SupportButtonProps) => {
+export function SupportButton(props: SupportButtonProps) {
+  const { title, children } = props;
   const { items } = useSupportConfig();
 
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const classes = useStyles();
+  const isSmallScreen = useMediaQuery<BackstageTheme>(theme =>
+    theme.breakpoints.down('sm'),
+  );
 
   const onClickHandler: MouseEventHandler = event => {
     setAnchorEl(event.currentTarget);
@@ -94,17 +102,28 @@ export const SupportButton = ({ title, children }: SupportButtonProps) => {
   };
 
   return (
-    <Fragment>
-      <Button
-        data-testid="support-button"
-        color="primary"
-        onClick={onClickHandler}
-      >
-        <Box marginRight={1}>
-          <HelpIcon />
-        </Box>
-        Support
-      </Button>
+    <>
+      <Box display="flex" ml={1}>
+        {isSmallScreen ? (
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={onClickHandler}
+            data-testid="support-button"
+          >
+            <HelpIcon />
+          </IconButton>
+        ) : (
+          <Button
+            data-testid="support-button"
+            color="primary"
+            onClick={onClickHandler}
+            startIcon={<HelpIcon />}
+          >
+            Support
+          </Button>
+        )}
+      </Box>
       <Popover
         data-testid="support-button-popover"
         open={popoverOpen}
@@ -141,6 +160,6 @@ export const SupportButton = ({ title, children }: SupportButtonProps) => {
           </Button>
         </DialogActions>
       </Popover>
-    </Fragment>
+    </>
   );
-};
+}

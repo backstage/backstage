@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { LatestRunCard } from './Cards';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { JenkinsApi, jenkinsApiRef } from '../../api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { Project } from '../../api/JenkinsApi';
 
 describe('<LatestRunCard />', () => {
   const entity = {
@@ -33,18 +33,19 @@ describe('<LatestRunCard />', () => {
   };
 
   const jenkinsApi: Partial<JenkinsApi> = {
-    getLastBuild: () => Promise.resolve({ timestamp: 0, result: 'success' }),
+    getProjects: () =>
+      Promise.resolve([
+        { lastBuild: { timestamp: 0, status: 'success' } },
+      ] as Project[]),
   };
 
   it('should show success status of latest build', async () => {
-    const apis = ApiRegistry.from([[jenkinsApiRef, jenkinsApi]]);
-
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider apis={[[jenkinsApiRef, jenkinsApi]]}>
         <EntityProvider entity={entity}>
           <LatestRunCard branch="master" />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(getByText('Completed')).toBeInTheDocument();
@@ -52,17 +53,15 @@ describe('<LatestRunCard />', () => {
 
   it('should show the appropriate error in case of a connection error', async () => {
     const jenkinsApiWithError: Partial<JenkinsApi> = {
-      getLastBuild: () => Promise.reject(new Error('Unauthorized')),
+      getProjects: () => Promise.reject(new Error('Unauthorized')),
     };
 
-    const apis = ApiRegistry.from([[jenkinsApiRef, jenkinsApiWithError]]);
-
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider apis={[[jenkinsApiRef, jenkinsApiWithError]]}>
         <EntityProvider entity={entity}>
           <LatestRunCard branch="master" />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(getByText("Error: Can't connect to Jenkins")).toBeInTheDocument();
@@ -71,21 +70,19 @@ describe('<LatestRunCard />', () => {
 
   it('should show the appropriate error in case Jenkins project is not found', async () => {
     const jenkinsApiWithError: Partial<JenkinsApi> = {
-      getLastBuild: () =>
+      getProjects: () =>
         Promise.reject({
           notFound: true,
           message: 'jenkins-project not found',
         }),
     };
 
-    const apis = ApiRegistry.from([[jenkinsApiRef, jenkinsApiWithError]]);
-
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider apis={[[jenkinsApiRef, jenkinsApiWithError]]}>
         <EntityProvider entity={entity}>
           <LatestRunCard branch="master" />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(getByText("Error: Can't find Jenkins project")).toBeInTheDocument();

@@ -14,31 +14,36 @@
  * limitations under the License.
  */
 
-import { Link, makeStyles, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 import React from 'react';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    textAlign: 'left',
-    margin: theme.spacing(2),
-    display: 'inline-block',
-  },
-  label: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    lineHeight: '16px',
-    letterSpacing: 0,
-    fontSize: 14,
-    height: '16px',
-    marginBottom: 2,
-  },
-  value: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    lineHeight: '16px',
-    fontSize: 14,
-    height: '16px',
-  },
-}));
+/** @public */
+export type HeaderLabelClassKey = 'root' | 'label' | 'value';
+
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      textAlign: 'left',
+    },
+    label: {
+      color: theme.palette.common.white,
+      fontWeight: 'bold',
+      letterSpacing: 0,
+      fontSize: theme.typography.fontSize,
+      marginBottom: theme.spacing(1) / 2,
+      lineHeight: 1,
+    },
+    value: {
+      color: 'rgba(255, 255, 255, 0.8)',
+      fontSize: theme.typography.fontSize,
+      lineHeight: 1,
+    },
+  }),
+  { name: 'BackstageHeaderLabel' },
+);
 
 type HeaderLabelContentProps = {
   value: React.ReactNode;
@@ -55,7 +60,9 @@ type HeaderLabelProps = {
   url?: string;
 };
 
-export const HeaderLabel = ({ label, value, url }: HeaderLabelProps) => {
+/** @public */
+export function HeaderLabel(props: HeaderLabelProps) {
+  const { label, value, url } = props;
   const classes = useStyles();
   const content = (
     <HeaderLabelContent
@@ -64,9 +71,11 @@ export const HeaderLabel = ({ label, value, url }: HeaderLabelProps) => {
     />
   );
   return (
-    <span className={classes.root}>
-      <Typography className={classes.label}>{label}</Typography>
-      {url ? <Link href={url}>{content}</Link> : content}
-    </span>
+    <Grid item>
+      <span className={classes.root}>
+        <Typography className={classes.label}>{label}</Typography>
+        {url ? <Link href={url}>{content}</Link> : content}
+      </span>
+    </Grid>
   );
-};
+}

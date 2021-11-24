@@ -15,11 +15,12 @@
  */
 
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { TechDocsCustomHome, PanelType } from './TechDocsCustomHome';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
+import { rootDocsRouteRef } from '../../routes';
 
 jest.mock('@backstage/plugin-catalog-react', () => {
   const actual = jest.requireActual('@backstage/plugin-catalog-react');
@@ -46,7 +47,7 @@ const mockCatalogApi = {
 } as Partial<CatalogApi>;
 
 describe('TechDocsCustomHome', () => {
-  const apiRegistry = ApiRegistry.with(catalogApiRef, mockCatalogApi);
+  const apiRegistry = TestApiRegistry.from([catalogApiRef, mockCatalogApi]);
 
   it('should render a TechDocs home page', async () => {
     const tabsConfig = [
@@ -78,6 +79,11 @@ describe('TechDocsCustomHome', () => {
       <ApiProvider apis={apiRegistry}>
         <TechDocsCustomHome tabsConfig={tabsConfig} />
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+        },
+      },
     );
 
     // Header

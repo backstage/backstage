@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that integrates towards Sentry
+ *
+ * @packageDocumentation
+ */
+
 export * from './api';
 export * from './components';
 export { sentryPlugin, sentryPlugin as plugin } from './plugin';

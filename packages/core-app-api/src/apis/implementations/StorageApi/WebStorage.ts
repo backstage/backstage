@@ -13,28 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   StorageApi,
   StorageValueChange,
   ErrorApi,
-  Observable,
 } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 
 const buckets = new Map<string, WebStorage>();
 
-export type CreateStorageApiOptions = {
-  errorApi: ErrorApi;
-  namespace?: string;
-};
-
+/**
+ * An implementation of the storage API, that uses the browser's local storage.
+ *
+ * @public
+ */
 export class WebStorage implements StorageApi {
   constructor(
     private readonly namespace: string,
     private readonly errorApi: ErrorApi,
   ) {}
 
-  static create(options: CreateStorageApiOptions): WebStorage {
+  static create(options: {
+    errorApi: ErrorApi;
+    namespace?: string;
+  }): WebStorage {
     return new WebStorage(options.namespace ?? '', options.errorApi);
   }
 

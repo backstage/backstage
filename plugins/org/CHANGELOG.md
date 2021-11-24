@@ -1,5 +1,138 @@
 # @backstage/plugin-org
 
+## 0.3.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.3.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.3.26
+
+### Patch Changes
+
+- 614da39174: Change the OwnershipCard link on an user profile, including the user's groups on the filters.
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+
+## 0.3.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.3.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+
+## 0.3.23
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.3.22
+
+### Patch Changes
+
+- 6ad8fe1a0: Make ownership card style customizable via custom `theme.getPageTheme()`.
+- 70718686f: Use correct `Link` in ownership card to avoid a full reload of the app while navigating.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-model@0.9.2
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.3.21
+
+### Patch Changes
+
+- c9927b1c7: Don't open a new tab when clicking on the ownership card.
+- 7e5f14dda: This change hides pagination counter of search tables and group members list when results fit in one page
+- ff304cfc3: Fix OwnershipCard links to support namespaced owners
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+
+## 0.3.20
+
+### Patch Changes
+
+- a60143c37: Link group ownership boxes through filtered catalog page
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.4
+  - @backstage/core-components@0.3.3
+
+## 0.3.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.3.18
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
+## 0.3.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
+## 0.3.16
+
+### Patch Changes
+
+- 34352a79c: Add edit button to Group Profile Card
+- Updated dependencies
+  - @backstage/core-components@0.1.5
+  - @backstage/catalog-model@0.9.0
+  - @backstage/plugin-catalog-react@0.2.6
+
 ## 0.3.15
 
 ### Patch Changes

@@ -3,12 +3,12 @@ import { render } from '@testing-library/react';
 import { ExampleFetchComponent } from './ExampleFetchComponent';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 
 describe('ExampleFetchComponent', () => {
   const server = setupServer();
   // Enable sane handlers for network requests
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   // setup mock response
   beforeEach(() => {

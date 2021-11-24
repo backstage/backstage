@@ -15,15 +15,11 @@
  */
 
 import React, { useState } from 'react';
-import {
-  Drawer,
-  Button,
-  Typography,
-  makeStyles,
-  IconButton,
-  createStyles,
-  Theme,
-} from '@material-ui/core';
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
 import Close from '@material-ui/icons/Close';
 
 export default {

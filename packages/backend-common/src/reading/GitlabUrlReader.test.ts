@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import { rest } from 'msw';
@@ -77,7 +77,7 @@ describe('GitlabUrlReader', () => {
   });
 
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
 
   describe('read', () => {
     beforeEach(() => {
@@ -108,36 +108,30 @@ describe('GitlabUrlReader', () => {
     it.each([
       // Project URLs
       {
-        url:
-          'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
+        url: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
         config: createConfig(),
         response: expect.objectContaining({
-          url:
-            'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+          url: 'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
           headers: expect.objectContaining({
             'private-token': '',
           }),
         }),
       },
       {
-        url:
-          'https://gitlab.example.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
+        url: 'https://gitlab.example.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
         config: createConfig('0123456789'),
         response: expect.objectContaining({
-          url:
-            'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+          url: 'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
           headers: expect.objectContaining({
             'private-token': '0123456789',
           }),
         }),
       },
       {
-        url:
-          'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/to/file.yaml', // Repo not in subgroup
+        url: 'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/to/file.yaml', // Repo not in subgroup
         config: createConfig(),
         response: expect.objectContaining({
-          url:
-            'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+          url: 'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
         }),
       },
 
@@ -229,7 +223,7 @@ describe('GitlabUrlReader', () => {
 
   describe('readTree', () => {
     const archiveBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'gitlab-archive.tar.gz'),
+      path.resolve(__dirname, '__fixtures__/gitlab-archive.tar.gz'),
     );
 
     const projectGitlabApiResponse = {
@@ -501,7 +495,7 @@ describe('GitlabUrlReader', () => {
 
   describe('search', () => {
     const archiveBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'gitlab-archive.tar.gz'),
+      path.resolve(__dirname, '__fixtures__/gitlab-archive.tar.gz'),
     );
 
     const projectGitlabApiResponse = {

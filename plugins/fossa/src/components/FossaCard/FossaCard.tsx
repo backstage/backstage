@@ -157,7 +157,7 @@ export const FossaCard = ({ variant }: { variant?: InfoCardVariants }) => {
         item
         container
         direction="column"
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="center"
         style={{ height: '100%' }}
         spacing={0}

@@ -1,5 +1,277 @@
 # @backstage/plugin-catalog-react
 
+## 0.6.4
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/core-app-api@0.1.21
+
+## 0.6.3
+
+### Patch Changes
+
+- 03b47a476d: export `loadIdentityOwnerRefs` and `loadCatalogOwnerRefs` all the way
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/catalog-client@0.5.1
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/core-app-api@0.1.20
+
+## 0.6.2
+
+### Patch Changes
+
+- f9cc2509f8: EntityTypePicker can be hidden and have an initial filter value set, similar to EntityKindPicker
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/core-components@0.7.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/core-app-api@0.1.19
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.6.1
+
+### Patch Changes
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/errors@0.1.3
+  - @backstage/core-app-api@0.1.18
+  - @backstage/core-plugin-api@0.1.11
+  - @backstage/catalog-model@0.9.5
+
+## 0.6.0
+
+### Minor Changes
+
+- 82fbda923e: Introduce a new `StarredEntitiesApi` that is used in the `useStarredEntities` hook.
+  The `@backstage/plugin-catalog` installs a default implementation that is backed by the `StorageApi`, but one can also override the `starredEntitiesApiRef`.
+
+  This change also updates the storage format from a custom string to an entity reference and moves the location in the local storage.
+  A migration will convert the previously starred entities to the location on the first load of Backstage.
+
+### Patch Changes
+
+- 0366c9b667: Introduce a `useStarredEntity` hook to check if a single entity is starred.
+  It provides a more efficient implementation compared to the `useStarredEntities` hook, because the rendering is only triggered if the selected entity is starred, not if _any_ entity is starred.
+- 4aca84f86b: Support `material-ui` overrides in plugin-catalog-react components
+- b03b9f19e0: added sorting in entity `Name` column by `metadata.title` if present
+- Updated dependencies
+  - @backstage/integration@0.6.8
+  - @backstage/core-app-api@0.1.17
+  - @backstage/core-components@0.7.0
+
+## 0.5.2
+
+### Patch Changes
+
+- 5aae9bb61e: Name column will now render entity `metadata.title` if its present
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/core-app-api@0.1.16
+  - @backstage/catalog-model@0.9.4
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.15
+  - @backstage/integration@0.6.6
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
+## 0.5.0
+
+### Minor Changes
+
+- dbcaa6387a: Extends the `CatalogClient` interface with a `refreshEntity` method.
+
+### Patch Changes
+
+- cc464a56b3: This makes Type and Lifecycle columns consistent for all table cases and adds a new line in Description column for better readability
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/core-app-api@0.1.14
+
+## 0.4.6
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- ea81a1f19c: Deprecated EntityContext in favor of using `useEntity`, `EntityProvider` and the new `AsyncEntityProvider` instead. This update also brings cross-version compatibility to `@backstage/catalog-react`, meaning that future versions can be used in parallel with this one.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/core-app-api@0.1.13
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.4.5
+
+### Patch Changes
+
+- 3ed78fca3: Added a `useEntityKinds` hook to load a unique list of entity kinds from the catalog.
+  Fixed a bug in `EntityTypePicker` where the component did not hide when no types were available in returned entities.
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/core-app-api@0.1.11
+
+## 0.4.4
+
+### Patch Changes
+
+- 5a1eb6bfc: Memoize the context value in `EntityListProvider`.
+
+  This removes quite a few unnecessary rerenders of the inner components.
+
+  When running the full `CatalogPage` test:
+
+  - Before: 98 table render calls total, 16 seconds runtime
+  - After: 57 table render calls total, 14 seconds runtime
+
+  This doesn't account for all of the slowness, but does give a minor difference in perceived speed in the browser too.
+
+- d39e7d141: Use the history API directly in `useEntityListProvider`.
+
+  This replaces `useSearchParams`/`useNavigate`, since they cause at least one additional re-render compared to using this method.
+
+  Table re-render count is down additionally:
+
+  - Initial render of catalog page: 12 -> 9
+  - Full `CatalogPage` test: 57 -> 48
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.10
+  - @backstage/core-components@0.3.3
+  - @backstage/integration@0.6.2
+
+## 0.4.3
+
+### Patch Changes
+
+- 3bc009287: Clarified messaging around configured locations in the `UnregisterEntityDialog`.
+- 2105d608f: Migrate and export `UnregisterEntityDialog` component from `catalog-react` package
+- Updated dependencies
+  - @backstage/core-app-api@0.1.9
+  - @backstage/core-components@0.3.2
+  - @backstage/integration@0.6.1
+
+## 0.4.2
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- a440d3b38: Move and rename `FavoriteEntity` component to `catalog-react`
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-app-api@0.1.8
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+  - @backstage/core-app-api@0.1.7
+
+## 0.4.0
+
+### Minor Changes
+
+- c5cb55803: Introduce the `useEntityOwnership` hook, which implements the full new ownership model.
+
+  This also means a breaking change to the interface of `UserListFilter`. It no longer
+  accepts a user entity as input, but rather a function that checks ownership of an
+  entity. This function is taken from the above mentioned hook output. So if you are
+  instantiating the filter yourself, you will change from something like
+
+  ```ts
+  const { entity } = useOwnUser();
+  const filter = new UserListFilter('owned', user, ...);
+  ```
+
+  to
+
+  ```ts
+  const { isOwnedEntity } = useEntityOwnership();
+  const filter = new UserListFilter('owned', isOwnedEntity, ...);
+  ```
+
+### Patch Changes
+
+- 19d9995b6: Improve accessibility of core & catalog components by adjusting them with non-breaking changes.
+- 11c370af2: Export `CATALOG_FILTER_EXISTS` symbol
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- 043a4238f: Fix `EntityListProvider` to not update url if unmounted
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/core-app-api@0.1.6
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/catalog-client@0.3.18
+
+## 0.3.1
+
+### Patch Changes
+
+- 221d7d060: added retry callback to useEntity hook
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+  - @backstage/catalog-client@0.3.17
+  - @backstage/core-app-api@0.1.5
+
+## 0.3.0
+
+### Minor Changes
+
+- 976b61080: Updated the software templates list page (`ScaffolderPage`) to use the `useEntityListProvider` hook from #5643. This reduces the code footprint, making it easier to customize the display of this page, and consolidates duplicate approaches to querying the catalog with filters.
+
+  - The `useEntityTypeFilter` hook has been updated along with the underlying `EntityTypeFilter` to work with multiple values, to allow more flexibility for different user interfaces. It's unlikely that this change affects you; however, if you're using either of these directly, you'll need to update your usage.
+  - `SearchToolbar` was renamed to `EntitySearchBar` and moved to `catalog-react` to be usable by other entity list pages
+  - `UserListPicker` now has an `availableTypes` prop to restrict which user-related options to present
+
+### Patch Changes
+
+- d84778c25: Store filter values set in `EntityListProvider` in query parameters. This allows selected filters to be restored when returning to pages that list catalog entities.
+- e13f0fb9d: Fix `EntityTypeFilter` so it produces unique case-insensitive set of available types
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.5.8
+  - @backstage/core-components@0.1.5
+  - @backstage/catalog-model@0.9.0
+  - @backstage/catalog-client@0.3.16
+
 ## 0.2.5
 
 ### Patch Changes

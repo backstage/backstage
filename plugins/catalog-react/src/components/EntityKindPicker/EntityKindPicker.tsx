@@ -17,7 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import { Alert } from '@material-ui/lab';
 import { useEntityListProvider } from '../../hooks';
-import { EntityKindFilter } from '../../types';
+import { EntityKindFilter } from '../../filters';
 
 type EntityKindFilterProps = {
   initialFilter?: string;
@@ -28,8 +28,10 @@ export const EntityKindPicker = ({
   initialFilter,
   hidden,
 }: EntityKindFilterProps) => {
-  const [selectedKind] = useState(initialFilter);
-  const { updateFilters } = useEntityListProvider();
+  const { updateFilters, queryParameters } = useEntityListProvider();
+  const [selectedKind] = useState(
+    [queryParameters.kind].flat()[0] ?? initialFilter,
+  );
 
   useEffect(() => {
     updateFilters({

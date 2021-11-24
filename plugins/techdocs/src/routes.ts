@@ -17,16 +17,14 @@
 import { createRouteRef } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '',
-  title: 'TechDocs Landing Page',
+  id: 'techdocs:index-page',
 });
 
 export const rootDocsRouteRef = createRouteRef({
-  path: ':namespace/:kind/:name/*',
-  title: 'Docs',
+  id: 'techdocs:reader-page',
+  params: ['namespace', 'kind', 'name'],
 });
 
 export const rootCatalogDocsRouteRef = createRouteRef({
-  path: '*',
-  title: 'Docs',
+  id: 'techdocs:catalog-reader-view',
 });

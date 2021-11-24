@@ -50,15 +50,13 @@ export const useUptimeMonitors = () => {
 
   const onUptimeMonitorChanged = (newUptimeMonitor: UptimeMonitor) => {
     setUptimeMonitorsList(
-      uptimeMonitorsList.map(
-        (uptimeMonitor: UptimeMonitor): UptimeMonitor => {
-          if (newUptimeMonitor.id === uptimeMonitor.id) {
-            return newUptimeMonitor;
-          }
+      uptimeMonitorsList.map((uptimeMonitor: UptimeMonitor): UptimeMonitor => {
+        if (newUptimeMonitor.id === uptimeMonitor.id) {
+          return newUptimeMonitor;
+        }
 
-          return uptimeMonitor;
-        },
-      ),
+        return uptimeMonitor;
+      }),
     );
   };
 

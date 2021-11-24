@@ -22,7 +22,7 @@ import { OAuthHandlers } from './types';
 const mockResponseData = {
   providerInfo: {
     accessToken: 'ACCESS_TOKEN',
-    idToken: 'ID_TOKEN',
+    token: 'ID_TOKEN',
     expiresInSeconds: 10,
     scope: 'email',
   },
@@ -64,6 +64,7 @@ describe('OAuthAdapter', () => {
       issueToken: async () => 'my-id-token',
       listPublicKeys: async () => ({ keys: [] }),
     },
+    isOriginAllowed: () => false,
   };
 
   it('sets the correct headers in start', async () => {
@@ -71,19 +72,19 @@ describe('OAuthAdapter', () => {
       providerInstance,
       oAuthProviderOptions,
     );
-    const mockRequest = ({
+    const mockRequest = {
       query: {
         scope: 'user',
         env: 'development',
       },
-    } as unknown) as express.Request;
+    } as unknown as express.Request;
 
-    const mockResponse = ({
+    const mockResponse = {
       cookie: jest.fn().mockReturnThis(),
       end: jest.fn().mockReturnThis(),
       setHeader: jest.fn().mockReturnThis(),
       statusCode: jest.fn().mockReturnThis(),
-    } as unknown) as express.Response;
+    } as unknown as express.Response;
 
     await oauthProvider.start(mockRequest, mockResponse);
     // nonce cookie checks
@@ -105,23 +106,24 @@ describe('OAuthAdapter', () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
+      isOriginAllowed: () => false,
     });
 
     const state = { nonce: 'nonce', env: 'development' };
-    const mockRequest = ({
+    const mockRequest = {
       cookies: {
         'test-provider-nonce': 'nonce',
       },
       query: {
         state: encodeState(state),
       },
-    } as unknown) as express.Request;
+    } as unknown as express.Request;
 
-    const mockResponse = ({
+    const mockResponse = {
       cookie: jest.fn().mockReturnThis(),
       setHeader: jest.fn().mockReturnThis(),
       end: jest.fn().mockReturnThis(),
-    } as unknown) as express.Response;
+    } as unknown as express.Response;
 
     await oauthProvider.frameHandler(mockRequest, mockResponse);
     expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
@@ -139,22 +141,23 @@ describe('OAuthAdapter', () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: true,
+      isOriginAllowed: () => false,
     });
 
-    const mockRequest = ({
+    const mockRequest = {
       cookies: {
         'test-provider-nonce': 'nonce',
       },
       query: {
         state: 'nonce',
       },
-    } as unknown) as express.Request;
+    } as unknown as express.Request;
 
-    const mockResponse = ({
+    const mockResponse = {
       cookie: jest.fn().mockReturnThis(),
       setHeader: jest.fn().mockReturnThis(),
       end: jest.fn().mockReturnThis(),
-    } as unknown) as express.Response;
+    } as unknown as express.Response;
 
     await oauthProvider.frameHandler(mockRequest, mockResponse);
     expect(mockResponse.cookie).toHaveBeenCalledTimes(0);
@@ -164,17 +167,18 @@ describe('OAuthAdapter', () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
+      isOriginAllowed: () => false,
     });
 
-    const mockRequest = ({
+    const mockRequest = {
       header: () => 'XMLHttpRequest',
-    } as unknown) as express.Request;
+    } as unknown as express.Request;
 
-    const mockResponse = ({
+    const mockResponse = {
       cookie: jest.fn().mockReturnThis(),
-      send: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
       status: jest.fn().mockReturnThis(),
-    } as unknown) as express.Response;
+    } as unknown as express.Response;
 
     await oauthProvider.logout(mockRequest, mockResponse);
     expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
@@ -183,6 +187,7 @@ describe('OAuthAdapter', () => {
       '',
       expect.objectContaining({ path: '/auth/test-provider' }),
     );
+    expect(mockResponse.end).toHaveBeenCalledTimes(1);
   });
 
   it('gets new access-token when refreshing', async () => {
@@ -190,20 +195,21 @@ describe('OAuthAdapter', () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
+      isOriginAllowed: () => false,
     });
 
-    const mockRequest = ({
+    const mockRequest = {
       header: () => 'XMLHttpRequest',
       cookies: {
         'test-provider-refresh-token': 'token',
       },
       query: {},
-    } as unknown) as express.Request;
+    } as unknown as express.Request;
 
-    const mockResponse = ({
+    const mockResponse = {
       json: jest.fn().mockReturnThis(),
       status: jest.fn().mockReturnThis(),
-    } as unknown) as express.Response;
+    } as unknown as express.Response;
 
     await oauthProvider.refresh(mockRequest, mockResponse);
     expect(mockResponse.json).toHaveBeenCalledTimes(1);
@@ -211,7 +217,7 @@ describe('OAuthAdapter', () => {
       ...mockResponseData,
       backstageIdentity: {
         id: mockResponseData.backstageIdentity.id,
-        idToken: 'my-id-token',
+        token: 'my-id-token',
       },
     });
   });
@@ -220,25 +226,19 @@ describe('OAuthAdapter', () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: true,
+      isOriginAllowed: () => false,
     });
 
-    const mockRequest = ({
+    const mockRequest = {
       header: () => 'XMLHttpRequest',
-      cookies: {
-        'test-provider-refresh-token': 'token',
-      },
-      query: {},
-    } as unknown) as express.Request;
+    } as unknown as express.Request;
 
-    const mockResponse = ({
-      send: jest.fn().mockReturnThis(),
-      status: jest.fn().mockReturnThis(),
-    } as unknown) as express.Response;
+    const mockResponse = {} as unknown as express.Response;
 
-    await oauthProvider.refresh(mockRequest, mockResponse);
-    expect(mockResponse.send).toHaveBeenCalledTimes(1);
-    expect(mockResponse.send).toHaveBeenCalledWith(
-      'Refresh token not supported for provider: test-provider',
+    await expect(
+      oauthProvider.refresh(mockRequest, mockResponse),
+    ).rejects.toThrow(
+      'Refresh token is not supported for provider test-provider',
     );
   });
 });

@@ -15,21 +15,29 @@
  */
 
 import React from 'react';
-import { makeStyles, Typography, Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 import { EmptyStateImage } from './EmptyStateImage';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    backgroundColor: theme.palette.background.default,
-    padding: theme.spacing(2, 0, 0, 0),
-  },
-  action: {
-    marginTop: theme.spacing(2),
-  },
-  imageContainer: {
-    position: 'relative',
-  },
-}));
+/** @public */
+export type EmptyStateClassKey = 'root' | 'action' | 'imageContainer';
+
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      backgroundColor: theme.palette.background.default,
+      padding: theme.spacing(2, 0, 0, 0),
+    },
+    action: {
+      marginTop: theme.spacing(2),
+    },
+    imageContainer: {
+      position: 'relative',
+    },
+  }),
+  { name: 'BackstageEmptyState' },
+);
 
 type Props = {
   title: string;
@@ -38,26 +46,30 @@ type Props = {
   action?: JSX.Element;
 };
 
-export const EmptyState = ({ title, description, missing, action }: Props) => {
+/** @public */
+export function EmptyState(props: Props) {
+  const { title, description, missing, action } = props;
   const classes = useStyles();
   return (
     <Grid
       container
       direction="row"
-      justify="space-around"
+      justifyContent="space-around"
       alignItems="flex-start"
       className={classes.root}
       spacing={2}
     >
-      <Grid item container direction="column" xs={12} md={6}>
-        <Grid item>
-          <Typography variant="h5">{title}</Typography>
-        </Grid>
-        <Grid item>
-          <Typography variant="body1">{description}</Typography>
-        </Grid>
-        <Grid item className={classes.action}>
-          {action}
+      <Grid item xs={12} md={6}>
+        <Grid container direction="column">
+          <Grid item xs>
+            <Typography variant="h5">{title}</Typography>
+          </Grid>
+          <Grid item xs>
+            <Typography variant="body1">{description}</Typography>
+          </Grid>
+          <Grid item xs className={classes.action}>
+            {action}
+          </Grid>
         </Grid>
       </Grid>
       <Grid item xs={12} md={6} className={classes.imageContainer}>
@@ -65,4 +77,4 @@ export const EmptyState = ({ title, description, missing, action }: Props) => {
       </Grid>
     </Grid>
   );
-};
+}

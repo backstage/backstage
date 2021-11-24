@@ -37,7 +37,17 @@ Substitute `x` for actual values, or leave them as
 dummy values just to try out the backend without using the auth or sentry features.
 You can also, instead of using dummy values for a huge number of environment variables, remove those config directly from app-config.yaml file located in the root folder.
 
-The backend starts up on port 7000 per default.
+The backend starts up on port 7007 per default.
+
+### Debugging
+
+The backend is a node process that can be inspected to allow breakpoints and live debugging. To enable this, pass the `--inspect` flag to [backend:dev](https://backstage.io/docs/cli/commands#backenddev).
+
+To debug the backend in [Visual Studio Code](https://code.visualstudio.com/):
+
+- Enable Auto Attach (⌘ + Shift + P > Toggle Auto Attach > Only With Flag)
+- Open a VSCode terminal (Control + `)
+- Run the backend from the VSCode terminal: `yarn start-backend --inspect`
 
 ## Populating The Catalog
 

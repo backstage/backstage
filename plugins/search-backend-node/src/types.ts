@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  DocumentCollator,
-  DocumentDecorator,
-  IndexableDocument,
-  SearchQuery,
-  SearchResultSet,
-} from '@backstage/search-common';
+import { DocumentCollator, DocumentDecorator } from '@backstage/search-common';
 
 /**
  * Parameters required to register a collator.
@@ -45,32 +39,4 @@ export interface RegisterDecoratorParameters {
    * The decorator class responsible for appending or modifying documents of the given type(s).
    */
   decorator: DocumentDecorator;
-}
-
-/**
- * A type of function responsible for translating an abstract search query into
- * a concrete query relevant to a particular search engine.
- */
-export type QueryTranslator = (query: SearchQuery) => unknown;
-
-/**
- * Interface that must be implemented by specific search engines, responsible
- * for performing indexing and querying and translating abstract queries into
- * concrete, search engine-specific queries.
- */
-export interface SearchEngine {
-  /**
-   * Override the default translator provided by the SearchEngine.
-   */
-  setTranslator(translator: QueryTranslator): void;
-
-  /**
-   * Add the given documents to the SearchEngine index of the given type.
-   */
-  index(type: string, documents: IndexableDocument[]): void;
-
-  /**
-   * Perform a search query against the SearchEngine.
-   */
-  query(query: SearchQuery): Promise<SearchResultSet>;
 }

@@ -14,34 +14,59 @@
  * limitations under the License.
  */
 
-import { AppConfig, JsonObject } from '@backstage/config';
+import { AppConfig } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { compileConfigSchemas } from './compile';
 import { collectConfigSchemas } from './collect';
-import { filterByVisibility } from './filtering';
+import { filterByVisibility, filterErrorsByVisibility } from './filtering';
 import {
+  ValidationError,
   ConfigSchema,
   ConfigSchemaPackageEntry,
   CONFIG_VISIBILITIES,
 } from './types';
 
-type Options =
+/**
+ * Options that control the loading of configuration schema files in the backend.
+ *
+ * @public
+ */
+export type LoadConfigSchemaOptions =
   | {
       dependencies: string[];
+      packagePaths?: string[];
     }
   | {
       serialized: JsonObject;
     };
 
+function errorsToError(errors: ValidationError[]): Error {
+  const messages = errors.map(({ dataPath, message, params }) => {
+    const paramStr = Object.entries(params)
+      .map(([name, value]) => `${name}=${value}`)
+      .join(' ');
+    return `Config ${message || ''} { ${paramStr} } at ${dataPath}`;
+  });
+  const error = new Error(`Config validation failed, ${messages.join('; ')}`);
+  (error as any).messages = messages;
+  return error;
+}
+
 /**
  * Loads config schema for a Backstage instance.
+ *
+ * @public
  */
 export async function loadConfigSchema(
-  options: Options,
+  options: LoadConfigSchemaOptions,
 ): Promise<ConfigSchema> {
   let schemas: ConfigSchemaPackageEntry[];
 
   if ('dependencies' in options) {
-    schemas = await collectConfigSchemas(options.dependencies);
+    schemas = await collectConfigSchemas(
+      options.dependencies,
+      options.packagePaths ?? [],
+    );
   } else {
     const { serialized } = options;
     if (serialized?.backstageConfigSchemaVersion !== 1) {
@@ -57,15 +82,18 @@ export async function loadConfigSchema(
   return {
     process(
       configs: AppConfig[],
-      { visibility, valueTransform } = {},
+      { visibility, valueTransform, withFilteredKeys } = {},
     ): AppConfig[] {
       const result = validate(configs);
-      if (result.errors) {
-        const error = new Error(
-          `Config validation failed, ${result.errors.join('; ')}`,
-        );
-        (error as any).messages = result.errors;
-        throw error;
+
+      const visibleErrors = filterErrorsByVisibility(
+        result.errors,
+        visibility,
+        result.visibilityByDataPath,
+        result.visibilityBySchemaPath,
+      );
+      if (visibleErrors.length > 0) {
+        throw errorsToError(visibleErrors);
       }
 
       let processedConfigs = configs;
@@ -73,21 +101,23 @@ export async function loadConfigSchema(
       if (visibility) {
         processedConfigs = processedConfigs.map(({ data, context }) => ({
           context,
-          data: filterByVisibility(
+          ...filterByVisibility(
             data,
             visibility,
-            result.visibilityByPath,
+            result.visibilityByDataPath,
             valueTransform,
+            withFilteredKeys,
           ),
         }));
       } else if (valueTransform) {
         processedConfigs = processedConfigs.map(({ data, context }) => ({
           context,
-          data: filterByVisibility(
+          ...filterByVisibility(
             data,
             Array.from(CONFIG_VISIBILITIES),
-            result.visibilityByPath,
+            result.visibilityByDataPath,
             valueTransform,
+            withFilteredKeys,
           ),
         }));
       }

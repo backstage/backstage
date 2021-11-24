@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAsync } from 'react-use';
-import { catalogApiRef } from '../api';
-import {
-  DefaultEntityFilters,
-  useEntityListProvider,
-} from './useEntityListProvider';
-import { EntityTypeFilter } from '../types';
 import { useApi } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '../api';
+import { useEntityListProvider } from './useEntityListProvider';
+import { EntityTypeFilter } from '../filters';
 
 type EntityTypeReturn = {
   loading: boolean;
   error?: Error;
-  types: string[];
-  selectedType: string | undefined;
-  setType: (type: string | undefined) => void;
+  availableTypes: string[];
+  selectedTypes: string[];
+  setSelectedTypes: (types: string[]) => void;
 };
 
 /**
@@ -40,15 +37,27 @@ export function useEntityTypeFilter(): EntityTypeReturn {
   const catalogApi = useApi(catalogApiRef);
   const {
     filters: { kind: kindFilter, type: typeFilter },
+    queryParameters,
     updateFilters,
   } = useEntityListProvider();
 
-  const [types, setTypes] = useState<string[]>([]);
+  const queryParamTypes = [queryParameters.type]
+    .flat()
+    .filter(Boolean) as string[];
+  const [selectedTypes, setSelectedTypes] = useState(
+    queryParamTypes.length ? queryParamTypes : typeFilter?.getTypes() ?? [],
+  );
+
+  const [availableTypes, setAvailableTypes] = useState<string[]>([]);
   const kind = useMemo(() => kindFilter?.value, [kindFilter]);
 
   // Load all valid spec.type values straight from the catalogApi, paying attention to only the
   // kind filter for a complete list.
-  const { error, loading, value: entities } = useAsync(async () => {
+  const {
+    error,
+    loading,
+    value: entities,
+  } = useAsync(async () => {
     if (kind) {
       const items = await catalogApi
         .getEntities({
@@ -61,37 +70,59 @@ export function useEntityTypeFilter(): EntityTypeReturn {
     return [];
   }, [kind, catalogApi]);
 
+  const entitiesRef = useRef(entities);
   useEffect(() => {
+    const oldEntities = entitiesRef.current;
+    entitiesRef.current = entities;
+    // Delay processing hook until kind and entity load updates have settled to generate list of types;
+    // This prevents reseting the type filter due to saved type value from query params not matching the
+    // empty set of type values while values are still being loaded; also only run this hook on changes
+    // to entities
+    if (loading || !kind || oldEntities === entities) {
+      return;
+    }
+
     // Resolve the unique set of types from returned entities; could be optimized by a new endpoint
     // in the catalog-backend that does this, rather than loading entities with redundant types.
-    const newTypes = [
-      ...new Set(
-        (entities ?? []).map(e => e.spec?.type).filter(Boolean) as string[],
-      ),
-    ].sort();
-    setTypes(newTypes);
+    if (!entities) return;
 
-    // Reset type filter if no longer applicable
-    updateFilters((oldFilters: DefaultEntityFilters) =>
-      oldFilters.type && !newTypes.includes(oldFilters.type.value)
-        ? { type: undefined }
-        : {},
+    // Sort by entity count descending, so the most common types appear on top
+    const countByType = entities.reduce((acc, entity) => {
+      if (typeof entity.spec?.type !== 'string') return acc;
+
+      const entityType = entity.spec.type.toLocaleLowerCase('en-US');
+      if (!acc[entityType]) {
+        acc[entityType] = 0;
+      }
+      acc[entityType] += 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const newTypes = Object.entries(countByType)
+      .sort(([, count1], [, count2]) => count2 - count1)
+      .map(([type]) => type);
+    setAvailableTypes(newTypes);
+
+    // Update type filter to only valid values when the list of available types has changed
+    const stillValidTypes = selectedTypes.filter(value =>
+      newTypes.includes(value),
     );
-  }, [updateFilters, entities]);
+    setSelectedTypes(stillValidTypes);
+  }, [loading, kind, selectedTypes, setSelectedTypes, entities]);
 
-  const setType = useCallback(
-    (type: string | undefined) =>
-      updateFilters({
-        type: type === undefined ? undefined : new EntityTypeFilter(type),
-      }),
-    [updateFilters],
-  );
+  useEffect(() => {
+    updateFilters({
+      type: selectedTypes.length
+        ? new EntityTypeFilter(selectedTypes)
+        : undefined,
+    });
+  }, [selectedTypes, updateFilters]);
 
   return {
     loading,
     error,
-    types,
-    selectedType: typeFilter?.value,
-    setType,
+    availableTypes,
+    selectedTypes,
+    setSelectedTypes,
   };
 }

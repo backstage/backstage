@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  RELATION_OWNED_BY,
-  UserEntity,
-} from '@backstage/catalog-model';
-import { getEntityRelations, isOwnerOf } from './utils';
-import { formatEntityRefTitle } from './components/EntityRefLink';
+import { Entity } from '@backstage/catalog-model';
 
 export type EntityFilter = {
   /**
@@ -29,7 +23,10 @@ export type EntityFilter = {
    *   { field: 'kind', values: ['component'] }
    *   { field: 'metadata.name', values: ['component-1', 'component-2'] }
    */
-  getCatalogFilters?: () => Record<string, string | string[]>;
+  getCatalogFilters?: () => Record<
+    string,
+    string | symbol | (string | symbol)[]
+  >;
 
   /**
    * Filter entities on the frontend after a catalog-backend request. This function will be called
@@ -40,68 +37,13 @@ export type EntityFilter = {
    * @param env
    */
   filterEntity?: (entity: Entity) => boolean;
+
+  /**
+   * Serialize the filter value to a string for query params. The UI component responsible for
+   * handling this filter should retrieve this from useEntityListProvider.queryParameters. The
+   * value restored should be in the precedence: queryParameters > initialValue prop > default.
+   */
+  toQueryValue?: () => string | string[];
 };
 
-export class EntityKindFilter implements EntityFilter {
-  constructor(readonly value: string) {}
-
-  getCatalogFilters(): Record<string, string | string[]> {
-    return { kind: this.value };
-  }
-}
-
-export class EntityTypeFilter implements EntityFilter {
-  constructor(readonly value: string) {}
-
-  getCatalogFilters(): Record<string, string | string[]> {
-    return { 'spec.type': this.value };
-  }
-}
-
-export class EntityTagFilter implements EntityFilter {
-  constructor(readonly values: string[]) {}
-
-  filterEntity(entity: Entity): boolean {
-    return this.values.every(v => (entity.metadata.tags ?? []).includes(v));
-  }
-}
-
-export class EntityOwnerFilter implements EntityFilter {
-  constructor(readonly values: string[]) {}
-
-  filterEntity(entity: Entity): boolean {
-    return this.values.some(v =>
-      getEntityRelations(entity, RELATION_OWNED_BY).some(
-        o => formatEntityRefTitle(o, { defaultKind: 'group' }) === v,
-      ),
-    );
-  }
-}
-
-export class EntityLifecycleFilter implements EntityFilter {
-  constructor(readonly values: string[]) {}
-
-  filterEntity(entity: Entity): boolean {
-    return this.values.some(v => entity.spec?.lifecycle === v);
-  }
-}
-
 export type UserListFilterKind = 'owned' | 'starred' | 'all';
-export class UserListFilter implements EntityFilter {
-  constructor(
-    readonly value: UserListFilterKind,
-    readonly user: UserEntity | undefined,
-    readonly isStarredEntity: (entity: Entity) => boolean,
-  ) {}
-
-  filterEntity(entity: Entity): boolean {
-    switch (this.value) {
-      case 'owned':
-        return this.user !== undefined && isOwnerOf(this.user, entity);
-      case 'starred':
-        return this.isStarredEntity(entity);
-      default:
-        return true;
-    }
-  }
-}

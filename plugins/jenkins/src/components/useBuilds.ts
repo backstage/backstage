@@ -17,13 +17,23 @@ import { useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { jenkinsApiRef } from '../api';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { getEntityName } from '@backstage/catalog-model';
 
 export enum ErrorType {
   CONNECTION_ERROR,
   NOT_FOUND,
 }
 
-export function useBuilds(projectName: string, branch?: string) {
+/**
+ * Hook to expose the latest build for all the pipelines/projects for an entity.
+ * If `branch` is provided, the latest build for only that branch will be given (but still as a list)
+ *
+ * TODO: deprecate branch and add a generic filter concept.
+ */
+export function useBuilds({ branch }: { branch?: string } = {}) {
+  const { entity } = useEntity();
+  const entityName = getEntityName(entity);
   const api = useApi(jenkinsApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -35,27 +45,28 @@ export function useBuilds(projectName: string, branch?: string) {
     errorType: ErrorType;
   }>();
 
-  const restartBuild = async (buildName: string) => {
+  const restartBuild = async (jobFullName: string, buildNumber: string) => {
     try {
-      await api.retry(buildName);
+      await api.retry({ entity: entityName, jobFullName, buildNumber });
     } catch (e) {
       errorApi.post(e);
     }
   };
 
-  const { loading, value: builds, retry } = useAsyncRetry(async () => {
+  const {
+    loading,
+    value: projects,
+    retry,
+  } = useAsyncRetry(async () => {
     try {
-      let build;
-      if (branch) {
-        build = await api.getLastBuild(`${projectName}/${branch}`);
-      } else {
-        build = await api.getFolder(`${projectName}`);
-      }
+      const build = await api.getProjects({
+        entity: getEntityName(entity),
+        filter: { branch },
+      });
 
-      const size = Array.isArray(build) ? build?.[0].build_num! : 1;
-      setTotal(size);
+      setTotal(build.length);
 
-      return build || [];
+      return build;
     } catch (e) {
       const errorType = e.notFound
         ? ErrorType.NOT_FOUND
@@ -63,24 +74,22 @@ export function useBuilds(projectName: string, branch?: string) {
       setError({ message: e.message, errorType });
       throw e;
     }
-  }, [api, errorApi, projectName, branch]);
+  }, [api, errorApi, entity, branch]);
 
   return [
     {
       page,
       pageSize,
       loading,
-      builds,
-      projectName,
+      projects,
       total,
       error,
     },
     {
-      builds,
       setPage,
       setPageSize,
       restartBuild,
-      retry,
+      retry, // fetch data again
     },
   ] as const;
 }

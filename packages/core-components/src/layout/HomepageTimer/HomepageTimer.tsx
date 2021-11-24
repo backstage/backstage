@@ -67,7 +67,13 @@ function getTimes(configApi: ConfigApi) {
   return clocks;
 }
 
-export const HomepageTimer = () => {
+/**
+ * Please use the HeaderWorldClock in the home plugin
+ *
+ * @public
+ * @deprecated in favor of the HeaderWorldClock which is found in the to home plugin
+ */
+export function HomepageTimer(_props: {}) {
   const configApi = useApi(configApiRef);
 
   const defaultTimes: TimeObj[] = [];
@@ -99,4 +105,4 @@ export const HomepageTimer = () => {
     );
   }
   return null;
-};
+}

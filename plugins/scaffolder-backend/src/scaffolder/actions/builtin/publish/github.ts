@@ -13,33 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputError } from '@backstage/errors';
-import {
-  GithubCredentialsProvider,
-  ScmIntegrationRegistry,
-} from '@backstage/integration';
-import { Octokit } from '@octokit/rest';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
-} from '../../../stages/publish/helpers';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
+} from '../helpers';
+import { getRepoSourceDirectory } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
+import { Config } from '@backstage/config';
+import { OctokitProvider } from '../github/OctokitProvider';
+import { assertError } from '@backstage/errors';
 
 type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
 type Collaborator = { access: Permission; username: string };
 
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
+  config: Config;
 }) {
-  const { integrations } = options;
-
-  const credentialsProviders = new Map(
-    integrations.github.list().map(integration => {
-      const provider = GithubCredentialsProvider.create(integration.config);
-      return [integration.config.host, provider];
-    }),
-  );
+  const { integrations, config } = options;
+  const octokitProvider = new OctokitProvider(integrations);
 
   return createTemplateAction<{
     repoUrl: string;
@@ -47,6 +40,7 @@ export function createPublishGithubAction(options: {
     access?: string;
     defaultBranch?: string;
     sourcePath?: string;
+    requireCodeOwnerReviews?: boolean;
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
     topics?: string[];
@@ -72,6 +66,11 @@ export function createPublishGithubAction(options: {
             title: 'Repository Access',
             description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
             type: 'string',
+          },
+          requireCodeOwnerReviews: {
+            title:
+              'Require an approved review in PR including files with a designated Code Owner',
+            type: 'boolean',
           },
           repoVisibility: {
             title: 'Repository Visibility',
@@ -136,42 +135,16 @@ export function createPublishGithubAction(options: {
         repoUrl,
         description,
         access,
+        requireCodeOwnerReviews = false,
         repoVisibility = 'private',
         defaultBranch = 'master',
         collaborators,
         topics,
       } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
-
-      const credentialsProvider = credentialsProviders.get(host);
-      const integrationConfig = integrations.github.byHost(host);
-
-      if (!credentialsProvider || !integrationConfig) {
-        throw new InputError(
-          `No matching integration configuration for host ${host}, please check your integrations config`,
-        );
-      }
-
-      // TODO(blam): Consider changing this API to have owner, repo interface instead of URL as the it's
-      // needless to create URL and then parse again the other side.
-      const { token } = await credentialsProvider.getCredentials({
-        url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
-          repo,
-        )}`,
-      });
-
-      if (!token) {
-        throw new InputError(
-          `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
-        );
-      }
-
-      const client = new Octokit({
-        auth: token,
-        baseUrl: integrationConfig.config.apiBaseUrl,
-        previews: ['nebula-preview'],
-      });
+      const { client, token, owner, repo } = await octokitProvider.getOctokit(
+        repoUrl,
+      );
 
       const user = await client.users.getByUsername({
         username: owner,
@@ -226,6 +199,7 @@ export function createPublishGithubAction(options: {
               permission,
             });
           } catch (e) {
+            assertError(e);
             ctx.logger.warn(
               `Skipping ${permission} access for ${team_slug}, ${e.message}`,
             );
@@ -241,12 +215,18 @@ export function createPublishGithubAction(options: {
             names: topics.map(t => t.toLowerCase()),
           });
         } catch (e) {
+          assertError(e);
           ctx.logger.warn(`Skipping topics ${topics.join(' ')}, ${e.message}`);
         }
       }
 
       const remoteUrl = newRepo.clone_url;
       const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
+
+      const gitAuthorInfo = {
+        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+      };
 
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
@@ -257,6 +237,10 @@ export function createPublishGithubAction(options: {
           password: token,
         },
         logger: ctx.logger,
+        commitMessage: config.getOptionalString(
+          'scaffolder.defaultCommitMessage',
+        ),
+        gitAuthorInfo,
       });
 
       try {
@@ -266,8 +250,10 @@ export function createPublishGithubAction(options: {
           repoName: newRepo.name,
           logger: ctx.logger,
           defaultBranch,
+          requireCodeOwnerReviews,
         });
       } catch (e) {
+        assertError(e);
         ctx.logger.warn(
           `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
         );

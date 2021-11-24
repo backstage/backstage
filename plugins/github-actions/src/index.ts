@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that integrates towards GitHub Actions
+ *
+ * @packageDocumentation
+ */
+
 export {
   githubActionsPlugin,
   githubActionsPlugin as plugin,

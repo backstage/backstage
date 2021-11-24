@@ -6,7 +6,11 @@ description: How to write your own actions
 
 If you're wanting to extend the functionality of the Scaffolder, you can do so
 by writing custom actions which can be used along side our
-[built-in actions](./builtin-actions.md)
+[built-in actions](./builtin-actions.md).
+
+> Note: When adding custom actions, the actions array will **replace the
+> built-in actions too**. To ensure you can continue to include he builtin
+> actions, see below to include them during registration of your action.
 
 ### Writing your Custom Action
 
@@ -60,7 +64,7 @@ close over the `TemplateAction`. Take a look at our
 [built-in actions](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/actions/builtin)
 for reference.
 
-We set the type generic to `{ contents: string, filename: string}` which is
+We set the type generic to `{ contents: string, filename: string }` which is
 there to set the type on the handler `ctx` `inputs` property so we get good type
 checking. This could be generated from the next part of this guide, the `input`
 schema, but it's not supported right now. Feel free to contribute 🚀 👍.
@@ -68,12 +72,12 @@ schema, but it's not supported right now. Feel free to contribute 🚀 👍.
 The `createTemplateAction` takes an object which specifies the following:
 
 - `id` - a unique ID for your custom action. We encourage you to namespace these
-  in someway so they wont collide with future built-in actions that we may ship
-  with the `scaffolder-backend` plugin.
+  in some way so that they won't collide with future built-in actions that we
+  may ship with the `scaffolder-backend` plugin.
 - `schema.input` - A JSON schema for input values to your function
 - `schema.output` - A JSON schema for values which are outputted from the
   function using `ctx.output`
-- `handler` the actual code which is run part of the action, with a context.
+- `handler` - the actual code which is run part of the action, with a context
 
 #### The context object
 
@@ -81,7 +85,7 @@ When the action `handler` is called, we provide you a `context` as the only
 argument. It looks like the following:
 
 - `ctx.baseUrl` - a string where the template is located
-- `ctx.logger` - a winston logger for additional logging inside your action
+- `ctx.logger` - a Winston logger for additional logging inside your action
 - `ctx.logStream` - a stream version of the logger if needed
 - `ctx.workspacePath` - a string of the working directory of the template run
 - `ctx.input` - an object which should match the JSON schema provided in the
@@ -91,6 +95,8 @@ argument. It looks like the following:
 - `createTemporaryDirectory` a function to call to give you a temporary
   directory somewhere on the runner so you can store some files there rather
   than polluting the `workspacePath`
+- `ctx.metadata` - an object containing a `name` field, indicating the template
+  name. More metadata fields may be added later.
 
 ### Registering Custom Actions
 
@@ -101,9 +107,7 @@ should have something similar to the below in
 
 ```ts
 return await createRouter({
-  preparers,
-  templaters,
-  publishers,
+  containerRunner,
   logger,
   config,
   database,
@@ -116,39 +120,22 @@ There's another property you can pass here, which is an array of `actions` which
 will set the available actions that the scaffolder has access to.
 
 ```ts
-const actions = [createNewFileAction()];
-return await createRouter({
-  preparers,
-  templaters,
-  publishers,
-  logger,
-  config,
-  database,
-  catalogClient,
-  reader,
-  actions,
-});
-```
-
-**NOTE** - the actions array will replace the built-in actions too, so if you
-want to have those as well as your new one, you'll need to do the following:
-
-```ts
 import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
+import { ScmIntegrations } from '@backstage/integration';
+
+const integrations = ScmIntegrations.fromConfig(config);
 
 const builtInActions = createBuiltinActions({
+  containerRunner,
   integrations,
+  config,
   catalogClient,
-  templaters,
   reader,
 });
 
 const actions = [...builtInActions, createNewFileAction()];
-
 return await createRouter({
-  preparers,
-  templaters,
-  publishers,
+  containerRunner,
   logger,
   config,
   database,
@@ -157,5 +144,17 @@ return await createRouter({
   actions,
 });
 ```
+
+### List of custom action packages
+
+Here is a list of Open Source custom actions that you can add to your Backstage
+scaffolder backend:
+
+| Name          | Package                                                                                                                                 | Owner                             |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| Yeoman        | [plugin-scaffolder-backend-module-yeoman](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-yeoman)             | [Backstage](https://backstage.io) |
+| Cookiecutter  | [plugin-scaffolder-backend-module-cookiecutter](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-cookiecutter) | [Backstage](https://backstage.io) |
+| Rails         | [plugin-scaffolder-backend-module-rails](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-rails)               | [Backstage](https://backstage.io) |
+| HTTP requests | [scaffolder-backend-module-http-request](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-http-request)                | [Roadie](https://roadie.io)       |
 
 Have fun! 🚀

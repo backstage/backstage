@@ -17,7 +17,8 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import { waitFor } from '@testing-library/react';
 
-import { mockApiClient, mockSemverProject } from '../test-helpers/test-helpers';
+import { mockApiClient } from '../test-helpers/mock-api-client';
+import { mockSemverProject } from '../test-helpers/test-helpers';
 import { useGetGitBatchInfo } from './useGetGitBatchInfo';
 
 describe('useGetHubBatchInfo', () => {
@@ -69,7 +70,9 @@ describe('useGetHubBatchInfo', () => {
   });
 
   it('should handle repositories without any releases', async () => {
-    (mockApiClient.getLatestRelease as jest.Mock).mockResolvedValueOnce(null);
+    (mockApiClient.getLatestRelease as jest.Mock).mockResolvedValueOnce({
+      latestRelease: null,
+    });
 
     const { result } = renderHook(() =>
       useGetGitBatchInfo({
@@ -84,8 +87,16 @@ describe('useGetHubBatchInfo', () => {
 
     expect(result.current.gitBatchInfo).toMatchInlineSnapshot(`
       Object {
-        "error": [TypeError: Cannot read property 'latestRelease' of null],
         "loading": false,
+        "value": Object {
+          "latestRelease": null,
+          "releaseBranch": null,
+          "repository": Object {
+            "defaultBranch": "mock_defaultBranch",
+            "name": "mock_repo",
+            "pushPermissions": true,
+          },
+        },
       }
     `);
   });

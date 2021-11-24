@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import ProviderIcon from '@material-ui/icons/AcUnit';
 import { OAuthRequestManager } from './OAuthRequestManager';
 
 describe('OAuthRequestManager', () => {
@@ -27,7 +26,7 @@ describe('OAuthRequestManager', () => {
     const requester = manager.createAuthRequester({
       provider: {
         title: 'My Provider',
-        icon: ProviderIcon,
+        icon: () => null,
       },
       onAuthRequest: async () => 'hello',
     });

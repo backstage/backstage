@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * A Backstage plugin that integrates towards Kafka
+ *
+ * @packageDocumentation
+ */
+
 export {
   kafkaPlugin,
   kafkaPlugin as plugin,

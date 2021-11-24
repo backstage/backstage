@@ -17,20 +17,24 @@
 import fetch from 'cross-fetch';
 import { FindingSummary, Metrics, SonarQubeApi } from './SonarQubeApi';
 import { ComponentWrapper, MeasuresWrapper } from './types';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 export class SonarQubeClient implements SonarQubeApi {
   discoveryApi: DiscoveryApi;
   baseUrl: string;
+  identityApi: IdentityApi;
 
   constructor({
     discoveryApi,
+    identityApi,
     baseUrl = 'https://sonarcloud.io/',
   }: {
     discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
     baseUrl?: string;
   }) {
     this.discoveryApi = discoveryApi;
+    this.identityApi = identityApi;
     this.baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   }
 
@@ -38,9 +42,17 @@ export class SonarQubeClient implements SonarQubeApi {
     path: string,
     query: { [key in string]: any },
   ): Promise<T | undefined> {
+    const idToken = await this.identityApi.getIdToken();
+
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sonarqube`;
     const response = await fetch(
       `${apiUrl}/${path}?${new URLSearchParams(query).toString()}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+        },
+      },
     );
     if (response.status === 200) {
       return (await response.json()) as T;
@@ -126,11 +138,13 @@ export class SonarQubeClient implements SonarQubeApi {
       getIssuesUrl: identifier =>
         `${this.baseUrl}project/issues?id=${encodeURIComponent(
           componentKey,
-        )}&types=${identifier.toUpperCase()}&resolved=false`,
+        )}&types=${identifier.toLocaleUpperCase('en-US')}&resolved=false`,
       getComponentMeasuresUrl: identifier =>
         `${this.baseUrl}component_measures?id=${encodeURIComponent(
           componentKey,
-        )}&metric=${identifier.toLowerCase()}&resolved=false&view=list`,
+        )}&metric=${identifier.toLocaleLowerCase(
+          'en-US',
+        )}&resolved=false&view=list`,
       getSecurityHotspotsUrl: () =>
         `${this.baseUrl}project/security_hotspots?id=${encodeURIComponent(
           componentKey,

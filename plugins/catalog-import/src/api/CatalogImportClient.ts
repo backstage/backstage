@@ -17,43 +17,51 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { EntityName } from '@backstage/catalog-model';
 import {
+  ConfigApi,
+  DiscoveryApi,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
+import {
   GitHubIntegrationConfig,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { Base64 } from 'js-base64';
+import { ScmAuthApi } from '@backstage/integration-react';
 import { Octokit } from '@octokit/rest';
+import { Base64 } from 'js-base64';
 import { PartialEntity } from '../types';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
-import {
-  DiscoveryApi,
-  IdentityApi,
-  OAuthApi,
-} from '@backstage/core-plugin-api';
+import { trimEnd } from 'lodash';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
-  private readonly githubAuthApi: OAuthApi;
+  private readonly scmAuthApi: ScmAuthApi;
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
   private readonly catalogApi: CatalogApi;
+  private readonly configApi: ConfigApi;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
-    githubAuthApi: OAuthApi;
+    scmAuthApi: ScmAuthApi;
     identityApi: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     catalogApi: CatalogApi;
+    configApi: ConfigApi;
   }) {
     this.discoveryApi = options.discoveryApi;
-    this.githubAuthApi = options.githubAuthApi;
+    this.scmAuthApi = options.scmAuthApi;
     this.identityApi = options.identityApi;
     this.scmIntegrationsApi = options.scmIntegrationsApi;
     this.catalogApi = options.catalogApi;
+    this.configApi = options.configApi;
   }
 
   async analyzeUrl(url: string): Promise<AnalyzeResult> {
-    if (url.match(/\.ya?ml$/)) {
+    if (
+      new URL(url).pathname.match(/\.ya?ml$/) ||
+      new URL(url).searchParams.get('path')?.match(/.ya?ml$/)
+    ) {
       const location = await this.catalogApi.addLocation({
         type: 'url',
         target: url,
@@ -64,6 +72,7 @@ export class CatalogImportClient implements CatalogImportApi {
         type: 'locations',
         locations: [
           {
+            exists: location.exists,
             target: location.location.target,
             entities: location.entities.map(e => ({
               kind: e.kind,
@@ -111,6 +120,24 @@ export class CatalogImportClient implements CatalogImportApi {
     };
   }
 
+  async preparePullRequest(): Promise<{
+    title: string;
+    body: string;
+  }> {
+    const appTitle =
+      this.configApi.getOptionalString('app.title') ?? 'Backstage';
+    const appBaseUrl = this.configApi.getString('app.baseUrl');
+
+    return {
+      title: 'Add catalog-info.yaml config file',
+      body: `This pull request adds a **Backstage entity metadata file** \
+to this repository so that the component can be added to the \
+[${appTitle} software catalog](${appBaseUrl}).\n\nAfter this pull request is merged, \
+the component will become available.\n\nFor more information, read an \
+[overview of the Backstage software catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview).`,
+    };
+  }
+
   async submitPullRequest({
     repositoryUrl,
     fileContent,
@@ -130,6 +157,7 @@ export class CatalogImportClient implements CatalogImportApi {
     if (ghConfig) {
       return await this.submitGitHubPrToRepo({
         ...ghConfig,
+        repositoryUrl,
         fileContent,
         title,
         body,
@@ -188,7 +216,7 @@ export class CatalogImportClient implements CatalogImportApi {
       entities: EntityName[];
     }>
   > {
-    const token = await this.githubAuthApi.getAccessToken(['repo']);
+    const { token } = await this.scmAuthApi.getCredentials({ url });
     const octo = new Octokit({
       auth: token,
       baseUrl: githubIntegrationConfig.apiBaseUrl,
@@ -213,29 +241,23 @@ export class CatalogImportClient implements CatalogImportApi {
 
       return await Promise.all(
         searchResult.data.items
-          .map(
-            i => `${url.replace(/[\/]*$/, '')}/blob/${defaultBranch}/${i.path}`,
-          )
-          .map(
-            async i =>
-              ({
-                target: i,
-                entities: (
-                  await this.catalogApi.addLocation({
-                    type: 'url',
-                    target: i,
-                    dryRun: true,
-                  })
-                ).entities.map(e => ({
-                  kind: e.kind,
-                  namespace: e.metadata.namespace ?? 'default',
-                  name: e.metadata.name,
-                })),
-              } as {
-                target: string;
-                entities: EntityName[];
-              }),
-          ),
+          .map(i => `${trimEnd(url, '/')}/blob/${defaultBranch}/${i.path}`)
+          .map(async target => {
+            const result = await this.catalogApi.addLocation({
+              type: 'url',
+              target,
+              dryRun: true,
+            });
+            return {
+              target,
+              exists: result.exists,
+              entities: result.entities.map(e => ({
+                kind: e.kind,
+                namespace: e.metadata.namespace ?? 'default',
+                name: e.metadata.name,
+              })),
+            };
+          }),
       );
     }
 
@@ -249,6 +271,7 @@ export class CatalogImportClient implements CatalogImportApi {
     title,
     body,
     fileContent,
+    repositoryUrl,
     githubIntegrationConfig,
   }: {
     owner: string;
@@ -256,9 +279,15 @@ export class CatalogImportClient implements CatalogImportApi {
     title: string;
     body: string;
     fileContent: string;
+    repositoryUrl: string;
     githubIntegrationConfig: GitHubIntegrationConfig;
   }): Promise<{ link: string; location: string }> {
-    const token = await this.githubAuthApi.getAccessToken(['repo']);
+    const { token } = await this.scmAuthApi.getCredentials({
+      url: repositoryUrl,
+      additionalScope: {
+        repoWrite: true,
+      },
+    });
 
     const octo = new Octokit({
       auth: token,

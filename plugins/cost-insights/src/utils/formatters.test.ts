@@ -36,11 +36,7 @@ describe('date formatters', () => {
 
   it('Correctly formats values to two significant digits', () => {
     const values = [
-      0.00000040925,
-      0.21,
-      0.0000004,
-      0.4139877878,
-      0.00000234566,
+      0.00000040925, 0.21, 0.0000004, 0.4139877878, 0.00000234566,
     ];
     const formattedValues = values.map(val =>
       lengthyCurrencyFormatter.format(val),

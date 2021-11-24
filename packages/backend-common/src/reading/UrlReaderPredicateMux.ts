@@ -52,7 +52,11 @@ export class UrlReaderPredicateMux implements UrlReader {
       }
     }
 
-    throw new NotAllowedError(`Reading from '${url}' is not allowed`);
+    throw new NotAllowedError(
+      `Reading from '${url}' is not allowed. ` +
+        `You may need to configure an integration for the target host, or add it ` +
+        `to the configured list of allowed hosts at 'backend.reading.allow'`,
+    );
   }
 
   async readUrl(

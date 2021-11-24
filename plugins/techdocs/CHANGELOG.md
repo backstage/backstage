@@ -1,5 +1,339 @@
 # @backstage/plugin-techdocs
 
+## 0.12.6
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- c1858c4cf9: Fixed entity triplet case handling for certain locales.
+- f7703981a9: Use a better checkbox rendering in a task list.
+- e266687580: Updates reader component used to display techdocs documentation. A previous change made this component not usable out of a page which don't have entityRef in url parameters. Reader component EntityRef parameter is now used instead of url parameters. Techdocs documentation component can now be used in our custom pages.
+- Updated dependencies
+  - @backstage/plugin-catalog@0.7.3
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/plugin-search@0.4.18
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/integration-react@0.1.14
+
+## 0.12.5
+
+### Patch Changes
+
+- fe5738fe1c: Lazy load `LazyLog` as it is rarely used.
+- 53c9ad7e04: Update font weight for headings in TechDocs
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/plugin-search@0.4.17
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
+## 0.12.4
+
+### Patch Changes
+
+- a9a8c6f7c5: Reader will now scroll to the top of the page when navigating between pages
+- 106a5dc3ad: Restore original casing for `kind`, `namespace` and `name` in `DefaultTechDocsCollator`.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/core-components@0.7.2
+  - @backstage/integration-react@0.1.13
+  - @backstage/plugin-catalog-react@0.6.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/plugin-search@0.4.16
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.12.3
+
+### Patch Changes
+
+- ba5b75ed2f: Add `<EntityListDocsGrid>` as an alternative to `<EntityListDocsTable>` that
+  shows a grid of card instead of table.
+
+  Extend `<DocsCardGrid>` to display the entity title of the entity instead of the
+  name if available.
+
+- 177401b571: Display entity title (if defined) in titles of TechDocs search results
+- cdf8ca6111: Only replace the shadow dom if the content is changed to avoid a flickering UI.
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/errors@0.1.3
+  - @backstage/core-plugin-api@0.1.11
+  - @backstage/plugin-catalog@0.7.2
+  - @backstage/plugin-catalog-react@0.6.1
+  - @backstage/catalog-model@0.9.5
+
+## 0.12.2
+
+### Patch Changes
+
+- 76fef740fe: Refactored `<Reader />` component internals to support future extensibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/plugin-catalog@0.7.1
+  - @backstage/integration@0.6.8
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+  - @backstage/plugin-search@0.4.15
+  - @backstage/integration-react@0.1.12
+
+## 0.12.1
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog@0.7.0
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+  - @backstage/integration@0.6.7
+  - @backstage/plugin-search@0.4.14
+
+## 0.12.0
+
+### Minor Changes
+
+- 82bb0842a3: Adds support for being able to customize and compose your TechDocs reader page in the App.
+
+  You can likely upgrade to this version without issue. If, however, you have
+  imported the `<Reader />` component in your custom code, the name of a property
+  has changed. You will need to make the following change anywhere you use it:
+
+  ```diff
+  -<Reader entityId={value} />
+  +<Reader entityRef={value} />
+  ```
+
+### Patch Changes
+
+- 79ebee7a6b: Add "data-testid" for e2e tests and fix techdocs entity not found error.
+- 3df2e8532b: Fixed the URL for the "Click to copy documentation link to clipboard" action
+- 0a8bec0877: Added a check for the TechDocs annotation on the entity
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/integration-react@0.1.11
+  - @backstage/plugin-catalog@0.6.17
+  - @backstage/plugin-catalog-react@0.5.1
+  - @backstage/plugin-search@0.4.13
+
+## 0.11.3
+
+### Patch Changes
+
+- be13dfe61a: Make techdocs context search bar width adjust on smaller screens.
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/plugin-catalog@0.6.16
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+  - @backstage/integration-react@0.1.10
+  - @backstage/plugin-search@0.4.12
+
+## 0.11.2
+
+### Patch Changes
+
+- 1d346ba903: Modify TechDocsCollator to be aware of new TechDocs URL pattern. Modify tech docs in context search to use correct casing when creating initial filter.
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/integration-react@0.1.9
+  - @backstage/plugin-catalog@0.6.15
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/plugin-search@0.4.11
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.11.1
+
+### Patch Changes
+
+- 30ed662a3: Adding in-context search to TechDocs Reader component. Using existing search-backend to query for indexed search results scoped into a specific entity's techdocs. Needs TechDocsCollator enabled on the backend to work.
+
+  Adding extra information to indexed tech docs documents for search.
+
+- 434dfc5d4: Display [metadata.title](https://backstage.io/docs/features/software-catalog/descriptor-format#title-optional) for components on the TechDocs homepage, if defined; otherwise fall back to `metadata.name` as displayed before.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/plugin-catalog@0.6.14
+  - @backstage/plugin-search@0.4.9
+  - @backstage/catalog-model@0.9.1
+  - @backstage/integration-react@0.1.8
+
+## 0.11.0
+
+### Minor Changes
+
+- c772d9a84: TechDocs sites can now be accessed using paths containing entity triplets of
+  any case (e.g. `/docs/namespace/KIND/name` or `/docs/namespace/kind/name`).
+
+  If you do not use an external storage provider for serving TechDocs, this is a
+  transparent change and no action is required from you.
+
+  If you _do_ use an external storage provider for serving TechDocs (one of\* GCS,
+  AWS S3, or Azure Blob Storage), you must run a migration command against your
+  storage provider before updating.
+
+  [A migration guide is available here](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-alpha-to-beta).
+
+  - (\*) We're seeking help from the community to bring OpenStack Swift support
+    [to feature parity](https://github.com/backstage/backstage/issues/6763) with the above.
+
+- 787bc0826: The TechDocs plugin has completed the migration to the Composability API. In
+  order to update to this version, please ensure you've made all necessary
+  changes to your `App.tsx` file as outlined in the [create-app changelog][cacl].
+
+  [cacl]: https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md
+
+### Patch Changes
+
+- 90c68a2ca: Fix Techdocs feedback icon link for GitHub URLs
+- Updated dependencies
+  - @backstage/plugin-catalog@0.6.13
+  - @backstage/plugin-catalog-react@0.4.4
+  - @backstage/core-components@0.3.3
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
+## 0.10.4
+
+### Patch Changes
+
+- a440d3b38: Expose a new composable `TechDocsIndexPage` and a `DefaultTechDocsHome` with support for starring docs and filtering on owned, starred, owner, and tags.
+
+  You can migrate to the new UI view by making the following changes in your `App.tsx`:
+
+  ```diff
+  -    <Route path="/docs" element={<TechdocsPage />} />
+  +    <Route path="/docs" element={<TechDocsIndexPage />}>
+  +      <DefaultTechDocsHome />
+  +    </Route>
+  +    <Route
+  +      path="/docs/:namespace/:kind/:name/*"
+  +      element={<TechDocsReaderPage />}
+  +    />
+  ```
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- 8a3e46591: Switch `EventSource` implementation with header support from a Node.js API-based one to an XHR-based one.
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog@0.6.11
+  - @backstage/plugin-catalog-react@0.4.2
+  - @backstage/integration-react@0.1.7
+
+## 0.10.3
+
+### Patch Changes
+
+- 260c053b9: Fix All Material UI Warnings
+- db58cf06c: Avoid sanitize safe links in the header of document pages.
+- 1d65bd490: Fix Techdocs feedback icon link for GitLab URLs with subgroup(s) in path
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+  - @backstage/integration-react@0.1.6
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.10.2
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- 11c370af2: Optimize load times by only fetching entities with the `backstage.io/techdocs-ref` annotation
+- 2b1ac002d: TechDocs now uses a "safe by default" sanitization library, rather than relying on its own, hard-coded list of allowable tags and attributes.
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/integration-react@0.1.5
+  - @backstage/theme@0.2.9
+
+## 0.10.1
+
+### Patch Changes
+
+- 9266b80ab: Add search list item to display tech docs search results
+- 03bf17e9b: Improve the responsiveness of the EntityPage UI. With this the Header component should scale with the screen size & wrapping should not cause overflowing/blocking of links. Additionally enforce the Pages using the Grid Layout to use it across all screen sizes & to wrap as intended.
+
+  To benefit from the improved responsive layout, the `EntityPage` in existing Backstage applications should be updated to set the `xs` column size on each grid item in the page, as this does not default. For example:
+
+  ```diff
+  -  <Grid item md={6}>
+  +  <Grid item xs={12} md={6}>
+  ```
+
+- 378cc6a54: Only update the `path` when the content is updated.
+  If content and path are updated independently, the frontend rendering is triggered twice on each navigation: Once for the `path` change (with the old content) and once for the new content.
+  This might result in a flickering rendering that is caused by the async frontend preprocessing, and the fact that replacing the shadow dom content is expensive.
+- 214e7c52d: Refactor the techdocs transformers to return `Promise`s and await all transformations.
+- e35b13afa: Handle error responses in `getTechDocsMetadata` and `getEntityMetadata` such that `<TechDocsPageHeader>` doesn't throw errors.
+- Updated dependencies
+  - @backstage/core-components@0.1.6
+  - @backstage/plugin-catalog-react@0.3.1
+
+## 0.10.0
+
+### Minor Changes
+
+- 94a54dd47: Added a `migrateDocsCase()` method to TechDocs publishers, along with
+  implementations for AWS, Azure, and GCS.
+
+  This change is in support of a future update to TechDocs that will allow for
+  case-insensitive entity triplet URL access to documentation pages which will
+  require a migration of existing documentation objects in external storage
+  solutions.
+
+  See [#4367](https://github.com/backstage/backstage/issues/4367) for details.
+
+### Patch Changes
+
+- 537c37b0f: Fix displaying owned documents list by fetching associated entity relations
+- 136a91974: Show a "Refresh" button to if the content is stale.
+  This removes the need to do a full page-reload to display more recent TechDocs content.
+- f1200f44c: Rewrite the `/sync/:namespace/:kind/:name` endpoint to support an event-stream as response.
+  This change allows the sync process to take longer than a normal HTTP timeout.
+  The stream also emits log events, so the caller can follow the build process in the frontend.
+- 3af126cdd: Provide a Drawer component to follow a running build.
+  This can be used to debug the rendering and get build logs in case an error occurs.
+- 2a4a3b32d: Techdocs: fix sidebars not adjusting position automatically
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
+## 0.9.9
+
+### Patch Changes
+
+- 0172d3424: Fixed bug preventing scroll bar from showing up on code blocks in a TechDocs site.
+- Updated dependencies
+  - @backstage/integration@0.5.8
+  - @backstage/core-components@0.1.5
+  - @backstage/catalog-model@0.9.0
+  - @backstage/plugin-catalog-react@0.2.6
+
 ## 0.9.8
 
 ### Patch Changes

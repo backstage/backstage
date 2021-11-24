@@ -71,10 +71,10 @@ describe('useKubernetesObjects', () => {
   const mockGetObjectsByEntity = jest.fn();
   const mockDecorateRequestBodyForAuth = jest.fn();
 
-  const expectMocksCalledCorrectly = () => {
-    expect(mockGetClusters).toBeCalledTimes(1);
+  const expectMocksCalledCorrectly = (numOfCalls: number = 1) => {
+    expect(mockGetClusters).toBeCalledTimes(numOfCalls);
     expect(mockGetClusters).toHaveBeenLastCalledWith();
-    expect(mockDecorateRequestBodyForAuth).toBeCalledTimes(2);
+    expect(mockDecorateRequestBodyForAuth).toBeCalledTimes(numOfCalls * 2);
     expect(mockDecorateRequestBodyForAuth).toHaveBeenCalledWith('google', {
       entity,
     });
@@ -82,7 +82,7 @@ describe('useKubernetesObjects', () => {
       'authprovider2',
       entityWithAuthToken,
     );
-    expect(mockGetObjectsByEntity).toBeCalledTimes(1);
+    expect(mockGetObjectsByEntity).toBeCalledTimes(numOfCalls);
     expect(mockGetObjectsByEntity).toHaveBeenLastCalledWith(
       entityWithAuthToken,
     );
@@ -94,12 +94,10 @@ describe('useKubernetesObjects', () => {
   it('should return objects', async () => {
     (useApi as any).mockReturnValue({
       getClusters: mockGetClusters.mockResolvedValue(getClustersResponse),
-      getObjectsByEntity: mockGetObjectsByEntity.mockResolvedValue(
-        mockResponse,
-      ),
-      decorateRequestBodyForAuth: mockDecorateRequestBodyForAuth.mockResolvedValue(
-        entityWithAuthToken,
-      ),
+      getObjectsByEntity:
+        mockGetObjectsByEntity.mockResolvedValue(mockResponse),
+      decorateRequestBodyForAuth:
+        mockDecorateRequestBodyForAuth.mockResolvedValue(entityWithAuthToken),
     });
     const { result, waitForNextUpdate } = renderHook(() =>
       useKubernetesObjects(entity),
@@ -112,15 +110,34 @@ describe('useKubernetesObjects', () => {
 
     expectMocksCalledCorrectly();
   });
+  it('should update on an interval', async () => {
+    (useApi as any).mockReturnValue({
+      getClusters: mockGetClusters.mockResolvedValue(getClustersResponse),
+      getObjectsByEntity:
+        mockGetObjectsByEntity.mockResolvedValue(mockResponse),
+      decorateRequestBodyForAuth:
+        mockDecorateRequestBodyForAuth.mockResolvedValue(entityWithAuthToken),
+    });
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useKubernetesObjects(entity, 100),
+    );
+
+    await waitForNextUpdate();
+    await waitForNextUpdate();
+
+    expect(result.current.error).toBeUndefined();
+    expect(result.current.kubernetesObjects).toStrictEqual(mockResponse);
+
+    expectMocksCalledCorrectly(2);
+  });
   it('should return error when getObjectsByEntity throws', async () => {
     (useApi as any).mockReturnValue({
       getClusters: mockGetClusters.mockResolvedValue(getClustersResponse),
       getObjectsByEntity: mockGetObjectsByEntity.mockRejectedValue({
         message: 'some error',
       }),
-      decorateRequestBodyForAuth: mockDecorateRequestBodyForAuth.mockResolvedValue(
-        entityWithAuthToken,
-      ),
+      decorateRequestBodyForAuth:
+        mockDecorateRequestBodyForAuth.mockResolvedValue(entityWithAuthToken),
     });
     const { result, waitForNextUpdate } = renderHook(() =>
       useKubernetesObjects(entity),
@@ -157,9 +174,10 @@ describe('useKubernetesObjects', () => {
   it('should return error when decorateRequestBodyForAuth throws', async () => {
     (useApi as any).mockReturnValue({
       getClusters: mockGetClusters.mockResolvedValue(getClustersResponse),
-      decorateRequestBodyForAuth: mockDecorateRequestBodyForAuth.mockRejectedValue(
-        { message: 'some-error' },
-      ),
+      decorateRequestBodyForAuth:
+        mockDecorateRequestBodyForAuth.mockRejectedValue({
+          message: 'some-error',
+        }),
       getObjectsByEntity: mockGetObjectsByEntity,
     });
     const { result, waitForNextUpdate } = renderHook(() =>

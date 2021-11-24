@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  Typography,
-  WithStyles,
-} from '@material-ui/core';
+import { createStyles, makeStyles, WithStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
+import { BackstageTheme } from '@backstage/theme';
 
-const styles = (theme: Theme) =>
+/** @public */
+export type ItemCardHeaderClassKey = 'root';
+
+const styles = (theme: BackstageTheme) =>
   createStyles({
     root: {
       color: theme.palette.common.white,
       padding: theme.spacing(2, 2, 3),
-      backgroundImage: 'linear-gradient(-137deg,  #4BB8A5 0%,  #187656 100%)',
+      backgroundImage: theme.palette.bursts.gradient.linear,
       backgroundPosition: 0,
       backgroundSize: 'inherit',
     },
   });
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles, { name: 'BackstageItemCardHeader' });
 
+/** @public */
 export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
   /**
    * A large title to show in the header, providing the main heading.
@@ -68,11 +68,11 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  *
  * Styles for the header can be overridden using the `classes` prop, e.g.:
  *
- * <code>
- *   <ItemCardHeader title="Hello" classes={{ root: myClassName }} />
- * </code>
+ * `<ItemCardHeader title="Hello" classes={{ root: myClassName }} />`
+ *
+ * @public
  */
-export const ItemCardHeader = (props: ItemCardHeaderProps) => {
+export function ItemCardHeader(props: ItemCardHeaderProps) {
   const { title, subtitle, children } = props;
   const classes = useStyles(props);
   return (
@@ -90,4 +90,4 @@ export const ItemCardHeader = (props: ItemCardHeaderProps) => {
       {children}
     </div>
   );
-};
+}

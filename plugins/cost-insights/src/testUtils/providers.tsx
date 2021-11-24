@@ -30,14 +30,16 @@ import { Group, Duration } from '../types';
 
 // TODO(Rugvip): Could be good to have a clear place to put test utils that is linted accordingly
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { TestApiProvider } from '@backstage/test-utils';
 
 type PartialPropsWithChildren<T> = PropsWithChildren<Partial<T>>;
 
 export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
 
-export type MockFilterProviderProps = PartialPropsWithChildren<FilterContextProps>;
+export type MockFilterProviderProps =
+  PartialPropsWithChildren<FilterContextProps>;
 
 export const MockFilterProvider = ({
   children,
@@ -61,7 +63,8 @@ export const MockFilterProvider = ({
   );
 };
 
-export type MockLoadingProviderProps = PartialPropsWithChildren<LoadingContextProps>;
+export type MockLoadingProviderProps =
+  PartialPropsWithChildren<LoadingContextProps>;
 
 export const MockLoadingProvider = ({
   children,
@@ -79,7 +82,8 @@ export const MockLoadingProvider = ({
   );
 };
 
-export type MockConfigProviderProps = PartialPropsWithChildren<ConfigContextProps>;
+export type MockConfigProviderProps =
+  PartialPropsWithChildren<ConfigContextProps>;
 
 export const MockConfigProvider = ({
   children,
@@ -99,7 +103,8 @@ export const MockConfigProvider = ({
   );
 };
 
-export type MockCurrencyProviderProps = PartialPropsWithChildren<CurrencyContextProps>;
+export type MockCurrencyProviderProps =
+  PartialPropsWithChildren<CurrencyContextProps>;
 
 export const MockCurrencyProvider = ({
   children,
@@ -120,7 +125,8 @@ export const MockCurrencyProvider = ({
   );
 };
 
-export type MockBillingDateProviderProps = PartialPropsWithChildren<BillingDateContextProps>;
+export type MockBillingDateProviderProps =
+  PartialPropsWithChildren<BillingDateContextProps>;
 
 export const MockBillingDateProvider = ({
   children,
@@ -150,7 +156,8 @@ export const MockScrollProvider = ({ children }: MockScrollProviderProps) => {
   );
 };
 
-export type MockGroupsProviderProps = PartialPropsWithChildren<GroupsContextProps>;
+export type MockGroupsProviderProps =
+  PartialPropsWithChildren<GroupsContextProps>;
 
 export const MockGroupsProvider = ({
   children,
@@ -193,16 +200,17 @@ export const MockCostInsightsApiProvider = ({
     getUserGroups: jest.fn(),
   };
 
-  // TODO: defaultConfigApiRef: ConfigApiRef
-
-  const defaultContext = ApiRegistry.from([
-    [identityApiRef, { ...defaultIdentityApi, ...context.identityApi }],
-    [
-      costInsightsApiRef,
-      { ...defaultCostInsightsApi, ...context.costInsightsApi },
-    ],
-    // [configApiRef, { ...defaultConfigApiRef, ...context.configApiRef }]
-  ]);
-
-  return <ApiProvider apis={defaultContext}>{children}</ApiProvider>;
+  return (
+    <TestApiProvider
+      apis={[
+        [identityApiRef, { ...defaultIdentityApi, ...context.identityApi }],
+        [
+          costInsightsApiRef,
+          { ...defaultCostInsightsApi, ...context.costInsightsApi },
+        ],
+      ]}
+    >
+      {children}
+    </TestApiProvider>
+  );
 };

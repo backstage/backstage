@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import GithubIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { GithubSession } from './types';
 import {
@@ -24,20 +23,22 @@ import {
   ProfileInfo,
   BackstageIdentity,
   AuthRequestOptions,
-  Observable,
 } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
   AuthSessionStore,
+  RefreshingAuthSessionManager,
   StaticAuthSessionManager,
 } from '../../../../lib/AuthSessionManager';
 import { OAuthApiCreateOptions } from '../types';
+import { OptionalRefreshSessionManagerMux } from '../../../../lib/AuthSessionManager/OptionalRefreshSessionManagerMux';
 
 export type GithubAuthResponse = {
   providerInfo: {
     accessToken: string;
     scope: string;
-    expiresInSeconds: number;
+    expiresInSeconds?: number;
   };
   profile: ProfileInfo;
   backstageIdentity: BackstageIdentity;
@@ -46,10 +47,15 @@ export type GithubAuthResponse = {
 const DEFAULT_PROVIDER = {
   id: 'github',
   title: 'GitHub',
-  icon: GithubIcon,
+  icon: () => null,
 };
 
-class GithubAuth implements OAuthApi, SessionApi {
+/**
+ * Implements the OAuth flow to GitHub products.
+ *
+ * @public
+ */
+export default class GithubAuth implements OAuthApi, SessionApi {
   static create({
     discoveryApi,
     environment = 'development',
@@ -68,29 +74,51 @@ class GithubAuth implements OAuthApi, SessionApi {
           providerInfo: {
             accessToken: res.providerInfo.accessToken,
             scopes: GithubAuth.normalizeScope(res.providerInfo.scope),
-            expiresAt: new Date(
-              Date.now() + res.providerInfo.expiresInSeconds * 1000,
-            ),
+            expiresAt: res.providerInfo.expiresInSeconds
+              ? new Date(Date.now() + res.providerInfo.expiresInSeconds * 1000)
+              : undefined,
           },
         };
       },
     });
 
-    const sessionManager = new StaticAuthSessionManager({
+    const refreshingSessionManager = new RefreshingAuthSessionManager({
       connector,
       defaultScopes: new Set(defaultScopes),
       sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
+      sessionShouldRefresh: (session: GithubSession) => {
+        const { expiresAt } = session.providerInfo;
+        if (!expiresAt) {
+          return false;
+        }
+        const expiresInSec = (expiresAt.getTime() - Date.now()) / 1000;
+        return expiresInSec < 60 * 5;
+      },
     });
 
-    const authSessionStore = new AuthSessionStore<GithubSession>({
-      manager: sessionManager,
+    const staticSessionManager = new AuthSessionStore<GithubSession>({
+      manager: new StaticAuthSessionManager({
+        connector,
+        defaultScopes: new Set(defaultScopes),
+        sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
+      }),
       storageKey: `${provider.id}Session`,
       sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
     });
 
-    return new GithubAuth(authSessionStore);
+    const sessionManagerMux = new OptionalRefreshSessionManagerMux({
+      refreshingSessionManager,
+      staticSessionManager,
+      sessionCanRefresh: session =>
+        session.providerInfo.expiresAt !== undefined,
+    });
+
+    return new GithubAuth(sessionManagerMux);
   }
 
+  /**
+   * @deprecated will be made private in the future. Use create method instead.
+   */
   constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
 
   async signIn() {
@@ -137,4 +165,3 @@ class GithubAuth implements OAuthApi, SessionApi {
     return new Set(scopeList);
   }
 }
-export default GithubAuth;

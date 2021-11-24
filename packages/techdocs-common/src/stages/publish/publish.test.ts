@@ -27,7 +27,7 @@ import { OpenStackSwiftPublish } from './openStackSwift';
 
 const logger = getVoidLogger();
 const discovery: jest.Mocked<PluginEndpointDiscovery> = {
-  getBaseUrl: jest.fn().mockResolvedValueOnce('http://localhost:7000'),
+  getBaseUrl: jest.fn().mockResolvedValueOnce('http://localhost:7007'),
   getExternalBaseUrl: jest.fn(),
 };
 
@@ -39,7 +39,7 @@ describe('Publisher', () => {
   it('should create local publisher by default', async () => {
     const mockConfig = new ConfigReader({
       techdocs: {
-        requestUrl: 'http://localhost:7000',
+        requestUrl: 'http://localhost:7007',
       },
     });
 
@@ -53,7 +53,7 @@ describe('Publisher', () => {
   it('should create local publisher from config', async () => {
     const mockConfig = new ConfigReader({
       techdocs: {
-        requestUrl: 'http://localhost:7000',
+        requestUrl: 'http://localhost:7007',
         publisher: {
           type: 'local',
         },
@@ -70,7 +70,7 @@ describe('Publisher', () => {
   it('should create google gcs publisher from config', async () => {
     const mockConfig = new ConfigReader({
       techdocs: {
-        requestUrl: 'http://localhost:7000',
+        requestUrl: 'http://localhost:7007',
         publisher: {
           type: 'googleGcs',
           googleGcs: {
@@ -91,7 +91,7 @@ describe('Publisher', () => {
   it('should create AWS S3 publisher from config', async () => {
     const mockConfig = new ConfigReader({
       techdocs: {
-        requestUrl: 'http://localhost:7000',
+        requestUrl: 'http://localhost:7007',
         publisher: {
           type: 'awsS3',
           awsS3: {
@@ -115,7 +115,7 @@ describe('Publisher', () => {
   it('should create Azure Blob Storage publisher from config', async () => {
     const mockConfig = new ConfigReader({
       techdocs: {
-        requestUrl: 'http://localhost:7000',
+        requestUrl: 'http://localhost:7007',
         publisher: {
           type: 'azureBlobStorage',
           azureBlobStorage: {
@@ -143,7 +143,7 @@ describe('Publisher', () => {
 
     const mockConfig = new ConfigReader({
       techdocs: {
-        requestUrl: 'http://localhost:7000',
+        requestUrl: 'http://localhost:7007',
         publisher: {
           type: 'azureBlobStorage',
           azureBlobStorage: {
@@ -166,16 +166,16 @@ describe('Publisher', () => {
   it('should create Open Stack Swift publisher from config', async () => {
     const mockConfig = new ConfigReader({
       techdocs: {
-        requestUrl: 'http://localhost:7000',
+        requestUrl: 'http://localhost:7007',
         publisher: {
           type: 'openStackSwift',
           openStackSwift: {
             credentials: {
-              username: 'mockuser',
-              password: 'verystrongpass',
+              id: 'mockId',
+              secret: 'mockSecret',
             },
             authUrl: 'mockauthurl',
-            region: 'mockregion',
+            swiftUrl: 'mockSwiftUrl',
             containerName: 'mock',
           },
         },

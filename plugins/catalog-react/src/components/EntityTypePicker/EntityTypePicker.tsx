@@ -15,16 +15,23 @@
  */
 
 import React, { useEffect } from 'react';
-import { capitalize } from 'lodash';
+import capitalize from 'lodash/capitalize';
 import { Box } from '@material-ui/core';
 import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { Select } from '@backstage/core-components';
 
-export const EntityTypePicker = () => {
+export type EntityTypeFilterProps = {
+  initialFilter?: string;
+  hidden?: boolean;
+};
+
+export const EntityTypePicker = (props: EntityTypeFilterProps) => {
+  const { hidden, initialFilter } = props;
   const alertApi = useApi(alertApiRef);
-  const { error, types, selectedType, setType } = useEntityTypeFilter();
+  const { error, availableTypes, selectedTypes, setSelectedTypes } =
+    useEntityTypeFilter();
 
   useEffect(() => {
     if (error) {
@@ -33,27 +40,30 @@ export const EntityTypePicker = () => {
         severity: 'error',
       });
     }
-  }, [error, alertApi]);
+    if (initialFilter) {
+      setSelectedTypes([initialFilter]);
+    }
+  }, [error, alertApi, initialFilter, setSelectedTypes]);
 
-  if (!types || error) {
-    return null;
-  }
+  if (availableTypes.length === 0 || error) return null;
 
   const items = [
     { value: 'all', label: 'All' },
-    ...types.map((type: string) => ({
+    ...availableTypes.map((type: string) => ({
       value: type,
       label: capitalize(type),
     })),
   ];
 
-  return (
+  return hidden ? null : (
     <Box pb={1} pt={1}>
       <Select
         label="Type"
         items={items}
-        selected={selectedType ?? 'all'}
-        onChange={value => setType(value === 'all' ? undefined : String(value))}
+        selected={(items.length > 1 ? selectedTypes[0] : undefined) ?? 'all'}
+        onChange={value =>
+          setSelectedTypes(value === 'all' ? [] : [String(value)])
+        }
       />
     </Box>
   );

@@ -17,7 +17,8 @@ import { useImmerReducer } from 'use-immer';
 import { useEffect } from 'react';
 import { scaffolderApiRef, LogEvent } from '../../api';
 import { ScaffolderTask, Status, TaskOutput } from '../../types';
-import { Subscription, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
+import { Subscription } from '@backstage/types';
 
 type Step = {
   id: string;

@@ -24,8 +24,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '/newrelic',
-  title: 'newrelic',
+  id: 'newrelic',
 });
 
 export const newRelicPlugin = createPlugin({
@@ -44,6 +43,7 @@ export const newRelicPlugin = createPlugin({
 
 export const NewRelicPage = newRelicPlugin.provide(
   createRoutableExtension({
+    name: 'NewRelicPage',
     component: () =>
       import('./components/NewRelicComponent').then(m => m.default),
     mountPoint: rootRouteRef,

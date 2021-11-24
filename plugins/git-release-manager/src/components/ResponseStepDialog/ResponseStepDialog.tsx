@@ -21,7 +21,6 @@ import {
   DialogActions,
   DialogTitle,
 } from '@material-ui/core';
-import RefreshIcon from '@material-ui/icons/Refresh';
 
 import { LinearProgressWithLabel } from './LinearProgressWithLabel';
 import { ResponseStep } from '../../types/types';
@@ -65,7 +64,6 @@ export const ResponseStepDialog = ({
           variant="contained"
           size="large"
           color="primary"
-          startIcon={<RefreshIcon />}
         >
           Ok
         </Button>

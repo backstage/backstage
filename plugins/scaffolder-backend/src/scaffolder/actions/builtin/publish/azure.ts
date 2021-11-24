@@ -16,16 +16,18 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { initRepoAndPush } from '../../../stages/publish/helpers';
+import { initRepoAndPush } from '../helpers';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
+import { Config } from '@backstage/config';
 
 export function createPublishAzureAction(options: {
   integrations: ScmIntegrationRegistry;
+  config: Config;
 }) {
-  const { integrations } = options;
+  const { integrations, config } = options;
 
   return createTemplateAction<{
     repoUrl: string;
@@ -78,7 +80,10 @@ export function createPublishAzureAction(options: {
     async handler(ctx) {
       const { repoUrl, defaultBranch = 'master' } = ctx.input;
 
-      const { owner, repo, host, organization } = parseRepoUrl(repoUrl);
+      const { owner, repo, host, organization } = parseRepoUrl(
+        repoUrl,
+        integrations,
+      );
 
       if (!organization) {
         throw new InputError(
@@ -123,6 +128,11 @@ export function createPublishAzureAction(options: {
       // so it's just the base path I think
       const repoContentsUrl = remoteUrl;
 
+      const gitAuthorInfo = {
+        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+      };
+
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
@@ -132,6 +142,10 @@ export function createPublishAzureAction(options: {
           password: integrationConfig.config.token,
         },
         logger: ctx.logger,
+        commitMessage: config.getOptionalString(
+          'scaffolder.defaultCommitMessage',
+        ),
+        gitAuthorInfo,
       });
 
       ctx.output('remoteUrl', remoteUrl);

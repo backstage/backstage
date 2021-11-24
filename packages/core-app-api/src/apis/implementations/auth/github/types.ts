@@ -16,11 +16,16 @@
 
 import { ProfileInfo, BackstageIdentity } from '@backstage/core-plugin-api';
 
+/**
+ * Session information for GitHub auth.
+ *
+ * @public
+ */
 export type GithubSession = {
   providerInfo: {
     accessToken: string;
     scopes: Set<string>;
-    expiresAt: Date;
+    expiresAt?: Date;
   };
   profile: ProfileInfo;
   backstageIdentity: BackstageIdentity;

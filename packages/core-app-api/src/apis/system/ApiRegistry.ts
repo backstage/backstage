@@ -32,11 +32,22 @@ class ApiRegistryBuilder {
   }
 }
 
+/**
+ * A registry for utility APIs.
+ *
+ * @public
+ * @deprecated Will be removed, use {@link @backstage/test-utils#TestApiProvider} or {@link @backstage/test-utils#TestApiRegistry} instead.
+ */
 export class ApiRegistry implements ApiHolder {
   static builder() {
     return new ApiRegistryBuilder();
   }
 
+  /**
+   * Creates a new ApiRegistry with a list of API implementations.
+   *
+   * @param apis - A list of pairs mapping an ApiRef to its respective implementation
+   */
   static from(apis: ApiImpl[]) {
     return new ApiRegistry(new Map(apis.map(([api, impl]) => [api.id, impl])));
   }
@@ -44,8 +55,8 @@ export class ApiRegistry implements ApiHolder {
   /**
    * Creates a new ApiRegistry with a single API implementation.
    *
-   * @param api ApiRef for the API to add
-   * @param impl Implementation of the API to add
+   * @param api - ApiRef for the API to add
+   * @param impl - Implementation of the API to add
    */
   static with<T>(api: ApiRef<T>, impl: T): ApiRegistry {
     return new ApiRegistry(new Map([[api.id, impl]]));
@@ -56,8 +67,8 @@ export class ApiRegistry implements ApiHolder {
   /**
    * Returns a new ApiRegistry with the provided API added to the existing ones.
    *
-   * @param api ApiRef for the API to add
-   * @param impl Implementation of the API to add
+   * @param api - ApiRef for the API to add
+   * @param impl - Implementation of the API to add
    */
   with<T>(api: ApiRef<T>, impl: T): ApiRegistry {
     return new ApiRegistry(new Map([...this.apis, [api.id, impl]]));

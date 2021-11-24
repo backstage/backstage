@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
+/**
+ * The Backstage plugin for browsing the Backstage catalog
+ *
+ * @packageDocumentation
+ */
+
+export { CatalogClientWrapper } from './CatalogClientWrapper';
 export * from './components/AboutCard';
-export { CatalogLayout } from './components/CatalogPage';
-export { CatalogResultListItem } from './components/CatalogResultListItem';
+export * from './components/CatalogKindHeader';
+export * from './components/CatalogResultListItem';
 export { CatalogTable } from './components/CatalogTable';
 export type { EntityRow as CatalogTableRow } from './components/CatalogTable';
-export { CreateComponentButton } from './components/CreateComponentButton';
-export { EntityLayout } from './components/EntityLayout';
+export * from './components/CatalogTable/columns';
+export * from './components/EntityLayout';
 export * from './components/EntityOrphanWarning';
-export { EntityPageLayout } from './components/EntityPageLayout';
+export * from './components/EntityProcessingErrorsPanel';
+export * from './components/EntityPageLayout';
 export * from './components/EntitySwitch';
+export * from './components/FilteredEntityLayout';
+export * from './overridableComponents';
 export { Router } from './components/Router';
 export {
   CatalogEntityPage,
@@ -31,8 +41,8 @@ export {
   catalogPlugin,
   catalogPlugin as plugin,
   EntityAboutCard,
-  EntityDependsOnComponentsCard,
   EntityDependencyOfComponentsCard,
+  EntityDependsOnComponentsCard,
   EntityDependsOnResourcesCard,
   EntityHasComponentsCard,
   EntityHasResourcesCard,
@@ -41,4 +51,6 @@ export {
   EntityLinksCard,
   EntitySystemDiagramCard,
 } from './plugin';
-export * from './components/CatalogTable/columns';
+
+export type { EntityLinksEmptyStateClassKey } from './components/EntityLinksCard';
+export type { SystemDiagramCardClassKey } from './components/SystemDiagramCard';

@@ -128,7 +128,11 @@ export const MembersListCard = (_props: {
   };
   const pageSize = 50;
 
-  const { loading, error, value: members } = useAsync(async () => {
+  const {
+    loading,
+    error,
+    value: members,
+  } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
       filter: { kind: 'User' },
     });
@@ -170,7 +174,7 @@ export const MembersListCard = (_props: {
       <InfoCard
         title={`Members (${members?.length || 0}${paginationLabel})`}
         subheader={`of ${displayName}`}
-        actions={pagination}
+        {...(nbPages <= 1 ? {} : { actions: pagination })}
       >
         <Grid container spacing={3}>
           {members && members.length > 0 ? (

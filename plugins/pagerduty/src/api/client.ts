@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Service, Incident, OnCall } from '../components/types';
+import { Service, Incident, ChangeEvent, OnCall } from '../components/types';
 import {
   PagerDutyApi,
   TriggerAlarmRequest,
@@ -23,6 +23,7 @@ import {
   OnCallsResponse,
   ClientApiConfig,
   RequestOptions,
+  ChangeEventsResponse,
 } from './types';
 import {
   createApiRef,
@@ -67,6 +68,17 @@ export class PagerDutyClient implements PagerDutyApi {
     const { incidents } = await this.getByUrl<IncidentsResponse>(url);
 
     return incidents;
+  }
+
+  async getChangeEventsByServiceId(serviceId: string): Promise<ChangeEvent[]> {
+    const params = `limit=5&time_zone=UTC&sort_by=timestamp`;
+    const url = `${await this.config.discoveryApi.getBaseUrl(
+      'proxy',
+    )}/pagerduty/services/${serviceId}/change_events?${params}`;
+
+    const { change_events } = await this.getByUrl<ChangeEventsResponse>(url);
+
+    return change_events;
   }
 
   async getOnCallByPolicyId(policyId: string): Promise<OnCall[]> {
@@ -124,7 +136,6 @@ export class PagerDutyClient implements PagerDutyApi {
       },
     };
     const response = await this.request(url, options);
-
     return response.json();
   }
 

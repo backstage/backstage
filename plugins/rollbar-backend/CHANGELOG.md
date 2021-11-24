@@ -1,5 +1,30 @@
 # @backstage/plugin-rollbar-backend
 
+## 0.1.15
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/config@0.1.8
+
+## 0.1.13
+
+### Patch Changes
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+
 ## 0.1.12
 
 ### Patch Changes

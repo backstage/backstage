@@ -5,8 +5,8 @@ sidebar_label: Google
 description: Adding Google OAuth as an authentication provider in Backstage
 ---
 
-The Backstage `core-api` package comes with a Google authentication provider
-that can authenticate users using Google OAuth.
+The Backstage `core-plugin-api` package comes with a Google authentication
+provider that can authenticate users using Google OAuth.
 
 ## Create OAuth Credentials
 
@@ -26,7 +26,7 @@ To support Google authentication, you must create OAuth credentials:
    - `Name`: Backstage (or your custom app name)
    - `Authorized JavaScript origins`: http://localhost:3000
    - `Authorized Redirect URIs`:
-     http://localhost:7000/api/auth/google/handler/frame
+     http://localhost:7007/api/auth/google/handler/frame
 7. Click Create
 
 ## Configuration

@@ -31,7 +31,9 @@ export function getEntityRelations(
 
   if (filter?.kind) {
     entityNames = entityNames?.filter(
-      e => e.kind.toLowerCase() === filter.kind.toLowerCase(),
+      e =>
+        e.kind.toLocaleLowerCase('en-US') ===
+        filter.kind.toLocaleLowerCase('en-US'),
     );
   }
 

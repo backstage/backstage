@@ -89,9 +89,10 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
       .replace(/[^a-zA-Z0-9\-]/g, '-');
   }
 
-  extractInformationFromArn(
-    arn: string,
-  ): { accountId: string; organizationId: string } {
+  extractInformationFromArn(arn: string): {
+    accountId: string;
+    organizationId: string;
+  } {
     const parts = arn.split('/');
 
     return {

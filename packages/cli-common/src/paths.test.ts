@@ -46,6 +46,8 @@ describe('paths', () => {
     const dir = resolvePath(__dirname, '..');
     const root = resolvePath(__dirname, '../../..');
 
+    jest.spyOn(process, 'cwd').mockReturnValue(dir);
+
     const paths = findPaths(__dirname);
 
     expect(paths.ownDir).toBe(dir);

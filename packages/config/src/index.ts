@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-export { ConfigReader } from './reader';
+/**
+ * Config API used by Backstage core, backend, and CLI
+ *
+ * @packageDocumentation
+ */
+
 export type {
-  AppConfig,
-  Config,
   JsonArray,
   JsonObject,
   JsonPrimitive,
   JsonValue,
-} from './types';
+} from './deprecatedTypes';
+export { ConfigReader } from './reader';
+export type { AppConfig, Config } from './types';

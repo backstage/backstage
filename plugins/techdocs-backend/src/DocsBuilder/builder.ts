@@ -18,7 +18,9 @@ import {
   ENTITY_DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { NotModifiedError } from '@backstage/errors';
+import { Config } from '@backstage/config';
+import { assertError, isError } from '@backstage/errors';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   GeneratorBase,
   GeneratorBuilder,
@@ -31,8 +33,8 @@ import {
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+import { Writable } from 'stream';
 import { Logger } from 'winston';
-import { Config } from '@backstage/config';
 import { BuildMetadataStorage } from './BuildMetadataStorage';
 
 type DocsBuilderArguments = {
@@ -42,6 +44,8 @@ type DocsBuilderArguments = {
   entity: Entity;
   logger: Logger;
   config: Config;
+  scmIntegrations: ScmIntegrationRegistry;
+  logStream?: Writable;
 };
 
 export class DocsBuilder {
@@ -51,6 +55,8 @@ export class DocsBuilder {
   private entity: Entity;
   private logger: Logger;
   private config: Config;
+  private scmIntegrations: ScmIntegrationRegistry;
+  private logStream: Writable | undefined;
 
   constructor({
     preparers,
@@ -59,6 +65,8 @@ export class DocsBuilder {
     entity,
     logger,
     config,
+    scmIntegrations,
+    logStream,
   }: DocsBuilderArguments) {
     this.preparer = preparers.get(entity);
     this.generator = generators.get(entity);
@@ -66,6 +74,8 @@ export class DocsBuilder {
     this.entity = entity;
     this.logger = logger;
     this.config = config;
+    this.scmIntegrations = scmIntegrations;
+    this.logStream = logStream;
   }
 
   /**
@@ -115,12 +125,13 @@ export class DocsBuilder {
     try {
       const preparerResponse = await this.preparer.prepare(this.entity, {
         etag: storedEtag,
+        logger: this.logger,
       });
 
       preparedDir = preparerResponse.preparedDir;
       newEtag = preparerResponse.etag;
     } catch (err) {
-      if (err instanceof NotModifiedError) {
+      if (isError(err) && err.name === 'NotModifiedError') {
         // No need to prepare anymore since cache is valid.
         // Set last check happened to now
         new BuildMetadataStorage(this.entity.metadata.uid).setLastUpdated();
@@ -131,7 +142,7 @@ export class DocsBuilder {
         );
         return false;
       }
-      throw new Error(err.message);
+      throw err;
     }
 
     this.logger.info(
@@ -159,12 +170,18 @@ export class DocsBuilder {
     const outputDir = await fs.mkdtemp(
       path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
     );
-    const parsedLocationAnnotation = getLocationForEntity(this.entity);
+
+    const parsedLocationAnnotation = getLocationForEntity(
+      this.entity,
+      this.scmIntegrations,
+    );
     await this.generator.run({
       inputDir: preparedDir,
       outputDir,
       parsedLocationAnnotation,
       etag: newEtag,
+      logger: this.logger,
+      logStream: this.logStream,
     });
 
     // Remove Prepared directory since it is no longer needed.
@@ -178,6 +195,7 @@ export class DocsBuilder {
         // Not a blocker hence no need to await this.
         fs.remove(preparedDir);
       } catch (error) {
+        assertError(error);
         this.logger.debug(`Error removing prepared directory ${error.message}`);
       }
     }
@@ -204,6 +222,7 @@ export class DocsBuilder {
         `Removing generated directory ${outputDir} since the site has been published`,
       );
     } catch (error) {
+      assertError(error);
       this.logger.debug(`Error removing generated directory ${error.message}`);
     }
 

@@ -25,7 +25,11 @@ export function useCatalogEntity() {
   const catalogApi = useApi(catalogApiRef);
   const { namespace, name } = useEntityCompoundName();
 
-  const { value: entity, error, loading } = useAsync(
+  const {
+    value: entity,
+    error,
+    loading,
+  } = useAsync(
     () => catalogApi.getEntityByName({ kind: 'Component', namespace, name }),
     [catalogApi, namespace, name],
   );

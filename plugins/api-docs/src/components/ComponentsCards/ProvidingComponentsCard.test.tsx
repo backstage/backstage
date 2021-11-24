@@ -19,12 +19,12 @@ import {
   CatalogApi,
   catalogApiRef,
   EntityProvider,
+  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ProvidingComponentsCard } from './ProvidingComponentsCard';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<ProvidingComponentsCard />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
@@ -38,10 +38,10 @@ describe('<ProvidingComponentsCard />', () => {
   let Wrapper: React.ComponentType;
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(catalogApiRef, catalogApi);
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        {children}
+      </TestApiProvider>
     );
   });
 
@@ -70,6 +70,11 @@ describe('<ProvidingComponentsCard />', () => {
           <ProvidingComponentsCard />
         </EntityProvider>
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(getByText('Providers')).toBeInTheDocument();
@@ -121,6 +126,11 @@ describe('<ProvidingComponentsCard />', () => {
           <ProvidingComponentsCard />
         </EntityProvider>
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {

@@ -19,11 +19,13 @@ import {
   getDefaultState as getDefaultLoadingState,
 } from '../utils/loading';
 
-export const MockDefaultLoadingActions = ([
-  DefaultLoadingAction.UserGroups,
-  DefaultLoadingAction.CostInsightsInitial,
-  DefaultLoadingAction.CostInsightsPage,
-] as string[]).concat(MockProducts.map(product => product.kind));
+export const MockDefaultLoadingActions = (
+  [
+    DefaultLoadingAction.UserGroups,
+    DefaultLoadingAction.CostInsightsInitial,
+    DefaultLoadingAction.CostInsightsPage,
+  ] as string[]
+).concat(MockProducts.map(product => product.kind));
 
 export const mockDefaultLoadingState = getDefaultLoadingState(
   MockDefaultLoadingActions,

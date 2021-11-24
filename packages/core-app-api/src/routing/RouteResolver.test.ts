@@ -65,7 +65,7 @@ const externalRef4 = createExternalRouteRef({
 
 describe('RouteResolver', () => {
   it('should not resolve anything with an empty resolver', () => {
-    const r = new RouteResolver(new Map(), new Map(), [], new Map());
+    const r = new RouteResolver(new Map(), new Map(), [], new Map(), '');
 
     expect(r.resolve(ref1, '/')?.()).toBe(undefined);
     expect(r.resolve(ref2, '/')?.({ x: '1x' })).toBe(undefined);
@@ -85,12 +85,36 @@ describe('RouteResolver', () => {
       new Map(),
       [{ routeRefs: new Set([ref1]), path: '/my-route', ...rest }],
       new Map(),
+      '',
     );
 
     expect(r.resolve(ref1, '/')?.()).toBe('/my-route');
     expect(r.resolve(ref2, '/')?.({ x: '1x' })).toBe(undefined);
     expect(r.resolve(subRef1, '/')?.()).toBe('/my-route/foo');
     expect(r.resolve(subRef2, '/')?.({ a: '2a' })).toBe('/my-route/foo/2a');
+    expect(r.resolve(subRef3, '/')?.({ x: '3x' })).toBe(undefined);
+    expect(r.resolve(subRef4, '/')?.({ x: '4x', a: '4a' })).toBe(undefined);
+    expect(r.resolve(externalRef1, '/')?.()).toBe(undefined);
+    expect(r.resolve(externalRef2, '/')?.()).toBe(undefined);
+    expect(r.resolve(externalRef3, '/')?.({ x: '5x' })).toBe(undefined);
+    expect(r.resolve(externalRef4, '/')?.({ x: '6x' })).toBe(undefined);
+  });
+
+  it('should resolve an absolute route and an app base path', () => {
+    const r = new RouteResolver(
+      new Map([[ref1, '/my-route']]),
+      new Map(),
+      [{ routeRefs: new Set([ref1]), path: '/my-route', ...rest }],
+      new Map(),
+      '/base',
+    );
+
+    expect(r.resolve(ref1, '/')?.()).toBe('/base/my-route');
+    expect(r.resolve(ref2, '/')?.({ x: '1x' })).toBe(undefined);
+    expect(r.resolve(subRef1, '/')?.()).toBe('/base/my-route/foo');
+    expect(r.resolve(subRef2, '/')?.({ a: '2a' })).toBe(
+      '/base/my-route/foo/2a',
+    );
     expect(r.resolve(subRef3, '/')?.({ x: '3x' })).toBe(undefined);
     expect(r.resolve(subRef4, '/')?.({ x: '4x', a: '4a' })).toBe(undefined);
     expect(r.resolve(externalRef1, '/')?.()).toBe(undefined);
@@ -122,6 +146,7 @@ describe('RouteResolver', () => {
         [externalRef3, ref2],
         [externalRef4, subRef3],
       ]),
+      '',
     );
 
     expect(r.resolve(ref1, '/')?.()).toBe('/my-route');
@@ -179,6 +204,7 @@ describe('RouteResolver', () => {
         },
       ],
       new Map<ExternalRouteRef, RouteRef | SubRouteRef>(),
+      '',
     );
 
     expect(r.resolve(ref2, '/')?.({ x: 'x' })).toBe('/root/x');
@@ -232,6 +258,7 @@ describe('RouteResolver', () => {
         [externalRef3, ref2],
         [externalRef4, subRef3],
       ]),
+      '',
     );
 
     const l = '/my-grandparent/my-y/my-parent/my-x';

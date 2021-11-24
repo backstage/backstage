@@ -36,6 +36,7 @@ export const shortcutsPlugin = createPlugin({
 
 export const Shortcuts = shortcutsPlugin.provide(
   createComponentExtension({
+    name: 'Shortcuts',
     component: { lazy: () => import('./Shortcuts').then(m => m.Shortcuts) },
   }),
 );

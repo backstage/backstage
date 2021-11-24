@@ -123,9 +123,9 @@ describe('Git', () => {
 
       await git.clone({ url, dir });
 
-      const { onAuth } = ((isomorphic.clone as unknown) as jest.Mock<
-        typeof isomorphic['clone']
-      >).mock.calls[0][0]!;
+      const { onAuth } = (
+        isomorphic.clone as unknown as jest.Mock<typeof isomorphic['clone']>
+      ).mock.calls[0][0]!;
 
       expect(onAuth()).toEqual(auth);
     });
@@ -190,9 +190,9 @@ describe('Git', () => {
 
       await git.fetch({ remote, dir });
 
-      const { onAuth } = ((isomorphic.fetch as unknown) as jest.Mock<
-        typeof isomorphic['fetch']
-      >).mock.calls[0][0]!;
+      const { onAuth } = (
+        isomorphic.fetch as unknown as jest.Mock<typeof isomorphic['fetch']>
+      ).mock.calls[0][0]!;
 
       expect(onAuth()).toEqual(auth);
     });
@@ -279,9 +279,9 @@ describe('Git', () => {
 
       await git.push({ remote, dir });
 
-      const { onAuth } = ((isomorphic.push as unknown) as jest.Mock<
-        typeof isomorphic['push']
-      >).mock.calls[0][0]!;
+      const { onAuth } = (
+        isomorphic.push as unknown as jest.Mock<typeof isomorphic['push']>
+      ).mock.calls[0][0]!;
 
       expect(onAuth()).toEqual(auth);
     });

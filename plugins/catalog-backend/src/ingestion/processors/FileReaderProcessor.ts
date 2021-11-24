@@ -20,8 +20,11 @@ import g from 'glob';
 import path from 'path';
 import { promisify } from 'util';
 import * as result from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
-import { parseEntityYaml } from './util/parse';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  CatalogProcessorParser,
+} from './types';
 
 const glob = promisify(g);
 
@@ -30,6 +33,7 @@ export class FileReaderProcessor implements CatalogProcessor {
     location: LocationSpec,
     optional: boolean,
     emit: CatalogProcessorEmit,
+    parser: CatalogProcessorParser,
   ): Promise<boolean> {
     if (location.type !== 'file') {
       return false;
@@ -44,9 +48,12 @@ export class FileReaderProcessor implements CatalogProcessor {
 
           // The normalize converts to native slashes; the glob library returns
           // forward slashes even on windows
-          for (const parseResult of parseEntityYaml(data, {
-            type: 'file',
-            target: path.normalize(fileMatch),
+          for await (const parseResult of parser({
+            data: data,
+            location: {
+              type: 'file',
+              target: path.normalize(fileMatch),
+            },
           })) {
             emit(parseResult);
           }

@@ -49,6 +49,22 @@ export function buildOrgHierarchy(groups: GroupEntity[]) {
   }
 }
 
+// Ensure that users have their direct group memberships.
+export function assignGroupsToUsers(
+  users: UserEntity[],
+  groupMemberUsers: Map<string, string[]>,
+) {
+  const usersByName = new Map(users.map(u => [u.metadata.name, u]));
+  for (const [groupName, userNames] of groupMemberUsers.entries()) {
+    for (const userName of userNames) {
+      const user = usersByName.get(userName);
+      if (user && !user.spec.memberOf.includes(groupName)) {
+        user.spec.memberOf.push(groupName);
+      }
+    }
+  }
+}
+
 // Ensure that users have their transitive group memberships. Requires that
 // the groups were previously processed with buildOrgHierarchy()
 export function buildMemberOf(groups: GroupEntity[], users: UserEntity[]) {

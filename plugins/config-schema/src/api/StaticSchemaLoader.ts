@@ -18,7 +18,7 @@ import ObservableImpl from 'zen-observable';
 import { ResponseError } from '@backstage/errors';
 import { Schema } from 'jsonschema';
 import { ConfigSchemaApi, ConfigSchemaResult } from './types';
-import { Observable } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 
 const DEFAULT_URL = 'config-schema.json';
 
@@ -49,7 +49,7 @@ export class StaticSchemaLoader implements ConfigSchemaApi {
         return undefined;
       }
 
-      throw ResponseError.fromResponse(res);
+      throw await ResponseError.fromResponse(res);
     }
 
     return await res.json();

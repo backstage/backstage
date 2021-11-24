@@ -16,7 +16,10 @@
 
 import React, { useContext, useState } from 'react';
 import { useLocalStorage } from 'react-use';
-import { Link, Typography, makeStyles, Collapse } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
+import Collapse from '@material-ui/core/Collapse';
 import CloseIcon from '@material-ui/icons/Close';
 import { BackstageTheme } from '@backstage/theme';
 import {
@@ -26,55 +29,67 @@ import {
 } from './config';
 import { SidebarDivider } from './Items';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  introCard: {
-    color: '#b5b5b5',
-    // XXX (@koroeskohr): should I be using a Mui theme variable?
-    fontSize: 12,
-    width: sidebarConfig.drawerWidthOpen,
-    marginTop: 18,
-    marginBottom: 12,
-    paddingLeft: sidebarConfig.iconPadding,
-    paddingRight: sidebarConfig.iconPadding,
-  },
-  introDismiss: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  introDismissLink: {
-    color: '#dddddd',
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: 4,
-    '&:hover': {
-      color: theme.palette.linkHover,
-      transition: theme.transitions.create('color', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.shortest,
-      }),
+/** @public */
+export type SidebarIntroClassKey =
+  | 'introCard'
+  | 'introDismiss'
+  | 'introDismissLink'
+  | 'introDismissText'
+  | 'introDismissIcon';
+
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    introCard: {
+      color: '#b5b5b5',
+      // XXX (@koroeskohr): should I be using a Mui theme variable?
+      fontSize: 12,
+      width: sidebarConfig.drawerWidthOpen,
+      marginTop: 18,
+      marginBottom: 12,
+      paddingLeft: sidebarConfig.iconPadding,
+      paddingRight: sidebarConfig.iconPadding,
     },
-  },
-  introDismissText: {
-    fontSize: '0.7rem',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  introDismissIcon: {
-    width: 18,
-    height: 18,
-    marginRight: 12,
-  },
-}));
+    introDismiss: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      marginTop: 12,
+    },
+    introDismissLink: {
+      color: '#dddddd',
+      display: 'flex',
+      alignItems: 'center',
+      marginBottom: 4,
+      '&:hover': {
+        color: theme.palette.linkHover,
+        transition: theme.transitions.create('color', {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.shortest,
+        }),
+      },
+    },
+    introDismissText: {
+      fontSize: '0.7rem',
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+    },
+    introDismissIcon: {
+      width: 18,
+      height: 18,
+      marginRight: 12,
+    },
+  }),
+  { name: 'BackstageSidebarIntro' },
+);
 
 type IntroCardProps = {
   text: string;
   onClose: () => void;
 };
 
-export const IntroCard = (props: IntroCardProps) => {
+/** @public */
+export function IntroCard(props: IntroCardProps) {
   const classes = useStyles();
   const { text, onClose } = props;
   const handleClose = () => onClose();
@@ -97,7 +112,7 @@ export const IntroCard = (props: IntroCardProps) => {
       </div>
     </div>
   );
-};
+}
 
 type SidebarIntroLocalStorage = {
   starredItemsDismissed: boolean;
@@ -127,16 +142,14 @@ Keep an eye out for the little star icon (⭐) next to the plugin name and give 
 const recentlyViewedIntroText =
   'And your recently viewed plugins will pop up here!';
 
-export const SidebarIntro = () => {
+export function SidebarIntro(_props: {}) {
   const { isOpen } = useContext(SidebarContext);
   const defaultValue = {
     starredItemsDismissed: false,
     recentlyViewedItemsDismissed: false,
   };
-  const [
-    dismissedIntro,
-    setDismissedIntro,
-  ] = useLocalStorage<SidebarIntroLocalStorage>(SIDEBAR_INTRO_LOCAL_STORAGE);
+  const [dismissedIntro, setDismissedIntro] =
+    useLocalStorage<SidebarIntroLocalStorage>(SIDEBAR_INTRO_LOCAL_STORAGE);
 
   const { starredItemsDismissed, recentlyViewedItemsDismissed } =
     dismissedIntro ?? {};
@@ -179,4 +192,4 @@ export const SidebarIntro = () => {
       )}
     </>
   );
-};
+}

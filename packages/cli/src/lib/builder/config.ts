@@ -80,7 +80,17 @@ export const makeConfigs = async (
         postcss(),
         forwardFileImports({
           exclude: /\.icon\.svg$/,
-          include: [/\.svg$/, /\.png$/, /\.gif$/, /\.jpg$/, /\.jpeg$/],
+          include: [
+            /\.svg$/,
+            /\.png$/,
+            /\.gif$/,
+            /\.jpg$/,
+            /\.jpeg$/,
+            /\.eot$/,
+            /\.woff$/,
+            /\.woff2$/,
+            /\.ttf$/,
+          ],
         }),
         json(),
         yaml(),

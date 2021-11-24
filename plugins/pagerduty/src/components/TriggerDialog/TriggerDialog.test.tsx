@@ -15,16 +15,15 @@
  */
 import React from 'react';
 import { fireEvent, act } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { pagerDutyApiRef } from '../../api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TriggerDialog } from './TriggerDialog';
 
-import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import {
   alertApiRef,
-  createApiRef,
   IdentityApi,
   identityApiRef,
 } from '@backstage/core-plugin-api';
@@ -39,17 +38,11 @@ describe('TriggerDialog', () => {
     triggerAlarm: mockTriggerAlarmFn,
   };
 
-  const apis = ApiRegistry.from([
-    [
-      alertApiRef,
-      createApiRef({
-        id: 'core.alert',
-        description: 'Used to report alerts and forward them to the app',
-      }),
-    ],
+  const apis = TestApiRegistry.from(
+    [alertApiRef, {}],
     [identityApiRef, mockIdentityApi],
     [pagerDutyApiRef, mockPagerDutyApi],
-  ]);
+  );
 
   it('open the dialog and trigger an alarm', async () => {
     const entity: Entity = {
@@ -92,9 +85,8 @@ describe('TriggerDialog', () => {
     });
     expect(mockTriggerAlarmFn).toHaveBeenCalled();
     expect(mockTriggerAlarmFn).toHaveBeenCalledWith({
-      integrationKey: entity!.metadata!.annotations![
-        'pagerduty.com/integration-key'
-      ],
+      integrationKey:
+        entity!.metadata!.annotations!['pagerduty.com/integration-key'],
       source: window.location.toString(),
       description,
       userName: 'guest@example.com',

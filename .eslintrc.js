@@ -34,5 +34,22 @@ module.exports = {
         onNonMatchingHeader: 'replace',
       },
     ],
+    'no-restricted-syntax': [
+      'error',
+      {
+        message:
+          "Avoid using .toLowerCase(), use .toLocaleLowerCase('en-US') instead. " +
+          'This rule can sometimes be ignored when converting text to be displayed to the user.',
+        selector:
+          "CallExpression[arguments.length=0] > MemberExpression[property.name='toLowerCase']",
+      },
+      {
+        message:
+          "Avoid using .toUpperCase(), use .toLocaleUpperCase('en-US') instead. " +
+          'This rule can sometimes be ignored when converting text to be displayed to the user.',
+        selector:
+          "CallExpression[arguments.length=0] > MemberExpression[property.name='toUpperCase']",
+      },
+    ],
   },
 };

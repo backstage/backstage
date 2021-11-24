@@ -13,9 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
+import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
+
+// Determines where the generator will be run
+export type GeneratorRunInType = 'docker' | 'local';
+
+/**
+ * The techdocs generator configurations options.
+ */
+export type GeneratorConfig = {
+  runIn: GeneratorRunInType;
+  dockerImage?: string;
+  pullImage?: boolean;
+};
 
 /**
  * The values that the generator will receive.
@@ -24,13 +38,15 @@ import { ParsedLocationAnnotation } from '../../helpers';
  * @param {string} outputDir Directory to store generated docs in. Usually - a newly created temporary directory.
  * @param {ParsedLocationAnnotation} parsedLocationAnnotation backstage.io/techdocs-ref annotation of an entity
  * @param {string} etag A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.
- * @param {Writable} [logStream] A dedicated log stream
+ * @param {Logger} [logger] A logger that forwards the messages to the caller to be displayed outside of the backend.
+ * @param {Writable} [logStream] A log stream that can send raw log messages to the caller to be displayed outside of the backend..
  */
 export type GeneratorRunOptions = {
   inputDir: string;
   outputDir: string;
   parsedLocationAnnotation?: ParsedLocationAnnotation;
   etag?: string;
+  logger: Logger;
   logStream?: Writable;
 };
 

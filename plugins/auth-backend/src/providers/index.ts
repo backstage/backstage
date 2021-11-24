@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
+export * from './github';
+export * from './gitlab';
 export * from './google';
+export * from './microsoft';
+export * from './oauth2';
+export * from './okta';
+export * from './bitbucket';
+export * from './atlassian';
+export * from './aws-alb';
+
 export { factories as defaultAuthProviderFactories } from './factories';
 
 // Export the minimal interface required for implementing a

@@ -15,56 +15,59 @@
  */
 
 import React from 'react';
-import {
-  ListItem,
-  ListItemIcon,
-  Divider,
-  ListItemText,
-  makeStyles,
-} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
 import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 import { Link } from '../../components/Link';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    maxWidth: 'fit-content',
-    padding: theme.spacing(2, 2, 2, 2.5),
-  },
-  boxTitle: {
-    margin: 0,
-    color: theme.palette.textSubtle,
-  },
-  arrow: {
-    color: theme.palette.textSubtle,
-  },
-}));
+/** @public */
+export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
 
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      maxWidth: 'fit-content',
+      padding: theme.spacing(2, 2, 2, 2.5),
+    },
+    boxTitle: {
+      margin: 0,
+      color: theme.palette.textSubtle,
+    },
+    arrow: {
+      color: theme.palette.textSubtle,
+    },
+  }),
+  { name: 'BackstageBottomLink' },
+);
+
+/** @public */
 export type BottomLinkProps = {
   link: string;
   title: string;
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
-export const BottomLink = ({ link, title, onClick }: BottomLinkProps) => {
+/** @public */
+export function BottomLink(props: BottomLinkProps) {
+  const { link, title, onClick } = props;
   const classes = useStyles();
 
   return (
     <div>
       <Divider />
       <Link to={link} onClick={onClick} underline="none">
-        <ListItem className={classes.root}>
-          <ListItemText>
-            <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
-              {title}
-            </Box>
-          </ListItemText>
-          <ListItemIcon>
-            <ArrowIcon className={classes.arrow} />
-          </ListItemIcon>
-        </ListItem>
+        <Box display="flex" alignItems="center" className={classes.root}>
+          <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
+            <Typography>
+              <strong>{title}</strong>
+            </Typography>
+          </Box>
+          <ArrowIcon className={classes.arrow} />
+        </Box>
       </Link>
     </div>
   );
-};
+}

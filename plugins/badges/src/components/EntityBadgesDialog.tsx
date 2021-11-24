@@ -48,7 +48,11 @@ export const EntityBadgesDialog = ({ open, onClose }: Props) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const badgesApi = useApi(badgesApiRef);
 
-  const { value: badges, loading, error } = useAsync(async () => {
+  const {
+    value: badges,
+    loading,
+    error,
+  } = useAsync(async () => {
     if (open && entity) {
       return await badgesApi.getEntityBadgeSpecs(entity);
     }

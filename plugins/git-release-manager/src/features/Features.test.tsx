@@ -18,8 +18,9 @@ import React from 'react';
 import { render, act, waitFor } from '@testing-library/react';
 
 import { Features } from './Features';
-import { mockApiClient, mockCalverProject } from '../test-helpers/test-helpers';
+import { mockCalverProject } from '../test-helpers/test-helpers';
 import { TEST_IDS } from '../test-helpers/test-ids';
+import { mockApiClient } from '../test-helpers/mock-api-client';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -40,6 +41,10 @@ describe('Features', () => {
           createRc: { omit: true },
           promoteRc: { omit: true },
           patch: { omit: true },
+          custom: {
+            // shouldn't trigger "missing key" warning in console
+            factory: () => [<div>Custom 1</div>, <div>Custom 2</div>],
+          },
         }}
       />,
     );

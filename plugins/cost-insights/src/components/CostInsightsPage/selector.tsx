@@ -31,21 +31,18 @@ type CostInsightsPageLoadingProps = {
   dispatchReset: (loadingActions: string[]) => void;
 };
 
-export const mapLoadingToProps: MapLoadingToProps<CostInsightsPageLoadingProps> = ({
-  state,
-  actions,
-  dispatch,
-}) => ({
-  loadingActions: actions,
-  loadingGroups: state[DefaultLoadingAction.UserGroups],
-  loadingBillingDate: state[DefaultLoadingAction.LastCompleteBillingDate],
-  loadingInitial: state[DefaultLoadingAction.CostInsightsInitial],
-  dispatchInitial: (isLoading: boolean) =>
-    dispatch({ [DefaultLoadingAction.CostInsightsInitial]: isLoading }),
-  dispatchInsights: (isLoading: boolean) =>
-    dispatch({ [DefaultLoadingAction.CostInsightsPage]: isLoading }),
-  dispatchNone: (loadingActions: string[]) =>
-    dispatch(getResetState(loadingActions)),
-  dispatchReset: (loadingActions: string[]) =>
-    dispatch(getResetStateWithoutInitial(loadingActions)),
-});
+export const mapLoadingToProps: MapLoadingToProps<CostInsightsPageLoadingProps> =
+  ({ state, actions, dispatch }) => ({
+    loadingActions: actions,
+    loadingGroups: state[DefaultLoadingAction.UserGroups],
+    loadingBillingDate: state[DefaultLoadingAction.LastCompleteBillingDate],
+    loadingInitial: state[DefaultLoadingAction.CostInsightsInitial],
+    dispatchInitial: (isLoading: boolean) =>
+      dispatch({ [DefaultLoadingAction.CostInsightsInitial]: isLoading }),
+    dispatchInsights: (isLoading: boolean) =>
+      dispatch({ [DefaultLoadingAction.CostInsightsPage]: isLoading }),
+    dispatchNone: (loadingActions: string[]) =>
+      dispatch(getResetState(loadingActions)),
+    dispatchReset: (loadingActions: string[]) =>
+      dispatch(getResetStateWithoutInitial(loadingActions)),
+  });

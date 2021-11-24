@@ -24,15 +24,19 @@ import { pagerDutyApiRef, UnauthorizedError } from '../../api';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { MissingTokenError } from '../Errors/MissingTokenError';
 import WebIcon from '@material-ui/icons/Web';
+import DateRangeIcon from '@material-ui/icons/DateRange';
 import { usePagerdutyEntity } from '../../hooks';
 import { PAGERDUTY_INTEGRATION_KEY } from '../constants';
 import { TriggerDialog } from '../TriggerDialog';
+import { ChangeEvents } from '../ChangeEvents';
 
 import { useApi } from '@backstage/core-plugin-api';
 import {
   Progress,
   HeaderIconLinkRow,
   IconLinkVerticalProps,
+  TabbedCard,
+  CardTab,
 } from '@backstage/core-components';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
@@ -42,6 +46,8 @@ export const PagerDutyCard = () => {
   const { integrationKey } = usePagerdutyEntity();
   const api = useApi(pagerDutyApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
+  const [refreshChangeEvents, setRefreshChangeEvents] =
+    useState<boolean>(false);
   const [dialogShown, setDialogShown] = useState<boolean>(false);
 
   const showDialog = useCallback(() => {
@@ -53,9 +59,14 @@ export const PagerDutyCard = () => {
 
   const handleRefresh = useCallback(() => {
     setRefreshIncidents(x => !x);
+    setRefreshChangeEvents(x => !x);
   }, []);
 
-  const { value: service, loading, error } = useAsync(async () => {
+  const {
+    value: service,
+    loading,
+    error,
+  } = useAsync(async () => {
     const services = await api.getServiceByIntegrationKey(
       integrationKey as string,
     );
@@ -65,6 +76,7 @@ export const PagerDutyCard = () => {
       name: services[0].name,
       url: services[0].html_url,
       policyId: services[0].escalation_policy.id,
+      policyLink: services[0].escalation_policy.html_url,
     };
   });
 
@@ -97,19 +109,39 @@ export const PagerDutyCard = () => {
     color: 'secondary',
   };
 
+  const escalationPolicyLink: IconLinkVerticalProps = {
+    label: 'Escalation Policy',
+    href: service!.policyLink,
+    icon: <DateRangeIcon />,
+  };
+
   return (
     <>
       <Card data-testid="pagerduty-card">
         <CardHeader
           title="PagerDuty"
-          subheader={<HeaderIconLinkRow links={[serviceLink, triggerLink]} />}
+          subheader={
+            <HeaderIconLinkRow
+              links={[serviceLink, triggerLink, escalationPolicyLink]}
+            />
+          }
         />
         <Divider />
         <CardContent>
-          <Incidents
-            serviceId={service!.id}
-            refreshIncidents={refreshIncidents}
-          />
+          <TabbedCard>
+            <CardTab label="Incidents">
+              <Incidents
+                serviceId={service!.id}
+                refreshIncidents={refreshIncidents}
+              />
+            </CardTab>
+            <CardTab label="Change Events">
+              <ChangeEvents
+                serviceId={service!.id}
+                refreshEvents={refreshChangeEvents}
+              />
+            </CardTab>
+          </TabbedCard>
           <EscalationPolicy policyId={service!.policyId} />
         </CardContent>
       </Card>

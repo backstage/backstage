@@ -15,8 +15,8 @@
  */
 
 import { Entity, GroupEntity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { catalogApiRef, EntityContext } from '@backstage/plugin-catalog-react';
+import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
+import { TestApiProvider } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
@@ -99,33 +99,30 @@ const catalogApi = (items: Entity[]) => ({
   getEntities: () => Promise.resolve({ items }),
 });
 
-const apiRegistry = (items: Entity[]) =>
-  ApiRegistry.from([[catalogApiRef, catalogApi(items)]]);
-
 export const Default = () => (
   <MemoryRouter>
-    <ApiProvider apis={apiRegistry([alice, bob])}>
-      <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
+    <TestApiProvider apis={[[catalogApiRef, catalogApi([alice, bob])]]}>
+      <EntityProvider entity={defaultEntity}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <MembersListCard />
           </Grid>
         </Grid>
-      </EntityContext.Provider>
-    </ApiProvider>
+      </EntityProvider>
+    </TestApiProvider>
   </MemoryRouter>
 );
 
 export const Empty = () => (
   <MemoryRouter>
-    <ApiProvider apis={apiRegistry([])}>
-      <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
+    <TestApiProvider apis={[[catalogApiRef, catalogApi([])]]}>
+      <EntityProvider entity={defaultEntity}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <MembersListCard />
           </Grid>
         </Grid>
-      </EntityContext.Provider>
-    </ApiProvider>
+      </EntityProvider>
+    </TestApiProvider>
   </MemoryRouter>
 );

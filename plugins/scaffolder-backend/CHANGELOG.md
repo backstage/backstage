@@ -1,5 +1,366 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.13
+
+### Patch Changes
+
+- 26eb174ce8: Skip empty file names when scaffolding with nunjucks
+- ecdcbd08ee: Expose template metadata to custom action handler in Scaffolder.
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+  - @backstage/plugin-catalog-backend@0.17.4
+
+## 0.15.12
+
+### Patch Changes
+
+- 9990df8a1f: Expose some classes and interfaces public so TaskWorkers can run externally from the scaffolder API.
+- b45a34fb15: Adds a new endpoint for consuming logs from the Scaffolder that uses long polling instead of Server Sent Events.
+
+  This is useful if Backstage is accessed from an environment that doesn't support SSE correctly, which happens in combination with certain enterprise HTTP Proxy servers.
+
+  It is intended to switch the endpoint globally for the whole instance.
+  If you want to use it, you can provide a reconfigured API to the `scaffolderApiRef`:
+
+  ```tsx
+  // packages/app/src/apis.ts
+
+  // ...
+  import {
+    scaffolderApiRef,
+    ScaffolderClient,
+  } from '@backstage/plugin-scaffolder';
+
+  export const apis: AnyApiFactory[] = [
+    // ...
+
+    createApiFactory({
+      api: scaffolderApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+        scmIntegrationsApi: scmIntegrationsApiRef,
+      },
+      factory: ({ discoveryApi, identityApi, scmIntegrationsApi }) =>
+        new ScaffolderClient({
+          discoveryApi,
+          identityApi,
+          scmIntegrationsApi,
+          // use long polling instead of an eventsource
+          useLongPollingLogs: true,
+        }),
+    }),
+  ];
+  ```
+
+- a794c341ca: Fix a bug where only file mode 775 is considered an executable
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/catalog-client@0.5.1
+  - @backstage/plugin-catalog-backend@0.17.3
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.4
+
+## 0.15.11
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- 41c49884d2: Start using the new `@backstage/types` package. Initially, this means using the `Observable` and `Json*` types from there. The types also remain in their old places but deprecated, and will be removed in a future release.
+- e55a5dea09: Fixed bug where the mode of an executable file was ignored
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.2
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/backend-common@0.9.8
+  - @backstage/catalog-model@0.9.6
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.3
+  - @backstage/plugin-scaffolder-common@0.1.1
+
+## 0.15.10
+
+### Patch Changes
+
+- b149e94290: Allow `catalog:register` action to register optional locations
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.1
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.15.9
+
+### Patch Changes
+
+- 0f99f1170e: Make sure `sourcePath` of `publish:github:pull-request` can only be used to
+  retrieve files from the workspace.
+
+## 0.15.8
+
+### Patch Changes
+
+- 42c618abf6: Use `resolveSafeChildPath` in the `fetchContents` function to forbid reading files outside the base directory when a template is registered from a `file:` location.
+- 18083d1821: Introduce the new `scaffolder.backstage.io/v1beta3` template kind with nunjucks support 🥋
+- Updated dependencies
+  - @backstage/integration@0.6.8
+  - @backstage/plugin-catalog-backend@0.17.0
+
+## 0.15.7
+
+### Patch Changes
+
+- ca3086a7ad: Fixed a bug where the `catalog:register` action would not return any entity when running towards recent versions of the catalog.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.15.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
+## 0.15.5
+
+### Patch Changes
+
+- 618143c3c7: Action needed: If you are using the templates located at https://github.com/backstage/backstage/tree/master/ in your Backstage app directly using the URL via the `app-config.yaml`, you should copy over the templates inside your org and import from there. The templates have now been moved to https://github.com/backstage/software-templates. See https://github.com/backstage/backstage/issues/6415 for explanation.
+- cfade02127: Change hardcoded branch `master` to \$defaultBranch in GitLab provider
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.9.3
+  - @backstage/integration@0.6.4
+
+## 0.15.4
+
+### Patch Changes
+
+- 04aad2dab: Fix issue #7021 scaffolder action fetch:template preserves templates file permissions
+- 21ccd4997: GitHub Webhook action in Scaffolder Backend has been improved to validate event names against Octokit Webhook event names list.
+- Updated dependencies
+  - @backstage/catalog-client@0.3.19
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/backend-common@0.9.2
+
+## 0.15.3
+
+### Patch Changes
+
+- 3f9dd1759: GitHub create repository webhook action: `github:webhook` for Backstage plugin Scaffolder has been added.
+- 774b08a5c: GitHubWebhook Action can be created with a default webhook secret. This allows getting secret from environment variable as an alternative to get it from context.
+- 536f4d844: Updated dependencies
+- 0b92a1e74: refactor: extract common Octokit related code and use it in actions: `publish:github`, `github:actions:dispatch`, `github:webhook`.
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
+## 0.15.2
+
+### Patch Changes
+
+- b438caf63: Add partial templating to `fetch:template` action.
+
+  If an `templateFileExtension` input is given, only files with that extension get their content processed. If `templateFileExtension` is `true`, the `.njk` extension is used. The `templateFileExtension` input is incompatible with both `cookiecutterCompat` and `copyWithoutRender`.
+
+  All other files get copied.
+
+  All output paths are subject to applying templating logic.
+
+- 1ce9b9571: Use more efficient approach to staging files in git during scaffolder actions
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.2
+
+## 0.15.1
+
+### Patch Changes
+
+- d622cfad1: GitHub branch protection option 'Require review from Code Owners' can be enabled by adding `requireCodeOwnersReview: true` in context input.
+
+## 0.15.0
+
+### Minor Changes
+
+- e30646aeb: Add Bitbucket workspace and project fields to RepoUrlPicker to support Bitbucket cloud and server
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.1
+
+## 0.14.2
+
+### Patch Changes
+
+- 6cf48c609: Add the `scaffolder.defaultCommitMessage`, which defaults to `Initial commit`, so it can be customized.
+- 48ea3d25b: The recommended value for a `backstage.io/techdocs-ref` annotation is now
+  `dir:.`, indicating "documentation source files are located in the same
+  directory relative to the catalog entity." Note that `url:<location>` values
+  are still supported.
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+
+## 0.14.1
+
+### Patch Changes
+
+- c73f53bc2: Add new built-in action ci:github-actions-dispatch
+- 7cea90592: - Move out the `cookiecutter` templating to its own module that is depended on by the `scaffolder-backend` plugin. No breaking change yet, but we will drop first class support for `cookiecutter` in the future and it will become an opt-in feature.
+- eb740ee24: Moved sample software templates to the [backstage/software-templates](https://github.com/backstage/software-templates) repository. If you previously referenced the sample templates straight from `scaffolder-backend` plugin in the main [backstage/backstage](https://github.com/backstage/backstage) repository in your `app-config.yaml`, these references will need to be updated.
+
+  See https://github.com/backstage/software-templates
+
+- Updated dependencies
+  - @backstage/catalog-client@0.3.17
+  - @backstage/backend-common@0.8.7
+
+## 0.14.0
+
+### Minor Changes
+
+- 96fc27698: Updated inputs for the `publish:github:pull-request` action.
+
+  Now requires a `repoUrl` instead of separate `owner` and `repo` inputs. This aligns with the output of the `RepoUrlPicker` ui field used by the pull-request sample template.
+
+### Patch Changes
+
+- e75506fe7: Unsubscribe from broker after response is flushed
+- ea1d956ef: Updating fs-extra to 10.0.0 to handle broken symbolic links correctly
+- 31de5f27f: Add new `fetch:template` action which handles the same responsibilities as `fetch:cookiecutter` without the external dependency on `cookiecutter`. For information on migrating from `fetch:cookiecutter` to `fetch:template`, see the [migration guide](https://backstage.io/docs/features/software-templates/builtin-actions#migrating-from-fetch-cookiecutter-to-fetch-template) in the docs.
+- 84d329e2a: Scaffolder: Added an 'eq' handlebars helper for use in software template YAML files. This can be used to execute a step depending on the value of an input, e.g.:
+
+  ```yaml
+  steps:
+    id: 'conditional-step'
+    action: 'custom-action'
+    if: '{{ eq parameters.myvalue "custom" }}',
+  ```
+
+- ae84b20cf: Revert the upgrade to `fs-extra@10.0.0` as that seemed to have broken all installs inexplicably.
+- Updated dependencies
+  - @backstage/backend-common@0.8.6
+
+## 0.13.0
+
+### Minor Changes
+
+- 60e830222: Support for `Template` kinds with version `backstage.io/v1alpha1` has now been removed. This means that the old method of running templates with `Preparers`, `Templaters` and `Publishers` has also been removed. If you had any logic in these abstractions, they should now be moved to `actions` instead, and you can find out more about those in the [documentation](https://backstage.io/docs/features/software-templates/writing-custom-actions)
+
+  If you need any help migrating existing templates, there's a [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2). Reach out to us on Discord in the #support channel if you're having problems.
+
+  The `scaffolder-backend` now no longer requires these `Preparers`, `Templaters`, and `Publishers` to be passed in, now all it needs is the `containerRunner`.
+
+  Please update your `packages/backend/src/plugins/scaffolder.ts` like the following
+
+  ```diff
+  - import {
+  -  DockerContainerRunner,
+  -  SingleHostDiscovery,
+  - } from '@backstage/backend-common';
+  + import { DockerContainerRunner } from '@backstage/backend-common';
+    import { CatalogClient } from '@backstage/catalog-client';
+  - import {
+  -   CookieCutter,
+  -   CreateReactAppTemplater,
+  -   createRouter,
+  -   Preparers,
+  -   Publishers,
+  -   Templaters,
+  - } from '@backstage/plugin-scaffolder-backend';
+  + import { createRouter } from '@backstage/plugin-scaffolder-backend';
+    import Docker from 'dockerode';
+    import { Router } from 'express';
+    import type { PluginEnvironment } from '../types';
+
+    export default async function createPlugin({
+      config,
+      database,
+      reader,
+  +   discovery,
+    }: PluginEnvironment): Promise<Router> {
+      const dockerClient = new Docker();
+      const containerRunner = new DockerContainerRunner({ dockerClient });
+
+  -   const cookiecutterTemplater = new CookieCutter({ containerRunner });
+  -   const craTemplater = new CreateReactAppTemplater({ containerRunner });
+  -   const templaters = new Templaters();
+
+  -   templaters.register('cookiecutter', cookiecutterTemplater);
+  -   templaters.register('cra', craTemplater);
+  -
+  -   const preparers = await Preparers.fromConfig(config, { logger });
+  -   const publishers = await Publishers.fromConfig(config, { logger });
+
+  -   const discovery = SingleHostDiscovery.fromConfig(config);
+      const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+      return await createRouter({
+  -     preparers,
+  -     templaters,
+  -     publishers,
+  +     containerRunner,
+        logger,
+        config,
+        database,
+
+  ```
+
+- 7cad18e2f: Adding `config: Config` as a required argument to `createBuiltinActions` and downstream methods in order to support configuration of the default git author used for Scaffolder commits.
+
+  The affected methods are:
+
+  - `createBuiltinActions`
+  - `createPublishGithubAction`
+  - `createPublishGitlabAction`
+  - `createPublishBitbucketAction`
+  - `createPublishAzureAction`
+
+  Call sites to these methods will need to be migrated to include the new `config` argument. See `createRouter` in `plugins/scaffolder-backend/src/service/router.ts` for an example of adding this new argument.
+
+  To configure the default git author, use the `defaultAuthor` key under `scaffolder` in `app-config.yaml`:
+
+  ```yaml
+  scaffolder:
+    defaultAuthor:
+      name: Example
+      email: example@example.com
+  ```
+
+### Patch Changes
+
+- dad481793: add default branch property for publish GitLab, Bitbucket and Azure actions
+- 62c2f10f7: Added filesystem remove/rename built-in actions
+- 6841e0113: fix minor version of git-url-parse as 11.5.x introduced a bug for Bitbucket Server
+- 11e66e804: bump azure-devops-node to 10.2.2
+- 7a3ad92b5: Export the `fetchContents` from scaffolder-backend
+- c2db794f5: add defaultBranch property for publish GitHub action
+- 253136fba: removing mandatory of protection for the default branch, that could be handled by the GitHub automation in async manner, thus throwing floating errors
+- Updated dependencies
+  - @backstage/integration@0.5.8
+  - @backstage/catalog-model@0.9.0
+  - @backstage/backend-common@0.8.5
+  - @backstage/catalog-client@0.3.16
+
 ## 0.12.4
 
 ### Patch Changes

@@ -64,6 +64,24 @@ export interface Config {
       connection: string | object;
       /** Database name prefix override */
       prefix?: string;
+      /**
+       * Whether to ensure the given database exists by creating it if it does not.
+       * Defaults to true if unspecified.
+       */
+      ensureExists?: boolean;
+      /**
+       * How plugins databases are managed/divided in the provided database instance.
+       *
+       * `database` -> Plugins are each given their own database to manage their schemas/tables.
+       *
+       * `schema` -> Plugins will be given their own schema (in the specified/default database)
+       *             to manage their tables.
+       *
+       * NOTE: Currently only supported by the `pg` client.
+       *
+       * @default database
+       */
+      pluginDivisionMode?: 'database' | 'schema';
       /** Plugin specific database configuration and client override */
       plugin?: {
         [pluginId: string]: {
@@ -74,6 +92,11 @@ export interface Config {
            * @secret
            */
           connection?: string | object;
+          /**
+           * Whether to ensure the given database exists by creating it if it does not.
+           * Defaults to base config if unspecified.
+           */
+          ensureExists?: boolean;
         };
       };
     };
@@ -120,6 +143,14 @@ export interface Config {
          * The host may also contain a port, for example `example.com:8080`.
          */
         host: string;
+
+        /**
+         * An optional list of paths. In case they are present only targets matching
+         * any of them will are allowed. You can use trailing slashes to make sure only
+         * subdirectories are allowed, for example `/mydir/` will allow targets with
+         * paths like `/mydir/a` but will block paths like `/mydir2`.
+         */
+        paths?: string[];
       }>;
     };
 

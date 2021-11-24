@@ -69,6 +69,10 @@ export async function buildBundle(options: BuildOptions) {
     throw new Error(`Failed to compile.\n${error.message || error}`);
   });
 
+  if (!stats) {
+    throw new Error('No stats returned');
+  }
+
   if (statsJsonEnabled) {
     // No @types/bfj
     await require('bfj').write(
@@ -87,28 +91,48 @@ export async function buildBundle(options: BuildOptions) {
 }
 
 async function build(compiler: webpack.Compiler, isCi: boolean) {
-  const stats = await new Promise<webpack.Stats>((resolve, reject) => {
-    compiler.run((err, buildStats) => {
-      if (err) {
-        if (err.message) {
-          const { errors } = formatWebpackMessages({
-            errors: [err.message],
-            warnings: new Array<string>(),
-          } as webpack.Stats.ToJsonOutput);
+  const stats = await new Promise<webpack.Stats | undefined>(
+    (resolve, reject) => {
+      compiler.run((err, buildStats) => {
+        if (err) {
+          if (err.message) {
+            const { errors } = formatWebpackMessages({
+              errors: [err.message],
+              warnings: new Array<string>(),
+              _showErrors: true,
+              _showWarnings: true,
+            });
 
-          throw new Error(errors[0]);
+            throw new Error(errors[0]);
+          } else {
+            reject(err);
+          }
         } else {
-          reject(err);
+          resolve(buildStats);
         }
-      } else {
-        resolve(buildStats);
-      }
-    });
-  });
-
-  const { errors, warnings } = formatWebpackMessages(
-    stats.toJson({ all: false, warnings: true, errors: true }),
+      });
+    },
   );
+
+  if (!stats) {
+    throw new Error('No stats provided');
+  }
+
+  const serializedStats = stats.toJson({
+    all: false,
+    warnings: true,
+    errors: true,
+  });
+  // NOTE(freben): The code below that extracts the message part of the errors,
+  // is due to react-dev-utils not yet being compatible with webpack 5. This
+  // may be possible to remove (just passing the serialized stats object
+  // directly into the format function) after a new release of react-dev-utils
+  // has been made available.
+  // See https://github.com/facebook/create-react-app/issues/9880
+  const { errors, warnings } = formatWebpackMessages({
+    errors: serializedStats.errors?.map(e => (e.message ? e.message : e)),
+    warnings: serializedStats.warnings?.map(e => (e.message ? e.message : e)),
+  });
 
   if (errors.length) {
     // Only keep the first error. Others are often indicative

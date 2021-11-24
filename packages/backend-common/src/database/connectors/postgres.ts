@@ -17,9 +17,11 @@
 import knexFactory, { Knex } from 'knex';
 
 import { Config } from '@backstage/config';
+import { ForwardedError } from '@backstage/errors';
 import { mergeDatabaseConfig } from '../config';
 import { DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
+import defaultSchemaOverride from './defaultSchemaOverride';
 
 /**
  * Creates a knex postgres database connection
@@ -94,8 +96,7 @@ function requirePgConnectionString() {
   try {
     return require('pg-connection-string').parse;
   } catch (e) {
-    const message = `Postgres: Install 'pg-connection-string'`;
-    throw new Error(`${message}\n${e.message}`);
+    throw new ForwardedError("Postgres: Install 'pg-connection-string'", e);
   }
 }
 
@@ -136,6 +137,29 @@ export async function ensurePgDatabaseExists(
 }
 
 /**
+ * Creates the missing Postgres schema if it does not exist
+ *
+ * @param dbConfig The database config
+ * @param schemas The name of the schemas to create
+ */
+export async function ensurePgSchemaExists(
+  dbConfig: Config,
+  ...schemas: Array<string>
+): Promise<void> {
+  const admin = createPgDatabaseClient(dbConfig);
+
+  try {
+    const ensureSchema = async (database: string) => {
+      await admin.raw(`CREATE SCHEMA IF NOT EXISTS ??`, [database]);
+    };
+
+    await Promise.all(schemas.map(ensureSchema));
+  } finally {
+    await admin.destroy();
+  }
+}
+
+/**
  * PostgreSQL database connector.
  *
  * Exposes database connector functionality via an immutable object.
@@ -143,6 +167,8 @@ export async function ensurePgDatabaseExists(
 export const pgConnector: DatabaseConnector = Object.freeze({
   createClient: createPgDatabaseClient,
   ensureDatabaseExists: ensurePgDatabaseExists,
+  ensureSchemaExists: ensurePgSchemaExists,
   createNameOverride: defaultNameOverride,
+  createSchemaOverride: defaultSchemaOverride,
   parseConnectionString: parsePgConnectionString,
 });

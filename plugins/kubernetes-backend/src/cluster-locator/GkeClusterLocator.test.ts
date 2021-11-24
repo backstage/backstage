@@ -213,7 +213,7 @@ describe('GkeClusterLocator', () => {
       } as any);
 
       await expect(sut.getClusters()).rejects.toThrow(
-        'There was an error retrieving clusters from GKE for projectId=some-project region=some-region : [some error]',
+        'There was an error retrieving clusters from GKE for projectId=some-project region=some-region; caused by Error: some error',
       );
 
       expect(mockedListClusters).toBeCalledTimes(1);

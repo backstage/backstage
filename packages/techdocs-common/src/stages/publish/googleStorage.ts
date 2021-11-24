@@ -15,17 +15,24 @@
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import {
-  FileExistsResponse,
-  Storage,
-  UploadResponse,
-} from '@google-cloud/storage';
+import { assertError } from '@backstage/errors';
+import { File, FileExistsResponse, Storage } from '@google-cloud/storage';
 import express from 'express';
 import JSON5 from 'json5';
-import createLimiter from 'p-limit';
 import path from 'path';
+import { Readable } from 'stream';
 import { Logger } from 'winston';
-import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import {
+  getFileTreeRecursively,
+  getHeadersForFileExtension,
+  lowerCaseEntityTriplet,
+  lowerCaseEntityTripletInStoragePath,
+  bulkStorageOperation,
+  getCloudPathForLocalPath,
+  getStaleFiles,
+  normalizeExternalStorageRootPath,
+} from './helpers';
+import { MigrateWriteStream } from './migrations';
 import {
   PublisherBase,
   PublishRequest,
@@ -34,6 +41,26 @@ import {
 } from './types';
 
 export class GoogleGCSPublish implements PublisherBase {
+  private readonly storageClient: Storage;
+  private readonly bucketName: string;
+  private readonly legacyPathCasing: boolean;
+  private readonly logger: Logger;
+  private readonly bucketRootPath: string;
+
+  constructor(options: {
+    storageClient: Storage;
+    bucketName: string;
+    legacyPathCasing: boolean;
+    logger: Logger;
+    bucketRootPath: string;
+  }) {
+    this.storageClient = options.storageClient;
+    this.bucketName = options.bucketName;
+    this.legacyPathCasing = options.legacyPathCasing;
+    this.logger = options.logger;
+    this.bucketRootPath = options.bucketRootPath;
+  }
+
   static fromConfig(config: Config, logger: Logger): PublisherBase {
     let bucketName = '';
     try {
@@ -44,6 +71,11 @@ export class GoogleGCSPublish implements PublisherBase {
           'techdocs.publisher.googleGcs.bucketName is required.',
       );
     }
+
+    const bucketRootPath = normalizeExternalStorageRootPath(
+      config.getOptionalString('techdocs.publisher.googleGcs.bucketRootPath') ||
+        '',
+    );
 
     // Credentials is an optional config. If missing, default GCS environment variables will be used.
     // Read more here https://cloud.google.com/docs/authentication/production
@@ -67,17 +99,18 @@ export class GoogleGCSPublish implements PublisherBase {
       }),
     });
 
-    return new GoogleGCSPublish(storageClient, bucketName, logger);
-  }
+    const legacyPathCasing =
+      config.getOptionalBoolean(
+        'techdocs.legacyUseCaseSensitiveTripletPaths',
+      ) || false;
 
-  constructor(
-    private readonly storageClient: Storage,
-    private readonly bucketName: string,
-    private readonly logger: Logger,
-  ) {
-    this.storageClient = storageClient;
-    this.bucketName = bucketName;
-    this.logger = logger;
+    return new GoogleGCSPublish({
+      storageClient,
+      bucketName,
+      legacyPathCasing,
+      logger,
+      bucketRootPath,
+    });
   }
 
   /**
@@ -95,6 +128,7 @@ export class GoogleGCSPublish implements PublisherBase {
         isAvailable: true,
       };
     } catch (err) {
+      assertError(err);
       this.logger.error(
         `Could not retrieve metadata about the GCS bucket ${this.bucketName}. ` +
           'Make sure the bucket exists. Also make sure that authentication is setup either by explicitly defining ' +
@@ -112,54 +146,98 @@ export class GoogleGCSPublish implements PublisherBase {
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
   async publish({ entity, directory }: PublishRequest): Promise<void> {
+    const useLegacyPathCasing = this.legacyPathCasing;
+    const bucket = this.storageClient.bucket(this.bucketName);
+    const bucketRootPath = this.bucketRootPath;
+
+    // First, try to retrieve a list of all individual files currently existing
+    let existingFiles: string[] = [];
     try {
-      // Note: GCS manages creation of parent directories if they do not exist.
-      // So collecting path of only the files is good enough.
-      const allFilesToUpload = await getFileTreeRecursively(directory);
+      const remoteFolder = getCloudPathForLocalPath(
+        entity,
+        undefined,
+        useLegacyPathCasing,
+        bucketRootPath,
+      );
+      existingFiles = await this.getFilesForFolder(remoteFolder);
+    } catch (e) {
+      assertError(e);
+      this.logger.error(
+        `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
+      );
+    }
 
-      const limiter = createLimiter(10);
-      const uploadPromises: Array<Promise<UploadResponse>> = [];
-      allFilesToUpload.forEach(sourceFilePath => {
-        // Remove the absolute path prefix of the source directory
-        // Path of all files to upload, relative to the root of the source directory
-        // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
-        const relativeFilePath = path.relative(directory, sourceFilePath);
+    // Then, merge new files into the same folder
+    let absoluteFilesToUpload;
+    try {
+      // Remove the absolute path prefix of the source directory
+      // Path of all files to upload, relative to the root of the source directory
+      // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
+      absoluteFilesToUpload = await getFileTreeRecursively(directory);
 
-        // Convert destination file path to a POSIX path for uploading.
-        // GCS expects / as path separator and relativeFilePath will contain \\ on Windows.
-        // https://cloud.google.com/storage/docs/gsutil/addlhelp/HowSubdirectoriesWork
-        const relativeFilePathPosix = relativeFilePath
-          .split(path.sep)
-          .join(path.posix.sep);
-
-        // The / delimiter is intentional since it represents the cloud storage and not the local file system.
-        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // GCS Bucket file relative path
-
-        // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
-        const uploadFile = limiter(() =>
-          this.storageClient.bucket(this.bucketName).upload(sourceFilePath, {
-            destination,
-          }),
-        );
-        uploadPromises.push(uploadFile);
-      });
-
-      await Promise.all(uploadPromises);
+      await bulkStorageOperation(
+        async absoluteFilePath => {
+          const relativeFilePath = path.relative(directory, absoluteFilePath);
+          return await bucket.upload(absoluteFilePath, {
+            destination: getCloudPathForLocalPath(
+              entity,
+              relativeFilePath,
+              useLegacyPathCasing,
+              bucketRootPath,
+            ),
+          });
+        },
+        absoluteFilesToUpload,
+        { concurrencyLimit: 10 },
+      );
 
       this.logger.info(
-        `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
+        `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${absoluteFilesToUpload.length}`,
       );
     } catch (e) {
       const errorMessage = `Unable to upload file(s) to Google Cloud Storage. ${e}`;
       this.logger.error(errorMessage);
       throw new Error(errorMessage);
     }
+
+    // Last, try to remove the files that were *only* present previously
+    try {
+      const relativeFilesToUpload = absoluteFilesToUpload.map(
+        absoluteFilePath =>
+          getCloudPathForLocalPath(
+            entity,
+            path.relative(directory, absoluteFilePath),
+            useLegacyPathCasing,
+            bucketRootPath,
+          ),
+      );
+      const staleFiles = getStaleFiles(relativeFilesToUpload, existingFiles);
+
+      await bulkStorageOperation(
+        async relativeFilePath => {
+          return await bucket.file(relativeFilePath).delete();
+        },
+        staleFiles,
+        { concurrencyLimit: 10 },
+      );
+
+      this.logger.info(
+        `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: ${staleFiles.length}`,
+      );
+    } catch (error) {
+      const errorMessage = `Unable to delete file(s) from Google Cloud Storage. ${error}`;
+      this.logger.error(errorMessage);
+    }
   }
 
   fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata> {
     return new Promise((resolve, reject) => {
-      const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+      const entityTriplet = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+      const entityDir = this.legacyPathCasing
+        ? entityTriplet
+        : lowerCaseEntityTriplet(entityTriplet);
+
+      const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
 
       const fileStreamChunks: Array<any> = [];
       this.storageClient
@@ -174,9 +252,8 @@ export class GoogleGCSPublish implements PublisherBase {
           fileStreamChunks.push(chunk);
         })
         .on('end', () => {
-          const techdocsMetadataJson = Buffer.concat(fileStreamChunks).toString(
-            'utf-8',
-          );
+          const techdocsMetadataJson =
+            Buffer.concat(fileStreamChunks).toString('utf-8');
           resolve(JSON5.parse(techdocsMetadataJson));
         });
     });
@@ -188,8 +265,18 @@ export class GoogleGCSPublish implements PublisherBase {
   docsRouter(): express.Handler {
     return (req, res) => {
       // Decode and trim the leading forward slash
-      // filePath example - /default/Component/documented-component/index.html
-      const filePath = decodeURI(req.path.replace(/^\//, ''));
+      const decodedUri = decodeURI(req.path.replace(/^\//, ''));
+
+      // Root path is removed from the Uri so that legacy casing can be applied
+      // to the entity triplet without manipulating the root path
+      const decodedUriNoRoot = path.relative(this.bucketRootPath, decodedUri);
+
+      const filePathNoRoot = this.legacyPathCasing
+        ? decodedUriNoRoot
+        : lowerCaseEntityTripletInStoragePath(decodedUriNoRoot);
+
+      // Re-prepend the root path to the relative file path
+      const filePath = path.posix.join(this.bucketRootPath, filePathNoRoot);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
@@ -204,10 +291,12 @@ export class GoogleGCSPublish implements PublisherBase {
           res.writeHead(200, responseHeaders);
         })
         .on('error', err => {
-          this.logger.warn(err.message);
+          this.logger.warn(
+            `TechDocs Google GCS router failed to serve content from bucket ${this.bucketName} at path ${filePath}: ${err.message}`,
+          );
           // Send a 404 with a meaningful message if possible.
           if (!res.headersSent) {
-            res.status(404).send(err.message);
+            res.status(404).send('File Not Found');
           } else {
             res.destroy();
           }
@@ -222,7 +311,13 @@ export class GoogleGCSPublish implements PublisherBase {
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     return new Promise(resolve => {
-      const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+      const entityTriplet = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+      const entityDir = this.legacyPathCasing
+        ? entityTriplet
+        : lowerCaseEntityTriplet(entityTriplet);
+
+      const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
+
       this.storageClient
         .bucket(this.bucketName)
         .file(`${entityRootDir}/index.html`)
@@ -233,6 +328,50 @@ export class GoogleGCSPublish implements PublisherBase {
         .catch(() => {
           resolve(false);
         });
+    });
+  }
+
+  migrateDocsCase({ removeOriginal = false, concurrency = 25 }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // Iterate through every file in the root of the publisher.
+      const allFileMetadata: Readable = this.storageClient
+        .bucket(this.bucketName)
+        .getFilesStream();
+      const migrateFiles = new MigrateWriteStream(
+        this.logger,
+        removeOriginal,
+        concurrency,
+      );
+      migrateFiles.on('finish', resolve).on('error', reject);
+      allFileMetadata.pipe(migrateFiles).on('error', error => {
+        migrateFiles.destroy();
+        reject(error);
+      });
+    });
+  }
+
+  private getFilesForFolder(folder: string): Promise<string[]> {
+    const fileMetadataStream: Readable = this.storageClient
+      .bucket(this.bucketName)
+      .getFilesStream({ prefix: folder });
+
+    return new Promise((resolve, reject) => {
+      const files: string[] = [];
+
+      fileMetadataStream.on('error', error => {
+        // push file to file array
+        reject(error);
+      });
+
+      fileMetadataStream.on('data', (file: File) => {
+        // push file to file array
+        files.push(file.name);
+      });
+
+      fileMetadataStream.on('end', () => {
+        // resolve promise
+        resolve(files);
+      });
     });
   }
 }

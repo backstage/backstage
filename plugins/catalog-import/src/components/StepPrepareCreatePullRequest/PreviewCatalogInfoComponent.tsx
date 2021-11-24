@@ -19,6 +19,7 @@ import { Card, CardContent, CardHeader } from '@material-ui/core';
 import React from 'react';
 import YAML from 'yaml';
 import { CodeSnippet } from '@backstage/core-components';
+import { trimEnd } from 'lodash';
 
 type Props = {
   repositoryUrl: string;
@@ -35,10 +36,7 @@ export const PreviewCatalogInfoComponent = ({
     <Card variant="outlined" className={classes?.card}>
       <CardHeader
         title={
-          <code>{`${repositoryUrl.replace(
-            /[\/]*$/,
-            '',
-          )}/catalog-info.yaml`}</code>
+          <code>{`${trimEnd(repositoryUrl, '/')}/catalog-info.yaml`}</code>
         }
       />
 

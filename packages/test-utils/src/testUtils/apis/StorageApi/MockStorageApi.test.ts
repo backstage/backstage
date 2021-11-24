@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MockStorageApi } from './MockStorageApi';
 import { StorageApi } from '@backstage/core-plugin-api';
+import { MockStorageApi } from './MockStorageApi';
 
 describe('WebStorage Storage API', () => {
   const createMockStorage = (): StorageApi => {
@@ -124,7 +124,7 @@ describe('WebStorage Storage API', () => {
     expect(secondStorage.get(keyName)).toBe('deerp');
   });
 
-  it('should not clash with other namesapces when creating buckets', async () => {
+  it('should not clash with other namespaces when creating buckets', async () => {
     const rootStorage = createMockStorage();
 
     // when getting key test2 it will translate to /profile/something/deep/test2
@@ -138,5 +138,18 @@ describe('WebStorage Storage API', () => {
     await firstStorage.set('test2', { error: true });
 
     expect(secondStorage.get('deep/test2')).toBe(undefined);
+  });
+
+  it('should not reuse storage instances between different rootStorages', async () => {
+    const rootStorage1 = createMockStorage();
+    const rootStorage2 = createMockStorage();
+
+    const firstStorage = rootStorage1.forBucket('something');
+    const secondStorage = rootStorage2.forBucket('something');
+
+    await firstStorage.set('test2', true);
+
+    expect(firstStorage.get('test2')).toBe(true);
+    expect(secondStorage.get('test2')).toBe(undefined);
   });
 });

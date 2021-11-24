@@ -59,9 +59,8 @@ export const BillingDateProvider = ({ children }: PropsWithChildren<{}>) => {
   const [error, setError] = useState<Maybe<Error>>(null);
   const { dispatchLoadingBillingDate } = useLoading(mapLoadingToProps);
 
-  const [lastCompleteBillingDate, setLastCompeteBillingDate] = useState<
-    Maybe<string>
-  >(null);
+  const [lastCompleteBillingDate, setLastCompeteBillingDate] =
+    useState<Maybe<string>>(null);
 
   useEffect(() => {
     dispatchLoadingBillingDate(true);

@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import { AuthProviders } from './AuthProviders';
-import { FeatureFlags } from './FeatureFlags';
-import { General } from './General';
+import { UserSettingsAuthProviders } from './AuthProviders';
+import { UserSettingsFeatureFlags } from './FeatureFlags';
+import { UserSettingsGeneral } from './General';
 import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
 type Props = {
@@ -31,16 +31,16 @@ export const SettingsPage = ({ providerSettings }: Props) => {
 
       <TabbedLayout>
         <TabbedLayout.Route path="general" title="General">
-          <General />
+          <UserSettingsGeneral />
         </TabbedLayout.Route>
         <TabbedLayout.Route
           path="auth-providers"
           title="Authentication Providers"
         >
-          <AuthProviders providerSettings={providerSettings} />
+          <UserSettingsAuthProviders providerSettings={providerSettings} />
         </TabbedLayout.Route>
         <TabbedLayout.Route path="feature-flags" title="Feature Flags">
-          <FeatureFlags />
+          <UserSettingsFeatureFlags />
         </TabbedLayout.Route>
       </TabbedLayout>
     </Page>

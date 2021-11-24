@@ -26,8 +26,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '',
-  title: 'Rollbar',
+  id: 'rollbar',
 });
 
 export const rollbarPlugin = createPlugin({
@@ -47,6 +46,7 @@ export const rollbarPlugin = createPlugin({
 
 export const EntityRollbarContent = rollbarPlugin.provide(
   createRoutableExtension({
+    name: 'EntityRollbarContent',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),

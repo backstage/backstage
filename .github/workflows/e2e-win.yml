@@ -7,7 +7,7 @@ on:
     paths:
       - '.github/workflows/e2e-win.yml'
       - 'packages/cli/**'
-      - 'packages/e2e/**'
+      - 'packages/e2e-test/**'
       - 'packages/create-app/**'
 
 jobs:
@@ -17,14 +17,21 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        node-version: [12.x, 14.x]
+        node-version: [14.x, 16.x]
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=8192
 
     name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
+      # In order to have the create-app template function as if it was downloaded from NPM
+      # we need to make sure we checkout files with LF line endings only
+      - name: Set git to use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
       - uses: actions/checkout@v2
 
       - name: use node.js ${{ matrix.node-version }}
@@ -33,6 +40,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
+      - name: setup chrome
+        uses: browser-actions/setup-chrome@latest
       - name: yarn install
         run: yarn install --frozen-lockfile
 
@@ -41,3 +50,5 @@ jobs:
         run: yarn build --ignore example-app --ignore example-backend --ignore @techdocs/cli
       - name: run E2E test
         run: yarn e2e-test run
+        env:
+          DEBUG: zombie

@@ -15,12 +15,15 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import {
+  CatalogApi,
+  catalogApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { FossaApi, fossaApiRef } from '../../api';
 import { FossaPage } from './FossaPage';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<FossaPage />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
@@ -32,6 +35,8 @@ describe('<FossaPage />', () => {
     getOriginLocationByEntity: jest.fn(),
     removeEntityByUid: jest.fn(),
     removeLocationById: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
   };
   const fossaApi: jest.Mocked<FossaApi> = {
     getFindingSummary: jest.fn(),
@@ -40,13 +45,15 @@ describe('<FossaPage />', () => {
   let Wrapper: React.ComponentType;
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(fossaApiRef, fossaApi).with(
-      catalogApiRef,
-      catalogApi,
-    );
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider
+        apis={[
+          [fossaApiRef, fossaApi],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
+        {children}
+      </TestApiProvider>
     );
   });
 
@@ -124,11 +131,50 @@ describe('<FossaPage />', () => {
       <Wrapper>
         <FossaPage />
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     expect(getAllByText(/Not configured/i)).toHaveLength(2);
     expect(getByText(/No dependencies/i)).toBeInTheDocument();
     expect(getByText(/0 Issues/i)).toBeInTheDocument();
     expect(getByText(/10 Issues/i)).toBeInTheDocument();
+  });
+
+  it('has configurable entity filter', async () => {
+    const entity: Entity = {
+      apiVersion: 'v1',
+      kind: 'API',
+      metadata: {
+        name: 'my-name-0',
+        annotations: {
+          'fossa.io/project-name': 'my-name-0',
+        },
+      },
+    };
+
+    fossaApi.getFindingSummaries.mockResolvedValue(new Map());
+    catalogApi.getEntities.mockResolvedValue({ items: [entity] });
+
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <FossaPage entitiesFilter={{ kind: 'API' }} />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
+
+    expect(catalogApi.getEntities).toBeCalledWith(
+      expect.objectContaining({
+        filter: { kind: 'API' },
+      }),
+    );
+    expect(getByText(/my-name-0/i)).toBeInTheDocument();
   });
 });

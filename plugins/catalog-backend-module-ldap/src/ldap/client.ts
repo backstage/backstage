@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ForwardedError } from '@backstage/errors';
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
 import { Logger } from 'winston';
 import { BindConfig } from './config';
@@ -23,6 +24,10 @@ import {
   DefaultLdapVendor,
   LdapVendor,
 } from './vendors';
+
+export interface SearchCallback {
+  (entry: SearchEntry): void;
+}
 
 /**
  * Basic wrapper for the ldapjs library.
@@ -47,7 +52,7 @@ export class LdapClient {
     });
 
     if (!bind) {
-      return new LdapClient(client);
+      return new LdapClient(client, logger);
     }
 
     return new Promise<LdapClient>((resolve, reject) => {
@@ -56,13 +61,16 @@ export class LdapClient {
         if (err) {
           reject(`LDAP bind failed for ${dn}, ${errorString(err)}`);
         } else {
-          resolve(new LdapClient(client));
+          resolve(new LdapClient(client, logger));
         }
       });
     });
   }
 
-  constructor(private readonly client: Client) {}
+  constructor(
+    private readonly client: Client,
+    private readonly logger: Logger,
+  ) {}
 
   /**
    * Performs an LDAP search operation.
@@ -72,9 +80,13 @@ export class LdapClient {
    */
   async search(dn: string, options: SearchOptions): Promise<SearchEntry[]> {
     try {
-      return await new Promise<SearchEntry[]>((resolve, reject) => {
-        const output: SearchEntry[] = [];
+      const output: SearchEntry[] = [];
 
+      const logInterval = setInterval(() => {
+        this.logger.debug(`Read ${output.length} LDAP entries so far...`);
+      }, 5000);
+
+      const search = new Promise<SearchEntry[]>((resolve, reject) => {
         this.client.search(dn, options, (err, res) => {
           if (err) {
             reject(new Error(errorString(err)));
@@ -104,8 +116,59 @@ export class LdapClient {
           });
         });
       });
+
+      return await search.finally(() => {
+        clearInterval(logInterval);
+      });
     } catch (e) {
-      throw new Error(`LDAP search at DN "${dn}" failed, ${e.message}`);
+      throw new ForwardedError(`LDAP search at DN "${dn}" failed`, e);
+    }
+  }
+
+  /**
+   * Performs an LDAP search operation, calls a function on each entry to limit memory usage
+   *
+   * @param dn The fully qualified base DN to search within
+   * @param options The search options
+   * @param f The callback to call on each search entry
+   */
+  async searchStreaming(
+    dn: string,
+    options: SearchOptions,
+    f: SearchCallback,
+  ): Promise<void> {
+    try {
+      return await new Promise<void>((resolve, reject) => {
+        this.client.search(dn, options, (err, res) => {
+          if (err) {
+            reject(new Error(errorString(err)));
+          }
+
+          res.on('searchReference', () => {
+            reject(new Error('Unable to handle referral'));
+          });
+
+          res.on('searchEntry', entry => {
+            f(entry);
+          });
+
+          res.on('error', e => {
+            reject(new Error(errorString(e)));
+          });
+
+          res.on('end', r => {
+            if (!r) {
+              throw new Error('Null response');
+            } else if (r.status !== 0) {
+              throw new Error(`Got status ${r.status}: ${r.errorMessage}`);
+            } else {
+              resolve();
+            }
+          });
+        });
+      });
+    } catch (e) {
+      throw new ForwardedError(`LDAP search at DN "${dn}" failed`, e);
     }
   }
 

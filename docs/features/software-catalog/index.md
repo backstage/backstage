@@ -8,12 +8,11 @@ description: The Backstage Software Catalog
 
 ## What is a Software Catalog?
 
-The Backstage Software Catalog — actually, a software catalog, since it includes
-more than just services — is a centralized system that keeps track of ownership
-and metadata for all the software in your ecosystem (services, websites,
-libraries, data pipelines, etc). The catalog is built around the concept of
-[metadata YAML files](descriptor-format.md) stored together with the code, which
-are then harvested and visualized in Backstage.
+The Backstage Software Catalog is a centralized system that keeps track of
+ownership and metadata for all the software in your ecosystem (services,
+websites, libraries, data pipelines, etc). The catalog is built around the
+concept of [metadata YAML files](descriptor-format.md) stored together with the
+code, which are then harvested and visualized in Backstage.
 
 ![software-catalog](https://backstage.io/blog/assets/6/header.png)
 

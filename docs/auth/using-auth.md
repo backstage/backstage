@@ -28,7 +28,8 @@ OAuth helps in that regard.
 The method with which frontend plugins request access to third party services is
 through [Utility APIs](../api/utility-apis.md) for each service provider. For a
 full list of providers, see the
-[Utility API References](../reference/utility-apis/README.md).
+[@backstage/core-plugin-api](../reference/core-plugin-api.md#variables)
+reference.
 
 ### Identity - WIP
 

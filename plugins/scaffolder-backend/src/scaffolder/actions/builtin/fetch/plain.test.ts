@@ -56,8 +56,7 @@ describe('fetch:plain', () => {
       action.handler({
         ...mockContext,
         input: {
-          url:
-            'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets',
+          url: 'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets',
           targetPath: '/foobar',
         },
       }),
@@ -70,8 +69,7 @@ describe('fetch:plain', () => {
     await action.handler({
       ...mockContext,
       input: {
-        url:
-          'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets',
+        url: 'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets',
         targetPath: 'lol',
       },
     });

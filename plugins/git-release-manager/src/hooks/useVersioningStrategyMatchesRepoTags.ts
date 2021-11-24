@@ -28,9 +28,8 @@ export const useVersioningStrategyMatchesRepoTags = ({
   latestReleaseTagName?: string;
   repositoryName?: string;
 }) => {
-  const [versioningStrategyMatches, setVersioningStrategyMatches] = useState(
-    false,
-  );
+  const [versioningStrategyMatches, setVersioningStrategyMatches] =
+    useState(false);
   useEffect(() => {
     setVersioningStrategyMatches(false);
 

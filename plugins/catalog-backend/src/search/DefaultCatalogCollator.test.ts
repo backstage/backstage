@@ -17,6 +17,11 @@
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultCatalogCollator } from './DefaultCatalogCollator';
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
+import { ConfigReader } from '@backstage/config';
+
+const server = setupServer();
 
 const expectedEntities: Entity[] = [
   {
@@ -32,29 +37,53 @@ const expectedEntities: Entity[] = [
       owner: 'someone',
     },
   },
-];
-
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: async () => {
-    return {
-      json: async () => {
-        return expectedEntities;
-      },
-    };
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      title: 'Test Entity',
+      name: 'test-entity-2',
+      description: 'The expected description 2',
+    },
+    spec: {
+      type: 'some-type',
+      lifecycle: 'experimental',
+      owner: 'someone',
+    },
   },
-}));
+];
 
 describe('DefaultCatalogCollator', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
   let collator: DefaultCatalogCollator;
 
-  beforeEach(() => {
+  beforeAll(() => {
     mockDiscoveryApi = {
-      getBaseUrl: jest.fn().mockResolvedValueOnce('http://localhost:7000'),
+      getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
       getExternalBaseUrl: jest.fn(),
     };
     collator = new DefaultCatalogCollator({ discovery: mockDiscoveryApi });
+    server.listen();
+  });
+  beforeEach(() => {
+    server.use(
+      rest.get('http://localhost:7007/entities', (req, res, ctx) => {
+        if (req.url.searchParams.has('filter')) {
+          const filter = req.url.searchParams.get('filter');
+          if (filter === 'kind=Foo,kind=Bar') {
+            // When filtering on the 'Foo,Bar' kinds we simply return no items, to simulate a filter
+            return res(ctx.json([]));
+          }
+          throw new Error('Unexpected filter parameter');
+        }
+        return res(ctx.json(expectedEntities));
+      }),
+    );
+  });
+  afterEach(() => server.resetHandlers());
+  afterAll(() => {
+    server.close();
+    jest.useRealTimers();
   });
 
   it('fetches from the configured catalog service', async () => {
@@ -74,6 +103,15 @@ describe('DefaultCatalogCollator', () => {
       lifecycle: expectedEntities[0]!.spec!.lifecycle,
       owner: expectedEntities[0]!.spec!.owner,
     });
+    expect(documents[1]).toMatchObject({
+      title: expectedEntities[1].metadata.title,
+      location: '/catalog/default/component/test-entity-2',
+      text: expectedEntities[1].metadata.description,
+      namespace: 'default',
+      componentType: expectedEntities[1]!.spec!.type,
+      lifecycle: expectedEntities[1]!.spec!.lifecycle,
+      owner: expectedEntities[1]!.spec!.owner,
+    });
   });
 
   it('maps a returned entity with a custom locationTemplate', async () => {
@@ -87,5 +125,19 @@ describe('DefaultCatalogCollator', () => {
     expect(documents[0]).toMatchObject({
       location: '/software/test-entity',
     });
+  });
+
+  it('allows filtering of the retrieved catalog entities', async () => {
+    // Provide an alternate location template.
+    collator = DefaultCatalogCollator.fromConfig(new ConfigReader({}), {
+      discovery: mockDiscoveryApi,
+      filter: {
+        kind: ['Foo', 'Bar'],
+      },
+    });
+
+    const documents = await collator.execute();
+    // The simulated 'Foo,Bar' filter should return in an empty list
+    expect(documents).toHaveLength(0);
   });
 });

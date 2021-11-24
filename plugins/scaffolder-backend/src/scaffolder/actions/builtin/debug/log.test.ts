@@ -22,9 +22,9 @@ import { createDebugLogAction } from './log';
 import { join } from 'path';
 
 describe('debug:log', () => {
-  const logStream = ({
+  const logStream = {
     write: jest.fn(),
-  } as jest.Mocked<Partial<Writable>>) as jest.Mocked<Writable>;
+  } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>;
 
   const mockTmpDir = os.tmpdir();
   const mockContext = {

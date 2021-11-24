@@ -30,8 +30,8 @@ import { Tooltip } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
 import * as React from 'react';
-import { useMemo } from 'react';
-import { useAsync } from 'react-use';
+import { useMemo, useState } from 'react';
+import { useAsync, useDeepCompareEffect } from 'react-use';
 import { FindingSummary, fossaApiRef } from '../../api';
 import { getProjectName } from '../getProjectName';
 
@@ -166,14 +166,25 @@ const filters: TableFilter[] = [
   { column: 'Branch', type: 'select' },
 ];
 
-export const FossaPage = () => {
+export type FossaPageProps = {
+  entitiesFilter?:
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>
+    | undefined;
+};
+
+export const FossaPage = ({
+  entitiesFilter = { kind: 'Component' },
+}: FossaPageProps) => {
   const catalogApi = useApi(catalogApiRef);
   const fossaApi = useApi(fossaApiRef);
+  const [filter, setFilter] = useState(entitiesFilter);
+  useDeepCompareEffect(() => setFilter(entitiesFilter), [entitiesFilter]);
 
   // Get a list of all relevant entities
   const { value: entities, loading: entitiesLoading } = useAsync(() => {
     return catalogApi.getEntities({
-      filter: { kind: 'Component' },
+      filter,
       fields: [
         'kind',
         'metadata.namespace',
@@ -182,7 +193,7 @@ export const FossaPage = () => {
         'relations',
       ],
     });
-  });
+  }, [filter]);
 
   // get the project names of all entities. the idx of both lists match.
   const projectNames = useMemo(

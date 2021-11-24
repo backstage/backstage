@@ -23,7 +23,11 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-import { msw, wrapInTestApp } from '@backstage/test-utils';
+import {
+  setupRequestMockHandlers,
+  TestApiRegistry,
+  wrapInTestApp,
+} from '@backstage/test-utils';
 import { fireEvent, render } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -35,20 +39,21 @@ import {
 } from '../../api';
 import * as data from '../../__fixtures__/website-list-response.json';
 import AuditList from './index';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 
 const { useNavigate } = jest.requireMock('react-router-dom');
 const websiteListResponse = data as WebsiteListResponse;
 
 describe('AuditList', () => {
-  let apis: ApiRegistry;
+  let apis: TestApiRegistry;
 
   const server = setupServer();
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   beforeEach(() => {
-    apis = ApiRegistry.from([
-      [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
+    apis = TestApiRegistry.from([
+      lighthouseApiRef,
+      new LighthouseRestApi('http://lighthouse'),
     ]);
   });
 

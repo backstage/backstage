@@ -41,10 +41,10 @@ import { ScrollAnchor } from '../../utils/scroll';
 
 type MapLoadingtoAlerts = (isLoading: boolean) => void;
 
-const mapLoadingToAlerts: MapLoadingToProps<MapLoadingtoAlerts> = ({
-  dispatch,
-}) => (isLoading: boolean) =>
-  dispatch({ [DefaultLoadingAction.CostInsightsAlerts]: isLoading });
+const mapLoadingToAlerts: MapLoadingToProps<MapLoadingtoAlerts> =
+  ({ dispatch }) =>
+  (isLoading: boolean) =>
+    dispatch({ [DefaultLoadingAction.CostInsightsAlerts]: isLoading });
 
 type AlertInsightsProps = {
   group: string;

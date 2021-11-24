@@ -22,11 +22,21 @@ import {
   BackstageIdentity,
   AuthProviderConfig,
 } from '../../providers/types';
-import { InputError } from '@backstage/errors';
+import {
+  AuthenticationError,
+  InputError,
+  isError,
+  NotAllowedError,
+} from '@backstage/errors';
 import { TokenIssuer } from '../../identity/types';
-import { verifyNonce } from './helpers';
+import { readState, verifyNonce } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
-import { OAuthHandlers, OAuthStartRequest, OAuthRefreshRequest } from './types';
+import {
+  OAuthHandlers,
+  OAuthStartRequest,
+  OAuthRefreshRequest,
+  OAuthState,
+} from './types';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -40,6 +50,7 @@ export type Options = {
   cookiePath: string;
   appOrigin: string;
   tokenIssuer: TokenIssuer;
+  isOriginAllowed: (origin: string) => boolean;
 };
 
 export class OAuthAdapter implements AuthProviderRouteHandlers {
@@ -61,6 +72,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       cookieDomain: url.hostname,
       cookiePath,
       secure,
+      isOriginAllowed: config.isOriginAllowed,
     });
   }
 
@@ -73,6 +85,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     // retrieve scopes from request
     const scope = req.query.scope?.toString() ?? '';
     const env = req.query.env?.toString();
+    const origin = req.query.origin?.toString();
 
     if (!env) {
       throw new InputError('No env provided in request query parameters');
@@ -86,7 +99,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce);
 
-    const state = { nonce: nonce, env: env };
+    const state = { nonce, env, origin };
     const forwardReq = Object.assign(req, { scope, state });
 
     const { url, status } = await this.handlers.start(
@@ -103,7 +116,22 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     req: express.Request,
     res: express.Response,
   ): Promise<void> {
+    let appOrigin = this.options.appOrigin;
+
     try {
+      const state: OAuthState = readState(req.query.state?.toString() ?? '');
+
+      if (state.origin) {
+        try {
+          appOrigin = new URL(state.origin).origin;
+        } catch {
+          throw new NotAllowedError('App origin is invalid, failed to parse');
+        }
+        if (!this.options.isOriginAllowed(appOrigin)) {
+          throw new NotAllowedError(`Origin '${appOrigin}' is not allowed`);
+        }
+      }
+
       // verify nonce cookie and state cookie on callback
       verifyNonce(req, this.options.providerId);
 
@@ -117,11 +145,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         response.providerInfo.scope = grantedScopes;
       }
 
-      if (!this.options.disableRefresh) {
-        if (!refreshToken) {
-          throw new InputError('Missing refresh token');
-        }
-
+      if (refreshToken && !this.options.disableRefresh) {
         // set new refresh token
         this.setRefreshTokenCookie(res, refreshToken);
       }
@@ -129,48 +153,42 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       await this.populateIdentity(response.backstageIdentity);
 
       // post message back to popup if successful
-      return postMessageResponse(res, this.options.appOrigin, {
+      return postMessageResponse(res, appOrigin, {
         type: 'authorization_response',
         response,
       });
     } catch (error) {
+      const { name, message } = isError(error)
+        ? error
+        : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
       // post error message back to popup if failure
-      return postMessageResponse(res, this.options.appOrigin, {
+      return postMessageResponse(res, appOrigin, {
         type: 'authorization_response',
-        error: {
-          name: error.name,
-          message: error.message,
-        },
+        error: { name, message },
       });
     }
   }
 
   async logout(req: express.Request, res: express.Response): Promise<void> {
     if (!ensuresXRequestedWith(req)) {
-      res.status(401).send('Invalid X-Requested-With header');
-      return;
+      throw new AuthenticationError('Invalid X-Requested-With header');
     }
 
-    if (!this.options.disableRefresh) {
-      // remove refresh token cookie before logout
-      this.removeRefreshTokenCookie(res);
-    }
-    res.status(200).send('logout!');
+    // remove refresh token cookie if it is set
+    this.removeRefreshTokenCookie(res);
+
+    res.status(200).end();
   }
 
   async refresh(req: express.Request, res: express.Response): Promise<void> {
     if (!ensuresXRequestedWith(req)) {
-      res.status(401).send('Invalid X-Requested-With header');
-      return;
+      throw new AuthenticationError('Invalid X-Requested-With header');
     }
 
     if (!this.handlers.refresh || this.options.disableRefresh) {
-      res
-        .status(400)
-        .send(
-          `Refresh token not supported for provider: ${this.options.providerId}`,
-        );
-      return;
+      throw new InputError(
+        `Refresh token is not supported for provider ${this.options.providerId}`,
+      );
     }
 
     try {
@@ -179,7 +197,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
       // throw error if refresh token is missing in the request
       if (!refreshToken) {
-        throw new Error('Missing session cookie');
+        throw new InputError('Missing session cookie');
       }
 
       const scope = req.query.scope?.toString() ?? '';
@@ -202,7 +220,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
       res.status(200).json(response);
     } catch (error) {
-      res.status(401).send(`${error.message}`);
+      throw new AuthenticationError('Refresh failed', error);
     }
   }
 
@@ -215,10 +233,12 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       return;
     }
 
-    if (!identity.idToken) {
-      identity.idToken = await this.options.tokenIssuer.issueToken({
+    if (!(identity.token || identity.idToken)) {
+      identity.token = await this.options.tokenIssuer.issueToken({
         claims: { sub: identity.id },
       });
+    } else if (!identity.token && identity.idToken) {
+      identity.token = identity.idToken;
     }
   }
 

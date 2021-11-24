@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
+/**
+ * The Backstage backend plugin that provides the Backstage catalog
+ *
+ * @packageDocumentation
+ */
+
 export * from './catalog';
-export * from './database';
 export * from './ingestion';
+export * from './legacy';
 export * from './search';
-export * from './service';
 export * from './util';
-export * from './next';
+export * from './processing';
+export * from './providers';
+export * from './service';

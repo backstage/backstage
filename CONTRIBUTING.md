@@ -102,6 +102,18 @@ Signed-off-by: Jane Smith <jane.smith@example.com>
 
 Note: If you have already pushed you branch to a remote, you might have to force push: `git push -f` after the rebase.
 
+### Using GitHub Desktop?
+
+If you are using the GitHub Desktop client, you need to manually add the `Signed-off-by` line to the Description field on the Changes tab before committing:
+
+```
+Awesome description (commit message)
+
+Signed-off-by: Jane Smith <jane.smith@example.com>
+```
+
+In case you forgot to add the line to your most recent commit, you can amend the commit message from the History tab before pushing your branch (GitHub Desktop 2.9 or later).
+
 ## Creating Changesets
 
 We use [changesets](https://github.com/atlassian/changesets) to help us prepare releases. They help us make sure that every package affected by a change gets a proper version number and an entry in its `CHANGELOG.md`. To make the process of generating releases easy, it helps when contributors include changesets with their pull requests.
@@ -110,16 +122,19 @@ We use [changesets](https://github.com/atlassian/changesets) to help us prepare 
 
 Any time a patch, minor, or major change aligning to [Semantic Versioning](https://semver.org) is made to any published package in `packages/` or `plugins/`, a changeset should be used. It helps to align your change to the [Backstage stability index](https://backstage.io/docs/overview/stability-index) for the package you are changing, for example, when to provide additional clarity on deprecation or impacting changes which will then be included into CHANGELOGs.
 
-In general, changesets are not needed for the documentation, build utilities, contributed samples in `contrib/`, or the [example `packages/app`](packages/app).
+In general, changesets are only needed for changes to packages within `packages/` or `plugins/` directories, and only for the packages that are not marked as `private`. Changesets are also not needed for changes that do not affect the published version of each package, for example changes to tests or in-line source code comments.
+
+Changesets **are** needed for new packages, as that is what triggers the package to be part of the next release.
 
 ### How to create a changeset
 
 1. Run `yarn changeset`
 2. Select which packages you want to include a changeset for
-3. Select impact of change that you're introducing (patch, minor, or major)
-4. Add generated changeset to Git
-5. Push the commit with your changeset to the branch associated with your PR
-6. Accept our gratitude for making the release process easier on the maintainers
+3. Select impact of change that you're introducing, using `minor` for breaking changes and `patch` otherwise. We do not use `major` changes while packages are at version `0.x`.
+4. Explain your changes in the generated changeset. See [examples of well written changesets](https://backstage.io/docs/getting-started/contributors#writing-changesets).
+5. Add generated changeset to Git
+6. Push the commit with your changeset to the branch associated with your PR
+7. Accept our gratitude for making the release process easier on the maintainers
 
 For more information, checkout [adding a changeset](https://github.com/atlassian/changesets/blob/master/docs/adding-a-changeset.md) documentation in the changesets repository.
 

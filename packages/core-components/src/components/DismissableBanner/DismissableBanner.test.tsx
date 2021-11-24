@@ -16,13 +16,17 @@
 
 import React from 'react';
 import { fireEvent } from '@testing-library/react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import {
+  renderWithEffects,
+  TestApiRegistry,
+  wrapInTestApp,
+} from '@backstage/test-utils';
 import { DismissableBanner } from './DismissableBanner';
-import { ApiRegistry, ApiProvider, WebStorage } from '@backstage/core-app-api';
+import { ApiProvider, WebStorage } from '@backstage/core-app-api';
 import { storageApiRef, StorageApi } from '@backstage/core-plugin-api';
 
 describe('<DismissableBanner />', () => {
-  let apis: ApiRegistry;
+  let apis: TestApiRegistry;
   const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
   const createWebStorage = (): StorageApi => {
     return WebStorage.create({
@@ -31,7 +35,7 @@ describe('<DismissableBanner />', () => {
   };
 
   beforeEach(() => {
-    apis = ApiRegistry.from([[storageApiRef, createWebStorage()]]);
+    apis = TestApiRegistry.from([storageApiRef, createWebStorage()]);
   });
 
   it('renders the message and the popover', async () => {

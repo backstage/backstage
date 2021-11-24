@@ -42,7 +42,7 @@ describe('DefaultBadgeBuilder', () => {
         createBadge: () => badge,
       },
       failbadge: {
-        createBadge: () => (undefined as unknown) as Badge, // force a bad return value..
+        createBadge: () => undefined as unknown as Badge, // force a bad return value..
       },
       invalidbadge: {
         createBadge: () => ({ style: 'wrong' as BadgeStyle, ...badge }),

@@ -24,10 +24,10 @@ export const LocalStorage = {
     try {
       value = JSON.parse(
         window.localStorage.getItem(LocalStorageKeys.SIDEBAR_PIN_STATE) ||
-          'false',
+          'true',
       );
     } catch {
-      return false;
+      return true;
     }
     return !!value;
   },

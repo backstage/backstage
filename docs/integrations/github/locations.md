@@ -60,5 +60,7 @@ preferred.
 ## Authentication with GitHub Apps
 
 Alternatively, Backstage can use GitHub Apps for backend authentication. This
-has higher rate limits, and a clearer authorization model. See the
-[github-apps plugin](../../plugins/github-apps.md) for how to set this up.
+has higher rate limits, and a clearer authorization model. See [github-apps] for
+how to set this up.
+
+[github-apps]: ../../plugins/github-apps.md

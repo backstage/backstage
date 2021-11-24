@@ -44,6 +44,10 @@ class Footer extends React.Component {
             <a href="https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md">
               Contributing
             </a>
+            <a href="https://backstage.spotify.com">Adopting</a>
+            <a href="https://github.com/backstage/community">
+              Community Sessions
+            </a>
             <a href="https://mailchi.mp/spotify/backstage-community">
               Subscribe to our newsletter
             </a>

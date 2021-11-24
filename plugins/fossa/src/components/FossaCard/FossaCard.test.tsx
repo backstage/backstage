@@ -16,11 +16,10 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { FossaApi, fossaApiRef } from '../../api';
 import { FossaCard } from './FossaCard';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<FossaCard />', () => {
   const fossaApi: jest.Mocked<FossaApi> = {
@@ -30,10 +29,10 @@ describe('<FossaCard />', () => {
   let Wrapper: React.ComponentType;
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(fossaApiRef, fossaApi);
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider apis={[[fossaApiRef, fossaApi]]}>
+        {children}
+      </TestApiProvider>
     );
   });
 
@@ -74,7 +73,7 @@ describe('<FossaCard />', () => {
 
     fossaApi.getFindingSummary.mockRejectedValue(new Error('My Error'));
 
-    const { getByText } = await renderInTestApp(
+    const { getAllByText } = await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <FossaCard />
@@ -82,7 +81,7 @@ describe('<FossaCard />', () => {
       </Wrapper>,
     );
 
-    expect(getByText(/Warning: My Error/i)).toBeInTheDocument();
+    expect(getAllByText(/Error: My Error/i).length).not.toBe(0);
   });
 
   it('shows empty', async () => {

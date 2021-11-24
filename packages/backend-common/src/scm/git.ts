@@ -31,6 +31,8 @@ From : https://isomorphic-git.org/docs/en/onAuth with fix for GitHub
 
 Azure       'notempty'      token
 */
+
+/** @public */
 export class Git {
   private constructor(
     private readonly config: {

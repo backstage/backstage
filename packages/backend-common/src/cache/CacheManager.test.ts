@@ -104,7 +104,7 @@ describe('CacheManager', () => {
       manager.forPlugin(plugin2Id).getClient({ defaultTtl: expectedTtl });
 
       const client = DefaultCacheClient as jest.Mock;
-      const cache = (Keyv as unknown) as jest.Mock;
+      const cache = Keyv as unknown as jest.Mock;
       expect(cache).toHaveBeenCalledTimes(2);
       expect(client).toHaveBeenCalledTimes(2);
 
@@ -124,7 +124,7 @@ describe('CacheManager', () => {
       const expectedNamespace = 'test-plugin';
       manager.forPlugin(expectedNamespace).getClient();
 
-      const cache = (Keyv as unknown) as jest.Mock;
+      const cache = Keyv as unknown as jest.Mock;
       const mockCalls = cache.mock.calls.splice(-1);
       const callArgs = mockCalls[0];
       expect(callArgs[0].store).toBeInstanceOf(NoStore);
@@ -138,7 +138,7 @@ describe('CacheManager', () => {
         .forPlugin(expectedNamespace)
         .getClient({ defaultTtl: expectedTtl });
 
-      const cache = (Keyv as unknown) as jest.Mock;
+      const cache = Keyv as unknown as jest.Mock;
       const mockCalls = cache.mock.calls.splice(-1);
       const callArgs = mockCalls[0];
       expect(callArgs[0]).toMatchObject({
@@ -162,7 +162,7 @@ describe('CacheManager', () => {
       const expectedTtl = 3600;
       manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
 
-      const cache = (Keyv as unknown) as jest.Mock;
+      const cache = Keyv as unknown as jest.Mock;
       const mockCacheCalls = cache.mock.calls.splice(-1);
       expect(mockCacheCalls[0][0]).toMatchObject({
         ttl: expectedTtl,

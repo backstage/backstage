@@ -160,17 +160,15 @@ export const IncidentListItem = ({
     return incident.monitorName;
   };
 
-  const [
-    { value: resolveValue, error: resolveError },
-    handleResolveIncident,
-  ] = useAsyncFn(
-    async ({ incidentId, incidentType }: TriggerAlarmRequest) =>
-      await api.incidentAction({
-        routingKey: team,
-        incidentType,
-        incidentId,
-      }),
-  );
+  const [{ value: resolveValue, error: resolveError }, handleResolveIncident] =
+    useAsyncFn(
+      async ({ incidentId, incidentType }: TriggerAlarmRequest) =>
+        await api.incidentAction({
+          routingKey: team,
+          incidentType,
+          incidentId,
+        }),
+    );
 
   const [
     { value: acknowledgeValue, error: acknowledgeError },

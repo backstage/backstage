@@ -17,15 +17,16 @@ import { useAsync } from 'react-use';
 import { ActionsListWorkflowRunsForRepoResponseData } from '../../api/types';
 
 export const useWorkflowRunJobs = (jobsUrl?: string) => {
-  const jobs = useAsync(async (): Promise<ActionsListWorkflowRunsForRepoResponseData> => {
-    if (jobsUrl === undefined) {
-      return {
-        builds: [],
-      };
-    }
+  const jobs =
+    useAsync(async (): Promise<ActionsListWorkflowRunsForRepoResponseData> => {
+      if (jobsUrl === undefined) {
+        return {
+          builds: [],
+        };
+      }
 
-    const data = await fetch(jobsUrl).then(d => d.json());
-    return data;
-  }, [jobsUrl]);
+      const data = await fetch(jobsUrl).then(d => d.json());
+      return data;
+    }, [jobsUrl]);
   return jobs;
 };

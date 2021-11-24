@@ -15,6 +15,7 @@
  */
 
 import { Logger } from 'winston';
+import { runPeriodically } from './runPeriodically';
 
 type TaskEnvelope = {
   task: Function;
@@ -28,7 +29,7 @@ type TaskEnvelope = {
 export class Scheduler {
   private logger: Logger;
   private schedule: TaskEnvelope[];
-  private intervalTimeouts: NodeJS.Timeout[] = [];
+  private runningTasks: Function[] = [];
 
   constructor({ logger }: { logger: Logger }) {
     this.logger = logger;
@@ -36,11 +37,12 @@ export class Scheduler {
   }
 
   /**
-   * Adds each task and interval to the schedule
-   *
+   * Adds each task and interval to the schedule.
+   * When running the tasks, the scheduler waits at least for the time specified
+   * in the interval once the task was completed, before running it again.
    */
   addToSchedule(task: Function, interval: number) {
-    if (this.intervalTimeouts.length) {
+    if (this.runningTasks.length) {
       throw new Error(
         'Cannot add task to schedule that has already been started.',
       );
@@ -54,13 +56,7 @@ export class Scheduler {
   start() {
     this.logger.info('Starting all scheduled search tasks.');
     this.schedule.forEach(({ task, interval }) => {
-      // Fire the task immediately, then schedule it.
-      task();
-      this.intervalTimeouts.push(
-        setInterval(() => {
-          task();
-        }, interval),
-      );
+      this.runningTasks.push(runPeriodically(() => task(), interval));
     });
   }
 
@@ -69,9 +65,9 @@ export class Scheduler {
    */
   stop() {
     this.logger.info('Stopping all scheduled search tasks.');
-    this.intervalTimeouts.forEach(timeout => {
-      clearInterval(timeout);
+    this.runningTasks.forEach(cancel => {
+      cancel();
     });
-    this.intervalTimeouts = [];
+    this.runningTasks = [];
   }
 }

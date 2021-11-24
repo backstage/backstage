@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { Grid, Typography, Button } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 import {
@@ -23,6 +25,7 @@ import {
   auth0AuthApiRef,
   errorApiRef,
 } from '@backstage/core-plugin-api';
+import { ForwardedError } from '@backstage/errors';
 
 const Component: ProviderComponent = ({ onResult }) => {
   const auth0AuthApi = useApi(auth0AuthApiRef);
@@ -33,6 +36,11 @@ const Component: ProviderComponent = ({ onResult }) => {
       const identity = await auth0AuthApi.getBackstageIdentity({
         instantPopup: true,
       });
+      if (!identity) {
+        throw new Error(
+          'The Auth0 provider is not configured to support sign-in',
+        );
+      }
 
       const profile = await auth0AuthApi.getProfile();
 
@@ -40,13 +48,13 @@ const Component: ProviderComponent = ({ onResult }) => {
         userId: identity!.id,
         profile: profile!,
         getIdToken: () =>
-          auth0AuthApi.getBackstageIdentity().then(i => i!.idToken),
+          auth0AuthApi.getBackstageIdentity().then(i => i!.token ?? i!.idToken),
         signOut: async () => {
           await auth0AuthApi.signOut();
         },
       });
     } catch (error) {
-      errorApi.post(error);
+      errorApi.post(new ForwardedError('Auth0 login failed', error));
     }
   };
 
@@ -82,7 +90,8 @@ const loader: ProviderLoader = async apis => {
   return {
     userId: identity.id,
     profile: profile!,
-    getIdToken: () => auth0AuthApi.getBackstageIdentity().then(i => i!.idToken),
+    getIdToken: () =>
+      auth0AuthApi.getBackstageIdentity().then(i => i!.token ?? i!.idToken),
     signOut: async () => {
       await auth0AuthApi.signOut();
     },

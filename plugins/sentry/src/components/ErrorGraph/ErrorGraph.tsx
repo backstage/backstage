@@ -20,8 +20,8 @@ import { Sparklines, SparklinesBars } from 'react-sparklines';
 
 export const ErrorGraph = ({ sentryIssue }: { sentryIssue: SentryIssue }) => {
   const data =
-    '12h' in sentryIssue.stats
-      ? sentryIssue.stats['12h']
+    '14d' in sentryIssue.stats
+      ? sentryIssue.stats['14d']
       : sentryIssue.stats['24h'];
 
   return (

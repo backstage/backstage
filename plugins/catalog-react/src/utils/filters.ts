@@ -19,13 +19,13 @@ import { EntityFilter } from '../types';
 
 export function reduceCatalogFilters(
   filters: EntityFilter[],
-): Record<string, string | string[]> {
+): Record<string, string | symbol | (string | symbol)[]> {
   return filters.reduce((compoundFilter, filter) => {
     return {
       ...compoundFilter,
       ...(filter.getCatalogFilters ? filter.getCatalogFilters() : {}),
     };
-  }, {} as Record<string, string | string[]>);
+  }, {} as Record<string, string | symbol | (string | symbol)[]>);
 }
 
 export function reduceEntityFilters(

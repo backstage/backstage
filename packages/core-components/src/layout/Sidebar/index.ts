@@ -15,8 +15,9 @@
  */
 
 export { Sidebar } from './Bar';
+export type { SidebarClassKey } from './Bar';
 export { SidebarPage, SidebarPinStateContext } from './Page';
-export type { SidebarPinStateContextType } from './Page';
+export type { SidebarPinStateContextType, SidebarPageClassKey } from './Page';
 export {
   SidebarDivider,
   SidebarItem,
@@ -25,7 +26,9 @@ export {
   SidebarSpacer,
   SidebarScrollWrapper,
 } from './Items';
+export type { SidebarItemClassKey } from './Items';
 export { IntroCard, SidebarIntro } from './Intro';
+export type { SidebarIntroClassKey } from './Intro';
 export {
   SIDEBAR_INTRO_LOCAL_STORAGE,
   SidebarContext,

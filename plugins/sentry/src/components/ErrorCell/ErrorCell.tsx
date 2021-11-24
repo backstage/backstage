@@ -44,13 +44,18 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 export const ErrorCell = ({ sentryIssue }: { sentryIssue: SentryIssue }) => {
   const classes = useStyles();
+  let issueType = '[No Type]';
+  if (sentryIssue.metadata.type) {
+    issueType = sentryIssue.metadata.type;
+  } else if (sentryIssue.title) {
+    issueType = sentryIssue.title;
+  }
+
   return (
     <div className={classes.root}>
       <Link href={sentryIssue.permalink}>
         <Typography variant="body1" gutterBottom className={classes.text}>
-          {sentryIssue.metadata.type
-            ? stripText(sentryIssue.metadata.type, 28)
-            : '[No type]'}
+          {stripText(issueType, 28)}
         </Typography>
       </Link>
       <Typography

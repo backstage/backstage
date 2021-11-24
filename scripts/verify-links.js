@@ -139,9 +139,8 @@ async function findExternalDocsLinks(dir) {
     const match = content.match(/---(?:\r|\n|.)*^id: (.*)$/m);
 
     // Both docs with an id and without should remove trailing /index
-    const realPath = (match
-      ? joinPath(dirname(url), match[1])
-      : url.replace(/\.md$/, '')
+    const realPath = (
+      match ? joinPath(dirname(url), match[1]) : url.replace(/\.md$/, '')
     ).replace(/\/index$/, '');
 
     paths.set(url, realPath);

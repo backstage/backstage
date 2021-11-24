@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import { Options } from 'webpack';
+import { WebpackOptionsNormalized, WebpackPluginInstance } from 'webpack';
 import TerserPlugin from 'terser-webpack-plugin';
 import { BundlingOptions } from './types';
 import { isParallelDefault } from '../parallel';
 
 export const optimization = (
   options: BundlingOptions,
-): Options.Optimization => {
+): WebpackOptionsNormalized['optimization'] => {
   const { isDev } = options;
 
   return {
     minimize: !isDev,
-    // Only configure when parallel is explicitly overriden from the default
+    // Only configure when parallel is explicitly overridden from the default
     ...(!isParallelDefault(options.parallel)
       ? {
           minimizer: [
             new TerserPlugin({
               parallel: options.parallel,
-            }),
+            }) as unknown as WebpackPluginInstance,
           ],
         }
       : {}),
@@ -45,11 +45,15 @@ export const optimization = (
         // enough, if they're smaller they end up in the main
         packages: {
           chunks: 'initial',
-          test: /[\\/]node_modules[\\/]/,
+          test(module: any) {
+            return Boolean(
+              module?.resource?.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/),
+            );
+          },
           name(module: any) {
             // get the name. E.g. node_modules/packageName/not/this/part.js
             // or node_modules/packageName
-            const packageName = module.context.match(
+            const packageName = module.resource.match(
               /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
             )[1];
 

@@ -17,17 +17,18 @@
 import { render, RenderResult } from '@testing-library/react';
 import React, { ReactNode } from 'react';
 import { MemoryRouter, Route, Routes, useOutlet } from 'react-router-dom';
-import { ApiProvider, ApiRegistry, LocalStorageFeatureFlags } from '../apis';
+import { LocalStorageFeatureFlags } from '../apis';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { AppContext } from '../app';
 import { AppContextProvider } from '../app/AppContext';
 import { FlatRoutes } from './FlatRoutes';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
 const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-  <ApiProvider apis={ApiRegistry.with(featureFlagsApiRef, mockFeatureFlagsApi)}>
+  <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
     {children}
-  </ApiProvider>
+  </TestApiProvider>
 );
 
 function makeRouteRenderer(node: ReactNode) {
@@ -37,11 +38,11 @@ function makeRouteRenderer(node: ReactNode) {
       <Wrapper>
         <AppContextProvider
           appContext={
-            ({
+            {
               getComponents: () => ({
                 NotFoundErrorPage: () => <>Not Found</>,
               }),
-            } as unknown) as AppContext
+            } as unknown as AppContext
           }
         >
           <MemoryRouter initialEntries={[path]} children={node} />
@@ -100,7 +101,6 @@ describe('FlatRoutes', () => {
       return <>Outlet: {useOutlet()}</>;
     };
 
-    // The '/*' suffixes here are intentional and will be ignored by FlatRoutes
     const routes = (
       <>
         <Route path="/a" element={<MyPage />}>
@@ -112,11 +112,15 @@ describe('FlatRoutes', () => {
         <Route path="/b" element={<MyPage />}>
           b
         </Route>
+        <Route path="/" element={<MyPage />}>
+          c
+        </Route>
       </>
     );
     const renderRoute = makeRouteRenderer(<FlatRoutes>{routes}</FlatRoutes>);
     expect(renderRoute('/a').getByText('Outlet: a')).toBeInTheDocument();
     expect(renderRoute('/a/b').getByText('Outlet: a-b')).toBeInTheDocument();
     expect(renderRoute('/b').getByText('Outlet: b')).toBeInTheDocument();
+    expect(renderRoute('/').getByText('Outlet: c')).toBeInTheDocument();
   });
 });

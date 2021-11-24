@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-import { createStyles, makeStyles, Theme, WithStyles } from '@material-ui/core';
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  WithStyles,
+} from '@material-ui/core/styles';
 import React from 'react';
+
+/** @public */
+export type ItemCardGridClassKey = 'root';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -27,8 +35,9 @@ const styles = (theme: Theme) =>
     },
   });
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles(styles, { name: 'BackstageItemCardGrid' });
 
+/** @public */
 export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
   /**
    * The Card items of the grid.
@@ -44,19 +53,19 @@ export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
  *
  * Styles for the grid can be overridden using the `classes` prop, e.g.:
  *
- * <code>
- *   <ItemCardGrid title="Hello" classes={{ root: myClassName }} />
- * </code>
+ * `<ItemCardGrid title="Hello" classes={{ root: myClassName }} />`
  *
  * This can be useful for e.g. overriding gridTemplateColumns to adapt the
  * minimum size of the cells to fit the content better.
+ *
+ * @public
  */
-export const ItemCardGrid = (props: ItemCardGridProps) => {
+export function ItemCardGrid(props: ItemCardGridProps) {
   const { children, ...otherProps } = props;
   const classes = useStyles(otherProps);
   return (
-    <div role="grid" className={classes.root} {...otherProps}>
+    <div className={classes.root} {...otherProps}>
       {children}
     </div>
   );
-};
+}

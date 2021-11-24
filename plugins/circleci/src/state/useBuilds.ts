@@ -26,21 +26,23 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
 const makeReadableStatus = (status: string | undefined) => {
   if (!status) return '';
-  return ({
-    retried: 'Retried',
-    canceled: 'Canceled',
-    infrastructure_fail: 'Infra fail',
-    timedout: 'Timedout',
-    not_run: 'Not run',
-    running: 'Running',
-    failed: 'Failed',
-    queued: 'Queued',
-    scheduled: 'Scheduled',
-    not_running: 'Not running',
-    no_tests: 'No tests',
-    fixed: 'Fixed',
-    success: 'Success',
-  } as Record<string, string>)[status];
+  return (
+    {
+      retried: 'Retried',
+      canceled: 'Canceled',
+      infrastructure_fail: 'Infra fail',
+      timedout: 'Timedout',
+      not_run: 'Not run',
+      running: 'Running',
+      failed: 'Failed',
+      queued: 'Queued',
+      scheduled: 'Scheduled',
+      not_running: 'Not running',
+      no_tests: 'No tests',
+      fixed: 'Fixed',
+      success: 'Success',
+    } as Record<string, string>
+  )[status];
 };
 
 const mapWorkflowDetails = (buildData: BuildSummary) => {

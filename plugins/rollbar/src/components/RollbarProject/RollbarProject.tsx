@@ -24,9 +24,8 @@ type Props = {
 };
 
 export const RollbarProject = ({ entity }: Props) => {
-  const { items, organization, project, loading, error } = useTopActiveItems(
-    entity,
-  );
+  const { items, organization, project, loading, error } =
+    useTopActiveItems(entity);
 
   return (
     <RollbarTopItemsTable

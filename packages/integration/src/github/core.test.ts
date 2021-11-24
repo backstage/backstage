@@ -16,8 +16,25 @@
 
 import { GitHubIntegrationConfig } from './config';
 import { getGitHubFileFetchUrl, getGitHubRequestOptions } from './core';
+import { GithubCredentials } from './GithubCredentialsProvider';
 
 describe('github core', () => {
+  const appCredentials: GithubCredentials = {
+    type: 'app',
+    token: 'A',
+    headers: {},
+  };
+
+  const tokenCredentials: GithubCredentials = {
+    type: 'token',
+    token: 'A',
+    headers: {},
+  };
+
+  const noCredentials: GithubCredentials = {
+    type: 'token',
+  };
+
   describe('getGitHubRequestOptions', () => {
     it('inserts a token when needed', () => {
       const withToken: GitHubIntegrationConfig = {
@@ -30,10 +47,12 @@ describe('github core', () => {
         rawBaseUrl: '',
       };
       expect(
-        (getGitHubRequestOptions(withToken).headers as any).Authorization,
+        (getGitHubRequestOptions(withToken, appCredentials).headers as any)
+          .Authorization,
       ).toEqual('token A');
       expect(
-        (getGitHubRequestOptions(withoutToken).headers as any).Authorization,
+        (getGitHubRequestOptions(withoutToken, noCredentials).headers as any)
+          .Authorization,
       ).toBeUndefined();
     });
   });
@@ -41,7 +60,7 @@ describe('github core', () => {
   describe('getGitHubFileFetchUrl', () => {
     it('rejects targets that do not look like URLs', () => {
       const config: GitHubIntegrationConfig = { host: '', apiBaseUrl: '' };
-      expect(() => getGitHubFileFetchUrl('a/b', config)).toThrow(
+      expect(() => getGitHubFileFetchUrl('a/b', config, noCredentials)).toThrow(
         /Incorrect URL: a\/b/,
       );
     });
@@ -55,14 +74,16 @@ describe('github core', () => {
         getGitHubFileFetchUrl(
           'https://github.com/a/b/blob/branchname/path/to/c.yaml',
           config,
+          appCredentials,
         ),
       ).toEqual(
         'https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=branchname',
       );
       expect(
         getGitHubFileFetchUrl(
-          'https://ghe.mycompany.net/a/b/blob/branchname/path/to/c.yaml',
+          'https://github.com/a/b/blob/branchname/path/to/c.yaml',
           config,
+          tokenCredentials,
         ),
       ).toEqual(
         'https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=branchname',
@@ -78,6 +99,16 @@ describe('github core', () => {
         getGitHubFileFetchUrl(
           'https://ghe.mycompany.net/a/b/blob/branchname/path/to/c.yaml',
           config,
+          appCredentials,
+        ),
+      ).toEqual(
+        'https://ghe.mycompany.net/api/v3/repos/a/b/contents/path/to/c.yaml?ref=branchname',
+      );
+      expect(
+        getGitHubFileFetchUrl(
+          'https://ghe.mycompany.net/a/b/blob/branchname/path/to/c.yaml',
+          config,
+          tokenCredentials,
         ),
       ).toEqual(
         'https://ghe.mycompany.net/api/v3/repos/a/b/contents/path/to/c.yaml?ref=branchname',
@@ -93,6 +124,7 @@ describe('github core', () => {
         getGitHubFileFetchUrl(
           'https://github.com/a/b/tree/branchname/path/to/c.yaml',
           config,
+          tokenCredentials,
         ),
       ).toEqual(
         'https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=branchname',
@@ -108,6 +140,7 @@ describe('github core', () => {
         getGitHubFileFetchUrl(
           'https://ghe.mycompany.net/a/b/tree/branchname/path/to/c.yaml',
           config,
+          tokenCredentials,
         ),
       ).toEqual(
         'https://ghe.mycompany.net/api/v3/repos/a/b/contents/path/to/c.yaml?ref=branchname',
@@ -123,6 +156,7 @@ describe('github core', () => {
         getGitHubFileFetchUrl(
           'https://github.com/a/b/blob/branchname/path/to/c.yaml',
           config,
+          tokenCredentials,
         ),
       ).toEqual(
         'https://raw.githubusercontent.com/a/b/branchname/path/to/c.yaml',
@@ -138,6 +172,7 @@ describe('github core', () => {
         getGitHubFileFetchUrl(
           'https://ghe.mycompany.net/a/b/blob/branchname/path/to/c.yaml',
           config,
+          tokenCredentials,
         ),
       ).toEqual('https://ghe.mycompany.net/raw/a/b/branchname/path/to/c.yaml');
     });

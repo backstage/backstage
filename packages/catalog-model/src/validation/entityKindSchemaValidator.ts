@@ -22,20 +22,22 @@ import { compileAjvSchema, throwAjvError } from './ajv';
  * Creates a validation function that takes some arbitrary data, and either
  * returns that data cast to a `T` if it matches that schema, or `false` if the
  * schema apiVersion/kind didn't apply to that data, or throws a
- * {@link TypeError} describing actual errors.
+ * {@link globals#TypeError} describing actual errors.
+ *
+ * @remarks
  *
  * This validator is highly specialized, in that it has special treatment of
  * the `kind` and `apiVersion` root keys. This only works if your schema has
  * their rule set to `"enum"`:
  *
- * <pre>
- *   "apiVersion": {
- *      "enum": ["backstage.io/v1alpha1", "backstage.io/v1beta1"]
- *   },
- *   "kind": {
- *     "enum": ["Group"]
- *   },
- * </pre>
+ * ```
+ * "apiVersion": {
+ *    "enum": ["backstage.io/v1alpha1", "backstage.io/v1beta1"]
+ * },
+ * "kind": {
+ *   "enum": ["Group"]
+ * },
+ * ```
  *
  * In the above example, the created validator will return `false` if and only
  * if the kind and/or apiVersion mismatch.
@@ -47,12 +49,16 @@ import { compileAjvSchema, throwAjvError } from './ajv';
  * The given schema may contain `$ref` references to the following, which are
  * resolved automatically for you:
  *
- * - EntityEnvelope
- * - Entity
- * - EntityMeta
- * - common#<id>
+ * - {@link Entity}
  *
- * @see https://github.com/backstage/backstage/tree/master/packages/catalog-model/src/schema
+ * - {@link EntityEnvelope}
+ *
+ * - {@link EntityMeta}
+ *
+ * - `common#<id>`
+ * @see {@link https://github.com/backstage/backstage/tree/master/packages/catalog-model/src/schema}
+ *
+ * @public
  */
 export function entityKindSchemaValidator<T extends Entity>(
   schema: unknown,

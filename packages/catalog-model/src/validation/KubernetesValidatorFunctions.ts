@@ -20,6 +20,7 @@ import { CommonValidatorFunctions } from './CommonValidatorFunctions';
  * Contains validation functions that match the Kubernetes spec, usable to
  * build a catalog that is compatible with those rule sets.
  *
+ * @public
  * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/names/
  * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set
  * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/#syntax-and-character-set

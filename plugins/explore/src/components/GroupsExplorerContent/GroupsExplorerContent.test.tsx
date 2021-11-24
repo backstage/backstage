@@ -16,11 +16,10 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { GroupsExplorerContent } from '../GroupsExplorerContent';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<GroupsExplorerContent />', () => {
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
@@ -32,12 +31,14 @@ describe('<GroupsExplorerContent />', () => {
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
     getEntityByName: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ApiProvider apis={ApiRegistry.with(catalogApiRef, catalogApi)}>
+    <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
       {children}
-    </ApiProvider>
+    </TestApiProvider>
   );
 
   const mountedRoutes = {
@@ -79,7 +80,9 @@ describe('<GroupsExplorerContent />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('my-namespace/group-a')).toBeInTheDocument();
+      expect(
+        getByText('my-namespace/group-a', { selector: 'div' }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -93,14 +96,16 @@ describe('<GroupsExplorerContent />', () => {
       mountedRoutes,
     );
 
-    await waitFor(() => expect(getByText('Our Teams')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(getByText('Our Teams', { selector: 'h2' })).toBeInTheDocument(),
+    );
   });
 
   it('renders a friendly error if it cannot collect domains', async () => {
     const catalogError = new Error('Network timeout');
     catalogApi.getEntities.mockRejectedValueOnce(catalogError);
 
-    const { getByText } = await renderInTestApp(
+    const { getAllByText } = await renderInTestApp(
       <Wrapper>
         <GroupsExplorerContent />
       </Wrapper>,
@@ -108,7 +113,7 @@ describe('<GroupsExplorerContent />', () => {
     );
 
     await waitFor(() =>
-      expect(getByText(/Warning: Network timeout/)).toBeInTheDocument(),
+      expect(getAllByText(/Error: Network timeout/).length).not.toBe(0),
     );
   });
 });

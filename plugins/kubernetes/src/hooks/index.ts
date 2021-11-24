@@ -17,3 +17,4 @@
 export * from './useKubernetesObjects';
 export * from './PodNamesWithErrors';
 export * from './GroupedResponses';
+export * from './Cluster';

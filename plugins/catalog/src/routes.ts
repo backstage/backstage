@@ -20,3 +20,9 @@ export const createComponentRouteRef = createExternalRouteRef({
   id: 'create-component',
   optional: true,
 });
+
+export const viewTechDocRouteRef = createExternalRouteRef({
+  id: 'view-techdoc',
+  optional: true,
+  params: ['namespace', 'kind', 'name'],
+});

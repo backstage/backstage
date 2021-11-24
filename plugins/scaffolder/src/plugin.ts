@@ -17,6 +17,10 @@
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
 import { EntityPicker } from './components/fields/EntityPicker';
+import {
+  entityNamePickerValidation,
+  EntityNamePicker,
+} from './components/fields/EntityNamePicker';
 import { OwnerPicker } from './components/fields/OwnerPicker';
 import {
   repoPickerValidation,
@@ -61,6 +65,14 @@ export const EntityPickerFieldExtension = scaffolderPlugin.provide(
   }),
 );
 
+export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: EntityNamePicker,
+    name: 'EntityNamePicker',
+    validation: entityNamePickerValidation,
+  }),
+);
+
 export const RepoUrlPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: RepoUrlPicker,
@@ -78,6 +90,7 @@ export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
 
 export const ScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({
+    name: 'ScaffolderPage',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),

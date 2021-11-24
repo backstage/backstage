@@ -21,25 +21,20 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '/cost-insights',
-  title: 'Cost Insights',
+  id: 'cost-insights',
 });
 
 export const projectGrowthAlertRef = createRouteRef({
-  path: '/cost-insights/investigating-growth',
-  title: 'Investigating Growth',
+  id: 'cost-insights:investigating-growth',
 });
 
 export const unlabeledDataflowAlertRef = createRouteRef({
-  path: '/cost-insights/labeling-jobs',
-  title: 'Labeling Dataflow Jobs',
+  id: 'cost-insights:labeling-jobs',
 });
 
 export const costInsightsPlugin = createPlugin({
   id: 'cost-insights',
-  register({ featureFlags }) {
-    featureFlags.register('cost-insights-currencies');
-  },
+  featureFlags: [{ name: 'cost-insights-currencies' }],
   routes: {
     root: rootRouteRef,
     growthAlerts: projectGrowthAlertRef,
@@ -49,28 +44,33 @@ export const costInsightsPlugin = createPlugin({
 
 export const CostInsightsPage = costInsightsPlugin.provide(
   createRoutableExtension({
+    name: 'CostInsightsPage',
     component: () =>
       import('./components/CostInsightsPage').then(m => m.CostInsightsPage),
     mountPoint: rootRouteRef,
   }),
 );
 
-export const CostInsightsProjectGrowthInstructionsPage = costInsightsPlugin.provide(
-  createRoutableExtension({
-    component: () =>
-      import('./components/ProjectGrowthInstructionsPage').then(
-        m => m.ProjectGrowthInstructionsPage,
-      ),
-    mountPoint: projectGrowthAlertRef,
-  }),
-);
+export const CostInsightsProjectGrowthInstructionsPage =
+  costInsightsPlugin.provide(
+    createRoutableExtension({
+      name: 'CostInsightsProjectGrowthInstructionsPage',
+      component: () =>
+        import('./components/ProjectGrowthInstructionsPage').then(
+          m => m.ProjectGrowthInstructionsPage,
+        ),
+      mountPoint: projectGrowthAlertRef,
+    }),
+  );
 
-export const CostInsightsLabelDataflowInstructionsPage = costInsightsPlugin.provide(
-  createRoutableExtension({
-    component: () =>
-      import('./components/LabelDataflowInstructionsPage').then(
-        m => m.LabelDataflowInstructionsPage,
-      ),
-    mountPoint: unlabeledDataflowAlertRef,
-  }),
-);
+export const CostInsightsLabelDataflowInstructionsPage =
+  costInsightsPlugin.provide(
+    createRoutableExtension({
+      name: 'CostInsightsLabelDataflowInstructionsPage',
+      component: () =>
+        import('./components/LabelDataflowInstructionsPage').then(
+          m => m.LabelDataflowInstructionsPage,
+        ),
+      mountPoint: unlabeledDataflowAlertRef,
+    }),
+  );

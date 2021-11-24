@@ -19,15 +19,14 @@ import {
   AddLocationRequest,
   AddLocationResponse,
   CatalogApi,
+  CatalogClient,
   CatalogEntitiesRequest,
   CatalogListResponse,
-  CatalogClient,
+  CatalogRequestOptions,
+  CatalogEntityAncestorsRequest,
+  CatalogEntityAncestorsResponse,
 } from '@backstage/catalog-client';
 import { IdentityApi } from '@backstage/core-plugin-api';
-
-type CatalogRequestOptions = {
-  token?: string;
-};
 
 /**
  * CatalogClient wrapper that injects identity token for all requests
@@ -109,6 +108,24 @@ export class CatalogClientWrapper implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<void> {
     return await this.client.removeEntityByUid(uid, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
+  }
+
+  async refreshEntity(
+    entityRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void> {
+    return await this.client.refreshEntity(entityRef, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
+  }
+
+  async getEntityAncestors(
+    request: CatalogEntityAncestorsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<CatalogEntityAncestorsResponse> {
+    return await this.client.getEntityAncestors(request, {
       token: options?.token ?? (await this.identityApi.getIdToken()),
     });
   }

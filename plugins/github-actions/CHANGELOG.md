@@ -1,5 +1,144 @@
 # @backstage/plugin-github-actions
 
+## 0.4.24
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.4.23
+
+### Patch Changes
+
+- e849f9cc0a: Use `<Progress>` instead of `<LinearProgress />` in combination with `Suspense`.
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
+## 0.4.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/integration@0.6.8
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.4.21
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+  - @backstage/integration@0.6.7
+
+## 0.4.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.4.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+
+## 0.4.18
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.4.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+
+## 0.4.16
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+
+## 0.4.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/integration@0.5.9
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.4.14
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
+## 0.4.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.3.0
+
+## 0.4.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.5.8
+  - @backstage/core-components@0.1.5
+  - @backstage/catalog-model@0.9.0
+  - @backstage/plugin-catalog-react@0.2.6
+
 ## 0.4.11
 
 ### Patch Changes

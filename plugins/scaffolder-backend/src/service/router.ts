@@ -14,44 +14,40 @@
  * limitations under the License.
  */
 
+import {
+  ContainerRunner,
+  PluginDatabaseManager,
+  UrlReader,
+} from '@backstage/backend-common';
+import { CatalogApi } from '@backstage/catalog-client';
+import { Entity, TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { InputError, NotFoundError } from '@backstage/errors';
+import { ScmIntegrations } from '@backstage/integration';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import {
-  PreparerBuilder,
-  TemplaterBuilder,
-  TemplaterValues,
-  PublisherBuilder,
-} from '../scaffolder';
-import { CatalogEntityClient } from '../lib/catalog';
 import { validate } from 'jsonschema';
+import { Logger } from 'winston';
+import { CatalogEntityClient } from '../lib/catalog';
 import {
+  createBuiltinActions,
   DatabaseTaskStore,
-  StorageTaskBroker,
+  TaskBroker,
+  TaskSpec,
   TaskWorker,
-} from '../scaffolder/tasks';
-import { templateEntityToSpec } from '../scaffolder/tasks/TemplateConverter';
-import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
-import { createLegacyActions } from '../scaffolder/stages/legacy';
+  TemplateAction,
+  TemplateActionRegistry,
+} from '../scaffolder';
+import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
-import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
-import { InputError, NotFoundError } from '@backstage/errors';
-import { CatalogApi } from '@backstage/catalog-client';
-import {
-  TemplateEntityV1alpha1,
-  TemplateEntityV1beta2,
-  Entity,
-} from '@backstage/catalog-model';
-import { ScmIntegrations } from '@backstage/integration';
-import { TemplateAction } from '../scaffolder/actions';
-import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
 
+/**
+ * RouterOptions
+ *
+ * @public
+ */
 export interface RouterOptions {
-  preparers: PreparerBuilder;
-  templaters: TemplaterBuilder;
-  publishers: PublisherBuilder;
-
   logger: Logger;
   config: Config;
   reader: UrlReader;
@@ -59,21 +55,17 @@ export interface RouterOptions {
   catalogClient: CatalogApi;
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
+  containerRunner: ContainerRunner;
+  taskBroker?: TaskBroker;
 }
 
-function isAlpha1Template(
-  entity: TemplateEntityV1alpha1 | TemplateEntityV1beta2,
-): entity is TemplateEntityV1alpha1 {
+function isSupportedTemplate(
+  entity: TemplateEntityV1beta2 | TemplateEntityV1beta3,
+) {
   return (
-    entity.apiVersion === 'backstage.io/v1alpha1' ||
-    entity.apiVersion === 'backstage.io/v1beta1'
+    entity.apiVersion === 'backstage.io/v1beta2' ||
+    entity.apiVersion === 'scaffolder.backstage.io/v1beta3'
   );
-}
-
-function isBeta2Template(
-  entity: TemplateEntityV1alpha1 | TemplateEntityV1beta2,
-): entity is TemplateEntityV1beta2 {
-  return entity.apiVersion === 'backstage.io/v1beta2';
 }
 
 export async function createRouter(
@@ -83,15 +75,13 @@ export async function createRouter(
   router.use(express.json());
 
   const {
-    preparers,
-    templaters,
-    publishers,
     logger: parentLogger,
     config,
     reader,
     database,
     catalogClient,
     actions,
+    containerRunner,
     taskWorkers,
   } = options;
 
@@ -99,18 +89,26 @@ export async function createRouter(
   const workingDirectory = await getWorkingDirectory(config, logger);
   const entityClient = new CatalogEntityClient(catalogClient);
   const integrations = ScmIntegrations.fromConfig(config);
+  let taskBroker: TaskBroker;
 
-  const databaseTaskStore = await DatabaseTaskStore.create(
-    await database.getClient(),
-  );
-  const taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+  if (!options.taskBroker) {
+    const databaseTaskStore = await DatabaseTaskStore.create({
+      database: await database.getClient(),
+    });
+    taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+  } else {
+    taskBroker = options.taskBroker;
+  }
+
   const actionRegistry = new TemplateActionRegistry();
+
   const workers = [];
   for (let i = 0; i < (taskWorkers || 1); i++) {
-    const worker = new TaskWorker({
-      logger,
+    const worker = await TaskWorker.create({
       taskBroker,
       actionRegistry,
+      integrations,
+      logger,
       workingDirectory,
     });
     workers.push(worker);
@@ -118,19 +116,13 @@ export async function createRouter(
 
   const actionsToRegister = Array.isArray(actions)
     ? actions
-    : [
-        ...createLegacyActions({
-          preparers,
-          publishers,
-          templaters,
-        }),
-        ...createBuiltinActions({
-          integrations,
-          catalogClient,
-          templaters,
-          reader,
-        }),
-      ];
+    : createBuiltinActions({
+        integrations,
+        catalogClient,
+        containerRunner,
+        reader,
+        config,
+      });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
   workers.forEach(worker => worker.start());
@@ -155,7 +147,7 @@ export async function createRouter(
         const template = await entityClient.findTemplate(name, {
           token: getBearerToken(req.headers.authorization),
         });
-        if (isBeta2Template(template)) {
+        if (isSupportedTemplate(template)) {
           const parameters = [template.spec.parameters ?? []].flat();
           res.json({
             title: template.metadata.title ?? template.metadata.name,
@@ -163,42 +155,6 @@ export async function createRouter(
               title: schema.title ?? 'Fill in template parameters',
               schema,
             })),
-          });
-        } else if (isAlpha1Template(template)) {
-          res.json({
-            title: template.metadata.title ?? template.metadata.name,
-            steps: [
-              {
-                title: 'Fill in template parameters',
-                schema: template.spec.schema,
-              },
-              {
-                title: 'Choose owner and repo',
-                schema: {
-                  type: 'object',
-                  required: ['storePath', 'owner'],
-                  properties: {
-                    owner: {
-                      type: 'string',
-                      title: 'Owner',
-                      description: 'Who is going to own this component',
-                    },
-                    storePath: {
-                      type: 'string',
-                      title: 'Store path',
-                      description:
-                        'A full URL to the repository that should be created. e.g https://github.com/backstage/new-repo',
-                    },
-                    access: {
-                      type: 'string',
-                      title: 'Access',
-                      description:
-                        'Who should have access, in org/team or user format',
-                    },
-                  },
-                },
-              },
-            ],
           });
         } else {
           throw new InputError(
@@ -221,26 +177,15 @@ export async function createRouter(
     })
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
-      const values: TemplaterValues = req.body.values;
+      const values = req.body.values;
       const token = getBearerToken(req.headers.authorization);
       const template = await entityClient.findTemplate(templateName, {
         token,
       });
 
-      let taskSpec;
-      if (isAlpha1Template(template)) {
-        logger.warn(
-          `[DEPRECATION] - Template: ${template.metadata.name} has version ${template.apiVersion} which is going to be deprecated. Please refer to https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2 for help on migrating`,
-        );
+      let taskSpec: TaskSpec;
 
-        const result = validate(values, template.spec.schema);
-        if (!result.valid) {
-          res.status(400).json({ errors: result.errors });
-          return;
-        }
-
-        taskSpec = templateEntityToSpec(template, values);
-      } else if (isBeta2Template(template)) {
+      if (isSupportedTemplate(template)) {
         for (const parameters of [template.spec.parameters ?? []].flat()) {
           const result = validate(values, parameters);
 
@@ -252,16 +197,32 @@ export async function createRouter(
 
         const baseUrl = getEntityBaseUrl(template);
 
-        taskSpec = {
-          baseUrl,
-          values,
-          steps: template.spec.steps.map((step, index) => ({
-            ...step,
-            id: step.id ?? `step-${index + 1}`,
-            name: step.name ?? step.action,
-          })),
-          output: template.spec.output ?? {},
-        };
+        taskSpec =
+          template.apiVersion === 'backstage.io/v1beta2'
+            ? {
+                apiVersion: template.apiVersion,
+                baseUrl,
+                values,
+                steps: template.spec.steps.map((step, index) => ({
+                  ...step,
+                  id: step.id ?? `step-${index + 1}`,
+                  name: step.name ?? step.action,
+                })),
+                output: template.spec.output ?? {},
+                metadata: { name: template.metadata?.name },
+              }
+            : {
+                apiVersion: template.apiVersion,
+                baseUrl,
+                parameters: values,
+                steps: template.spec.steps.map((step, index) => ({
+                  ...step,
+                  id: step.id ?? `step-${index + 1}`,
+                  name: step.name ?? step.action,
+                })),
+                output: template.spec.output ?? {},
+                metadata: { name: template.metadata?.name },
+              };
       } else {
         throw new InputError(
           `Unsupported apiVersion field in schema entity, ${
@@ -288,7 +249,9 @@ export async function createRouter(
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const { taskId } = req.params;
-      const after = Number(req.query.after) || undefined;
+      const after =
+        req.query.after !== undefined ? Number(req.query.after) : undefined;
+
       logger.debug(`Event stream observing taskId '${taskId}' opened`);
 
       // Mandatory headers and http status to keep connection open
@@ -299,7 +262,7 @@ export async function createRouter(
       });
 
       // After client opens connection send all events as string
-      const unsubscribe = taskBroker.observe(
+      const { unsubscribe } = taskBroker.observe(
         { taskId, after },
         (error, { events }) => {
           if (error) {
@@ -308,17 +271,20 @@ export async function createRouter(
             );
           }
 
+          let shouldUnsubscribe = false;
           for (const event of events) {
             res.write(
               `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`,
             );
             if (event.type === 'completion') {
-              unsubscribe();
+              shouldUnsubscribe = true;
               // Closing the event stream here would cause the frontend
               // to automatically reconnect because it lost connection.
             }
           }
-          res.flush();
+          // res.flush() is only available with the compression middleware
+          res.flush?.();
+          if (shouldUnsubscribe) unsubscribe();
         },
       );
       // When client closes connection we update the clients list
@@ -326,6 +292,43 @@ export async function createRouter(
       req.on('close', () => {
         unsubscribe();
         logger.debug(`Event stream observing taskId '${taskId}' closed`);
+      });
+    })
+    .get('/v2/tasks/:taskId/events', async (req, res) => {
+      const { taskId } = req.params;
+      const after = Number(req.query.after) || undefined;
+
+      let unsubscribe = () => {};
+
+      // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
+      const timeout = setTimeout(() => {
+        unsubscribe();
+        res.json([]);
+      }, 30_000);
+
+      // Get all known events after an id (always includes the completion event) and return the first callback
+      ({ unsubscribe } = taskBroker.observe(
+        { taskId, after },
+        (error, { events }) => {
+          // stop the timeout
+          clearTimeout(timeout);
+          unsubscribe();
+
+          if (error) {
+            logger.error(
+              `Received error from log when observing taskId '${taskId}', ${error}`,
+            );
+          }
+
+          res.json(events);
+        },
+      ));
+
+      // When client closes connection we update the clients list
+      // avoiding the disconnected one
+      req.on('close', () => {
+        unsubscribe();
+        clearTimeout(timeout);
       });
     });
 

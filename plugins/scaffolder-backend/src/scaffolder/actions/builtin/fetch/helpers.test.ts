@@ -67,7 +67,19 @@ describe('fetchContent helper', () => {
         fetchUrl: '/etc/passwd',
       }),
     ).rejects.toThrow(
-      'Fetch URL may not be absolute for file locations, /etc/passwd',
+      'Relative path is not allowed to refer to a directory outside its parent',
+    );
+  });
+
+  it('should reject relative file locations that exit the baseUrl', async () => {
+    await expect(
+      fetchContents({
+        ...options,
+        baseUrl: 'file:///some/path',
+        fetchUrl: '../test',
+      }),
+    ).rejects.toThrow(
+      'Relative path is not allowed to refer to a directory outside its parent',
     );
   });
 

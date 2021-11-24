@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
+export * from './DefaultResultListItem';
 export * from './Filters';
-export * from './SearchFilter';
 export * from './SearchBar';
+export * from './SearchContext';
+export * from './SearchFilter';
+export * from './SearchModal';
 export * from './SearchPage';
 export * from './SearchResult';
-export * from './DefaultResultListItem';
+export * from './SearchResultPager';
+export * from './SearchType';
 export * from './SidebarSearch';
-export * from './SearchContext';
+export * from './SidebarSearchModal';

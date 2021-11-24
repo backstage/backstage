@@ -62,7 +62,7 @@ spec:
   steps:
     - id: fetch-base
       name: Fetch Base
-      action: fetch:cookiecutter
+      action: fetch:template
       input:
         url: ./template
         values:
@@ -97,7 +97,7 @@ spec:
     entityRef: '{{ steps.register.output.entityRef }}'
 ```
 
-Let's dive in an pick apart what each of these sections do and what they are.
+Let's dive in and pick apart what each of these sections do and what they are.
 
 ### `spec.parameters` - `FormStep | FormStep[]`
 
@@ -227,13 +227,40 @@ spec:
             inputType: tel
 ```
 
+#### Hide or mask sensitive data on Review step
+
+Sometimes, specially in custom fields, you collect some data on Create form that
+must not be shown to the user on Review step. To hide or mask this data, you can
+use `ui:widget: password` or set some properties of `ui:backstage`:
+
+```yaml
+- title: Hide or mask values
+  properties:
+    password:
+      title: Password
+      type: string
+      ui:widget: password # will print '******' as value for property 'password' on Review Step
+    masked:
+      title: Masked
+      type: string
+      ui:backstage:
+        review:
+          mask: '<some-value-to-show>' # will print '<some-value-to-show>' as value for property 'Masked' on Review Step
+    hidden:
+      title: Hidden
+      type: string
+      ui:backstage:
+        review:
+          show: false # wont print any info about 'hidden' property on Review Step
+```
+
 #### The Repository Picker
 
-So in order to make working with repository providers easier, we've built a
-custom picker that can be used by overriding the `ui:field` option in the
-`uiSchema` for a `string` field. Instead of displaying a text input block it
-will render our custom component that we've built which makes it easy to select
-a repository provider, and insert a project or owner, and repository name.
+In order to make working with repository providers easier, we've built a custom
+picker that can be used by overriding the `ui:field` option in the `uiSchema`
+for a `string` field. Instead of displaying a text input block it will render
+our custom component that we've built which makes it easy to select a repository
+provider, and insert a project or owner, and repository name.
 
 You can see it in the above full example which is a separate step and it looks a
 little like this:
@@ -257,8 +284,8 @@ to publish to. And it can be any host that is listed in your `integrations`
 config in `app-config.yaml`.
 
 The `RepoUrlPicker` is a custom field that we provide part of the
-`plugin-scaffolder`. It's currently not possible to create your own fields yet,
-but contributions are welcome! :)
+`plugin-scaffolder`. You can provide your own custom fields by
+[writing your own Custom Field Extensions](./writing-custom-field-extensions.md)
 
 #### The Owner Picker
 
@@ -289,16 +316,16 @@ template. These follow the same standard format:
 - id: fetch-base # A unique id for the step
   name: Fetch Base # A title displayed in the frontend
   if: '{{ parameters.name }}' # Optional condition, skip the step if not truthy
-  action: fetch:cookiecutter # an action to call
-  input: # input that is passed as arguments to the action handler
+  action: fetch:template # An action to call
+  input: # Input that is passed as arguments to the action handler
     url: ./template
     values:
       name: '{{ parameters.name }}'
 ```
 
-By default we ship some built in actions that you can take a look at
-[here](./builtin-actions.md), or you can create your own custom actions by
-looking at the docs [here](./writing-custom-actions.md)
+By default we ship some [built in actions](./builtin-actions.md) that you can
+take a look at, or you can
+[create your own custom actions](./writing-custom-actions.md).
 
 ### Outputs
 
@@ -317,20 +344,20 @@ output:
 
 ### The templating syntax
 
-You might have noticed in the examples that there are `{{ }}`, and these are a
-`handlebars` templates for linking and glueing all these different parts of
-`yaml` together. All the form inputs from the `parameters` section, when passed
-to the steps will be available by using the template syntax
-`{{ parameters.something }}`. This is great for passing the values from the form
-into different steps and reusing these input variables. To pass arrays or
-objects use the syntax `{{ json paramaters.something }}` where
-`paramaters.something` is of type `object` or `array` in the `jsonSchema`, such
-as the `nicknames` parameter in the previous example.
+You might have noticed variables wrapped in `{{ }}` in the examples. These are
+`handlebars` template strings for linking and gluing the different parts of the
+template together. All the form inputs from the `parameters` section will be
+available by using this template syntax (for example,
+`{{ parameters.firstName }}` inserts the value of `firstName` from the
+parameters). This is great for passing the values from the form into different
+steps and reusing these input variables. To pass arrays or objects use the
+`json` custom [helper](https://handlebarsjs.com/guide/expressions.html#helpers).
+For example, `{{ json parameters.nicknames }}` will insert the result of calling
+`JSON.stringify` on the value of the `nicknames` parameter.
 
 As you can see above in the `Outputs` section, `actions` and `steps` can also
-output things. So you can grab that output by using
-`steps.$stepId.output.$property`.
+output things. You can grab that output using `steps.$stepId.output.$property`.
 
 You can read more about all the `inputs` and `outputs` defined in the actions in
-code part of the `JSONSchema` or you can read more about our built in ones
-[here](./builtin-actions.md).
+code part of the `JSONSchema`, or you can read more about our
+[built in actions](./builtin-actions.md).

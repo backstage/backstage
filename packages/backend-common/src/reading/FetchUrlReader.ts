@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import fetch from 'cross-fetch';
-import { NotFoundError } from '@backstage/errors';
 import {
   ReaderFactory,
   ReadTreeResponse,
@@ -24,9 +24,12 @@ import {
   SearchResponse,
   UrlReader,
 } from './types';
+import path from 'path';
 
 /**
  * A UrlReader that does a plain fetch of the URL.
+ *
+ * @public
  */
 export class FetchUrlReader implements UrlReader {
   /**
@@ -37,18 +40,30 @@ export class FetchUrlReader implements UrlReader {
    * `host`:
    *   Either full hostnames to match, or subdomain wildcard matchers with a leading `*`.
    *   For example `example.com` and `*.example.com` are valid values, `prod.*.example.com` is not.
+   *
+   * `paths`:
+   *   An optional list of paths which are allowed. If the list is omitted all paths are allowed.
    */
   static factory: ReaderFactory = ({ config }) => {
     const predicates =
       config
         .getOptionalConfigArray('backend.reading.allow')
         ?.map(allowConfig => {
+          const paths = allowConfig.getOptionalStringArray('paths');
+          const checkPath = paths
+            ? (url: URL) => {
+                const targetPath = path.posix.normalize(url.pathname);
+                return paths.some(allowedPath =>
+                  targetPath.startsWith(allowedPath),
+                );
+              }
+            : (_url: URL) => true;
           const host = allowConfig.getString('host');
           if (host.startsWith('*.')) {
             const suffix = host.slice(1);
-            return (url: URL) => url.host.endsWith(suffix);
+            return (url: URL) => url.host.endsWith(suffix) && checkPath(url);
           }
-          return (url: URL) => url.host === host;
+          return (url: URL) => url.host === host && checkPath(url);
         }) ?? [];
 
     const reader = new FetchUrlReader();
@@ -57,15 +72,35 @@ export class FetchUrlReader implements UrlReader {
   };
 
   async read(url: string): Promise<Buffer> {
+    const response = await this.readUrl(url);
+    return response.buffer();
+  }
+
+  async readUrl(
+    url: string,
+    options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
     let response: Response;
     try {
-      response = await fetch(url);
+      response = await fetch(url, {
+        headers: {
+          ...(options?.etag && { 'If-None-Match': options.etag }),
+        },
+        signal: options?.signal,
+      });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 
+    if (response.status === 304) {
+      throw new NotModifiedError();
+    }
+
     if (response.ok) {
-      return Buffer.from(await response.text());
+      return {
+        buffer: async () => Buffer.from(await response.arrayBuffer()),
+        etag: response.headers.get('ETag') ?? undefined,
+      };
     }
 
     const message = `could not read ${url}, ${response.status} ${response.statusText}`;
@@ -73,15 +108,6 @@ export class FetchUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
-  }
-
-  async readUrl(
-    url: string,
-    _options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
-    // TODO etag is not implemented yet.
-    const buffer = await this.read(url);
-    return { buffer: async () => buffer };
   }
 
   async readTree(): Promise<ReadTreeResponse> {

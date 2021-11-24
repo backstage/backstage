@@ -27,13 +27,21 @@ export const includedFilter = (name: string) =>
 
 // Packages that are not allowed to have any duplicates
 const FORBID_DUPLICATES = [
-  /^@backstage\/core$/,
-  /^@backstage\/core-api$/,
+  /^@backstage\/core-app-api$/,
   /^@backstage\/plugin-/,
 ];
 
+// There are some packages that ARE explicitly allowed to have duplicates since
+// they handle that appropriately. This takes precedence over FORBID_DUPLICATES
+// above.
+const ALLOW_DUPLICATES = [
+  /^@backstage\/core-plugin-api$/,
+  /^@backstage\/plugin-catalog-react$/,
+];
+
 export const forbiddenDuplicatesFilter = (name: string) =>
-  FORBID_DUPLICATES.some(pattern => pattern.test(name));
+  FORBID_DUPLICATES.some(pattern => pattern.test(name)) &&
+  !ALLOW_DUPLICATES.some(pattern => pattern.test(name));
 
 export default async (cmd: Command) => {
   const fix = Boolean(cmd.fix);
@@ -55,11 +63,9 @@ export default async (cmd: Command) => {
     lockfile.replaceVersions(result.newVersions);
     await lockfile.save();
   } else {
-    const [
-      newVersionsForbidden,
-      newVersionsAllowed,
-    ] = partition(result.newVersions, ({ name }) =>
-      forbiddenDuplicatesFilter(name),
+    const [newVersionsForbidden, newVersionsAllowed] = partition(
+      result.newVersions,
+      ({ name }) => forbiddenDuplicatesFilter(name),
     );
     if (newVersionsForbidden.length && !fix) {
       success = false;

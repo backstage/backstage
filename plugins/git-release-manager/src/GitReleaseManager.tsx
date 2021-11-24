@@ -18,12 +18,14 @@ import React from 'react';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { Box } from '@material-ui/core';
+import { useApi } from '@backstage/core-plugin-api';
+import { ContentHeader, Progress } from '@backstage/core-components';
 
 import {
   ComponentConfig,
-  ComponentConfigCreateRc,
-  ComponentConfigPatch,
-  ComponentConfigPromoteRc,
+  CreateRcOnSuccessArgs,
+  PatchOnSuccessArgs,
+  PromoteRcOnSuccessArgs,
 } from './types/types';
 import { Features } from './features/Features';
 import { gitReleaseManagerApiRef } from './api/serviceApiRef';
@@ -33,18 +35,33 @@ import { ProjectContext, Project } from './contexts/ProjectContext';
 import { RepoDetailsForm } from './features/RepoDetailsForm/RepoDetailsForm';
 import { useQueryHandler } from './hooks/useQueryHandler';
 import { UserContext } from './contexts/UserContext';
-
-import { useApi } from '@backstage/core-plugin-api';
-import { ContentHeader, Progress } from '@backstage/core-components';
+import {
+  GetBranchResult,
+  GetLatestReleaseResult,
+  GetRepositoryResult,
+} from './api/GitReleaseClient';
 
 interface GitReleaseManagerProps {
   project?: Omit<Project, 'isProvidedViaProps'>;
   features?: {
     info?: Pick<ComponentConfig<void>, 'omit'>;
     stats?: Pick<ComponentConfig<void>, 'omit'>;
-    createRc?: ComponentConfigCreateRc;
-    promoteRc?: ComponentConfigPromoteRc;
-    patch?: ComponentConfigPatch;
+    createRc?: ComponentConfig<CreateRcOnSuccessArgs>;
+    promoteRc?: ComponentConfig<PromoteRcOnSuccessArgs>;
+    patch?: ComponentConfig<PatchOnSuccessArgs>;
+    custom?: {
+      factory: ({
+        latestRelease,
+        project,
+        releaseBranch,
+        repository,
+      }: {
+        latestRelease: GetLatestReleaseResult['latestRelease'] | null;
+        project: Project;
+        releaseBranch: GetBranchResult['branch'] | null;
+        repository: GetRepositoryResult['repository'];
+      }) => React.ReactElement | React.ReactElement[];
+    };
   };
 }
 

@@ -15,13 +15,10 @@
  */
 
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import {
-  wrapInTestApp,
-  Keyboard,
-  renderInTestApp,
-} from '@backstage/test-utils';
+import { fireEvent } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { HeaderActionMenu } from './HeaderActionMenu';
+import userEvent from '@testing-library/user-event';
 
 describe('<ComponentContextMenu />', () => {
   it('renders without any items and without exploding', async () => {
@@ -89,16 +86,13 @@ describe('<ComponentContextMenu />', () => {
   });
 
   it('should close when hitting escape', async () => {
-    const rendered = render(
-      wrapInTestApp(
-        <HeaderActionMenu actionItems={[{ label: 'Some label' }]} />,
-      ),
+    const rendered = await renderInTestApp(
+      <HeaderActionMenu actionItems={[{ label: 'Some label' }]} />,
     );
-
     expect(rendered.container.getAttribute('aria-hidden')).toBeNull();
     fireEvent.click(rendered.getByTestId('header-action-menu'));
     expect(rendered.container.getAttribute('aria-hidden')).toBe('true');
-    await Keyboard.type(rendered, '<Esc>');
+    userEvent.type(rendered.getByTestId('header-action-menu'), '{esc}');
     expect(rendered.container.getAttribute('aria-hidden')).toBeNull();
   });
 });
