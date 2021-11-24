@@ -15,10 +15,13 @@
  */
 
 export { Sidebar, SidebarExpandButton } from './Bar';
-export { SidebarSubItem } from './SidebarSubItem';
-export { Submenu } from './Submenu';
-export type { SubmenuProps } from './Submenu';
-export type { SidebarSubItemProps, DropDownItem } from './SidebarSubItem';
+export { SidebarSubmenuItem } from './SidebarSubmenuItem';
+export { SidebarSubmenu } from './SidebarSubmenu';
+export type { SidebarSubmenuProps } from './SidebarSubmenu';
+export type {
+  SidebarSubmenuItemProps,
+  DropDownItem,
+} from './SidebarSubmenuItem';
 export type { SidebarClassKey } from './Bar';
 export { SidebarPage, SidebarPinStateContext } from './Page';
 export type { SidebarPinStateContextType, SidebarPageClassKey } from './Page';

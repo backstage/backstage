@@ -68,12 +68,12 @@ const useStyles = (props: { left: number }) =>
   }));
 
 /**
- * Holds a title for text Header of a Submenu and children
- * components to be rendered inside Submenu
+ * Holds a title for text Header of a sidebar submenu and children
+ * components to be rendered inside SidebarSubmenu
  *
  * @public
  */
-export type SubmenuProps = {
+export type SidebarSubmenuProps = {
   title?: string;
   children: ReactNode;
 };
@@ -83,10 +83,10 @@ export type SubmenuProps = {
  *
  * @public
  */
-export const Submenu = ({
+export const SidebarSubmenu = ({
   title,
   children,
-}: PropsWithChildren<SubmenuProps>) => {
+}: PropsWithChildren<SidebarSubmenuProps>) => {
   const { isOpen } = useContext(SidebarContext);
   const left = isOpen
     ? sidebarConfig.drawerWidthOpen

@@ -24,8 +24,8 @@ import { CatalogSidebarLogo } from './icons/CatalogSidebarLogo';
 import { MiscIcon } from './icons/MiscIcon';
 import { Sidebar, SidebarExpandButton } from './Bar';
 import { SidebarItem, SidebarSearchField } from './Items';
-import { SidebarSubItem } from './SidebarSubItem';
-import { Submenu } from './Submenu';
+import { SidebarSubmenuItem } from './SidebarSubmenuItem';
+import { SidebarSubmenu } from './SidebarSubmenu';
 import { SidebarPinStateContext } from '.';
 
 async function renderScalableSidebar() {
@@ -40,9 +40,9 @@ async function renderScalableSidebar() {
           onClick={() => {}}
           text="Catalog"
         >
-          <Submenu title="Catalog">
-            <SidebarSubItem title="Tools" to="/1" icon={BuildRoundedIcon} />
-            <SidebarSubItem
+          <SidebarSubmenu title="Catalog">
+            <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
+            <SidebarSubmenuItem
               title="Misc"
               to="/6"
               icon={MiscIcon}
@@ -57,7 +57,7 @@ async function renderScalableSidebar() {
                 },
               ]}
             />
-          </Submenu>
+          </SidebarSubmenu>
         </SidebarItem>
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
         <SidebarExpandButton />

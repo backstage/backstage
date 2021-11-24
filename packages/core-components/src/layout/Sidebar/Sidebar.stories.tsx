@@ -31,12 +31,12 @@ import {
   SidebarSearchField,
   SidebarSpace,
 } from '.';
-import { SidebarSubItem } from './SidebarSubItem';
+import { SidebarSubmenuItem } from './SidebarSubmenuItem';
 import { CatalogSidebarLogo } from './icons/CatalogSidebarLogo';
 import { APIsIcon } from './icons/APIsIcon';
 import { ServicesIcon } from './icons/ServicesIcon';
 import { MiscIcon } from './icons/MiscIcon';
-import { Submenu } from './Submenu';
+import { SidebarSubmenu } from './SidebarSubmenu';
 
 export default {
   title: 'Layout/Sidebar',
@@ -73,17 +73,17 @@ export const SampleScalableSidebar = () => (
       <SidebarSearchField onSearch={handleSearch} to="/search" />
       <SidebarDivider />
       <SidebarItem icon={CatalogSidebarLogo} onClick={() => {}} text="Catalog">
-        <Submenu title="Catalog">
-          <SidebarSubItem title="Tools" to="/1" icon={BuildRoundedIcon} />
-          <SidebarSubItem title="APIs" to="/2" icon={APIsIcon} />
-          <SidebarSubItem title="Services" to="/3" icon={ServicesIcon} />
-          <SidebarSubItem
+        <SidebarSubmenu title="Catalog">
+          <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
+          <SidebarSubmenuItem title="APIs" to="/2" icon={APIsIcon} />
+          <SidebarSubmenuItem title="Services" to="/3" icon={ServicesIcon} />
+          <SidebarSubmenuItem
             title="Libraries"
             to="/4"
             icon={LibraryBooksOutlinedIcon}
           />
-          <SidebarSubItem title="Websites" to="/5" icon={WebOutlinedIcon} />
-          <SidebarSubItem
+          <SidebarSubmenuItem title="Websites" to="/5" icon={WebOutlinedIcon} />
+          <SidebarSubmenuItem
             title="Misc"
             to="/6"
             icon={MiscIcon}
@@ -98,7 +98,7 @@ export const SampleScalableSidebar = () => (
               },
             ]}
           />
-        </Submenu>
+        </SidebarSubmenu>
       </SidebarItem>
       <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
       <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />

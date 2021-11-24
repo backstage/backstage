@@ -1988,19 +1988,31 @@ export const SidebarSpacer: React_2.ComponentType<
 >;
 
 // @public
-export const SidebarSubItem: ({
+export const SidebarSubmenu: ({
+  title,
+  children,
+}: PropsWithChildren<SidebarSubmenuProps>) => JSX.Element;
+
+// @public
+export const SidebarSubmenuItem: ({
   title,
   to,
   icon: Icon,
   dropdownItems,
-}: SidebarSubItemProps) => JSX.Element;
+}: SidebarSubmenuItemProps) => JSX.Element;
 
 // @public
-export type SidebarSubItemProps = {
+export type SidebarSubmenuItemProps = {
   title: string;
   to: string;
   icon: IconComponent;
   dropdownItems?: DropDownItem[];
+};
+
+// @public
+export type SidebarSubmenuProps = {
+  title?: string;
+  children: ReactNode;
 };
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
@@ -2107,18 +2119,6 @@ export type StructuredMetadataTableListClassKey = 'root';
 //
 // @public (undocumented)
 export type StructuredMetadataTableNestedListClassKey = 'root';
-
-// @public
-export const Submenu: ({
-  title,
-  children,
-}: PropsWithChildren<SubmenuProps>) => JSX.Element;
-
-// @public
-export type SubmenuProps = {
-  title?: string;
-  children: ReactNode;
-};
 
 // Warning: (ae-forgotten-export) The symbol "SubvalueCellProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SubvalueCell" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

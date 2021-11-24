@@ -44,7 +44,7 @@ import {
   SidebarContext,
   ItemWithSubmenuContext,
 } from './config';
-import { Submenu } from './Submenu';
+import { SidebarSubmenu } from './SidebarSubmenu';
 
 export type SidebarItemClassKey =
   | 'root'
@@ -410,9 +410,9 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   let hasSubmenu = false;
   let submenu: any;
   const componentType = (
-    <Submenu>
+    <SidebarSubmenu>
       <></>
-    </Submenu>
+    </SidebarSubmenu>
   ).type;
   Children.forEach(children, element => {
     if (!React.isValidElement(element)) return;
