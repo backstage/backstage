@@ -88,6 +88,7 @@ nav:
           - Discovery: 'integrations/aws-s3/discovery.md'
       - Azure:
           - Locations: 'integrations/azure/locations.md'
+          - Discovery: 'integrations/azure/discovery.md'
           - Org Data: 'integrations/azure/org.md'
       - Bitbucket:
           - Locations: 'integrations/bitbucket/locations.md'

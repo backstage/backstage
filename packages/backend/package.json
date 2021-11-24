@@ -52,7 +52,7 @@
     "@backstage/plugin-tech-insights-node": "^0.1.0",
     "@backstage/plugin-tech-insights-backend-module-jsonfc": "^0.1.0",
     "@backstage/plugin-todo-backend": "^0.1.13",
-    "@gitbeaker/node": "^30.2.0",
+    "@gitbeaker/node": "^34.6.0",
     "@octokit/rest": "^18.5.3",
     "azure-devops-node-api": "^11.0.1",
     "dockerode": "^3.3.1",

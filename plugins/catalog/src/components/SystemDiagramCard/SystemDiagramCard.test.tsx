@@ -21,10 +21,9 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { Entity, RELATION_PART_OF } from '@backstage/catalog-model';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { SystemDiagramCard } from './SystemDiagramCard';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<SystemDiagramCard />', () => {
   beforeAll(() => {
@@ -55,11 +54,11 @@ describe('<SystemDiagramCard />', () => {
     };
 
     const { queryByText } = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={entity}>
           <SystemDiagramCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -114,11 +113,11 @@ describe('<SystemDiagramCard />', () => {
     };
 
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={entity}>
           <SystemDiagramCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -173,11 +172,11 @@ describe('<SystemDiagramCard />', () => {
     };
 
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={entity}>
           <SystemDiagramCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,

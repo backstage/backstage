@@ -16,15 +16,15 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { EscalationPolicy } from './EscalationPolicy';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { splunkOnCallApiRef } from '../../api';
 import { MOCKED_ON_CALL, MOCKED_USER } from '../../api/mocks';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 
 const mockSplunkOnCallApi = {
-  getOnCallUsers: () => [],
+  getOnCallUsers: jest.fn(),
 };
-const apis = ApiRegistry.from([[splunkOnCallApiRef, mockSplunkOnCallApi]]);
+const apis = TestApiRegistry.from([splunkOnCallApiRef, mockSplunkOnCallApi]);
 
 describe('Escalation', () => {
   it('Handles an empty response', async () => {

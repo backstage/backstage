@@ -20,11 +20,10 @@ import {
   catalogApiRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { FossaApi, fossaApiRef } from '../../api';
 import { FossaPage } from './FossaPage';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<FossaPage />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
@@ -46,13 +45,15 @@ describe('<FossaPage />', () => {
   let Wrapper: React.ComponentType;
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(fossaApiRef, fossaApi).with(
-      catalogApiRef,
-      catalogApi,
-    );
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider
+        apis={[
+          [fossaApiRef, fossaApi],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
+        {children}
+      </TestApiProvider>
     );
   });
 
