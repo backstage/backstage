@@ -49,20 +49,20 @@ describe('SecureTemplater', () => {
 
     // Same two tests repeated to make sure switching back and forth works
     expect(
-      templater.render('${{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
+      templater.render('{{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
     ).toBe('1');
     expect(
-      templater.render('${{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
-    ).toBe('1');
-    expect(() => templater.render('${{ 1 | jsonify }}', {})).toThrow(
-      '(unknown path)\n  Error: filter not found: jsonify',
-    );
-    expect(
-      templater.render('${{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
+      templater.render('{{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
     ).toBe('1');
     expect(() => templater.render('${{ 1 | jsonify }}', {})).toThrow(
       '(unknown path)\n  Error: filter not found: jsonify',
     );
+    expect(
+      templater.render('{{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
+    ).toBe('1');
+    expect(() => templater.render('${{ 1 | jsonify }}', {})).toThrow(
+      '(unknown path)\n  Error: filter not found: jsonify',
+    );
     expect(() => templater.render('${{ 1 | jsonify }}', {})).toThrow(
       '(unknown path)\n  Error: filter not found: jsonify',
     );
@@ -70,7 +70,7 @@ describe('SecureTemplater', () => {
       '(unknown path)\n  Error: filter not found: jsonify',
     );
     expect(
-      templater.render('${{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
+      templater.render('{{ 1 | jsonify }}', {}, { cookiecutterCompat: true }),
     ).toBe('1');
   });
 

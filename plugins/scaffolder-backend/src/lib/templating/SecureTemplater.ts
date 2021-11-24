@@ -35,6 +35,15 @@ const { render, renderCompat } = (() => {
     },
   });
 
+  const compatEnv = module.exports.configure({
+    autoescape: false,
+    tags: {
+      variableStart: '{{',
+      variableEnd: '}}',
+    },
+  });
+  compatEnv.addFilter('jsonify', compatEnv.getFilter('dump'));
+
   if (typeof parseRepoUrl !== 'undefined') {
     env.addFilter('parseRepoUrl', repoUrl => {
       return JSON.parse(parseRepoUrl(repoUrl))
@@ -52,7 +61,6 @@ const { render, renderCompat } = (() => {
       if (uninstallCompat) {
         uninstallCompat();
         uninstallCompat = undefined;
-        delete env.filters.jsonify;
       }
       return env.renderString(str, JSON.parse(values));
     } catch (error) {
@@ -65,9 +73,8 @@ const { render, renderCompat } = (() => {
     try {
       if (!uninstallCompat) {
         uninstallCompat = module.exports.installJinjaCompat();
-        env.filters.jsonify = env.filters.dump;
       }
-      return env.renderString(str, JSON.parse(values));
+      return compatEnv.renderString(str, JSON.parse(values));
     } catch (error) {
       // Make sure errors don't leak anything
       throw new Error(String(error.message));
