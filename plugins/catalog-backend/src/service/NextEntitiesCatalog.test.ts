@@ -462,7 +462,7 @@ describe('NextEntitiesCatalog', () => {
         };
         await addEntityToSearch(knex, entity1);
         await addEntityToSearch(knex, entity2);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new NextEntitiesCatalog(knex, {} as any, []);
 
         const testFilter = {
           key: 'kind',
