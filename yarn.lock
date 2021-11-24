@@ -5556,16 +5556,16 @@
     util-deprecate "^1.0.2"
 
 "@storybook/addon-actions@^6.1.11":
-  version "6.3.7"
-  resolved "https://registry.npmjs.org/@storybook/addon-actions/-/addon-actions-6.3.7.tgz#b25434972bef351aceb3f7ec6fd66e210f256aac"
-  integrity sha512-CEAmztbVt47Gw1o6Iw0VP20tuvISCEKk9CS/rCjHtb4ubby6+j/bkp3pkEUQIbyLdHiLWFMz0ZJdyA/U6T6jCw==
+  version "6.3.12"
+  resolved "https://registry.npmjs.org/@storybook/addon-actions/-/addon-actions-6.3.12.tgz#69eb5f8f780f1b00456051da6290d4b959ba24a0"
+  integrity sha512-mzuN4Ano4eyicwycM2PueGzzUCAEzt9/6vyptWEIVJu0sjK0J9KtBRlqFi1xGQxmCfimDR/n/vWBBkc7fp2uJA==
   dependencies:
-    "@storybook/addons" "6.3.7"
-    "@storybook/api" "6.3.7"
-    "@storybook/client-api" "6.3.7"
-    "@storybook/components" "6.3.7"
-    "@storybook/core-events" "6.3.7"
-    "@storybook/theming" "6.3.7"
+    "@storybook/addons" "6.3.12"
+    "@storybook/api" "6.3.12"
+    "@storybook/client-api" "6.3.12"
+    "@storybook/components" "6.3.12"
+    "@storybook/core-events" "6.3.12"
+    "@storybook/theming" "6.3.12"
     core-js "^3.8.2"
     fast-deep-equal "^3.1.3"
     global "^4.4.0"
@@ -5841,19 +5841,6 @@
     qs "^6.10.0"
     telejson "^5.3.2"
 
-"@storybook/channel-postmessage@6.3.7":
-  version "6.3.7"
-  resolved "https://registry.npmjs.org/@storybook/channel-postmessage/-/channel-postmessage-6.3.7.tgz#bd4edf84a29aa2cd4a22d26115c60194d289a840"
-  integrity sha512-Cmw8HRkeSF1yUFLfEIUIkUICyCXX8x5Ol/5QPbiW9HPE2hbZtYROCcg4bmWqdq59N0Tp9FQNSn+9ZygPgqQtNw==
-  dependencies:
-    "@storybook/channels" "6.3.7"
-    "@storybook/client-logger" "6.3.7"
-    "@storybook/core-events" "6.3.7"
-    core-js "^3.8.2"
-    global "^4.4.0"
-    qs "^6.10.0"
-    telejson "^5.3.2"
-
 "@storybook/channels@6.3.11":
   version "6.3.11"
   resolved "https://registry.npmjs.org/@storybook/channels/-/channels-6.3.11.tgz#a14ce233367a9072bd1cffef3825f125c27bb0ae"
@@ -5915,30 +5902,6 @@
     "@storybook/channels" "6.3.12"
     "@storybook/client-logger" "6.3.12"
     "@storybook/core-events" "6.3.12"
-    "@storybook/csf" "0.0.1"
-    "@types/qs" "^6.9.5"
-    "@types/webpack-env" "^1.16.0"
-    core-js "^3.8.2"
-    global "^4.4.0"
-    lodash "^4.17.20"
-    memoizerific "^1.11.3"
-    qs "^6.10.0"
-    regenerator-runtime "^0.13.7"
-    stable "^0.1.8"
-    store2 "^2.12.0"
-    ts-dedent "^2.0.0"
-    util-deprecate "^1.0.2"
-
-"@storybook/client-api@6.3.7":
-  version "6.3.7"
-  resolved "https://registry.npmjs.org/@storybook/client-api/-/client-api-6.3.7.tgz#cb1dca05467d777bd09aadbbdd1dd22ca537ce14"
-  integrity sha512-8wOH19cMIwIIYhZy5O5Wl8JT1QOL5kNuamp9GPmg5ff4DtnG+/uUslskRvsnKyjPvl+WbIlZtBVWBiawVdd/yQ==
-  dependencies:
-    "@storybook/addons" "6.3.7"
-    "@storybook/channel-postmessage" "6.3.7"
-    "@storybook/channels" "6.3.7"
-    "@storybook/client-logger" "6.3.7"
-    "@storybook/core-events" "6.3.7"
     "@storybook/csf" "0.0.1"
     "@types/qs" "^6.9.5"
     "@types/webpack-env" "^1.16.0"
@@ -29142,9 +29105,9 @@ write-pkg@^4.0.0:
     write-json-file "^3.2.0"
 
 ws@7.4.5, ws@^7.4.6:
-  version "7.5.5"
-  resolved "https://registry.npmjs.org/ws/-/ws-7.5.5.tgz#8b4bc4af518cfabd0473ae4f99144287b33eb881"
-  integrity sha512-BAkMFcAzl8as1G/hArkxOxq3G7pjUqQ3gzYbLL0/5zNkph70e+lCoxBGnm6AW1+/aiNeV4fnKqZ8m4GZewmH2w==
+  version "7.5.6"
+  resolved "https://registry.npmjs.org/ws/-/ws-7.5.6.tgz#e59fc509fb15ddfb65487ee9765c5a51dec5fe7b"
+  integrity sha512-6GLgCqo2cy2A2rjCNFlxQS6ZljG/coZfZXclldI8FB/1G3CCI36Zd8xy2HrFVACi8tfk5XrgLQEk+P0Tnz9UcA==
 
 ws@7.4.6:
   version "7.4.6"
