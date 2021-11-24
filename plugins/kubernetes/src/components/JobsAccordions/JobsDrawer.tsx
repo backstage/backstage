@@ -34,7 +34,7 @@ export const JobDrawer = ({
         return {
           parallelism: jobObj.spec?.parallelism ?? '???',
           completions: jobObj.spec?.completions ?? '???',
-          backOffLimit: jobObj.spec?.backoffLimit ?? '???',
+          backoffLimit: jobObj.spec?.backoffLimit ?? '???',
           startTime: jobObj.status?.startTime ?? '???',
         };
       }}

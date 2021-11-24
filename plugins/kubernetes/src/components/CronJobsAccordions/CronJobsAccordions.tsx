@@ -82,7 +82,7 @@ const CronJobSummary = ({ cronJob }: CronJobSummaryProps) => {
               ? `${cronJob.spec.schedule} (${cronstrue.toString(
                   cronJob.spec.schedule,
                 )})`
-              : '???'}
+              : 'N/A'}
           </Typography>
         </Grid>
       </Grid>
