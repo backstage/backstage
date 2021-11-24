@@ -208,7 +208,7 @@ metadata:
   labels:
     'backstage.io/kubernetes-id': dice-roller
 spec:
-  schedule: "*/1 * * * *"
+  schedule: '*/1 * * * *'
   jobTemplate:
     metadata:
       labels:
@@ -220,13 +220,13 @@ spec:
             'backstage.io/kubernetes-id': dice-roller
         spec:
           containers:
-          - name: busybox
-            image: busybox
-            imagePullPolicy: IfNotPresent
-            command:
-            - /bin/sh
-            - -c
-            - date; echo Rolling a die!
+            - name: busybox
+              image: busybox
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - date; echo Rolling a die!
           restartPolicy: OnFailure
 
 ---
