@@ -17,12 +17,23 @@
 import mockFs from 'mock-fs';
 import * as winston from 'winston';
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, resolvePackagePath } from '@backstage/backend-common';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { TaskContext, TaskSpec } from './types';
+
+const realFiles = Object.fromEntries(
+  [
+    require.resolve('vm2/lib/fixasync'),
+    resolvePackagePath(
+      '@backstage/plugin-scaffolder-backend',
+      'assets',
+      'nunjucks.js.txt',
+    ),
+  ].map(k => [k, mockFs.load(k)]),
+);
 
 describe('DefaultWorkflowRunner', () => {
   const logger = getVoidLogger();
@@ -50,6 +61,7 @@ describe('DefaultWorkflowRunner', () => {
     winston.format.simple(); // put logform the require cache before mocking fs
     mockFs({
       '/tmp': mockFs.directory(),
+      ...realFiles,
     });
 
     jest.resetAllMocks();

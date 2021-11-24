@@ -26,6 +26,7 @@ import {
 import * as winston from 'winston';
 import fs from 'fs-extra';
 import path from 'path';
+import nunjucks from 'nunjucks';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { PassThrough } from 'stream';
@@ -102,7 +103,17 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   }
 
   private isSingleTemplateString(input: string) {
-    const { parser, nodes } = require('nunjucks');
+    const { parser, nodes } = nunjucks as unknown as {
+      parser: {
+        parse(
+          template: string,
+          ctx: object,
+          options: nunjucks.ConfigureOptions,
+        ): { children: { children?: unknown[] }[] };
+      };
+      nodes: { TemplateData: Function };
+    };
+
     const parsed = parser.parse(
       input,
       {},
