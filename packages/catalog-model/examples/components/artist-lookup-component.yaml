@@ -3,7 +3,7 @@ kind: Component
 metadata:
   annotations:
       buildkite.com/project-slug: nutrien/digital-k8s
-      backstage.io/techdocs-ref: url:https://github.com/backstage/backstage/tree/master
+      backstage.io/techdocs-ref: url:https://github.com/jsqcloud/backstage/tree/master
   name: artist-lookup
   description: Artist Lookup
   tags:
