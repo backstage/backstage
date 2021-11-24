@@ -50,6 +50,8 @@ const NUNJUCKS_LICENSE = `/**
  */
 `;
 
+// This script is used to bundle nunjucks into a single script that is
+// loaded into a sandbox for executing templates.
 require('esbuild')
   .build({
     entryPoints: [require.resolve('nunjucks')],
