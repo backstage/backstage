@@ -35,9 +35,7 @@ describe('SecureTemplater', () => {
       render('${{ invalid...syntax }}', {
         test: 'my-value',
       }),
-    ).toThrow(
-      '(unknown path) [Line 1, Column 13]\n  expected name as lookup value, got .',
-    );
+    ).toThrow(/expected name as lookup value, got ./);
   });
 
   it('should make cookiecutter compatibility available when requested', async () => {
@@ -50,17 +48,17 @@ describe('SecureTemplater', () => {
     expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
     expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
     expect(() => renderWithout('${{ 1 | jsonify }}', {})).toThrow(
-      '(unknown path)\n  Error: filter not found: jsonify',
+      /Error: filter not found: jsonify/,
     );
     expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
     expect(() => renderWithout('${{ 1 | jsonify }}', {})).toThrow(
-      '(unknown path)\n  Error: filter not found: jsonify',
+      /Error: filter not found: jsonify/,
     );
     expect(() => renderWithout('${{ 1 | jsonify }}', {})).toThrow(
-      '(unknown path)\n  Error: filter not found: jsonify',
+      /Error: filter not found: jsonify/,
     );
     expect(() => renderWithout('${{ 1 | jsonify }}', {})).toThrow(
-      '(unknown path)\n  Error: filter not found: jsonify',
+      /Error: filter not found: jsonify/,
     );
     expect(renderWith('{{ 1 | jsonify }}', {})).toBe('1');
   });
@@ -90,9 +88,9 @@ describe('SecureTemplater', () => {
     );
     expect(() =>
       renderWithout('${{ repoUrl | parseRepoUrl | dump }}', ctx),
-    ).toThrow('(unknown path)\n  Error: filter not found: parseRepoUrl');
+    ).toThrow(/Error: filter not found: parseRepoUrl/);
     expect(() => renderWithout('${{ repoUrl | projectSlug }}', ctx)).toThrow(
-      '(unknown path)\n  Error: filter not found: projectSlug',
+      /Error: filter not found: projectSlug/,
     );
 
     expect(parseRepoUrl.mock.calls).toEqual([
@@ -142,8 +140,6 @@ describe('SecureTemplater', () => {
         ctx,
       ),
     ).toBe('');
-    expect(() => render('${{ x }}', ctx)).toThrow(
-      `TypeError: Cannot read property 'length' of undefined`,
-    );
+    expect(() => render('${{ x }}', ctx)).toThrow();
   });
 });
