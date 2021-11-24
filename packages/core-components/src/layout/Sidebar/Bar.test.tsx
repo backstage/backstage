@@ -26,34 +26,43 @@ import { Sidebar, SidebarExpandButton } from './Bar';
 import { SidebarItem, SidebarSearchField } from './Items';
 import { SidebarSubItem } from './SidebarSubItem';
 import { Submenu } from './Submenu';
+import { SidebarPinStateContext } from '.';
 
 async function renderScalableSidebar() {
   await renderInTestApp(
-    <Sidebar disableExpandOnHover>
-      <SidebarSearchField onSearch={() => {}} to="/search" />
-      <SidebarItem icon={CatalogSidebarLogo} onClick={() => {}} text="Catalog">
-        <Submenu title="Catalog">
-          <SidebarSubItem title="Tools" to="/1" icon={BuildRoundedIcon} />
-          <SidebarSubItem
-            title="Misc"
-            to="/6"
-            icon={MiscIcon}
-            dropdownItems={[
-              {
-                title: 'dropdown item 1',
-                to: '/dropdownitemlink',
-              },
-              {
-                title: 'dropdown item 2',
-                to: '/dropdownitemlink2',
-              },
-            ]}
-          />
-        </Submenu>
-      </SidebarItem>
-      <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
-      <SidebarExpandButton />
-    </Sidebar>,
+    <SidebarPinStateContext.Provider
+      value={{ isPinned: false, toggleSidebarPinState: () => {} }}
+    >
+      <Sidebar disableExpandOnHover>
+        <SidebarSearchField onSearch={() => {}} to="/search" />
+        <SidebarItem
+          icon={CatalogSidebarLogo}
+          onClick={() => {}}
+          text="Catalog"
+        >
+          <Submenu title="Catalog">
+            <SidebarSubItem title="Tools" to="/1" icon={BuildRoundedIcon} />
+            <SidebarSubItem
+              title="Misc"
+              to="/6"
+              icon={MiscIcon}
+              dropdownItems={[
+                {
+                  title: 'dropdown item 1',
+                  to: '/dropdownitemlink',
+                },
+                {
+                  title: 'dropdown item 2',
+                  to: '/dropdownitemlink2',
+                },
+              ]}
+            />
+          </Submenu>
+        </SidebarItem>
+        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+        <SidebarExpandButton />
+      </Sidebar>
+    </SidebarPinStateContext.Provider>,
   );
 }
 
