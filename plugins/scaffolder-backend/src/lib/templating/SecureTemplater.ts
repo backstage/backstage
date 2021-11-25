@@ -111,7 +111,7 @@ export class SecureTemplater {
       };
     }
 
-    const vm = new VM({ timeout: 1000, sandbox });
+    const vm = new VM({ sandbox });
 
     const nunjucksSource = await fs.readFile(
       resolvePackagePath(
