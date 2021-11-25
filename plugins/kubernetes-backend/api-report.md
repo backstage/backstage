@@ -10,6 +10,7 @@ import type { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger as Logger_2 } from 'winston';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { PodStatus } from '@kubernetes/client-node/dist/top';
 
 // Warning: (ae-missing-release-tag) "AWSClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -164,6 +165,11 @@ export interface KubernetesFetcher {
   fetchObjectsForService(
     params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper>;
+  // (undocumented)
+  fetchPodMetricsByNamespace(
+    clusterDetails: ClusterDetails,
+    namespace: string,
+  ): Promise<PodStatus[]>;
 }
 
 // Warning: (ae-missing-release-tag) "KubernetesObjectsProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
