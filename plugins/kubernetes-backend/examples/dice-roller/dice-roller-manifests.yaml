@@ -201,6 +201,35 @@ spec:
   targetCPUUtilizationPercentage: 50
 
 ---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dice-roller-cronjob
+  labels:
+    'backstage.io/kubernetes-id': dice-roller
+spec:
+  schedule: '*/1 * * * *'
+  jobTemplate:
+    metadata:
+      labels:
+        'backstage.io/kubernetes-id': dice-roller
+    spec:
+      template:
+        metadata:
+          labels:
+            'backstage.io/kubernetes-id': dice-roller
+        spec:
+          containers:
+            - name: busybox
+              image: busybox
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - date; echo Rolling a die!
+          restartPolicy: OnFailure
+
+---
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:

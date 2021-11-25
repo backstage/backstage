@@ -69,6 +69,18 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     objectType: 'horizontalpodautoscalers',
   },
   {
+    group: 'batch',
+    apiVersion: 'v1',
+    plural: 'jobs',
+    objectType: 'jobs',
+  },
+  {
+    group: 'batch',
+    apiVersion: 'v1',
+    plural: 'cronjobs',
+    objectType: 'cronjobs',
+  },
+  {
     group: 'networking.k8s.io',
     apiVersion: 'v1',
     plural: 'ingresses',
