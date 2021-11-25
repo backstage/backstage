@@ -17,7 +17,7 @@
 import { JWKS, JWK, JWT } from 'jose';
 import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
-import { TokenManager } from './types';
+import { ServerIdentity, TokenManager } from './types';
 
 /**
  * Creates and validates tokens for use during backend-to-backend
@@ -26,7 +26,9 @@ import { TokenManager } from './types';
  * @public
  */
 export class ServerTokenManager implements TokenManager {
-  private readonly keyStore: JWKS.KeyStore;
+  private readonly verificationKeys: JWKS.KeyStore | JWK.NoneKey;
+  private readonly signingKey: JWK.Key | JWK.NoneKey;
+  private readonly signingAlgorithm: string | undefined;
 
   static noop() {
     return new ServerTokenManager();
@@ -41,35 +43,35 @@ export class ServerTokenManager implements TokenManager {
   }
 
   private constructor(secrets?: string[]) {
-    this.keyStore = new JWKS.KeyStore(
-      secrets?.length
-        ? secrets.map(secret => JWK.asKey({ kty: 'oct', k: secret }))
-        : [],
-    );
+    if (secrets?.length) {
+      this.verificationKeys = new JWKS.KeyStore(
+        secrets.map(k => JWK.asKey({ kty: 'oct', k })),
+      );
+      this.signingKey = this.verificationKeys.all()[0];
+      this.signingAlgorithm = 'HS256';
+    } else {
+      this.verificationKeys = this.signingKey = JWK.None;
+    }
   }
 
-  async getToken(): Promise<{ token: string }> {
-    if (this.keyStore.size === 0) {
-      return { token: '' };
-    }
-
-    const jwt = JWT.sign({ sub: 'backstage-server' }, this.keyStore.all()[0], {
-      algorithm: 'HS256',
+  async getToken(pluginId: string): Promise<{ token: string }> {
+    // TODO(mtlewis): should we wrap pluginId in a urn?
+    const jwt = JWT.sign({ sub: pluginId }, this.signingKey, {
+      algorithm: this.signingAlgorithm,
     });
 
     return { token: jwt };
   }
 
-  validateToken(token: string): void {
-    if (this.keyStore.size === 0) {
-      return;
-    }
-
+  async authenticate(token: string): Promise<ServerIdentity> {
+    let decodedJwt = {};
     try {
-      JWT.verify(token, this.keyStore);
-      return;
+      JWT.verify(token, this.verificationKeys);
+      decodedJwt = JWT.decode(token);
     } catch (e) {
       throw new AuthenticationError('Invalid server token');
     }
+
+    return { pluginId: decodedJwt.sub, token };
   }
 }

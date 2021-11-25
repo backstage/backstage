@@ -29,36 +29,46 @@ describe('ServerTokenManager', () => {
   describe('getToken', () => {
     it('should return a token if secret in config exists', async () => {
       const tokenManager = ServerTokenManager.fromConfig(configWithSecret);
-      expect((await tokenManager.getToken()).token).toBeDefined();
+      expect((await tokenManager.getToken('test-plugin')).token).toBeDefined();
     });
 
-    it('should return an empty string if using a noop TokenManager', async () => {
+    it('should return a token string if using a noop TokenManager', async () => {
       const tokenManager = ServerTokenManager.noop();
-      expect((await tokenManager.getToken()).token).toBe('');
+      expect((await tokenManager.getToken('test-plugin')).token).toBeDefined();
     });
   });
 
-  describe('validateToken', () => {
+  describe('authenticate', () => {
     it('should not throw if token is valid', async () => {
       const tokenManager = ServerTokenManager.fromConfig(configWithSecret);
-      const { token } = await tokenManager.getToken();
-      expect(() => tokenManager.validateToken(token)).not.toThrow();
+      const { token } = await tokenManager.getToken('test-plugin');
+      await expect(tokenManager.authenticate(token)).resolves.not.toThrow();
     });
 
-    it('should throw if token is invalid', () => {
+    it('should allow retrieving the pluginId from valid tokens', async () => {
       const tokenManager = ServerTokenManager.fromConfig(configWithSecret);
-      expect(() => tokenManager.validateToken('random-string')).toThrowError(
-        /invalid server token/i,
-      );
+      const { token } = await tokenManager.getToken('test-plugin-123');
+
+      await expect(tokenManager.authenticate(token)).resolves.toEqual({
+        pluginId: 'test-plugin-123',
+        token,
+      });
+    });
+
+    it('should throw if token is invalid', async () => {
+      const tokenManager = ServerTokenManager.fromConfig(configWithSecret);
+      await expect(
+        tokenManager.authenticate('random-string'),
+      ).rejects.toThrowError(/invalid server token/i);
     });
 
     it('should validate server tokens created by a different instance using the same secret', async () => {
       const tokenManager1 = ServerTokenManager.fromConfig(configWithSecret);
       const tokenManager2 = ServerTokenManager.fromConfig(configWithSecret);
 
-      const { token } = await tokenManager1.getToken();
+      const { token } = await tokenManager1.getToken('test-plugin');
 
-      expect(() => tokenManager2.validateToken(token)).not.toThrow();
+      await expect(tokenManager2.authenticate(token)).resolves.not.toThrow();
     });
 
     it('should validate server tokens created using any of the secrets', async () => {
@@ -80,11 +90,11 @@ describe('ServerTokenManager', () => {
         }),
       );
 
-      const { token: token1 } = await tokenManager1.getToken();
-      expect(() => tokenManager3.validateToken(token1)).not.toThrow();
+      const { token: token1 } = await tokenManager1.getToken('test-plugin');
+      await expect(tokenManager3.authenticate(token1)).resolves.not.toThrow();
 
-      const { token: token2 } = await tokenManager2.getToken();
-      expect(() => tokenManager3.validateToken(token2)).not.toThrow();
+      const { token: token2 } = await tokenManager2.getToken('test-plugin');
+      await expect(tokenManager3.authenticate(token2)).resolves.not.toThrow();
     });
 
     it('should throw for server tokens created using a different secret', async () => {
@@ -99,9 +109,24 @@ describe('ServerTokenManager', () => {
         }),
       );
 
-      const { token } = await tokenManager1.getToken();
+      const { token } = await tokenManager1.getToken('test-plugin');
 
-      expect(() => tokenManager2.validateToken(token)).toThrowError(
+      await expect(tokenManager2.authenticate(token)).rejects.toThrowError(
+        /invalid server token/i,
+      );
+    });
+
+    it('should throw for server tokens created using a noop TokenManager', async () => {
+      const noopTokenManager = ServerTokenManager.noop();
+      const tokenManager = ServerTokenManager.fromConfig(
+        new ConfigReader({
+          backend: { auth: { keys: [{ secret: 'a1b2c3' }] } },
+        }),
+      );
+
+      const { token } = await noopTokenManager.getToken('test-plugin');
+
+      await expect(tokenManager.authenticate(token)).rejects.toThrowError(
         /invalid server token/i,
       );
     });
@@ -115,19 +140,40 @@ describe('ServerTokenManager', () => {
     });
 
     it('should accept tokens it generates', async () => {
-      const { token } = await noopTokenManager.getToken();
+      const { token } = await noopTokenManager.getToken('test-plugin');
 
-      expect(() => noopTokenManager.validateToken(token)).not.toThrow();
+      await expect(noopTokenManager.authenticate(token)).resolves.not.toThrow();
     });
 
-    it('should accept arbitrary strings', async () => {
-      expect(() =>
-        noopTokenManager.validateToken('random-string'),
-      ).not.toThrow();
+    it('should accept tokens generated by other noop token managers', async () => {
+      const noopTokenManager2 = ServerTokenManager.noop();
+      await expect(
+        noopTokenManager.authenticate(
+          (
+            await noopTokenManager2.getToken('test-plugin')
+          ).token,
+        ),
+      ).resolves.not.toThrow();
     });
 
-    it('should accept empty strings', async () => {
-      expect(() => noopTokenManager.validateToken('')).not.toThrow();
+    it('should not accept signed tokens', async () => {
+      const tokenManager = ServerTokenManager.fromConfig(configWithSecret);
+      await expect(
+        noopTokenManager.authenticate(
+          (
+            await tokenManager.getToken('test-plugin')
+          ).token,
+        ),
+      ).rejects.toThrowError(/invalid server token/i);
+    });
+
+    it('should allow retrieving the pluginId from valid tokens', async () => {
+      const { token } = await noopTokenManager.getToken('test-plugin-123');
+
+      await expect(noopTokenManager.authenticate(token)).resolves.toEqual({
+        pluginId: 'test-plugin-123',
+        token,
+      });
     });
   });
 });

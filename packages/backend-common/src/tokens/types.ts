@@ -15,11 +15,29 @@
  */
 
 /**
+ * A (pluginId, token) pair.
+ *
+ * @public
+ */
+export type ServerIdentity = {
+  /**
+   * The ID of the plugin backend to which this
+   * identity corresponds.
+   */
+  pluginId: string;
+
+  /**
+   * The token used to authenticate the plugin backend.
+   */
+  token: string;
+};
+
+/**
  * Interface for creating and validating tokens.
  *
  * @public
  */
 export interface TokenManager {
-  getToken: () => Promise<{ token: string }>;
-  validateToken: (token: string) => void;
+  getToken: (pluginId: string) => Promise<{ token: string }>;
+  authenticate: (token: string) => Promise<ServerIdentity | undefined>;
 }
