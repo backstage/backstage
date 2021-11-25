@@ -21,8 +21,6 @@ import { WithPermission } from './WithPermission';
 import { usePermission } from '../hooks/usePermission';
 
 jest.mock('../hooks/usePermission', () => ({
-  AsyncPermissionResult: jest.requireActual('../hooks/usePermission')
-    .AsyncPermissionResult,
   usePermission: jest.fn(),
 }));
 

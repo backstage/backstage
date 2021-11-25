@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export * from './usePermission';
+export { usePermission } from './usePermission';
+export type { AsyncPermissionResult } from './usePermission';

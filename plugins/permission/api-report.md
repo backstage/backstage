@@ -6,6 +6,8 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AuthorizeRequest } from '@backstage/plugin-permission-common';
 import { AuthorizeResponse } from '@backstage/plugin-permission-common';
+import { Config } from '@backstage/config';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionClient } from '@backstage/plugin-permission-common';
@@ -26,6 +28,16 @@ export class IdentityPermissionApi implements PermissionApi {
   authorize(
     requests: Array<AuthorizeRequest>,
   ): Promise<Array<AuthorizeResponse>>;
+  // (undocumented)
+  static create({
+    configApi,
+    discoveryApi,
+    identityApi,
+  }: {
+    configApi: Config;
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  }): IdentityPermissionApi;
 }
 
 // @public

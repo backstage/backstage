@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-permission': patch
+'@backstage/plugin-permission': minor
 ---
 
 Add @backstage/plugin-permission
