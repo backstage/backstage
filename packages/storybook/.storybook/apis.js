@@ -11,6 +11,7 @@ import {
   OktaAuth,
   Auth0Auth,
   ConfigReader,
+  LocalStorageFeatureFlags,
 } from '@backstage/core-app-api';
 
 import {
@@ -25,9 +26,12 @@ import {
   oktaAuthApiRef,
   auth0AuthApiRef,
   configApiRef,
+  featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
 
 const builder = ApiRegistry.builder();
+
+builder.add(featureFlagsApiRef, new LocalStorageFeatureFlags());
 
 builder.add(configApiRef, new ConfigReader({}));
 

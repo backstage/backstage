@@ -133,7 +133,6 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
     dropdownItems.some(item => {
       const resolvedPath = resolvePath(item.to);
       isActive = locationPathname === resolvedPath.pathname;
-      return isActive;
     });
     return (
       <div className={classes.itemContainer}>

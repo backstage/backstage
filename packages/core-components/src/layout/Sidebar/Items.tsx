@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '@backstage/core-plugin-api';
+import { IconComponent, useElementFilter } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, styled, Theme } from '@material-ui/core/styles';
 import Badge from '@material-ui/core/Badge';
@@ -173,25 +173,16 @@ type ItemWithSubmenuProps = {
   icon: IconComponent;
   submenu: ReactNode;
 };
-const ItemWithSubmenu = ({
-  label,
-  hasNotifications = false,
-  icon: Icon,
-  submenu,
-}: ItemWithSubmenuProps) => {
-  const classes = useStyles();
-  const [isHoveredOn, setIsHoveredOn] = useState(false);
+
+function isItemWithSubmenuActive(submenu: ReactNode, locationPathname: string) {
+  // Item is active if any of submenu items have active paths
+  const toPathnames: string[] = [];
+  let isActive = false;
   let submenuItems: ReactNode;
   Children.forEach(submenu, element => {
     if (!React.isValidElement(element)) return;
     submenuItems = element.props.children;
   });
-
-  const toPathnames: string[] = [];
-  let isActive;
-  const { pathname: locationPathname } = useLocation();
-
-  // SidebarItem is active if any of submenu items have active paths
   Children.forEach(submenuItems, element => {
     if (!React.isValidElement(element)) return;
     if (element.props.dropdownItems) {
@@ -202,11 +193,23 @@ const ItemWithSubmenu = ({
       toPathnames.push(element.props.to);
     }
   });
-  toPathnames.some(to => {
+  isActive = toPathnames.some(to => {
     const toPathname = resolvePath(to);
-    isActive = locationPathname === toPathname.pathname;
-    return isActive;
+    return locationPathname === toPathname.pathname;
   });
+  return isActive;
+}
+
+const ItemWithSubmenu = ({
+  label,
+  hasNotifications = false,
+  icon: Icon,
+  submenu,
+}: ItemWithSubmenuProps) => {
+  const classes = useStyles();
+  const [isHoveredOn, setIsHoveredOn] = useState(false);
+  const { pathname: locationPathname } = useLocation();
+  const isActive = isItemWithSubmenuActive(submenu, locationPathname);
 
   const handleMouseEnter = () => {
     setIsHoveredOn(true);
@@ -408,19 +411,30 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   };
 
   let hasSubmenu = false;
-  let submenu: any;
+  let submenu: ReactNode;
   const componentType = (
     <SidebarSubmenu>
       <></>
     </SidebarSubmenu>
   ).type;
-  Children.forEach(children, element => {
-    if (!React.isValidElement(element)) return;
-    if (element.type === componentType) {
-      submenu = element;
-      hasSubmenu = true;
-    }
-  });
+  // Filter children for SidebarSubmenu components
+  const submenus = useElementFilter(children, elements =>
+    elements
+      .getElements()
+      .filter(
+        child => React.isValidElement(child) && child.type === componentType,
+      ),
+  );
+  // Error thrown if more than one SidebarSubmenu in a SidebarItem
+  if (submenus.length > 1) {
+    throw new Error(
+      'Cannot render more than one SidebarSubmenu inside a SidebarItem',
+    );
+  } else if (submenus.length === 1) {
+    hasSubmenu = true;
+    submenu = submenus[0];
+  }
+
   if (hasSubmenu) {
     return (
       <ItemWithSubmenu
