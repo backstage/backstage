@@ -1,5 +1,14 @@
 # @backstage/core-components
 
+## 0.7.5
+
+### Patch Changes
+
+- 157530187a: Pin sidebar by default for easier navigation
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/core-plugin-api@0.2.1
+
 ## 0.7.4
 
 ### Patch Changes
