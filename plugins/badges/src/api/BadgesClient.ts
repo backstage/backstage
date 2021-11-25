@@ -52,7 +52,7 @@ export class BadgesClient implements BadgesApi {
 
   private async getEntityBadgeSpecsUrl(entity: Entity): Promise<string> {
     const routeParams = this.getEntityRouteParams(entity);
-    const path = generatePath(`:kind/:namespace/:name`, routeParams);
+    const path = generatePath(`:namespace/:kind/:name`, routeParams);
     return `${await this.discoveryApi.getBaseUrl(
       'badges',
     )}/entity/${path}/badge-specs`;
