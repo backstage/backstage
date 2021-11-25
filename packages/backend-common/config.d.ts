@@ -23,8 +23,9 @@ export interface Config {
     /** Backend configuration for when request authentication is enabled */
     auth?: {
       /**
-       * Secret shared by all backends for generating tokens
-       * Format is base64 24-bit key
+       * Secret shared by all backends for generating tokens. Should be
+       * a base64 string, recommended length is 24 bytes.
+       *
        * @visibility secret
        */
       secret: string;
