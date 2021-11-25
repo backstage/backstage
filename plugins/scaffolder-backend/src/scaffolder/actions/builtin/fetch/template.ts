@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath, extname } from 'path';
+import { extname } from 'path';
 import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
@@ -114,7 +114,7 @@ export function createFetchTemplateAction(options: {
       ctx.logger.info('Fetching template content from remote URL');
 
       const workDir = await ctx.createTemporaryDirectory();
-      const templateDir = resolvePath(workDir, 'template');
+      const templateDir = resolveSafeChildPath(workDir, 'template');
 
       const targetPath = ctx.input.targetPath ?? './';
       const outputDir = resolveSafeChildPath(ctx.workspacePath, targetPath);
@@ -240,7 +240,7 @@ export function createFetchTemplateAction(options: {
         if (renderFilename) {
           localOutputPath = templater.renderString(localOutputPath, context);
         }
-        const outputPath = resolvePath(outputDir, localOutputPath);
+        const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
         // variables have been expanded to make an empty file name
         // this is due to a conditional like if values.my_condition then file-name.txt else empty string so skip
         if (outputDir === outputPath) {
@@ -259,7 +259,7 @@ export function createFetchTemplateAction(options: {
           );
           await fs.ensureDir(outputPath);
         } else {
-          const inputFilePath = resolvePath(templateDir, location);
+          const inputFilePath = resolveSafeChildPath(templateDir, location);
 
           if (await isBinaryFile(inputFilePath)) {
             ctx.logger.info(

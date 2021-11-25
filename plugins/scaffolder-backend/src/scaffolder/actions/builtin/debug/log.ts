@@ -15,7 +15,7 @@
  */
 
 import { readdir, stat } from 'fs-extra';
-import { relative, resolve } from 'path';
+import { relative, join } from 'path';
 import { createTemplateAction } from '../../createTemplateAction';
 
 /**
@@ -68,7 +68,7 @@ export async function recursiveReadDir(dir: string): Promise<string[]> {
   const subdirs = await readdir(dir);
   const files = await Promise.all(
     subdirs.map(async subdir => {
-      const res = resolve(dir, subdir);
+      const res = join(dir, subdir);
       return (await stat(res)).isDirectory() ? recursiveReadDir(res) : [res];
     }),
   );
