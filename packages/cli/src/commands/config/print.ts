@@ -19,8 +19,17 @@ import { stringify as stringifyYaml } from 'yaml';
 import { AppConfig, ConfigReader } from '@backstage/config';
 import { loadCliConfig } from '../../lib/config';
 import { ConfigSchema, ConfigVisibility } from '@backstage/config-loader';
+import chalk from 'chalk';
 
 export default async (cmd: Command) => {
+  if (cmd.lax) {
+    console.warn(
+      chalk.yellow(
+        '[DEPRECATED] - The lax argument is deprecated and will be removed in the future.',
+      ),
+    );
+  }
+
   const { schema, appConfigs } = await loadCliConfig({
     args: cmd.config,
     fromPackage: cmd.package,

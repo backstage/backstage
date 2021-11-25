@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
+import chalk from 'chalk';
 import { Command } from 'commander';
 import { loadCliConfig } from '../../lib/config';
 
 export default async (cmd: Command) => {
+  if (cmd.lax) {
+    console.warn(
+      chalk.yellow(
+        '[DEPRECATED] - The lax argument is deprecated and will be removed in the future.',
+      ),
+    );
+  }
   await loadCliConfig({
     args: cmd.config,
     fromPackage: cmd.package,
