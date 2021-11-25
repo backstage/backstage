@@ -216,19 +216,16 @@ export class KubernetesFanOutHandler {
             customResources: this.customResources,
           })
           .then(result => {
-            // TODO refactor
-            const namespaces: string[] = result.responses
-              .filter(isPodFetchResponse)
-              .map(r => r.resources[0]?.metadata?.namespace)
-              .filter(isString);
-
-            this.logger.info(
-              `fetching metrics for entity.metadata.name=${entityName} namespaces=[${namespaces.join(
-                ', ',
-              )}]`,
+            // TODO refactor, extract as method
+            const namespaces: Set<string> = new Set<string>(
+              result.responses
+                .filter(isPodFetchResponse)
+                .flatMap(r => r.resources)
+                .map(p => p.metadata?.namespace)
+                .filter(isString),
             );
 
-            const podMetrics = namespaces.flatMap(ns =>
+            const podMetrics = Array.from(namespaces).map(ns =>
               this.fetcher.fetchPodMetricsByNamespace(clusterDetailsItem, ns),
             );
 

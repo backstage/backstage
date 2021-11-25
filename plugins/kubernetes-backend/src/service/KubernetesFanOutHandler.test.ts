@@ -15,13 +15,29 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { ObjectFetchParams } from '../types/types';
+import { ClusterDetails, ObjectFetchParams } from '../types/types';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
+import { PodStatus } from '@kubernetes/client-node/dist/top';
 
 const fetchObjectsForService = jest.fn();
 const fetchPodMetricsByNamespace = jest.fn();
 
 const getClustersByServiceId = jest.fn();
+
+const POD_METRICS_FIXTURE = {
+  containers: [],
+  cpu: {
+    currentUsage: 100,
+    limitTotal: 102,
+    requestTotal: 101,
+  },
+  memory: {
+    currentUsage: '1000',
+    limitTotal: '1002',
+    requestTotal: '1001',
+  },
+  pod: {},
+};
 
 const mockFetch = (mock: jest.Mock) => {
   mock.mockImplementation((params: ObjectFetchParams) =>
@@ -33,6 +49,34 @@ const mockFetch = (mock: jest.Mock) => {
     ),
   );
 };
+
+const mockMetrics = (mock: jest.Mock) => {
+  mock.mockImplementation((clusterDetails: ClusterDetails, namespace: string) =>
+    Promise.resolve(generatePodStatus(clusterDetails.name, namespace)),
+  );
+};
+
+function generatePodStatus(
+  _clusterName: string,
+  _namespace: string,
+): PodStatus[] {
+  return [
+    {
+      Pod: {},
+      CPU: {
+        CurrentUsage: 100,
+        RequestTotal: 101,
+        LimitTotal: 102,
+      },
+      Memory: {
+        CurrentUsage: BigInt('1000'),
+        RequestTotal: BigInt('1001'),
+        LimitTotal: BigInt('1002'),
+      },
+      Containers: [],
+    },
+  ] as any;
+}
 
 function generateMockResourcesAndErrors(
   serviceId: string,
@@ -85,6 +129,7 @@ function generateMockResourcesAndErrors(
           {
             metadata: {
               name: `my-pods-${serviceId}-${clusterName}`,
+              namespace: `ns-${serviceId}-${clusterName}`,
             },
           },
         ],
@@ -95,6 +140,7 @@ function generateMockResourcesAndErrors(
           {
             metadata: {
               name: `my-configmaps-${serviceId}-${clusterName}`,
+              namespace: `ns-${serviceId}-${clusterName}`,
             },
           },
         ],
@@ -105,6 +151,7 @@ function generateMockResourcesAndErrors(
           {
             metadata: {
               name: `my-services-${serviceId}-${clusterName}`,
+              namespace: `ns-${serviceId}-${clusterName}`,
             },
           },
         ],
@@ -129,6 +176,7 @@ describe('handleGetKubernetesObjectsForService', () => {
     );
 
     mockFetch(fetchObjectsForService);
+    mockMetrics(fetchPodMetricsByNamespace);
 
     const sut = new KubernetesFanOutHandler({
       logger: getVoidLogger(),
@@ -163,6 +211,11 @@ describe('handleGetKubernetesObjectsForService', () => {
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(1);
+    expect(fetchPodMetricsByNamespace.mock.calls.length).toBe(1);
+    expect(fetchPodMetricsByNamespace.mock.calls[0][1]).toBe(
+      'ns-test-component-test-cluster',
+    );
+
     expect(result).toStrictEqual({
       items: [
         {
@@ -170,13 +223,14 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'test-cluster',
           },
           errors: [],
-          podMetrics: [],
+          podMetrics: [POD_METRICS_FIXTURE],
           resources: [
             {
               resources: [
                 {
                   metadata: {
                     name: 'my-pods-test-component-test-cluster',
+                    namespace: 'ns-test-component-test-cluster',
                   },
                 },
               ],
@@ -187,6 +241,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-configmaps-test-component-test-cluster',
+                    namespace: 'ns-test-component-test-cluster',
                   },
                 },
               ],
@@ -197,10 +252,129 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-services-test-component-test-cluster',
+                    namespace: 'ns-test-component-test-cluster',
                   },
                 },
               ],
               type: 'services',
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  it('dont call top for the same namespace twice', async () => {
+    getClustersByServiceId.mockImplementation(() =>
+      Promise.resolve([
+        {
+          name: 'test-cluster',
+          authProvider: 'serviceAccount',
+        },
+      ]),
+    );
+
+    fetchObjectsForService.mockImplementation((_: ObjectFetchParams) =>
+      Promise.resolve({
+        errors: [],
+        responses: [
+          {
+            type: 'pods',
+            resources: [
+              {
+                metadata: {
+                  name: `pod1`,
+                  namespace: `ns-a`,
+                },
+              },
+              {
+                metadata: {
+                  name: `pod2`,
+                  namespace: `ns-a`,
+                },
+              },
+              {
+                metadata: {
+                  name: `pod3`,
+                  namespace: `ns-b`,
+                },
+              },
+            ],
+          },
+        ],
+      }),
+    );
+
+    mockMetrics(fetchPodMetricsByNamespace);
+
+    const sut = new KubernetesFanOutHandler({
+      logger: getVoidLogger(),
+      fetcher: {
+        fetchObjectsForService,
+        fetchPodMetricsByNamespace,
+      },
+      serviceLocator: {
+        getClustersByServiceId,
+      },
+      customResources: [],
+    });
+
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity: {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
+        metadata: {
+          name: 'test-component',
+          annotations: {
+            'backstage.io/kubernetes-labels-selector':
+              'backstage.io/test-label=test-component',
+          },
+        },
+        spec: {
+          type: 'service',
+          lifecycle: 'production',
+          owner: 'joe',
+        },
+      },
+    });
+
+    expect(getClustersByServiceId.mock.calls.length).toBe(1);
+    expect(fetchObjectsForService.mock.calls.length).toBe(1);
+    expect(fetchPodMetricsByNamespace.mock.calls.length).toBe(2);
+    expect(fetchPodMetricsByNamespace.mock.calls[0][1]).toBe('ns-a');
+    expect(fetchPodMetricsByNamespace.mock.calls[1][1]).toBe('ns-b');
+
+    expect(result).toStrictEqual({
+      items: [
+        {
+          cluster: {
+            name: 'test-cluster',
+          },
+          errors: [],
+          podMetrics: [POD_METRICS_FIXTURE, POD_METRICS_FIXTURE],
+          resources: [
+            {
+              resources: [
+                {
+                  metadata: {
+                    name: 'pod1',
+                    namespace: 'ns-a',
+                  },
+                },
+                {
+                  metadata: {
+                    name: 'pod2',
+                    namespace: 'ns-a',
+                  },
+                },
+                {
+                  metadata: {
+                    name: 'pod3',
+                    namespace: 'ns-b',
+                  },
+                },
+              ],
+              type: 'pods',
             },
           ],
         },
@@ -224,6 +398,7 @@ describe('handleGetKubernetesObjectsForService', () => {
     );
 
     mockFetch(fetchObjectsForService);
+    mockMetrics(fetchPodMetricsByNamespace);
 
     const sut = new KubernetesFanOutHandler({
       logger: getVoidLogger(),
@@ -269,13 +444,14 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'test-cluster',
           },
           errors: [],
-          podMetrics: [],
+          podMetrics: [POD_METRICS_FIXTURE],
           resources: [
             {
               resources: [
                 {
                   metadata: {
                     name: 'my-pods-test-component-test-cluster',
+                    namespace: 'ns-test-component-test-cluster',
                   },
                 },
               ],
@@ -286,6 +462,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-configmaps-test-component-test-cluster',
+                    namespace: 'ns-test-component-test-cluster',
                   },
                 },
               ],
@@ -296,6 +473,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-services-test-component-test-cluster',
+                    namespace: 'ns-test-component-test-cluster',
                   },
                 },
               ],
@@ -308,13 +486,14 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'other-cluster',
           },
           errors: [],
-          podMetrics: [],
+          podMetrics: [POD_METRICS_FIXTURE],
           resources: [
             {
               resources: [
                 {
                   metadata: {
                     name: 'my-pods-test-component-other-cluster',
+                    namespace: 'ns-test-component-other-cluster',
                   },
                 },
               ],
@@ -325,6 +504,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-configmaps-test-component-other-cluster',
+                    namespace: 'ns-test-component-other-cluster',
                   },
                 },
               ],
@@ -335,6 +515,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-services-test-component-other-cluster',
+                    namespace: 'ns-test-component-other-cluster',
                   },
                 },
               ],
@@ -364,6 +545,7 @@ describe('handleGetKubernetesObjectsForService', () => {
     );
 
     mockFetch(fetchObjectsForService);
+    mockMetrics(fetchPodMetricsByNamespace);
 
     const sut = new KubernetesFanOutHandler({
       logger: getVoidLogger(),
@@ -408,13 +590,14 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'test-cluster',
           },
           errors: [],
-          podMetrics: [],
+          podMetrics: [POD_METRICS_FIXTURE],
           resources: [
             {
               resources: [
                 {
                   metadata: {
                     name: 'my-pods-test-component-test-cluster',
+                    namespace: 'ns-test-component-test-cluster',
                   },
                 },
               ],
@@ -425,6 +608,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-configmaps-test-component-test-cluster',
+                    namespace: 'ns-test-component-test-cluster',
                   },
                 },
               ],
@@ -435,6 +619,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-services-test-component-test-cluster',
+                    namespace: 'ns-test-component-test-cluster',
                   },
                 },
               ],
@@ -447,13 +632,14 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'other-cluster',
           },
           errors: [],
-          podMetrics: [],
+          podMetrics: [POD_METRICS_FIXTURE],
           resources: [
             {
               resources: [
                 {
                   metadata: {
                     name: 'my-pods-test-component-other-cluster',
+                    namespace: 'ns-test-component-other-cluster',
                   },
                 },
               ],
@@ -464,6 +650,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-configmaps-test-component-other-cluster',
+                    namespace: 'ns-test-component-other-cluster',
                   },
                 },
               ],
@@ -474,6 +661,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-services-test-component-other-cluster',
+                    namespace: 'ns-test-component-other-cluster',
                   },
                 },
               ],
@@ -507,6 +695,7 @@ describe('handleGetKubernetesObjectsForService', () => {
     );
 
     mockFetch(fetchObjectsForService);
+    mockMetrics(fetchPodMetricsByNamespace);
 
     const sut = new KubernetesFanOutHandler({
       logger: getVoidLogger(),
@@ -551,13 +740,14 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'test-cluster',
           },
           errors: [],
-          podMetrics: [],
+          podMetrics: [POD_METRICS_FIXTURE],
           resources: [
             {
               resources: [
                 {
                   metadata: {
                     name: 'my-pods-test-component-test-cluster',
+                    namespace: 'ns-test-component-test-cluster',
                   },
                 },
               ],
@@ -568,6 +758,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-configmaps-test-component-test-cluster',
+                    namespace: 'ns-test-component-test-cluster',
                   },
                 },
               ],
@@ -578,6 +769,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-services-test-component-test-cluster',
+                    namespace: 'ns-test-component-test-cluster',
                   },
                 },
               ],
@@ -590,13 +782,14 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'other-cluster',
           },
           errors: [],
-          podMetrics: [],
+          podMetrics: [POD_METRICS_FIXTURE],
           resources: [
             {
               resources: [
                 {
                   metadata: {
                     name: 'my-pods-test-component-other-cluster',
+                    namespace: 'ns-test-component-other-cluster',
                   },
                 },
               ],
@@ -607,6 +800,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-configmaps-test-component-other-cluster',
+                    namespace: 'ns-test-component-other-cluster',
                   },
                 },
               ],
@@ -617,6 +811,7 @@ describe('handleGetKubernetesObjectsForService', () => {
                 {
                   metadata: {
                     name: 'my-services-test-component-other-cluster',
+                    namespace: 'ns-test-component-other-cluster',
                   },
                 },
               ],
