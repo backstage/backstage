@@ -29,6 +29,7 @@ import {
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
+import { SecretsContextProvider } from './secrets/Context';
 
 type RouterProps = {
   TemplateCardComponent?:
@@ -77,7 +78,11 @@ export const Router = ({ TemplateCardComponent, groups }: RouterProps) => {
       />
       <Route
         path="/templates/:templateName"
-        element={<TemplatePage customFieldExtensions={fieldExtensions} />}
+        element={
+          <SecretsContextProvider>
+            <TemplatePage customFieldExtensions={fieldExtensions} />
+          </SecretsContextProvider>
+        }
       />
       <Route path="/tasks/:taskId" element={<TaskPage />} />
       <Route path="/actions" element={<ActionsPage />} />

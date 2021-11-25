@@ -16,7 +16,7 @@
 import { JsonObject, JsonValue } from '@backstage/types';
 import { LinearProgress } from '@material-ui/core';
 import { FormValidation, IChangeEvent } from '@rjsf/core';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { generatePath, Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
@@ -39,6 +39,7 @@ import {
   useApiHolder,
   useRouteRef,
 } from '@backstage/core-plugin-api';
+import { SecretsContextProvider, SecretsContext } from '../secrets/Context';
 
 const useTemplateParameterSchema = (templateName: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -122,6 +123,8 @@ export const TemplatePage = ({
   const { schema, loading, error } = useTemplateParameterSchema(templateName);
   const [formState, setFormState] = useState({});
   const handleFormReset = () => setFormState({});
+  const secretsContext = useContext(SecretsContext);
+
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState(e.formData),
     [setFormState],

@@ -20,15 +20,19 @@ import {
   SelectItem,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import {
+  scmIntegrationsApiRef,
+  scmAuthApiRef,
+} from '@backstage/integration-react';
+import React, { useCallback, useEffect } from 'react';
+import { FieldProps } from '@rjsf/core';
+import { scaffolderApiRef } from '../../../api';
+import { useAsync } from 'react-use';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import { FieldProps } from '@rjsf/core';
-import React, { useCallback, useEffect } from 'react';
-import { useAsync } from 'react-use';
-import { scaffolderApiRef } from '../../../api';
+import { useSecretsContext } from '../../secrets';
 
 function splitFormData(url: string | undefined, allowedOwners?: string[]) {
   let host = undefined;
@@ -97,6 +101,9 @@ export const RepoUrlPicker = ({
 }: FieldProps<string>) => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const integrationApi = useApi(scmIntegrationsApiRef);
+  const { setSecret } = useSecretsContext();
+  const scmAuthApi = useApi(scmAuthApiRef);
+
   const allowedHosts = uiSchema['ui:options']?.allowedHosts as string[];
   const allowedOwners = uiSchema['ui:options']?.allowedOwners as string[];
 
@@ -238,6 +245,19 @@ export const RepoUrlPicker = ({
     project,
   ]);
 
+  const onBlur = useCallback(() => {
+    const check = async () => {
+      if (host && owner && repo) {
+        const token = await scmAuthApi.getCredentials({
+          url: `https://${host}/${owner}/${repo}`,
+        });
+
+        setSecret({ scmToken: token.token });
+      }
+    };
+    check();
+  }, [host, owner, repo, scmAuthApi, setSecret]);
+
   if (loading) {
     return <Progress />;
   }
@@ -375,7 +395,12 @@ export const RepoUrlPicker = ({
         error={rawErrors?.length > 0 && !repo}
       >
         <InputLabel htmlFor="repoInput">Repository</InputLabel>
-        <Input id="repoInput" onChange={updateRepo} value={repo} />
+        <Input
+          id="repoInput"
+          onChange={updateRepo}
+          value={repo}
+          onBlur={onBlur}
+        />
         <FormHelperText>The name of the repository</FormHelperText>
       </FormControl>
     </>
