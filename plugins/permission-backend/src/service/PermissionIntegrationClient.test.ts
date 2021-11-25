@@ -162,7 +162,7 @@ describe('PermissionIntegrationClient', () => {
           resourceType: 'test-resource',
           conditions: mockConditions,
         }),
-      ).rejects.toThrowError(/request failed with 401/i);
+      ).rejects.toThrowError(/401/i);
     });
 
     it('should reject invalid responses', async () => {

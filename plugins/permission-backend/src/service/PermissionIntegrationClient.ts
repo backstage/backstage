@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import { z } from 'zod';
-import { ResponseError } from '@backstage/errors';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import {
   AuthorizeResult,
@@ -73,7 +72,9 @@ export class PermissionIntegrationClient {
     });
 
     if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
+      throw new Error(
+        `Unexpected response from plugin upstream when applying conditions. Expected 200 but got ${response.status} - ${response.statusText}`,
+      );
     }
 
     return responseSchema.parse(await response.json());
