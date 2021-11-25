@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.14
+
+### Patch Changes
+
+- a096e4c4d7: Switched to executing scaffolder templating in a secure context for any template based on nunjucks, as it is [not secure by default](https://mozilla.github.io/nunjucks/api.html#user-defined-templates-warning).
+- f9352ab606: Removed all usages of `path.resolve` in order to ensure that template paths are resolved in a safe way.
+- e634a47ce5: Fix bug where there was error log lines written when failing to `JSON.parse` things that were not `JSON` values.
+- 42ebbc18c0: Bump gitbeaker to the latest version
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/plugin-catalog-backend@0.18.0
+  - @backstage/backend-common@0.9.11
+
 ## 0.15.13
 
 ### Patch Changes

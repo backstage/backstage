@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes
 
+## 0.4.21
+
+### Patch Changes
+
+- 3739d3f773: Implement support for formatting OpenShift dashboard url links
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.1.6
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
 ## 0.4.20
 
 ### Patch Changes

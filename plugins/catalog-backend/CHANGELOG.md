@@ -1,5 +1,72 @@
 # @backstage/plugin-catalog-backend
 
+## 0.18.0
+
+### Minor Changes
+
+- 7f82ce9f51: **BREAKING** EntitiesSearchFilter fields have changed.
+
+  EntitiesSearchFilter now has only two fields: `key` and `value`. The `matchValueIn` and `matchValueExists` fields are no longer are supported. Previous filters written using the `matchValueIn` and `matchValueExists` fields can be rewritten as follows:
+
+  Filtering by existence of key only:
+
+  ```diff
+    filter: {
+      {
+        key: 'abc',
+  -     matchValueExists: true,
+      },
+    }
+  ```
+
+  Filtering by key and values:
+
+  ```diff
+    filter: {
+      {
+        key: 'abc',
+  -     matchValueExists: true,
+  -     matchValueIn: ['xyz'],
+  +     values: ['xyz'],
+      },
+    }
+  ```
+
+  Negation of filters can now be achieved through a `not` object:
+
+  ```
+  filter: {
+    not: {
+      key: 'abc',
+      values: ['xyz'],
+    },
+  }
+  ```
+
+### Patch Changes
+
+- 740f958290: Providing an empty values array in an EntityFilter will now return no matches.
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- eddb82ab7c: Index User entities by displayName to be able to search by full name. Added displayName (if present) to the 'text' field in the indexed document.
+- 563b039f0b: Added Azure DevOps discovery processor
+- 8866b62f3d: Detect a duplicate entities when adding locations through dry run
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/backend-common@0.9.11
+
 ## 0.17.4
 
 ### Patch Changes
