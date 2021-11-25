@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JWK, JWT } from 'jose';
+import { JWKS, JWK, JWT } from 'jose';
 import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
 import { TokenManager } from './types';
@@ -26,40 +26,47 @@ import { TokenManager } from './types';
  * @public
  */
 export class ServerTokenManager implements TokenManager {
-  private key: JWK.OctKey | JWK.NoneKey;
+  private readonly keyStore: JWKS.KeyStore;
 
   static noop() {
     return new ServerTokenManager();
   }
 
   static fromConfig(config: Config) {
-    const secret = config.getString('backend.auth.secret');
-
-    return new ServerTokenManager(secret);
+    return new ServerTokenManager(
+      config
+        .getConfigArray('backend.auth.keys')
+        .map(key => key.getString('secret')),
+    );
   }
 
-  private constructor(secret: string = '') {
-    this.key = secret ? JWK.asKey({ kty: 'oct', k: secret }) : JWK.None;
+  private constructor(secrets?: string[]) {
+    this.keyStore = new JWKS.KeyStore(
+      secrets?.length
+        ? secrets.map(secret => JWK.asKey({ kty: 'oct', k: secret }))
+        : [],
+    );
   }
 
   async getToken(): Promise<{ token: string }> {
-    if (this.key === JWK.None) {
+    if (this.keyStore.size === 0) {
       return { token: '' };
     }
 
-    const jwt = JWT.sign({ sub: 'backstage-server' }, this.key, {
+    const jwt = JWT.sign({ sub: 'backstage-server' }, this.keyStore.all()[0], {
       algorithm: 'HS256',
     });
+
     return { token: jwt };
   }
 
   validateToken(token: string): void {
-    if (this.key === JWK.None) {
+    if (this.keyStore.size === 0) {
       return;
     }
 
     try {
-      JWT.verify(token, this.key);
+      JWT.verify(token, this.keyStore);
       return;
     } catch (e) {
       throw new AuthenticationError('Invalid server token');

@@ -18,7 +18,7 @@ import { ServerTokenManager } from './ServerTokenManager';
 
 const emptyConfig = new ConfigReader({});
 const configWithSecret = new ConfigReader({
-  backend: { auth: { secret: 'a-secret-key' } },
+  backend: { auth: { keys: [{ secret: 'a-secret-key' }] } },
 });
 
 describe('ServerTokenManager', () => {
@@ -61,12 +61,42 @@ describe('ServerTokenManager', () => {
       expect(() => tokenManager2.validateToken(token)).not.toThrow();
     });
 
-    it('should throw for server tokens created using a different secret', async () => {
+    it('should validate server tokens created using any of the secrets', async () => {
       const tokenManager1 = ServerTokenManager.fromConfig(
-        new ConfigReader({ backend: { auth: { secret: 'a1b2c3' } } }),
+        new ConfigReader({
+          backend: { auth: { keys: [{ secret: 'a1b2c3' }] } },
+        }),
       );
       const tokenManager2 = ServerTokenManager.fromConfig(
-        new ConfigReader({ backend: { auth: { secret: 'd4e5f6' } } }),
+        new ConfigReader({
+          backend: { auth: { keys: [{ secret: 'd4e5f6' }] } },
+        }),
+      );
+      const tokenManager3 = ServerTokenManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            auth: { keys: [{ secret: 'a1b2c3' }, { secret: 'd4e5f6' }] },
+          },
+        }),
+      );
+
+      const { token: token1 } = await tokenManager1.getToken();
+      expect(() => tokenManager3.validateToken(token1)).not.toThrow();
+
+      const { token: token2 } = await tokenManager2.getToken();
+      expect(() => tokenManager3.validateToken(token2)).not.toThrow();
+    });
+
+    it('should throw for server tokens created using a different secret', async () => {
+      const tokenManager1 = ServerTokenManager.fromConfig(
+        new ConfigReader({
+          backend: { auth: { keys: [{ secret: 'a1b2c3' }] } },
+        }),
+      );
+      const tokenManager2 = ServerTokenManager.fromConfig(
+        new ConfigReader({
+          backend: { auth: { keys: [{ secret: 'd4e5f6' }] } },
+        }),
       );
 
       const { token } = await tokenManager1.getToken();
