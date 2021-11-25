@@ -24,7 +24,7 @@ app:
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
-  # See authenticate-api-requests.md in the contrib docs for information on the format
+  # See backend-to-backend-auth.md in the docs for information on the format
   # auth:
   #   secret: ${BACKEND_SECRET}
   baseUrl: http://localhost:7007
