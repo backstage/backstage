@@ -170,6 +170,7 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'test-cluster',
           },
           errors: [],
+          podMetrics: [],
           resources: [
             {
               resources: [
@@ -268,6 +269,7 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'test-cluster',
           },
           errors: [],
+          podMetrics: [],
           resources: [
             {
               resources: [
@@ -306,6 +308,7 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'other-cluster',
           },
           errors: [],
+          podMetrics: [],
           resources: [
             {
               resources: [
@@ -405,6 +408,7 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'test-cluster',
           },
           errors: [],
+          podMetrics: [],
           resources: [
             {
               resources: [
@@ -443,6 +447,7 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'other-cluster',
           },
           errors: [],
+          podMetrics: [],
           resources: [
             {
               resources: [
@@ -546,6 +551,7 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'test-cluster',
           },
           errors: [],
+          podMetrics: [],
           resources: [
             {
               resources: [
@@ -584,6 +590,7 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'other-cluster',
           },
           errors: [],
+          podMetrics: [],
           resources: [
             {
               resources: [
@@ -622,6 +629,7 @@ describe('handleGetKubernetesObjectsForService', () => {
             name: 'error-cluster',
           },
           errors: ['some random cluster error'],
+          podMetrics: [],
           resources: [
             {
               type: 'pods',
