@@ -28,6 +28,7 @@ import React, {
   Children,
   forwardRef,
   KeyboardEventHandler,
+  PropsWithChildren,
   ReactNode,
   useContext,
   useState,
@@ -167,13 +168,6 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageSidebarItem' },
 );
 
-type ItemWithSubmenuProps = {
-  label?: string;
-  hasNotifications?: boolean;
-  icon: IconComponent;
-  submenu: ReactNode;
-};
-
 function isItemWithSubmenuActive(submenu: ReactNode, locationPathname: string) {
   // Item is active if any of submenu items have active paths
   const toPathnames: string[] = [];
@@ -201,15 +195,15 @@ function isItemWithSubmenuActive(submenu: ReactNode, locationPathname: string) {
 }
 
 const ItemWithSubmenu = ({
-  label,
+  text,
   hasNotifications = false,
   icon: Icon,
-  submenu,
-}: ItemWithSubmenuProps) => {
+  children,
+}: PropsWithChildren<ItemWithSubmenuProps>) => {
   const classes = useStyles();
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const { pathname: locationPathname } = useLocation();
-  const isActive = isItemWithSubmenuActive(submenu, locationPathname);
+  const isActive = isItemWithSubmenuActive(children, locationPathname);
 
   const handleMouseEnter = () => {
     setIsHoveredOn(true);
@@ -235,9 +229,9 @@ const ItemWithSubmenu = ({
       <div data-testid="login-button" className={classes.iconContainer}>
         {itemIcon}
       </div>
-      {label && (
-        <Typography variant="subtitle2" className={classes.label}>
-          {label}
+      {text && (
+        <Typography variant="subtitle2" className={classes.text}>
+          {text}
         </Typography>
       )}
       <div className={classes.secondaryAction}>{}</div>
@@ -272,7 +266,7 @@ const ItemWithSubmenu = ({
             <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
           )}
         </div>
-        {isHoveredOn && submenu}
+        {isHoveredOn && children}
       </div>
     </ItemWithSubmenuContext.Provider>
   );
@@ -283,12 +277,12 @@ type SidebarItemBaseProps = {
   text?: string;
   hasNotifications?: boolean;
   disableHighlight?: boolean;
-  children?: ReactNode;
   className?: string;
 };
 
 type SidebarItemButtonProps = SidebarItemBaseProps & {
   onClick: (ev: React.MouseEvent) => void;
+  children?: ReactNode;
 };
 
 type SidebarItemLinkProps = SidebarItemBaseProps & {
@@ -296,7 +290,21 @@ type SidebarItemLinkProps = SidebarItemBaseProps & {
   onClick?: (ev: React.MouseEvent) => void;
 } & NavLinkProps;
 
-type SidebarItemProps = SidebarItemButtonProps | SidebarItemLinkProps;
+type ItemWithSubmenuProps = SidebarItemBaseProps & {
+  to?: string;
+  onClick?: (ev: React.MouseEvent) => void;
+  children: ReactNode;
+};
+
+/**
+ * SidebarItem with 'to' property will be a clickable link.
+ * SidebarItem with 'onClick' property and without 'to' property will be a clickable button.
+ * SidebarItem which wraps a SidebarSubmenu will be a clickable button which opens a submenu.
+ */
+type SidebarItemProps =
+  | SidebarItemLinkProps
+  | SidebarItemButtonProps
+  | ItemWithSubmenuProps;
 
 function isButtonItem(
   props: SidebarItemProps,
@@ -389,7 +397,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
         {itemIcon}
       </div>
       {text && (
-        <Typography variant="subtitle2" className={classes.label}>
+        <Typography variant="subtitle2" className={classes.text}>
           {text}
         </Typography>
       )}
@@ -438,11 +446,12 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   if (hasSubmenu) {
     return (
       <ItemWithSubmenu
-        label={text}
+        text={text}
         icon={Icon}
         hasNotifications={hasNotifications}
-        submenu={submenu}
-      />
+      >
+        {submenu}
+      </ItemWithSubmenu>
     );
   }
 
@@ -458,7 +467,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     <WorkaroundNavLink
       {...childProps}
       activeClassName={classes.selected}
-      to={props.to}
+      to={props.to ? props.to : ''}
       ref={ref}
       aria-label={text ? text : props.to}
       {...navLinkProps}
