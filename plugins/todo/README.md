@@ -56,7 +56,7 @@ async function main() {
   // ...
   const todoEnv = useHotMemoize(module, () => createEnv('todo'));
   // ...
-  apiRouter.use('/todo', await kafka(todoEnv));
+  apiRouter.use('/todo', await todo(todoEnv));
 ```
 
 3. Add the plugin as a tab to your service entities:

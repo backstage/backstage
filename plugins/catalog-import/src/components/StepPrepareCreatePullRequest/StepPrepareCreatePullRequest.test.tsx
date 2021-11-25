@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { TestApiProvider } from '@backstage/test-utils';
 import { TextField } from '@material-ui/core';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -54,13 +54,15 @@ describe('<StepPrepareCreatePullRequest />', () => {
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ApiProvider
-      apis={ApiRegistry.with(catalogImportApiRef, catalogImportApi)
-        .with(catalogApiRef, catalogApi)
-        .with(errorApiRef, errorApi)}
+    <TestApiProvider
+      apis={[
+        [catalogImportApiRef, catalogImportApi],
+        [catalogApiRef, catalogApi],
+        [errorApiRef, errorApi],
+      ]}
     >
       {children}
-    </ApiProvider>
+    </TestApiProvider>
   );
 
   const onPrepareFn = jest.fn();

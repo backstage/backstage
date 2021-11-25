@@ -18,12 +18,13 @@ import React from 'react';
 import { DismissableBanner } from './DismissableBanner';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import { ApiProvider, ApiRegistry, WebStorage } from '@backstage/core-app-api';
+import { WebStorage } from '@backstage/core-app-api';
 import {
   ErrorApi,
   storageApiRef,
   StorageApi,
 } from '@backstage/core-plugin-api';
+import { TestApiProvider } from '@backstage/test-utils';
 
 export default {
   title: 'Feedback/DismissableBanner',
@@ -37,47 +38,47 @@ const createWebStorage = (): StorageApi => {
   return WebStorage.create({ errorApi });
 };
 
-const apis = ApiRegistry.from([[storageApiRef, createWebStorage()]]);
+const apis = [[storageApiRef, createWebStorage()] as const];
 
 export const Default = () => (
   <div style={containerStyle}>
-    <ApiProvider apis={apis}>
+    <TestApiProvider apis={apis}>
       <DismissableBanner
         message="This is a dismissable banner"
         variant="info"
         id="default_dismissable"
       />
-    </ApiProvider>
+    </TestApiProvider>
   </div>
 );
 
 export const Error = () => (
   <div style={containerStyle}>
-    <ApiProvider apis={apis}>
+    <TestApiProvider apis={apis}>
       <DismissableBanner
         message="This is a dismissable banner with an error message"
         variant="error"
         id="error_dismissable"
       />
-    </ApiProvider>
+    </TestApiProvider>
   </div>
 );
 
 export const EmojisIncluded = () => (
   <div style={containerStyle}>
-    <ApiProvider apis={apis}>
+    <TestApiProvider apis={apis}>
       <DismissableBanner
         message="This is a dismissable banner with emojis: 🚀 💚 😆 "
         variant="info"
         id="emojis_dismissable"
       />
-    </ApiProvider>
+    </TestApiProvider>
   </div>
 );
 
 export const WithLink = () => (
   <div style={containerStyle}>
-    <ApiProvider apis={apis}>
+    <TestApiProvider apis={apis}>
       <DismissableBanner
         message={
           <Typography>
@@ -90,29 +91,29 @@ export const WithLink = () => (
         variant="info"
         id="linked_dismissable"
       />
-    </ApiProvider>
+    </TestApiProvider>
   </div>
 );
 export const Fixed = () => (
   <div style={containerStyle}>
-    <ApiProvider apis={apis}>
+    <TestApiProvider apis={apis}>
       <DismissableBanner
         message="This is a dismissable banner with a fixed position fixed at the bottom of the page"
         variant="info"
         id="fixed_dismissable"
         fixed
       />
-    </ApiProvider>
+    </TestApiProvider>
   </div>
 );
 export const Warning = () => (
   <div style={containerStyle}>
-    <ApiProvider apis={apis}>
+    <TestApiProvider apis={apis}>
       <DismissableBanner
         message="This is a dismissable banner with a warning message"
         variant="warning"
         id="warning_dismissable"
       />
-    </ApiProvider>
+    </TestApiProvider>
   </div>
 );

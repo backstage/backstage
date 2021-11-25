@@ -272,17 +272,26 @@ export class AppManager implements BackstageApp {
           const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
 
           for (const plugin of this.plugins.values()) {
-            for (const output of plugin.output()) {
-              switch (output.type) {
-                case 'feature-flag': {
-                  featureFlagsApi.registerFlag({
-                    name: output.name,
-                    pluginId: plugin.getId(),
-                  });
-                  break;
+            if ('getFeatureFlags' in plugin) {
+              for (const flag of plugin.getFeatureFlags()) {
+                featureFlagsApi.registerFlag({
+                  name: flag.name,
+                  pluginId: plugin.getId(),
+                });
+              }
+            } else {
+              for (const output of plugin.output()) {
+                switch (output.type) {
+                  case 'feature-flag': {
+                    featureFlagsApi.registerFlag({
+                      name: output.name,
+                      pluginId: plugin.getId(),
+                    });
+                    break;
+                  }
+                  default:
+                    break;
                 }
-                default:
-                  break;
               }
             }
           }

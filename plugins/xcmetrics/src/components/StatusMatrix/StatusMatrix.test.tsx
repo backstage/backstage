@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { StatusMatrix } from './StatusMatrix';
 import { xcmetricsApiRef } from '../../api';
 
@@ -25,11 +24,9 @@ const client = require('../../api/XcmetricsClient');
 describe('StatusMatrix', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <StatusMatrix />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     const cell = rendered.getByTestId(client.mockBuild.id);

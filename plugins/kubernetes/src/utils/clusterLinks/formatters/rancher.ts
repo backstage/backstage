@@ -23,14 +23,24 @@ const kindMappings: Record<string, string> = {
 };
 
 export function rancherFormatter(options: ClusterLinksFormatterOptions): URL {
-  const result = new URL(options.dashboardUrl.href);
-  const name = options.object.metadata?.name;
-  const namespace = options.object.metadata?.namespace;
+  const basePath = new URL(options.dashboardUrl.href);
+  const name = encodeURIComponent(options.object.metadata?.name ?? '');
+  const namespace = encodeURIComponent(
+    options.object.metadata?.namespace ?? '',
+  );
   const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
-  if (validKind && name && namespace) {
-    result.pathname += `explorer/${validKind}/${namespace}/${name}`;
-  } else if (namespace) {
-    result.pathname += 'explorer/workload';
+  if (!basePath.pathname.endsWith('/')) {
+    // a dashboard url with a path should end with a slash otherwise
+    // the new combined URL will replace the last segment with the appended path!
+    // https://foobar.com/abc/def + explorer/service/test  --> https://foobar.com/abc/explorer/service/test
+    // https://foobar.com/abc/def/ + explorer/service/test --> https://foobar.com/abc/def/explorer/service/test
+    basePath.pathname += '/';
   }
-  return result;
+  let path = '';
+  if (validKind && name && namespace) {
+    path = `explorer/${validKind}/${namespace}/${name}`;
+  } else if (namespace) {
+    path = 'explorer/workload';
+  }
+  return new URL(path, basePath);
 }

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import { BuildListFilter } from './BuildListFilter';
 import { BuildFilters, xcmetricsApiRef } from '../../api';
@@ -37,14 +36,12 @@ const renderWithFiltersVisible = async (
   callback?: (filters: BuildFilters) => void,
 ) => {
   const rendered = await renderInTestApp(
-    <ApiProvider
-      apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-    >
+    <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
       <BuildListFilter
         initialValues={initialValues}
         onFilterChange={callback ?? jest.fn()}
       />
-    </ApiProvider>,
+    </TestApiProvider>,
   );
 
   userEvent.click(rendered.getByLabelText('show filters'));
@@ -67,14 +64,12 @@ const setProjectFilter = async (rendered: RenderResult, option: string) => {
 describe('BuildListFilter', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <BuildListFilter
           initialValues={initialValues}
           onFilterChange={jest.fn()}
         />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText('Filters (0)')).toBeInTheDocument();

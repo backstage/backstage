@@ -59,7 +59,7 @@ describe('DefaultCatalogCollator', () => {
 
   beforeAll(() => {
     mockDiscoveryApi = {
-      getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7000'),
+      getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
       getExternalBaseUrl: jest.fn(),
     };
     collator = new DefaultCatalogCollator({ discovery: mockDiscoveryApi });
@@ -67,7 +67,7 @@ describe('DefaultCatalogCollator', () => {
   });
   beforeEach(() => {
     server.use(
-      rest.get('http://localhost:7000/entities', (req, res, ctx) => {
+      rest.get('http://localhost:7007/entities', (req, res, ctx) => {
         if (req.url.searchParams.has('filter')) {
           const filter = req.url.searchParams.get('filter');
           if (filter === 'kind=Foo,kind=Bar') {

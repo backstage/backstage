@@ -176,7 +176,7 @@ describe('OAuthAdapter', () => {
 
     const mockResponse = {
       cookie: jest.fn().mockReturnThis(),
-      send: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
       status: jest.fn().mockReturnThis(),
     } as unknown as express.Response;
 
@@ -187,6 +187,7 @@ describe('OAuthAdapter', () => {
       '',
       expect.objectContaining({ path: '/auth/test-provider' }),
     );
+    expect(mockResponse.end).toHaveBeenCalledTimes(1);
   });
 
   it('gets new access-token when refreshing', async () => {
@@ -230,21 +231,14 @@ describe('OAuthAdapter', () => {
 
     const mockRequest = {
       header: () => 'XMLHttpRequest',
-      cookies: {
-        'test-provider-refresh-token': 'token',
-      },
-      query: {},
     } as unknown as express.Request;
 
-    const mockResponse = {
-      send: jest.fn().mockReturnThis(),
-      status: jest.fn().mockReturnThis(),
-    } as unknown as express.Response;
+    const mockResponse = {} as unknown as express.Response;
 
-    await oauthProvider.refresh(mockRequest, mockResponse);
-    expect(mockResponse.send).toHaveBeenCalledTimes(1);
-    expect(mockResponse.send).toHaveBeenCalledWith(
-      'Refresh token not supported for provider: test-provider',
+    await expect(
+      oauthProvider.refresh(mockRequest, mockResponse),
+    ).rejects.toThrow(
+      'Refresh token is not supported for provider test-provider',
     );
   });
 });

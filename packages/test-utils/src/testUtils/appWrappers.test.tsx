@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import {
   createExternalRouteRef,
   createRouteRef,
@@ -29,6 +28,7 @@ import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router';
 import { MockErrorApi } from './apis';
 import { renderInTestApp, wrapInTestApp } from './appWrappers';
+import { TestApiProvider } from './TestApiProvider';
 
 describe('wrapInTestApp', () => {
   it('should provide routing and warn about missing act()', async () => {
@@ -111,9 +111,9 @@ describe('wrapInTestApp', () => {
     };
 
     const rendered = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(errorApiRef, mockErrorApi)}>
+      <TestApiProvider apis={[[errorApiRef, mockErrorApi]]}>
         <A />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText('foo')).toBeInTheDocument();

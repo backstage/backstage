@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { TestApiProvider } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -34,14 +34,14 @@ describe('<StepInitAnalyzeUrl />', () => {
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ApiProvider
-      apis={ApiRegistry.with(catalogImportApiRef, catalogImportApi).with(
-        errorApiRef,
-        errorApi,
-      )}
+    <TestApiProvider
+      apis={[
+        [catalogImportApiRef, catalogImportApi],
+        [errorApiRef, errorApi],
+      ]}
     >
       {children}
-    </ApiProvider>
+    </TestApiProvider>
   );
 
   const location = {

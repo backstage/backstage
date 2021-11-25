@@ -15,13 +15,9 @@
  */
 
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { Header } from './Header';
-import {
-  ApiRegistry,
-  ConfigReader,
-  ApiProvider,
-} from '@backstage/core-app-api';
+import { ConfigReader } from '@backstage/core-app-api';
 import { configApiRef } from '@backstage/core-plugin-api';
 
 jest.mock('react-helmet', () => {
@@ -72,14 +68,12 @@ describe('<Header/>', () => {
   });
 
   it('should use app.title', async () => {
-    const apiRegistry = ApiRegistry.with(
-      configApiRef,
-      new ConfigReader({ app: { title: 'Blah' } }),
-    );
     const rendered = await renderInTestApp(
-      <ApiProvider apis={apiRegistry}>
+      <TestApiProvider
+        apis={[[configApiRef, new ConfigReader({ app: { title: 'Blah' } })]]}
+      >
         <Header title="Title" type="tool" typeLink="/tool" />,
-      </ApiProvider>,
+      </TestApiProvider>,
     );
     rendered.getAllByText(/Title | Blah/);
   });

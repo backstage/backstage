@@ -63,7 +63,7 @@ Here's how to get the backend up and running:
    ```
 
 4. Now run `yarn start-backend` from the repo root
-5. Finally open `http://localhost:7000/api/azure-devops/health` in a browser and it should return `{"status":"ok"}`
+5. Finally open `http://localhost:7007/api/azure-devops/health` in a browser and it should return `{"status":"ok"}`
 
 ## Links
 

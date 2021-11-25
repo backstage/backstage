@@ -114,9 +114,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   private isSingleTemplateString(input: string) {
     const { parser, nodes } = require('nunjucks');
     const parsed = parser.parse(input, {}, this.nunjucksOptions);
+
     return (
       parsed.children.length === 1 &&
-      !(parsed.children[0] instanceof nodes.TemplateData)
+      !(parsed.children[0]?.children?.[0] instanceof nodes.TemplateData)
     );
   }
 

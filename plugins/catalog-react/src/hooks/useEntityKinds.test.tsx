@@ -15,12 +15,12 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '../api';
 import { renderHook } from '@testing-library/react-hooks';
 import { useEntityKinds } from './useEntityKinds';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const entities: Entity[] = [
   {
@@ -59,9 +59,9 @@ const mockCatalogApi: Partial<CatalogApi> = {
 
 const wrapper = ({ children }: PropsWithChildren<{}>) => {
   return (
-    <ApiProvider apis={ApiRegistry.with(catalogApiRef, mockCatalogApi)}>
+    <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
       {children}
-    </ApiProvider>
+    </TestApiProvider>
   );
 };
 
