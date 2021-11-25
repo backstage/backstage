@@ -21,7 +21,7 @@ import {
   V1HorizontalPodAutoscaler,
   V1Service,
   V1ConfigMap,
-  ExtensionsV1beta1Ingress,
+  V1Ingress,
 } from '@kubernetes/client-node';
 
 export interface DeploymentResources {
@@ -34,7 +34,7 @@ export interface DeploymentResources {
 export interface GroupedResponses extends DeploymentResources {
   services: V1Service[];
   configMaps: V1ConfigMap[];
-  ingresses: ExtensionsV1beta1Ingress[];
+  ingresses: V1Ingress[];
   customResources: any[];
 }
 

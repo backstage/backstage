@@ -19,6 +19,7 @@ import { ObjectFetchParams } from '../types/types';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 
 const fetchObjectsForService = jest.fn();
+const fetchPodMetricsByNamespace = jest.fn();
 
 const getClustersByServiceId = jest.fn();
 
@@ -133,6 +134,7 @@ describe('handleGetKubernetesObjectsForService', () => {
       logger: getVoidLogger(),
       fetcher: {
         fetchObjectsForService,
+        fetchPodMetricsByNamespace,
       },
       serviceLocator: {
         getClustersByServiceId,
@@ -226,6 +228,7 @@ describe('handleGetKubernetesObjectsForService', () => {
       logger: getVoidLogger(),
       fetcher: {
         fetchObjectsForService,
+        fetchPodMetricsByNamespace,
       },
       serviceLocator: {
         getClustersByServiceId,
@@ -363,6 +366,7 @@ describe('handleGetKubernetesObjectsForService', () => {
       logger: getVoidLogger(),
       fetcher: {
         fetchObjectsForService,
+        fetchPodMetricsByNamespace,
       },
       serviceLocator: {
         getClustersByServiceId,
@@ -503,6 +507,7 @@ describe('handleGetKubernetesObjectsForService', () => {
       logger: getVoidLogger(),
       fetcher: {
         fetchObjectsForService,
+        fetchPodMetricsByNamespace,
       },
       serviceLocator: {
         getClustersByServiceId,

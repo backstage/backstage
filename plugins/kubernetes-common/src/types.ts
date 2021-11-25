@@ -15,10 +15,10 @@
  */
 
 import {
-  ExtensionsV1beta1Ingress,
   V1ConfigMap,
   V1Deployment,
   V1HorizontalPodAutoscaler,
+  V1Ingress,
   V1Pod,
   V1ReplicaSet,
   V1Service,
@@ -67,6 +67,7 @@ export interface ClusterAttributes {
 export interface ClusterObjects {
   cluster: ClusterAttributes;
   resources: FetchResponse[];
+  podMetrics: ClientPodStatus[];
   errors: KubernetesFetchError[];
 }
 
@@ -118,7 +119,7 @@ export interface HorizontalPodAutoscalersFetchResponse {
 
 export interface IngressesFetchResponse {
   type: 'ingresses';
-  resources: Array<ExtensionsV1beta1Ingress>;
+  resources: Array<V1Ingress>;
 }
 
 export interface CustomResourceFetchResponse {
@@ -137,3 +138,22 @@ export type KubernetesErrorTypes =
   | 'UNAUTHORIZED_ERROR'
   | 'SYSTEM_ERROR'
   | 'UNKNOWN_ERROR';
+
+export interface ClientCurrentResourceUsage {
+  currentUsage: number | string;
+  requestTotal: number | string;
+  limitTotal: number | string;
+}
+
+export interface ClientContainerStatus {
+  container: string;
+  cpuUsage: ClientCurrentResourceUsage;
+  memoryUsage: ClientCurrentResourceUsage;
+}
+
+export interface ClientPodStatus {
+  pod: V1Pod;
+  cpu: ClientCurrentResourceUsage;
+  memory: ClientCurrentResourceUsage;
+  containers: ClientContainerStatus[];
+}

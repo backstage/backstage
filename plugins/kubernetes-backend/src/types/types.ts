@@ -21,6 +21,7 @@ import type {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
+import { PodStatus } from '@kubernetes/client-node/dist/top';
 
 export interface ObjectFetchParams {
   serviceId: string;
@@ -40,6 +41,10 @@ export interface KubernetesFetcher {
   fetchObjectsForService(
     params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper>;
+  fetchPodMetricsByNamespace(
+    clusterDetails: ClusterDetails,
+    namespace: string,
+  ): Promise<PodStatus[]>;
 }
 
 export interface FetchResponseWrapper {
