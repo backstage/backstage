@@ -3,13 +3,13 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: system:aggregated-metrics-reader
   labels:
-    rbac.authorization.k8s.io/aggregate-to-view: "true"
-    rbac.authorization.k8s.io/aggregate-to-edit: "true"
-    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+    rbac.authorization.k8s.io/aggregate-to-view: 'true'
+    rbac.authorization.k8s.io/aggregate-to-edit: 'true'
+    rbac.authorization.k8s.io/aggregate-to-admin: 'true'
 rules:
-  - apiGroups: ["metrics.k8s.io"]
-    resources: ["pods"]
-    verbs: ["get", "list", "watch"]
+  - apiGroups: ['metrics.k8s.io']
+    resources: ['pods']
+    verbs: ['get', 'list', 'watch']
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
@@ -98,7 +98,7 @@ metadata:
   name: metrics-server
   namespace: kube-system
   labels:
-    kubernetes.io/name: "Metrics-server"
+    kubernetes.io/name: 'Metrics-server'
 spec:
   selector:
     k8s-app: metrics-server
@@ -113,7 +113,7 @@ metadata:
   name: system:metrics-server
 rules:
   - apiGroups:
-      - ""
+      - ''
     resources:
       - pods
       - nodes
