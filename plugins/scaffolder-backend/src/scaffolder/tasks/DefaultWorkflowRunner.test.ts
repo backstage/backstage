@@ -146,6 +146,30 @@ describe('DefaultWorkflowRunner', () => {
 
       expect(fakeActionHandler).toHaveBeenCalledTimes(1);
     });
+
+    it('should pass metadata through', async () => {
+      const templateName = 'template name';
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {},
+        output: {},
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-validated-action',
+            input: { foo: 1 },
+          },
+        ],
+        metadata: { name: templateName },
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler.mock.calls[0][0].metadata).toEqual({
+        name: templateName,
+      });
+    });
   });
 
   describe('conditionals', () => {

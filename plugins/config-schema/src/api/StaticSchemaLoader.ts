@@ -49,7 +49,7 @@ export class StaticSchemaLoader implements ConfigSchemaApi {
         return undefined;
       }
 
-      throw ResponseError.fromResponse(res);
+      throw await ResponseError.fromResponse(res);
     }
 
     return await res.json();

@@ -122,7 +122,9 @@ We use [changesets](https://github.com/atlassian/changesets) to help us prepare 
 
 Any time a patch, minor, or major change aligning to [Semantic Versioning](https://semver.org) is made to any published package in `packages/` or `plugins/`, a changeset should be used. It helps to align your change to the [Backstage stability index](https://backstage.io/docs/overview/stability-index) for the package you are changing, for example, when to provide additional clarity on deprecation or impacting changes which will then be included into CHANGELOGs.
 
-In general, changesets are not needed for the documentation, build utilities, contributed samples in `contrib/`, or the [example `packages/app`](packages/app).
+In general, changesets are only needed for changes to packages within `packages/` or `plugins/` directories, and only for the packages that are not marked as `private`. Changesets are also not needed for changes that do not affect the published version of each package, for example changes to tests or in-line source code comments.
+
+Changesets **are** needed for new packages, as that is what triggers the package to be part of the next release.
 
 ### How to create a changeset
 

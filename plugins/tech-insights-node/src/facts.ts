@@ -136,6 +136,9 @@ export type FactRetrieverContext = {
   config: Config;
   discovery: PluginEndpointDiscovery;
   logger: Logger;
+  entityFilter?:
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>;
 };
 
 /**

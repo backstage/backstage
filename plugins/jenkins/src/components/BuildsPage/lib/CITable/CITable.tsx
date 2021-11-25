@@ -17,12 +17,13 @@ import React from 'react';
 import { Box, IconButton, Link, Typography, Tooltip } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { JenkinsRunStatus } from '../Status';
 import { useBuilds } from '../../../useBuilds';
 import { buildRouteRef } from '../../../../plugin';
 import { Table, TableColumn } from '@backstage/core-components';
 import { Project } from '../../../../api/JenkinsApi';
+import { useRouteRef } from '@backstage/core-plugin-api';
 
 const FailCount = ({ count }: { count: number }): JSX.Element | null => {
   if (count !== 0) {
@@ -91,28 +92,33 @@ const generatedColumns: TableColumn[] = [
     field: 'fullName',
     highlight: true,
     render: (row: Partial<Project>) => {
-      if (!row.fullName || !row.lastBuild?.number) {
-        return (
-          <>
-            {row.fullName ||
-              row.fullDisplayName ||
-              row.displayName ||
-              'Unknown'}
-          </>
-        );
-      }
+      const LinkWrapper = () => {
+        const routeLink = useRouteRef(buildRouteRef);
+        if (!row.fullName || !row.lastBuild?.number) {
+          return (
+            <>
+              {row.fullName ||
+                row.fullDisplayName ||
+                row.displayName ||
+                'Unknown'}
+            </>
+          );
+        }
 
-      return (
-        <Link
-          component={RouterLink}
-          to={generatePath(buildRouteRef.path, {
-            jobFullName: encodeURIComponent(row.fullName),
-            buildNumber: String(row.lastBuild?.number),
-          })}
-        >
-          {row.fullDisplayName}
-        </Link>
-      );
+        return (
+          <Link
+            component={RouterLink}
+            to={routeLink({
+              jobFullName: encodeURIComponent(row.fullName),
+              buildNumber: String(row.lastBuild?.number),
+            })}
+          >
+            {row.fullDisplayName}
+          </Link>
+        );
+      };
+
+      return <LinkWrapper />;
     },
   },
   {
