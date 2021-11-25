@@ -59,7 +59,7 @@ require('esbuild')
     format: 'cjs',
     platform: 'node',
     target: 'node14',
-    banner: NUNJUCKS_LICENSE,
+    banner: { js: NUNJUCKS_LICENSE },
     external: ['fsevents'],
     outfile: path.resolve(__dirname, '../assets/nunjucks.js.txt'),
   })
