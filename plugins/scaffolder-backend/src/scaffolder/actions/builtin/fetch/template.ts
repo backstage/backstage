@@ -21,22 +21,9 @@ import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
 import { createTemplateAction } from '../../createTemplateAction';
 import globby from 'globby';
-import nunjucks from 'nunjucks';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
-
-/*
- * Maximise compatibility with Jinja (and therefore cookiecutter)
- * using nunjucks jinja compat mode. Since this method mutates
- * the global nunjucks instance, we can't enable this per-template,
- * or only for templates with cookiecutter compat enabled, so the
- * next best option is to explicitly enable it globally and allow
- * folks to rely on jinja compatibility behaviour in fetch:template
- * templates if they wish.
- *
- * cf. https://mozilla.github.io/nunjucks/api.html#installjinjacompat
- */
-nunjucks.installJinjaCompat();
+import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
 
 type CookieCompatInput = {
   copyWithoutRender?: string[];
@@ -179,36 +166,6 @@ export function createFetchTemplateAction(options: {
         ).flat(),
       );
 
-      // Create a templater
-      const templater = nunjucks.configure({
-        ...(ctx.input.cookiecutterCompat
-          ? {}
-          : {
-              tags: {
-                // TODO(mtlewis/orkohunter): Document Why we are changing the literals? Not here, but on scaffolder docs. ADR?
-                variableStart: '${{',
-                variableEnd: '}}',
-              },
-            }),
-        // We don't want this builtin auto-escaping, since uses HTML escape sequences
-        // like `&quot;` - the correct way to escape strings in our case depends on
-        // the file type.
-        autoescape: false,
-      });
-
-      if (ctx.input.cookiecutterCompat) {
-        // The "jsonify" filter built into cookiecutter is common
-        // in fetch:cookiecutter templates, so when compat mode
-        // is enabled we alias the "dump" filter from nunjucks as
-        // jsonify. Dump accepts an optional `spaces` parameter
-        // which enables indented output, but when this parameter
-        // is not supplied it works identically to jsonify.
-        //
-        // cf. https://cookiecutter.readthedocs.io/en/latest/advanced/template_extensions.html?highlight=jsonify#jsonify-extension
-        // cf. https://mozilla.github.io/nunjucks/templating.html#dump
-        templater.addFilter('jsonify', templater.getFilter('dump'));
-      }
-
       // Cookiecutter prefixes all parameters in templates with
       // `cookiecutter.`. To replicate this, we wrap our parameters
       // in an object with a `cookiecutter` property when compat
@@ -222,6 +179,10 @@ export function createFetchTemplateAction(options: {
         `Processing ${allEntriesInTemplate.length} template files/directories with input values`,
         ctx.input.values,
       );
+
+      const renderTemplate = await SecureTemplater.loadRenderer({
+        cookiecutterCompat: ctx.input.cookiecutterCompat,
+      });
 
       for (const location of allEntriesInTemplate) {
         let renderFilename: boolean;
@@ -238,7 +199,7 @@ export function createFetchTemplateAction(options: {
           renderFilename = renderContents = !nonTemplatedEntries.has(location);
         }
         if (renderFilename) {
-          localOutputPath = templater.renderString(localOutputPath, context);
+          localOutputPath = renderTemplate(localOutputPath, context);
         }
         const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
         // variables have been expanded to make an empty file name
@@ -275,7 +236,7 @@ export function createFetchTemplateAction(options: {
             await fs.outputFile(
               outputPath,
               renderContents
-                ? templater.renderString(inputFileContents, context)
+                ? renderTemplate(inputFileContents, context)
                 : inputFileContents,
               { mode: statsObj.mode },
             );
