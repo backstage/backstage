@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
   "description": "The Backstage backend plugin that helps you create new things",
-  "version": "0.15.13",
+  "version": "0.15.14",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -27,16 +27,17 @@
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "clean": "backstage-cli clean",
+    "build:assets": "node scripts/build-nunjucks.js"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.9.10",
+    "@backstage/backend-common": "^0.9.11",
     "@backstage/catalog-client": "^0.5.2",
     "@backstage/catalog-model": "^0.9.7",
     "@backstage/config": "^0.1.11",
-    "@backstage/errors": "^0.1.4",
+    "@backstage/errors": "^0.1.5",
     "@backstage/integration": "^0.6.9",
-    "@backstage/plugin-catalog-backend": "^0.17.4",
+    "@backstage/plugin-catalog-backend": "^0.18.0",
     "@backstage/plugin-scaffolder-common": "^0.1.1",
     "@backstage/plugin-scaffolder-backend-module-cookiecutter": "^0.1.4",
     "@backstage/types": "^0.1.1",
@@ -68,17 +69,19 @@
     "octokit-plugin-create-pull-request": "^3.10.0",
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
-    "yaml": "^1.10.0"
+    "yaml": "^1.10.0",
+    "vm2": "^3.9.5"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.9.0",
-    "@backstage/test-utils": "^0.1.22",
+    "@backstage/cli": "^0.9.1",
+    "@backstage/test-utils": "^0.1.23",
     "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^9.0.1",
     "@types/git-url-parse": "^9.0.0",
     "@types/mock-fs": "^4.13.0",
     "@types/nunjucks": "^3.1.4",
     "@types/supertest": "^2.0.8",
+    "esbuild": "^0.13.14",
     "jest-when": "^3.1.0",
     "mock-fs": "^5.1.0",
     "msw": "^0.35.0",
@@ -88,7 +91,8 @@
   "files": [
     "dist",
     "migrations",
-    "config.d.ts"
+    "config.d.ts",
+    "assets"
   ],
   "configSchema": "config.d.ts"
 }

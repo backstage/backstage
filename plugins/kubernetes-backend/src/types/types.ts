@@ -72,6 +72,8 @@ export type KubernetesObjectTypes =
   | 'deployments'
   | 'replicasets'
   | 'horizontalpodautoscalers'
+  | 'jobs'
+  | 'cronjobs'
   | 'ingresses'
   | 'customresources';
 
