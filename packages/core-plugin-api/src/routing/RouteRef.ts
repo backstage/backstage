@@ -59,21 +59,21 @@ export class RouteRefImpl<Params extends AnyParams>
     if (config.path) {
       // eslint-disable-next-line no-console
       console.warn(
-        `[core-plugin-api] - routeRefs no longer decide their own path, please remove the path for ${this.toString()}. This will be removed in upcoming versions.`,
+        `DEPRECATION WARNING: Passing a path to createRouteRef is deprecated, please remove the path for ${this}.`,
       );
     }
 
     if (config.icon) {
       // eslint-disable-next-line no-console
       console.warn(
-        `[core-plugin-api] - routeRefs no longer decide their own icon, please remove the icon for ${this.toString()}. This will be removed in upcoming versions.`,
+        `DEPRECATION WARNING: Passing an icon to createRouteRef is deprecated, please remove the icon for ${this}.`,
       );
     }
 
     if (config.title) {
       // eslint-disable-next-line no-console
       console.warn(
-        `[core-plugin-api] - routeRefs no longer decide their own title, please remove the title for ${this.toString()}. This will be removed in upcoming versions.`,
+        `DEPRECATION WARNING: Passing a title to createRouteRef is deprecated, please remove the title for ${this}.`,
       );
     }
   }
