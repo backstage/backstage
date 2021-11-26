@@ -526,8 +526,12 @@ export type SearchResponseFile = {
   content(): Promise<Buffer>;
 };
 
+// Warning: (ae-missing-release-tag) "ServerTokenManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
 export class ServerTokenManager implements TokenManager {
+  // (undocumented)
+  authenticate(token: string): Promise<void>;
   // (undocumented)
   static fromConfig(config: Config): ServerTokenManager;
   // (undocumented)
@@ -535,9 +539,20 @@ export class ServerTokenManager implements TokenManager {
     token: string;
   }>;
   // (undocumented)
-  static noop(): ServerTokenManager;
+  static noop(): ServerTokenManager.NoopTokenManager;
+}
+
+// @public (undocumented)
+export namespace ServerTokenManager {
   // (undocumented)
-  validateToken(token: string): void;
+  export class NoopTokenManager implements TokenManager {
+    // (undocumented)
+    authenticate(): Promise<void>;
+    // (undocumented)
+    getToken(): Promise<{
+      token: string;
+    }>;
+  }
 }
 
 // @public (undocumented)
@@ -600,11 +615,11 @@ export interface StatusCheckHandlerOptions {
 // @public
 export interface TokenManager {
   // (undocumented)
+  authenticate: (token: string) => Promise<void>;
+  // (undocumented)
   getToken: () => Promise<{
     token: string;
   }>;
-  // (undocumented)
-  validateToken: (token: string) => void;
 }
 
 // @public
