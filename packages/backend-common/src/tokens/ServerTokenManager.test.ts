@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { ConfigReader } from '@backstage/config';
+import { TokenManager } from './types';
 import { ServerTokenManager } from './ServerTokenManager';
 
 const emptyConfig = new ConfigReader({});
@@ -122,8 +123,40 @@ describe('ServerTokenManager', () => {
     });
   });
 
+  describe('ServerTokenManager.fromConfig', () => {
+    it('should throw if backend auth configuration is missing', () => {
+      expect(() =>
+        ServerTokenManager.fromConfig(new ConfigReader({})),
+      ).toThrow();
+    });
+
+    it('should throw if no keys are included in the configuration', () => {
+      expect(() =>
+        ServerTokenManager.fromConfig(
+          new ConfigReader({
+            backend: { auth: { keys: [] } },
+          }),
+        ),
+      ).toThrow();
+    });
+
+    it('should throw if any key is missing a secret property', () => {
+      expect(() =>
+        ServerTokenManager.fromConfig(
+          new ConfigReader({
+            backend: {
+              auth: {
+                keys: [{ secret: '123' }, {}, { secret: '789' }],
+              },
+            },
+          }),
+        ),
+      ).toThrow();
+    });
+  });
+
   describe('ServerTokenManager.noop', () => {
-    let noopTokenManager: ServerTokenManager;
+    let noopTokenManager: TokenManager;
 
     beforeEach(() => {
       noopTokenManager = ServerTokenManager.noop();
@@ -146,11 +179,11 @@ describe('ServerTokenManager', () => {
       ).resolves.not.toThrow();
     });
 
-    it('should not accept signed tokens', async () => {
+    it('should accept signed tokens', async () => {
       const tokenManager = ServerTokenManager.fromConfig(configWithSecret);
       await expect(
         noopTokenManager.authenticate((await tokenManager.getToken()).token),
-      ).rejects.toThrowError(/invalid server token/i);
+      ).resolves.not.toThrow();
     });
   });
 });

@@ -19,6 +19,14 @@ import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
 import { TokenManager } from './types';
 
+class NoopTokenManager implements TokenManager {
+  async getToken() {
+    return { token: '' };
+  }
+
+  async authenticate() {}
+}
+
 /**
  * Creates and validates tokens for use during backend-to-backend
  * authentication.
@@ -26,12 +34,11 @@ import { TokenManager } from './types';
  * @public
  */
 export class ServerTokenManager implements TokenManager {
-  private readonly verificationKeys: JWKS.KeyStore | JWK.NoneKey;
-  private readonly signingKey: JWK.Key | JWK.NoneKey;
-  private readonly signingAlgorithm: string | undefined;
+  private readonly verificationKeys: JWKS.KeyStore;
+  private readonly signingKey: JWK.Key;
 
   static noop() {
-    return new ServerTokenManager();
+    return new NoopTokenManager();
   }
 
   static fromConfig(config: Config) {
@@ -43,20 +50,21 @@ export class ServerTokenManager implements TokenManager {
   }
 
   private constructor(secrets?: string[]) {
-    if (secrets?.length) {
-      this.verificationKeys = new JWKS.KeyStore(
-        secrets.map(k => JWK.asKey({ kty: 'oct', k })),
+    if (!secrets?.length) {
+      throw new Error(
+        'No secrets provided when constructing ServerTokenManager',
       );
-      this.signingKey = this.verificationKeys.all()[0];
-      this.signingAlgorithm = 'HS256';
-    } else {
-      this.verificationKeys = this.signingKey = JWK.None;
     }
+
+    this.verificationKeys = new JWKS.KeyStore(
+      secrets.map(k => JWK.asKey({ kty: 'oct', k })),
+    );
+    this.signingKey = this.verificationKeys.all()[0];
   }
 
   async getToken(): Promise<{ token: string }> {
     const jwt = JWT.sign({ sub: 'backstage-server' }, this.signingKey, {
-      algorithm: this.signingAlgorithm,
+      algorithm: 'HS256',
     });
 
     return { token: jwt };
