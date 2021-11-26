@@ -31,6 +31,8 @@ import MuiMenuBookIcon from '@material-ui/icons/MenuBook';
 import MuiPeopleIcon from '@material-ui/icons/People';
 import MuiPersonIcon from '@material-ui/icons/Person';
 import MuiWarningIcon from '@material-ui/icons/Warning';
+import GitlabIcon from '../static/GitlabIcon';
+import SlackIcon from '../static/SlackIcon';
 
 type AppIconsKey =
   | 'brokenImage'
@@ -50,7 +52,9 @@ type AppIconsKey =
   | 'kind:system'
   | 'kind:user'
   | 'user'
-  | 'warning';
+  | 'warning'
+  | 'gitlab'
+  | 'slack';
 
 export type AppIcons = { [key in AppIconsKey]: IconComponent };
 
@@ -74,4 +78,6 @@ export const defaultAppIcons: AppIcons = {
   'kind:user': MuiPersonIcon,
   user: MuiPersonIcon,
   warning: MuiWarningIcon,
+  gitlab: GitlabIcon as IconComponent,
+  slack: SlackIcon as IconComponent,
 };

@@ -21,6 +21,16 @@ app:
         links:
           - url: https://discord.gg/MUpMjP2
             title: '#backstage'
+      - title: Sample gitlab link
+        icon: gitlab
+        links:
+          - url: https://gitlab.com/
+            title: 'Sample gitlab link'
+      - title: Sample slack link
+        icon: slack
+        links:
+          - url: https://slack.com/intl/en-in/
+            title: 'Sample slack link'
 
 backend:
   baseUrl: http://localhost:7000
