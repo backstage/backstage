@@ -107,12 +107,13 @@ export const renderCondition = (
   return [condition.type, <StatusAborted />];
 };
 
-const currentToDeclaredResourceToPerc = (
+// visible for testing
+export const currentToDeclaredResourceToPerc = (
   current: number | string,
   resource: number | string,
 ): string => {
   if (typeof current === 'number' && typeof resource === 'number') {
-    return `${Math.round((current / 10 / resource) * 100)}%`;
+    return `${Math.round((current / resource) * 100)}%`;
   }
 
   const numerator: bigint = BigInt(current);
@@ -124,14 +125,22 @@ const currentToDeclaredResourceToPerc = (
 export const podStatusToCpuUtil = (podStatus: ClientPodStatus): ReactNode => {
   const cpuUtil = podStatus.cpu;
 
+  let currentUsage: number | string = cpuUtil.currentUsage;
+
+  // current usage number for CPU is a different unit than request/limit total
+  // this might be a bug in the k8s library
+  if (typeof cpuUtil.currentUsage === 'number') {
+    currentUsage = cpuUtil.currentUsage / 10;
+  }
+
   return (
     <SubvalueCell
       value={`requests: ${currentToDeclaredResourceToPerc(
-        cpuUtil.currentUsage,
+        currentUsage,
         cpuUtil.requestTotal,
       )}`}
       subvalue={`limits: ${currentToDeclaredResourceToPerc(
-        cpuUtil.currentUsage,
+        currentUsage,
         cpuUtil.limitTotal,
       )}`}
     />
