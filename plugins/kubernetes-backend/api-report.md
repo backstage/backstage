@@ -35,6 +35,7 @@ export interface ClusterDetails {
   name: string;
   // (undocumented)
   serviceAccountToken?: string | undefined;
+  skipMetricsLookup?: boolean;
   // (undocumented)
   skipTLSVerify?: boolean;
   // (undocumented)
