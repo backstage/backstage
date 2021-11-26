@@ -72,7 +72,7 @@ export const SampleScalableSidebar = () => (
     <Sidebar disableExpandOnHover>
       <SidebarSearchField onSearch={handleSearch} to="/search" />
       <SidebarDivider />
-      <SidebarItem icon={CatalogSidebarLogo} onClick={() => {}} text="Catalog">
+      <SidebarItem icon={CatalogSidebarLogo} text="Catalog">
         <SidebarSubmenu title="Catalog">
           <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
           <SidebarSubmenuItem title="APIs" to="/2" icon={APIsIcon} />

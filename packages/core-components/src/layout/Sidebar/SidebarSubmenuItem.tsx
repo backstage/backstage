@@ -28,7 +28,7 @@ import clsx from 'clsx';
 import { BackstageTheme } from '@backstage/theme';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import { ItemWithSubmenuContext } from './config';
+import { SidebarItemWithSubmenuContext } from './config';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   item: {
@@ -118,7 +118,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const classes = useStyles();
   const { pathname: locationPathname } = useLocation();
   const { pathname: toPathname } = useResolvedPath(to);
-  const { setIsHoveredOn } = useContext(ItemWithSubmenuContext);
+  const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
     setIsHoveredOn(false);
   };

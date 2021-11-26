@@ -43,7 +43,7 @@ import {
 import {
   sidebarConfig,
   SidebarContext,
-  ItemWithSubmenuContext,
+  SidebarItemWithSubmenuContext,
 } from './config';
 import { SidebarSubmenu } from './SidebarSubmenu';
 
@@ -96,11 +96,13 @@ const useStyles = makeStyles<BackstageTheme>(
       },
       highlightable: {
         '&:hover': {
-          background: theme.palette.navigation.navItem.hoverBackground,
+          background:
+            theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
         },
       },
       highlighted: {
-        background: theme.palette.navigation.navItem.hoverBackground,
+        background:
+          theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
       },
       label: {
         // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
@@ -168,7 +170,10 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageSidebarItem' },
 );
 
-function isItemWithSubmenuActive(submenu: ReactNode, locationPathname: string) {
+function isSidebarItemWithSubmenuActive(
+  submenu: ReactNode,
+  locationPathname: string,
+) {
   // Item is active if any of submenu items have active paths
   const toPathnames: string[] = [];
   let isActive = false;
@@ -194,16 +199,16 @@ function isItemWithSubmenuActive(submenu: ReactNode, locationPathname: string) {
   return isActive;
 }
 
-const ItemWithSubmenu = ({
+const SidebarItemWithSubmenu = ({
   text,
   hasNotifications = false,
   icon: Icon,
   children,
-}: PropsWithChildren<ItemWithSubmenuProps>) => {
+}: PropsWithChildren<SidebarItemWithSubmenuProps>) => {
   const classes = useStyles();
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const { pathname: locationPathname } = useLocation();
-  const isActive = isItemWithSubmenuActive(children, locationPathname);
+  const isActive = isSidebarItemWithSubmenuActive(children, locationPathname);
 
   const handleMouseEnter = () => {
     setIsHoveredOn(true);
@@ -240,7 +245,7 @@ const ItemWithSubmenu = ({
   const closedContent = itemIcon;
 
   return (
-    <ItemWithSubmenuContext.Provider
+    <SidebarItemWithSubmenuContext.Provider
       value={{
         isHoveredOn,
         setIsHoveredOn,
@@ -268,7 +273,7 @@ const ItemWithSubmenu = ({
         </div>
         {isHoveredOn && children}
       </div>
-    </ItemWithSubmenuContext.Provider>
+    </SidebarItemWithSubmenuContext.Provider>
   );
 };
 
@@ -290,7 +295,7 @@ type SidebarItemLinkProps = SidebarItemBaseProps & {
   onClick?: (ev: React.MouseEvent) => void;
 } & NavLinkProps;
 
-type ItemWithSubmenuProps = SidebarItemBaseProps & {
+type SidebarItemWithSubmenuProps = SidebarItemBaseProps & {
   to?: string;
   onClick?: (ev: React.MouseEvent) => void;
   children: ReactNode;
@@ -304,7 +309,7 @@ type ItemWithSubmenuProps = SidebarItemBaseProps & {
 type SidebarItemProps =
   | SidebarItemLinkProps
   | SidebarItemButtonProps
-  | ItemWithSubmenuProps;
+  | SidebarItemWithSubmenuProps;
 
 function isButtonItem(
   props: SidebarItemProps,
@@ -427,11 +432,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   ).type;
   // Filter children for SidebarSubmenu components
   const submenus = useElementFilter(children, elements =>
-    elements
-      .getElements()
-      .filter(
-        child => React.isValidElement(child) && child.type === componentType,
-      ),
+    elements.getElements().filter(child => child.type === componentType),
   );
   // Error thrown if more than one SidebarSubmenu in a SidebarItem
   if (submenus.length > 1) {
@@ -445,13 +446,13 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   if (hasSubmenu) {
     return (
-      <ItemWithSubmenu
+      <SidebarItemWithSubmenu
         text={text}
         icon={Icon}
         hasNotifications={hasNotifications}
       >
         {submenu}
-      </ItemWithSubmenu>
+      </SidebarItemWithSubmenu>
     );
   }
 

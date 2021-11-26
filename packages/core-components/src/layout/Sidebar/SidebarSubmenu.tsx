@@ -18,7 +18,7 @@ import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import React, { PropsWithChildren, ReactNode, useContext } from 'react';
 import {
-  ItemWithSubmenuContext,
+  SidebarItemWithSubmenuContext,
   sidebarConfig,
   SidebarContext,
   submenuConfig,
@@ -42,7 +42,7 @@ const useStyles = (props: { left: number }) =>
       top: 0,
       bottom: 0,
       padding: 0,
-      background: theme.palette.navigation.submenu.background,
+      background: theme.palette.navigation.submenu?.background ?? '#404040',
       overflowX: 'hidden',
       msOverflowStyle: 'none',
       scrollbarWidth: 'none',
@@ -94,7 +94,7 @@ export const SidebarSubmenu = ({
   const props = { left: left };
   const classes = useStyles(props)();
 
-  const { isHoveredOn } = useContext(ItemWithSubmenuContext);
+  const { isHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   return (
     <div
       className={clsx(classes.drawer, {

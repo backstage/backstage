@@ -67,14 +67,13 @@ export const SidebarContext = createContext<SidebarContextType>({
   setOpen: _open => {},
 });
 
-export type ItemWithSubmenuContextType = {
+export type SidebarItemWithSubmenuContextType = {
   isHoveredOn: boolean;
   setIsHoveredOn: Dispatch<SetStateAction<boolean>>;
 };
 
-export const ItemWithSubmenuContext = createContext<ItemWithSubmenuContextType>(
-  {
+export const SidebarItemWithSubmenuContext =
+  createContext<SidebarItemWithSubmenuContextType>({
     isHoveredOn: false,
     setIsHoveredOn: () => {},
-  },
-);
+  });
