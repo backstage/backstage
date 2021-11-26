@@ -98,6 +98,11 @@ export interface ClusterDetails {
   authProvider: string;
   serviceAccountToken?: string | undefined;
   skipTLSVerify?: boolean;
+  /**
+   * Whether to skip the lookup to the metrics server to retrieve pod resource usage.
+   * It is not guaranteed that the Kubernetes distro has the metrics server installed.
+   */
+  skipMetricsLookup?: boolean;
   caData?: string | undefined;
   /**
    * Specifies the link to the Kubernetes dashboard managing this cluster.

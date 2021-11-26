@@ -216,6 +216,12 @@ export class KubernetesFanOutHandler {
             customResources: this.customResources,
           })
           .then(result => {
+            if (clusterDetailsItem.skipMetricsLookup) {
+              return Promise.all([
+                Promise.resolve(result),
+                Promise.resolve([]),
+              ]);
+            }
             // TODO refactor, extract as method
             const namespaces: Set<string> = new Set<string>(
               result.responses
@@ -235,7 +241,6 @@ export class KubernetesFanOutHandler {
             ]);
           })
           .then(([result, metrics]) => {
-            // TODO call get metrics per namespace found
             const objects: ClusterObjects = {
               cluster: {
                 name: clusterDetailsItem.name,
