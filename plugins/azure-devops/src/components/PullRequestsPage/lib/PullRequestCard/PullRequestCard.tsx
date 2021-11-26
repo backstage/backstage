@@ -67,14 +67,19 @@ export const PullRequestCard = ({
     </Link>
   );
 
+  const repoLink = (
+    <Link to={pullRequest.repository?.url ?? ''} color="inherit">
+      {pullRequest.repository?.name}
+    </Link>
+  );
+
+  const creationDate = pullRequest.creationDate
+    ? DateTime.fromISO(pullRequest.creationDate).toRelative()
+    : undefined;
+
   const subheader = (
     <span>
-      <Link to={pullRequest.repository?.url ?? ''} color="inherit">
-        {pullRequest.repository?.name}
-      </Link>{' '}
-      ·{' '}
-      {pullRequest.creationDate &&
-        DateTime.fromISO(pullRequest.creationDate).toRelative()}
+      {repoLink}·{creationDate}
     </span>
   );
 
