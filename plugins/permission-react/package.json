@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-permission",
+  "name": "@backstage/plugin-permission-react",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
