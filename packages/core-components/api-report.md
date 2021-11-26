@@ -1990,7 +1990,6 @@ export type SidebarSubItemDropDownItem = {
 // @public
 export const SidebarSubmenu: ({
   title,
-  backgroundColor,
   children,
 }: PropsWithChildren<SidebarSubmenuProps>) => JSX.Element;
 
@@ -2010,7 +2009,6 @@ export type SidebarSubmenuItemProps = {
 // @public
 export type SidebarSubmenuProps = {
   title?: string;
-  backgroundColor?: string;
   children: ReactNode;
 };
 

@@ -61,114 +61,112 @@ export type SidebarItemClassKey =
   | 'secondaryAction'
   | 'selected';
 
-const useStyles = (props: { hoverBackgroundColor?: string }) =>
-  makeStyles<BackstageTheme>(
-    theme => {
-      const {
-        selectedIndicatorWidth,
-        drawerWidthClosed,
-        drawerWidthOpen,
-        iconContainerWidth,
-      } = sidebarConfig;
-      return {
-        root: {
-          color: theme.palette.navigation.color,
-          display: 'flex',
-          flexFlow: 'row nowrap',
-          alignItems: 'center',
-          height: 48,
-          cursor: 'pointer',
+const useStyles = makeStyles<BackstageTheme>(
+  theme => {
+    const {
+      selectedIndicatorWidth,
+      drawerWidthClosed,
+      drawerWidthOpen,
+      iconContainerWidth,
+    } = sidebarConfig;
+    return {
+      root: {
+        color: theme.palette.navigation.color,
+        display: 'flex',
+        flexFlow: 'row nowrap',
+        alignItems: 'center',
+        height: 48,
+        cursor: 'pointer',
+      },
+      buttonItem: {
+        background: 'none',
+        border: 'none',
+        width: 'auto',
+        margin: 0,
+        padding: 0,
+        textAlign: 'inherit',
+        font: 'inherit',
+      },
+      closed: {
+        width: drawerWidthClosed,
+        justifyContent: 'center',
+      },
+      open: {
+        width: drawerWidthOpen,
+      },
+      highlightable: {
+        '&:hover': {
+          background: theme.palette.navigation.navItem.hoverBackground,
         },
-        buttonItem: {
-          background: 'none',
-          border: 'none',
-          width: 'auto',
-          margin: 0,
-          padding: 0,
-          textAlign: 'inherit',
-          font: 'inherit',
+      },
+      highlighted: {
+        background: theme.palette.navigation.navItem.hoverBackground,
+      },
+      label: {
+        // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
+        fontWeight: 'bold',
+        whiteSpace: 'nowrap',
+        lineHeight: 'auto',
+        flex: '3 1 auto',
+        width: '110px',
+        overflow: 'hidden',
+        'text-overflow': 'ellipsis',
+      },
+      iconContainer: {
+        boxSizing: 'border-box',
+        height: '100%',
+        width: iconContainerWidth,
+        marginRight: -theme.spacing(2),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      searchRoot: {
+        marginBottom: 12,
+      },
+      searchField: {
+        color: '#b5b5b5',
+        fontWeight: 'bold',
+        fontSize: theme.typography.fontSize,
+      },
+      searchFieldHTMLInput: {
+        padding: `${theme.spacing(2)} 0 ${theme.spacing(2)}`,
+      },
+      searchContainer: {
+        width: drawerWidthOpen - iconContainerWidth,
+      },
+      secondaryAction: {
+        width: theme.spacing(6),
+        textAlign: 'center',
+        marginRight: theme.spacing(1),
+      },
+      closedItemIcon: {
+        width: '100%',
+        justifyContent: 'center',
+      },
+      submenuArrow: {
+        position: 'absolute',
+        right: 0,
+      },
+      selected: {
+        '&$root': {
+          borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
+          color: theme.palette.navigation.selectedColor,
         },
-        closed: {
+        '&$closed': {
           width: drawerWidthClosed,
-          justifyContent: 'center',
         },
-        open: {
-          width: drawerWidthOpen,
+        '& $closedItemIcon': {
+          paddingRight: selectedIndicatorWidth,
         },
-        highlightable: {
-          '&:hover': {
-            // Ideally this would be added to the pallette but would cause a breaking change
-            background: props.hoverBackgroundColor || '#404040',
-          },
+        '& $iconContainer': {
+          marginLeft: -selectedIndicatorWidth,
         },
-        highlighted: {
-          background: props.hoverBackgroundColor || '#404040',
-        },
-        label: {
-          // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
-          fontWeight: 'bold',
-          whiteSpace: 'nowrap',
-          lineHeight: 'auto',
-          flex: '3 1 auto',
-          width: '110px',
-          overflow: 'hidden',
-          'text-overflow': 'ellipsis',
-        },
-        iconContainer: {
-          boxSizing: 'border-box',
-          height: '100%',
-          width: iconContainerWidth,
-          marginRight: -theme.spacing(2),
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-        searchRoot: {
-          marginBottom: 12,
-        },
-        searchField: {
-          color: '#b5b5b5',
-          fontWeight: 'bold',
-          fontSize: theme.typography.fontSize,
-        },
-        searchFieldHTMLInput: {
-          padding: `${theme.spacing(2)} 0 ${theme.spacing(2)}`,
-        },
-        searchContainer: {
-          width: drawerWidthOpen - iconContainerWidth,
-        },
-        secondaryAction: {
-          width: theme.spacing(6),
-          textAlign: 'center',
-          marginRight: theme.spacing(1),
-        },
-        closedItemIcon: {
-          width: '100%',
-          justifyContent: 'center',
-        },
-        submenuArrow: {
-          position: 'absolute',
-          right: 0,
-        },
-        selected: {
-          '&$root': {
-            borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
-            color: theme.palette.navigation.selectedColor,
-          },
-          '&$closed': {
-            width: drawerWidthClosed,
-          },
-          '& $closedItemIcon': {
-            paddingRight: selectedIndicatorWidth,
-          },
-          '& $iconContainer': {
-            marginLeft: -selectedIndicatorWidth,
-          },
-        },
-      };
-    },
-    { name: 'BackstageSidebarItem' },
-  );
+      },
+    };
+  },
+  { name: 'BackstageSidebarItem' },
+);
 
 function isItemWithSubmenuActive(submenu: ReactNode, locationPathname: string) {
   // Item is active if any of submenu items have active paths
@@ -199,11 +197,10 @@ function isItemWithSubmenuActive(submenu: ReactNode, locationPathname: string) {
 const ItemWithSubmenu = ({
   text,
   hasNotifications = false,
-  hoverBackgroundColor,
   icon: Icon,
   children,
 }: PropsWithChildren<ItemWithSubmenuProps>) => {
-  const classes = useStyles({ hoverBackgroundColor })();
+  const classes = useStyles();
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const { pathname: locationPathname } = useLocation();
   const isActive = isItemWithSubmenuActive(children, locationPathname);
@@ -280,7 +277,6 @@ type SidebarItemBaseProps = {
   text?: string;
   hasNotifications?: boolean;
   disableHighlight?: boolean;
-  hoverBackgroundColor?: string;
   className?: string;
 };
 
@@ -370,13 +366,12 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     text,
     hasNotifications = false,
     disableHighlight = false,
-    hoverBackgroundColor,
     onClick,
     children,
     className,
     ...navLinkProps
   } = props;
-  const classes = useStyles({ hoverBackgroundColor })();
+  const classes = useStyles();
   // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
   // depend on the current location, and at least have it being optionally forced to selected.
   // Still waiting on a Q answered to fine tune the implementation
@@ -454,7 +449,6 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
         text={text}
         icon={Icon}
         hasNotifications={hasNotifications}
-        hoverBackgroundColor={hoverBackgroundColor}
       >
         {submenu}
       </ItemWithSubmenu>
@@ -491,7 +485,7 @@ type SidebarSearchFieldProps = {
 
 export function SidebarSearchField(props: SidebarSearchFieldProps) {
   const [input, setInput] = useState('');
-  const classes = useStyles({})();
+  const classes = useStyles();
   const Icon = props.icon ? props.icon : SearchIcon;
 
   const search = () => {
