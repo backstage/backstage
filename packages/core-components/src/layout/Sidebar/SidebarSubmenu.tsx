@@ -25,7 +25,7 @@ import {
 } from './config';
 import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = (props: { left: number }) =>
+const useStyles = (props: { left: number; backgroundColor?: string }) =>
   makeStyles<BackstageTheme>(theme => ({
     root: {
       zIndex: 1000,
@@ -42,7 +42,7 @@ const useStyles = (props: { left: number }) =>
       top: 0,
       bottom: 0,
       padding: 0,
-      background: theme.palette.navigation.submenu.background,
+      background: props.backgroundColor || '#404040',
       overflowX: 'hidden',
       msOverflowStyle: 'none',
       scrollbarWidth: 'none',
@@ -75,6 +75,7 @@ const useStyles = (props: { left: number }) =>
  */
 export type SidebarSubmenuProps = {
   title?: string;
+  backgroundColor?: string;
   children: ReactNode;
 };
 
@@ -85,13 +86,14 @@ export type SidebarSubmenuProps = {
  */
 export const SidebarSubmenu = ({
   title,
+  backgroundColor,
   children,
 }: PropsWithChildren<SidebarSubmenuProps>) => {
   const { isOpen } = useContext(SidebarContext);
   const left = isOpen
     ? sidebarConfig.drawerWidthOpen
     : sidebarConfig.drawerWidthClosed;
-  const props = { left: left };
+  const props = { left, backgroundColor };
   const classes = useStyles(props)();
 
   const { isHoveredOn } = useContext(ItemWithSubmenuContext);
