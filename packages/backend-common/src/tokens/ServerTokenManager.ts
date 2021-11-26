@@ -19,14 +19,6 @@ import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
 import { TokenManager } from './types';
 
-class NoopTokenManager implements TokenManager {
-  async getToken() {
-    return { token: '' };
-  }
-
-  async authenticate() {}
-}
-
 /**
  * Creates and validates tokens for use during backend-to-backend
  * authentication.
@@ -38,7 +30,7 @@ export class ServerTokenManager implements TokenManager {
   private readonly signingKey: JWK.Key;
 
   static noop() {
-    return new NoopTokenManager();
+    return new ServerTokenManager.NoopTokenManager();
   }
 
   static fromConfig(config: Config) {
@@ -76,5 +68,15 @@ export class ServerTokenManager implements TokenManager {
     } catch (e) {
       throw new AuthenticationError('Invalid server token');
     }
+  }
+}
+
+export namespace ServerTokenManager {
+  export class NoopTokenManager implements TokenManager {
+    async getToken() {
+      return { token: '' };
+    }
+
+    async authenticate() {}
   }
 }
