@@ -26,6 +26,7 @@ import isEmpty from 'lodash/isEmpty';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 import { GridItem } from './styles';
+import { LegacyUserIdentity } from '@backstage/core-app-api/src/apis/implementations/IdentityApi/LegacyUserIdentity';
 
 // accept base64url format according to RFC7515 (https://tools.ietf.org/html/rfc7515#section-3)
 const ID_TOKEN_REGEX = /^[a-z0-9_\-]+\.[a-z0-9_\-]+\.[a-z0-9_\-]+$/i;
@@ -60,7 +61,7 @@ const asInputRef = (renderResult: UseFormRegisterReturn) => {
   };
 };
 
-const Component: ProviderComponent = ({ onResult }) => {
+const Component: ProviderComponent = ({ onSignInSuccess }) => {
   const classes = useFormStyles();
   const { register, handleSubmit, formState } = useForm<Data>({
     mode: 'onChange',
@@ -69,13 +70,15 @@ const Component: ProviderComponent = ({ onResult }) => {
   const { errors } = formState;
 
   const handleResult = ({ userId, idToken }: Data) => {
-    onResult({
-      userId,
-      profile: {
-        email: `${userId}@example.com`,
-      },
-      getIdToken: idToken ? async () => idToken : undefined,
-    });
+    onSignInSuccess(
+      LegacyUserIdentity.fromResult({
+        userId,
+        profile: {
+          email: `${userId}@example.com`,
+        },
+        getIdToken: idToken ? async () => idToken : undefined,
+      }),
+    );
   };
 
   return (

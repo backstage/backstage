@@ -17,10 +17,10 @@
 import React, { useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import {
   SignInPageProps,
-  SignInResult,
   useApi,
   useApiHolder,
   errorApiRef,
+  IdentityApi,
 } from '@backstage/core-plugin-api';
 import {
   IdentityProviders,
@@ -81,7 +81,7 @@ export function getSignInProviders(
 
 export const useSignInProviders = (
   providers: SignInProviderType,
-  onResult: SignInPageProps['onResult'],
+  onSignInSuccess: SignInPageProps['onSignInSuccess'],
 ) => {
   const errorApi = useApi(errorApiRef);
   const apiHolder = useApiHolder();
@@ -89,16 +89,16 @@ export const useSignInProviders = (
 
   // This decorates the result with sign out logic from this hook
   const handleWrappedResult = useCallback(
-    (result: SignInResult) => {
-      onResult({
-        ...result,
+    (identityApi: IdentityApi) => {
+      onSignInSuccess({
+        ...identityApi,
         signOut: async () => {
           localStorage.removeItem(PROVIDER_STORAGE_KEY);
-          await result.signOut?.();
+          await identityApi.signOut?.();
         },
       });
     },
-    [onResult],
+    [onSignInSuccess],
   );
 
   // In this effect we check if the user has already selected an existing login
@@ -151,7 +151,14 @@ export const useSignInProviders = (
     return () => {
       didCancel = true;
     };
-  }, [loading, errorApi, onResult, apiHolder, providers, handleWrappedResult]);
+  }, [
+    loading,
+    errorApi,
+    onSignInSuccess,
+    apiHolder,
+    providers,
+    handleWrappedResult,
+  ]);
 
   // This renders all available sign-in providers
   const elements = useMemo(
@@ -161,7 +168,7 @@ export const useSignInProviders = (
 
         const { Component } = provider.components;
 
-        const handleResult = (result: SignInResult) => {
+        const handleSignInSuccess = (result: IdentityApi) => {
           localStorage.setItem(PROVIDER_STORAGE_KEY, provider.id);
 
           handleWrappedResult(result);
@@ -171,7 +178,7 @@ export const useSignInProviders = (
           <Component
             key={provider.id}
             config={provider.config!}
-            onResult={handleResult}
+            onSignInSuccess={handleSignInSuccess}
           />
         );
       }),

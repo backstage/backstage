@@ -51,7 +51,6 @@ import {
   ExternalRouteRef,
 } from '@backstage/core-plugin-api';
 import { GuestUserIdentity } from '../apis/implementations/IdentityApi/GuestUserIdentity';
-import { LegacyUserIdentity } from '../apis/implementations/IdentityApi/LegacyUserIdentity';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
   childDiscoverer,
@@ -78,7 +77,6 @@ import {
   AppRouteBinder,
   BackstageApp,
   SignInPageProps,
-  SignInResult,
 } from './types';
 import { AppThemeProvider } from './AppThemeProvider';
 import { defaultConfigLoader } from './defaultConfigLoader';
@@ -349,17 +347,8 @@ export class AppManager implements BackstageApp {
     }) => {
       const [identityApi, setIdentityApi] = useState<IdentityApi>();
 
-      const setLegacyResult = (result: SignInResult) => {
-        setIdentityApi(new LegacyUserIdentity(result));
-      };
-
       if (!identityApi) {
-        return (
-          <Component
-            onResult={setLegacyResult}
-            onSignInSuccess={setIdentityApi}
-          />
-        );
+        return <Component onSignInSuccess={setIdentityApi} />;
       }
 
       this.appIdentityProxy.setTarget(identityApi);
@@ -492,55 +481,55 @@ export class AppManager implements BackstageApp {
   }
 }
 
-interface FooPropsV1 {
-  foo: () => undefined;
-}
-
-interface FooPropsV2 {
-  foo: () => undefined;
-  bar: () => undefined;
-}
-
-// type FooProps = {
-//   foo: () => undefined
-// } | {
-//   foo: () => undefined
-//   bar: () => undefined
+// interface FooPropsV1 {
+//   foo: () => undefined;
 // }
 
-interface CreateDerpOptions {
-  components: {
-    Foo: (props: FooPropsV1 | FooPropsV2) => JSX.Element;
-  };
-}
+// interface FooPropsV2 {
+//   foo: () => undefined;
+//   bar: () => undefined;
+// }
 
-interface Derp {
-  getComponents(): {
-    Foo: (props: FooPropsV1) => JSX.Element;
-  };
-}
+// // type FooProps = {
+// //   foo: () => undefined
+// // } | {
+// //   foo: () => undefined
+// //   bar: () => undefined
+// // }
 
-function createDerp(options: CreateDerpOptions): Derp {
-  return { getComponents: () => options.components };
-}
+// interface CreateDerpOptions {
+//   components: {
+//     Foo: (props: FooPropsV1 | FooPropsV2) => JSX.Element;
+//   };
+// }
 
-function CustomFoo(props: FooPropsV1) {
-  return <div>{props.foo()}</div>;
-}
+// interface Derp {
+//   getComponents(): {
+//     Foo: (props: FooPropsV1) => JSX.Element;
+//   };
+// }
 
-function NewCustomFoo(props: FooPropsV2) {
-  return (
-    <div>
-      {props.foo()} {props.bar()}
-    </div>
-  );
-}
+// function createDerp(options: CreateDerpOptions): Derp {
+//   return { getComponents: () => options.components };
+// }
 
-const derp = createDerp({
-  components: {
-    Foo: NewCustomFoo,
-  },
-});
+// function CustomFoo(props: FooPropsV1) {
+//   return <div>{props.foo()}</div>;
+// }
 
-const { Foo } = derp.getComponents();
-const _foo = <Foo foo={() => undefined} />;
+// function NewCustomFoo(props: FooPropsV2) {
+//   return (
+//     <div>
+//       {props.foo()} {props.bar()}
+//     </div>
+//   );
+// }
+
+// const derp = createDerp({
+//   components: {
+//     Foo: NewCustomFoo,
+//   },
+// });
+
+// const { Foo } = derp.getComponents();
+// const _foo = <Foo foo={() => undefined} />;

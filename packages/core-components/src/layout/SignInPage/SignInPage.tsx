@@ -50,7 +50,7 @@ type SingleSignInPageProps = SignInPageProps & {
 export type Props = MultiSignInPageProps | SingleSignInPageProps;
 
 export const MultiSignInPage = ({
-  onResult,
+  onSignInSuccess,
   providers = [],
   title,
   align = 'left',
@@ -61,7 +61,7 @@ export const MultiSignInPage = ({
   const signInProviders = getSignInProviders(providers);
   const [loading, providerElements] = useSignInProviders(
     signInProviders,
-    onResult,
+    onSignInSuccess,
   );
 
   if (loading) {
@@ -88,9 +88,9 @@ export const MultiSignInPage = ({
 };
 
 export const SingleSignInPage = ({
-  onSignInSuccess,
   provider,
   auto,
+  onSignInSuccess,
 }: SingleSignInPageProps) => {
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
@@ -133,7 +133,9 @@ export const SingleSignInPage = ({
         setShowLoginPage(true);
         return;
       }
+
       const profile = await authApi.getProfile();
+
       onSignInSuccess(
         UserIdentity.from({
           identity: identityResponse.identity,

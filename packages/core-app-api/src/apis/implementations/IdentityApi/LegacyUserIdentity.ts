@@ -27,10 +27,14 @@ function parseJwtPayload(token: string) {
 }
 
 export class LegacyUserIdentity implements IdentityApi {
-  constructor(private readonly result: SignInResult) {}
+  private constructor(private readonly result: SignInResult) {}
 
   getUserId(): string {
     return this.result.userId;
+  }
+
+  static fromResult(result: SignInResult): LegacyUserIdentity {
+    return new LegacyUserIdentity(result);
   }
 
   async getIdToken(): Promise<string | undefined> {

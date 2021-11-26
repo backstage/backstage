@@ -26,17 +26,18 @@ import {
   errorApiRef,
 } from '@backstage/core-plugin-api';
 import { ForwardedError } from '@backstage/errors';
+import { UserIdentity } from './UserIdentity';
 
-const Component: ProviderComponent = ({ onResult }) => {
+const Component: ProviderComponent = ({ onSignInSuccess }) => {
   const auth0AuthApi = useApi(auth0AuthApiRef);
   const errorApi = useApi(errorApiRef);
 
   const handleLogin = async () => {
     try {
-      const identity = await auth0AuthApi.getBackstageIdentity({
+      const identityResponse = await auth0AuthApi.getBackstageIdentity({
         instantPopup: true,
       });
-      if (!identity) {
+      if (!identityResponse) {
         throw new Error(
           'The Auth0 provider is not configured to support sign-in',
         );
@@ -44,15 +45,13 @@ const Component: ProviderComponent = ({ onResult }) => {
 
       const profile = await auth0AuthApi.getProfile();
 
-      onResult({
-        userId: identity!.id,
-        profile: profile!,
-        getIdToken: () =>
-          auth0AuthApi.getBackstageIdentity().then(i => i!.token ?? i!.idToken),
-        signOut: async () => {
-          await auth0AuthApi.signOut();
-        },
-      });
+      onSignInSuccess(
+        UserIdentity.from({
+          identity: identityResponse.identity,
+          authApi: auth0AuthApi,
+          profile,
+        }),
+      );
     } catch (error) {
       errorApi.post(new ForwardedError('Auth0 login failed', error));
     }
@@ -77,25 +76,20 @@ const Component: ProviderComponent = ({ onResult }) => {
 const loader: ProviderLoader = async apis => {
   const auth0AuthApi = apis.get(auth0AuthApiRef)!;
 
-  const identity = await auth0AuthApi.getBackstageIdentity({
+  const identityResponse = await auth0AuthApi.getBackstageIdentity({
     optional: true,
   });
 
-  if (!identity) {
+  if (!identityResponse) {
     return undefined;
   }
 
   const profile = await auth0AuthApi.getProfile();
-
-  return {
-    userId: identity.id,
-    profile: profile!,
-    getIdToken: () =>
-      auth0AuthApi.getBackstageIdentity().then(i => i!.token ?? i!.idToken),
-    signOut: async () => {
-      await auth0AuthApi.signOut();
-    },
-  };
+  return UserIdentity.from({
+    identity: identityResponse.identity,
+    authApi: auth0AuthApi,
+    profile,
+  });
 };
 
 export const auth0Provider: SignInProvider = { Component, loader };

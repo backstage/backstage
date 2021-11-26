@@ -137,7 +137,7 @@ export type AuthProviderFactory = (
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;
   profile: ProfileInfo;
-  backstageIdentity?: BackstageIdentity;
+  backstageIdentity?: BackstageIdentityResponse;
 };
 
 /**
@@ -230,7 +230,7 @@ export type SignInResolver<AuthResult> = (
     catalogIdentityClient: CatalogIdentityClient;
     logger: Logger;
   },
-) => Promise<BackstageIdentity>;
+) => Promise<BackstageIdentityResponse>;
 
 export type AuthHandlerResult = { profile: ProfileInfo };
 

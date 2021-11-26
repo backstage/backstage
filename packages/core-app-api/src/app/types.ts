@@ -71,12 +71,6 @@ export type SignInResult = {
  */
 export type SignInPageProps = {
   /**
-   * Set the sign-in result for the app. This should only be called once.
-   * @deprecated use {@link SignInPageProps.onSignInSuccess} instead.
-   */
-  onResult(result: SignInResult): void;
-
-  /**
    * Set the IdentityApi on successful sign in. This should only be called once.
    */
   onSignInSuccess(identityApi: IdentityApi): void;
