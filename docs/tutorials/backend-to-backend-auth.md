@@ -60,12 +60,9 @@ const response = await fetch(pluginBackendApiUrl, {
 });
 ```
 
-You can use the same `tokenManager` to validate tokens supplied on incoming
+You can use the same `tokenManager` to authenticate tokens supplied on incoming
 requests:
 
 ```typescript
-const isValidServerToken = await tokenManager.validateToken(token);
-if (!isValidServerToken) {
-  throw new UnauthorizedError();
-}
+await tokenManager.authenticate(token); // throws if token is invalid
 ```
