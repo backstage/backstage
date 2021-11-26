@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
-import {
-  PluginCacheManager,
-  PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  TokenManager,
-  UrlReader,
-} from '@backstage/backend-common';
-
-export type PluginEnvironment = {
-  logger: Logger;
-  cache: PluginCacheManager;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
-  discovery: PluginEndpointDiscovery;
-  tokenManager: TokenManager;
-};
+/**
+ * Interface for creating and validating tokens.
+ *
+ * @public
+ */
+export interface TokenManager {
+  getToken: () => Promise<{ token: string }>;
+  authenticate: (token: string) => Promise<void>;
+}

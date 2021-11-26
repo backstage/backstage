@@ -54,6 +54,7 @@
     "git-url-parse": "^11.6.0",
     "helmet": "^4.0.0",
     "isomorphic-git": "^1.8.0",
+    "jose": "^1.27.1",
     "keyv": "^4.0.3",
     "keyv-memcache": "^1.2.5",
     "knex": "^0.95.1",
