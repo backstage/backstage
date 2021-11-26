@@ -32,6 +32,7 @@ import {
   AlertDisplay,
   OAuthRequestDialog,
   SignInPage,
+  ContentHeader,
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
@@ -175,7 +176,20 @@ const routes = (
     >
       {techDocsPage}
     </Route>
-    <Route path="/create" element={<ScaffolderPage />}>
+    <Route
+      path="/create"
+      element={
+        <ScaffolderPage
+          ExtraSwimlanes={[
+            {
+              title: <ContentHeader title="Recommended" />,
+              filter: entity =>
+                entity?.metadata?.tags?.includes('recommended') || false,
+            },
+          ]}
+        />
+      }
+    >
       <ScaffolderFieldExtensions>
         <LowerCaseValuePickerFieldExtension />
       </ScaffolderFieldExtensions>

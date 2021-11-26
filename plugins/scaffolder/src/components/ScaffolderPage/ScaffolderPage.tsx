@@ -23,7 +23,7 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   EntityKindPicker,
@@ -51,13 +51,17 @@ export type ScaffolderPageProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
+  ExtraSwimlanes?: Array<{
+    title: React.ReactNode;
+    filter: (entity: Entity) => boolean;
+  }>;
 };
 
 export const ScaffolderPageContents = ({
   TemplateCardComponent,
+  ExtraSwimlanes,
 }: ScaffolderPageProps) => {
   const styles = useStyles();
-
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
 
   return (
@@ -96,6 +100,13 @@ export const ScaffolderPageContents = ({
             <EntityTagPicker />
           </div>
           <div>
+            {ExtraSwimlanes &&
+              ExtraSwimlanes.map(swimlane => (
+                <TemplateList
+                  TemplateCardComponent={TemplateCardComponent}
+                  Swimlane={swimlane}
+                />
+              ))}
             <TemplateList TemplateCardComponent={TemplateCardComponent} />
           </div>
         </div>
@@ -106,8 +117,12 @@ export const ScaffolderPageContents = ({
 
 export const ScaffolderPage = ({
   TemplateCardComponent,
+  ExtraSwimlanes,
 }: ScaffolderPageProps) => (
   <EntityListProvider>
-    <ScaffolderPageContents TemplateCardComponent={TemplateCardComponent} />
+    <ScaffolderPageContents
+      TemplateCardComponent={TemplateCardComponent}
+      ExtraSwimlanes={ExtraSwimlanes}
+    />
   </EntityListProvider>
 );

@@ -16,10 +16,13 @@
 
 import React, { ComponentType } from 'react';
 import {
+  Entity,
   stringifyEntityRef,
   TemplateEntityV1beta2,
 } from '@backstage/catalog-model';
 import {
+  Content,
+  ContentHeader,
   ItemCardGrid,
   Progress,
   WarningPanel,
@@ -32,41 +35,84 @@ export type TemplateListProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
+  Swimlane?: {
+    title: React.ReactNode;
+    filter: (entity: Entity) => boolean;
+  };
 };
 
-export const TemplateList = ({ TemplateCardComponent }: TemplateListProps) => {
+type TemplateCardGridProps = {
+  Card: ComponentType<{ template: TemplateEntityV1beta2 }>;
+  entities: Entity[];
+};
+const TemplateCardGrid = ({ Card, entities }: TemplateCardGridProps) => {
+  return (
+    <ItemCardGrid>
+      {entities &&
+        entities?.length > 0 &&
+        entities.map((template: Entity) => (
+          <Card
+            key={stringifyEntityRef(template)}
+            template={template as TemplateEntityV1beta2}
+          />
+        ))}
+    </ItemCardGrid>
+  );
+};
+
+export const TemplateList = ({
+  TemplateCardComponent,
+  Swimlane,
+}: TemplateListProps) => {
   const { loading, error, entities } = useEntityListProvider();
   const Card = TemplateCardComponent || TemplateCard;
-  return (
-    <>
-      {loading && <Progress />}
+  if (Swimlane === null || Swimlane === undefined) {
+    return (
+      <>
+        {loading && <Progress />}
 
+        {error && (
+          <WarningPanel title="Oops! Something went wrong loading the templates">
+            {error.message}
+          </WarningPanel>
+        )}
+
+        {!error && !loading && !entities.length && (
+          <Typography variant="body2">
+            No templates found that match your filter. Learn more about{' '}
+            <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
+              adding templates
+            </Link>
+            .
+          </Typography>
+        )}
+        <Content>
+          <ContentHeader title="All Templates" />
+          <TemplateCardGrid Card={Card} entities={entities} />
+        </Content>
+      </>
+    );
+  }
+
+  const filteredEntities = entities.filter((entity: Entity) =>
+    Swimlane.filter(entity),
+  );
+
+  if (filteredEntities.length === 0) {
+    return null;
+  }
+
+  return (
+    <Content>
+      {Swimlane.title}
+      {loading && <Progress />}
       {error && (
         <WarningPanel title="Oops! Something went wrong loading the templates">
           {error.message}
         </WarningPanel>
       )}
 
-      {!error && !loading && !entities.length && (
-        <Typography variant="body2">
-          No templates found that match your filter. Learn more about{' '}
-          <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
-            adding templates
-          </Link>
-          .
-        </Typography>
-      )}
-
-      <ItemCardGrid>
-        {entities &&
-          entities?.length > 0 &&
-          entities.map(template => (
-            <Card
-              key={stringifyEntityRef(template)}
-              template={template as TemplateEntityV1beta2}
-            />
-          ))}
-      </ItemCardGrid>
-    </>
+      <TemplateCardGrid Card={Card} entities={filteredEntities} />
+    </Content>
   );
 };

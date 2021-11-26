@@ -24,6 +24,7 @@ import { JSONSchema } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
@@ -213,11 +214,18 @@ export const ScaffolderFieldExtensions: React_2.ComponentType;
 // @public (undocumented)
 export const ScaffolderPage: ({
   TemplateCardComponent,
+  ExtraSwimlanes,
 }: {
   TemplateCardComponent?:
     | ComponentType<{
         template: TemplateEntityV1beta2;
       }>
+    | undefined;
+  ExtraSwimlanes?:
+    | {
+        title: ReactNode;
+        filter: (entity: Entity) => boolean;
+      }[]
     | undefined;
 }) => JSX.Element;
 
@@ -240,7 +248,8 @@ export { scaffolderPlugin };
 // @public (undocumented)
 export const TemplateList: ({
   TemplateCardComponent,
-}: TemplateListProps) => JSX.Element;
+  Swimlane,
+}: TemplateListProps) => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "TemplateListProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -251,6 +260,10 @@ export type TemplateListProps = {
         template: TemplateEntityV1beta2;
       }>
     | undefined;
+  Swimlane?: {
+    title: React_2.ReactNode;
+    filter: (entity: Entity) => boolean;
+  };
 };
 
 // Warning: (ae-missing-release-tag) "TemplateTypePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
