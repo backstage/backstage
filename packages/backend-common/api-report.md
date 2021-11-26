@@ -537,19 +537,7 @@ export class ServerTokenManager implements TokenManager {
     token: string;
   }>;
   // (undocumented)
-  static noop(): ServerTokenManager.NoopTokenManager;
-}
-
-// @public (undocumented)
-export namespace ServerTokenManager {
-  export class NoopTokenManager implements TokenManager {
-    // (undocumented)
-    authenticate(): Promise<void>;
-    // (undocumented)
-    getToken(): Promise<{
-      token: string;
-    }>;
-  }
+  static noop(): TokenManager;
 }
 
 // @public (undocumented)
