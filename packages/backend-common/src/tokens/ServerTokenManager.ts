@@ -17,7 +17,7 @@
 import { JWKS, JWK, JWT } from 'jose';
 import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
-import { ServerIdentity, TokenManager } from './types';
+import { TokenManager } from './types';
 
 /**
  * Creates and validates tokens for use during backend-to-backend
@@ -54,24 +54,19 @@ export class ServerTokenManager implements TokenManager {
     }
   }
 
-  async getToken(pluginId: string): Promise<{ token: string }> {
-    // TODO(mtlewis): should we wrap pluginId in a urn?
-    const jwt = JWT.sign({ sub: pluginId }, this.signingKey, {
+  async getToken(): Promise<{ token: string }> {
+    const jwt = JWT.sign({ sub: 'backstage-server' }, this.signingKey, {
       algorithm: this.signingAlgorithm,
     });
 
     return { token: jwt };
   }
 
-  async authenticate(token: string): Promise<ServerIdentity> {
-    let decodedJwt = {};
+  async authenticate(token: string): Promise<void> {
     try {
       JWT.verify(token, this.verificationKeys);
-      decodedJwt = JWT.decode(token);
     } catch (e) {
       throw new AuthenticationError('Invalid server token');
     }
-
-    return { pluginId: decodedJwt.sub, token };
   }
 }
