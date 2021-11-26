@@ -27,5 +27,4 @@ jobs:
           days-before-pr-close: 3
           exempt-pr-labels: reviewer-approved,awaiting-review
           stale-pr-label: stale
-      - name: Print outputs
-        run: echo ${{ join(steps.stale.outputs.*, ',') }}
+          operations-per-run: 100
