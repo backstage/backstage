@@ -13,4 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { scorecardsPlugin, EntityScorecardContent } from './plugin';
+export * from './TechInsightsApi';
+export * from './TechInsightsClient';

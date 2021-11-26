@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ScorecardsApi } from './ScorecardsApi';
+import { TechInsightsApi } from './TechInsightsApi';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Check } from './types';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
@@ -30,7 +30,7 @@ export type Options = {
   discoveryApi: DiscoveryApi;
 };
 
-export class ScorecardsClient implements ScorecardsApi {
+export class TechInsightsClient implements TechInsightsApi {
   private readonly discoveryApi: DiscoveryApi;
 
   constructor(options: Options) {

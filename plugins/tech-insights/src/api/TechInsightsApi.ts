@@ -20,12 +20,12 @@ import { Check } from './types';
 import { CheckResultRenderer } from '../components/CheckResultRenderer';
 import { EntityName } from '@backstage/catalog-model';
 
-export const scorecardsApiRef = createApiRef<ScorecardsApi>({
-  id: 'plugin.scorecards.service',
-  description: 'Used by the scorecards plugin to make requests',
+export const techInsightsApiRef = createApiRef<TechInsightsApi>({
+  id: 'plugin.techinsights.service',
+  description: 'Used by the tech insights plugin to make requests',
 });
 
-export interface ScorecardsApi {
+export interface TechInsightsApi {
   getScorecardsDefinition: (
     type: string,
     value: CheckResult[],

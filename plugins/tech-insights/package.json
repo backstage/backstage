@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-scorecards",
+  "name": "@backstage/plugin-tech-insights",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",

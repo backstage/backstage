@@ -21,10 +21,10 @@ import { Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { ChecksOverview } from './ChecksOverview';
 import Alert from '@material-ui/lab/Alert';
-import { scorecardsApiRef } from '../../api/ScorecardsApi';
+import { techInsightsApiRef } from '../../api/TechInsightsApi';
 
 export const ScorecardsOverview = () => {
-  const api = useApi(scorecardsApiRef);
+  const api = useApi(techInsightsApiRef);
   const { namespace, kind, name } = useParams();
 
   const { value, loading, error } = useAsync(

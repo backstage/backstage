@@ -33,7 +33,7 @@ export function defaultCheckResultRenderers(
       type: 'json-rules-engine',
       title: 'Boolean scorecard',
       description:
-        'This card represents an overview of default boolean checks:',
+        'This card represents an overview of default boolean Backstage checks:',
       component: <BooleanCheck checkResult={value} />,
     },
   ];

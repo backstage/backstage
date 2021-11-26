@@ -20,19 +20,19 @@ import {
   discoveryApiRef,
 } from '@backstage/core-plugin-api';
 import { rootRouteRef } from './routes';
-import { scorecardsApiRef } from './api/ScorecardsApi';
-import { ScorecardsClient } from './api';
+import { techInsightsApiRef } from './api/TechInsightsApi';
+import { TechInsightsClient } from './api/TechInsightsClient';
 
 /**
  * @public
  */
-export const scorecardsPlugin = createPlugin({
-  id: 'scorecards',
+export const techInsightsPlugin = createPlugin({
+  id: 'tech-insights',
   apis: [
     createApiFactory({
-      api: scorecardsApiRef,
+      api: techInsightsApiRef,
       deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new ScorecardsClient({ discoveryApi }),
+      factory: ({ discoveryApi }) => new TechInsightsClient({ discoveryApi }),
     }),
   ],
   routes: {
@@ -43,9 +43,9 @@ export const scorecardsPlugin = createPlugin({
 /**
  * @public
  */
-export const EntityScorecardContent = scorecardsPlugin.provide(
+export const EntityTechInsightsScorecardContent = techInsightsPlugin.provide(
   createRoutableExtension({
-    name: 'EntityScorecardContent',
+    name: 'EntityTechInsightsScorecardContent',
     component: () =>
       import('./components/ScorecardsOverview').then(m => m.ScorecardsOverview),
     mountPoint: rootRouteRef,

@@ -19,15 +19,17 @@ import { makeStyles, Grid, Typography } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';
 import { Content, Page, InfoCard } from '@backstage/core-components';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { scorecardsApiRef } from '../../api/ScorecardsApi';
+import { techInsightsApiRef } from '../../api/TechInsightsApi';
+import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: BackstageTheme) => ({
   contentScorecards: {
     paddingLeft: 0,
     paddingRight: 0,
   },
   subheader: {
     fontWeight: 'bold',
+    paddingLeft: theme.spacing(0.5),
   },
 }));
 
@@ -37,7 +39,7 @@ type Checks = {
 
 export const ChecksOverview = ({ checks }: Checks) => {
   const classes = useStyles();
-  const api = useApi(scorecardsApiRef);
+  const api = useApi(techInsightsApiRef);
   const checkRenderType = api.getScorecardsDefinition(
     checks[0].check.type,
     checks,

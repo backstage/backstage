@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { scorecardsPlugin } from './plugin';
-
-describe('scorecards', () => {
-  it('should export plugin', () => {
-    expect(scorecardsPlugin).toBeDefined();
-  });
-});
+export {
+  techInsightsPlugin,
+  EntityTechInsightsScorecardContent,
+} from './plugin';

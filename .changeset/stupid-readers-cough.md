@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scorecards': patch
+'@backstage/plugin-tech-insights': patch
 ---
 
-New package containing scorecards, appropriate UI components for the Tech Insights plugin.
+New package containing UI components for the Tech Insights plugin.

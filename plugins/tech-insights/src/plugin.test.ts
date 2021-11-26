@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import { scorecardsPlugin, EntityScorecardContent } from '../src/plugin';
+import { techInsightsPlugin } from './plugin';
 
-createDevApp()
-  .registerPlugin(scorecardsPlugin)
-  .addPage({
-    element: <EntityScorecardContent />,
-    title: 'Root Page',
-    path: '/scorecards',
-  })
-  .render();
+describe('tech insights', () => {
+  it('should export plugin', () => {
+    expect(techInsightsPlugin).toBeDefined();
+  });
+});
