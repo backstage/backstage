@@ -1,8 +1,8 @@
 name: 'Stale workflow'
 on:
   workflow_dispatch:
-  # schedule:
-  #   - cron: '0 0 * * *' # at 00:00 every day
+  schedule:
+    - cron: '*/10 * * * *' # run every 10 minutes as it also removes labels.
 
 jobs:
   stale:
@@ -27,7 +27,5 @@ jobs:
           days-before-pr-close: 3
           exempt-pr-labels: reviewer-approved,awaiting-review
           stale-pr-label: stale
-          # Will be removed once we are happy with the new workflow.
-          debug-only: true
       - name: Print outputs
         run: echo ${{ join(steps.stale.outputs.*, ',') }}
