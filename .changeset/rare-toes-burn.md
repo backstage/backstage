@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-azure-devops-backend': patch
+'@backstage/plugin-azure-devops-backend': minor
 ---
 
 Added getting builds by definition name
