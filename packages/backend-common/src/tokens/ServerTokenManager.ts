@@ -71,7 +71,16 @@ export class ServerTokenManager implements TokenManager {
   }
 }
 
+/**
+ * @public
+ */
 export namespace ServerTokenManager {
+  /**
+   * Stub token manager which returns empty tokens and always
+   * authenticates successfully.
+   *
+   * @public
+   */
   export class NoopTokenManager implements TokenManager {
     async getToken() {
       return { token: '' };

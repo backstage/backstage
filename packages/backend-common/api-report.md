@@ -526,8 +526,6 @@ export type SearchResponseFile = {
   content(): Promise<Buffer>;
 };
 
-// Warning: (ae-missing-release-tag) "ServerTokenManager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class ServerTokenManager implements TokenManager {
   // (undocumented)
@@ -544,7 +542,6 @@ export class ServerTokenManager implements TokenManager {
 
 // @public (undocumented)
 export namespace ServerTokenManager {
-  // (undocumented)
   export class NoopTokenManager implements TokenManager {
     // (undocumented)
     authenticate(): Promise<void>;
