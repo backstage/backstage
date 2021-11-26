@@ -1982,12 +1982,6 @@ export const SidebarSpacer: React_2.ComponentType<
 >;
 
 // @public
-export type SidebarSubItemDropDownItem = {
-  title: string;
-  to: string;
-};
-
-// @public
 export const SidebarSubmenu: ({
   title,
   children,
@@ -1999,11 +1993,17 @@ export const SidebarSubmenuItem: (
 ) => JSX.Element;
 
 // @public
+export type SidebarSubmenuItemDropDownItem = {
+  title: string;
+  to: string;
+};
+
+// @public
 export type SidebarSubmenuItemProps = {
   title: string;
   to: string;
   icon: IconComponent;
-  dropdownItems?: SidebarSubItemDropDownItem[];
+  dropdownItems?: SidebarSubmenuItemDropDownItem[];
 };
 
 // @public

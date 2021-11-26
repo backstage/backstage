@@ -20,7 +20,7 @@ export { SidebarSubmenu } from './SidebarSubmenu';
 export type { SidebarSubmenuProps } from './SidebarSubmenu';
 export type {
   SidebarSubmenuItemProps,
-  SidebarSubItemDropDownItem,
+  SidebarSubmenuItemDropDownItem,
 } from './SidebarSubmenuItem';
 export type { SidebarClassKey } from './Bar';
 export { SidebarPage, SidebarPinStateContext } from './Page';
