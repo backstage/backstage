@@ -214,16 +214,17 @@ export const ScaffolderFieldExtensions: React_2.ComponentType;
 // @public (undocumented)
 export const ScaffolderPage: ({
   TemplateCardComponent,
-  ExtraSwimlanes,
+  extraSwimlanes,
 }: {
   TemplateCardComponent?:
     | ComponentType<{
         template: TemplateEntityV1beta2;
       }>
     | undefined;
-  ExtraSwimlanes?:
+  extraSwimlanes?:
     | {
-        title: ReactNode;
+        title?: string | undefined;
+        titleComponent?: ReactNode;
         filter: (entity: Entity) => boolean;
       }[]
     | undefined;
@@ -248,7 +249,7 @@ export { scaffolderPlugin };
 // @public (undocumented)
 export const TemplateList: ({
   TemplateCardComponent,
-  Swimlane,
+  swimlane,
 }: TemplateListProps) => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "TemplateListProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -260,8 +261,9 @@ export type TemplateListProps = {
         template: TemplateEntityV1beta2;
       }>
     | undefined;
-  Swimlane?: {
-    title: React_2.ReactNode;
+  swimlane?: {
+    title?: string;
+    titleComponent?: React_2.ReactNode;
     filter: (entity: Entity) => boolean;
   };
 };

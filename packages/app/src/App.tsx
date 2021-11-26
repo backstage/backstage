@@ -32,7 +32,6 @@ import {
   AlertDisplay,
   OAuthRequestDialog,
   SignInPage,
-  ContentHeader,
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
@@ -180,11 +179,11 @@ const routes = (
       path="/create"
       element={
         <ScaffolderPage
-          ExtraSwimlanes={[
+          extraSwimlanes={[
             {
-              title: <ContentHeader title="Recommended" />,
+              title: 'Recommended',
               filter: entity =>
-                entity?.metadata?.tags?.includes('recommended') || false,
+                entity?.metadata?.tags?.includes('recommended') ?? false,
             },
           ]}
         />

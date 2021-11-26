@@ -34,15 +34,16 @@ type RouterProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
-  ExtraSwimlanes?: Array<{
-    title: React.ReactNode;
+  extraSwimlanes?: Array<{
+    title?: string;
+    titleComponent?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
 };
 
 export const Router = ({
   TemplateCardComponent,
-  ExtraSwimlanes,
+  extraSwimlanes,
 }: RouterProps) => {
   const outlet = useOutlet();
 
@@ -73,7 +74,7 @@ export const Router = ({
         element={
           <ScaffolderPage
             TemplateCardComponent={TemplateCardComponent}
-            ExtraSwimlanes={ExtraSwimlanes}
+            extraSwimlanes={extraSwimlanes}
           />
         }
       />

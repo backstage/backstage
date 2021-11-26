@@ -51,18 +51,28 @@ export type ScaffolderPageProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
-  ExtraSwimlanes?: Array<{
-    title: React.ReactNode;
+  extraSwimlanes?: Array<{
+    title?: string;
+    titleComponent?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
 };
 
 export const ScaffolderPageContents = ({
   TemplateCardComponent,
-  ExtraSwimlanes,
+  extraSwimlanes,
 }: ScaffolderPageProps) => {
   const styles = useStyles();
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
+  const otherTemplatesSwimlane = {
+    title: extraSwimlanes ? 'Other Templates' : 'Templates',
+    filter: (entity: Entity) => {
+      const filtered = (extraSwimlanes ?? []).map(swimlane =>
+        swimlane.filter(entity),
+      );
+      return !filtered.some(result => result === true);
+    },
+  };
 
   return (
     <Page themeId="home">
@@ -100,14 +110,17 @@ export const ScaffolderPageContents = ({
             <EntityTagPicker />
           </div>
           <div>
-            {ExtraSwimlanes &&
-              ExtraSwimlanes.map(swimlane => (
+            {extraSwimlanes &&
+              extraSwimlanes.map(swimlane => (
                 <TemplateList
                   TemplateCardComponent={TemplateCardComponent}
-                  Swimlane={swimlane}
+                  swimlane={swimlane}
                 />
               ))}
-            <TemplateList TemplateCardComponent={TemplateCardComponent} />
+            <TemplateList
+              TemplateCardComponent={TemplateCardComponent}
+              swimlane={otherTemplatesSwimlane}
+            />
           </div>
         </div>
       </Content>
@@ -117,12 +130,12 @@ export const ScaffolderPageContents = ({
 
 export const ScaffolderPage = ({
   TemplateCardComponent,
-  ExtraSwimlanes,
+  extraSwimlanes,
 }: ScaffolderPageProps) => (
   <EntityListProvider>
     <ScaffolderPageContents
       TemplateCardComponent={TemplateCardComponent}
-      ExtraSwimlanes={ExtraSwimlanes}
+      extraSwimlanes={extraSwimlanes}
     />
   </EntityListProvider>
 );
