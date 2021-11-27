@@ -14,47 +14,23 @@
  * limitations under the License.
  */
 
-import { Duration } from 'luxon';
+import { Contexts } from './Contexts';
 import { RootContext } from './RootContext';
 
 describe('RootContext', () => {
-  it('can perform a manual abort', async () => {
-    const { ctx, abort } = RootContext.create().withAbort();
-
-    const cb = jest.fn();
-    ctx.abortSignal.addEventListener('abort', cb);
-    ctx.abortPromise.then(cb);
-
-    abort();
-
-    await ctx.abortPromise;
-    expect(cb).toBeCalledTimes(2);
+  it('returns empty values', async () => {
+    const ctx = new RootContext();
+    expect(ctx.abortSignal).toBeDefined();
+    expect(ctx.deadline).toBeUndefined();
+    expect(ctx.value('a')).toBeUndefined();
   });
 
-  it('can abort on a timeout', async () => {
-    const ctx = RootContext.create().withTimeout(Duration.fromMillis(200));
-    const start = Date.now();
-
-    const cb = jest.fn();
-    ctx.abortSignal.addEventListener('abort', cb);
-    ctx.abortPromise.then(cb);
-
-    await ctx.abortPromise;
-    const delta = Date.now() - start;
-
-    expect(delta).toBeGreaterThan(100);
-    expect(delta).toBeLessThan(300);
-    expect(cb).toBeCalledTimes(2);
-  });
-
-  it('can apply behaviors', () => {
-    const ctx = RootContext.create().with(
-      c => c.withValue('a', 1),
-      c => c.withValue<number>('a', p => p! + 1),
-      c => c.withValue('b', 3),
+  it('can decorate', () => {
+    const parent = new RootContext();
+    const child = parent.use(
+      Contexts.setValue('a', 2),
+      Contexts.setValue('a', 3),
     );
-
-    expect(ctx.value('a')).toBe(2);
-    expect(ctx.value('b')).toBe(3);
+    expect(child.value('a')).toBe(3);
   });
 });

@@ -14,20 +14,37 @@
  * limitations under the License.
  */
 
-import { AbortController } from 'node-abort-controller';
 import { Context, ContextDecorator } from './types';
 
-const neverAborts = new AbortController().signal;
-
 /**
- * An empty root context.
+ * A context that just holds a single value, and delegates the rest to its
+ * parent.
  */
-export class RootContext implements Context {
-  readonly abortSignal = neverAborts;
-  readonly deadline = undefined;
+export class ValueContext implements Context {
+  static forConstantValue(
+    ctx: Context,
+    key: string | symbol,
+    value: unknown,
+  ): Context {
+    return new ValueContext(ctx, key, value);
+  }
 
-  value<T = unknown>(_key: string | symbol): T | undefined {
-    return undefined;
+  constructor(
+    private readonly _parent: Context,
+    private readonly _key: string | symbol,
+    private readonly _value: unknown,
+  ) {}
+
+  get abortSignal(): AbortSignal {
+    return this._parent.abortSignal;
+  }
+
+  get deadline(): Date | undefined {
+    return this._parent.deadline;
+  }
+
+  value<T = unknown>(key: string | symbol): T | undefined {
+    return key === this._key ? (this._value as T) : this._parent.value(key);
   }
 
   use(...items: ContextDecorator[]): Context {
