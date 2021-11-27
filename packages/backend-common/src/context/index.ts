@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { RootContext } from './RootContext';
+export { Contexts } from './Contexts';
 export type { Context, ContextDecorator } from './types';

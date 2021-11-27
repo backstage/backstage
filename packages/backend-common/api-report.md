@@ -12,7 +12,6 @@ import { AzureIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import cors from 'cors';
-import { DateTime } from 'luxon';
 import Docker from 'dockerode';
 import { Duration } from 'luxon';
 import { ErrorRequestHandler } from 'express';
@@ -149,24 +148,26 @@ export interface ContainerRunner {
 
 // @public
 export interface Context {
-  readonly abortPromise: Promise<void>;
   readonly abortSignal: AbortSignal;
-  readonly deadline: DateTime | undefined;
+  readonly deadline: Date | undefined;
+  use(...decorators: ContextDecorator[]): Context;
   value<T = unknown>(key: string | symbol): T | undefined;
-  with(...decorators: ContextDecorator[]): Context;
-  withAbort(): {
-    ctx: Context;
-    abort: () => void;
-  };
-  withTimeout(timeout: Duration): Context;
-  withValue<T = unknown>(
-    key: string | symbol,
-    value: T | ((previous: T | undefined) => T),
-  ): Context;
 }
 
 // @public
 export type ContextDecorator = (ctx: Context) => Context;
+
+// @public
+export class Contexts {
+  static root(): Context;
+  static setAbort(signal: AbortSignal_2): ContextDecorator;
+  static setTimeoutDuration(timeout: Duration): ContextDecorator;
+  static setTimeoutMillis(timeout: number): ContextDecorator;
+  static setValue(
+    key: string | symbol,
+    value: unknown | ((previous: unknown | undefined) => unknown),
+  ): ContextDecorator;
+}
 
 // @public @deprecated
 export const createDatabase: typeof createDatabaseClient;
@@ -478,25 +479,6 @@ export function resolvePackagePath(name: string, ...paths: string[]): string;
 
 // @public
 export function resolveSafeChildPath(base: string, path: string): string;
-
-// @public
-export class RootContext implements Context {
-  get abortPromise(): Promise<void>;
-  get abortSignal(): AbortSignal_2;
-  static create(): Context;
-  get deadline(): DateTime | undefined;
-  value<T = unknown>(key: string | symbol): T | undefined;
-  with(...items: ContextDecorator[]): Context;
-  withAbort(): {
-    ctx: Context;
-    abort: () => void;
-  };
-  withTimeout(timeout: Duration): Context;
-  withValue<T = unknown>(
-    key: string | symbol,
-    value: T | ((previous: T | undefined) => T),
-  ): Context;
-}
 
 // @public
 export type RunContainerOptions = {
