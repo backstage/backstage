@@ -34,17 +34,14 @@ type RouterProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
-  extraSwimlanes?: Array<{
+  groups?: Array<{
     title?: string;
     titleComponent?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
 };
 
-export const Router = ({
-  TemplateCardComponent,
-  extraSwimlanes,
-}: RouterProps) => {
+export const Router = ({ TemplateCardComponent, groups }: RouterProps) => {
   const outlet = useOutlet();
 
   const customFieldExtensions = useElementFilter(outlet, elements =>
@@ -74,7 +71,7 @@ export const Router = ({
         element={
           <ScaffolderPage
             TemplateCardComponent={TemplateCardComponent}
-            extraSwimlanes={extraSwimlanes}
+            groups={groups}
           />
         }
       />

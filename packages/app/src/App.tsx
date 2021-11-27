@@ -179,7 +179,7 @@ const routes = (
       path="/create"
       element={
         <ScaffolderPage
-          extraSwimlanes={[
+          groups={[
             {
               title: 'Recommended',
               filter: entity =>

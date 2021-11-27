@@ -35,7 +35,7 @@ export type TemplateListProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
-  swimlane?: {
+  group?: {
     title?: string;
     titleComponent?: React.ReactNode;
     filter: (entity: Entity) => boolean;
@@ -44,20 +44,20 @@ export type TemplateListProps = {
 
 export const TemplateList = ({
   TemplateCardComponent,
-  swimlane,
+  group,
 }: TemplateListProps) => {
   const { loading, error, entities } = useEntityListProvider();
   const Card = TemplateCardComponent || TemplateCard;
-  const maybeFilteredEntities = swimlane
-    ? entities.filter(e => swimlane.filter(e))
+  const maybeFilteredEntities = group
+    ? entities.filter(e => group.filter(e))
     : entities;
-  const title = swimlane ? (
-    swimlane.titleComponent || <ContentHeader title={swimlane.title} />
+  const title = group ? (
+    group.titleComponent || <ContentHeader title={group.title} />
   ) : (
     <ContentHeader title="Other Templates" />
   );
 
-  if (swimlane && maybeFilteredEntities.length === 0) {
+  if (group && maybeFilteredEntities.length === 0) {
     return null;
   }
   return (

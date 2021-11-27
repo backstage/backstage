@@ -51,7 +51,7 @@ export type ScaffolderPageProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
-  extraSwimlanes?: Array<{
+  groups?: Array<{
     title?: string;
     titleComponent?: React.ReactNode;
     filter: (entity: Entity) => boolean;
@@ -60,16 +60,14 @@ export type ScaffolderPageProps = {
 
 export const ScaffolderPageContents = ({
   TemplateCardComponent,
-  extraSwimlanes,
+  groups,
 }: ScaffolderPageProps) => {
   const styles = useStyles();
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
-  const otherTemplatesSwimlane = {
-    title: extraSwimlanes ? 'Other Templates' : 'Templates',
+  const otherTemplatesGroup = {
+    title: groups ? 'Other Templates' : 'Templates',
     filter: (entity: Entity) => {
-      const filtered = (extraSwimlanes ?? []).map(swimlane =>
-        swimlane.filter(entity),
-      );
+      const filtered = (groups ?? []).map(group => group.filter(entity));
       return !filtered.some(result => result === true);
     },
   };
@@ -110,16 +108,16 @@ export const ScaffolderPageContents = ({
             <EntityTagPicker />
           </div>
           <div>
-            {extraSwimlanes &&
-              extraSwimlanes.map(swimlane => (
+            {groups &&
+              groups.map(group => (
                 <TemplateList
                   TemplateCardComponent={TemplateCardComponent}
-                  swimlane={swimlane}
+                  group={group}
                 />
               ))}
             <TemplateList
               TemplateCardComponent={TemplateCardComponent}
-              swimlane={otherTemplatesSwimlane}
+              group={otherTemplatesGroup}
             />
           </div>
         </div>
@@ -130,12 +128,12 @@ export const ScaffolderPageContents = ({
 
 export const ScaffolderPage = ({
   TemplateCardComponent,
-  extraSwimlanes,
+  groups,
 }: ScaffolderPageProps) => (
   <EntityListProvider>
     <ScaffolderPageContents
       TemplateCardComponent={TemplateCardComponent}
-      extraSwimlanes={extraSwimlanes}
+      groups={groups}
     />
   </EntityListProvider>
 );

@@ -58,12 +58,12 @@ RUN pip3 install cookiecutter
 
 Once you have more than a few software templates you may want to customize your
 `ScaffolderPage` by grouping and surfacing certain templates together. You can
-accomplish this by creating `swimLanes` and passing them to your
-`ScaffolderPage` like below
+accomplish this by creating `groups` and passing them to your `ScaffolderPage`
+like below
 
 ```
 <ScaffolderPage
-  extraSwimlanes={[
+  groups={[
     {
       title: "Recommended",
       filter: entity =>
@@ -74,10 +74,9 @@ accomplish this by creating `swimLanes` and passing them to your
 ```
 
 This code will group all templates with the 'recommended' tag together at the
-top of the page above any other templates not filtered by this swimlane or
-others.
+top of the page above any other templates not filtered by this group or others.
 
-You can also further customize swimlanes by passing in a `titleComponent`
-instead of a `title` which will be a component to use as the header instead of
-just the default `ContentHeader` with the `title` set as it's value.
+You can also further customize groups by passing in a `titleComponent` instead
+of a `title` which will be a component to use as the header instead of just the
+default `ContentHeader` with the `title` set as it's value.
 ![Grouped Templates](../../assets/software-templates/grouped-templates.png)
