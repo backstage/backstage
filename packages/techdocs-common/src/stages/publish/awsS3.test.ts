@@ -203,7 +203,13 @@ describe('AwsS3Publish', () => {
       const publisher = createPublisherFromConfig({
         sse: 'aws:kms',
       });
-      expect(await publisher.publish({ entity, directory })).toBeUndefined();
+      expect(await publisher.publish({ entity, directory })).toMatchObject({
+        objects: expect.arrayContaining([
+          'default/component/backstage/404.html',
+          'default/component/backstage/index.html',
+          'default/component/backstage/assets/main.css',
+        ]),
+      });
     });
 
     it('should fail to publish a directory', async () => {
