@@ -122,17 +122,7 @@ export const UserListPicker = ({
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-
-  // Remove group items that aren't in availableFilters and exclude
-  // any now-empty groups.
-  const filterGroups = getFilterGroups(orgName)
-    .map(filterGroup => ({
-      ...filterGroup,
-      items: filterGroup.items.filter(
-        ({ id }) => !availableFilters || availableFilters.includes(id),
-      ),
-    }))
-    .filter(({ items }) => !!items.length);
+  const [filterGroups, setFilterGroups] = useState<ButtonGroup[]>();
 
   const { filters, updateFilters, backendEntities, queryParameters } =
     useEntityListProvider();
@@ -193,23 +183,38 @@ export const UserListPicker = ({
     }
   }
 
-  function removeListItem(
-    arr: ButtonGroup[],
-    itemID: 'all' | 'owned' | 'starred',
-  ): ButtonGroup[] {
-    const index = arr[0].items.map(item => item.id).indexOf(itemID);
-    arr[0].items.splice(index, 1);
-    return arr;
-  }
+  const removeOwnedFromItemList = (itemList: ButtonGroup[]) => {
+    const index = itemList[0].items.map(item => item.id).indexOf('owned');
+    itemList[0].items.splice(index, 1);
+    return itemList;
+  };
 
-  // should we do the same for starred?
-  if (totalOwnedUserEntities < 1) {
-    removeListItem(filterGroups, 'owned');
-  }
+  useEffect(() => {
+    // Remove group items that aren't in availableFilters and exclude
+    // any now-empty groups.
+    const defaultFilterGroups = getFilterGroups(orgName)
+      .map(filterGroup => ({
+        ...filterGroup,
+        items: filterGroup.items.filter(
+          ({ id }) => !availableFilters || availableFilters.includes(id),
+        ),
+      }))
+      .filter(({ items }) => !!items.length);
+    if (totalOwnedUserEntities < 1) {
+      setSelectedUserFilter('all');
+    }
+    if (['group', 'user'].some(kind => kind === queryParameters.kind)) {
+      setFilterGroups(removeOwnedFromItemList(defaultFilterGroups));
+    }
+    return () =>
+      setFilterGroups(prevState =>
+        prevState !== defaultFilterGroups ? defaultFilterGroups : prevState,
+      );
+  }, [totalOwnedUserEntities, queryParameters, availableFilters, orgName]);
 
   return (
     <Card className={classes.root}>
-      {filterGroups.map(group => (
+      {filterGroups?.map(group => (
         <Fragment key={group.name}>
           <Typography variant="subtitle2" className={classes.title}>
             {group.name}
