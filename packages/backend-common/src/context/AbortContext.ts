@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AbortSignal } from 'node-abort-controller';
+import { AbortController, AbortSignal } from 'node-abort-controller';
 import { Context, ContextDecorator } from './types';
 
 /**
@@ -24,6 +24,10 @@ export class AbortContext implements Context {
   /**
    * Abort either when the parent aborts, or after the given timeout has
    * expired.
+   *
+   * @param ctx - The parent context
+   * @param timeout - A timeout value, in milliseconds
+   * @returns A new context
    */
   static forTimeoutMillis(ctx: Context, timeout: number): Context {
     const desiredDeadline = new Date(Date.now() + timeout);
@@ -40,42 +44,79 @@ export class AbortContext implements Context {
     }
 
     const controller = new AbortController();
-
-    const timeoutHandle = setTimeout(() => {
-      controller.abort();
-    }, timeout);
-
-    const abort = () => {
-      ctx.abortSignal.removeEventListener('abort', abort);
-      clearTimeout(timeoutHandle);
-      controller.abort();
-    };
-
+    const timeoutHandle = setTimeout(abort, timeout);
     ctx.abortSignal.addEventListener('abort', abort);
+
+    function abort() {
+      ctx.abortSignal.removeEventListener('abort', abort);
+      clearTimeout(timeoutHandle!);
+      controller.abort();
+    }
 
     return new AbortContext(ctx, controller.signal, actualDeadline);
   }
 
   /**
-   * Abort either when the parent aborts, or when the given signal is triggered.
+   * Abort either when the parent aborts, or when the given controller is
+   * triggered.
+   *
+   * @remarks
+   *
+   * If you have access to the controller, this function is more efficient than
+   * {@link AbortContext#forSignal}.
+   *
+   * @param ctx - The parent context
+   * @param controller - An abort controller
+   * @returns A new context
    */
-  static forSignal(ctx: Context, signal: AbortSignal): Context {
-    // If the parent context was already aborted, it is fine to reuse as-is
+  static forController(ctx: Context, controller: AbortController): Context {
+    // Already aborted context / signal are fine to reuse as-is
     if (ctx.abortSignal.aborted) {
       return ctx;
+    } else if (controller.signal.aborted) {
+      return new AbortContext(ctx, controller.signal, ctx.deadline);
+    }
+
+    function abort() {
+      ctx.abortSignal.removeEventListener('abort', abort);
+      controller.abort();
+    }
+
+    ctx.abortSignal.addEventListener('abort', abort);
+
+    return new AbortContext(ctx, controller.signal, ctx.deadline);
+  }
+
+  /**
+   * Abort either when the parent aborts, or when the given signal is triggered.
+   *
+   * @remarks
+   *
+   * If you have access to the controller and not just the signal,
+   * {@link AbortContext#forController} is slightly more efficient to use.
+   *
+   * @param ctx - The parent context
+   * @param signal - An abort signal
+   * @returns A new context
+   */
+  static forSignal(ctx: Context, signal: AbortSignal): Context {
+    // Already aborted context / signal are fine to reuse as-is
+    if (ctx.abortSignal.aborted) {
+      return ctx;
+    } else if (signal.aborted) {
+      return new AbortContext(ctx, signal, ctx.deadline);
     }
 
     const controller = new AbortController();
-    const abort = controller.abort.bind(controller);
 
-    // If the incoming signal was already aborted, let's trigger the new one as
-    // well
-    if (signal.aborted) {
-      abort();
-    } else {
-      ctx.abortSignal.addEventListener('abort', abort);
-      signal.addEventListener('abort', abort);
+    function abort() {
+      ctx.abortSignal.removeEventListener('abort', abort);
+      signal.removeEventListener('abort', abort);
+      controller.abort();
     }
+
+    ctx.abortSignal.addEventListener('abort', abort);
+    signal.addEventListener('abort', abort);
 
     return new AbortContext(ctx, controller.signal, ctx.deadline);
   }

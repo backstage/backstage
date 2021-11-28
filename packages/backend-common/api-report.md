@@ -6,6 +6,7 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
+import { AbortController as AbortController_2 } from 'node-abort-controller';
 import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
@@ -148,7 +149,7 @@ export interface ContainerRunner {
 
 // @public
 export interface Context {
-  readonly abortSignal: AbortSignal;
+  readonly abortSignal: AbortSignal_2;
   readonly deadline: Date | undefined;
   use(...decorators: ContextDecorator[]): Context;
   value<T = unknown>(key: string | symbol): T | undefined;
@@ -160,7 +161,7 @@ export type ContextDecorator = (ctx: Context) => Context;
 // @public
 export class Contexts {
   static root(): Context;
-  static setAbort(signal: AbortSignal_2): ContextDecorator;
+  static setAbort(source: AbortController_2 | AbortSignal_2): ContextDecorator;
   static setTimeoutDuration(timeout: Duration): ContextDecorator;
   static setTimeoutMillis(timeout: number): ContextDecorator;
   static setValue(

@@ -15,7 +15,7 @@
  */
 
 import { Duration } from 'luxon';
-import { AbortSignal } from 'node-abort-controller';
+import { AbortController, AbortSignal } from 'node-abort-controller';
 import { AbortContext } from './AbortContext';
 import { RootContext } from './RootContext';
 import { Context, ContextDecorator } from './types';
@@ -42,21 +42,24 @@ export class Contexts {
 
   /**
    * Creates a derived context, which signals to abort operations either when
-   * any parent context signals, or when the given controller is aborted.
+   * any parent context signals, or when the given source is aborted.
    *
    * @remarks
    *
    * If the parent context was already aborted, then it is returned as-is.
    *
-   * If the given signal was already aborted, then a new already-aborted context
+   * If the given source was already aborted, then a new already-aborted context
    * is returned.
    *
-   * @param signal - An abort signal that you intend to perhaps trigger at some
-   *                 later point in time.
+   * @param source - An abort controller or signal that you intend to perhaps
+   *                 trigger at some later point in time.
    * @returns A decorator that can be passed to {@link Context.use}
    */
-  static setAbort(signal: AbortSignal): ContextDecorator {
-    return ctx => AbortContext.forSignal(ctx, signal);
+  static setAbort(source: AbortController | AbortSignal): ContextDecorator {
+    return ctx =>
+      'aborted' in source
+        ? AbortContext.forSignal(ctx, source)
+        : AbortContext.forController(ctx, source);
   }
 
   /**

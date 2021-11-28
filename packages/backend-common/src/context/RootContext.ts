@@ -17,13 +17,11 @@
 import { AbortController } from 'node-abort-controller';
 import { Context, ContextDecorator } from './types';
 
-const neverAborts = new AbortController().signal;
-
 /**
  * An empty root context.
  */
 export class RootContext implements Context {
-  readonly abortSignal = neverAborts;
+  readonly abortSignal = new AbortController().signal;
   readonly deadline = undefined;
 
   value<T = unknown>(_key: string | symbol): T | undefined {
