@@ -33,7 +33,13 @@ import {
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
 import { compact } from 'lodash';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { UserListFilter } from '../../filters';
 import {
   useEntityListProvider,
@@ -122,7 +128,30 @@ export const UserListPicker = ({
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-  const [filterGroups, setFilterGroups] = useState<ButtonGroup[]>();
+  // Remove group items that aren't in availableFilters and exclude
+  // any now-empty groups.
+  const initialFilterGroup = getFilterGroups(orgName)
+    .map(filterGroup => ({
+      ...filterGroup,
+      items: filterGroup.items.filter(
+        ({ id }) => !availableFilters || availableFilters.includes(id),
+      ),
+    }))
+    .filter(({ items }) => !!items.length);
+  const [filterGroups, setFilterGroups] =
+    useState<ButtonGroup[]>(initialFilterGroup);
+  const setDefaultFilterGroups = useCallback(() => {
+    setFilterGroups(
+      getFilterGroups(orgName)
+        .map(filterGroup => ({
+          ...filterGroup,
+          items: filterGroup.items.filter(
+            ({ id }) => !availableFilters || availableFilters.includes(id),
+          ),
+        }))
+        .filter(({ items }) => !!items.length),
+    );
+  }, [availableFilters, orgName]);
 
   const { filters, updateFilters, backendEntities, queryParameters } =
     useEntityListProvider();
@@ -190,31 +219,20 @@ export const UserListPicker = ({
   };
 
   useEffect(() => {
-    // Remove group items that aren't in availableFilters and exclude
-    // any now-empty groups.
-    const defaultFilterGroups = getFilterGroups(orgName)
-      .map(filterGroup => ({
-        ...filterGroup,
-        items: filterGroup.items.filter(
-          ({ id }) => !availableFilters || availableFilters.includes(id),
-        ),
-      }))
-      .filter(({ items }) => !!items.length);
     if (totalOwnedUserEntities < 1) {
       setSelectedUserFilter('all');
     }
     if (['group', 'user'].some(kind => kind === queryParameters.kind)) {
-      setFilterGroups(removeOwnedFromItemList(defaultFilterGroups));
-    }
-    return () =>
-      setFilterGroups(prevState =>
-        prevState !== defaultFilterGroups ? defaultFilterGroups : prevState,
+      setFilterGroups(currentFilterGroups =>
+        removeOwnedFromItemList(currentFilterGroups),
       );
-  }, [totalOwnedUserEntities, queryParameters, availableFilters, orgName]);
+    }
+    return () => setDefaultFilterGroups();
+  }, [totalOwnedUserEntities, queryParameters, setDefaultFilterGroups]);
 
   return (
     <Card className={classes.root}>
-      {filterGroups?.map(group => (
+      {filterGroups.map(group => (
         <Fragment key={group.name}>
           <Typography variant="subtitle2" className={classes.title}>
             {group.name}
