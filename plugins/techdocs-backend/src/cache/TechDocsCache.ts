@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 import { CacheClient } from '@backstage/backend-common';
-import { assertError } from '@backstage/errors';
+import { assertError, CustomErrorBase } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 
-export class CacheInvalidationError extends Error {
-  public readonly rejections: PromiseRejectedResult[];
-
-  constructor(rejections: PromiseRejectedResult[]) {
-    super();
-    this.rejections = rejections;
-  }
-}
+export class CacheInvalidationError extends CustomErrorBase {}
 
 export class TechDocsCache {
   protected readonly cache: CacheClient;
@@ -101,7 +94,10 @@ export class TechDocsCache {
     ) as PromiseRejectedResult[];
 
     if (rejected.length) {
-      throw new CacheInvalidationError(rejected);
+      throw new CacheInvalidationError(
+        'TechDocs cache invalidation error',
+        rejected,
+      );
     }
 
     return settled;

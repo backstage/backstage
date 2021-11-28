@@ -162,9 +162,7 @@ describe('TechDocsCache', () => {
 
       await expect(
         CacheUnderTest.invalidateMultiple.bind(CacheUnderTest, expectedPaths),
-      ).rejects.toThrow(
-        expect.objectContaining({ rejections: expect.arrayContaining([]) }),
-      );
+      ).rejects.toThrow(CacheInvalidationError);
     });
   });
 });

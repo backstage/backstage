@@ -16,7 +16,7 @@
 import { Router } from 'express';
 import router from 'express-promise-router';
 import { Logger } from 'winston';
-import { TechDocsCache } from '.';
+import { TechDocsCache } from './TechDocsCache';
 
 type CacheMiddlewareOptions = {
   cache: TechDocsCache;
@@ -69,7 +69,7 @@ export const createCacheMiddleware = ({
     socket.on('close', hadError => {
       const content = Buffer.concat(chunks);
       const head = content.toString('utf8', 0, 12);
-      if (writeToCache && !hadError && head === 'HTTP/1.1 200') {
+      if (writeToCache && !hadError && head.match(/HTTP\/\d\.\d 200/)) {
         cache.set(reqPath, content);
       }
     });
