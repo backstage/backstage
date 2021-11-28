@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { AbortSignal } from 'node-abort-controller';
+
 /**
  * A function that accepts a context and produces a new, derived context from,
  * decorated with some specific behavior.

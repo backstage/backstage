@@ -160,6 +160,98 @@ describe('AbortContext', () => {
     });
   });
 
+  describe('forController', () => {
+    it('signals child when parent is aborted', () => {
+      const root = new RootContext();
+
+      const parentController = new AbortController();
+      const parent = AbortContext.forController(root, parentController);
+      const parentListener = jest.fn();
+      parent.abortSignal.addEventListener('abort', parentListener);
+
+      const childController = new AbortController();
+      const child = AbortContext.forController(parent, childController);
+      const childListener = jest.fn();
+      child.abortSignal.addEventListener('abort', childListener);
+
+      expect(parent.abortSignal.aborted).toBe(false);
+      expect(child.abortSignal.aborted).toBe(false);
+      expect(parentListener).toBeCalledTimes(0);
+      expect(childListener).toBeCalledTimes(0);
+
+      parentController.abort();
+
+      expect(parent.abortSignal.aborted).toBe(true);
+      expect(child.abortSignal.aborted).toBe(true);
+      expect(parentListener).toBeCalledTimes(1);
+      expect(childListener).toBeCalledTimes(1);
+    });
+
+    it('does not signal parent when child is aborted', async () => {
+      const root = new RootContext();
+
+      const parentController = new AbortController();
+      const parent = AbortContext.forController(root, parentController);
+      const parentListener = jest.fn();
+      parent.abortSignal.addEventListener('abort', parentListener);
+
+      const childController = new AbortController();
+      const child = AbortContext.forController(parent, childController);
+      const childListener = jest.fn();
+      child.abortSignal.addEventListener('abort', childListener);
+
+      expect(parent.abortSignal.aborted).toBe(false);
+      expect(child.abortSignal.aborted).toBe(false);
+      expect(parentListener).toBeCalledTimes(0);
+      expect(childListener).toBeCalledTimes(0);
+
+      childController.abort();
+
+      expect(parent.abortSignal.aborted).toBe(false);
+      expect(child.abortSignal.aborted).toBe(true);
+      expect(parentListener).toBeCalledTimes(0);
+      expect(childListener).toBeCalledTimes(1);
+    });
+
+    it('child carries over parent signal state if parent was already aborted', async () => {
+      const root = new RootContext();
+
+      const parentController = new AbortController();
+      const parent = AbortContext.forController(root, parentController);
+
+      parentController.abort();
+
+      const childController = new AbortController();
+      const child = AbortContext.forController(parent, childController);
+      const childListener = jest.fn();
+      child.abortSignal.addEventListener('abort', childListener);
+
+      expect(parent.abortSignal.aborted).toBe(true);
+      expect(child.abortSignal.aborted).toBe(true);
+      expect(childListener).toBeCalledTimes(0);
+
+      childController.abort();
+
+      expect(parent.abortSignal.aborted).toBe(true);
+      expect(child.abortSignal.aborted).toBe(true);
+      expect(childListener).toBeCalledTimes(0);
+    });
+
+    it('child carries over given signal state if it was already aborted', async () => {
+      const root = new RootContext();
+
+      const childController = new AbortController();
+      childController.abort();
+
+      const child = AbortContext.forController(root, childController);
+      const childListener = jest.fn();
+      child.abortSignal.addEventListener('abort', childListener);
+
+      expect(child.abortSignal.aborted).toBe(true);
+      expect(childListener).toBeCalledTimes(0);
+    });
+  });
+
   describe('forSignal', () => {
     it('signals child when parent is aborted', async () => {
       const root = new RootContext();

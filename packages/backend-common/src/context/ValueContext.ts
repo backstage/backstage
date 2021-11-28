@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AbortSignal } from 'node-abort-controller';
 import { Context, ContextDecorator } from './types';
 
 /**
