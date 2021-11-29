@@ -30,7 +30,6 @@ export function registerCommands(program: CommanderStatic) {
     .command('app:build')
     .description('Build an app for a production release')
     .option('--stats', 'Write bundle stats to output directory')
-    // Deprecated
     .option(
       '--lax',
       '[DEPRECATED] - Do not require environment variables to be set',
@@ -172,10 +171,7 @@ export function registerCommands(program: CommanderStatic) {
       '--package <name>',
       'Only load config schema that applies to the given package',
     )
-    .option(
-      '--lax',
-      '[DEPRECATED] - Do not require environment variables to be set',
-    )
+    .option('--lax', 'Do not require environment variables to be set')
     .option('--frontend', 'Print only the frontend configuration')
     .option('--with-secrets', 'Include secrets in the printed configuration')
     .option(
@@ -192,10 +188,7 @@ export function registerCommands(program: CommanderStatic) {
       '--package <name>',
       'Only load config schema that applies to the given package',
     )
-    .option(
-      '--lax',
-      '[DEPRECATED] - Do not require environment variables to be set',
-    )
+    .option('--lax', 'Do not require environment variables to be set')
     .option('--frontend', 'Only validate the frontend configuration')
     .option(...configOption)
     .description(

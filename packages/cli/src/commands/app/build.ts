@@ -26,7 +26,9 @@ export default async (cmd: Command) => {
   if (cmd.lax) {
     console.warn(
       chalk.yellow(
-        '[DEPRECATED] - The lax argument is deprecated and will be removed in the future.',
+        `[DEPRECATED] - The --lax option is deprecated and will be removed in the future.
+        Please open an issue towards https://github.com/backstage/backstage that describes your use-case if you need the flag to stay around
+    `,
       ),
     );
   }
