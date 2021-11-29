@@ -1,5 +1,14 @@
 # @backstage/plugin-jenkins
 
+## 0.5.13
+
+### Patch Changes
+
+- ad433b346f: Fix Jenkins project table pagination.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
 ## 0.5.12
 
 ### Patch Changes

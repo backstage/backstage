@@ -34,9 +34,7 @@ export const unlabeledDataflowAlertRef = createRouteRef({
 
 export const costInsightsPlugin = createPlugin({
   id: 'cost-insights',
-  register({ featureFlags }) {
-    featureFlags.register('cost-insights-currencies');
-  },
+  featureFlags: [{ name: 'cost-insights-currencies' }],
   routes: {
     root: rootRouteRef,
     growthAlerts: projectGrowthAlertRef,

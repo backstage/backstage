@@ -2,7 +2,7 @@
 id: how-to-guides
 title: Search "HOW TO" guides
 sidebar_label: "HOW TO" guides
-description: Search "HOW TO" guides 
+description: Search "HOW TO" guides
 ---
 
 ## How to implement your own Search API
@@ -74,6 +74,7 @@ indexBuilder.addCollator({
   collator: DefaultTechDocsCollator.fromConfig(config, {
     discovery,
     logger,
+    tokenManager,
   }),
 });
 ```

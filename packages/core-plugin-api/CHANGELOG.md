@@ -1,5 +1,13 @@
 # @backstage/core-plugin-api
 
+## 0.2.1
+
+### Patch Changes
+
+- 950b36393c: Deprecated `register` option of `createPlugin` and the `outputs` methods of the plugin instance.
+
+  Introduces the `featureFlags` property to define your feature flags instead.
+
 ## 0.2.0
 
 ### Minor Changes
