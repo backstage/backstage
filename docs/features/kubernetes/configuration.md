@@ -219,6 +219,12 @@ The custom resource's apiVersion.
 
 The plural representing the custom resource.
 
+### `apiVersionOverrides` (optional)
+
+Overrides for the API versions used to make requests for the corresponding
+objects. If using a legacy Kubernetes version, you may use this config to
+override the default API versions to ones that are supported by your cluster.
+
 ### Role Based Access Control
 
 The current RBAC permissions required are read-only cluster wide, for the
