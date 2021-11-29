@@ -29,7 +29,7 @@ describe('JobDrawer', () => {
     expect(getByText('YAML')).toBeInTheDocument();
     expect(getByText('Parallelism')).toBeInTheDocument();
     expect(getByText('Completions')).toBeInTheDocument();
-    expect(getByText('Back Off Limit')).toBeInTheDocument();
+    expect(getByText('Backoff Limit')).toBeInTheDocument();
     expect(getByText('Start Time')).toBeInTheDocument();
   });
 });
