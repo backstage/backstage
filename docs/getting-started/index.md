@@ -36,9 +36,9 @@ guide to do a repository-based installation.
 - `yarn` [Installation](https://classic.yarnpkg.com/en/docs/install)
 - `docker` [installation](https://docs.docker.com/engine/install/)
 - `git` [installation](https://github.com/git-guides/install-git)
-- If the system is not directly accessible over your network (uncommon, mostly
-  when you're installing in a container, VM, remote system), the following ports
-  need to be opened: 3000, 7000
+- If the system is not directly accessible over your network the following ports
+  need to be opened: 3000, 7007. This is quite uncommon, unless when you're
+  installing in a container, VM or remote system.
 
 ### Create your Backstage App
 
@@ -80,8 +80,8 @@ It might take a little while, but as soon as the message
 `[0] webpack compiled successfully` appears, you can open a browser and directly
 navigate to your freshly installed Backstage portal at `http://localhost:3000`.
 You can start exploring the demo immediately. Please note that the in-memory
-database will be cleared when you restart the app, so you'll most likely will
-want to carry on with the database steps.
+database will be cleared when you restart the app, so you'll most likely want to
+carry on with the database steps.
 
 <p align='center'>
   <img src='../assets/getting-started/portal.png' alt='Screenshot of the Backstage portal.'>
