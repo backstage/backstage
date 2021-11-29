@@ -40,7 +40,7 @@
     "@backstage/plugin-kubernetes-backend": "^0.3.19",
     "@backstage/plugin-kafka-backend": "^0.2.12",
     "@backstage/plugin-permission-backend": "^0.1.0",
-    "@backstage/plugin-permission-common": "^0.1.0",
+    "@backstage/plugin-permission-common": "^0.2.0",
     "@backstage/plugin-permission-policy-simple": "^0.1.0",
     "@backstage/plugin-permission-node": "^0.1.0",
     "@backstage/plugin-proxy-backend": "^0.2.14",
