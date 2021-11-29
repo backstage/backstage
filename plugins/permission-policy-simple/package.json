@@ -22,9 +22,9 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.9.4",
     "@backstage/plugin-auth-backend": "^0.4.3",
-    "@backstage/plugin-catalog-backend": "^0.17.0",
-    "@backstage/plugin-permission-common": "^0.1.0",
-    "@backstage/plugin-permission-node": "^0.0.0"
+    "@backstage/plugin-catalog-backend": "^0.18.0",
+    "@backstage/plugin-permission-common": "^0.2.0",
+    "@backstage/plugin-permission-node": "^0.1.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.9.0",
