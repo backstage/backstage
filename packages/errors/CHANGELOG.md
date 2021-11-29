@@ -1,5 +1,12 @@
 # @backstage/errors
 
+## 0.1.5
+
+### Patch Changes
+
+- 4d09c60256: Deprecate `parseErrorResponse` in favour of `parseErrorResponseBody`. Deprecate `data` field inside `ErrorResponse` in favour of `body`.
+  Rename the error name for unknown errors from `unknown` to `error`.
+
 ## 0.1.4
 
 ### Patch Changes

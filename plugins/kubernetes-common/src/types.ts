@@ -17,8 +17,10 @@
 import {
   ExtensionsV1beta1Ingress,
   V1ConfigMap,
+  V1CronJob,
   V1Deployment,
   V1HorizontalPodAutoscaler,
+  V1Job,
   V1Pod,
   V1ReplicaSet,
   V1Service,
@@ -83,6 +85,8 @@ export type FetchResponse =
   | DeploymentFetchResponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
+  | JobsFetchResponse
+  | CronJobsFetchResponse
   | IngressesFetchResponse
   | CustomResourceFetchResponse;
 
@@ -114,6 +118,16 @@ export interface ReplicaSetsFetchResponse {
 export interface HorizontalPodAutoscalersFetchResponse {
   type: 'horizontalpodautoscalers';
   resources: Array<V1HorizontalPodAutoscaler>;
+}
+
+export interface JobsFetchResponse {
+  type: 'jobs';
+  resources: Array<V1Job>;
+}
+
+export interface CronJobsFetchResponse {
+  type: 'cronjobs';
+  resources: Array<V1CronJob>;
 }
 
 export interface IngressesFetchResponse {

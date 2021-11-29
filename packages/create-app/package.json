@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -25,6 +25,8 @@
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "clean": "backstage-cli clean",
+    "prepack": "node scripts/prepack.js",
+    "postpack": "node scripts/postpack.js",
     "start": "nodemon --"
   },
   "dependencies": {
