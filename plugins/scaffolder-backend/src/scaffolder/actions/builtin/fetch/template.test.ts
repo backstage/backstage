@@ -33,6 +33,17 @@ jest.mock('./helpers', () => ({
   fetchContents: jest.fn(),
 }));
 
+const realFiles = Object.fromEntries(
+  [
+    require.resolve('vm2/lib/fixasync'),
+    resolvePackagePath(
+      '@backstage/plugin-scaffolder-backend',
+      'assets',
+      'nunjucks.js.txt',
+    ),
+  ].map(k => [k, mockFs.load(k)]),
+);
+
 const aBinaryFile = fs.readFileSync(
   resolvePackagePath(
     '@backstage/plugin-scaffolder-backend',
@@ -76,7 +87,9 @@ describe('fetch:template', () => {
   });
 
   beforeEach(() => {
-    mockFs();
+    mockFs({
+      ...realFiles,
+    });
 
     action = createFetchTemplateAction({
       reader: Symbol('UrlReader') as unknown as UrlReader,
@@ -150,6 +163,7 @@ describe('fetch:template', () => {
 
         mockFetchContents.mockImplementation(({ outputPath }) => {
           mockFs({
+            ...realFiles,
             [outputPath]: {
               'an-executable.sh': mockFs.file({
                 content: '#!/usr/bin/env bash',
@@ -259,6 +273,7 @@ describe('fetch:template', () => {
 
         mockFetchContents.mockImplementation(({ outputPath }) => {
           mockFs({
+            ...realFiles,
             [outputPath]: {
               processed: {
                 'templated-content-${{ values.name }}.txt':
@@ -312,6 +327,7 @@ describe('fetch:template', () => {
 
       mockFetchContents.mockImplementation(({ outputPath }) => {
         mockFs({
+          ...realFiles,
           [outputPath]: {
             '{{ cookiecutter.name }}.txt': 'static content',
             subdir: {
@@ -366,6 +382,7 @@ describe('fetch:template', () => {
 
       mockFetchContents.mockImplementation(({ outputPath }) => {
         mockFs({
+          ...realFiles,
           [outputPath]: {
             'empty-dir-${{ values.count }}': {},
             'static.txt': 'static content',
@@ -447,6 +464,7 @@ describe('fetch:template', () => {
 
       mockFetchContents.mockImplementation(({ outputPath }) => {
         mockFs({
+          ...realFiles,
           [outputPath]: {
             '${{ values.name }}.njk': '${{ values.name }}: ${{ values.count }}',
             '${{ values.name }}.txt.jinja2':

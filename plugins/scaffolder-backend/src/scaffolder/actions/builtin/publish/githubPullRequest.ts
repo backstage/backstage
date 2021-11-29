@@ -15,7 +15,6 @@
  */
 
 import fs from 'fs-extra';
-import path from 'path';
 import { parseRepoUrl, isExecutable } from './util';
 
 import {
@@ -197,7 +196,7 @@ export const createPublishGithubPullRequestAction = ({
 
       const fileContents = await Promise.all(
         localFilePaths.map(filePath => {
-          const absPath = path.resolve(fileRoot, filePath);
+          const absPath = resolveSafeChildPath(fileRoot, filePath);
           const base64EncodedContent = fs
             .readFileSync(absPath)
             .toString('base64');

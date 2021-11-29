@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ScmIntegrations } from '@backstage/integration';
 import {
   TaskContext,
@@ -23,9 +24,9 @@ import {
   WorkflowRunner,
 } from './types';
 import * as winston from 'winston';
-import nunjucks from 'nunjucks';
 import fs from 'fs-extra';
 import path from 'path';
+import nunjucks from 'nunjucks';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { PassThrough } from 'stream';
@@ -33,6 +34,10 @@ import { isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
 import { parseRepoUrl } from '../actions/builtin/publish/util';
 import { TemplateActionRegistry } from '../actions';
+import {
+  SecureTemplater,
+  SecureTemplateRenderer,
+} from '../../lib/templating/SecureTemplater';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -84,43 +89,43 @@ const createStepLogger = ({
 };
 
 export class NunjucksWorkflowRunner implements WorkflowRunner {
-  private readonly nunjucks: nunjucks.Environment;
-
-  private readonly nunjucksOptions: nunjucks.ConfigureOptions = {
-    autoescape: false,
-    tags: {
-      variableStart: '${{',
-      variableEnd: '}}',
-    },
-  };
-
-  constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
-    this.nunjucks = nunjucks.configure(this.nunjucksOptions);
-
-    // TODO(blam): let's work out how we can deprecate these.
-    // We shouldn't really need to be exposing these now we can deal with
-    // objects in the params block.
-    // Maybe we can expose a new RepoUrlPicker with secrets for V3 that provides an object already.
-    this.nunjucks.addFilter('parseRepoUrl', repoUrl => {
-      return parseRepoUrl(repoUrl, this.options.integrations);
-    });
-
-    this.nunjucks.addFilter('projectSlug', repoUrl => {
-      const { owner, repo } = parseRepoUrl(repoUrl, this.options.integrations);
-      return `${owner}/${repo}`;
-    });
-  }
+  constructor(private readonly options: NunjucksWorkflowRunnerOptions) {}
 
   private isSingleTemplateString(input: string) {
-    const { parser, nodes } = require('nunjucks');
-    const parsed = parser.parse(input, {}, this.nunjucksOptions);
+    const { parser, nodes } = nunjucks as unknown as {
+      parser: {
+        parse(
+          template: string,
+          ctx: object,
+          options: nunjucks.ConfigureOptions,
+        ): { children: { children?: unknown[] }[] };
+      };
+      nodes: { TemplateData: Function };
+    };
+
+    const parsed = parser.parse(
+      input,
+      {},
+      {
+        autoescape: false,
+        tags: {
+          variableStart: '${{',
+          variableEnd: '}}',
+        },
+      },
+    );
+
     return (
       parsed.children.length === 1 &&
-      !(parsed.children[0] instanceof nodes.TemplateData)
+      !(parsed.children[0]?.children?.[0] instanceof nodes.TemplateData)
     );
   }
 
-  private render<T>(input: T, context: TemplateContext): T {
+  private render<T>(
+    input: T,
+    context: TemplateContext,
+    renderTemplate: SecureTemplateRenderer,
+  ): T {
     return JSON.parse(JSON.stringify(input), (_key, value) => {
       try {
         if (typeof value === 'string') {
@@ -133,10 +138,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               );
 
               // Run the templating
-              const templated = this.nunjucks.renderString(
-                wrappedDumped,
-                context,
-              );
+              const templated = renderTemplate(wrappedDumped, context);
 
               // If there's an empty string returned, then it's undefined
               if (templated === '') {
@@ -153,7 +155,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           }
 
           // Fallback to default behaviour
-          const templated = this.nunjucks.renderString(value, context);
+          const templated = renderTemplate(value, context);
 
           if (templated === '') {
             return undefined;
@@ -178,6 +180,18 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       this.options.workingDirectory,
       await task.getWorkspaceName(),
     );
+
+    const { integrations } = this.options;
+    const renderTemplate = await SecureTemplater.loadRenderer({
+      // TODO(blam): let's work out how we can deprecate this.
+      // We shouldn't really need to be exposing these now we can deal with
+      // objects in the params block.
+      // Maybe we can expose a new RepoUrlPicker with secrets for V3 that provides an object already.
+      parseRepoUrl(url: string) {
+        return parseRepoUrl(url, integrations);
+      },
+    });
+
     try {
       await fs.ensureDir(workspacePath);
       await task.emitLog(
@@ -192,7 +206,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       for (const step of task.spec.steps) {
         try {
           if (step.if) {
-            const ifResult = await this.render(step.if, context);
+            const ifResult = await this.render(
+              step.if,
+              context,
+              renderTemplate,
+            );
             if (!isTruthy(ifResult)) {
               await task.emitLog(
                 `Skipping step ${step.id} because it's if condition was false`,
@@ -210,7 +228,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           const action = this.options.actionRegistry.get(step.action);
           const { taskLogger, streamLogger } = createStepLogger({ task, step });
 
-          const input = (step.input && this.render(step.input, context)) ?? {};
+          const input =
+            (step.input && this.render(step.input, context, renderTemplate)) ??
+            {};
 
           if (action.schema?.input) {
             const validateResult = validateJsonSchema(
@@ -273,7 +293,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         }
       }
 
-      const output = this.render(task.spec.output, context);
+      const output = this.render(task.spec.output, context, renderTemplate);
 
       return { output };
     } finally {

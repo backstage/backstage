@@ -19,6 +19,7 @@ import {
   LocationSpec,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
   CatalogProcessingOrchestrator,
@@ -54,6 +55,43 @@ export class DefaultLocationService implements LocationService {
     return this.store.deleteLocation(id);
   }
 
+  private async processEntities(
+    unprocessedEntities: DeferredEntity[],
+  ): Promise<Entity[]> {
+    const entities: Entity[] = [];
+    while (unprocessedEntities.length) {
+      const currentEntity = unprocessedEntities.pop();
+      if (!currentEntity) {
+        continue;
+      }
+      const processed = await this.orchestrator.process({
+        entity: currentEntity.entity,
+        state: {}, // we process without the existing cache
+      });
+
+      if (processed.ok) {
+        if (
+          entities.some(
+            e =>
+              stringifyEntityRef(e) ===
+              stringifyEntityRef(processed.completedEntity),
+          )
+        ) {
+          throw new Error(
+            `Duplicate nested entity: ${stringifyEntityRef(
+              processed.completedEntity,
+            )}`,
+          );
+        }
+        unprocessedEntities.push(...processed.deferredEntities);
+        entities.push(processed.completedEntity);
+      } else {
+        throw Error(processed.errors.map(String).join(', '));
+      }
+    }
+    return entities;
+  }
+
   private async dryRunCreateLocation(
     spec: LocationSpec,
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
@@ -86,24 +124,7 @@ export class DefaultLocationService implements LocationService {
     const unprocessedEntities: DeferredEntity[] = [
       { entity, locationKey: `${spec.type}:${spec.target}` },
     ];
-    const entities: Entity[] = [];
-    while (unprocessedEntities.length) {
-      const currentEntity = unprocessedEntities.pop();
-      if (!currentEntity) {
-        continue;
-      }
-      const processed = await this.orchestrator.process({
-        entity: currentEntity.entity,
-        state: {}, // we process without the existing cache
-      });
-
-      if (processed.ok) {
-        unprocessedEntities.push(...processed.deferredEntities);
-        entities.push(processed.completedEntity);
-      } else {
-        throw Error(processed.errors.map(String).join(', '));
-      }
-    }
+    const entities: Entity[] = await this.processEntities(unprocessedEntities);
 
     return {
       exists: await existsPromise,

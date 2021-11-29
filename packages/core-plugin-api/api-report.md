@@ -258,6 +258,7 @@ export type BackstagePlugin<
   getId(): string;
   output(): PluginOutput[];
   getApis(): Iterable<AnyApiFactory>;
+  getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
@@ -463,7 +464,7 @@ export type FeatureFlag = {
   pluginId: string;
 };
 
-// @public
+// @public @deprecated
 export type FeatureFlagOutput = {
   type: 'feature-flag';
   name: string;
@@ -682,14 +683,20 @@ export type PluginConfig<
   register?(hooks: PluginHooks): void;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
+  featureFlags?: PluginFeatureFlagConfig[];
 };
 
 // @public
+export type PluginFeatureFlagConfig = {
+  name: string;
+};
+
+// @public @deprecated
 export type PluginHooks = {
   featureFlags: FeatureFlagsHooks;
 };
 
-// @public
+// @public @deprecated
 export type PluginOutput = FeatureFlagOutput;
 
 // @public

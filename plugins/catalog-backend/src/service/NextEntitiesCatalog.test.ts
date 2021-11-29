@@ -435,5 +435,37 @@ describe('NextEntitiesCatalog', () => {
         expect(entities).toContainEqual(entity1);
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should return no matches for an empty values array',
+      // NOTE: An empty values array is not a sensible input in a realistic scenario.
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+        const entity1: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'one' },
+          spec: {},
+        };
+        const entity2: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'two' },
+          spec: {},
+        };
+        await addEntityToSearch(knex, entity1);
+        await addEntityToSearch(knex, entity2);
+        const catalog = new NextEntitiesCatalog(knex);
+
+        const testFilter = {
+          key: 'kind',
+          values: [],
+        };
+        const request = { filter: testFilter };
+        const { entities } = await catalog.entities(request);
+
+        expect(entities.length).toBe(0);
+      },
+    );
   });
 });

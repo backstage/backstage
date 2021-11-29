@@ -31,6 +31,7 @@ import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
+import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
 
@@ -171,6 +172,26 @@ export class AwsS3DiscoveryProcessor implements CatalogProcessor {
     optional: boolean,
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
+  ): Promise<boolean>;
+}
+
+// Warning: (ae-missing-release-tag) "AzureDevOpsDiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
+  constructor(options: { integrations: ScmIntegrations; logger: Logger_2 });
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger_2;
+    },
+  ): AzureDevOpsDiscoveryProcessor;
+  // (undocumented)
+  readLocation(
+    location: LocationSpec,
+    _optional: boolean,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean>;
 }
 
@@ -736,8 +757,10 @@ export class DefaultCatalogCollator implements DocumentCollator {
     locationTemplate,
     filter,
     catalogClient,
+    tokenManager,
   }: {
     discovery: PluginEndpointDiscovery;
+    tokenManager: TokenManager;
     locationTemplate?: string;
     filter?: CatalogEntitiesRequest['filter'];
     catalogClient?: CatalogApi;
@@ -760,11 +783,14 @@ export class DefaultCatalogCollator implements DocumentCollator {
     _config: Config,
     options: {
       discovery: PluginEndpointDiscovery;
+      tokenManager: TokenManager;
       filter?: CatalogEntitiesRequest['filter'];
     },
   ): DefaultCatalogCollator;
   // (undocumented)
   protected locationTemplate: string;
+  // (undocumented)
+  protected tokenManager: TokenManager;
   // (undocumented)
   readonly type: string;
 }

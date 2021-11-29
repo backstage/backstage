@@ -1,5 +1,14 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.12
+
+### Patch Changes
+
+- 950b36393c: Supply featureFlags using featureFlag config option.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
 ## 0.11.11
 
 ### Patch Changes

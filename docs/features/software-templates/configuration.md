@@ -53,3 +53,30 @@ You can do so by including the following lines in the last step of your
 RUN apt-get update && apt-get install -y python3 python3-pip
 RUN pip3 install cookiecutter
 ```
+
+### Customizing the ScaffolderPage with Grouping and Filtering
+
+Once you have more than a few software templates you may want to customize your
+`ScaffolderPage` by grouping and surfacing certain templates together. You can
+accomplish this by creating `groups` and passing them to your `ScaffolderPage`
+like below
+
+```
+<ScaffolderPage
+  groups={[
+    {
+      title: "Recommended",
+      filter: entity =>
+        entity?.metadata?.tags?.includes('recommended') ?? false,
+    },
+  ]}
+/>
+```
+
+This code will group all templates with the 'recommended' tag together at the
+top of the page above any other templates not filtered by this group or others.
+
+You can also further customize groups by passing in a `titleComponent` instead
+of a `title` which will be a component to use as the header instead of just the
+default `ContentHeader` with the `title` set as it's value.
+![Grouped Templates](../../assets/software-templates/grouped-templates.png)

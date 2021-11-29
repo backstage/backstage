@@ -15,10 +15,40 @@
  */
 import { ClusterLinksFormatterOptions } from '../../../types/types';
 
-export function openshiftFormatter(
-  _options: ClusterLinksFormatterOptions,
-): URL {
-  throw new Error(
-    'OpenShift formatter is not yet implemented. Please, contribute!',
+const kindMappings: Record<string, string> = {
+  deployment: 'deployments',
+  ingress: 'ingresses',
+  service: 'services',
+  horizontalpodautoscaler: 'horizontalpodautoscalers',
+  persistentvolume: 'persistentvolumes',
+};
+
+export function openshiftFormatter(options: ClusterLinksFormatterOptions): URL {
+  const basePath = new URL(options.dashboardUrl.href);
+  const name = encodeURIComponent(options.object.metadata?.name ?? '');
+  const namespace = encodeURIComponent(
+    options.object.metadata?.namespace ?? '',
   );
+  const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
+  if (!basePath.pathname.endsWith('/')) {
+    // a dashboard url with a path should end with a slash otherwise
+    // the new combined URL will replace the last segment with the appended path!
+    // https://foobar.com/abc/def + k8s/cluster/projects/test  --> https://foobar.com/abc/k8s/cluster/projects/test
+    // https://foobar.com/abc/def/ + k8s/cluster/projects/test --> https://foobar.com/abc/def/k8s/cluster/projects/test
+    basePath.pathname += '/';
+  }
+  let path = '';
+  if (namespace) {
+    if (name && validKind) {
+      path = `k8s/ns/${namespace}/${validKind}/${name}`;
+    } else {
+      path = `k8s/cluster/projects/${namespace}`;
+    }
+  } else if (validKind) {
+    path = `k8s/cluster/${validKind}`;
+    if (name) {
+      path += `/${name}`;
+    }
+  }
+  return new URL(path, basePath);
 }
