@@ -32,10 +32,10 @@ import {
   SidebarSpace,
 } from '.';
 import { SidebarSubmenuItem } from './SidebarSubmenuItem';
-import { CatalogSidebarLogo } from './icons/CatalogSidebarLogo';
-import { APIsIcon } from './icons/APIsIcon';
-import { ServicesIcon } from './icons/ServicesIcon';
-import { MiscIcon } from './icons/MiscIcon';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import CloudQueueIcon from '@material-ui/icons/CloudQueue';
+import SettingsApplications from '@material-ui/icons/SettingsApplications';
+import AcUnitIcon from '@material-ui/icons/AcUnit';
 import { SidebarSubmenu } from './SidebarSubmenu';
 
 export default {
@@ -72,11 +72,15 @@ export const SampleScalableSidebar = () => (
     <Sidebar disableExpandOnHover>
       <SidebarSearchField onSearch={handleSearch} to="/search" />
       <SidebarDivider />
-      <SidebarItem icon={CatalogSidebarLogo} text="Catalog">
+      <SidebarItem icon={MenuBookIcon} text="Catalog">
         <SidebarSubmenu title="Catalog">
           <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
-          <SidebarSubmenuItem title="APIs" to="/2" icon={APIsIcon} />
-          <SidebarSubmenuItem title="Services" to="/3" icon={ServicesIcon} />
+          <SidebarSubmenuItem title="APIs" to="/2" icon={CloudQueueIcon} />
+          <SidebarSubmenuItem
+            title="Services"
+            to="/3"
+            icon={SettingsApplications}
+          />
           <SidebarSubmenuItem
             title="Libraries"
             to="/4"
@@ -86,7 +90,7 @@ export const SampleScalableSidebar = () => (
           <SidebarSubmenuItem
             title="Misc"
             to="/6"
-            icon={MiscIcon}
+            icon={AcUnitIcon}
             dropdownItems={[
               {
                 title: 'Lorem Ipsum',

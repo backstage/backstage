@@ -388,7 +388,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       variant="dot"
       overlap="circular"
       invisible={!hasNotifications}
-      className={clsx({ [classes.closeItemIcon]: !isOpen })}
+      className={clsx({ [classes.closedItemIcon]: !isOpen })}
     >
       <Icon fontSize="small" />
     </Badge>

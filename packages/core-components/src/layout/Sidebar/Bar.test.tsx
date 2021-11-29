@@ -20,8 +20,8 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import { CatalogSidebarLogo } from './icons/CatalogSidebarLogo';
-import { MiscIcon } from './icons/MiscIcon';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import AcUnitIcon from '@material-ui/icons/AcUnit';
 import { Sidebar, SidebarExpandButton } from './Bar';
 import { SidebarItem, SidebarSearchField } from './Items';
 import { SidebarSubmenuItem } from './SidebarSubmenuItem';
@@ -35,17 +35,13 @@ async function renderScalableSidebar() {
     >
       <Sidebar disableExpandOnHover>
         <SidebarSearchField onSearch={() => {}} to="/search" />
-        <SidebarItem
-          icon={CatalogSidebarLogo}
-          onClick={() => {}}
-          text="Catalog"
-        >
+        <SidebarItem icon={MenuBookIcon} onClick={() => {}} text="Catalog">
           <SidebarSubmenu title="Catalog">
             <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
             <SidebarSubmenuItem
               title="Misc"
               to="/6"
-              icon={MiscIcon}
+              icon={AcUnitIcon}
               dropdownItems={[
                 {
                   title: 'dropdown item 1',

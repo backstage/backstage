@@ -16,35 +16,33 @@
 
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 const useStyles = makeStyles({
-  svg: {
-    width: 'auto',
-    height: 15,
+  iconContainer: {
+    display: 'flex',
+    position: 'relative',
+    width: '100%',
   },
-  path: {
-    fill: '#7df3e1',
+  arrow1: {
+    right: '6px',
+    position: 'absolute',
   },
 });
-const DoubleArrowRight = () => {
+
+const DoubleArrowLeft = () => {
   const classes = useStyles();
 
   return (
-    <svg
-      className={classes.svg}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 16 16"
-    >
-      <path
-        d="M15.18 4.94408L14.236 4.00008L8.90266 9.33341L14.236 14.6667L15.18 13.7227L10.7907 9.33341L15.18 4.94408Z"
-        fill="#BDBDBD"
-      />
-      <path
-        d="M8.90271 4.94408L7.95871 4.00008L2.62538 9.33341L7.95871 14.6667L8.90271 13.7227L4.51338 9.33341L8.90271 4.94408Z"
-        fill="#BDBDBD"
-      />
-    </svg>
+    <div className={classes.iconContainer}>
+      <div className={classes.arrow1}>
+        <ArrowBackIosIcon style={{ fontSize: '12px' }} />
+      </div>
+      <div>
+        <ArrowBackIosIcon style={{ fontSize: '12px' }} />
+      </div>
+    </div>
   );
 };
 
-export default DoubleArrowRight;
+export default DoubleArrowLeft;

@@ -16,34 +16,32 @@
 
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
 const useStyles = makeStyles({
-  svg: {
-    width: 'auto',
-    height: 15,
+  iconContainer: {
+    display: 'flex',
+    position: 'relative',
+    width: '100%',
   },
-  path: {
-    fill: '#7df3e1',
+  arrow1: {
+    right: '6px',
+    position: 'absolute',
   },
 });
+
 const DoubleArrowRight = () => {
   const classes = useStyles();
 
   return (
-    <svg
-      className={classes.svg}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 16 16"
-    >
-      <path
-        d="M0.82 11.0559L1.764 11.9999L7.09733 6.66658L1.764 1.33325L0.82 2.27725L5.20933 6.66658L0.82 11.0559Z"
-        fill="#BDBDBD"
-      />
-      <path
-        d="M7.0973 11.0559L8.0413 11.9999L13.3746 6.66658L8.0413 1.33325L7.0973 2.27725L11.4866 6.66658L7.0973 11.0559Z"
-        fill="#BDBDBD"
-      />
-    </svg>
+    <div className={classes.iconContainer}>
+      <div className={classes.arrow1}>
+        <ArrowForwardIosIcon style={{ fontSize: '12px' }} />
+      </div>
+      <div>
+        <ArrowForwardIosIcon style={{ fontSize: '12px' }} />
+      </div>
+    </div>
   );
 };
 
