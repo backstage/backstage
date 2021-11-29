@@ -242,7 +242,7 @@ function convertRepository(repository?: GitRepository): Repository | undefined {
   return {
     id: repository.id,
     name: repository.name,
-    url: repository.url,
+    url: repository.url?.replace('_apis/git/repositories', '_git'),
   };
 }
 
