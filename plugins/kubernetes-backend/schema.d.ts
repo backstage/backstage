@@ -80,6 +80,6 @@ export interface Config {
       cronjobs?: string;
       jobs?: string;
       ingresses?: string;
-    };
+    } & { [pluralKind: string]: string };
   };
 }
