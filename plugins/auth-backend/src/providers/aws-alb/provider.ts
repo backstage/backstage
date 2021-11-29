@@ -21,7 +21,7 @@ import {
   SignInResolver,
 } from '../types';
 import express from 'express';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import * as crypto from 'crypto';
 import { KeyObject } from 'crypto';
 import { Logger } from 'winston';

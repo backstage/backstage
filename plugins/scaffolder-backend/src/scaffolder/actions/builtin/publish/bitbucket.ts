@@ -19,7 +19,7 @@ import {
   BitbucketIntegrationConfig,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import fetch from 'cross-fetch';
+import fetch, { Response, RequestInit } from 'node-fetch';
 import { initRepoAndPush } from '../helpers';
 import { createTemplateAction } from '../../createTemplateAction';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';

@@ -158,8 +158,8 @@ export function getBitbucketFileFetchUrl(
  */
 export function getBitbucketRequestOptions(
   config: BitbucketIntegrationConfig,
-): RequestInit {
-  const headers: HeadersInit = {};
+): { headers: Record<string, string> } {
+  const headers: Record<string, string> = {};
 
   if (config.token) {
     headers.Authorization = `Bearer ${config.token}`;

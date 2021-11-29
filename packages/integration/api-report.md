@@ -112,7 +112,9 @@ export function getAzureFileFetchUrl(url: string): string;
 export function getAzureRequestOptions(
   config: AzureIntegrationConfig,
   additionalHeaders?: Record<string, string>,
-): RequestInit;
+): {
+  headers: Record<string, string>;
+};
 
 // @public
 export function getBitbucketDefaultBranch(
@@ -135,7 +137,9 @@ export function getBitbucketFileFetchUrl(
 // @public
 export function getBitbucketRequestOptions(
   config: BitbucketIntegrationConfig,
-): RequestInit;
+): {
+  headers: Record<string, string>;
+};
 
 // @public
 export function getGitHubFileFetchUrl(
@@ -148,7 +152,9 @@ export function getGitHubFileFetchUrl(
 export function getGitHubRequestOptions(
   config: GitHubIntegrationConfig,
   credentials: GithubCredentials,
-): RequestInit;
+): {
+  headers: Record<string, string>;
+};
 
 // @public
 export function getGitLabFileFetchUrl(
@@ -157,9 +163,9 @@ export function getGitLabFileFetchUrl(
 ): Promise<string>;
 
 // @public
-export function getGitLabRequestOptions(
-  config: GitLabIntegrationConfig,
-): RequestInit;
+export function getGitLabRequestOptions(config: GitLabIntegrationConfig): {
+  headers: Record<string, string>;
+};
 
 // @public
 export type GithubAppConfig = {

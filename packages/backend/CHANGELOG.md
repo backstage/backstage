@@ -1,5 +1,27 @@
 # example-backend
 
+## 0.2.54
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-backend@0.3.19
+  - @backstage/plugin-tech-insights-backend@0.1.2
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.1
+  - @backstage/plugin-auth-backend@0.4.9
+  - @backstage/plugin-scaffolder-backend@0.15.14
+  - @backstage/plugin-catalog-backend@0.18.0
+  - @backstage/plugin-kafka-backend@0.2.12
+  - @backstage/backend-common@0.9.11
+  - @backstage/plugin-azure-devops-backend@0.2.2
+  - @backstage/plugin-badges-backend@0.1.12
+  - @backstage/plugin-code-coverage-backend@0.1.15
+  - @backstage/plugin-jenkins-backend@0.1.8
+  - @backstage/plugin-proxy-backend@0.2.14
+  - @backstage/plugin-rollbar-backend@0.1.16
+  - @backstage/plugin-search-backend@0.2.7
+  - @backstage/plugin-techdocs-backend@0.10.9
+
 ## 0.2.52
 
 ### Patch Changes
