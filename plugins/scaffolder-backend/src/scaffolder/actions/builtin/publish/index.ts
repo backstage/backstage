@@ -20,3 +20,4 @@ export { createPublishFileAction } from './file';
 export { createPublishGithubAction } from './github';
 export { createPublishGithubPullRequestAction } from './githubPullRequest';
 export { createPublishGitlabAction } from './gitlab';
+export { createPublishGitlabMergeRequestAction } from './gitlabMergeRequest';
