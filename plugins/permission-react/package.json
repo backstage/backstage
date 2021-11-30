@@ -30,7 +30,7 @@
   "dependencies": {
     "@backstage/config": "^0.1.11",
     "@backstage/core-plugin-api": "^0.2.0",
-    "@backstage/plugin-permission-common": "^0.1.0",
+    "@backstage/plugin-permission-common": "^0.2.0",
     "@types/react": "*",
     "cross-fetch": "^3.0.6",
     "react": "^16.13.1",
