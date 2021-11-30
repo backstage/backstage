@@ -9,6 +9,7 @@ import { Account } from 'aws-sdk/clients/organizations';
 import { BitbucketIntegration } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntitiesRequest } from '@backstage/catalog-client';
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import { DocumentCollator } from '@backstage/search-common';
@@ -549,17 +550,6 @@ export const conditions: Conditions<{
   };
 }>;
 
-// Warning: (ae-missing-release-tag) "createConditions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const createConditions: (
-  conditions: PermissionCriteria<PermissionCondition<unknown[]>>,
-) => {
-  pluginId: string;
-  resourceType: string;
-  conditions: PermissionCriteria<PermissionCondition<unknown[]>>;
-};
-
 // Warning: (ae-missing-release-tag) "CreateDatabaseOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -573,6 +563,13 @@ export type CreateDatabaseOptions = {
 export function createNextRouter(
   options: NextRouterOptions,
 ): Promise<express.Router>;
+
+// Warning: (ae-missing-release-tag) "createPolicyDecision" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createPolicyDecision: (
+  conditions: PermissionCriteria<PermissionCondition<unknown[]>>,
+) => ConditionalPolicyDecision;
 
 // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
 // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
