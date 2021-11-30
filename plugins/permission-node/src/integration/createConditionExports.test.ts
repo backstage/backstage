@@ -62,7 +62,7 @@ describe('createConditionExports', () => {
     });
   });
 
-  describe('createConditions', () => {
+  describe('createPolicyDecisions', () => {
     it('wraps conditions in an object with resourceType and pluginId', () => {
       const { createPolicyDecision } = testIntegration();
 
