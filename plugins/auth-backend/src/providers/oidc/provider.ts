@@ -205,7 +205,6 @@ export class OidcAuthProvider implements OAuthHandlers {
         },
       );
     }
-    return response;
   }
 }
 

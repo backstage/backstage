@@ -31,6 +31,7 @@ const mockResponseData = {
   },
   backstageIdentity: {
     id: 'foo',
+    token: '',
   },
 };
 

@@ -141,6 +141,30 @@ export type AuthResponse<ProviderInfo> = {
 };
 
 /**
+ * User identity information within Backstage.
+ *
+ * @public
+ */
+export type BackstageUserIdentity = {
+  /**
+   * The type of identity that this structure represents. In the frontend app
+   * this will currently always be 'user'.
+   */
+  type: 'user';
+
+  /**
+   * The entityRef of the user in the catalog.
+   * For example User:default/sandra
+   */
+  userEntityRef: string;
+
+  /**
+   * The user and group entities that the user claims ownership through
+   */
+  ownershipEntityRefs: string[];
+};
+
+/**
  * @public
  */
 export type BackstageIdentityResponse = {
@@ -171,20 +195,7 @@ export type BackstageIdentityResponse = {
   /**
    * A plaintext description of the identity that is encapsulated within the token.
    */
-  identity?: {
-    type: 'user';
-
-    /**
-     * The entityRef of the user in the catalog.
-     * For example User:default/sandra
-     */
-    userEntityRef: string;
-
-    /**
-     * The user and group entities that the user claims ownership through
-     */
-    ownershipEntityRefs: string[];
-  };
+  identity?: BackstageUserIdentity;
 };
 
 /**

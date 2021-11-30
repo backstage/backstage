@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ApiRef, createApiRef } from '../system';
-import { ProfileInfo } from './auth';
+import { BackstageUserIdentity, ProfileInfo } from './auth';
 
 /*
 
@@ -23,26 +23,6 @@ import { ProfileInfo } from './auth';
 - [ ] Evolution plan for utility APIs
 
 */
-
-/**
- * User identity information within Backstage.
- *
- * @public
- */
-export type BackstageUserIdentity = {
-  type: 'user';
-
-  /**
-   * The entityRef of the user in the catalog.
-   * For example User:default/sandra
-   */
-  userEntityRef: string;
-
-  /**
-   * The user and group entities that the user claims ownership through
-   */
-  ownershipEntityRefs: string[];
-};
 
 /**
  * The Identity API used to identify and get information about the signed in user.

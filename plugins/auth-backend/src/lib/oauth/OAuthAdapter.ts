@@ -19,8 +19,8 @@ import crypto from 'crypto';
 import { URL } from 'url';
 import {
   AuthProviderRouteHandlers,
-  BackstageIdentity,
   AuthProviderConfig,
+  BackstageIdentityResponse,
 } from '../../providers/types';
 import {
   AuthenticationError,
@@ -228,17 +228,17 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
    * If the response from the OAuth provider includes a Backstage identity, we
    * make sure it's populated with all the information we can derive from the user ID.
    */
-  private async populateIdentity(identity?: BackstageIdentity) {
+  private async populateIdentity(identity?: BackstageIdentityResponse) {
     if (!identity) {
       return;
     }
 
-    if (!(identity.token || identity.idToken)) {
+    if (!(identity.token || identity.token)) {
       identity.token = await this.options.tokenIssuer.issueToken({
         claims: { sub: identity.id },
       });
-    } else if (!identity.token && identity.idToken) {
-      identity.token = identity.idToken;
+    } else if (!identity.token && identity.token) {
+      identity.token = identity.token;
     }
   }
 

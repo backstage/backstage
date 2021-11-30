@@ -51,7 +51,7 @@ describe('oauth helpers', () => {
           },
           backstageIdentity: {
             id: 'a',
-            idToken: 'a.b.c',
+            token: 'a.b.c',
           },
         },
       };
@@ -106,7 +106,7 @@ describe('oauth helpers', () => {
           },
           backstageIdentity: {
             id: 'a',
-            idToken: 'a.b.c',
+            token: 'a.b.c',
           },
         },
       };
@@ -148,7 +148,7 @@ describe('oauth helpers', () => {
           },
           backstageIdentity: {
             id: 'a',
-            idToken: 'a.b.c',
+            token: 'a.b.c',
           },
         },
       };
