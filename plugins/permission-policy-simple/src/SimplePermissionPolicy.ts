@@ -26,11 +26,11 @@ import {
 import {
   PermissionPolicy,
   createConditionFactory,
-  PolicyResult,
+  PolicyDecision,
 } from '@backstage/plugin-permission-node';
 import {
   conditions as catalogConditions,
-  createConditions as createCatalogConditions,
+  createPolicyDecision as createCatalogPolicyDecision,
 } from '@backstage/plugin-catalog-backend';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/catalog-model';
 import { isComponentType as isComponentTypeRule } from './rules';
@@ -42,7 +42,7 @@ export class SimplePermissionPolicy implements PermissionPolicy {
   async handle(
     request: Omit<AuthorizeRequest, 'resourceRef'>,
     identity?: BackstageIdentity,
-  ): Promise<PolicyResult> {
+  ): Promise<PolicyDecision> {
     if (request.permission.name === techdocsReadPermission.name) {
       return {
         result: AuthorizeResult.DENY,
@@ -57,36 +57,18 @@ export class SimplePermissionPolicy implements PermissionPolicy {
       }
 
       if (request.permission.attributes.action === 'read') {
-        return {
-          result: AuthorizeResult.CONDITIONAL,
-          conditions: createCatalogConditions({
-            anyOf: [
-              {
-                allOf: [isEntityOwner(getIdentityClaims(identity))],
-              },
-              {
-                allOf: [isComponentType(['website'])],
-              },
-              {
-                allOf: [isEntityKind(['template'])],
-              },
-            ],
-          }),
-        };
+        return createCatalogPolicyDecision({
+          anyOf: [
+            isEntityOwner(getIdentityClaims(identity)),
+            isComponentType(['website']),
+            isEntityKind(['template']),
+          ],
+        });
       }
 
-      return {
-        result: AuthorizeResult.CONDITIONAL,
-        conditions: createCatalogConditions({
-          anyOf: [
-            {
-              allOf: [isEntityOwner(getIdentityClaims(identity))],
-            },
-            // TODO(authorization-framework) we probably need the ability
-            // to do negative matching (i.e. exclude all entities of type X)
-          ],
-        }),
-      };
+      return createCatalogPolicyDecision(
+        isEntityOwner(getIdentityClaims(identity)),
+      );
     }
 
     if (identity) {
