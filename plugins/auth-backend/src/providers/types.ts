@@ -165,6 +165,7 @@ export type BackstageUserIdentity = {
 };
 
 /**
+ * Response object containing the {@link BackstageUserIdentity} and the token from the authentication provider.
  * @public
  */
 export type BackstageIdentityResponse = {

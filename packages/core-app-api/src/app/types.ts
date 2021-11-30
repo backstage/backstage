@@ -43,7 +43,7 @@ export type BootErrorPageProps = {
  * The outcome of signing in on the sign-in page.
  *
  * @public
- * @deprecated replaced by passing the {@link IdentityApi} to the {@link SignInPageProps.onSignInSuccess} instead.
+ * @deprecated replaced by passing the {@link @backstage/core-plugin-api#IdentityApi} to the {@link SignInPageProps.onSignInSuccess} instead.
  */
 export type SignInResult = {
   /**

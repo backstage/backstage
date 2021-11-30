@@ -103,7 +103,7 @@ export interface AuthProviderRouteHandlers {
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;
   profile: ProfileInfo;
-  backstageIdentity?: BackstageIdentity;
+  backstageIdentity?: BackstageIdentityResponse;
 };
 
 // Warning: (ae-missing-release-tag) "AwsAlbProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -116,14 +116,19 @@ export type AwsAlbProviderOptions = {
   };
 };
 
-// Warning: (ae-missing-release-tag) "BackstageIdentity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type BackstageIdentity = {
+// @public
+export type BackstageIdentityResponse = {
   id: string;
-  idToken?: string;
-  token?: string;
   entity?: Entity;
+  token: string;
+  identity?: BackstageUserIdentity;
+};
+
+// @public
+export type BackstageUserIdentity = {
+  type: 'user';
+  userEntityRef: string;
+  ownershipEntityRefs: string[];
 };
 
 // Warning: (ae-missing-release-tag) "BitbucketOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -361,7 +366,7 @@ export type GoogleProviderOptions = {
 // @public
 export class IdentityClient {
   constructor(options: { discovery: PluginEndpointDiscovery; issuer: string });
-  authenticate(token: string | undefined): Promise<BackstageIdentity>;
+  authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
   static getBearerToken(
     authorizationHeader: string | undefined,
   ): string | undefined;
@@ -551,8 +556,6 @@ export const postMessageResponse: (
   response: WebMessageResponse,
 ) => void;
 
-// Warning: (ae-missing-release-tag) "ProfileInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type ProfileInfo = {
   email?: string;
@@ -637,5 +640,4 @@ export type WebMessageResponse =
 // src/providers/github/provider.d.ts:71:68 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // src/providers/github/provider.d.ts:78:5 - (ae-forgotten-export) The symbol "StateEncoder" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:100:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:122:8 - (tsdoc-missing-deprecation-message) The @deprecated block must include a deprecation message, e.g. describing the recommended alternative
 ```

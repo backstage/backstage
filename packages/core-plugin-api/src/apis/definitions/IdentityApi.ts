@@ -26,7 +26,7 @@ export type IdentityApi = {
    * The ID of the signed in user. This ID is not meant to be presented to the user, but used
    * as an opaque string to pass on to backends or use in frontend logic.
    *
-   * @deprecated use {@link IdentityApi.getIdentity} instead.
+   * @deprecated use {@link IdentityApi.getBackstageIdentity} instead.
    */
   getUserId(): string;
 
