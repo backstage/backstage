@@ -140,7 +140,7 @@ export async function createRouter(
   });
 
   router.get('/all-teams', async (_req, res) => {
-    const allTeams = Object.values(await azureDevOpsApi.getAllTeams());
+    const allTeams = await azureDevOpsApi.getAllTeams();
     res.status(200).json(allTeams);
   });
 
