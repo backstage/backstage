@@ -17,14 +17,10 @@
 import React from 'react';
 import { V1Pod } from '@kubernetes/client-node';
 import { PodDrawer } from './PodDrawer';
-import {
-  containersReady,
-  containerStatuses,
-  totalRestarts,
-} from '../../utils/pod';
+import { containerStatuses } from '../../utils/pod';
 import { Table, TableColumn } from '@backstage/core-components';
 
-const columns: TableColumn<V1Pod>[] = [
+const DEFAULT_COLUMNS: TableColumn<V1Pod>[] = [
   {
     title: 'name',
     highlight: true,
@@ -35,28 +31,18 @@ const columns: TableColumn<V1Pod>[] = [
     render: (pod: V1Pod) => pod.status?.phase ?? 'unknown',
   },
   {
-    title: 'containers ready',
-    align: 'center',
-    render: containersReady,
-  },
-  {
-    title: 'total restarts',
-    align: 'center',
-    render: totalRestarts,
-    type: 'numeric',
-  },
-  {
     title: 'status',
     render: containerStatuses,
   },
 ];
 
-type DeploymentTablesProps = {
+type PodsTablesProps = {
   pods: V1Pod[];
+  extraColumns?: TableColumn<V1Pod>[];
   children?: React.ReactNode;
 };
 
-export const PodsTable = ({ pods }: DeploymentTablesProps) => {
+export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
   const tableStyle = {
     minWidth: '0',
     width: '100%',
@@ -67,7 +53,7 @@ export const PodsTable = ({ pods }: DeploymentTablesProps) => {
       <Table
         options={{ paging: true, search: false }}
         data={pods}
-        columns={columns}
+        columns={DEFAULT_COLUMNS.concat(extraColumns)}
       />
     </div>
   );
