@@ -161,12 +161,10 @@ describe('createRouter', () => {
       beforeEach(() => {
         policy.handle.mockReturnValueOnce({
           result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'test-plugin',
+          resourceType: 'test-resource-1',
           conditions: {
-            pluginId: 'test-plugin',
-            resourceType: 'test-resource-1',
-            conditions: {
-              anyOf: [{ rule: 'test-rule', params: ['abc'] }],
-            },
+            anyOf: [{ rule: 'test-rule', params: ['abc'] }],
           },
         });
       });
@@ -265,11 +263,9 @@ describe('createRouter', () => {
     it('returns a 500 error if the policy returns a different resourceType', async () => {
       policy.handle.mockReturnValueOnce({
         result: AuthorizeResult.CONDITIONAL,
-        conditions: {
-          pluginId: 'test-plugin',
-          resourceType: 'test-resource-2',
-          conditions: {},
-        },
+        pluginId: 'test-plugin',
+        resourceType: 'test-resource-2',
+        conditions: {},
       });
 
       const response = await request(app)
