@@ -225,12 +225,19 @@ Overrides for the API versions used to make requests for the corresponding
 objects. If using a legacy Kubernetes version, you may use this config to
 override the default API versions to ones that are supported by your cluster.
 
+Example:
+
 ```yaml
 ---
 kubernetes:
   apiVersionOverrides:
     cronjobs: 'v1beta1'
 ```
+
+For more information on which API versions are supported by your cluster, please
+view the Kubernetes API docs for your Kubernetes version (e.g.
+[API Groups for v1.22](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#-strong-api-groups-strong-)
+)
 
 ### Role Based Access Control
 
