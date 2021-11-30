@@ -7,7 +7,7 @@ description: How to build a Backstage Docker image for deployment
 
 This section describes how to build a Backstage App into a deployable Docker
 image. It is split into three sections, first covering the host build approach,
-which is recommended due its speed and more efficient and often simpler caching.
+which is recommended due to its speed and more efficient and often simpler caching.
 The second section covers a full multi-stage Docker build, and the last section
 covers how to deploy the frontend and backend as separate images.
 
