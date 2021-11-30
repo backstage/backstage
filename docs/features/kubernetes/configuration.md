@@ -225,6 +225,13 @@ Overrides for the API versions used to make requests for the corresponding
 objects. If using a legacy Kubernetes version, you may use this config to
 override the default API versions to ones that are supported by your cluster.
 
+```yaml
+---
+kubernetes:
+  apiVersionOverrides:
+    cronjobs: 'v1beta1'
+```
+
 ### Role Based Access Control
 
 The current RBAC permissions required are read-only cluster wide, for the

@@ -259,7 +259,7 @@ export class KubernetesBuilder {
       objectTypesToFetch = objectTypesToFetch ?? DEFAULT_OBJECTS;
 
       for (const obj of objectTypesToFetch) {
-        if (apiVersionOverrides.getOptionalString(obj.objectType)) {
+        if (apiVersionOverrides.has(obj.objectType)) {
           obj.apiVersion = apiVersionOverrides.getString(obj.objectType);
         }
       }
