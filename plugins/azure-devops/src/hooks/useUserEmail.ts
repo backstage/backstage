@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core-plugin-api';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
-export const azurePullRequestDashboardRouteRef = createRouteRef({
-  id: 'azure-pull-request-dashboard',
-  path: '',
-});
-
-export const azurePipelinesEntityContentRouteRef = createRouteRef({
-  id: 'azure-pipelines-entity-content',
-});
-
-export const azurePullRequestsEntityContentRouteRef = createRouteRef({
-  id: 'azure-pull-requests-entity-content',
-});
+export function useUserEmail(): string | undefined {
+  const identityApi = useApi(identityApiRef);
+  return identityApi.getProfile().email;
+}

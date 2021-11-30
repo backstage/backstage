@@ -14,17 +14,4 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core-plugin-api';
-
-export const azurePullRequestDashboardRouteRef = createRouteRef({
-  id: 'azure-pull-request-dashboard',
-  path: '',
-});
-
-export const azurePipelinesEntityContentRouteRef = createRouteRef({
-  id: 'azure-pipelines-entity-content',
-});
-
-export const azurePullRequestsEntityContentRouteRef = createRouteRef({
-  id: 'azure-pull-requests-entity-content',
-});
+export { PullRequestsPage } from './PullRequestsPage';

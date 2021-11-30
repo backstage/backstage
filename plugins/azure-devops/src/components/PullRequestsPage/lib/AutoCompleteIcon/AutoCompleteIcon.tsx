@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core-plugin-api';
+import DoneAllIcon from '@material-ui/icons/DoneAll';
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 
-export const azurePullRequestDashboardRouteRef = createRouteRef({
-  id: 'azure-pull-request-dashboard',
-  path: '',
-});
+const useStyles = makeStyles(theme => ({
+  root: (props: { hasAutoComplete: boolean }) => ({
+    color: props.hasAutoComplete
+      ? theme.palette.success.main
+      : theme.palette.grey[400],
+  }),
+}));
 
-export const azurePipelinesEntityContentRouteRef = createRouteRef({
-  id: 'azure-pipelines-entity-content',
-});
-
-export const azurePullRequestsEntityContentRouteRef = createRouteRef({
-  id: 'azure-pull-requests-entity-content',
-});
+export const AutoCompleteIcon = (props: { hasAutoComplete: boolean }) => {
+  const classes = useStyles(props);
+  return <DoneAllIcon className={classes.root} />;
+};

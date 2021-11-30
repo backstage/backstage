@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core-plugin-api';
+import { Policy } from '@backstage/plugin-azure-devops-common';
+import { PullRequestCardPolicy } from './PullRequestCardPolicy';
+import React from 'react';
 
-export const azurePullRequestDashboardRouteRef = createRouteRef({
-  id: 'azure-pull-request-dashboard',
-  path: '',
-});
+type PullRequestCardProps = {
+  policies: Policy[];
+  className: string;
+};
 
-export const azurePipelinesEntityContentRouteRef = createRouteRef({
-  id: 'azure-pipelines-entity-content',
-});
-
-export const azurePullRequestsEntityContentRouteRef = createRouteRef({
-  id: 'azure-pull-requests-entity-content',
-});
+export const PullRequestCardPolicies = ({
+  policies,
+  className,
+}: PullRequestCardProps) => (
+  <div className={className}>
+    {policies.map(policy => (
+      <PullRequestCardPolicy key={policy.id} policy={policy} />
+    ))}
+  </div>
+);

@@ -14,17 +14,29 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core-plugin-api';
+import { Team } from '@backstage/plugin-azure-devops-common';
+import { azureDevOpsApiRef } from '../api';
+import { useApi } from '@backstage/core-plugin-api';
+import { useAsync } from 'react-use';
 
-export const azurePullRequestDashboardRouteRef = createRouteRef({
-  id: 'azure-pull-request-dashboard',
-  path: '',
-});
+export function useAllTeams(): {
+  teams?: Team[];
+  loading: boolean;
+  error?: Error;
+} {
+  const api = useApi(azureDevOpsApiRef);
 
-export const azurePipelinesEntityContentRouteRef = createRouteRef({
-  id: 'azure-pipelines-entity-content',
-});
+  const {
+    value: teams,
+    loading,
+    error,
+  } = useAsync(() => {
+    return api.getAllTeams();
+  }, [api]);
 
-export const azurePullRequestsEntityContentRouteRef = createRouteRef({
-  id: 'azure-pull-requests-entity-content',
-});
+  return {
+    teams,
+    loading,
+    error,
+  };
+}

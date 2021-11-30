@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core-plugin-api';
+import { Avatar } from '@backstage/core-components';
+import React from 'react';
+import { Reviewer } from '@backstage/plugin-azure-devops-common';
 
-export const azurePullRequestDashboardRouteRef = createRouteRef({
-  id: 'azure-pull-request-dashboard',
-  path: '',
-});
+type PullRequestCardReviewerProps = {
+  reviewer: Reviewer;
+};
 
-export const azurePipelinesEntityContentRouteRef = createRouteRef({
-  id: 'azure-pipelines-entity-content',
-});
-
-export const azurePullRequestsEntityContentRouteRef = createRouteRef({
-  id: 'azure-pull-requests-entity-content',
-});
+export const PullRequestCardReviewer = ({
+  reviewer,
+}: PullRequestCardReviewerProps) => (
+  <Avatar
+    displayName={reviewer.displayName}
+    picture={reviewer.imageUrl}
+    customStyles={{
+      width: '2.5rem',
+      height: '2.5rem',
+      fontSize: '1rem',
+      border: '0.3rem solid silver',
+    }}
+  />
+);

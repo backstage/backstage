@@ -34,6 +34,7 @@ import {
   SignInPage,
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
+import { AzurePullRequestsPage } from '@backstage/plugin-azure-devops';
 import {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -216,6 +217,7 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
   </FlatRoutes>
 );
 

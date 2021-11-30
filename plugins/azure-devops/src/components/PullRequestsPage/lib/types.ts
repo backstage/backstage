@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core-plugin-api';
+import {
+  DashboardPullRequest,
+  Team,
+} from '@backstage/plugin-azure-devops-common';
 
-export const azurePullRequestDashboardRouteRef = createRouteRef({
-  id: 'azure-pull-request-dashboard',
-  path: '',
-});
+export interface PullRequestGroup {
+  title: string;
+  pullRequests: DashboardPullRequest[];
+  simplified?: boolean;
+}
 
-export const azurePipelinesEntityContentRouteRef = createRouteRef({
-  id: 'azure-pipelines-entity-content',
-});
+export type PullRequestFilter = (pullRequest: DashboardPullRequest) => boolean;
 
-export const azurePullRequestsEntityContentRouteRef = createRouteRef({
-  id: 'azure-pull-requests-entity-content',
-});
+export type TeamFilter = (team: Team) => boolean;
+
+export interface PullRequestGroupConfig {
+  title: string;
+  filter: PullRequestFilter;
+  simplified?: boolean;
+}
