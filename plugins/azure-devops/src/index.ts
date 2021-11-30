@@ -22,4 +22,4 @@ export {
   AzurePullRequestsPage,
 } from './plugin';
 
-export * from './components/AzurePullRequestsIcon';
+export { AzurePullRequestsIcon } from './components/AzurePullRequestsIcon';
