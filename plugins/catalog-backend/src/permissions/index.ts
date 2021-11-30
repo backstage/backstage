@@ -18,7 +18,7 @@ import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/catalog-model';
 import { createConditionExports } from '@backstage/plugin-permission-node';
 import { hasAnnotation, isEntityKind, isEntityOwner } from './rules';
 
-export const { conditions, createConditions } = createConditionExports({
+export const { conditions, createPolicyDecision } = createConditionExports({
   pluginId: 'catalog',
   // TODO(authorization-framework): what if a single plugin has
   // multiple resource types?
