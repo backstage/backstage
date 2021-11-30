@@ -102,7 +102,7 @@
     "rollup-pluginutils": "^2.8.2",
     "run-script-webpack-plugin": "^0.0.11",
     "semver": "^7.3.2",
-    "style-loader": "^1.2.1",
+    "style-loader": "^3.3.1",
     "sucrase": "^3.20.2",
     "tar": "^6.1.2",
     "terser-webpack-plugin": "^5.1.3",
