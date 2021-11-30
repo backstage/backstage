@@ -17,7 +17,7 @@
 import {
   AppsV1Api,
   AutoscalingV1Api,
-  BatchV1Api,
+  BatchV1beta1Api,
   CoreV1Api,
   NetworkingV1beta1Api,
 } from '@kubernetes/client-node';
@@ -42,7 +42,7 @@ export interface Clients {
   core: CoreV1Api;
   apps: AppsV1Api;
   autoscaling: AutoscalingV1Api;
-  batch: BatchV1Api;
+  batch: BatchV1beta1Api;
   networkingBeta1: NetworkingV1beta1Api;
 }
 
