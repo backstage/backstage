@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-tech-insights': patch
+'@backstage/plugin-tech-insights': minor
 ---
 
 New package containing UI components for the Tech Insights plugin.
