@@ -16,14 +16,6 @@
 import { ApiRef, createApiRef } from '../system';
 import { BackstageUserIdentity, ProfileInfo } from './auth';
 
-/*
-
-- [ ] IdentityApi getProfile, make async
-- [ ] BackstageIdentity (settle or remove)
-- [ ] Evolution plan for utility APIs
-
-*/
-
 /**
  * The Identity API used to identify and get information about the signed in user.
  *
