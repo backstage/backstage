@@ -9,7 +9,7 @@ import { EntitiesSearchFilter } from '@backstage/plugin-catalog-backend';
 import { Entity } from '@backstage/catalog-model';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
-import { PolicyResult } from '@backstage/plugin-permission-node';
+import { PolicyDecision } from '@backstage/plugin-permission-node';
 
 // Warning: (ae-missing-release-tag) "isComponentType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -29,7 +29,7 @@ export class SimplePermissionPolicy implements PermissionPolicy {
   handle(
     request: Omit<AuthorizeRequest, 'resourceRef'>,
     identity?: BackstageIdentity,
-  ): Promise<PolicyResult>;
+  ): Promise<PolicyDecision>;
 }
 
 // (No @packageDocumentation comment for this package)
