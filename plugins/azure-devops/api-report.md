@@ -22,7 +22,13 @@ export const AzurePullRequestsIcon: (props: SvgIconProps) => JSX.Element;
 // Warning: (ae-missing-release-tag) "AzurePullRequestsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const AzurePullRequestsPage: () => JSX.Element;
+export const AzurePullRequestsPage: ({
+  projectName,
+  pollingInterval,
+}: {
+  projectName?: string | undefined;
+  pollingInterval?: number | undefined;
+}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityAzurePipelinesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
