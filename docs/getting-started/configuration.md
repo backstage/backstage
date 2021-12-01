@@ -1,0 +1,272 @@
+---
+id: index
+title: Getting Started, configuring backstage
+description: Getting started with your initial backstage configuration
+---
+
+The steps in this guide assume you've installed backstage app from the npm
+repository, like in the [Getting Started guide](./index.md) and want to
+configure Backstage.
+
+At the end of this guide, you can expect:
+
+- Backstage to use a PostgreSQL database
+- You'll authenticate using one of the auth providers
+- The Backstage GitHub integration to be configured
+- You're able to use Software Templates
+
+### Prerequisites
+
+- Access to a Linux-based operating system, such as Linux, MacOS or
+  [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
+- An account with elevated rights to install prerequisites
+- If the database is not hosted on the same server as the Backstage app, the
+  PostgreSQL port needs to be accessible (the default is 5432 or 5433)
+
+### Install and configure PostgreSQL
+
+These instructions can be skipped if you already have a PostgreSQL server
+installed and created a schema and user. The example below is for Linux, but
+luckily there's detailed instructions on how to
+[install PostgreSQL](https://www.postgresql.org/download/) to help you get
+started.
+
+```shell
+sudo apt-get install postgresql
+```
+
+Test if your database is working:
+
+```shell
+sudo -u postgres psql
+```
+
+You should see a message, like:
+
+```shell
+psql (12.9 (Ubuntu 12.9-0ubuntu0.20.04.1))
+Type "help" for help.
+
+postgres=#
+```
+
+For this tutorial we're going to use the existing postgres user. The next step
+is to set the password for this user:
+
+```shell
+postgres=# ALTER USER postgres PASSWORD 'secret';
+```
+
+For this tutorial, we're done here. Type '\q', followed by pressing the enter
+key. Then again type 'exit' and press enter. Next, you need to install and
+configure the client.
+
+Stop Backstage, and go to the root directory of your freshly installed Backstage
+App. Use the following commands to start the PostgreSQL client installation:
+
+```shell
+# From your Backstage root directory
+cd packages/backend
+yarn add pg
+```
+
+Use your favorite editor to open the 'app-config.yaml' and add your PostgreSQL
+configuration. in the root directory of your Backstage app using the credentials
+from the previous steps.
+
+```diff
+backend:
+  database:
+-    client: sqlite3
+-    connection: ':memory:'
++    # config options: https://node-postgres.com/api/client
++    client: pg
++    connection:
++      host: ${POSTGRES_HOST}
++      port: ${POSTGRES_PORT}
++      user: ${POSTGRES_USER}
++      password: ${POSTGRES_PASSWORD}
++      # https://node-postgres.com/features/ssl
++      #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
++        #ca: # if you have a CA file and want to verify it you can uncomment this section
++        #$file: <file-path>/ca/server.crt
+```
+
+You'll use the connection details from the previous step. You can set the
+`POSTGRES_` environment variables prior to launching Backstage, or remove the
+`${...}` values and set actual values in this configuration file. The default
+port for PostgreSQL is 5432 or 5433, and the host name could be 127.0.0.1 if
+installed locally. In general, using connection details in a configuration file
+is not recommended.
+
+Start the backstage app:
+
+```shell
+yarn dev
+```
+
+It should start as normal. If it's completely started you'll notice the catalog
+is populated with the information, still coming from the configuration files. If
+you add a new component, or register an existing one it will be saved in the
+database. You can verify this by stopping the Backstage app and starting it
+again.
+
+If you want to read more about the database configuration, here's some helpful
+links:
+
+- [Configuring Plugin Databases](https://backstage.io/docs/tutorials/configuring-plugin-databases#privileges)
+- [Read more about Knex](http://knexjs.org/), which is the library we use for
+  the database backend
+
+### Setting up authentication
+
+There's multiple authentication providers available for you to use with
+Backstage, feel free to follow
+[the instructions for adding authentication](https://backstage.io/docs/auth/).
+For this tutorial we choose to use GitHub, a free service most of you might be
+familiar with. For other options, see ((the auth provider
+documentation)[https://backstage.io/docs/auth/github/provider#create-an-oauth-app-on-github]).
+
+Go to
+(https://github.com/settings/applications/new)[https://github.com/settings/applications/new]
+to create your OAuth App. The `Homepage URL` should point to Backstage's
+frontend, in our tutorial it would be `http://127.0.0.1:3000`. The
+`Authorization callback URL` will point to the auth backend, which will most
+likely be `http://127.0.0.1:7007/api/auth/github/handler/frame`.
+
+Now, add your OAuth key and secret to the configuration. Open 'app-config.yaml',
+and add your ClientId and ClientSecret. It should end up looking like this:
+
+```
+auth:
+  # see https://backstage.io/docs/auth/ to learn about auth providers
+  providers:
+    github:
+      development:
+        clientId: YOUR CLIENT ID
+        clientSecret: YOUR CLIENT SECRET
+```
+
+Backstage will re-read the configuration. If there's no errors, that's great! We
+can continue with the last part of the configuration. The next step is needed to
+change the sign-in page, this we actually need to add in the source.
+
+Open `packages/app/src/App.tsx` and below the last `import` line, add:
+
+```
+import { githubAuthApiRef } from '@backstage/core-plugin-api';
+import { SignInProviderConfig, SignInPage } from '@backstage/core-components';
+
+const githubProvider: SignInProviderConfig = {
+ id: 'github-auth-provider',
+ title: 'GitHub',
+ message: 'Sign in using GitHub',
+ apiRef: githubAuthApiRef,
+};
+```
+
+Now search for `const app = createApp({` in this file, and below `apis,` add:
+
+```
+components: {
+   SignInPage: props => (
+     <SignInPage
+       {...props}
+       auto
+       provider={githubProvider}
+     />
+   ),
+ },
+```
+
+That should be it. You can stop your Backstage App. When you start it again and
+go to your Backstage portal in your browser you should have your login prompt!
+
+To learn more about Authentication in Backstage, there's the following docs you
+could read:
+
+- (Adding
+  Authentication)[https://backstage.io/docs/auth/#adding-the-provider-to-the-sign-in-page]
+- (Adding a new Authentication
+  Provider)[https://backstage.io/docs/auth/add-auth-provider]
+- (Using authentication and identity)[https://backstage.io/docs/auth/using-auth]
+- (Using organizational data from
+  GitHub)[https://backstage.io/docs/integrations/github/org]
+
+### Setting up a GitHub Integration
+
+The GitHub integration supports loading catalog entities from GitHub or GitHub
+Enterprise. Entities can be added to static catalog configuration, registered
+with the catalog-import plugin, or discovered from a GitHub organization. Users
+and Groups can also be loaded from an organization. While using GitHub Apps
+might be the best way to set up integrations, for this tutorial you'll use a
+Personal Access Token.
+
+Open your Token creation page on GitHub by going to
+(https://github.com/settings/tokens/new)[https://github.com/settings/tokens/new].
+Use a name to identify this token and put it in the notes field. Choose a
+reasonable number of days.
+
+Set the scope to your likings. For this tutorial, selecting "repo" should be
+enough.
+
+In the `app-config.yaml`, search for `integrations:` and add your token, like we
+did in below example:
+
+```
+integrations:
+  github:
+    - host: github.com
+      token: ghp_urtokendeinfewinfiwebfweb
+```
+
+That's settled. This information will be leveraged by other plugins.
+
+Some helpful links, for if you want to learn more about:
+
+- (Other available integrations)[https://backstage.io/docs/integrations/]
+- (Using GitHub Apps instead of a Personal Access
+  Token)[https://backstage.io/docs/plugins/github-apps#docsNav]
+
+### Explore what we've done so far
+
+Open your Backstage frontend. You should see your login screen if you're not
+logged in yet. Go to Settings, you'll see your profile. Hopefully You'll
+recognize the picture and name here, otherwise something went terribly wrong.
+
+Register an existing component
+
+- Register a new component, by going to `create` and choose
+  `Register existing component`
+- As URL use `https://github.com/backstage/demo/blob/master/catalog-info.yaml`.
+  This is used by our demo site.
+- Hit `Analyze` and review the changes. Apply them if correct
+- If you go back to `Home`, you should be able to find `demo`. You should be
+  able to click it and see the details
+
+Create a new component using a software template
+
+- Go to `create` and choose to create a website with the `React SSR Template`
+- Type in a name, let's use `tutorial`
+- Select the group `group-a` which will own this new website, and go to the next
+  step
+- For the location, we're going to use the default GitHub location.
+- As owner, type your GitHub username
+- For the repository name, type `tutorial`. Go to the next step
+- Review your new service, and press `Create`
+- You can follow along with the progress, and as soon as it's finished you can
+  take a look at your new service
+
+Achievement unlocked. You've set up an installation of the core backstage App,
+made it persistent, and configured it so you are now able to use software
+templates.
+
+Let us know how your experience was: [on discord](https://discord.gg/EBHEGzX),
+file issues for any
+[feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
+or
+[plugin suggestions](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME),
+or
+[bugs](https://github.com/backstage/backstage/issues/new?labels=bug&template=bug_template.md)
+you have, and feel free to
+[contribute](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)!
