@@ -2,4 +2,4 @@
 '@backstage/plugin-circleci': patch
 ---
 
-Fixed bug in circleci plugin. The bug fix is with respect to restartBuild action in circleci.Changed the vcstype from Git to map the vcstype dynamically.
+Fixed a bug in the `CircleCI` plugin where restarting builds was hard-coded to GitHub rather than introspecting the entity source location.
