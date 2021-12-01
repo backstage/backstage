@@ -40,9 +40,10 @@ import {
   GroupedResponsesContext,
   PodNamesWithErrorsContext,
 } from '../../hooks';
-import { StatusError, StatusOK } from '@backstage/core-components';
+import { StatusError, StatusOK, TableColumn } from '@backstage/core-components';
 
 type DeploymentsAccordionsProps = {
+  podTableColumns?: TableColumn<V1Pod>[];
   children?: React.ReactNode;
 };
 
@@ -50,6 +51,7 @@ type DeploymentAccordionProps = {
   deployment: V1Deployment;
   ownedPods: V1Pod[];
   matchingHpa?: V1HorizontalPodAutoscaler;
+  podTableColumns?: TableColumn<V1Pod>[];
   children?: React.ReactNode;
 };
 
@@ -143,6 +145,7 @@ const DeploymentAccordion = ({
   deployment,
   ownedPods,
   matchingHpa,
+  podTableColumns,
 }: DeploymentAccordionProps) => {
   const podNamesWithErrors = useContext(PodNamesWithErrorsContext);
 
@@ -161,13 +164,15 @@ const DeploymentAccordion = ({
         />
       </AccordionSummary>
       <AccordionDetails>
-        <PodsTable pods={ownedPods} />
+        <PodsTable pods={ownedPods} podTableColumns={podTableColumns} />
       </AccordionDetails>
     </Accordion>
   );
 };
 
-export const DeploymentsAccordions = ({}: DeploymentsAccordionsProps) => {
+export const DeploymentsAccordions = ({
+  podTableColumns,
+}: DeploymentsAccordionsProps) => {
   const groupedResponses = useContext(GroupedResponsesContext);
 
   return (
@@ -192,6 +197,7 @@ export const DeploymentsAccordions = ({}: DeploymentsAccordionsProps) => {
                 groupedResponses.pods,
               )}
               deployment={deployment}
+              podTableColumns={podTableColumns}
             />
           </Grid>
         </Grid>

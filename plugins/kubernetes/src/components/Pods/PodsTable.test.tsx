@@ -18,6 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import * as pod from './__fixtures__/pod.json';
 import * as crashingPod from './__fixtures__/crashing-pod.json';
+import customColumns from './__fixtures__/custom-columns.json';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { PodsTable } from './PodsTable';
 
@@ -63,5 +64,24 @@ describe('PodsTable', () => {
     expect(getByText('Container: side-car')).toBeInTheDocument();
     expect(getByText('Container: other-side-car')).toBeInTheDocument();
     expect(getAllByText('CrashLoopBackOff')).toHaveLength(2);
+  });
+  it('should render select columns', async () => {
+    const { getByText, queryByText } = render(
+      wrapInTestApp(
+        <PodsTable
+          pods={[pod as any]}
+          podTableColumns={Object.values(customColumns)}
+        />,
+      ),
+    );
+
+    // titles that should be rendered
+    expect(getByText('name')).toBeInTheDocument();
+    expect(getByText('containers ready')).toBeInTheDocument();
+
+    // titles that should not be rendered
+    expect(queryByText('phase')).toBeNull();
+    expect(queryByText('total restarts')).toBeNull();
+    expect(queryByText('status')).toBeNull();
   });
 });

@@ -20,7 +20,11 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
 import { KubernetesContent } from './components/KubernetesContent';
 import { Button } from '@material-ui/core';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
+import {
+  MissingAnnotationEmptyState,
+  TableColumn,
+} from '@backstage/core-components';
+import { V1Pod } from '@kubernetes/client-node';
 
 const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
 const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
@@ -35,9 +39,10 @@ export const isKubernetesAvailable = (entity: Entity) =>
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
+  podTableColumns?: TableColumn<V1Pod>[];
 };
 
-export const Router = (_props: Props) => {
+export const Router = ({ podTableColumns }: Props) => {
   const { entity } = useEntity();
 
   const kubernetesAnnotationValue =
@@ -52,7 +57,15 @@ export const Router = (_props: Props) => {
   ) {
     return (
       <Routes>
-        <Route path="/" element={<KubernetesContent entity={entity} />} />
+        <Route
+          path="/"
+          element={
+            <KubernetesContent
+              entity={entity}
+              podTableColumns={podTableColumns}
+            />
+          }
+        />
       </Routes>
     );
   }

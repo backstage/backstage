@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { V1Pod } from '@kubernetes/client-node';
 import { PodDrawer } from './PodDrawer';
 import {
@@ -23,51 +23,34 @@ import {
   totalRestarts,
 } from '../../utils/pod';
 import { Table, TableColumn } from '@backstage/core-components';
-
-const columns: TableColumn<V1Pod>[] = [
-  {
-    title: 'name',
-    highlight: true,
-    render: (pod: V1Pod) => <PodDrawer pod={pod} />,
-  },
-  {
-    title: 'phase',
-    render: (pod: V1Pod) => pod.status?.phase ?? 'unknown',
-  },
-  {
-    title: 'containers ready',
-    align: 'center',
-    render: containersReady,
-  },
-  {
-    title: 'total restarts',
-    align: 'center',
-    render: totalRestarts,
-    type: 'numeric',
-  },
-  {
-    title: 'status',
-    render: containerStatuses,
-  },
-];
+import * as columnFactories from './columns';
 
 type DeploymentTablesProps = {
   pods: V1Pod[];
+  podTableColumns?: TableColumn<V1Pod>[];
   children?: React.ReactNode;
 };
 
-export const PodsTable = ({ pods }: DeploymentTablesProps) => {
+export const PodsTable = ({ pods, podTableColumns }: DeploymentTablesProps) => {
   const tableStyle = {
     minWidth: '0',
     width: '100%',
   };
+
+  const defaultColumns: TableColumn<V1Pod>[] = [
+    columnFactories.createNameColumn(),
+    columnFactories.createPhaseColumn(),
+    columnFactories.createContainersReadyColumn(),
+    columnFactories.createTotalRestartsColumn(),
+    columnFactories.createStatusColumn(),
+  ];
 
   return (
     <div style={tableStyle}>
       <Table
         options={{ paging: true, search: false }}
         data={pods}
-        columns={columns}
+        columns={podTableColumns || defaultColumns}
       />
     </div>
   );

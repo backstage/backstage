@@ -36,7 +36,8 @@ import {
   PodNamesWithErrorsContext,
 } from '../../hooks';
 
-import { StatusError, StatusOK } from '@backstage/core-components';
+import { StatusError, StatusOK, TableColumn } from '@backstage/core-components';
+import { V1Pod } from '@kubernetes/client-node';
 
 type ClusterSummaryProps = {
   clusterName: string;
@@ -103,9 +104,14 @@ type ClusterProps = {
   clusterObjects: ClusterObjects;
   podsWithErrors: Set<string>;
   children?: React.ReactNode;
+  podTableColumns?: TableColumn<V1Pod>[];
 };
 
-export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
+export const Cluster = ({
+  clusterObjects,
+  podsWithErrors,
+  podTableColumns,
+}: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
   return (
     <ClusterContext.Provider value={clusterObjects.cluster}>
@@ -125,7 +131,7 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
                   <CustomResources />
                 </Grid>
                 <Grid item>
-                  <DeploymentsAccordions />
+                  <DeploymentsAccordions podTableColumns={podTableColumns} />
                 </Grid>
                 <Grid item>
                   <IngressesAccordions />
