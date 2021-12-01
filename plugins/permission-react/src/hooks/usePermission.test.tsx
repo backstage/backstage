@@ -51,12 +51,12 @@ describe('usePermission', () => {
       </TestApiProvider>,
     );
 
-    expect(mockAuthorize).toHaveBeenCalledWith([{ permission }]);
+    expect(mockAuthorize).toHaveBeenCalledWith({ permission });
     expect(getByText('loading')).toBeTruthy();
   });
 
   it('Returns allowed when permissionApi allows authorization.', async () => {
-    mockAuthorize.mockResolvedValueOnce([{ result: AuthorizeResult.ALLOW }]);
+    mockAuthorize.mockResolvedValueOnce({ result: AuthorizeResult.ALLOW });
 
     const { findByText } = render(
       <TestApiProvider
@@ -66,12 +66,12 @@ describe('usePermission', () => {
       </TestApiProvider>,
     );
 
-    expect(mockAuthorize).toHaveBeenCalledWith([{ permission }]);
+    expect(mockAuthorize).toHaveBeenCalledWith({ permission });
     expect(await findByText('content')).toBeTruthy();
   });
 
   it('Returns not allowed when permissionApi denies authorization.', async () => {
-    mockAuthorize.mockResolvedValueOnce([{ result: AuthorizeResult.DENY }]);
+    mockAuthorize.mockResolvedValueOnce({ result: AuthorizeResult.DENY });
 
     const { findByText } = render(
       <TestApiProvider
@@ -81,7 +81,7 @@ describe('usePermission', () => {
       </TestApiProvider>,
     );
 
-    expect(mockAuthorize).toHaveBeenCalledWith([{ permission }]);
+    expect(mockAuthorize).toHaveBeenCalledWith({ permission });
     await expect(findByText('content')).rejects.toThrowError();
   });
 });

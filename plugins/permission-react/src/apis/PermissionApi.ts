@@ -27,9 +27,7 @@ import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
  * @public
  */
 export type PermissionApi = {
-  authorize(
-    requests: Array<AuthorizeRequest>,
-  ): Promise<Array<AuthorizeResponse>>;
+  authorize(request: AuthorizeRequest): Promise<AuthorizeResponse>;
 };
 
 /**
@@ -38,5 +36,5 @@ export type PermissionApi = {
  * @public
  */
 export const permissionApiRef: ApiRef<PermissionApi> = createApiRef({
-  id: 'plugin.permission',
+  id: 'plugin.permission.api',
 });

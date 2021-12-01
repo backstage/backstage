@@ -15,4 +15,3 @@
  */
 
 export { PermissionedRoute } from './PermissionedRoute';
-export { WithPermission } from './WithPermission';

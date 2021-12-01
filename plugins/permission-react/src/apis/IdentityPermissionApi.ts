@@ -29,7 +29,7 @@ import { Config } from '@backstage/config';
  * @public
  */
 export class IdentityPermissionApi implements PermissionApi {
-  constructor(
+  private constructor(
     private readonly permissionClient: PermissionClient,
     private readonly identityApi: IdentityApi,
   ) {}
@@ -47,11 +47,10 @@ export class IdentityPermissionApi implements PermissionApi {
     return new IdentityPermissionApi(permissionClient, identityApi);
   }
 
-  async authorize(
-    requests: Array<AuthorizeRequest>,
-  ): Promise<Array<AuthorizeResponse>> {
-    return await this.permissionClient.authorize(requests, {
+  async authorize(request: AuthorizeRequest): Promise<AuthorizeResponse> {
+    const response = await this.permissionClient.authorize([request], {
       token: await this.identityApi.getIdToken(),
     });
+    return response[0];
   }
 }

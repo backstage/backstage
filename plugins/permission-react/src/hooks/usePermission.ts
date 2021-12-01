@@ -42,12 +42,10 @@ export const usePermission = (
   const permissionApi = useApi(permissionApiRef);
 
   const { loading, error, value } = useAsync(async () => {
-    const [{ result }] = await permissionApi.authorize([
-      {
-        permission,
-        resourceRef,
-      },
-    ]);
+    const { result } = await permissionApi.authorize({
+      permission,
+      resourceRef,
+    });
 
     return result;
   }, [permissionApi, permission]);

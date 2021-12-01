@@ -10,7 +10,6 @@ import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
-import { PermissionClient } from '@backstage/plugin-permission-common';
 import { default as React_2 } from 'react';
 import { RouteProps } from 'react-router';
 
@@ -23,11 +22,8 @@ export type AsyncPermissionResult = {
 
 // @public
 export class IdentityPermissionApi implements PermissionApi {
-  constructor(permissionClient: PermissionClient, identityApi: IdentityApi);
   // (undocumented)
-  authorize(
-    requests: Array<AuthorizeRequest>,
-  ): Promise<Array<AuthorizeResponse>>;
+  authorize(request: AuthorizeRequest): Promise<AuthorizeResponse>;
   // (undocumented)
   static create({
     configApi,
@@ -42,9 +38,7 @@ export class IdentityPermissionApi implements PermissionApi {
 
 // @public
 export type PermissionApi = {
-  authorize(
-    requests: Array<AuthorizeRequest>,
-  ): Promise<Array<AuthorizeResponse>>;
+  authorize(request: AuthorizeRequest): Promise<AuthorizeResponse>;
 };
 
 // @public
@@ -70,16 +64,6 @@ export const usePermission: (
   permission: Permission,
   resourceRef?: string | undefined,
 ) => AsyncPermissionResult;
-
-// @public
-export const WithPermission: ({
-  permission,
-  resourceRef,
-  children,
-}: React_2.PropsWithChildren<{
-  permission: Permission;
-  resourceRef?: string | undefined;
-}>) => JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```
