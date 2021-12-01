@@ -9,6 +9,7 @@
 /docs/features/search                       @backstage/techdocs-core
 /docs/assets/search                         @backstage/techdocs-core
 /plugins/allure                             @backstage/reviewers @deepak-bhardwaj-ps
+/plugins/circleci                           @backstage/reviewers @adamdmharvey
 /plugins/code-coverage                      @backstage/reviewers @alde @nissayeva
 /plugins/code-coverage-backend              @backstage/reviewers @alde @nissayeva
 /plugins/cost-insights                      @backstage/silver-lining
