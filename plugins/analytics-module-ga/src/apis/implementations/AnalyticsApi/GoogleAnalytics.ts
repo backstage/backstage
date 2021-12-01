@@ -42,18 +42,25 @@ export class GoogleAnalytics implements AnalyticsApi {
   private constructor({
     cdmConfig,
     trackingId,
+    gaAddress,
     testMode,
     debug,
   }: {
     cdmConfig: CustomDimensionOrMetricConfig[];
     trackingId: string;
+    gaAddress: string;
     testMode: boolean;
     debug: boolean;
   }) {
     this.cdmConfig = cdmConfig;
 
     // Initialize Google Analytics.
-    ReactGA.initialize(trackingId, { testMode, debug, titleCase: false });
+    ReactGA.initialize(trackingId, {
+      gaAddress,
+      testMode,
+      debug,
+      titleCase: false,
+    });
   }
 
   /**
@@ -62,6 +69,9 @@ export class GoogleAnalytics implements AnalyticsApi {
   static fromConfig(config: Config) {
     // Get all necessary configuration.
     const trackingId = config.getString('app.analytics.ga.trackingId');
+    const gaAddress =
+      config.getOptionalString('app.analytics.ga.gaAddress') ??
+      'https://www.google-analytics.com/analytics.js';
     const debug = config.getOptionalBoolean('app.analytics.ga.debug') ?? false;
     const testMode =
       config.getOptionalBoolean('app.analytics.ga.testMode') ?? false;
@@ -82,6 +92,7 @@ export class GoogleAnalytics implements AnalyticsApi {
     // Return an implementation instance.
     return new GoogleAnalytics({
       trackingId,
+      gaAddress,
       cdmConfig,
       testMode,
       debug,

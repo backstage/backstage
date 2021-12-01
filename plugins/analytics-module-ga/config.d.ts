@@ -28,6 +28,13 @@ export interface Config {
         trackingId: string;
 
         /**
+         * URL to Google Analytics analytics.js script
+         * Defaults to https://www.google-analytics.com/analytics.js
+         * @visibility frontend
+         */
+        gaAddress?: string;
+
+        /**
          * Whether or not to log analytics debug statements to the console.
          * Defaults to false.
          *
