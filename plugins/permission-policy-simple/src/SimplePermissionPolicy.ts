@@ -59,7 +59,9 @@ export class SimplePermissionPolicy implements PermissionPolicy {
       if (request.permission.attributes.action === 'read') {
         return createCatalogPolicyDecision({
           anyOf: [
-            isEntityOwner(getIdentityClaims(identity)),
+            // TODO(mtlewis): when a rule has no params, it has a TParams of unknown[],
+            // should be [].
+            isEntityOwner(),
             isComponentType(['website']),
             isEntityKind(['template']),
           ],

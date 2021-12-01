@@ -19,22 +19,28 @@ import {
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import {
+  BackstageIdentity,
+  getIdentityClaims,
+} from '@backstage/plugin-auth-backend';
 import { EntitiesSearchFilter } from '../../catalog/types';
 
 export const isEntityOwner = {
   name: 'IS_ENTITY_OWNER',
   description: 'Allow entities owned by the current user',
-  apply: (resource: Entity, claims: string[]) => {
+  apply: (resource: Entity, user: BackstageIdentity) => {
     if (!resource.relations) {
       return false;
     }
+
+    const claims = getIdentityClaims(user);
 
     return resource.relations
       .filter(relation => relation.type === RELATION_OWNED_BY)
       .some(relation => claims.includes(stringifyEntityRef(relation.target)));
   },
-  toQuery: (claims: string[]): EntitiesSearchFilter => ({
+  toQuery: (user: BackstageIdentity): EntitiesSearchFilter => ({
     key: 'spec.owner',
-    values: claims,
+    values: getIdentityClaims(user),
   }),
 };

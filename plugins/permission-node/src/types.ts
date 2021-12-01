@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BackstageIdentity } from '@backstage/plugin-auth-backend';
 import type { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 /**
@@ -45,12 +46,19 @@ export type PermissionRule<
    * arguments supplied for the rule; for example, a rule could be `isOwner` with entityRefs as the
    * params.
    */
-  apply(resource: TResource, ...params: TParams): boolean;
+  apply(
+    resource: TResource,
+    user: BackstageIdentity,
+    ...params: TParams
+  ): boolean;
 
   /**
    * Translate this rule to criteria suitable for use in querying a backing data store. The criteria
    * can be used for loading a collection of resources efficiently with conditional criteria already
    * applied.
    */
-  toQuery(...params: TParams): PermissionCriteria<TQuery>;
+  toQuery(
+    user: BackstageIdentity,
+    ...params: TParams
+  ): PermissionCriteria<TQuery>;
 };
