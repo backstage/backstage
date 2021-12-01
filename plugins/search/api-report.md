@@ -84,6 +84,7 @@ export const SearchBar: ({
   className,
   debounceTime,
   placeholder,
+  clearButton,
 }: Props) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SearchBarNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -94,11 +95,13 @@ export const SearchBarNext: ({
   className,
   debounceTime,
   placeholder,
+  clearButton,
 }: {
   autoFocus?: boolean | undefined;
   className?: string | undefined;
   debounceTime?: number | undefined;
   placeholder?: string | undefined;
+  clearButton?: boolean | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SearchContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
