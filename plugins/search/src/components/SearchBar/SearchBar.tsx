@@ -31,6 +31,7 @@ type PresenterProps = {
   className?: string;
   placeholder?: string;
   autoFocus?: boolean;
+  clearButton?: boolean;
 };
 
 export const SearchBarBase = ({
@@ -40,6 +41,7 @@ export const SearchBarBase = ({
   onSubmit,
   className,
   placeholder: overridePlaceholder,
+  clearButton = true,
 }: PresenterProps) => {
   const configApi = useApi(configApiRef);
 
@@ -79,11 +81,13 @@ export const SearchBarBase = ({
         </InputAdornment>
       }
       endAdornment={
-        <InputAdornment position="end">
-          <IconButton aria-label="Clear" onClick={handleClear}>
-            <ClearButton />
-          </IconButton>
-        </InputAdornment>
+        clearButton && (
+          <InputAdornment position="end">
+            <IconButton aria-label="Clear" onClick={handleClear}>
+              <ClearButton />
+            </IconButton>
+          </InputAdornment>
+        )
       }
       {...(className && { className })}
       {...(onSubmit && { onKeyDown })}
@@ -96,6 +100,7 @@ type Props = {
   className?: string;
   debounceTime?: number;
   placeholder?: string;
+  clearButton?: boolean;
 };
 
 export const SearchBar = ({
@@ -103,6 +108,7 @@ export const SearchBar = ({
   className,
   debounceTime = 0,
   placeholder,
+  clearButton = true,
 }: Props) => {
   const { term, setTerm } = useSearch();
   const [value, setValue] = useState<string>(term);
@@ -129,6 +135,7 @@ export const SearchBar = ({
       onChange={handleQuery}
       onClear={handleClear}
       placeholder={placeholder}
+      clearButton={clearButton}
     />
   );
 };
