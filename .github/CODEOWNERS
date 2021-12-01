@@ -8,6 +8,7 @@
 /docs/features/techdocs                     @backstage/techdocs-core
 /docs/features/search                       @backstage/techdocs-core
 /docs/assets/search                         @backstage/techdocs-core
+/plugins/allure                             @backstage/reviewers @deepak-bhardwaj-ps
 /plugins/code-coverage                      @backstage/reviewers @alde @nissayeva
 /plugins/code-coverage-backend              @backstage/reviewers @alde @nissayeva
 /plugins/cost-insights                      @backstage/silver-lining
