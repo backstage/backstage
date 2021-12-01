@@ -16,20 +16,19 @@
 import { createTemplateAction } from '../../createTemplateAction';
 import { readFile } from 'fs-extra';
 import { Gitlab } from '@gitbeaker/node';
-import path from 'path';
 import globby from 'globby';
 import { CommitAction } from '@gitbeaker/core/dist/types/services/Commits';
-import { CreateMergeRequestOptions } from '@gitbeaker/core/dist/types/services/MergeRequests';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
 import { parseRepoUrl } from './util';
+import { resolveSafeChildPath } from '@backstage/backend-common';
 
 export type GitlabMergeRequestActionInput = {
   projectid: string;
   repoUrl: string;
   title: string;
   description: string;
-  destinationBranch: string;
+  branchName: string;
   targetPath: string;
 };
 
@@ -39,10 +38,10 @@ export const createPublishGitlabMergeRequestAction = (options: {
   const { integrations } = options;
 
   return createTemplateAction<GitlabMergeRequestActionInput>({
-    id: 'publish:gitlab-merge-request',
+    id: 'publish:gitlab:merge-request',
     schema: {
       input: {
-        required: ['projectid', 'repoUrl', 'targetPath'],
+        required: ['projectid', 'repoUrl', 'targetPath', 'branchName'],
         type: 'object',
         properties: {
           repoUrl: {
@@ -65,7 +64,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Merge Request Description',
             description: 'The description of the merge request',
           },
-          destinationBranch: {
+          branchName: {
             type: 'string',
             title: 'Destination Branch name',
             description: 'The description of the merge request',
@@ -98,15 +97,8 @@ export const createPublishGitlabMergeRequestAction = (options: {
       const integrationConfig = integrations.gitlab.byHost(host);
 
       const actions: CommitAction[] = [];
-      const formatedTimestamp = () => {
-        const d = new Date();
-        const date = d.toISOString().split('T')[0];
-        const time = d.toTimeString().split(' ')[0].replace(/:/g, '_');
-        return `${date}_${time}`;
-      };
-      const destinationBranch = ctx.input.destinationBranch
-        ? ctx.input.destinationBranch + formatedTimestamp()
-        : `backstage_${formatedTimestamp()}`;
+
+      const destinationBranch = ctx.input.branchName;
 
       if (!integrationConfig) {
         throw new InputError(
@@ -124,14 +116,14 @@ export const createPublishGitlabMergeRequestAction = (options: {
       });
 
       const fileRoot = ctx.workspacePath;
-      const localFilePaths = await globby([`${ctx.input.targetPath}'/**'`], {
+      const localFilePaths = await globby([`${ctx.input.targetPath}/**`], {
         cwd: fileRoot,
         gitignore: true,
         dot: true,
       });
 
       const fileContents = await Promise.all(
-        localFilePaths.map(p => readFile(path.resolve(fileRoot, p))),
+        localFilePaths.map(p => readFile(resolveSafeChildPath(fileRoot, p))),
       );
 
       const repoFilePaths = localFilePaths.map(repoFilePath => {
@@ -146,11 +138,9 @@ export const createPublishGitlabMergeRequestAction = (options: {
         });
       }
 
-      const defaultBranch: any = await api.Projects.show(
+      const { default_branch: defaultBranch }: any = await api.Projects.show(
         ctx.input.projectid,
-      ).then(projectJSON => {
-        return projectJSON?.default_branch;
-      });
+      );
 
       try {
         await api.Branches.create(
