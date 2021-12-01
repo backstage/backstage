@@ -19,10 +19,9 @@ import { render } from '@testing-library/react';
 import * as pod from './__fixtures__/pod.json';
 import * as crashingPod from './__fixtures__/crashing-pod.json';
 import { wrapInTestApp } from '@backstage/test-utils';
-import {PodsTable, READY_COLUMNS, RESOURCE_COLUMNS} from './PodsTable';
+import { PodsTable, READY_COLUMNS, RESOURCE_COLUMNS } from './PodsTable';
 import { kubernetesProviders } from '../../hooks/test-utils';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
-
 
 describe('PodsTable', () => {
   it('should render pod', async () => {
@@ -84,7 +83,14 @@ describe('PodsTable', () => {
       podNameToClientPodStatus,
     );
     const { getByText } = render(
-      wrapper(wrapInTestApp(<PodsTable pods={[pod as any]}  extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]} />)),
+      wrapper(
+        wrapInTestApp(
+          <PodsTable
+            pods={[pod as any]}
+            extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]}
+          />,
+        ),
+      ),
     );
 
     // titles
@@ -108,7 +114,6 @@ describe('PodsTable', () => {
     expect(getByText('limits: 0%')).toBeInTheDocument();
   });
   it('should render placehoplder when empty metrics context', async () => {
-
     const podNameToClientPodStatus = new Map<string, ClientPodStatus>();
 
     const wrapper = kubernetesProviders(
@@ -116,8 +121,15 @@ describe('PodsTable', () => {
       undefined,
       podNameToClientPodStatus,
     );
-    const { getByText,getAllByText } = render(
-      wrapper(wrapInTestApp(<PodsTable pods={[pod as any]}  extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]} />)),
+    const { getByText, getAllByText } = render(
+      wrapper(
+        wrapInTestApp(
+          <PodsTable
+            pods={[pod as any]}
+            extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]}
+          />,
+        ),
+      ),
     );
 
     // titles
@@ -140,7 +152,10 @@ describe('PodsTable', () => {
   it('should render crashing pod with extra columns', async () => {
     const { getByText, getAllByText } = render(
       wrapInTestApp(
-        <PodsTable pods={[crashingPod as any]} extraColumns={[READY_COLUMNS]} />,
+        <PodsTable
+          pods={[crashingPod as any]}
+          extraColumns={[READY_COLUMNS]}
+        />,
       ),
     );
 

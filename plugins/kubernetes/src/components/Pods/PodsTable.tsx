@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import { V1Pod } from '@kubernetes/client-node';
 import { PodDrawer } from './PodDrawer';
 import {
@@ -22,14 +22,14 @@ import {
   containerStatuses,
   podStatusToCpuUtil,
   podStatusToMemoryUtil,
-  totalRestarts
+  totalRestarts,
 } from '../../utils/pod';
 import { Table, TableColumn } from '@backstage/core-components';
 import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
 
-export const READY_COLUMNS:PodColumns = "READY"
-export const RESOURCE_COLUMNS:PodColumns = "RESOURCE"
-export type PodColumns = "READY" | "RESOURCE"
+export const READY_COLUMNS: PodColumns = 'READY';
+export const RESOURCE_COLUMNS: PodColumns = 'RESOURCE';
+export type PodColumns = 'READY' | 'RESOURCE';
 
 type PodsTablesProps = {
   pods: V1Pod[];
@@ -68,12 +68,11 @@ const READY: TableColumn<V1Pod>[] = [
 ];
 
 export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
-
   const podNamesWithMetrics = useContext(PodNamesWithMetricsContext);
-  const columns:TableColumn<V1Pod>[] =  [...DEFAULT_COLUMNS]
+  const columns: TableColumn<V1Pod>[] = [...DEFAULT_COLUMNS];
 
   if (extraColumns.includes(READY_COLUMNS)) {
-    columns.push(...READY)
+    columns.push(...READY);
   }
   if (extraColumns.includes(RESOURCE_COLUMNS)) {
     const resourceColumns: TableColumn<V1Pod>[] = [
