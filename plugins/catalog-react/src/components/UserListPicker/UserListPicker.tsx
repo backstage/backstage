@@ -33,13 +33,7 @@ import {
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
 import { compact } from 'lodash';
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { UserListFilter } from '../../filters';
 import {
   useEntityListProvider,
@@ -128,30 +122,7 @@ export const UserListPicker = ({
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-  // Remove group items that aren't in availableFilters and exclude
-  // any now-empty groups.
-  const initialFilterGroup = getFilterGroups(orgName)
-    .map(filterGroup => ({
-      ...filterGroup,
-      items: filterGroup.items.filter(
-        ({ id }) => !availableFilters || availableFilters.includes(id),
-      ),
-    }))
-    .filter(({ items }) => !!items.length);
-  const [filterGroups, setFilterGroups] =
-    useState<ButtonGroup[]>(initialFilterGroup);
-  const setDefaultFilterGroups = useCallback(() => {
-    setFilterGroups(
-      getFilterGroups(orgName)
-        .map(filterGroup => ({
-          ...filterGroup,
-          items: filterGroup.items.filter(
-            ({ id }) => !availableFilters || availableFilters.includes(id),
-          ),
-        }))
-        .filter(({ items }) => !!items.length),
-    );
-  }, [availableFilters, orgName]);
+  const [filterGroups, setFilterGroups] = useState<ButtonGroup[]>([]);
 
   const { filters, updateFilters, backendEntities, queryParameters } =
     useEntityListProvider();
@@ -212,6 +183,12 @@ export const UserListPicker = ({
     }
   }
 
+  useEffect(() => {
+    if (totalOwnedUserEntities < 1) {
+      setSelectedUserFilter('all');
+    }
+  }, [totalOwnedUserEntities]);
+
   const removeOwnedFromItemList = (itemList: ButtonGroup[]) => {
     const index = itemList[0].items.map(item => item.id).indexOf('owned');
     itemList[0].items.splice(index, 1);
@@ -219,16 +196,25 @@ export const UserListPicker = ({
   };
 
   useEffect(() => {
-    if (totalOwnedUserEntities < 1) {
-      setSelectedUserFilter('all');
-    }
+    // Remove group items that aren't in availableFilters and exclude
+    // any now-empty groups.
+    const initialFilterGroup = getFilterGroups(orgName)
+      .map(filterGroup => ({
+        ...filterGroup,
+        items: filterGroup.items.filter(
+          ({ id }) => !availableFilters || availableFilters.includes(id),
+        ),
+      }))
+      .filter(({ items }) => !!items.length);
+    // TODO: avoid hardcoding kinds here
     if (['group', 'user'].some(kind => kind === queryParameters.kind)) {
-      setFilterGroups(currentFilterGroups =>
-        removeOwnedFromItemList(currentFilterGroups),
-      );
+      setFilterGroups(removeOwnedFromItemList(initialFilterGroup));
     }
-    return () => setDefaultFilterGroups();
-  }, [totalOwnedUserEntities, queryParameters, setDefaultFilterGroups]);
+    return () =>
+      setFilterGroups(prevState =>
+        prevState !== initialFilterGroup ? initialFilterGroup : prevState,
+      );
+  }, [queryParameters, availableFilters, orgName]);
 
   return (
     <Card className={classes.root}>
