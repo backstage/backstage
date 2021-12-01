@@ -160,6 +160,14 @@ by this plugin.
 Grab a copy of [oauth2-redirect.html](https://github.com/swagger-api/swagger-ui/blob/master/dist/oauth2-redirect.html)
 and put it in the `app/public/` directory in order to enable Swagger UI to complete this redirection.
 
+This also may require you to adjust `Content Security Policy` header settings of your Backstage application, so that the script in `oauth2-redirect.html` can be executed. Since the script is static we can add the hash of it directly to our CSP policy, which we do by adding the following to the `csp` section of the app configuration:
+
+```yaml
+script-src:
+  - "'self'"
+  - "'sha256-GeDavzSZ8O71Jggf/pQkKbt52dfZkrdNMQ3e+Ox+AkI='" # oauth2-redirect.html
+```
+
 #### Configuring your OAuth2 Client
 
 You'll need to make sure your OAuth2 client has been registered in your OAuth2 Authentication Server (AS)

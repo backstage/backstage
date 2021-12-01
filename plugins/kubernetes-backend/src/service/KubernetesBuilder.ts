@@ -243,6 +243,10 @@ export class KubernetesBuilder {
       'kubernetes.objectTypes',
     ) as KubernetesObjectTypes[];
 
+    const apiVersionOverrides = this.env.config.getOptionalConfig(
+      'kubernetes.apiVersionOverrides',
+    );
+
     let objectTypesToFetch;
 
     if (objectTypesToFetchStrings) {
@@ -250,6 +254,17 @@ export class KubernetesBuilder {
         objectTypesToFetchStrings.includes(obj.objectType),
       );
     }
+
+    if (apiVersionOverrides) {
+      objectTypesToFetch = objectTypesToFetch ?? DEFAULT_OBJECTS;
+
+      for (const obj of objectTypesToFetch) {
+        if (apiVersionOverrides.has(obj.objectType)) {
+          obj.apiVersion = apiVersionOverrides.getString(obj.objectType);
+        }
+      }
+    }
+
     return objectTypesToFetch;
   }
 }
