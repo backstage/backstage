@@ -20,7 +20,7 @@ import Button from '@material-ui/core/Button';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { GridItem } from './styles';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
-import { GuestUserIdentity } from '@backstage/core-app-api/src/apis/implementations/IdentityApi/GuestUserIdentity';
+import { GuestUserIdentity } from './GuestUserIdentity';
 
 const Component: ProviderComponent = ({ onSignInSuccess }) => (
   <GridItem>

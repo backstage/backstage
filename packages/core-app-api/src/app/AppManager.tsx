@@ -50,7 +50,7 @@ import {
   SubRouteRef,
   ExternalRouteRef,
 } from '@backstage/core-plugin-api';
-import { GuestUserIdentity } from '../apis/implementations/IdentityApi/GuestUserIdentity';
+import { GuestUserIdentity } from '@backstage/core-components';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
   childDiscoverer,

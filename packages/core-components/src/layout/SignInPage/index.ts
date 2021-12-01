@@ -18,3 +18,5 @@ export type { SignInProviderConfig } from './types';
 export { SignInPage } from './SignInPage';
 export type { SignInPageClassKey } from './styles';
 export type { CustomProviderClassKey } from './customProvider';
+export { GuestUserIdentity } from './GuestUserIdentity';
+export { LegacyUserIdentity } from './LegacyUserIdentity';
