@@ -25,7 +25,10 @@ import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
 import { NavLink } from 'react-router-dom';
 import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
-import { SidebarSearchModal, SearchContextProvider } from '@backstage/plugin-search';
+import {
+  SidebarSearchModal,
+  SearchContextProvider,
+} from '@backstage/plugin-search';
 import {
   Sidebar,
   SidebarPage,
