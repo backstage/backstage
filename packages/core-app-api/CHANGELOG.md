@@ -1,5 +1,111 @@
 # @backstage/core-app-api
 
+## 0.1.23
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- 000190de69: The `ApiRegistry` from `@backstage/core-app-api` class has been deprecated and will be removed in a future release. To replace it, we have introduced two new helpers that are exported from `@backstage/test-utils`, namely `TestApiProvider` and `TestApiRegistry`.
+
+  These two new helpers are more tailored for writing tests and development setups, as they allow for partial implementations of each of the APIs.
+
+  When migrating existing code it is typically best to prefer usage of `TestApiProvider` when possible, so for example the following code:
+
+  ```tsx
+  render(
+    <ApiProvider
+      apis={ApiRegistry.from([
+        [identityApiRef, mockIdentityApi as unknown as IdentityApi]
+      ])}
+    >
+      {...}
+    </ApiProvider>
+  )
+  ```
+
+  Would be migrated to this:
+
+  ```tsx
+  render(
+    <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
+      {...}
+    </TestApiProvider>
+  )
+  ```
+
+  In cases where the `ApiProvider` is used in a more standalone way, for example to reuse a set of APIs across multiple tests, the `TestApiRegistry` can be used instead. Note that the `TestApiRegistry` only has a single static factory method, `.from()`, and it is slightly different from the existing `.from()` method on `ApiRegistry` in that it doesn't require the API pairs to be wrapped in an outer array.
+
+  Usage that looks like this:
+
+  ```ts
+  const apis = ApiRegistry.with(
+    identityApiRef,
+    mockIdentityApi as unknown as IdentityApi,
+  ).with(configApiRef, new ConfigReader({}));
+  ```
+
+  OR like this:
+
+  ```ts
+  const apis = ApiRegistry.from([
+    [identityApiRef, mockIdentityApi as unknown as IdentityApi],
+    [configApiRef, new ConfigReader({})],
+  ]);
+  ```
+
+  Would be migrated to this:
+
+  ```ts
+  const apis = TestApiRegistry.from(
+    [identityApiRef, mockIdentityApi],
+    [configApiRef, new ConfigReader({})],
+  );
+  ```
+
+  If your app is still using the `ApiRegistry` to construct the `apis` for `createApp`, we recommend that you move over to use the new method of supplying API factories instead, using `createApiFactory`.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.1.22
+
+### Patch Changes
+
+- Reverted the `createApp` TypeScript type to match the one before version `0.1.21`, as it was an accidental breaking change.
+
+## 0.1.21
+
+### Patch Changes
+
+- 0b1de52732: Migrated to using new `ErrorApiError` and `ErrorApiErrorContext` names.
+- ecd1fcb80a: Deprecated the `BackstagePluginWithAnyOutput` type.
+- 32bfbafb0f: Start exporting and marking several types as public to address errors in the API report.
+- 014cbf8cb9: The `createApp` function from `@backstage/core-app-api` has been deprecated, with two new options being provided as a replacement.
+
+  The first and most commonly used one is `createApp` from the new `@backstage/app-defaults` package, which behaves just like the existing `createApp`. In the future this method is likely to be expanded to add more APIs and other pieces into the default setup, for example the Utility APIs from `@backstage/integration-react`.
+
+  The other option that we now provide is to use `createSpecializedApp` from `@backstage/core-app-api`. This is a more low-level API where you need to provide a full set of options, including your own `components`, `icons`, `defaultApis`, and `themes`. The `createSpecializedApp` way of creating an app is particularly useful if you are not using `@backstage/core-components` or MUI, as it allows you to avoid those dependencies completely.
+
+- 475edb5bc5: move the BehaviorSubject init into the constructor
+- Updated dependencies
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/app-defaults@0.1.1
+
 ## 0.1.20
 
 ### Patch Changes

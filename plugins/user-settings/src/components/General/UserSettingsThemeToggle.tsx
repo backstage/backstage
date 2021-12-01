@@ -131,7 +131,7 @@ export const UserSettingsThemeToggle = () => {
                 value={theme.id}
               >
                 <>
-                  {theme.variant}&nbsp;
+                  {theme.title}&nbsp;
                   <ThemeIcon
                     id={theme.id}
                     icon={themeIcon}

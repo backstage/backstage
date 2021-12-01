@@ -20,7 +20,6 @@ import {
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import {
   IdentityApi,
@@ -38,6 +37,7 @@ import {
   mockBreakpoint,
   MockStorageApi,
   renderWithEffects,
+  TestApiProvider,
   wrapInTestApp,
 } from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
@@ -129,8 +129,8 @@ describe('CatalogPage', () => {
   const renderWrapped = (children: React.ReactNode) =>
     renderWithEffects(
       wrapInTestApp(
-        <ApiProvider
-          apis={ApiRegistry.from([
+        <TestApiProvider
+          apis={[
             [catalogApiRef, catalogApi],
             [identityApiRef, identityApi],
             [storageApiRef, storageApi],
@@ -138,10 +138,10 @@ describe('CatalogPage', () => {
               starredEntitiesApiRef,
               new DefaultStarredEntitiesApi({ storageApi }),
             ],
-          ])}
+          ]}
         >
           {children}
-        </ApiProvider>,
+        </TestApiProvider>,
         {
           mountedRoutes: {
             '/create': createComponentRouteRef,

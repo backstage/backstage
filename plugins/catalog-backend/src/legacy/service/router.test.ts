@@ -115,11 +115,11 @@ describe('createRouter readonly disabled', () => {
           anyOf: [
             {
               allOf: [
-                { key: 'a', matchValueIn: ['1', '2'] },
-                { key: 'b', matchValueIn: ['3'] },
+                { key: 'a', values: ['1', '2'] },
+                { key: 'b', values: ['3'] },
               ],
             },
-            { allOf: [{ key: 'c', matchValueIn: ['4'] }] },
+            { allOf: [{ key: 'c', values: ['4'] }] },
           ],
         },
       });

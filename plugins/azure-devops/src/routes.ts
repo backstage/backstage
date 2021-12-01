@@ -13,8 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createRouteRef } from '@backstage/core-plugin-api';
 
-export const azureDevOpsRouteRef = createRouteRef({
-  title: 'azure-devops',
+export const azurePullRequestDashboardRouteRef = createRouteRef({
+  id: 'azure-pull-request-dashboard',
+});
+
+export const azurePipelinesEntityContentRouteRef = createRouteRef({
+  id: 'azure-pipelines-entity-content',
+});
+
+export const azurePullRequestsEntityContentRouteRef = createRouteRef({
+  id: 'azure-pull-requests-entity-content',
 });

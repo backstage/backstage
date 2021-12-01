@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import {
   CatalogApi,
   catalogApiRef,
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
-import { MockAnalyticsApi, renderInTestApp } from '@backstage/test-utils';
+import {
+  MockAnalyticsApi,
+  renderInTestApp,
+  TestApiProvider,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { catalogEntityRouteRef, catalogGraphRouteRef } from '../../routes';
@@ -31,7 +36,7 @@ describe('<CatalogGraphCard/>', () => {
   let entity: Entity;
   let wrapper: JSX.Element;
   let catalog: jest.Mocked<CatalogApi>;
-  let apis: ApiRegistry;
+  let apis: TestApiRegistry;
 
   beforeAll(() => {
     Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
@@ -61,7 +66,7 @@ describe('<CatalogGraphCard/>', () => {
       refreshEntity: jest.fn(),
       getEntityAncestors: jest.fn(),
     };
-    apis = ApiRegistry.with(catalogApiRef, catalog);
+    apis = TestApiRegistry.from([catalogApiRef, catalog]);
 
     wrapper = (
       <ApiProvider apis={apis}>
@@ -123,9 +128,9 @@ describe('<CatalogGraphCard/>', () => {
   test('captures analytics event on click', async () => {
     const analyticsSpy = new MockAnalyticsApi();
     const { findByText } = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.from([[analyticsApiRef, analyticsSpy]])}>
+      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
         {wrapper}
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,

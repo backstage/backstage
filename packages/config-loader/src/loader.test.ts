@@ -122,18 +122,20 @@ describe('loadConfig', () => {
         configTargets: [],
         env: 'production',
       }),
-    ).resolves.toEqual([
-      {
-        context: 'app-config.yaml',
-        data: {
-          app: {
-            title: 'Example App',
-            sessionKey: 'abc123',
-            escaped: '${Escaped}',
+    ).resolves.toEqual({
+      appConfigs: [
+        {
+          context: 'app-config.yaml',
+          data: {
+            app: {
+              title: 'Example App',
+              sessionKey: 'abc123',
+              escaped: '${Escaped}',
+            },
           },
         },
-      },
-    ]);
+      ],
+    });
   });
 
   it('load config from remote path', async () => {
@@ -151,18 +153,20 @@ describe('loadConfig', () => {
           reloadIntervalSeconds: 30,
         },
       }),
-    ).resolves.toEqual([
-      {
-        context: configUrl,
-        data: {
-          app: {
-            title: 'Remote Example App',
-            sessionKey: 'abc123',
-            escaped: '${Escaped}',
+    ).resolves.toEqual({
+      appConfigs: [
+        {
+          context: configUrl,
+          data: {
+            app: {
+              title: 'Remote Example App',
+              sessionKey: 'abc123',
+              escaped: '${Escaped}',
+            },
           },
         },
-      },
-    ]);
+      ],
+    });
   });
 
   it('loads config with secrets from two different files', async () => {
@@ -173,28 +177,30 @@ describe('loadConfig', () => {
         configTargets: [{ path: '/root/app-config.yaml' }],
         env: 'production',
       }),
-    ).resolves.toEqual([
-      {
-        context: 'app-config.yaml',
-        data: {
-          app: {
-            title: 'Example App',
-            sessionKey: 'abc123',
-            escaped: '${Escaped}',
+    ).resolves.toEqual({
+      appConfigs: [
+        {
+          context: 'app-config.yaml',
+          data: {
+            app: {
+              title: 'Example App',
+              sessionKey: 'abc123',
+              escaped: '${Escaped}',
+            },
           },
         },
-      },
-      {
-        context: 'app-config2.yaml',
-        data: {
-          app: {
-            title: 'Example App 2',
-            sessionKey: 'abc123',
-            escaped: '${Escaped}',
+        {
+          context: 'app-config2.yaml',
+          data: {
+            app: {
+              title: 'Example App 2',
+              sessionKey: 'abc123',
+              escaped: '${Escaped}',
+            },
           },
         },
-      },
-    ]);
+      ],
+    });
   });
 
   it('loads config with secrets from single file', async () => {
@@ -205,18 +211,20 @@ describe('loadConfig', () => {
         configTargets: [{ path: '/root/app-config.yaml' }],
         env: 'production',
       }),
-    ).resolves.toEqual([
-      {
-        context: 'app-config.yaml',
-        data: {
-          app: {
-            title: 'Example App',
-            sessionKey: 'abc123',
-            escaped: '${Escaped}',
+    ).resolves.toEqual({
+      appConfigs: [
+        {
+          context: 'app-config.yaml',
+          data: {
+            app: {
+              title: 'Example App',
+              sessionKey: 'abc123',
+              escaped: '${Escaped}',
+            },
           },
         },
-      },
-    ]);
+      ],
+    });
   });
 
   it('loads development config with secrets', async () => {
@@ -230,34 +238,36 @@ describe('loadConfig', () => {
         ],
         env: 'development',
       }),
-    ).resolves.toEqual([
-      {
-        context: 'app-config.yaml',
-        data: {
-          app: {
-            title: 'Example App',
-            sessionKey: 'abc123',
-            escaped: '${Escaped}',
-          },
-        },
-      },
-      {
-        context: 'app-config.development.yaml',
-        data: {
-          app: {
-            sessionKey: 'development-key',
-          },
-          backend: {
-            foo: {
-              bar: 'token is-secret',
+    ).resolves.toEqual({
+      appConfigs: [
+        {
+          context: 'app-config.yaml',
+          data: {
+            app: {
+              title: 'Example App',
+              sessionKey: 'abc123',
+              escaped: '${Escaped}',
             },
           },
-          other: {
-            secret: 'abc123',
+        },
+        {
+          context: 'app-config.development.yaml',
+          data: {
+            app: {
+              sessionKey: 'development-key',
+            },
+            backend: {
+              foo: {
+                bar: 'token is-secret',
+              },
+            },
+            other: {
+              secret: 'abc123',
+            },
           },
         },
-      },
-    ]);
+      ],
+    });
   });
 
   it('loads deep substituted config', async () => {
@@ -268,19 +278,21 @@ describe('loadConfig', () => {
         configTargets: [{ path: '/root/app-config.substitute.yaml' }],
         env: 'development',
       }),
-    ).resolves.toEqual([
-      {
-        context: 'app-config.substitute.yaml',
-        data: {
-          app: {
-            someConfig: {
-              secret: '123abc',
+    ).resolves.toEqual({
+      appConfigs: [
+        {
+          context: 'app-config.substitute.yaml',
+          data: {
+            app: {
+              someConfig: {
+                secret: '123abc',
+              },
+              noSubstitute: 'notSubstituted',
             },
-            noSubstitute: 'notSubstituted',
           },
         },
-      },
-    ]);
+      ],
+    });
   });
 
   it('watches config files', async () => {
@@ -297,18 +309,20 @@ describe('loadConfig', () => {
           stopSignal: stopSignal.promise,
         },
       }),
-    ).resolves.toEqual([
-      {
-        context: 'app-config.yaml',
-        data: {
-          app: {
-            title: 'Example App',
-            sessionKey: 'abc123',
-            escaped: '${Escaped}',
+    ).resolves.toEqual({
+      appConfigs: [
+        {
+          context: 'app-config.yaml',
+          data: {
+            app: {
+              title: 'Example App',
+              sessionKey: 'abc123',
+              escaped: '${Escaped}',
+            },
           },
         },
-      },
-    ]);
+      ],
+    });
 
     await fs.writeJson('/root/app-config.yaml', {
       app: {
@@ -349,18 +363,20 @@ describe('loadConfig', () => {
           reloadIntervalSeconds: 1,
         },
       }),
-    ).resolves.toEqual([
-      {
-        context: configUrl,
-        data: {
-          app: {
-            title: 'Remote Example App',
-            sessionKey: 'abc123',
-            escaped: '${Escaped}',
+    ).resolves.toEqual({
+      appConfigs: [
+        {
+          context: configUrl,
+          data: {
+            app: {
+              title: 'Remote Example App',
+              sessionKey: 'abc123',
+              escaped: '${Escaped}',
+            },
           },
         },
-      },
-    ]);
+      ],
+    });
 
     server.use(reloadHandler);
 

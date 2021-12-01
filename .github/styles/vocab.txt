@@ -63,6 +63,7 @@ Debounce
 declaratively
 deduplicated
 deps
+dependabot
 destructured
 dev
 devops
@@ -188,6 +189,7 @@ oidc
 Okta
 onboarding
 Onboarding
+OpenShift
 orgs
 pagerduty
 pageview

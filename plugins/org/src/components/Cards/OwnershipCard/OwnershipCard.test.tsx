@@ -21,11 +21,10 @@ import {
   EntityProvider,
   catalogRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { queryByText } from '@testing-library/react';
 import React from 'react';
 import { OwnershipCard } from './OwnershipCard';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('OwnershipCard', () => {
   const groupEntity: GroupEntity = {
@@ -121,11 +120,11 @@ describe('OwnershipCard', () => {
     });
 
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(catalogApiRef, catalogApi)}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={groupEntity}>
           <OwnershipCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/create': catalogRouteRef,
@@ -157,11 +156,11 @@ describe('OwnershipCard', () => {
     });
 
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(catalogApiRef, catalogApi)}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={groupEntity}>
           <OwnershipCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/create': catalogRouteRef,
@@ -205,11 +204,11 @@ describe('OwnershipCard', () => {
     });
 
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(catalogApiRef, catalogApi)}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={userEntity}>
           <OwnershipCard />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/create': catalogRouteRef,

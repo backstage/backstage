@@ -23,7 +23,7 @@ guide to do a repository-based installation.
 
 - Access to a Linux-based operating system, such as Linux, MacOS or
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
-- An account with elevated rights
+- An account with elevated rights to install the dependencies
 - `curl` or `wget` installed
 - Node.js Active LTS Release installed (currently v14) using one of these
   methods:
@@ -36,15 +36,16 @@ guide to do a repository-based installation.
 - `yarn` [Installation](https://classic.yarnpkg.com/en/docs/install)
 - `docker` [installation](https://docs.docker.com/engine/install/)
 - `git` [installation](https://github.com/git-guides/install-git)
-- If the system is not directly accessible over your network, the following
-  ports need to be opened: 3000, 7000
+- If the system is not directly accessible over your network the following ports
+  need to be opened: 3000, 7007. This is quite uncommon, unless when you're
+  installing in a container, VM or remote system.
 
 ### Create your Backstage App
 
 To install the Backstage Standalone app, we make use of `npx`, a tool to run
-Node executables straight from the registry. Running the command below will
-install Backstage. The wizard will create a subdirectory inside your current
-working directory.
+Node executables straight from the registry. This tool is part of your Node.js
+installation. Running the command below will install Backstage. The wizard will
+create a subdirectory inside your current working directory.
 
 ```bash
 npx @backstage/create-app
@@ -78,11 +79,20 @@ yarn dev
 It might take a little while, but as soon as the message
 `[0] webpack compiled successfully` appears, you can open a browser and directly
 navigate to your freshly installed Backstage portal at `http://localhost:3000`.
-You can start exploring the demo immediately.
+You can start exploring the demo immediately. Please note that the in-memory
+database will be cleared when you restart the app, so you'll most likely want to
+carry on with the database steps.
 
 <p align='center'>
   <img src='../assets/getting-started/portal.png' alt='Screenshot of the Backstage portal.'>
 </p>
+
+The most common next steps are to move to a persistent database, configure
+authentication, and add a plugin:
+
+- [Switching from SQLite to PostgresQL](https://backstage.io/docs/tutorials/switching-sqlite-postgres)
+- [Setting up Authentication](https://backstage.io/docs/auth/)
+- [Adding a plugin](https://backstage.io/docs/getting-started/configure-app-with-plugins)
 
 Congratulations! That should be it. Let us know how it went:
 [on discord](https://discord.gg/EBHEGzX), file issues for any
@@ -93,10 +103,3 @@ or
 [bugs](https://github.com/backstage/backstage/issues/new?labels=bug&template=bug_template.md)
 you have, and feel free to
 [contribute](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)!
-
-The most common next steps are to configure Backstage, add a plugin and moving
-to a more persistent database:
-
-- [Setting up Authentication](https://backstage.io/docs/auth/)
-- [Switching from SQLite to PostgresQL](https://backstage.io/docs/tutorials/switching-sqlite-postgres)
-- [Adding a plugin](https://backstage.io/docs/getting-started/configure-app-with-plugins)

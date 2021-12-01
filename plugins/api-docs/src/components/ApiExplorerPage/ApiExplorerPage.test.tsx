@@ -15,11 +15,7 @@
  */
 
 import { Entity, RELATION_MEMBER_OF } from '@backstage/catalog-model';
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ConfigReader } from '@backstage/core-app-api';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import {
   ConfigApi,
@@ -34,7 +30,11 @@ import {
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
-import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
+import {
+  MockStorageApi,
+  TestApiProvider,
+  wrapInTestApp,
+} from '@backstage/test-utils';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import { render } from '@testing-library/react';
 import React from 'react';
@@ -88,8 +88,8 @@ describe('ApiCatalogPage', () => {
   const renderWrapped = (children: React.ReactNode) =>
     render(
       wrapInTestApp(
-        <ApiProvider
-          apis={ApiRegistry.from([
+        <TestApiProvider
+          apis={[
             [catalogApiRef, catalogApi],
             [configApiRef, configApi],
             [storageApiRef, storageApi],
@@ -98,10 +98,10 @@ describe('ApiCatalogPage', () => {
               new DefaultStarredEntitiesApi({ storageApi }),
             ],
             [apiDocsConfigRef, apiDocsConfig],
-          ])}
+          ]}
         >
           {children}
-        </ApiProvider>,
+        </TestApiProvider>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { searchApiRef } from '@backstage/plugin-search';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import {
   act,
   fireEvent,
@@ -54,7 +54,7 @@ describe('<TechDocsPage />', () => {
     const querySpy = jest.fn(query);
     const searchApi = { query: querySpy };
 
-    const apiRegistry = ApiRegistry.from([[searchApiRef, searchApi]]);
+    const apiRegistry = TestApiRegistry.from([searchApiRef, searchApi]);
 
     await act(async () => {
       const rendered = render(
@@ -75,7 +75,7 @@ describe('<TechDocsPage />', () => {
     const querySpy = jest.fn(query);
     const searchApi = { query: querySpy };
 
-    const apiRegistry = ApiRegistry.from([[searchApiRef, searchApi]]);
+    const apiRegistry = TestApiRegistry.from([searchApiRef, searchApi]);
 
     await act(async () => {
       const rendered = render(

@@ -23,7 +23,11 @@ import {
   createVersionedContext,
 } from '@backstage/version-bridge';
 
-type ApiProviderProps = {
+/**
+ * Prop types for the ApiProvider component.
+ * @public
+ */
+export type ApiProviderProps = {
   apis: ApiHolder;
   children: ReactNode;
 };

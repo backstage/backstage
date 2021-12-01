@@ -12,6 +12,7 @@ import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchQuery } from '@backstage/search-common';
 import { SearchResult as SearchResult_2 } from '@backstage/search-common';
@@ -22,7 +23,11 @@ import { SearchResultSet } from '@backstage/search-common';
 // @public (undocumented)
 export const DefaultResultListItem: ({
   result,
+  icon,
+  secondaryAction,
 }: {
+  icon?: ReactNode;
+  secondaryAction?: ReactNode;
   result: IndexableDocument;
 }) => JSX.Element;
 
@@ -80,22 +85,28 @@ export const searchApiRef: ApiRef<SearchApi>;
 //
 // @public (undocumented)
 export const SearchBar: ({
+  autoFocus,
   className,
   debounceTime,
   placeholder,
+  clearButton,
 }: Props) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SearchBarNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
 export const SearchBarNext: ({
+  autoFocus,
   className,
   debounceTime,
   placeholder,
+  clearButton,
 }: {
+  autoFocus?: boolean | undefined;
   className?: string | undefined;
   debounceTime?: number | undefined;
   placeholder?: string | undefined;
+  clearButton?: boolean | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SearchContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

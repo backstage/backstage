@@ -46,6 +46,11 @@ export interface DatabaseConnector {
    */
   createNameOverride(name: string): Partial<Knex.Config>;
   /**
+   * createSchemaOverride provides a partial knex config sufficient to override a
+   * PostgreSQL schema name within utilizing the `searchPath` knex configuration.
+   */
+  createSchemaOverride?(name: string): Partial<Knex.Config>;
+  /**
    * parseConnectionString produces a knex connection config object representing
    * a database connection string.
    */
@@ -63,5 +68,17 @@ export interface DatabaseConnector {
   ensureDatabaseExists?(
     dbConfig: Config,
     ...databases: Array<string>
+  ): Promise<void>;
+
+  /**
+   * ensureSchemaExists performs a side-effect to ensure schema names passed in are
+   * present.
+   *
+   * Calling this function on schemas which already exist should do nothing.
+   * Missing schemas should be created if needed.
+   */
+  ensureSchemaExists?(
+    dbConfig: Config,
+    ...schemas: Array<string>
   ): Promise<void>;
 }

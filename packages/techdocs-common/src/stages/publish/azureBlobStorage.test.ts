@@ -51,7 +51,7 @@ const createPublisherFromConfig = ({
 } = {}) => {
   const config = new ConfigReader({
     techdocs: {
-      requestUrl: 'http://localhost:7000',
+      requestUrl: 'http://localhost:7007',
       publisher: {
         type: 'azureBlobStorage',
         azureBlobStorage: {

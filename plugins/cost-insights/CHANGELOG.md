@@ -1,5 +1,24 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.12
+
+### Patch Changes
+
+- 950b36393c: Supply featureFlags using featureFlag config option.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.11.11
+
+### Patch Changes
+
+- 4576f82858: Fixed generation of sample data in the example Cost Insights client
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
 ## 0.11.10
 
 ### Patch Changes

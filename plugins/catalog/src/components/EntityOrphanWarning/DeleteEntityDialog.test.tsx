@@ -20,10 +20,9 @@ import { ORIGIN_LOCATION_ANNOTATION } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { screen, waitFor } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('DeleteEntityDialog', () => {
   const alertApi: jest.Mocked<AlertApi> = {
@@ -34,10 +33,6 @@ describe('DeleteEntityDialog', () => {
   const catalogClient: jest.Mocked<CatalogApi> = {
     removeEntityByUid: jest.fn(),
   } as any;
-  const apis = ApiRegistry.with(catalogApiRef, catalogClient).with(
-    alertApiRef,
-    alertApi,
-  );
 
   const entity = {
     apiVersion: 'backstage.io/v1alpha1',
@@ -54,7 +49,14 @@ describe('DeleteEntityDialog', () => {
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ApiProvider apis={apis}>{children}</ApiProvider>
+    <TestApiProvider
+      apis={[
+        [catalogApiRef, catalogClient],
+        [alertApiRef, alertApi],
+      ]}
+    >
+      {children}
+    </TestApiProvider>
   );
 
   afterEach(() => {

@@ -1,6 +1,5 @@
 import {
   AlertApiForwarder,
-  ApiRegistry,
   ErrorAlerter,
   ErrorApiForwarder,
   GithubAuth,
@@ -27,78 +26,57 @@ import {
   configApiRef,
 } from '@backstage/core-plugin-api';
 
-const builder = ApiRegistry.builder();
-
-builder.add(configApiRef, new ConfigReader({}));
-
-const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
-
-builder.add(errorApiRef, new ErrorAlerter(alertApi, new ErrorApiForwarder()));
-
-builder.add(identityApiRef, {
+const configApi = new ConfigReader({});
+const alertApi = new AlertApiForwarder();
+const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
+const identityApi = {
   getUserId: () => 'guest',
   getProfile: () => ({ email: 'guest@example.com' }),
   getIdToken: () => undefined,
   signOut: async () => {},
+};
+const oauthRequestApi = new OAuthRequestManager();
+const googleAuthApi = GoogleAuth.create({
+  apiOrigin: 'http://localhost:7007',
+  basePath: '/auth/',
+  oauthRequestApi,
+});
+const githubAuthApi = GithubAuth.create({
+  apiOrigin: 'http://localhost:7007',
+  basePath: '/auth/',
+  oauthRequestApi,
+});
+const gitlabAuthApi = GitlabAuth.create({
+  apiOrigin: 'http://localhost:7007',
+  basePath: '/auth/',
+  oauthRequestApi,
+});
+const oktaAuthApi = OktaAuth.create({
+  apiOrigin: 'http://localhost:7007',
+  basePath: '/auth/',
+  oauthRequestApi,
+});
+const auth0AuthApi = Auth0Auth.create({
+  apiOrigin: 'http://localhost:7007',
+  basePath: '/auth/',
+  oauthRequestApi,
+});
+const oauth2Api = OAuth2.create({
+  apiOrigin: 'http://localhost:7007',
+  basePath: '/auth/',
+  oauthRequestApi,
 });
 
-const oauthRequestApi = builder.add(
-  oauthRequestApiRef,
-  new OAuthRequestManager(),
-);
-
-builder.add(
-  googleAuthApiRef,
-  GoogleAuth.create({
-    apiOrigin: 'http://localhost:7000',
-    basePath: '/auth/',
-    oauthRequestApi,
-  }),
-);
-
-builder.add(
-  githubAuthApiRef,
-  GithubAuth.create({
-    apiOrigin: 'http://localhost:7000',
-    basePath: '/auth/',
-    oauthRequestApi,
-  }),
-);
-
-builder.add(
-  gitlabAuthApiRef,
-  GitlabAuth.create({
-    apiOrigin: 'http://localhost:7000',
-    basePath: '/auth/',
-    oauthRequestApi,
-  }),
-);
-
-builder.add(
-  oktaAuthApiRef,
-  OktaAuth.create({
-    apiOrigin: 'http://localhost:7000',
-    basePath: '/auth/',
-    oauthRequestApi,
-  }),
-);
-
-builder.add(
-  auth0AuthApiRef,
-  Auth0Auth.create({
-    apiOrigin: 'http://localhost:7000',
-    basePath: '/auth/',
-    oauthRequestApi,
-  }),
-);
-
-builder.add(
-  oauth2ApiRef,
-  OAuth2.create({
-    apiOrigin: 'http://localhost:7000',
-    basePath: '/auth/',
-    oauthRequestApi,
-  }),
-);
-
-export const apis = builder.build();
+export const apis = [
+  [configApiRef, configApi],
+  [alertApiRef, alertApi],
+  [errorApiRef, errorApi],
+  [identityApiRef, identityApi],
+  [oauthRequestApiRef, oauthRequestApi],
+  [googleAuthApiRef, googleAuthApi],
+  [githubAuthApiRef, githubAuthApi],
+  [gitlabAuthApiRef, gitlabAuthApi],
+  [oktaAuthApiRef, oktaAuthApi],
+  [auth0AuthApiRef, auth0AuthApi],
+  [oauth2ApiRef, oauth2Api],
+];

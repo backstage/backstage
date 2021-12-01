@@ -24,8 +24,7 @@ import {
  * @public
  */
 export const catalogGraphRouteRef = createRouteRef({
-  path: '/catalog-graph',
-  title: 'Catalog Graph',
+  id: 'catalog-graph',
 });
 
 /**

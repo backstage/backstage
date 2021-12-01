@@ -34,4 +34,5 @@ export type {
   TaskContext,
   TaskStore,
   DispatchResult,
+  TemplateMetadata,
 } from './types';

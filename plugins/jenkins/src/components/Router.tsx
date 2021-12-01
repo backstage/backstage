@@ -19,7 +19,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { Route, Routes } from 'react-router';
 import { JENKINS_ANNOTATION, LEGACY_JENKINS_ANNOTATION } from '../constants';
-import { buildRouteRef, rootRouteRef } from '../plugin';
+import { buildRouteRef } from '../plugin';
 import { CITable } from './BuildsPage/lib/CITable';
 import { DetailedViewPage } from './BuildWithStepsPage/';
 
@@ -41,7 +41,7 @@ export const Router = (_props: Props) => {
 
   return (
     <Routes>
-      <Route path={`/${rootRouteRef.path}`} element={<CITable />} />
+      <Route path="/" element={<CITable />} />
       <Route path={`/${buildRouteRef.path}`} element={<DetailedViewPage />} />
     </Routes>
   );

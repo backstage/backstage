@@ -25,3 +25,4 @@ export type {
 
 export type { PersistenceContext } from './service/persistence/persistenceContext';
 export { createFactRetrieverRegistration } from './service/fact/createFactRetriever';
+export * from './service/fact/factRetrievers';

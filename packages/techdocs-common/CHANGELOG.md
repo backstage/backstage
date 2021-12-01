@@ -1,5 +1,37 @@
 # @backstage/techdocs-common
 
+## 0.10.8
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/backend-common@0.9.11
+
+## 0.10.7
+
+### Patch Changes
+
+- 0b60a051c9: Added OpenStack Swift case migration support.
+- 9e64a7ac1e: Allow amazon web services s3 buckets to pass an server side encryption configuration so they can publish to encrypted buckets
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+
 ## 0.10.6
 
 ### Patch Changes
@@ -855,7 +887,7 @@
 
   Based on the config `techdocs.publisher.type`, the publisher could be either Local publisher or Google Cloud Storage publisher.
 
-  4. `techdocs.storageUrl` is now a required config. Should be `http://localhost:7000/api/techdocs/static/docs` in most setups.
+  4. `techdocs.storageUrl` is now a required config. Should be `http://localhost:7007/api/techdocs/static/docs` in most setups.
 
   5. Parts of `@backstage/plugin-techdocs-backend` have been moved to a new package `@backstage/techdocs-common` to generate docs. Also to publish docs
      to-and-fro between TechDocs and a storage (either local or external). However, a Backstage app does NOT need to import the `techdocs-common` package -

@@ -20,20 +20,19 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.9.9",
+    "@backstage/backend-common": "^0.9.10",
     "@backstage/errors": "^0.1.4",
     "@backstage/integration": "^0.6.9",
-    "@backstage/plugin-scaffolder-backend": "^0.15.12",
+    "@backstage/plugin-scaffolder-backend": "^0.15.13",
     "@backstage/config": "^0.1.11",
     "@backstage/types": "^0.1.1",
     "command-exists": "^1.2.9",
     "fs-extra": "10.0.0",
     "winston": "^3.2.1",
-    "cross-fetch": "^3.0.6",
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.8.2",
+    "@backstage/cli": "^0.9.0",
     "@types/fs-extra": "^9.0.1",
     "@types/mock-fs": "^4.13.0",
     "@types/jest": "^26.0.7",

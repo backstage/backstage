@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { spawn } from 'child_process';
+import { SpawnOptionsWithoutStdio, spawn } from 'child_process';
 import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
 import { Git } from '@backstage/backend-common';
@@ -22,18 +22,27 @@ import { Octokit } from '@octokit/rest';
 import { assertError } from '@backstage/errors';
 
 export type RunCommandOptions = {
+  /** command to run */
   command: string;
+  /** arguments to pass the command */
   args: string[];
+  /** options to pass to spawn */
+  options?: SpawnOptionsWithoutStdio;
+  /** stream to capture stdout and stderr output */
   logStream?: Writable;
 };
 
+/**
+ * Run a command in a sub-process, normally a shell command.
+ */
 export const runCommand = async ({
   command,
   args,
   logStream = new PassThrough(),
+  options,
 }: RunCommandOptions) => {
   await new Promise<void>((resolve, reject) => {
-    const process = spawn(command, args);
+    const process = spawn(command, args, options);
 
     process.stdout.on('data', stream => {
       logStream.write(stream);

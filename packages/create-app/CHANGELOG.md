@@ -1,5 +1,54 @@
 # @backstage/create-app
 
+## 0.4.5
+
+### Patch Changes
+
+- dcaeaac174: Cleaned out the `peerDependencies` in the published version of the package, making it much quicker to run `npx @backstage/create-app` as it no longer needs to install a long list of unnecessary.
+- a5a5d7e1f1: DefaultTechDocsCollator is now included in the search backend, and the Search Page updated with the SearchType component that includes the techdocs type
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- 42ebbc18c0: Bump gitbeaker to the latest version
+
+## 0.4.4
+
+### Patch Changes
+
+- 4ebc9fd277: Create backstage.json file
+
+  `@backstage/create-app` will create a new `backstage.json` file. At this point, the file will contain a `version` property, representing the version of `@backstage/create-app` used for creating the application. If the backstage's application has been bootstrapped using an older version of `@backstage/create-app`, the `backstage.json` file can be created and kept in sync, together with all the changes of the latest version of backstage, by running the following script:
+
+  ```bash
+  yarn backstage-cli versions:bump
+  ```
+
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 014cbf8cb9: Migrated the app template use the new `@backstage/app-defaults` for the `createApp` import, since the `createApp` exported by `@backstage/app-core-api` will be removed in the future.
+
+  To migrate an existing application, add the latest version of `@backstage/app-defaults` as a dependency in `packages/app/package.json`, and make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+  -import { createApp, FlatRoutes } from '@backstage/core-app-api';
+  +import { createApp } from '@backstage/app-defaults';
+  +import { FlatRoutes } from '@backstage/core-app-api';
+  ```
+
+- 2163e83fa2: Refactor and add regression tests for create-app tasks
+- Updated dependencies
+  - @backstage/cli-common@0.1.6
+
 ## 0.4.3
 
 ### Patch Changes

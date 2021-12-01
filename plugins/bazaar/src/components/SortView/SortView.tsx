@@ -100,6 +100,10 @@ export const SortView = () => {
         community: project.community,
         updatedAt: project.updated_at,
         membersCount: project.members_count,
+        size: project.size,
+        startDate: project.startDate,
+        endDate: project.endDate,
+        responsible: project.responsible,
       });
     });
 

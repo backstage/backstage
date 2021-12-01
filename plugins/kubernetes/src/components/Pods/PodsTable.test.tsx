@@ -18,13 +18,48 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import * as pod from './__fixtures__/pod.json';
 import * as crashingPod from './__fixtures__/crashing-pod.json';
+import { TableColumn } from '@backstage/core-components';
 import { wrapInTestApp } from '@backstage/test-utils';
+import { V1Pod } from '@kubernetes/client-node';
 import { PodsTable } from './PodsTable';
+import { containersReady, totalRestarts } from '../../utils/pod';
+
+const extraColumns: TableColumn<V1Pod>[] = [
+  {
+    title: 'containers ready',
+    align: 'center',
+    render: containersReady,
+  },
+  {
+    title: 'total restarts',
+    align: 'center',
+    render: totalRestarts,
+    type: 'numeric',
+  },
+];
 
 describe('PodsTable', () => {
   it('should render pod', async () => {
     const { getByText } = render(
       wrapInTestApp(<PodsTable pods={[pod as any]} />),
+    );
+
+    // titles
+    expect(getByText('name')).toBeInTheDocument();
+    expect(getByText('phase')).toBeInTheDocument();
+    expect(getByText('status')).toBeInTheDocument();
+
+    // values
+    expect(getByText('dice-roller-6c8646bfd-2m5hv')).toBeInTheDocument();
+    expect(getByText('Running')).toBeInTheDocument();
+    expect(getByText('OK')).toBeInTheDocument();
+  });
+
+  it('should render pod with extra columns', async () => {
+    const { getByText } = render(
+      wrapInTestApp(
+        <PodsTable pods={[pod as any]} extraColumns={extraColumns} />,
+      ),
     );
 
     // titles
@@ -41,9 +76,12 @@ describe('PodsTable', () => {
     expect(getByText('0')).toBeInTheDocument();
     expect(getByText('OK')).toBeInTheDocument();
   });
-  it('should render crashing pod', async () => {
+
+  it('should render crashing pod with extra columns', async () => {
     const { getByText, getAllByText } = render(
-      wrapInTestApp(<PodsTable pods={[crashingPod as any]} />),
+      wrapInTestApp(
+        <PodsTable pods={[crashingPod as any]} extraColumns={extraColumns} />,
+      ),
     );
 
     // titles

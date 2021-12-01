@@ -27,14 +27,15 @@ Add or update `app-config.local.yaml` with the following:
 
 ```yaml
 kubernetes:
-  serviceLocatorMethod: 'multiTenant'
+  serviceLocatorMethod:
+    type: 'multiTenant'
   clusterLocatorMethods:
-    - 'config'
-  clusters:
-    - url: <KUBERNETES MASTER BASE URL FROM STEP 2>
-      name: minikube
-      serviceAccountToken: <TOKEN FROM STEP 4>
-      authProvider: 'serviceAccount'
+    - type: 'config'
+      clusters:
+        - url: <KUBERNETES MASTER BASE URL FROM STEP 2>
+          name: minikube
+          serviceAccountToken: <TOKEN FROM STEP 4>
+          authProvider: 'serviceAccount'
 ```
 
 ### Getting the service account token
