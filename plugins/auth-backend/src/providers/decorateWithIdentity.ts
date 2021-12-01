@@ -33,7 +33,7 @@ export function decorateWithIdentity(
     identity: {
       type: 'user',
       userEntityRef: sub,
-      ownershipEntityRefs: ent ?? [sub],
+      ownershipEntityRefs: ent ?? [],
     },
   };
 }

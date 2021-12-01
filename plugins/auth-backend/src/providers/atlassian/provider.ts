@@ -45,6 +45,7 @@ import express from 'express';
 import { TokenIssuer } from '../../identity';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { Logger } from 'winston';
+import { decorateWithIdentity } from '../decorateWithIdentity';
 
 export type AtlassianAuthProviderOptions = OAuthProviderOptions & {
   scopes: string;
@@ -136,7 +137,7 @@ export class AtlassianAuthProvider implements OAuthHandlers {
     };
 
     if (this.signInResolver) {
-      response.backstageIdentity = await this.signInResolver(
+      const resolverResponse = await this.signInResolver(
         {
           result,
           profile,
@@ -147,6 +148,8 @@ export class AtlassianAuthProvider implements OAuthHandlers {
           logger: this.logger,
         },
       );
+
+      response.backstageIdentity = decorateWithIdentity(resolverResponse);
     }
 
     return response;

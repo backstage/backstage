@@ -37,6 +37,7 @@ import {
   OAuthRefreshRequest,
   OAuthState,
 } from './types';
+import { decorateWithIdentity } from '../../providers/decorateWithIdentity';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -150,12 +151,12 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         this.setRefreshTokenCookie(res, refreshToken);
       }
 
-      await this.populateIdentity(response.backstageIdentity);
+      const identity = await this.populateIdentity(response.backstageIdentity);
 
       // post message back to popup if successful
       return postMessageResponse(res, appOrigin, {
         type: 'authorization_response',
-        response,
+        response: { ...response, backstageIdentity: identity },
       });
     } catch (error) {
       const { name, message } = isError(error)
@@ -209,7 +210,9 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         forwardReq as OAuthRefreshRequest,
       );
 
-      await this.populateIdentity(response.backstageIdentity);
+      const backstageIdentity = await this.populateIdentity(
+        response.backstageIdentity,
+      );
 
       if (
         response.providerInfo.refreshToken &&
@@ -218,7 +221,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         this.setRefreshTokenCookie(res, response.providerInfo.refreshToken);
       }
 
-      res.status(200).json(response);
+      res.status(200).json({ ...response, backstageIdentity });
     } catch (error) {
       throw new AuthenticationError('Refresh failed', error);
     }
@@ -228,18 +231,24 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
    * If the response from the OAuth provider includes a Backstage identity, we
    * make sure it's populated with all the information we can derive from the user ID.
    */
-  private async populateIdentity(identity?: BackstageIdentityResponse) {
+  private async populateIdentity(
+    identity?: Omit<BackstageIdentityResponse, 'identity'>,
+  ): Promise<BackstageIdentityResponse | undefined> {
     if (!identity) {
-      return;
+      return undefined;
     }
 
-    if (!identity.token) {
-      identity.token = await this.options.tokenIssuer.issueToken({
-        claims: { sub: identity.id },
-      });
-    } else if (!identity.token && identity.token) {
-      identity.token = identity.token;
+    if (identity.token) {
+      return decorateWithIdentity(identity);
     }
+
+    const token = await this.options.tokenIssuer.issueToken({
+      claims: { sub: identity.id },
+    });
+
+    console.log(token);
+
+    return decorateWithIdentity({ ...identity, token });
   }
 
   private setNonceCookie = (res: express.Response, nonce: string) => {

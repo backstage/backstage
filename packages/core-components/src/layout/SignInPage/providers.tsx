@@ -30,7 +30,7 @@ import {
 import { commonProvider } from './commonProvider';
 import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
-import { IdentityApiProxy } from './IdentityApiProxy';
+import { IdentityApiSignOutProxy } from './IdentityApiSignOutProxy';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
@@ -92,7 +92,7 @@ export const useSignInProviders = (
   const handleWrappedResult = useCallback(
     (identityApi: IdentityApi) => {
       onSignInSuccess(
-        IdentityApiProxy.from({
+        IdentityApiSignOutProxy.from({
           identityApi,
           signOut: async () => {
             localStorage.removeItem(PROVIDER_STORAGE_KEY);

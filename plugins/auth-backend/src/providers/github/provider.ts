@@ -32,7 +32,6 @@ import {
   AuthHandler,
   SignInResolver,
   StateEncoder,
-  BackstageIdentityResponse,
 } from '../types';
 import {
   OAuthAdapter,
@@ -46,6 +45,7 @@ import {
 } from '../../lib/oauth';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { TokenIssuer } from '../../identity';
+import { decorateWithIdentity } from '../decorateWithIdentity';
 
 type PrivateInfo = {
   refreshToken?: string;
@@ -168,25 +168,6 @@ export class GithubAuthProvider implements OAuthHandlers {
     };
 
     if (this.signInResolver) {
-      const decorateWithIdentity = (
-        signInResolverResponse: Omit<BackstageIdentityResponse, 'identity'>,
-      ): BackstageIdentityResponse => {
-        function parseJwtPayload(token: string) {
-          const [_header, payload, _signature] = token.split('.');
-          return JSON.parse(Buffer.from(payload, 'base64').toString());
-        }
-        const { sub, ent } = parseJwtPayload(signInResolverResponse.token);
-        return {
-          ...signInResolverResponse,
-          identity: {
-            type: 'user',
-            userEntityRef: sub,
-            ownershipEntityRefs: ent ?? [sub],
-          },
-        };
-        // parse token
-        // build identity
-      };
       const signInResolverResult = await this.signInResolver(
         {
           result,
@@ -198,7 +179,6 @@ export class GithubAuthProvider implements OAuthHandlers {
           logger: this.logger,
         },
       );
-
       response.backstageIdentity = decorateWithIdentity(signInResolverResult);
     }
 

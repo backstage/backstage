@@ -52,6 +52,11 @@ describe('oauth helpers', () => {
           backstageIdentity: {
             id: 'a',
             token: 'a.b.c',
+            identity: {
+              type: 'user',
+              ownershipEntityRefs: [],
+              userEntityRef: 'a',
+            },
           },
         },
       };
@@ -107,6 +112,11 @@ describe('oauth helpers', () => {
           backstageIdentity: {
             id: 'a',
             token: 'a.b.c',
+            identity: {
+              type: 'user',
+              ownershipEntityRefs: [],
+              userEntityRef: 'a',
+            },
           },
         },
       };
@@ -149,6 +159,11 @@ describe('oauth helpers', () => {
           backstageIdentity: {
             id: 'a',
             token: 'a.b.c',
+            identity: {
+              type: 'user',
+              ownershipEntityRefs: [],
+              userEntityRef: 'a',
+            },
           },
         },
       };
