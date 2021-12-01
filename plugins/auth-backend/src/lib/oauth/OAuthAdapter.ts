@@ -246,8 +246,6 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       claims: { sub: identity.id },
     });
 
-    console.log(token);
-
     return decorateWithIdentity({ ...identity, token });
   }
 
