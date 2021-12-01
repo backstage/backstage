@@ -19,11 +19,11 @@ import { makeStyles, List, ListItem, ListItemText } from '@material-ui/core';
 import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { JsonValue } from '@backstage/types';
+import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: BackstageTheme) => ({
   listItemText: {
-    paddingRight: '1rem',
+    paddingRight: theme.spacing(0.5),
     flex: '0 1 auto',
   },
   icon: {
@@ -35,20 +35,12 @@ type Prop = {
   checkResult: CheckResult[];
 };
 
-const renderResult = (classes: any, result: JsonValue) => {
-  return result ? (
-    <CheckCircleOutline className={classes.icon} color="primary" />
-  ) : (
-    <ErrorOutlineIcon className={classes.icon} color="error" />
-  );
-};
-
 export const BooleanCheck = ({ checkResult }: Prop) => {
   const classes = useStyles();
 
   return (
     <List>
-      {checkResult!.map((check, index) => (
+      {checkResult.map((check, index) => (
         <ListItem>
           <ListItemText
             key={index}
@@ -56,7 +48,11 @@ export const BooleanCheck = ({ checkResult }: Prop) => {
             secondary={check.check.description}
             className={classes.listItemText}
           />
-          {renderResult(classes, check.result)}
+          {check.result ? (
+            <CheckCircleOutline className={classes.icon} color="primary" />
+          ) : (
+            <ErrorOutlineIcon className={classes.icon} color="error" />
+          )}
         </ListItem>
       ))}
     </List>
