@@ -21,16 +21,28 @@ import {
   BackstageUserIdentity,
   BackstageIdentityApi,
   SessionApi,
+  SignInResult,
 } from '@backstage/core-plugin-api';
 
+import { GuestUserIdentity } from './GuestUserIdentity';
+import { LegacyUserIdentity } from './LegacyUserIdentity';
+
 export class UserIdentity implements IdentityApi {
+  static createGuest() {
+    return new GuestUserIdentity();
+  }
+
+  static fromLegacy({ result }: { result: SignInResult }) {
+    return LegacyUserIdentity.fromResult(result);
+  }
+
   static from(options: {
     identity: BackstageUserIdentity;
     authApi: ProfileInfoApi & BackstageIdentityApi & SessionApi;
     /**
      * Passing a profile synchronously allows the deprecated `getProfile` method to be
      * called by consumers of the {@link IdentityApi}. If you do not have any consumers
-     * of that method than this is safe to leave out.
+     * of that method then this is safe to leave out.
      *
      * @deprecated Only provide this if you have plugins that call the synchronous `getProfile` method, which is also deprecated.
      */

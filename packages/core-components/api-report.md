@@ -9,6 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstagePalette } from '@backstage/theme';
 import { BackstageTheme } from '@backstage/theme';
+import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { ButtonProps as ButtonProps_2 } from '@material-ui/core/Button';
 import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
@@ -20,6 +21,7 @@ import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinearProgressProps } from '@material-ui/core/LinearProgress';
 import { LinkProps as LinkProps_2 } from '@material-ui/core/Link';
 import { LinkProps as LinkProps_3 } from 'react-router-dom';
@@ -27,6 +29,7 @@ import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import { MaterialTableProps } from '@material-table/core';
 import { NavLinkProps } from 'react-router-dom';
 import { Overrides } from '@material-ui/core/styles/overrides';
+import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
@@ -35,6 +38,7 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { SignInPageProps } from '@backstage/core-plugin-api';
+import { SignInResult } from '@backstage/core-plugin-api';
 import { SparklinesLineProps } from 'react-sparklines';
 import { SparklinesProps } from 'react-sparklines';
 import { StyledComponentProps } from '@material-ui/core/styles';
@@ -2317,6 +2321,42 @@ export function useQueryParamState<T>(
 // @public (undocumented)
 export function UserIcon(props: IconComponentProps): JSX.Element;
 
+// Warning: (ae-missing-release-tag) "UserIdentity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class UserIdentity implements IdentityApi {
+  // Warning: (ae-forgotten-export) The symbol "GuestUserIdentity" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  static createGuest(): GuestUserIdentity;
+  // (undocumented)
+  static from(options: {
+    identity: BackstageUserIdentity;
+    authApi: ProfileInfoApi & BackstageIdentityApi & SessionApi;
+    profile?: ProfileInfo;
+  }): UserIdentity;
+  // Warning: (ae-forgotten-export) The symbol "LegacyUserIdentity" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  static fromLegacy({ result }: { result: SignInResult }): LegacyUserIdentity;
+  // (undocumented)
+  getBackstageIdentity(): Promise<BackstageUserIdentity>;
+  // (undocumented)
+  getCredentials(): Promise<{
+    token?: string | undefined;
+  }>;
+  // (undocumented)
+  getIdToken(): Promise<string | undefined>;
+  // (undocumented)
+  getProfile(): ProfileInfo;
+  // (undocumented)
+  getProfileInfo(): Promise<ProfileInfo>;
+  // (undocumented)
+  getUserId(): string;
+  // (undocumented)
+  signOut(): Promise<void>;
+}
+
 // Warning: (ae-missing-release-tag) "useSupportConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -2360,4 +2400,5 @@ export type WarningPanelClassKey =
 // src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:20:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:8:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
+// src/layout/SignInPage/UserIdentity.d.ts:22:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "IdentityApi"
 ```

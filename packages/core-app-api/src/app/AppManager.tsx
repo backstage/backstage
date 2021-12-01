@@ -50,7 +50,7 @@ import {
   SubRouteRef,
   ExternalRouteRef,
 } from '@backstage/core-plugin-api';
-import { GuestUserIdentity } from '@backstage/core-components';
+import { UserIdentity } from '@backstage/core-components';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
   childDiscoverer,
@@ -361,7 +361,7 @@ export class AppManager implements BackstageApp {
 
       // If the app hasn't configured a sign-in page, we just continue as guest.
       if (!SignInPageComponent) {
-        this.appIdentityProxy.setTarget(new GuestUserIdentity());
+        this.appIdentityProxy.setTarget(UserIdentity.createGuest());
 
         return (
           <RouterComponent>
