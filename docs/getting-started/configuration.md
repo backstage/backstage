@@ -41,7 +41,7 @@ Test if your database is working:
 sudo -u postgres psql
 ```
 
-You should see a message, like:
+You should see a very welcoming message, like:
 
 ```shell
 psql (12.9 (Ubuntu 12.9-0ubuntu0.20.04.1))
@@ -57,8 +57,8 @@ is to set the password for this user:
 postgres=# ALTER USER postgres PASSWORD 'secret';
 ```
 
-For this tutorial, we're done here. Type '\q', followed by pressing the enter
-key. Then again type 'exit' and press enter. Next, you need to install and
+For this tutorial, we're done here. Type `\q`, followed by pressing the enter
+key. Then again type `exit` and press enter. Next, you need to install and
 configure the client.
 
 Stop Backstage, and go to the root directory of your freshly installed Backstage
@@ -70,7 +70,7 @@ cd packages/backend
 yarn add pg
 ```
 
-Use your favorite editor to open the 'app-config.yaml' and add your PostgreSQL
+Use your favorite editor to open `app-config.yaml` and add your PostgreSQL
 configuration. in the root directory of your Backstage app using the credentials
 from the previous steps.
 
@@ -95,9 +95,9 @@ backend:
 You'll use the connection details from the previous step. You can set the
 `POSTGRES_` environment variables prior to launching Backstage, or remove the
 `${...}` values and set actual values in this configuration file. The default
-port for PostgreSQL is 5432 or 5433, and the host name could be 127.0.0.1 if
-installed locally. In general, using connection details in a configuration file
-is not recommended.
+port for PostgreSQL is `5432` or `5433`, and the host name could be `127.0.0.1`
+if installed locally. In general, using connection details in a configuration
+file is not recommended. But this is a
 
 Start the backstage app:
 
@@ -134,8 +134,13 @@ frontend, in our tutorial it would be `http://127.0.0.1:3000`. The
 `Authorization callback URL` will point to the auth backend, which will most
 likely be `http://127.0.0.1:7007/api/auth/github/handler/frame`.
 
-Now, add your OAuth key and secret to the configuration. Open 'app-config.yaml',
-and add your ClientId and ClientSecret. It should end up looking like this:
+<p align='center'>
+  <img src='../assets/getting-started/gh-oauth.png' alt='Screenshot of the GitHub OAuth creation page'>
+</p>
+
+Take note of the `Client ID` and the Client Secret. Open 'app-config.yaml', and
+add your ClientId and ClientSecret to this file. It should end up looking like
+this:
 
 ```
 auth:
@@ -149,7 +154,7 @@ auth:
 
 Backstage will re-read the configuration. If there's no errors, that's great! We
 can continue with the last part of the configuration. The next step is needed to
-change the sign-in page, this we actually need to add in the source.
+change the sign-in page, this you actually need to add in the source code.
 
 Open `packages/app/src/App.tsx` and below the last `import` line, add:
 
@@ -165,7 +170,7 @@ const githubProvider: SignInProviderConfig = {
 };
 ```
 
-Now search for `const app = createApp({` in this file, and below `apis,` add:
+Search for `const app = createApp({` in this file, and below `apis,` add:
 
 ```
 components: {
@@ -180,7 +185,7 @@ components: {
 ```
 
 That should be it. You can stop your Backstage App. When you start it again and
-go to your Backstage portal in your browser you should have your login prompt!
+go to your Backstage portal in your browser, you should have your login prompt!
 
 To learn more about Authentication in Backstage, there's the following docs you
 could read:
@@ -204,8 +209,13 @@ Personal Access Token.
 
 Open your Token creation page on GitHub by going to
 (https://github.com/settings/tokens/new)[https://github.com/settings/tokens/new].
-Use a name to identify this token and put it in the notes field. Choose a
-reasonable number of days.
+Use a name to identify this token and put it in the notes field. Choose a number
+of days for expiration. If you have a hard time picking a number, we suggest to
+go for 7 days, it's a lucky number.
+
+<p align='center'>
+  <img src='../assets/getting-started/gh-oauth.png' alt='Screenshot of the GitHub OAuth creation page'>
+</p>
 
 Set the scope to your likings. For this tutorial, selecting "repo" should be
 enough.
@@ -231,16 +241,27 @@ Some helpful links, for if you want to learn more about:
 ### Explore what we've done so far
 
 Open your Backstage frontend. You should see your login screen if you're not
-logged in yet. Go to Settings, you'll see your profile. Hopefully You'll
-recognize the picture and name here, otherwise something went terribly wrong.
+logged in yet. As soon as you've logged in, go to Settings, you'll see your
+profile. Hopefully You'll recognize the profile picture and name on your screen,
+otherwise something went terribly wrong.
 
 Register an existing component
 
 - Register a new component, by going to `create` and choose
-  `Register existing component`
+`Register existing component`
+<p align='center'>
+  <img src='../assets/getting-started/b-existing-1.png' alt='Software template main screen, with a blue button to add an existing component'>
+</p>
 - As URL use `https://github.com/backstage/demo/blob/master/catalog-info.yaml`.
-  This is used by our demo site.
+This is used by our demo site.
+<p align='center'>
+  <img src='../assets/getting-started/b-existing-2.png' alt='Register a new component wizard, asking for an URL to the existing component YAML file'>
+</p>
 - Hit `Analyze` and review the changes. Apply them if correct
+<p align='center'>
+  <img src='../assets/getting-started/b-existing-3.png' alt='Register a new component wizard, showing the metadata for the component YAML we use in this tutorial'>
+</p>
+- You should receive a message that your entities have been added.
 - If you go back to `Home`, you should be able to find `demo`. You should be
   able to click it and see the details
 
@@ -249,13 +270,20 @@ Create a new component using a software template
 - Go to `create` and choose to create a website with the `React SSR Template`
 - Type in a name, let's use `tutorial`
 - Select the group `group-a` which will own this new website, and go to the next
-  step
+step
+<p align='center'>
+  <img src='../assets/getting-started/b-scaffold-1.png' alt='Software template deployment input screen asking for a name, the group owning this and a description'>
+</p>
 - For the location, we're going to use the default GitHub location.
 - As owner, type your GitHub username
 - For the repository name, type `tutorial`. Go to the next step
-- Review your new service, and press `Create`
-- You can follow along with the progress, and as soon as it's finished you can
-  take a look at your new service
+<p align='center'>
+  <img src='../assets/getting-started/b-scaffold-2.png' alt='Software template deployment input screen asking for the github username and name of the new repo to create'>
+</p>
+- Review the details of this new service, and press `Create` if you want to
+  deploy it like this.
+- You can follow along with the progress, and as soon as every step is finished,
+  you can take a look at your new service
 
 Achievement unlocked. You've set up an installation of the core backstage App,
 made it persistent, and configured it so you are now able to use software
