@@ -196,7 +196,7 @@ export type BackstageIdentityResponse = {
   /**
    * A plaintext description of the identity that is encapsulated within the token.
    */
-  identity?: BackstageUserIdentity;
+  identity: BackstageUserIdentity;
 };
 
 /**
@@ -242,7 +242,7 @@ export type SignInResolver<AuthResult> = (
     catalogIdentityClient: CatalogIdentityClient;
     logger: Logger;
   },
-) => Promise<BackstageIdentityResponse>;
+) => Promise<Omit<BackstageIdentityResponse, 'identity'>>;
 
 export type AuthHandlerResult = { profile: ProfileInfo };
 

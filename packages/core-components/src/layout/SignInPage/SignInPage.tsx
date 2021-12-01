@@ -135,7 +135,6 @@ export const SingleSignInPage = ({
       }
 
       const profile = await authApi.getProfile();
-
       onSignInSuccess(
         UserIdentity.from({
           identity: identityResponse.identity,
@@ -149,6 +148,7 @@ export const SingleSignInPage = ({
       setShowLoginPage(true);
     }
   };
+
   useMount(() => login({ checkExisting: true }));
 
   return showLoginPage ? (

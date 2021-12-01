@@ -30,6 +30,7 @@ import {
 import { commonProvider } from './commonProvider';
 import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
+import { IdentityApiProxy } from './IdentityApiProxy';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
@@ -90,13 +91,15 @@ export const useSignInProviders = (
   // This decorates the result with sign out logic from this hook
   const handleWrappedResult = useCallback(
     (identityApi: IdentityApi) => {
-      onSignInSuccess({
-        ...identityApi,
-        signOut: async () => {
-          localStorage.removeItem(PROVIDER_STORAGE_KEY);
-          await identityApi.signOut?.();
-        },
-      });
+      onSignInSuccess(
+        IdentityApiProxy.from({
+          identityApi,
+          signOut: async () => {
+            localStorage.removeItem(PROVIDER_STORAGE_KEY);
+            await identityApi.signOut?.();
+          },
+        }),
+      );
     },
     [onSignInSuccess],
   );

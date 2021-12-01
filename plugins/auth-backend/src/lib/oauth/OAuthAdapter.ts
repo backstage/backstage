@@ -233,7 +233,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       return;
     }
 
-    if (!(identity.token || identity.id)) {
+    if (!identity.token) {
       identity.token = await this.options.tokenIssuer.issueToken({
         claims: { sub: identity.id },
       });

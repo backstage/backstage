@@ -159,7 +159,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
     };
 
     if (this.signInResolver) {
-      response.backstageIdentity = await this.signInResolver(
+      const signInResolverResult = await this.signInResolver(
         {
           result,
           profile,
@@ -170,6 +170,8 @@ export class GoogleAuthProvider implements OAuthHandlers {
           logger: this.logger,
         },
       );
+
+      console.log(signInResolverResult);
     }
 
     return response;
