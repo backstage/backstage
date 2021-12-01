@@ -46,7 +46,19 @@ export class GitLabClient {
     return this.pagedRequest(`${this.config.apiBaseUrl}/projects`, options);
   }
 
-  private async pagedRequest(
+  /**
+   * Performs a request against a given paginated GitLab endpoint.
+   *
+   * This method may be used to perform authenticated REST calls against any
+   * paginated GitLab endpoint which uses X-NEXT-PAGE headers. The return value
+   * can be be used with the {@link paginated} async-generator function to yield
+   * each item from the paged request.
+   *
+   * @see {@link paginated}
+   * @param endpoint - The complete request URL for the endpoint.
+   * @param options - Request queryString options which may also include page variables.
+   */
+  async pagedRequest(
     endpoint: string,
     options?: ListOptions,
   ): Promise<PagedResponse<any>> {
@@ -92,6 +104,18 @@ export type PagedResponse<T> = {
   nextPage?: number;
 };
 
+/**
+ * Advances through each page and provides each item from a paginated request.
+ *
+ * The async generator function yields each item from repeated calls to the
+ * provided request function. The generator walks through each available page by
+ * setting the page key in the options passed into the request function and
+ * making repeated calls until there are no more pages.
+ *
+ * @see {@link pagedRequest}
+ * @param request - Function which returns a PagedResponse to walk through.
+ * @param options - Initial ListOptions for the request function.
+ */
 export async function* paginated(
   request: (options: ListOptions) => Promise<PagedResponse<any>>,
   options: ListOptions,
