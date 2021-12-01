@@ -24,16 +24,22 @@ const kindMappings: Record<string, string> = {
 
 export function standardFormatter(options: ClusterLinksFormatterOptions) {
   const result = new URL(options.dashboardUrl.href);
-  const name = options.object.metadata?.name;
-  const namespace = options.object.metadata?.namespace;
+  const name = encodeURIComponent(options.object.metadata?.name ?? '');
+  const namespace = encodeURIComponent(
+    options.object.metadata?.namespace ?? '',
+  );
   const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
-  if (namespace) {
-    result.searchParams.set('namespace', namespace);
+  if (!result.pathname.endsWith('/')) {
+    result.pathname += '/';
   }
   if (validKind && name && namespace) {
     result.hash = `/${validKind}/${namespace}/${name}`;
   } else if (namespace) {
     result.hash = '/workloads';
+  }
+  if (namespace) {
+    // Note that Angular SPA requires a hash and the query parameter should be part of it
+    result.hash += `?namespace=${namespace}`;
   }
   return result;
 }

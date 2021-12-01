@@ -16,6 +16,11 @@
 
 import { createRouteRef } from '@backstage/core-plugin-api';
 
+export const azurePullRequestDashboardRouteRef = createRouteRef({
+  id: 'azure-pull-request-dashboard',
+  path: '',
+});
+
 export const azurePipelinesEntityContentRouteRef = createRouteRef({
   id: 'azure-pipelines-entity-content',
 });

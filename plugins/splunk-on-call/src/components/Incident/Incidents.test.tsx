@@ -16,43 +16,39 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { Incidents } from './Incidents';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { splunkOnCallApiRef } from '../../api';
 import { MOCK_TEAM, MOCK_INCIDENT } from '../../api/mocks';
 
 import {
   alertApiRef,
-  createApiRef,
   IdentityApi,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 
 const mockIdentityApi: Partial<IdentityApi> = {
   getUserId: () => 'test',
 };
 
 const mockSplunkOnCallApi = {
-  getIncidents: () => [],
-  getTeams: () => [],
+  getIncidents: jest.fn(),
+  getTeams: jest.fn(),
 };
-const apis = ApiRegistry.from([
-  [
-    alertApiRef,
-    createApiRef({
-      id: 'core.alert',
-      description: 'Used to report alerts and forward them to the app',
-    }),
-  ],
+const apis = TestApiRegistry.from(
+  [alertApiRef, {}],
   [identityApiRef, mockIdentityApi],
   [splunkOnCallApiRef, mockSplunkOnCallApi],
-]);
+);
 
 describe('Incidents', () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('Renders an empty state when there are no incidents', async () => {
-    mockSplunkOnCallApi.getTeams = jest
-      .fn()
-      .mockImplementationOnce(async () => [MOCK_TEAM]);
+    mockSplunkOnCallApi.getIncidents.mockResolvedValue([]);
+    mockSplunkOnCallApi.getTeams.mockResolvedValue([MOCK_TEAM]);
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
@@ -69,13 +65,9 @@ describe('Incidents', () => {
   });
 
   it('Renders all incidents', async () => {
-    mockSplunkOnCallApi.getIncidents = jest
-      .fn()
-      .mockImplementationOnce(async () => [MOCK_INCIDENT]);
+    mockSplunkOnCallApi.getIncidents.mockResolvedValue([MOCK_INCIDENT]);
+    mockSplunkOnCallApi.getTeams.mockResolvedValue([MOCK_TEAM]);
 
-    mockSplunkOnCallApi.getTeams = jest
-      .fn()
-      .mockImplementationOnce(async () => [MOCK_TEAM]);
     const {
       getByText,
       getByTitle,
@@ -108,9 +100,10 @@ describe('Incidents', () => {
   });
 
   it('Handle errors', async () => {
-    mockSplunkOnCallApi.getIncidents = jest
-      .fn()
-      .mockRejectedValueOnce(new Error('Error occurred'));
+    mockSplunkOnCallApi.getIncidents.mockRejectedValueOnce(
+      new Error('Error occurred'),
+    );
+    mockSplunkOnCallApi.getTeams.mockResolvedValue([]);
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(

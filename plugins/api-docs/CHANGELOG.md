@@ -1,5 +1,14 @@
 # @backstage/plugin-api-docs
 
+## 0.6.15
+
+### Patch Changes
+
+- c982fc12cb: Adjusted some styles in the OpenAPI definition, for elements which were barely readable in dark mode.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
 ## 0.6.14
 
 ### Patch Changes

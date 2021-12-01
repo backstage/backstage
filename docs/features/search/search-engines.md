@@ -4,9 +4,9 @@ title: Search Engines
 description: Choosing and configuring your search engine for Backstage
 ---
 
-Backstage supports 2 search engines by default, an in-memory engine called Lunr
-and ElasticSearch. You can configure your own search engines by implementing the
-provided interface as mentioned in the
+Backstage supports 3 search engines by default, an in-memory engine called Lunr,
+ElasticSearch and Postgres. You can configure your own search engines by
+implementing the provided interface as mentioned in the
 [search backend documentation.](./getting-started.md#Backend)
 
 Provided search engine implementations have their own way of constructing

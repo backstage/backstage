@@ -526,6 +526,20 @@ export type SearchResponseFile = {
   content(): Promise<Buffer>;
 };
 
+// @public
+export class ServerTokenManager implements TokenManager {
+  // (undocumented)
+  authenticate(token: string): Promise<void>;
+  // (undocumented)
+  static fromConfig(config: Config): ServerTokenManager;
+  // (undocumented)
+  getToken(): Promise<{
+    token: string;
+  }>;
+  // (undocumented)
+  static noop(): TokenManager;
+}
+
 // @public (undocumented)
 export type ServiceBuilder = {
   loadConfig(config: Config): ServiceBuilder;
@@ -581,6 +595,16 @@ export function statusCheckHandler(
 // @public (undocumented)
 export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
+}
+
+// @public
+export interface TokenManager {
+  // (undocumented)
+  authenticate: (token: string) => Promise<void>;
+  // (undocumented)
+  getToken: () => Promise<{
+    token: string;
+  }>;
 }
 
 // @public

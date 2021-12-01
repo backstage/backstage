@@ -41,6 +41,7 @@ import {
   SidebarSpace,
   SidebarScrollWrapper,
 } from '@backstage/core-components';
+import { AzurePullRequestsIcon } from '@backstage/plugin-azure-devops';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -94,6 +95,11 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
         <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
         <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
+        <SidebarItem
+          icon={AzurePullRequestsIcon}
+          to="azure-pull-requests"
+          text="Azure PRs"
+        />
       </SidebarScrollWrapper>
       <SidebarDivider />
       <Shortcuts />

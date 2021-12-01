@@ -30,7 +30,10 @@ export function registerCommands(program: CommanderStatic) {
     .command('app:build')
     .description('Build an app for a production release')
     .option('--stats', 'Write bundle stats to output directory')
-    .option('--lax', 'Do not require environment variables to be set')
+    .option(
+      '--lax',
+      '[DEPRECATED] - Do not require environment variables to be set',
+    )
     .option(...configOption)
     .action(lazy(() => import('./app/build').then(m => m.default)));
 
@@ -54,16 +57,6 @@ export function registerCommands(program: CommanderStatic) {
       'Build all local package dependencies before bundling the backend',
     )
     .action(lazy(() => import('./backend/bundle').then(m => m.default)));
-
-  program
-    .command('backend:build-image')
-    .allowUnknownOption(true)
-    .helpOption(', --backstage-cli-help') // Let docker handle --help
-    .option('--build', 'Build packages before packing them into the image')
-    .description(
-      'Bundles the package into a docker image. This command is deprecated and will be removed.',
-    )
-    .action(lazy(() => import('./backend/buildImage').then(m => m.default)));
 
   program
     .command('backend:dev')
@@ -115,7 +108,7 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('remove-plugin')
-    .description('Removes plugin in the current repository')
+    .description('[DEPRECATED] - Removes plugin in the current repository')
     .action(
       lazy(() => import('./remove-plugin/removePlugin').then(m => m.default)),
     );

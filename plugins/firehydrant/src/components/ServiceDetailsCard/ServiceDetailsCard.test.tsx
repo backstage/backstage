@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { fireHydrantApiRef } from '../../api';
 import { screen } from '@testing-library/react';
 import { ServiceDetailsCard } from './ServiceDetailsCard';
 import { Service, Incident } from '../types';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 
 const mockFireHydrantApi = {
-  getServiceDetails: () => {},
-  getServiceAnalytics: () => {},
+  getServiceDetails: jest.fn(),
+  getServiceAnalytics: jest.fn(),
 };
 
-const apis = ApiRegistry.from([[fireHydrantApiRef, mockFireHydrantApi]]);
+const apis = TestApiRegistry.from([fireHydrantApiRef, mockFireHydrantApi]);
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntity: () => {

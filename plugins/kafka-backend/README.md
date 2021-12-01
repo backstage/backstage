@@ -49,3 +49,7 @@ kafka:
         username: my-username
         password: my-password
 ```
+
+### ACLs
+
+If you are using ACLs on Kafka, you will need to have the `DESCRIBE` ACL on both consumer groups and topics.

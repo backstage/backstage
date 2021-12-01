@@ -15,10 +15,10 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
 import { createTemplateAction } from '../../createTemplateAction';
 import * as yaml from 'yaml';
 import { Entity } from '@backstage/catalog-model';
+import { resolveSafeChildPath } from '@backstage/backend-common';
 
 export function createCatalogWriteAction() {
   return createTemplateAction<{ name?: string; entity: Entity }>({
@@ -42,7 +42,7 @@ export function createCatalogWriteAction() {
       const { entity } = ctx.input;
 
       await fs.writeFile(
-        resolvePath(ctx.workspacePath, 'catalog-info.yaml'),
+        resolveSafeChildPath(ctx.workspacePath, 'catalog-info.yaml'),
         yaml.stringify(entity),
       );
     },
