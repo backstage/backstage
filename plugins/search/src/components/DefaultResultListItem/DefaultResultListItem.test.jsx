@@ -17,7 +17,7 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
-
+import FindInPageIcon from '@material-ui/icons/FindInPage';
 import { DefaultResultListItem } from './DefaultResultListItem';
 
 describe('DefaultResultListItem', () => {
@@ -25,6 +25,7 @@ describe('DefaultResultListItem', () => {
     title: 'title',
     text: 'text',
     location: '/location',
+    owner: 'owner',
   };
 
   it('Links to result.location', async () => {
@@ -37,5 +38,22 @@ describe('DefaultResultListItem', () => {
     expect(screen.getByRole('listitem')).toHaveTextContent(
       result.title + result.text,
     );
+  });
+
+  it('should render icon if prop is specified', async () => {
+    await renderInTestApp(
+      <DefaultResultListItem
+        result={result}
+        icon={<FindInPageIcon title="icon" />}
+      />,
+    );
+    expect(screen.getByTitle('icon')).toBeInTheDocument();
+  });
+
+  it('should render secondary action if prop is specified', async () => {
+    await renderInTestApp(
+      <DefaultResultListItem result={result} secondaryAction={result.owner} />,
+    );
+    expect(screen.getByText('owner')).toBeInTheDocument();
   });
 });
