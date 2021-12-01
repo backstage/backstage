@@ -80,7 +80,7 @@ const handleRequest = async (
 
   if (response.result === AuthorizeResult.CONDITIONAL) {
     // Sanity check that any resource provided matches the one expected by the permission
-    if (request.permission.resourceType !== response.conditions.resourceType) {
+    if (request.permission.resourceType !== response.resourceType) {
       throw new Error(
         `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
       );
@@ -92,7 +92,9 @@ const handleRequest = async (
         ...(await permissionIntegrationClient.applyConditions(
           {
             resourceRef,
-            ...response.conditions,
+            pluginId: response.pluginId,
+            resourceType: response.resourceType,
+            conditions: response.conditions,
           },
           authHeader,
         )),
@@ -102,10 +104,7 @@ const handleRequest = async (
     return {
       id,
       result: AuthorizeResult.CONDITIONAL,
-      // TODO(mtlewis): this .conditions.conditions situation is a bit awkward. I think it's
-      // worth exploring a bit of reorganization of the ConditionalPolicyResult type so that
-      // the naming of property chains like this makes a bit more sense.
-      conditions: response.conditions.conditions,
+      conditions: response.conditions,
     };
   }
 
