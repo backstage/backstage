@@ -99,7 +99,6 @@ export class OidcAuthProvider implements OAuthHandlers {
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
     const { strategy } = await this.implementation;
     const options: Record<string, string> = {
-      accessType: 'offline',
       scope: req.scope || this.scope || 'openid profile email',
       state: encodeState(req.state),
     };
@@ -143,6 +142,7 @@ export class OidcAuthProvider implements OAuthHandlers {
   private async setupStrategy(options: Options): Promise<OidcImpl> {
     const issuer = await Issuer.discover(options.metadataUrl);
     const client = new issuer.Client({
+      access_type: 'offline', // this option must be passed to provider to receive a refresh token
       client_id: options.clientId,
       client_secret: options.clientSecret,
       redirect_uris: [options.callbackUrl],
