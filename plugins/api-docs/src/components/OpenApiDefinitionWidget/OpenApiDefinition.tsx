@@ -121,7 +121,7 @@ const useStyles = makeStyles(theme => ({
         color: theme.palette.secondary.light,
       },
       [`& .property-row td:first-child`]: {
-        color: theme.palette.warning.dark,
+        color: theme.palette.text.primary,
       },
       [`& span.prop-type`]: {
         color: theme.palette.success.light,
