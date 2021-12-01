@@ -36,24 +36,52 @@ describe('DatabaseManager', () => {
   afterEach(() => jest.resetAllMocks());
 
   describe('DatabaseManager.fromConfig', () => {
-    it('accesses the backend.database key', () => {
-      const config = new ConfigReader({
-        backend: {
-          database: {
-            client: 'pg',
-            connection: {
-              host: 'localhost',
-              user: 'foo',
-              password: 'bar',
-              database: 'foodb',
-            },
+    const backendConfig = {
+      backend: {
+        database: {
+          client: 'pg',
+          connection: {
+            host: 'localhost',
+            user: 'foo',
+            password: 'bar',
+            database: 'foodb',
           },
         },
-      });
+      },
+    };
+
+    it('accesses the backend.database key', () => {
+      const config = new ConfigReader(backendConfig);
       const getConfigSpy = jest.spyOn(config, 'getConfig');
       DatabaseManager.fromConfig(config);
 
       expect(getConfigSpy).toHaveBeenCalledWith('backend.database');
+    });
+
+    it('runMigrate default value', () => {
+      const config = new ConfigReader(backendConfig);
+      const database = DatabaseManager.fromConfig(config);
+      const client = database.forPlugin('test');
+
+      expect(client.runMigrations).toBe(true);
+    });
+
+    it('runMigrate as a function', () => {
+      const config = new ConfigReader(backendConfig);
+      const runMigrate = jest.fn().mockReturnValue(false);
+      const database = DatabaseManager.fromConfig(config, runMigrate);
+      const client = database.forPlugin('test');
+
+      expect(runMigrate).toHaveBeenCalledTimes(1);
+      expect(client.runMigrations).toBe(false);
+    });
+
+    it('runMigrate as a boolean', () => {
+      const config = new ConfigReader(backendConfig);
+      const database = DatabaseManager.fromConfig(config, false);
+      const client = database.forPlugin('test');
+
+      expect(client.runMigrations).toBe(false);
     });
   });
 
