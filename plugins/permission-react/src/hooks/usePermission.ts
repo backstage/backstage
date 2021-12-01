@@ -48,7 +48,7 @@ export const usePermission = (
     });
 
     return result;
-  }, [permissionApi, permission]);
+  }, [permissionApi, permission, resourceRef]);
 
   if (loading) {
     return { loading: true, allowed: false };
