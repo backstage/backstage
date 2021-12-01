@@ -24,6 +24,7 @@
 /plugins/azure-devops-common                @backstage/reviewers @marleypowell @awanlin
 /plugins/kafka                              @backstage/reviewers @nirga
 /plugins/kafka-backend                      @backstage/reviewers @nirga
+/plugins/scaffolder-backend-module-yeoman   @backstage/reviewers @pawelmitka
 /tech-insights-backend                      @backstage/reviewers @xantier @iain-b
 /tech-insights-backend-module-jsonfc        @backstage/reviewers @xantier @iain-b
 /tech-insights-tech-insights-common         @backstage/reviewers @xantier @iain-b
