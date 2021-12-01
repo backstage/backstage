@@ -81,7 +81,7 @@
     "@types/mock-fs": "^4.13.0",
     "@types/nunjucks": "^3.1.4",
     "@types/supertest": "^2.0.8",
-    "esbuild": "^0.13.14",
+    "esbuild": "^0.14.1",
     "jest-when": "^3.1.0",
     "mock-fs": "^5.1.0",
     "msw": "^0.35.0",
