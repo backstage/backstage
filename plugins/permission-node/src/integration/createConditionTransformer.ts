@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { BackstageIdentity } from '@backstage/plugin-auth-backend';
 import {
   PermissionCondition,
   PermissionCriteria,
@@ -28,22 +29,23 @@ import {
 const mapConditions = <TQuery>(
   criteria: PermissionCriteria<PermissionCondition>,
   getRule: (name: string) => PermissionRule<unknown, TQuery>,
+  user: BackstageIdentity | undefined,
 ): PermissionCriteria<TQuery> => {
   if (isAndCriteria(criteria)) {
     return {
-      allOf: criteria.allOf.map(child => mapConditions(child, getRule)),
+      allOf: criteria.allOf.map(child => mapConditions(child, getRule, user)),
     };
   } else if (isOrCriteria(criteria)) {
     return {
-      anyOf: criteria.anyOf.map(child => mapConditions(child, getRule)),
+      anyOf: criteria.anyOf.map(child => mapConditions(child, getRule, user)),
     };
   } else if (isNotCriteria(criteria)) {
     return {
-      not: mapConditions(criteria.not, getRule),
+      not: mapConditions(criteria.not, getRule, user),
     };
   }
 
-  return getRule(criteria.rule).toQuery(...criteria.params);
+  return getRule(criteria.rule).toQuery({ user }, ...criteria.params);
 };
 
 /**
@@ -56,6 +58,7 @@ const mapConditions = <TQuery>(
  */
 export type ConditionTransformer<TQuery> = (
   conditions: PermissionCriteria<PermissionCondition>,
+  user: BackstageIdentity | undefined,
 ) => PermissionCriteria<TQuery>;
 
 /**
@@ -74,5 +77,5 @@ export const createConditionTransformer = <
 ): ConditionTransformer<TQuery> => {
   const getRule = createGetRule(permissionRules);
 
-  return conditions => mapConditions(conditions, getRule);
+  return (conditions, user) => mapConditions(conditions, getRule, user);
 };

@@ -20,6 +20,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 import {
   AuthorizeResult,
   PermissionClient,
@@ -169,6 +170,7 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
   constructor(
     private readonly database: Knex,
     private readonly permissionApi: PermissionClient,
+    private readonly identity: IdentityClient,
     permissionRules: CatalogPermissionRule[],
   ) {
     this.transformConditions = createConditionTransformer(permissionRules);
@@ -199,10 +201,11 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
           pageInfo: { hasNextPage: false },
         };
       } else if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
+        const user = request?.authorizationToken
+          ? await this.identity.authenticate(request?.authorizationToken)
+          : undefined;
         entitiesQuery = parseFilter(
-          this.transformConditions(
-            authorizeResponse.conditions,
-          ),
+          this.transformConditions(authorizeResponse.conditions, user),
           entitiesQuery,
           db,
         );

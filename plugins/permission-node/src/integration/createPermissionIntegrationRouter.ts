@@ -28,6 +28,10 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from './util';
+import {
+  BackstageIdentity,
+  IdentityClient,
+} from '@backstage/plugin-auth-backend';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -75,20 +79,21 @@ const applyConditions = <TResource>(
   criteria: PermissionCriteria<PermissionCondition>,
   resource: TResource,
   getRule: (name: string) => PermissionRule<TResource, unknown>,
+  user: BackstageIdentity | undefined,
 ): boolean => {
   if (isAndCriteria(criteria)) {
     return criteria.allOf.every(child =>
-      applyConditions(child, resource, getRule),
+      applyConditions(child, resource, getRule, user),
     );
   } else if (isOrCriteria(criteria)) {
     return criteria.anyOf.some(child =>
-      applyConditions(child, resource, getRule),
+      applyConditions(child, resource, getRule, user),
     );
   } else if (isNotCriteria(criteria)) {
-    return !applyConditions(criteria.not, resource, getRule);
+    return !applyConditions(criteria.not, resource, getRule, user);
   }
 
-  return getRule(criteria.rule).apply(resource, ...criteria.params);
+  return getRule(criteria.rule).apply({ resource, user }, ...criteria.params);
 };
 
 /**
@@ -122,10 +127,12 @@ export const createPermissionIntegrationRouter = <TResource>({
   resourceType,
   rules,
   getResource,
+  identity,
 }: {
   resourceType: string;
   rules: PermissionRule<TResource, any>[];
   getResource: (resourceRef: string) => Promise<TResource | undefined>;
+  identity: IdentityClient;
 }): Router => {
   const router = Router();
 
@@ -165,8 +172,11 @@ export const createPermissionIntegrationRouter = <TResource>({
           .send(`Resource for ref ${body.resourceRef} not found.`);
       }
 
+      const token = IdentityClient.getBearerToken(req.header('authorization'));
+      const user = token ? await identity.authenticate(token) : undefined;
+
       return res.status(200).json({
-        result: applyConditions(body.conditions, resource, getRule)
+        result: applyConditions(body.conditions, resource, getRule, user)
           ? AuthorizeResult.ALLOW
           : AuthorizeResult.DENY,
       });

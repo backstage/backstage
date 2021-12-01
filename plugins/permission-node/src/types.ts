@@ -47,8 +47,10 @@ export type PermissionRule<
    * params.
    */
   apply(
-    resource: TResource,
-    user: BackstageIdentity,
+    context: {
+      resource: TResource;
+      user: BackstageIdentity | undefined;
+    },
     ...params: TParams
   ): boolean;
 
@@ -58,7 +60,9 @@ export type PermissionRule<
    * applied.
    */
   toQuery(
-    user: BackstageIdentity,
+    context: {
+      user: BackstageIdentity | undefined;
+    },
     ...params: TParams
   ): PermissionCriteria<TQuery>;
 };
