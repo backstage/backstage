@@ -26,7 +26,7 @@ describe('<StepPrepareSelectLocations />', () => {
     type: 'locations',
     locations: [
       {
-        target: 'url',
+        target: 'url-1',
         entities: [
           {
             kind: 'component',
@@ -57,8 +57,8 @@ describe('<StepPrepareSelectLocations />', () => {
     jest.resetAllMocks();
   });
 
-  it('renders without exploding', async () => {
-    const { getByRole } = await renderInTestApp(
+  it('renders display locations to be added', async () => {
+    const rendered = await renderInTestApp(
       <StepPrepareSelectLocations
         analyzeResult={analyzeResult}
         onPrepare={() => undefined}
@@ -66,7 +66,48 @@ describe('<StepPrepareSelectLocations />', () => {
       />,
     );
 
-    expect(getByRole('button', { name: /Review/i })).toBeDisabled();
+    expect(rendered.getByText('url-1')).toBeInTheDocument();
+    expect(rendered.getByText('url-2')).toBeInTheDocument();
+    expect(
+      rendered.queryByText(/Select one or more locations/),
+    ).toBeInTheDocument();
+    expect(
+      rendered.queryByText(/locations already exist/),
+    ).not.toBeInTheDocument();
+    expect(rendered.getByRole('button', { name: /Review/i })).toBeDisabled();
+  });
+
+  it('should display existing locations only', async () => {
+    const analyzeResultWithExistingLocation = {
+      type: 'locations',
+      locations: [
+        {
+          target: 'my-target',
+          exists: true,
+          entities: [
+            {
+              kind: 'component',
+              namespace: 'default',
+              name: 'name',
+            },
+          ],
+        },
+      ],
+    } as Extract<AnalyzeResult, { type: 'locations' }>;
+
+    const rendered = await renderInTestApp(
+      <StepPrepareSelectLocations
+        analyzeResult={analyzeResultWithExistingLocation}
+        onPrepare={() => undefined}
+        onGoBack={() => undefined}
+      />,
+    );
+
+    expect(rendered.getByText(/my-target/)).toBeInTheDocument();
+    expect(rendered.queryByText(/locations already exist/)).toBeInTheDocument();
+    expect(
+      rendered.queryByText(/Select one or more locations/),
+    ).not.toBeInTheDocument();
   });
 
   it('should select and deselect all', async () => {
@@ -188,7 +229,7 @@ describe('<StepPrepareSelectLocations />', () => {
       type: 'locations',
       locations: [
         {
-          target: 'url',
+          target: 'url-1',
           entities: [
             {
               kind: 'component',

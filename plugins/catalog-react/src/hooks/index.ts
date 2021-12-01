@@ -13,7 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { EntityContext, useEntity, useEntityFromUrl } from './useEntity';
+export {
+  EntityContext,
+  useEntity,
+  useEntityFromUrl,
+  EntityProvider,
+  AsyncEntityProvider,
+} from './useEntity';
+export type {
+  EntityProviderProps,
+  AsyncEntityProviderProps,
+} from './useEntity';
 export { useEntityCompoundName } from './useEntityCompoundName';
 export {
   EntityListContext,
@@ -26,4 +36,9 @@ export { useEntityKinds } from './useEntityKinds';
 export { useOwnUser } from './useOwnUser';
 export { useRelatedEntities } from './useRelatedEntities';
 export { useStarredEntities } from './useStarredEntities';
-export { useEntityOwnership } from './useEntityOwnership';
+export { useStarredEntity } from './useStarredEntity';
+export {
+  loadCatalogOwnerRefs,
+  useEntityOwnership,
+  loadIdentityOwnerRefs,
+} from './useEntityOwnership';

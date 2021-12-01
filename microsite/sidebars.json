@@ -29,7 +29,14 @@
       "getting-started/contributors",
       "getting-started/project-structure"
     ],
-    "CLI": ["cli/index", "cli/commands"],
+    "Local Development": [
+      {
+        "type": "subcategory",
+        "label": "CLI",
+        "ids": ["local-dev/cli-overview", "local-dev/cli-commands"]
+      },
+      "local-dev/linking-local-packages"
+    ],
     "Core Features": [
       {
         "type": "subcategory",
@@ -70,8 +77,8 @@
           "features/software-templates/writing-templates",
           "features/software-templates/builtin-actions",
           "features/software-templates/writing-custom-actions",
-          "features/software-templates/template-legacy",
-          "features/software-templates/migrating-from-v1alpha1-to-v1beta2"
+          "features/software-templates/writing-custom-field-extensions",
+          "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
       },
       {
@@ -82,7 +89,8 @@
           "features/search/getting-started",
           "features/search/concepts",
           "features/search/architecture",
-          "features/search/search-engines"
+          "features/search/search-engines",
+          "features/search/how-to-guides"
         ]
       },
       {
@@ -97,6 +105,7 @@
           "features/techdocs/configuration",
           "features/techdocs/using-cloud-storage",
           "features/techdocs/configuring-ci-cd",
+          "features/techdocs/cli",
           "features/techdocs/how-to-guides",
           "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
@@ -108,12 +117,19 @@
       {
         "type": "subcategory",
         "label": "AWS S3",
-        "ids": ["integrations/aws-s3/locations"]
+        "ids": [
+          "integrations/aws-s3/locations",
+          "integrations/aws-s3/discovery"
+        ]
       },
       {
         "type": "subcategory",
         "label": "Azure",
-        "ids": ["integrations/azure/locations", "integrations/azure/org"]
+        "ids": [
+          "integrations/azure/locations",
+          "integrations/azure/discovery",
+          "integrations/azure/org"
+        ]
       },
       {
         "type": "subcategory",
@@ -140,12 +156,10 @@
       {
         "type": "subcategory",
         "label": "GitLab",
-        "ids": ["integrations/gitlab/locations"]
-      },
-      {
-        "type": "subcategory",
-        "label": "Google Analytics",
-        "ids": ["integrations/google-analytics/installation"]
+        "ids": [
+          "integrations/gitlab/locations",
+          "integrations/gitlab/discovery"
+        ]
       },
       {
         "type": "subcategory",
@@ -166,6 +180,7 @@
       "plugins/structure-of-a-plugin",
       "plugins/integrating-plugin-into-software-catalog",
       "plugins/composability",
+      "plugins/analytics",
       {
         "type": "subcategory",
         "label": "Backends and APIs",
@@ -206,6 +221,8 @@
         "label": "Included providers",
         "ids": [
           "auth/auth0/provider",
+          "auth/atlassian/provider",
+          "auth/bitbucket/provider",
           "auth/microsoft/provider",
           "auth/github/provider",
           "auth/gitlab/provider",
@@ -234,29 +251,26 @@
       "dls/contributing-to-storybook",
       "dls/figma"
     ],
-    "API references": [
+    "API Reference": [
       {
         "type": "subcategory",
-        "label": "TypeScript API",
-        "ids": [
-          "api/utility-apis",
-          "reference/utility-apis/README",
-          "reference/createPlugin",
-          "reference/createPlugin-feature-flags"
-        ]
+        "label": "Guides",
+        "ids": ["api/utility-apis"]
       },
       {
         "type": "subcategory",
-        "label": "Backend APIs",
-        "ids": ["api/backend"]
-      }
+        "label": "API Reference",
+        "ids": ["reference/index"]
+      },
+      "api/deprecations"
     ],
     "Tutorials": [
       "tutorials/journey",
       "tutorials/quickstart-app-plugin",
       "tutorials/migrating-away-from-core",
       "tutorials/configuring-plugin-databases",
-      "tutorials/switching-sqlite-postgres"
+      "tutorials/switching-sqlite-postgres",
+      "tutorials/using-backstage-proxy-within-plugin"
     ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",
@@ -270,7 +284,8 @@
       "architecture-decisions/adrs-adr008",
       "architecture-decisions/adrs-adr009",
       "architecture-decisions/adrs-adr010",
-      "architecture-decisions/adrs-adr011"
+      "architecture-decisions/adrs-adr011",
+      "architecture-decisions/adrs-adr012"
     ],
     "FAQ": ["FAQ"]
   }

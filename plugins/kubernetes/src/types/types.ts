@@ -22,6 +22,8 @@ import {
   V1Service,
   V1ConfigMap,
   ExtensionsV1beta1Ingress,
+  V1Job,
+  V1CronJob,
 } from '@kubernetes/client-node';
 
 export interface DeploymentResources {
@@ -35,5 +37,17 @@ export interface GroupedResponses extends DeploymentResources {
   services: V1Service[];
   configMaps: V1ConfigMap[];
   ingresses: ExtensionsV1beta1Ingress[];
+  jobs: V1Job[];
+  cronJobs: V1CronJob[];
   customResources: any[];
 }
+
+export interface ClusterLinksFormatterOptions {
+  dashboardUrl: URL;
+  object: any;
+  kind: string;
+}
+
+export type ClusterLinksFormatter = (
+  options: ClusterLinksFormatterOptions,
+) => URL;

@@ -23,6 +23,7 @@ type SlackChannel = {
   href?: string;
 };
 
+/** @public */
 export type ErrorBoundaryProps = {
   slackChannel?: string | SlackChannel;
   onError?: (error: Error, errorInfo: string) => null;
@@ -51,6 +52,7 @@ const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
   );
 };
 
+/** @public */
 export const ErrorBoundary: ComponentClass<
   ErrorBoundaryProps,
   State

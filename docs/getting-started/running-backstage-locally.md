@@ -70,7 +70,7 @@ cd packages/backend
 yarn start
 ```
 
-That starts up a backend instance on port 7000.
+That starts up a backend instance on port 7007.
 
 In the other window, we will then launch the frontend. This command is run from
 the project root, not inside the backend directory.

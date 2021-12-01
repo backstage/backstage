@@ -37,9 +37,7 @@ exported by [@backstage/theme](https://www.npmjs.com/package/@backstage/theme)
 in combination with
 [createTheme](https://material-ui.com/customization/theming/#createmuitheme-options-args-theme)
 from [@material-ui/core](https://www.npmjs.com/package/@material-ui/core). See
-the
-[@backstage/theme source](https://github.com/backstage/backstage/tree/master/packages/theme/src)
-and the implementation of the `createTheme` function for how this is done.
+the "Overriding Backstage and Material UI css rules" section below.
 
 You can also create a theme from scratch that matches the `BackstageTheme` type
 exported by [@backstage/theme](https://www.npmjs.com/package/@backstage/theme).
@@ -88,7 +86,7 @@ const themeOptions = createThemeOptions({
       main: '#123456',
     },
     error: {
-      main: '#123456'
+      main: '#123456',
     },
     warning: {
       main: '#123456',
@@ -105,17 +103,17 @@ const themeOptions = createThemeOptions({
     },
     banner: {
       info: '#123456',
-      error: '#123456'
-      text: '#123456'
+      error: '#123456',
+      text: '#123456',
       link: '#123456',
     },
-    errorBackground: '#123456'
-    warningBackground: '#123456'
-    infoBackground: '#123456'
+    errorBackground: '#123456',
+    warningBackground: '#123456',
+    infoBackground: '#123456',
     navigation: {
       background: '#123456',
-      indicator: '#123456'
-      color: '#123456'
+      indicator: '#123456',
+      color: '#123456',
       selectedColor: '#123456',
     },
   },
@@ -123,16 +121,89 @@ const themeOptions = createThemeOptions({
   fontFamily: 'Comic Sans',
   /* below drives the header colors */
   pageTheme: {
-    home: genPageTheme(['#123456','#123456'], shapes.wave),
-    documentation: genPageTheme(['#123456','#123456'], shapes.wave2),
-    tool: genPageTheme(['#123456','#123456'], shapes.round),
-    service: genPageTheme(['#123456','#123456'], shapes.wave),
-    website: genPageTheme(['#123456','#123456'], shapes.wave),
-    library: genPageTheme(['#123456','#123456'], shapes.wave),
-    other: genPageTheme(['#123456','#123456'], shapes.wave),
-    app: genPageTheme(['#123456','#123456'], shapes.wave),
-    apis: genPageTheme(['#123456','#123456'], shapes.wave),
+    home: genPageTheme(['#123456', '#123456'], shapes.wave),
+    documentation: genPageTheme(['#123456', '#123456'], shapes.wave2),
+    tool: genPageTheme(['#123456', '#123456'], shapes.round),
+    service: genPageTheme(['#123456', '#123456'], shapes.wave),
+    website: genPageTheme(['#123456', '#123456'], shapes.wave),
+    library: genPageTheme(['#123456', '#123456'], shapes.wave),
+    other: genPageTheme(['#123456', '#123456'], shapes.wave),
+    app: genPageTheme(['#123456', '#123456'], shapes.wave),
+    apis: genPageTheme(['#123456', '#123456'], shapes.wave),
   },
+});
+```
+
+## Overriding Backstage and Material UI components styles
+
+When creating a custom theme you would be applying different values to
+component's css rules that use the theme object. For example, a Backstage
+component's styles might look like this:
+
+```ts
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    header: {
+      padding: theme.spacing(3),
+      boxShadow: '0 0 8px 3px rgba(20, 20, 20, 0.3)',
+      backgroundImage: theme.page.backgroundImage,
+    },
+  }),
+  { name: 'BackstageHeader' },
+);
+```
+
+Notice how the `padding` is getting its value from `theme.spacing`, that means
+that setting a value for spacing in your custom theme would affect this
+component padding property and the same goes for `backgroundImage` which uses
+`theme.page.backgroundImage`. However, the `boxShadow` property doesn't
+reference any value from the theme, that means that creating a custom theme
+wouldn't be enough to alter the `box-shadow` property or to add css rules that
+aren't already defined like a margin. For these cases you should also create an
+override.
+
+```ts
+import { createApp } from '@backstage/core-app-api';
+import { BackstageTheme, lightTheme } from '@backstage/theme';
+/**
+ * The `@backstage/core-components` package exposes this type that
+ * contains all Backstage and `material-ui` components that can be
+ * overridden along with the classes key those components use.
+ */
+import { BackstageOverrides } from '@backstage/core-components';
+
+export const createCustomThemeOverrides = (
+  theme: BackstageTheme,
+): BackstageOverrides => {
+  return {
+    BackstageHeader: {
+      header: {
+        width: 'auto',
+        margin: '20px',
+        boxShadow: 'none',
+        borderBottom: `4px solid ${theme.palette.primary.main}`,
+      },
+    },
+  };
+};
+
+const app = createApp({
+  apis: ...,
+  plugins: ...,
+  themes: [{
+    id: 'my-theme',
+    title: 'My Custom Theme',
+    variant: 'light',
+    theme: {
+      ...lightTheme,
+      overrides: {
+        // These are the overrides that Backstage applies to `material-ui` components
+        ...lightTheme.overrides,
+        // These are your custom overrides, either to `material-ui` or Backstage components.
+        ...createCustomThemeOverrides(lightTheme),
+      },
+    },
+  }]
 });
 ```
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { FormProps } from '@rjsf/core';
 
 function isObject(value: unknown): value is JsonObject {

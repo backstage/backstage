@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { assertError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   GeneratorBuilder,
@@ -113,6 +113,7 @@ export class DocsSynchronizer {
         return;
       }
     } catch (e) {
+      assertError(e);
       const msg = `Failed to build the docs page: ${e.message}`;
       taskLogger.error(msg);
       this.logger.error(msg, e);

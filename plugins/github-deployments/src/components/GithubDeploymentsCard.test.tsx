@@ -16,7 +16,11 @@
 import React from 'react';
 
 import { fireEvent } from '@testing-library/react';
-import { msw, renderInTestApp } from '@backstage/test-utils';
+import {
+  setupRequestMockHandlers,
+  renderInTestApp,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import {
   GithubDeployment,
   GithubDeploymentsApiClient,
@@ -39,11 +43,7 @@ import { Entity } from '@backstage/catalog-model';
 import { GithubDeploymentsTable } from './GithubDeploymentsTable';
 import { Box } from '@material-ui/core';
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import {
   errorApiRef,
   configApiRef,
@@ -92,14 +92,14 @@ const githubAuthApi: OAuthApi = {
   getAccessToken: async _ => 'access_token',
 };
 
-const apis = ApiRegistry.from([
+const apis = TestApiRegistry.from(
   [configApiRef, configApi],
   [errorApiRef, errorApiMock],
   [
     githubDeploymentsApiRef,
     new GithubDeploymentsApiClient({ scmIntegrationsApi, githubAuthApi }),
   ],
-]);
+);
 
 const assertFetchedData = async () => {
   const rendered = await renderInTestApp(
@@ -127,7 +127,7 @@ const assertFetchedData = async () => {
 
 describe('github-deployments', () => {
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
 
   beforeEach(() => {
     worker.resetHandlers();

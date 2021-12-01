@@ -31,6 +31,12 @@ const testRoute2 = {
   children: <div>tabbed-test-content-2</div>,
 };
 
+const testRoute3 = {
+  title: 'tabbed-test-title-3',
+  path: '/some-other-path-similar',
+  children: <div>tabbed-test-content-3</div>,
+};
+
 describe('RoutedTabs', () => {
   it('renders simplest case', async () => {
     const rendered = await renderInTestApp(
@@ -46,7 +52,7 @@ describe('RoutedTabs', () => {
       <Routes>
         <Route
           path="/*"
-          element={<RoutedTabs routes={[testRoute1, testRoute2]} />}
+          element={<RoutedTabs routes={[testRoute1, testRoute2, testRoute3]} />}
         />
       </Routes>,
     );
@@ -61,6 +67,13 @@ describe('RoutedTabs', () => {
 
     expect(rendered.getByText('tabbed-test-title-2')).toBeInTheDocument();
     expect(rendered.queryByText('tabbed-test-content-2')).toBeInTheDocument();
+
+    const thirdTab = rendered.queryAllByRole('tab')[2];
+    act(() => {
+      fireEvent.click(thirdTab);
+    });
+    expect(rendered.getByText('tabbed-test-title-3')).toBeInTheDocument();
+    expect(rendered.queryByText('tabbed-test-content-3')).toBeInTheDocument();
   });
 
   describe('correctly delegates nested links', () => {

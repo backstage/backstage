@@ -22,6 +22,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useRandomJoke, JokeType } from './Context';
+import upperFirst from 'lodash/upperFirst';
 
 export const Settings = () => {
   const { type, handleChangeType } = useRandomJoke();
@@ -39,7 +40,7 @@ export const Settings = () => {
             key={t}
             value={t}
             control={<Radio />}
-            label={`${t.slice(0, 1).toUpperCase()}${t.slice(1)}`}
+            label={upperFirst(t)}
           />
         ))}
       </RadioGroup>

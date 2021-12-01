@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
-import type { Quadrant, Ring, Entry } from '../../utils/types';
+import React from 'react';
 import { WithLink } from '../../utils/components';
+import type { Entry, Quadrant, Ring } from '../../utils/types';
 import { RadarDescription } from '../RadarDescription';
 
 type Segments = {
@@ -32,17 +32,21 @@ export type Props = {
 };
 
 const useStyles = makeStyles<Theme>(theme => ({
+  quadrantLegend: {
+    overflowY: 'auto',
+    scrollbarWidth: 'thin',
+  },
   quadrant: {
     height: '100%',
     width: '100%',
-    overflow: 'hidden',
+    scrollbarWidth: 'thin',
     pointerEvents: 'none',
   },
   quadrantHeading: {
     pointerEvents: 'none',
     userSelect: 'none',
     marginTop: 0,
-    marginBottom: theme.spacing(8 / (18 * 0.375)),
+    marginBottom: theme.spacing(2),
     fontSize: '18px',
   },
   rings: {
@@ -53,12 +57,16 @@ const useStyles = makeStyles<Theme>(theme => ({
     pageBreakInside: 'avoid',
     '-webkit-column-break-inside': 'avoid',
     fontSize: '12px',
+    marginBottom: theme.spacing(2),
+  },
+  ringEmpty: {
+    color: theme.palette.text.secondary,
   },
   ringHeading: {
     pointerEvents: 'none',
     userSelect: 'none',
     marginTop: 0,
-    marginBottom: theme.spacing(8 / (12 * 0.375)),
+    marginBottom: theme.spacing(1),
     fontSize: '12px',
     fontWeight: 800,
   },
@@ -172,7 +180,7 @@ const RadarLegend = (props: Props): JSX.Element => {
       <div data-testid="radar-ring" key={ring.id} className={classes.ring}>
         <h3 className={classes.ringHeading}>{ring.name}</h3>
         {entries.length === 0 ? (
-          <p>(empty)</p>
+          <p className={classes.ringEmpty}>(empty)</p>
         ) : (
           <ol className={classes.ringList}>
             {entries.map(entry => (
@@ -221,6 +229,7 @@ const RadarLegend = (props: Props): JSX.Element => {
         y={quadrant.legendY}
         width={quadrant.legendWidth}
         height={quadrant.legendHeight}
+        className={classes.quadrantLegend}
         data-testid="radar-quadrant"
       >
         <div className={classes.quadrant}>

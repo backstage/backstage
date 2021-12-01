@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-react';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import { render } from '@testing-library/react';
@@ -64,15 +64,13 @@ describe('<LastLighthouseAuditCard />', () => {
     },
   };
 
-  const subject = (value = {}) =>
+  const subject = () =>
     render(
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>
-          <EntityContext.Provider
-            value={{ entity: entity, loading: false, ...value }}
-          >
+          <EntityProvider entity={entity}>
             <LastLighthouseAuditCard />
-          </EntityContext.Provider>
+          </EntityProvider>
         </MemoryRouter>
       </ThemeProvider>,
     );

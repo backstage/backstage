@@ -7,21 +7,42 @@
 
 import { ApiFactory } from '@backstage/core-plugin-api';
 import { AppTheme } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
-import { createPlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { GridProps } from '@material-ui/core';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 
-// Warning: (ae-forgotten-export) The symbol "DevAppBuilder" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "createDevApp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function createDevApp(): DevAppBuilder;
 
-// Warning: (ae-missing-release-tag) "EntityGridItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public
+export class DevAppBuilder {
+  addPage(opts: DevAppPageOptions): DevAppBuilder;
+  addRootChild(node: ReactNode): DevAppBuilder;
+  addThemes(themes: AppTheme[]): this;
+  build(): ComponentType<{}>;
+  registerApi<
+    Api,
+    Impl extends Api,
+    Deps extends {
+      [name in string]: unknown;
+    },
+  >(factory: ApiFactory<Api, Impl, Deps>): DevAppBuilder;
+  registerPlugin(...plugins: BackstagePlugin[]): DevAppBuilder;
+  render(): void;
+}
+
+// @public (undocumented)
+export type DevAppPageOptions = {
+  path?: string;
+  element: JSX.Element;
+  children?: JSX.Element;
+  title?: string;
+  icon?: IconComponent;
+};
+
 // @public (undocumented)
 export const EntityGridItem: ({
   entity,
@@ -30,6 +51,4 @@ export const EntityGridItem: ({
 }: Omit<GridProps<'div', {}>, 'container' | 'item'> & {
   entity: Entity;
 }) => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

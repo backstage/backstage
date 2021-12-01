@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that helps you build a home page
+ *
+ * @packageDocumentation
+ */
+
 export {
   homePlugin,
   HomepageCompositionRoot,
-  RandomJokeHomePageComponent,
+  HomePageRandomJoke,
   ComponentAccordion,
   ComponentTabs,
   ComponentTab,
+  WelcomeTitle,
 } from './plugin';
-export { SettingsModal } from './components';
+export { SettingsModal, HeaderWorldClock } from './components';
+export type { ClockConfig } from './components';
 export { createCardExtension } from './extensions';

@@ -23,7 +23,11 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-import { msw, wrapInTestApp } from '@backstage/test-utils';
+import {
+  setupRequestMockHandlers,
+  TestApiRegistry,
+  wrapInTestApp,
+} from '@backstage/test-utils';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -32,7 +36,7 @@ import { Audit, lighthouseApiRef, LighthouseRestApi } from '../../api';
 import * as data from '../../__fixtures__/create-audit-response.json';
 import CreateAudit from './index';
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { ErrorApi, errorApiRef } from '@backstage/core-plugin-api';
 
 const { useNavigate }: { useNavigate: jest.Mock } =
@@ -41,17 +45,17 @@ const createAuditResponse = data as Audit;
 
 // TODO add act() to these tests without breaking them!
 describe('CreateAudit', () => {
-  let apis: ApiRegistry;
+  let apis: TestApiRegistry;
   let errorApi: ErrorApi;
   const server = setupServer();
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   beforeEach(() => {
     errorApi = { post: jest.fn(), error$: jest.fn() };
-    apis = ApiRegistry.from([
+    apis = TestApiRegistry.from(
       [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
       [errorApiRef, errorApi],
-    ]);
+    );
   });
 
   it('renders the form', () => {

@@ -15,18 +15,26 @@
  */
 
 import {
+  EDIT_URL_ANNOTATION,
   Entity,
   VIEW_URL_ANNOTATION,
-  EDIT_URL_ANNOTATION,
 } from '@backstage/catalog-model';
-import { act, fireEvent } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/test-utils';
-import * as React from 'react';
-import { CatalogTable } from './CatalogTable';
+import { ApiProvider } from '@backstage/core-app-api';
 import {
+  entityRouteRef,
+  DefaultStarredEntitiesApi,
   MockEntityListContextProvider,
+  starredEntitiesApiRef,
   UserListFilter,
 } from '@backstage/plugin-catalog-react';
+import {
+  MockStorageApi,
+  renderInTestApp,
+  TestApiRegistry,
+} from '@backstage/test-utils';
+import { act, fireEvent } from '@testing-library/react';
+import * as React from 'react';
+import { CatalogTable } from './CatalogTable';
 
 const entities: Entity[] = [
   {
@@ -47,6 +55,11 @@ const entities: Entity[] = [
 ];
 
 describe('CatalogTable component', () => {
+  const mockApis = TestApiRegistry.from([
+    starredEntitiesApiRef,
+    new DefaultStarredEntitiesApi({ storageApi: MockStorageApi.create() }),
+  ]);
+
   beforeEach(() => {
     window.open = jest.fn();
   });
@@ -57,9 +70,16 @@ describe('CatalogTable component', () => {
 
   it('should render error message', async () => {
     const rendered = await renderInTestApp(
-      <MockEntityListContextProvider value={{ error: new Error('error') }}>
-        <CatalogTable />
-      </MockEntityListContextProvider>,
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider value={{ error: new Error('error') }}>
+          <CatalogTable />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
     const errorMessage = await rendered.findByText(
       /Could not fetch catalog entities./,
@@ -69,20 +89,27 @@ describe('CatalogTable component', () => {
 
   it('should display entity names when loading has finished and no error occurred', async () => {
     const rendered = await renderInTestApp(
-      <MockEntityListContextProvider
-        value={{
-          entities,
-          filters: {
-            user: new UserListFilter(
-              'owned',
-              () => false,
-              () => false,
-            ),
-          },
-        }}
-      >
-        <CatalogTable />
-      </MockEntityListContextProvider>,
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            entities,
+            filters: {
+              user: new UserListFilter(
+                'owned',
+                () => false,
+                () => false,
+              ),
+            },
+          }}
+        >
+          <CatalogTable />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
     expect(rendered.getByText(/Owned \(3\)/)).toBeInTheDocument();
     expect(rendered.getByText(/component1/)).toBeInTheDocument();
@@ -101,9 +128,16 @@ describe('CatalogTable component', () => {
     };
 
     const { getByTitle } = await renderInTestApp(
-      <MockEntityListContextProvider value={{ entities: [entity] }}>
-        <CatalogTable />
-      </MockEntityListContextProvider>,
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider value={{ entities: [entity] }}>
+          <CatalogTable />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     const editButton = getByTitle('Edit');
@@ -126,9 +160,16 @@ describe('CatalogTable component', () => {
     };
 
     const { getByTitle } = await renderInTestApp(
-      <MockEntityListContextProvider value={{ entities: [entity] }}>
-        <CatalogTable />
-      </MockEntityListContextProvider>,
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider value={{ entities: [entity] }}>
+          <CatalogTable />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     const viewButton = getByTitle('View');

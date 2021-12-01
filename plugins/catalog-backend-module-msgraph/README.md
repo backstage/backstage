@@ -1,41 +1,24 @@
 # Catalog Backend Module for Microsoft Graph
 
 This is an extension module to the `plugin-catalog-backend` plugin, providing a
-`MicrosoftGraphOrgReaderProcessor` that can be used to ingest organization data
-from the Microsoft Graph API. This processor is useful if you want to import
-users and groups from Azure Active Directory or Office 365.
+`MicrosoftGraphOrgReaderProcessor` and a `MicrosoftGraphOrgEntityProvider` that
+can be used to ingest organization data from the Microsoft Graph API. This
+processor is useful if you want to import users and groups from Azure Active
+Directory or Office 365.
 
 ## Getting Started
 
-1. The processor is not installed by default, therefore you have to add a
-   dependency to `@backstage/plugin-catalog-backend-module-msgraph` to your
-   backend package.
+First you need to decide whether you want to use an [entity provider or a processor](https://backstage.io/docs/features/software-catalog/life-of-an-entity#stitching) to ingest the organization data.
+If you want groups and users deleted from the source to be automatically deleted
+from Backstage, choose the entity provider.
 
-```bash
-# From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-catalog-backend-module-msgraph
-```
-
-2. The `MicrosoftGraphOrgReaderProcessor` is not registered by default, so you
-   have to register it in the catalog plugin:
-
-```typescript
-// packages/backend/src/plugins/catalog.ts
-builder.addProcessor(
-  MicrosoftGraphOrgReaderProcessor.fromConfig(config, {
-    logger,
-  }),
-);
-```
-
-3. Create or use an existing App registration in the [Microsoft Azure Portal](https://portal.azure.com/).
+1. Create or use an existing App registration in the [Microsoft Azure Portal](https://portal.azure.com/).
    The App registration requires at least the API permissions `Group.Read.All`,
    `GroupMember.Read.All`, `User.Read` and `User.Read.All` for Microsoft Graph
    (if you still run into errors about insufficient privileges, add
    `Team.ReadBasic.All` and `TeamMember.Read.All` too).
 
-4. Configure the processor:
+2. Configure the processor or entity provider:
 
 ```yaml
 # app-config.yaml
@@ -55,10 +38,68 @@ catalog:
           # Optional filter for user, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties
           # and for the syntax https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter
+          # This and userGroupMemberFilter are mutually exclusive, only one can be specified
           userFilter: accountEnabled eq true and userType eq 'member'
+          # Optional filter for users, use group membership to get users.
+          # This and userFilter are mutually exclusive, only one can be specified
+          userGroupMemberFilter: "displayName eq 'Backstage Users'"
           # Optional filter for group, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/group?view=graph-rest-1.0#properties
           groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
+```
+
+`userFilter` and `userGroupMemberFilter` are mutually exclusive, only one can be provided. If both are provided, an error will be thrown.
+
+By default, all users are loaded. If you want to filter users based on their attributes, use `userFilter`. `userGroupMemberFilter` can be used if you want to load users based on their group membership.
+
+3. The package is not installed by default, therefore you have to add a
+   dependency to `@backstage/plugin-catalog-backend-module-msgraph` to your
+   backend package.
+
+```bash
+# From your Backstage root directory
+cd packages/backend
+yarn add @backstage/plugin-catalog-backend-module-msgraph
+```
+
+### Using the Entity Provider
+
+4. The `MicrosoftGraphOrgEntityProvider` is not registered by default, so you
+   have to register it in the catalog plugin. Pass the target to reference a
+   provider from the configuration. As entity providers are not part of the
+   entity refresh loop, you have to run them manually.
+
+```typescript
+// packages/backend/src/plugins/catalog.ts
+const msGraphOrgEntityProvider = MicrosoftGraphOrgEntityProvider.fromConfig(
+  env.config,
+  {
+    id: 'https://graph.microsoft.com/v1.0',
+    target: 'https://graph.microsoft.com/v1.0',
+    logger: env.logger,
+  },
+);
+builder.addEntityProvider(msGraphOrgEntityProvider);
+
+// Trigger a read every 5 minutes
+useHotCleanup(
+  module,
+  runPeriodically(() => msGraphOrgEntityProvider.read(), 5 * 60 * 1000),
+);
+```
+
+### Using the Processor
+
+4. The `MicrosoftGraphOrgReaderProcessor` is not registered by default, so you
+   have to register it in the catalog plugin:
+
+```typescript
+// packages/backend/src/plugins/catalog.ts
+builder.addProcessor(
+  MicrosoftGraphOrgReaderProcessor.fromConfig(config, {
+    logger,
+  }),
+);
 ```
 
 5. Add a location that ingests from Microsoft Graph:
@@ -76,10 +117,11 @@ catalog:
     …
 ```
 
-## Customize the Processor
+## Customize the Processor or Entity Provider
 
-In case you want to customize the ingested entities, the `MicrosoftGraphOrgReaderProcessor`
-allows to pass transformers for users, groups and the organization.
+In case you want to customize the ingested entities, both the `MicrosoftGraphOrgReaderProcessor`
+and the `MicrosoftGraphOrgEntityProvider` allows to pass transformers for users,
+groups and the organization.
 
 1. Create a transformer:
 

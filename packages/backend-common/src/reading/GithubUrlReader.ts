@@ -51,6 +51,8 @@ export type GhBlobResponse =
 /**
  * A processor that adds the ability to read files from GitHub v3 APIs, such as
  * the one exposed by GitHub itself.
+ *
+ * @public
  */
 export class GithubUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
@@ -108,6 +110,7 @@ export class GithubUrlReader implements UrlReader {
           ...(options?.etag && { 'If-None-Match': options.etag }),
           Accept: 'application/vnd.github.v3.raw',
         },
+        signal: options?.signal,
       });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
@@ -124,10 +127,21 @@ export class GithubUrlReader implements UrlReader {
       };
     }
 
-    const message = `${url} could not be read as ${ghUrl}, ${response.status} ${response.statusText}`;
+    let message = `${url} could not be read as ${ghUrl}, ${response.status} ${response.statusText}`;
     if (response.status === 404) {
       throw new NotFoundError(message);
     }
+
+    // GitHub returns a 403 response with a couple of headers indicating rate
+    // limit status. See more in the GitHub docs:
+    // https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
+    if (
+      response.status === 403 &&
+      response.headers.get('X-RateLimit-Remaining') === '0'
+    ) {
+      message += ' (rate limit exceeded)';
+    }
+
     throw new Error(message);
   }
 
@@ -151,7 +165,7 @@ export class GithubUrlReader implements UrlReader {
       repoDetails.repo.archive_url,
       commitSha,
       filepath,
-      { headers },
+      { headers, signal: options?.signal },
       options,
     );
   }
@@ -175,7 +189,7 @@ export class GithubUrlReader implements UrlReader {
       repoDetails.repo.archive_url,
       commitSha,
       filepath,
-      { headers },
+      { headers, signal: options?.signal },
     );
 
     return { files, etag: commitSha };

@@ -1,5 +1,85 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.3
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.3.2
+
+### Patch Changes
+
+- 82ea1f2bed: Minor internal type improvement
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/core-plugin-api@0.1.11
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.8
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.3.0
+
+### Minor Changes
+
+- 6c318336b4: Errors caused while patching can leave the release branch in a broken state. Most commonly caused due to merge errors.
+
+  This has been solved by introducing a dry run prior to patching the release branch. The dry run will attempt to cherry pick the selected patch commit onto a temporary branch created off of the release branch. If it succeeds, the temporary branch is deleted and the patch is applied on the release branch
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/integration@0.6.7
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
+## 0.2.7
+
+### Patch Changes
+
+- 023350f910: Remove 'refresh' icon from success dialog's OK-CTA. User feedback deemed it confusing.
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+
+## 0.2.6
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.2.5
+
+### Patch Changes
+
+- 27ef7b645: Wrap each feature in custom feature arrays with an element containing a 'key' to avoid missing-key-warnings
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+
 ## 0.2.4
 
 ### Patch Changes

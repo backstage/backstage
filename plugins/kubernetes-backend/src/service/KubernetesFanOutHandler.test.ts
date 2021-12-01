@@ -211,6 +211,7 @@ describe('handleGetKubernetesObjectsForService', () => {
         {
           name: 'test-cluster',
           authProvider: 'serviceAccount',
+          dashboardUrl: 'https://k8s.foo.coom',
         },
         {
           name: 'other-cluster',
@@ -260,6 +261,7 @@ describe('handleGetKubernetesObjectsForService', () => {
       items: [
         {
           cluster: {
+            dashboardUrl: 'https://k8s.foo.coom',
             name: 'test-cluster',
           },
           errors: [],

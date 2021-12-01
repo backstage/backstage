@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JSONSchema } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 
 export type Status = 'open' | 'processing' | 'failed' | 'completed' | 'skipped';
 export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';

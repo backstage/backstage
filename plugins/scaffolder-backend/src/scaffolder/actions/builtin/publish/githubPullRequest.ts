@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { readFile } from 'fs-extra';
-import path from 'path';
-import { parseRepoUrl } from './util';
+import fs from 'fs-extra';
+import { parseRepoUrl, isExecutable } from './util';
 
 import {
   GithubCredentialsProvider,
@@ -28,6 +27,9 @@ import { Octokit } from '@octokit/rest';
 import { InputError, CustomErrorBase } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import globby from 'globby';
+import { resolveSafeChildPath } from '@backstage/backend-common';
+
+export type Encoding = 'utf-8' | 'base64';
 
 class GithubResponseError extends CustomErrorBase {}
 
@@ -183,7 +185,7 @@ export const createPublishGithubPullRequestAction = ({
 
       const client = await clientFactory({ integrations, host, owner, repo });
       const fileRoot = sourcePath
-        ? path.resolve(ctx.workspacePath, sourcePath)
+        ? resolveSafeChildPath(ctx.workspacePath, sourcePath)
         : ctx.workspacePath;
 
       const localFilePaths = await globby(['./**', './**/.*', '!.git'], {
@@ -193,7 +195,30 @@ export const createPublishGithubPullRequestAction = ({
       });
 
       const fileContents = await Promise.all(
-        localFilePaths.map(p => readFile(path.resolve(fileRoot, p))),
+        localFilePaths.map(filePath => {
+          const absPath = resolveSafeChildPath(fileRoot, filePath);
+          const base64EncodedContent = fs
+            .readFileSync(absPath)
+            .toString('base64');
+          const fileStat = fs.statSync(absPath);
+          // See the properties of tree items
+          // in https://docs.github.com/en/rest/reference/git#trees
+          const githubTreeItemMode = isExecutable(fileStat.mode)
+            ? '100755'
+            : '100644';
+          // Always use base64 encoding to avoid doubling a binary file in size
+          // due to interpreting a binary file as utf-8 and sending github
+          // the utf-8 encoded content.
+          //
+          // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
+          // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
+          const encoding: Encoding = 'base64';
+          return {
+            encoding: encoding,
+            content: base64EncodedContent,
+            mode: githubTreeItemMode,
+          };
+        }),
       );
 
       const repoFilePaths = localFilePaths.map(repoFilePath => {
@@ -202,10 +227,7 @@ export const createPublishGithubPullRequestAction = ({
 
       const changes = [
         {
-          files: zipObject(
-            repoFilePaths,
-            fileContents.map(buf => buf.toString()),
-          ),
+          files: zipObject(repoFilePaths, fileContents),
           commit: title,
         },
       ];

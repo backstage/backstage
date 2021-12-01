@@ -8,6 +8,7 @@ apis
 args
 asciidoc
 async
+Atlassian
 automations
 autoscaling
 Autoscaling
@@ -51,6 +52,7 @@ configmaps
 configs
 const
 cookiecutter
+cron
 css
 Datadog
 dataflow
@@ -61,6 +63,7 @@ Debounce
 declaratively
 deduplicated
 deps
+dependabot
 destructured
 dev
 devops
@@ -68,7 +71,6 @@ devs
 discoverability
 Discoverability
 dls
-docgen
 Dockerfile
 dockerfiles
 Dockerize
@@ -98,6 +100,7 @@ GraphQL
 graphviz
 Hackathons
 haproxy
+hardcoded
 Helidon
 Heroku
 hoc
@@ -161,6 +164,8 @@ Monorepo
 monorepos
 msgraph
 msw
+mutex
+mutexes
 mysql
 namespace
 namespaced
@@ -184,6 +189,7 @@ oidc
 Okta
 onboarding
 Onboarding
+OpenShift
 orgs
 pagerduty
 pageview
@@ -310,3 +316,4 @@ Zalando
 Zhou
 zoomable
 zsh
+Firestore

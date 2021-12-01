@@ -23,6 +23,10 @@ const fromNode = 'node';
 const toNode = 'other-node';
 
 const edge = {
+  points: [
+    { x: 10, y: 20 },
+    { x: 20, y: 20 },
+  ],
   from: fromNode,
   to: toNode,
 };
@@ -38,10 +42,6 @@ const renderElement = jest.fn((props: RenderLabelProps) => (
 ));
 
 const minProps = {
-  points: [
-    { x: 10, y: 20 },
-    { x: 20, y: 20 },
-  ],
   id,
   setEdge,
   renderElement,

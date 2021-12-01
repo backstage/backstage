@@ -1,5 +1,59 @@
 # @backstage/catalog-client
 
+## 0.5.2
+
+### Patch Changes
+
+- 3bf2238187: Update to the right version of @backstage/errors
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+
+## 0.5.1
+
+### Patch Changes
+
+- 39e92897e4: Improved API documentation for catalog-client.
+
+## 0.5.0
+
+### Minor Changes
+
+- bb0f6b8a0f: Updates the `<EntitySwitch if={asyncMethod}/>` to accept asynchronous `if` functions.
+
+  Adds the new `getEntityAncestors` method to `CatalogClient`.
+
+  Updates the `<EntityProcessingErrorsPanel />` to make use of the ancestry endpoint to display errors for entities further up the ancestry tree. This makes it easier to discover issues where for example the origin location has been removed or malformed.
+
+  `hasCatalogProcessingErrors()` is now changed to be asynchronous so any calls outside the already established entitySwitch need to be awaited.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+
+## 0.4.0
+
+### Minor Changes
+
+- dbcaa6387a: Extends the `CatalogClient` interface with a `refreshEntity` method.
+
+### Patch Changes
+
+- 9ef2987a83: Update `AddLocationResponse` to optionally return `exists` to signal that the location already exists, this is only returned when calling `addLocation` in dryRun.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+
+## 0.3.19
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+
 ## 0.3.18
 
 ### Patch Changes

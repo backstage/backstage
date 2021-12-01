@@ -205,4 +205,62 @@ describe('github:repository:webhook:create', () => {
       },
     });
   });
+
+  it('should validate input', async () => {
+    const Validator = require('jsonschema').Validator;
+    const v = new Validator();
+
+    // validate default input without events specified
+    expect(v.validate(mockContext.input, action.schema?.input).valid).toBe(
+      true,
+    );
+
+    const inputWithValidEvent = {
+      ...mockContext.input,
+      events: ['push'],
+    };
+    expect(v.validate(inputWithValidEvent, action.schema?.input).valid).toBe(
+      true,
+    );
+
+    const inputWithMultipleValidEvents = {
+      ...mockContext.input,
+      events: ['push', 'pull_request'],
+    };
+    expect(
+      v.validate(inputWithMultipleValidEvents, action.schema?.input).valid,
+    ).toBe(true);
+
+    const inputWithInvalidEvent = {
+      ...mockContext.input,
+      events: ['unexpected_event'],
+    };
+    expect(v.validate(inputWithInvalidEvent, action.schema?.input).valid).toBe(
+      false,
+    );
+
+    const inputWithOneInvalidEvent = {
+      ...mockContext.input,
+      events: ['push', 'unexpected_event'],
+    };
+    expect(
+      v.validate(inputWithOneInvalidEvent, action.schema?.input).valid,
+    ).toBe(false);
+
+    const inputWithAllEvents = {
+      ...mockContext.input,
+      events: ['*'],
+    };
+    expect(v.validate(inputWithAllEvents, action.schema?.input).valid).toBe(
+      true,
+    );
+
+    const inputWithAllEventsAndMore = {
+      ...mockContext.input,
+      events: ['*', 'push'],
+    };
+    expect(
+      v.validate(inputWithAllEventsAndMore, action.schema?.input).valid,
+    ).toBe(false);
+  });
 });

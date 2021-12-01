@@ -16,7 +16,9 @@
 
 import React from 'react';
 import { WarningPanel } from './WarningPanel';
-import { Button, Link, Typography } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
 
 export default {
   title: 'Feedback/Warning Panel',

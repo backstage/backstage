@@ -16,11 +16,10 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FieldProps } from '@rjsf/core';
 import React from 'react';
 import { OwnerPicker } from './OwnerPicker';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -50,14 +49,15 @@ describe('<OwnerPicker />', () => {
   let Wrapper: React.ComponentType;
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(catalogApiRef, catalogApi);
     entities = [
       makeEntity('Group', 'default', 'team-a'),
       makeEntity('Group', 'default', 'squad-b'),
     ];
 
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        {children}
+      </TestApiProvider>
     );
   });
 

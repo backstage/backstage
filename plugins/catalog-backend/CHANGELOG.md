@@ -1,5 +1,326 @@
 # @backstage/plugin-catalog-backend
 
+## 0.18.0
+
+### Minor Changes
+
+- 7f82ce9f51: **BREAKING** EntitiesSearchFilter fields have changed.
+
+  EntitiesSearchFilter now has only two fields: `key` and `value`. The `matchValueIn` and `matchValueExists` fields are no longer are supported. Previous filters written using the `matchValueIn` and `matchValueExists` fields can be rewritten as follows:
+
+  Filtering by existence of key only:
+
+  ```diff
+    filter: {
+      {
+        key: 'abc',
+  -     matchValueExists: true,
+      },
+    }
+  ```
+
+  Filtering by key and values:
+
+  ```diff
+    filter: {
+      {
+        key: 'abc',
+  -     matchValueExists: true,
+  -     matchValueIn: ['xyz'],
+  +     values: ['xyz'],
+      },
+    }
+  ```
+
+  Negation of filters can now be achieved through a `not` object:
+
+  ```
+  filter: {
+    not: {
+      key: 'abc',
+      values: ['xyz'],
+    },
+  }
+  ```
+
+### Patch Changes
+
+- 740f958290: Providing an empty values array in an EntityFilter will now return no matches.
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- eddb82ab7c: Index User entities by displayName to be able to search by full name. Added displayName (if present) to the 'text' field in the indexed document.
+- 563b039f0b: Added Azure DevOps discovery processor
+- 8866b62f3d: Detect a duplicate entities when adding locations through dry run
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/backend-common@0.9.11
+
+## 0.17.4
+
+### Patch Changes
+
+- 5d2a7303bd: This fixes a bug where locations couldn't be added unless the processing engine is started.
+  It's now possible to run the catalog backend without starting the processing engine and still allowing locations registrations.
+
+  This is done by refactor the `EntityProvider.connect` to happen outside the engine.
+
+- 06934f2f52: Adjust entity query construction to ensure sub-queries are always isolated from one another.
+- b90fc74d70: adds getDefaultProcessor method to CatalogBuilder
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+
+## 0.17.3
+
+### Patch Changes
+
+- 86bef79ad1: Allow singleton and flexibly nested EntityFilters
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/catalog-client@0.5.1
+
+## 0.17.2
+
+### Patch Changes
+
+- b9ce1ce2c1: Allow custom LocationAnalyzer in NextCatalogBuilder
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/backend-common@0.9.8
+  - @backstage/catalog-model@0.9.6
+  - @backstage/search-common@0.2.1
+
+## 0.17.1
+
+### Patch Changes
+
+- 3adaf88db2: Take CatalogParser in account when processing file locations.
+- 1f62d1cbe9: Minor rearrangement of `Stitcher` to clarify the scope of one stitch round
+- 3ba87f514e: Add a `GitHubOrgEntityProvider` that can be used instead of the `GithubOrgReaderProcessor`.
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- 177401b571: Use entity title (if defined) as title of documents indexed by `DefaultCatalogCollator`
+- Updated dependencies
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.17.0
+
+### Minor Changes
+
+- 9fb9256e50: This continues the deprecation of classes used by the legacy catalog engine. New deprecations can be viewed in this [PR](https://github.com/backstage/backstage/pull/7500) or in the API reference documentation.
+
+  The `batchAddOrUpdateEntities` method of the `EntitiesCatalog` interface has been marked as optional and is being deprecated. It is still implemented and required to be implemented by the legacy catalog classes, but was never implemented in the new catalog.
+
+  This change is only relevant if you are consuming the `EntitiesCatalog` interface directly, in which case you will get a type error that you need to resolve. It can otherwise be ignored.
+
+### Patch Changes
+
+- 3b59bb915e: Fixes a bug in the catalog where entities were not being marked as orphaned.
+- 55ff928d50: This change refactors the internal package structure to remove the `next` catalog folder that was used during the implementation and testing phase of the new catalog engine. The implementation is now the default and is therefore restructured to no longer be packaged under `next/`. This refactor does not change catalog imports from other parts of the project.
+- Updated dependencies
+  - @backstage/integration@0.6.8
+
+## 0.16.0
+
+### Minor Changes
+
+- 2c5bab2f82: Errors emitted from processors are now considered a failure during entity processing and will prevent entities from being updated. The impact of this change is that when errors are emitted while for example reading a location, then ingestion effectively stops there. If you emit a number of entities along with just one error, then the error will be persisted on the current entity but the emitted entities will _not_ be stored. This fixes [a bug](https://github.com/backstage/backstage/issues/6973) where entities would get marked as orphaned rather than put in an error state when the catalog failed to read a location.
+
+  In previous versions of the catalog, an emitted error was treated as a less severe problem than an exception thrown by the processor. We are now ensuring that the behavior is consistent for these two cases. Even though both thrown and emitted errors are treated the same, emitted errors stay around as they allow you to highlight multiple errors related to an entity at once. An emitted error will also only prevent the writing of the processing result, while a thrown error will skip the rest of the processing steps.
+
+### Patch Changes
+
+- 957e4b3351: Updated dependencies
+- f66c38148a: Avoid duplicate logging of entity processing errors.
+- 426d5031a6: A number of classes and types, that were part of the old catalog engine implementation, are now formally marked as deprecated. They will be removed entirely from the code base in a future release.
+
+  After upgrading to this version, it is recommended that you take a look inside your `packages/backend/src/plugins/catalog.ts` file (using a code editor), to see if you are using any functionality that it marks as deprecated. If you do, please migrate away from it at your earliest convenience.
+
+  Migrating to using the new engine implementation is typically a matter of calling `CatalogBuilder.create({ ... })` instead of `new CatalogBuilder({ ... })`.
+
+  If you are seeing deprecation warnings for `createRouter`, you can either use the `router` field from the return value from updated catalog builder, or temporarily call `createNextRouter`. The latter will however also be deprecated at a later time.
+
+- 7b78dd17e6: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.15.0
+
+### Minor Changes
+
+- 1572d02b63: Introduced a new `CatalogProcessorCache` that is available to catalog processors. It allows arbitrary values to be saved that will then be visible during the next run. The cache is scoped to each individual processor and entity, but is shared across processing steps in a single processor.
+
+  The cache is available as a new argument to each of the processing steps, except for `validateEntityKind` and `handleError`.
+
+  This also introduces an optional `getProcessorName` to the `CatalogProcessor` interface, which is used to provide a stable identifier for the processor. While it is currently optional it will move to be required in the future.
+
+  The breaking part of this change is the modification of the `state` field in the `EntityProcessingRequest` and `EntityProcessingResult` types. This is unlikely to have any impact as the `state` field was previously unused, but could require some minor updates.
+
+- c1836728e0: Add `/entities/by-name/:kind/:namespace/:name/ancestry` to get the "processing parents" lineage of an entity.
+
+  This involves a breaking change of adding the method `entityAncestry` to `EntitiesCatalog`.
+
+### Patch Changes
+
+- 3d10360c82: When issuing a `full` update from an entity provider, entities with updates are now properly persisted.
+- 9ea4565b00: Fixed a bug where internal references within the catalog were broken when new entities where added through entity providers, such as registering a new location or adding one in configuration. These broken references then caused some entities to be incorrectly marked as orphaned and prevented refresh from working properly.
+- Updated dependencies
+  - @backstage/backend-common@0.9.5
+  - @backstage/integration@0.6.6
+
+## 0.14.0
+
+### Minor Changes
+
+- d6f90e934d: #### Enforcing catalog rules
+
+  Apply the catalog rules enforcer, based on origin location.
+
+  This is a breaking change, in the sense that this was not properly checked in earlier versions of the new catalog engine. You may see ingestion of certain entities start to be rejected after this update, if the following conditions apply to you:
+
+  - You are using the configuration key `catalog.rules.[].allow`, and
+  - Your registered locations point (directly or transitively) to entities whose kinds are not listed in `catalog.rules.[].allow`
+
+  and/or
+
+  - You are using the configuration key `catalog.locations.[].rules.[].allow`
+  - The config locations point (directly or transitively) to entities whose kinds are not listed neither `catalog.rules.[].allow`, nor in the corresponding `.rules.[].allow` of that config location
+
+  This is an example of what the configuration might look like:
+
+  ```yaml
+  catalog:
+    # These do not list Template as a valid kind; users are therefore unable to
+    # manually register entities of the Template kind
+    rules:
+      - allow:
+          - Component
+          - API
+          - Resource
+          - Group
+          - User
+          - System
+          - Domain
+          - Location
+    locations:
+      # This lists Template as valid only for that specific config location
+      - type: file
+        target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
+        rules:
+          - allow: [Template]
+  ```
+
+  If you are not using any of those `rules` section, you should not be affected by this change.
+
+  If you do use any of those `rules` sections, make sure that they are complete and list all of the kinds that are in active use in your Backstage installation.
+
+  #### Other
+
+  Also, the class `CatalogRulesEnforcer` was renamed to `DefaultCatalogRulesEnforcer`, implementing the type `CatalogRulesEnforcer`.
+
+- 501ce92f9c: Bitbucket Cloud Discovery support
+- 89fd81a1ab: Add API endpoint for requesting a catalog refresh at `/refresh`, which is activated if a `RefreshService` is passed to `createRouter`.
+
+  The new method is used to trigger a refresh of an entity in an as localized was as possible, usually by refreshing the parent location.
+
+### Patch Changes
+
+- 9ef2987a83: Update `createLocation` to optionally return `exists` to signal that the location already exists, this is only returned for dry runs.
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
+## 0.13.8
+
+### Patch Changes
+
+- fab79adde1: Add AWS S3 Discovery Processor. Add readTree() to AwsS3UrlReader. Add ReadableArrayResponse type that implements ReadTreeResponse to use in AwsS3UrlReader's readTree()
+- a41ac6b952: Fill in most missing type exports.
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.9.3
+  - @backstage/integration@0.6.4
+
+## 0.13.7
+
+### Patch Changes
+
+- ce17a1693: Allow the catalog search collator to filter the entities that it indexes
+- dbb952787: Use `ScmIntegrationRegistry#resolveUrl` in the placeholder processors instead of a custom implementation.
+
+  If you manually instantiate the `PlaceholderProcessor` (you most probably don't), add the new required constructor parameter:
+
+  ```diff
+  + import { ScmIntegrations } from '@backstage/integration';
+    // ...
+  + const integrations = ScmIntegrations.fromConfig(config);
+    // ...
+    new PlaceholderProcessor({
+      resolvers: placeholderResolvers,
+      reader,
+  +   integrations,
+    });
+  ```
+
+  All custom `PlaceholderResolver` can use the new `resolveUrl` parameter to resolve relative URLs.
+
+- 1797c5ce5: This change drops support for deprecated location types which have all been replaced by the `url` type.
+  There has been a deprecation warning in place since the beginning of this year so most should already be migrated and received information at this point.
+
+  The now removed location types are:
+
+  ```
+  github
+  github/api
+  bitbucket/api
+  gitlab/api
+  azure/api
+  ```
+
+- Updated dependencies
+  - @backstage/catalog-client@0.3.19
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/backend-common@0.9.2
+
+## 0.13.6
+
+### Patch Changes
+
+- 4d62dc15b: GitHub discovery processor passes over repositories that do not have a default branch
+- 977b1dfbe: Adds optional namespacing for users in the GitHub Multi Org Plugin
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/search-common@0.2.0
+  - @backstage/plugin-search-backend-node@0.4.2
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
 ## 0.13.5
 
 ### Patch Changes

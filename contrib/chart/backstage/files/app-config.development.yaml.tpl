@@ -1,7 +1,7 @@
 backend:
   lighthouseHostname: {{ include "lighthouse.serviceName" . | quote }}
   listen:
-      port: {{ .Values.appConfig.backend.listen.port | default 7000 }}
+      port: {{ .Values.appConfig.backend.listen.port | default 7007 }}
   database:
     client: {{ .Values.appConfig.backend.database.client | quote }}
     connection:
@@ -47,5 +47,5 @@ sentry:
   organization: {{ .Values.appConfig.sentry.organization | quote }}
 
 techdocs:
-  generators:
-    techdocs: 'local'
+  generator: 
+    runIn: 'local'

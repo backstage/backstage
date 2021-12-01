@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-react';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import { render } from '@testing-library/react';
@@ -30,8 +30,9 @@ import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 import * as data from '../../__fixtures__/website-list-response.json';
 import { AuditListForEntity } from './AuditListForEntity';
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { TestApiRegistry } from '@backstage/test-utils';
 
 jest.mock('../../hooks/useWebsiteForEntity', () => ({
   useWebsiteForEntity: jest.fn(),
@@ -41,7 +42,7 @@ const websiteListResponse = data as WebsiteListResponse;
 const entityWebsite = websiteListResponse.items[0];
 
 describe('<AuditListTableForEntity />', () => {
-  let apis: ApiRegistry;
+  let apis: TestApiRegistry;
 
   const mockErrorApi: jest.Mocked<typeof errorApiRef.T> = {
     post: jest.fn(),
@@ -49,10 +50,10 @@ describe('<AuditListTableForEntity />', () => {
   };
 
   beforeEach(() => {
-    apis = ApiRegistry.from([
+    apis = TestApiRegistry.from(
       [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
       [errorApiRef, mockErrorApi],
-    ]);
+    );
 
     (useWebsiteForEntity as jest.Mock).mockReturnValue({
       value: entityWebsite,
@@ -77,16 +78,14 @@ describe('<AuditListTableForEntity />', () => {
     },
   };
 
-  const subject = (value = {}) =>
+  const subject = () =>
     render(
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>
           <ApiProvider apis={apis}>
-            <EntityContext.Provider
-              value={{ entity: entity, loading: false, ...value }}
-            >
+            <EntityProvider entity={entity}>
               <AuditListForEntity />
-            </EntityContext.Provider>
+            </EntityProvider>
           </ApiProvider>
         </MemoryRouter>
       </ThemeProvider>,

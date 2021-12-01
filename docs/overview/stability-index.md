@@ -145,12 +145,6 @@ Provides utilities for developing plugins in isolation.
 
 Stability: `0`. This package is largely broken and needs updates.
 
-### `docgen` [GitHub](https://github.com/backstage/backstage/tree/master/packages/docgen/)
-
-Internal CLI utility for generating API Documentation.
-
-Stability: `N/A`
-
 ### `e2e-test` [GitHub](https://github.com/backstage/backstage/tree/master/packages/e2e-test/)
 
 Internal CLI utility for running e2e tests.
@@ -285,7 +279,7 @@ Integrates GraphiQL as a tool to browse GraphQL API endpoints inside Backstage.
 
 Stability: `1`
 
-### `graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/graphql/)
+### `graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/graphql-backend/)
 
 A backend plugin that provides
 

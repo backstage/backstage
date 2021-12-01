@@ -20,21 +20,16 @@ import { render } from '@testing-library/react';
 import { Node } from './Node';
 import { RenderNodeProps } from './types';
 
-const node = { id: 'abc' };
+const node = { id: 'abc', x: 0, y: 0, width: 0, height: 0 };
 const setNode = jest.fn(() => new dagre.graphlib.Graph());
 const renderElement = jest.fn((props: RenderNodeProps) => (
   <text>{props.node.id}</text>
 ));
 
 const minProps = {
-  id: node.id,
   node,
   setNode,
   render: renderElement,
-  x: 0,
-  y: 0,
-  width: 0,
-  height: 0,
 };
 
 describe('<Node />', () => {
@@ -50,7 +45,7 @@ describe('<Node />', () => {
 
   it('renders the supplied element', () => {
     const { getByText } = render(<Node {...minProps} />);
-    expect(getByText(minProps.id)).toBeInTheDocument();
+    expect(getByText(minProps.node.id)).toBeInTheDocument();
   });
 
   it('passes down node properties to the render method', () => {
@@ -62,13 +57,13 @@ describe('<Node />', () => {
 
   it('calls setNode with node ID and actual size after rendering', () => {
     const { getByText } = render(<Node {...minProps} />);
-    expect(getByText(minProps.id)).toBeInTheDocument();
+    expect(getByText(minProps.node.id)).toBeInTheDocument();
 
     // Updates the node in the graph
     expect(setNode).toHaveBeenCalledWith(node.id, {
+      ...node,
       height: 100,
       width: 100,
-      ...node,
     });
 
     // Does not pass down width/height to node

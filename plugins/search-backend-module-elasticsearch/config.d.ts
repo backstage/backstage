@@ -20,90 +20,103 @@ export interface Config {
     /**
      * Options for ElasticSearch
      */
-    elasticsearch?:
-      | // elastic = Elastic.co ElasticSearch provider
-      {
-          provider: 'elastic';
-
+    elasticsearch?: {
+      /** Miscellaneous options for the client */
+      clientOptions?: {
+        ssl?: {
           /**
-           * Elastic.co CloudID
-           * See: https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/client-connecting.html#authentication
+           * If true the server will reject any connection which is not
+           * authorized with the list of supplied CAs.
+           * @default true
            */
-          cloudId: string;
-
-          auth: {
-            username: string;
+          rejectUnauthorized?: boolean;
+        };
+      } & (
+        | {
+            // elastic = Elastic.co ElasticSearch provider
+            provider: 'elastic';
 
             /**
-             * @visibility secret
+             * Elastic.co CloudID
+             * See: https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/client-connecting.html#authentication
              */
-            password: string;
-          };
-        }
+            cloudId: string;
 
-      /**
-       *  AWS = Amazon Elasticsearch Service provider
-       *
-       *  Authentication is handled using the default AWS credentials provider chain
-       */
-      | {
-          provider: 'aws';
+            auth: {
+              username: string;
 
-          /**
-           * Node configuration.
-           * URL AWS ES endpoint to connect to.
-           * Eg. https://my-es-cluster.eu-west-1.es.amazonaws.com
-           */
-          node: string;
-        }
+              /**
+               * @visibility secret
+               */
+              password: string;
+            };
+          }
 
-      /**
-       * Standard ElasticSearch
-       *
-       * Includes self-hosted clusters and others that provide direct connection via an endpoint
-       * and authentication method (see possible authentication options below)
-       */
-      | {
-          /**
-           * Node configuration.
-           * URL/URLS to ElasticSearch node to connect to.
-           * Either direct URL like 'https://localhost:9200' or with credentials like 'https://username:password@localhost:9200'
-           */
-          node: string | string[];
-
-          /**
-           * Authentication credentials for ElasticSearch
-           * If both ApiKey/Bearer token and username+password is provided, tokens take precedence
-           */
-          auth?:
-            | {
-                username: string;
-
-                /**
-                 * @visibility secret
-                 */
-                password: string;
-              }
-            | {
-                /**
-                 * Base64 Encoded API key to be used to connect to the cluster.
-                 * See: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html
-                 *
-                 * @visibility secret
-                 */
-                apiKey: string;
-              };
-          /* TODO(kuangp): unsupported until @elastic/elasticsearch@7.14 is released
+        /**
+         *  AWS = Amazon Elasticsearch Service provider
+         *
+         *  Authentication is handled using the default AWS credentials provider chain
+         */
         | {
+            provider: 'aws';
 
-          /**
-           * Bearer authentication token to connect to the cluster.
-           * See: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-service-token.html
-           *
-           * @visibility secret
-           *
-          bearer: string;
-        };*/
-        };
+            /**
+             * Node configuration.
+             * URL AWS ES endpoint to connect to.
+             * Eg. https://my-es-cluster.eu-west-1.es.amazonaws.com
+             */
+            node: string;
+          }
+
+        /**
+         * Standard ElasticSearch
+         *
+         * Includes self-hosted clusters and others that provide direct connection via an endpoint
+         * and authentication method (see possible authentication options below)
+         */
+        | {
+            /**
+             * Node configuration.
+             * URL/URLS to ElasticSearch node to connect to.
+             * Either direct URL like 'https://localhost:9200' or with credentials like 'https://username:password@localhost:9200'
+             */
+            node: string | string[];
+
+            /**
+             * Authentication credentials for ElasticSearch
+             * If both ApiKey/Bearer token and username+password is provided, tokens take precedence
+             */
+            auth?:
+              | {
+                  username: string;
+
+                  /**
+                   * @visibility secret
+                   */
+                  password: string;
+                }
+              | {
+                  /**
+                   * Base64 Encoded API key to be used to connect to the cluster.
+                   * See: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html
+                   *
+                   * @visibility secret
+                   */
+                  apiKey: string;
+                };
+            /* TODO(kuangp): unsupported until @elastic/elasticsearch@7.14 is released
+    | {
+ 
+      /**
+       * Bearer authentication token to connect to the cluster.
+       * See: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-service-token.html
+       *
+       * @visibility secret
+       *
+      bearer: string;
+    };*/
+          }
+      );
+    };
   };
 }

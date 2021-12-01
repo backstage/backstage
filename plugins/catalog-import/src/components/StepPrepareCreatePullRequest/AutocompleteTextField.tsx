@@ -25,7 +25,7 @@ type Props<TFieldValue extends string> = {
   options: string[];
   required?: boolean;
 
-  errors?: FieldErrors<Record<TFieldValue, string>>;
+  errors?: FieldErrors;
   rules?: React.ComponentProps<typeof Controller>['rules'];
 
   loading?: boolean;

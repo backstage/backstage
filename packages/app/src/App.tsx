@@ -14,20 +14,36 @@
  * limitations under the License.
  */
 
-import { createApp, FlatRoutes } from '@backstage/core-app-api';
+import {
+  RELATION_API_CONSUMED_BY,
+  RELATION_API_PROVIDED_BY,
+  RELATION_CONSUMES_API,
+  RELATION_DEPENDENCY_OF,
+  RELATION_DEPENDS_ON,
+  RELATION_HAS_PART,
+  RELATION_OWNED_BY,
+  RELATION_OWNER_OF,
+  RELATION_PART_OF,
+  RELATION_PROVIDES_API,
+} from '@backstage/catalog-model';
+import { createApp } from '@backstage/app-defaults';
+import { FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core-components';
-import { HomepageCompositionRoot } from '@backstage/plugin-home';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
+import { AzurePullRequestsPage } from '@backstage/plugin-azure-devops';
 import {
   CatalogEntityPage,
   CatalogIndexPage,
   catalogPlugin,
 } from '@backstage/plugin-catalog';
-
+import {
+  CatalogGraphPage,
+  catalogGraphPlugin,
+} from '@backstage/plugin-catalog-graph';
 import {
   CatalogImportPage,
   catalogImportPlugin,
@@ -40,12 +56,13 @@ import {
 import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
 import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
 import { GraphiQLPage } from '@backstage/plugin-graphiql';
+import { HomepageCompositionRoot } from '@backstage/plugin-home';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
 import {
+  ScaffolderFieldExtensions,
   ScaffolderPage,
   scaffolderPlugin,
-  ScaffolderFieldExtensions,
 } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
@@ -61,14 +78,15 @@ import React from 'react';
 import { hot } from 'react-hot-loader/root';
 import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
-import { Root } from './components/Root';
 import { entityPage } from './components/catalog/EntityPage';
-import { searchPage } from './components/search/SearchPage';
-import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/customScaffolderExtensions';
 import { HomePage } from './components/home/HomePage';
-
+import { Root } from './components/Root';
+import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/customScaffolderExtensions';
+import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
+
+import { techDocsPage } from './components/techdocs/TechDocsPage';
 
 const app = createApp({
   apis,
@@ -77,7 +95,6 @@ const app = createApp({
     // Custom icon example
     alert: AlarmIcon,
   },
-
   components: {
     SignInPage: props => {
       return (
@@ -94,6 +111,9 @@ const app = createApp({
     bind(catalogPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
       viewTechDoc: techdocsPlugin.routes.docRoot,
+    });
+    bind(catalogGraphPlugin.externalRoutes, {
+      catalogEntity: catalogPlugin.routes.catalogEntity,
     });
     bind(apiDocsPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
@@ -125,14 +145,51 @@ const routes = (
       {entityPage}
     </Route>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
+    <Route
+      path="/catalog-graph"
+      element={
+        <CatalogGraphPage
+          initialState={{
+            selectedKinds: ['component', 'domain', 'system', 'api', 'group'],
+            selectedRelations: [
+              RELATION_OWNER_OF,
+              RELATION_OWNED_BY,
+              RELATION_CONSUMES_API,
+              RELATION_API_CONSUMED_BY,
+              RELATION_PROVIDES_API,
+              RELATION_API_PROVIDED_BY,
+              RELATION_HAS_PART,
+              RELATION_PART_OF,
+              RELATION_DEPENDS_ON,
+              RELATION_DEPENDENCY_OF,
+            ],
+          }}
+        />
+      }
+    />
     <Route path="/docs" element={<TechDocsIndexPage />}>
       <DefaultTechDocsHome />
     </Route>
     <Route
       path="/docs/:namespace/:kind/:name/*"
       element={<TechDocsReaderPage />}
-    />
-    <Route path="/create" element={<ScaffolderPage />}>
+    >
+      {techDocsPage}
+    </Route>
+    <Route
+      path="/create"
+      element={
+        <ScaffolderPage
+          groups={[
+            {
+              title: 'Recommended',
+              filter: entity =>
+                entity?.metadata?.tags?.includes('recommended') ?? false,
+            },
+          ]}
+        />
+      }
+    >
       <ScaffolderFieldExtensions>
         <LowerCaseValuePickerFieldExtension />
       </ScaffolderFieldExtensions>
@@ -160,6 +217,7 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
   </FlatRoutes>
 );
 

@@ -230,6 +230,4 @@ export interface StatusResponse {
   // (undocumented)
   status: string;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

@@ -23,11 +23,9 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import { stripFirstDirectoryFromPath } from './tree/util';
 import {
   ReadTreeResponseFactory,
   ReaderFactory,
@@ -40,6 +38,7 @@ import {
   ReadUrlResponse,
 } from './types';
 
+/** @public */
 export class AzureUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -56,21 +55,34 @@ export class AzureUrlReader implements UrlReader {
   ) {}
 
   async read(url: string): Promise<Buffer> {
+    const response = await this.readUrl(url);
+    return response.buffer();
+  }
+
+  async readUrl(
+    url: string,
+    options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
+    // TODO: etag is not implemented yet.
+    const { signal } = options ?? {};
+
     const builtUrl = getAzureFileFetchUrl(url);
 
     let response: Response;
     try {
-      response = await fetch(
-        builtUrl,
-        getAzureRequestOptions(this.integration.config),
-      );
+      response = await fetch(builtUrl, {
+        ...getAzureRequestOptions(this.integration.config),
+        ...(signal && { signal }),
+      });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 
     // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
     if (response.ok && response.status !== 203) {
-      return Buffer.from(await response.arrayBuffer());
+      return {
+        buffer: async () => Buffer.from(await response.arrayBuffer()),
+      };
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
@@ -80,19 +92,12 @@ export class AzureUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  async readUrl(
-    url: string,
-    _options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
-    // TODO etag is not implemented yet.
-    const buffer = await this.read(url);
-    return { buffer: async () => buffer };
-  }
-
   async readTree(
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
+    const { etag, filter, signal } = options ?? {};
+
     // TODO: Support filepath based reading tree feature like other providers
 
     // Get latest commit SHA
@@ -110,16 +115,16 @@ export class AzureUrlReader implements UrlReader {
     }
 
     const commitSha = (await commitsAzureResponse.json()).value[0].commitId;
-    if (options?.etag && options.etag === commitSha) {
+    if (etag && etag === commitSha) {
       throw new NotModifiedError();
     }
 
-    const archiveAzureResponse = await fetch(
-      getAzureDownloadUrl(url),
-      getAzureRequestOptions(this.integration.config, {
+    const archiveAzureResponse = await fetch(getAzureDownloadUrl(url), {
+      ...getAzureRequestOptions(this.integration.config, {
         Accept: 'application/zip',
       }),
-    );
+      ...(signal && { signal }),
+    });
     if (!archiveAzureResponse.ok) {
       const message = `Failed to read tree from ${url}, ${archiveAzureResponse.status} ${archiveAzureResponse.statusText}`;
       if (archiveAzureResponse.status === 404) {
@@ -128,28 +133,39 @@ export class AzureUrlReader implements UrlReader {
       throw new Error(message);
     }
 
+    // When downloading a zip archive from azure on a subpath we get an extra directory
+    // layer added at the top. With for example the file /a/b/c.txt and a download of
+    // /a/b, we'll see /b/c.txt in the zip archive. This picks out /b so that we can remove it.
+    let subpath;
+    const path = new URL(url).searchParams.get('path');
+    if (path) {
+      subpath = path.split('/').filter(Boolean).slice(-1)[0];
+    }
+
     return await this.deps.treeResponseFactory.fromZipArchive({
       stream: archiveAzureResponse.body as unknown as Readable,
       etag: commitSha,
-      filter: options?.filter,
+      filter,
+      subpath,
     });
   }
 
   async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
-    const { filepath } = parseGitUrl(url);
-    const matcher = new Minimatch(filepath);
+    const treeUrl = new URL(url);
+
+    const path = treeUrl.searchParams.get('path');
+    const matcher = path && new Minimatch(path.replace(/^\/+/, ''));
 
     // TODO(freben): For now, read the entire repo and filter through that. In
     // a future improvement, we could be smart and try to deduce that non-glob
     // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
     // to get just that part of the repo.
-    const treeUrl = new URL(url);
     treeUrl.searchParams.delete('path');
-    treeUrl.pathname = treeUrl.pathname.replace(/\/+$/, '');
 
     const tree = await this.readTree(treeUrl.toString(), {
       etag: options?.etag,
-      filter: path => matcher.match(stripFirstDirectoryFromPath(path)),
+      signal: options?.signal,
+      filter: p => (matcher ? matcher.match(p) : true),
     });
     const files = await tree.files();
 

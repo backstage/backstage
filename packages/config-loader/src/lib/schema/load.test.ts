@@ -102,4 +102,146 @@ describe('loadConfigSchema', () => {
       'Serialized configuration schema is invalid or has an invalid version number',
     );
   });
+
+  describe('should consider schema', () => {
+    it('when filtering simple config', async () => {
+      mockFs({
+        'package.json': JSON.stringify({
+          name: 'a',
+          configSchema: {
+            type: 'object',
+            properties: {
+              key1: { type: 'string', visibility: 'frontend' },
+              key2: { type: 'number', visibility: 'secret' },
+            },
+          },
+        }),
+      });
+
+      const schema = await loadConfigSchema({
+        packagePaths: ['package.json'],
+        dependencies: [],
+      });
+
+      const configs = [
+        { data: { key1: 'a', key2: 'not-a-number' }, context: 'test' },
+      ];
+
+      expect(() => schema.process(configs)).toThrow(
+        'Config validation failed, Config should be number { type=number } at /key2',
+      );
+      expect(schema.process(configs, { visibility: ['frontend'] })).toEqual([
+        { data: { key1: 'a' }, context: 'test' },
+      ]);
+      expect(() => schema.process(configs, { visibility: ['secret'] })).toThrow(
+        'Config validation failed, Config should be number { type=number } at /key2',
+      );
+    });
+
+    it('when filtering nested config', async () => {
+      mockFs({
+        'package.json': JSON.stringify({
+          name: 'a',
+          configSchema: {
+            type: 'object',
+            properties: {
+              nested: {
+                allOf: [
+                  {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      visibility: 'frontend',
+                      properties: {
+                        x: { type: 'number' },
+                      },
+                      additionalProperties: {
+                        visibility: 'frontend',
+                        type: 'string',
+                        pattern: '^...$',
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        }),
+      });
+
+      const schema = await loadConfigSchema({
+        packagePaths: ['package.json'],
+        dependencies: [],
+      });
+
+      const mkConfig = (nested: any) => [
+        { data: { nested: [nested] }, context: 'test' },
+      ];
+      expect(
+        schema.process(mkConfig({ x: 1 }), { visibility: ['frontend'] }),
+      ).toEqual([{ data: { nested: [{}] }, context: 'test' }]);
+      expect(() => schema.process(mkConfig({ y: 1 }))).toThrow(
+        'Config validation failed, Config should be string { type=string } at /nested/0/y',
+      );
+      expect(() =>
+        schema.process(mkConfig({ y: 1 }), { visibility: ['frontend'] }),
+      ).toThrow(
+        'Config validation failed, Config should be string { type=string } at /nested/0/y',
+      );
+      expect(
+        schema.process(mkConfig({ x: 'a' }), { visibility: ['frontend'] }),
+      ).toEqual([{ data: { nested: [{}] }, context: 'test' }]);
+      expect(
+        schema.process(mkConfig({ y: 'aaa' }), { visibility: ['frontend'] }),
+      ).toEqual([{ data: { nested: [{ y: 'aaa' }] }, context: 'test' }]);
+      expect(() =>
+        schema.process(mkConfig({ y: 'aaaa' }), { visibility: ['frontend'] }),
+      ).toThrow(
+        'Config validation failed, Config should match pattern "^...$" { pattern=^...$ } at /nested/0/y',
+      );
+
+      // This is a bit of an edge case where we have a structural error, these should always be reported
+      expect(() =>
+        schema.process([{ data: { nested: {} }, context: 'test' }], {
+          visibility: ['frontend'],
+        }),
+      ).toThrow(
+        'Config validation failed, Config should be array { type=array } at /nested',
+      );
+    });
+  });
+
+  it('when filtering config with required values', async () => {
+    mockFs({
+      'package.json': JSON.stringify({
+        name: 'a',
+        configSchema: {
+          type: 'object',
+          properties: {
+            other: {
+              required: ['x a'],
+              type: 'object',
+              properties: {
+                'x a': { type: 'number', visibility: 'frontend' },
+              },
+            },
+          },
+        },
+      }),
+    });
+
+    const schema = await loadConfigSchema({
+      packagePaths: ['package.json'],
+      dependencies: [],
+    });
+
+    // Errors about required values should also be filtered like the rest
+    expect(() =>
+      schema.process([{ data: { other: {} }, context: 'test' }], {
+        visibility: ['frontend'],
+      }),
+    ).toThrow(
+      "Config should have required property 'x a' { missingProperty=x a } at /other",
+    );
+  });
 });

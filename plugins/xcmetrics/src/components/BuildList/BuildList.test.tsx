@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { BuildList } from './BuildList';
 import { xcmetricsApiRef } from '../../api';
 import userEvent from '@testing-library/user-event';
@@ -35,11 +34,9 @@ jest.mock('../BuildDetails', () => ({
 describe('BuildList', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <BuildList />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText('Builds')).toBeInTheDocument();
@@ -50,11 +47,9 @@ describe('BuildList', () => {
 
   it('should show build details', async () => {
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <BuildList />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     userEvent.click(
@@ -70,11 +65,9 @@ describe('BuildList', () => {
       .mockRejectedValue({ message });
 
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <BuildList />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText(message)).toBeInTheDocument();

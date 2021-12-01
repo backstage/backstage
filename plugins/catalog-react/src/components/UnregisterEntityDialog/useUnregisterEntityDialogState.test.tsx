@@ -31,7 +31,7 @@ import {
   UseUnregisterEntityDialogState,
   useUnregisterEntityDialogState,
 } from './useUnregisterEntityDialogState';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { TestApiProvider } from '@backstage/test-utils';
 
 function defer<T>(): { promise: Promise<T>; resolve: (value: T) => void } {
   let resolve: (value: T) => void = () => {};
@@ -51,9 +51,9 @@ describe('useUnregisterEntityDialogState', () => {
   const catalogApi = catalogApiMock as Partial<CatalogApi> as CatalogApi;
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ApiProvider apis={ApiRegistry.with(catalogApiRef, catalogApi)}>
+    <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
       {children}
-    </ApiProvider>
+    </TestApiProvider>
   );
 
   let entity: Entity;

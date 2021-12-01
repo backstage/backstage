@@ -26,11 +26,11 @@ export class ExitCodeError extends CustomError {
   readonly code: number;
 
   constructor(code: number, command?: string) {
-    if (command) {
-      super(`Command '${command}' exited with code ${code}`);
-    } else {
-      super(`Child exited with code ${code}`);
-    }
+    super(
+      command
+        ? `Command '${command}' exited with code ${code}`
+        : `Child exited with code ${code}`,
+    );
     this.code = code;
   }
 }

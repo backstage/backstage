@@ -21,6 +21,7 @@ import {
   PageWithHeader,
   SupportButton,
   TableColumn,
+  TableProps,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -56,11 +57,13 @@ const defaultColumns: TableColumn<CatalogTableRow>[] = [
 type ApiExplorerPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
+  actions?: TableProps<CatalogTableRow>['actions'];
 };
 
 export const ApiExplorerPage = ({
   initiallySelectedFilter = 'all',
   columns,
+  actions,
 }: ApiExplorerPageProps) => {
   const configApi = useApi(configApiRef);
   const generatedSubtitle = `${
@@ -94,7 +97,10 @@ export const ApiExplorerPage = ({
               <EntityTagPicker />
             </FilterContainer>
             <EntityListContainer>
-              <CatalogTable columns={columns || defaultColumns} />
+              <CatalogTable
+                columns={columns || defaultColumns}
+                actions={actions}
+              />
             </EntityListContainer>
           </FilteredEntityLayout>
         </EntityListProvider>

@@ -16,6 +16,11 @@
 
 import { ProfileInfo, BackstageIdentity } from '@backstage/core-plugin-api';
 
+/**
+ * Session information for GitHub auth.
+ *
+ * @public
+ */
 export type GithubSession = {
   providerInfo: {
     accessToken: string;

@@ -21,12 +21,27 @@ import {
 } from '@backstage/integration';
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 
+/**
+ * Factory class for creating {@link @backstage/integration#ScmIntegrationRegistry} instances.
+ *
+ * @public
+ */
 export class ScmIntegrationsApi {
+  /**
+   * Instantiates an {@link @backstage/integration#ScmIntegrationRegistry}.
+   *
+   * @param config - The root of the config hierarchy.
+   */
   static fromConfig(config: Config): ScmIntegrationRegistry {
     return ScmIntegrations.fromConfig(config);
   }
 }
 
+/**
+ * The API that holds all configured SCM integrations.
+ *
+ * @public
+ */
 export const scmIntegrationsApiRef: ApiRef<ScmIntegrationRegistry> =
   createApiRef({
     id: 'integration.scmintegrations',

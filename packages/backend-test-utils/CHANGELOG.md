@@ -1,5 +1,32 @@
 # @backstage/backend-test-utils
 
+## 0.1.9
+
+### Patch Changes
+
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- Updated dependencies
+  - @backstage/cli@0.9.0
+  - @backstage/backend-common@0.9.10
+
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.7
+  - @backstage/cli@0.8.0
+
+## 0.1.7
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/config@0.1.9
+  - @backstage/backend-common@0.9.2
+  - @backstage/cli@0.7.11
+
 ## 0.1.6
 
 ### Patch Changes

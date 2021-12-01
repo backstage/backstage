@@ -1,5 +1,76 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.12
+
+### Patch Changes
+
+- 950b36393c: Supply featureFlags using featureFlag config option.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.11.11
+
+### Patch Changes
+
+- 4576f82858: Fixed generation of sample data in the example Cost Insights client
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.11.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.11.9
+
+### Patch Changes
+
+- 957e4b3351: Updated dependencies
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+
+## 0.11.8
+
+### Patch Changes
+
+- 6c02579445: Added optional currencies config to allow overriding the default currencies.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
+## 0.11.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/config@0.1.10
+
+## 0.11.6
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.11.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.4.0
+
 ## 0.11.4
 
 ### Patch Changes

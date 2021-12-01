@@ -23,7 +23,7 @@ import {
 import { AllureApiClient, allureApiRef } from './api';
 
 export const allureRouteRef = createRouteRef({
-  title: 'allure-report',
+  id: 'allure',
 });
 
 export const allurePlugin = createPlugin({
@@ -44,6 +44,7 @@ export const allurePlugin = createPlugin({
 
 export const EntityAllureReportContent = allurePlugin.provide(
   createRoutableExtension({
+    name: 'EntityAllureReportContent',
     component: () =>
       import('./components/AllureReportComponent').then(
         m => m.AllureReportComponent,

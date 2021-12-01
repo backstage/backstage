@@ -15,28 +15,46 @@
  */
 
 import { ApiRef, createApiRef } from '../system';
-import { Observable } from '../../types';
+import { Observable } from '@backstage/types';
 
 /**
  * Mirrors the JavaScript Error class, for the purpose of
  * providing documentation and optional fields.
+ *
+ * @public
  */
-type Error = {
+export type ErrorApiError = {
   name: string;
   message: string;
   stack?: string;
 };
 
 /**
- * Provides additional information about an error that was posted to the application.
+ * @public
+ * @deprecated Use ErrorApiError instead
  */
-export type ErrorContext = {
+export type Error = ErrorApiError;
+
+/**
+ * Provides additional information about an error that was posted to the application.
+ *
+ * @public
+ */
+export type ErrorApiErrorContext = {
   // If set to true, this error should not be displayed to the user. Defaults to false.
   hidden?: boolean;
 };
 
 /**
+ * @public
+ * @deprecated Use ErrorApiErrorContext instead
+ */
+export type ErrorContext = ErrorApiErrorContext;
+
+/**
  * The error API is used to report errors to the app, and display them to the user.
+ *
+ * @remarks
  *
  * Plugins can use this API as a method of displaying errors to the user, but also
  * to report errors for collection by error reporting services.
@@ -49,19 +67,29 @@ export type ErrorContext = {
  * if it would be useful to collect or log it for debugging purposes, but with
  * the hidden flag set. For example, an error arising from form field validation
  * should probably not be reported, while a failed REST call would be useful to report.
+ *
+ * @public
  */
 export type ErrorApi = {
   /**
    * Post an error for handling by the application.
    */
-  post(error: Error, context?: ErrorContext): void;
+  post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
 
   /**
    * Observe errors posted by other parts of the application.
    */
-  error$(): Observable<{ error: Error; context?: ErrorContext }>;
+  error$(): Observable<{
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
+  }>;
 };
 
+/**
+ * The {@link ApiRef} of {@link ErrorApi}.
+ *
+ * @public
+ */
 export const errorApiRef: ApiRef<ErrorApi> = createApiRef({
   id: 'core.error',
 });

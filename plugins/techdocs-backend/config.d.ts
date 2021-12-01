@@ -83,12 +83,12 @@ export interface Config {
                * User access key id
                * @visibility secret
                */
-              accessKeyId: string;
+              accessKeyId?: string;
               /**
                * User secret access key
                * @visibility secret
                */
-              secretAccessKey: string;
+              secretAccessKey?: string;
               /**
                * ARN of role to be assumed
                * @visibility backend
@@ -121,6 +121,14 @@ export interface Config {
              * @visibility backend
              */
             s3ForcePathStyle?: boolean;
+
+            /**
+             * (Optional) AWS Server Side Encryption
+             * Defaults to undefined.
+             * If not set, encrypted buckets will fail to publish.
+             * https://docs.aws.amazon.com/AmazonS3/latest/userguide/specifying-s3-encryption.html
+             */
+            sse?: 'aws:kms' | 'AES256';
           };
         }
       | {
@@ -219,14 +227,14 @@ export interface Config {
         };
 
     /**
-     * @example http://localhost:7000/api/techdocs
+     * @example http://localhost:7007/api/techdocs
      * @visibility frontend
      * @deprecated
      */
     requestUrl?: string;
 
     /**
-     * @example http://localhost:7000/api/techdocs/static/docs
+     * @example http://localhost:7007/api/techdocs/static/docs
      * @deprecated
      */
     storageUrl?: string;

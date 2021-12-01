@@ -27,9 +27,11 @@ nav:
       - Key Concepts: 'getting-started/concepts.md'
       - Contributors: 'getting-started/contributors.md'
       - Project Structure: 'getting-started/project-structure.md'
-  - CLI:
-      - Overview: 'cli/index.md'
-      - Commands: 'cli/commands.md'
+  - Local Development:
+      - CLI:
+          - Overview: 'local-dev/cli-overview.md'
+          - Commands: 'local-dev/cli-commands.md'
+      - Linking in Local Packages: 'local-dev/linking-local-packages.md'
   - Core Features:
       - Software Catalog:
           - Overview: 'features/software-catalog/index.md'
@@ -59,13 +61,13 @@ nav:
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Templates (Legacy): 'features/software-templates/legacy.md'
           - Migrating from v1alpha1 to v1beta2 templates: 'features/software-templates/migrating-from-v1alpha1-to-v1beta2.md'
-
       - Backstage Search:
           - Overview: 'features/search/README.md'
           - Getting Started: 'features/search/getting-started.md'
           - Concepts: 'features/search/concepts.md'
           - Search Architecture: 'features/search/architecture.md'
           - Search Engines: 'features/search/search-engines.md'
+          - HOW TO guides: 'features/search/how-to-guides.md'
       - TechDocs:
           - Overview: 'features/techdocs/README.md'
           - Getting Started: 'features/techdocs/getting-started.md'
@@ -75,6 +77,7 @@ nav:
           - TechDocs Configuration Options: 'features/techdocs/configuration.md'
           - Using Cloud Storage: 'features/techdocs/using-cloud-storage.md'
           - Configuring CI/CD to generate and publish TechDocs sites: 'features/techdocs/configuring-ci-cd.md'
+          - CLI: 'features/techdocs/cli.md'
           - HOW TO guides: 'features/techdocs/how-to-guides.md'
           - Troubleshooting: 'features/techdocs/troubleshooting.md'
           - FAQ: 'features/techdocs/FAQ.md'
@@ -82,8 +85,10 @@ nav:
       - Overview: 'integrations/index.md'
       - AWS S3:
           - Locations: 'integrations/aws-s3/locations.md'
+          - Discovery: 'integrations/aws-s3/discovery.md'
       - Azure:
           - Locations: 'integrations/azure/locations.md'
+          - Discovery: 'integrations/azure/discovery.md'
           - Org Data: 'integrations/azure/org.md'
       - Bitbucket:
           - Locations: 'integrations/bitbucket/locations.md'
@@ -96,8 +101,7 @@ nav:
           - Org Data: 'integrations/github/org.md'
       - GitLab:
           - Locations: 'integrations/gitlab/locations.md'
-      - Google Analytics:
-          - Installation: 'integrations/google-analytics/installation.md'
+          - Discovery: 'integrations/gitlab/discovery.md'
       - Google GCS:
           - Locations: 'integrations/google-cloud-storage/locations.md'
       - LDAP:
@@ -110,7 +114,8 @@ nav:
       - Structure of a plugin: 'plugins/structure-of-a-plugin.md'
       - Plugin Development: 'plugins/plugin-development.md'
       - Integrate into the Software Catalog: 'plugins/integrating-plugin-into-software-catalog.md'
-      - Composability System Migration: 'plugins/composability.md'
+      - Composability System: 'plugins/composability.md'
+      - Plugin Analytics: 'plugins/analytics.md'
       - Backends and APIs:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'
@@ -139,6 +144,7 @@ nav:
           - Google: 'auth/google/provider.md'
           - Okta: 'auth/okta/provider.md'
           - OneLogin: 'auth/onelogin/provider.md'
+          - Bitbucket: 'auth/bitbucket/provider.md'
       - Adding authentication providers: 'auth/add-auth-provider.md'
       - Using authentication and identity: 'auth/using-auth.md'
       - Sign in resolvers: 'auth/identity-resolver.md'
@@ -156,19 +162,16 @@ nav:
       - Design: 'dls/design.md'
       - Contributing to Storybook: 'dls/contributing-to-storybook.md'
       - Figma: 'dls/figma.md'
-  - API references:
-      - TypeScript API:
+  - API Reference:
+      - Guides:
           - Utility APIs: 'api/utility-apis.md'
-          - reference/utility-apis/README: 'reference/utility-apis/README.md'
-          - createPlugin: 'reference/createPlugin.md'
-          - createPlugin -feature flags: 'reference/createPlugin-feature-flags.md'
-      - Backend APIs:
-          - Backend: 'api/backend.md'
+      - Deprecations: 'api/deprecations.md'
   - Tutorials:
       - Future developer journey: 'tutorials/journey.md'
       - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'
       - Adding Custom Plugin to Existing Monorepo App: 'tutorials/quickstart-app-plugin.md'
       - Switching Backstage from SQLite to PostgreSQL: 'tutorials/switching-sqlite-postgres.md'
+      - Using the Backstage Proxy from Within a Plugin: 'tutorials/using-backstage-proxy-within-plugin.md'
   - Architecture Decision Records (ADRs):
       - Overview: 'architecture-decisions/index.md'
       - ADR001 - Architecture Decision Record (ADR) log: 'architecture-decisions/adr001-add-adr-log.md'

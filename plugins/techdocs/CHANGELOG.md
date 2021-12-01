@@ -1,5 +1,202 @@
 # @backstage/plugin-techdocs
 
+## 0.12.7
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.12.6
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- c1858c4cf9: Fixed entity triplet case handling for certain locales.
+- f7703981a9: Use a better checkbox rendering in a task list.
+- e266687580: Updates reader component used to display techdocs documentation. A previous change made this component not usable out of a page which don't have entityRef in url parameters. Reader component EntityRef parameter is now used instead of url parameters. Techdocs documentation component can now be used in our custom pages.
+- Updated dependencies
+  - @backstage/plugin-catalog@0.7.3
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/plugin-search@0.4.18
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/integration-react@0.1.14
+
+## 0.12.5
+
+### Patch Changes
+
+- fe5738fe1c: Lazy load `LazyLog` as it is rarely used.
+- 53c9ad7e04: Update font weight for headings in TechDocs
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/plugin-search@0.4.17
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
+## 0.12.4
+
+### Patch Changes
+
+- a9a8c6f7c5: Reader will now scroll to the top of the page when navigating between pages
+- 106a5dc3ad: Restore original casing for `kind`, `namespace` and `name` in `DefaultTechDocsCollator`.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/core-components@0.7.2
+  - @backstage/integration-react@0.1.13
+  - @backstage/plugin-catalog-react@0.6.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/plugin-search@0.4.16
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.12.3
+
+### Patch Changes
+
+- ba5b75ed2f: Add `<EntityListDocsGrid>` as an alternative to `<EntityListDocsTable>` that
+  shows a grid of card instead of table.
+
+  Extend `<DocsCardGrid>` to display the entity title of the entity instead of the
+  name if available.
+
+- 177401b571: Display entity title (if defined) in titles of TechDocs search results
+- cdf8ca6111: Only replace the shadow dom if the content is changed to avoid a flickering UI.
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/errors@0.1.3
+  - @backstage/core-plugin-api@0.1.11
+  - @backstage/plugin-catalog@0.7.2
+  - @backstage/plugin-catalog-react@0.6.1
+  - @backstage/catalog-model@0.9.5
+
+## 0.12.2
+
+### Patch Changes
+
+- 76fef740fe: Refactored `<Reader />` component internals to support future extensibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/plugin-catalog@0.7.1
+  - @backstage/integration@0.6.8
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+  - @backstage/plugin-search@0.4.15
+  - @backstage/integration-react@0.1.12
+
+## 0.12.1
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog@0.7.0
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+  - @backstage/integration@0.6.7
+  - @backstage/plugin-search@0.4.14
+
+## 0.12.0
+
+### Minor Changes
+
+- 82bb0842a3: Adds support for being able to customize and compose your TechDocs reader page in the App.
+
+  You can likely upgrade to this version without issue. If, however, you have
+  imported the `<Reader />` component in your custom code, the name of a property
+  has changed. You will need to make the following change anywhere you use it:
+
+  ```diff
+  -<Reader entityId={value} />
+  +<Reader entityRef={value} />
+  ```
+
+### Patch Changes
+
+- 79ebee7a6b: Add "data-testid" for e2e tests and fix techdocs entity not found error.
+- 3df2e8532b: Fixed the URL for the "Click to copy documentation link to clipboard" action
+- 0a8bec0877: Added a check for the TechDocs annotation on the entity
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/integration-react@0.1.11
+  - @backstage/plugin-catalog@0.6.17
+  - @backstage/plugin-catalog-react@0.5.1
+  - @backstage/plugin-search@0.4.13
+
+## 0.11.3
+
+### Patch Changes
+
+- be13dfe61a: Make techdocs context search bar width adjust on smaller screens.
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/plugin-catalog@0.6.16
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+  - @backstage/integration-react@0.1.10
+  - @backstage/plugin-search@0.4.12
+
+## 0.11.2
+
+### Patch Changes
+
+- 1d346ba903: Modify TechDocsCollator to be aware of new TechDocs URL pattern. Modify tech docs in context search to use correct casing when creating initial filter.
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/integration-react@0.1.9
+  - @backstage/plugin-catalog@0.6.15
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/plugin-search@0.4.11
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.11.1
+
+### Patch Changes
+
+- 30ed662a3: Adding in-context search to TechDocs Reader component. Using existing search-backend to query for indexed search results scoped into a specific entity's techdocs. Needs TechDocsCollator enabled on the backend to work.
+
+  Adding extra information to indexed tech docs documents for search.
+
+- 434dfc5d4: Display [metadata.title](https://backstage.io/docs/features/software-catalog/descriptor-format#title-optional) for components on the TechDocs homepage, if defined; otherwise fall back to `metadata.name` as displayed before.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/plugin-catalog@0.6.14
+  - @backstage/plugin-search@0.4.9
+  - @backstage/catalog-model@0.9.1
+  - @backstage/integration-react@0.1.8
+
 ## 0.11.0
 
 ### Minor Changes

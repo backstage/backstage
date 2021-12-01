@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { makeStyles, Tooltip, TooltipProps } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
 import React, { useState } from 'react';
 import TextTruncate, { TextTruncateProps } from 'react-text-truncate';
 
@@ -26,13 +27,18 @@ type Props = {
   placement?: TooltipProps['placement'];
 };
 
-const useStyles = makeStyles({
-  container: {
-    overflow: 'visible !important',
-  },
-});
+export type OverflowTooltipClassKey = 'container';
 
-export const OverflowTooltip = (props: Props) => {
+const useStyles = makeStyles(
+  {
+    container: {
+      overflow: 'visible !important',
+    },
+  },
+  { name: 'BackstageOverflowTooltip' },
+);
+
+export function OverflowTooltip(props: Props) {
   const [hover, setHover] = useState(false);
   const classes = useStyles();
 
@@ -54,4 +60,4 @@ export const OverflowTooltip = (props: Props) => {
       />
     </Tooltip>
   );
-};
+}

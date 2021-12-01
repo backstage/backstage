@@ -25,22 +25,19 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '',
-  title: 'Lighthouse',
+  id: 'lighthouse',
 });
 
 export const viewAuditRouteRef = createRouteRef({
-  path: 'audit/:id',
-  title: 'View Lighthouse Audit',
+  id: 'lighthouse:audit',
 });
 
 export const createAuditRouteRef = createRouteRef({
-  path: 'create-audit',
-  title: 'Create Lighthouse Audit',
+  id: 'lighthouse:create-audit',
 });
 
 export const entityContentRouteRef = createRouteRef({
-  title: 'Lighthouse Entity Content',
+  id: 'lighthouse:entity-content',
 });
 
 export const lighthousePlugin = createPlugin({
@@ -60,6 +57,7 @@ export const lighthousePlugin = createPlugin({
 
 export const LighthousePage = lighthousePlugin.provide(
   createRoutableExtension({
+    name: 'LighthousePage',
     component: () => import('./Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
@@ -67,6 +65,7 @@ export const LighthousePage = lighthousePlugin.provide(
 
 export const EntityLighthouseContent = lighthousePlugin.provide(
   createRoutableExtension({
+    name: 'EntityLighthouseContent',
     component: () => import('./Router').then(m => m.EmbeddedRouter),
     mountPoint: entityContentRouteRef,
   }),
@@ -74,6 +73,7 @@ export const EntityLighthouseContent = lighthousePlugin.provide(
 
 export const EntityLastLighthouseAuditCard = lighthousePlugin.provide(
   createComponentExtension({
+    name: 'EntityLastLighthouseAuditCard',
     component: {
       lazy: () =>
         import('./components/Cards').then(m => m.LastLighthouseAuditCard),

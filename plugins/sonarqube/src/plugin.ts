@@ -46,6 +46,7 @@ export const sonarQubePlugin = createPlugin({
 
 export const EntitySonarQubeCard = sonarQubePlugin.provide(
   createComponentExtension({
+    name: 'EntitySonarQubeCard',
     component: {
       lazy: () =>
         import('./components/SonarQubeCard').then(m => m.SonarQubeCard),

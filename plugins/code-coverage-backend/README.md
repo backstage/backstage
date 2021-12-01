@@ -31,11 +31,11 @@ POST a Cobertura XML file to `/report`
 Example:
 
 ```json
-// curl -X POST -H "Content-Type:text/xml" -d @cobertura.xml "localhost:7000/api/code-coverage/report?entity=component:default/entity-name&coverageType=cobertura"
+// curl -X POST -H "Content-Type:text/xml" -d @cobertura.xml "localhost:7007/api/code-coverage/report?entity=component:default/entity-name&coverageType=cobertura"
 {
   "links": [
     {
-      "href": "http://localhost:7000/api/code-coverage/report?entity=component:default/entity-name",
+      "href": "http://localhost:7007/api/code-coverage/report?entity=component:default/entity-name",
       "rel": "coverage"
     }
   ]
@@ -49,11 +49,11 @@ POST a JaCoCo XML file to `/report`
 Example:
 
 ```json
-// curl -X POST -H "Content-Type:text/xml" -d @jacoco.xml "localhost:7000/api/code-coverage/report?entity=component:default/entity-name&coverageType=jacoco"
+// curl -X POST -H "Content-Type:text/xml" -d @jacoco.xml "localhost:7007/api/code-coverage/report?entity=component:default/entity-name&coverageType=jacoco"
 {
   "links": [
     {
-      "href": "http://localhost:7000/api/code-coverage/report?entity=component:default/entity-name",
+      "href": "http://localhost:7007/api/code-coverage/report?entity=component:default/entity-name",
       "rel": "coverage"
     }
   ]
@@ -67,7 +67,7 @@ GET `/report`
 Example:
 
 ```json
-// curl localhost:7000/api/code-coverage/report?entity=component:default/entity-name
+// curl localhost:7007/api/code-coverage/report?entity=component:default/entity-name
 {
   "aggregate": {
     "branch": {
@@ -111,7 +111,7 @@ GET `/history`
 Example
 
 ```json
-// curl localhost:7000/api/code-coverage/history?entity=component:default/entity-name
+// curl localhost:7007/api/code-coverage/history?entity=component:default/entity-name
 {
   "entity": {
     "kind": "Component",

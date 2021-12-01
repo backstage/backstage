@@ -17,7 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
-import { getEntityName } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { createTemplateAction } from '../../createTemplateAction';
 
 export function createCatalogRegisterAction(options: {
@@ -27,8 +27,8 @@ export function createCatalogRegisterAction(options: {
   const { catalogClient, integrations } = options;
 
   return createTemplateAction<
-    | { catalogInfoUrl: string }
-    | { repoContentsUrl: string; catalogInfoPath?: string }
+    | { catalogInfoUrl: string; optional?: boolean }
+    | { repoContentsUrl: string; catalogInfoPath?: string; optional?: boolean }
   >({
     id: 'catalog:register',
     description:
@@ -45,6 +45,12 @@ export function createCatalogRegisterAction(options: {
                 description:
                   'An absolute URL pointing to the catalog info file location',
                 type: 'string',
+              },
+              optional: {
+                title: 'Optional',
+                description:
+                  'Permit the registered location to optionally exist. Default: false',
+                type: 'boolean',
               },
             },
           },
@@ -63,6 +69,12 @@ export function createCatalogRegisterAction(options: {
                 description:
                   'A relative path from the repo root pointing to the catalog info file, defaults to /catalog-info.yaml',
                 type: 'string',
+              },
+              optional: {
+                title: 'Optional',
+                description:
+                  'Permit the registered location to optionally exist. Default: false',
+                type: 'boolean',
               },
             },
           },
@@ -93,18 +105,38 @@ export function createCatalogRegisterAction(options: {
 
       ctx.logger.info(`Registering ${catalogInfoUrl} in the catalog`);
 
-      const result = await catalogClient.addLocation(
+      await catalogClient.addLocation(
         {
           type: 'url',
           target: catalogInfoUrl,
         },
         ctx.token ? { token: ctx.token } : {},
       );
-      if (result.entities.length >= 1) {
-        const { kind, name, namespace } = getEntityName(result.entities[0]);
-        ctx.output('entityRef', `${kind}:${namespace}/${name}`);
-        ctx.output('catalogInfoUrl', catalogInfoUrl);
+
+      try {
+        const result = await catalogClient.addLocation(
+          {
+            dryRun: true,
+            type: 'url',
+            target: catalogInfoUrl,
+          },
+          ctx.token ? { token: ctx.token } : {},
+        );
+
+        if (result.entities.length > 0) {
+          const { entities } = result;
+          const entity =
+            entities.find(e => !e.metadata.name.startsWith('generated-')) ??
+            entities[0];
+          ctx.output('entityRef', stringifyEntityRef(entity));
+        }
+      } catch (e) {
+        if (!input.optional) {
+          throw e;
+        }
       }
+
+      ctx.output('catalogInfoUrl', catalogInfoUrl);
     },
   });
 }

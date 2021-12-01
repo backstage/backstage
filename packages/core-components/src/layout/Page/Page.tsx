@@ -16,25 +16,31 @@
 
 import React, { PropsWithChildren } from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, ThemeProvider } from '@material-ui/core';
+import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    display: 'grid',
-    gridTemplateAreas:
-      "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
-    gridTemplateRows: 'max-content auto 1fr',
-    gridTemplateColumns: 'auto 1fr auto',
-    height: '100vh',
-    overflowY: 'auto',
-  },
-}));
+export type PageClassKey = 'root';
+
+const useStyles = makeStyles(
+  () => ({
+    root: {
+      display: 'grid',
+      gridTemplateAreas:
+        "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
+      gridTemplateRows: 'max-content auto 1fr',
+      gridTemplateColumns: 'auto 1fr auto',
+      height: '100vh',
+      overflowY: 'auto',
+    },
+  }),
+  { name: 'BackstagePage' },
+);
 
 type Props = {
   themeId: string;
 };
 
-export const Page = ({ themeId, children }: PropsWithChildren<Props>) => {
+export function Page(props: PropsWithChildren<Props>) {
+  const { themeId, children } = props;
   const classes = useStyles();
   return (
     <ThemeProvider
@@ -46,4 +52,4 @@ export const Page = ({ themeId, children }: PropsWithChildren<Props>) => {
       <div className={classes.root}>{children}</div>
     </ThemeProvider>
   );
-};
+}

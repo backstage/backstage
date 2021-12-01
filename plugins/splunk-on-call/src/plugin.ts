@@ -24,9 +24,7 @@ import {
   createComponentExtension,
 } from '@backstage/core-plugin-api';
 
-export const rootRouteRef = createRouteRef({
-  title: 'splunk-on-call',
-});
+export const rootRouteRef = createRouteRef({ id: 'splunk-on-call' });
 
 export const splunkOnCallPlugin = createPlugin({
   id: 'splunk-on-call',
@@ -45,6 +43,7 @@ export const splunkOnCallPlugin = createPlugin({
 
 export const SplunkOnCallPage = splunkOnCallPlugin.provide(
   createRoutableExtension({
+    name: 'SplunkOnCallPage',
     component: () =>
       import('./components/SplunkOnCallPage').then(m => m.SplunkOnCallPage),
     mountPoint: rootRouteRef,
@@ -53,6 +52,7 @@ export const SplunkOnCallPage = splunkOnCallPlugin.provide(
 
 export const EntitySplunkOnCallCard = splunkOnCallPlugin.provide(
   createComponentExtension({
+    name: 'EntitySplunkOnCallCard',
     component: {
       lazy: () =>
         import('./components/EntitySplunkOnCallCard').then(

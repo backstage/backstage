@@ -144,7 +144,8 @@ spec:
 
 Note that to be able to read from targets that are outside of the normal
 integration points such as `github.com`, you'll need to explicitly allow it by
-adding an entry in the `backend.reading.allow` list. For example:
+adding an entry in the `backend.reading.allow` list. Paths can be specified to
+further restrict targets For example:
 
 ```yml
 backend:
@@ -153,6 +154,8 @@ backend:
     allow:
       - host: example.com
       - host: '*.examples.org'
+      - host: example.net
+        paths: ['/api/']
 ```
 
 ## Common to All Kinds: The Envelope
@@ -502,6 +505,8 @@ spec:
   lifecycle: production
   owner: artist-relations-team
   system: artist-engagement-portal
+  dependsOn:
+    - resource:default/artists-db
   providesApis:
     - artist-api
 ```
@@ -619,9 +624,6 @@ The following describes the following entity kind:
 | ------------ | ---------------------- |
 | `apiVersion` | `backstage.io/v1beta2` |
 | `kind`       | `Template`             |
-
-If you're looking for docs on `v1alpha1` you can find them
-[here](../software-templates/legacy.md)
 
 A template definition describes both the parameters that are rendered in the
 frontend part of the scaffolding wizard, and the steps that are executed when

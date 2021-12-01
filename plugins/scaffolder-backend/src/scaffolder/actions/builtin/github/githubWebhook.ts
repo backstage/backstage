@@ -16,6 +16,8 @@
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
 import { OctokitProvider } from './OctokitProvider';
+import { emitterEventNames } from '@octokit/webhooks';
+import { assertError } from '@backstage/errors';
 
 type ContentType = 'form' | 'json';
 
@@ -25,6 +27,7 @@ export function createGithubWebhookAction(options: {
 }) {
   const { integrations, defaultWebhookSecret } = options;
   const octokitProvider = new OctokitProvider(integrations);
+  const eventNames = emitterEventNames.filter(event => !event.includes('.'));
 
   return createTemplateAction<{
     repoUrl: string;
@@ -63,9 +66,20 @@ export function createGithubWebhookAction(options: {
             description:
               'Determines what events the hook is triggered for. Default: push',
             type: 'array',
-            items: {
-              type: 'string',
-            },
+            oneOf: [
+              {
+                items: {
+                  type: 'string',
+                  enum: eventNames,
+                },
+              },
+              {
+                items: {
+                  type: 'string',
+                  const: '*',
+                },
+              },
+            ],
           },
           active: {
             title: 'Active',
@@ -117,6 +131,7 @@ export function createGithubWebhookAction(options: {
         });
         ctx.logger.info(`Webhook '${webhookUrl}' created successfully`);
       } catch (e) {
+        assertError(e);
         ctx.logger.warn(
           `Failed: create webhook '${webhookUrl}' on repo: '${repo}', ${e.message}`,
         );

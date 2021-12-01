@@ -17,8 +17,8 @@
 import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
-  RELATION_CONSUMES_API,
-  RELATION_PROVIDES_API,
+  LOCATION_ANNOTATION,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
   HeaderIconLinkRow,
@@ -26,14 +26,14 @@ import {
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import {
+  catalogApiRef,
   getEntityMetadataEditUrl,
-  getEntityRelations,
   getEntitySourceLocation,
   useEntity,
 } from '@backstage/plugin-catalog-react';
@@ -45,10 +45,10 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core';
+import CachedIcon from '@material-ui/icons/Cached';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { viewTechDocRouteRef } from '../../routes';
 import { AboutContent } from './AboutContent';
 
@@ -82,6 +82,8 @@ export function AboutCard({ variant }: AboutCardProps) {
   const classes = useStyles();
   const { entity } = useEntity();
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  const catalogApi = useApi(catalogApiRef);
+  const alertApi = useApi(alertApiRef);
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
 
   const entitySourceLocation = getEntitySourceLocation(
@@ -89,16 +91,6 @@ export function AboutCard({ variant }: AboutCardProps) {
     scmIntegrationsApi,
   );
   const entityMetadataEditUrl = getEntityMetadataEditUrl(entity);
-  const providesApiRelations = getEntityRelations(
-    entity,
-    RELATION_PROVIDES_API,
-  );
-  const consumesApiRelations = getEntityRelations(
-    entity,
-    RELATION_CONSUMES_API,
-  );
-  const hasApis =
-    providesApiRelations.length > 0 || consumesApiRelations.length > 0;
 
   const viewInSource: IconLinkVerticalProps = {
     label: 'View Source',
@@ -120,13 +112,6 @@ export function AboutCard({ variant }: AboutCardProps) {
         name: entity.metadata.name,
       }),
   };
-  const viewApi: IconLinkVerticalProps = {
-    title: hasApis ? '' : 'No APIs available',
-    label: 'View API',
-    disabled: !hasApis,
-    icon: <ExtensionIcon />,
-    href: 'api',
-  };
 
   let cardClass = '';
   if (variant === 'gridItem') {
@@ -142,24 +127,40 @@ export function AboutCard({ variant }: AboutCardProps) {
     cardContentClass = classes.fullHeightCardContent;
   }
 
+  const isUrl =
+    entity.metadata.annotations?.[LOCATION_ANNOTATION]?.startsWith('url:');
+  const refreshEntity = useCallback(async () => {
+    await catalogApi.refreshEntity(stringifyEntityRef(entity));
+    alertApi.post({ message: 'Refresh scheduled', severity: 'info' });
+  }, [catalogApi, alertApi, entity]);
+
   return (
     <Card className={cardClass}>
       <CardHeader
         title="About"
         action={
-          <IconButton
-            component={Link}
-            aria-label="Edit"
-            disabled={!entityMetadataEditUrl}
-            title="Edit Metadata"
-            to={entityMetadataEditUrl ?? '#'}
-          >
-            <EditIcon />
-          </IconButton>
+          <>
+            {isUrl && (
+              <IconButton
+                aria-label="Refresh"
+                title="Schedule entity refresh"
+                onClick={refreshEntity}
+              >
+                <CachedIcon />
+              </IconButton>
+            )}
+            <IconButton
+              component={Link}
+              aria-label="Edit"
+              disabled={!entityMetadataEditUrl}
+              title="Edit Metadata"
+              to={entityMetadataEditUrl ?? '#'}
+            >
+              <EditIcon />
+            </IconButton>
+          </>
         }
-        subheader={
-          <HeaderIconLinkRow links={[viewInSource, viewInTechDocs, viewApi]} />
-        }
+        subheader={<HeaderIconLinkRow links={[viewInSource, viewInTechDocs]} />}
       />
       <Divider />
       <CardContent className={cardContentClass}>

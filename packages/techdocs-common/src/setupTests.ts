@@ -14,47 +14,7 @@
  * limitations under the License.
  */
 
-import os from 'os';
-import path from 'path';
-import fs from 'fs-extra';
+import { StorageFilesMock } from './testUtils/StorageFilesMock';
 
-const rootDir: string = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
-
-const encoding = 'utf8';
-
-class StorageFilesMock implements IStorageFilesMock {
-  private files: Record<string, string>;
-
-  constructor() {
-    this.files = {};
-  }
-
-  public emptyFiles(): void {
-    this.files = {};
-  }
-
-  public fileExists(targetPath: string): boolean {
-    const filePath = path.join(rootDir, targetPath);
-    const posixPath = filePath.split(path.posix.sep).join(path.sep);
-    return this.files[posixPath] !== undefined;
-  }
-
-  public readFile(targetPath: string): Buffer {
-    const filePath = path.join(rootDir, targetPath);
-    return Buffer.from(this.files[filePath] ?? '', encoding);
-  }
-
-  public writeFile(targetPath: string, sourcePath: string): void;
-  public writeFile(targetPath: string, sourceBuffer: Buffer): void;
-  public writeFile(targetPath: string, source: string | Buffer): void {
-    const filePath = path.join(rootDir, targetPath);
-    if (typeof source === 'string') {
-      this.files[filePath] = fs.readFileSync(source).toString(encoding);
-    } else {
-      this.files[filePath] = source.toString(encoding);
-    }
-  }
-}
-
-global.rootDir = rootDir;
-global.storageFilesMock = new StorageFilesMock();
+(global as any).rootDir = StorageFilesMock.rootDir;
+(global as any).storageFilesMock = new StorageFilesMock();

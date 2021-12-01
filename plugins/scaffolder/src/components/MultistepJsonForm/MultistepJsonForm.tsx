@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import {
   Box,
   Button,
@@ -24,6 +24,7 @@ import {
   Stepper,
   Typography,
 } from '@material-ui/core';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
@@ -44,7 +45,7 @@ type Props = {
   formData: Record<string, any>;
   onChange: (e: IChangeEvent) => void;
   onReset: () => void;
-  onFinish: () => void;
+  onFinish: () => Promise<void>;
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
 };
@@ -112,6 +113,8 @@ export const MultistepJsonForm = ({
   widgets,
 }: Props) => {
   const [activeStep, setActiveStep] = useState(0);
+  const [disableButtons, setDisableButtons] = useState(false);
+  const errorApi = useApi(errorApiRef);
 
   const handleReset = () => {
     setActiveStep(0);
@@ -121,6 +124,15 @@ export const MultistepJsonForm = ({
     setActiveStep(Math.min(activeStep + 1, steps.length));
   };
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
+  const handleCreate = async () => {
+    setDisableButtons(true);
+    try {
+      await onFinish();
+    } catch (err) {
+      setDisableButtons(false);
+      errorApi.post(err);
+    }
+  };
 
   return (
     <>
@@ -172,9 +184,18 @@ export const MultistepJsonForm = ({
               metadata={getReviewData(formData, steps)}
             />
             <Box mb={4} />
-            <Button onClick={handleBack}>Back</Button>
-            <Button onClick={handleReset}>Reset</Button>
-            <Button variant="contained" color="primary" onClick={onFinish}>
+            <Button onClick={handleBack} disabled={disableButtons}>
+              Back
+            </Button>
+            <Button onClick={handleReset} disabled={disableButtons}>
+              Reset
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCreate}
+              disabled={disableButtons}
+            >
               Create
             </Button>
           </Paper>

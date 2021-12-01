@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { deserializeError } from '../serialization';
 import {
-  parseErrorResponse,
-  ErrorResponse,
-  deserializeError,
-} from '../serialization';
+  ErrorResponseBody,
+  parseErrorResponseBody,
+} from '../serialization/response';
 
 /**
  * An error thrown as the result of a failed server request.
  *
- * The server is expected to respond on the ErrorResponse format.
+ * The server is expected to respond on the ErrorResponseBody format.
+ *
+ * @public
  */
 export class ResponseError extends Error {
   /**
@@ -37,7 +39,7 @@ export class ResponseError extends Error {
   /**
    * The parsed JSON error body, as sent by the server.
    */
-  readonly data: ErrorResponse;
+  readonly body: ErrorResponseBody;
 
   /**
    * The Error cause, as seen by the remote server. This is parsed out of the
@@ -58,7 +60,7 @@ export class ResponseError extends Error {
    * been consumed before.
    */
   static async fromResponse(response: Response): Promise<ResponseError> {
-    const data = await parseErrorResponse(response);
+    const data = await parseErrorResponseBody(response);
 
     const status = data.response.statusCode || response.status;
     const statusText = data.error.name || response.statusText;
@@ -73,16 +75,28 @@ export class ResponseError extends Error {
     });
   }
 
+  /**
+   * @deprecated will be removed.
+   **/
   constructor(props: {
     message: string;
     response: Response;
-    data: ErrorResponse;
+    data: ErrorResponseBody;
     cause: Error;
   }) {
     super(props.message);
     this.name = 'ResponseError';
     this.response = props.response;
-    this.data = props.data;
+    this.body = props.data;
     this.cause = props.cause;
+  }
+  /**
+   * The parsed JSON error body, as sent by the server.
+   * @deprecated use body instead.
+   */
+  get data(): ErrorResponseBody {
+    // eslint-disable-next-line no-console
+    console.warn('ErrorResponse.data is deprecated, use .body instead.');
+    return this.body;
   }
 }

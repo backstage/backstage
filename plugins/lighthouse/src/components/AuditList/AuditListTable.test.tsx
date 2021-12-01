@@ -16,7 +16,11 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInTestApp, msw } from '@backstage/test-utils';
+import {
+  wrapInTestApp,
+  setupRequestMockHandlers,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import AuditListTable from './AuditListTable';
 
 import {
@@ -28,19 +32,20 @@ import { formatTime } from '../../utils';
 import { setupServer } from 'msw/node';
 import * as data from '../../__fixtures__/website-list-response.json';
 
-import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 
 const websiteListResponse = data as WebsiteListResponse;
 
 describe('AuditListTable', () => {
-  let apis: ApiRegistry;
+  let apis: TestApiRegistry;
 
   const server = setupServer();
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   beforeEach(() => {
-    apis = ApiRegistry.from([
-      [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
+    apis = TestApiRegistry.from([
+      lighthouseApiRef,
+      new LighthouseRestApi('http://lighthouse'),
     ]);
   });
 

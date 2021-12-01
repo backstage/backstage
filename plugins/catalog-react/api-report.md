@@ -15,15 +15,41 @@ import { Context } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { IconButton } from '@material-ui/core';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinkProps } from '@backstage/core-components';
+import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { StorageApi } from '@backstage/core-plugin-api';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { UserEntity } from '@backstage/catalog-model';
+
+// @public
+export const AsyncEntityProvider: ({
+  children,
+  entity,
+  loading,
+  error,
+  refresh,
+}: AsyncEntityProviderProps) => JSX.Element;
+
+// @public
+export interface AsyncEntityProviderProps {
+  // (undocumented)
+  children: ReactNode;
+  // (undocumented)
+  entity?: Entity;
+  // (undocumented)
+  error?: Error;
+  // (undocumented)
+  loading: boolean;
+  // (undocumented)
+  refresh?: VoidFunction;
+}
 
 export { CATALOG_FILTER_EXISTS };
 
@@ -108,10 +134,20 @@ export type DefaultEntityFilters = {
   text?: EntityTextFilter;
 };
 
+// @public
+export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
+  constructor(opts: { storageApi: StorageApi });
+  // (undocumented)
+  isStarred(entityRef: string): boolean;
+  // (undocumented)
+  starredEntitie$(): Observable<Set<string>>;
+  // (undocumented)
+  toggleStarred(entityRef: string): Promise<void>;
+}
+
 // Warning: (ae-forgotten-export) The symbol "EntityLoadingStatus" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EntityContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const EntityContext: Context<EntityLoadingStatus>;
 
 // Warning: (ae-missing-release-tag) "EntityFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -199,14 +235,19 @@ export class EntityOwnerFilter implements EntityFilter {
 // @public (undocumented)
 export const EntityOwnerPicker: () => JSX.Element | null;
 
-// Warning: (ae-forgotten-export) The symbol "EntityProviderProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EntityProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const EntityProvider: ({
   entity,
   children,
 }: EntityProviderProps) => JSX.Element;
+
+// @public
+export interface EntityProviderProps {
+  // (undocumented)
+  children: ReactNode;
+  // (undocumented)
+  entity?: Entity;
+}
 
 // Warning: (ae-forgotten-export) The symbol "EntityRefLinkProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "EntityRefLink" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -230,13 +271,14 @@ export const EntityRefLink: React_2.ForwardRefExoticComponent<
     | 'children'
     | 'key'
     | 'id'
+    | 'className'
     | 'classes'
+    | 'innerRef'
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
     | 'suppressHydrationWarning'
     | 'accessKey'
-    | 'className'
     | 'contentEditable'
     | 'contextMenu'
     | 'draggable'
@@ -477,7 +519,6 @@ export const EntityRefLink: React_2.ForwardRefExoticComponent<
     | 'onTransitionEndCapture'
     | 'component'
     | 'variant'
-    | 'innerRef'
     | 'download'
     | 'href'
     | 'hrefLang'
@@ -618,10 +659,20 @@ export class EntityTypeFilter implements EntityFilter {
   readonly value: string | string[];
 }
 
+// Warning: (ae-missing-release-tag) "EntityTypeFilterProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type EntityTypeFilterProps = {
+  initialFilter?: string;
+  hidden?: boolean;
+};
+
 // Warning: (ae-missing-release-tag) "EntityTypePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityTypePicker: () => JSX.Element | null;
+export const EntityTypePicker: (
+  props: EntityTypeFilterProps,
+) => JSX.Element | null;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
@@ -686,6 +737,17 @@ export function getEntitySourceLocation(
 // @public
 export function isOwnerOf(owner: Entity, owned: Entity): boolean;
 
+// @public
+export function loadCatalogOwnerRefs(
+  catalogApi: CatalogApi,
+  identityOwnerRefs: string[],
+): Promise<string[]>;
+
+// @public
+export function loadIdentityOwnerRefs(
+  identityApi: IdentityApi,
+): Promise<string[]>;
+
 // Warning: (ae-missing-release-tag) "MockEntityListContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -715,6 +777,15 @@ export function reduceEntityFilters(
 // @public (undocumented)
 export const rootRoute: RouteRef<undefined>;
 
+// @public
+export interface StarredEntitiesApi {
+  starredEntitie$(): Observable<Set<string>>;
+  toggleStarred(entityRef: string): Promise<void>;
+}
+
+// @public
+export const starredEntitiesApiRef: ApiRef<StarredEntitiesApi>;
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "UnregisterEntityDialog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -726,8 +797,6 @@ export const UnregisterEntityDialog: ({
   entity,
 }: Props_3) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "useEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function useEntity<T extends Entity = Entity>(): {
   entity: T;
@@ -766,8 +835,6 @@ export function useEntityListProvider<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters>;
 
-// Warning: (ae-missing-release-tag) "useEntityOwnership" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function useEntityOwnership(): {
   loading: boolean;
@@ -841,10 +908,18 @@ export const UserListPicker: ({
 // Warning: (ae-missing-release-tag) "useStarredEntities" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const useStarredEntities: () => {
+export function useStarredEntities(): {
   starredEntities: Set<string>;
-  toggleStarredEntity: (entity: Entity) => void;
-  isStarredEntity: (entity: Entity) => boolean;
+  toggleStarredEntity: (entityOrRef: Entity | EntityName | string) => void;
+  isStarredEntity: (entityOrRef: Entity | EntityName | string) => boolean;
+};
+
+// Warning: (ae-missing-release-tag) "useStarredEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function useStarredEntity(entityOrRef: Entity | EntityName | string): {
+  toggleStarredEntity: () => void;
+  isStarredEntity: boolean;
 };
 
 // Warnings were encountered during analysis:
@@ -857,6 +932,4 @@ export const useStarredEntities: () => {
 // src/types.d.ts:16:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/types.d.ts:22:68 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 // src/types.d.ts:22:88 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-
-// (No @packageDocumentation comment for this package)
 ```

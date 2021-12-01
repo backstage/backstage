@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export * from './actions';
+export * from './tasks';

@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  CatalogBuilder,
-  createRouter,
-} from '@backstage/plugin-catalog-backend';
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -25,20 +23,8 @@ export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
-  const {
-    entitiesCatalog,
-    locationAnalyzer,
-    processingEngine,
-    locationService,
-  } = await builder.build();
-
+  builder.addProcessor(new ScaffolderEntitiesProcessor());
+  const { processingEngine, router } = await builder.build();
   await processingEngine.start();
-
-  return await createRouter({
-    entitiesCatalog,
-    locationAnalyzer,
-    locationService,
-    logger: env.logger,
-    config: env.config,
-  });
+  return router;
 }

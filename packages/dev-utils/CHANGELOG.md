@@ -1,5 +1,77 @@
 # @backstage/dev-utils
 
+## 0.2.13
+
+### Patch Changes
+
+- 58a4e67ded: Add theme switcher to sidebar of dev app.
+- 014cbf8cb9: Migrated to using `@backstage/app-defaults`.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/core-app-api@0.1.21
+  - @backstage/test-utils@0.1.22
+  - @backstage/app-defaults@0.1.1
+  - @backstage/integration-react@0.1.14
+
+## 0.2.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/core-app-api@0.1.17
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+  - @backstage/test-utils@0.1.19
+  - @backstage/integration-react@0.1.12
+
+## 0.2.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.15
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/integration-react@0.1.11
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/core-app-api@0.1.14
+  - @backstage/integration-react@0.1.10
+
+## 0.2.9
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-model@0.9.2
+  - @backstage/core-app-api@0.1.12
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/core-app-api@0.1.11
+  - @backstage/integration-react@0.1.8
+
 ## 0.2.7
 
 ### Patch Changes

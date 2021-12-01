@@ -1,5 +1,121 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.10.9
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/backend-common@0.9.11
+  - @backstage/techdocs-common@0.10.8
+
+## 0.10.8
+
+### Patch Changes
+
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 9e64a7ac1e: Allow amazon web services s3 buckets to pass an server side encryption configuration so they can publish to encrypted buckets
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+  - @backstage/techdocs-common@0.10.7
+
+## 0.10.7
+
+### Patch Changes
+
+- b45607a2ec: Make techdocs s3 publisher credentials config schema optional.
+
+## 0.10.6
+
+### Patch Changes
+
+- 106a5dc3ad: Restore original casing for `kind`, `namespace` and `name` in `DefaultTechDocsCollator`.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/backend-common@0.9.8
+  - @backstage/catalog-model@0.9.6
+  - @backstage/search-common@0.2.1
+  - @backstage/techdocs-common@0.10.5
+
+## 0.10.5
+
+### Patch Changes
+
+- 177401b571: Display entity title (if defined) in titles of TechDocs search results
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/techdocs-common@0.10.4
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.10.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+  - @backstage/techdocs-common@0.10.3
+
+## 0.10.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
+## 0.10.2
+
+### Patch Changes
+
+- 1d346ba903: Modify TechDocsCollator to be aware of new TechDocs URL pattern. Modify tech docs in context search to use correct casing when creating initial filter.
+- Updated dependencies
+  - @backstage/backend-common@0.9.3
+  - @backstage/integration@0.6.4
+  - @backstage/techdocs-common@0.10.1
+
+## 0.10.1
+
+### Patch Changes
+
+- 30ed662a3: Adding in-context search to TechDocs Reader component. Using existing search-backend to query for indexed search results scoped into a specific entity's techdocs. Needs TechDocsCollator enabled on the backend to work.
+
+  Adding extra information to indexed tech docs documents for search.
+
+- a42a142c2: Errors encountered while attempting to load TechDocs search indices at
+  collation-time are now logged at `DEBUG` instead of `WARN` level.
+- Updated dependencies
+  - @backstage/techdocs-common@0.10.0
+  - @backstage/integration@0.6.3
+  - @backstage/search-common@0.2.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
 ## 0.10.0
 
 ### Minor Changes

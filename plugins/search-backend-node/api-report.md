@@ -67,6 +67,4 @@ export class Scheduler {
 }
 
 export { SearchEngine };
-
-// (No @packageDocumentation comment for this package)
 ```

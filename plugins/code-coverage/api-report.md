@@ -35,6 +35,4 @@ export { isCodeCoverageAvailable as isPluginApplicableToEntity };
 //
 // @public (undocumented)
 export const Router: () => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

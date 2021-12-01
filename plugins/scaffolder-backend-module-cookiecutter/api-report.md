@@ -10,14 +10,10 @@ import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-backend';
 import { UrlReader } from '@backstage/backend-common';
 
-// Warning: (ae-missing-release-tag) "createFetchCookiecutterAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createFetchCookiecutterAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   containerRunner: ContainerRunner;
 }): TemplateAction<any>;
-
-// (No @packageDocumentation comment for this package)
 ```

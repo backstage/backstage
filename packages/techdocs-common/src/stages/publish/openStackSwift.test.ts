@@ -84,7 +84,7 @@ beforeEach(() => {
   mockFs.restore();
   const mockConfig = new ConfigReader({
     techdocs: {
-      requestUrl: 'http://localhost:7000',
+      requestUrl: 'http://localhost:7007',
       publisher: {
         type: 'openStackSwift',
         openStackSwift: {
@@ -114,7 +114,7 @@ describe('OpenStackSwiftPublish', () => {
     it('should reject incorrect config', async () => {
       const mockConfig = new ConfigReader({
         techdocs: {
-          requestUrl: 'http://localhost:7000',
+          requestUrl: 'http://localhost:7007',
           publisher: {
             type: 'openStackSwift',
             openStackSwift: {
@@ -363,6 +363,22 @@ describe('OpenStackSwiftPublish', () => {
       expect(svgResponse.header).toMatchObject({
         'content-type': 'text/plain; charset=utf-8',
       });
+    });
+
+    it('should return 404 if file is not found', async () => {
+      const {
+        kind,
+        metadata: { namespace, name },
+      } = entity;
+
+      const response = await request(app).get(
+        `/${namespace}/${kind}/${name}/not-found.html`,
+      );
+      expect(response.status).toBe(404);
+
+      expect(Buffer.from(response.text).toString('utf8')).toEqual(
+        'File Not Found',
+      );
     });
   });
 });

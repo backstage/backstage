@@ -22,6 +22,4 @@ export const firehydrantPlugin: BackstagePlugin<
   },
   {}
 >;
-
-// (No @packageDocumentation comment for this package)
 ```

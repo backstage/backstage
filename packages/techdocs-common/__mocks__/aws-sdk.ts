@@ -15,10 +15,11 @@
  */
 import { EventEmitter } from 'events';
 import { ReadStream } from 'fs';
+import { IStorageFilesMock } from '../src/testUtils/types';
 
 export { Credentials } from 'aws-sdk';
 
-const storage = global.storageFilesMock;
+const storage = global.storageFilesMock as IStorageFilesMock;
 
 export class S3 {
   constructor() {

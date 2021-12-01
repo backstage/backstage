@@ -24,7 +24,7 @@
  *  If there are any updates from MUI React on testing `useMediaQuery` this mock should be replaced
  *  https://material-ui.com/components/use-media-query/#testing
  *
- * @param matchMediaOptions
+ * @public
  */
 export default function mockBreakpoint({ matches = false }) {
   Object.defineProperty(window, 'matchMedia', {

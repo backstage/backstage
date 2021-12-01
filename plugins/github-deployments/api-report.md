@@ -84,6 +84,4 @@ const GithubStateIndicator: ({ state }: { state: string }) => JSX.Element;
 //
 // @public (undocumented)
 export const isGithubDeploymentsAvailable: (entity: Entity) => boolean;
-
-// (No @packageDocumentation comment for this package)
 ```

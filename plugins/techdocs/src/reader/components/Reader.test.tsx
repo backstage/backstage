@@ -19,12 +19,12 @@ import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import React from 'react';
 import { TechDocsStorageApi, techdocsStorageApiRef } from '../../api';
 import { Reader } from './Reader';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { searchApiRef } from '@backstage/plugin-search';
 
 jest.mock('react-router-dom', () => {
@@ -41,7 +41,7 @@ const { useParams }: { useParams: jest.Mock } =
 describe('<Reader />', () => {
   it('should render Reader content', async () => {
     useParams.mockReturnValue({
-      entityId: 'Component::backstage',
+      entityRef: 'Component::backstage',
     });
 
     const scmIntegrationsApi: ScmIntegrationsApi =
@@ -57,18 +57,18 @@ describe('<Reader />', () => {
           results: [],
         }),
     };
-    const apiRegistry = ApiRegistry.from([
+    const apiRegistry = TestApiRegistry.from(
       [scmIntegrationsApiRef, scmIntegrationsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
       [searchApiRef, searchApi],
-    ]);
+    );
 
     await act(async () => {
       const rendered = render(
         wrapInTestApp(
           <ApiProvider apis={apiRegistry}>
             <Reader
-              entityId={{
+              entityRef={{
                 kind: 'Component',
                 namespace: 'default',
                 name: 'example',

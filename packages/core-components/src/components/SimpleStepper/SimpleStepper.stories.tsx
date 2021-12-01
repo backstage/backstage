@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TextField } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
 import React, { useState } from 'react';
 import { SimpleStepper } from './SimpleStepper';
 import { SimpleStepperStep } from './SimpleStepperStep';

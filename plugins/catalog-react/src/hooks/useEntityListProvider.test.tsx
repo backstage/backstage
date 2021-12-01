@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
-import qs from 'qs';
-import { act, renderHook } from '@testing-library/react-hooks';
-import { MockStorageApi } from '@backstage/test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import {
-  EntityListProvider,
-  useEntityListProvider,
-} from './useEntityListProvider';
-import { catalogApiRef } from '../api';
-import { UserListFilterKind } from '../types';
-import { EntityKindFilter, EntityTypeFilter, UserListFilter } from '../filters';
-import { EntityKindPicker, UserListPicker } from '../components';
-
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import {
   ConfigApi,
   configApiRef,
@@ -37,6 +23,19 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import { MockStorageApi, TestApiProvider } from '@backstage/test-utils';
+import { act, renderHook } from '@testing-library/react-hooks';
+import qs from 'qs';
+import React, { PropsWithChildren } from 'react';
+import { catalogApiRef } from '../api';
+import { DefaultStarredEntitiesApi, starredEntitiesApiRef } from '../apis';
+import { EntityKindPicker, UserListPicker } from '../components';
+import { EntityKindFilter, EntityTypeFilter, UserListFilter } from '../filters';
+import { UserListFilterKind } from '../types';
+import {
+  EntityListProvider,
+  useEntityListProvider,
+} from './useEntityListProvider';
 
 const entities: Entity[] = [
   {
@@ -76,12 +75,6 @@ const mockCatalogApi: Partial<CatalogApi> = {
   getEntities: jest.fn().mockImplementation(async () => ({ items: entities })),
   getEntityByName: async () => undefined,
 };
-const apis = ApiRegistry.from([
-  [configApiRef, mockConfigApi],
-  [catalogApiRef, mockCatalogApi],
-  [identityApiRef, mockIdentityApi],
-  [storageApiRef, MockStorageApi.create()],
-]);
 
 const wrapper = ({
   userFilter,
@@ -90,13 +83,26 @@ const wrapper = ({
   userFilter?: UserListFilterKind;
 }>) => {
   return (
-    <ApiProvider apis={apis}>
+    <TestApiProvider
+      apis={[
+        [configApiRef, mockConfigApi],
+        [catalogApiRef, mockCatalogApi],
+        [identityApiRef, mockIdentityApi],
+        [storageApiRef, MockStorageApi.create()],
+        [
+          starredEntitiesApiRef,
+          new DefaultStarredEntitiesApi({
+            storageApi: MockStorageApi.create(),
+          }),
+        ],
+      ]}
+    >
       <EntityListProvider>
         <EntityKindPicker initialFilter="component" hidden />
         <UserListPicker initialFilter={userFilter} />
         {children}
       </EntityListProvider>
-    </ApiProvider>
+    </TestApiProvider>
   );
 };
 

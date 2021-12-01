@@ -21,9 +21,13 @@ import {
   Extension,
   AnyRoutes,
   AnyExternalRoutes,
+  PluginFeatureFlagConfig,
 } from './types';
 import { AnyApiFactory } from '../apis';
 
+/**
+ * @internal
+ */
 export class PluginImpl<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
@@ -41,6 +45,14 @@ export class PluginImpl<
     return this.config.apis ?? [];
   }
 
+  getFeatureFlags(): Iterable<PluginFeatureFlagConfig> {
+    const registeredFlags = this.output()
+      .filter(({ type }) => type === 'feature-flag')
+      .map(({ name }) => ({ name }));
+
+    return registeredFlags;
+  }
+
   get routes(): Routes {
     return this.config.routes ?? ({} as Routes);
   }
@@ -53,11 +65,18 @@ export class PluginImpl<
     if (this.storedOutput) {
       return this.storedOutput;
     }
-    if (!this.config.register) {
-      return [];
+    const outputs = new Array<PluginOutput>();
+    this.storedOutput = outputs;
+
+    if (this.config.featureFlags) {
+      for (const flag of this.config.featureFlags) {
+        outputs.push({ type: 'feature-flag', name: flag.name });
+      }
     }
 
-    const outputs = new Array<PluginOutput>();
+    if (!this.config.register) {
+      return outputs;
+    }
 
     this.config.register({
       featureFlags: {
@@ -67,7 +86,6 @@ export class PluginImpl<
       },
     });
 
-    this.storedOutput = outputs;
     return this.storedOutput;
   }
 
@@ -80,6 +98,12 @@ export class PluginImpl<
   }
 }
 
+/**
+ * Creates Backstage Plugin from config.
+ *
+ * @param config - Plugin configuration.
+ * @public
+ */
 export function createPlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},

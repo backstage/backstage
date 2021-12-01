@@ -15,12 +15,12 @@
  */
 import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { splunkOnCallApiRef } from '../../api';
 import { TriggerDialog } from './TriggerDialog';
 
-import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
-import { alertApiRef, createApiRef } from '@backstage/core-plugin-api';
+import { ApiProvider } from '@backstage/core-app-api';
+import { alertApiRef } from '@backstage/core-plugin-api';
 
 describe('TriggerDialog', () => {
   const mockTriggerAlarmFn = jest.fn();
@@ -28,16 +28,10 @@ describe('TriggerDialog', () => {
     incidentAction: mockTriggerAlarmFn,
   };
 
-  const apis = ApiRegistry.from([
-    [
-      alertApiRef,
-      createApiRef({
-        id: 'core.alert',
-        description: 'Used to report alerts and forward them to the app',
-      }),
-    ],
+  const apis = TestApiRegistry.from(
+    [alertApiRef, {}],
     [splunkOnCallApiRef, mockSplunkOnCallApi],
-  ]);
+  );
 
   it('open the dialog and trigger an alarm', async () => {
     const { getByText, getByRole, getByTestId } = render(

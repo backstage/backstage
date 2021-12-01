@@ -47,10 +47,10 @@ jest.doMock('@octokit/rest', () => {
 });
 
 import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
-import { OAuthApi } from '@backstage/core-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
+import { ScmAuthApi } from '@backstage/integration-react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -58,13 +58,13 @@ import { CatalogImportClient } from './CatalogImportClient';
 
 describe('CatalogImportClient', () => {
   const server = setupServer();
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   const mockBaseUrl = 'http://backstage:9191/api/catalog';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
-  const githubAuthApi: jest.Mocked<OAuthApi> = {
-    getAccessToken: jest.fn(),
+  const scmAuthApi: jest.Mocked<ScmAuthApi> = {
+    getCredentials: jest.fn().mockResolvedValue({ token: 'token' }),
   };
   const identityApi = {
     getUserId: () => {
@@ -104,6 +104,8 @@ describe('CatalogImportClient', () => {
     getLocationByEntity: jest.fn(),
     getLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
   };
 
   let catalogImportClient: CatalogImportClient;
@@ -111,10 +113,15 @@ describe('CatalogImportClient', () => {
   beforeEach(() => {
     catalogImportClient = new CatalogImportClient({
       discoveryApi,
-      githubAuthApi,
+      scmAuthApi,
       scmIntegrationsApi,
       identityApi,
       catalogApi,
+      configApi: new ConfigReader({
+        app: {
+          baseUrl: 'https://demo.backstage.io/',
+        },
+      }),
     });
   });
 
@@ -440,6 +447,15 @@ describe('CatalogImportClient', () => {
         head: 'backstage-integration',
         body: 'A body',
         base: 'main',
+      });
+    });
+  });
+
+  describe('preparePullRequest', () => {
+    test('should prepare pull request details', async () => {
+      await expect(catalogImportClient.preparePullRequest()).resolves.toEqual({
+        title: 'Add catalog-info.yaml config file',
+        body: expect.any(String),
       });
     });
   });

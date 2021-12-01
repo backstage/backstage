@@ -20,6 +20,20 @@ export interface Config {
   };
 
   backend: {
+    /** Backend configuration for when request authentication is enabled */
+    auth?: {
+      /** Keys shared by all backends for signing and validating backend tokens. */
+      keys: {
+        /**
+         * Secret for generating tokens. Should be a base64 string, recommended
+         * length is 24 bytes.
+         *
+         * @visibility secret
+         */
+        secret: string;
+      }[];
+    };
+
     baseUrl: string; // defined in core, but repeated here without doc
 
     /** Address that the backend should listen to. */
@@ -69,6 +83,19 @@ export interface Config {
        * Defaults to true if unspecified.
        */
       ensureExists?: boolean;
+      /**
+       * How plugins databases are managed/divided in the provided database instance.
+       *
+       * `database` -> Plugins are each given their own database to manage their schemas/tables.
+       *
+       * `schema` -> Plugins will be given their own schema (in the specified/default database)
+       *             to manage their tables.
+       *
+       * NOTE: Currently only supported by the `pg` client.
+       *
+       * @default database
+       */
+      pluginDivisionMode?: 'database' | 'schema';
       /** Plugin specific database configuration and client override */
       plugin?: {
         [pluginId: string]: {
@@ -130,6 +157,14 @@ export interface Config {
          * The host may also contain a port, for example `example.com:8080`.
          */
         host: string;
+
+        /**
+         * An optional list of paths. In case they are present only targets matching
+         * any of them will are allowed. You can use trailing slashes to make sure only
+         * subdirectories are allowed, for example `/mydir/` will allow targets with
+         * paths like `/mydir/a` but will block paths like `/mydir2`.
+         */
+        paths?: string[];
       }>;
     };
 

@@ -21,14 +21,15 @@ import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { Header } from '@backstage/core-components';
 import {
   techdocsApiRef,
   TechDocsApi,
   techdocsStorageApiRef,
   TechDocsStorageApi,
 } from '../../api';
-import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { searchApiRef } from '@backstage/plugin-search';
 
 jest.mock('react-router-dom', () => {
@@ -53,7 +54,7 @@ global.scroll = jest.fn();
 describe('<TechDocsPage />', () => {
   it('should render techdocs page', async () => {
     useParams.mockReturnValue({
-      entityId: 'Component::backstage',
+      entityRef: 'Component::backstage',
     });
 
     const scmIntegrationsApi: ScmIntegrationsApi =
@@ -89,12 +90,12 @@ describe('<TechDocsPage />', () => {
           results: [],
         }),
     };
-    const apiRegistry = ApiRegistry.from([
+    const apiRegistry = TestApiRegistry.from(
       [scmIntegrationsApiRef, scmIntegrationsApi],
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
       [searchApiRef, searchApi],
-    ]);
+    );
 
     await act(async () => {
       const rendered = render(
@@ -105,6 +106,71 @@ describe('<TechDocsPage />', () => {
         ),
       );
       expect(rendered.getByTestId('techdocs-content')).toBeInTheDocument();
+    });
+  });
+
+  it('should render techdocs page with custom header', async () => {
+    useParams.mockReturnValue({
+      entityRef: 'Component::backstage',
+    });
+
+    const scmIntegrationsApi: ScmIntegrationsApi =
+      ScmIntegrationsApi.fromConfig(
+        new ConfigReader({
+          integrations: {},
+        }),
+      );
+    const techdocsApi: Partial<TechDocsApi> = {
+      getEntityMetadata: () =>
+        Promise.resolve({
+          apiVersion: 'v1',
+          kind: 'Component',
+          metadata: {
+            name: 'backstage',
+          },
+        }),
+      getTechDocsMetadata: () =>
+        Promise.resolve({
+          site_name: 'string',
+          site_description: 'string',
+        }),
+    };
+
+    const techdocsStorageApi: Partial<TechDocsStorageApi> = {
+      getEntityDocs: (): Promise<string> => Promise.resolve('String'),
+      getBaseUrl: (): Promise<string> => Promise.resolve('String'),
+      getApiOrigin: (): Promise<string> => Promise.resolve('String'),
+    };
+    const searchApi = {
+      query: () =>
+        Promise.resolve({
+          results: [],
+        }),
+    };
+    const apiRegistry = TestApiRegistry.from(
+      [scmIntegrationsApiRef, scmIntegrationsApi],
+      [techdocsApiRef, techdocsApi],
+      [techdocsStorageApiRef, techdocsStorageApi],
+      [searchApiRef, searchApi],
+    );
+
+    await act(async () => {
+      const rendered = render(
+        wrapInTestApp(
+          <ApiProvider apis={apiRegistry}>
+            <TechDocsPage>
+              {({ techdocsMetadataValue }) => (
+                <Header
+                  type="documentation"
+                  title="A custom header"
+                  subtitle={techdocsMetadataValue?.site_name}
+                />
+              )}
+            </TechDocsPage>
+          </ApiProvider>,
+        ),
+      );
+      expect(rendered.getByText('A custom header')).toBeInTheDocument();
     });
   });
 });

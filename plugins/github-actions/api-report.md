@@ -352,6 +352,4 @@ export type Step = {
   started_at: string;
   completed_at: string;
 };
-
-// (No @packageDocumentation comment for this package)
 ```

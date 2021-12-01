@@ -102,20 +102,24 @@ more to come...
 See [Backstage Search Architecture](architecture.md) to get an overview of how
 the search engines are used.
 
-| Search Engine | Support Status |
-| ------------- | -------------- |
-| Basic (lunr)  | ✅             |
-| ElasticSearch | Not yet ❌     |
+| Search Engines                                     | Support Status |
+| -------------------------------------------------- | -------------- |
+| [Lunr](./search-engines.md#lunr)                   | ✅             |
+| [ElasticSearch](./search-engines.md#elasticsearch) | ✅             |
+| [Postgres](./search-engines.md#postgres)           | ✅             |
 
-[Reach out to us](#feedback) if you want to chat about support for more search
-engines.
+[Reach out to us](#get-involved) if you want to chat about support for more
+search engines.
 
 ## Plugins Integrated with Search
 
-| Plugin   | Support Status |
-| -------- | -------------- |
-| Catalog  | ✅             |
-| TechDocs | Not yet ❌     |
+| Plugin                                                         | Support Status |
+| -------------------------------------------------------------- | -------------- |
+| Catalog                                                        | ✅             |
+| [TechDocs](./how-to-guides.md#how-to-index-techdocs-documents) | ✅             |
+
+[Reach out to us](#get-involved) if you want to chat about support for more
+plugins integrated to search.
 
 ## Tech Stack
 

@@ -2,12 +2,12 @@
 
 ## Getting started
 
-Set up Backstage and TechDocs by follow our guide on [Getting Started](../../docs/features/techdocs/getting-started.md).
+Set up Backstage and TechDocs by following our guide on [Getting Started](../../docs/features/techdocs/getting-started.md).
 
 ## Configuration
 
-http://backstage.io/docs/features/techdocs/configuration
+Refer to our [configuration reference](../../docs/features/techdocs/configuration.md) for a complete listing of configuration options.
 
-### TechDocs Storage Api
+### TechDocs Storage API
 
-The default setup of TechDocs assumes your documentation is accessed by reading a page with the format of `<storageUrl>/<entity kind>/<entity namespace>/<entity name>`. If for some reason you want to change this it can be configured by implementing a new techdocs storage API. Do this by implementing TechDocsStorage found in `plugins/techdocs/src/api`. Add your new API to the application in `app/src/apis.ts` (or replace if it's already registered as an API).
+The default setup of TechDocs assumes that your documentation is accessed by reading a page with the format of `<storageUrl>/<entity kind>/<entity namespace>/<entity name>`. This can be configured by [implementing a new techdocs storage API](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-implement-your-own-techdocs-apis).

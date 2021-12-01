@@ -52,11 +52,16 @@ class AnyEntityPolicy implements EntityPolicy {
   }
 }
 
+/**
+ * Provides helpers for enforcing a set of {@link EntityPolicy} in an `and`/`or` expression.
+ *
+ * @public
+ */
 export const EntityPolicies = {
-  allOf(policies: EntityPolicy[]) {
+  allOf(policies: EntityPolicy[]): EntityPolicy {
     return new AllEntityPolicies(policies);
   },
-  oneOf(policies: EntityPolicy[]) {
+  oneOf(policies: EntityPolicy[]): EntityPolicy {
     return new AnyEntityPolicy(policies);
   },
 };

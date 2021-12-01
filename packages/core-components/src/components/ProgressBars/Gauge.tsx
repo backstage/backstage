@@ -14,58 +14,77 @@
  * limitations under the License.
  */
 
-import { makeStyles, useTheme } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { Circle } from 'rc-progress';
 import React from 'react';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    position: 'relative',
-    lineHeight: 0,
-  },
-  overlay: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -60%)',
-    fontSize: 45,
-    fontWeight: 'bold',
-    color: theme.palette.textContrast,
-  },
-  circle: {
-    width: '80%',
-    transform: 'translate(10%, 0)',
-  },
-  colorUnknown: {},
-}));
+/** @public */
+export type GaugeClassKey = 'root' | 'overlay' | 'circle' | 'colorUnknown';
 
-type Props = {
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      position: 'relative',
+      lineHeight: 0,
+    },
+    overlay: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -60%)',
+      fontSize: 45,
+      fontWeight: 'bold',
+      color: theme.palette.textContrast,
+    },
+    circle: {
+      width: '80%',
+      transform: 'translate(10%, 0)',
+    },
+    colorUnknown: {},
+  }),
+  { name: 'BackstageGauge' },
+);
+
+/** @public */
+export type GaugeProps = {
   value: number;
   fractional?: boolean;
   inverse?: boolean;
   unit?: string;
   max?: number;
+  getColor?: GaugePropsGetColor;
 };
 
-const defaultProps = {
+/** @public */
+export type GaugePropsGetColorOptions = {
+  palette: BackstagePalette;
+  value: number;
+  inverse?: boolean;
+  max?: number;
+};
+
+/** @public */
+export type GaugePropsGetColor = (args: GaugePropsGetColorOptions) => string;
+
+const defaultGaugeProps = {
   fractional: true,
   inverse: false,
   unit: '%',
   max: 100,
 };
 
-export function getProgressColor(
-  palette: BackstageTheme['palette'],
-  value: number,
-  inverse?: boolean,
-  max?: number,
-) {
+export const getProgressColor: GaugePropsGetColor = ({
+  palette,
+  value,
+  inverse,
+  max,
+}) => {
   if (isNaN(value)) {
     return '#ddd';
   }
 
-  const actualMax = max ? max : defaultProps.max;
+  const actualMax = max ? max : defaultGaugeProps.max;
   const actualValue = inverse ? actualMax - value : value;
 
   if (actualValue < actualMax / 3) {
@@ -75,13 +94,15 @@ export function getProgressColor(
   }
 
   return palette.status.ok;
-}
+};
 
-export const Gauge = (props: Props) => {
+/** @public */
+export function Gauge(props: GaugeProps) {
+  const { getColor = getProgressColor } = props;
   const classes = useStyles(props);
-  const theme = useTheme<BackstageTheme>();
+  const { palette } = useTheme<BackstageTheme>();
   const { value, fractional, inverse, unit, max } = {
-    ...defaultProps,
+    ...defaultGaugeProps,
     ...props,
   };
 
@@ -95,7 +116,7 @@ export const Gauge = (props: Props) => {
         percent={asPercentage}
         strokeWidth={12}
         trailWidth={12}
-        strokeColor={getProgressColor(theme.palette, asActual, inverse, max)}
+        strokeColor={getColor({ palette, value: asActual, inverse, max })}
         className={classes.circle}
       />
       <div className={classes.overlay}>
@@ -103,4 +124,4 @@ export const Gauge = (props: Props) => {
       </div>
     </div>
   );
-};
+}

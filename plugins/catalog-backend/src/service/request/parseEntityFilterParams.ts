@@ -15,7 +15,7 @@
  */
 
 import { InputError } from '@backstage/errors';
-import { EntitiesSearchFilter, EntityFilter } from '../../database';
+import { EntitiesSearchFilter, EntityFilter } from '../../catalog';
 import { parseStringsParam } from './common';
 
 /**
@@ -75,11 +75,9 @@ export function parseEntityFilterString(
     const f =
       key in filtersByKey ? filtersByKey[key] : (filtersByKey[key] = { key });
 
-    if (value === undefined) {
-      f.matchValueExists = true;
-    } else {
-      f.matchValueIn = f.matchValueIn || [];
-      f.matchValueIn.push(value);
+    if (value !== undefined) {
+      f.values = f.values || [];
+      f.values.push(value);
     }
   }
 

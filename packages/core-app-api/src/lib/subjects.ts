@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Observable } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 
 // TODO(Rugvip): These are stopgap and probably incomplete implementations of subjects.
@@ -121,34 +121,37 @@ export class PublishSubject<T>
  *
  * See http://reactivex.io/documentation/subject.html
  */
+
 export class BehaviorSubject<T>
   implements Observable<T>, ZenObservable.SubscriptionObserver<T>
 {
-  private isClosed = false;
+  private isClosed: boolean;
   private currentValue: T;
-  private terminatingError?: Error;
+  private terminatingError: Error | undefined;
+  private readonly observable: Observable<T>;
 
   constructor(value: T) {
+    this.isClosed = false;
     this.currentValue = value;
-  }
-
-  private readonly observable = new ObservableImpl<T>(subscriber => {
-    if (this.isClosed) {
-      if (this.terminatingError) {
-        subscriber.error(this.terminatingError);
-      } else {
-        subscriber.complete();
+    this.terminatingError = undefined;
+    this.observable = new ObservableImpl<T>(subscriber => {
+      if (this.isClosed) {
+        if (this.terminatingError) {
+          subscriber.error(this.terminatingError);
+        } else {
+          subscriber.complete();
+        }
+        return () => {};
       }
-      return () => {};
-    }
 
-    subscriber.next(this.currentValue);
+      subscriber.next(this.currentValue);
 
-    this.subscribers.add(subscriber);
-    return () => {
-      this.subscribers.delete(subscriber);
-    };
-  });
+      this.subscribers.add(subscriber);
+      return () => {
+        this.subscribers.delete(subscriber);
+      };
+    });
+  }
 
   private readonly subscribers = new Set<
     ZenObservable.SubscriptionObserver<T>

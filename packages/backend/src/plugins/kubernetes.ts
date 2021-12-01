@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-kubernetes-backend';
+import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
   logger,
   config,
 }: PluginEnvironment) {
-  return await createRouter({ logger, config });
+  const { router } = await KubernetesBuilder.createBuilder({
+    logger,
+    config,
+  }).build();
+  return router;
 }

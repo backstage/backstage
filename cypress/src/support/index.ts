@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 /// <reference types="cypress" />
-
-Cypress.Commands.add('loginAsGuest', () => {
-  cy.visit('/', {
-    onLoad: (win: Window) =>
-      win.localStorage.setItem('@backstage/core:SignInPage:provider', 'guest'),
-  });
-});
-
-export {};
+import './commands';

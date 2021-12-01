@@ -1,5 +1,189 @@
 # @backstage/plugin-scaffolder
 
+## 0.11.12
+
+### Patch Changes
+
+- 2d7d165737: Bump `react-jsonschema-form`
+- 9f21236a29: Fixed a missing `await` when throwing server side errors
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.11.11
+
+### Patch Changes
+
+- 8809b6c0dd: Update the json-schema dependency version.
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/integration-react@0.1.14
+
+## 0.11.10
+
+### Patch Changes
+
+- fe5738fe1c: Lazy load `LazyLog` as it is rarely used.
+- b45a34fb15: Adds a new endpoint for consuming logs from the Scaffolder that uses long polling instead of Server Sent Events.
+
+  This is useful if Backstage is accessed from an environment that doesn't support SSE correctly, which happens in combination with certain enterprise HTTP Proxy servers.
+
+  It is intended to switch the endpoint globally for the whole instance.
+  If you want to use it, you can provide a reconfigured API to the `scaffolderApiRef`:
+
+  ```tsx
+  // packages/app/src/apis.ts
+
+  // ...
+  import {
+    scaffolderApiRef,
+    ScaffolderClient,
+  } from '@backstage/plugin-scaffolder';
+
+  export const apis: AnyApiFactory[] = [
+    // ...
+
+    createApiFactory({
+      api: scaffolderApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+        scmIntegrationsApi: scmIntegrationsApiRef,
+      },
+      factory: ({ discoveryApi, identityApi, scmIntegrationsApi }) =>
+        new ScaffolderClient({
+          discoveryApi,
+          identityApi,
+          scmIntegrationsApi,
+          // use long polling instead of an eventsource
+          useLongPollingLogs: true,
+        }),
+    }),
+  ];
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/catalog-client@0.5.1
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
+## 0.11.9
+
+### Patch Changes
+
+- 5e10974af6: Surfacing all components of the ScaffolderPage outside of the plugin so you can customize the page
+- 5df2435892: Scaffolder: Enable back Template action buttons if template fails to execute
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/core-components@0.7.2
+  - @backstage/integration-react@0.1.13
+  - @backstage/plugin-catalog-react@0.6.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.11.8
+
+### Patch Changes
+
+- 0366c9b667: Introduce a `useStarredEntity` hook to check if a single entity is starred.
+  It provides a more efficient implementation compared to the `useStarredEntities` hook, because the rendering is only triggered if the selected entity is starred, not if _any_ entity is starred.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/integration@0.6.8
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+  - @backstage/integration-react@0.1.12
+
+## 0.11.7
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.11.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/integration-react@0.1.11
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.11.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+  - @backstage/integration-react@0.1.10
+
+## 0.11.4
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- 70fdfbf36a: Change the Categories filter to a dropdown component
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/integration-react@0.1.9
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.11.3
+
+### Patch Changes
+
+- c299e90a2: Disable all buttons in the final step when 'Create' button is clicked in template.
+- 3acf5988f: Fix display error when it fails to load a template (/create) page
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-client@0.3.19
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.11.2
+
+### Patch Changes
+
+- 34e14fdf7: Allow to pass custom TemplateCard to ScaffolderPage
+- 957ae8059: Use themeId in TemplateCard from theme object
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/integration-react@0.1.8
+
 ## 0.11.1
 
 ### Patch Changes

@@ -21,6 +21,8 @@ import { Entity } from '../Entity';
 
 /**
  * Sets a default namespace if none was set.
+ *
+ * @public
  */
 export class DefaultNamespaceEntityPolicy implements EntityPolicy {
   private readonly namespace: string;

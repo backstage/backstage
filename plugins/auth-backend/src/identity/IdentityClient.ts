@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import { JWK, JWT, JWKS, JSONWebKey } from 'jose';
 import { BackstageIdentity } from '../providers';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';

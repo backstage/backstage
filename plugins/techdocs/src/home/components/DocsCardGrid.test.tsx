@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { configApiRef } from '@backstage/core-plugin-api';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import React from 'react';
-import { configApiRef } from '@backstage/core-plugin-api';
-import { DocsCardGrid } from './DocsCardGrid';
 import { rootDocsRouteRef } from '../../routes';
+import { DocsCardGrid } from './DocsCardGrid';
 
 // Hacky way to mock a specific boolean config value.
 const getOptionalBooleanMock = jest.fn().mockReturnValue(false);
@@ -125,5 +125,33 @@ describe('Entity Docs Card Grid', () => {
     expect(button.getAttribute('href')).toContain(
       '/techdocs/SomeNamespace/TestKind/testName',
     );
+  });
+
+  it('should render entity title if available', async () => {
+    const { findByText } = render(
+      wrapInTestApp(
+        <DocsCardGrid
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
+                title: 'TestTitle',
+              },
+              spec: {
+                owner: 'techdocs@example.com',
+              },
+            },
+          ]}
+        />,
+        {
+          mountedRoutes: {
+            '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+          },
+        },
+      ),
+    );
+    expect(await findByText('TestTitle')).toBeInTheDocument();
   });
 });

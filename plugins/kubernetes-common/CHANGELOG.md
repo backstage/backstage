@@ -1,5 +1,27 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.1.6
+
+### Patch Changes
+
+- 37dc844728: Include CronJobs and Jobs as default objects returned by the kubernetes backend and add/update relevant types.
+
+## 0.1.5
+
+### Patch Changes
+
+- 193a999a80: Fixed incorrect keyword, repository directory path and entrypoints in `package.json`.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+
+## 0.1.4
+
+### Patch Changes
+
+- 7a0c334707: Provide access to the Kubernetes dashboard when viewing a specific resource
+- Updated dependencies
+  - @backstage/catalog-model@0.9.3
+
 ## 0.1.3
 
 ### Patch Changes

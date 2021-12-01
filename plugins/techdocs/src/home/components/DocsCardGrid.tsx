@@ -39,7 +39,7 @@ export const DocsCardGrid = ({
     'techdocs.legacyUseCaseSensitiveTripletPaths',
   )
     ? (str: string) => str
-    : (str: string) => str.toLocaleLowerCase();
+    : (str: string) => str.toLocaleLowerCase('en-US');
 
   if (!entities) return null;
   return (
@@ -49,7 +49,9 @@ export const DocsCardGrid = ({
         : entities.map((entity, index: number) => (
             <Card key={index}>
               <CardMedia>
-                <ItemCardHeader title={entity.metadata.name} />
+                <ItemCardHeader
+                  title={entity.metadata.title ?? entity.metadata.name}
+                />
               </CardMedia>
               <CardContent>{entity.metadata.description}</CardContent>
               <CardActions>
@@ -62,6 +64,7 @@ export const DocsCardGrid = ({
                     name: toLowerMaybe(entity.metadata.name),
                   })}
                   color="primary"
+                  data-testid="read_docs"
                 >
                   Read Docs
                 </Button>

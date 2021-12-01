@@ -46,28 +46,39 @@ import {
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
-  domainNode: {
-    fill: theme.palette.primary.main,
-    stroke: theme.palette.border,
-  },
-  systemNode: {
-    fill: 'coral',
-    stroke: theme.palette.border,
-  },
-  componentNode: {
-    fill: 'yellowgreen',
-    stroke: theme.palette.border,
-  },
-  apiNode: {
-    fill: theme.palette.gold,
-    stroke: theme.palette.border,
-  },
-  resourceNode: {
-    fill: 'grey',
-    stroke: theme.palette.border,
-  },
-}));
+/** @public */
+export type SystemDiagramCardClassKey =
+  | 'domainNode'
+  | 'systemNode'
+  | 'componentNode'
+  | 'apiNode'
+  | 'resourceNode';
+
+const useStyles = makeStyles(
+  (theme: BackstageTheme) => ({
+    domainNode: {
+      fill: theme.palette.primary.main,
+      stroke: theme.palette.border,
+    },
+    systemNode: {
+      fill: 'coral',
+      stroke: theme.palette.border,
+    },
+    componentNode: {
+      fill: 'yellowgreen',
+      stroke: theme.palette.border,
+    },
+    apiNode: {
+      fill: theme.palette.gold,
+      stroke: theme.palette.border,
+    },
+    resourceNode: {
+      fill: 'grey',
+      stroke: theme.palette.border,
+    },
+  }),
+  { name: 'PluginCatalogSystemDiagramCard' },
+);
 
 // Simplifies the diagram output by hiding the default namespace and kind
 function readableEntityName(

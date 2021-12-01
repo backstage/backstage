@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { MemoryRouter } from 'react-router';
+import { entityRouteRef } from '../../routes';
 import { EntityRefLinks } from './EntityRefLinks';
 
 describe('<EntityRefLinks />', () => {
-  it('renders a single link', () => {
+  it('renders a single link', async () => {
     const entityNames = [
       {
         kind: 'Component',
@@ -28,16 +28,21 @@ describe('<EntityRefLinks />', () => {
         name: 'software',
       },
     ];
-    const { getByText } = render(<EntityRefLinks entityRefs={entityNames} />, {
-      wrapper: MemoryRouter,
-    });
+    const { getByText } = await renderInTestApp(
+      <EntityRefLinks entityRefs={entityNames} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
     expect(getByText('component:software')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
     );
   });
 
-  it('renders multiple links', () => {
+  it('renders multiple links', async () => {
     const entityNames = [
       {
         kind: 'Component',
@@ -50,9 +55,14 @@ describe('<EntityRefLinks />', () => {
         name: 'interface',
       },
     ];
-    const { getByText } = render(<EntityRefLinks entityRefs={entityNames} />, {
-      wrapper: MemoryRouter,
-    });
+    const { getByText } = await renderInTestApp(
+      <EntityRefLinks entityRefs={entityNames} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
     expect(getByText(',')).toBeInTheDocument();
     expect(getByText('component:software')).toHaveAttribute(
       'href',

@@ -50,6 +50,7 @@ describe('useImportState', () => {
         entities: [] as Entity[],
       },
     ],
+    refreshed: [],
   };
 
   it('should use initial url', async () => {
@@ -131,14 +132,16 @@ describe('useImportState', () => {
       });
 
       act(() => result.current.onReset());
-
       expect(result.current).toMatchObject({
         activeFlow: 'unknown',
         activeStepNumber: 0,
         analysisUrl: undefined,
         activeState: 'analyze',
         analyzeResult: undefined,
-        prepareResult: locationR,
+        prepareResult: {
+          type: 'locations',
+          locations: [{ target: 'https://0', entities: [] }],
+        },
         reviewResult: undefined,
       });
     });

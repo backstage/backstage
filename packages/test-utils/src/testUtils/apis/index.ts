@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
+export * from './AnalyticsApi';
 export * from './ErrorApi';
 export * from './StorageApi';

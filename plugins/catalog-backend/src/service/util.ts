@@ -42,7 +42,7 @@ export async function requireRequestBody(req: Request): Promise<unknown> {
 
 export async function validateRequestBody<T>(
   req: Request,
-  schema: yup.Schema<T>,
+  schema: yup.AnySchema<T>,
 ): Promise<T> {
   const body = await requireRequestBody(req);
 

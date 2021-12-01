@@ -13,4 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * A Backstage plugin that shows XCode build metrics for your components
+ *
+ * @packageDocumentation
+ */
+
 export { xcmetricsPlugin, XcmetricsPage } from './plugin';

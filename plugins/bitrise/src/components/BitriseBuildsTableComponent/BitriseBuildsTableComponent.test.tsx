@@ -18,14 +18,14 @@ import React from 'react';
 import { bitriseApiRef } from '../../plugin';
 import { BitriseClientApi } from '../../api/bitriseApi.client';
 import { setupServer } from 'msw/node';
-import { msw, renderInTestApp } from '@backstage/test-utils';
+import {
+  setupRequestMockHandlers,
+  renderInTestApp,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import { useBitriseBuilds } from '../../hooks/useBitriseBuilds';
 import { BitriseBuildsTable } from './BitriseBuildsTableComponent';
-import {
-  ApiProvider,
-  ApiRegistry,
-  UrlPatternDiscovery,
-} from '@backstage/core-app-api';
+import { ApiProvider, UrlPatternDiscovery } from '@backstage/core-app-api';
 
 jest.mock('../../hooks/useBitriseBuilds', () => ({
   useBitriseBuilds: jest.fn(),
@@ -34,13 +34,16 @@ jest.mock('../../hooks/useBitriseBuilds', () => ({
 const server = setupServer();
 
 describe('BitriseBuildsFetchComponent', () => {
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
   const mockBaseUrl = 'http://backstage:9191';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
-  let apis: ApiRegistry;
+  let apis: TestApiRegistry;
 
   beforeEach(() => {
-    apis = ApiRegistry.with(bitriseApiRef, new BitriseClientApi(discoveryApi));
+    apis = TestApiRegistry.from([
+      bitriseApiRef,
+      new BitriseClientApi(discoveryApi),
+    ]);
   });
 
   it('should display `no records` message if there are no builds', async () => {

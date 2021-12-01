@@ -22,24 +22,23 @@ import {
   TabbedLayout,
 } from '@backstage/core-components';
 import { Overview } from '../Overview';
-import { buildsRouteRef, rootRouteRef } from '../../routes';
-import { RouteRef, SubRouteRef } from '@backstage/core-plugin-api';
+import { buildsRouteRef } from '../../routes';
 import { BuildsPage } from '../BuildsPage';
 
 export interface TabConfig {
-  routeRef: RouteRef | SubRouteRef;
+  path: string;
   title: string;
   component: ReactChild;
 }
 
 const TABS: TabConfig[] = [
   {
-    routeRef: rootRouteRef,
+    path: '/',
     title: 'Overview',
     component: <Overview />,
   },
   {
-    routeRef: buildsRouteRef,
+    path: buildsRouteRef.path,
     title: 'Builds',
     component: <BuildsPage />,
   },
@@ -53,11 +52,7 @@ export const XcmetricsLayout = () => (
     </Header>
     <TabbedLayout>
       {TABS.map(tab => (
-        <TabbedLayout.Route
-          key={tab.routeRef.path}
-          path={tab.routeRef.path}
-          title={tab.title}
-        >
+        <TabbedLayout.Route key={tab.path} path={tab.path} title={tab.title}>
           <Content>{tab.component}</Content>
         </TabbedLayout.Route>
       ))}

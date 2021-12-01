@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * A Backstage plugin that integrates towards iLert
+ *
+ * @packageDocumentation
+ */
+
 import ILertIconComponent from './assets/ilert.icon.svg';
 import { IconComponent } from '@backstage/core-plugin-api';
 

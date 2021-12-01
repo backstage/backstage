@@ -188,9 +188,9 @@ Assuming you follow the common plugin structure, the changes to your front-end m
 
 ```diff
 // plugins/internal-plugin/src/api.ts
--  import {createApiRef} from '@backstage/core';
-+  import {createApiRef, IdentityApi} from '@backstage/core';
-import {Config} from '@backstage/config';
+-  import { createApiRef } from '@backstage/core-plugin-api';
++  import { createApiRef, IdentityApi } from '@backstage/core-plugin-api';
+import { Config } from '@backstage/config';
 // ...
 
 type MyApiOptions = {
@@ -237,14 +237,14 @@ import {
     createApiFactory,
     createPlugin,
 +   identityApiRef,
-} from '@backstage/core';
-import {mypluginPageRouteRef} from './routeRefs';
-import {MyApi, myApiRef} from './api';
+} from '@backstage/core-plugin-api';
+import { myPluginPageRouteRef } from './routeRefs';
+import { MyApi, myApiRef } from './api';
 
 export const plugin = createPlugin({
     id: 'my-plugin',
     routes: {
-        mainPage: mypluginPageRouteRef,
+        mainPage: myPluginPageRouteRef,
     },
     apis: [
         createApiFactory({
@@ -253,9 +253,9 @@ export const plugin = createPlugin({
                 configApi: configApiRef,
 +               identityApi: identityApiRef,
             },
--           factory: ({configApi}) =>
+-           factory: ({ configApi }) =>
 -               new MyApi({ configApi }),
-+           factory: ({configApi, identityApi}) =>
++           factory: ({ configApi, identityApi }) =>
 +               new MyApi({ configApi, identityApi }),
         }),
     ],

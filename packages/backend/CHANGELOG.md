@@ -1,5 +1,144 @@
 # example-backend
 
+## 0.2.54
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-backend@0.3.19
+  - @backstage/plugin-tech-insights-backend@0.1.2
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.1
+  - @backstage/plugin-auth-backend@0.4.9
+  - @backstage/plugin-scaffolder-backend@0.15.14
+  - @backstage/plugin-catalog-backend@0.18.0
+  - @backstage/plugin-kafka-backend@0.2.12
+  - @backstage/backend-common@0.9.11
+  - @backstage/plugin-azure-devops-backend@0.2.2
+  - @backstage/plugin-badges-backend@0.1.12
+  - @backstage/plugin-code-coverage-backend@0.1.15
+  - @backstage/plugin-jenkins-backend@0.1.8
+  - @backstage/plugin-proxy-backend@0.2.14
+  - @backstage/plugin-rollbar-backend@0.1.16
+  - @backstage/plugin-search-backend@0.2.7
+  - @backstage/plugin-techdocs-backend@0.10.9
+
+## 0.2.52
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/plugin-jenkins-backend@0.1.7
+  - @backstage/plugin-search-backend-module-elasticsearch@0.0.5
+  - @backstage/plugin-scaffolder-backend@0.15.12
+  - @backstage/plugin-azure-devops-backend@0.2.0
+  - @backstage/catalog-client@0.5.1
+  - @backstage/plugin-auth-backend@0.4.7
+  - @backstage/plugin-catalog-backend@0.17.3
+  - @backstage/plugin-scaffolder-backend-module-rails@0.1.7
+
+## 0.2.50
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.4.4
+  - @backstage/integration@0.6.8
+  - @backstage/plugin-scaffolder-backend@0.15.8
+  - @backstage/plugin-catalog-backend@0.17.0
+  - @backstage/plugin-azure-devops-backend@0.1.2
+  - @backstage/plugin-code-coverage-backend@0.1.13
+  - @backstage/plugin-kubernetes-backend@0.3.17
+  - example-app@0.2.50
+
+## 0.2.49
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.16.0
+  - @backstage/catalog-model@0.9.4
+  - @backstage/plugin-proxy-backend@0.2.13
+  - @backstage/plugin-auth-backend@0.4.3
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+  - @backstage/plugin-scaffolder-backend@0.15.7
+  - example-app@0.2.49
+  - @backstage/plugin-badges-backend@0.1.11
+  - @backstage/plugin-code-coverage-backend@0.1.12
+  - @backstage/plugin-jenkins-backend@0.1.6
+  - @backstage/plugin-techdocs-backend@0.10.4
+  - @backstage/plugin-todo-backend@0.1.13
+
+## 0.2.48
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.5
+  - @backstage/plugin-catalog-backend@0.15.0
+  - @backstage/plugin-azure-devops-backend@0.1.1
+  - @backstage/integration@0.6.6
+  - @backstage/plugin-auth-backend@0.4.2
+  - example-app@0.2.48
+
+## 0.2.47
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.14.0
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+  - @backstage/plugin-kafka-backend@0.2.10
+  - @backstage/plugin-kubernetes-backend@0.3.16
+  - @backstage/plugin-rollbar-backend@0.1.15
+  - @backstage/plugin-search-backend-module-pg@0.2.1
+  - example-app@0.2.47
+  - @backstage/plugin-auth-backend@0.4.1
+  - @backstage/plugin-badges-backend@0.1.10
+  - @backstage/plugin-code-coverage-backend@0.1.11
+  - @backstage/plugin-jenkins-backend@0.1.5
+  - @backstage/plugin-scaffolder-backend@0.15.6
+  - @backstage/plugin-techdocs-backend@0.10.3
+  - @backstage/plugin-todo-backend@0.1.12
+
+## 0.2.46
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.4.0
+  - @backstage/plugin-scaffolder-backend@0.15.5
+  - @backstage/backend-common@0.9.3
+  - @backstage/plugin-catalog-backend@0.13.8
+  - @backstage/plugin-techdocs-backend@0.10.2
+  - @backstage/integration@0.6.4
+  - @backstage/plugin-search-backend-module-elasticsearch@0.0.4
+  - example-app@0.2.46
+
+## 0.2.44
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.13.6
+  - @backstage/plugin-scaffolder-backend@0.15.3
+  - @backstage/plugin-techdocs-backend@0.10.1
+  - @backstage/plugin-auth-backend@0.3.24
+  - @backstage/integration@0.6.3
+  - @backstage/plugin-search-backend@0.2.6
+  - @backstage/plugin-search-backend-module-elasticsearch@0.0.3
+  - @backstage/plugin-search-backend-module-pg@0.2.0
+  - @backstage/plugin-search-backend-node@0.4.2
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+  - example-app@0.2.44
+
 ## 0.2.43
 
 ### Patch Changes

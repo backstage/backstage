@@ -42,6 +42,7 @@ export const githubActionsPlugin = createPlugin({
 
 export const EntityGithubActionsContent = githubActionsPlugin.provide(
   createRoutableExtension({
+    name: 'EntityGithubActionsContent',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
@@ -49,6 +50,7 @@ export const EntityGithubActionsContent = githubActionsPlugin.provide(
 
 export const EntityLatestGithubActionRunCard = githubActionsPlugin.provide(
   createComponentExtension({
+    name: 'EntityLatestGithubActionRunCard',
     component: {
       lazy: () =>
         import('./components/Cards').then(m => m.LatestWorkflowRunCard),
@@ -59,6 +61,7 @@ export const EntityLatestGithubActionRunCard = githubActionsPlugin.provide(
 export const EntityLatestGithubActionsForBranchCard =
   githubActionsPlugin.provide(
     createComponentExtension({
+      name: 'EntityLatestGithubActionsForBranchCard',
       component: {
         lazy: () =>
           import('./components/Cards').then(
@@ -70,6 +73,7 @@ export const EntityLatestGithubActionsForBranchCard =
 
 export const EntityRecentGithubActionsRunsCard = githubActionsPlugin.provide(
   createComponentExtension({
+    name: 'EntityRecentGithubActionsRunsCard',
     component: {
       lazy: () =>
         import('./components/Cards').then(m => m.RecentWorkflowRunsCard),

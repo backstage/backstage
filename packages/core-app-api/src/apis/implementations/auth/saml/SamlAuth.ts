@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import SamlIcon from '@material-ui/icons/AcUnit';
 import { DirectAuthConnector } from '../../../../lib/AuthConnector';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
@@ -25,8 +24,8 @@ import {
   ProfileInfoApi,
   BackstageIdentityApi,
   SessionApi,
-  Observable,
 } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { SamlSession } from './types';
 import {
   AuthSessionStore,
@@ -42,10 +41,17 @@ export type SamlAuthResponse = {
 const DEFAULT_PROVIDER = {
   id: 'saml',
   title: 'SAML',
-  icon: SamlIcon,
+  icon: () => null,
 };
 
-class SamlAuth implements ProfileInfoApi, BackstageIdentityApi, SessionApi {
+/**
+ * Implements a general SAML based auth flow.
+ *
+ * @public
+ */
+export default class SamlAuth
+  implements ProfileInfoApi, BackstageIdentityApi, SessionApi
+{
   static create({
     discoveryApi,
     environment = 'development',
@@ -73,6 +79,9 @@ class SamlAuth implements ProfileInfoApi, BackstageIdentityApi, SessionApi {
     return this.sessionManager.sessionState$();
   }
 
+  /**
+   * @deprecated will be made private in the future. Use create method instead.
+   */
   constructor(private readonly sessionManager: SessionManager<SamlSession>) {}
 
   async signIn() {
@@ -94,5 +103,3 @@ class SamlAuth implements ProfileInfoApi, BackstageIdentityApi, SessionApi {
     return session?.profile;
   }
 }
-
-export default SamlAuth;

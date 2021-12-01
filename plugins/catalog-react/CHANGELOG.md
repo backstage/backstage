@@ -1,5 +1,140 @@
 # @backstage/plugin-catalog-react
 
+## 0.6.4
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/core-app-api@0.1.21
+
+## 0.6.3
+
+### Patch Changes
+
+- 03b47a476d: export `loadIdentityOwnerRefs` and `loadCatalogOwnerRefs` all the way
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/catalog-client@0.5.1
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/core-app-api@0.1.20
+
+## 0.6.2
+
+### Patch Changes
+
+- f9cc2509f8: EntityTypePicker can be hidden and have an initial filter value set, similar to EntityKindPicker
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/core-components@0.7.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/core-app-api@0.1.19
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.6.1
+
+### Patch Changes
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/errors@0.1.3
+  - @backstage/core-app-api@0.1.18
+  - @backstage/core-plugin-api@0.1.11
+  - @backstage/catalog-model@0.9.5
+
+## 0.6.0
+
+### Minor Changes
+
+- 82fbda923e: Introduce a new `StarredEntitiesApi` that is used in the `useStarredEntities` hook.
+  The `@backstage/plugin-catalog` installs a default implementation that is backed by the `StorageApi`, but one can also override the `starredEntitiesApiRef`.
+
+  This change also updates the storage format from a custom string to an entity reference and moves the location in the local storage.
+  A migration will convert the previously starred entities to the location on the first load of Backstage.
+
+### Patch Changes
+
+- 0366c9b667: Introduce a `useStarredEntity` hook to check if a single entity is starred.
+  It provides a more efficient implementation compared to the `useStarredEntities` hook, because the rendering is only triggered if the selected entity is starred, not if _any_ entity is starred.
+- 4aca84f86b: Support `material-ui` overrides in plugin-catalog-react components
+- b03b9f19e0: added sorting in entity `Name` column by `metadata.title` if present
+- Updated dependencies
+  - @backstage/integration@0.6.8
+  - @backstage/core-app-api@0.1.17
+  - @backstage/core-components@0.7.0
+
+## 0.5.2
+
+### Patch Changes
+
+- 5aae9bb61e: Name column will now render entity `metadata.title` if its present
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/core-app-api@0.1.16
+  - @backstage/catalog-model@0.9.4
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.15
+  - @backstage/integration@0.6.6
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
+## 0.5.0
+
+### Minor Changes
+
+- dbcaa6387a: Extends the `CatalogClient` interface with a `refreshEntity` method.
+
+### Patch Changes
+
+- cc464a56b3: This makes Type and Lifecycle columns consistent for all table cases and adds a new line in Description column for better readability
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/core-app-api@0.1.14
+
+## 0.4.6
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- ea81a1f19c: Deprecated EntityContext in favor of using `useEntity`, `EntityProvider` and the new `AsyncEntityProvider` instead. This update also brings cross-version compatibility to `@backstage/catalog-react`, meaning that future versions can be used in parallel with this one.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/core-app-api@0.1.13
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.4.5
+
+### Patch Changes
+
+- 3ed78fca3: Added a `useEntityKinds` hook to load a unique list of entity kinds from the catalog.
+  Fixed a bug in `EntityTypePicker` where the component did not hide when no types were available in returned entities.
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/core-app-api@0.1.11
+
 ## 0.4.4
 
 ### Patch Changes

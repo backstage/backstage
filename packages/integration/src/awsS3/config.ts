@@ -21,8 +21,9 @@ const AMAZON_AWS_HOST = 'amazonaws.com';
 
 /**
  * The configuration parameters for a single AWS S3 provider.
+ *
+ * @public
  */
-
 export type AwsS3IntegrationConfig = {
   /**
    * The host of the target that this matches on, e.g. "amazonaws.com"
@@ -50,7 +51,8 @@ export type AwsS3IntegrationConfig = {
 /**
  * Reads a single Aws S3 integration config.
  *
- * @param config The config object of a single integration
+ * @param config - The config object of a single integration
+ * @public
  */
 
 export function readAwsS3IntegrationConfig(
@@ -70,6 +72,13 @@ export function readAwsS3IntegrationConfig(
   return { host, accessKeyId, secretAccessKey, roleArn };
 }
 
+/**
+ * Reads a set of AWS S3 integration configs, and inserts some defaults for
+ * public Amazon AWS if not specified.
+ *
+ * @param configs - The config objects of the integrations
+ * @public
+ */
 export function readAwsS3IntegrationConfigs(
   configs: Config[],
 ): AwsS3IntegrationConfig[] {

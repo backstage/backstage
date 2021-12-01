@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { graphql } from '@octokit/graphql';
 import { graphql as graphqlMsw } from 'msw';
 import { setupServer } from 'msw/node';
@@ -28,7 +28,7 @@ import {
 
 describe('github', () => {
   const server = setupServer();
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   describe('getOrganizationUsers', () => {
     it('reads members', async () => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { withLogCollector } from '../../test-utils-core/src';
+import { withLogCollector } from '@backstage/test-utils';
 import { ConfigReader } from './reader';
 
 const DATA = {

@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage backend plugin that handles authentication
+ *
+ * @packageDocumentation
+ */
+
 export * from './service/router';
 export { IdentityClient } from './identity';
 export type { TokenIssuer } from './identity';
@@ -25,3 +31,5 @@ export * from './lib/flow';
 
 // OAuth wrapper over a passport or a custom `startegy`.
 export * from './lib/oauth';
+
+export * from './lib/catalog';

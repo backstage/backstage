@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import { EntityName } from '@backstage/catalog-model';
+import { SearchContextProvider, useSearch } from '@backstage/plugin-search';
 import {
+  CircularProgress,
   Grid,
   IconButton,
   InputAdornment,
   TextField,
-  CircularProgress,
 } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { SearchContextProvider, useSearch } from '@backstage/plugin-search';
-import { DocsResultListItem } from '../../components/DocsResultListItem';
 import SearchIcon from '@material-ui/icons/Search';
-import { useDebounce } from 'react-use';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useDebounce } from 'react-use';
+import { DocsResultListItem } from '../../components/DocsResultListItem';
 
 type TechDocsSearchProps = {
-  entityId: {
-    name: string;
-    namespace: string;
-    kind: string;
-  };
+  entityId: EntityName;
   debounceTime?: number;
 };
 
@@ -141,7 +138,7 @@ const TechDocsSearchBar = ({
               ...params.InputProps,
               startAdornment: (
                 <InputAdornment position="start">
-                  <IconButton aria-label="Query term" disabled>
+                  <IconButton aria-label="Query" disabled>
                     <SearchIcon />
                   </IconButton>
                 </InputAdornment>
@@ -161,7 +158,8 @@ const TechDocsSearchBar = ({
     </Grid>
   );
 };
-const TechDocsSearch = (props: TechDocsSearchProps) => {
+
+export const TechDocsSearch = (props: TechDocsSearchProps) => {
   const initialState = {
     term: '',
     types: ['techdocs'],
@@ -174,4 +172,3 @@ const TechDocsSearch = (props: TechDocsSearchProps) => {
     </SearchContextProvider>
   );
 };
-export { TechDocsSearch };

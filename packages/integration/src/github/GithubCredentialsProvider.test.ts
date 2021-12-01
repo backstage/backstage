@@ -76,7 +76,7 @@ describe('GithubCredentialsProvider tests', () => {
 
     octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
       data: {
-        expires_at: DateTime.local().plus({ hour: 1 }).toString(),
+        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
         token: 'secret_token',
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
@@ -120,7 +120,7 @@ describe('GithubCredentialsProvider tests', () => {
 
     octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
       data: {
-        expires_at: DateTime.local().plus({ hour: 1 }).toString(),
+        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
         token: 'secret_token',
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
@@ -151,7 +151,7 @@ describe('GithubCredentialsProvider tests', () => {
 
     octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
       data: {
-        expires_at: DateTime.local().plus({ hour: 1 }).toString(),
+        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
         token: 'secret_token',
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
@@ -272,7 +272,7 @@ describe('GithubCredentialsProvider tests', () => {
 
     octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
       data: {
-        expires_at: DateTime.local().plus({ hour: 1 }).toString(),
+        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
         token: 'secret_token',
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);

@@ -1,5 +1,123 @@
 # @backstage/codemods
 
+## 0.1.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.23
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.1.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.6
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/core-app-api@0.1.21
+
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/core-app-api@0.1.20
+
+## 0.1.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.5
+  - @backstage/core-components@0.7.2
+  - @backstage/core-app-api@0.1.19
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.1.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/core-app-api@0.1.18
+  - @backstage/core-plugin-api@0.1.11
+
+## 0.1.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.17
+  - @backstage/core-components@0.7.0
+
+## 0.1.17
+
+### Patch Changes
+
+- 7dee4db0b0: build(deps): bump `jscodeshift` from 0.12.0 to 0.13.0
+- 903dbdeb7d: Added an `extension-names` codemod, which adds a `name` key to all extensions
+  provided by plugins. Extension names are used to provide richer context to
+  events captured by the new Analytics API, and may also appear in debug output
+  and other situations.
+
+  To apply this codemod, run `npx @backstage/codemods apply extension-names` in
+  the root of your Backstage monorepo.
+
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/core-app-api@0.1.16
+  - @backstage/cli-common@0.1.4
+
+## 0.1.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.15
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
+## 0.1.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/core-app-api@0.1.14
+
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/core-app-api@0.1.13
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/cli-common@0.1.3
+  - @backstage/core-app-api@0.1.12
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.4.0
+  - @backstage/core-app-api@0.1.11
+
 ## 0.1.11
 
 ### Patch Changes

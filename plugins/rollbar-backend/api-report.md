@@ -77,6 +77,4 @@ export interface RouterOptions {
   // (undocumented)
   rollbarApi?: RollbarApi;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

@@ -22,7 +22,8 @@ import { getRootLogger } from '../logging';
 /**
  * Logs incoming requests.
  *
- * @param logger An optional logger to use. If not specified, the root logger will be used.
+ * @public
+ * @param logger - An optional logger to use. If not specified, the root logger will be used.
  * @returns An Express request handler
  */
 export function requestLoggingHandler(logger?: Logger): RequestHandler {

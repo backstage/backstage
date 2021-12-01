@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that helps you manage releases in git
+ *
+ * @packageDocumentation
+ */
+
 export {
   gitReleaseManagerPlugin,
   GitReleaseManagerPage,

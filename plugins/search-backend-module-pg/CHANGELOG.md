@@ -1,5 +1,29 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.2.1
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/backend-common@0.9.4
+
+## 0.2.0
+
+### Minor Changes
+
+- a13f21cdc: Implement optional `pageCursor` based paging in search.
+
+  To use paging in your app, add a `<SearchResultPager />` to your
+  `SearchPage.tsx`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/search-common@0.2.0
+  - @backstage/plugin-search-backend-node@0.4.2
+  - @backstage/backend-common@0.9.1
+
 ## 0.1.3
 
 ### Patch Changes

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { NotFoundError } from '@backstage/errors';
+import { TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { techdocsStorageApiRef } from '../../api';
@@ -38,10 +38,10 @@ describe('useReaderState', () => {
   };
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(techdocsStorageApiRef, techdocsStorageApi);
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider apis={[[techdocsStorageApiRef, techdocsStorageApi]]}>
+        {children}
+      </TestApiProvider>
     );
   });
 
@@ -359,7 +359,9 @@ describe('useReaderState', () => {
           contentReload: expect.any(Function),
         });
 
-        await waitForValueToChange(() => result.current.state);
+        await waitForValueToChange(() => result.current.state, {
+          timeout: 2000,
+        });
 
         expect(result.current).toEqual({
           state: 'INITIAL_BUILD',
@@ -496,7 +498,9 @@ describe('useReaderState', () => {
         });
 
         // the new content is loaded
-        await waitForValueToChange(() => result.current.state);
+        await waitForValueToChange(() => result.current.state, {
+          timeout: 2000,
+        });
         expect(result.current).toEqual({
           state: 'CONTENT_FRESH',
           path: '/example',
@@ -576,7 +580,9 @@ describe('useReaderState', () => {
           contentReload: expect.any(Function),
         });
 
-        await waitForValueToChange(() => result.current.state);
+        await waitForValueToChange(() => result.current.state, {
+          timeout: 2000,
+        });
         expect(result.current).toEqual({
           state: 'CONTENT_FRESH',
           path: '/new',

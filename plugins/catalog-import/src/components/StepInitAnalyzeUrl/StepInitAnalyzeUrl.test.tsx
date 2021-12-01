@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
+import { errorApiRef } from '@backstage/core-plugin-api';
+import { TestApiProvider } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AnalyzeResult, catalogImportApiRef } from '../../api/';
 import { StepInitAnalyzeUrl } from './StepInitAnalyzeUrl';
-
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('<StepInitAnalyzeUrl />', () => {
   const catalogImportApi: jest.Mocked<typeof catalogImportApiRef.T> = {
@@ -35,14 +34,14 @@ describe('<StepInitAnalyzeUrl />', () => {
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ApiProvider
-      apis={ApiRegistry.with(catalogImportApiRef, catalogImportApi).with(
-        errorApiRef,
-        errorApi,
-      )}
+    <TestApiProvider
+      apis={[
+        [catalogImportApiRef, catalogImportApi],
+        [errorApiRef, errorApi],
+      ]}
     >
       {children}
-    </ApiProvider>
+    </TestApiProvider>
   );
 
   const location = {

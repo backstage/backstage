@@ -21,6 +21,7 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity/types';
+import { OAuthStartRequest } from '../lib/oauth/types';
 import { CatalogIdentityClient } from '../lib/catalog';
 
 export type AuthProviderConfig = {
@@ -119,19 +120,6 @@ export interface AuthProviderRouteHandlers {
   logout?(req: express.Request, res: express.Response): Promise<void>;
 }
 
-/**
- * EXPERIMENTAL - this will almost certainly break in a future release.
- *
- * Used to resolve an identity from auth information in some auth providers.
- */
-export type ExperimentalIdentityResolver = (
-  /**
-   * An object containing information specific to the auth provider.
-   */
-  payload: object,
-  catalogApi: CatalogApi,
-) => Promise<AuthResponse<any>>;
-
 export type AuthProviderFactoryOptions = {
   providerId: string;
   globalConfig: AuthProviderConfig;
@@ -140,7 +128,6 @@ export type AuthProviderFactoryOptions = {
   tokenIssuer: TokenIssuer;
   discovery: PluginEndpointDiscovery;
   catalogApi: CatalogApi;
-  identityResolver?: ExperimentalIdentityResolver;
 };
 
 export type AuthProviderFactory = (
@@ -237,3 +224,7 @@ export type AuthHandlerResult = { profile: ProfileInfo };
 export type AuthHandler<AuthResult> = (
   input: AuthResult,
 ) => Promise<AuthHandlerResult>;
+
+export type StateEncoder = (
+  req: OAuthStartRequest,
+) => Promise<{ encodedState: string }>;

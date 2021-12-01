@@ -16,6 +16,7 @@
 
 import {
   AppsV1Api,
+  BatchV1beta1Api,
   AutoscalingV1Api,
   CoreV1Api,
   KubeConfig,
@@ -31,6 +32,7 @@ export class KubernetesClientProvider {
       name: clusterDetails.name,
       server: clusterDetails.url,
       skipTLSVerify: clusterDetails.skipTLSVerify,
+      caData: clusterDetails.caData,
     };
 
     // TODO configure
@@ -71,6 +73,12 @@ export class KubernetesClientProvider {
     const kc = this.getKubeConfig(clusterDetails);
 
     return kc.makeApiClient(AutoscalingV1Api);
+  }
+
+  getBatchClientByClusterDetails(clusterDetails: ClusterDetails) {
+    const kc = this.getKubeConfig(clusterDetails);
+
+    return kc.makeApiClient(BatchV1beta1Api);
   }
 
   getNetworkingBeta1Client(clusterDetails: ClusterDetails) {

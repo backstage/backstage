@@ -27,8 +27,12 @@ import { Entity } from '../Entity';
  * Ensures that the format of individual fields of the entity envelope
  * is valid.
  *
+ * @remarks
+ *
  * This does not take into account machine generated fields such as uid, etag
  * and generation.
+ *
+ * @public
  */
 export class FieldFormatEntityPolicy implements EntityPolicy {
   private readonly validators: Validators;
@@ -75,6 +79,10 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
           case 'isValidDnsLabel':
             expectation =
               'a string that is sequences of [a-z0-9] separated by [-], at most 63 characters in total';
+            break;
+          case 'isValidTag':
+            expectation =
+              'a string that is sequences of [a-z0-9+#] separated by [-], at most 63 characters in total';
             break;
           case 'isValidAnnotationValue':
             expectation = 'a string';

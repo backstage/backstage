@@ -23,7 +23,10 @@ import {
 } from './types';
 import { OldIconComponent } from '../icons/types';
 
-// TODO(Rugvip): Remove this in the next breaking release, it's exported but unused
+/**
+ * @deprecated
+ * @internal
+ */
 export type RouteRefConfig<Params extends AnyParams> = {
   params?: ParamKeys<Params>;
   path?: string;
@@ -31,28 +34,57 @@ export type RouteRefConfig<Params extends AnyParams> = {
   title: string;
 };
 
+/**
+ * @internal
+ */
 export class RouteRefImpl<Params extends AnyParams>
   implements RouteRef<Params>
 {
+  // The marker is used for type checking while the symbol is used at runtime.
+  declare $$routeRefType: 'absolute';
   readonly [routeRefType] = 'absolute';
 
   constructor(
     private readonly id: string,
     readonly params: ParamKeys<Params>,
     private readonly config: {
+      /** @deprecated */
       path?: string;
+      /** @deprecated */
       icon?: OldIconComponent;
+      /** @deprecated */
       title?: string;
     },
-  ) {}
+  ) {
+    if (config.path) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `DEPRECATION WARNING: Passing a path to createRouteRef is deprecated, please remove the path for ${this}.`,
+      );
+    }
+
+    if (config.icon) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `DEPRECATION WARNING: Passing an icon to createRouteRef is deprecated, please remove the icon for ${this}.`,
+      );
+    }
+
+    if (config.title) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `DEPRECATION WARNING: Passing a title to createRouteRef is deprecated, please remove the title for ${this}.`,
+      );
+    }
+  }
+
+  /** @deprecated use `useRouteRef` instead */
+  get path() {
+    return this.config.path ?? '';
+  }
 
   get icon() {
     return this.config.icon;
-  }
-
-  // TODO(Rugvip): Remove this, routes are looked up via the registry instead
-  get path() {
-    return this.config.path ?? '';
   }
 
   get title() {
@@ -64,6 +96,12 @@ export class RouteRefImpl<Params extends AnyParams>
   }
 }
 
+/**
+ * Create a {@link RouteRef} from a route descriptor.
+ *
+ * @param config - Description of the route reference to be created.
+ * @public
+ */
 export function createRouteRef<
   // Params is the type that we care about and the one to be embedded in the route ref.
   // For example, given the params ['name', 'kind'], Params will be {name: string, kind: string}

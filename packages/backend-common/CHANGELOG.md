@@ -1,5 +1,153 @@
 # @backstage/backend-common
 
+## 0.9.11
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/errors@0.1.5
+
+## 0.9.10
+
+### Patch Changes
+
+- d7c1e0e34a: Added the `isDatabaseConflictError` function.
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 1e99c73c75: Update internal usage of `configLoader.loadConfig` that now returns an object instead of an array of configs.
+- 1daada3a06: Paths can be specified in backend.reading.allow to further restrict allowed targets
+- 7ad9a07b27: Adding config prop `pluginDivisionMode` to allow plugins using the `pg` client to create their own management schemas in the db. This allows `pg` client plugins to work in separate schemas in the same db.
+- 01f74aa878: Add `AbortSignal` support to `UrlReader`
+- a8732a1200: Make sure that server builder `start()` propagates errors (such as failing to bind to the required port) properly and doesn't resolve the promise prematurely.
+
+  After this change, the backend logger will be able to actually capture the error as it happens:
+
+  ```
+  2021-11-11T10:54:21.334Z backstage info Initializing http server
+  2021-11-11T10:54:21.335Z backstage error listen EADDRINUSE: address already in use :::7000 code=EADDRINUSE errno=-48 syscall=listen address=:: port=7000
+  ```
+
+- 26b5da1c1a: Do not redact empty or one-character strings. These imply that it's just a test or local dev, and unnecessarily ruin the log output.
+- Updated dependencies
+  - @backstage/config-loader@0.8.0
+  - @backstage/cli-common@0.1.6
+
+## 0.9.9
+
+### Patch Changes
+
+- 8c4cad0bf2: AWSS3UrlReader now throws a `NotModifiedError` (exported from @backstage/backend-common) when s3 returns a 304 response.
+- 0611f3b3e2: Reading app config from a remote server
+- Updated dependencies
+  - @backstage/config-loader@0.7.2
+
+## 0.9.8
+
+### Patch Changes
+
+- 96cfa561eb: Adjusted some API exports
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- 1be8d2abdb: Any set configurations which have been tagged with a visibility 'secret', are now redacted from log lines.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/cli-common@0.1.5
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/config-loader@0.7.1
+
+## 0.9.7
+
+### Patch Changes
+
+- be59619212: Add "rate limit exceeded" to error from GithubUrlReader if that is the cause of a read failure
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/config-loader@0.7.0
+  - @backstage/errors@0.1.3
+
+## 0.9.6
+
+### Patch Changes
+
+- 8f969d5a56: Correct error message typo
+- a31afc5b62: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- d7055285de: Add glob patterns support to config CORS options. It's possible to send patterns like:
+
+  ```yaml
+  backend:
+    cors:
+      origin:
+        - https://*.my-domain.com
+        - http://localhost:700[0-9]
+        - https://sub-domain-+([0-9]).my-domain.com
+  ```
+
+- Updated dependencies
+  - @backstage/config-loader@0.6.10
+  - @backstage/integration@0.6.7
+  - @backstage/cli-common@0.1.4
+
+## 0.9.5
+
+### Patch Changes
+
+- 8bb3c0a578: The `subscribe` method on the `Config` returned by `loadBackendConfig` is now forwarded through `getConfig` and `getOptionalConfig`.
+- 0c8a59e293: Fix an issue where filtering in search doesn't work correctly for Bitbucket.
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/config-loader@0.6.9
+
+## 0.9.4
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/config@0.1.10
+
+## 0.9.3
+
+### Patch Changes
+
+- fab79adde1: Add AWS S3 Discovery Processor. Add readTree() to AwsS3UrlReader. Add ReadableArrayResponse type that implements ReadTreeResponse to use in AwsS3UrlReader's readTree()
+- f7ad3a8925: Fix Azure `readTree` and `search` handling to properly support paths.
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/integration@0.6.4
+
+## 0.9.2
+
+### Patch Changes
+
+- 9e5ed27ec: Properly export all used types.
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+  - @backstage/config-loader@0.6.8
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+
+## 0.9.1
+
+### Patch Changes
+
+- 714a2a918: Export type that are needed to implement a new `UrlReader`
+- Updated dependencies
+  - @backstage/integration@0.6.3
+
 ## 0.9.0
 
 ### Minor Changes

@@ -27,6 +27,9 @@ kubernetes:
           authProvider: 'serviceAccount'
           skipTLSVerify: false
           serviceAccountToken: ${K8S_MINIKUBE_TOKEN}
+          dashboardUrl: http://127.0.0.1:64713 # url copied from running the command: minikube service kubernetes-dashboard -n kubernetes-dashboard
+          dashboardApp: standard
+          caData: ${K8S_CONFIG_CA_DATA}
         - url: http://127.0.0.2:9999
           name: aws-cluster-1
           authProvider: 'aws'
@@ -98,6 +101,59 @@ kubectl -n <NAMESPACE> get secret $(kubectl -n <NAMESPACE> get sa <SERVICE_ACCOU
 | base64 --decode
 ```
 
+##### `clusters.\*.dashboardUrl` (optional)
+
+Specifies the link to the Kubernetes dashboard managing this cluster.
+
+Note that you should specify the app used for the dashboard using the
+**dashboardApp property**, in order to properly format links to kubernetes
+resources, otherwise it will assume that you're running the standard one.
+
+##### `clusters.\*.dashboardApp` (optional)
+
+Specifies the app that provides the Kubernetes dashboard.
+
+This will be used for formatting links to kubernetes objects inside the
+dashboard.
+
+The supported dashboards are: `standard`, `rancher`, `openshift`, `gke`, `aks`,
+`eks` However, not all of them are implemented yet, so please contribute!
+
+Note that it will default to the regular dashboard provided by the Kubernetes
+project (`standard`), that can run in any Kubernetes cluster.
+
+Note that you can add your own formatter by registering it to the
+`clusterLinksFormatters` dictionary, in the app project.
+
+Example:
+
+```ts
+import { clusterLinksFormatters } from '@backstage/plugin-kubernetes';
+clusterLinksFormatters.myDashboard = (options) => ...;
+```
+
+See also
+https://github.com/backstage/backstage/tree/master/plugins/kubernetes/src/utils/clusterLinks/formatters
+for real examples.
+
+##### `clusters.\*.caData` (optional)
+
+PEM-encoded certificate authority certificates.
+
+This values could be obtained via inspecting the Kubernetes config file (usually
+at `~/.kube/config`) under `clusters.cluster.certificate-authority-data`. For
+GKE, execute the following command to obtain the value
+
+```
+gcloud container clusters describe <YOUR_CLUSTER_NAME> \
+    --zone=<YOUR_COMPUTE_ZONE> \
+    --format="value(masterAuth.clusterCaCertificate)"
+```
+
+See also
+https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#environments-without-gcloud
+for complete docs about GKE without `gcloud`.
+
 #### `gke`
 
 This cluster locator is designed to work with Kubernetes clusters running in
@@ -162,6 +218,26 @@ The custom resource's apiVersion.
 #### `customResources.\*.plural`
 
 The plural representing the custom resource.
+
+### `apiVersionOverrides` (optional)
+
+Overrides for the API versions used to make requests for the corresponding
+objects. If using a legacy Kubernetes version, you may use this config to
+override the default API versions to ones that are supported by your cluster.
+
+Example:
+
+```yaml
+---
+kubernetes:
+  apiVersionOverrides:
+    cronjobs: 'v1beta1'
+```
+
+For more information on which API versions are supported by your cluster, please
+view the Kubernetes API docs for your Kubernetes version (e.g.
+[API Groups for v1.22](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#-strong-api-groups-strong-)
+)
 
 ### Role Based Access Control
 

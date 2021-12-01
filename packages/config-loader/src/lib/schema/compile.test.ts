@@ -29,12 +29,30 @@ describe('compileConfigSchemas', () => {
       },
     ]);
     expect(validate([{ data: { a: 1 }, context: 'test' }])).toEqual({
-      errors: ['Config should be string { type=string } at /a'],
-      visibilityByPath: new Map(),
+      errors: [
+        {
+          keyword: 'type',
+          dataPath: '/a',
+          schemaPath: '#/properties/a/type',
+          message: 'should be string',
+          params: { type: 'string' },
+        },
+      ],
+      visibilityByDataPath: new Map(),
+      visibilityBySchemaPath: new Map(),
     });
     expect(validate([{ data: { b: 'b' }, context: 'test' }])).toEqual({
-      errors: ['Config should be number { type=number } at /b'],
-      visibilityByPath: new Map(),
+      errors: [
+        {
+          keyword: 'type',
+          dataPath: '/b',
+          schemaPath: '#/properties/b/type',
+          message: 'should be number',
+          params: { type: 'number' },
+        },
+      ],
+      visibilityByDataPath: new Map(),
+      visibilityBySchemaPath: new Map(),
     });
   });
 
@@ -78,12 +96,20 @@ describe('compileConfigSchemas', () => {
         { data: { a: 'a', b: 'b', c: 'c', d: ['d'] }, context: 'test' },
       ]),
     ).toEqual({
-      visibilityByPath: new Map(
+      visibilityByDataPath: new Map(
         Object.entries({
           '/a': 'frontend',
           '/b': 'secret',
           '/d': 'secret',
           '/d/0': 'frontend',
+        }),
+      ),
+      visibilityBySchemaPath: new Map(
+        Object.entries({
+          '/properties/a': 'frontend',
+          '/properties/b': 'secret',
+          '/properties/d': 'secret',
+          '/properties/d/items': 'frontend',
         }),
       ),
     });

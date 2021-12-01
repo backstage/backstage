@@ -24,14 +24,16 @@ import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
 import os from 'os';
 import { Command } from 'commander';
+import { assertError } from '@backstage/errors';
 import {
   parseOwnerIds,
   addCodeownersEntry,
   getCodeownersFilePath,
 } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
-import { packageVersions } from '../../lib/version';
 import { Task, templatingTask } from '../../lib/tasks';
+import { Lockfile } from '../../lib/versioning';
+import { createPackageVersionProvider } from '../../lib/version';
 
 const exec = promisify(execCb);
 
@@ -172,6 +174,7 @@ async function buildPlugin(pluginFolder: string) {
         );
       });
     } catch (error) {
+      assertError(error);
       Task.error(error.message);
       break;
     }
@@ -238,7 +241,10 @@ export default async (cmd: Command) => {
   }
 
   const answers: Answers = await inquirer.prompt(questions);
-  const pluginId = cmd.backend ? `${answers.id}-backend` : answers.id;
+  const pluginId =
+    cmd.backend && !answers.id.endsWith('-backend')
+      ? `${answers.id}-backend`
+      : answers.id;
 
   const name = cmd.scope
     ? `@${cmd.scope.replace(/^@/, '')}/plugin-${pluginId}`
@@ -257,10 +263,16 @@ export default async (cmd: Command) => {
   const pluginDir = isMonoRepo
     ? paths.resolveTargetRoot('plugins', pluginId)
     : paths.resolveTargetRoot(pluginId);
-  const ownerIds = parseOwnerIds(answers.owner);
   const { version: pluginVersion } = isMonoRepo
     ? await fs.readJson(paths.resolveTargetRoot('lerna.json'))
     : { version: '0.1.0' };
+
+  let lockfile: Lockfile | undefined;
+  try {
+    lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
+  } catch (error) {
+    console.warn(`No yarn.lock available, ${error}`);
+  }
 
   Task.log();
   Task.log('Creating the plugin...');
@@ -288,7 +300,7 @@ export default async (cmd: Command) => {
         privatePackage,
         npmRegistry,
       },
-      packageVersions,
+      createPackageVersionProvider(lockfile),
     );
 
     Task.section('Moving to final location');
@@ -305,12 +317,8 @@ export default async (cmd: Command) => {
       await addPluginExtensionToApp(pluginId, extensionName, name);
     }
 
-    if (ownerIds && ownerIds.length) {
-      await addCodeownersEntry(
-        codeownersPath!,
-        `/plugins/${pluginId}`,
-        ownerIds,
-      );
+    if (answers.owner) {
+      await addCodeownersEntry(`/plugins/${pluginId}`, answers.owner);
     }
 
     Task.log();
@@ -318,6 +326,7 @@ export default async (cmd: Command) => {
     Task.log();
     Task.exit();
   } catch (error) {
+    assertError(error);
     Task.error(error.message);
 
     Task.log('It seems that something went wrong when creating the plugin 🤔');

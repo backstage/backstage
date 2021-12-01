@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import { rest } from 'msw';
@@ -77,7 +77,7 @@ describe('GitlabUrlReader', () => {
   });
 
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
 
   describe('read', () => {
     beforeEach(() => {
@@ -223,7 +223,7 @@ describe('GitlabUrlReader', () => {
 
   describe('readTree', () => {
     const archiveBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'gitlab-archive.tar.gz'),
+      path.resolve(__dirname, '__fixtures__/gitlab-archive.tar.gz'),
     );
 
     const projectGitlabApiResponse = {
@@ -495,7 +495,7 @@ describe('GitlabUrlReader', () => {
 
   describe('search', () => {
     const archiveBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'gitlab-archive.tar.gz'),
+      path.resolve(__dirname, '__fixtures__/gitlab-archive.tar.gz'),
     );
 
     const projectGitlabApiResponse = {

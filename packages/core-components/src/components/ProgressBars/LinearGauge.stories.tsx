@@ -41,3 +41,9 @@ export const LowProgress = () => (
     <LinearGauge value={0.2} />
   </div>
 );
+
+export const StaticColor = () => (
+  <div style={containerStyle}>
+    <LinearGauge getColor={() => '#f0f'} value={0.5} />
+  </div>
+);

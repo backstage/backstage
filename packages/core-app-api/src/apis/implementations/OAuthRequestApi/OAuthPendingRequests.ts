@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Observable } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { BehaviorSubject } from '../../../lib/subjects';
 
 type RequestQueueEntry<ResultType> = {

@@ -172,6 +172,7 @@ This page itself can be exported as a routable extension in the plugin:
 ```ts
 export const CustomCatalogIndexPage = myPlugin.provide(
   createRoutableExtension({
+    name: 'CustomCatalogIndexPage',
     component: () =>
       import('./components/CustomCatalogPage').then(m => m.CustomCatalogPage),
     mountPoint: catalogRouteRef,

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { TechDocsSearch } from './TechDocsSearch';
+import { ApiProvider } from '@backstage/core-app-api';
+import { searchApiRef } from '@backstage/plugin-search';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import {
   act,
   fireEvent,
@@ -22,9 +23,8 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { searchApiRef } from '@backstage/plugin-search';
+import React from 'react';
+import { TechDocsSearch } from './TechDocsSearch';
 
 const entityId = {
   name: 'test',
@@ -54,7 +54,7 @@ describe('<TechDocsPage />', () => {
     const querySpy = jest.fn(query);
     const searchApi = { query: querySpy };
 
-    const apiRegistry = ApiRegistry.from([[searchApiRef, searchApi]]);
+    const apiRegistry = TestApiRegistry.from([searchApiRef, searchApi]);
 
     await act(async () => {
       const rendered = render(
@@ -75,7 +75,7 @@ describe('<TechDocsPage />', () => {
     const querySpy = jest.fn(query);
     const searchApi = { query: querySpy };
 
-    const apiRegistry = ApiRegistry.from([[searchApiRef, searchApi]]);
+    const apiRegistry = TestApiRegistry.from([searchApiRef, searchApi]);
 
     await act(async () => {
       const rendered = render(

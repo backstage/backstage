@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { trimEnd } from 'lodash';
 
 /**
  * The configuration parameters for a single GitHub API provider.
@@ -52,12 +53,12 @@ export function readGithubConfig(config: Config): ProviderConfig[] {
 
   // First read all the explicit providers
   for (const providerConfig of providerConfigs) {
-    const target = providerConfig.getString('target').replace(/\/+$/, '');
+    const target = trimEnd(providerConfig.getString('target'), '/');
     let apiBaseUrl = providerConfig.getOptionalString('apiBaseUrl');
     const token = providerConfig.getOptionalString('token');
 
     if (apiBaseUrl) {
-      apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
+      apiBaseUrl = trimEnd(apiBaseUrl, '/');
     } else if (target === 'https://github.com') {
       apiBaseUrl = 'https://api.github.com';
     }

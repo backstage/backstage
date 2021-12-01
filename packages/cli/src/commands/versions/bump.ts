@@ -17,6 +17,7 @@
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import semver from 'semver';
+import { isError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 import { run } from '../../lib/run';
 import { paths } from '../../lib/paths';
@@ -26,6 +27,7 @@ import {
   Lockfile,
 } from '../../lib/versioning';
 import { includedFilter, forbiddenDuplicatesFilter } from './lint';
+import { BACKSTAGE_JSON } from '@backstage/cli-common';
 
 const DEP_TYPES = [
   'dependencies',
@@ -59,7 +61,7 @@ export default async () => {
     try {
       target = await findTargetVersion(name);
     } catch (error) {
-      if (error.name === 'NotFoundError') {
+      if (isError(error) && error.name === 'NotFoundError') {
         console.log(`Package info not found, ignoring package ${name}`);
         return;
       }
@@ -97,7 +99,7 @@ export default async () => {
     try {
       target = await findTargetVersion(name);
     } catch (error) {
-      if (error.name === 'NotFoundError') {
+      if (isError(error) && error.name === 'NotFoundError') {
         console.log(`Package info not found, ignoring package ${name}`);
         return;
       }
@@ -180,6 +182,10 @@ export default async () => {
 
       await fs.writeJson(pkgPath, pkgJson, { spaces: 2 });
     });
+
+    console.log();
+
+    await bumpBackstageJsonVersion();
 
     console.log();
     console.log(
@@ -268,6 +274,41 @@ function createVersionFinder() {
     found.set(name, latest);
     return latest;
   };
+}
+
+export async function bumpBackstageJsonVersion() {
+  const backstageJsonPath = paths.resolveTargetRoot(BACKSTAGE_JSON);
+  const backstageJson = await fs.readJSON(backstageJsonPath).catch(e => {
+    if (e.code === 'ENOENT') {
+      // gracefully continue in case the file doesn't exist
+      return;
+    }
+    throw e;
+  });
+
+  const info = await fetchPackageInfo('@backstage/create-app');
+  const { latest } = info['dist-tags'];
+
+  if (backstageJson?.version === latest) {
+    return;
+  }
+
+  console.log(
+    chalk.yellow(
+      typeof backstageJson === 'undefined'
+        ? `Creating ${BACKSTAGE_JSON}`
+        : `Bumping version in ${BACKSTAGE_JSON}`,
+    ),
+  );
+
+  await fs.writeJson(
+    backstageJsonPath,
+    { ...backstageJson, version: latest },
+    {
+      spaces: 2,
+      encoding: 'utf8',
+    },
+  );
 }
 
 async function workerThreads<T>(

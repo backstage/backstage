@@ -1,5 +1,107 @@
 # @backstage/plugin-api-docs
 
+## 0.6.15
+
+### Patch Changes
+
+- c982fc12cb: Adjusted some styles in the OpenAPI definition, for elements which were barely readable in dark mode.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.6.14
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/plugin-catalog@0.7.3
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.6.13
+
+### Patch Changes
+
+- 044c38e739: Lazy load all API definition widgets. The widgets use libraries like
+  `swagger-ui`, `graphiql`, and `@asyncapi/react-component` which are quite heavy
+  weight. To improve initial load times, the widgets are only loaded once used.
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
+## 0.6.12
+
+### Patch Changes
+
+- d03ee85ff8: Bump `swagger-ui-react` to `^4.0.0-rc.3`.
+- 3c50c86604: Remove unused dependency on material-icons/font
+- 6ed423c139: lock down the `swagger-client`
+- b6ab93c421: Add actions props to the ApiExplorerPage
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/plugin-catalog@0.7.1
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.6.11
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog@0.7.0
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+
+## 0.6.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/plugin-catalog@0.6.17
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.6.9
+
+### Patch Changes
+
+- cc464a56b3: This makes Type and Lifecycle columns consistent for all table cases and adds a new line in Description column for better readability
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/plugin-catalog@0.6.16
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+
+## 0.6.8
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/plugin-catalog@0.6.15
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/plugin-catalog@0.6.14
+  - @backstage/catalog-model@0.9.1
+
 ## 0.6.6
 
 ### Patch Changes

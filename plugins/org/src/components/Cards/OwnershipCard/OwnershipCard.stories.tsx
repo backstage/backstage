@@ -15,14 +15,14 @@
  */
 
 import { GroupEntity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import {
   CatalogApi,
   catalogApiRef,
   catalogRouteRef,
-  EntityContext,
+  EntityProvider,
 } from '@backstage/plugin-catalog-react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import {
   BackstageTheme,
   createTheme,
@@ -86,18 +86,18 @@ const catalogApi: Partial<CatalogApi> = {
   getEntities: () => Promise.resolve({ items: [serviceA, serviceB, websiteA] }),
 };
 
-const apiRegistry = ApiRegistry.from([[catalogApiRef, catalogApi]]);
+const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
 export const Default = () =>
   wrapInTestApp(
-    <ApiProvider apis={apiRegistry}>
-      <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
+    <ApiProvider apis={apis}>
+      <EntityProvider entity={defaultEntity}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <OwnershipCard />
           </Grid>
         </Grid>
-      </EntityContext.Provider>
+      </EntityProvider>
     </ApiProvider>,
     {
       mountedRoutes: { '/catalog': catalogRouteRef },
@@ -123,16 +123,14 @@ const monochromeTheme = (outer: BackstageTheme) =>
 export const Themed = () =>
   wrapInTestApp(
     <ThemeProvider theme={monochromeTheme}>
-      <ApiProvider apis={apiRegistry}>
-        <EntityContext.Provider
-          value={{ entity: defaultEntity, loading: false }}
-        >
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={defaultEntity}>
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
               <OwnershipCard />
             </Grid>
           </Grid>
-        </EntityContext.Provider>
+        </EntityProvider>
       </ApiProvider>
     </ThemeProvider>,
     {

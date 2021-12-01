@@ -39,7 +39,7 @@ export type SentryIssue = {
   userCount: number;
   stats: {
     '24h'?: EventPoint[];
-    '12h'?: EventPoint[];
+    '14d'?: EventPoint[];
   };
   culprit: string;
   title: string;

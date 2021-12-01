@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import Auth0Icon from '@material-ui/icons/AcUnit';
 import { auth0AuthApiRef } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
@@ -22,10 +21,15 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'auth0',
   title: 'Auth0',
-  icon: Auth0Icon,
+  icon: () => null,
 };
 
-class Auth0Auth {
+/**
+ * Implements the OAuth flow to Auth0 products.
+ *
+ * @public
+ */
+export default class Auth0Auth {
   static create({
     discoveryApi,
     environment = 'development',
@@ -42,5 +46,3 @@ class Auth0Auth {
     });
   }
 }
-
-export default Auth0Auth;

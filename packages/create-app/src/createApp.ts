@@ -14,78 +14,23 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { promisify } from 'util';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import inquirer, { Answers, Question } from 'inquirer';
-import { exec as execCb } from 'child_process';
 import { resolve as resolvePath } from 'path';
 import { findPaths } from '@backstage/cli-common';
 import os from 'os';
-import { Task, templatingTask } from './lib/tasks';
+import {
+  Task,
+  buildAppTask,
+  checkAppExistsTask,
+  checkPathExistsTask,
+  createTemporaryAppFolderTask,
+  moveAppTask,
+  templatingTask,
+} from './lib/tasks';
 
-const exec = promisify(execCb);
-
-async function checkExists(rootDir: string, name: string) {
-  await Task.forItem('checking', name, async () => {
-    const destination = resolvePath(rootDir, name);
-
-    if (await fs.pathExists(destination)) {
-      const existing = chalk.cyan(destination.replace(`${rootDir}/`, ''));
-      throw new Error(
-        `A directory with the same name already exists: ${existing}\nPlease try again with a different app name`,
-      );
-    }
-  });
-}
-
-async function createTemporaryAppFolder(tempDir: string) {
-  await Task.forItem('creating', 'temporary directory', async () => {
-    try {
-      await fs.mkdir(tempDir);
-    } catch (error) {
-      throw new Error(
-        `Failed to create temporary app directory: ${error.message}`,
-      );
-    }
-  });
-}
-
-async function cleanUp(tempDir: string) {
-  await Task.forItem('remove', 'temporary directory', async () => {
-    await fs.remove(tempDir);
-  });
-}
-
-async function buildApp(appDir: string) {
-  const runCmd = async (cmd: string) => {
-    await Task.forItem('executing', cmd, async () => {
-      process.chdir(appDir);
-
-      await exec(cmd).catch(error => {
-        process.stdout.write(error.stderr);
-        process.stdout.write(error.stdout);
-        throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
-      });
-    });
-  };
-
-  await runCmd('yarn install');
-  await runCmd('yarn tsc');
-}
-
-async function moveApp(tempDir: string, destination: string, id: string) {
-  await Task.forItem('moving', id, async () => {
-    await fs.move(tempDir, destination).catch(error => {
-      throw new Error(
-        `Failed to move app from ${tempDir} to ${destination}: ${error.message}`,
-      );
-    });
-  });
-}
-
-export default async (cmd: Command): Promise<void> => {
+export default async (cmd: Command, version: string): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
 
@@ -119,27 +64,44 @@ export default async (cmd: Command): Promise<void> => {
 
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
-  const appDir = resolvePath(paths.targetDir, answers.name);
+
+  // Use `--path` argument as applicaiton directory when specified, otherwise
+  // create a directory using `answers.name`
+  const appDir = cmd.path
+    ? resolvePath(paths.targetDir, cmd.path)
+    : resolvePath(paths.targetDir, answers.name);
 
   Task.log();
   Task.log('Creating the app...');
 
   try {
-    Task.section('Checking if the directory is available');
-    await checkExists(paths.targetDir, answers.name);
+    if (cmd.path) {
+      // Template directly to specified path
 
-    Task.section('Creating a temporary app directory');
-    await createTemporaryAppFolder(tempDir);
+      Task.section('Checking that supplied path exists');
+      await checkPathExistsTask(appDir);
 
-    Task.section('Preparing files');
-    await templatingTask(templateDir, tempDir, answers);
+      Task.section('Preparing files');
+      await templatingTask(templateDir, cmd.path, answers, version);
+    } else {
+      // Template to temporary location, and then move files
 
-    Task.section('Moving to final location');
-    await moveApp(tempDir, appDir, answers.name);
+      Task.section('Checking if the directory is available');
+      await checkAppExistsTask(paths.targetDir, answers.name);
+
+      Task.section('Creating a temporary app directory');
+      await createTemporaryAppFolderTask(tempDir);
+
+      Task.section('Preparing files');
+      await templatingTask(templateDir, tempDir, answers, version);
+
+      Task.section('Moving to final location');
+      await moveAppTask(tempDir, appDir, answers.name);
+    }
 
     if (!cmd.skipInstall) {
       Task.section('Building the app');
-      await buildApp(appDir);
+      await buildAppTask(appDir);
     }
 
     Task.log();
@@ -156,13 +118,10 @@ export default async (cmd: Command): Promise<void> => {
     Task.log();
     Task.exit();
   } catch (error) {
-    Task.error(error.message);
+    Task.error(String(error));
 
     Task.log('It seems that something went wrong when creating the app 🤔');
-    Task.log('We are going to clean up, and then you can try again.');
 
-    Task.section('Cleanup');
-    await cleanUp(tempDir);
     Task.error('🔥  Failed to create app!');
     Task.exit(1);
   }

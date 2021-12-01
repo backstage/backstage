@@ -1,5 +1,57 @@
 # @backstage/integration
 
+## 0.6.9
+
+### Patch Changes
+
+- a15d028517: More API fixes: mark things public, add docs, fix exports
+- Updated dependencies
+  - @backstage/config@0.1.11
+
+## 0.6.8
+
+### Patch Changes
+
+- eab072161e: By replacing `\n` with a newline for GitHub Apps private keys, this allows users to store the private key as an environment variable and reference it in the YAML.
+
+## 0.6.7
+
+### Patch Changes
+
+- a31afc5b62: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+
+## 0.6.6
+
+### Patch Changes
+
+- d1f2118389: Support selective GitHub app installation for GHE
+
+## 0.6.5
+
+### Patch Changes
+
+- 8113ba5ebb: Allow file extension `.yml` to be ingested in GitLab processor
+- Updated dependencies
+  - @backstage/config@0.1.10
+
+## 0.6.4
+
+### Patch Changes
+
+- f7ad3a8925: Fix Azure URL handling to properly support both repo shorthand (`/owner/_git/project`) and full URLs (`/owner/project/_git/repo`).
+
+  Fix Azure DevOps Server URL handling by being able to parse URLs with hosts other than `dev.azure.com`. Note that the `api-version` used for API requests is currently `6.0`, meaning you need to support at least this version in your Azure DevOps Server instance.
+
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- cc5c8f4979: Handle pagination on return results when fetch GitHub API to list selected repos
+
+## 0.6.3
+
+### Patch Changes
+
+- 5dca42b17: Update to properly handle Azure DevOps Server download URL
+
 ## 0.6.2
 
 ### Patch Changes

@@ -1,5 +1,132 @@
 # @backstage/plugin-catalog
 
+## 0.7.3
+
+### Patch Changes
+
+- 38d6df6bb9: Remove the "View Api" icon in the AboutCard, as the information is misleading for some users and is
+  duplicated in the tabs above.
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/integration-react@0.1.14
+
+## 0.7.2
+
+### Patch Changes
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/errors@0.1.3
+  - @backstage/core-plugin-api@0.1.11
+  - @backstage/plugin-catalog-react@0.6.1
+  - @backstage/catalog-model@0.9.5
+
+## 0.7.1
+
+### Patch Changes
+
+- 82fbda923e: Introduce a new `StarredEntitiesApi` that is used in the `useStarredEntities` hook.
+  The `@backstage/plugin-catalog` installs a default implementation that is backed by the `StorageApi`, but one can also override the `starredEntitiesApiRef`.
+
+  This change also updates the storage format from a custom string to an entity reference and moves the location in the local storage.
+  A migration will convert the previously starred entities to the location on the first load of Backstage.
+
+- 93a13dfb42: Support `material-ui` overrides in SystemDiagramCard and EmptityLinksEmptyState components
+- b03b9f19e0: added sorting in entity `Name` column by `metadata.title` if present
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+  - @backstage/integration-react@0.1.12
+
+## 0.7.0
+
+### Minor Changes
+
+- bb0f6b8a0f: Updates the `<EntitySwitch if={asyncMethod}/>` to accept asynchronous `if` functions.
+
+  Adds the new `getEntityAncestors` method to `CatalogClient`.
+
+  Updates the `<EntityProcessingErrorsPanel />` to make use of the ancestry endpoint to display errors for entities further up the ancestry tree. This makes it easier to discover issues where for example the origin location has been removed or malformed.
+
+  `hasCatalogProcessingErrors()` is now changed to be asynchronous so any calls outside the already established entitySwitch need to be awaited.
+
+### Patch Changes
+
+- 5aae9bb61e: Name column will now render entity `metadata.title` if its present
+- 1c5c5b23fb: Replace deprecated material UI components used by LinksCard to remove errors from console log
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+  - @backstage/catalog-client@0.5.0
+
+## 0.6.17
+
+### Patch Changes
+
+- dd52fa1c5c: Update AboutCard to only render refresh button if the entity is managed by an url location.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/integration-react@0.1.11
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.6.16
+
+### Patch Changes
+
+- dbcaa6387a: Updates the `AboutCard` with a refresh button that allows the entity to be scheduled for refresh.
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/integration-react@0.1.10
+
+## 0.6.15
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- e95b379d5f: Deprecated `Router` in favor of using the plugin extensions.
+- d5b23612c2: Display entity titles on `EntityLayout` if defined
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/integration@0.6.4
+  - @backstage/integration-react@0.1.9
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.6.14
+
+### Patch Changes
+
+- 10db3ce09: Update the `AboutCard` to properly support non-standard entity types and rework the defaults for the build-in kinds.
+
+  This change also uses `useElementFilter(...)` instead of `React.children.count(...)` in `AboutField` to properly recognize whether children are available.
+
+- 7e5f14dda: This change hides pagination counter of search tables and group members list when results fit in one page
+- 3ed78fca3: Added the ability to switch entity kind on the catalog index page. This is a non-breaking change, but if you created a custom `CatalogPage` and wish to use this feature, make the modifications shown on [#6895](https://github.com/backstage/backstage/pull/6895).
+- aaa1dd17b: Use a `Link` for the edit button on the `AboutCard` instead of doing `window.open(...)`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/integration@0.6.3
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/integration-react@0.1.8
+
 ## 0.6.13
 
 ### Patch Changes

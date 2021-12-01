@@ -16,7 +16,9 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { GitType } from 'circleci-api';
 import { Me } from 'circleci-api';
+import { PathParams } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SubRouteRef } from '@backstage/core-plugin-api';
 
 export { BuildStepAction };
 
@@ -68,7 +70,7 @@ export const circleCIApiRef: ApiRef<CircleCIApi>;
 // Warning: (ae-missing-release-tag) "circleCIBuildRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const circleCIBuildRouteRef: RouteRef<undefined>;
+export const circleCIBuildRouteRef: SubRouteRef<PathParams<'/:buildId'>>;
 
 // Warning: (ae-missing-release-tag) "circleCIPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -103,6 +105,4 @@ export { isCircleCIAvailable as isPluginApplicableToEntity };
 //
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

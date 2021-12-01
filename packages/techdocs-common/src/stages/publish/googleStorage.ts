@@ -15,6 +15,7 @@
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { assertError } from '@backstage/errors';
 import { File, FileExistsResponse, Storage } from '@google-cloud/storage';
 import express from 'express';
 import JSON5 from 'json5';
@@ -29,6 +30,7 @@ import {
   bulkStorageOperation,
   getCloudPathForLocalPath,
   getStaleFiles,
+  normalizeExternalStorageRootPath,
 } from './helpers';
 import { MigrateWriteStream } from './migrations';
 import {
@@ -39,6 +41,26 @@ import {
 } from './types';
 
 export class GoogleGCSPublish implements PublisherBase {
+  private readonly storageClient: Storage;
+  private readonly bucketName: string;
+  private readonly legacyPathCasing: boolean;
+  private readonly logger: Logger;
+  private readonly bucketRootPath: string;
+
+  constructor(options: {
+    storageClient: Storage;
+    bucketName: string;
+    legacyPathCasing: boolean;
+    logger: Logger;
+    bucketRootPath: string;
+  }) {
+    this.storageClient = options.storageClient;
+    this.bucketName = options.bucketName;
+    this.legacyPathCasing = options.legacyPathCasing;
+    this.logger = options.logger;
+    this.bucketRootPath = options.bucketRootPath;
+  }
+
   static fromConfig(config: Config, logger: Logger): PublisherBase {
     let bucketName = '';
     try {
@@ -49,6 +71,11 @@ export class GoogleGCSPublish implements PublisherBase {
           'techdocs.publisher.googleGcs.bucketName is required.',
       );
     }
+
+    const bucketRootPath = normalizeExternalStorageRootPath(
+      config.getOptionalString('techdocs.publisher.googleGcs.bucketRootPath') ||
+        '',
+    );
 
     // Credentials is an optional config. If missing, default GCS environment variables will be used.
     // Read more here https://cloud.google.com/docs/authentication/production
@@ -77,24 +104,13 @@ export class GoogleGCSPublish implements PublisherBase {
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
 
-    return new GoogleGCSPublish(
+    return new GoogleGCSPublish({
       storageClient,
       bucketName,
       legacyPathCasing,
       logger,
-    );
-  }
-
-  constructor(
-    private readonly storageClient: Storage,
-    private readonly bucketName: string,
-    private readonly legacyPathCasing: boolean,
-    private readonly logger: Logger,
-  ) {
-    this.storageClient = storageClient;
-    this.bucketName = bucketName;
-    this.legacyPathCasing = legacyPathCasing;
-    this.logger = logger;
+      bucketRootPath,
+    });
   }
 
   /**
@@ -112,6 +128,7 @@ export class GoogleGCSPublish implements PublisherBase {
         isAvailable: true,
       };
     } catch (err) {
+      assertError(err);
       this.logger.error(
         `Could not retrieve metadata about the GCS bucket ${this.bucketName}. ` +
           'Make sure the bucket exists. Also make sure that authentication is setup either by explicitly defining ' +
@@ -131,6 +148,7 @@ export class GoogleGCSPublish implements PublisherBase {
   async publish({ entity, directory }: PublishRequest): Promise<void> {
     const useLegacyPathCasing = this.legacyPathCasing;
     const bucket = this.storageClient.bucket(this.bucketName);
+    const bucketRootPath = this.bucketRootPath;
 
     // First, try to retrieve a list of all individual files currently existing
     let existingFiles: string[] = [];
@@ -139,9 +157,11 @@ export class GoogleGCSPublish implements PublisherBase {
         entity,
         undefined,
         useLegacyPathCasing,
+        bucketRootPath,
       );
       existingFiles = await this.getFilesForFolder(remoteFolder);
     } catch (e) {
+      assertError(e);
       this.logger.error(
         `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
       );
@@ -163,6 +183,7 @@ export class GoogleGCSPublish implements PublisherBase {
               entity,
               relativeFilePath,
               useLegacyPathCasing,
+              bucketRootPath,
             ),
           });
         },
@@ -187,6 +208,7 @@ export class GoogleGCSPublish implements PublisherBase {
             entity,
             path.relative(directory, absoluteFilePath),
             useLegacyPathCasing,
+            bucketRootPath,
           ),
       );
       const staleFiles = getStaleFiles(relativeFilesToUpload, existingFiles);
@@ -211,9 +233,11 @@ export class GoogleGCSPublish implements PublisherBase {
   fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata> {
     return new Promise((resolve, reject) => {
       const entityTriplet = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
-      const entityRootDir = this.legacyPathCasing
+      const entityDir = this.legacyPathCasing
         ? entityTriplet
         : lowerCaseEntityTriplet(entityTriplet);
+
+      const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
 
       const fileStreamChunks: Array<any> = [];
       this.storageClient
@@ -243,10 +267,16 @@ export class GoogleGCSPublish implements PublisherBase {
       // Decode and trim the leading forward slash
       const decodedUri = decodeURI(req.path.replace(/^\//, ''));
 
-      // filePath example - /default/component/documented-component/index.html
-      const filePath = this.legacyPathCasing
-        ? decodedUri
-        : lowerCaseEntityTripletInStoragePath(decodedUri);
+      // Root path is removed from the Uri so that legacy casing can be applied
+      // to the entity triplet without manipulating the root path
+      const decodedUriNoRoot = path.relative(this.bucketRootPath, decodedUri);
+
+      const filePathNoRoot = this.legacyPathCasing
+        ? decodedUriNoRoot
+        : lowerCaseEntityTripletInStoragePath(decodedUriNoRoot);
+
+      // Re-prepend the root path to the relative file path
+      const filePath = path.posix.join(this.bucketRootPath, filePathNoRoot);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
@@ -261,10 +291,12 @@ export class GoogleGCSPublish implements PublisherBase {
           res.writeHead(200, responseHeaders);
         })
         .on('error', err => {
-          this.logger.warn(err.message);
+          this.logger.warn(
+            `TechDocs Google GCS router failed to serve content from bucket ${this.bucketName} at path ${filePath}: ${err.message}`,
+          );
           // Send a 404 with a meaningful message if possible.
           if (!res.headersSent) {
-            res.status(404).send(err.message);
+            res.status(404).send('File Not Found');
           } else {
             res.destroy();
           }
@@ -280,9 +312,11 @@ export class GoogleGCSPublish implements PublisherBase {
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     return new Promise(resolve => {
       const entityTriplet = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-      const entityRootDir = this.legacyPathCasing
+      const entityDir = this.legacyPathCasing
         ? entityTriplet
         : lowerCaseEntityTriplet(entityTriplet);
+
+      const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
 
       this.storageClient
         .bucket(this.bucketName)

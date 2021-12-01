@@ -16,6 +16,7 @@
 
 import { Writable } from 'stream';
 
+/** @public */
 export type RunContainerOptions = {
   imageName: string;
   command?: string | string[];
@@ -27,6 +28,7 @@ export type RunContainerOptions = {
   pullImage?: boolean;
 };
 
+/** @public */
 export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
 }

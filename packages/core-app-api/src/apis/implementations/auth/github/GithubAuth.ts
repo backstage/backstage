@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import GithubIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { GithubSession } from './types';
 import {
@@ -24,8 +23,8 @@ import {
   ProfileInfo,
   BackstageIdentity,
   AuthRequestOptions,
-  Observable,
 } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
   AuthSessionStore,
@@ -48,10 +47,15 @@ export type GithubAuthResponse = {
 const DEFAULT_PROVIDER = {
   id: 'github',
   title: 'GitHub',
-  icon: GithubIcon,
+  icon: () => null,
 };
 
-class GithubAuth implements OAuthApi, SessionApi {
+/**
+ * Implements the OAuth flow to GitHub products.
+ *
+ * @public
+ */
+export default class GithubAuth implements OAuthApi, SessionApi {
   static create({
     discoveryApi,
     environment = 'development',
@@ -112,6 +116,9 @@ class GithubAuth implements OAuthApi, SessionApi {
     return new GithubAuth(sessionManagerMux);
   }
 
+  /**
+   * @deprecated will be made private in the future. Use create method instead.
+   */
   constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
 
   async signIn() {
@@ -158,4 +165,3 @@ class GithubAuth implements OAuthApi, SessionApi {
     return new Set(scopeList);
   }
 }
-export default GithubAuth;

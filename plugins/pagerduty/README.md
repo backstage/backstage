@@ -1,11 +1,11 @@
 # PagerDuty + Backstage Integration Benefits
 
-- Display relevant PagerDuty information about an entity within Backstage, such as the escalation policy or if there are any active incidents
+- Display relevant PagerDuty information about an entity within Backstage, such as the escalation policy, if there are any active incidents, and recent changes
 - Trigger an incident to the currently on-call responder(s) for a service
 
 # How it Works
 
-- The Backstage PagerDuty plugin allows PagerDuty information about a Backstage entity to be displayed within Backstage. This includes active incidents as well as the current on-call responders' names, email addresses, and links to their profiles in PagerDuty.
+- The Backstage PagerDuty plugin allows PagerDuty information about a Backstage entity to be displayed within Backstage. This includes active incidents, recent change events, as well as the current on-call responders' names, email addresses, and links to their profiles in PagerDuty.
 - Incidents can be manually triggered via the plugin with a user-provided description, which will in turn notify the current on-call responders.
 
 # Requirements

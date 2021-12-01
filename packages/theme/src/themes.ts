@@ -18,6 +18,11 @@ import { createTheme } from './baseTheme';
 import { pageTheme } from './pageTheme';
 import { yellow } from '@material-ui/core/colors';
 
+/**
+ * The default Backstage light theme.
+ *
+ * @public
+ */
 export const lightTheme = createTheme({
   palette: {
     type: 'light',
@@ -50,6 +55,7 @@ export const lightTheme = createTheme({
       error: '#E22134',
       text: '#FFFFFF',
       link: '#000000',
+      warning: '#FF9800',
     },
     border: '#E6E6E6',
     textContrast: '#000000',
@@ -83,6 +89,11 @@ export const lightTheme = createTheme({
   pageTheme,
 });
 
+/**
+ * The default Backstage dark theme.
+ *
+ * @public
+ */
 export const darkTheme = createTheme({
   palette: {
     type: 'dark',
@@ -119,6 +130,7 @@ export const darkTheme = createTheme({
       error: '#E22134',
       text: '#FFFFFF',
       link: '#000000',
+      warning: '#FF9800',
     },
     border: '#E6E6E6',
     textContrast: '#FFFFFF',

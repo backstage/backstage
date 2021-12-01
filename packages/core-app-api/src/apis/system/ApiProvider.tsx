@@ -14,35 +14,34 @@
  * limitations under the License.
  */
 
-import React, {
-  createContext,
-  useContext,
-  ReactNode,
-  PropsWithChildren,
-} from 'react';
+import React, { useContext, ReactNode, PropsWithChildren } from 'react';
 import PropTypes from 'prop-types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiAggregator } from './ApiAggregator';
-import { getOrCreateGlobalSingleton } from '../../lib/globalObject';
 import {
-  VersionedValue,
   createVersionedValueMap,
-} from '../../lib/versionedValues';
+  createVersionedContext,
+} from '@backstage/version-bridge';
 
-type ApiProviderProps = {
+/**
+ * Prop types for the ApiProvider component.
+ * @public
+ */
+export type ApiProviderProps = {
   apis: ApiHolder;
   children: ReactNode;
 };
 
-type ApiContextType = VersionedValue<{ 1: ApiHolder }> | undefined;
-const ApiContext = getOrCreateGlobalSingleton('api-context', () =>
-  createContext<ApiContextType>(undefined),
-);
+const ApiContext = createVersionedContext<{ 1: ApiHolder }>('api-context');
 
-export const ApiProvider = ({
-  apis,
-  children,
-}: PropsWithChildren<ApiProviderProps>) => {
+/**
+ * Provides an {@link @backstage/core-plugin-api#ApiHolder} for consumption in
+ * the React tree.
+ *
+ * @public
+ */
+export const ApiProvider = (props: PropsWithChildren<ApiProviderProps>) => {
+  const { apis, children } = props;
   const parentHolder = useContext(ApiContext)?.atVersion(1);
   const holder = parentHolder ? new ApiAggregator(apis, parentHolder) : apis;
 

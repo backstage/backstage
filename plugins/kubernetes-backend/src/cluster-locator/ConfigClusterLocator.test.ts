@@ -53,6 +53,7 @@ describe('ConfigClusterLocator', () => {
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
         skipTLSVerify: false,
+        caData: undefined,
       },
     ]);
   });
@@ -66,6 +67,7 @@ describe('ConfigClusterLocator', () => {
           url: 'http://localhost:8080',
           authProvider: 'serviceAccount',
           skipTLSVerify: false,
+          dashboardUrl: 'https://k8s.foo.com',
         },
         {
           name: 'cluster2',
@@ -83,10 +85,12 @@ describe('ConfigClusterLocator', () => {
     expect(result).toStrictEqual([
       {
         name: 'cluster1',
+        dashboardUrl: 'https://k8s.foo.com',
         serviceAccountToken: 'token',
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
         skipTLSVerify: false,
+        caData: undefined,
       },
       {
         name: 'cluster2',
@@ -94,6 +98,7 @@ describe('ConfigClusterLocator', () => {
         url: 'http://localhost:8081',
         authProvider: 'google',
         skipTLSVerify: true,
+        caData: undefined,
       },
     ]);
   });
@@ -139,6 +144,7 @@ describe('ConfigClusterLocator', () => {
         url: 'http://localhost:8080',
         authProvider: 'aws',
         skipTLSVerify: false,
+        caData: undefined,
       },
       {
         assumeRole: 'SomeRole',
@@ -148,6 +154,7 @@ describe('ConfigClusterLocator', () => {
         url: 'http://localhost:8081',
         authProvider: 'aws',
         skipTLSVerify: true,
+        caData: undefined,
       },
       {
         assumeRole: 'SomeRole',
@@ -157,6 +164,7 @@ describe('ConfigClusterLocator', () => {
         serviceAccountToken: undefined,
         authProvider: 'aws',
         skipTLSVerify: true,
+        caData: undefined,
       },
     ]);
   });

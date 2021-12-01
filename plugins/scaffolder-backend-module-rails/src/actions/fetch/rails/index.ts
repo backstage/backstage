@@ -15,7 +15,7 @@
  */
 
 import { ContainerRunner, UrlReader } from '@backstage/backend-common';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
@@ -27,6 +27,16 @@ import {
 import { resolve as resolvePath } from 'path';
 import { RailsNewRunner } from './railsNewRunner';
 
+/**
+ * Creates the `fetch:rails` Scaffolder action.
+ *
+ * @remarks
+ *
+ * See {@link https://guides.rubyonrails.org/rails_application_templates.html} and {@link https://backstage.io/docs/features/software-templates/writing-custom-actions}.
+ *
+ * @param options - Configuration of the templater.
+ * @public
+ */
 export function createFetchRailsAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;

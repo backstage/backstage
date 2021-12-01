@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * material-ui theme for use with Backstage.
+ *
+ * @packageDocumentation
+ */
+
 export * from './themes';
 export * from './baseTheme';
 export * from './types';

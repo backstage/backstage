@@ -100,17 +100,16 @@ const app = createApp({
 
 ### Backend
 
-When using ALB auth it is not possible to leverage the built-in auth config discovery mechanism implemented in the app created by default; bespoke logic needs to be implemented.
+When using ALB auth you can configure it as described [here](https://backstage.io/docs/auth/identity-resolver).
 
-- replace the content of `packages/backend/plugin/auth.ts` with the below
+- replace the content of `packages/backend/plugin/auth.ts` with the below and tweak it according to your needs.
 
 ```ts
 import {
   createRouter,
-  AuthResponse,
-  AuthProviderFactoryOptions,
-  defaultAuthProviderFactories,
+  createAwsAlbProvider,
 } from '@backstage/plugin-auth-backend';
+import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
@@ -118,30 +117,59 @@ export default async function createPlugin({
   database,
   config,
   discovery,
-}: PluginEnvironment) {
-  const identityResolver = (payload: any): Promise<AuthResponse<any>> => {
-    return Promise.resolve({
-      providerInfo: {},
-      profile: {
-        email: payload.email,
-        displayName: payload.name,
-        picture: payload.picture,
-      },
-      backstageIdentity: {
-        id: payload.email,
-      },
-    });
-  };
-  const providerFactories = {
-    awsalb: (options: AuthProviderFactoryOptions) =>
-      defaultAuthProviderFactories.awsalb({ ...options, identityResolver }),
-  };
+}: PluginEnvironment): Promise<Router> {
   return await createRouter({
     logger,
     config,
     database,
     discovery,
-    providerFactories,
+    providerFactories: {
+      awsalb: createAwsAlbProvider({
+        authHandler: async ({ fullProfile }) => {
+          let email: string | undefined = undefined;
+          if (fullProfile.emails && fullProfile.emails.length > 0) {
+            const [firstEmail] = fullProfile.emails;
+            email = firstEmail.value;
+          }
+
+          let picture: string | undefined = undefined;
+          if (fullProfile.photos && fullProfile.photos.length > 0) {
+            const [firstPhoto] = fullProfile.photos;
+            picture = firstPhoto.value;
+          }
+
+          const displayName: string | undefined =
+            fullProfile.displayName ?? fullProfile.username ?? fullProfile.id;
+
+          return {
+            profile: {
+              email,
+              picture,
+              displayName,
+            },
+          };
+        },
+        signIn: {
+          resolver: async ({ profile: { email } }, ctx) => {
+            const [id] = email?.split('@') ?? '';
+            // Fetch from an external system that returns entity claims like:
+            // ['user:default/breanna.davison', ...]
+            const ent = [`user:default/${id}`];
+
+            // Resolve group membership from the Backstage catalog
+            const fullEnt =
+              await ctx.catalogIdentityClient.resolveCatalogMembership({
+                entityRefs: [id].concat(ent),
+                logger: ctx.logger,
+              });
+            const token = await ctx.tokenIssuer.issueToken({
+              claims: { sub: id, ent: fullEnt },
+            });
+            return { id, token };
+          },
+        },
+      }),
+    },
   });
 }
 ```

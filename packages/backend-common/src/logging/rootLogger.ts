@@ -18,17 +18,53 @@ import { merge } from 'lodash';
 import * as winston from 'winston';
 import { LoggerOptions } from 'winston';
 import { coloredFormat } from './formats';
+import { escapeRegExp } from '../util/escapeRegExp';
 
 let rootLogger: winston.Logger;
+let redactionRegExp: RegExp | undefined;
 
+/** @public */
 export function getRootLogger(): winston.Logger {
   return rootLogger;
 }
 
+/** @public */
 export function setRootLogger(newLogger: winston.Logger) {
   rootLogger = newLogger;
 }
 
+export function setRootLoggerRedactionList(redactionList: string[]) {
+  // Exclude secrets that are empty or just one character in length. These
+  // typically mean that you are running local dev or tests, or using the
+  // --lax flag which sets things to just 'x'. So exclude those.
+  const filtered = redactionList.filter(r => r.length > 1);
+
+  if (filtered.length) {
+    redactionRegExp = new RegExp(
+      `(${filtered.map(escapeRegExp).join('|')})`,
+      'g',
+    );
+  } else {
+    redactionRegExp = undefined;
+  }
+}
+
+/**
+ * A winston formatting function that finds occurrences of filteredKeys
+ * and replaces them with the corresponding identifier.
+ */
+function redactLogLine(info: winston.Logform.TransformableInfo) {
+  // TODO(hhogg): The logger is created before the config is loaded,
+  // because the logger is needed in the config loader. There is a risk of
+  // a secret being logged out during the config loading stage.
+  if (redactionRegExp) {
+    info.message = info.message.replace(redactionRegExp, '[REDACTED]');
+  }
+
+  return info;
+}
+
+/** @public */
 export function createRootLogger(
   options: winston.LoggerOptions = {},
   env = process.env,
@@ -38,6 +74,7 @@ export function createRootLogger(
       {
         level: env.LOG_LEVEL || 'info',
         format: winston.format.combine(
+          winston.format(redactLogLine)(),
           env.NODE_ENV === 'production' ? winston.format.json() : coloredFormat,
         ),
         defaultMeta: {

@@ -23,7 +23,7 @@ import {
   railsArgumentResolver,
   RailsRunOptions,
 } from './railsArgumentResolver';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { Writable } from 'stream';
 
 export class RailsNewRunner {

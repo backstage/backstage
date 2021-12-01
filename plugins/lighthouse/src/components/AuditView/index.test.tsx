@@ -26,7 +26,11 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-import { msw, wrapInTestApp } from '@backstage/test-utils';
+import {
+  setupRequestMockHandlers,
+  TestApiRegistry,
+  wrapInTestApp,
+} from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -35,18 +39,18 @@ import { Audit, lighthouseApiRef, LighthouseRestApi, Website } from '../../api';
 import { formatTime } from '../../utils';
 import * as data from '../../__fixtures__/website-response.json';
 import AuditView from './index';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 
 const { useParams }: { useParams: jest.Mock } =
   jest.requireMock('react-router-dom');
 const websiteResponse = data as Website;
 
 describe('AuditView', () => {
-  let apis: ApiRegistry;
+  let apis: TestApiRegistry;
   let id: string;
 
   const server = setupServer();
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   beforeEach(() => {
     server.use(
@@ -55,8 +59,9 @@ describe('AuditView', () => {
       ),
     );
 
-    apis = ApiRegistry.from([
-      [lighthouseApiRef, new LighthouseRestApi('https://lighthouse')],
+    apis = TestApiRegistry.from([
+      lighthouseApiRef,
+      new LighthouseRestApi('https://lighthouse'),
     ]);
     id = websiteResponse.audits.find(a => a.status === 'COMPLETED')
       ?.id as string;

@@ -45,3 +45,39 @@ export const Default = () => {
     </MemoryRouter>
   );
 };
+
+export const CustomPlaceholder = () => {
+  return (
+    <MemoryRouter>
+      {/* @ts-ignore (defaultValue requires more than what is used here) */}
+      <SearchContext.Provider value={defaultValue}>
+        <Grid container direction="row">
+          <Grid item xs={12}>
+            <Paper style={{ padding: '8px 0' }}>
+              <SearchBar placeholder="This is a custom placeholder" />
+            </Paper>
+          </Grid>
+        </Grid>
+      </SearchContext.Provider>
+    </MemoryRouter>
+  );
+};
+
+export const Focused = () => {
+  return (
+    <MemoryRouter>
+      {/* @ts-ignore (defaultValue requires more than what is used here) */}
+      <SearchContext.Provider value={defaultValue}>
+        <Grid container direction="row">
+          <Grid item xs={12}>
+            <Paper style={{ padding: '8px 0' }}>
+              {/* decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus */}
+              {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+              <SearchBar autoFocus />
+            </Paper>
+          </Grid>
+        </Grid>
+      </SearchContext.Provider>
+    </MemoryRouter>
+  );
+};

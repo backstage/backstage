@@ -17,7 +17,8 @@
 export { readGithubConfig, readGithubMultiOrgConfig } from './config';
 export type { GithubMultiOrgConfig, ProviderConfig } from './config';
 export {
+  getOrganizationRepositories,
   getOrganizationTeams,
   getOrganizationUsers,
-  getOrganizationRepositories,
 } from './github';
+export { parseGitHubOrgUrl } from './util';

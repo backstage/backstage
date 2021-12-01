@@ -29,15 +29,21 @@ import { useDebounce } from 'react-use';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
 
-const useStyles = makeStyles(_theme => ({
-  searchToolbar: {
-    paddingLeft: 0,
-    paddingRight: 0,
+const useStyles = makeStyles(
+  _theme => ({
+    searchToolbar: {
+      paddingLeft: 0,
+      paddingRight: 0,
+    },
+    input: {},
+  }),
+  {
+    name: 'CatalogReactEntitySearchBar',
   },
-}));
+);
 
 export const EntitySearchBar = () => {
-  const styles = useStyles();
+  const classes = useStyles();
 
   const { filters, updateFilters } = useEntityListProvider();
   const [search, setSearch] = useState(filters.text?.value ?? '');
@@ -53,10 +59,11 @@ export const EntitySearchBar = () => {
   );
 
   return (
-    <Toolbar className={styles.searchToolbar}>
+    <Toolbar className={classes.searchToolbar}>
       <FormControl>
         <Input
           id="input-with-icon-adornment"
+          className={classes.input}
           placeholder="Search"
           autoComplete="off"
           onChange={event => setSearch(event.target.value)}

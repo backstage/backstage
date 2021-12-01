@@ -16,7 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { getVoidLogger } from '../logging';
@@ -28,7 +28,7 @@ const fetchUrlReader = new FetchUrlReader();
 describe('FetchUrlReader', () => {
   const worker = setupServer();
 
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -77,6 +77,10 @@ describe('FetchUrlReader', () => {
               { host: 'example.com:700' },
               { host: '*.examples.org' },
               { host: '*.examples.org:700' },
+              {
+                host: 'foobar.org',
+                paths: ['/dir1/'],
+              },
             ],
           },
         },
@@ -106,6 +110,9 @@ describe('FetchUrlReader', () => {
     expect(predicate(new URL('https://examples.org:700/test'))).toBe(false);
     expect(predicate(new URL('https://a.examples.org:700/test'))).toBe(true);
     expect(predicate(new URL('https://a.b.examples.org:700/test'))).toBe(true);
+    expect(predicate(new URL('https://foobar.org/dir1/subpath'))).toBe(true);
+    expect(predicate(new URL('https://foobar.org/dir12'))).toBe(false);
+    expect(predicate(new URL('https://foobar.org/'))).toBe(false);
   });
 
   describe('read', () => {

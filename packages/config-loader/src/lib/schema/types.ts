@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AppConfig, JsonObject } from '@backstage/config';
+import { AppConfig } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
 /**
  * An sub-set of configuration schema.
@@ -37,8 +38,10 @@ export const CONFIG_VISIBILITIES = ['frontend', 'backend', 'secret'] as const;
 
 /**
  * A type representing the possible configuration value visibilities
+ *
+ * @public
  */
-export type ConfigVisibility = typeof CONFIG_VISIBILITIES[number];
+export type ConfigVisibility = 'frontend' | 'backend' | 'secret';
 
 /**
  * The default configuration visibility if no other values is given.
@@ -48,7 +51,14 @@ export const DEFAULT_CONFIG_VISIBILITY: ConfigVisibility = 'backend';
 /**
  * An explanation of a configuration validation error.
  */
-type ValidationError = string;
+export type ValidationError = {
+  keyword: string;
+  dataPath: string;
+  schemaPath: string;
+  params: Record<string, any>;
+  propertyName?: string;
+  message?: string;
+};
 
 /**
  * The result of validating configuration data using a schema.
@@ -63,7 +73,14 @@ type ValidationResult = {
    *
    * The path in the key uses the form `/<key>/<sub-key>/<array-index>/<leaf-key>`
    */
-  visibilityByPath: Map<string, ConfigVisibility>;
+  visibilityByDataPath: Map<string, ConfigVisibility>;
+
+  /**
+   * The configuration visibilities that were discovered during validation.
+   *
+   * The path in the key uses the form `/properties/<key>/items/additionalProperties/<leaf-key>`
+   */
+  visibilityBySchemaPath: Map<string, ConfigVisibility>;
 };
 
 /**
@@ -73,6 +90,8 @@ export type ValidationFunc = (configs: AppConfig[]) => ValidationResult;
 
 /**
  * A function used to transform primitive configuration values.
+ *
+ * @public
  */
 export type TransformFunc<T extends number | string | boolean> = (
   value: T,
@@ -81,8 +100,10 @@ export type TransformFunc<T extends number | string | boolean> = (
 
 /**
  * Options used to process configuration data with a schema.
+ *
+ * @public
  */
-type ConfigProcessingOptions = {
+export type ConfigSchemaProcessingOptions = {
   /**
    * The visibilities that should be included in the output data.
    * If omitted, the data will not be filtered by visibility.
@@ -107,11 +128,13 @@ type ConfigProcessingOptions = {
 
 /**
  * A loaded configuration schema that is ready to process configuration data.
+ *
+ * @public
  */
 export type ConfigSchema = {
   process(
     appConfigs: AppConfig[],
-    options?: ConfigProcessingOptions,
+    options?: ConfigSchemaProcessingOptions,
   ): AppConfig[];
 
   serialize(): JsonObject;

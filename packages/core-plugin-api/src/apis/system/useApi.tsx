@@ -16,10 +16,18 @@
 
 import React, { PropsWithChildren } from 'react';
 import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
-import { useVersionedContext } from '../../lib/versionedValues';
+import { useVersionedContext } from '@backstage/version-bridge';
 
+/**
+ * React hook for retrieving {@link ApiHolder}, an API catalog.
+ *
+ * @public
+ */
 export function useApiHolder(): ApiHolder {
   const versionedHolder = useVersionedContext<{ 1: ApiHolder }>('api-context');
+  if (!versionedHolder) {
+    throw new Error('API context is not available');
+  }
 
   const apiHolder = versionedHolder.atVersion(1);
   if (!apiHolder) {
@@ -28,6 +36,12 @@ export function useApiHolder(): ApiHolder {
   return apiHolder;
 }
 
+/**
+ * React hook for retrieving APIs.
+ *
+ * @param apiRef - Reference of the API to use.
+ * @public
+ */
 export function useApi<T>(apiRef: ApiRef<T>): T {
   const apiHolder = useApiHolder();
 
@@ -38,6 +52,12 @@ export function useApi<T>(apiRef: ApiRef<T>): T {
   return api;
 }
 
+/**
+ * Wrapper for giving component an API context.
+ *
+ * @param apis - APIs for the context.
+ * @public
+ */
 export function withApis<T>(apis: TypesToApiRefs<T>) {
   return function withApisWrapper<P extends T>(
     WrappedComponent: React.ComponentType<P>,

@@ -26,13 +26,19 @@ const ENTITY_YAML = `metadata:
       title: My Dashboard
       icon: dashboard`;
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  code: {
-    borderRadius: 6,
-    margin: `${theme.spacing(2)}px 0px`,
-    background: theme.palette.type === 'dark' ? '#444' : '#fff',
-  },
-}));
+/** @public */
+export type EntityLinksEmptyStateClassKey = 'code';
+
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    code: {
+      borderRadius: 6,
+      margin: `${theme.spacing(2)}px 0px`,
+      background: theme.palette.type === 'dark' ? '#444' : '#fff',
+    },
+  }),
+  { name: 'PluginCatalogEntityLinksEmptyState' },
+);
 
 export const EntityLinksEmptyState = () => {
   const classes = useStyles();

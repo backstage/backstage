@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   BitbucketIntegration,
   getBitbucketDefaultBranch,
@@ -24,25 +25,26 @@ import {
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
+import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import { stripFirstDirectoryFromPath } from './tree/util';
 import {
-  ReadTreeResponseFactory,
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
+  ReadTreeResponseFactory,
+  ReadUrlOptions,
+  ReadUrlResponse,
   SearchOptions,
   SearchResponse,
   UrlReader,
-  ReadUrlResponse,
-  ReadUrlOptions,
 } from './types';
 
 /**
  * A processor that adds the ability to read files from Bitbucket v1 and v2 APIs, such as
  * the one exposed by Bitbucket Cloud itself.
+ *
+ * @public
  */
 export class BitbucketUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
@@ -75,18 +77,33 @@ export class BitbucketUrlReader implements UrlReader {
   }
 
   async read(url: string): Promise<Buffer> {
+    const response = await this.readUrl(url);
+    return response.buffer();
+  }
+
+  async readUrl(
+    url: string,
+    options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
+    // TODO: etag is not supported yet
+    const { signal } = options ?? {};
     const bitbucketUrl = getBitbucketFileFetchUrl(url, this.integration.config);
-    const options = getBitbucketRequestOptions(this.integration.config);
+    const requestOptions = getBitbucketRequestOptions(this.integration.config);
 
     let response: Response;
     try {
-      response = await fetch(bitbucketUrl.toString(), options);
+      response = await fetch(bitbucketUrl.toString(), {
+        ...requestOptions,
+        ...(signal && { signal }),
+      });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 
     if (response.ok) {
-      return Buffer.from(await response.arrayBuffer());
+      return {
+        buffer: async () => Buffer.from(await response.arrayBuffer()),
+      };
     }
 
     const message = `${url} could not be read as ${bitbucketUrl}, ${response.status} ${response.statusText}`;
@@ -94,15 +111,6 @@ export class BitbucketUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
-  }
-
-  async readUrl(
-    url: string,
-    _options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
-    // TODO etag is not implemented yet.
-    const buffer = await this.read(url);
-    return { buffer: async () => buffer };
   }
 
   async readTree(
@@ -148,11 +156,11 @@ export class BitbucketUrlReader implements UrlReader {
     // a future improvement, we could be smart and try to deduce that non-glob
     // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
     // to get just that part of the repo.
-    const treeUrl = url.replace(filepath, '').replace(/\/+$/, '');
+    const treeUrl = trimEnd(url.replace(filepath, ''), '/');
 
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,
-      filter: path => matcher.match(stripFirstDirectoryFromPath(path)),
+      filter: path => matcher.match(path),
     });
     const files = await tree.files();
 

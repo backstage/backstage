@@ -4,12 +4,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - '.github/workflows/microsite-with-storybook-deploy.yml'
-      - 'packages/storybook/**'
-      - 'packages/core-components/src/**'
-      - 'microsite/**'
-      - 'docs/**'
 
 jobs:
   deploy-microsite-and-storybook:
@@ -40,6 +34,9 @@ jobs:
       - name: microsite yarn install
         run: yarn install --frozen-lockfile
         working-directory: microsite
+
+      - name: build API reference
+        run: yarn build:api-docs
 
       - name: build microsite
         run: yarn build

@@ -29,7 +29,8 @@ import {
   UrlReader,
   ContainerRunner,
 } from '@backstage/backend-common';
-import { ConfigReader, JsonObject } from '@backstage/config';
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import mockFs from 'mock-fs';
 import os from 'os';

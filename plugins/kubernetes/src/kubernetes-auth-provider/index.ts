@@ -15,4 +15,5 @@
  */
 
 export { kubernetesAuthProvidersApiRef } from './types';
+export type { KubernetesAuthProvidersApi } from './types';
 export { KubernetesAuthProviders } from './KubernetesAuthProviders';

@@ -24,7 +24,11 @@ If you don't have a `plugins.ts` file see: [troubleshooting](#troubleshooting)
 ### Add the `<Shortcuts />` component within your `<Sidebar>`:
 
 ```tsx
-import { Sidebar, SidebarDivider, SidebarSpace } from '@backstage/core';
+import {
+  Sidebar,
+  SidebarDivider,
+  SidebarSpace,
+} from '@backstage/core-components';
 import { Shortcuts } from '@backstage/plugin-shortcuts';
 
 export const SidebarComponent = () => (

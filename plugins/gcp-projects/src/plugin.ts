@@ -41,6 +41,7 @@ export const gcpProjectsPlugin = createPlugin({
 
 export const GcpProjectsPage = gcpProjectsPlugin.provide(
   createRoutableExtension({
+    name: 'GcpProjectsPage',
     component: () =>
       import('./components/GcpProjectsPage').then(m => m.GcpProjectsPage),
     mountPoint: rootRouteRef,

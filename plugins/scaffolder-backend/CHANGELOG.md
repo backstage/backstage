@@ -1,5 +1,185 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.14
+
+### Patch Changes
+
+- a096e4c4d7: Switched to executing scaffolder templating in a secure context for any template based on nunjucks, as it is [not secure by default](https://mozilla.github.io/nunjucks/api.html#user-defined-templates-warning).
+- f9352ab606: Removed all usages of `path.resolve` in order to ensure that template paths are resolved in a safe way.
+- e634a47ce5: Fix bug where there was error log lines written when failing to `JSON.parse` things that were not `JSON` values.
+- 42ebbc18c0: Bump gitbeaker to the latest version
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/plugin-catalog-backend@0.18.0
+  - @backstage/backend-common@0.9.11
+
+## 0.15.13
+
+### Patch Changes
+
+- 26eb174ce8: Skip empty file names when scaffolding with nunjucks
+- ecdcbd08ee: Expose template metadata to custom action handler in Scaffolder.
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+  - @backstage/plugin-catalog-backend@0.17.4
+
+## 0.15.12
+
+### Patch Changes
+
+- 9990df8a1f: Expose some classes and interfaces public so TaskWorkers can run externally from the scaffolder API.
+- b45a34fb15: Adds a new endpoint for consuming logs from the Scaffolder that uses long polling instead of Server Sent Events.
+
+  This is useful if Backstage is accessed from an environment that doesn't support SSE correctly, which happens in combination with certain enterprise HTTP Proxy servers.
+
+  It is intended to switch the endpoint globally for the whole instance.
+  If you want to use it, you can provide a reconfigured API to the `scaffolderApiRef`:
+
+  ```tsx
+  // packages/app/src/apis.ts
+
+  // ...
+  import {
+    scaffolderApiRef,
+    ScaffolderClient,
+  } from '@backstage/plugin-scaffolder';
+
+  export const apis: AnyApiFactory[] = [
+    // ...
+
+    createApiFactory({
+      api: scaffolderApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+        scmIntegrationsApi: scmIntegrationsApiRef,
+      },
+      factory: ({ discoveryApi, identityApi, scmIntegrationsApi }) =>
+        new ScaffolderClient({
+          discoveryApi,
+          identityApi,
+          scmIntegrationsApi,
+          // use long polling instead of an eventsource
+          useLongPollingLogs: true,
+        }),
+    }),
+  ];
+  ```
+
+- a794c341ca: Fix a bug where only file mode 775 is considered an executable
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/catalog-client@0.5.1
+  - @backstage/plugin-catalog-backend@0.17.3
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.4
+
+## 0.15.11
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- 41c49884d2: Start using the new `@backstage/types` package. Initially, this means using the `Observable` and `Json*` types from there. The types also remain in their old places but deprecated, and will be removed in a future release.
+- e55a5dea09: Fixed bug where the mode of an executable file was ignored
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.2
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/backend-common@0.9.8
+  - @backstage/catalog-model@0.9.6
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.3
+  - @backstage/plugin-scaffolder-common@0.1.1
+
+## 0.15.10
+
+### Patch Changes
+
+- b149e94290: Allow `catalog:register` action to register optional locations
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.1
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.15.9
+
+### Patch Changes
+
+- 0f99f1170e: Make sure `sourcePath` of `publish:github:pull-request` can only be used to
+  retrieve files from the workspace.
+
+## 0.15.8
+
+### Patch Changes
+
+- 42c618abf6: Use `resolveSafeChildPath` in the `fetchContents` function to forbid reading files outside the base directory when a template is registered from a `file:` location.
+- 18083d1821: Introduce the new `scaffolder.backstage.io/v1beta3` template kind with nunjucks support 🥋
+- Updated dependencies
+  - @backstage/integration@0.6.8
+  - @backstage/plugin-catalog-backend@0.17.0
+
+## 0.15.7
+
+### Patch Changes
+
+- ca3086a7ad: Fixed a bug where the `catalog:register` action would not return any entity when running towards recent versions of the catalog.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.15.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
+## 0.15.5
+
+### Patch Changes
+
+- 618143c3c7: Action needed: If you are using the templates located at https://github.com/backstage/backstage/tree/master/ in your Backstage app directly using the URL via the `app-config.yaml`, you should copy over the templates inside your org and import from there. The templates have now been moved to https://github.com/backstage/software-templates. See https://github.com/backstage/backstage/issues/6415 for explanation.
+- cfade02127: Change hardcoded branch `master` to \$defaultBranch in GitLab provider
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.9.3
+  - @backstage/integration@0.6.4
+
+## 0.15.4
+
+### Patch Changes
+
+- 04aad2dab: Fix issue #7021 scaffolder action fetch:template preserves templates file permissions
+- 21ccd4997: GitHub Webhook action in Scaffolder Backend has been improved to validate event names against Octokit Webhook event names list.
+- Updated dependencies
+  - @backstage/catalog-client@0.3.19
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/backend-common@0.9.2
+
+## 0.15.3
+
+### Patch Changes
+
+- 3f9dd1759: GitHub create repository webhook action: `github:webhook` for Backstage plugin Scaffolder has been added.
+- 774b08a5c: GitHubWebhook Action can be created with a default webhook secret. This allows getting secret from environment variable as an alternative to get it from context.
+- 536f4d844: Updated dependencies
+- 0b92a1e74: refactor: extract common Octokit related code and use it in actions: `publish:github`, `github:actions:dispatch`, `github:webhook`.
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
 ## 0.15.2
 
 ### Patch Changes

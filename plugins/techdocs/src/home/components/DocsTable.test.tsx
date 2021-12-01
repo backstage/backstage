@@ -19,6 +19,7 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { DocsTable } from './DocsTable';
 import { rootDocsRouteRef } from '../../routes';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 // Hacky way to mock a specific boolean config value.
 const getOptionalBooleanMock = jest.fn().mockReturnValue(false);
@@ -94,6 +95,7 @@ describe('DocsTable test', () => {
         {
           mountedRoutes: {
             '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       ),
@@ -144,6 +146,7 @@ describe('DocsTable test', () => {
         {
           mountedRoutes: {
             '/techdocs/:namespace/:kind/:name/*': rootDocsRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       ),
@@ -163,6 +166,7 @@ describe('DocsTable test', () => {
       wrapInTestApp(<DocsTable entities={[]} />, {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
       }),
     );

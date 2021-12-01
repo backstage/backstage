@@ -76,7 +76,7 @@ CMD ["node", "packages/backend", "--config", "app-config.yaml"]
 
 For more details on how the `backend:bundle` command and the `skeleton.tar.gz`
 file works, see the
-[`backend:bundle` command docs](../cli/commands.md#backendbundle).
+[`backend:bundle` command docs](../local-dev/cli-commands.md#backendbundle).
 
 The `Dockerfile` is located at `packages/backend/Dockerfile`, but needs to be
 executed with the root of the repo as the build context, in order to get access
@@ -105,13 +105,16 @@ docker image build . -f packages/backend/Dockerfile --tag backstage
 To try out the image locally you can run the following:
 
 ```sh
-docker run -it -p 7000:7000 backstage
+docker run -it -p 7007:7007 backstage
 ```
 
 You should then start to get logs in your terminal, and then you can open your
-browser at `http://localhost:7000`
+browser at `http://localhost:7007`
 
 ## Multi-stage Build
+
+> NOTE: The `.dockerignore` is different in this setup, read on for more
+> details.
 
 This section describes how to set up a multi-stage Docker build that builds the
 entire project within Docker. This is typically slower than a host build, but is
@@ -119,12 +122,12 @@ sometimes desired because Docker in Docker is not available in the build
 environment, or due to other requirements.
 
 The build is split into three different stages, where the first stage finds all
-of the `package.json`s that are relevant for the initial install step enabling
-us to cache the initial `yarn install` that installs all dependencies. The
-second stage executes the build itself, and is similar to the steps we execute
-on the host in the host build. The third and final stage then packages it all
-together into the final image, and is similar to the `Dockerfile` of the host
-build.
+of the `package.json` files that are relevant for the initial install step
+enabling us to cache the initial `yarn install` that installs all dependencies.
+The second stage executes the build itself, and is similar to the steps we
+execute on the host in the host build. The third and final stage then packages
+it all together into the final image, and is similar to the `Dockerfile` of the
+host build.
 
 The following `Dockerfile` executes the multi-stage build and should be added to
 the repo root:
@@ -137,6 +140,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 
 COPY packages packages
+# Comment this out if you don't have any internal plugins
 COPY plugins plugins
 
 RUN find packages \! -name "package.json" -mindepth 2 -maxdepth 2 -exec rm -rf {} \+
@@ -182,8 +186,9 @@ end up being properly installed.
 
 To speed up the build when not running in a fresh clone of the repo you should
 set up a `.dockerignore`. This one is different than the host build one, because
-we want to have access to the source code of all packages for the build, but can
-ignore any existing build output or dependencies:
+we want to have access to the source code of all packages for the build. We can
+however ignore any existing build output or dependencies on the host. For our
+new `.dockerignore`, replace the contents of your existing one with this:
 
 ```text
 node_modules
@@ -203,11 +208,11 @@ docker image build -t backstage .
 To try out the image locally you can run the following:
 
 ```sh
-docker run -it -p 7000:7000 backstage
+docker run -it -p 7007:7007 backstage
 ```
 
 You should then start to get logs in your terminal, and then you can open your
-browser at `http://localhost:7000`
+browser at `http://localhost:7007`
 
 ## Separate Frontend
 

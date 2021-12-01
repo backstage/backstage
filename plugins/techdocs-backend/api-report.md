@@ -14,6 +14,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PreparerBuilder } from '@backstage/techdocs-common';
 import { PublisherBase } from '@backstage/techdocs-common';
 import { TechDocsDocument } from '@backstage/techdocs-common';
+import { TokenManager } from '@backstage/backend-common';
 
 // Warning: (ae-forgotten-export) The symbol "RouterOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -25,19 +26,16 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 //
 // @public (undocumented)
 export class DefaultTechDocsCollator implements DocumentCollator {
+  // @deprecated
   constructor({
     discovery,
     locationTemplate,
     logger,
     catalogClient,
+    tokenManager,
     parallelismLimit,
-  }: {
-    discovery: PluginEndpointDiscovery;
-    logger: Logger_2;
-    locationTemplate?: string;
-    catalogClient?: CatalogApi;
-    parallelismLimit?: number;
-  });
+    legacyPathCasing,
+  }: TechDocsCollatorOptions);
   // (undocumented)
   protected applyArgsToFormat(
     format: string,
@@ -48,14 +46,30 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   // (undocumented)
   execute(): Promise<TechDocsDocument[]>;
   // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: TechDocsCollatorOptions,
+  ): DefaultTechDocsCollator;
+  // (undocumented)
   protected locationTemplate: string;
   // (undocumented)
   readonly type: string;
 }
 
+// Warning: (ae-missing-release-tag) "TechDocsCollatorOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TechDocsCollatorOptions = {
+  discovery: PluginEndpointDiscovery;
+  logger: Logger_2;
+  tokenManager: TokenManager;
+  locationTemplate?: string;
+  catalogClient?: CatalogApi;
+  parallelismLimit?: number;
+  legacyPathCasing?: boolean;
+};
+
 export { TechDocsDocument };
 
 export * from '@backstage/techdocs-common';
-
-// (No @packageDocumentation comment for this package)
 ```

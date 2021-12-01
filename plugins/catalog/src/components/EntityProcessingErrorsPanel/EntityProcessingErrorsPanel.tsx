@@ -14,36 +14,113 @@
  * limitations under the License.
  */
 
-import { Entity, UNSTABLE_EntityStatusItem } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  Entity,
+  stringifyEntityRef,
+  UNSTABLE_EntityStatusItem,
+  compareEntityToRef,
+} from '@backstage/catalog-model';
+import {
+  catalogApiRef,
+  EntityRefLink,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import React from 'react';
 import { ResponseErrorPanel } from '@backstage/core-components';
-import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
+import {
+  CatalogApi,
+  ENTITY_STATUS_CATALOG_PROCESSING_TYPE,
+} from '@backstage/catalog-client';
+import { useApi, ApiHolder } from '@backstage/core-plugin-api';
+import { useAsync } from 'react-use';
+import { SerializedError } from '@backstage/errors';
 
-const errorfilter = (i: UNSTABLE_EntityStatusItem) =>
+const errorFilter = (i: UNSTABLE_EntityStatusItem) =>
   i.error &&
   i.level === 'error' &&
   i.type === ENTITY_STATUS_CATALOG_PROCESSING_TYPE;
 
-export const hasCatalogProcessingErrors = (entity: Entity) =>
-  entity?.status?.items?.filter(errorfilter).length! > 0;
+type GetOwnAndAncestorsErrorsResponse = {
+  items: {
+    errors: SerializedError[];
+    entity: Entity;
+  }[];
+};
+
+async function getOwnAndAncestorsErrors(
+  entityRef: string,
+  catalogApi: CatalogApi,
+): Promise<GetOwnAndAncestorsErrorsResponse> {
+  const ancestors = await catalogApi.getEntityAncestors({ entityRef });
+  const items = ancestors.items
+    .map(item => {
+      const statuses = item.entity.status?.items ?? [];
+      const errors = statuses
+        .filter(errorFilter)
+        .map(e => e.error)
+        .filter((e): e is SerializedError => Boolean(e));
+      return { errors: errors, entity: item.entity };
+    })
+    .filter(item => item.errors.length > 0);
+  return { items };
+}
+
+export const hasCatalogProcessingErrors = async (
+  entity: Entity,
+  context: { apis: ApiHolder },
+) => {
+  const catalogApi = context.apis.get(catalogApiRef);
+  if (!catalogApi) {
+    throw new Error(`No implementation available for ${catalogApiRef}`);
+  }
+
+  const errors = await getOwnAndAncestorsErrors(
+    stringifyEntityRef(entity),
+    catalogApi,
+  );
+  return errors.items.length > 0;
+};
 
 /**
- * Displays a list of errors if the entity is invalid.
+ * Displays a list of errors from the ancestors of the current entity.
  */
 export const EntityProcessingErrorsPanel = () => {
   const { entity } = useEntity();
-  const catalogProcessingErrors =
-    (entity?.status?.items?.filter(
-      errorfilter,
-    ) as Required<UNSTABLE_EntityStatusItem>[]) || [];
+  const entityRef = stringifyEntityRef(entity);
+  const catalogApi = useApi(catalogApiRef);
+  const { loading, error, value } = useAsync(async () => {
+    return getOwnAndAncestorsErrors(entityRef, catalogApi);
+  }, [entityRef, catalogApi]);
+
+  if (error) {
+    return (
+      <Box mb={1}>
+        <ResponseErrorPanel error={error} />
+      </Box>
+    );
+  }
+
+  if (loading || !value) {
+    return null;
+  }
 
   return (
     <>
-      {catalogProcessingErrors.map(({ error }, index) => (
+      {value.items.map((ancestorError, index) => (
         <Box key={index} mb={1}>
-          <ResponseErrorPanel error={error} />
+          {!compareEntityToRef(
+            entity,
+            stringifyEntityRef(ancestorError.entity),
+          ) && (
+            <Box p={1}>
+              The error below originates from{' '}
+              <EntityRefLink entityRef={ancestorError.entity} />
+            </Box>
+          )}
+          {ancestorError.errors.map((e, i) => (
+            <ResponseErrorPanel key={i} error={e} />
+          ))}
         </Box>
       ))}
     </>

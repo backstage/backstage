@@ -17,7 +17,6 @@
 import { generatePath } from 'react-router';
 import { ResponseError } from '@backstage/errors';
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
-import { entityRoute } from '@backstage/plugin-catalog-react';
 import { BadgesApi, BadgeSpec } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
@@ -53,7 +52,7 @@ export class BadgesClient implements BadgesApi {
 
   private async getEntityBadgeSpecsUrl(entity: Entity): Promise<string> {
     const routeParams = this.getEntityRouteParams(entity);
-    const path = generatePath(entityRoute.path, routeParams);
+    const path = generatePath(`:namespace/:kind/:name`, routeParams);
     return `${await this.discoveryApi.getBaseUrl(
       'badges',
     )}/entity/${path}/badge-specs`;
@@ -61,9 +60,10 @@ export class BadgesClient implements BadgesApi {
 
   private getEntityRouteParams(entity: Entity) {
     return {
-      kind: entity.kind.toLowerCase(),
+      kind: entity.kind.toLocaleLowerCase('en-US'),
       namespace:
-        entity.metadata.namespace?.toLowerCase() ?? ENTITY_DEFAULT_NAMESPACE,
+        entity.metadata.namespace?.toLocaleLowerCase('en-US') ??
+        ENTITY_DEFAULT_NAMESPACE,
       name: entity.metadata.name,
     };
   }

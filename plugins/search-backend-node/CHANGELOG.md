@@ -1,5 +1,25 @@
 # @backstage/plugin-search-backend-node
 
+## 0.4.3
+
+### Patch Changes
+
+- a369f19e7e: Handle special case when filter array has single value optimizing Lunr search behaviour.
+- Updated dependencies
+  - @backstage/search-common@0.2.1
+
+## 0.4.2
+
+### Patch Changes
+
+- a13f21cdc: Implement optional `pageCursor` based paging in search.
+
+  To use paging in your app, add a `<SearchResultPager />` to your
+  `SearchPage.tsx`.
+
+- Updated dependencies
+  - @backstage/search-common@0.2.0
+
 ## 0.4.1
 
 ### Patch Changes

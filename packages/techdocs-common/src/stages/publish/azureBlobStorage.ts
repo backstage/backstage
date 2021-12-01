@@ -21,6 +21,7 @@ import {
 } from '@azure/storage-blob';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { assertError, ForwardedError } from '@backstage/errors';
 import express from 'express';
 import JSON5 from 'json5';
 import limiterFactory from 'p-limit';
@@ -46,6 +47,23 @@ import {
 const BATCH_CONCURRENCY = 3;
 
 export class AzureBlobStoragePublish implements PublisherBase {
+  private readonly storageClient: BlobServiceClient;
+  private readonly containerName: string;
+  private readonly legacyPathCasing: boolean;
+  private readonly logger: Logger;
+
+  constructor(options: {
+    storageClient: BlobServiceClient;
+    containerName: string;
+    legacyPathCasing: boolean;
+    logger: Logger;
+  }) {
+    this.storageClient = options.storageClient;
+    this.containerName = options.containerName;
+    this.legacyPathCasing = options.legacyPathCasing;
+    this.logger = options.logger;
+  }
+
   static fromConfig(config: Config, logger: Logger): PublisherBase {
     let containerName = '';
     try {
@@ -94,24 +112,12 @@ export class AzureBlobStoragePublish implements PublisherBase {
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
 
-    return new AzureBlobStoragePublish(
-      storageClient,
-      containerName,
-      legacyPathCasing,
-      logger,
-    );
-  }
-
-  constructor(
-    private readonly storageClient: BlobServiceClient,
-    private readonly containerName: string,
-    private readonly legacyPathCasing: boolean,
-    private readonly logger: Logger,
-  ) {
-    this.storageClient = storageClient;
-    this.containerName = containerName;
-    this.legacyPathCasing = legacyPathCasing;
-    this.logger = logger;
+    return new AzureBlobStoragePublish({
+      storageClient: storageClient,
+      containerName: containerName,
+      legacyPathCasing: legacyPathCasing,
+      logger: logger,
+    });
   }
 
   async getReadiness(): Promise<ReadinessResponse> {
@@ -132,6 +138,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
         );
       }
     } catch (e) {
+      assertError(e);
       this.logger.error(`from Azure Blob Storage client library: ${e.message}`);
     }
 
@@ -165,6 +172,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
         maxPageSize: BATCH_CONCURRENCY,
       });
     } catch (e) {
+      assertError(e);
       this.logger.error(
         `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
       );
@@ -307,7 +315,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
       );
       return techdocsMetadata;
     } catch (e) {
-      throw new Error(`TechDocs metadata fetch failed, ${e.message}`);
+      throw new ForwardedError('TechDocs metadata fetch failed', e);
     }
   }
 
@@ -328,8 +336,8 @@ export class AzureBlobStoragePublish implements PublisherBase {
       const fileExtension = platformPath.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      try {
-        this.download(this.containerName, filePath).then(fileContent => {
+      this.download(this.containerName, filePath)
+        .then(fileContent => {
           // Inject response headers
           for (const [headerKey, headerValue] of Object.entries(
             responseHeaders,
@@ -337,11 +345,13 @@ export class AzureBlobStoragePublish implements PublisherBase {
             res.setHeader(headerKey, headerValue);
           }
           res.send(fileContent);
+        })
+        .catch(e => {
+          this.logger.warn(
+            `TechDocs Azure router failed to serve content from container ${this.containerName} at path ${filePath}: ${e.message}`,
+          );
+          res.status(404).send('File Not Found');
         });
-      } catch (e) {
-        this.logger.error(e.message);
-        res.status(404).json(e.message);
-      }
     };
   }
 
@@ -384,6 +394,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
     try {
       newPath = lowerCaseEntityTripletInStoragePath(originalPath);
     } catch (e) {
+      assertError(e);
       this.logger.warn(e.message);
       return;
     }
@@ -393,6 +404,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
       this.logger.verbose(`Migrating ${originalPath}`);
       await this.renameBlob(originalPath, newPath, removeOriginal);
     } catch (e) {
+      assertError(e);
       this.logger.warn(`Unable to migrate ${originalPath}: ${e.message}`);
     }
   }

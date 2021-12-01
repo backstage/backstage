@@ -21,6 +21,14 @@ describe('normalizeEntityName', () => {
     expect(normalizeEntityName('User Name')).toBe('user_name');
   });
 
+  it('should normalize complex name to valid entity name', () => {
+    expect(normalizeEntityName('User (Name)')).toBe('user_name');
+  });
+
+  it('should normalize complex name to valid entity name without extra underscore', () => {
+    expect(normalizeEntityName('User :(Name:)')).toBe('user_name');
+  });
+
   it('should normalize e-mail to valid entity name', () => {
     expect(normalizeEntityName('user.name@example.com')).toBe(
       'user.name_example.com',

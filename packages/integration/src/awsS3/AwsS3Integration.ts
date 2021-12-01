@@ -18,6 +18,11 @@ import { basicIntegrations, defaultScmResolveUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import { AwsS3IntegrationConfig, readAwsS3IntegrationConfigs } from './config';
 
+/**
+ * Integrates with AWS S3 or compatible solutions.
+ *
+ * @public
+ */
 export class AwsS3Integration implements ScmIntegration {
   static factory: ScmIntegrationsFactory<AwsS3Integration> = ({ config }) => {
     const configs = readAwsS3IntegrationConfigs(
@@ -42,6 +47,7 @@ export class AwsS3Integration implements ScmIntegration {
   }
 
   constructor(private readonly integrationConfig: AwsS3IntegrationConfig) {}
+
   resolveUrl(options: {
     url: string;
     base: string;

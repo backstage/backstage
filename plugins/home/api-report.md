@@ -10,6 +10,14 @@ import { Extension } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-missing-release-tag) "ClockConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ClockConfig = {
+  label: string;
+  timeZone: string;
+};
+
 // Warning: (ae-missing-release-tag) "ComponentAccordion" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -63,9 +71,11 @@ export const ComponentTabs: ({
 export function createCardExtension<T>({
   title,
   components,
+  name,
 }: {
   title: string;
   components: () => Promise<ComponentParts>;
+  name?: string;
 }): Extension<
   ({
     Renderer,
@@ -76,12 +86,34 @@ export function createCardExtension<T>({
   } & T) => JSX.Element
 >;
 
+// Warning: (ae-missing-release-tag) "HeaderWorldClock" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const HeaderWorldClock: ({
+  clockConfigs,
+}: {
+  clockConfigs: ClockConfig[];
+}) => JSX.Element | null;
+
 // Warning: (ae-missing-release-tag) "HomepageCompositionRoot" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const HomepageCompositionRoot: (props: {
   title?: string | undefined;
   children?: ReactNode;
+}) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "HomePageRandomJoke" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const HomePageRandomJoke: ({
+  Renderer,
+  title: overrideTitle,
+  ...childProps
+}: ComponentRenderer & {
+  title?: string | undefined;
+} & {
+  defaultCategory?: 'any' | 'programming' | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "homePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -93,19 +125,6 @@ export const homePlugin: BackstagePlugin<
   },
   {}
 >;
-
-// Warning: (ae-missing-release-tag) "RandomJokeHomePageComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const RandomJokeHomePageComponent: ({
-  Renderer,
-  title: overrideTitle,
-  ...childProps
-}: ComponentRenderer & {
-  title?: string | undefined;
-} & {
-  defaultCategory?: 'any' | 'programming' | undefined;
-}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SettingsModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -122,9 +141,10 @@ export const SettingsModal: ({
   children: JSX.Element;
 }) => JSX.Element;
 
+// @public
+export const WelcomeTitle: () => JSX.Element;
+
 // Warnings were encountered during analysis:
 //
 // src/extensions.d.ts:16:5 - (ae-forgotten-export) The symbol "ComponentParts" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
 ```

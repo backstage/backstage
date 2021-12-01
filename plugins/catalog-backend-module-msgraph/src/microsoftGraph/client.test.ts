@@ -15,7 +15,7 @@
  */
 
 import * as msal from '@azure/msal-node';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { MicrosoftGraphClient } from './client';
@@ -28,7 +28,7 @@ describe('MicrosoftGraphClient', () => {
   let client: MicrosoftGraphClient;
   const worker = setupServer();
 
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
 
   beforeEach(() => {
     confidentialClientApplication.acquireTokenByClientCredential.mockResolvedValue(

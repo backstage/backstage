@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import React, {
   createContext,
   PropsWithChildren,
@@ -25,17 +25,22 @@ import { sidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
 
-const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>({
-  root: {
-    width: '100%',
-    minHeight: '100%',
-    transition: 'padding-left 0.1s ease-out',
-    paddingLeft: ({ isPinned }) =>
-      isPinned
-        ? sidebarConfig.drawerWidthOpen
-        : sidebarConfig.drawerWidthClosed,
+export type SidebarPageClassKey = 'root';
+
+const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
+  {
+    root: {
+      width: '100%',
+      minHeight: '100%',
+      transition: 'padding-left 0.1s ease-out',
+      paddingLeft: ({ isPinned }) =>
+        isPinned
+          ? sidebarConfig.drawerWidthOpen
+          : sidebarConfig.drawerWidthClosed,
+    },
   },
-});
+  { name: 'BackstageSidebarPage' },
+);
 
 export type SidebarPinStateContextType = {
   isPinned: boolean;
@@ -44,12 +49,12 @@ export type SidebarPinStateContextType = {
 
 export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
   {
-    isPinned: false,
+    isPinned: true,
     toggleSidebarPinState: () => {},
   },
 );
 
-export const SidebarPage = (props: PropsWithChildren<{}>) => {
+export function SidebarPage(props: PropsWithChildren<{}>) {
   const [isPinned, setIsPinned] = useState(() =>
     LocalStorage.getSidebarPinState(),
   );
@@ -71,4 +76,4 @@ export const SidebarPage = (props: PropsWithChildren<{}>) => {
       <div className={classes.root}>{props.children}</div>
     </SidebarPinStateContext.Provider>
   );
-};
+}

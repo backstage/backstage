@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import React, { createContext, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import {
-  VersionedValue,
   createVersionedValueMap,
-} from '../lib/versionedValues';
-import { getOrCreateGlobalSingleton } from '../lib/globalObject';
+  createVersionedContext,
+} from '@backstage/version-bridge';
 import { AppContext as AppContextV1 } from './types';
 
-type AppContextType = VersionedValue<{ 1: AppContextV1 }> | undefined;
-const AppContext = getOrCreateGlobalSingleton('app-context', () =>
-  createContext<AppContextType | undefined>(undefined),
-);
+const AppContext = createVersionedContext<{ 1: AppContextV1 }>('app-context');
 
 type Props = {
   appContext: AppContextV1;

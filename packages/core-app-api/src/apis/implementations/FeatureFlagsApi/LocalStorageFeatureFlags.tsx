@@ -43,7 +43,10 @@ export function validateFlagName(name: string): void {
 }
 
 /**
- * Create the FeatureFlags implementation based on the API.
+ * A feature flags implementation that stores the flags in the browser's local
+ * storage.
+ *
+ * @public
  */
 export class LocalStorageFeatureFlags implements FeatureFlagsApi {
   private registeredFeatureFlags: FeatureFlag[] = [];

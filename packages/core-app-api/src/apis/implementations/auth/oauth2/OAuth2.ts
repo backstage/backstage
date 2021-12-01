@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import OAuth2Icon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
@@ -28,17 +27,16 @@ import {
   SessionState,
   SessionApi,
   BackstageIdentityApi,
-  Observable,
 } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { OAuth2Session } from './types';
 import { OAuthApiCreateOptions } from '../types';
 
-type Options = {
-  sessionManager: SessionManager<OAuth2Session>;
-  scopeTransform: (scopes: string[]) => string[];
-};
-
-type CreateOptions = OAuthApiCreateOptions & {
+/**
+ * OAuth2 create options.
+ * @public
+ */
+export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
 };
 
@@ -56,10 +54,15 @@ export type OAuth2Response = {
 const DEFAULT_PROVIDER = {
   id: 'oauth2',
   title: 'Your Identity Provider',
-  icon: OAuth2Icon,
+  icon: () => null,
 };
 
-class OAuth2
+/**
+ * Implements a generic OAuth2 flow for auth.
+ *
+ * @public
+ */
+export default class OAuth2
   implements
     OAuthApi,
     OpenIdConnectApi,
@@ -74,7 +77,7 @@ class OAuth2
     oauthRequestApi,
     defaultScopes = [],
     scopeTransform = x => x,
-  }: CreateOptions) {
+  }: OAuth2CreateOptions) {
     const connector = new DefaultAuthConnector({
       discoveryApi,
       environment,
@@ -115,7 +118,13 @@ class OAuth2
   private readonly sessionManager: SessionManager<OAuth2Session>;
   private readonly scopeTransform: (scopes: string[]) => string[];
 
-  constructor(options: Options) {
+  /**
+   * @deprecated will be made private in the future. Use create method instead.
+   */
+  constructor(options: {
+    sessionManager: SessionManager<OAuth2Session>;
+    scopeTransform: (scopes: string[]) => string[];
+  }) {
     this.sessionManager = options.sessionManager;
     this.scopeTransform = options.scopeTransform;
   }
@@ -176,5 +185,3 @@ class OAuth2
     return new Set(scopeTransform(scopeList));
   }
 }
-
-export default OAuth2;

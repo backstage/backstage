@@ -22,6 +22,4 @@ export const EntityBadgesDialog: ({
   open: boolean;
   onClose?: (() => any) | undefined;
 }) => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

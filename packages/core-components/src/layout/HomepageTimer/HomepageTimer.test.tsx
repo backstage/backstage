@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import { renderWithEffects } from '@backstage/test-utils';
+import { renderWithEffects, TestApiProvider } from '@backstage/test-utils';
 import { HomepageTimer } from './HomepageTimer';
 import React from 'react';
 import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ThemeProvider } from '@material-ui/core/styles';
+import { ConfigReader } from '@backstage/core-app-api';
 import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
 
 it('changes default timezone to GMT', async () => {
@@ -41,9 +37,9 @@ it('changes default timezone to GMT', async () => {
 
   const rendered = await renderWithEffects(
     <ThemeProvider theme={lightTheme}>
-      <ApiProvider apis={ApiRegistry.from([[configApiRef, configApi]])}>
+      <TestApiProvider apis={[[configApiRef, configApi]]}>
         <HomepageTimer />
-      </ApiProvider>
+      </TestApiProvider>
     </ThemeProvider>,
   );
 

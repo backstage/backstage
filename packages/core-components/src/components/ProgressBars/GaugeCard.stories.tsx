@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren } from 'react';
 import { GaugeCard } from './GaugeCard';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import { MemoryRouter } from 'react-router';
 
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
@@ -94,6 +94,27 @@ export const LinkInFooter = () => (
     </Grid>
     <Grid item>
       <GaugeCard title="Progress" deepLink={linkInfo} inverse progress={0.2} />
+    </Grid>
+  </Wrapper>
+);
+
+export const StaticColor = () => (
+  <Wrapper>
+    <Grid item>
+      <GaugeCard getColor={() => '#f00'} title="Red" progress={0.5} />
+    </Grid>
+    <Grid item>
+      <GaugeCard getColor={() => '#0f0'} title="Green" progress={0.5} />
+    </Grid>
+    <Grid item>
+      <GaugeCard getColor={() => '#00f'} title="Blue" progress={0.5} />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        getColor={({ palette }) => palette.status.error}
+        title="palette.status.error"
+        progress={0.5}
+      />
     </Grid>
   </Wrapper>
 );

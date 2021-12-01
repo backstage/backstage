@@ -56,6 +56,7 @@ export const gitReleaseManagerPlugin = createPlugin({
 
 export const GitReleaseManagerPage = gitReleaseManagerPlugin.provide(
   createRoutableExtension({
+    name: 'GitReleaseManagerPage',
     component: () =>
       import('./GitReleaseManager').then(m => m.GitReleaseManager),
     mountPoint: rootRouteRef,

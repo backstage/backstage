@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { assertError } from '@backstage/errors';
 import { CommanderStatic } from 'commander';
 import { exitWithError } from '../lib/errors';
 
@@ -69,9 +70,34 @@ export function registerCommands(program: CommanderStatic) {
     .description('Start local development server with HMR for the backend')
     .option('--check', 'Enable type checking and linting')
     .option('--inspect', 'Enable debugger')
+    .option('--inspect-brk', 'Enable debugger with await to attach debugger')
     // We don't actually use the config in the CLI, just pass them on to the NodeJS process
     .option(...configOption)
     .action(lazy(() => import('./backend/dev').then(m => m.default)));
+
+  program
+    .command('create')
+    .storeOptionsAsProperties(false)
+    .description(
+      'Open up an interactive guide to creating new things in your app',
+    )
+    .option(
+      '--select <name>',
+      'Select the thing you want to be creating upfront',
+    )
+    .option(
+      '--option <name>=<value>',
+      'Pre-fill options for the creation process',
+      (opt, arr: string[]) => [...arr, opt],
+      [],
+    )
+    .option('--scope <scope>', 'The scope to use for new packages')
+    .option(
+      '--npm-registry <URL>',
+      'The package registry to use for new packages',
+    )
+    .option('--no-private', 'Do not mark new packages as private')
+    .action(lazy(() => import('./create/create').then(m => m.default)));
 
   program
     .command('create-plugin')
@@ -170,6 +196,7 @@ export function registerCommands(program: CommanderStatic) {
       'Only load config schema that applies to the given package',
     )
     .option('--lax', 'Do not require environment variables to be set')
+    .option('--frontend', 'Only validate the frontend configuration')
     .option(...configOption)
     .description(
       'Validate that the given configuration loads and matches schema',
@@ -224,6 +251,20 @@ export function registerCommands(program: CommanderStatic) {
     .command('create-github-app <github-org>')
     .description('Create new GitHub App in your organization.')
     .action(lazy(() => import('./create-github-app').then(m => m.default)));
+
+  program
+    .command('info')
+    .description('Show helpful information for debugging and reporting bugs')
+    .action(lazy(() => import('./info').then(m => m.default)));
+
+  program
+    .command('install [plugin-id]', { hidden: true })
+    .option(
+      '--from <packageJsonFilePath>',
+      'Install from a local package.json containing the installation recipe',
+    )
+    .description('Install a Backstage plugin [EXPERIMENTAL]')
+    .action(lazy(() => import('./install/install').then(m => m.default)));
 }
 
 // Wraps an action function so that it always exits and handles errors
@@ -237,6 +278,7 @@ function lazy(
 
       process.exit(0);
     } catch (error) {
+      assertError(error);
       exitWithError(error);
     }
   };

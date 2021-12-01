@@ -16,8 +16,10 @@ Backstage identity information in your app or plugins.
 
 Backstage comes with many common authentication providers in the core library:
 
+- [Atlassian](atlassian/provider.md)
 - [Auth0](auth0/provider.md)
 - [Azure](microsoft/provider.md)
+- [Bitbucket](bitbucket/provider.md)
 - [GitHub](github/provider.md)
 - [GitLab](gitlab/provider.md)
 - [Google](google/provider.md)
@@ -60,9 +62,8 @@ small update to show this provider as a login option. The `SignInPage` component
 handles this, and takes either a `provider` or `providers` (array) prop of
 `SignInProviderConfig` definitions.
 
-These reference the [ApiRef](../reference/utility-apis/README.md) exported by
-the provider. Again, an example using GitHub that can be adapted to any of the
-built-in providers:
+These reference the `ApiRef` exported by the provider. Again, an example using
+GitHub that can be adapted to any of the built-in providers:
 
 ```diff
 # packages/app/src/App.tsx

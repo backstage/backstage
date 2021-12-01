@@ -1,5 +1,219 @@
 # @backstage/core-components
 
+## 0.7.5
+
+### Patch Changes
+
+- 157530187a: Pin sidebar by default for easier navigation
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/core-plugin-api@0.2.1
+
+## 0.7.4
+
+### Patch Changes
+
+- 274a4fc633: Add Props Icon for Sidebar Item SidebarSearchField and Settings
+- 682945e233: Changing the `Header` styles to use more theme variables. With this the title `font-size` will not change on resizing the window.
+- 892c1d9202: Update OAuthAdapter to create identity.token from identity.idToken if it does not exist, and prevent overwrites to identity.toke. Update login page commonProvider to prefer .token over .idToken
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.7.3
+
+### Patch Changes
+
+- c11a37710a: Added a warning variant to `DismissableBanner` component. If you are using a
+  custom theme, you will need to add the optional `palette.banner.warning` color,
+  otherwise this variant will fall back to the `palette.banner.error` color.
+- 5826c17b7d: Allow for `cellStyle` property on `TableColumn` to be a function as well as `React.CSSProperties` as per the Material UI Table component
+- e0861b92ff: Add new way to override color selection to progress bar/gauge components.
+
+  `Gauge`, `LinearGauge` and `GaugeCard` all accept a `getColor` prop,
+  which is a function of the type:
+
+  ```ts
+  export type GaugePropsGetColor = (args: {
+    palette: Palette;
+    value: number;
+    inverse?: boolean;
+    max?: number;
+  }) => string;
+  ```
+
+  Return a standard CSS color string (e.g. "red", "#f02020"), and the gauge will
+  be set to that color.
+
+  If the prop is omitted, the default implementation is unchanged from previous
+  versions.
+
+- 021986e8a3: fixed route resolving (issue #7741) when user cannot select a tab in any of the tabbed pages (like the Catalog page) if it shares the same initial letters as a preceding tab. (i.e. where tab with a path of /ci is followed by a path of /ci-2, user cannot select /ci-2 as /ci will always be selected first).
+- a39a2105ef: Add Theme Overrides for Sidebar
+- Updated dependencies
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+
+## 0.7.2
+
+### Patch Changes
+
+- afd5c82ce1: Updates the d3 dependencies
+- c6c2942daa: Deprecated `DismissbleBannerClassKey` and fixed the typo to make `DismissableBannerClassKey`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/errors@0.1.4
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.7.1
+
+### Patch Changes
+
+- e535ea766a: Switched to relying on the built-in support for async loading in `react-syntax-highlighter`. This should provide further improvements to async rendering and lazy loading, and avoid test flakiness that was happening because of the significant number or resources being loaded in lazily all at once.
+- 2023a9683f: Fixed invalid wrap in DismissableBanner component
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/errors@0.1.3
+  - @backstage/core-plugin-api@0.1.11
+
+## 0.7.0
+
+### Minor Changes
+
+- 5c42360577: Add documentation and more type safety around DependencyGraph
+- a20cbf00d2: The syntax highlighting library used by the `CodeSnippet` component is now lazy loaded. This most likely has no effect on existing code, but may break tests as the content of the `CodeSnippet` is now rendered asynchronously.
+
+### Patch Changes
+
+- 75bc878221: Internal refactor to avoid importing all of `@material-ui/core`.
+- 6ec56d5a57: update the null check to use the optional chaining operator in case of non-null assertion operator is not working in function extractInitials(values: string)
+- 81c2a1af86: Resolve a warning in `<Button>` related to not using `React.forwardRef`.
+- 53470ada54: Fix search in Firefox. When the search was performed by pressing enter, the query parameter was first set but then reverted back.
+- b488d8b69f: Change the Table search field placeholder to "Filter" and change icon accordingly
+
+  We had feedback that users expected the catalog table search field to have more sophisticated behaviour
+  than simple filtering. This change sets the search field placeholder to read "Filter"
+  to avoid confusion with the search feature. The icon is updated to match. This change is applied
+  generally in core-components so this change is made consistently across the app given the search
+  field is present on all pages via the sidebar.
+
+- 2435d7a49b: Deprecated HomepageTimer in favor of HeaderWorldClock which is found in the [home plugin](https://github.com/backstage/backstage/tree/master/plugins/home)
+- Updated dependencies
+  - @backstage/theme@0.2.11
+
+## 0.6.1
+
+### Patch Changes
+
+- f139fed1ac: The `<Link />` component now automatically instruments all link clicks using
+  the new Analytics API. Each click triggers a `click` event, containing the
+  text of the link the user clicked on, as well as the location to which the user
+  clicked. In addition, these events inherit plugin/extension-level metadata,
+  allowing clicks to be attributed to the plugin/extension/route containing the
+  link:
+
+  ```json
+  {
+    "action": "click",
+    "subject": "Text content of the link that was clicked",
+    "attributes": {
+      "to": "/value/of-the/to-prop/passed-to-the-link"
+    },
+    "context": {
+      "extension": "ExtensionInWhichTheLinkWasClicked",
+      "pluginId": "plugin-in-which-link-was-clicked",
+      "routeRef": "route-ref-in-which-the-link-was-clicked"
+    }
+  }
+  ```
+
+- 666e1f478e: Provide a clearer error message when a authentication provider used by the `SignInPage` has not been configured to support sign-in.
+- 63d426bfeb: Wrap up the `Link` component in a component to reset the color so that we can actually see the button text
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 162e1eee65: SignInPage: move the initial invocation of `login` away from the render method
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.10
+
+## 0.6.0
+
+### Minor Changes
+
+- 21767b08ca: Checkbox tree filters are no longer available in the Table component:
+
+  - Deleted the `CheckboxTree` component
+  - Removed the filter type `'checkbox-tree'` from the `TableFilter` types.
+
+### Patch Changes
+
+- 9c3cb8d4e2: Stop forcing `target="_blank"` in the `SupportButton` but instead use the default logic of the `Link` component, that opens external targets in a new window and relative targets in the same window.
+- d21e39e303: Support `material-ui` overrides in Backstage internal components
+- c4e77bb34a: Added documentation for exported symbols.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+
+## 0.5.0
+
+### Minor Changes
+
+- 537bd04005: Fixed a popup-blocking bug affecting iOS Safari in SignInPage.tsx by ensuring that the popup occurs in the same tick as the tap/click
+
+### Patch Changes
+
+- c0eb1fb9df: Allow to configure zooming for `<DependencyGraph>`. `zoom` can either be
+  `enabled`, `disabled`, or `enable-on-click`. The latter requires the user to
+  click into the diagram to enable zooming.
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/config@0.1.10
+
+## 0.4.2
+
+### Patch Changes
+
+- 60c03f69a7: Change the styling of the `<DependencyGraph>` to have more contrast in light
+  mode. Nodes now have a design similar to material UI buttons.
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- d9f2ff12bb: Deprecated CheckboxTree component. Deprecated the filter type `'checkbox-tree'` from the `TableFilter` types.
+- 61e9fcf406: Improve UX for Login pop-up
+- 005510dabe: remove hard coded min height in page header
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.4.1
+
+### Patch Changes
+
+- 06e275705: Fix warning produced by BottomLink component
+
+  During development, we noticed warnings such as:
+
+  ```
+  react_devtools_backend.js:2842 Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>.
+  ```
+
+  The BottomLink component renders a Box component within a Typography component which leads to a div tag within a p tag.
+  This change inverts that ordering without changing the visual appearance.
+
+- Updated dependencies
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.4.0
+
+### Minor Changes
+
+- 3ed78fca3: Changed the `titleComponent` prop on `ContentHeader` to accept `ReactNode` instead of a React `ComponentType`. Usages of this prop should be converted from passing a component to passing in the rendered element:
+
+  ```diff
+  -<ContentHeader titleComponent={MyComponent}>
+  +<ContentHeader titleComponent={<MyComponent />}>
+  ```
+
+### Patch Changes
+
+- e0a6aea82: Bumped `react-hook-form` to `^7.12.2`
+
 ## 0.3.3
 
 ### Patch Changes

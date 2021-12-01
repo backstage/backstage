@@ -15,6 +15,11 @@
  */
 import { ProfileInfo, BackstageIdentity } from '@backstage/core-plugin-api';
 
+/**
+ * Session information for SAML auth.
+ *
+ * @public
+ */
 export type SamlSession = {
   userId: string;
   profile: ProfileInfo;

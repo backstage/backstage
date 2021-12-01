@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * The Backstage plugin that helps you create new things
+ *
+ * @packageDocumentation
+ */
+
 export { scaffolderApiRef, ScaffolderClient } from './api';
 export type { ScaffolderApi } from './api';
 export {
@@ -38,3 +44,6 @@ export {
   TextValuePicker,
 } from './components/fields';
 export { FavouriteTemplate } from './components/FavouriteTemplate';
+export { TemplateList } from './components/TemplateList';
+export type { TemplateListProps } from './components/TemplateList';
+export { TemplateTypePicker } from './components/TemplateTypePicker';

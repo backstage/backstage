@@ -138,11 +138,13 @@ export class SonarQubeClient implements SonarQubeApi {
       getIssuesUrl: identifier =>
         `${this.baseUrl}project/issues?id=${encodeURIComponent(
           componentKey,
-        )}&types=${identifier.toUpperCase()}&resolved=false`,
+        )}&types=${identifier.toLocaleUpperCase('en-US')}&resolved=false`,
       getComponentMeasuresUrl: identifier =>
         `${this.baseUrl}component_measures?id=${encodeURIComponent(
           componentKey,
-        )}&metric=${identifier.toLowerCase()}&resolved=false&view=list`,
+        )}&metric=${identifier.toLocaleLowerCase(
+          'en-US',
+        )}&resolved=false&view=list`,
       getSecurityHotspotsUrl: () =>
         `${this.baseUrl}project/security_hotspots?id=${encodeURIComponent(
           componentKey,

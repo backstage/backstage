@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-export { fossaPlugin } from './plugin';
+/**
+ * A Backstage plugin that integrates towards FOSSA
+ *
+ * @packageDocumentation
+ */
+
+export * from './components';
 export { EntityFossaCard, FossaPage } from './extensions';
+export { fossaPlugin } from './plugin';

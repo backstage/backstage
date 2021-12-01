@@ -18,13 +18,12 @@ import {
   ExploreTool,
   exploreToolsConfigRef,
 } from '@backstage/plugin-explore-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ToolExplorerContent } from './ToolExplorerContent';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<ToolExplorerContent />', () => {
   const exploreToolsConfigApi: jest.Mocked<typeof exploreToolsConfigRef.T> = {
@@ -33,11 +32,9 @@ describe('<ToolExplorerContent />', () => {
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
     <ThemeProvider theme={lightTheme}>
-      <ApiProvider
-        apis={ApiRegistry.with(exploreToolsConfigRef, exploreToolsConfigApi)}
-      >
+      <TestApiProvider apis={[[exploreToolsConfigRef, exploreToolsConfigApi]]}>
         {children}
-      </ApiProvider>
+      </TestApiProvider>
     </ThemeProvider>
   );
 

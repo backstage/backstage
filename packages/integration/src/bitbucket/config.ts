@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { trimEnd } from 'lodash';
 import { isValidHost } from '../helpers';
 
 const BITBUCKET_HOST = 'bitbucket.org';
@@ -22,6 +23,8 @@ const BITBUCKET_API_BASE_URL = 'https://api.bitbucket.org/2.0';
 
 /**
  * The configuration parameters for a single Bitbucket API provider.
+ *
+ * @public
  */
 export type BitbucketIntegrationConfig = {
   /**
@@ -65,7 +68,8 @@ export type BitbucketIntegrationConfig = {
 /**
  * Reads a single Bitbucket integration config.
  *
- * @param config The config object of a single integration
+ * @param config - The config object of a single integration
+ * @public
  */
 export function readBitbucketIntegrationConfig(
   config: Config,
@@ -83,7 +87,7 @@ export function readBitbucketIntegrationConfig(
   }
 
   if (apiBaseUrl) {
-    apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
+    apiBaseUrl = trimEnd(apiBaseUrl, '/');
   } else if (host === BITBUCKET_HOST) {
     apiBaseUrl = BITBUCKET_API_BASE_URL;
   }
@@ -101,7 +105,8 @@ export function readBitbucketIntegrationConfig(
  * Reads a set of Bitbucket integration configs, and inserts some defaults for
  * public Bitbucket if not specified.
  *
- * @param configs All of the integration config objects
+ * @param configs - All of the integration config objects
+ * @public
  */
 export function readBitbucketIntegrationConfigs(
   configs: Config[],

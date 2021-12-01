@@ -1,5 +1,20 @@
 # @backstage/search-common
 
+## 0.2.1
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+
+## 0.2.0
+
+### Minor Changes
+
+- a13f21cdc: Implement optional `pageCursor` based paging in search.
+
+  To use paging in your app, add a `<SearchResultPager />` to your
+  `SearchPage.tsx`.
+
 ## 0.1.3
 
 ### Patch Changes

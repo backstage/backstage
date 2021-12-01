@@ -20,7 +20,7 @@ import mockData from './sentry-issue-mock.json';
 
 function getMockIssue(): SentryIssue {
   const randomizedStats = {
-    '12h': new Array(12)
+    '24h': new Array(24)
       .fill(0)
       .map(() => [0, Math.floor(Math.random() * 100)]),
   };

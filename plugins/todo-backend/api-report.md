@@ -131,6 +131,4 @@ export interface TodoService {
 // Warnings were encountered during analysis:
 //
 // src/service/types.d.ts:9:9 - (ae-forgotten-export) The symbol "Fields" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
 ```

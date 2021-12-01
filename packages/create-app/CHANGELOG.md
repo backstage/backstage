@@ -1,5 +1,319 @@
 # @backstage/create-app
 
+## 0.4.5
+
+### Patch Changes
+
+- dcaeaac174: Cleaned out the `peerDependencies` in the published version of the package, making it much quicker to run `npx @backstage/create-app` as it no longer needs to install a long list of unnecessary.
+- a5a5d7e1f1: DefaultTechDocsCollator is now included in the search backend, and the Search Page updated with the SearchType component that includes the techdocs type
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- 42ebbc18c0: Bump gitbeaker to the latest version
+
+## 0.4.4
+
+### Patch Changes
+
+- 4ebc9fd277: Create backstage.json file
+
+  `@backstage/create-app` will create a new `backstage.json` file. At this point, the file will contain a `version` property, representing the version of `@backstage/create-app` used for creating the application. If the backstage's application has been bootstrapped using an older version of `@backstage/create-app`, the `backstage.json` file can be created and kept in sync, together with all the changes of the latest version of backstage, by running the following script:
+
+  ```bash
+  yarn backstage-cli versions:bump
+  ```
+
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 014cbf8cb9: Migrated the app template use the new `@backstage/app-defaults` for the `createApp` import, since the `createApp` exported by `@backstage/app-core-api` will be removed in the future.
+
+  To migrate an existing application, add the latest version of `@backstage/app-defaults` as a dependency in `packages/app/package.json`, and make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+  -import { createApp, FlatRoutes } from '@backstage/core-app-api';
+  +import { createApp } from '@backstage/app-defaults';
+  +import { FlatRoutes } from '@backstage/core-app-api';
+  ```
+
+- 2163e83fa2: Refactor and add regression tests for create-app tasks
+- Updated dependencies
+  - @backstage/cli-common@0.1.6
+
+## 0.4.3
+
+### Patch Changes
+
+- 5dcea2586c: Integrated `SidebarSearchModal` component into default-app to use the `SearchModal`.
+
+  The `SidebarSearchModal` component can also be used in other generated apps:
+
+  ```diff
+  import {
+  -  SidebarSearch,
+  +  SidebarSearchModal
+  } from '@backstage/plugin-search';
+  ...
+   <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+  -     <SidebarSearch />
+  +     <SidebarSearchModal />
+        <SidebarDivider />
+  ...
+  ```
+
+  If you only want to use the `SearchModal` you can import it from `'@backstage/plugin-search'`:
+
+  ```js
+  import { SearchModal } from '@backstage/plugin-search';
+  ```
+
+- 5725f87e4c: Updated the app template to no longer include the `--no-private` flag for the `create-plugin` command.
+
+  To apply this change to an existing application, remove the `--no-private` flag from the `create-plugin` command in the root `package.json`:
+
+  ```diff
+     "prettier:check": "prettier --check .",
+  -  "create-plugin": "backstage-cli create-plugin --scope internal --no-private",
+  +  "create-plugin": "backstage-cli create-plugin --scope internal",
+     "remove-plugin": "backstage-cli remove-plugin"
+  ```
+
+- 1921f70aa7: Removed the version pinning of the packages `graphql-language-service-interface` and `graphql-language-service-parser`. This should no longer be necessary.
+
+  You can apply the same change in your repository by ensuring that the following does _NOT_ appear in your root `package.json`.
+
+  ```json
+  "resolutions": {
+    "graphql-language-service-interface": "2.8.2",
+    "graphql-language-service-parser": "1.9.0"
+    },
+  ```
+
+## 0.4.2
+
+## 0.4.1
+
+### Patch Changes
+
+- 4f1c30c176: Support optional path argument when generating a project using `create-app`
+- Updated dependencies
+  - @backstage/cli-common@0.1.5
+
+## 0.4.0
+
+### Minor Changes
+
+- 5914668655: Removed `@backstage/plugin-welcome`, no new updates to the packages will be
+  published in the future.
+
+  The welcome plugin was used by early alpha versions of Backstage, but today only
+  contained a simple page with welcome instructions. It was superseded by
+  `@backstage/plugin-home` which can be used to build a homepage customized to the
+  needs of your organization.
+
+  If it's still used in your app, remove the dependency from your `package.json`
+  as well as left over code.
+
+### Patch Changes
+
+- b486adb8c6: Removed the included `jest` configuration from the root `package.json` as the `transformModules` option no longer exists.
+
+  To apply this change to an existing app, make the follow change to the root `package.json`:
+
+  ```diff
+  -  "jest": {
+  -    "transformModules": [
+  -      "@asyncapi/react-component"
+  -    ]
+  -  }
+  ```
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+
+## 0.3.45
+
+### Patch Changes
+
+- eaca0f53fb: The scaffolder plugin has just released the beta 3 version of software templates, which replaces the handlebars templating syntax. As part of this change, the template entity schema is no longer included in the core catalog-model as with previous versions. The decoupling of the template entities version will allow us to more easily make updates in the future.
+
+  In order to use the new beta 3 templates, the following changes are **required** for any existing installation, inside `packages/backend/src/plugins/catalog.ts`:
+
+  ```diff
+  +import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+
+  ...
+
+     const builder = await CatalogBuilder.create(env);
+  +  builder.addProcessor(new ScaffolderEntitiesProcessor());
+     const { processingEngine, router } = await builder.build();
+  ```
+
+  If you're interested in learning more about creating custom kinds, please check out the [extending the model](https://backstage.io/docs/features/software-catalog/extending-the-model) documentation.
+
+## 0.3.44
+
+### Patch Changes
+
+- e254368371: Switched the default `test` script in the package root to use `backstage-cli test` rather than `lerna run test`. This is thanks to the `@backstage/cli` now supporting running the test command from the project root.
+
+  To apply this change to an existing project, apply the following change to your root `package.json`:
+
+  ```diff
+  -    "test": "lerna run test --since origin/master -- --coverage",
+  +    "test": "backstage-cli test",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.4
+
+## 0.3.43
+
+### Patch Changes
+
+- 9325075eea: Added the default `ScmAuth` implementation to the app.
+
+  To apply this change to an existing app, head to `packages/app/apis.ts`, import `ScmAuth` from `@backstage/integration-react`, and add a `ScmAuth.createDefaultApiFactory()` to your list of APIs:
+
+  ```diff
+   import {
+     ScmIntegrationsApi,
+     scmIntegrationsApiRef,
+  +   ScmAuth,
+   } from '@backstage/integration-react';
+
+   export const apis: AnyApiFactory[] = [
+  ...
+  +  ScmAuth.createDefaultApiFactory(),
+  ...
+   ];
+  ```
+
+  If you have integrations towards SCM providers other than the default ones (github.com, gitlab.com, etc.), you will want to create a custom `ScmAuth` factory instead, for example like this:
+
+  ```ts
+  createApiFactory({
+    api: scmAuthApiRef,
+    deps: {
+      gheAuthApi: gheAuthApiRef,
+      githubAuthApi: githubAuthApiRef,
+    },
+    factory: ({ githubAuthApi, gheAuthApi }) =>
+      ScmAuth.merge(
+        ScmAuth.forGithub(githubAuthApi),
+        ScmAuth.forGithub(gheAuthApi, {
+          host: 'ghe.example.com',
+        }),
+      ),
+  });
+  ```
+
+## 0.3.42
+
+### Patch Changes
+
+- 89fd81a1ab: This change adds an API endpoint for requesting a catalog refresh at `/refresh`, which is activated if a `RefreshService` is passed to `createRouter`.
+  The creation of the router has been abstracted behind the `CatalogBuilder` to simplify usage and future changes. The following **changes are required** to your `catalog.ts` for the refresh endpoint to function.
+
+  ```diff
+  -  import {
+  -    CatalogBuilder,
+  -    createRouter,
+  -  } from '@backstage/plugin-catalog-backend';
+  +  import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+
+    export default async function createPlugin(
+      env: PluginEnvironment,
+    ): Promise<Router> {
+      const builder = await CatalogBuilder.create(env);
+  -    const {
+  -      entitiesCatalog,
+  -      locationAnalyzer,
+  -      processingEngine,
+  -      locationService,
+  -    } = await builder.build();
+  +   const { processingEngine, router } = await builder.build();
+      await processingEngine.start();
+
+  -   return await createRouter({
+  -     entitiesCatalog,
+  -     locationAnalyzer,
+  -     locationService,
+  -     logger: env.logger,
+  -     config: env.config,
+  -   });
+  +   return router;
+    }
+  ```
+
+- d0a47c8605: Switched required engine from Node.js 12 or 14, to 14 or 16.
+
+  To apply these changes to an existing app, switch out the following in the root `package.json`:
+
+  ```diff
+     "engines": {
+  -    "node": "12 || 14"
+  +    "node": "14 || 16"
+     },
+  ```
+
+  Also get rid of the entire `engines` object in `packages/backend/package.json`, as it is redundant:
+
+  ```diff
+  -  "engines": {
+  -    "node": "12 || 14"
+  -  },
+  ```
+
+- df95665e4b: Bumped the default `@spotify/prettier-config` dependency to `^11.0.0`.
+
+  This is an optional upgrade, but you may be interested in doing the same, to get the most modern lint rules out there.
+
+## 0.3.41
+
+## 0.3.40
+
+### Patch Changes
+
+- a5013957e: Updated the search configuration class to use the static `fromConfig`-based constructor for the `DefaultCatalogCollator`.
+
+  To apply this change to an existing app, replace the following line in `search.ts`:
+
+  ```diff
+  -collator: new DefaultCatalogCollator({ discovery })
+  +collator: DefaultCatalogCollator.fromConfig(config, { discovery })
+  ```
+
+  The `config` parameter was not needed before, so make sure you also add that in the signature of `createPlugin`
+  in `search.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+    discovery,
+  +  config,
+  }: PluginEnvironment) {
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+
+## 0.3.39
+
+### Patch Changes
+
+- 25924638b: Minor tweaks to the create-app template to match earlier documented changes
+
 ## 0.3.38
 
 ### Patch Changes

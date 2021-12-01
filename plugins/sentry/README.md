@@ -93,7 +93,7 @@ You can add it by overriding the `sentryApiRef`:
 ```ts
 // packages/app/src/apis.ts
 
-import { createApiFactory } from '@backstage/core';
+import { createApiFactory } from '@backstage/core-plugin-api';
 import { MockSentryApi, sentryApiRef } from '@backstage/plugin-sentry';
 
 export const apis = [
