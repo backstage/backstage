@@ -23,7 +23,7 @@ import { V1Job, ObjectSerializer } from '@kubernetes/client-node';
 
 describe('JobsAccordions', () => {
   it('should render 2 jobs', async () => {
-    const wrapper = kubernetesProviders(oneCronJobsFixture, []);
+    const wrapper = kubernetesProviders(oneCronJobsFixture, new Set<string>());
 
     const jobs: V1Job[] = oneCronJobsFixture.jobs.map(
       job => ObjectSerializer.deserialize(job, 'V1Job') as V1Job,
