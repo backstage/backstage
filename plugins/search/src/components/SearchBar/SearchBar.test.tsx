@@ -149,6 +149,20 @@ describe('SearchBar', () => {
     );
   });
 
+  it('Should not show clear button', async () => {
+    render(
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={{ ...initialState, term }}>
+          <SearchBar clearButton={false} />
+        </SearchContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(
+      screen.queryByRole('button', { name: 'Clear' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('Adheres to provided debounceTime', async () => {
     jest.useFakeTimers();
 
