@@ -47,19 +47,25 @@ export class DatabaseManager {
    * names if config is not provided.
    *
    * @param config - The loaded application configuration.
+   * @param runMigrations - Controls whether or not to perform database migrations.
    */
-  static fromConfig(config: Config): DatabaseManager {
+  static fromConfig(
+    config: Config,
+    runMigrations?: boolean | (() => boolean),
+  ): DatabaseManager {
     const databaseConfig = config.getConfig('backend.database');
 
     return new DatabaseManager(
       databaseConfig,
       databaseConfig.getOptionalString('prefix'),
+      runMigrations,
     );
   }
 
   private constructor(
     private readonly config: Config,
     private readonly prefix: string = 'backstage_plugin_',
+    private readonly runMigrations: boolean | (() => boolean) = true,
   ) {}
 
   /**
@@ -76,6 +82,10 @@ export class DatabaseManager {
       getClient(): Promise<Knex> {
         return _this.getDatabase(pluginId);
       },
+      runMigrations:
+        typeof _this.runMigrations === 'function'
+          ? _this.runMigrations()
+          : _this.runMigrations,
     };
   }
 

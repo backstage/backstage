@@ -30,6 +30,14 @@ export interface PluginDatabaseManager {
    * stores so that plugins are discouraged from database integration.
    */
   getClient(): Promise<Knex>;
+
+  /**
+   * runMigrations can be used to determine if database migrations
+   * should be performed.
+   *
+   * Useful if connecting to a read-only database.
+   */
+  runMigrations: boolean;
 }
 
 /**
