@@ -32,6 +32,7 @@ import { DeploymentsAccordions } from '../DeploymentsAccordions';
 import { groupResponses } from '../../utils/response';
 import { IngressesAccordions } from '../IngressesAccordions';
 import { ServicesAccordions } from '../ServicesAccordions';
+import { CronJobsAccordions } from '../CronJobsAccordions';
 import { CustomResources } from '../CustomResources';
 import {
   ClusterContext,
@@ -147,6 +148,9 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
                   <Grid item>
                     <ServicesAccordions />
                   </Grid>
+                </Grid>
+                <Grid item>
+                  <CronJobsAccordions />
                 </Grid>
               </AccordionDetails>
             </Accordion>

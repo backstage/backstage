@@ -24,5 +24,7 @@ export const GroupedResponsesContext = React.createContext<GroupedResponses>({
   configMaps: [],
   horizontalPodAutoscalers: [],
   ingresses: [],
+  jobs: [],
+  cronJobs: [],
   customResources: [],
 });

@@ -19,14 +19,33 @@ import { render } from '@testing-library/react';
 import * as pod from './__fixtures__/pod.json';
 import * as crashingPod from './__fixtures__/crashing-pod.json';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { PodsTable } from './PodsTable';
+import {PodsTable, READY_COLUMNS, RESOURCE_COLUMNS} from './PodsTable';
 import { kubernetesProviders } from '../../hooks/test-utils';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 
+
 describe('PodsTable', () => {
   it('should render pod', async () => {
-    const { getByText, getAllByText } = render(
+    const { getByText } = render(
       wrapInTestApp(<PodsTable pods={[pod as any]} />),
+    );
+
+    // titles
+    expect(getByText('name')).toBeInTheDocument();
+    expect(getByText('phase')).toBeInTheDocument();
+    expect(getByText('status')).toBeInTheDocument();
+
+    // values
+    expect(getByText('dice-roller-6c8646bfd-2m5hv')).toBeInTheDocument();
+    expect(getByText('Running')).toBeInTheDocument();
+    expect(getByText('OK')).toBeInTheDocument();
+  });
+
+  it('should render pod with extra columns', async () => {
+    const { getByText } = render(
+      wrapInTestApp(
+        <PodsTable pods={[pod as any]} extraColumns={[READY_COLUMNS]} />,
+      ),
     );
 
     // titles
@@ -35,8 +54,6 @@ describe('PodsTable', () => {
     expect(getByText('containers ready')).toBeInTheDocument();
     expect(getByText('total restarts')).toBeInTheDocument();
     expect(getByText('status')).toBeInTheDocument();
-    expect(getByText('CPU usage %')).toBeInTheDocument();
-    expect(getByText('Memory usage %')).toBeInTheDocument();
 
     // values
     expect(getByText('dice-roller-6c8646bfd-2m5hv')).toBeInTheDocument();
@@ -44,7 +61,6 @@ describe('PodsTable', () => {
     expect(getByText('1/1')).toBeInTheDocument();
     expect(getByText('0')).toBeInTheDocument();
     expect(getByText('OK')).toBeInTheDocument();
-    expect(getAllByText('unknown')).toHaveLength(2);
   });
   it('should render pod, with metrics context', async () => {
     const podNameToClientPodStatus = new Map<string, ClientPodStatus>();
@@ -68,7 +84,7 @@ describe('PodsTable', () => {
       podNameToClientPodStatus,
     );
     const { getByText } = render(
-      wrapper(wrapInTestApp(<PodsTable pods={[pod as any]} />)),
+      wrapper(wrapInTestApp(<PodsTable pods={[pod as any]}  extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]} />)),
     );
 
     // titles
@@ -91,9 +107,17 @@ describe('PodsTable', () => {
     expect(getByText('requests: 1%')).toBeInTheDocument();
     expect(getByText('limits: 0%')).toBeInTheDocument();
   });
-  it('should render crashing pod', async () => {
-    const { getByText, getAllByText } = render(
-      wrapInTestApp(<PodsTable pods={[crashingPod as any]} />),
+  it('should render placehoplder when empty metrics context', async () => {
+
+    const podNameToClientPodStatus = new Map<string, ClientPodStatus>();
+
+    const wrapper = kubernetesProviders(
+      undefined,
+      undefined,
+      podNameToClientPodStatus,
+    );
+    const { getByText,getAllByText } = render(
+      wrapper(wrapInTestApp(<PodsTable pods={[pod as any]}  extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]} />)),
     );
 
     // titles
@@ -104,6 +128,28 @@ describe('PodsTable', () => {
     expect(getByText('status')).toBeInTheDocument();
     expect(getByText('CPU usage %')).toBeInTheDocument();
     expect(getByText('Memory usage %')).toBeInTheDocument();
+
+    // values
+    expect(getByText('dice-roller-6c8646bfd-2m5hv')).toBeInTheDocument();
+    expect(getByText('Running')).toBeInTheDocument();
+    expect(getByText('1/1')).toBeInTheDocument();
+    expect(getByText('0')).toBeInTheDocument();
+    expect(getByText('OK')).toBeInTheDocument();
+    expect(getAllByText('unknown')).toHaveLength(2);
+  });
+  it('should render crashing pod with extra columns', async () => {
+    const { getByText, getAllByText } = render(
+      wrapInTestApp(
+        <PodsTable pods={[crashingPod as any]} extraColumns={[READY_COLUMNS]} />,
+      ),
+    );
+
+    // titles
+    expect(getByText('name')).toBeInTheDocument();
+    expect(getByText('phase')).toBeInTheDocument();
+    expect(getByText('containers ready')).toBeInTheDocument();
+    expect(getByText('total restarts')).toBeInTheDocument();
+    expect(getByText('status')).toBeInTheDocument();
 
     // values
     expect(

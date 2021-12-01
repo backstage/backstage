@@ -16,8 +16,10 @@ Backstage identity information in your app or plugins.
 
 Backstage comes with many common authentication providers in the core library:
 
+- [Atlassian](atlassian/provider.md)
 - [Auth0](auth0/provider.md)
 - [Azure](microsoft/provider.md)
+- [Bitbucket](bitbucket/provider.md)
 - [GitHub](github/provider.md)
 - [GitLab](gitlab/provider.md)
 - [Google](google/provider.md)

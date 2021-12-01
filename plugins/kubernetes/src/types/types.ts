@@ -22,6 +22,8 @@ import {
   V1Service,
   V1ConfigMap,
   V1Ingress,
+  V1Job,
+  V1CronJob,
 } from '@kubernetes/client-node';
 
 export interface DeploymentResources {
@@ -35,6 +37,8 @@ export interface GroupedResponses extends DeploymentResources {
   services: V1Service[];
   configMaps: V1ConfigMap[];
   ingresses: V1Ingress[];
+  jobs: V1Job[];
+  cronJobs: V1CronJob[];
   customResources: any[];
 }
 
