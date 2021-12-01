@@ -67,6 +67,7 @@ function getPolicyIcon(policy: Policy): JSX.Element | null {
           return null;
       }
     case PolicyType.MinimumReviewers:
+    case PolicyType.RequiredReviewers:
       return <PolicyRequiredIcon />;
     case PolicyType.Status:
     case PolicyType.Comments:

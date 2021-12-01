@@ -14,25 +14,55 @@
  * limitations under the License.
  */
 
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { useAsyncRetry, useInterval } from 'react-use';
+
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import { azureDevOpsApiRef } from '../api';
-import { useApi } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
+import { useCallback } from 'react';
 
-export function useDashboardPullRequests(project: string): {
+const POLLING_INTERVAL = 10000;
+
+export function useDashboardPullRequests(
+  project?: string,
+  pollingInterval: number = POLLING_INTERVAL,
+): {
   pullRequests?: DashboardPullRequest[];
   loading: boolean;
   error?: Error;
 } {
   const api = useApi(azureDevOpsApiRef);
+  const errorApi = useApi(errorApiRef);
+
+  const getDashboardPullRequests = useCallback(async (): Promise<
+    DashboardPullRequest[]
+  > => {
+    if (!project) {
+      return Promise.reject(new Error('Missing project name'));
+    }
+
+    try {
+      return await api.getDashboardPullRequests(project);
+    } catch (error) {
+      if (error instanceof Error) {
+        errorApi.post(error);
+      }
+
+      return Promise.reject(error);
+    }
+  }, [project, api, errorApi]);
 
   const {
     value: pullRequests,
     loading,
     error,
-  } = useAsync(() => {
-    return api.getDashboardPullRequests(project);
-  }, [api, project]);
+    retry,
+  } = useAsyncRetry(
+    () => getDashboardPullRequests(),
+    [getDashboardPullRequests],
+  );
+
+  useInterval(() => retry(), pollingInterval);
 
   return {
     pullRequests,
