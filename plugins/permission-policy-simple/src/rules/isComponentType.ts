@@ -17,15 +17,20 @@
 import { ComponentEntityV1alpha1, Entity } from '@backstage/catalog-model';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { EntitiesSearchFilter } from '@backstage/plugin-catalog-backend';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 
 // TODO(authorization-framework): is this the right model for composing multiple
 // requirements in a single rule? We could also explore other things, like
 // introducing an array of rule dependencies which are inserted before the rule
 // if specified.
-export const isComponentType = {
+export const isComponentType: PermissionRule<
+  Entity,
+  EntitiesSearchFilter,
+  [string[]]
+> = {
   name: 'IS_COMPONENT_TYPE',
   description: 'Allow entities with type component',
-  apply(resource: Entity, componentTypes: string[]) {
+  apply({ resource }, componentTypes) {
     return (
       resource.kind.toLocaleLowerCase('en-US') === 'component' &&
       componentTypes
@@ -37,7 +42,7 @@ export const isComponentType = {
         )
     );
   },
-  toQuery(componentTypes: string[]): PermissionCriteria<EntitiesSearchFilter> {
+  toQuery(_context, componentTypes) {
     return {
       allOf: [
         {

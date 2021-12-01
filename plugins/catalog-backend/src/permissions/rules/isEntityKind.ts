@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 import { EntitiesSearchFilter } from '../../catalog/types';
 
-export const isEntityKind = {
+export const isEntityKind: PermissionRule<
+  Entity,
+  EntitiesSearchFilter,
+  [string[]]
+> = {
   name: 'IS_ENTITY_KIND',
   description: 'Allow entities with the specified kind',
-  apply(resource: Entity, kinds: string[]) {
+  apply({ resource }, kinds) {
     return kinds
       .map(kind => kind.toLocaleLowerCase('en-US'))
       .some(kind => kind === resource.kind.toLocaleLowerCase('en-US'));
   },
-  toQuery(kinds: string[]): EntitiesSearchFilter {
+  toQuery(_context, kinds): EntitiesSearchFilter {
     return {
       key: 'kind',
       values: kinds.map(kind => kind.toLocaleLowerCase('en-US')),

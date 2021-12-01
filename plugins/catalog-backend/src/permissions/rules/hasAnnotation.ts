@@ -15,15 +15,20 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 import { EntitiesSearchFilter } from '../../catalog/types';
 
-export const hasAnnotation = {
+export const hasAnnotation: PermissionRule<
+  Entity,
+  EntitiesSearchFilter,
+  [string]
+> = {
   name: 'HAS_ANNOTATION',
   description:
     'Allow entities which are annotated with the specified annotation',
-  apply: (resource: Entity, annotation: string) =>
+  apply: ({ resource }, annotation) =>
     !!resource.metadata.annotations?.hasOwnProperty(annotation[0]),
-  toQuery: (annotation: string): EntitiesSearchFilter => ({
+  toQuery: (_context, annotation): EntitiesSearchFilter => ({
     key: annotation,
   }),
 };

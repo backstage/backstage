@@ -19,17 +19,15 @@ import {
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  BackstageIdentity,
-  getIdentityClaims,
-} from '@backstage/plugin-auth-backend';
+import { getIdentityClaims } from '@backstage/plugin-auth-backend';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 import { EntitiesSearchFilter } from '../../catalog/types';
 
-export const isEntityOwner = {
+export const isEntityOwner: PermissionRule<Entity, EntitiesSearchFilter, []> = {
   name: 'IS_ENTITY_OWNER',
   description: 'Allow entities owned by the current user',
-  apply: (resource: Entity, user: BackstageIdentity) => {
-    if (!resource.relations) {
+  apply: ({ resource, user }) => {
+    if (!resource.relations || !user) {
       return false;
     }
 
@@ -39,8 +37,8 @@ export const isEntityOwner = {
       .filter(relation => relation.type === RELATION_OWNED_BY)
       .some(relation => claims.includes(stringifyEntityRef(relation.target)));
   },
-  toQuery: (user: BackstageIdentity): EntitiesSearchFilter => ({
+  toQuery: ({ user }): EntitiesSearchFilter => ({
     key: 'spec.owner',
-    values: getIdentityClaims(user),
+    values: user ? getIdentityClaims(user) : [],
   }),
 };

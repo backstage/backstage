@@ -75,6 +75,7 @@ export interface NextRouterOptions {
   refreshService?: RefreshService;
   logger: Logger;
   config: Config;
+  identity: IdentityClient;
 }
 
 export async function createNextRouter(
@@ -88,6 +89,7 @@ export async function createNextRouter(
     refreshService,
     config,
     logger,
+    identity,
   } = options;
 
   const router = Router();
@@ -114,6 +116,7 @@ export async function createNextRouter(
           resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
           getResource: resourceRef => getEntity(resourceRef, entitiesCatalog),
           rules: permissionRules,
+          identity,
         }),
       )
       .get('/entities', async (req, res) => {

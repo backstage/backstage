@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  PluginEndpointDiscovery,
+  UrlReader,
+} from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
@@ -85,6 +89,7 @@ import { LocationService } from './types';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
 import { CatalogPermissionRule } from '../permissions/types';
 import * as catalogPermissionRules from '../permissions/rules';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -92,6 +97,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionClient;
+  discovery: PluginEndpointDiscovery;
 };
 
 /**
@@ -339,7 +345,7 @@ export class NextCatalogBuilder {
     locationService: LocationService;
     router: Router;
   }> {
-    const { config, database, logger, permissions } = this.env;
+    const { config, database, logger, permissions, discovery } = this.env;
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
@@ -365,9 +371,14 @@ export class NextCatalogBuilder {
       parser,
       policy,
     });
+    const identity = new IdentityClient({
+      discovery,
+      issuer: await discovery.getExternalBaseUrl('auth'),
+    });
     const entitiesCatalog = new NextEntitiesCatalog(
       dbClient,
       permissions,
+      identity,
       this.permissionRules,
     );
     const stitcher = new Stitcher(dbClient, logger);
@@ -405,6 +416,7 @@ export class NextCatalogBuilder {
       refreshService,
       logger,
       config,
+      identity,
     });
 
     await connectEntityProviders(processingDatabase, entityProviders);
