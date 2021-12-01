@@ -36,6 +36,8 @@ import {
   getOwnedPodsThroughReplicaSets,
   getMatchingHpa,
 } from '../../utils/owner';
+import { containersReady, totalRestarts } from '../../utils/pod';
+import * as columnFactories from '../Pods/columns';
 import {
   GroupedResponsesContext,
   PodNamesWithErrorsContext,
@@ -62,6 +64,11 @@ type DeploymentSummaryProps = {
   hpa?: V1HorizontalPodAutoscaler;
   children?: React.ReactNode;
 };
+
+const deploymentPodColumns: TableColumn<V1Pod>[] = [
+  columnFactories.createContainersReadyColumn(),
+  columnFactories.createTotalRestartsColumn(),
+];
 
 const DeploymentSummary = ({
   deployment,
@@ -164,7 +171,11 @@ const DeploymentAccordion = ({
         />
       </AccordionSummary>
       <AccordionDetails>
-        <PodsTable pods={ownedPods} podTableColumns={podTableColumns} />
+        <PodsTable
+          pods={ownedPods}
+          extraColumns={deploymentPodColumns}
+          podTableColumns={podTableColumns}
+        />
       </AccordionDetails>
     </Accordion>
   );

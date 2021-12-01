@@ -16,7 +16,7 @@
 
 import {
   AppsV1Api,
-  BatchV1Api,
+  BatchV1beta1Api,
   AutoscalingV1Api,
   CoreV1Api,
   KubeConfig,
@@ -78,7 +78,7 @@ export class KubernetesClientProvider {
   getBatchClientByClusterDetails(clusterDetails: ClusterDetails) {
     const kc = this.getKubeConfig(clusterDetails);
 
-    return kc.makeApiClient(BatchV1Api);
+    return kc.makeApiClient(BatchV1beta1Api);
   }
 
   getNetworkingBeta1Client(clusterDetails: ClusterDetails) {

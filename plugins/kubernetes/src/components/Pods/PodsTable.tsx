@@ -17,21 +17,22 @@
 import React, { useMemo } from 'react';
 import { V1Pod } from '@kubernetes/client-node';
 import { PodDrawer } from './PodDrawer';
-import {
-  containersReady,
-  containerStatuses,
-  totalRestarts,
-} from '../../utils/pod';
+import { containerStatuses } from '../../utils/pod';
 import { Table, TableColumn } from '@backstage/core-components';
 import * as columnFactories from './columns';
 
-type DeploymentTablesProps = {
+type PodsTablesProps = {
   pods: V1Pod[];
+  extraColumns?: TableColumn<V1Pod>[];
   podTableColumns?: TableColumn<V1Pod>[];
   children?: React.ReactNode;
 };
 
-export const PodsTable = ({ pods, podTableColumns }: DeploymentTablesProps) => {
+export const PodsTable = ({
+  pods,
+  extraColumns = [],
+  podTableColumns,
+}: PodsTablesProps) => {
   const tableStyle = {
     minWidth: '0',
     width: '100%',
@@ -40,8 +41,6 @@ export const PodsTable = ({ pods, podTableColumns }: DeploymentTablesProps) => {
   const defaultColumns: TableColumn<V1Pod>[] = [
     columnFactories.createNameColumn(),
     columnFactories.createPhaseColumn(),
-    columnFactories.createContainersReadyColumn(),
-    columnFactories.createTotalRestartsColumn(),
     columnFactories.createStatusColumn(),
   ];
 
@@ -50,7 +49,7 @@ export const PodsTable = ({ pods, podTableColumns }: DeploymentTablesProps) => {
       <Table
         options={{ paging: true, search: false }}
         data={pods}
-        columns={podTableColumns || defaultColumns}
+        columns={podTableColumns || defaultColumns.concat(extraColumns)}
       />
     </div>
   );

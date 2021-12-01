@@ -15,8 +15,8 @@
  */
 
 export type {
-  ConditionalPolicyResult,
+  ConditionalPolicyDecision,
   PermissionPolicy,
   PolicyAuthorizeRequest,
-  PolicyResult,
+  PolicyDecision,
 } from './types';
