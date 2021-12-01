@@ -121,7 +121,7 @@ export type BackstageIdentityResponse = {
   id: string;
   entity?: Entity;
   token: string;
-  identity?: BackstageUserIdentity;
+  identity: BackstageUserIdentity;
 };
 
 // @public
@@ -453,7 +453,7 @@ export interface OAuthHandlers {
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   handler(req: express.Request): Promise<{
-    response: AuthResponse<OAuthProviderInfo>;
+    response: OAuthResponse;
     refreshToken?: string;
   }>;
   logout?(): Promise<void>;
@@ -461,7 +461,7 @@ export interface OAuthHandlers {
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  refresh?(req: OAuthRefreshRequest): Promise<AuthResponse<OAuthProviderInfo>>;
+  refresh?(req: OAuthRefreshRequest): Promise<OAuthResponse>;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -499,7 +499,12 @@ export type OAuthRefreshRequest = express.Request<{}> & {
 // Warning: (ae-missing-release-tag) "OAuthResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type OAuthResponse = AuthResponse<OAuthProviderInfo>;
+export type OAuthResponse = Omit<
+  AuthResponse<OAuthProviderInfo>,
+  'backstageIdentity'
+> & {
+  backstageIdentity?: Omit<BackstageIdentityResponse, 'identity'>;
+};
 
 // Warning: (ae-missing-release-tag) "OAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
