@@ -123,6 +123,7 @@ export function registerCommands(program: CommanderStatic) {
   program
     .command('plugin:build')
     .description('Build a plugin')
+    .option('--minify', 'Minify the generated code')
     .action(lazy(() => import('./plugin/build').then(m => m.default)));
 
   program

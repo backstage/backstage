@@ -98,13 +98,10 @@ export const makeConfigs = async (
           include: /\.icon\.svg$/,
           template: svgrTemplate,
         }),
-        esbuild(
-          options.esBuild || {
-            target: 'es2019',
-            // TODO: remove this
-            minify: true,
-          },
-        ),
+        esbuild({
+          target: 'es2019',
+          minify: options.minify,
+        }),
       ],
     });
   }

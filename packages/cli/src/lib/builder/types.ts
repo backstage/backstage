@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import type { Options } from 'rollup-plugin-esbuild';
-
 export enum Output {
   esm,
   cjs,
@@ -24,5 +22,5 @@ export enum Output {
 
 export type BuildOptions = {
   outputs: Set<Output>;
-  esBuild: Options;
+  minify?: boolean;
 };
