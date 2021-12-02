@@ -175,7 +175,8 @@ export function createStatusCheckRouter(options: {
 // @public (undocumented)
 export class DatabaseManager {
   forPlugin(pluginId: string): PluginDatabaseManager;
-  static fromConfig(config: Config): DatabaseManager;
+  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
+  static fromConfig(config: Config, options?: Options): DatabaseManager;
 }
 
 // @public (undocumented)
@@ -395,6 +396,9 @@ export type PluginCacheManager = {
 // @public
 export interface PluginDatabaseManager {
   getClient(): Promise<Knex>;
+  migrations: {
+    apply: boolean;
+  };
 }
 
 // @public
@@ -642,4 +646,8 @@ export function useHotCleanup(
 
 // @public
 export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
+
+// Warnings were encountered during analysis:
+//
+// src/database/types.d.ts:26:12 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
 ```
