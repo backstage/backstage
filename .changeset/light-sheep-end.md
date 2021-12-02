@@ -2,4 +2,4 @@
 '@backstage/plugin-kubernetes': patch
 ---
 
-Add podTableColumn prop to k8s plugin to allow for customization of Pod Table columns
+Add customPodTableColumns prop to k8s plugin to allow users to add additional columns to the Pod Table in the Deployments Accordion
