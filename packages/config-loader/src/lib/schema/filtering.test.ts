@@ -20,6 +20,7 @@ import { filterByVisibility, filterErrorsByVisibility } from './filtering';
 
 const data = {
   arr: ['f', 'b', 's'],
+  arrU: ['f', 'b', 't'],
   objArr: [
     { f: 1, b: 2, s: 3 },
     { f: 4, b: 5, s: 6 },
@@ -40,6 +41,8 @@ const data = {
 
 const visibility = new Map<string, ConfigVisibility>(
   Object.entries({
+    '/arrU': 'frontend',
+    '/arrU/2': 'backend',
     '/arr/0': 'frontend',
     '/arr/1': 'backend',
     '/arr/2': 'secret',
@@ -71,6 +74,9 @@ describe('filterByVisibility', () => {
           'arr[0]',
           'arr[1]',
           'arr[2]',
+          'arrU[0]',
+          'arrU[1]',
+          'arrU[2]',
           'objArr[0].f',
           'objArr[0].b',
           'objArr[0].s',
@@ -97,10 +103,12 @@ describe('filterByVisibility', () => {
           obj: { f: 'a' },
           arrF: [],
           objF: {},
+          arrU: ['f', 'b'],
         },
         filteredKeys: [
           'arr[1]',
           'arr[2]',
+          'arrU[2]',
           'objArr[0].b',
           'objArr[0].s',
           'objArr[1].b',
@@ -120,6 +128,7 @@ describe('filterByVisibility', () => {
       {
         data: {
           arr: ['b'],
+          arrU: ['t'],
           objArr: [{ b: 2 }, { b: 5 }],
           obj: { b: {} },
           arrF: [{ never: 'here' }],
@@ -132,6 +141,8 @@ describe('filterByVisibility', () => {
         filteredKeys: [
           'arr[0]',
           'arr[2]',
+          'arrU[0]',
+          'arrU[1]',
           'objArr[0].f',
           'objArr[0].s',
           'objArr[1].f',
@@ -154,6 +165,9 @@ describe('filterByVisibility', () => {
         filteredKeys: [
           'arr[0]',
           'arr[1]',
+          'arrU[0]',
+          'arrU[1]',
+          'arrU[2]',
           'objArr[0].f',
           'objArr[0].b',
           'objArr[1].f',
