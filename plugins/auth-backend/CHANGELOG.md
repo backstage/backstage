@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend
 
+## 0.4.10
+
+### Patch Changes
+
+- 4bf4111902: Migrated the SAML provider to implement the `authHandler` and `signIn.resolver` options.
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- 36fa32216f: Added signIn and authHandler resolver for oidc provider
+- 7071dce02d: Expose catalog lib in plugin-auth-backend, i.e `CatalogIdentityClient` class is exposed now.
+- 1b69ed44f2: Added custom OAuth2.0 authorization header for generic oauth2 provider.
+- Updated dependencies
+  - @backstage/backend-common@0.9.12
+
 ## 0.4.9
 
 ### Patch Changes

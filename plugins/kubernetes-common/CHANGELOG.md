@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.1.7
+
+### Patch Changes
+
+- 59677fadb1: Improvements to API Reference documentation
+
 ## 0.1.6
 
 ### Patch Changes

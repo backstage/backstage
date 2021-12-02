@@ -1,5 +1,33 @@
 # @backstage/plugin-search
 
+## 0.5.0
+
+### Minor Changes
+
+- c5b6045f36: Search Modal now relies on the Search Context to access state and state setter. If you use the SidebarSearchModal as described in the [getting started documentation](https://backstage.io/docs/features/search/getting-started#using-the-search-modal), make sure to update your code with the SearchContextProvider.
+
+  ```diff
+  export const Root = ({ children }: PropsWithChildren<{}>) => (
+    <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+  -     <SidebarSearchModal />
+  +     <SearchContextProvider>
+  +       <SidebarSearchModal />
+  +     </SearchContextProvider>
+        <SidebarDivider />
+      ...
+  ```
+
+### Patch Changes
+
+- f06ecd09a7: Add optional icon and secondaryAction properties for DefaultResultListItem component
+- c5941d5c30: Add a new optional clearButton property to the SearchBar component. The default value for this new property is true.
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
 ## 0.4.18
 
 ### Patch Changes
