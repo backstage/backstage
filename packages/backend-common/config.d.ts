@@ -124,7 +124,7 @@ export interface Config {
            *
            * This is merged recursively into the base knexConfig
            */
-          knexConfig: object;
+          knexConfig?: object;
         };
       };
     };
