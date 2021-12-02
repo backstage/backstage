@@ -78,7 +78,10 @@ export const SearchContextProvider = ({
   const [term, setTerm] = useState<string>(initialState.term);
   const [types, setTypes] = useState<string[]>(initialState.types);
   const [open, setOpen] = useState<boolean>(false);
-  const toggleModal = (): void => setOpen(prevState => !prevState);
+  const toggleModal = useCallback(
+    (): void => setOpen(prevState => !prevState),
+    [],
+  );
 
   const prevTerm = usePrevious(term);
 
