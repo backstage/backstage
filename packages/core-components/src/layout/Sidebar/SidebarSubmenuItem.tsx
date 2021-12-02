@@ -87,7 +87,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
  *
  * @public
  */
-export type SidebarSubmenuItemDropDownItem = {
+export type SidebarSubmenuItemDropdownItem = {
   title: string;
   to: string;
 };
@@ -105,7 +105,7 @@ export type SidebarSubmenuItemProps = {
   title: string;
   to: string;
   icon: IconComponent;
-  dropdownItems?: SidebarSubmenuItemDropDownItem[];
+  dropdownItems?: SidebarSubmenuItemDropdownItem[];
 };
 
 /**
