@@ -1,5 +1,29 @@
 # @backstage/plugin-azure-devops
 
+## 0.1.5
+
+### Patch Changes
+
+- 0749dd0307: feat: Created pull request card component and initial pull request dashboard page.
+- 82cd709fdb: **Backend**
+
+  - Created new `/dashboard-pull-requests/:projectName` endpoint
+  - Created new `/all-teams` endpoint
+  - Implemented pull request policy evaluation conversion
+
+  **Frontend**
+
+  - Refactored `PullRequestsPage` and added new properties for `projectName` and `pollingInterval`
+  - Fixed spacing issue between repo link and creation date in `PullRequestCard`
+  - Added missing condition to `PullRequestCardPolicy` for `RequiredReviewers`
+  - Updated `useDashboardPullRequests` hook to implement long polling for pull requests
+
+- Updated dependencies
+  - @backstage/plugin-azure-devops-common@0.1.1
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
 ## 0.1.4
 
 ### Patch Changes

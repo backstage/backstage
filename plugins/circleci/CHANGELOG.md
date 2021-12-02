@@ -1,5 +1,15 @@
 # @backstage/plugin-circleci
 
+## 0.2.30
+
+### Patch Changes
+
+- 5a46712a7d: Fixed a bug in the `CircleCI` plugin where restarting builds was hard-coded to GitHub rather than introspecting the entity source location.
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
 ## 0.2.29
 
 ### Patch Changes

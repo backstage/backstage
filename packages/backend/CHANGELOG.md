@@ -1,5 +1,27 @@
 # example-backend
 
+## 0.2.55
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/plugin-scaffolder-backend@0.15.15
+  - @backstage/plugin-auth-backend@0.4.10
+  - @backstage/plugin-kubernetes-backend@0.3.20
+  - @backstage/plugin-badges-backend@0.1.13
+  - @backstage/plugin-catalog-backend@0.19.0
+  - @backstage/plugin-code-coverage-backend@0.1.16
+  - @backstage/plugin-jenkins-backend@0.1.9
+  - @backstage/plugin-tech-insights-backend@0.1.3
+  - @backstage/plugin-techdocs-backend@0.11.0
+  - @backstage/plugin-todo-backend@0.1.14
+  - @backstage/backend-common@0.9.12
+  - @backstage/plugin-azure-devops-backend@0.2.3
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.2
+  - @backstage/plugin-tech-insights-node@0.1.1
+  - example-app@0.2.55
+
 ## 0.2.54
 
 ### Patch Changes
