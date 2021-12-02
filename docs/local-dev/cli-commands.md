@@ -371,6 +371,7 @@ the monorepo.
 Usage: backstage-cli plugin:build [options]
 
 Options:
+  --minify    Minify the generated code
   -h, --help  display help for command
 ```
 
