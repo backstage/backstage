@@ -145,11 +145,13 @@ export class DatabaseManager {
    * @returns the merged kexConfig value or undefined if it isn't specified
    */
   private getAdditionalKnexConfig(pluginId: string): JsonObject | undefined {
-    const pluginConfig = this.config.getOptional<JsonObject>(
-      `${pluginPath(pluginId)}.knexConfig`,
-    );
+    const pluginConfig = this.config
+      .getOptionalConfig(`${pluginPath(pluginId)}.knexConfig`)
+      ?.get<JsonObject>();
 
-    const baseConfig = this.config.getOptional<JsonObject>('knexConfig');
+    const baseConfig = this.config
+      .getOptionalConfig('knexConfig')
+      ?.get<JsonObject>();
 
     return merge(baseConfig, pluginConfig);
   }
