@@ -18,7 +18,7 @@ import { isChildPath } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { assertError, ForwardedError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { spawn } from 'child_process';
+import { SpawnOptionsWithoutStdio, spawn } from 'child_process';
 import fs from 'fs-extra';
 import gitUrlParse from 'git-url-parse';
 import yaml, { DEFAULT_SCHEMA, Type } from 'js-yaml';
@@ -38,19 +38,18 @@ export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
 }
 
 export type RunCommandOptions = {
+  /** command to run */
   command: string;
+  /** arguments to pass the command */
   args: string[];
-  options: object;
+  /** options to pass to spawn */
+  options: SpawnOptionsWithoutStdio;
+  /** stream to capture stdout and stderr output */
   logStream?: Writable;
 };
 
 /**
- *
- * @param options the options object
- * @param options.command the command to run
- * @param options.args the arguments to pass the command
- * @param options.options options used in spawn
- * @param options.logStream the log streamer to capture log messages
+ * Run a command in a sub-process, normally a shell command.
  */
 export const runCommand = async ({
   command,
