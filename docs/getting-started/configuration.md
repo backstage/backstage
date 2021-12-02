@@ -1,7 +1,7 @@
 ---
 id: index
-title: Getting Started, configuring backstage
-description: Getting started with your initial backstage configuration
+title: Getting Started, configuring Backstage
+description: Getting started with your initial Backstage configuration
 ---
 
 This is part two of the Getting Started documentation of Backstage. The steps in
@@ -115,7 +115,7 @@ as advertised.
 If you want to read more about the database configuration, here's some helpful
 links:
 
-- [Configuring Plugin Databases](https://backstage.io/docs/tutorials/configuring-plugin-databases#privileges)
+- [Configuring Plugin Databases](../tutorials/configuring-plugin-databases#privileges)
 - [Read more about Knex](http://knexjs.org/), which is the library we use for
   the database backend
 
@@ -123,11 +123,11 @@ links:
 
 There's multiple authentication providers available for you to use with
 Backstage, feel free to follow
-[the instructions for adding authentication](https://backstage.io/docs/auth/).
+[the instructions for adding authentication](../auth/).
 
 For this tutorial we choose to use GitHub, a free service most of you might be
 familiar with. For other options, see
-[the auth provider documentation](https://backstage.io/docs/auth/github/provider#create-an-oauth-app-on-github).
+[the auth provider documentation](../auth/github/provider#create-an-oauth-app-on-github).
 
 Go to
 [https://github.com/settings/applications/new](https://github.com/settings/applications/new)
@@ -140,9 +140,9 @@ likely be `http://127.0.0.1:7007/api/auth/github/handler/frame`.
   <img src='../assets/getting-started/gh-oauth.png' alt='Screenshot of the GitHub OAuth creation page'>
 </p>
 
-Take note of the `Client ID` and the Client Secret. Open 'app-config.yaml', and
-add your ClientId and ClientSecret to this file. It should end up looking like
-this:
+Take note of the `Client ID` and the `Client Secret`. Open 'app-config.yaml',
+and add your `clientId` and `clientSecret` to this file. It should end up
+looking like this:
 
 ```
 auth:
@@ -192,10 +192,10 @@ go to your Backstage portal in your browser, you should have your login prompt!
 To learn more about Authentication in Backstage, there's the following docs you
 could read:
 
-- [Adding Authentication](https://backstage.io/docs/auth/#adding-the-provider-to-the-sign-in-page)
-- [Adding a new Authentication Provider](https://backstage.io/docs/auth/add-auth-provider)
-- [Using authentication and identity](https://backstage.io/docs/auth/using-auth)
-- [Using organizational data from GitHub](https://backstage.io/docs/integrations/github/org)
+- [Adding Authentication](../auth/)
+- [Adding a new Authentication Provider](../auth/add-auth-provider)
+- [Using authentication and identity](../auth/using-auth)
+- [Using organizational data from GitHub](../integrations/github/org.md)
 
 ### Setting up a GitHub Integration
 
@@ -206,11 +206,11 @@ and Groups can also be loaded from an organization. While using GitHub Apps
 might be the best way to set up integrations, for this tutorial you'll use a
 Personal Access Token.
 
-Open your Token creation page on GitHub by going to
-[https://github.com/settings/tokens/new](https://github.com/settings/tokens/new).
-Use a name to identify this token and put it in the notes field. Choose a number
-of days for expiration. If you have a hard time picking a number, we suggest to
-go for 7 days, it's a lucky number.
+Create your Personal Access Token by opening the
+[the GitHub token creation page](https://github.com/settings/tokens/new). Use a
+name to identify this token and put it in the notes field. Choose a number of
+days for expiration. If you have a hard time picking a number, we suggest to go
+for 7 days, it's a lucky number.
 
 <p align='center'>
   <img src='../assets/getting-started/gh-oauth.png' alt='Screenshot of the GitHub OAuth creation page'>
@@ -233,8 +233,8 @@ That's settled. This information will be leveraged by other plugins.
 
 Some helpful links, for if you want to learn more about:
 
-- [Other available integrations](https://backstage.io/docs/integrations/)
-- [Using GitHub Apps instead of a Personal Access Token](https://backstage.io/docs/plugins/github-apps#docsNav)
+- [Other available integrations](../integrations/)
+- [Using GitHub Apps instead of a Personal Access Token](../plugins/github-apps#docsNav)
 
 ### Explore what we've done so far
 
