@@ -34,7 +34,6 @@ import {
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
-  IdentityPermissionApi,
 } from '@backstage/core-app-api';
 
 import {
@@ -58,9 +57,13 @@ import {
   oidcAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
-  permissionApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+
+import {
+  IdentityPermissionApi,
+  permissionApiRef,
+} from '@backstage/plugin-permission-react';
 
 export const apis = [
   createApiFactory({
@@ -282,6 +285,6 @@ export const apis = [
       configApi: configApiRef,
     },
     factory: ({ configApi, discoveryApi, identityApi }) =>
-      new IdentityPermissionApi(discoveryApi, identityApi, configApi),
+      IdentityPermissionApi.create({ configApi, discoveryApi, identityApi }),
   }),
 ];

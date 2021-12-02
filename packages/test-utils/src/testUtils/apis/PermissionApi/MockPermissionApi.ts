@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PermissionApi } from '@backstage/core-plugin-api';
+import { PermissionApi } from '@backstage/plugin-permission-react';
 import {
   AuthorizeRequest,
   AuthorizeResponse,
@@ -35,7 +35,7 @@ export class MockPermissionApi implements PermissionApi {
       AuthorizeResult.ALLOW,
   ) {}
 
-  async authorize(requests: AuthorizeRequest[]): Promise<AuthorizeResponse[]> {
-    return requests.map(request => ({ result: this.requestHandler(request) }));
+  async authorize(request: AuthorizeRequest): Promise<AuthorizeResponse> {
+    return { result: this.requestHandler(request) };
   }
 }

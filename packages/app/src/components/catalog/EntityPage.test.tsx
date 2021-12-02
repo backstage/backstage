@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { permissionApiRef } from '@backstage/core-plugin-api';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { EntityLayout } from '@backstage/plugin-catalog';
 import {
   DefaultStarredEntitiesApi,

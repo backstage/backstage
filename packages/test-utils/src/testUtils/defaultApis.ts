@@ -34,7 +34,6 @@ import {
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
-  IdentityPermissionApi,
 } from '@backstage/core-app-api';
 
 import {
@@ -59,8 +58,12 @@ import {
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
   identityApiRef,
-  permissionApiRef,
 } from '@backstage/core-plugin-api';
+
+import {
+  IdentityPermissionApi,
+  permissionApiRef,
+} from '@backstage/plugin-permission-react';
 
 // TODO(Rugvip): This is just a copy of the createApp default APIs for now, but
 //               we should clean up this list a bit move more things over to mocks.
@@ -272,6 +275,6 @@ export const defaultApis = [
       configApi: configApiRef,
     },
     factory: ({ discoveryApi, identityApi, configApi }) =>
-      new IdentityPermissionApi(discoveryApi, identityApi, configApi),
+      IdentityPermissionApi.create({ configApi, discoveryApi, identityApi }),
   }),
 ];
