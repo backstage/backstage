@@ -74,7 +74,14 @@ export const HomePageSearchBar: ({
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "SearchApi" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "SearchApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface SearchApi {
+  // (undocumented)
+  query(query: SearchQuery): Promise<SearchResultSet>;
+}
+
 // Warning: (ae-missing-release-tag) "searchApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
