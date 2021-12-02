@@ -29,6 +29,8 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/backend-common": "^0.9.11",
+    "@backstage/config": "^0.1.11",
     "@backstage/plugin-auth-backend": "^0.5.0",
     "@backstage/plugin-permission-common": "^0.2.0",
     "@types/express": "^4.17.6",
