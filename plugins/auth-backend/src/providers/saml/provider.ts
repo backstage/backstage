@@ -128,7 +128,7 @@ export const createSamlProvider = (
       audience: config.getOptionalString('audience'),
       issuer: config.getString('issuer'),
       cert: config.getString('cert'),
-      privateCert: config.getOptionalString('privateKey'),
+      privateKey: config.getOptionalString('privateKey'),
       authnContext: config.getOptionalStringArray('authnContext'),
       identifierFormat: config.getOptionalString('identifierFormat'),
       decryptionPvk: config.getOptionalString('decryptionPvk'),
