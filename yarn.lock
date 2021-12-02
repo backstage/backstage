@@ -5540,10 +5540,10 @@
   resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-12.0.0.tgz#4c7af3f74a47668bec0c860b72e2a0103e78a138"
   integrity sha512-nMVll8ZkN/W8+IHn6Iz3YzCKW0qhrn3TVfyxkAr3qmXm5cex+GzyUdZEuxb8rdN2inZL6A1Il2NFfO5p/UKxog==
 
-"@spotify/prettier-config@^11.0.0":
-  version "11.0.0"
-  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-11.0.0.tgz#d91e0546a8c1c0f7299e2edc7e44306e9be210f6"
-  integrity sha512-dOI13j1uHMZkRxhZuge/ugOE7Aqcg7Nxki932lDZuXyY4G8CGxkc/66PeQ8pR4PCzThHORXo7Ptvau6bh101lQ==
+"@spotify/prettier-config@^12.0.0":
+  version "12.0.0"
+  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-12.0.0.tgz#936ca5e977cfccbccd1731ab98b1f2bf65852b5d"
+  integrity sha512-64WWqE40U/WwWV8iIQBseTU+b2t+SdJSyQoCLdVPCKM9uf7KOjRivVwXe4KlWoV3y7duNSGuB2UgWhkXzscVmQ==
 
 "@storybook/addon-a11y@^6.3.4":
   version "6.3.12"
