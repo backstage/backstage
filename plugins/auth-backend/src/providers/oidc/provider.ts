@@ -35,7 +35,6 @@ import {
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
-  makeProfileInfo,
   PassportDoneCallback,
 } from '../../lib/passport';
 import {
@@ -262,8 +261,12 @@ export const createOidcProvider = (
 
       const authHandler: AuthHandler<AuthResult> = options?.authHandler
         ? options.authHandler
-        : async ({ userinfo, tokenset }) => ({
-            profile: makeProfileInfo({ ...userinfo } as any, tokenset.id_token), // todo some required values does not exist in oidc response
+        : async ({ userinfo }) => ({
+            profile: {
+              displayName: userinfo.name,
+              email: userinfo.email,
+              picture: userinfo.picture,
+            },
           });
       const signInResolverFn =
         options?.signIn?.resolver ?? oAuth2DefaultSignInResolver;
