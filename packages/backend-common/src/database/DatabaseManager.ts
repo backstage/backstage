@@ -36,6 +36,10 @@ function pluginPath(pluginId: string): string {
   return `plugin.${pluginId}`;
 }
 
+type Options = {
+  migrations?: PluginDatabaseManager['migrations'];
+};
+
 /** @public */
 export class DatabaseManager {
   /**
@@ -47,22 +51,22 @@ export class DatabaseManager {
    * names if config is not provided.
    *
    * @param config - The loaded application configuration.
-   * @param runMigrations - Controls whether or not to perform database migrations.
+   * @param options - An optional configuration object.
    */
-  static fromConfig(config: Config, runMigrations?: boolean): DatabaseManager {
+  static fromConfig(config: Config, options?: Options): DatabaseManager {
     const databaseConfig = config.getConfig('backend.database');
 
     return new DatabaseManager(
       databaseConfig,
       databaseConfig.getOptionalString('prefix'),
-      runMigrations,
+      options,
     );
   }
 
   private constructor(
     private readonly config: Config,
     private readonly prefix: string = 'backstage_plugin_',
-    private readonly runMigrations: boolean = true,
+    private readonly options?: Options,
   ) {}
 
   /**
@@ -74,12 +78,15 @@ export class DatabaseManager {
    */
   forPlugin(pluginId: string): PluginDatabaseManager {
     const _this = this;
+    const defaultMigrationOptions = {
+      apply: true,
+    };
 
     return {
       getClient(): Promise<Knex> {
         return _this.getDatabase(pluginId);
       },
-      runMigrations: _this.runMigrations,
+      migrations: _this.options?.migrations ?? defaultMigrationOptions,
     };
   }
 

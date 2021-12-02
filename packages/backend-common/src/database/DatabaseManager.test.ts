@@ -58,20 +58,22 @@ describe('DatabaseManager', () => {
       expect(getConfigSpy).toHaveBeenCalledWith('backend.database');
     });
 
-    it('runMigrations defaults to true', () => {
+    it('handles default options', () => {
       const config = new ConfigReader(backendConfig);
       const database = DatabaseManager.fromConfig(config);
       const client = database.forPlugin('test');
 
-      expect(client.runMigrations).toBe(true);
+      expect(client.migrations?.apply).toBe(true);
     });
 
-    it('runMigrations can be set', () => {
+    it('handles migrations options', () => {
       const config = new ConfigReader(backendConfig);
-      const database = DatabaseManager.fromConfig(config, false);
+      const database = DatabaseManager.fromConfig(config, {
+        migrations: { apply: false },
+      });
       const client = database.forPlugin('test');
 
-      expect(client.runMigrations).toBe(false);
+      expect(client.migrations?.apply).toBe(false);
     });
   });
 

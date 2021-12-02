@@ -32,12 +32,19 @@ export interface PluginDatabaseManager {
   getClient(): Promise<Knex>;
 
   /**
-   * runMigrations can be used to determine if database migrations
-   * should be performed.
-   *
-   * Useful if connecting to a read-only database.
+   * This optional property is used to control the behavior of database migrations.
    */
-  runMigrations: boolean;
+  migrations?: {
+    /**
+     * apply can be used to determine if database migrations
+     * should be performed.
+     *
+     * Useful if connecting to a read-only database.
+     *
+     * @default true
+     */
+    apply: boolean;
+  };
 }
 
 /**
