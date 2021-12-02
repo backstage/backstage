@@ -20,7 +20,7 @@
  * @packageDocumentation
  */
 
-export { searchApiRef } from './apis';
+export { searchApiRef, SearchApi } from './apis';
 export {
   Filters,
   FiltersButton,
