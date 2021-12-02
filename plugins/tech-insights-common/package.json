@@ -31,7 +31,8 @@
   },
   "dependencies": {
     "@types/luxon": "^2.0.5",
-    "luxon": "^2.0.2"
+    "luxon": "^2.0.2",
+    "@backstage/types": "^0.1.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.9.0"
