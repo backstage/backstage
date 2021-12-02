@@ -39,10 +39,10 @@ export const isKubernetesAvailable = (entity: Entity) =>
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
-  podTableColumns?: TableColumn<V1Pod>[];
+  customPodTableColumns?: TableColumn<V1Pod>[];
 };
 
-export const Router = ({ podTableColumns }: Props) => {
+export const Router = ({ customPodTableColumns }: Props) => {
   const { entity } = useEntity();
 
   const kubernetesAnnotationValue =
@@ -62,7 +62,7 @@ export const Router = ({ podTableColumns }: Props) => {
           element={
             <KubernetesContent
               entity={entity}
-              podTableColumns={podTableColumns}
+              customPodTableColumns={customPodTableColumns}
             />
           }
         />

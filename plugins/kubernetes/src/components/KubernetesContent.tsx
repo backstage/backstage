@@ -34,12 +34,12 @@ import { V1Pod } from '@kubernetes/client-node';
 type KubernetesContentProps = {
   entity: Entity;
   children?: React.ReactNode;
-  podTableColumns?: TableColumn<V1Pod>[];
+  customPodTableColumns?: TableColumn<V1Pod>[];
 };
 
 export const KubernetesContent = ({
   entity,
-  podTableColumns,
+  customPodTableColumns,
 }: KubernetesContentProps) => {
   const { kubernetesObjects, error } = useKubernetesObjects(entity);
 
@@ -130,7 +130,7 @@ export const KubernetesContent = ({
                       <Cluster
                         clusterObjects={item}
                         podsWithErrors={podsWithErrors}
-                        podTableColumns={podTableColumns}
+                        customPodTableColumns={customPodTableColumns}
                       />
                     </Grid>
                   );

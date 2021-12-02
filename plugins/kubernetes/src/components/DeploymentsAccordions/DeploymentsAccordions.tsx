@@ -37,7 +37,6 @@ import {
   getMatchingHpa,
 } from '../../utils/owner';
 import { containersReady, totalRestarts } from '../../utils/pod';
-import * as columnFactories from '../Pods/columns';
 import {
   GroupedResponsesContext,
   PodNamesWithErrorsContext,
@@ -45,7 +44,7 @@ import {
 import { StatusError, StatusOK, TableColumn } from '@backstage/core-components';
 
 type DeploymentsAccordionsProps = {
-  podTableColumns?: TableColumn<V1Pod>[];
+  customPodTableColumns?: TableColumn<V1Pod>[];
   children?: React.ReactNode;
 };
 
@@ -53,7 +52,7 @@ type DeploymentAccordionProps = {
   deployment: V1Deployment;
   ownedPods: V1Pod[];
   matchingHpa?: V1HorizontalPodAutoscaler;
-  podTableColumns?: TableColumn<V1Pod>[];
+  customPodTableColumns?: TableColumn<V1Pod>[];
   children?: React.ReactNode;
 };
 
@@ -66,8 +65,17 @@ type DeploymentSummaryProps = {
 };
 
 const deploymentPodColumns: TableColumn<V1Pod>[] = [
-  columnFactories.createContainersReadyColumn(),
-  columnFactories.createTotalRestartsColumn(),
+  {
+    title: 'containers ready',
+    align: 'center',
+    render: containersReady,
+  },
+  {
+    title: 'total restarts',
+    align: 'center',
+    render: totalRestarts,
+    type: 'numeric',
+  },
 ];
 
 const DeploymentSummary = ({
@@ -152,13 +160,15 @@ const DeploymentAccordion = ({
   deployment,
   ownedPods,
   matchingHpa,
-  podTableColumns,
+  customPodTableColumns,
 }: DeploymentAccordionProps) => {
   const podNamesWithErrors = useContext(PodNamesWithErrorsContext);
 
   const podsWithErrors = ownedPods.filter(p =>
     podNamesWithErrors.has(p.metadata?.name ?? ''),
   );
+
+  const extraColumns = deploymentPodColumns.concat(customPodTableColumns);
 
   return (
     <Accordion TransitionProps={{ unmountOnExit: true }}>
@@ -171,18 +181,14 @@ const DeploymentAccordion = ({
         />
       </AccordionSummary>
       <AccordionDetails>
-        <PodsTable
-          pods={ownedPods}
-          extraColumns={deploymentPodColumns}
-          podTableColumns={podTableColumns}
-        />
+        <PodsTable pods={ownedPods} extraColumns={extraColumns} />
       </AccordionDetails>
     </Accordion>
   );
 };
 
 export const DeploymentsAccordions = ({
-  podTableColumns,
+  customPodTableColumns,
 }: DeploymentsAccordionsProps) => {
   const groupedResponses = useContext(GroupedResponsesContext);
 
@@ -208,7 +214,7 @@ export const DeploymentsAccordions = ({
                 groupedResponses.pods,
               )}
               deployment={deployment}
-              podTableColumns={podTableColumns}
+              customPodTableColumns={customPodTableColumns}
             />
           </Grid>
         </Grid>

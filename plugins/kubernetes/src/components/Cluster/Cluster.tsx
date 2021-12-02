@@ -105,13 +105,13 @@ type ClusterProps = {
   clusterObjects: ClusterObjects;
   podsWithErrors: Set<string>;
   children?: React.ReactNode;
-  podTableColumns?: TableColumn<V1Pod>[];
+  customPodTableColumns?: TableColumn<V1Pod>[];
 };
 
 export const Cluster = ({
   clusterObjects,
   podsWithErrors,
-  podTableColumns,
+  customPodTableColumns,
 }: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
   return (
@@ -132,7 +132,9 @@ export const Cluster = ({
                   <CustomResources />
                 </Grid>
                 <Grid item>
-                  <DeploymentsAccordions podTableColumns={podTableColumns} />
+                  <DeploymentsAccordions
+                    customPodTableColumns={customPodTableColumns}
+                  />
                 </Grid>
                 <Grid item>
                   <IngressesAccordions />

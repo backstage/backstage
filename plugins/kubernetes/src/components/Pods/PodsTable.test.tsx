@@ -38,6 +38,19 @@ const extraColumns: TableColumn<V1Pod>[] = [
   },
 ];
 
+const customColumns: TableColumn<V1Pod>[] = [
+  {
+    title: 'custom_column',
+    align: 'center',
+    render: containersReady,
+  },
+  {
+    title: 'custom_column_2',
+    align: 'center',
+    render: totalRestarts,
+  },
+];
+
 describe('PodsTable', () => {
   it('should render pod', async () => {
     const { getByText } = render(
@@ -102,29 +115,28 @@ describe('PodsTable', () => {
     expect(getByText('Container: other-side-car')).toBeInTheDocument();
     expect(getAllByText('CrashLoopBackOff')).toHaveLength(2);
   });
-  it('should render select columns', async () => {
-    const { getByText, queryByText } = render(
+  it('should render additional custom columns', async () => {
+    const columnsToAdd = extraColumns.concat(customColumns);
+    const { getByText, getAllByText } = render(
       wrapInTestApp(
-        <PodsTable pods={[pod as any]} podTableColumns={extraColumns} />,
+        <PodsTable pods={[pod as any]} extraColumns={columnsToAdd} />,
       ),
     );
 
-    // titles that should be rendered
+    // titles
+    expect(getByText('name')).toBeInTheDocument();
+    expect(getByText('phase')).toBeInTheDocument();
     expect(getByText('containers ready')).toBeInTheDocument();
     expect(getByText('total restarts')).toBeInTheDocument();
+    expect(getByText('status')).toBeInTheDocument();
+    expect(getByText('custom_column')).toBeInTheDocument();
+    expect(getByText('custom_column_2')).toBeInTheDocument();
 
-    // titles that should not be rendered
-    expect(queryByText('name')).toBeNull();
-    expect(queryByText('phase')).toBeNull();
-    expect(queryByText('status')).toBeNull();
-
-    // values that should be rendered
-    expect(getByText('1/1')).toBeInTheDocument();
-    expect(getByText('0')).toBeInTheDocument();
-
-    // values that should not be rendered
-    expect(queryByText('dice-roller-6c8646bfd-2m5hv')).toBeNull();
-    expect(queryByText('Running')).toBeNull();
-    expect(queryByText('OK')).toBeNull();
+    // values
+    expect(getByText('dice-roller-6c8646bfd-2m5hv')).toBeInTheDocument();
+    expect(getByText('Running')).toBeInTheDocument();
+    expect(getAllByText('1/1')).toHaveLength(2);
+    expect(getAllByText('0')).toHaveLength(2);
+    expect(getByText('OK')).toBeInTheDocument();
   });
 });
