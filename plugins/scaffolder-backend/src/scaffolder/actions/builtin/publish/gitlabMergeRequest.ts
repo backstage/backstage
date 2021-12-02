@@ -138,15 +138,15 @@ export const createPublishGitlabMergeRequestAction = (options: {
         });
       }
 
-      const { default_branch: defaultBranch }: any = await api.Projects.show(
-        ctx.input.projectid,
-      );
+      const projects = await api.Projects.show(ctx.input.projectid);
+
+      const { default_branch: defaultBranch } = projects;
 
       try {
         await api.Branches.create(
           ctx.input.projectid,
           destinationBranch,
-          defaultBranch,
+          String(defaultBranch),
         ).then(branchResponse => {
           return branchResponse;
         });
@@ -171,7 +171,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
         const mergeRequestUrl: any = await api.MergeRequests.create(
           ctx.input.projectid,
           destinationBranch,
-          defaultBranch,
+          String(defaultBranch),
           ctx.input.title,
           { description: ctx.input.description },
         ).then(mergeRequest => {
