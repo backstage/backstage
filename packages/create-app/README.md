@@ -22,4 +22,4 @@ yarn backstage-create-app
 ## Documentation
 
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)
+- [Backstage Documentation](hhttps://backstage.io/docs/)
