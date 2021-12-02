@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+import { AllFilter } from './allFilter';
+import { AssignedToTeamFilter } from './assignedToTeamFilter';
+import { AssignedToTeamsFilter } from './assignedToTeamsFilter';
+import { AssignedToUserFilter } from './assignedToUserFilter';
+import { CreatedByTeamFilter } from './createdByTeamFilter';
+import { CreatedByTeamsFilter } from './createdByTeamsFilter';
+import { CreatedByUserFilter } from './createdByUserFilter';
+import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
+
 export enum FilterType {
   All = 'All',
 
@@ -51,3 +60,14 @@ export const FilterTypes = [
 export type BaseFilter = {
   type: FilterType;
 };
+
+export type Filter =
+  | AssignedToUserFilter
+  | CreatedByUserFilter
+  | AssignedToTeamFilter
+  | CreatedByTeamFilter
+  | AssignedToTeamsFilter
+  | CreatedByTeamsFilter
+  | AllFilter;
+
+export type PullRequestFilter = (pullRequest: DashboardPullRequest) => boolean;
