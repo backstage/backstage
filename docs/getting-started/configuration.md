@@ -5,7 +5,7 @@ description: Getting started with your initial Backstage configuration
 ---
 
 This is part two of the Getting Started documentation of Backstage. The steps in
-this tutorial assume you've installed backstage app from the npm repository,
+this tutorial assume you've installed Backstage app from the npm repository,
 like in the [Getting Started guide](./index.md) and want to configure Backstage.
 
 At the end of this tutorial, you can expect:
@@ -100,7 +100,7 @@ The default port for PostgreSQL is `5432` or `5433`, and the host name could be
 `127.0.0.1` if installed locally. A word of caution: In general, using
 connection details in a configuration file is not recommended.
 
-Start the backstage app:
+Start the Backstage app:
 
 ```shell
 yarn dev
@@ -292,7 +292,7 @@ Create a new component using a software template
   - You can follow along with the progress, and as soon as every step is
     finished, you can take a look at your new service
 
-Achievement unlocked. You've set up an installation of the core backstage App,
+Achievement unlocked. You've set up an installation of the core Backstage App,
 made it persistent, and configured it so you are now able to use software
 templates.
 
