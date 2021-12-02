@@ -163,5 +163,51 @@ describe('buildEntitySearch', () => {
         { entity_id: 'eid', key: 'relations.t2', value: 'k:ns/b' },
       ]);
     });
+
+    it('rejects duplicate keys', () => {
+      expect(() =>
+        buildEntitySearch('eid', {
+          relations: [],
+          apiVersion: 'a',
+          kind: 'b',
+          metadata: {
+            name: 'n',
+            Namespace: 'ns',
+          },
+        }),
+      ).toThrow(
+        `Entity has duplicate keys that vary only in casing, 'metadata.namespace'`,
+      );
+
+      expect(() =>
+        buildEntitySearch('eid', {
+          relations: [
+            { type: 'dup', target: { kind: 'k', namespace: 'ns', name: 'a' } },
+            { type: 'DUP', target: { kind: 'k', namespace: 'ns', name: 'b' } },
+          ],
+          apiVersion: 'a',
+          kind: 'b',
+          metadata: { name: 'n' },
+        }),
+      ).toThrow(
+        `Entity has duplicate keys that vary only in casing, 'relations.dup'`,
+      );
+
+      expect(() =>
+        buildEntitySearch('eid', {
+          apiVersion: 'a',
+          kind: 'b',
+          metadata: { name: 'n' },
+          spec: {
+            owner: 'o',
+            OWNER: 'o',
+            lifecycle: 'production',
+            lifeCycle: 'production',
+          },
+        }),
+      ).toThrow(
+        `Entity has duplicate keys that vary only in casing, 'spec.owner', 'spec.lifecycle'`,
+      );
+    });
   });
 });
