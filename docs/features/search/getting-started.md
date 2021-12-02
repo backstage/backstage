@@ -120,7 +120,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
-       <SearchContextProvider>
+      <SearchContextProvider>
         <SidebarSearchModal />
       </SearchContextProvider>
       <SidebarDivider />
