@@ -53,6 +53,7 @@ describe('Tech Insights router tests', () => {
             },
           }) as unknown as Promise<Knex>;
         },
+        migrations: { apply: true },
       },
       logger: getVoidLogger(),
       factRetrievers: [],

@@ -32,9 +32,9 @@ export interface PluginDatabaseManager {
   getClient(): Promise<Knex>;
 
   /**
-   * This optional property is used to control the behavior of database migrations.
+   * This property is used to control the behavior of database migrations.
    */
-  migrations?: {
+  migrations: {
     /**
      * apply can be used to determine if database migrations
      * should be performed.

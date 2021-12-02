@@ -56,6 +56,7 @@ export async function startStandaloneServer(
       async getClient() {
         return database;
       },
+      migrations: { apply: true },
     },
     discovery,
   });

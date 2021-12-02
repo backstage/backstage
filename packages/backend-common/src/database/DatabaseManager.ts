@@ -37,7 +37,7 @@ function pluginPath(pluginId: string): string {
 }
 
 type Options = {
-  migrations?: PluginDatabaseManager['migrations'];
+  migrations: PluginDatabaseManager['migrations'];
 };
 
 /** @public */
@@ -78,15 +78,15 @@ export class DatabaseManager {
    */
   forPlugin(pluginId: string): PluginDatabaseManager {
     const _this = this;
-    const defaultMigrationOptions = {
-      apply: true,
-    };
 
     return {
       getClient(): Promise<Knex> {
         return _this.getDatabase(pluginId);
       },
-      migrations: _this.options?.migrations ?? defaultMigrationOptions,
+      migrations: {
+        apply: true,
+        ..._this.options?.migrations,
+      },
     };
   }
 
