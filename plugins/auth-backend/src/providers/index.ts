@@ -23,6 +23,7 @@ export * from './okta';
 export * from './bitbucket';
 export * from './atlassian';
 export * from './aws-alb';
+export * from './saml';
 
 export { factories as defaultAuthProviderFactories } from './factories';
 

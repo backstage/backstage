@@ -26,31 +26,52 @@ import {
   executeRedirectStrategy,
   PassportDoneCallback,
 } from '../../lib/passport';
-import { AuthProviderRouteHandlers, AuthProviderFactory } from '../types';
+import {
+  AuthProviderRouteHandlers,
+  AuthProviderFactory,
+  AuthHandler,
+  SignInResolver,
+  AuthResponse,
+} from '../types';
 import { postMessageResponse } from '../../lib/flow';
 import { TokenIssuer } from '../../identity/types';
 import { isError } from '@backstage/errors';
+import { CatalogIdentityClient } from '../../lib/catalog';
+import { Logger } from 'winston';
 
-type SamlInfo = {
+/** @public */
+export type SamlAuthResult = {
   fullProfile: any;
 };
 
 type Options = SamlConfig & {
+  signInResolver?: SignInResolver<SamlAuthResult>;
+  authHandler: AuthHandler<SamlAuthResult>;
   tokenIssuer: TokenIssuer;
+  catalogIdentityClient: CatalogIdentityClient;
+  logger: Logger;
   appUrl: string;
 };
 
 export class SamlAuthProvider implements AuthProviderRouteHandlers {
   private readonly strategy: SamlStrategy;
+  private readonly signInResolver?: SignInResolver<SamlAuthResult>;
+  private readonly authHandler: AuthHandler<SamlAuthResult>;
   private readonly tokenIssuer: TokenIssuer;
+  private readonly catalogIdentityClient: CatalogIdentityClient;
+  private readonly logger: Logger;
   private readonly appUrl: string;
 
   constructor(options: Options) {
     this.appUrl = options.appUrl;
+    this.signInResolver = options.signInResolver;
+    this.authHandler = options.authHandler;
     this.tokenIssuer = options.tokenIssuer;
+    this.catalogIdentityClient = options.catalogIdentityClient;
+    this.logger = options.logger;
     this.strategy = new SamlStrategy({ ...options }, ((
       fullProfile: SamlProfile,
-      done: PassportDoneCallback<SamlInfo>,
+      done: PassportDoneCallback<SamlAuthResult>,
     ) => {
       // TODO: There's plenty more validation and profile handling to do here,
       //       this provider is currently only intended to validate the provider pattern
@@ -71,27 +92,35 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
     res: express.Response,
   ): Promise<void> {
     try {
-      const { result } = await executeFrameHandlerStrategy<SamlInfo>(
+      const { result } = await executeFrameHandlerStrategy<SamlAuthResult>(
         req,
         this.strategy,
       );
 
-      const id = result.fullProfile.nameID;
+      const { profile } = await this.authHandler(result);
 
-      const idToken = await this.tokenIssuer.issueToken({
-        claims: { sub: id },
-      });
+      const response: AuthResponse<{}> = {
+        profile,
+        providerInfo: {},
+      };
+
+      if (this.signInResolver) {
+        response.backstageIdentity = await this.signInResolver(
+          {
+            result,
+            profile,
+          },
+          {
+            tokenIssuer: this.tokenIssuer,
+            catalogIdentityClient: this.catalogIdentityClient,
+            logger: this.logger,
+          },
+        );
+      }
 
       return postMessageResponse(res, this.appUrl, {
         type: 'authorization_response',
-        response: {
-          profile: {
-            email: result.fullProfile.email,
-            displayName: result.fullProfile.displayName,
-          },
-          providerInfo: {},
-          backstageIdentity: { id, idToken },
-        },
+        response,
       });
     } catch (error) {
       const { name, message } = isError(error)
@@ -105,23 +134,81 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   }
 
   async logout(_req: express.Request, res: express.Response): Promise<void> {
-    res.send('noop');
-  }
-
-  identifyEnv(): string | undefined {
-    return undefined;
+    res.end();
   }
 }
 
+const samlDefaultSignInResolver: SignInResolver<SamlAuthResult> = async (
+  info,
+  ctx,
+) => {
+  const id = info.result.fullProfile.nameID;
+
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: { sub: id },
+  });
+
+  return { id, token };
+};
+
 type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
 
-export type SamlProviderOptions = {};
+/** @public */
+export type SamlProviderOptions = {
+  /**
+   * The profile transformation function used to verify and convert the auth response
+   * into the profile that will be presented to the user.
+   */
+  authHandler?: AuthHandler<SamlAuthResult>;
 
+  /**
+   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+   */
+  signIn?: {
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     */
+    resolver?: SignInResolver<SamlAuthResult>;
+  };
+};
+
+/** @public */
 export const createSamlProvider = (
-  _options?: SamlProviderOptions,
+  options?: SamlProviderOptions,
 ): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, tokenIssuer }) => {
-    const opts = {
+  return ({
+    providerId,
+    globalConfig,
+    config,
+    tokenIssuer,
+    catalogApi,
+    logger,
+  }) => {
+    const catalogIdentityClient = new CatalogIdentityClient({
+      catalogApi,
+      tokenIssuer,
+    });
+
+    const authHandler: AuthHandler<SamlAuthResult> = options?.authHandler
+      ? options.authHandler
+      : async ({ fullProfile }) => ({
+          profile: {
+            email: fullProfile.email,
+            displayName: fullProfile.displayName,
+          },
+        });
+
+    const signInResolverFn =
+      options?.signIn?.resolver ?? samlDefaultSignInResolver;
+
+    const signInResolver: SignInResolver<SamlAuthResult> = info =>
+      signInResolverFn(info, {
+        catalogIdentityClient,
+        tokenIssuer,
+        logger,
+      });
+
+    return new SamlAuthProvider({
       callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
       entryPoint: config.getString('entryPoint'),
       logoutUrl: config.getOptionalString('logoutUrl'),
@@ -140,8 +227,10 @@ export const createSamlProvider = (
 
       tokenIssuer,
       appUrl: globalConfig.appUrl,
-    };
-
-    return new SamlAuthProvider(opts);
+      authHandler,
+      signInResolver,
+      logger,
+      catalogIdentityClient,
+    });
   };
 };
