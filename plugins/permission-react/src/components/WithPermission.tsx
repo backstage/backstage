@@ -18,11 +18,24 @@ import { Permission } from '@backstage/plugin-permission-common';
 import React, { PropsWithChildren } from 'react';
 import { usePermission } from '../hooks';
 
+/**
+ * React Higher-Order Component that provides conditional rendering after an authorization check.
+ *
+ * Usage:
+ * ```
+ * <WithPermission permission={somePermission}>
+ *   <MyComponent />
+ * </WithPermission>
+ * ```
+ * MyComponent will only render if the user is authorized to perform somePermission.
+ * @public
+ */
 export const WithPermission = ({
   permission,
+  resourceRef,
   children,
-}: PropsWithChildren<{ permission: Permission }>) => {
-  const permissionResult = usePermission(permission);
+}: PropsWithChildren<{ permission: Permission; resourceRef?: string }>) => {
+  const permissionResult = usePermission(permission, resourceRef);
 
-  return <>{permissionResult.isAllowed() ? children : null}</>;
+  return <>{permissionResult.allowed ? children : null}</>;
 };

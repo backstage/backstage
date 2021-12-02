@@ -25,14 +25,8 @@ describe('MockPermissionApi', () => {
     const api = new MockPermissionApi();
 
     await expect(
-      api.authorize([
-        { permission: { name: 'permission.1' } as Permission },
-        { permission: { name: 'permission.2' } as Permission },
-      ]),
-    ).resolves.toEqual([
-      { result: AuthorizeResult.ALLOW },
-      { result: AuthorizeResult.ALLOW },
-    ]);
+      api.authorize({ permission: { name: 'permission.1' } as Permission }),
+    ).resolves.toEqual({ result: AuthorizeResult.ALLOW });
   });
 
   it('allows passing a handler to customize the result', async () => {
@@ -43,13 +37,7 @@ describe('MockPermissionApi', () => {
     );
 
     await expect(
-      api.authorize([
-        { permission: { name: 'permission.1' } as Permission },
-        { permission: { name: 'permission.2' } as Permission },
-      ]),
-    ).resolves.toEqual([
-      { result: AuthorizeResult.ALLOW },
-      { result: AuthorizeResult.DENY },
-    ]);
+      api.authorize({ permission: { name: 'permission.2' } as Permission }),
+    ).resolves.toEqual({ result: AuthorizeResult.DENY });
   });
 });
