@@ -29,10 +29,10 @@ export interface Config {
 
         /**
          * URL to Google Analytics analytics.js script
-         * Defaults to https://www.google-analytics.com/analytics.js
+         * Defaults to fetching from GA source (eg. https://www.google-analytics.com/analytics.js)
          * @visibility frontend
          */
-        gaAddress?: string;
+        scriptSrc?: string;
 
         /**
          * Whether or not to log analytics debug statements to the console.
