@@ -51,8 +51,10 @@ By default this implementation comes with an in-memory storage to store checks. 
 Checks for this FactChecker are constructed as [`json-rules-engine` compatible JSON rules](https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#conditions). A check could look like the following for example:
 
 ```ts
-import { TechInsightJsonRuleCheck } from '../types';
-import { JSON_RULE_ENGINE_CHECK_TYPE } from '../constants';
+import {
+  JSON_RULE_ENGINE_CHECK_TYPE,
+  TechInsightJsonRuleCheck,
+} from '@backstage/plugin-tech-insights-backend-module-jsonfc';
 
 export const exampleCheck: TechInsightJsonRuleCheck = {
   id: 'demodatacheck', // Unique identifier of this check
