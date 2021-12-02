@@ -48,11 +48,11 @@
   "scripts": {
     "start": "backstage-cli app:serve",
     "build": "backstage-cli app:build",
-    "test": "backstage-cli test",
-    "lint": "backstage-cli lint",
     "clean": "backstage-cli clean",
+    "test": "backstage-cli test",
     "test:e2e": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:dev",
     "test:e2e:ci": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:run",
+    "lint": "backstage-cli lint",
     "cy:dev": "cypress open",
     "cy:run": "cypress run"
   },
