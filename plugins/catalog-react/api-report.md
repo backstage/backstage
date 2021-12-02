@@ -6,7 +6,7 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AsyncPermissionResult } from '@backstage/plugin-permission';
+import { AsyncPermissionResult } from '@backstage/plugin-permission-react';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';

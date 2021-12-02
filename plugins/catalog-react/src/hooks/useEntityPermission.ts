@@ -16,7 +16,7 @@
 
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Permission } from '@backstage/plugin-permission-common';
-import { usePermission } from '@backstage/plugin-permission';
+import { usePermission } from '@backstage/plugin-permission-react';
 import { useEntity } from './useEntity';
 
 export const useEntityPermission = (permission: Permission) => {

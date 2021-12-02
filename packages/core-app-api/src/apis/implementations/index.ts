@@ -30,4 +30,3 @@ export * from './FeatureFlagsApi';
 export * from './FetchApi';
 export * from './OAuthRequestApi';
 export * from './StorageApi';
-export * from './PermissionApi';

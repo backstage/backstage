@@ -16,7 +16,7 @@ import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
-import { PermissionApi } from '@backstage/core-plugin-api';
+import { PermissionApi } from '@backstage/plugin-permission-react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RenderResult } from '@testing-library/react';
@@ -84,7 +84,7 @@ export class MockPermissionApi implements PermissionApi {
     ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY,
   );
   // (undocumented)
-  authorize(requests: AuthorizeRequest[]): Promise<AuthorizeResponse[]>;
+  authorize(request: AuthorizeRequest): Promise<AuthorizeResponse>;
 }
 
 // @public
