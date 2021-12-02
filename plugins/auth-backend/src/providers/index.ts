@@ -19,6 +19,7 @@ export * from './gitlab';
 export * from './google';
 export * from './microsoft';
 export * from './oauth2';
+export * from './oidc';
 export * from './okta';
 export * from './bitbucket';
 export * from './atlassian';

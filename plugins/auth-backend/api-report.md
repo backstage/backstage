@@ -14,7 +14,9 @@ import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Profile } from 'passport';
+import { TokenSet } from 'openid-client';
 import { UserEntity } from '@backstage/catalog-model';
+import { UserinfoResponse } from 'openid-client';
 
 // Warning: (ae-missing-release-tag) "AtlassianAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -243,6 +245,14 @@ export const createMicrosoftProvider: (
 // @public (undocumented)
 export const createOAuth2Provider: (
   options?: OAuth2ProviderOptions | undefined,
+) => AuthProviderFactory;
+
+// Warning: (ae-forgotten-export) The symbol "OidcProviderOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "createOidcProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createOidcProvider: (
+  options?: OidcProviderOptions | undefined,
 ) => AuthProviderFactory;
 
 // Warning: (ae-missing-release-tag) "createOktaProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
