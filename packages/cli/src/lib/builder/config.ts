@@ -100,6 +100,7 @@ export const makeConfigs = async (
         }),
         esbuild({
           target: 'es2019',
+          minify: options.minify,
         }),
       ],
     });
