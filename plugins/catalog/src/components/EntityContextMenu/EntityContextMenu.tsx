@@ -96,7 +96,7 @@ export const EntityContextMenu = ({
   );
 
   const disableUnregister =
-    (!unregisterPermission.isAllowed() ||
+    (!unregisterPermission.allowed ||
       UNSTABLE_contextMenuOptions?.disableUnregister) ??
     false;
 
