@@ -16,27 +16,34 @@
 
 export enum FilterType {
   All = 'All',
+
+  // Assigned To
   AssignedToUser = 'AssignedToUser',
-  CreatedByUser = 'CreatedByUser',
   AssignedToCurrentUser = 'AssignedToCurrentUser',
-  CreatedByCurrentUser = 'CreatedByCurrentUser',
   AssignedToTeam = 'AssignedToTeam',
-  CreatedByTeam = 'CreatedByTeam',
   AssignedToTeams = 'AssignedToTeams',
-  CreatedByTeams = 'CreatedByTeams',
   AssignedToCurrentUsersTeams = 'AssignedToCurrentUsersTeams',
+
+  // Created By
+  CreatedByUser = 'CreatedByUser',
+  CreatedByCurrentUser = 'CreatedByCurrentUser',
+  CreatedByTeam = 'CreatedByTeam',
+  CreatedByTeams = 'CreatedByTeams',
   CreatedByCurrentUsersTeams = 'CreatedByCurrentUsersTeams',
 }
 
 export const FilterTypes = [
   FilterType.All,
+
   FilterType.AssignedToUser,
-  FilterType.CreatedByUser,
   FilterType.AssignedToCurrentUser,
-  FilterType.CreatedByCurrentUser,
   FilterType.AssignedToTeam,
-  FilterType.CreatedByTeam,
   FilterType.AssignedToTeams,
+  FilterType.AssignedToCurrentUsersTeams,
+
+  FilterType.CreatedByUser,
+  FilterType.CreatedByCurrentUser,
+  FilterType.CreatedByTeam,
   FilterType.CreatedByTeams,
   FilterType.CreatedByCurrentUsersTeams,
 ] as const;
