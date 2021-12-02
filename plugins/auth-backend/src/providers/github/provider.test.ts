@@ -41,12 +41,7 @@ describe('GithubAuthProvider', () => {
   const tokenIssuer: TokenIssuer = {
     listPublicKeys: jest.fn(),
     async issueToken(params) {
-      const tokenContents = {
-        sub: params.claims.sub,
-        ent: params.claims.ent ?? [],
-      };
-
-      return `eyblob.${btoa(JSON.stringify(tokenContents))}.eyblob`;
+      return `token-for-${params.claims.sub}`;
     },
   };
   const catalogIdentityClient = {
@@ -98,13 +93,7 @@ describe('GithubAuthProvider', () => {
       const expected = {
         backstageIdentity: {
           id: 'jimmymarkum',
-          token:
-            'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
-          identity: {
-            ownershipEntityRefs: ['user:default/jimmymarkum'],
-            type: 'user',
-            userEntityRef: 'jimmymarkum',
-          },
+          token: 'token-for-jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -149,13 +138,7 @@ describe('GithubAuthProvider', () => {
       const expected = {
         backstageIdentity: {
           id: 'jimmymarkum',
-          token:
-            'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
-          identity: {
-            type: 'user',
-            ownershipEntityRefs: ['user:default/jimmymarkum'],
-            userEntityRef: 'jimmymarkum',
-          },
+          token: 'token-for-jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -198,13 +181,7 @@ describe('GithubAuthProvider', () => {
       const expected = {
         backstageIdentity: {
           id: 'jimmymarkum',
-          token:
-            'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
-          identity: {
-            type: 'user',
-            ownershipEntityRefs: ['user:default/jimmymarkum'],
-            userEntityRef: 'jimmymarkum',
-          },
+          token: 'token-for-jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -247,13 +224,7 @@ describe('GithubAuthProvider', () => {
       const expected = {
         backstageIdentity: {
           id: 'daveboyle',
-          token:
-            'eyblob.eyJzdWIiOiJkYXZlYm95bGUiLCJlbnQiOlsidXNlcjpkZWZhdWx0L2RhdmVib3lsZSJdfQ==.eyblob',
-          identity: {
-            type: 'user',
-            ownershipEntityRefs: ['user:default/daveboyle'],
-            userEntityRef: 'daveboyle',
-          },
+          token: 'token-for-daveboyle',
         },
         providerInfo: {
           accessToken:
@@ -297,13 +268,7 @@ describe('GithubAuthProvider', () => {
         response: {
           backstageIdentity: {
             id: 'ipd12039',
-            token:
-              'eyblob.eyJzdWIiOiJpcGQxMjAzOSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvaXBkMTIwMzkiXX0=.eyblob',
-            identity: {
-              type: 'user',
-              ownershipEntityRefs: ['user:default/ipd12039'],
-              userEntityRef: 'ipd12039',
-            },
+            token: 'token-for-ipd12039',
           },
           providerInfo: {
             accessToken: 'a.b.c',
@@ -356,13 +321,7 @@ describe('GithubAuthProvider', () => {
       expect(response).toEqual({
         backstageIdentity: {
           id: 'mockuser',
-          token:
-            'eyblob.eyJzdWIiOiJtb2NrdXNlciIsImVudCI6WyJ1c2VyOmRlZmF1bHQvbW9ja3VzZXIiXX0=.eyblob',
-          identity: {
-            type: 'user',
-            ownershipEntityRefs: ['user:default/mockuser'],
-            userEntityRef: 'mockuser',
-          },
+          token: 'token-for-mockuser',
         },
         profile: {
           displayName: 'Mocked User',

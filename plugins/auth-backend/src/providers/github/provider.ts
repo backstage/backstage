@@ -45,7 +45,6 @@ import {
 } from '../../lib/oauth';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { TokenIssuer } from '../../identity';
-import { decorateWithIdentity } from '../decorateWithIdentity';
 
 type PrivateInfo = {
   refreshToken?: string;
@@ -168,7 +167,7 @@ export class GithubAuthProvider implements OAuthHandlers {
     };
 
     if (this.signInResolver) {
-      const signInResolverResult = await this.signInResolver(
+      response.backstageIdentity = await this.signInResolver(
         {
           result,
           profile,
@@ -179,7 +178,6 @@ export class GithubAuthProvider implements OAuthHandlers {
           logger: this.logger,
         },
       );
-      response.backstageIdentity = decorateWithIdentity(signInResolverResult);
     }
 
     return response;
