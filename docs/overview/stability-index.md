@@ -175,15 +175,6 @@ Utilities for writing tests for Backstage plugins and apps.
 
 Stability: `2`
 
-### `test-utils-core` [GitHub](https://github.com/backstage/backstage/tree/master/packages/test-utils-core/)
-
-Internal testing utilities that are separated out for usage in
-@backstage/core-app-api and @backstage/core-plugin-api. All exports are
-re-exported by @backstage/test-utils. This package should not be depended on
-directly.
-
-Stability: See @backstage/test-utils
-
 ### `theme` [GitHub](https://github.com/backstage/backstage/tree/master/packages/theme/)
 
 The core Backstage MUI theme along with customization utilities.

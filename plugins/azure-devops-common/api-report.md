@@ -120,14 +120,14 @@ export enum PolicyType {
 // Warning: (ae-missing-release-tag) "PolicyTypeId" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const PolicyTypeId: {
-  Build: string;
-  Status: string;
-  MinimumReviewers: string;
-  Comments: string;
-  RequiredReviewers: string;
-  MergeStrategy: string;
-};
+export enum PolicyTypeId {
+  Build = '0609b952-1397-4640-95ec-e00a01b2c241',
+  Comments = 'c6a1889d-b943-4856-b76f-9e46bb6b0df2',
+  MergeStrategy = 'fa4e907d-c16b-4a4c-9dfa-4916e5d171ab',
+  MinimumReviewers = 'fa4e907d-c16b-4a4c-9dfa-4906e5d171dd',
+  RequiredReviewers = 'fd2167ab-b0be-447a-8ec8-39368250530e',
+  Status = 'cbdc66da-9728-4af8-aada-9a5a32e4a226',
+}
 
 // Warning: (ae-missing-release-tag) "PullRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

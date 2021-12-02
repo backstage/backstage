@@ -5,12 +5,14 @@
 ```ts
 import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { Config } from '@backstage/config';
+import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import express from 'express';
 import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { Logger as Logger_2 } from 'winston';
 import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
 import { RepoBuild } from '@backstage/plugin-azure-devops-common';
+import { Team } from '@backstage/plugin-azure-devops-common';
 import { WebApi } from 'azure-devops-node-api';
 
 // Warning: (ae-missing-release-tag) "AzureDevOpsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -19,11 +21,18 @@ import { WebApi } from 'azure-devops-node-api';
 export class AzureDevOpsApi {
   constructor(logger: Logger_2, webApi: WebApi);
   // (undocumented)
+  getAllTeams(): Promise<Team[]>;
+  // (undocumented)
   getBuildList(
     projectName: string,
     repoId: string,
     top: number,
   ): Promise<Build[]>;
+  // (undocumented)
+  getDashboardPullRequests(
+    projectName: string,
+    options: PullRequestOptions,
+  ): Promise<DashboardPullRequest[]>;
   // (undocumented)
   getGitRepository(
     projectName: string,

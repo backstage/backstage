@@ -18,6 +18,7 @@ import {
   Content,
   Header,
   Page,
+  Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { PullRequestGroup, PullRequestGroupConfig } from './lib/types';
@@ -27,11 +28,6 @@ import { useDashboardPullRequests, useUserEmail } from '../../hooks';
 
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestGrid } from './lib/PullRequestGrid';
-
-/**
- * @deprecated TEMPORARY - This will be configurable in a follow up PR.
- */
-const PROJECT_NAME = 'projectName';
 
 function usePullRequestGroupConfigs(
   userEmail: string | undefined,
@@ -73,8 +69,41 @@ function usePullRequestGroups(
   return pullRequestGroups;
 }
 
-export const PullRequestsPage = () => {
-  const { pullRequests, error } = useDashboardPullRequests(PROJECT_NAME);
+type PullRequestsPageContentProps = {
+  pullRequestGroups: PullRequestGroup[];
+  loading: boolean;
+  error?: Error;
+};
+
+const PullRequestsPageContent = ({
+  pullRequestGroups,
+  loading,
+  error,
+}: PullRequestsPageContentProps) => {
+  if (loading && pullRequestGroups.length <= 0) {
+    return <Progress />;
+  }
+
+  if (error) {
+    return <ResponseErrorPanel error={error} />;
+  }
+
+  return <PullRequestGrid pullRequestGroups={pullRequestGroups} />;
+};
+
+type PullRequestsPageProps = {
+  projectName?: string;
+  pollingInterval?: number;
+};
+
+export const PullRequestsPage = ({
+  projectName,
+  pollingInterval,
+}: PullRequestsPageProps) => {
+  const { pullRequests, loading, error } = useDashboardPullRequests(
+    projectName,
+    pollingInterval,
+  );
   const userEmail = useUserEmail();
   const pullRequestGroupConfigs = usePullRequestGroupConfigs(userEmail);
   const pullRequestGroups = usePullRequestGroups(
@@ -82,16 +111,16 @@ export const PullRequestsPage = () => {
     pullRequestGroupConfigs,
   );
 
-  const pullRequestsContent = error ? (
-    <ResponseErrorPanel error={error} />
-  ) : (
-    <PullRequestGrid pullRequestGroups={pullRequestGroups} />
-  );
-
   return (
     <Page themeId="tool">
       <Header title="Azure Pull Requests" />
-      <Content>{pullRequestsContent}</Content>
+      <Content>
+        <PullRequestsPageContent
+          pullRequestGroups={pullRequestGroups}
+          loading={loading}
+          error={error}
+        />
+      </Content>
     </Page>
   );
 };

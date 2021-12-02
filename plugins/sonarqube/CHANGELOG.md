@@ -1,5 +1,16 @@
 # @backstage/plugin-sonarqube
 
+## 0.2.8
+
+### Patch Changes
+
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- 59677fadb1: Improvements to API Reference documentation
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
 ## 0.2.7
 
 ### Patch Changes

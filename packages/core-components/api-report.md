@@ -832,6 +832,7 @@ export const SidebarContext: Context<SidebarContextType>;
 // @public (undocumented)
 export type SidebarContextType = {
   isOpen: boolean;
+  setOpen: (open: boolean) => void;
 };
 
 // Warning: (ae-missing-release-tag) "SidebarDivider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1102,6 +1103,9 @@ export const SidebarDivider: React_2.ComponentType<
       className?: string | undefined;
     }
 >;
+
+// @public
+export const SidebarExpandButton: () => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "SidebarIntro" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1976,6 +1980,37 @@ export const SidebarSpacer: React_2.ComponentType<
       className?: string | undefined;
     }
 >;
+
+// @public
+export const SidebarSubmenu: ({
+  title,
+  children,
+}: PropsWithChildren<SidebarSubmenuProps>) => JSX.Element;
+
+// @public
+export const SidebarSubmenuItem: (
+  props: SidebarSubmenuItemProps,
+) => JSX.Element;
+
+// @public
+export type SidebarSubmenuItemDropdownItem = {
+  title: string;
+  to: string;
+};
+
+// @public
+export type SidebarSubmenuItemProps = {
+  title: string;
+  to: string;
+  icon: IconComponent;
+  dropdownItems?: SidebarSubmenuItemDropdownItem[];
+};
+
+// @public
+export type SidebarSubmenuProps = {
+  title?: string;
+  children: ReactNode;
+};
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SignInPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

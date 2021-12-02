@@ -21,6 +21,7 @@
  */
 
 export { searchApiRef } from './apis';
+export type { SearchApi } from './apis';
 export {
   Filters,
   FiltersButton,
