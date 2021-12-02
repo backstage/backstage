@@ -113,6 +113,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
             // The alternative is using the `buildRawUrl` function, which does not support subgroups, so providing a raw
             // URL here won't work either.
             target: `${project.web_url}/-/blob/${project_branch}/${catalogPath}`,
+            presence: 'optional',
           },
           true,
         ),

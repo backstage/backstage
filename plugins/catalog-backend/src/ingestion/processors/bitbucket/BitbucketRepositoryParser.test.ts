@@ -29,6 +29,7 @@ describe('BitbucketRepositoryParser', () => {
           {
             type: 'url',
             target: `${browseUrl}${path}`,
+            presence: 'optional',
           },
           true,
         ),
