@@ -66,7 +66,7 @@ export const version = findVersion();
 export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
 
 export function createPackageVersionProvider(lockfile?: Lockfile) {
-  return (name: string, versionHint?: string) => {
+  return (name: string, versionHint?: string): string => {
     const packageVersion = packageVersions[name];
     const targetVersion = versionHint || packageVersion;
     if (!targetVersion) {
@@ -94,6 +94,6 @@ export function createPackageVersionProvider(lockfile?: Lockfile) {
     if (semver.parse(versionHint)?.prerelease.length) {
       return versionHint!;
     }
-    return `^${versionHint}`;
+    return versionHint?.match(/^[\d\.]+$/) ? `^${versionHint}` : versionHint!;
   };
 }
