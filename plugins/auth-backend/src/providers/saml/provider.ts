@@ -36,13 +36,9 @@ import {
 import { postMessageResponse } from '../../lib/flow';
 import { TokenIssuer } from '../../identity/types';
 import { isError } from '@backstage/errors';
-<<<<<<< HEAD
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { Logger } from 'winston';
 import { decorateWithIdentity } from '../decorateWithIdentity';
-=======
-import { decorateWithIdentity } from '../decorateWithIdentity';
->>>>>>> chore: reworking the auth providers to decorate the identity from the token that is returned from the different providers
 
 /** @public */
 export type SamlAuthResult = {
@@ -124,8 +120,6 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
 
         response.backstageIdentity = decorateWithIdentity(signInResponse);
       }
-
-     
 
       return postMessageResponse(res, this.appUrl, {
         type: 'authorization_response',
