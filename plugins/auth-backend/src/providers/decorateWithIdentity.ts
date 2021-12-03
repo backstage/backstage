@@ -22,6 +22,8 @@ function parseJwtPayload(token: string) {
 }
 
 /**
+ * @public
+ *
  * Parses token and decorates the BackstageIdentityResponse with identity information sourced from the token
  */
 export function decorateWithIdentity(

@@ -65,7 +65,7 @@ export class LegacyUserIdentity implements IdentityApi {
     return {
       type: 'user',
       userEntityRef: sub,
-      ownershipEntityRefs: ent ?? [sub],
+      ownershipEntityRefs: ent ?? [],
     };
   }
 
