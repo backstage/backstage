@@ -288,8 +288,6 @@ export const createSamlProvider: (
   options?: SamlProviderOptions | undefined,
 ) => AuthProviderFactory;
 
-// Warning: (ae-missing-release-tag) "decorateWithIdentity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function decorateWithIdentity(
   signInResolverResponse: Omit<BackstageIdentityResponse, 'identity'>,
