@@ -47,7 +47,6 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@material-ui/styles": "^4.10.0",
-    "@types/react": "*",
     "dompurify": "^2.2.9",
     "event-source-polyfill": "^1.0.25",
     "git-url-parse": "^11.6.0",
@@ -59,6 +58,7 @@
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0",
     "react-dom": "^16.13.1 || ^17.0.0"
   },

@@ -38,12 +38,12 @@
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.1.8",
-    "@types/react": "*",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "zen-observable": "^0.8.15"
   },
   "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {

@@ -59,7 +59,7 @@
     "@types/jest": "^26.0.7",
     "@types/luxon": "^2.0.4",
     "@types/node": "^14.14.32",
-    "@types/react": "*",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "cross-fetch": "^3.0.6",
     "msw": "^0.35.0"
   },
