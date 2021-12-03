@@ -2325,20 +2325,20 @@ export function UserIcon(props: IconComponentProps): JSX.Element;
 //
 // @public (undocumented)
 export class UserIdentity implements IdentityApi {
-  // Warning: (ae-forgotten-export) The symbol "GuestUserIdentity" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
-  static createGuest(): GuestUserIdentity;
-  // (undocumented)
-  static from(options: {
+  static create(options: {
     identity: BackstageUserIdentity;
     authApi: ProfileInfoApi & BackstageIdentityApi & SessionApi;
     profile?: ProfileInfo;
   }): UserIdentity;
+  // Warning: (ae-forgotten-export) The symbol "GuestUserIdentity" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  static createGuest(): GuestUserIdentity;
   // Warning: (ae-forgotten-export) The symbol "LegacyUserIdentity" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  static fromLegacy({ result }: { result: SignInResult }): LegacyUserIdentity;
+  static fromLegacy(result: SignInResult): LegacyUserIdentity;
   // (undocumented)
   getBackstageIdentity(): Promise<BackstageUserIdentity>;
   // (undocumented)
@@ -2400,5 +2400,5 @@ export type WarningPanelClassKey =
 // src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:20:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:8:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
-// src/layout/SignInPage/UserIdentity.d.ts:22:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "IdentityApi"
+// src/layout/SignInPage/UserIdentity.d.ts:20:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "IdentityApi"
 ```
