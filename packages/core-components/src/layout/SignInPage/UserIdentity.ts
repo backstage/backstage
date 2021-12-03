@@ -32,11 +32,11 @@ export class UserIdentity implements IdentityApi {
     return new GuestUserIdentity();
   }
 
-  static fromLegacy({ result }: { result: SignInResult }) {
+  static fromLegacy(result: SignInResult) {
     return LegacyUserIdentity.fromResult(result);
   }
 
-  static from(options: {
+  static create(options: {
     identity: BackstageUserIdentity;
     authApi: ProfileInfoApi & BackstageIdentityApi & SessionApi;
     /**

@@ -72,11 +72,9 @@ const Component: ProviderComponent = ({ onSignInSuccess }) => {
   const handleResult = ({ userId }: Data) => {
     onSignInSuccess(
       UserIdentity.fromLegacy({
-        result: {
-          userId,
-          profile: {
-            email: `${userId}@example.com`,
-          },
+        userId,
+        profile: {
+          email: `${userId}@example.com`,
         },
       }),
     );

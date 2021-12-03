@@ -44,3 +44,5 @@ export type {
   BackstageIdentityResponse,
   ProfileInfo,
 } from './types';
+
+export { decorateWithIdentity } from './decorateWithIdentity';

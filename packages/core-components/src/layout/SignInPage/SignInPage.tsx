@@ -136,7 +136,7 @@ export const SingleSignInPage = ({
 
       const profile = await authApi.getProfile();
       onSignInSuccess(
-        UserIdentity.from({
+        UserIdentity.create({
           identity: identityResponse.identity,
           authApi,
           profile,

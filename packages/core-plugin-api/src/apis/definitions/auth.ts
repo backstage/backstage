@@ -188,7 +188,7 @@ export type BackstageUserIdentity = {
 };
 
 /**
- * A (user id, token) pair.
+ * Token and Identity response, with the users claims in the Identity.
  *
  * @public
  */

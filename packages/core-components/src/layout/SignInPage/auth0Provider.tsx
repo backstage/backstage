@@ -46,7 +46,7 @@ const Component: ProviderComponent = ({ onSignInSuccess }) => {
       const profile = await auth0AuthApi.getProfile();
 
       onSignInSuccess(
-        UserIdentity.from({
+        UserIdentity.create({
           identity: identityResponse.identity,
           authApi: auth0AuthApi,
           profile,
@@ -85,7 +85,7 @@ const loader: ProviderLoader = async apis => {
   }
 
   const profile = await auth0AuthApi.getProfile();
-  return UserIdentity.from({
+  return UserIdentity.create({
     identity: identityResponse.identity,
     authApi: auth0AuthApi,
     profile,
