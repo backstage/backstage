@@ -45,10 +45,12 @@
     "jwt-decode": "^3.1.0",
     "lodash": "^4.17.21",
     "qs": "^6.9.4",
-    "react": "^16.13.1",
     "react-router": "6.0.0-beta.0",
     "react-use": "^17.2.4",
     "zen-observable": "^0.8.15"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.10.0",

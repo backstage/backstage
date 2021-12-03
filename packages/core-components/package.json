@@ -53,8 +53,6 @@
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",
     "rc-progress": "^3.0.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.12.2",
     "react-markdown": "^7.0.1",
@@ -66,6 +64,10 @@
     "react-use": "^17.2.4",
     "remark-gfm": "^2.0.0",
     "zen-observable": "^0.8.15"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
     "@backstage/core-app-api": "^0.1.24",

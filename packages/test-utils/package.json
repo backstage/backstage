@@ -39,11 +39,12 @@
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.1.8",
     "@types/react": "*",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "zen-observable": "^0.8.15"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.10.0",
