@@ -22,8 +22,8 @@ export const hasAnnotation = {
   description:
     'Allow entities which are annotated with the specified annotation',
   apply: (resource: Entity, annotation: string) =>
-    !!resource.metadata.annotations?.hasOwnProperty(annotation[0]),
+    !!resource.metadata.annotations?.hasOwnProperty(annotation),
   toQuery: (annotation: string): EntitiesSearchFilter => ({
-    key: annotation,
+    key: `metadata.annotations.${annotation}`,
   }),
 };
