@@ -2,4 +2,4 @@
 '@backstage/plugin-xcmetrics': patch
 ---
 
-Handle a case where Xcode data from XCMetrics version < 0.0.8 could be missing
+Handle a case where XCode data from backend (before 0.0.8) could be missing
