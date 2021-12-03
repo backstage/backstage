@@ -59,6 +59,12 @@ describe('TechDocsStorageClient', () => {
     ).resolves.toEqual(
       `${mockBaseUrl}/static/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
     );
+
+    await expect(
+      storageApi.getBaseUrl('../test.js', mockEntity, 'some-docs-path'),
+    ).resolves.toEqual(
+      `${mockBaseUrl}/static/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
+    );
   });
 
   it('should return base url with correct entity structure', async () => {
