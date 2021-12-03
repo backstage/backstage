@@ -32,21 +32,22 @@ const MOCK_CONFIG = readGitLabIntegrationConfig(
     apiBaseUrl: 'https://example.com/api/v4',
   }),
 );
+const FAKE_PAGED_ENDPOINT = `/some-endpoint`;
+const FAKE_PAGED_URL = `${MOCK_CONFIG.apiBaseUrl}${FAKE_PAGED_ENDPOINT}`;
 
-const FAKE_PAGED_ENDPOINT = `${MOCK_CONFIG.apiBaseUrl}/some-endpoint`;
-
-function setupFakeFourPageEndpoint(srv: SetupServerApi, endpoint: string) {
+function setupFakeFourPageURL(srv: SetupServerApi, url: string) {
   srv.use(
-    rest.get(endpoint, (req, res, ctx) => {
+    rest.get(url, (req, res, ctx) => {
       const page = req.url.searchParams.get('page');
       const currentPage = page ? Number(page) : 1;
       const fakePageCount = 4;
 
       return res(
-        ctx.set({
-          'x-next-page':
-            currentPage < fakePageCount ? String(currentPage + 1) : '',
-        }),
+        // set next page number header if page requested is less than count
+        ctx.set(
+          'x-next-page',
+          currentPage < fakePageCount ? String(currentPage + 1) : '',
+        ),
         ctx.json([{ someContentOfPage: currentPage }]),
       );
     }),
@@ -106,7 +107,7 @@ describe('GitLabClient', () => {
   describe('pagedRequest', () => {
     beforeEach(() => {
       // setup fake paginated endpoint with 4 pages each returning one item
-      setupFakeFourPageEndpoint(server, FAKE_PAGED_ENDPOINT);
+      setupFakeFourPageURL(server, FAKE_PAGED_URL);
     });
 
     it('should provide immediate items within the page', async () => {
@@ -157,9 +158,10 @@ describe('GitLabClient', () => {
     });
 
     it('should throw if response is not okay', async () => {
-      const endpoint = `${MOCK_CONFIG.apiBaseUrl}/unhealthy-endpoint`;
+      const endpoint = '/unhealthy-endpoint';
+      const url = `${MOCK_CONFIG.apiBaseUrl}${endpoint}`;
       server.use(
-        rest.get(endpoint, (_, res, ctx) => {
+        rest.get(url, (_, res, ctx) => {
           return res(ctx.status(400), ctx.json({ error: 'some error' }));
         }),
       );
@@ -203,33 +205,33 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
 
-      const instanceProjectsGen = paginated(
+      const instanceProjects = paginated(
         options => client.listProjects(options),
         {},
       );
-      const allItems = [];
-      for await (const item of instanceProjectsGen) {
-        allItems.push(item);
+      const allProjects = [];
+      for await (const project of instanceProjects) {
+        allProjects.push(project);
       }
-      expect(allItems).toHaveLength(2);
+      expect(allProjects).toHaveLength(2);
     });
   });
 });
 
 describe('paginated', () => {
   it('should iterate through the pages until exhausted', async () => {
-    setupFakeFourPageEndpoint(server, FAKE_PAGED_ENDPOINT);
+    setupFakeFourPageURL(server, FAKE_PAGED_URL);
     const client = new GitLabClient({
       config: MOCK_CONFIG,
       logger: getVoidLogger(),
     });
 
-    const paginatedAsyncGenerator = paginated(
+    const paginatedItems = paginated(
       options => client.pagedRequest(FAKE_PAGED_ENDPOINT, options),
       {},
     );
     const allItems = [];
-    for await (const item of paginatedAsyncGenerator) {
+    for await (const item of paginatedItems) {
       allItems.push(item);
     }
 
