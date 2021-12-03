@@ -114,10 +114,16 @@ export class DatabaseManager {
     const connection = this.getConnectionConfig(pluginId);
 
     if (this.getClientType(pluginId).client === 'sqlite3') {
+      const sqliteFilename = (connection as Knex.Sqlite3ConnectionConfig)
+        ?.filename;
+
+      // if persisting to a file, create separate files per plugin to avoid db migration issues.
+      if (sqliteFilename !== ':memory:') {
+        return `${sqliteFilename}/${pluginId}`;
+      }
+
       // sqlite database name should fallback to ':memory:' as a special case
-      return (
-        (connection as Knex.Sqlite3ConnectionConfig)?.filename ?? ':memory:'
-      );
+      return ':memory:';
     }
 
     const databaseName = (connection as Knex.ConnectionConfig)?.database;

@@ -282,7 +282,10 @@ describe('DatabaseManager', () => {
       expect(baseConfig.get().client).toEqual('sqlite3');
 
       // sqlite3 uses 'filename' instead of 'database'
-      expect(overrides).toHaveProperty('connection.filename');
+      expect(overrides).toHaveProperty(
+        'connection.filename',
+        `plugin_with_different_client/${pluginId}`,
+      );
     });
 
     it('provides database client specific base from plugin connection string when client set under plugin', async () => {
