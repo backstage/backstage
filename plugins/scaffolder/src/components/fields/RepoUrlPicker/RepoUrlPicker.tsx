@@ -27,7 +27,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import { useApi } from '@backstage/core-plugin-api';
 import { Progress } from '@backstage/core-components';
 
-function splitFormData(url: string | undefined, allowedOwners: string[]) {
+function splitFormData(url: string | undefined, allowedOwners?: string[]) {
   let host = undefined;
   let owner = undefined;
   let repo = undefined;
@@ -39,10 +39,7 @@ function splitFormData(url: string | undefined, allowedOwners: string[]) {
     if (url) {
       const parsed = new URL(`https://${url}`);
       host = parsed.host;
-      owner =
-        parsed.searchParams.get('owner') || allowedOwners
-          ? allowedOwners[0]
-          : undefined;
+      owner = parsed.searchParams.get('owner') || allowedOwners?.[0];
       repo = parsed.searchParams.get('repo') || undefined;
       // This is azure dev ops specific. not used for any other provider.
       organization = parsed.searchParams.get('organization') || undefined;
