@@ -134,6 +134,7 @@ export type TaskSpec = TaskSpecV1beta2 | TaskSpecV1beta3;
  */
 export type TaskSecrets = {
   token: string | undefined;
+  uiSecrets: JsonObject;
 };
 
 /**

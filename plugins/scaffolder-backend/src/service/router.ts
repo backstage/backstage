@@ -231,8 +231,11 @@ export async function createRouter(
         );
       }
 
+      console.log('secrets', req.body.secrets);
+
       const result = await taskBroker.dispatch(taskSpec, {
         token: token,
+        uiSecrets: req.body.secrets ?? {},
       });
 
       res.status(201).json({ id: result.taskId });

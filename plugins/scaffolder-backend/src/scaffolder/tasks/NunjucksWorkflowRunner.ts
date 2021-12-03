@@ -17,6 +17,7 @@
 import { ScmIntegrations } from '@backstage/integration';
 import {
   TaskContext,
+  TaskSecrets,
   TaskSpec,
   TaskSpecV1beta3,
   TaskStep,
@@ -51,6 +52,7 @@ type TemplateContext = {
   steps: {
     [stepName: string]: { output: { [outputName: string]: JsonValue } };
   };
+  secrets: TaskSecrets;
 };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
@@ -200,9 +202,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const context: TemplateContext = {
         parameters: task.spec.parameters,
+        secrets: task.secrets?.uiSecrets,
         steps: {},
       };
 
+      console.log('context', context);
       for (const step of task.spec.steps) {
         try {
           if (step.if) {

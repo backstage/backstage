@@ -44,6 +44,7 @@ export function createPublishGithubAction(options: {
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
     topics?: string[];
+    GIT_TOKEN?: string;
   }>({
     id: 'publish:github',
     description:
@@ -53,6 +54,10 @@ export function createPublishGithubAction(options: {
         type: 'object',
         required: ['repoUrl'],
         properties: {
+          GIT_TOKEN: {
+            title: 'Github token to use',
+            type: 'string',
+          },
           repoUrl: {
             title: 'Repository Location',
             description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
@@ -140,10 +145,13 @@ export function createPublishGithubAction(options: {
         defaultBranch = 'master',
         collaborators,
         topics,
+        GIT_TOKEN,
       } = ctx.input;
 
+      console.log('gitToken', GIT_TOKEN);
       const { client, token, owner, repo } = await octokitProvider.getOctokit(
         repoUrl,
+        GIT_TOKEN,
       );
 
       const user = await client.users.getByUsername({

@@ -115,6 +115,26 @@ export const RepoUrlPicker = ({
     formData,
     allowedOwners,
   );
+
+  const onBlur = useCallback(() => {
+    const withCredentials = uiSchema['ui:options']?.withCredentials as {
+      key: string;
+    };
+
+    const check = async () => {
+      if (withCredentials) {
+        if (host && owner && repo) {
+          const token = await scmAuthApi.getCredentials({
+            url: `https://${host}/${owner}/${repo}`,
+          });
+
+          setSecret({ [withCredentials.key]: token.token });
+        }
+      }
+    };
+    check();
+  }, [host, owner, repo, scmAuthApi, setSecret, uiSchema]);
+
   const updateHost = useCallback(
     (value: SelectedItems) => {
       onChange(
@@ -127,8 +147,10 @@ export const RepoUrlPicker = ({
           project,
         }),
       );
+
+      onBlur();
     },
-    [onChange, owner, repo, organization, workspace, project],
+    [onChange, owner, repo, organization, workspace, project, onBlur],
   );
 
   const updateOwnerSelect = useCallback(
@@ -244,19 +266,6 @@ export const RepoUrlPicker = ({
     workspace,
     project,
   ]);
-
-  const onBlur = useCallback(() => {
-    const check = async () => {
-      if (host && owner && repo) {
-        const token = await scmAuthApi.getCredentials({
-          url: `https://${host}/${owner}/${repo}`,
-        });
-
-        setSecret({ scmToken: token.token });
-      }
-    };
-    check();
-  }, [host, owner, repo, scmAuthApi, setSecret]);
 
   if (loading) {
     return <Progress />;

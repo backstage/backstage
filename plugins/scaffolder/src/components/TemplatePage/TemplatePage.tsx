@@ -39,7 +39,7 @@ import {
   useApiHolder,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import { SecretsContextProvider, SecretsContext } from '../secrets/Context';
+import { SecretsContext } from '../secrets/Context';
 
 const useTemplateParameterSchema = (templateName: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -131,7 +131,11 @@ export const TemplatePage = ({
   );
 
   const handleCreate = async () => {
-    const id = await scaffolderApi.scaffold(templateName, formState);
+    const id = await scaffolderApi.scaffold(
+      templateName,
+      formState,
+      secretsContext?.secrets ?? {},
+    );
     navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
   };
 

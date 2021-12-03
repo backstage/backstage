@@ -51,7 +51,10 @@ export class OctokitProvider {
    *
    * @param repoUrl Repository URL
    */
-  async getOctokit(repoUrl: string): Promise<OctokitIntegration> {
+  async getOctokit(
+    repoUrl: string,
+    tokenOverride?: string,
+  ): Promise<OctokitIntegration> {
     const { owner, repo, host } = parseRepoUrl(repoUrl, this.integrations);
 
     if (!owner) {
@@ -74,11 +77,13 @@ export class OctokitProvider {
 
     // TODO(blam): Consider changing this API to have owner, repo interface instead of URL as the it's
     // needless to create URL and then parse again the other side.
-    const { token } = await credentialsProvider.getCredentials({
-      url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
-        repo,
-      )}`,
-    });
+    const { token } = tokenOverride
+      ? { token: tokenOverride }
+      : await credentialsProvider.getCredentials({
+          url: `https://${host}/${encodeURIComponent(
+            owner,
+          )}/${encodeURIComponent(repo)}`,
+        });
 
     if (!token) {
       throw new InputError(
