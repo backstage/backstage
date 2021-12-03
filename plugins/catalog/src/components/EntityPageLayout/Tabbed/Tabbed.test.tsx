@@ -16,8 +16,7 @@
 import React from 'react';
 import { Tabbed } from './Tabbed';
 import { renderInTestApp } from '@backstage/test-utils';
-import { fireEvent } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { act, fireEvent } from '@testing-library/react';
 import { Routes, Route } from 'react-router';
 
 describe('Tabbed layout', () => {

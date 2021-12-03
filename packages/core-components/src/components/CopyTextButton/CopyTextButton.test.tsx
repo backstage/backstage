@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { fireEvent } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { act, fireEvent } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { CopyTextButton } from './CopyTextButton';
 import { errorApiRef } from '@backstage/core-plugin-api';
