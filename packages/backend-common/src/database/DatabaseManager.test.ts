@@ -284,7 +284,7 @@ describe('DatabaseManager', () => {
       // sqlite3 uses 'filename' instead of 'database'
       expect(overrides).toHaveProperty(
         'connection.filename',
-        `plugin_with_different_client/${pluginId}`,
+        `plugin_with_different_client/${pluginId}.sqlite`,
       );
     });
 
