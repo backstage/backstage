@@ -35,6 +35,7 @@
     "@backstage/plugin-newrelic": "^0.3.10",
     "@backstage/plugin-org": "^0.3.31",
     "@backstage/plugin-pagerduty": "0.3.19",
+    "@backstage/plugin-permission-react": "^0.1.1",
     "@backstage/plugin-rollbar": "^0.3.20",
     "@backstage/plugin-scaffolder": "^0.11.14",
     "@backstage/plugin-search": "^0.5.1",

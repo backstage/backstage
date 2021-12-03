@@ -31,9 +31,15 @@ import {
   AnyApiFactory,
   configApiRef,
   createApiFactory,
+  discoveryApiRef,
   errorApiRef,
   githubAuthApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  permissionApiRef,
+  IdentityPermissionApi,
+} from '@backstage/plugin-permission-react';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -64,4 +70,15 @@ export const apis: AnyApiFactory[] = [
   }),
 
   createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
+
+  createApiFactory({
+    api: permissionApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ configApi, discoveryApi, identityApi }) =>
+      IdentityPermissionApi.create({ configApi, discoveryApi, identityApi }),
+  }),
 ];
