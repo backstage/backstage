@@ -25,10 +25,29 @@ export class AzureDevOpsApi {
   // (undocumented)
   getAllTeams(): Promise<Team[]>;
   // (undocumented)
+  getBuildDefinitions(
+    projectName: string,
+    definitionName: string,
+  ): Promise<BuildDefinitionReference[]>;
+  // (undocumented)
   getBuildList(
     projectName: string,
     repoId: string,
     top: number,
+  ): Promise<Build[]>;
+  // (undocumented)
+  getBuildRuns(
+    projectName: string,
+    top: number,
+    repoName?: string,
+    definitionName?: string,
+  ): Promise<BuildRun[]>;
+  // (undocumented)
+  getBuilds(
+    projectName: string,
+    top: number,
+    repoId?: string,
+    definitions?: number[],
   ): Promise<Build[]>;
   // (undocumented)
   getDashboardPullRequests(

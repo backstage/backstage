@@ -261,6 +261,8 @@ export class AzureDevOpsApi {
     return teamMembers
       .map(teamMember => teamMember.identity?.id)
       .filter((id): id is string => Boolean(id));
+  }
+
   public async getBuildDefinitions(
     projectName: string,
     definitionName: string,
@@ -270,25 +272,7 @@ export class AzureDevOpsApi {
     );
 
     const client = await this.webApi.getBuildApi();
-    return client.getDefinitions(
-      projectName,
-      definitionName,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-    );
+    return client.getDefinitions(projectName, definitionName);
   }
 
   public async getBuilds(
@@ -346,14 +330,14 @@ export class AzureDevOpsApi {
         projectName,
         definitionName,
       );
-      definitions = buildDefinitions.map(bd => bd.id) as number[];
+      definitions = buildDefinitions
+        .map(bd => bd.id)
+        .filter((bd): bd is number => Boolean(bd));
     }
 
     const builds = await this.getBuilds(projectName, top, repoId, definitions);
 
-    const buildRuns: BuildRun[] = builds.map(build => {
-      return mappedBuildRun(build);
-    });
+    const buildRuns: BuildRun[] = builds.map(mappedBuildRun);
 
     return buildRuns;
   }
