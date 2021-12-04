@@ -20,37 +20,43 @@ describe('AnsiProcessor', () => {
   it('should process a single line', () => {
     const processor = new AnsiProcessor();
     expect(processor.process('foo\x1b[31mbar\x1b[39mbaz')).toEqual([
-      [
-        {
-          text: 'foo',
-          modifiers: {},
-        },
-        {
-          text: 'bar',
-          modifiers: { foreground: 'red' },
-        },
-        {
-          text: 'baz',
-          modifiers: {},
-        },
-      ],
+      {
+        chunks: [
+          {
+            text: 'foo',
+            modifiers: {},
+          },
+          {
+            text: 'bar',
+            modifiers: { foreground: 'red' },
+          },
+          {
+            text: 'baz',
+            modifiers: {},
+          },
+        ],
+        lineNumber: 1,
+      },
     ]);
 
     expect(processor.process(`foo [32mbar[39m: baz`)).toEqual([
-      [
-        {
-          text: 'foo ',
-          modifiers: {},
-        },
-        {
-          text: 'bar',
-          modifiers: { foreground: 'green' },
-        },
-        {
-          text: ': baz',
-          modifiers: {},
-        },
-      ],
+      {
+        chunks: [
+          {
+            text: 'foo ',
+            modifiers: {},
+          },
+          {
+            text: 'bar',
+            modifiers: { foreground: 'green' },
+          },
+          {
+            text: ': baz',
+            modifiers: {},
+          },
+        ],
+        lineNumber: 1,
+      },
     ]);
   });
 
@@ -62,36 +68,42 @@ a\x1b[34mb\x1b[39mc
 x\x1b[44my\x1b[49mz
 `),
     ).toEqual([
-      [{ text: '', modifiers: {} }],
-      [
-        {
-          text: 'a',
-          modifiers: {},
-        },
-        {
-          text: 'b',
-          modifiers: { foreground: 'blue' },
-        },
-        {
-          text: 'c',
-          modifiers: {},
-        },
-      ],
-      [
-        {
-          text: 'x',
-          modifiers: {},
-        },
-        {
-          text: 'y',
-          modifiers: { background: 'blue' },
-        },
-        {
-          text: 'z',
-          modifiers: {},
-        },
-      ],
-      [{ text: '', modifiers: {} }],
+      { chunks: [{ text: '', modifiers: {} }], lineNumber: 1 },
+      {
+        chunks: [
+          {
+            text: 'a',
+            modifiers: {},
+          },
+          {
+            text: 'b',
+            modifiers: { foreground: 'blue' },
+          },
+          {
+            text: 'c',
+            modifiers: {},
+          },
+        ],
+        lineNumber: 2,
+      },
+      {
+        chunks: [
+          {
+            text: 'x',
+            modifiers: {},
+          },
+          {
+            text: 'y',
+            modifiers: { background: 'blue' },
+          },
+          {
+            text: 'z',
+            modifiers: {},
+          },
+        ],
+        lineNumber: 3,
+      },
+      { chunks: [{ text: '', modifiers: {} }], lineNumber: 4 },
     ]);
   });
 
@@ -102,35 +114,41 @@ x\x1b[44my\x1b[49mz
 a\x1b[45mb\x1b[35mc
 x\x1b[39my\x1b[49mz`),
     ).toEqual([
-      [{ text: '', modifiers: {} }],
-      [
-        {
-          text: 'a',
-          modifiers: {},
-        },
-        {
-          text: 'b',
-          modifiers: { background: 'magenta' },
-        },
-        {
-          text: 'c',
-          modifiers: { foreground: 'magenta', background: 'magenta' },
-        },
-      ],
-      [
-        {
-          text: 'x',
-          modifiers: { foreground: 'magenta', background: 'magenta' },
-        },
-        {
-          text: 'y',
-          modifiers: { background: 'magenta' },
-        },
-        {
-          text: 'z',
-          modifiers: {},
-        },
-      ],
+      { chunks: [{ text: '', modifiers: {} }], lineNumber: 1 },
+      {
+        chunks: [
+          {
+            text: 'a',
+            modifiers: {},
+          },
+          {
+            text: 'b',
+            modifiers: { background: 'magenta' },
+          },
+          {
+            text: 'c',
+            modifiers: { foreground: 'magenta', background: 'magenta' },
+          },
+        ],
+        lineNumber: 2,
+      },
+      {
+        chunks: [
+          {
+            text: 'x',
+            modifiers: { foreground: 'magenta', background: 'magenta' },
+          },
+          {
+            text: 'y',
+            modifiers: { background: 'magenta' },
+          },
+          {
+            text: 'z',
+            modifiers: {},
+          },
+        ],
+        lineNumber: 3,
+      },
     ]);
   });
 
@@ -139,56 +157,65 @@ x\x1b[39my\x1b[49mz`),
     const out1 = processor.process(`
 a\x1b[36mb\x1b[3mc`);
     expect(out1).toEqual([
-      [{ text: '', modifiers: {} }],
-      [
-        {
-          text: 'a',
-          modifiers: {},
-        },
-        {
-          text: 'b',
-          modifiers: { foreground: 'cyan' },
-        },
-        {
-          text: 'c',
-          modifiers: { foreground: 'cyan', italic: true },
-        },
-      ],
+      { chunks: [{ text: '', modifiers: {} }], lineNumber: 1 },
+      {
+        chunks: [
+          {
+            text: 'a',
+            modifiers: {},
+          },
+          {
+            text: 'b',
+            modifiers: { foreground: 'cyan' },
+          },
+          {
+            text: 'c',
+            modifiers: { foreground: 'cyan', italic: true },
+          },
+        ],
+        lineNumber: 2,
+      },
     ]);
 
     const out2 = processor.process(`
 a\x1b[36mb\x1b[3mc
 x\x1b[39my\x1b[23mz`);
     expect(out2).toEqual([
-      [{ text: '', modifiers: {} }],
-      [
-        {
-          text: 'a',
-          modifiers: {},
-        },
-        {
-          text: 'b',
-          modifiers: { foreground: 'cyan' },
-        },
-        {
-          text: 'c',
-          modifiers: { foreground: 'cyan', italic: true },
-        },
-      ],
-      [
-        {
-          text: 'x',
-          modifiers: { foreground: 'cyan', italic: true },
-        },
-        {
-          text: 'y',
-          modifiers: { italic: true },
-        },
-        {
-          text: 'z',
-          modifiers: {},
-        },
-      ],
+      { chunks: [{ text: '', modifiers: {} }], lineNumber: 1 },
+      {
+        chunks: [
+          {
+            text: 'a',
+            modifiers: {},
+          },
+          {
+            text: 'b',
+            modifiers: { foreground: 'cyan' },
+          },
+          {
+            text: 'c',
+            modifiers: { foreground: 'cyan', italic: true },
+          },
+        ],
+        lineNumber: 2,
+      },
+      {
+        chunks: [
+          {
+            text: 'x',
+            modifiers: { foreground: 'cyan', italic: true },
+          },
+          {
+            text: 'y',
+            modifiers: { italic: true },
+          },
+          {
+            text: 'z',
+            modifiers: {},
+          },
+        ],
+        lineNumber: 3,
+      },
     ]);
 
     // Verifies that we appended rather than reprocessed

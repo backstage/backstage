@@ -179,7 +179,7 @@ export function LogViewer(props: LogViewerProps) {
               {!noLineNumbers && (
                 <span className={classes.lineNumber}>{index + 1}</span>
               )}
-              {data[index].map(({ text, modifiers }, i) => (
+              {data[index].chunks.map(({ text, modifiers }, i) => (
                 <span
                   key={i}
                   className={getModifierClasses(classes, modifiers)}

@@ -71,34 +71,56 @@ export interface ChunkModifiers {
   underline?: boolean;
 }
 
-export interface Chunk {
+// export interface AnsiLine {
+//   lineNumber: number;
+//   chunks: AnsiChunk[];
+// }
+
+export interface AnsiChunk {
   text: string;
   modifiers: ChunkModifiers;
 }
 
+export class AnsiLine {
+  constructor(
+    readonly lineNumber: number = 1,
+    readonly chunks: AnsiChunk[] = [],
+  ) {}
+
+  lastChunk(): AnsiChunk | undefined {
+    return this.chunks[this.chunks.length - 1];
+  }
+}
+
 export class AnsiProcessor {
   private text: string = '';
-  private lines: Chunk[][] = [];
+  private lines: AnsiLine[] = [];
 
   /**
    * Processes a chunk of text while keeping internal state that optimizes
    * subsequent processing that appends to the text.
    */
-  process(text: string): Chunk[][] {
+  process(text: string): AnsiLine[] {
     if (this.text === text) {
       return this.lines;
     }
 
     if (text.startsWith(this.text)) {
       const lastLineIndex = this.lines.length > 0 ? this.lines.length - 1 : 0;
-      const lastLine = this.lines[lastLineIndex] ?? [];
-      const lastChunk = lastLine[lastLine.length - 1] as Chunk | undefined;
+      const lastLine = this.lines[lastLineIndex] ?? new AnsiLine();
+      const lastChunk = lastLine.lastChunk();
+
       const newLines = this.processLines(
         (lastChunk?.text ?? '') + text.slice(this.text.length),
         lastChunk?.modifiers,
+        lastLine?.lineNumber,
       );
       this.text = text;
-      lastLine.splice(lastLine.length - 1, 1, ...newLines[0]);
+      lastLine.chunks.splice(
+        lastLine.chunks.length - 1,
+        1,
+        ...newLines[0]?.chunks,
+      );
       this.lines[lastLineIndex] = lastLine;
       this.lines.push(...newLines.slice(1));
     } else {
@@ -113,16 +135,23 @@ export class AnsiProcessor {
   private processLines = (
     text: string,
     modifiers: ChunkModifiers = {},
-  ): Chunk[][] => {
-    const lines: Chunk[][] = [];
+    startingLineNumber: number = 1,
+  ): AnsiLine[] => {
+    const lines: AnsiLine[] = [];
+
+    let currentModifiers = modifiers;
+    let currentLineNumber = startingLineNumber;
 
     let prevIndex = 0;
-    let currentModifiers = modifiers;
     newlineRegex.lastIndex = 0;
     for (;;) {
       const match = newlineRegex.exec(text);
       if (!match) {
-        lines.push(this.processText(text.slice(prevIndex), currentModifiers));
+        const chunks = this.processText(
+          text.slice(prevIndex),
+          currentModifiers,
+        );
+        lines.push(new AnsiLine(currentLineNumber, chunks));
         return lines;
       }
 
@@ -130,11 +159,12 @@ export class AnsiProcessor {
       prevIndex = match.index + match[0].length;
 
       const chunks = this.processText(line, currentModifiers);
-      lines.push(chunks);
+      lines.push(new AnsiLine(currentLineNumber, chunks));
 
       // Modifiers that are active in the last chunk are carried over to the next line
       currentModifiers =
         chunks[chunks.length - 1].modifiers ?? currentModifiers;
+      currentLineNumber += 1;
     }
   };
 
@@ -142,11 +172,12 @@ export class AnsiProcessor {
   private processText = (
     fullText: string,
     modifiers: ChunkModifiers,
-  ): Chunk[] => {
-    const chunks: Chunk[] = [];
+  ): AnsiChunk[] => {
+    const chunks: AnsiChunk[] = [];
+
+    let currentModifiers = modifiers;
 
     let prevIndex = 0;
-    let currentModifiers = modifiers;
     ansiRegex.lastIndex = 0;
     for (;;) {
       const match = ansiRegex.exec(fullText);
