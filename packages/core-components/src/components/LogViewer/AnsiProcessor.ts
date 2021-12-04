@@ -88,7 +88,10 @@ export class AnsiLine {
     readonly lineNumber: number = 1,
     readonly chunks: AnsiChunk[] = [],
   ) {
-    this.text = chunks.map(c => c.text).join('');
+    this.text = chunks
+      .map(c => c.text)
+      .join('')
+      .toLocaleLowerCase('en-US');
   }
 
   lastChunk(): AnsiChunk | undefined {
@@ -98,7 +101,10 @@ export class AnsiLine {
   replaceLastChunk(newChunks?: AnsiChunk[]) {
     if (newChunks) {
       this.chunks.splice(this.chunks.length - 1, 1, ...newChunks);
-      this.text = this.chunks.map(c => c.text).join('');
+      this.text = this.chunks
+        .map(c => c.text)
+        .join('')
+        .toLocaleLowerCase('en-US');
     }
   }
 }

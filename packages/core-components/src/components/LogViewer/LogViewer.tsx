@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
+import { alpha, makeStyles } from '@material-ui/core/styles';
 import React, { useMemo, useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
-import { AnsiProcessor } from './AnsiProcessor';
+import { AnsiChunk, AnsiLine, AnsiProcessor } from './AnsiProcessor';
 import startCase from 'lodash/startCase';
 import * as colors from '@material-ui/core/colors';
 import clsx from 'clsx';
@@ -85,6 +85,9 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1),
     cursor: 'pointer',
   },
+  textHighlight: {
+    background: alpha(theme.palette.primary.main, 0.3),
+  },
   modifierBold: {
     fontWeight: theme.typography.fontWeightBold,
   },
@@ -122,31 +125,31 @@ const useStyles = makeStyles(theme => ({
     color: colors.grey[500],
   },
   modifierBackgroundBlack: {
-    color: colors.common.black,
+    background: colors.common.black,
   },
   modifierBackgroundRed: {
-    color: colors.red[500],
+    background: colors.red[500],
   },
   modifierBackgroundGreen: {
-    color: colors.green[500],
+    background: colors.green[500],
   },
   modifierBackgroundYellow: {
-    color: colors.yellow[500],
+    background: colors.yellow[500],
   },
   modifierBackgroundBlue: {
-    color: colors.blue[500],
+    background: colors.blue[500],
   },
   modifierBackgroundMagenta: {
-    color: colors.purple[500],
+    background: colors.purple[500],
   },
   modifierBackgroundCyan: {
-    color: colors.cyan[500],
+    background: colors.cyan[500],
   },
   modifierBackgroundWhite: {
-    color: colors.common.white,
+    background: colors.common.white,
   },
   modifierBackgroundGrey: {
-    color: colors.grey[500],
+    background: colors.grey[500],
   },
 }));
 
@@ -179,22 +182,135 @@ function getModifierClasses(
   return classNames.length > 0 ? classNames.join(' ') : undefined;
 }
 
+export function LogLine({
+  line,
+  classes,
+  searchText,
+}: {
+  line: AnsiLine;
+  classes: ReturnType<typeof useStyles>;
+  searchText: string;
+}) {
+  let searchResults: Array<{ start: number; end: number }> | undefined =
+    undefined;
+  if (searchText && line.text.includes(searchText)) {
+    searchResults = [];
+    let offset = 0;
+    for (;;) {
+      const start = line.text.indexOf(searchText, offset);
+      if (start === -1) {
+        break;
+      }
+      const end = start + searchText.length;
+      searchResults.push({ start, end });
+      offset = end;
+    }
+  }
+
+  const output = new Array<JSX.Element>(line.chunks.length);
+
+  let key = 0;
+  let chunkOffset = 0;
+  let nextResult = searchResults?.shift();
+  for (const { text, modifiers } of line.chunks) {
+    if (!nextResult || chunkOffset + text.length < nextResult.start) {
+      output.push(
+        <span key={key++} className={getModifierClasses(classes, modifiers)}>
+          {text}
+        </span>,
+      );
+      chunkOffset += text.length;
+      continue;
+    }
+
+    let localOffset = 0;
+    while (nextResult) {
+      let localStart = nextResult.start - chunkOffset;
+      if (localStart < 0) {
+        localStart = 0;
+      }
+      const localEnd = nextResult.end - chunkOffset;
+      const beforeMatch = text.slice(localOffset, localStart);
+      const match = text.slice(localStart, localEnd);
+
+      if (beforeMatch) {
+        output.push(
+          <span key={key++} className={getModifierClasses(classes, modifiers)}>
+            {beforeMatch}
+          </span>,
+        );
+      }
+      output.push(
+        <span
+          key={key++}
+          className={clsx(
+            getModifierClasses(classes, modifiers),
+            classes.textHighlight,
+          )}
+        >
+          {match}
+        </span>,
+      );
+
+      localOffset = localStart + match.length;
+
+      if (match.length === searchText.length) {
+        nextResult = searchResults?.shift();
+      } else {
+        break;
+      }
+    }
+
+    if (localOffset < text.length) {
+      output.push(
+        <span key={key++} className={getModifierClasses(classes, modifiers)}>
+          {text.slice(localOffset)}
+        </span>,
+      );
+    }
+
+    chunkOffset += text.length;
+  }
+  return <>{output}</>;
+}
+
 export function LogViewer(props: LogViewerProps) {
   const { noLineNumbers } = props;
   const classes = useStyles();
   const [selectedLine, setSelectedLine] = useState<number>();
-  const [filter, setFilter] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const searchText = searchInput.toLocaleLowerCase('en-US');
 
   // The processor keeps state that optimizes appending to the text
   const processor = useMemo(() => new AnsiProcessor(), []);
   const lines = processor.process(props.text);
 
   const filteredLines = useMemo(() => {
-    if (!filter) {
+    if (!searchText) {
       return lines;
     }
-    return lines.filter(line => line.text.includes(filter));
-  }, [lines, filter]);
+    const matchingLines = [];
+    const searchResults = [];
+    for (const line of lines) {
+      if (line.text.includes(searchText)) {
+        matchingLines.push(line);
+
+        const lineResults = [];
+        let offset = 0;
+        for (;;) {
+          const start = line.text.indexOf(searchText, offset);
+          if (start === -1) {
+            break;
+          }
+          const end = start + searchText.length;
+          lineResults.push({ start, end });
+          offset = end;
+        }
+        searchResults.push(lineResults);
+      }
+    }
+    return lines.filter(line => line.text.includes(searchText));
+  }, [lines, searchText]);
 
   return (
     <AutoSizer>
@@ -205,8 +321,8 @@ export function LogViewer(props: LogViewerProps) {
               size="small"
               variant="standard"
               placeholder="Search"
-              value={filter}
-              onChange={e => setFilter(e.target.value)}
+              value={searchInput}
+              onChange={e => setSearchInput(e.target.value)}
             />
           </div>
           <FixedSizeList
@@ -218,7 +334,8 @@ export function LogViewer(props: LogViewerProps) {
             itemCount={filteredLines.length}
           >
             {({ index, style, data }) => {
-              const { chunks, lineNumber } = data[index];
+              const line = data[index];
+              const { lineNumber } = line;
               return (
                 <div
                   style={{ ...style }}
@@ -238,14 +355,11 @@ export function LogViewer(props: LogViewerProps) {
                       {lineNumber}
                     </a>
                   )}
-                  {chunks.map(({ text, modifiers }, i) => (
-                    <span
-                      key={i}
-                      className={getModifierClasses(classes, modifiers)}
-                    >
-                      {text}
-                    </span>
-                  ))}
+                  <LogLine
+                    line={line}
+                    classes={classes}
+                    searchText={searchText}
+                  />
                 </div>
               );
             }}
