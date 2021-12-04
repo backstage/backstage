@@ -15,12 +15,16 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import { AnsiProcessor } from './AnsiProcessor';
 import startCase from 'lodash/startCase';
 import * as colors from '@material-ui/core/colors';
+import clsx from 'clsx';
+import TextField from '@material-ui/core/TextField';
+
+const HEADER_SIZE = 40;
 
 export interface LogViewerProps {
   text: string;
@@ -48,18 +52,38 @@ export interface ChunkModifiers {
 
 const useStyles = makeStyles(theme => ({
   root: {
+    background: theme.palette.background.paper,
+  },
+  header: {
+    height: HEADER_SIZE,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  log: {
     fontFamily: '"Monaco", monospace',
     fontSize: theme.typography.fontSize,
-    background: theme.palette.background.paper,
   },
   line: {
     whiteSpace: 'pre',
+
+    '&:hover': {
+      background: theme.palette.action.hover,
+    },
+  },
+  lineSelected: {
+    background: theme.palette.action.selected,
+
+    '&:hover': {
+      background: theme.palette.action.selected,
+    },
   },
   lineNumber: {
     display: 'inline-block',
     textAlign: 'end',
     width: 60,
     marginRight: theme.spacing(1),
+    cursor: 'pointer',
   },
   modifierBold: {
     fontWeight: theme.typography.fontWeightBold,
@@ -152,44 +176,81 @@ function getModifierClasses(
     )}` as keyof typeof classes;
     classNames.push(classes[key]);
   }
-  return classNames.join(' ');
+  return classNames.length > 0 ? classNames.join(' ') : undefined;
 }
 
 export function LogViewer(props: LogViewerProps) {
   const { noLineNumbers } = props;
   const classes = useStyles();
+  const [selectedLine, setSelectedLine] = useState<number>();
+  const [filter, setFilter] = useState('');
 
   // The processor keeps state that optimizes appending to the text
   const processor = useMemo(() => new AnsiProcessor(), []);
   const lines = processor.process(props.text);
 
+  const filteredLines = useMemo(() => {
+    if (!filter) {
+      return lines;
+    }
+    return lines.filter(line => line.text.includes(filter));
+  }, [lines, filter]);
+
   return (
     <AutoSizer>
       {({ height, width }) => (
-        <FixedSizeList
-          className={classes.root}
-          height={height}
-          width={width}
-          itemData={lines}
-          itemSize={20}
-          itemCount={lines.length}
-        >
-          {({ index, style, data }) => (
-            <div style={{ ...style }} className={classes.line}>
-              {!noLineNumbers && (
-                <span className={classes.lineNumber}>{index + 1}</span>
-              )}
-              {data[index].chunks.map(({ text, modifiers }, i) => (
-                <span
-                  key={i}
-                  className={getModifierClasses(classes, modifiers)}
+        <div style={{ width, height }} className={classes.root}>
+          <div className={classes.header}>
+            <TextField
+              size="small"
+              variant="standard"
+              placeholder="Search"
+              value={filter}
+              onChange={e => setFilter(e.target.value)}
+            />
+          </div>
+          <FixedSizeList
+            className={classes.log}
+            height={height - HEADER_SIZE}
+            width={width}
+            itemData={filteredLines}
+            itemSize={20}
+            itemCount={filteredLines.length}
+          >
+            {({ index, style, data }) => {
+              const { chunks, lineNumber } = data[index];
+              return (
+                <div
+                  style={{ ...style }}
+                  className={clsx(classes.line, {
+                    [classes.lineSelected]: selectedLine === lineNumber,
+                  })}
                 >
-                  {text}
-                </span>
-              ))}
-            </div>
-          )}
-        </FixedSizeList>
+                  {!noLineNumbers && (
+                    <a
+                      role="row"
+                      target="_self"
+                      href={`#line-${lineNumber}`}
+                      className={classes.lineNumber}
+                      onClick={() => setSelectedLine(lineNumber)}
+                      onKeyPress={() => setSelectedLine(lineNumber)}
+                    >
+                      {lineNumber}
+                    </a>
+                  )}
+                  {chunks.map(({ text, modifiers }, i) => (
+                    <span
+                      key={i}
+                      className={getModifierClasses(classes, modifiers)}
+                    >
+                      {text}
+                    </span>
+                  ))}
+                </div>
+              );
+            }}
+          </FixedSizeList>
+        </div>
       )}
     </AutoSizer>
   );

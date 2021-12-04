@@ -82,13 +82,24 @@ export interface AnsiChunk {
 }
 
 export class AnsiLine {
+  text: string;
+
   constructor(
     readonly lineNumber: number = 1,
     readonly chunks: AnsiChunk[] = [],
-  ) {}
+  ) {
+    this.text = chunks.map(c => c.text).join('');
+  }
 
   lastChunk(): AnsiChunk | undefined {
     return this.chunks[this.chunks.length - 1];
+  }
+
+  replaceLastChunk(newChunks?: AnsiChunk[]) {
+    if (newChunks) {
+      this.chunks.splice(this.chunks.length - 1, 1, ...newChunks);
+      this.text = this.chunks.map(c => c.text).join('');
+    }
   }
 }
 
@@ -115,18 +126,14 @@ export class AnsiProcessor {
         lastChunk?.modifiers,
         lastLine?.lineNumber,
       );
-      this.text = text;
-      lastLine.chunks.splice(
-        lastLine.chunks.length - 1,
-        1,
-        ...newLines[0]?.chunks,
-      );
+      lastLine.replaceLastChunk(newLines[0]?.chunks);
+
       this.lines[lastLineIndex] = lastLine;
       this.lines.push(...newLines.slice(1));
     } else {
       this.lines = this.processLines(text);
-      this.text = text;
     }
+    this.text = text;
 
     return this.lines;
   }

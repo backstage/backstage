@@ -35,6 +35,7 @@ describe('AnsiProcessor', () => {
             modifiers: {},
           },
         ],
+        text: 'foobarbaz',
         lineNumber: 1,
       },
     ]);
@@ -55,6 +56,7 @@ describe('AnsiProcessor', () => {
             modifiers: {},
           },
         ],
+        text: 'foo bar: baz',
         lineNumber: 1,
       },
     ]);
@@ -68,7 +70,7 @@ a\x1b[34mb\x1b[39mc
 x\x1b[44my\x1b[49mz
 `),
     ).toEqual([
-      { chunks: [{ text: '', modifiers: {} }], lineNumber: 1 },
+      { chunks: [{ text: '', modifiers: {} }], text: '', lineNumber: 1 },
       {
         chunks: [
           {
@@ -84,6 +86,7 @@ x\x1b[44my\x1b[49mz
             modifiers: {},
           },
         ],
+        text: 'abc',
         lineNumber: 2,
       },
       {
@@ -101,9 +104,10 @@ x\x1b[44my\x1b[49mz
             modifiers: {},
           },
         ],
+        text: 'xyz',
         lineNumber: 3,
       },
-      { chunks: [{ text: '', modifiers: {} }], lineNumber: 4 },
+      { chunks: [{ text: '', modifiers: {} }], text: '', lineNumber: 4 },
     ]);
   });
 
@@ -114,7 +118,7 @@ x\x1b[44my\x1b[49mz
 a\x1b[45mb\x1b[35mc
 x\x1b[39my\x1b[49mz`),
     ).toEqual([
-      { chunks: [{ text: '', modifiers: {} }], lineNumber: 1 },
+      { chunks: [{ text: '', modifiers: {} }], text: '', lineNumber: 1 },
       {
         chunks: [
           {
@@ -130,6 +134,7 @@ x\x1b[39my\x1b[49mz`),
             modifiers: { foreground: 'magenta', background: 'magenta' },
           },
         ],
+        text: 'abc',
         lineNumber: 2,
       },
       {
@@ -147,6 +152,7 @@ x\x1b[39my\x1b[49mz`),
             modifiers: {},
           },
         ],
+        text: 'xyz',
         lineNumber: 3,
       },
     ]);
@@ -157,7 +163,7 @@ x\x1b[39my\x1b[49mz`),
     const out1 = processor.process(`
 a\x1b[36mb\x1b[3mc`);
     expect(out1).toEqual([
-      { chunks: [{ text: '', modifiers: {} }], lineNumber: 1 },
+      { chunks: [{ text: '', modifiers: {} }], text: '', lineNumber: 1 },
       {
         chunks: [
           {
@@ -173,6 +179,7 @@ a\x1b[36mb\x1b[3mc`);
             modifiers: { foreground: 'cyan', italic: true },
           },
         ],
+        text: 'abc',
         lineNumber: 2,
       },
     ]);
@@ -181,7 +188,7 @@ a\x1b[36mb\x1b[3mc`);
 a\x1b[36mb\x1b[3mc
 x\x1b[39my\x1b[23mz`);
     expect(out2).toEqual([
-      { chunks: [{ text: '', modifiers: {} }], lineNumber: 1 },
+      { chunks: [{ text: '', modifiers: {} }], text: '', lineNumber: 1 },
       {
         chunks: [
           {
@@ -197,6 +204,7 @@ x\x1b[39my\x1b[23mz`);
             modifiers: { foreground: 'cyan', italic: true },
           },
         ],
+        text: 'abc',
         lineNumber: 2,
       },
       {
@@ -214,6 +222,7 @@ x\x1b[39my\x1b[23mz`);
             modifiers: {},
           },
         ],
+        text: 'xyz',
         lineNumber: 3,
       },
     ]);
