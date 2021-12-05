@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { AnsiChunk, AnsiLine, ChunkModifiers } from './AnsiProcessor';
 import startCase from 'lodash/startCase';
 import clsx from 'clsx';
@@ -150,22 +150,29 @@ export function LogLine({
   searchText,
   highlightResultIndex,
 }: LogLineProps) {
-  const chunks = calculateHighlightedChunks(line, searchText);
+  const chunks = useMemo(
+    () => calculateHighlightedChunks(line, searchText),
+    [line, searchText],
+  );
 
-  const elements = chunks.map(({ text, modifiers, highlight }, index) => (
-    <span
-      key={index}
-      className={clsx(
-        getModifierClasses(classes, modifiers),
-        highlight !== undefined &&
-          (highlight === highlightResultIndex
-            ? classes.textSelectedHighlight
-            : classes.textHighlight),
-      )}
-    >
-      {text}
-    </span>
-  ));
+  const elements = useMemo(
+    () =>
+      chunks.map(({ text, modifiers, highlight }, index) => (
+        <span
+          key={index}
+          className={clsx(
+            getModifierClasses(classes, modifiers),
+            highlight !== undefined &&
+              (highlight === highlightResultIndex
+                ? classes.textSelectedHighlight
+                : classes.textHighlight),
+          )}
+        >
+          {text}
+        </span>
+      )),
+    [chunks, highlightResultIndex, classes],
+  );
 
   return <>{elements}</>;
 }
