@@ -15,7 +15,7 @@
  */
 
 import { ChunkModifiers } from './AnsiProcessor';
-import { getModifierClasses } from './LogLine';
+import { findSearchResults, getModifierClasses } from './LogLine';
 
 describe('getModifierClasses', () => {
   const classes = {
@@ -63,5 +63,50 @@ describe('getModifierClasses', () => {
         background: 'red',
       }),
     ).toEqual('bold italic underline red bg-red');
+  });
+});
+
+describe('findSearchResults', () => {
+  it('should not return results if there is no match', () => {
+    expect(findSearchResults('Foo', 'Bar')).toEqual(undefined);
+    expect(findSearchResults('Foo Bar', 'oof')).toEqual(undefined);
+    expect(findSearchResults('Foo Bar', '')).toEqual(undefined);
+    expect(findSearchResults('', '')).toEqual(undefined);
+    expect(findSearchResults('', 'Foo')).toEqual(undefined);
+  });
+
+  it('should find result indices', () => {
+    expect(findSearchResults('Foo', 'Foo')).toEqual([{ start: 0, end: 3 }]);
+    expect(findSearchResults('Foo', 'o')).toEqual([
+      { start: 1, end: 2 },
+      { start: 2, end: 3 },
+    ]);
+    expect(findSearchResults('FooBarBaz', 'Bar')).toEqual([
+      { start: 3, end: 6 },
+    ]);
+    expect(findSearchResults('Foo Bar Baz', ' ')).toEqual([
+      { start: 3, end: 4 },
+      { start: 7, end: 8 },
+    ]);
+    expect(findSearchResults('FooBarBazBarFoo', 'Bar')).toEqual([
+      { start: 3, end: 6 },
+      { start: 9, end: 12 },
+    ]);
+    expect(findSearchResults('FooBarBazBarFoo', 'Foo')).toEqual([
+      { start: 0, end: 3 },
+      { start: 12, end: 15 },
+    ]);
+  });
+
+  it('should not overlap search results', () => {
+    expect(findSearchResults('aaa', 'aa')).toEqual([{ start: 0, end: 2 }]);
+    expect(findSearchResults('aaaa', 'aa')).toEqual([
+      { start: 0, end: 2 },
+      { start: 2, end: 4 },
+    ]);
+    expect(findSearchResults('aaaaa', 'aa')).toEqual([
+      { start: 0, end: 2 },
+      { start: 2, end: 4 },
+    ]);
   });
 });
