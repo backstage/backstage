@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { Progress } from '@backstage/core-components';
+import { LogViewer } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import {
@@ -32,14 +32,11 @@ import {
 } from '@material-ui/core';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React, { Suspense } from 'react';
+import React from 'react';
 import { useProjectName } from '../useProjectName';
 import { useDownloadWorkflowRunLogs } from './useDownloadWorkflowRunLogs';
 
-const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
-const LinePart = React.lazy(() => import('react-lazylog/build/LinePart'));
-
-const useStyles = makeStyles<Theme>(() => ({
+const useStyles = makeStyles<Theme>(theme => ({
   button: {
     order: -1,
     marginRight: 0,
@@ -53,48 +50,18 @@ const useStyles = makeStyles<Theme>(() => ({
     justifyContent: 'center',
     margin: 'auto',
   },
-  normalLog: {
+  normalLogContainer: {
     height: '75vh',
     width: '100%',
   },
-  modalLog: {
+  modalLogContainer: {
     height: '100%',
     width: '100%',
   },
+  log: {
+    background: theme.palette.background.default,
+  },
 }));
-
-const DisplayLog = ({
-  jobLogs,
-  className,
-}: {
-  jobLogs: any;
-  className: string;
-}) => {
-  return (
-    <Suspense fallback={<Progress />}>
-      <div className={className}>
-        <LazyLog
-          text={jobLogs ?? 'No Values Found'}
-          extraLines={1}
-          caseInsensitive
-          enableSearch
-          formatPart={line => {
-            if (
-              line.toLocaleLowerCase().includes('error') ||
-              line.toLocaleLowerCase().includes('failed') ||
-              line.toLocaleLowerCase().includes('failure')
-            ) {
-              return (
-                <LinePart style={{ color: 'red' }} part={{ text: line }} />
-              );
-            }
-            return line;
-          }}
-        />
-      </div>
-    </Suspense>
-  );
-};
 
 /**
  * A component for Run Logs visualization.
@@ -123,6 +90,7 @@ export const WorkflowRunLogs = ({
     repo,
     id: runId,
   });
+  const logText = jobLogs.value ? String(jobLogs.value) : undefined;
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
@@ -162,18 +130,19 @@ export const WorkflowRunLogs = ({
           onClose={handleClose}
         >
           <Fade in={open}>
-            <DisplayLog
-              jobLogs={jobLogs.value || undefined}
-              className={classes.modalLog}
-            />
+            <div className={classes.modalLogContainer}>
+              <LogViewer
+                text={logText ?? 'No Values Found'}
+                className={classes.log}
+              />
+            </div>
           </Fade>
         </Modal>
       </AccordionSummary>
-      {jobLogs.value && (
-        <DisplayLog
-          jobLogs={jobLogs.value || undefined}
-          className={classes.normalLog}
-        />
+      {logText && (
+        <div className={classes.normalLogContainer}>
+          <LogViewer text={logText} className={classes.log} />
+        </div>
       )}
     </Accordion>
   );
