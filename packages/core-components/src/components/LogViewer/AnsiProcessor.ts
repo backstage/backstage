@@ -71,11 +71,6 @@ export interface ChunkModifiers {
   underline?: boolean;
 }
 
-// export interface AnsiLine {
-//   lineNumber: number;
-//   chunks: AnsiChunk[];
-// }
-
 export interface AnsiChunk {
   text: string;
   modifiers: ChunkModifiers;
