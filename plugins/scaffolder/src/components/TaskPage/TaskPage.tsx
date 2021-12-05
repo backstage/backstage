@@ -20,7 +20,7 @@ import {
   Header,
   Lifecycle,
   Page,
-  Progress,
+  LogViewer,
 } from '@backstage/core-components';
 import { BackstageTheme } from '@backstage/theme';
 import {
@@ -40,14 +40,12 @@ import Check from '@material-ui/icons/Check';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import classNames from 'classnames';
 import { DateTime, Interval } from 'luxon';
-import React, { memo, Suspense, useEffect, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { useInterval } from 'react-use';
 import { Status, TaskOutput } from '../../types';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import { TaskPageLinks } from './TaskPageLinks';
-
-const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -213,22 +211,6 @@ export const TaskStatusStepper = memo(
   },
 );
 
-const TaskLogger = memo(({ log }: { log: string }) => {
-  return (
-    <Suspense fallback={<Progress />}>
-      <div style={{ height: '80vh' }}>
-        <LazyLog
-          text={log}
-          extraLines={1}
-          follow
-          selectableLines
-          enableSearch
-        />
-      </div>
-    </Suspense>
-  );
-});
-
 const hasLinks = ({ entityRef, remoteUrl, links = [] }: TaskOutput): boolean =>
   !!(entityRef || remoteUrl || links.length > 0);
 
@@ -318,7 +300,9 @@ export const TaskPage = () => {
                 </Paper>
               </Grid>
               <Grid item xs={9}>
-                <TaskLogger log={logAsString} />
+                <div style={{ height: '80vh' }}>
+                  <LogViewer text={logAsString} />
+                </div>
               </Grid>
             </Grid>
           </div>
