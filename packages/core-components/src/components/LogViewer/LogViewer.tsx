@@ -17,102 +17,49 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
-import { AnsiLine, AnsiProcessor } from './AnsiProcessor';
+import { AnsiProcessor } from './AnsiProcessor';
 import { HEADER_SIZE, useStyles } from './styles';
 import clsx from 'clsx';
 import { LogLine } from './LogLine';
 import { LogViewerControls } from './LogViewerControls';
-import { useToggle } from 'react-use';
+import { useLogViewerSearch } from './useLogViewerSearch';
 
 export interface LogViewerProps {
   text: string;
-}
-
-function applySearchFilter(lines: AnsiLine[], searchText: string) {
-  if (!searchText) {
-    return { lines };
-  }
-
-  const matchingLines = [];
-  const searchResults = [];
-  for (const line of lines) {
-    if (line.text.includes(searchText)) {
-      matchingLines.push(line);
-
-      let offset = 0;
-      let lineResultIndex = 0;
-      for (;;) {
-        const start = line.text.indexOf(searchText, offset);
-        if (start === -1) {
-          break;
-        }
-        searchResults.push({
-          lineNumber: line.lineNumber,
-          lineIndex: lineResultIndex++,
-        });
-        offset = start + searchText.length;
-      }
-    }
-  }
-
-  return {
-    lines: matchingLines,
-    results: searchResults,
-  };
 }
 
 export function LogViewer(props: LogViewerProps) {
   const classes = useStyles();
   const listRef = useRef<FixedSizeList | null>(null);
   const [selectedLine, setSelectedLine] = useState<number>();
-  const [resultIndex, setResultIndex] = useState<number | undefined>();
-  const [shouldFilter, toggleShouldFilter] = useToggle(false);
-  const [searchInput, setSearchInput] = useState('');
-  const searchText = searchInput.toLocaleLowerCase('en-US');
 
   // The processor keeps state that optimizes appending to the text
   const processor = useMemo(() => new AnsiProcessor(), []);
   const lines = processor.process(props.text);
 
-  const filter = useMemo(
-    () => applySearchFilter(lines, searchText),
-    [lines, searchText],
-  );
-
-  const searchResult = filter.results?.[resultIndex ?? 0];
-  const searchResultLine = searchResult?.lineNumber;
-
-  const displayLines = shouldFilter ? filter.lines : lines;
+  const search = useLogViewerSearch(lines);
 
   useEffect(() => {
-    if (searchResultLine !== undefined && listRef.current) {
-      listRef.current.scrollToItem(searchResultLine - 1, 'center');
+    if (search.resultLine !== undefined && listRef.current) {
+      listRef.current.scrollToItem(search.resultLine - 1, 'center');
     }
-  }, [searchResultLine]);
+  }, [search.resultLine]);
 
   return (
     <AutoSizer>
       {({ height, width }) => (
         <div style={{ width, height }} className={classes.root}>
           <div className={classes.header}>
-            <LogViewerControls
-              search={searchInput}
-              onSearchChange={setSearchInput}
-              resultIndex={resultIndex}
-              resultCount={filter.results?.length}
-              onResultIndexChange={setResultIndex}
-              shouldFilter={shouldFilter}
-              onToggleShouldFilter={toggleShouldFilter}
-            />
+            <LogViewerControls {...search} />
           </div>
           <FixedSizeList
             ref={listRef}
             className={classes.log}
             height={height - HEADER_SIZE}
             width={width}
-            itemData={displayLines}
+            itemData={search.lines}
             itemSize={20}
-            itemCount={displayLines.length}
+            itemCount={search.lines.length}
           >
             {({ index, style, data }) => {
               const line = data[index];
@@ -137,10 +84,10 @@ export function LogViewer(props: LogViewerProps) {
                   <LogLine
                     line={line}
                     classes={classes}
-                    searchText={searchText}
+                    searchText={search.searchText}
                     highlightResultIndex={
-                      searchResultLine === lineNumber
-                        ? searchResult!.lineIndex
+                      search.resultLine === lineNumber
+                        ? search.resultLineIndex
                         : undefined
                     }
                   />

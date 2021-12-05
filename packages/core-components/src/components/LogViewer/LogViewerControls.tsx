@@ -21,39 +21,32 @@ import Typography from '@material-ui/core/Typography';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import { LogViewerSearch } from './useLogViewerSearch';
 
-export interface LogViewerControlsProps {
-  search: string;
-  onSearchChange: (search: string) => void;
-  resultIndex: number | undefined;
-  resultCount: number | undefined;
-  onResultIndexChange: (index: number) => void;
-  shouldFilter: boolean;
-  onToggleShouldFilter: () => void;
-}
+export interface LogViewerControlsProps extends LogViewerSearch {}
 
 export function LogViewerControls(props: LogViewerControlsProps) {
-  const { resultCount, onResultIndexChange, onToggleShouldFilter } = props;
+  const { resultCount, setResultIndex, toggleShouldFilter } = props;
   const resultIndex = props.resultIndex ?? 0;
 
   const increment = () => {
     if (resultCount !== undefined) {
       const next = resultIndex + 1;
-      onResultIndexChange(next >= resultCount ? 0 : next);
+      setResultIndex(next >= resultCount ? 0 : next);
     }
   };
 
   const decrement = () => {
     if (resultCount !== undefined) {
       const next = resultIndex - 1;
-      onResultIndexChange(next < 0 ? resultCount - 1 : next);
+      setResultIndex(next < 0 ? resultCount - 1 : next);
     }
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       if (event.metaKey || event.ctrlKey || event.altKey) {
-        onToggleShouldFilter();
+        toggleShouldFilter();
       } else if (event.shiftKey) {
         decrement();
       } else {
@@ -81,11 +74,11 @@ export function LogViewerControls(props: LogViewerControlsProps) {
         size="small"
         variant="standard"
         placeholder="Search"
-        value={props.search}
+        value={props.searchInput}
         onKeyPress={handleKeyPress}
-        onChange={e => props.onSearchChange(e.target.value)}
+        onChange={e => props.setSearchInput(e.target.value)}
       />
-      <IconButton size="small" onClick={onToggleShouldFilter}>
+      <IconButton size="small" onClick={toggleShouldFilter}>
         {props.shouldFilter ? (
           <FilterListIcon color="primary" />
         ) : (
