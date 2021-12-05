@@ -128,7 +128,7 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Foo',
         modifiers: {},
-        highlight: true,
+        highlight: 0,
       },
       {
         text: 'BarBaz',
@@ -143,7 +143,7 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Bar',
         modifiers: {},
-        highlight: true,
+        highlight: 0,
       },
       {
         text: 'Baz',
@@ -158,7 +158,7 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Baz',
         modifiers: {},
-        highlight: true,
+        highlight: 0,
       },
     ]);
   });
@@ -171,7 +171,7 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Foo',
         modifiers: {},
-        highlight: true,
+        highlight: 0,
       },
       {
         text: 'BarBazBazBar',
@@ -180,7 +180,7 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Foo',
         modifiers: {},
-        highlight: true,
+        highlight: 1,
       },
     ]);
     expect(calculateHighlightedChunks(line, 'bar')).toEqual([
@@ -191,7 +191,7 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Bar',
         modifiers: {},
-        highlight: true,
+        highlight: 0,
       },
       {
         text: 'BazBaz',
@@ -200,7 +200,7 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Bar',
         modifiers: {},
-        highlight: true,
+        highlight: 1,
       },
       {
         text: 'Foo',
@@ -215,12 +215,12 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Baz',
         modifiers: {},
-        highlight: true,
+        highlight: 0,
       },
       {
         text: 'Baz',
         modifiers: {},
-        highlight: true,
+        highlight: 1,
       },
       {
         text: 'BarFoo',
@@ -237,7 +237,7 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Foo',
         modifiers: { bold: true },
-        highlight: true,
+        highlight: 0,
       },
       {
         text: 'BarBazBazBar',
@@ -246,7 +246,7 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Foo',
         modifiers: { bold: true },
-        highlight: true,
+        highlight: 1,
       },
     ]);
   });
@@ -262,7 +262,7 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Foo',
         modifiers: { bold: true },
-        highlight: true,
+        highlight: 0,
       },
       {
         text: 'BarBaz',
@@ -275,7 +275,7 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Foo',
         modifiers: { italic: true },
-        highlight: true,
+        highlight: 1,
       },
     ]);
   });
@@ -295,27 +295,27 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Fo',
         modifiers: { bold: true },
-        highlight: true,
+        highlight: 0,
       },
       {
         text: 'o',
         modifiers: {},
-        highlight: true,
+        highlight: 0,
       },
       {
         text: 'Foo',
         modifiers: {},
-        highlight: true,
+        highlight: 1,
       },
       {
         text: 'Fo',
         modifiers: {},
-        highlight: true,
+        highlight: 2,
       },
       {
         text: 'o',
         modifiers: { italic: true },
-        highlight: true,
+        highlight: 2,
       },
       {
         text: 'BarBaz',
@@ -324,32 +324,32 @@ describe('calculateHighlightedChunks', () => {
       {
         text: 'Foo',
         modifiers: { foreground: 'blue' },
-        highlight: true,
+        highlight: 3,
       },
       {
         text: 'Foo',
         modifiers: { italic: true },
-        highlight: true,
+        highlight: 4,
       },
       {
         text: 'Foo',
         modifiers: { italic: true },
-        highlight: true,
+        highlight: 5,
       },
       {
         text: 'F',
         modifiers: { bold: true },
-        highlight: true,
+        highlight: 6,
       },
       {
         text: 'o',
         modifiers: {},
-        highlight: true,
+        highlight: 6,
       },
       {
         text: 'o',
         modifiers: { bold: true },
-        highlight: true,
+        highlight: 6,
       },
     ]);
   });

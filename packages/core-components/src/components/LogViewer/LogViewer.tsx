@@ -234,6 +234,11 @@ export function LogViewer(props: LogViewerProps) {
                     line={line}
                     classes={classes}
                     searchText={searchText}
+                    highlightResultIndex={
+                      searchResultLine === lineNumber
+                        ? searchResult!.lineIndex
+                        : undefined
+                    }
                   />
                 </div>
               );

@@ -68,7 +68,7 @@ export function findSearchResults(text: string, searchText: string) {
 }
 
 export interface HighlightAnsiChunk extends AnsiChunk {
-  highlight?: boolean;
+  highlight?: number;
 }
 
 export function calculateHighlightedChunks(
@@ -83,23 +83,24 @@ export function calculateHighlightedChunks(
   const chunks = new Array<HighlightAnsiChunk>();
 
   let lineOffset = 0;
-  let nextResult = results.shift();
+  let resultIndex = 0;
+  let result = results[resultIndex];
   for (const chunk of line.chunks) {
     const { text, modifiers } = chunk;
-    if (!nextResult || lineOffset + text.length < nextResult.start) {
+    if (!result || lineOffset + text.length < result.start) {
       chunks.push(chunk);
       lineOffset += text.length;
       continue;
     }
 
     let localOffset = 0;
-    while (nextResult) {
-      const localStart = Math.max(nextResult.start - lineOffset, 0);
+    while (result) {
+      const localStart = Math.max(result.start - lineOffset, 0);
       if (localStart > text.length) {
         break; // The next result is not in this chunk
       }
 
-      const localEnd = Math.min(nextResult.end - lineOffset, text.length);
+      const localEnd = Math.min(result.end - lineOffset, text.length);
 
       const hasTextBeforeResult = localStart > localOffset;
       if (hasTextBeforeResult) {
@@ -109,16 +110,17 @@ export function calculateHighlightedChunks(
       if (hasResultText) {
         chunks.push({
           modifiers,
-          highlight: true,
+          highlight: resultIndex,
           text: text.slice(localStart, localEnd),
         });
       }
 
       localOffset = localEnd;
 
-      const foundCompleteResult = nextResult.end - lineOffset === localEnd;
+      const foundCompleteResult = result.end - lineOffset === localEnd;
       if (foundCompleteResult) {
-        nextResult = results.shift();
+        resultIndex += 1;
+        result = results[resultIndex];
       } else {
         break; // The rest of the result is in the following chunks
       }
@@ -139,9 +141,15 @@ export interface LogLineProps {
   line: AnsiLine;
   classes: ReturnType<typeof useStyles>;
   searchText: string;
+  highlightResultIndex?: number;
 }
 
-export function LogLine({ line, classes, searchText }: LogLineProps) {
+export function LogLine({
+  line,
+  classes,
+  searchText,
+  highlightResultIndex,
+}: LogLineProps) {
   const chunks = calculateHighlightedChunks(line, searchText);
 
   const elements = chunks.map(({ text, modifiers, highlight }, index) => (
@@ -149,7 +157,10 @@ export function LogLine({ line, classes, searchText }: LogLineProps) {
       key={index}
       className={clsx(
         getModifierClasses(classes, modifiers),
-        highlight && classes.textHighlight,
+        highlight !== undefined &&
+          (highlight === highlightResultIndex
+            ? classes.textSelectedHighlight
+            : classes.textHighlight),
       )}
     >
       {text}

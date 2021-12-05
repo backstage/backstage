@@ -55,7 +55,10 @@ export const useStyles = makeStyles(theme => ({
     cursor: 'pointer',
   },
   textHighlight: {
-    background: alpha(theme.palette.primary.main, 0.3),
+    background: alpha(theme.palette.info.main, 0.15),
+  },
+  textSelectedHighlight: {
+    background: alpha(theme.palette.info.main, 0.4),
   },
   modifierBold: {
     fontWeight: theme.typography.fontWeightBold,
