@@ -23,6 +23,8 @@ const RealLogViewer = lazy(() =>
 
 /**
  * The properties for the LogViewer component.
+ *
+ * @public
  */
 export interface LogViewerProps {
   /**
@@ -47,6 +49,8 @@ export interface LogViewerProps {
  * log is sized automatically to fill the available vertical space. This means
  * it may often be needed to wrap the LogViewer in a container that provides it
  * with a fixed amount of space.
+ *
+ * @public
  */
 export function LogViewer(props: LogViewerProps) {
   const { Progress } = useApp().getComponents();

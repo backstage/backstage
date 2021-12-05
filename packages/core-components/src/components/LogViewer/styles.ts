@@ -19,6 +19,7 @@ import * as colors from '@material-ui/core/colors';
 
 export const HEADER_SIZE = 40;
 
+/** @public Class keys for overriding LogViewer styles */
 export type LogViewerClassKey =
   | 'root'
   | 'header'
