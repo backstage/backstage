@@ -31,7 +31,7 @@ export const useStyles = makeStyles(theme => ({
   },
   log: {
     fontFamily: '"Monaco", monospace',
-    fontSize: theme.typography.fontSize,
+    fontSize: theme.typography.pxToRem(12),
   },
   line: {
     position: 'relative',
