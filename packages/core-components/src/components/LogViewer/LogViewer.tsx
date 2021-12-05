@@ -28,25 +28,6 @@ export interface LogViewerProps {
   text: string;
 }
 
-export type AnsiColor =
-  | 'black'
-  | 'red'
-  | 'green'
-  | 'yellow'
-  | 'blue'
-  | 'magenta'
-  | 'cyan'
-  | 'white'
-  | 'grey';
-
-export interface ChunkModifiers {
-  foreground?: AnsiColor;
-  background?: AnsiColor;
-  bold?: boolean;
-  italic?: boolean;
-  underline?: boolean;
-}
-
 function applySearchFilter(lines: AnsiLine[], searchText: string) {
   if (!searchText) {
     return { lines };
