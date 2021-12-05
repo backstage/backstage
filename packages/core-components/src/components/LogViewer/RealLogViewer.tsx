@@ -88,6 +88,7 @@ export function RealLogViewer(props: RealLogViewerProps) {
                 >
                   {selection.shouldShowButton(lineNumber) && (
                     <IconButton
+                      data-testid="copy-button"
                       size="small"
                       className={classes.lineCopyButton}
                       onClick={() => selection.copySelection()}

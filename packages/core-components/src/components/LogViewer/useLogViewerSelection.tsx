@@ -60,7 +60,7 @@ export function useLogViewerSelection(lines: AnsiLine[]) {
       if (sel) {
         const copyText = lines
           .slice(Math.min(sel.start, sel.end) - 1, Math.max(sel.start, sel.end))
-          .map(l => l.text)
+          .map(l => l.chunks.map(c => c.text).join(''))
           .join('\n');
         copyToClipboard(copyText);
         setSelection(undefined);
