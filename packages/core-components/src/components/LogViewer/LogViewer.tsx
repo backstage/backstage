@@ -17,16 +17,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import FilterListIcon from '@material-ui/icons/FilterList';
 import { AnsiLine, AnsiProcessor } from './AnsiProcessor';
 import { HEADER_SIZE, useStyles } from './styles';
 import clsx from 'clsx';
-import TextField from '@material-ui/core/TextField';
 import { LogLine } from './LogLine';
+import { LogViewerControls } from './LogViewerControls';
 import { useToggle } from 'react-use';
 
 export interface LogViewerProps {
@@ -83,78 +78,6 @@ function applySearchFilter(lines: AnsiLine[], searchText: string) {
     lines: matchingLines,
     results: searchResults,
   };
-}
-
-function LogViewerControls(props: {
-  search: string;
-  onSearchChange: (search: string) => void;
-  resultIndex: number | undefined;
-  resultCount: number | undefined;
-  onResultIndexChange: (index: number) => void;
-  shouldFilter: boolean;
-  onToggleShouldFilter: () => void;
-}) {
-  const { resultCount, onResultIndexChange, onToggleShouldFilter } = props;
-  const resultIndex = props.resultIndex ?? 0;
-
-  const increment = () => {
-    if (resultCount !== undefined) {
-      const next = resultIndex + 1;
-      onResultIndexChange(next >= resultCount ? 0 : next);
-    }
-  };
-
-  const decrement = () => {
-    if (resultCount !== undefined) {
-      const next = resultIndex - 1;
-      onResultIndexChange(next < 0 ? resultCount - 1 : next);
-    }
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      if (event.metaKey || event.ctrlKey || event.altKey) {
-        onToggleShouldFilter();
-      } else if (event.shiftKey) {
-        decrement();
-      } else {
-        increment();
-      }
-    }
-  };
-
-  return (
-    <>
-      {resultCount !== undefined && (
-        <>
-          <IconButton size="small" onClick={decrement}>
-            <ChevronLeftIcon />
-          </IconButton>
-          <Typography>
-            {Math.min(resultIndex + 1, resultCount)}/{resultCount}
-          </Typography>
-          <IconButton size="small" onClick={increment}>
-            <ChevronRightIcon />
-          </IconButton>
-        </>
-      )}
-      <TextField
-        size="small"
-        variant="standard"
-        placeholder="Search"
-        value={props.search}
-        onKeyPress={handleKeyPress}
-        onChange={e => props.onSearchChange(e.target.value)}
-      />
-      <IconButton size="small" onClick={onToggleShouldFilter}>
-        {props.shouldFilter ? (
-          <FilterListIcon color="primary" />
-        ) : (
-          <FilterListIcon color="disabled" />
-        )}
-      </IconButton>
-    </>
-  );
 }
 
 export function LogViewer(props: LogViewerProps) {
