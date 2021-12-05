@@ -140,8 +140,9 @@ techdocs:
   # be configured with a valid cache store.
   cache:
     # Represents the number of milliseconds a statically built asset should
-    # stay cached. Cache invalidation is handled automatically if you publish
-    # to storage using the techdocs-cli, allowing long TTLs (e.g. 1 month/year)
+    # stay cached. Cache invalidation is handled automatically by the frontend,
+    # which compares the build times in cached metadata vs. canonical storage,
+    # allowing long TTLs (e.g. 1 month/year)
     ttl: 3600000
 
     # (Optional) The time (in milliseconds) that the TechDocs backend will wait
