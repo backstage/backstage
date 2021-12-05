@@ -14,5 +14,19 @@
  * limitations under the License.
  */
 
-export { LazyLogViewer as LogViewer } from './LazyLogViewer';
-export type { LogViewerProps } from './LogViewer';
+import React, { lazy, Suspense } from 'react';
+import { useApp } from '@backstage/core-plugin-api';
+import { LogViewerProps } from './LogViewer';
+
+const LogViewer = lazy(() =>
+  import('./LogViewer').then(m => ({ default: m.LogViewer })),
+);
+
+export function LazyLogViewer(props: LogViewerProps) {
+  const { Progress } = useApp().getComponents();
+  return (
+    <Suspense fallback={<Progress />}>
+      <LogViewer {...props} />
+    </Suspense>
+  );
+}
