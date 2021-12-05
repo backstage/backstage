@@ -59,7 +59,7 @@ describe('createCacheMiddleware', () => {
     app = express().use(router);
     app.use((req, res, next) => {
       // By default, send cacheable content.
-      if (req.path !== '/api/static/docs/error.png') {
+      if (req.path !== '/static/docs/error.png') {
         res.send('default-response');
       } else {
         next(new Error());
@@ -70,7 +70,7 @@ describe('createCacheMiddleware', () => {
   describe('middleware', () => {
     it('does not apply to non-static/docs paths', async () => {
       await request(app)
-        .get('/api/static/not-docs')
+        .get('/static/not-docs')
         .expect(200, 'default-response');
 
       expect(cache.set).not.toHaveBeenCalled();
@@ -79,7 +79,7 @@ describe('createCacheMiddleware', () => {
     it('responds with cached response', async () => {
       cache.get.mockResolvedValueOnce(getMockHttpResponseFor('xyz'));
 
-      await request(app).get('/api/static/docs/foo.html').expect(200, 'xyz');
+      await request(app).get('/static/docs/foo.html').expect(200, 'xyz');
 
       await waitForSocketClose();
       expect(cache.set).not.toHaveBeenCalled();
@@ -88,7 +88,7 @@ describe('createCacheMiddleware', () => {
     it('sets cache when content is cacheable', async () => {
       const expectedPath = 'default/api/xyz/index.html';
       await request(app)
-        .get(`/api/static/docs/${expectedPath}`)
+        .get(`/static/docs/${expectedPath}`)
         .expect(200, 'default-response');
 
       await waitForSocketClose();
@@ -100,7 +100,7 @@ describe('createCacheMiddleware', () => {
     });
 
     it('does not set cache on error', async () => {
-      await request(app).get('/api/static/docs/error.png').expect(500);
+      await request(app).get('/static/docs/error.png').expect(500);
 
       await waitForSocketClose();
       expect(cache.set).not.toHaveBeenCalled();

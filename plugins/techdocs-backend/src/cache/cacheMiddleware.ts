@@ -35,7 +35,7 @@ export const createCacheMiddleware = ({
   // loaded from cache. Cache key is the object's path (after `/static/docs/`).
   cacheMiddleware.use(async (req, res, next) => {
     const socket = res.socket;
-    const isCacheable = req.path.includes('/static/docs/');
+    const isCacheable = req.path.startsWith('/static/docs/');
 
     // Continue early if this is non-cacheable, or there's no socket.
     if (!isCacheable || !socket) {
@@ -66,11 +66,11 @@ export const createCacheMiddleware = ({
 
     // When a socket is closed, if there were no errors and the data written
     // over the socket should be cached, cache it!
-    socket.on('close', hadError => {
+    socket.on('close', async hadError => {
       const content = Buffer.concat(chunks);
       const head = content.toString('utf8', 0, 12);
       if (writeToCache && !hadError && head.match(/HTTP\/\d\.\d 200/)) {
-        cache.set(reqPath, content);
+        await cache.set(reqPath, content);
       }
     });
 

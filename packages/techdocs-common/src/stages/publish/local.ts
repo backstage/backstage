@@ -127,15 +127,17 @@ export class LocalPublish implements PublisherBase {
 
     // Generate publish response.
     const techdocsApiUrl = await this.discovery.getBaseUrl('techdocs');
-    const objects = (await getFileTreeRecursively(publishDir)).map(abs => {
-      return abs.split(`${staticDocsDir}/`)[1];
-    });
+    const publishedFilePaths = (await getFileTreeRecursively(publishDir)).map(
+      abs => {
+        return abs.split(`${staticDocsDir}/`)[1];
+      },
+    );
 
     return {
       remoteUrl: `${techdocsApiUrl}/static/docs/${encodeURIComponent(
         entity.metadata.name,
       )}`,
-      objects,
+      objects: publishedFilePaths,
     };
   }
 

@@ -43,8 +43,8 @@ export class TechDocsCache {
     config: Config,
     { cache, logger }: { cache: CacheClient; logger: Logger },
   ) {
-    const readTimeout =
-      config.getOptionalNumber('techdocs.cache.readTimeout') || 1000;
+    const timeout = config.getOptionalNumber('techdocs.cache.readTimeout');
+    const readTimeout = timeout === undefined ? 1000 : timeout;
     return new TechDocsCache({ cache, logger, readTimeout });
   }
 
