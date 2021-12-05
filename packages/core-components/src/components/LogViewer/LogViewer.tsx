@@ -17,15 +17,20 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
-import { AnsiProcessor } from './AnsiProcessor';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import { AnsiLine, AnsiProcessor } from './AnsiProcessor';
 import { HEADER_SIZE, useStyles } from './styles';
 import clsx from 'clsx';
 import TextField from '@material-ui/core/TextField';
 import { LogLine } from './LogLine';
+import { useToggle } from 'react-use';
 
 export interface LogViewerProps {
   text: string;
-  noLineNumbers?: boolean;
 }
 
 export type AnsiColor =
@@ -47,11 +52,117 @@ export interface ChunkModifiers {
   underline?: boolean;
 }
 
+function applySearchFilter(lines: AnsiLine[], searchText: string) {
+  if (!searchText) {
+    return { lines };
+  }
+
+  const matchingLines = [];
+  const searchResults = [];
+  for (const line of lines) {
+    if (line.text.includes(searchText)) {
+      matchingLines.push(line);
+
+      let offset = 0;
+      let lineResultIndex = 0;
+      for (;;) {
+        const start = line.text.indexOf(searchText, offset);
+        if (start === -1) {
+          break;
+        }
+        searchResults.push({
+          lineNumber: line.lineNumber,
+          lineIndex: lineResultIndex++,
+        });
+        offset = start + searchText.length;
+      }
+    }
+  }
+
+  return {
+    lines: matchingLines,
+    results: searchResults,
+  };
+}
+
+function LogViewerControls(props: {
+  search: string;
+  onSearchChange: (search: string) => void;
+  resultIndex: number | undefined;
+  resultCount: number | undefined;
+  onResultIndexChange: (index: number) => void;
+  shouldFilter: boolean;
+  onToggleShouldFilter: () => void;
+}) {
+  const { resultCount, onResultIndexChange, onToggleShouldFilter } = props;
+  const resultIndex = props.resultIndex ?? 0;
+
+  const increment = () => {
+    if (resultCount !== undefined) {
+      const next = resultIndex + 1;
+      onResultIndexChange(next >= resultCount ? 0 : next);
+    }
+  };
+
+  const decrement = () => {
+    if (resultCount !== undefined) {
+      const next = resultIndex - 1;
+      onResultIndexChange(next < 0 ? resultCount - 1 : next);
+    }
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      if (event.metaKey || event.ctrlKey || event.altKey) {
+        onToggleShouldFilter();
+      } else if (event.shiftKey) {
+        decrement();
+      } else {
+        increment();
+      }
+    }
+  };
+
+  return (
+    <>
+      {resultCount !== undefined && (
+        <>
+          <IconButton size="small" onClick={decrement}>
+            <ChevronLeftIcon />
+          </IconButton>
+          <Typography>
+            {Math.min(resultIndex + 1, resultCount)}/{resultCount}
+          </Typography>
+          <IconButton size="small" onClick={increment}>
+            <ChevronRightIcon />
+          </IconButton>
+        </>
+      )}
+      <TextField
+        size="small"
+        variant="standard"
+        placeholder="Search"
+        value={props.search}
+        onKeyPress={handleKeyPress}
+        onChange={e => props.onSearchChange(e.target.value)}
+      />
+      <IconButton size="small" onClick={onToggleShouldFilter}>
+        {props.shouldFilter ? (
+          <FilterListIcon color="primary" />
+        ) : (
+          <FilterListIcon color="disabled" />
+        )}
+      </IconButton>
+    </>
+  );
+}
+
 export function LogViewer(props: LogViewerProps) {
-  const { noLineNumbers } = props;
-  const listRef = useRef<FixedSizeList | null>(null);
   const classes = useStyles();
+  const listRef = useRef<FixedSizeList | null>(null);
   const [selectedLine, setSelectedLine] = useState<number>();
+  const [resultIndex, setResultIndex] = useState<number | undefined>();
+  const [shouldFilter, toggleShouldFilter] = useToggle(false);
   const [searchInput, setSearchInput] = useState('');
   const searchText = searchInput.toLocaleLowerCase('en-US');
 
@@ -59,53 +170,35 @@ export function LogViewer(props: LogViewerProps) {
   const processor = useMemo(() => new AnsiProcessor(), []);
   const lines = processor.process(props.text);
 
-  const filteredLines = useMemo(() => {
-    if (!searchText) {
-      return lines;
-    }
-    const matchingLines = [];
-    const searchResults = [];
-    for (const line of lines) {
-      if (line.text.includes(searchText)) {
-        matchingLines.push(line);
+  const filter = useMemo(
+    () => applySearchFilter(lines, searchText),
+    [lines, searchText],
+  );
 
-        const lineResults = [];
-        let offset = 0;
-        for (;;) {
-          const start = line.text.indexOf(searchText, offset);
-          if (start === -1) {
-            break;
-          }
-          const end = start + searchText.length;
-          lineResults.push({ start, end });
-          offset = end;
-        }
-        searchResults.push(lineResults);
-      }
-    }
-    return lines.filter(line => line.text.includes(searchText));
-  }, [lines, searchText]);
+  const searchResult = filter.results?.[resultIndex ?? 0];
+  const searchResultLine = searchResult?.lineNumber;
 
-  const [foundLine] = filteredLines;
-  const scrollToLineNumber = foundLine?.lineNumber;
+  const displayLines = shouldFilter ? filter.lines : lines;
 
   useEffect(() => {
-    if (scrollToLineNumber !== undefined && listRef.current) {
-      listRef.current.scrollToItem(scrollToLineNumber - 1, 'center');
+    if (searchResultLine !== undefined && listRef.current) {
+      listRef.current.scrollToItem(searchResultLine - 1, 'center');
     }
-  }, [scrollToLineNumber]);
+  }, [searchResultLine]);
 
   return (
     <AutoSizer>
       {({ height, width }) => (
         <div style={{ width, height }} className={classes.root}>
           <div className={classes.header}>
-            <TextField
-              size="small"
-              variant="standard"
-              placeholder="Search"
-              value={searchInput}
-              onChange={e => setSearchInput(e.target.value)}
+            <LogViewerControls
+              search={searchInput}
+              onSearchChange={setSearchInput}
+              resultIndex={resultIndex}
+              resultCount={filter.results?.length}
+              onResultIndexChange={setResultIndex}
+              shouldFilter={shouldFilter}
+              onToggleShouldFilter={toggleShouldFilter}
             />
           </div>
           <FixedSizeList
@@ -113,9 +206,9 @@ export function LogViewer(props: LogViewerProps) {
             className={classes.log}
             height={height - HEADER_SIZE}
             width={width}
-            itemData={lines}
+            itemData={displayLines}
             itemSize={20}
-            itemCount={lines.length}
+            itemCount={displayLines.length}
           >
             {({ index, style, data }) => {
               const line = data[index];
@@ -127,18 +220,16 @@ export function LogViewer(props: LogViewerProps) {
                     [classes.lineSelected]: selectedLine === lineNumber,
                   })}
                 >
-                  {!noLineNumbers && (
-                    <a
-                      role="row"
-                      target="_self"
-                      href={`#line-${lineNumber}`}
-                      className={classes.lineNumber}
-                      onClick={() => setSelectedLine(lineNumber)}
-                      onKeyPress={() => setSelectedLine(lineNumber)}
-                    >
-                      {lineNumber}
-                    </a>
-                  )}
+                  <a
+                    role="row"
+                    target="_self"
+                    href={`#line-${lineNumber}`}
+                    className={classes.lineNumber}
+                    onClick={() => setSelectedLine(lineNumber)}
+                    onKeyPress={() => setSelectedLine(lineNumber)}
+                  >
+                    {lineNumber}
+                  </a>
                   <LogLine
                     line={line}
                     classes={classes}
