@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import { AnsiProcessor } from './AnsiProcessor';
@@ -49,6 +49,7 @@ export interface ChunkModifiers {
 
 export function LogViewer(props: LogViewerProps) {
   const { noLineNumbers } = props;
+  const listRef = useRef<FixedSizeList | null>(null);
   const classes = useStyles();
   const [selectedLine, setSelectedLine] = useState<number>();
   const [searchInput, setSearchInput] = useState('');
@@ -85,6 +86,15 @@ export function LogViewer(props: LogViewerProps) {
     return lines.filter(line => line.text.includes(searchText));
   }, [lines, searchText]);
 
+  const [foundLine] = filteredLines;
+  const scrollToLineNumber = foundLine?.lineNumber;
+
+  useEffect(() => {
+    if (scrollToLineNumber !== undefined && listRef.current) {
+      listRef.current.scrollToItem(scrollToLineNumber - 1, 'center');
+    }
+  }, [scrollToLineNumber]);
+
   return (
     <AutoSizer>
       {({ height, width }) => (
@@ -99,12 +109,13 @@ export function LogViewer(props: LogViewerProps) {
             />
           </div>
           <FixedSizeList
+            ref={listRef}
             className={classes.log}
             height={height - HEADER_SIZE}
             width={width}
-            itemData={filteredLines}
+            itemData={lines}
             itemSize={20}
-            itemCount={filteredLines.length}
+            itemCount={lines.length}
           >
             {({ index, style, data }) => {
               const line = data[index];
