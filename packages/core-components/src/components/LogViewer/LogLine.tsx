@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import { AnsiLine, ChunkModifiers } from './AnsiProcessor';
+import { AnsiChunk, AnsiLine, ChunkModifiers } from './AnsiProcessor';
 import startCase from 'lodash/startCase';
 import clsx from 'clsx';
-import { useStyles } from './useStyles';
+import { useStyles } from './styles';
 
-function getModifierClasses(
+export function getModifierClasses(
   classes: ReturnType<typeof useStyles>,
   modifiers: ChunkModifiers,
 ) {
@@ -49,41 +49,45 @@ function getModifierClasses(
   return classNames.length > 0 ? classNames.join(' ') : undefined;
 }
 
-export interface LogLineProps {
-  line: AnsiLine;
-  classes: ReturnType<typeof useStyles>;
-  searchText: string;
+export function findSearchResults(text: string, searchText: string) {
+  if (!searchText || !text.includes(searchText)) {
+    return undefined;
+  }
+  const searchResults = new Array<{ start: number; end: number }>();
+  let offset = 0;
+  for (;;) {
+    const start = text.indexOf(searchText, offset);
+    if (start === -1) {
+      break;
+    }
+    const end = start + searchText.length;
+    searchResults.push({ start, end });
+    offset = end;
+  }
+  return searchResults;
 }
 
-export function LogLine({ line, classes, searchText }: LogLineProps) {
-  let searchResults: Array<{ start: number; end: number }> | undefined =
-    undefined;
-  if (searchText && line.text.includes(searchText)) {
-    searchResults = [];
-    let offset = 0;
-    for (;;) {
-      const start = line.text.indexOf(searchText, offset);
-      if (start === -1) {
-        break;
-      }
-      const end = start + searchText.length;
-      searchResults.push({ start, end });
-      offset = end;
-    }
+export interface HighlightAnsiChunk extends AnsiChunk {
+  highlight?: boolean;
+}
+
+export function calculateHighlightedChunks(
+  line: AnsiLine,
+  searchText: string,
+): HighlightAnsiChunk[] {
+  const results = findSearchResults(line.text, searchText);
+  if (!results) {
+    return line.chunks;
   }
 
-  const output = new Array<JSX.Element>(line.chunks.length);
+  const chunks = new Array<HighlightAnsiChunk>();
 
-  let key = 0;
   let chunkOffset = 0;
-  let nextResult = searchResults?.shift();
-  for (const { text, modifiers } of line.chunks) {
+  let nextResult = results.shift();
+  for (const chunk of line.chunks) {
+    const { text, modifiers } = chunk;
     if (!nextResult || chunkOffset + text.length < nextResult.start) {
-      output.push(
-        <span key={key++} className={getModifierClasses(classes, modifiers)}>
-          {text}
-        </span>,
-      );
+      chunks.push(chunk);
       chunkOffset += text.length;
       continue;
     }
@@ -99,42 +103,49 @@ export function LogLine({ line, classes, searchText }: LogLineProps) {
       const match = text.slice(localStart, localEnd);
 
       if (beforeMatch) {
-        output.push(
-          <span key={key++} className={getModifierClasses(classes, modifiers)}>
-            {beforeMatch}
-          </span>,
-        );
+        chunks.push({ text: beforeMatch, modifiers });
       }
-      output.push(
-        <span
-          key={key++}
-          className={clsx(
-            getModifierClasses(classes, modifiers),
-            classes.textHighlight,
-          )}
-        >
-          {match}
-        </span>,
-      );
+      chunks.push({ text: match, modifiers, highlight: true });
 
       localOffset = localStart + match.length;
 
       if (match.length === searchText.length) {
-        nextResult = searchResults?.shift();
+        nextResult = results.shift();
       } else {
         break;
       }
     }
 
     if (localOffset < text.length) {
-      output.push(
-        <span key={key++} className={getModifierClasses(classes, modifiers)}>
-          {text.slice(localOffset)}
-        </span>,
-      );
+      chunks.push({ text: text.slice(localOffset), modifiers });
     }
 
     chunkOffset += text.length;
   }
-  return <>{output}</>;
+
+  return chunks;
+}
+
+export interface LogLineProps {
+  line: AnsiLine;
+  classes: ReturnType<typeof useStyles>;
+  searchText: string;
+}
+
+export function LogLine({ line, classes, searchText }: LogLineProps) {
+  const chunks = calculateHighlightedChunks(line, searchText);
+
+  const elements = chunks.map(({ text, modifiers, highlight }, index) => (
+    <span
+      key={index}
+      className={clsx(
+        getModifierClasses(classes, modifiers),
+        highlight && classes.textHighlight,
+      )}
+    >
+      {text}
+    </span>
+  ));
+
+  return <>{elements}</>;
 }
