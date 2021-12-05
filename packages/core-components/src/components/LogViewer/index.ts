@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { LazyLogViewer as LogViewer } from './LazyLogViewer';
+export { LogViewer } from './LogViewer';
 export type { LogViewerProps } from './LogViewer';

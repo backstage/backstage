@@ -14,113 +14,45 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo, useRef } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import CopyIcon from '@material-ui/icons/FileCopy';
-import AutoSizer from 'react-virtualized-auto-sizer';
-import { FixedSizeList } from 'react-window';
-import { AnsiProcessor } from './AnsiProcessor';
-import { HEADER_SIZE, useStyles } from './styles';
-import clsx from 'clsx';
-import { LogLine } from './LogLine';
-import { LogViewerControls } from './LogViewerControls';
-import { useLogViewerSearch } from './useLogViewerSearch';
-import { useLogViewerSelection } from './useLogViewerSelection';
+import React, { lazy, Suspense } from 'react';
+import { useApp } from '@backstage/core-plugin-api';
 
+const RealLogViewer = lazy(() =>
+  import('./RealLogViewer').then(m => ({ default: m.RealLogViewer })),
+);
+
+/**
+ * The properties for the LogViewer component.
+ */
 export interface LogViewerProps {
+  /**
+   * The text of the logs to display.
+   *
+   * The LogViewer component is optimized for appending content at the end of the text.
+   */
   text: string;
+  /**
+   * The className to apply to the root LogViewer element inside the auto sizer.
+   */
   className?: string;
 }
 
+/**
+ * A component that displays logs in a scrollable text area.
+ *
+ * The LogViewer has support for search and filtering, as well as displaying
+ * text content with ANSI color escape codes.
+ *
+ * Since the LogViewer uses windowing to avoid rendering all contents at once, the
+ * log is sized automatically to fill the available vertical space. This means
+ * it may often be needed to wrap the LogViewer in a container that provides it
+ * with a fixed amount of space.
+ */
 export function LogViewer(props: LogViewerProps) {
-  const classes = useStyles();
-  const listRef = useRef<FixedSizeList | null>(null);
-
-  // The processor keeps state that optimizes appending to the text
-  const processor = useMemo(() => new AnsiProcessor(), []);
-  const lines = processor.process(props.text);
-
-  const search = useLogViewerSearch(lines);
-  const selection = useLogViewerSelection(lines);
-
-  useEffect(() => {
-    if (search.resultLine !== undefined && listRef.current) {
-      listRef.current.scrollToItem(search.resultLine - 1, 'center');
-    }
-  }, [search.resultLine]);
-
-  const handleSelectLine = (
-    line: number,
-    event: { shiftKey: boolean; preventDefault: () => void },
-  ) => {
-    event.preventDefault();
-    selection.setSelection(line, event.shiftKey);
-  };
-
+  const { Progress } = useApp().getComponents();
   return (
-    <AutoSizer>
-      {({ height, width }) => (
-        <div
-          style={{ width, height }}
-          className={clsx(classes.root, props.className)}
-        >
-          <div className={classes.header}>
-            <LogViewerControls {...search} />
-          </div>
-          <FixedSizeList
-            ref={listRef}
-            className={classes.log}
-            height={height - HEADER_SIZE}
-            width={width}
-            itemData={search.lines}
-            itemSize={20}
-            itemCount={search.lines.length}
-          >
-            {({ index, style, data }) => {
-              const line = data[index];
-              const { lineNumber } = line;
-              return (
-                <div
-                  style={{ ...style }}
-                  className={clsx(classes.line, {
-                    [classes.lineSelected]: selection.isSelected(lineNumber),
-                  })}
-                >
-                  {selection.shouldShowButton(lineNumber) && (
-                    <IconButton
-                      size="small"
-                      className={classes.lineCopyButton}
-                      onClick={() => selection.copySelection()}
-                    >
-                      <CopyIcon fontSize="inherit" />
-                    </IconButton>
-                  )}
-                  <a
-                    role="row"
-                    target="_self"
-                    href={`#line-${lineNumber}`}
-                    className={classes.lineNumber}
-                    onClick={event => handleSelectLine(lineNumber, event)}
-                    onKeyPress={event => handleSelectLine(lineNumber, event)}
-                  >
-                    {lineNumber}
-                  </a>
-                  <LogLine
-                    line={line}
-                    classes={classes}
-                    searchText={search.searchText}
-                    highlightResultIndex={
-                      search.resultLine === lineNumber
-                        ? search.resultLineIndex
-                        : undefined
-                    }
-                  />
-                </div>
-              );
-            }}
-          </FixedSizeList>
-        </div>
-      )}
-    </AutoSizer>
+    <Suspense fallback={<Progress />}>
+      <RealLogViewer {...props} />
+    </Suspense>
   );
 }
