@@ -29,6 +29,7 @@ import { useLogViewerSelection } from './useLogViewerSelection';
 
 export interface LogViewerProps {
   text: string;
+  className?: string;
 }
 
 export function LogViewer(props: LogViewerProps) {
@@ -59,7 +60,10 @@ export function LogViewer(props: LogViewerProps) {
   return (
     <AutoSizer>
       {({ height, width }) => (
-        <div style={{ width, height }} className={classes.root}>
+        <div
+          style={{ width, height }}
+          className={clsx(classes.root, props.className)}
+        >
           <div className={classes.header}>
             <LogViewerControls {...search} />
           </div>
