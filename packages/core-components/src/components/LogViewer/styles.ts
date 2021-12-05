@@ -34,6 +34,7 @@ export const useStyles = makeStyles(theme => ({
     fontSize: theme.typography.fontSize,
   },
   line: {
+    position: 'relative',
     whiteSpace: 'pre',
 
     '&:hover': {
@@ -46,6 +47,11 @@ export const useStyles = makeStyles(theme => ({
     '&:hover': {
       background: theme.palette.action.selected,
     },
+  },
+  lineCopyButton: {
+    position: 'absolute',
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   lineNumber: {
     display: 'inline-block',

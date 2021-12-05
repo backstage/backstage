@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
+import IconButton from '@material-ui/core/IconButton';
+import CopyIcon from '@material-ui/icons/FileCopy';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import { AnsiProcessor } from './AnsiProcessor';
@@ -23,6 +25,7 @@ import clsx from 'clsx';
 import { LogLine } from './LogLine';
 import { LogViewerControls } from './LogViewerControls';
 import { useLogViewerSearch } from './useLogViewerSearch';
+import { useLogViewerSelection } from './useLogViewerSelection';
 
 export interface LogViewerProps {
   text: string;
@@ -31,19 +34,27 @@ export interface LogViewerProps {
 export function LogViewer(props: LogViewerProps) {
   const classes = useStyles();
   const listRef = useRef<FixedSizeList | null>(null);
-  const [selectedLine, setSelectedLine] = useState<number>();
 
   // The processor keeps state that optimizes appending to the text
   const processor = useMemo(() => new AnsiProcessor(), []);
   const lines = processor.process(props.text);
 
   const search = useLogViewerSearch(lines);
+  const selection = useLogViewerSelection(lines);
 
   useEffect(() => {
     if (search.resultLine !== undefined && listRef.current) {
       listRef.current.scrollToItem(search.resultLine - 1, 'center');
     }
   }, [search.resultLine]);
+
+  const handleSelectLine = (
+    line: number,
+    event: { shiftKey: boolean; preventDefault: () => void },
+  ) => {
+    event.preventDefault();
+    selection.setSelection(line, event.shiftKey);
+  };
 
   return (
     <AutoSizer>
@@ -68,16 +79,25 @@ export function LogViewer(props: LogViewerProps) {
                 <div
                   style={{ ...style }}
                   className={clsx(classes.line, {
-                    [classes.lineSelected]: selectedLine === lineNumber,
+                    [classes.lineSelected]: selection.isSelected(lineNumber),
                   })}
                 >
+                  {selection.shouldShowButton(lineNumber) && (
+                    <IconButton
+                      size="small"
+                      className={classes.lineCopyButton}
+                      onClick={() => selection.copySelection()}
+                    >
+                      <CopyIcon fontSize="inherit" />
+                    </IconButton>
+                  )}
                   <a
                     role="row"
                     target="_self"
                     href={`#line-${lineNumber}`}
                     className={classes.lineNumber}
-                    onClick={() => setSelectedLine(lineNumber)}
-                    onKeyPress={() => setSelectedLine(lineNumber)}
+                    onClick={event => handleSelectLine(lineNumber, event)}
+                    onKeyPress={event => handleSelectLine(lineNumber, event)}
                   >
                     {lineNumber}
                   </a>
