@@ -8036,14 +8036,6 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-lazylog@^4.5.0":
-  version "4.5.1"
-  resolved "https://registry.npmjs.org/@types/react-lazylog/-/react-lazylog-4.5.1.tgz#babb5d814f7035b5434518769975e12f299356a8"
-  integrity sha512-g4yeosa1zYhu2BUJmuu2H2o0dsdRj0o8Omw3pBiVHdLHJaeYIyArvyMRR3bI/MxZxG4EaiRl8AOQ6zeM8P46jA==
-  dependencies:
-    "@types/react" "*"
-    immutable ">=3.8.2"
-
 "@types/react-redux@^7.1.16":
   version "7.1.19"
   resolved "https://registry.npmjs.org/@types/react-redux/-/react-redux-7.1.19.tgz#477bd0a9b01bae6d6bf809418cdfa7d3c16d4c62"
@@ -17047,7 +17039,7 @@ immer@^9.0.1, immer@^9.0.6:
   resolved "https://registry.npmjs.org/immer/-/immer-9.0.7.tgz#b6156bd7db55db7abc73fd2fdadf4e579a701075"
   integrity sha512-KGllzpbamZDvOIxnmJ0jI840g7Oikx58lBPWV0hUh7dtAyZpFqqrBZdKka5GlTwMTZ1Tjc/bKKW4VSFAt6BqMA==
 
-immutable@>=3.8.2, immutable@^3.8.2, immutable@^3.x.x:
+immutable@^3.8.2, immutable@^3.x.x:
   version "3.8.2"
   resolved "https://registry.npmjs.org/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
   integrity sha1-wkOZUUVbs5kT2vKBN28VMOEErfM=
@@ -24561,7 +24553,7 @@ react-is@^16.13.1, react-is@^16.7.0, react-is@^16.8.0, react-is@^16.8.1, react-i
   resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
-react-lazylog@^4.5.2, react-lazylog@^4.5.3:
+react-lazylog@^4.5.2:
   version "4.5.3"
   resolved "https://registry.npmjs.org/react-lazylog/-/react-lazylog-4.5.3.tgz#289e24995b5599e75943556ac63f5e2c04d0001e"
   integrity sha512-lyov32A/4BqihgXgtNXTHCajXSXkYHPlIEmV8RbYjHIMxCFSnmtdg4kDCI3vATz7dURtiFTvrw5yonHnrS+NNg==
