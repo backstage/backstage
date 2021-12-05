@@ -82,45 +82,54 @@ export function calculateHighlightedChunks(
 
   const chunks = new Array<HighlightAnsiChunk>();
 
-  let chunkOffset = 0;
+  let lineOffset = 0;
   let nextResult = results.shift();
   for (const chunk of line.chunks) {
     const { text, modifiers } = chunk;
-    if (!nextResult || chunkOffset + text.length < nextResult.start) {
+    if (!nextResult || lineOffset + text.length < nextResult.start) {
       chunks.push(chunk);
-      chunkOffset += text.length;
+      lineOffset += text.length;
       continue;
     }
 
     let localOffset = 0;
     while (nextResult) {
-      let localStart = nextResult.start - chunkOffset;
-      if (localStart < 0) {
-        localStart = 0;
+      const localStart = Math.max(nextResult.start - lineOffset, 0);
+      if (localStart > text.length) {
+        break; // The next result is not in this chunk
       }
-      const localEnd = nextResult.end - chunkOffset;
-      const beforeMatch = text.slice(localOffset, localStart);
-      const match = text.slice(localStart, localEnd);
 
-      if (beforeMatch) {
-        chunks.push({ text: beforeMatch, modifiers });
+      const localEnd = Math.min(nextResult.end - lineOffset, text.length);
+
+      const hasTextBeforeResult = localStart > localOffset;
+      if (hasTextBeforeResult) {
+        chunks.push({ text: text.slice(localOffset, localStart), modifiers });
       }
-      chunks.push({ text: match, modifiers, highlight: true });
+      const hasResultText = localEnd > localStart;
+      if (hasResultText) {
+        chunks.push({
+          modifiers,
+          highlight: true,
+          text: text.slice(localStart, localEnd),
+        });
+      }
 
-      localOffset = localStart + match.length;
+      localOffset = localEnd;
 
-      if (match.length === searchText.length) {
+      const foundCompleteResult = nextResult.end - lineOffset === localEnd;
+      if (foundCompleteResult) {
         nextResult = results.shift();
       } else {
-        break;
+        break; // The rest of the result is in the following chunks
       }
     }
 
-    if (localOffset < text.length) {
+    const hasTextAfterResult = localOffset < text.length;
+    if (hasTextAfterResult) {
       chunks.push({ text: text.slice(localOffset), modifiers });
     }
 
-    chunkOffset += text.length;
+    lineOffset += text.length;
   }
 
   return chunks;

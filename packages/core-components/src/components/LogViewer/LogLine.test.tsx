@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { ChunkModifiers } from './AnsiProcessor';
-import { findSearchResults, getModifierClasses } from './LogLine';
+import { AnsiLine, ChunkModifiers } from './AnsiProcessor';
+import {
+  calculateHighlightedChunks,
+  findSearchResults,
+  getModifierClasses,
+} from './LogLine';
 
 describe('getModifierClasses', () => {
   const classes = {
@@ -107,6 +111,246 @@ describe('findSearchResults', () => {
     expect(findSearchResults('aaaaa', 'aa')).toEqual([
       { start: 0, end: 2 },
       { start: 2, end: 4 },
+    ]);
+  });
+});
+
+describe('calculateHighlightedChunks', () => {
+  it('should pass through chunks if there are no results', () => {
+    const chunks = [{ text: 'Foo', modifiers: {} }];
+    const line = new AnsiLine(0, chunks);
+    expect(calculateHighlightedChunks(line, 'bar')).toBe(chunks);
+  });
+
+  it('should highlight one result from plain text', () => {
+    const line = new AnsiLine(0, [{ text: 'FooBarBaz', modifiers: {} }]);
+    expect(calculateHighlightedChunks(line, 'foo')).toEqual([
+      {
+        text: 'Foo',
+        modifiers: {},
+        highlight: true,
+      },
+      {
+        text: 'BarBaz',
+        modifiers: {},
+      },
+    ]);
+    expect(calculateHighlightedChunks(line, 'bar')).toEqual([
+      {
+        text: 'Foo',
+        modifiers: {},
+      },
+      {
+        text: 'Bar',
+        modifiers: {},
+        highlight: true,
+      },
+      {
+        text: 'Baz',
+        modifiers: {},
+      },
+    ]);
+    expect(calculateHighlightedChunks(line, 'baz')).toEqual([
+      {
+        text: 'FooBar',
+        modifiers: {},
+      },
+      {
+        text: 'Baz',
+        modifiers: {},
+        highlight: true,
+      },
+    ]);
+  });
+
+  it('should highlight multiple results from plain text', () => {
+    const line = new AnsiLine(0, [
+      { text: 'FooBarBazBazBarFoo', modifiers: {} },
+    ]);
+    expect(calculateHighlightedChunks(line, 'foo')).toEqual([
+      {
+        text: 'Foo',
+        modifiers: {},
+        highlight: true,
+      },
+      {
+        text: 'BarBazBazBar',
+        modifiers: {},
+      },
+      {
+        text: 'Foo',
+        modifiers: {},
+        highlight: true,
+      },
+    ]);
+    expect(calculateHighlightedChunks(line, 'bar')).toEqual([
+      {
+        text: 'Foo',
+        modifiers: {},
+      },
+      {
+        text: 'Bar',
+        modifiers: {},
+        highlight: true,
+      },
+      {
+        text: 'BazBaz',
+        modifiers: {},
+      },
+      {
+        text: 'Bar',
+        modifiers: {},
+        highlight: true,
+      },
+      {
+        text: 'Foo',
+        modifiers: {},
+      },
+    ]);
+    expect(calculateHighlightedChunks(line, 'baz')).toEqual([
+      {
+        text: 'FooBar',
+        modifiers: {},
+      },
+      {
+        text: 'Baz',
+        modifiers: {},
+        highlight: true,
+      },
+      {
+        text: 'Baz',
+        modifiers: {},
+        highlight: true,
+      },
+      {
+        text: 'BarFoo',
+        modifiers: {},
+      },
+    ]);
+  });
+
+  it('should forward modifiers to result', () => {
+    const line = new AnsiLine(0, [
+      { text: 'FooBarBazBazBarFoo', modifiers: { bold: true } },
+    ]);
+    expect(calculateHighlightedChunks(line, 'foo')).toEqual([
+      {
+        text: 'Foo',
+        modifiers: { bold: true },
+        highlight: true,
+      },
+      {
+        text: 'BarBazBazBar',
+        modifiers: { bold: true },
+      },
+      {
+        text: 'Foo',
+        modifiers: { bold: true },
+        highlight: true,
+      },
+    ]);
+  });
+
+  it('should highlight full chunks', () => {
+    const line = new AnsiLine(0, [
+      { text: 'Foo', modifiers: { bold: true } },
+      { text: 'BarBaz', modifiers: { bold: true } },
+      { text: 'BazBar', modifiers: { italic: true } },
+      { text: 'Foo', modifiers: { italic: true } },
+    ]);
+    expect(calculateHighlightedChunks(line, 'foo')).toEqual([
+      {
+        text: 'Foo',
+        modifiers: { bold: true },
+        highlight: true,
+      },
+      {
+        text: 'BarBaz',
+        modifiers: { bold: true },
+      },
+      {
+        text: 'BazBar',
+        modifiers: { italic: true },
+      },
+      {
+        text: 'Foo',
+        modifiers: { italic: true },
+        highlight: true,
+      },
+    ]);
+  });
+
+  it('should highlight partial chunks', () => {
+    const line = new AnsiLine(0, [
+      { text: 'Fo', modifiers: { bold: true } },
+      { text: 'oFooFo', modifiers: {} },
+      { text: 'oBarBaz', modifiers: { italic: true } },
+      { text: 'Foo', modifiers: { foreground: 'blue' } },
+      { text: 'FooFoo', modifiers: { italic: true } },
+      { text: 'F', modifiers: { bold: true } },
+      { text: 'o', modifiers: {} },
+      { text: 'o', modifiers: { bold: true } },
+    ]);
+    expect(calculateHighlightedChunks(line, 'foo')).toEqual([
+      {
+        text: 'Fo',
+        modifiers: { bold: true },
+        highlight: true,
+      },
+      {
+        text: 'o',
+        modifiers: {},
+        highlight: true,
+      },
+      {
+        text: 'Foo',
+        modifiers: {},
+        highlight: true,
+      },
+      {
+        text: 'Fo',
+        modifiers: {},
+        highlight: true,
+      },
+      {
+        text: 'o',
+        modifiers: { italic: true },
+        highlight: true,
+      },
+      {
+        text: 'BarBaz',
+        modifiers: { italic: true },
+      },
+      {
+        text: 'Foo',
+        modifiers: { foreground: 'blue' },
+        highlight: true,
+      },
+      {
+        text: 'Foo',
+        modifiers: { italic: true },
+        highlight: true,
+      },
+      {
+        text: 'Foo',
+        modifiers: { italic: true },
+        highlight: true,
+      },
+      {
+        text: 'F',
+        modifiers: { bold: true },
+        highlight: true,
+      },
+      {
+        text: 'o',
+        modifiers: {},
+        highlight: true,
+      },
+      {
+        text: 'o',
+        modifiers: { bold: true },
+        highlight: true,
+      },
     ]);
   });
 });
