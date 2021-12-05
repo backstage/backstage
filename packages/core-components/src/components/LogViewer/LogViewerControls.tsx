@@ -26,31 +26,15 @@ import { LogViewerSearch } from './useLogViewerSearch';
 export interface LogViewerControlsProps extends LogViewerSearch {}
 
 export function LogViewerControls(props: LogViewerControlsProps) {
-  const { resultCount, setResultIndex, toggleShouldFilter } = props;
+  const { resultCount, resultIndexStep, toggleShouldFilter } = props;
   const resultIndex = props.resultIndex ?? 0;
-
-  const increment = () => {
-    if (resultCount !== undefined) {
-      const next = resultIndex + 1;
-      setResultIndex(next >= resultCount ? 0 : next);
-    }
-  };
-
-  const decrement = () => {
-    if (resultCount !== undefined) {
-      const next = resultIndex - 1;
-      setResultIndex(next < 0 ? resultCount - 1 : next);
-    }
-  };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       if (event.metaKey || event.ctrlKey || event.altKey) {
         toggleShouldFilter();
-      } else if (event.shiftKey) {
-        decrement();
       } else {
-        increment();
+        resultIndexStep(event.shiftKey);
       }
     }
   };
@@ -59,13 +43,13 @@ export function LogViewerControls(props: LogViewerControlsProps) {
     <>
       {resultCount !== undefined && (
         <>
-          <IconButton size="small" onClick={decrement}>
+          <IconButton size="small" onClick={() => resultIndexStep(true)}>
             <ChevronLeftIcon />
           </IconButton>
           <Typography>
             {Math.min(resultIndex + 1, resultCount)}/{resultCount}
           </Typography>
-          <IconButton size="small" onClick={increment}>
+          <IconButton size="small" onClick={() => resultIndexStep()}>
             <ChevronRightIcon />
           </IconButton>
         </>

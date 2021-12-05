@@ -61,9 +61,9 @@ export interface LogViewerSearch {
   shouldFilter: boolean;
   toggleShouldFilter: () => void;
 
-  resultIndex: number | undefined;
   resultCount: number | undefined;
-  setResultIndex: (number: number) => void;
+  resultIndex: number | undefined;
+  resultIndexStep: (decrement?: boolean) => void;
 
   resultLine: number | undefined;
   resultLineIndex: number | undefined;
@@ -73,7 +73,7 @@ export function useLogViewerSearch(lines: AnsiLine[]): LogViewerSearch {
   const [searchInput, setSearchInput] = useState('');
   const searchText = searchInput.toLocaleLowerCase('en-US');
 
-  const [resultIndex, setResultIndex] = useState<number | undefined>();
+  const [resultIndex, setResultIndex] = useState<number>(0);
 
   const [shouldFilter, toggleShouldFilter] = useToggle(false);
 
@@ -82,7 +82,24 @@ export function useLogViewerSearch(lines: AnsiLine[]): LogViewerSearch {
     [lines, searchText],
   );
 
-  const searchResult = filter.results?.[resultIndex ?? 0];
+  const searchResult = filter.results
+    ? filter.results[Math.min(resultIndex, filter.results.length - 1)]
+    : undefined;
+  const resultCount = filter.results?.length;
+
+  const resultIndexStep = (decrement?: boolean) => {
+    if (decrement) {
+      if (resultCount !== undefined) {
+        const next = Math.min(resultIndex - 1, resultCount - 2);
+        setResultIndex(next < 0 ? resultCount - 1 : next);
+      }
+    } else {
+      if (resultCount !== undefined) {
+        const next = resultIndex + 1;
+        setResultIndex(next >= resultCount ? 0 : next);
+      }
+    }
+  };
 
   return {
     lines: shouldFilter ? filter.lines : lines,
@@ -91,9 +108,9 @@ export function useLogViewerSearch(lines: AnsiLine[]): LogViewerSearch {
     setSearchInput,
     shouldFilter,
     toggleShouldFilter,
+    resultCount,
     resultIndex,
-    resultCount: filter.results?.length,
-    setResultIndex,
+    resultIndexStep,
     resultLine: searchResult?.lineNumber,
     resultLineIndex: searchResult?.lineIndex,
   };
