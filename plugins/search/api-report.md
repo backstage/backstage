@@ -150,6 +150,7 @@ export const SearchFilterNext: {
 export const SearchModal: ({
   open,
   toggleModal,
+  searchBarProps,
 }: SearchModalProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SearchModalProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -158,6 +159,13 @@ export const SearchModal: ({
 export interface SearchModalProps {
   // (undocumented)
   open?: boolean;
+  // Warning: (ae-forgotten-export) The symbol "SearchBarBaseProps" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  searchBarProps?: Omit<
+    SearchBarBaseProps,
+    'value' | 'className' | 'onChange' | 'onSubmit'
+  >;
   // (undocumented)
   toggleModal: () => void;
 }
