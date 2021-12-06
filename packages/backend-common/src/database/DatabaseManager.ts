@@ -119,7 +119,7 @@ export class DatabaseManager {
         ?.filename;
 
       // if persisting to a file, create separate files per plugin to avoid db migration issues.
-      if (sqliteFilename !== ':memory:') {
+      if (sqliteFilename && sqliteFilename !== ':memory:') {
         return path.join(sqliteFilename, `${pluginId}.sqlite`);
       }
 
