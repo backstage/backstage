@@ -1,5 +1,5 @@
 ---
-id: index
+id: configuration
 title: Getting Started, configuring Backstage
 description: Getting started with your initial Backstage configuration
 ---
@@ -19,7 +19,8 @@ At the end of this tutorial, you can expect:
 
 - Access to a Linux-based operating system, such as Linux, MacOS or
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
-- An account with elevated rights to install prerequisites
+- An account with elevated rights to install prerequisites on your operating
+  system
 - If the database is not hosted on the same server as the Backstage app, the
   PostgreSQL port needs to be accessible (the default is 5432 or 5433)
 
@@ -137,16 +138,17 @@ frontend, in our tutorial it would be `http://127.0.0.1:3000`. The
 likely be `http://127.0.0.1:7007/api/auth/github/handler/frame`.
 
 <p align='center'>
-  <img src='../assets/getting-started/gh-oauth.png' alt='Screenshot of the GitHub OAuth creation page'>
+  <img src='../assets/getting-started/gh-oauth.png' alt='Screenshot of the GitHub OAuth creation page' />
 </p>
 
-Take note of the `Client ID` and the `Client Secret`. Open 'app-config.yaml',
+Take note of the `Client ID` and the `Client Secret`. Open `app-config.yaml`,
 and add your `clientId` and `clientSecret` to this file. It should end up
 looking like this:
 
 ```
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
+  environment: development
   providers:
     github:
       development:
@@ -213,7 +215,7 @@ days for expiration. If you have a hard time picking a number, we suggest to go
 for 7 days, it's a lucky number.
 
 <p align='center'>
-  <img src='../assets/getting-started/gh-oauth.png' alt='Screenshot of the GitHub OAuth creation page'>
+  <img src='../assets/getting-started/gh-oauth.png' alt='Screenshot of the GitHub OAuth creation page' />
 </p>
 
 Set the scope to your likings. For this tutorial, selecting "repo" should be
@@ -238,37 +240,39 @@ Some helpful links, for if you want to learn more about:
 
 ### Explore what we've done so far
 
+## Login to Backstage and check profile
+
 Open your Backstage frontend. You should see your login screen if you're not
 logged in yet. As soon as you've logged in, go to Settings, you'll see your
-profile. Hopefully You'll recognize the profile picture and name on your screen,
+profile. Hopefully you'll recognize the profile picture and name on your screen,
 otherwise something went terribly wrong.
 
-Register an existing component
+## Register an existing component
 
 - Register a new component, by going to `create` and choose
   `Register existing component`
 
 <p align='center'>
-  <img src='../assets/getting-started/b-existing-1.png' alt='Software template main screen, with a blue button to add an existing component'>
+  <img data-zoomable src='../assets/getting-started/b-existing-1.png' alt='Software template main screen, with a blue button to add an existing component' />
 </p>
 
 - As URL use `https://github.com/backstage/demo/blob/master/catalog-info.yaml`.
-  This is used by our demo site.
+  This is used by our [demo site](https://demo.backstage.io).
 
 <p align='center'>
-  <img src='../assets/getting-started/b-existing-2.png' alt='Register a new component wizard, asking for an URL to the existing component YAML file'>
+  <img src='../assets/getting-started/b-existing-2.png' alt='Register a new component wizard, asking for an URL to the existing component YAML file' />
 </p>
 - Hit `Analyze` and review the changes. Apply them if correct
 
 <p align='center'>
-  <img src='../assets/getting-started/b-existing-3.png' alt='Register a new component wizard, showing the metadata for the component YAML we use in this tutorial'>
+  <img src='../assets/getting-started/b-existing-3.png' alt='Register a new component wizard, showing the metadata for the component YAML we use in this tutorial' />
 </p>
 
 - You should receive a message that your entities have been added.
 - If you go back to `Home`, you should be able to find `demo`. You should be
   able to click it and see the details
 
-Create a new component using a software template
+## Create a new component using a software template
 
 - Go to `create` and choose to create a website with the `React SSR Template`
 - Type in a name, let's use `tutorial`
@@ -276,15 +280,15 @@ Create a new component using a software template
   step
 
 <p align='center'>
-  <img src='../assets/getting-started/b-scaffold-1.png' alt='Software template deployment input screen asking for a name, the group owning this and a description'>
+  <img src='../assets/getting-started/b-scaffold-1.png' alt='Software template deployment input screen asking for a name, the group owning this, and a description' />
 </p>
 
-- For the location, we're going to use the default GitHub location.
+- For the location, we're going to use the default
 - As owner, type your GitHub username
 - For the repository name, type `tutorial`. Go to the next step
 
 <p align='center'>
-  <img src='../assets/getting-started/b-scaffold-2.png' alt='Software template deployment input screen asking for the github username and name of the new repo to create'>
+  <img src='../assets/getting-started/b-scaffold-2.png' alt='Software template deployment input screen asking for the github username, and name of the new repo to create' />
 </p>
 
 - Review the details of this new service, and press `Create` if you want to

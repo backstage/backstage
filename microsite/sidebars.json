@@ -14,6 +14,7 @@
     ],
     "Getting Started": [
       "getting-started/index",
+      "getting-started/configuration",
       "getting-started/create-an-app",
       "getting-started/running-backstage-locally",
       {
