@@ -23,7 +23,7 @@ import ClearButton from '@material-ui/icons/Clear';
 
 import { useSearch } from '../SearchContext';
 
-type PresenterProps = {
+export type SearchBarBaseProps = {
   value: string;
   onChange: (value: string) => void;
   onClear?: () => void;
@@ -42,7 +42,7 @@ export const SearchBarBase = ({
   className,
   placeholder: overridePlaceholder,
   clearButton = true,
-}: PresenterProps) => {
+}: SearchBarBaseProps) => {
   const configApi = useApi(configApiRef);
 
   const onKeyDown = React.useCallback(

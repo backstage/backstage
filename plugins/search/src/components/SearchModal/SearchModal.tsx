@@ -30,7 +30,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
 
-import { SearchBarBase } from '../SearchBar';
+import { SearchBarBase, SearchBarBaseProps } from '../SearchBar';
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResult } from '../SearchResult';
 import { SearchContextProvider, useSearch } from '../SearchContext';
@@ -41,6 +41,10 @@ import { useNavigateToQuery } from '../util';
 export interface SearchModalProps {
   open?: boolean;
   toggleModal: () => void;
+  searchBarProps?: Omit<
+    SearchBarBaseProps,
+    'value' | 'className' | 'onChange' | 'onSubmit'
+  >;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -58,7 +62,11 @@ const useStyles = makeStyles(theme => ({
   viewResultsLink: { verticalAlign: '0.5em' },
 }));
 
-export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
+export const Modal = ({
+  open = true,
+  toggleModal,
+  searchBarProps = {},
+}: SearchModalProps) => {
   const getSearchLink = useRouteRef(rootRouteRef);
   const handleSearch = useNavigateToQuery();
   const classes = useStyles();
@@ -108,7 +116,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
           <SearchBarBase
             // decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus
             // eslint-disable-next-line jsx-a11y/no-autofocus
-            autoFocus
+            {...searchBarProps}
             className={classes.input}
             value={value}
             onChange={handleQuery}
@@ -166,10 +174,18 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
   );
 };
 
-export const SearchModal = ({ open = true, toggleModal }: SearchModalProps) => {
+export const SearchModal = ({
+  open = true,
+  toggleModal,
+  searchBarProps,
+}: SearchModalProps) => {
   return (
     <SearchContextProvider>
-      <Modal open={open} toggleModal={toggleModal} />
+      <Modal
+        open={open}
+        toggleModal={toggleModal}
+        searchBarProps={searchBarProps}
+      />
     </SearchContextProvider>
   );
 };
