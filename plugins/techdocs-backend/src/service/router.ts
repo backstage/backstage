@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  PluginCacheManager,
+} from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -31,6 +34,7 @@ import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
+import { createCacheMiddleware, TechDocsCache } from '../cache';
 
 /**
  * All of the required dependencies for running TechDocs in the "out-of-the-box"
@@ -44,6 +48,7 @@ type OutOfTheBoxDeploymentOptions = {
   discovery: PluginEndpointDiscovery;
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
+  cache?: PluginCacheManager;
 };
 
 /**
@@ -80,12 +85,22 @@ export async function createRouter(
   const router = Router();
   const { publisher, config, logger, discovery } = options;
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+  // Set up a cache client if configured.
+  let cache: TechDocsCache | undefined;
+  const defaultTtl = config.getOptionalNumber('techdocs.cache.ttl');
+  if (isOutOfTheBoxOption(options) && options.cache && defaultTtl) {
+    const cacheClient = options.cache.getClient({ defaultTtl });
+    cache = TechDocsCache.fromConfig(config, { cache: cacheClient, logger });
+  }
+
   const scmIntegrations = ScmIntegrations.fromConfig(config);
   const docsSynchronizer = new DocsSynchronizer({
     publisher,
     logger,
     config,
     scmIntegrations,
+    cache,
   });
 
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
@@ -175,6 +190,17 @@ export async function createRouter(
     // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
     // of the repository) is responsible for building and publishing documentation to the storage provider
     if (config.getString('techdocs.builder') !== 'local') {
+      // However, if caching is enabled, take the opportunity to check and
+      // invalidate stale cache entries.
+      if (cache) {
+        await docsSynchronizer.doCacheSync({
+          responseHandler,
+          discovery,
+          token,
+          entity,
+        });
+        return;
+      }
       responseHandler.finish({ updated: false });
       return;
     }
@@ -198,6 +224,11 @@ export async function createRouter(
       ),
     );
   });
+
+  // If a cache manager was provided, attach the cache middleware.
+  if (cache) {
+    router.use(createCacheMiddleware({ logger, cache }));
+  }
 
   // Route middleware which serves files from the storage set in the publisher.
   router.use('/static/docs', publisher.docsRouter());

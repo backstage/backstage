@@ -23,7 +23,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import {
-  addBuildTimestampMetadata,
+  createOrUpdateMetadata,
   getMkdocsYml,
   patchIndexPreBuild,
   patchMkdocsYmlPreBuild,
@@ -164,9 +164,9 @@ export class TechdocsGenerator implements GeneratorBase {
      * Post Generate steps
      */
 
-    // Add build timestamp to techdocs_metadata.json
+    // Add build timestamp and files to techdocs_metadata.json
     // Creates techdocs_metadata.json if file does not exist.
-    await addBuildTimestampMetadata(
+    await createOrUpdateMetadata(
       path.join(outputDir, 'techdocs_metadata.json'),
       childLogger,
     );
