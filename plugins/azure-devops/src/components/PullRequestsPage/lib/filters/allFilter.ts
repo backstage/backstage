@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { BaseFilter, FilterType } from './types';
+import { BaseFilter, FilterType, PullRequestFilter } from './types';
 
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
-import { PullRequestFilter } from '../types';
 
 export type AllFilter = BaseFilter & {
   type: FilterType.All;

@@ -17,7 +17,7 @@
 import { BaseFilter, FilterType, PullRequestFilter } from './types';
 
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
-import { equalsIgnoreCase } from '../utils';
+import { equalsIgnoreCase } from '../../../../utils';
 
 export type CreatedByUserFilter = BaseFilter &
   (

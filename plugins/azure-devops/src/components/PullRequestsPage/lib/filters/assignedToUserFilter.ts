@@ -17,7 +17,7 @@
 import { BaseFilter, FilterType, PullRequestFilter } from './types';
 
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
-import { stringArrayHas } from '../utils';
+import { stringArrayHas } from '../../../../utils';
 
 export type AssignedToUserFilter = BaseFilter &
   (

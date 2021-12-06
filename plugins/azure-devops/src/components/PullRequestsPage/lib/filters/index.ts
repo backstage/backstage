@@ -15,5 +15,5 @@
  */
 
 export { createFilter } from './createFilter';
-export { FilterTypes } from './types';
-export type { Filter, PullRequestFilter, FilterType } from './types';
+export { FilterTypes, FilterType } from './types';
+export type { Filter, PullRequestFilter } from './types';
