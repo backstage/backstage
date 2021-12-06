@@ -15,4 +15,5 @@
  */
 
 export { GitLabClient, paginated } from './client';
+export { parseGitLabGroupUrl } from './org';
 export type { GitLabProject } from './types';
