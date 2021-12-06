@@ -116,14 +116,13 @@ export type SidebarSubmenuItemProps = {
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const { title, to, icon: Icon, dropdownItems } = props;
   const classes = useStyles();
-  const { pathname: locationPathname } = useLocation();
-  const { pathname: toPathname } = useResolvedPath(to);
+  const { pathname: locationPathname, search: locationSearch } = useLocation();
+  const { pathname: toPathname, search: toSearch } = useResolvedPath(to ?? '');
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
     setIsHoveredOn(false);
   };
-
-  let isActive = locationPathname === toPathname;
+  let isActive = locationPathname === toPathname && toSearch === locationSearch;
 
   const [showDropDown, setShowDropDown] = useState(false);
   const handleClickDropdown = () => {
@@ -132,7 +131,10 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
       const resolvedPath = resolvePath(item.to);
-      isActive = locationPathname === resolvedPath.pathname;
+      isActive =
+        locationPathname === resolvedPath.pathname &&
+        locationSearch === toSearch;
+      return isActive;
     });
     return (
       <div className={classes.itemContainer}>
