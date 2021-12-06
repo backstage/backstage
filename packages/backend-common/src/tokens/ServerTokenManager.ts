@@ -18,14 +18,7 @@ import { JWKS, JWK, JWT } from 'jose';
 import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
 import { TokenManager } from './types';
-
-class NoopTokenManager implements TokenManager {
-  async getToken() {
-    return { token: '' };
-  }
-
-  async authenticate() {}
-}
+import { Logger } from 'winston';
 
 /**
  * Creates and validates tokens for use during backend-to-backend
@@ -37,20 +30,42 @@ export class ServerTokenManager implements TokenManager {
   private readonly verificationKeys: JWKS.KeyStore;
   private readonly signingKey: JWK.Key;
 
-  static noop(): TokenManager {
-    return new NoopTokenManager();
+  static default(options: { config: Config; logger: Logger }) {
+    const { config, logger } = options;
+
+    if (process.env.NODE_ENV === 'development') {
+      let secrets: string[] = [];
+      try {
+        secrets = this.getSecrets(config);
+      } catch {
+        // For development, if a secret has not been configured, we auto generate a secret instead of throwing.
+      }
+
+      if (!secrets.length) {
+        const generatedDevOnlyKey = JWK.generateSync('oct', 24 * 8);
+        if (generatedDevOnlyKey.k === undefined) {
+          throw new Error('No key generated');
+        }
+        logger.warn(
+          'Generated a secret for backend-to-backend authentication: DEVELOPMENT USE ONLY. You must configure a secret before deploying to production.',
+        );
+        return new ServerTokenManager([generatedDevOnlyKey.k]);
+      }
+      return new ServerTokenManager(secrets);
+    }
+
+    const secrets = this.getSecrets(config);
+    return new ServerTokenManager(secrets);
   }
 
-  static fromConfig(config: Config) {
-    return new ServerTokenManager(
-      config
-        .getConfigArray('backend.auth.keys')
-        .map(key => key.getString('secret')),
-    );
+  private static getSecrets(config: Config) {
+    return config
+      .getConfigArray('backend.auth.keys')
+      .map(key => key.getString('secret'));
   }
 
-  private constructor(secrets?: string[]) {
-    if (!secrets?.length) {
+  private constructor(secrets: string[]) {
+    if (!secrets.length) {
       throw new Error(
         'No secrets provided when constructing ServerTokenManager',
       );

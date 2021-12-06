@@ -491,13 +491,14 @@ export class ServerTokenManager implements TokenManager {
   // (undocumented)
   authenticate(token: string): Promise<void>;
   // (undocumented)
-  static fromConfig(config: Config): ServerTokenManager;
+  static default(options: {
+    config: Config;
+    logger: Logger_2;
+  }): ServerTokenManager;
   // (undocumented)
   getToken(): Promise<{
     token: string;
   }>;
-  // (undocumented)
-  static noop(): TokenManager;
 }
 
 // @public (undocumented)

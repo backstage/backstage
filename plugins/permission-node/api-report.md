@@ -4,11 +4,17 @@
 
 ```ts
 import { AuthorizeRequest } from '@backstage/plugin-permission-common';
+import { AuthorizeRequestOptions } from '@backstage/plugin-permission-common';
+import { AuthorizeResponse } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
+import { BackstageIdentity } from '@backstage/plugin-auth-backend';
+import { Config } from '@backstage/config';
+import { DiscoveryApi } from '@backstage/plugin-permission-common';
+import { PermissionClient } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
+import { ServerTokenManager } from '@backstage/backend-common';
 
 // @public
 export type ApplyConditionsRequest = {
@@ -119,4 +125,20 @@ export type PolicyDecision =
       result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
     }
   | ConditionalPolicyDecision;
+
+// Warning: (ae-missing-release-tag) "ServerPermissionClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class ServerPermissionClient extends PermissionClient {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    configApi: Config;
+    serverTokenManager: ServerTokenManager;
+  });
+  // (undocumented)
+  authorize(
+    requests: AuthorizeRequest[],
+    options?: AuthorizeRequestOptions,
+  ): Promise<AuthorizeResponse[]>;
+}
 ```
