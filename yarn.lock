@@ -14398,9 +14398,9 @@ expect@^26.6.2:
     jest-regex-util "^26.0.0"
 
 express-prom-bundle@^6.3.6:
-  version "6.3.6"
-  resolved "https://registry.npmjs.org/express-prom-bundle/-/express-prom-bundle-6.3.6.tgz#c8da1c1024edfcc54953c365991aca57ffd0cfda"
-  integrity sha512-IRsTRCEKCVCHEriQlZ1FuutjEFc89KASsveXh+1HcGEnuZKiAC4LugxrsGEIdySqYvqOYSr2SWHJ6L8/BK2SHA==
+  version "6.4.1"
+  resolved "https://registry.npmjs.org/express-prom-bundle/-/express-prom-bundle-6.4.1.tgz#a688050b9e090f6969825c33143106d3e0e5a70e"
+  integrity sha512-Sg0svLQe/SS5z1tHDTVfZVjNumobiDlXM0jmemt5Dm9K6BX8z9yCwEr93zbko6fNMR4zKav77iPfxUWi6gAjNA==
   dependencies:
     on-finished "^2.3.0"
     url-value-parser "^2.0.0"
