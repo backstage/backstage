@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { applyCspDirectives } from './ServiceBuilderImpl';
+import { NextFunction, Request, Response } from 'express';
+import { applyCspDirectives, ServiceBuilderImpl } from './ServiceBuilderImpl';
 
 describe('ServiceBuilderImpl', () => {
   describe('applyCspDirectives', () => {
@@ -31,6 +32,24 @@ describe('ServiceBuilderImpl', () => {
     it('removes false value keys', () => {
       const result = applyCspDirectives({ 'upgrade-insecure-requests': false });
       expect(result!['upgrade-insecure-requests']).toBeUndefined();
+    });
+  });
+
+  describe('setCustomErrorHandler', () => {
+    it('adds custom error handler', () => {
+      const serviceBuilder = new ServiceBuilderImpl(module);
+      const customErrorHandler = (
+        error: Error,
+        req: Request,
+        res: Response,
+        next: NextFunction,
+      ) => {};
+      serviceBuilder.setErrorHandler(customErrorHandler);
+      expect(serviceBuilder.errorHandler).toEqual(customErrorHandler);
+    });
+    it('use default error handler', () => {
+      const serviceBuilder = new ServiceBuilderImpl(module);
+      expect(serviceBuilder.errorHandler).toBeUndefined();
     });
   });
 });

@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import cors from 'cors';
-import { Router, RequestHandler } from 'express';
+import { Router, RequestHandler, ErrorRequestHandler } from 'express';
 import { Server } from 'http';
 import { Logger } from 'winston';
 
@@ -97,6 +97,15 @@ export type ServiceBuilder = {
   setRequestLoggingHandler(
     requestLoggingHandler: RequestLoggingHandlerFactory,
   ): ServiceBuilder;
+
+  /**
+   * Set the error handler
+   *
+   * If no handler is given the default one is used
+   *
+   * @param errorHandler - an error handler
+   */
+  setErrorHandler(errorHandler: ErrorRequestHandler): ServiceBuilder;
 
   /**
    * Starts the server using the given settings.
