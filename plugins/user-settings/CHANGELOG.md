@@ -1,5 +1,15 @@
 # @backstage/plugin-user-settings
 
+## 0.3.12
+
+### Patch Changes
+
+- 9a1c8e92eb: The theme switcher now renders the title of themes instead of their variant
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
 ## 0.3.11
 
 ### Patch Changes

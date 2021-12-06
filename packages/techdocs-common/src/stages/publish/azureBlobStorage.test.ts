@@ -89,6 +89,7 @@ describe('AzureBlobStoragePublish', () => {
     site_name: 'backstage',
     site_description: 'site_content',
     etag: 'etag',
+    build_timestamp: 612741599,
   };
 
   const directory = getEntityRootDir(entity);
@@ -154,14 +155,26 @@ describe('AzureBlobStoragePublish', () => {
   describe('publish', () => {
     it('should publish a directory', async () => {
       const publisher = createPublisherFromConfig();
-      expect(await publisher.publish({ entity, directory })).toBeUndefined();
+      expect(await publisher.publish({ entity, directory })).toMatchObject({
+        objects: expect.arrayContaining([
+          'default/component/backstage/404.html',
+          `default/component/backstage/index.html`,
+          `default/component/backstage/assets/main.css`,
+        ]),
+      });
     });
 
     it('should publish a directory as well when legacy casing is used', async () => {
       const publisher = createPublisherFromConfig({
         legacyUseCaseSensitiveTripletPaths: true,
       });
-      expect(await publisher.publish({ entity, directory })).toBeUndefined();
+      expect(await publisher.publish({ entity, directory })).toMatchObject({
+        objects: expect.arrayContaining([
+          'default/Component/backstage/404.html',
+          `default/Component/backstage/index.html`,
+          `default/Component/backstage/assets/main.css`,
+        ]),
+      });
     });
 
     it('should fail to publish a directory', async () => {

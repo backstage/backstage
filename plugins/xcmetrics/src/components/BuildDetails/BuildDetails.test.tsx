@@ -51,6 +51,20 @@ describe('BuildDetails', () => {
     ).toBeInTheDocument();
     expect(rendered.getByText(client.mockBuild.schema)).toBeInTheDocument();
   });
+
+  it('should render if xcode data is not present', async () => {
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
+        <BuildDetails
+          buildData={{ ...client.mockBuildResponse, xcode: undefined }}
+        />
+      </TestApiProvider>,
+    );
+
+    expect(
+      rendered.getByText('Xcode').parentNode?.childNodes[1].textContent,
+    ).toEqual('Unknown');
+  });
 });
 
 describe('BuildDetails with request', () => {

@@ -39,6 +39,7 @@ import {
 import {
   PublisherBase,
   PublishRequest,
+  PublishResponse,
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
@@ -214,7 +215,11 @@ export class AwsS3Publish implements PublisherBase {
    * Upload all the files from the generated `directory` to the S3 bucket.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
-  async publish({ entity, directory }: PublishRequest): Promise<void> {
+  async publish({
+    entity,
+    directory,
+  }: PublishRequest): Promise<PublishResponse> {
+    const objects: string[] = [];
     const useLegacyPathCasing = this.legacyPathCasing;
     const bucketRootPath = this.bucketRootPath;
     const sse = this.sse;
@@ -263,6 +268,7 @@ export class AwsS3Publish implements PublisherBase {
             ...(sse && { ServerSideEncryption: sse }),
           } as aws.S3.PutObjectRequest;
 
+          objects.push(params.Key);
           return this.storageClient.upload(params).promise();
         },
         absoluteFilesToUpload,
@@ -311,6 +317,7 @@ export class AwsS3Publish implements PublisherBase {
       const errorMessage = `Unable to delete file(s) from AWS S3. ${error}`;
       this.logger.error(errorMessage);
     }
+    return { objects };
   }
 
   async fetchTechDocsMetadata(

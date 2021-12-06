@@ -29,7 +29,7 @@ import { SidebarContext } from '@backstage/core-components';
 describe('Shortcuts', () => {
   it('displays an add button', async () => {
     await renderInTestApp(
-      <SidebarContext.Provider value={{ isOpen: true }}>
+      <SidebarContext.Provider value={{ isOpen: true, setOpen: _open => {} }}>
         <TestApiProvider
           apis={[
             [

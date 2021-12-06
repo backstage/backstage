@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import { V1Pod, V1PodCondition } from '@kubernetes/client-node';
+import {
+  V1Pod,
+  V1PodCondition,
+  V1DeploymentCondition,
+} from '@kubernetes/client-node';
 import React, { Fragment, ReactNode } from 'react';
 import { Chip } from '@material-ui/core';
-import { V1DeploymentCondition } from '@kubernetes/client-node/dist/gen/model/v1DeploymentCondition';
 import {
   StatusAborted,
   StatusError,
   StatusOK,
   SubvalueCell,
 } from '@backstage/core-components';
+import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 
 export const imageChips = (pod: V1Pod): ReactNode => {
   const containerStatuses = pod.status?.containerStatuses ?? [];
@@ -101,4 +105,63 @@ export const renderCondition = (
     ];
   }
   return [condition.type, <StatusAborted />];
+};
+
+// visible for testing
+export const currentToDeclaredResourceToPerc = (
+  current: number | string,
+  resource: number | string,
+): string => {
+  if (typeof current === 'number' && typeof resource === 'number') {
+    return `${Math.round((current / resource) * 100)}%`;
+  }
+
+  const numerator: bigint = BigInt(current);
+  const denominator: bigint = BigInt(resource);
+
+  return `${(numerator * BigInt(100)) / denominator}%`;
+};
+
+export const podStatusToCpuUtil = (podStatus: ClientPodStatus): ReactNode => {
+  const cpuUtil = podStatus.cpu;
+
+  let currentUsage: number | string = cpuUtil.currentUsage;
+
+  // current usage number for CPU is a different unit than request/limit total
+  // this might be a bug in the k8s library
+  if (typeof cpuUtil.currentUsage === 'number') {
+    currentUsage = cpuUtil.currentUsage / 10;
+  }
+
+  return (
+    <SubvalueCell
+      value={`requests: ${currentToDeclaredResourceToPerc(
+        currentUsage,
+        cpuUtil.requestTotal,
+      )}`}
+      subvalue={`limits: ${currentToDeclaredResourceToPerc(
+        currentUsage,
+        cpuUtil.limitTotal,
+      )}`}
+    />
+  );
+};
+
+export const podStatusToMemoryUtil = (
+  podStatus: ClientPodStatus,
+): ReactNode => {
+  const memUtil = podStatus.memory;
+
+  return (
+    <SubvalueCell
+      value={`requests: ${currentToDeclaredResourceToPerc(
+        memUtil.currentUsage,
+        memUtil.requestTotal,
+      )}`}
+      subvalue={`limits: ${currentToDeclaredResourceToPerc(
+        memUtil.currentUsage,
+        memUtil.limitTotal,
+      )}`}
+    />
+  );
 };

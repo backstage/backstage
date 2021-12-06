@@ -47,6 +47,7 @@ export function registerCommands(program: CommanderStatic) {
   program
     .command('backend:build')
     .description('Build a backend plugin')
+    .option('--minify', 'Minify the generated code')
     .action(lazy(() => import('./backend/build').then(m => m.default)));
 
   program
@@ -116,6 +117,7 @@ export function registerCommands(program: CommanderStatic) {
   program
     .command('plugin:build')
     .description('Build a plugin')
+    .option('--minify', 'Minify the generated code')
     .action(lazy(() => import('./plugin/build').then(m => m.default)));
 
   program

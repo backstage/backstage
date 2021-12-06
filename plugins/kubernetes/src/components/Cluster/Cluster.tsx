@@ -23,7 +23,10 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import { ClusterObjects } from '@backstage/plugin-kubernetes-common';
+import {
+  ClientPodStatus,
+  ClusterObjects,
+} from '@backstage/plugin-kubernetes-common';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { DeploymentsAccordions } from '../DeploymentsAccordions';
 import { groupResponses } from '../../utils/response';
@@ -39,6 +42,7 @@ import {
 
 import { StatusError, StatusOK, TableColumn } from '@backstage/core-components';
 import { V1Pod } from '@kubernetes/client-node';
+import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
 
 type ClusterSummaryProps = {
   clusterName: string;
@@ -114,41 +118,52 @@ export const Cluster = ({
   customPodTableColumns,
 }: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
+  const podNameToMetrics = clusterObjects.podMetrics
+    .flat()
+    .reduce((accum, next) => {
+      const name = next.pod.metadata?.name;
+      if (name !== undefined) {
+        accum.set(name, next);
+      }
+      return accum;
+    }, new Map<string, ClientPodStatus>());
   return (
     <ClusterContext.Provider value={clusterObjects.cluster}>
       <GroupedResponsesContext.Provider value={groupedResponses}>
-        <PodNamesWithErrorsContext.Provider value={podsWithErrors}>
-          <Accordion TransitionProps={{ unmountOnExit: true }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <ClusterSummary
-                clusterName={clusterObjects.cluster.name}
-                totalNumberOfPods={groupedResponses.pods.length}
-                numberOfPodsWithErrors={podsWithErrors.size}
-              />
-            </AccordionSummary>
-            <AccordionDetails>
-              <Grid container direction="column">
-                <Grid item>
-                  <CustomResources />
-                </Grid>
-                <Grid item>
-                  <DeploymentsAccordions
-                    customPodTableColumns={customPodTableColumns}
-                  />
-                </Grid>
-                <Grid item>
-                  <IngressesAccordions />
-                </Grid>
-                <Grid item>
-                  <ServicesAccordions />
+        <PodNamesWithMetricsContext.Provider value={podNameToMetrics}>
+          <PodNamesWithErrorsContext.Provider value={podsWithErrors}>
+            <Accordion TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <ClusterSummary
+                  clusterName={clusterObjects.cluster.name}
+                  totalNumberOfPods={groupedResponses.pods.length}
+                  numberOfPodsWithErrors={podsWithErrors.size}
+                />
+              </AccordionSummary>
+              <AccordionDetails>
+                <Grid container direction="column">
+                  <Grid item>
+                    <CustomResources />
+                  </Grid>
+                  <Grid item>
+                    <DeploymentsAccordions
+                      customPodTableColumns={customPodTableColumns}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <IngressesAccordions />
+                  </Grid>
+                  <Grid item>
+                    <ServicesAccordions />
+                  </Grid>
                 </Grid>
                 <Grid item>
                   <CronJobsAccordions />
                 </Grid>
-              </Grid>
-            </AccordionDetails>
-          </Accordion>
-        </PodNamesWithErrorsContext.Provider>
+              </AccordionDetails>
+            </Accordion>
+          </PodNamesWithErrorsContext.Provider>
+        </PodNamesWithMetricsContext.Provider>
       </GroupedResponsesContext.Provider>
     </ClusterContext.Provider>
   );

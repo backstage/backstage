@@ -27,9 +27,19 @@ import {
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
 import {
+  ClientContainerStatus,
+  ClientCurrentResourceUsage,
+  ClientPodStatus,
   ClusterObjects,
+  FetchResponse,
   ObjectsByEntityResponse,
+  PodFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
+import {
+  ContainerStatus,
+  CurrentResourceUsage,
+  PodStatus,
+} from '@kubernetes/client-node';
 
 export const DEFAULT_OBJECTS: ObjectToFetch[] = [
   {
@@ -92,6 +102,50 @@ export interface KubernetesFanOutHandlerOptions
   extends KubernetesObjectsProviderOptions {}
 
 export interface KubernetesRequestBody extends ObjectsByEntityRequest {}
+
+const isPodFetchResponse = (fr: FetchResponse): fr is PodFetchResponse =>
+  fr.type === 'pods';
+const isString = (str: string | undefined): str is string => str !== undefined;
+
+const numberOrBigIntToNumberOrString = (
+  value: number | BigInt,
+): number | string => {
+  // @ts-ignore
+  return typeof value === 'bigint' ? value.toString() : value;
+};
+
+const toClientSafeResource = (
+  current: CurrentResourceUsage,
+): ClientCurrentResourceUsage => {
+  return {
+    currentUsage: numberOrBigIntToNumberOrString(current.CurrentUsage),
+    requestTotal: numberOrBigIntToNumberOrString(current.RequestTotal),
+    limitTotal: numberOrBigIntToNumberOrString(current.LimitTotal),
+  };
+};
+
+const toClientSafeContainer = (
+  container: ContainerStatus,
+): ClientContainerStatus => {
+  return {
+    container: container.Container,
+    cpuUsage: toClientSafeResource(container.CPUUsage),
+    memoryUsage: toClientSafeResource(container.MemoryUsage),
+  };
+};
+
+const toClientSafePodMetrics = (
+  podMetrics: PodStatus[][],
+): ClientPodStatus[] => {
+  return podMetrics.flat().map((pd: PodStatus): ClientPodStatus => {
+    return {
+      pod: pd.Pod,
+      memory: toClientSafeResource(pd.Memory),
+      cpu: toClientSafeResource(pd.CPU),
+      containers: pd.Containers.map(toClientSafeContainer),
+    };
+  });
+};
 
 export class KubernetesFanOutHandler {
   private readonly logger: Logger;
@@ -162,10 +216,36 @@ export class KubernetesFanOutHandler {
             customResources: this.customResources,
           })
           .then(result => {
+            if (clusterDetailsItem.skipMetricsLookup) {
+              return Promise.all([
+                Promise.resolve(result),
+                Promise.resolve([]),
+              ]);
+            }
+            // TODO refactor, extract as method
+            const namespaces: Set<string> = new Set<string>(
+              result.responses
+                .filter(isPodFetchResponse)
+                .flatMap(r => r.resources)
+                .map(p => p.metadata?.namespace)
+                .filter(isString),
+            );
+
+            const podMetrics = Array.from(namespaces).map(ns =>
+              this.fetcher.fetchPodMetricsByNamespace(clusterDetailsItem, ns),
+            );
+
+            return Promise.all([
+              Promise.resolve(result),
+              Promise.all(podMetrics),
+            ]);
+          })
+          .then(([result, metrics]) => {
             const objects: ClusterObjects = {
               cluster: {
                 name: clusterDetailsItem.name,
               },
+              podMetrics: toClientSafePodMetrics(metrics),
               resources: result.responses,
               errors: result.errors,
             };

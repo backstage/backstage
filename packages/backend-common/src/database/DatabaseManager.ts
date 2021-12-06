@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { Knex } from 'knex';
-import { omit } from 'lodash';
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
+import { Knex } from 'knex';
+import { merge, omit } from 'lodash';
+import { mergeDatabaseConfig } from './config';
 import {
-  createNameOverride,
-  ensureDatabaseExists,
-  normalizeConnection,
-  createSchemaOverride,
-  ensureSchemaExists,
   createDatabaseClient,
+  createNameOverride,
+  createSchemaOverride,
+  ensureDatabaseExists,
+  ensureSchemaExists,
+  normalizeConnection,
 } from './connection';
 import { PluginDatabaseManager } from './types';
-import { mergeDatabaseConfig } from './config';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -138,6 +138,24 @@ export class DatabaseManager {
     };
   }
 
+  /**
+   * Provides the knexConfig which should be used for a given plugin.
+   *
+   * @param pluginId Plugin to get the knexConfig for
+   * @returns the merged kexConfig value or undefined if it isn't specified
+   */
+  private getAdditionalKnexConfig(pluginId: string): JsonObject | undefined {
+    const pluginConfig = this.config
+      .getOptionalConfig(`${pluginPath(pluginId)}.knexConfig`)
+      ?.get<JsonObject>();
+
+    const baseConfig = this.config
+      .getOptionalConfig('knexConfig')
+      ?.get<JsonObject>();
+
+    return merge(baseConfig, pluginConfig);
+  }
+
   private getEnsureExistsConfig(pluginId: string): boolean {
     const baseConfig = this.config.getOptionalBoolean('ensureExists') ?? true;
     return (
@@ -200,6 +218,7 @@ export class DatabaseManager {
     const { client } = this.getClientType(pluginId);
 
     return {
+      ...this.getAdditionalKnexConfig(pluginId),
       client,
       connection: this.getConnectionConfig(pluginId),
     };

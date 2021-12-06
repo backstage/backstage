@@ -36,12 +36,12 @@ import {
   getOwnedPodsThroughReplicaSets,
   getMatchingHpa,
 } from '../../utils/owner';
-import { containersReady, totalRestarts } from '../../utils/pod';
 import {
   GroupedResponsesContext,
   PodNamesWithErrorsContext,
 } from '../../hooks';
-import { StatusError, StatusOK, TableColumn } from '@backstage/core-components';
+import { StatusError, StatusOK } from '@backstage/core-components';
+import { READY_COLUMNS, RESOURCE_COLUMNS } from '../Pods/PodsTable';
 
 type DeploymentsAccordionsProps = {
   customPodTableColumns?: TableColumn<V1Pod>[];
@@ -63,20 +63,6 @@ type DeploymentSummaryProps = {
   hpa?: V1HorizontalPodAutoscaler;
   children?: React.ReactNode;
 };
-
-const deploymentPodColumns: TableColumn<V1Pod>[] = [
-  {
-    title: 'containers ready',
-    align: 'center',
-    render: containersReady,
-  },
-  {
-    title: 'total restarts',
-    align: 'center',
-    render: totalRestarts,
-    type: 'numeric',
-  },
-];
 
 const DeploymentSummary = ({
   deployment,
@@ -168,8 +154,6 @@ const DeploymentAccordion = ({
     podNamesWithErrors.has(p.metadata?.name ?? ''),
   );
 
-  const extraColumns = deploymentPodColumns.concat(customPodTableColumns);
-
   return (
     <Accordion TransitionProps={{ unmountOnExit: true }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -181,7 +165,11 @@ const DeploymentAccordion = ({
         />
       </AccordionSummary>
       <AccordionDetails>
-        <PodsTable pods={ownedPods} extraColumns={extraColumns} />
+        <PodsTable
+          pods={ownedPods}
+          extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]}
+          customColumns={customPodTableColumns}
+        />
       </AccordionDetails>
     </Accordion>
   );

@@ -14,7 +14,9 @@ import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Profile } from 'passport';
+import { TokenSet } from 'openid-client';
 import { UserEntity } from '@backstage/catalog-model';
+import { UserinfoResponse } from 'openid-client';
 
 // Warning: (ae-missing-release-tag) "AtlassianAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -245,6 +247,14 @@ export const createOAuth2Provider: (
   options?: OAuth2ProviderOptions | undefined,
 ) => AuthProviderFactory;
 
+// Warning: (ae-forgotten-export) The symbol "OidcProviderOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "createOidcProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createOidcProvider: (
+  options?: OidcProviderOptions | undefined,
+) => AuthProviderFactory;
+
 // Warning: (ae-missing-release-tag) "createOktaProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -267,6 +277,11 @@ export function createRouter({
   database,
   providerFactories,
 }: RouterOptions): Promise<express.Router>;
+
+// @public (undocumented)
+export const createSamlProvider: (
+  options?: SamlProviderOptions | undefined,
+) => AuthProviderFactory;
 
 // Warning: (ae-missing-release-tag) "factories" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -567,6 +582,19 @@ export interface RouterOptions {
   // (undocumented)
   providerFactories?: ProviderFactories;
 }
+
+// @public (undocumented)
+export type SamlAuthResult = {
+  fullProfile: any;
+};
+
+// @public (undocumented)
+export type SamlProviderOptions = {
+  authHandler?: AuthHandler<SamlAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<SamlAuthResult>;
+  };
+};
 
 // Warning: (ae-missing-release-tag) "TokenIssuer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

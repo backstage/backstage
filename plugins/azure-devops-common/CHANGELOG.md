@@ -1,5 +1,11 @@
 # @backstage/plugin-azure-devops-common
 
+## 0.1.1
+
+### Patch Changes
+
+- 0749dd0307: feat: Created pull request card component and initial pull request dashboard page.
+
 ## 0.1.0
 
 ### Minor Changes

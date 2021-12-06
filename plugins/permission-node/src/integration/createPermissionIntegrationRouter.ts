@@ -132,7 +132,7 @@ export const createPermissionIntegrationRouter = <TResource>({
   const getRule = createGetRule(rules);
 
   router.post(
-    '/permissions/apply-conditions',
+    '/.well-known/backstage/permissions/apply-conditions',
     express.json(),
     async (
       req,

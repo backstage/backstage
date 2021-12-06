@@ -9,6 +9,7 @@
 /docs/features/search                       @backstage/techdocs-core
 /docs/assets/search                         @backstage/techdocs-core
 /plugins/allure                             @backstage/reviewers @deepak-bhardwaj-ps
+/plugins/circleci                           @backstage/reviewers @adamdmharvey
 /plugins/code-coverage                      @backstage/reviewers @alde @nissayeva
 /plugins/code-coverage-backend              @backstage/reviewers @alde @nissayeva
 /plugins/cost-insights                      @backstage/silver-lining
@@ -22,9 +23,13 @@
 /plugins/azure-devops                       @backstage/reviewers @marleypowell @awanlin
 /plugins/azure-devops-backend               @backstage/reviewers @marleypowell @awanlin
 /plugins/azure-devops-common                @backstage/reviewers @marleypowell @awanlin
+/plugins/jenkins                            @backstage/reviewers @timja
+/plugins/jenkins-backend                    @backstage/reviewers @timja
 /plugins/kafka                              @backstage/reviewers @nirga
 /plugins/kafka-backend                      @backstage/reviewers @nirga
 /plugins/scaffolder-backend-module-yeoman   @backstage/reviewers @pawelmitka
+/plugins/scaffolder-backend-module-rails    @backstage/reviewers @angeliski
+/plugins/git-release-manager                @backstage/reviewers @erikengervall
 /tech-insights-backend                      @backstage/reviewers @xantier @iain-b
 /tech-insights-backend-module-jsonfc        @backstage/reviewers @xantier @iain-b
 /tech-insights-tech-insights-common         @backstage/reviewers @xantier @iain-b
