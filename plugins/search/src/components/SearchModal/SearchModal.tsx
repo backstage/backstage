@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import React, { useEffect, useState } from 'react';
+import { useDebounce } from 'react-use';
 import {
   Dialog,
   DialogActions,
@@ -26,16 +27,16 @@ import {
 } from '@material-ui/core';
 import { Launch } from '@material-ui/icons/';
 import { makeStyles } from '@material-ui/core/styles';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { Link } from '@backstage/core-components';
+
 import { SearchBarBase } from '../SearchBar';
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResult } from '../SearchResult';
 import { SearchContextProvider, useSearch } from '../SearchContext';
 import { SearchResultPager } from '../SearchResultPager';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { Link } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
-
-import { useDebounce } from 'react-use';
+import { useNavigateToQuery } from '../util';
 
 export interface SearchModalProps {
   open?: boolean;
@@ -59,6 +60,7 @@ const useStyles = makeStyles(theme => ({
 
 export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
   const getSearchLink = useRouteRef(rootRouteRef);
+  const handleSearch = useNavigateToQuery();
   const classes = useStyles();
 
   const { term, setTerm } = useSearch();
@@ -85,6 +87,11 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
     handleResultClick();
   };
 
+  const handleSubmit = () => {
+    toggleModal();
+    handleSearch({ query: value });
+  };
+
   return (
     <Dialog
       classes={{
@@ -99,10 +106,13 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
       <DialogTitle>
         <Paper className={classes.container}>
           <SearchBarBase
+            // decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus
             className={classes.input}
             value={value}
             onChange={handleQuery}
-            onClear={handleClear}
+            onSubmit={handleSubmit}
           />
         </Paper>
       </DialogTitle>

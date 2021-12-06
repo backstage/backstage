@@ -48,6 +48,7 @@ export const SearchBarBase = ({
   const onKeyDown = React.useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (onSubmit && e.key === 'Enter') {
+        e.preventDefault();
         onSubmit();
       }
     },
@@ -123,8 +124,6 @@ export const SearchBar = ({
     setValue(newValue);
   };
 
-  const handleClear = () => setValue('');
-
   return (
     <SearchBarBase
       // decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus
@@ -133,7 +132,6 @@ export const SearchBar = ({
       className={className}
       value={value}
       onChange={handleQuery}
-      onClear={handleClear}
       placeholder={placeholder}
       clearButton={clearButton}
     />
