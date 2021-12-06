@@ -40,26 +40,38 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type CatalogKindHeaderProps = {
   initialFilter?: string;
+  onChange?: (kind: EntityKindFilter) => void;
 };
 
 export const CatalogKindHeader = ({
   initialFilter = 'component',
+  onChange,
 }: CatalogKindHeaderProps) => {
   const classes = useStyles();
   const { kinds: allKinds = [] } = useEntityKinds();
-  const { updateFilters, queryParameters } = useEntityListProvider();
+  const { updateFilters, queryParameters, filters } = useEntityListProvider();
 
   const [selectedKind, setSelectedKind] = useState(
     ([queryParameters.kind].flat()[0] ?? initialFilter).toLocaleLowerCase(
       'en-US',
     ),
   );
+  const { kind: filteredKind } = filters;
 
   useEffect(() => {
     updateFilters({
       kind: selectedKind ? new EntityKindFilter(selectedKind) : undefined,
     });
   }, [selectedKind, updateFilters]);
+
+  // Use kind from filters as a dependency instead of the selectedKind because we want to wait with triggering this until the data has been loaded
+  useEffect(() => {
+    if (!filteredKind?.value || !onChange) {
+      return;
+    }
+
+    onChange(filteredKind);
+  }, [filteredKind, onChange]);
 
   // Before allKinds is loaded, or when a kind is entered manually in the URL, selectedKind may not
   // be present in allKinds. It should still be shown in the dropdown, but may not have the nice

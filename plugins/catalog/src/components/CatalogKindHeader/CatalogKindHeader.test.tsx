@@ -118,4 +118,24 @@ describe('<CatalogKindHeader />', () => {
       kind: new EntityKindFilter('template'),
     });
   });
+
+  it('triggers the kind change event', async () => {
+    const onChange = jest.fn();
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider>
+          <CatalogKindHeader onChange={onChange} />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(onChange).toHaveBeenCalledWith(new EntityKindFilter('component'));
+
+    const input = rendered.getByText('Components');
+    fireEvent.mouseDown(input);
+
+    const option = rendered.getByRole('option', { name: 'Systems' });
+    fireEvent.click(option);
+
+    expect(onChange).toHaveBeenCalledWith(new EntityKindFilter('system'));
+  });
 });

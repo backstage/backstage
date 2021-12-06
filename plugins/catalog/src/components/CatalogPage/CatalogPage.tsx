@@ -25,6 +25,7 @@ import {
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
+  EntityKindFilter,
   EntityLifecyclePicker,
   EntityListProvider,
   EntityOwnerPicker,
@@ -48,12 +49,14 @@ export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<EntityRow>[];
   actions?: TableProps<EntityRow>['actions'];
+  onKindChange?: (kind: EntityKindFilter) => void;
 };
 
 export const CatalogPage = ({
   columns,
   actions,
   initiallySelectedFilter = 'owned',
+  onKindChange,
 }: CatalogPageProps) => {
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
@@ -63,7 +66,9 @@ export const CatalogPage = ({
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <EntityListProvider>
         <Content>
-          <ContentHeader titleComponent={<CatalogKindHeader />}>
+          <ContentHeader
+            titleComponent={<CatalogKindHeader onChange={onKindChange} />}
+          >
             <CreateButton
               title="Create Component"
               to={createComponentLink && createComponentLink()}
