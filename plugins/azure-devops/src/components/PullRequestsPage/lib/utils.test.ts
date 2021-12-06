@@ -132,7 +132,7 @@ describe('getPullRequestGroups', () => {
       { title: 'Other PRs', filter: (_: unknown) => true, simplified: true },
     ];
 
-    const result = getPullRequestGroups(pullRequests, configs);
+    const result = getPullRequestGroups(pullRequests, configs) ?? [];
 
     expect(result.length).toBe(2);
 
