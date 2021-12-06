@@ -43,12 +43,17 @@ describe('ServiceBuilderImpl', () => {
         req: Request,
         res: Response,
         next: NextFunction,
-      ) => {};
+      ) => {
+        console.log(req, res);
+        next(error);
+      };
       serviceBuilder.setErrorHandler(customErrorHandler);
+      // @ts-ignore check private attribute
       expect(serviceBuilder.errorHandler).toEqual(customErrorHandler);
     });
     it('use default error handler', () => {
       const serviceBuilder = new ServiceBuilderImpl(module);
+      // @ts-ignore check private attribute
       expect(serviceBuilder.errorHandler).toBeUndefined();
     });
   });
