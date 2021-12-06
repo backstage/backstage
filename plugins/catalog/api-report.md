@@ -17,6 +17,7 @@ import { CatalogEntityAncestorsResponse } from '@backstage/catalog-client';
 import { CatalogListResponse } from '@backstage/catalog-client';
 import { CatalogRequestOptions } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
+import { EntityKindFilter } from '@backstage/plugin-catalog-react';
 import { EntityName } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -134,6 +135,7 @@ export const CatalogIndexPage: ({
   columns,
   actions,
   initiallySelectedFilter,
+  onKindChange,
 }: CatalogPageProps) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "CatalogKindHeaderProps" needs to be exported by the entry point index.d.ts
@@ -142,6 +144,7 @@ export const CatalogIndexPage: ({
 // @public (undocumented)
 export const CatalogKindHeader: ({
   initialFilter,
+  onChange,
 }: CatalogKindHeaderProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "catalogPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
