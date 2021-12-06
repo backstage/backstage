@@ -287,6 +287,8 @@ export type TechDocsMetadata = {
   site_name: string;
   site_description: string;
   etag: string;
+  build_timestamp: number;
+  files?: string[];
 };
 
 // Warning: (ae-missing-release-tag) "transformDirLocation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

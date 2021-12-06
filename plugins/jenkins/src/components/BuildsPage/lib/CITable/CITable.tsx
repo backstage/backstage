@@ -205,6 +205,10 @@ export const CITableView = ({
   onChangePageSize,
   total,
 }: Props) => {
+  const projectsInPage = projects?.slice(
+    page * pageSize,
+    Math.min(projects.length, (page + 1) * pageSize),
+  );
   return (
     <Table
       isLoading={loading}
@@ -219,7 +223,7 @@ export const CITableView = ({
           onClick: () => retry(),
         },
       ]}
-      data={projects ?? []}
+      data={projectsInPage ?? []}
       onPageChange={onChangePage}
       onRowsPerPageChange={onChangePageSize}
       title={

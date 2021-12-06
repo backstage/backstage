@@ -15,14 +15,14 @@
  */
 
 import { GroupEntity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import {
   CatalogApi,
   catalogApiRef,
   catalogRouteRef,
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import {
   BackstageTheme,
   createTheme,
@@ -86,11 +86,11 @@ const catalogApi: Partial<CatalogApi> = {
   getEntities: () => Promise.resolve({ items: [serviceA, serviceB, websiteA] }),
 };
 
-const apiRegistry = ApiRegistry.from([[catalogApiRef, catalogApi]]);
+const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
 export const Default = () =>
   wrapInTestApp(
-    <ApiProvider apis={apiRegistry}>
+    <ApiProvider apis={apis}>
       <EntityProvider entity={defaultEntity}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
@@ -123,7 +123,7 @@ const monochromeTheme = (outer: BackstageTheme) =>
 export const Themed = () =>
   wrapInTestApp(
     <ThemeProvider theme={monochromeTheme}>
-      <ApiProvider apis={apiRegistry}>
+      <ApiProvider apis={apis}>
         <EntityProvider entity={defaultEntity}>
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>

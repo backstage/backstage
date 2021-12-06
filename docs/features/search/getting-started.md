@@ -114,13 +114,15 @@ const routes = (
 In `Root.tsx`, add the `SidebarSearchModal` component:
 
 ```bash
-import { SidebarSearchModal } from '@backstage/plugin-search';
+import { SidebarSearchModal, SearchContextProvider } from '@backstage/plugin-search';
 
 export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
-      <SidebarSearchModal />
+      <SearchContextProvider>
+        <SidebarSearchModal />
+      </SearchContextProvider>
       <SidebarDivider />
 ...
 ```
@@ -154,13 +156,17 @@ import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 export default async function createPlugin({
   logger,
   discovery,
+  tokenManager,
 }: PluginEnvironment) {
   const searchEngine = new LunrSearchEngine({ logger });
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: new DefaultCatalogCollator({ discovery }),
+    collator: new DefaultCatalogCollator({
+      discovery,
+      tokenManager,
+    }),
   });
 
   const { scheduler } = await indexBuilder.build();
@@ -285,7 +291,10 @@ const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
 indexBuilder.addCollator({
   defaultRefreshIntervalSeconds: 600,
-  collator: new DefaultCatalogCollator({ discovery }),
+  collator: new DefaultCatalogCollator({
+    discovery,
+    tokenManager,
+  }),
 });
 
 indexBuilder.addCollator({
@@ -303,6 +312,9 @@ its `defaultRefreshIntervalSeconds` value, like this:
 ```typescript {3}
 indexBuilder.addCollator({
   defaultRefreshIntervalSeconds: 600,
-  collator: new DefaultCatalogCollator({ discovery }),
+  collator: new DefaultCatalogCollator({
+    discovery,
+    tokenManager,
+  }),
 });
 ```

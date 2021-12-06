@@ -1,5 +1,24 @@
 # @backstage/plugin-api-docs
 
+## 0.6.16
+
+### Patch Changes
+
+- 752a53d94e: Improve theme integration for OpenApi definition
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
+## 0.6.15
+
+### Patch Changes
+
+- c982fc12cb: Adjusted some styles in the OpenAPI definition, for elements which were barely readable in dark mode.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
 ## 0.6.14
 
 ### Patch Changes

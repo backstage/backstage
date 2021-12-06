@@ -15,14 +15,10 @@
  */
 import React from 'react';
 import { screen } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { rootRouteRef } from '../../plugin';
 import { searchApiRef } from '../../apis';
 
@@ -38,10 +34,10 @@ jest.mock('../SearchContext', () => ({
 describe('SearchModal', () => {
   const query = jest.fn().mockResolvedValue({});
 
-  const apiRegistry = ApiRegistry.from([
+  const apiRegistry = TestApiRegistry.from(
     [configApiRef, new ConfigReader({ app: { title: 'Mock app' } })],
     [searchApiRef, { query }],
-  ]);
+  );
 
   const toggleModal = jest.fn();
 

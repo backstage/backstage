@@ -17,19 +17,126 @@ import { openshiftFormatter } from './openshift';
 
 describe('clusterLinks - OpenShift formatter', () => {
   it('should return an url on the workloads when there is a namespace only', () => {
-    expect(() =>
-      openshiftFormatter({
-        dashboardUrl: new URL('https://k8s.foo.com'),
-        object: {
-          metadata: {
-            name: 'foobar',
-            namespace: 'bar',
-          },
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com'),
+      object: {
+        metadata: {
+          namespace: 'bar',
         },
-        kind: 'Deployment',
-      }),
-    ).toThrowError(
-      'OpenShift formatter is not yet implemented. Please, contribute!',
+      },
+      kind: 'foo',
+    });
+    expect(url.href).toBe('https://k8s.foo.com/k8s/cluster/projects/bar');
+  });
+  it('should return an url on the workloads when the kind is not recognizeed', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'UnknownKind',
+    });
+    expect(url.href).toBe('https://k8s.foo.com/k8s/cluster/projects/bar');
+  });
+  it('should return an url on the deployment', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Deployment',
+    });
+    expect(url.href).toBe('https://k8s.foo.com/k8s/ns/bar/deployments/foobar');
+  });
+  it('should return an url on the deployment and keep the path prefix 1', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/some/prefix/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Deployment',
+    });
+    expect(url.href).toBe(
+      'https://k8s.foo.com/some/prefix/k8s/ns/bar/deployments/foobar',
+    );
+  });
+  it('should return an url on the deployment and keep the path prefix 2', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/some/prefix'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Deployment',
+    });
+    expect(url.href).toBe(
+      'https://k8s.foo.com/some/prefix/k8s/ns/bar/deployments/foobar',
+    );
+  });
+  it('should return an url on the service', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Service',
+    });
+    expect(url.href).toBe('https://k8s.foo.com/k8s/ns/bar/services/foobar');
+  });
+  it('should return an url on the ingress', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Ingress',
+    });
+    expect(url.href).toBe('https://k8s.foo.com/k8s/ns/bar/ingresses/foobar');
+  });
+  it('should return an url on the deployment for a hpa', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'HorizontalPodAutoscaler',
+    });
+    expect(url.href).toBe(
+      'https://k8s.foo.com/k8s/ns/bar/horizontalpodautoscalers/foobar',
+    );
+  });
+  it('should return an url on the PV', () => {
+    const url = openshiftFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+        },
+      },
+      kind: 'PersistentVolume',
+    });
+    expect(url.href).toBe(
+      'https://k8s.foo.com/k8s/cluster/persistentvolumes/foobar',
     );
   });
 });

@@ -85,6 +85,12 @@ export class OAuth2AuthProvider implements OAuthHandlers {
         tokenURL: options.tokenUrl,
         passReqToCallback: false as true,
         scope: options.scope,
+        customHeaders: {
+          Authorization: `Basic ${this.encodeClientCredentials(
+            options.clientId,
+            options.clientSecret,
+          )}`,
+        },
       },
       (
         accessToken: any,
@@ -186,6 +192,10 @@ export class OAuth2AuthProvider implements OAuthHandlers {
     }
 
     return response;
+  }
+
+  encodeClientCredentials(clientID: string, clientSecret: string): string {
+    return Buffer.from(`${clientID}:${clientSecret}`).toString('base64');
   }
 }
 

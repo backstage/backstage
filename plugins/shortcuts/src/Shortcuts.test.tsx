@@ -15,25 +15,31 @@
  */
 
 import React from 'react';
-import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
+import {
+  MockStorageApi,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import { screen, waitFor } from '@testing-library/react';
 import { Shortcuts } from './Shortcuts';
 import { LocalStoredShortcuts, shortcutsApiRef } from './api';
 
 import { SidebarContext } from '@backstage/core-components';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-
-const apis = ApiRegistry.from([
-  [shortcutsApiRef, new LocalStoredShortcuts(MockStorageApi.create())],
-]);
 
 describe('Shortcuts', () => {
   it('displays an add button', async () => {
     await renderInTestApp(
-      <SidebarContext.Provider value={{ isOpen: true }}>
-        <ApiProvider apis={apis}>
+      <SidebarContext.Provider value={{ isOpen: true, setOpen: _open => {} }}>
+        <TestApiProvider
+          apis={[
+            [
+              shortcutsApiRef,
+              new LocalStoredShortcuts(MockStorageApi.create()),
+            ],
+          ]}
+        >
           <Shortcuts />
-        </ApiProvider>
+        </TestApiProvider>
       </SidebarContext.Provider>,
     );
     await waitFor(() => !screen.queryByTestId('progress'));

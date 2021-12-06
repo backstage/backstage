@@ -59,6 +59,7 @@ export default async function createPlugin({
   discovery,
   config,
   database,
+  tokenManager,
 }: PluginEnvironment) {
   // Initialize a connection to a search engine.
   const searchEngine = await createSearchEngine({ config, logger, database });
@@ -68,7 +69,10 @@ export default async function createPlugin({
   // particular collator gathers entities from the software catalog.
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
+    collator: DefaultCatalogCollator.fromConfig(config, {
+      discovery,
+      tokenManager,
+    }),
   });
 
   indexBuilder.addCollator({
@@ -76,6 +80,7 @@ export default async function createPlugin({
     collator: DefaultTechDocsCollator.fromConfig(config, {
       discovery,
       logger,
+      tokenManager,
     }),
   });
 

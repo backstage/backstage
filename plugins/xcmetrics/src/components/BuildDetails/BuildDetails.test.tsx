@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { BuildDetails, withRequest } from './BuildDetails';
 import { xcmetricsApiRef } from '../../api';
 
@@ -35,11 +34,9 @@ jest.mock('../BuildTimeline', () => ({
 describe('BuildDetails', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <BuildDetails buildData={client.mockBuildResponse} />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText('accordion-Host')).toBeInTheDocument();
@@ -54,6 +51,20 @@ describe('BuildDetails', () => {
     ).toBeInTheDocument();
     expect(rendered.getByText(client.mockBuild.schema)).toBeInTheDocument();
   });
+
+  it('should render if xcode data is not present', async () => {
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
+        <BuildDetails
+          buildData={{ ...client.mockBuildResponse, xcode: undefined }}
+        />
+      </TestApiProvider>,
+    );
+
+    expect(
+      rendered.getByText('Xcode').parentNode?.childNodes[1].textContent,
+    ).toEqual('Unknown');
+  });
 });
 
 describe('BuildDetails with request', () => {
@@ -61,11 +72,9 @@ describe('BuildDetails with request', () => {
 
   it('should fetch the build and render', async () => {
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <BuildDetailsWithRequest buildId={client.mockBuild.id} />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText(client.mockBuild.id)).toBeInTheDocument();
@@ -78,11 +87,9 @@ describe('BuildDetails with request', () => {
       .mockRejectedValue({ message: errorMessage });
 
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <BuildDetailsWithRequest buildId={client.mockBuild.id} />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText(errorMessage)).toBeInTheDocument();
@@ -92,11 +99,9 @@ describe('BuildDetails with request', () => {
     client.XcmetricsClient.getBuild = jest.fn().mockReturnValue(undefined);
 
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <BuildDetailsWithRequest buildId={client.mockBuild.id} />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(

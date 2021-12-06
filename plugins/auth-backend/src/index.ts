@@ -31,3 +31,5 @@ export * from './lib/flow';
 
 // OAuth wrapper over a passport or a custom `startegy`.
 export * from './lib/oauth';
+
+export * from './lib/catalog';

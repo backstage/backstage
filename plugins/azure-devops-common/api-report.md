@@ -27,6 +27,108 @@ export enum BuildStatus {
   Postponed = 8,
 }
 
+// Warning: (ae-missing-release-tag) "CreatedBy" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CreatedBy {
+  // (undocumented)
+  displayName?: string;
+  // (undocumented)
+  id?: string;
+  // (undocumented)
+  imageUrl?: string;
+  // (undocumented)
+  uniqueName?: string;
+}
+
+// Warning: (ae-missing-release-tag) "DashboardPullRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface DashboardPullRequest {
+  // (undocumented)
+  createdBy?: CreatedBy;
+  // (undocumented)
+  creationDate?: string;
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  hasAutoComplete: boolean;
+  // (undocumented)
+  isDraft?: boolean;
+  // (undocumented)
+  link?: string;
+  // (undocumented)
+  policies?: Policy[];
+  // (undocumented)
+  pullRequestId?: number;
+  // (undocumented)
+  repository?: Repository;
+  // (undocumented)
+  reviewers?: Reviewer[];
+  // (undocumented)
+  status?: PullRequestStatus;
+  // (undocumented)
+  title?: string;
+}
+
+// Warning: (ae-missing-release-tag) "Policy" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface Policy {
+  // (undocumented)
+  id?: number;
+  // (undocumented)
+  link?: string;
+  // (undocumented)
+  status?: PolicyEvaluationStatus;
+  // (undocumented)
+  text?: string;
+  // (undocumented)
+  type: PolicyType;
+}
+
+// Warning: (ae-missing-release-tag) "PolicyEvaluationStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export enum PolicyEvaluationStatus {
+  Approved = 2,
+  Broken = 5,
+  NotApplicable = 4,
+  Queued = 0,
+  Rejected = 3,
+  Running = 1,
+}
+
+// Warning: (ae-missing-release-tag) "PolicyType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export enum PolicyType {
+  // (undocumented)
+  Build = 'Build',
+  // (undocumented)
+  Comments = 'Comments',
+  // (undocumented)
+  MergeStrategy = 'MergeStrategy',
+  // (undocumented)
+  MinimumReviewers = 'MinimumReviewers',
+  // (undocumented)
+  RequiredReviewers = 'RequiredReviewers',
+  // (undocumented)
+  Status = 'Status',
+}
+
+// Warning: (ae-missing-release-tag) "PolicyTypeId" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export enum PolicyTypeId {
+  Build = '0609b952-1397-4640-95ec-e00a01b2c241',
+  Comments = 'c6a1889d-b943-4856-b76f-9e46bb6b0df2',
+  MergeStrategy = 'fa4e907d-c16b-4a4c-9dfa-4916e5d171ab',
+  MinimumReviewers = 'fa4e907d-c16b-4a4c-9dfa-4906e5d171dd',
+  RequiredReviewers = 'fd2167ab-b0be-447a-8ec8-39368250530e',
+  Status = 'cbdc66da-9728-4af8-aada-9a5a32e4a226',
+}
+
 // Warning: (ae-missing-release-tag) "PullRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -63,6 +165,22 @@ export enum PullRequestStatus {
   NotSet = 0,
 }
 
+// Warning: (ae-missing-release-tag) "PullRequestVoteStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export enum PullRequestVoteStatus {
+  // (undocumented)
+  Approved = 10,
+  // (undocumented)
+  ApprovedWithSuggestions = 5,
+  // (undocumented)
+  NoVote = 0,
+  // (undocumented)
+  Rejected = -10,
+  // (undocumented)
+  WaitingForAuthor = -5,
+}
+
 // Warning: (ae-missing-release-tag) "RepoBuild" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -85,6 +203,48 @@ export type RepoBuild = {
 export type RepoBuildOptions = {
   top?: number;
 };
+
+// Warning: (ae-missing-release-tag) "Repository" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface Repository {
+  // (undocumented)
+  id?: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  url?: string;
+}
+
+// Warning: (ae-missing-release-tag) "Reviewer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface Reviewer {
+  // (undocumented)
+  displayName?: string;
+  // (undocumented)
+  id?: string;
+  // (undocumented)
+  imageUrl?: string;
+  // (undocumented)
+  isContainer?: boolean;
+  // (undocumented)
+  isRequired?: boolean;
+  // (undocumented)
+  voteStatus: PullRequestVoteStatus;
+}
+
+// Warning: (ae-missing-release-tag) "Team" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface Team {
+  // (undocumented)
+  id?: string;
+  // (undocumented)
+  memberIds?: string[];
+  // (undocumented)
+  name?: string;
+}
 
 // (No @packageDocumentation comment for this package)
 ```

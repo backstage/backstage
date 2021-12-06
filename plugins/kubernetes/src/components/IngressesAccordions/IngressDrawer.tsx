@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { ExtensionsV1beta1Ingress } from '@kubernetes/client-node';
+import { V1Ingress } from '@kubernetes/client-node';
 import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
 import { Typography, Grid } from '@material-ui/core';
 
@@ -23,7 +23,7 @@ export const IngressDrawer = ({
   ingress,
   expanded,
 }: {
-  ingress: ExtensionsV1beta1Ingress;
+  ingress: V1Ingress;
   expanded?: boolean;
 }) => {
   return (
@@ -31,7 +31,7 @@ export const IngressDrawer = ({
       object={ingress}
       expanded={expanded}
       kind="Ingress"
-      renderObject={(ingressObject: ExtensionsV1beta1Ingress) => {
+      renderObject={(ingressObject: V1Ingress) => {
         return ingressObject.spec || {};
       }}
     >

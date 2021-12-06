@@ -16,6 +16,9 @@
 
 import React from 'react';
 import { Grid } from '@material-ui/core';
+import FindInPageIcon from '@material-ui/icons/FindInPage';
+import GroupIcon from '@material-ui/icons/Group';
+import { Button } from '@backstage/core-components';
 import { DefaultResultListItem } from '../index';
 import { MemoryRouter } from 'react-router';
 
@@ -24,17 +27,59 @@ export default {
   component: DefaultResultListItem,
 };
 
+const mockSearchResult = {
+  location: 'search/search-result',
+  title: 'Search Result 1',
+  text: 'some text from the search result',
+  owner: 'some-example-owner',
+};
+
 export const Default = () => {
   return (
     <MemoryRouter>
       <Grid container direction="row">
         <Grid item xs={12}>
+          <DefaultResultListItem result={mockSearchResult} />
+        </Grid>
+      </Grid>
+    </MemoryRouter>
+  );
+};
+
+export const WithIcon = () => {
+  return (
+    <MemoryRouter>
+      <Grid container direction="row">
+        <Grid item xs={12}>
           <DefaultResultListItem
-            result={{
-              location: 'search/search-result',
-              title: 'Search Result 1',
-              text: 'some text from the search result',
-            }}
+            result={mockSearchResult}
+            icon={<FindInPageIcon color="primary" />}
+          />
+        </Grid>
+      </Grid>
+    </MemoryRouter>
+  );
+};
+
+export const WithSecondaryAction = () => {
+  return (
+    <MemoryRouter>
+      <Grid container direction="row">
+        <Grid item xs={12}>
+          <DefaultResultListItem
+            result={mockSearchResult}
+            secondaryAction={
+              <Button
+                to="#"
+                size="small"
+                aria-label="owner"
+                variant="text"
+                startIcon={<GroupIcon />}
+                style={{ textTransform: 'lowercase' }}
+              >
+                {mockSearchResult.owner}
+              </Button>
+            }
           />
         </Grid>
       </Grid>

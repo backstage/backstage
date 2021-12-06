@@ -39,7 +39,7 @@ const createMockEntity = (annotations = {}, lowerCase = false) => {
 };
 
 const testDiscovery: jest.Mocked<PluginEndpointDiscovery> = {
-  getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7000/api/techdocs'),
+  getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007/api/techdocs'),
   getExternalBaseUrl: jest.fn(),
 };
 

@@ -21,6 +21,7 @@ import type {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
+import { PodStatus } from '@kubernetes/client-node/dist/top';
 
 export interface ObjectFetchParams {
   serviceId: string;
@@ -40,6 +41,10 @@ export interface KubernetesFetcher {
   fetchObjectsForService(
     params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper>;
+  fetchPodMetricsByNamespace(
+    clusterDetails: ClusterDetails,
+    namespace: string,
+  ): Promise<PodStatus[]>;
 }
 
 export interface FetchResponseWrapper {
@@ -67,6 +72,8 @@ export type KubernetesObjectTypes =
   | 'deployments'
   | 'replicasets'
   | 'horizontalpodautoscalers'
+  | 'jobs'
+  | 'cronjobs'
   | 'ingresses'
   | 'customresources';
 
@@ -91,6 +98,11 @@ export interface ClusterDetails {
   authProvider: string;
   serviceAccountToken?: string | undefined;
   skipTLSVerify?: boolean;
+  /**
+   * Whether to skip the lookup to the metrics server to retrieve pod resource usage.
+   * It is not guaranteed that the Kubernetes distro has the metrics server installed.
+   */
+  skipMetricsLookup?: boolean;
   caData?: string | undefined;
   /**
    * Specifies the link to the Kubernetes dashboard managing this cluster.

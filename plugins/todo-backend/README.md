@@ -46,7 +46,7 @@ async function main() {
   // ...
   const todoEnv = useHotMemoize(module, () => createEnv('todo'));
   // ...
-  apiRouter.use('/todo', await kafka(todoEnv));
+  apiRouter.use('/todo', await todo(todoEnv));
 ```
 
 ## Scanned Files

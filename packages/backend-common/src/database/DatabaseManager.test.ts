@@ -505,5 +505,42 @@ describe('DatabaseManager', () => {
         'database_name_overriden',
       );
     });
+
+    it('fetches and merges additional knex config', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                database: 'foodb',
+              },
+              knexConfig: {
+                something: false,
+              },
+              plugin: {
+                testdbname: {
+                  knexConfig: {
+                    debug: true,
+                  },
+                },
+              },
+            },
+          },
+        }),
+      );
+      await testManager.forPlugin('testdbname').getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig] = mockCalls[0];
+
+      expect(baseConfig.data).toEqual(
+        expect.objectContaining({
+          debug: true,
+          something: false,
+        }),
+      );
+    });
   });
 });

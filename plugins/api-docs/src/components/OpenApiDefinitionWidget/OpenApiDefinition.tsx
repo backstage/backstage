@@ -22,18 +22,9 @@ import 'swagger-ui-react/swagger-ui.css';
 const useStyles = makeStyles(theme => ({
   root: {
     '& .swagger-ui': {
-      fontFamily: 'inherit',
+      fontFamily: theme.typography.fontFamily,
       color: theme.palette.text.primary,
 
-      [`& .info h1,
-          .info h2,
-          .info h3,
-          .info h4,
-          .info h5,
-          .info h6`]: {
-        fontFamily: 'inherit',
-        color: theme.palette.text.primary,
-      },
       [`& .scheme-container`]: {
         backgroundColor: theme.palette.background.default,
       },
@@ -41,7 +32,7 @@ const useStyles = makeStyles(theme => ({
           .opblock-tag small,
           table thead tr td,
           table thead tr th`]: {
-        fontFamily: 'inherit',
+        fontFamily: theme.typography.fontFamily,
         color: theme.palette.text.primary,
         borderColor: theme.palette.divider,
       },
@@ -49,34 +40,30 @@ const useStyles = makeStyles(theme => ({
           section.models.is-open h4`]: {
         borderColor: theme.palette.divider,
       },
-      [`& .opblock .opblock-summary-description,
-          .parameter__type,
-          table.headers td,
-          .model-title,
-          .model .property.primitive,
-          section h3`]: {
-        fontFamily: 'inherit',
-        color: theme.palette.text.secondary,
+      [`& .model-title,
+          .model .renderedMarkdown,
+          .model .description`]: {
+        fontFamily: theme.typography.fontFamily,
+        fontWeight: theme.typography.fontWeightRegular,
       },
-      [`& .opblock .opblock-summary-operation-id, 
-          .opblock .opblock-summary-path,
-          .opblock .opblock-summary-path__deprecated,
-          .opblock .opblock-section-header h4,
+      [`& h1, h2, h3, h4, h5, h6,
+          .errors h4, .error h4, .opblock h4, section.models h4,
+          .response-control-media-type__accept-message,
+          .opblock-summary-description,
+          .opblock-summary-operation-id,
+          .opblock-summary-path,
+          .opblock-summary-path__deprecated,
+          .opblock-external-docs-wrapper,
+          .opblock-section-header .btn,
+          .opblock-section-header>label,
+          .scheme-container .schemes>label,a.nostyle,
           .parameter__name,
           .response-col_status,
           .response-col_links,
-          .responses-inner h4,
-          .responses-inner h5,
-          .opblock-section-header .btn,
-          .tab li,
-          .info li,
-          .info p,
-          .info table,
-          section.models h4,
+          .error .btn,
           .info .title,
-          table.model tr.description,
-          .property-row`]: {
-        fontFamily: 'inherit',
+          .info .base-url`]: {
+        fontFamily: theme.typography.fontFamily,
         color: theme.palette.text.primary,
       },
       [`& .opblock .opblock-section-header, 
@@ -88,21 +75,56 @@ const useStyles = makeStyles(theme => ({
           .parameter__in`]: {
         color: theme.palette.text.disabled,
       },
-      [`& .opblock-description-wrapper p,
-          .opblock-external-docs-wrapper p,
-          .opblock-title_normal p,
-          .response-control-media-type__accept-message,
-          .opblock .opblock-section-header>label,
-          .scheme-container .schemes>label,
-          .info .base-url,
-          .model`]: {
-        color: theme.palette.text.hint,
+      [`& table.model, 
+          .parameter__type,
+          .model.model-title,
+          .model-title,
+          .model span,
+          .model .brace-open,
+          .model .brace-close,
+          .model .property.primitive,
+          .model .renderedMarkdown,
+          .model .description,
+          .errors small`]: {
+        color: theme.palette.text.secondary,
       },
       [`& .parameter__name.required:after`]: {
         color: theme.palette.warning.dark,
       },
-      [`& .prop-type`]: {
+      [`& table.model, 
+          table.model .model,
+          .opblock-external-docs-wrapper`]: {
+        fontSize: theme.typography.fontSize,
+      },
+      [`& table.headers td`]: {
+        color: theme.palette.text.primary,
+        fontWeight: theme.typography.fontWeightRegular,
+      },
+      [`& .model-hint`]: {
+        color: theme.palette.text.hint,
+        backgroundColor: theme.palette.background.paper,
+      },
+      [`& .opblock-summary-method, 
+          .info a`]: {
+        fontFamily: theme.typography.fontFamily,
+      },
+      [`& .info, .opblock, .tab`]: {
+        [`& li, p`]: {
+          fontFamily: theme.typography.fontFamily,
+          color: theme.palette.text.primary,
+        },
+      },
+      [`& a`]: {
         color: theme.palette.primary.main,
+      },
+      [`& .renderedMarkdown code`]: {
+        color: theme.palette.secondary.light,
+      },
+      [`& .property-row td:first-child`]: {
+        color: theme.palette.text.primary,
+      },
+      [`& span.prop-type`]: {
+        color: theme.palette.success.light,
       },
     },
   },

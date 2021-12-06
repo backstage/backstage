@@ -15,6 +15,7 @@
  */
 import React from 'react';
 import {
+  StatusAborted,
   StatusError,
   StatusOK,
   StatusWarning,
@@ -32,4 +33,4 @@ interface StatusIconProps {
 }
 
 export const StatusIcon = ({ buildStatus }: StatusIconProps) =>
-  STATUS_ICONS[buildStatus];
+  STATUS_ICONS[buildStatus] ?? <StatusAborted />;

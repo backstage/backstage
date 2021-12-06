@@ -29,6 +29,7 @@ exports.up = async function up(knex) {
       .comment('Optional end date of the project (ISO 8601 format)');
     table
       .text('responsible')
+      .defaultTo('')
       .notNullable()
       .comment('Contact person of the project');
   });

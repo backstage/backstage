@@ -14,27 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useState, ComponentType } from 'react';
+import React, { ComponentType } from 'react';
 import { Button } from '@material-ui/core';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { SearchModal } from '../index';
+import { useSearch, SearchContextProvider } from '../SearchContext';
 import { searchApiRef } from '../../apis';
 import { rootRouteRef } from '../../plugin';
-
-export default {
-  title: 'Plugins/Search/SearchModal',
-  component: SearchModal,
-  decorators: [
-    (Story: ComponentType<{}>) =>
-      wrapInTestApp(
-        <>
-          <Story />
-        </>,
-        { mountedRoutes: { '/search': rootRouteRef } },
-      ),
-  ],
-};
 
 const mockSearchApi = {
   query: () =>
@@ -70,16 +57,33 @@ const mockSearchApi = {
 
 const apiRegistry = () => ApiRegistry.from([[searchApiRef, mockSearchApi]]);
 
+export default {
+  title: 'Plugins/Search/SearchModal',
+  component: SearchModal,
+  decorators: [
+    (Story: ComponentType<{}>) =>
+      wrapInTestApp(
+        <>
+          <ApiProvider apis={apiRegistry()}>
+            <SearchContextProvider>
+              <Story />
+            </SearchContextProvider>
+          </ApiProvider>
+        </>,
+        { mountedRoutes: { '/search': rootRouteRef } },
+      ),
+  ],
+};
+
 export const Default = () => {
-  const [open, setOpen] = useState<boolean>(false);
-  const toggleModal = (): void => setOpen(prevState => !prevState);
+  const { open, toggleModal } = useSearch();
 
   return (
-    <ApiProvider apis={apiRegistry()}>
+    <>
       <Button variant="contained" color="primary" onClick={toggleModal}>
         Toggle Search Modal
       </Button>
       <SearchModal open={open} toggleModal={toggleModal} />
-    </ApiProvider>
+    </>
   );
 };

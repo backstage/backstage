@@ -21,8 +21,8 @@ import {
   RELATION_OWNED_BY,
   UserEntity,
 } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
+import { TestApiProvider } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { catalogApiRef } from '../api';
@@ -50,14 +50,14 @@ describe('useEntityOwnership', () => {
   const catalogApi = mockCatalogApi as unknown as CatalogApi;
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ApiProvider
-      apis={ApiRegistry.with(identityApiRef, identityApi).with(
-        catalogApiRef,
-        catalogApi,
-      )}
+    <TestApiProvider
+      apis={[
+        [identityApiRef, identityApi],
+        [catalogApiRef, catalogApi],
+      ]}
     >
       {children}
-    </ApiProvider>
+    </TestApiProvider>
   );
 
   const ownedEntity: ComponentEntity = {

@@ -17,19 +17,30 @@
 import {
   BuildResult,
   BuildStatus,
+  DashboardPullRequest,
+  Policy,
   PullRequest,
   PullRequestOptions,
   RepoBuild,
+  Team,
 } from '@backstage/plugin-azure-devops-common';
 import {
   GitPullRequest,
   GitPullRequestSearchCriteria,
   GitRepository,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import {
+  convertDashboardPullRequest,
+  convertPolicy,
+  getArtifactId,
+} from '../utils';
 
 import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { Logger } from 'winston';
+import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
+import { TeamMember } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import { WebApi } from 'azure-devops-node-api';
+import { WebApiTeam } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 
 export class AzureDevOpsApi {
   public constructor(
@@ -137,6 +148,115 @@ export class AzureDevOpsApi {
     });
 
     return pullRequests;
+  }
+
+  public async getDashboardPullRequests(
+    projectName: string,
+    options: PullRequestOptions,
+  ): Promise<DashboardPullRequest[]> {
+    this.logger?.debug(
+      `Getting dashboard pull requests for project '${projectName}'.`,
+    );
+
+    const client = await this.webApi.getGitApi();
+
+    const searchCriteria: GitPullRequestSearchCriteria = {
+      status: options.status,
+    };
+
+    const gitPullRequests: GitPullRequest[] =
+      await client.getPullRequestsByProject(
+        projectName,
+        searchCriteria,
+        undefined,
+        undefined,
+        options.top,
+      );
+
+    return Promise.all(
+      gitPullRequests.map(async gitPullRequest => {
+        const projectId = gitPullRequest.repository?.project?.id;
+        const prId = gitPullRequest.pullRequestId;
+
+        let policies: Policy[] | undefined;
+
+        if (projectId && prId) {
+          policies = await this.getPullRequestPolicies(
+            projectName,
+            projectId,
+            prId,
+          );
+        }
+
+        return convertDashboardPullRequest(
+          gitPullRequest,
+          this.webApi.serverUrl,
+          policies,
+        );
+      }),
+    );
+  }
+
+  private async getPullRequestPolicies(
+    projectName: string,
+    projectId: string,
+    pullRequestId: number,
+  ): Promise<Policy[]> {
+    this.logger?.debug(
+      `Getting pull request policies for pull request id '${pullRequestId}'.`,
+    );
+
+    const client = await this.webApi.getPolicyApi();
+
+    const artifactId = getArtifactId(projectId, pullRequestId);
+
+    const policyEvaluationRecords: PolicyEvaluationRecord[] =
+      await client.getPolicyEvaluations(projectName, artifactId);
+
+    return policyEvaluationRecords
+      .map(convertPolicy)
+      .filter((policy): policy is Policy => Boolean(policy));
+  }
+
+  public async getAllTeams(): Promise<Team[]> {
+    this.logger?.debug('Getting all teams.');
+
+    const client = await this.webApi.getCoreApi();
+    const webApiTeams: WebApiTeam[] = await client.getAllTeams();
+
+    const teams: Team[] = await Promise.all(
+      webApiTeams.map(async team => ({
+        id: team.id,
+        name: team.name,
+        memberIds: await this.getTeamMemberIds(team),
+      })),
+    );
+
+    return teams.sort((a, b) =>
+      a.name && b.name ? a.name.localeCompare(b.name) : 0,
+    );
+  }
+
+  private async getTeamMemberIds(
+    team: WebApiTeam,
+  ): Promise<string[] | undefined> {
+    this.logger?.debug(`Getting team member ids for team '${team.name}'.`);
+
+    if (!team.projectId || !team.id) {
+      return undefined;
+    }
+
+    const client = await this.webApi.getCoreApi();
+
+    const teamMembers: TeamMember[] =
+      await client.getTeamMembersWithExtendedProperties(
+        team.projectId,
+        team.id,
+      );
+
+    return teamMembers
+      .map(teamMember => teamMember.identity?.id)
+      .filter((id): id is string => Boolean(id));
   }
 }
 
