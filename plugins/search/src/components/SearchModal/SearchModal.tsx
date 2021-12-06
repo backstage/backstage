@@ -114,8 +114,6 @@ export const Modal = ({
       <DialogTitle>
         <Paper className={classes.container}>
           <SearchBarBase
-            // decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus
-            // eslint-disable-next-line jsx-a11y/no-autofocus
             {...searchBarProps}
             className={classes.input}
             value={value}
