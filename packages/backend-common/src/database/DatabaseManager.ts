@@ -28,6 +28,7 @@ import {
   normalizeConnection,
 } from './connection';
 import { PluginDatabaseManager } from './types';
+import path from 'path';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -119,7 +120,7 @@ export class DatabaseManager {
 
       // if persisting to a file, create separate files per plugin to avoid db migration issues.
       if (sqliteFilename !== ':memory:') {
-        return `${sqliteFilename}/${pluginId}.sqlite`;
+        return path.join(sqliteFilename, `${pluginId}.sqlite`);
       }
 
       // sqlite database name should fallback to ':memory:' as a special case
