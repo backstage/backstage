@@ -117,7 +117,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const { title, to, icon: Icon, dropdownItems } = props;
   const classes = useStyles();
   const { pathname: locationPathname, search: locationSearch } = useLocation();
-  const { pathname: toPathname, search: toSearch } = useResolvedPath(to ?? '');
+  const { pathname: toPathname, search: toSearch } = useResolvedPath(to);
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
     setIsHoveredOn(false);
