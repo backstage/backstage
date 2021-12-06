@@ -164,6 +164,14 @@ export type BackstageUserIdentity = {
   ownershipEntityRefs: string[];
 };
 
+/**
+ * A representation of a successful Backstage sign-in.
+ *
+ * Compared to the {@link BackstageIdentityResponse} this type omits
+ * the decoded identity information embedded in the token.
+ *
+ * @public
+ */
 export interface BackstageSignInResult {
   /**
    * An opaque ID that uniquely identifies the user within Backstage.

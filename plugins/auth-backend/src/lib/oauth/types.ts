@@ -51,6 +51,11 @@ export type OAuthResult = {
   refreshToken?: string;
 };
 
+/**
+ * The expected response from an OAuth flow.
+ *
+ * @public
+ */
 export type OAuthResponse = {
   profile: ProfileInfo;
   providerInfo: OAuthProviderInfo;

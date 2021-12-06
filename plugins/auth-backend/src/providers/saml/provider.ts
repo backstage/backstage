@@ -38,7 +38,7 @@ import { TokenIssuer } from '../../identity/types';
 import { isError } from '@backstage/errors';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { Logger } from 'winston';
-import { decorateWithIdentity } from '../decorateWithIdentity';
+import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 
 /** @public */
 export type SamlAuthResult = {
@@ -118,7 +118,8 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
           },
         );
 
-        response.backstageIdentity = decorateWithIdentity(signInResponse);
+        response.backstageIdentity =
+          prepareBackstageIdentityResponse(signInResponse);
       }
 
       return postMessageResponse(res, this.appUrl, {

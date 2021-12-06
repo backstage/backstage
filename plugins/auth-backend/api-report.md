@@ -124,9 +124,7 @@ export interface BackstageIdentityResponse extends BackstageSignInResult {
   identity: BackstageUserIdentity;
 }
 
-// Warning: (ae-missing-release-tag) "BackstageSignInResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface BackstageSignInResult {
   // @deprecated
   entity?: Entity;
@@ -298,11 +296,6 @@ export function createRouter({
 export const createSamlProvider: (
   options?: SamlProviderOptions | undefined,
 ) => AuthProviderFactory;
-
-// @public
-export function decorateWithIdentity(
-  signInResolverResponse: Omit<BackstageIdentityResponse, 'identity'>,
-): BackstageIdentityResponse;
 
 // Warning: (ae-missing-release-tag) "factories" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -512,9 +505,7 @@ export type OAuthRefreshRequest = express.Request<{}> & {
   refreshToken: string;
 };
 
-// Warning: (ae-missing-release-tag) "OAuthResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type OAuthResponse = {
   profile: ProfileInfo;
   providerInfo: OAuthProviderInfo;
@@ -575,6 +566,11 @@ export const postMessageResponse: (
   appOrigin: string,
   response: WebMessageResponse,
 ) => void;
+
+// @public
+export function prepareBackstageIdentityResponse(
+  result: BackstageSignInResult,
+): BackstageIdentityResponse;
 
 // @public
 export type ProfileInfo = {

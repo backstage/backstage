@@ -47,4 +47,4 @@ export type {
   ProfileInfo,
 } from './types';
 
-export { decorateWithIdentity } from './decorateWithIdentity';
+export { prepareBackstageIdentityResponse } from './prepareBackstageIdentityResponse';

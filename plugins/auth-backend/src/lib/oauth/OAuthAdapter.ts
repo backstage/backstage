@@ -38,7 +38,7 @@ import {
   OAuthRefreshRequest,
   OAuthState,
 } from './types';
-import { decorateWithIdentity } from '../../providers/decorateWithIdentity';
+import { prepareBackstageIdentityResponse } from '../../providers/prepareBackstageIdentityResponse';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -240,14 +240,14 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     }
 
     if (identity.token) {
-      return decorateWithIdentity(identity);
+      return prepareBackstageIdentityResponse(identity);
     }
 
     const token = await this.options.tokenIssuer.issueToken({
       claims: { sub: identity.id },
     });
 
-    return decorateWithIdentity({ ...identity, token });
+    return prepareBackstageIdentityResponse({ ...identity, token });
   }
 
   private setNonceCookie = (res: express.Response, nonce: string) => {
