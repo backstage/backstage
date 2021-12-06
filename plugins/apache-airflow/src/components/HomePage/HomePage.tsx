@@ -31,7 +31,6 @@ import { VersionComponent } from '../VersionComponent';
 export const HomePage = () => (
   <Page themeId="tool">
     <Header title="Apache Airflow" subtitle="Workflow management platform">
-      <HeaderLabel label="Owner" value="Colton Padden" />
       <HeaderLabel label="Lifecycle" value="Alpha" />
     </Header>
     <Content>
