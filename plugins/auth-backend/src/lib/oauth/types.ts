@@ -17,10 +17,11 @@
 import express from 'express';
 import { Profile as PassportProfile } from 'passport';
 import {
-  AuthResponse,
   RedirectInfo,
-  BackstageIdentityResponse,
+  BackstageSignInResult,
+  ProfileInfo,
 } from '../../providers/types';
+
 /**
  * Common options for passport.js-based OAuth providers
  */
@@ -50,11 +51,10 @@ export type OAuthResult = {
   refreshToken?: string;
 };
 
-export type OAuthResponse = Omit<
-  AuthResponse<OAuthProviderInfo>,
-  'backstageIdentity'
-> & {
-  backstageIdentity?: Omit<BackstageIdentityResponse, 'identity'>;
+export type OAuthResponse = {
+  profile: ProfileInfo;
+  providerInfo: OAuthProviderInfo;
+  backstageIdentity?: BackstageSignInResult;
 };
 
 export type OAuthProviderInfo = {

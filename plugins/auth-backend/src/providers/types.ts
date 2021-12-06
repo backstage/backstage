@@ -164,11 +164,7 @@ export type BackstageUserIdentity = {
   ownershipEntityRefs: string[];
 };
 
-/**
- * Response object containing the {@link BackstageUserIdentity} and the token from the authentication provider.
- * @public
- */
-export type BackstageIdentityResponse = {
+export interface BackstageSignInResult {
   /**
    * An opaque ID that uniquely identifies the user within Backstage.
    *
@@ -192,12 +188,25 @@ export type BackstageIdentityResponse = {
    * The token used to authenticate the user within Backstage.
    */
   token: string;
+}
 
+/**
+ * The old exported symbol for {@link BackstageSignInResult}.
+ * @public
+ * @deprecated Use the `BackstageSignInResult` type instead.
+ */
+export type BackstageIdentity = BackstageSignInResult;
+
+/**
+ * Response object containing the {@link BackstageUserIdentity} and the token from the authentication provider.
+ * @public
+ */
+export interface BackstageIdentityResponse extends BackstageSignInResult {
   /**
    * A plaintext description of the identity that is encapsulated within the token.
    */
   identity: BackstageUserIdentity;
-};
+}
 
 /**
  * Used to display login information to user, i.e. sidebar popup.
@@ -242,7 +251,7 @@ export type SignInResolver<AuthResult> = (
     catalogIdentityClient: CatalogIdentityClient;
     logger: Logger;
   },
-) => Promise<Omit<BackstageIdentityResponse, 'identity'>>;
+) => Promise<BackstageSignInResult>;
 
 export type AuthHandlerResult = { profile: ProfileInfo };
 

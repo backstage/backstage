@@ -116,13 +116,24 @@ export type AwsAlbProviderOptions = {
   };
 };
 
+// @public @deprecated
+export type BackstageIdentity = BackstageSignInResult;
+
 // @public
-export type BackstageIdentityResponse = {
-  id: string;
-  entity?: Entity;
-  token: string;
+export interface BackstageIdentityResponse extends BackstageSignInResult {
   identity: BackstageUserIdentity;
-};
+}
+
+// Warning: (ae-missing-release-tag) "BackstageSignInResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface BackstageSignInResult {
+  // @deprecated
+  entity?: Entity;
+  // @deprecated
+  id: string;
+  token: string;
+}
 
 // @public
 export type BackstageUserIdentity = {
@@ -504,11 +515,10 @@ export type OAuthRefreshRequest = express.Request<{}> & {
 // Warning: (ae-missing-release-tag) "OAuthResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type OAuthResponse = Omit<
-  AuthResponse<OAuthProviderInfo>,
-  'backstageIdentity'
-> & {
-  backstageIdentity?: Omit<BackstageIdentityResponse, 'identity'>;
+export type OAuthResponse = {
+  profile: ProfileInfo;
+  providerInfo: OAuthProviderInfo;
+  backstageIdentity?: BackstageSignInResult;
 };
 
 // Warning: (ae-missing-release-tag) "OAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

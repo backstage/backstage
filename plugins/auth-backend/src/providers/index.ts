@@ -40,8 +40,10 @@ export type {
 // to the frontend
 export type {
   AuthResponse,
+  BackstageIdentity,
   BackstageUserIdentity,
   BackstageIdentityResponse,
+  BackstageSignInResult,
   ProfileInfo,
 } from './types';
 

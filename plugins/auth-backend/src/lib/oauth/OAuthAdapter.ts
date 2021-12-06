@@ -21,6 +21,7 @@ import {
   AuthProviderRouteHandlers,
   AuthProviderConfig,
   BackstageIdentityResponse,
+  BackstageSignInResult,
 } from '../../providers/types';
 import {
   AuthenticationError,
@@ -232,7 +233,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
    * make sure it's populated with all the information we can derive from the user ID.
    */
   private async populateIdentity(
-    identity?: Omit<BackstageIdentityResponse, 'identity'>,
+    identity?: BackstageSignInResult,
   ): Promise<BackstageIdentityResponse | undefined> {
     if (!identity) {
       return undefined;

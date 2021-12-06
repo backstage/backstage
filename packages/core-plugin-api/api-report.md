@@ -237,7 +237,7 @@ export type AuthRequestOptions = {
   instantPopup?: boolean;
 };
 
-// @public @deprecated (undocumented)
+// @public @deprecated
 export type BackstageIdentity = BackstageIdentityResponse;
 
 // @public
