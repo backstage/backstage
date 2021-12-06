@@ -27,27 +27,49 @@ import {
 import { GuestUserIdentity } from './GuestUserIdentity';
 import { LegacyUserIdentity } from './LegacyUserIdentity';
 
+/**
+ * An implementation of the IdentityApi that is constructed using
+ * various backstage user identity representations.
+ *
+ * @public
+ */
 export class UserIdentity implements IdentityApi {
-  static createGuest() {
+  /**
+   * Creates a new IdentityApi that acts as a Guest User.
+   *
+   * @public
+   */
+  static createGuest(): IdentityApi {
     return new GuestUserIdentity();
   }
 
-  static fromLegacy(result: SignInResult) {
+  /**
+   * Creates a new IdentityApi using a legacy SignInResult object.
+   *
+   * @public
+   */
+  static fromLegacy(result: SignInResult): IdentityApi {
     return LegacyUserIdentity.fromResult(result);
   }
 
+  /**
+   * Creates a new IdentityApi implementation using a user identity
+   * and an auth API that will be used to request backstage tokens.
+   *
+   * @public
+   */
   static create(options: {
     identity: BackstageUserIdentity;
     authApi: ProfileInfoApi & BackstageIdentityApi & SessionApi;
     /**
      * Passing a profile synchronously allows the deprecated `getProfile` method to be
-     * called by consumers of the {@link IdentityApi}. If you do not have any consumers
-     * of that method then this is safe to leave out.
+     * called by consumers of the {@link @backstage/core-plugin-api#IdentityApi}. If you
+     * do not have any consumers of that method then this is safe to leave out.
      *
      * @deprecated Only provide this if you have plugins that call the synchronous `getProfile` method, which is also deprecated.
      */
     profile?: ProfileInfo;
-  }) {
+  }): IdentityApi {
     return new UserIdentity(options.identity, options.authApi, options.profile);
   }
 
@@ -59,6 +81,7 @@ export class UserIdentity implements IdentityApi {
     private readonly profile?: ProfileInfo,
   ) {}
 
+  /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getUserId} */
   getUserId(): string {
     const ref = this.identity.userEntityRef;
     const match = /^([^:/]+:)?([^:/]+\/)?([^:/]+)$/.exec(ref);
@@ -69,11 +92,13 @@ export class UserIdentity implements IdentityApi {
     return match[3];
   }
 
+  /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getIdToken} */
   async getIdToken(): Promise<string | undefined> {
     const identity = await this.authApi.getBackstageIdentity();
     return identity!.token;
   }
 
+  /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getProfile} */
   getProfile(): ProfileInfo {
     if (!this.profile) {
       throw new Error(
@@ -83,20 +108,24 @@ export class UserIdentity implements IdentityApi {
     return this.profile;
   }
 
+  /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getProfileInfo} */
   async getProfileInfo(): Promise<ProfileInfo> {
     const profile = await this.authApi.getProfile();
     return profile!;
   }
 
+  /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getBackstageIdentity} */
   async getBackstageIdentity(): Promise<BackstageUserIdentity> {
     return this.identity;
   }
 
+  /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getCredentials} */
   async getCredentials(): Promise<{ token?: string | undefined }> {
     const identity = await this.authApi.getBackstageIdentity();
     return { token: identity!.token };
   }
 
+  /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.signOut} */
   async signOut(): Promise<void> {
     return this.authApi.signOut();
   }
