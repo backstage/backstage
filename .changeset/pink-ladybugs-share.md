@@ -1,5 +1,5 @@
 ---
-'@backstage/backend-common': path
+'@backstage/backend-common': patch
 ---
 
 Each plugin now saves to a separate sqlite database file when `connection.filename` is provided in the sqlite config.
