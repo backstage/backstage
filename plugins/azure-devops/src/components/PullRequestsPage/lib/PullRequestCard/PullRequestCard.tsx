@@ -79,7 +79,7 @@ export const PullRequestCard = ({
 
   const subheader = (
     <span>
-      {repoLink}·{creationDate}
+      {repoLink} · {creationDate}
     </span>
   );
 

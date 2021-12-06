@@ -12,6 +12,7 @@ import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchQuery } from '@backstage/search-common';
 import { SearchResult as SearchResult_2 } from '@backstage/search-common';
@@ -22,7 +23,11 @@ import { SearchResultSet } from '@backstage/search-common';
 // @public (undocumented)
 export const DefaultResultListItem: ({
   result,
+  icon,
+  secondaryAction,
 }: {
+  icon?: ReactNode;
+  secondaryAction?: ReactNode;
   result: IndexableDocument;
 }) => JSX.Element;
 
