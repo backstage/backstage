@@ -36,7 +36,8 @@
     "url": "https://github.com/backstage/backstage/issues"
   },
   "dependencies": {
-    "@backstage/types": "^0.1.1"
+    "@backstage/types": "^0.1.1",
+    "@backstage/plugin-permission-common": "^0.2.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.10.0"

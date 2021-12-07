@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Permission } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 
 export interface SearchQuery {
@@ -53,6 +54,24 @@ export interface IndexableDocument {
    * is clicked).
    */
   location: string;
+
+  /**
+   * Optional authorization information to be used when determining whether this
+   * search result should be visible to a given user.
+   */
+  authorization?: {
+    /**
+     * The permission to use to authorize access. Should generally be the same
+     * permission used to authorize access to the corresponding resource (e.g.
+     * for catalog entity documents, this should be the catalogEntityReadPermission).
+     */
+    permission: Permission;
+
+    /**
+     * Identifier for the resource.
+     */
+    resourceRef: string;
+  };
 }
 
 /**
