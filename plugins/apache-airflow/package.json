@@ -30,7 +30,6 @@
     "@microsoft/api-documenter": "^7.13.68",
     "@microsoft/api-extractor": "^7.18.7",
     "@microsoft/api-extractor-model": "^7.13.5",
-    "@types/node": "^14.14.32",
     "concurrently": "^6.0.0",
     "cross-fetch": "^3.0.6",
     "lint-staged": "^11.1.2",
