@@ -104,6 +104,34 @@ function setupFakeInstanceProjectsEndpoint(
 }
 
 describe('GitLabClient', () => {
+  describe('isSelfManaged', () => {
+    it('returns true if self managed instance', () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader({
+            host: 'example.com',
+            token: 'test-token',
+            apiBaseUrl: 'https://example.com/api/v4',
+          }),
+        ),
+        logger: getVoidLogger(),
+      });
+      expect(client.isSelfManaged()).toBeTruthy();
+    });
+    it('returns false if gitlab.com', () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader({
+            host: 'gitlab.com',
+            token: 'test-token',
+          }),
+        ),
+        logger: getVoidLogger(),
+      });
+      expect(client.isSelfManaged()).toBeFalsy();
+    });
+  });
+
   describe('pagedRequest', () => {
     beforeEach(() => {
       // setup fake paginated endpoint with 4 pages each returning one item

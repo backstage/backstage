@@ -42,6 +42,13 @@ export class GitLabClient {
     this.logger = options.logger;
   }
 
+  /**
+   * Indicates whether the client is for a SaaS or self managed GitLab instance.
+   */
+  isSelfManaged(): boolean {
+    return this.config.host !== 'gitlab.com';
+  }
+
   async listProjects(options?: ListOptions): Promise<PagedResponse<any>> {
     if (options?.group) {
       return this.pagedRequest(
