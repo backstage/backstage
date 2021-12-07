@@ -1,5 +1,12 @@
 # @backstage/plugin-api-docs
 
+## 0.6.17
+
+### Patch Changes
+
+- dde1681f33: chore(dependencies): bump `graphiql` package to latest
+- ef64a444ca: Update AsyncAPI component to 1.0.0-x releases
+
 ## 0.6.16
 
 ### Patch Changes
