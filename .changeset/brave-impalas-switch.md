@@ -1,7 +1,5 @@
 ---
-'example-backend': patch
 '@backstage/backend-common': patch
-'@backstage/config-loader': patch
 ---
 
 Fixed bug in backend-common to allow passing of remote option in order to enable passing remote url in --config option. The remote option should be passed along with reloadIntervalSeconds from packages/backend/src/index.ts (Updated the file as well)

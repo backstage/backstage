@@ -129,12 +129,12 @@ export async function loadConfig(
   if (remote === undefined) {
     if (configUrls.length > 0) {
       throw new Error(
-        `Remote config detected but this feature is turned off. Please enable by passing remote option in loadBackendConfig() call inside packages/backend/src/index.ts. See https://backstage.io/docs/conf/writing#configuration-files for detailed info.`,
+        `Please make sure you are passing the remote option when loading the configuration. See https://backstage.io/docs/conf/writing#configuration-files for detailed info.`,
       );
     }
-  } else if (remote.reloadIntervalSeconds === undefined) {
+  } else if (remote.reloadIntervalSeconds <= 0) {
     throw new Error(
-      `Remote config must be contain reloadIntervalSeconds: <seconds> value`,
+      `Remote config must be contain a non zero reloadIntervalSeconds: <seconds> value`,
     );
   }
 
