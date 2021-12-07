@@ -22,6 +22,10 @@ export interface SearchQuery {
   pageCursor?: string;
 }
 
+export type QueryOptions = {
+  token?: string;
+};
+
 export interface SearchResult {
   type: string;
   document: IndexableDocument;
@@ -107,5 +111,5 @@ export interface SearchEngine {
   /**
    * Perform a search query against the SearchEngine.
    */
-  query(query: SearchQuery): Promise<SearchResultSet>;
+  query(query: SearchQuery, options?: QueryOptions): Promise<SearchResultSet>;
 }
