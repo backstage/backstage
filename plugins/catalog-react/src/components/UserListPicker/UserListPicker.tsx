@@ -122,15 +122,17 @@ export const UserListPicker = ({
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-  const userAndGroupFilterIds = ['starred', 'all'];
   const { filters, updateFilters, backendEntities, queryParameters } =
     useEntityListProvider();
+
   // Remove group items that aren't in availableFilters and exclude
   // any now-empty groups.
+  const userAndGroupFilterIds = ['starred', 'all'];
   const filterGroups = getFilterGroups(orgName)
     .map(filterGroup => ({
       ...filterGroup,
       items: filterGroup.items.filter(({ id }) =>
+        // TODO: avoid hardcoding kinds here
         ['group', 'user'].some(kind => kind === queryParameters.kind)
           ? userAndGroupFilterIds.includes(id)
           : !availableFilters || availableFilters.includes(id),
@@ -155,21 +157,13 @@ export const UserListPicker = ({
   // filter that's controlled by this picker.
   const [entitiesWithoutUserFilter, setEntitiesWithoutUserFilter] =
     useState(backendEntities);
-  useEffect(() => {
-    const filterFn = reduceEntityFilters(
-      compact(Object.values({ ...filters, user: undefined })),
-    );
-    setEntitiesWithoutUserFilter(backendEntities.filter(filterFn));
-  }, [filters, backendEntities]);
-
   const totalOwnedUserEntities = entitiesWithoutUserFilter.filter(entity =>
     ownedFilter.filterEntity(entity),
   ).length;
-
   const [selectedUserFilter, setSelectedUserFilter] = useState(
-    totalOwnedUserEntities < 1
-      ? 'all'
-      : [queryParameters.user].flat()[0] ?? initialFilter,
+    totalOwnedUserEntities > 0
+      ? [queryParameters.user].flat()[0] ?? initialFilter
+      : 'all',
   );
 
   useEffect(() => {
@@ -183,6 +177,13 @@ export const UserListPicker = ({
         : undefined,
     });
   }, [selectedUserFilter, isOwnedEntity, isStarredEntity, updateFilters]);
+
+  useEffect(() => {
+    const filterFn = reduceEntityFilters(
+      compact(Object.values({ ...filters, user: undefined })),
+    );
+    setEntitiesWithoutUserFilter(backendEntities.filter(filterFn));
+  }, [filters, backendEntities]);
 
   function getFilterCount(id: UserListFilterKind) {
     switch (id) {
