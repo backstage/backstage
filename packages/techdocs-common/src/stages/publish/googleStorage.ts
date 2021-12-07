@@ -36,6 +36,7 @@ import { MigrateWriteStream } from './migrations';
 import {
   PublisherBase,
   PublishRequest,
+  PublishResponse,
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
@@ -145,7 +146,11 @@ export class GoogleGCSPublish implements PublisherBase {
    * Upload all the files from the generated `directory` to the GCS bucket.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
-  async publish({ entity, directory }: PublishRequest): Promise<void> {
+  async publish({
+    entity,
+    directory,
+  }: PublishRequest): Promise<PublishResponse> {
+    const objects: string[] = [];
     const useLegacyPathCasing = this.legacyPathCasing;
     const bucket = this.storageClient.bucket(this.bucketName);
     const bucketRootPath = this.bucketRootPath;
@@ -178,14 +183,14 @@ export class GoogleGCSPublish implements PublisherBase {
       await bulkStorageOperation(
         async absoluteFilePath => {
           const relativeFilePath = path.relative(directory, absoluteFilePath);
-          return await bucket.upload(absoluteFilePath, {
-            destination: getCloudPathForLocalPath(
-              entity,
-              relativeFilePath,
-              useLegacyPathCasing,
-              bucketRootPath,
-            ),
-          });
+          const destination = getCloudPathForLocalPath(
+            entity,
+            relativeFilePath,
+            useLegacyPathCasing,
+            bucketRootPath,
+          );
+          objects.push(destination);
+          return await bucket.upload(absoluteFilePath, { destination });
         },
         absoluteFilesToUpload,
         { concurrencyLimit: 10 },
@@ -228,6 +233,8 @@ export class GoogleGCSPublish implements PublisherBase {
       const errorMessage = `Unable to delete file(s) from Google Cloud Storage. ${error}`;
       this.logger.error(errorMessage);
     }
+
+    return { objects };
   }
 
   fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata> {

@@ -300,7 +300,7 @@ const SidebarItemWithSubmenu = ({
         {itemIcon}
       </div>
       {text && (
-        <Typography variant="subtitle2" className={classes.text}>
+        <Typography variant="subtitle2" className={classes.label}>
           {text}
         </Typography>
       )}
@@ -467,7 +467,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
         {itemIcon}
       </div>
       {text && (
-        <Typography variant="subtitle2" className={classes.text}>
+        <Typography variant="subtitle2" className={classes.label}>
           {text}
         </Typography>
       )}

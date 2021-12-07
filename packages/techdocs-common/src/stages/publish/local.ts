@@ -98,7 +98,10 @@ export class LocalPublish implements PublisherBase {
     };
   }
 
-  publish({ entity, directory }: PublishRequest): Promise<PublishResponse> {
+  async publish({
+    entity,
+    directory,
+  }: PublishRequest): Promise<PublishResponse> {
     const entityNamespace = entity.metadata.namespace ?? 'default';
 
     const publishDir = this.staticEntityPathJoin(
@@ -112,27 +115,30 @@ export class LocalPublish implements PublisherBase {
       fs.mkdirSync(publishDir, { recursive: true });
     }
 
-    return new Promise((resolve, reject) => {
-      fs.copy(directory, publishDir, err => {
-        if (err) {
-          this.logger.debug(
-            `Failed to copy docs from ${directory} to ${publishDir}`,
-          );
-          reject(err);
-        }
-        this.logger.info(`Published site stored at ${publishDir}`);
-        this.discovery
-          .getBaseUrl('techdocs')
-          .then(techdocsApiUrl => {
-            resolve({
-              remoteUrl: `${techdocsApiUrl}/static/docs/${entity.metadata.name}`,
-            });
-          })
-          .catch(reason => {
-            reject(reason);
-          });
-      });
-    });
+    try {
+      await fs.copy(directory, publishDir);
+      this.logger.info(`Published site stored at ${publishDir}`);
+    } catch (error) {
+      this.logger.debug(
+        `Failed to copy docs from ${directory} to ${publishDir}`,
+      );
+      throw error;
+    }
+
+    // Generate publish response.
+    const techdocsApiUrl = await this.discovery.getBaseUrl('techdocs');
+    const publishedFilePaths = (await getFileTreeRecursively(publishDir)).map(
+      abs => {
+        return abs.split(`${staticDocsDir}/`)[1];
+      },
+    );
+
+    return {
+      remoteUrl: `${techdocsApiUrl}/static/docs/${encodeURIComponent(
+        entity.metadata.name,
+      )}`,
+      objects: publishedFilePaths,
+    };
   }
 
   async fetchTechDocsMetadata(
