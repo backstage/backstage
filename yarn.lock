@@ -24039,9 +24039,9 @@ raw-loader@^4.0.2:
     schema-utils "^3.0.0"
 
 rc-progress@^3.0.0:
-  version "3.1.3"
-  resolved "https://registry.npmjs.org/rc-progress/-/rc-progress-3.1.3.tgz#d77d8fd26d9d948d72c2a28b64b71a6e86df2426"
-  integrity sha512-Jl4fzbBExHYMoC6HBPzel0a9VmhcSXx24LVt/mdhDM90MuzoMCJjXZAlhA0V0CJi+SKjMhfBoIQ6Lla1nD4QNw==
+  version "3.1.4"
+  resolved "https://registry.npmjs.org/rc-progress/-/rc-progress-3.1.4.tgz#66040d0fae7d8ced2b38588378eccb2864bad615"
+  integrity sha512-XBAif08eunHssGeIdxMXOmRQRULdHaDdIFENQ578CMb4dyewahmmfJRyab+hw4KH4XssEzzYOkAInTLS7JJG+Q==
   dependencies:
     "@babel/runtime" "^7.10.1"
     classnames "^2.2.6"
