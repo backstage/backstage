@@ -58,10 +58,10 @@ export class GitLabClient {
    * @param endpoint - The complete request URL for the endpoint.
    * @param options - Request queryString options which may also include page variables.
    */
-  async pagedRequest(
+  async pagedRequest<T = any>(
     endpoint: string,
     options?: ListOptions,
-  ): Promise<PagedResponse<any>> {
+  ): Promise<PagedResponse<T>> {
     const request = new URL(endpoint);
     for (const key in options) {
       if (options[key]) {
@@ -116,8 +116,8 @@ export type PagedResponse<T> = {
  * @param request - Function which returns a PagedResponse to walk through.
  * @param options - Initial ListOptions for the request function.
  */
-export async function* paginated(
-  request: (options: ListOptions) => Promise<PagedResponse<any>>,
+export async function* paginated<T = any>(
+  request: (options: ListOptions) => Promise<PagedResponse<T>>,
   options: ListOptions,
 ) {
   let res;
