@@ -25,6 +25,11 @@ import {
   PermissionClient,
 } from '@backstage/plugin-permission-common';
 
+/**
+ * A server side {@link @backstage/plugin-permission-common#PermissionClient}
+ * that allows all backend-to-backend requests.
+ * @public
+ */
 export class ServerPermissionClient extends PermissionClient {
   private readonly serverTokenManager: ServerTokenManager;
 

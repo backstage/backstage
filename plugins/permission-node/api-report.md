@@ -126,9 +126,7 @@ export type PolicyDecision =
     }
   | ConditionalPolicyDecision;
 
-// Warning: (ae-missing-release-tag) "ServerPermissionClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class ServerPermissionClient extends PermissionClient {
   constructor(options: {
     discoveryApi: DiscoveryApi;
