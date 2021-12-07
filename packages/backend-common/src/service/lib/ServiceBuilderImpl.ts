@@ -67,6 +67,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private routers: [string, Router][];
   private requestLoggingHandler: RequestLoggingHandlerFactory | undefined;
   private errorHandler: ErrorRequestHandler | undefined;
+  private useDefaultErrorHandler: boolean;
   // Reference to the module where builder is created - needed for hot module
   // reloading
   private module: NodeModule;
@@ -74,6 +75,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   constructor(moduleRef: NodeModule) {
     this.routers = [];
     this.module = moduleRef;
+    this.useDefaultErrorHandler = true;
   }
 
   loadConfig(config: Config): ServiceBuilder {
@@ -158,6 +160,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
+  disableDefaultErrorHandler() {
+    this.useDefaultErrorHandler = false;
+    return this;
+  }
+
   async start(): Promise<http.Server> {
     const app = express();
     const { port, host, logger, corsOptions, httpsSettings, helmetOptions } =
@@ -175,7 +182,14 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       app.use(root, route);
     }
     app.use(notFoundHandler());
-    app.use(this.errorHandler ?? defaultErrorHandler());
+
+    if (this.errorHandler) {
+      app.use(this.errorHandler);
+    }
+
+    if (this.useDefaultErrorHandler) {
+      app.use(defaultErrorHandler());
+    }
 
     const server: http.Server = httpsSettings
       ? await createHttpsServer(app, httpsSettings, logger)

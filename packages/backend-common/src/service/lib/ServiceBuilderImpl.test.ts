@@ -40,11 +40,12 @@ describe('ServiceBuilderImpl', () => {
       const serviceBuilder = new ServiceBuilderImpl(module);
       const customErrorHandler = (
         error: Error,
+        // @ts-ignore
         req: Request,
+        // @ts-ignore
         res: Response,
         next: NextFunction,
       ) => {
-        console.log(req, res);
         next(error);
       };
       serviceBuilder.setErrorHandler(customErrorHandler);

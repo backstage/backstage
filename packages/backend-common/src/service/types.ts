@@ -108,6 +108,13 @@ export type ServiceBuilder = {
   setErrorHandler(errorHandler: ErrorRequestHandler): ServiceBuilder;
 
   /**
+   * Disable default error handler
+   *
+   * If it's not called, default error handler is used
+   */
+  disableDefaultErrorHandler(): ServiceBuilder;
+
+  /**
    * Starts the server using the given settings.
    */
   start(): Promise<Server>;
