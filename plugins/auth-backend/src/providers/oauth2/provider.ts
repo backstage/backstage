@@ -59,7 +59,7 @@ export type OAuth2AuthProviderOptions = OAuthProviderOptions & {
   tokenUrl: string;
   scope?: string;
   logger: Logger;
-  basicAuth?: boolean;
+  includeBasicAuth?: boolean;
 };
 
 export class OAuth2AuthProvider implements OAuthHandlers {
@@ -86,7 +86,7 @@ export class OAuth2AuthProvider implements OAuthHandlers {
         tokenURL: options.tokenUrl,
         passReqToCallback: false as true,
         scope: options.scope,
-        customHeaders: options.basicAuth
+        customHeaders: options.includeBasicAuth
           ? {
               Authorization: `Basic ${this.encodeClientCredentials(
                 options.clientId,
@@ -247,7 +247,7 @@ export const createOAuth2Provider = (
       const authorizationUrl = envConfig.getString('authorizationUrl');
       const tokenUrl = envConfig.getString('tokenUrl');
       const scope = envConfig.getOptionalString('scope');
-      const basicAuth = envConfig.getOptionalBoolean('basicAuth');
+      const includeBasicAuth = envConfig.getOptionalBoolean('includeBasicAuth');
       const disableRefresh =
         envConfig.getOptionalBoolean('disableRefresh') ?? false;
 
@@ -284,7 +284,7 @@ export const createOAuth2Provider = (
         tokenUrl,
         scope,
         logger,
-        basicAuth,
+        includeBasicAuth,
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
