@@ -11,7 +11,7 @@ would be good to also have some files in there that can be templated in.
 A simple `template.yaml` definition might look something like this:
 
 ```yaml
-apiVersion: backstage.io/v1beta3
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 # some metadata about the template itself
 metadata:

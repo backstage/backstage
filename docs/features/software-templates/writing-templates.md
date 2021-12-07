@@ -14,7 +14,7 @@ Let's take a look at a simple example:
 
 ```yaml
 # Notice the v1beta3 version
-apiVersion: backstage.io/v1beta3
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 # some metadata about the template itself
 metadata:
@@ -183,7 +183,7 @@ this:
 It would look something like the following in a template:
 
 ```yaml
-apiVersion: backstage.io/v1beta3
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: v1beta3-demo
