@@ -17,13 +17,21 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Reader } from './reader';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
+  // Lower-case entity triplets by default, but allow override.
+  const toLowerMaybe = useApi(configApiRef).getOptionalBoolean(
+    'techdocs.legacyUseCaseSensitiveTripletPaths',
+  )
+    ? (str: string) => str
+    : (str: string) => str.toLocaleLowerCase('en-US');
+
   return (
     <Reader
       withSearch={false}
       entityRef={{
-        kind: entity.kind,
+        kind: toLowerMaybe(entity.kind),
         namespace: entity.metadata.namespace ?? 'default',
         name: entity.metadata.name,
       }}
