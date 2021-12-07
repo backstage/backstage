@@ -73,7 +73,7 @@ yarn dev
 ```
 
 <p align='center'>
-  <img src='../assets/getting-started/startup.png' alt='Screenshot of the command output, with the message web pack compiled successfully.' />
+  <img src='../assets/getting-started/startup.png' alt='Screenshot of the command output, with the message web pack compiled successfully.'/>
 </p>
 
 It might take a little while, but as soon as the message
@@ -84,12 +84,15 @@ database will be cleared when you restart the app, so you'll most likely want to
 carry on with the database steps.
 
 <p align='center'>
-  <img src='../assets/getting-started/portal.png' alt='Screenshot of the Backstage portal.'>
+  <img src='../assets/getting-started/portal.png' alt='Screenshot of the Backstage portal.'/>
 </p>
 
-In the next part of this tutorial, you'll learn how to change to a persistent
-database, configure authentication, and add your first integration. Continue
-with [getting started: Configuring Backstage](configuration.md).
+The most common next steps are to move to a persistent database, configure
+authentication, and add a plugin:
+
+- [Switching from SQLite to PostgresQL](https://backstage.io/docs/tutorials/switching-sqlite-postgres)
+- [Setting up Authentication](https://backstage.io/docs/auth/)
+- [Adding a plugin](https://backstage.io/docs/getting-started/configure-app-with-plugins)
 
 Congratulations! That should be it. Let us know how it went:
 [on discord](https://discord.gg/EBHEGzX), file issues for any
