@@ -58,12 +58,20 @@ const useStyles = (props: { left: number }) =>
     },
     drawerOpen: {
       width: submenuConfig.drawerWidthOpen,
+      [theme.breakpoints.down('sm')]: {
+        width: '100%',
+        position: 'relative',
+        paddingLeft: theme.spacing(3),
+        left: 0,
+        top: 0,
+      },
     },
     title: {
       fontSize: 24,
       fontWeight: 500,
       color: '#FFF',
       padding: 20,
+      display: 'none',
     },
   }));
 

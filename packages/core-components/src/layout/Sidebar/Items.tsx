@@ -307,7 +307,6 @@ const SidebarItemWithSubmenu = ({
       <div className={classes.secondaryAction}>{}</div>
     </>
   );
-  const closedContent = itemIcon;
 
   return (
     <SidebarItemWithSubmenuContext.Provider
@@ -316,12 +315,8 @@ const SidebarItemWithSubmenu = ({
         setIsHoveredOn,
       }}
     >
-      <div
-        onMouseLeave={handleMouseLeave}
-        className={clsx(isHoveredOn && classes.highlighted)}
-      >
+      <div onMouseLeave={handleMouseLeave} onMouseEnter={handleMouseEnter}>
         <div
-          onMouseEnter={handleMouseEnter}
           data-testid="item-with-submenu"
           className={clsx(
             classes.root,
@@ -331,7 +326,7 @@ const SidebarItemWithSubmenu = ({
             isHoveredOn && classes.highlighted,
           )}
         >
-          {isOpen ? openContent : closedContent}
+          {isOpen ? openContent : itemIcon}
           {!isHoveredOn && (
             <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
           )}
@@ -488,28 +483,12 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     ),
   };
 
-  let hasSubmenu = false;
-  let submenu: ReactNode;
-  const componentType = (
-    <SidebarSubmenu>
-      <></>
-    </SidebarSubmenu>
-  ).type;
   // Filter children for SidebarSubmenu components
-  const submenus = useElementFilter(children, elements =>
-    elements.getElements().filter(child => child.type === componentType),
+  const [submenu] = useElementFilter(children, elements =>
+    elements.getElements().filter(child => child.type === SidebarSubmenu),
   );
-  // Error thrown if more than one SidebarSubmenu in a SidebarItem
-  if (submenus.length > 1) {
-    throw new Error(
-      'Cannot render more than one SidebarSubmenu inside a SidebarItem',
-    );
-  } else if (submenus.length === 1) {
-    hasSubmenu = true;
-    submenu = submenus[0];
-  }
 
-  if (hasSubmenu) {
+  if (submenu) {
     return (
       <SidebarItemWithSubmenu
         text={text}

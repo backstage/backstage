@@ -60,12 +60,11 @@ export const SIDEBAR_INTRO_LOCAL_STORAGE =
 
 export type SidebarContextType = {
   isOpen: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen?: (open: boolean) => void;
 };
 
 export const SidebarContext = createContext<SidebarContextType>({
   isOpen: false,
-  setOpen: _open => {},
 });
 
 export type SidebarItemWithSubmenuContextType = {

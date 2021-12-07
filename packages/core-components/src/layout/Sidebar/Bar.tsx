@@ -178,18 +178,8 @@ export const Sidebar = ({ children }: React.PropsWithChildren<Props>) => {
     theme.breakpoints.down('xs'),
   );
 
-  // TODO: Generalize
-  const setOpen = () => {};
-
   return isMobileScreen ? (
-    <SidebarContext.Provider
-      value={{
-        isOpen: true,
-        setOpen,
-      }}
-    >
-      <MobileSidebar>{children}</MobileSidebar>
-    </SidebarContext.Provider>
+    <MobileSidebar>{children}</MobileSidebar>
   ) : (
     <DesktopSidebar>{children}</DesktopSidebar>
   );
@@ -209,13 +199,13 @@ export const SidebarExpandButton = () => {
     theme.breakpoints.down('md'),
   );
 
+  if (isPinned || isSmallScreen || !setOpen) {
+    return null;
+  }
+
   const handleClick = () => {
     setOpen(!isOpen);
   };
-
-  if (isPinned || isSmallScreen) {
-    return null;
-  }
 
   return (
     <button

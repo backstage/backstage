@@ -809,6 +809,11 @@ export const Sidebar: ({
 export const SIDEBAR_INTRO_LOCAL_STORAGE =
   '@backstage/core/sidebar-intro-dismissed';
 
+// Warning: (ae-missing-release-tag) "SidebarClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarClassKey = 'drawer' | 'drawerOpen';
+
 // Warning: (ae-missing-release-tag) "sidebarConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -838,7 +843,7 @@ export const SidebarContext: Context<SidebarContextType>;
 // @public (undocumented)
 export type SidebarContextType = {
   isOpen: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen?: (open: boolean) => void;
 };
 
 // Warning: (ae-missing-release-tag) "SidebarDivider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1110,6 +1115,9 @@ export const SidebarDivider: React_2.ComponentType<
     }
 >;
 
+// @public
+export const SidebarExpandButton: () => JSX.Element | null;
+
 // Warning: (ae-missing-release-tag) "SidebarGroup" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -1130,9 +1138,6 @@ export interface SidebarGroupProps extends BottomNavigationActionProps {
   // (undocumented)
   to?: string;
 }
-
-// @public
-export const SidebarExpandButton: () => JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "SidebarIntro" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

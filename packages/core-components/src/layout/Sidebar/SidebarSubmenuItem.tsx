@@ -76,6 +76,10 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     color: theme.palette.navigation.color,
     display: 'flex',
     justifyContent: 'center',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+      paddingLeft: theme.spacing(4),
+    },
     fontSize: '14px',
   },
 }));

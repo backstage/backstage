@@ -26,6 +26,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { orderBy } from 'lodash';
 import React, { createContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
+import { SidebarContext } from '.';
 import { sidebarConfig } from './config';
 import { SidebarGroup } from './SidebarGroup';
 
@@ -143,21 +144,23 @@ export const MobileSidebar = ({ children }: React.PropsWithChildren<{}>) => {
     !sidebarGroups[selectedMenuItemIndex].props.to;
 
   return (
-    <MobileSidebarContext.Provider
-      value={{ selectedMenuItemIndex, setSelectedMenuItemIndex }}
-    >
-      {shouldShowGroupChildren && (
-        <OverlayMenu
-          {...sidebarGroups[selectedMenuItemIndex].props}
-          onClose={() => setSelectedMenuItemIndex(-1)}
-        />
-      )}
-      <BottomNavigation
-        className={classes.root}
-        data-testid="mobile-sidebar-root"
+    <SidebarContext.Provider value={{ isOpen: true }}>
+      <MobileSidebarContext.Provider
+        value={{ selectedMenuItemIndex, setSelectedMenuItemIndex }}
       >
-        {sidebarGroups}
-      </BottomNavigation>
-    </MobileSidebarContext.Provider>
+        {shouldShowGroupChildren && (
+          <OverlayMenu
+            {...sidebarGroups[selectedMenuItemIndex].props}
+            onClose={() => setSelectedMenuItemIndex(-1)}
+          />
+        )}
+        <BottomNavigation
+          className={classes.root}
+          data-testid="mobile-sidebar-root"
+        >
+          {sidebarGroups}
+        </BottomNavigation>
+      </MobileSidebarContext.Provider>
+    </SidebarContext.Provider>
   );
 };
