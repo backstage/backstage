@@ -17,6 +17,7 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 
@@ -45,8 +46,10 @@ export async function createRouter(
         }`,
       );
 
+      const token = IdentityClient.getBearerToken(req.header('authorization'));
+
       try {
-        const results = await engine?.query(req.query);
+        const results = await engine?.query(req.query, { token });
         res.send(results);
       } catch (err) {
         throw new Error(
