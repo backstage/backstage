@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-export { Sidebar } from './Bar';
+export { Sidebar, SidebarExpandButton } from './Bar';
 export { MobileSidebar } from './MobileSidebar';
 export { SidebarGroup } from './SidebarGroup';
 export type { SidebarGroupProps } from './SidebarGroup';
+export { SidebarSubmenuItem } from './SidebarSubmenuItem';
+export { SidebarSubmenu } from './SidebarSubmenu';
+export type { SidebarSubmenuProps } from './SidebarSubmenu';
+export type {
+  SidebarSubmenuItemProps,
+  SidebarSubmenuItemDropdownItem,
+} from './SidebarSubmenuItem';
+export type { SidebarClassKey } from './Bar';
 export { SidebarPage, SidebarPinStateContext } from './Page';
 export type { SidebarPinStateContextType, SidebarPageClassKey } from './Page';
 export {

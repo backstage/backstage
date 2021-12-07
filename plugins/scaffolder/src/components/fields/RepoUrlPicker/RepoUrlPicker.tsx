@@ -27,7 +27,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import { useApi } from '@backstage/core-plugin-api';
 import { Progress } from '@backstage/core-components';
 
-function splitFormData(url: string | undefined) {
+function splitFormData(url: string | undefined, allowedOwners: string[]) {
   let host = undefined;
   let owner = undefined;
   let repo = undefined;
@@ -39,7 +39,10 @@ function splitFormData(url: string | undefined) {
     if (url) {
       const parsed = new URL(`https://${url}`);
       host = parsed.host;
-      owner = parsed.searchParams.get('owner') || undefined;
+      owner =
+        parsed.searchParams.get('owner') || allowedOwners
+          ? allowedOwners[0]
+          : undefined;
       repo = parsed.searchParams.get('repo') || undefined;
       // This is azure dev ops specific. not used for any other provider.
       organization = parsed.searchParams.get('organization') || undefined;
@@ -95,13 +98,16 @@ export const RepoUrlPicker = ({
   const scaffolderApi = useApi(scaffolderApiRef);
   const integrationApi = useApi(scmIntegrationsApiRef);
   const allowedHosts = uiSchema['ui:options']?.allowedHosts as string[];
+  const allowedOwners = uiSchema['ui:options']?.allowedOwners as string[];
 
   const { value: integrations, loading } = useAsync(async () => {
     return await scaffolderApi.getIntegrationsList({ allowedHosts });
   });
 
-  const { host, owner, repo, organization, workspace, project } =
-    splitFormData(formData);
+  const { host, owner, repo, organization, workspace, project } = splitFormData(
+    formData,
+    allowedOwners,
+  );
   const updateHost = useCallback(
     (evt: React.ChangeEvent<{ name?: string; value: unknown }>) => {
       onChange(
@@ -300,21 +306,57 @@ export const RepoUrlPicker = ({
         </>
       )}
       {/* Show this for all hosts except bitbucket */}
-      {host && integrationApi.byHost(host)?.type !== 'bitbucket' && (
-        <>
-          <FormControl
-            margin="normal"
-            required
-            error={rawErrors?.length > 0 && !owner}
-          >
-            <InputLabel htmlFor="ownerInput">Owner</InputLabel>
-            <Input id="ownerInput" onChange={updateOwner} value={owner} />
-            <FormHelperText>
-              The organization, user or project that this repo will belong to
-            </FormHelperText>
-          </FormControl>
-        </>
-      )}
+      {host &&
+        integrationApi.byHost(host)?.type !== 'bitbucket' &&
+        !allowedOwners && (
+          <>
+            <FormControl
+              margin="normal"
+              required
+              error={rawErrors?.length > 0 && !owner}
+            >
+              <InputLabel htmlFor="ownerInput">Owner</InputLabel>
+              <Input id="ownerInput" onChange={updateOwner} value={owner} />
+              <FormHelperText>
+                The organization, user or project that this repo will belong to
+              </FormHelperText>
+            </FormControl>
+          </>
+        )}
+      {/* Show this for all hosts except bitbucket where allowed owner is set */}
+      {host &&
+        integrationApi.byHost(host)?.type !== 'bitbucket' &&
+        allowedOwners && (
+          <>
+            <FormControl
+              margin="normal"
+              required
+              error={rawErrors?.length > 0 && !owner}
+            >
+              <InputLabel htmlFor="ownerInput">Owner Available</InputLabel>
+              <Select
+                native
+                id="ownerInput"
+                onChange={updateOwner}
+                value={owner}
+              >
+                {allowedOwners ? (
+                  allowedOwners.map(i => (
+                    <option key={i} value={i}>
+                      {i}
+                    </option>
+                  ))
+                ) : (
+                  <p>loading</p>
+                )}
+                ;
+              </Select>
+              <FormHelperText>
+                The organization, user or project that this repo will belong to
+              </FormHelperText>
+            </FormControl>
+          </>
+        )}
       {/* Show this for all hosts */}
       <FormControl
         margin="normal"

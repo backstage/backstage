@@ -24,7 +24,7 @@ import {
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/techdocs-common';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { Knex } from 'knex';

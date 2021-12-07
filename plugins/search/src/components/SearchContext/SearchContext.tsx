@@ -37,6 +37,8 @@ type SearchContextValue = {
   setTypes: React.Dispatch<React.SetStateAction<string[]>>;
   filters: JsonObject;
   setFilters: React.Dispatch<React.SetStateAction<JsonObject>>;
+  open?: boolean;
+  toggleModal: () => void;
   pageCursor?: string;
   setPageCursor: React.Dispatch<React.SetStateAction<string | undefined>>;
   fetchNextPage?: React.DispatchWithoutAction;
@@ -49,6 +51,7 @@ type SettableSearchContext = Omit<
   | 'setTerm'
   | 'setTypes'
   | 'setFilters'
+  | 'toggleModal'
   | 'setPageCursor'
   | 'fetchNextPage'
   | 'fetchPreviousPage'
@@ -74,6 +77,12 @@ export const SearchContextProvider = ({
   const [filters, setFilters] = useState<JsonObject>(initialState.filters);
   const [term, setTerm] = useState<string>(initialState.term);
   const [types, setTypes] = useState<string[]>(initialState.types);
+  const [open, setOpen] = useState<boolean>(false);
+  const toggleModal = useCallback(
+    (): void => setOpen(prevState => !prevState),
+    [],
+  );
+
   const prevTerm = usePrevious(term);
 
   const result = useAsync(
@@ -109,6 +118,8 @@ export const SearchContextProvider = ({
     result,
     filters,
     setFilters,
+    open,
+    toggleModal,
     term,
     setTerm,
     types,

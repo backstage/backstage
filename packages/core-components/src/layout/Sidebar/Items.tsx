@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '@backstage/core-plugin-api';
+import { IconComponent, useElementFilter } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, styled, Theme } from '@material-ui/core/styles';
 import Badge from '@material-ui/core/Badge';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
 import React, {
+  Children,
   forwardRef,
   KeyboardEventHandler,
+  PropsWithChildren,
   ReactNode,
   useContext,
   useState,
@@ -33,10 +36,16 @@ import React, {
 import {
   Link,
   NavLinkProps,
+  resolvePath,
   useLocation,
   useResolvedPath,
 } from 'react-router-dom';
-import { sidebarConfig, SidebarContext } from './config';
+import {
+  sidebarConfig,
+  SidebarContext,
+  SidebarItemWithSubmenuContext,
+} from './config';
+import { SidebarSubmenu } from './SidebarSubmenu';
 
 export type SidebarItemClassKey =
   | 'root'
@@ -87,6 +96,16 @@ const useStyles = makeStyles<BackstageTheme>(
           width: drawerWidthOpen,
         },
       },
+      highlightable: {
+        '&:hover': {
+          background:
+            theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
+        },
+      },
+      highlighted: {
+        background:
+          theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
+      },
       label: {
         // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
         fontWeight: 'bold',
@@ -124,6 +143,14 @@ const useStyles = makeStyles<BackstageTheme>(
         width: theme.spacing(6),
         textAlign: 'center',
         marginRight: theme.spacing(1),
+      },
+      closedItemIcon: {
+        width: '100%',
+        justifyContent: 'center',
+      },
+      submenuArrow: {
+        position: 'absolute',
+        right: 0,
       },
       selected: {
         '&$root': {
@@ -184,6 +211,12 @@ const useStyles = makeStyles<BackstageTheme>(
           textAlign: 'center',
           marginRight: theme.spacing(1),
         },
+        '&$closed': {
+          width: drawerWidthClosed,
+        },
+        '& $closedItemIcon': {
+          paddingRight: selectedIndicatorWidth,
+        },
         selected: {
           '&$root': {
             borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
@@ -202,16 +235,124 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageSidebarItem' },
 );
 
+function isSidebarItemWithSubmenuActive(
+  submenu: ReactNode,
+  locationPathname: string,
+) {
+  // Item is active if any of submenu items have active paths
+  const toPathnames: string[] = [];
+  let isActive = false;
+  let submenuItems: ReactNode;
+  Children.forEach(submenu, element => {
+    if (!React.isValidElement(element)) return;
+    submenuItems = element.props.children;
+  });
+  Children.forEach(submenuItems, element => {
+    if (!React.isValidElement(element)) return;
+    if (element.props.dropdownItems) {
+      element.props.dropdownItems.map((item: { to: string }) =>
+        toPathnames.push(item.to),
+      );
+    } else if (element.props.to) {
+      toPathnames.push(element.props.to);
+    }
+  });
+  isActive = toPathnames.some(to => {
+    const toPathname = resolvePath(to);
+    return locationPathname === toPathname.pathname;
+  });
+  return isActive;
+}
+
+const SidebarItemWithSubmenu = ({
+  text,
+  hasNotifications = false,
+  icon: Icon,
+  children,
+}: PropsWithChildren<SidebarItemWithSubmenuProps>) => {
+  const classes = useStyles();
+  const [isHoveredOn, setIsHoveredOn] = useState(false);
+  const { pathname: locationPathname } = useLocation();
+  const isActive = isSidebarItemWithSubmenuActive(children, locationPathname);
+
+  const handleMouseEnter = () => {
+    setIsHoveredOn(true);
+  };
+  const handleMouseLeave = () => {
+    setIsHoveredOn(false);
+  };
+
+  const { isOpen } = useContext(SidebarContext);
+  const itemIcon = (
+    <Badge
+      color="secondary"
+      variant="dot"
+      overlap="circular"
+      className={isOpen ? '' : classes.closedItemIcon}
+      invisible={!hasNotifications}
+    >
+      <Icon fontSize="small" />
+    </Badge>
+  );
+  const openContent = (
+    <>
+      <div data-testid="login-button" className={classes.iconContainer}>
+        {itemIcon}
+      </div>
+      {text && (
+        <Typography variant="subtitle2" className={classes.text}>
+          {text}
+        </Typography>
+      )}
+      <div className={classes.secondaryAction}>{}</div>
+    </>
+  );
+  const closedContent = itemIcon;
+
+  return (
+    <SidebarItemWithSubmenuContext.Provider
+      value={{
+        isHoveredOn,
+        setIsHoveredOn,
+      }}
+    >
+      <div
+        onMouseLeave={handleMouseLeave}
+        className={clsx(isHoveredOn && classes.highlighted)}
+      >
+        <div
+          onMouseEnter={handleMouseEnter}
+          data-testid="item-with-submenu"
+          className={clsx(
+            classes.root,
+            isOpen ? classes.open : classes.closed,
+            isActive && classes.selected,
+            classes.highlightable,
+            isHoveredOn && classes.highlighted,
+          )}
+        >
+          {isOpen ? openContent : closedContent}
+          {!isHoveredOn && (
+            <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
+          )}
+        </div>
+        {isHoveredOn && children}
+      </div>
+    </SidebarItemWithSubmenuContext.Provider>
+  );
+};
+
 type SidebarItemBaseProps = {
   icon: IconComponent;
   text?: string;
   hasNotifications?: boolean;
-  children?: ReactNode;
+  disableHighlight?: boolean;
   className?: string;
 };
 
 type SidebarItemButtonProps = SidebarItemBaseProps & {
   onClick: (ev: React.MouseEvent) => void;
+  children?: ReactNode;
 };
 
 type SidebarItemLinkProps = SidebarItemBaseProps & {
@@ -219,7 +360,21 @@ type SidebarItemLinkProps = SidebarItemBaseProps & {
   onClick?: (ev: React.MouseEvent) => void;
 } & NavLinkProps;
 
-type SidebarItemProps = SidebarItemButtonProps | SidebarItemLinkProps;
+type SidebarItemWithSubmenuProps = SidebarItemBaseProps & {
+  to?: string;
+  onClick?: (ev: React.MouseEvent) => void;
+  children: ReactNode;
+};
+
+/**
+ * SidebarItem with 'to' property will be a clickable link.
+ * SidebarItem with 'onClick' property and without 'to' property will be a clickable button.
+ * SidebarItem which wraps a SidebarSubmenu will be a clickable button which opens a submenu.
+ */
+type SidebarItemProps =
+  | SidebarItemLinkProps
+  | SidebarItemButtonProps
+  | SidebarItemWithSubmenuProps;
 
 function isButtonItem(
   props: SidebarItemProps,
@@ -280,6 +435,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     icon: Icon,
     text,
     hasNotifications = false,
+    disableHighlight = false,
     onClick,
     children,
     className,
@@ -297,6 +453,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       variant="dot"
       overlap="circular"
       invisible={!hasNotifications}
+      className={clsx({ [classes.closedItemIcon]: !isOpen })}
     >
       <Icon fontSize="small" />
     </Badge>
@@ -310,7 +467,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
         {itemIcon}
       </div>
       {text && (
-        <Typography variant="subtitle2" className={classes.label}>
+        <Typography variant="subtitle2" className={classes.text}>
           {text}
         </Typography>
       )}
@@ -327,8 +484,42 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       classes.root,
       isOpen ? classes.open : classes.closed,
       isButtonItem(props) && classes.buttonItem,
+      { [classes.highlightable]: !disableHighlight },
     ),
   };
+
+  let hasSubmenu = false;
+  let submenu: ReactNode;
+  const componentType = (
+    <SidebarSubmenu>
+      <></>
+    </SidebarSubmenu>
+  ).type;
+  // Filter children for SidebarSubmenu components
+  const submenus = useElementFilter(children, elements =>
+    elements.getElements().filter(child => child.type === componentType),
+  );
+  // Error thrown if more than one SidebarSubmenu in a SidebarItem
+  if (submenus.length > 1) {
+    throw new Error(
+      'Cannot render more than one SidebarSubmenu inside a SidebarItem',
+    );
+  } else if (submenus.length === 1) {
+    hasSubmenu = true;
+    submenu = submenus[0];
+  }
+
+  if (hasSubmenu) {
+    return (
+      <SidebarItemWithSubmenu
+        text={text}
+        icon={Icon}
+        hasNotifications={hasNotifications}
+      >
+        {submenu}
+      </SidebarItemWithSubmenu>
+    );
+  }
 
   if (isButtonItem(props)) {
     return (
@@ -342,7 +533,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     <WorkaroundNavLink
       {...childProps}
       activeClassName={classes.selected}
-      to={props.to}
+      to={props.to ? props.to : ''}
       ref={ref}
       aria-label={text ? text : props.to}
       {...navLinkProps}
@@ -393,7 +584,12 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
 
   return (
     <div className={classes.searchRoot}>
-      <SidebarItem icon={Icon} to={props.to} onClick={handleItemClick}>
+      <SidebarItem
+        icon={Icon}
+        to={props.to}
+        onClick={handleItemClick}
+        disableHighlight
+      >
         <TextField
           placeholder="Search"
           value={input}

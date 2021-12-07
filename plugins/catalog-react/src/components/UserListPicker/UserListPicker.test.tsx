@@ -26,9 +26,9 @@ import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityTagFilter, UserListFilter } from '../../filters';
 import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
-import { MockStorageApi } from '@backstage/test-utils';
+import { MockStorageApi, TestApiRegistry } from '@backstage/test-utils';
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import {
   ConfigApi,
   configApiRef,
@@ -62,12 +62,12 @@ const mockIdentityApi = {
   getIdToken: async () => undefined,
 } as Partial<IdentityApi>;
 
-const apis = ApiRegistry.from([
+const apis = TestApiRegistry.from(
   [configApiRef, mockConfigApi],
   [catalogApiRef, mockCatalogApi],
   [identityApiRef, mockIdentityApi],
   [storageApiRef, MockStorageApi.create()],
-]);
+);
 
 const mockIsOwnedEntity = (entity: Entity) =>
   entity.metadata.name === 'component-1';

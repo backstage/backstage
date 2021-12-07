@@ -1,5 +1,52 @@
 # @backstage/plugin-auth-backend
 
+## 0.4.10
+
+### Patch Changes
+
+- 4bf4111902: Migrated the SAML provider to implement the `authHandler` and `signIn.resolver` options.
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- 36fa32216f: Added signIn and authHandler resolver for oidc provider
+- 7071dce02d: Expose catalog lib in plugin-auth-backend, i.e `CatalogIdentityClient` class is exposed now.
+- 1b69ed44f2: Added custom OAuth2.0 authorization header for generic oauth2 provider.
+- Updated dependencies
+  - @backstage/backend-common@0.9.12
+
+## 0.4.9
+
+### Patch Changes
+
+- 9312572360: Switched to using the standardized JSON error responses for all provider endpoints.
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/backend-common@0.9.11
+  - @backstage/test-utils@0.1.23
+
+## 0.4.8
+
+### Patch Changes
+
+- 892c1d9202: Update OAuthAdapter to create identity.token from identity.idToken if it does not exist, and prevent overwrites to identity.toke. Update login page commonProvider to prefer .token over .idToken
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+  - @backstage/test-utils@0.1.22
+
 ## 0.4.7
 
 ### Patch Changes

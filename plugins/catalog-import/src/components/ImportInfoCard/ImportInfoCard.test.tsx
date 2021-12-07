@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { configApiRef } from '@backstage/core-plugin-api';
-import { renderInTestApp } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  TestApiProvider,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import React from 'react';
 import { CatalogImportApi, catalogImportApiRef } from '../../api';
 import { ImportInfoCard } from './ImportInfoCard';
 
 describe('<ImportInfoCard />', () => {
-  let apis: ApiRegistry;
+  let apis: TestApiRegistry;
   let catalogImportApi: jest.Mocked<CatalogImportApi>;
 
   beforeEach(() => {
@@ -35,26 +35,29 @@ describe('<ImportInfoCard />', () => {
       submitPullRequest: jest.fn(),
     };
 
-    apis = ApiRegistry.with(
-      configApiRef,
-      new ConfigReader({
-        integrations: {
-          github: [{ token: 'my-token' }],
-        },
-      }),
-    ).with(catalogImportApiRef, catalogImportApi);
+    apis = TestApiRegistry.from(
+      [
+        configApiRef,
+        new ConfigReader({
+          integrations: {
+            github: [{ token: 'my-token' }],
+          },
+        }),
+      ],
+      [catalogImportApiRef, catalogImportApi],
+    );
   });
 
   it('renders without exploding', async () => {
-    apis = ApiRegistry.with(
-      configApiRef,
-      new ConfigReader({ integrations: {} }),
-    ).with(catalogImportApiRef, catalogImportApi);
-
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider
+        apis={[
+          [configApiRef, new ConfigReader({ integrations: {} })],
+          [catalogImportApiRef, catalogImportApi],
+        ]}
+      >
         <ImportInfoCard />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(getByText('Register an existing component')).toBeInTheDocument();

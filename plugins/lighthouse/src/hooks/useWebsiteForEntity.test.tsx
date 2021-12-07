@@ -21,8 +21,8 @@ import { lighthouseApiRef, WebsiteListResponse } from '../api';
 import * as data from '../__fixtures__/website-list-response.json';
 import { useWebsiteForEntity } from './useWebsiteForEntity';
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const websiteListResponse = data as WebsiteListResponse;
 const website = websiteListResponse.items[0];
@@ -55,14 +55,14 @@ describe('useWebsiteForEntity', () => {
 
   const wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
-      <ApiProvider
-        apis={ApiRegistry.with(errorApiRef, mockErrorApi).with(
-          lighthouseApiRef,
-          mockLighthouseApi,
-        )}
+      <TestApiProvider
+        apis={[
+          [errorApiRef, mockErrorApi],
+          [lighthouseApiRef, mockLighthouseApi],
+        ]}
       >
         <EntityProvider entity={entity}>{children}</EntityProvider>
-      </ApiProvider>
+      </TestApiProvider>
     );
   };
 

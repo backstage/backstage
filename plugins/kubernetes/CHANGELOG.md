@@ -1,5 +1,37 @@
 # @backstage/plugin-kubernetes
 
+## 0.4.22
+
+### Patch Changes
+
+- 86ed770308: Added accordions to display information on Jobs and CronJobs in the kubernetes plugin. Updated the PodsTable with fewer default columns and the ability to pass in additional ones depending on the use case.
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+  - @backstage/plugin-kubernetes-common@0.1.7
+
+## 0.4.21
+
+### Patch Changes
+
+- 3739d3f773: Implement support for formatting OpenShift dashboard url links
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.1.6
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.4.20
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
 ## 0.4.19
 
 ### Patch Changes

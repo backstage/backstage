@@ -24,6 +24,7 @@ import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
+import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
@@ -41,6 +42,7 @@ export type ActionContext<Input extends InputBase> = {
   input: Input;
   output(name: string, value: JsonValue): void;
   createTemporaryDirectory(): Promise<string>;
+  metadata?: TemplateMetadata;
 };
 
 // Warning: (ae-missing-release-tag) "CatalogEntityClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -303,11 +305,12 @@ export interface RouterOptions {
 // Warning: (ae-forgotten-export) The symbol "RunCommandOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "runCommand" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export const runCommand: ({
   command,
   args,
   logStream,
+  options,
 }: RunCommandOptions) => Promise<void>;
 
 // @public (undocumented)
@@ -432,6 +435,8 @@ export interface TaskSpecV1beta2 {
   // (undocumented)
   baseUrl?: string;
   // (undocumented)
+  metadata?: TemplateMetadata;
+  // (undocumented)
   output: {
     [name: string]: string;
   };
@@ -453,6 +458,8 @@ export interface TaskSpecV1beta3 {
   apiVersion: 'scaffolder.backstage.io/v1beta3';
   // (undocumented)
   baseUrl?: string;
+  // (undocumented)
+  metadata?: TemplateMetadata;
   // (undocumented)
   output: {
     [name: string]: JsonValue;
@@ -558,4 +565,9 @@ export class TemplateActionRegistry {
     action: TemplateAction<Parameters>,
   ): void;
 }
+
+// @public
+export type TemplateMetadata = {
+  name: string;
+};
 ```

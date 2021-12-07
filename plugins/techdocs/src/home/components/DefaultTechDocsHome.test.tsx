@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import {
   ConfigApi,
   configApiRef,
@@ -30,7 +26,11 @@ import {
   DefaultStarredEntitiesApi,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
-import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
+import {
+  MockStorageApi,
+  renderInTestApp,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { rootDocsRouteRef } from '../../routes';
@@ -69,12 +69,12 @@ describe('TechDocs Home', () => {
 
   const storageApi = MockStorageApi.create();
 
-  const apiRegistry = ApiRegistry.from([
+  const apiRegistry = TestApiRegistry.from(
     [catalogApiRef, mockCatalogApi],
     [configApiRef, configApi],
     [storageApiRef, storageApi],
     [starredEntitiesApiRef, new DefaultStarredEntitiesApi({ storageApi })],
-  ]);
+  );
 
   it('should render a TechDocs home page', async () => {
     await renderInTestApp(

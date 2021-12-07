@@ -349,6 +349,78 @@ describe('Integration Test', () => {
     });
   });
 
+  it('getFeatureFlags should return feature flags', async () => {
+    const storageFlags = new LocalStorageFeatureFlags();
+    jest.spyOn(storageFlags, 'registerFlag');
+
+    const apis = [
+      noOpAnalyticsApi,
+      createApiFactory({
+        api: featureFlagsApiRef,
+        deps: { configApi: configApiRef },
+        factory() {
+          return storageFlags;
+        },
+      }),
+    ];
+
+    const app = new AppManager({
+      apis,
+      defaultApis: [],
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          Provider: ({ children }) => <>{children}</>,
+        },
+      ],
+      icons,
+      plugins: [
+        createPlugin({
+          id: 'test',
+          featureFlags: [
+            {
+              name: 'foo',
+            },
+          ],
+          register: p => p.featureFlags.register('name'),
+        }),
+      ],
+      components,
+      configLoader: async () => [],
+      bindRoutes: ({ bind }) => {
+        bind(plugin1.externalRoutes, {
+          extRouteRef1: plugin1RouteRef,
+          extRouteRef2: plugin2RouteRef,
+        });
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<ExposedComponent />} />
+            <Route path="/foo" element={<HiddenComponent />} />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    expect(storageFlags.registerFlag).toHaveBeenCalledWith({
+      name: 'name',
+      pluginId: 'test',
+    });
+    expect(storageFlags.registerFlag).toHaveBeenCalledWith({
+      name: 'foo',
+      pluginId: 'test',
+    });
+  });
+
   it('should track route changes via analytics api', async () => {
     const mockAnalyticsApi = new MockAnalyticsApi();
     const apis = [createApiFactory(analyticsApiRef, mockAnalyticsApi)];

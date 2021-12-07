@@ -16,30 +16,33 @@
 import { createRouteRef } from '@backstage/core-plugin-api';
 import { wrapInTestApp } from '@backstage/test-utils';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import ExtensionIcon from '@material-ui/icons/Extension';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import MenuIcon from '@material-ui/icons/Menu';
+import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
+import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
+import WebOutlinedIcon from '@material-ui/icons/WebOutlined';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import CloudQueueIcon from '@material-ui/icons/CloudQueue';
+import SettingsApplications from '@material-ui/icons/SettingsApplications';
+import AcUnitIcon from '@material-ui/icons/AcUnit';
 import React, { ComponentType } from 'react';
-import { useLocation } from 'react-router-dom';
 import {
   Sidebar,
   SidebarDivider,
   SidebarGroup,
+  SidebarExpandButton,
   SidebarIntro,
   SidebarItem,
+  SidebarPage,
   SidebarSearchField,
   SidebarSpace,
+  SidebarSubmenu,
+  SidebarSubmenuItem,
 } from '.';
-import { SidebarPage } from './Page';
 
 const routeRef = createRouteRef({
   id: 'storybook.test-route',
 });
-
-const Location = () => {
-  const location = useLocation();
-  return <pre>Current location: {location.pathname}</pre>;
-};
 
 export default {
   title: 'Layout/Sidebar',
@@ -50,22 +53,70 @@ export default {
   ],
 };
 
-export const SampleSidebar = () => {
-  return (
-    <SidebarPage>
-      <Sidebar>
-        <SidebarGroup label="Menu" icon={MenuIcon}>
-          <SidebarSearchField onSearch={() => {}} />
-          <SidebarDivider />
-          <SidebarItem icon={HomeOutlinedIcon} to="/" text="Home" />
-          <SidebarItem icon={ExtensionIcon} to="/one" text="Plugins" />
-          <SidebarItem icon={AddCircleOutlineIcon} to="/two" text="Create..." />
-          <SidebarDivider />
-          <SidebarIntro />
-          <SidebarSpace />
-        </SidebarGroup>
-      </Sidebar>
-      <Location />
-    </SidebarPage>
-  );
+const handleSearch = (input: string) => {
+  // eslint-disable-next-line no-console
+  console.log(input);
 };
+
+export const SampleSidebar = () => (
+  <SidebarPage>
+    <Sidebar>
+      <SidebarGroup label="Menu" icon={MenuIcon}>
+        <SidebarSearchField onSearch={handleSearch} to="/search" />
+        <SidebarDivider />
+        <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
+        <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
+        <SidebarDivider />
+        <SidebarIntro />
+        <SidebarSpace />
+      </SidebarGroup>
+    </Sidebar>
+  </SidebarPage>
+);
+
+export const SampleScalableSidebar = () => (
+  <SidebarPage>
+    <Sidebar disableExpandOnHover>
+      <SidebarSearchField onSearch={handleSearch} to="/search" />
+      <SidebarDivider />
+      <SidebarItem icon={MenuBookIcon} text="Catalog">
+        <SidebarSubmenu title="Catalog">
+          <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
+          <SidebarSubmenuItem title="APIs" to="/2" icon={CloudQueueIcon} />
+          <SidebarSubmenuItem
+            title="Services"
+            to="/3"
+            icon={SettingsApplications}
+          />
+          <SidebarSubmenuItem
+            title="Libraries"
+            to="/4"
+            icon={LibraryBooksOutlinedIcon}
+          />
+          <SidebarSubmenuItem title="Websites" to="/5" icon={WebOutlinedIcon} />
+          <SidebarSubmenuItem
+            title="Misc"
+            to="/6"
+            icon={AcUnitIcon}
+            dropdownItems={[
+              {
+                title: 'Lorem Ipsum',
+                to: '/7',
+              },
+              {
+                title: 'Lorem Ipsum',
+                to: '/8',
+              },
+            ]}
+          />
+        </SidebarSubmenu>
+      </SidebarItem>
+      <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
+      <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
+      <SidebarDivider />
+      <SidebarIntro />
+      <SidebarSpace />
+      <SidebarExpandButton />
+    </Sidebar>
+  </SidebarPage>
+);

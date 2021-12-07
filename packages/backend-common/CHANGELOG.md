@@ -1,5 +1,61 @@
 # @backstage/backend-common
 
+## 0.9.12
+
+### Patch Changes
+
+- 905dd952ac: Create a `TokenManager` interface and `ServerTokenManager` implementation to generate and validate server tokens for authenticated backend-to-backend API requests.
+- 6b500622d5: Move to using node-fetch internally instead of cross-fetch
+- 54989b671d: Fixed a potential crash in the log redaction code
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/config-loader@0.8.1
+
+## 0.9.11
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/errors@0.1.5
+
+## 0.9.10
+
+### Patch Changes
+
+- d7c1e0e34a: Added the `isDatabaseConflictError` function.
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 1e99c73c75: Update internal usage of `configLoader.loadConfig` that now returns an object instead of an array of configs.
+- 1daada3a06: Paths can be specified in backend.reading.allow to further restrict allowed targets
+- 7ad9a07b27: Adding config prop `pluginDivisionMode` to allow plugins using the `pg` client to create their own management schemas in the db. This allows `pg` client plugins to work in separate schemas in the same db.
+- 01f74aa878: Add `AbortSignal` support to `UrlReader`
+- a8732a1200: Make sure that server builder `start()` propagates errors (such as failing to bind to the required port) properly and doesn't resolve the promise prematurely.
+
+  After this change, the backend logger will be able to actually capture the error as it happens:
+
+  ```
+  2021-11-11T10:54:21.334Z backstage info Initializing http server
+  2021-11-11T10:54:21.335Z backstage error listen EADDRINUSE: address already in use :::7000 code=EADDRINUSE errno=-48 syscall=listen address=:: port=7000
+  ```
+
+- 26b5da1c1a: Do not redact empty or one-character strings. These imply that it's just a test or local dev, and unnecessarily ruin the log output.
+- Updated dependencies
+  - @backstage/config-loader@0.8.0
+  - @backstage/cli-common@0.1.6
+
 ## 0.9.9
 
 ### Patch Changes

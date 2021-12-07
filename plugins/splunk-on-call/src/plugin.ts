@@ -24,9 +24,7 @@ import {
   createComponentExtension,
 } from '@backstage/core-plugin-api';
 
-export const rootRouteRef = createRouteRef({
-  title: 'splunk-on-call',
-});
+export const rootRouteRef = createRouteRef({ id: 'splunk-on-call' });
 
 export const splunkOnCallPlugin = createPlugin({
   id: 'splunk-on-call',

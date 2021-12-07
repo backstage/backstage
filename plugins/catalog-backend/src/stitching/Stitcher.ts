@@ -209,6 +209,11 @@ export class Stitcher {
       entity.metadata.etag = hash;
     }
 
+    // This may throw if the entity is invalid, so we call it before
+    // the final_entites write, even though we may end up not needing
+    // to write the search index.
+    const searchEntries = buildEntitySearch(entityId, entity);
+
     const rowsChanged = await this.database<DbFinalEntitiesRow>(
       'final_entities',
     )
@@ -235,7 +240,6 @@ export class Stitcher {
     // B writes the entity ->
     // B writes search ->
     // A writes search
-    const searchEntries = buildEntitySearch(entityId, entity);
     await this.database<DbSearchRow>('search')
       .where({ entity_id: entityId })
       .delete();

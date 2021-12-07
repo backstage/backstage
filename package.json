@@ -30,6 +30,8 @@
     "prettier:check": "prettier --check .",
     "lerna": "lerna",
     "storybook": "yarn workspace storybook start",
+    "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
+    "snyk:test:package": "yarn snyk:test --include",
     "build-storybook": "yarn workspace storybook build-storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
@@ -61,7 +63,8 @@
   "devDependencies": {
     "@changesets/cli": "^2.14.0",
     "@octokit/rest": "^18.12.0",
-    "@spotify/prettier-config": "^11.0.0",
+    "@spotify/prettier-config": "^12.0.0",
+    "@types/node": "^14.14.32",
     "@types/webpack": "^5.28.0",
     "command-exists": "^1.2.9",
     "cross-env": "^7.0.0",

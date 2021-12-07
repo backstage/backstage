@@ -23,9 +23,14 @@ app:
             title: '#backstage'
 
 backend:
-  baseUrl: http://localhost:7000
+  # Used for enabling authentication, secret is shared by all backend plugins
+  # See backend-to-backend-auth.md in the docs for information on the format
+  # auth:
+  #   keys:
+  #     - secret: ${BACKEND_SECRET}
+  baseUrl: http://localhost:7007
   listen:
-    port: 7000
+    port: 7007
   database:
     client: sqlite3
     connection: ':memory:'
@@ -272,24 +277,6 @@ scaffolder:
   #   email: scaffolder@backstage.io
   # Use to customize the default commit message when new components are created
   # defaultCommitMessage: 'Initial commit'
-  github:
-    token: ${GITHUB_TOKEN}
-    visibility: public # or 'internal' or 'private'
-  gitlab:
-    api:
-      baseUrl: https://gitlab.com
-      token: ${GITLAB_TOKEN}
-    visibility: public # or 'internal' or 'private'
-  azure:
-    baseUrl: https://dev.azure.com/{your-organization}
-    api:
-      token: ${AZURE_TOKEN}
-  bitbucket:
-    api:
-      host: https://bitbucket.org
-      username: ${BITBUCKET_USERNAME}
-      token: ${BITBUCKET_TOKEN}
-    visibility: public # or or 'private'
 
 auth:
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running

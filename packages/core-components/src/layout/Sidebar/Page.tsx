@@ -53,7 +53,7 @@ export type SidebarPinStateContextType = {
 
 export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
   {
-    isPinned: false,
+    isPinned: true,
     toggleSidebarPinState: () => {},
   },
 );

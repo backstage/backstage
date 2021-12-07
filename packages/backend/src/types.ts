@@ -20,6 +20,7 @@ import {
   PluginCacheManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
+  TokenManager,
   UrlReader,
 } from '@backstage/backend-common';
 
@@ -30,4 +31,5 @@ export type PluginEnvironment = {
   config: Config;
   reader: UrlReader;
   discovery: PluginEndpointDiscovery;
+  tokenManager: TokenManager;
 };

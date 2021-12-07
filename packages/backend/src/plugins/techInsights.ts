@@ -17,10 +17,12 @@ import {
   createRouter,
   buildTechInsightsContext,
   createFactRetrieverRegistration,
+  entityOwnershipFactRetriever,
+  entityMetadataFactRetriever,
+  techdocsFactRetriever,
 } from '@backstage/plugin-tech-insights-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-import { CatalogClient } from '@backstage/catalog-client';
 import {
   JsonRulesEngineFactCheckerFactory,
   JSON_RULE_ENGINE_CHECK_TYPE,
@@ -38,41 +40,12 @@ export default async function createPlugin({
     database,
     discovery,
     factRetrievers: [
-      createFactRetrieverRegistration('5 4 * * 6', {
-        // Example cron, At 04:05 on Saturday.
-        id: 'testRetriever',
-        version: '1.1.2',
-        entityFilter: [{ kind: 'component' }], // EntityFilter to be used in the future (creating checks, graphs etc.) to figure out which entities this fact retrieves data for.
-        schema: {
-          examplenumberfact: {
-            type: 'integer',
-            description: 'Example fact returning a number',
-          },
-        },
-        handler: async _ctx => {
-          const catalogClient = new CatalogClient({
-            discoveryApi: discovery,
-          });
-          const entities = await catalogClient.getEntities({
-            filter: [{ kind: 'component' }],
-          });
-
-          return Promise.resolve(
-            entities.items.map(it => {
-              return {
-                entity: {
-                  namespace: it.metadata.namespace!!,
-                  kind: it.kind,
-                  name: it.metadata.name,
-                },
-                facts: {
-                  examplenumberfact: 2,
-                },
-              };
-            }),
-          );
-        },
-      }),
+      createFactRetrieverRegistration(
+        '* * * * *', // Example cron, every minute
+        entityOwnershipFactRetriever,
+      ),
+      createFactRetrieverRegistration('* * * * *', entityMetadataFactRetriever),
+      createFactRetrieverRegistration('* * * * *', techdocsFactRetriever),
     ],
     factCheckerFactory: new JsonRulesEngineFactCheckerFactory({
       checks: [
@@ -81,14 +54,33 @@ export default async function createPlugin({
           type: JSON_RULE_ENGINE_CHECK_TYPE,
           name: 'simpleTestCheck',
           description: 'Simple Check For Testing',
-          factIds: ['testRetriever'],
+          factIds: [
+            'entityMetadataFactRetriever',
+            'techdocsFactRetriever',
+            'entityOwnershipFactRetriever',
+          ],
           rule: {
             conditions: {
               all: [
                 {
-                  fact: 'examplenumberfact',
-                  operator: 'lessThan',
-                  value: 5,
+                  fact: 'hasGroupOwner',
+                  operator: 'equal',
+                  value: true,
+                },
+                {
+                  fact: 'hasTitle',
+                  operator: 'equal',
+                  value: true,
+                },
+                {
+                  fact: 'hasDescription',
+                  operator: 'equal',
+                  value: true,
+                },
+                {
+                  fact: 'hasAnnotationBackstageIoTechdocsRef',
+                  operator: 'equal',
+                  value: true,
                 },
               ],
             },

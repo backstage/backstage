@@ -18,14 +18,14 @@ import React from 'react';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { settingsRouteRef } from '../plugin';
 import { SidebarItem } from '@backstage/core-components';
-import { IconComponent } from '@backstage/core-plugin-api';
+import { useRouteRef, IconComponent } from '@backstage/core-plugin-api';
 
 type SettingsProps = {
   icon?: IconComponent;
 };
 
 export const Settings = (props: SettingsProps) => {
+  const routePath = useRouteRef(settingsRouteRef);
   const Icon = props.icon ? props.icon : SettingsIcon;
-
-  return <SidebarItem text="Settings" to={settingsRouteRef.path} icon={Icon} />;
+  return <SidebarItem text="Settings" to={routePath()} icon={Icon} />;
 };

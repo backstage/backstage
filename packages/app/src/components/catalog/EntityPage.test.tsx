@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { EntityLayout } from '@backstage/plugin-catalog';
 import {
   DefaultStarredEntitiesApi,
@@ -22,7 +21,11 @@ import {
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import { githubActionsApiRef } from '@backstage/plugin-github-actions';
-import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
+import {
+  MockStorageApi,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import React from 'react';
 import { cicdContent } from './EntityPage';
 
@@ -45,22 +48,22 @@ describe('EntityPage Test', () => {
 
   const mockedApi = {
     listWorkflowRuns: jest.fn().mockResolvedValue([]),
-    getWorkflow: jest.fn(),
-    getWorkflowRun: jest.fn(),
-    reRunWorkflow: jest.fn(),
-    listJobsForWorkflowRun: jest.fn(),
-    downloadJobLogsForWorkflowRun: jest.fn(),
-  } as jest.Mocked<typeof githubActionsApiRef.T>;
-
-  const apis = ApiRegistry.with(githubActionsApiRef, mockedApi).with(
-    starredEntitiesApiRef,
-    new DefaultStarredEntitiesApi({ storageApi: MockStorageApi.create() }),
-  );
+  };
 
   describe('cicdContent', () => {
     it('Should render GitHub Actions View', async () => {
       const rendered = await renderInTestApp(
-        <ApiProvider apis={apis}>
+        <TestApiProvider
+          apis={[
+            [githubActionsApiRef, mockedApi],
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({
+                storageApi: MockStorageApi.create(),
+              }),
+            ],
+          ]}
+        >
           <EntityProvider entity={entity}>
             <EntityLayout>
               <EntityLayout.Route path="/ci-cd" title="CI-CD">
@@ -68,7 +71,7 @@ describe('EntityPage Test', () => {
               </EntityLayout.Route>
             </EntityLayout>
           </EntityProvider>
-        </ApiProvider>,
+        </TestApiProvider>,
       );
 
       expect(rendered.getByText('ExampleComponent')).toBeInTheDocument();

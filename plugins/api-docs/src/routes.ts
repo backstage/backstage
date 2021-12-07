@@ -19,12 +19,8 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 
-const NoIcon = () => null;
-
 export const rootRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/api-docs',
-  title: 'APIs',
+  id: 'api-docs',
 });
 
 export const createComponentRouteRef = createExternalRouteRef({

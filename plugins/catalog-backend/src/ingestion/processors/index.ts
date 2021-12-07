@@ -26,6 +26,7 @@ export { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 export { CodeOwnersProcessor } from './CodeOwnersProcessor';
 export { FileReaderProcessor } from './FileReaderProcessor';
 export { GithubDiscoveryProcessor } from './GithubDiscoveryProcessor';
+export { AzureDevOpsDiscoveryProcessor } from './AzureDevOpsDiscoveryProcessor';
 export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 export { GithubMultiOrgReaderProcessor } from './GithubMultiOrgReaderProcessor';
 export { GitLabDiscoveryProcessor } from './GitLabDiscoveryProcessor';

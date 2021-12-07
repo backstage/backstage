@@ -40,8 +40,5 @@ export function formatClusterLink(options: FormatClusterLinkOptions) {
     object: options.object,
     kind: options.kind,
   });
-  // Note that we can't rely on 'url.href' since it will put the search before the hash
-  // and this won't be properly recognized by SPAs such as Angular in the standard dashboard.
-  // Note also that pathname, hash and search will be properly url encoded.
-  return `${url.origin}${url.pathname}${url.hash}${url.search}`;
+  return url.toString();
 }

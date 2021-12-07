@@ -55,9 +55,9 @@ export class PublisherConfig {
     return new ConfigReader({
       // This backend config is not used at all. Just something needed a create a mock discovery instance.
       backend: {
-        baseUrl: 'http://localhost:7000',
+        baseUrl: 'http://localhost:7007',
         listen: {
-          port: 7000,
+          port: 7007,
         },
       },
       techdocs: {
@@ -89,6 +89,7 @@ export class PublisherConfig {
         ...(cmd.awsRoleArn && { credentials: { roleArn: cmd.awsRoleArn } }),
         ...(cmd.awsEndpoint && { endpoint: cmd.awsEndpoint }),
         ...(cmd.awsS3ForcePathStyle && { s3ForcePathStyle: true }),
+        ...(cmd.awsS3sse && { sse: cmd.awsS3sse }),
       },
     };
   }

@@ -1,5 +1,23 @@
 # @backstage/plugin-kafka-backend
 
+## 0.2.12
+
+### Patch Changes
+
+- 4f81bfd356: Add ACL requirements for kafka-backend plugin
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/backend-common@0.9.11
+
+## 0.2.11
+
+### Patch Changes
+
+- 9145449220: Update Kafka configuration types
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+
 ## 0.2.10
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # @backstage/plugin-badges
 
+## 0.2.15
+
+### Patch Changes
+
+- 4149d74c10: Fix the path that the Badges client uses towards the `plugin-badges-backend`
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.2.14
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
 ## 0.2.13
 
 ### Patch Changes

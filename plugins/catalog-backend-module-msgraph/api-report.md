@@ -13,6 +13,7 @@ import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import * as msal from '@azure/msal-node';
+import { Response as Response_2 } from 'node-fetch';
 import { UserEntity } from '@backstage/catalog-model';
 
 // Warning: (ae-missing-release-tag) "defaultGroupTransformer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -88,11 +89,11 @@ export class MicrosoftGraphClient {
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
   getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User>;
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
-  requestApi(path: string, query?: ODataQuery): Promise<Response>;
+  requestApi(path: string, query?: ODataQuery): Promise<Response_2>;
   // Warning: (ae-forgotten-export) The symbol "ODataQuery" needs to be exported by the entry point index.d.ts
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "ODataQuery"
   requestCollection<T>(path: string, query?: ODataQuery): AsyncIterable<T>;
-  requestRaw(url: string): Promise<Response>;
+  requestRaw(url: string): Promise<Response_2>;
 }
 
 // Warning: (ae-missing-release-tag) "MicrosoftGraphOrgEntityProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
