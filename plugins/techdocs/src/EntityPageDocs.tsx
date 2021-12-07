@@ -17,23 +17,18 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Reader } from './reader';
+import { toLowerMaybe } from './helpers';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
-  // Lower-case entity triplets by default, but allow override.
-  const toLowerMaybe = useApi(configApiRef).getOptionalBoolean(
-    'techdocs.legacyUseCaseSensitiveTripletPaths',
-  )
-    ? (str: string) => str
-    : (str: string) => str.toLocaleLowerCase('en-US');
-
+  const config = useApi(configApiRef);
   return (
     <Reader
       withSearch={false}
       entityRef={{
-        kind: toLowerMaybe(entity.kind),
-        namespace: entity.metadata.namespace ?? 'default',
-        name: entity.metadata.name,
+        namespace: toLowerMaybe(entity.metadata.namespace ?? 'default', config),
+        kind: toLowerMaybe(entity.kind, config),
+        name: toLowerMaybe(entity.metadata.name, config),
       }}
     />
   );
