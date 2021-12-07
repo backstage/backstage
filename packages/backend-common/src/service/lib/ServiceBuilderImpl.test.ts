@@ -36,8 +36,15 @@ describe('ServiceBuilderImpl', () => {
   });
 
   describe('setCustomErrorHandler', () => {
+    it('check if custom error handler is undefined', () => {
+      const serviceBuilder = new ServiceBuilderImpl(module);
+      const serviceBuilderProto = Object.getPrototypeOf(serviceBuilder);
+      expect(serviceBuilderProto.errorHandler).toBeUndefined();
+    });
+
     it('adds custom error handler', () => {
       const serviceBuilder = new ServiceBuilderImpl(module);
+      const serviceBuilderProto = Object.getPrototypeOf(serviceBuilder);
       const customErrorHandler = (
         error: Error,
         _req: Request,
@@ -46,12 +53,8 @@ describe('ServiceBuilderImpl', () => {
       ) => {
         next(error);
       };
-      serviceBuilder.setErrorHandler(customErrorHandler);
-      expect(serviceBuilder.errorHandler).toEqual(customErrorHandler);
-    });
-    it('use default error handler', () => {
-      const serviceBuilder = new ServiceBuilderImpl(module);
-      expect(serviceBuilder.errorHandler).toBeUndefined();
+      serviceBuilderProto.setErrorHandler(customErrorHandler);
+      expect(serviceBuilderProto.errorHandler).toEqual(customErrorHandler);
     });
   });
 });
