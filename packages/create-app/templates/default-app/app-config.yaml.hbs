@@ -6,6 +6,11 @@ organization:
   name: My Company
 
 backend:
+  # Used for enabling authentication, secret is shared by all backend plugins
+  # See backend-to-backend-auth.md in the docs for information on the format
+  # auth:
+  #   keys:
+  #     - secret: ${BACKEND_SECRET}
   baseUrl: http://localhost:7007
   listen:
     port: 7007
@@ -72,9 +77,7 @@ auth:
   providers: {}
 
 scaffolder:
-  github:
-    token: ${GITHUB_TOKEN}
-    visibility: public # or 'internal' or 'private'
+  # see https://backstage.io/docs/features/software-templates/configuration for software template options
 
 catalog:
   rules:

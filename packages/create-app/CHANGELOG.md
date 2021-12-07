@@ -1,5 +1,94 @@
 # @backstage/create-app
 
+## 0.4.6
+
+### Patch Changes
+
+- 24d2ce03f3: Search Modal now relies on the Search Context to access state and state setter. If you use the SidebarSearchModal as described in the [getting started documentation](https://backstage.io/docs/features/search/getting-started#using-the-search-modal), make sure to update your code with the SearchContextProvider.
+
+  ```diff
+  export const Root = ({ children }: PropsWithChildren<{}>) => (
+    <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+  -     <SidebarSearchModal />
+  +     <SearchContextProvider>
+  +       <SidebarSearchModal />
+  +     </SearchContextProvider>
+        <SidebarDivider />
+      ...
+  ```
+
+- 905dd952ac: Incorporate usage of the tokenManager into the backend created using `create-app`.
+
+  In existing backends, update the `PluginEnvironment` to include a `tokenManager`:
+
+  ```diff
+  // packages/backend/src/types.ts
+
+  ...
+  import {
+    ...
+  + TokenManager,
+  } from '@backstage/backend-common';
+
+  export type PluginEnvironment = {
+    ...
+  + tokenManager: TokenManager;
+  };
+  ```
+
+  Then, create a `ServerTokenManager`. This can either be a `noop` that requires no secret and validates all requests by default, or one that uses a secret from your `app-config.yaml` to generate and validate tokens.
+
+  ```diff
+  // packages/backend/src/index.ts
+
+  ...
+  import {
+    ...
+  + ServerTokenManager,
+  } from '@backstage/backend-common';
+  ...
+
+  function makeCreateEnv(config: Config) {
+    ...
+    // CHOOSE ONE
+    // TokenManager not requiring a secret
+  + const tokenManager = ServerTokenManager.noop();
+    // OR TokenManager requiring a secret
+  + const tokenManager = ServerTokenManager.fromConfig(config);
+
+    ...
+    return (plugin: string): PluginEnvironment => {
+      ...
+  -   return { logger, cache, database, config, reader, discovery };
+  +   return { logger, cache, database, config, reader, discovery, tokenManager };
+    };
+  }
+  ```
+
+## 0.4.5
+
+### Patch Changes
+
+- dcaeaac174: Cleaned out the `peerDependencies` in the published version of the package, making it much quicker to run `npx @backstage/create-app` as it no longer needs to install a long list of unnecessary.
+- a5a5d7e1f1: DefaultTechDocsCollator is now included in the search backend, and the Search Page updated with the SearchType component that includes the techdocs type
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- 42ebbc18c0: Bump gitbeaker to the latest version
+
 ## 0.4.4
 
 ### Patch Changes

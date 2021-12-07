@@ -29,6 +29,7 @@ import {
 } from '../types/types';
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
+import { PodStatus } from '@kubernetes/client-node';
 
 describe('KubernetesBuilder', () => {
   let app: express.Express;
@@ -194,6 +195,7 @@ describe('KubernetesBuilder', () => {
               name: someCluster.name,
             },
             errors: [],
+            podMetrics: [],
             resources: [
               {
                 type: 'pods',
@@ -211,6 +213,12 @@ describe('KubernetesBuilder', () => {
       };
 
       const fetcher: KubernetesFetcher = {
+        fetchPodMetricsByNamespace(
+          _clusterDetails: ClusterDetails,
+          _namespace: string,
+        ): Promise<PodStatus[]> {
+          return Promise.resolve([]);
+        },
         fetchObjectsForService(
           _params: ObjectFetchParams,
         ): Promise<FetchResponseWrapper> {

@@ -15,6 +15,7 @@
  */
 
 import {
+  DashboardPullRequest,
   PullRequestOptions,
   PullRequestStatus,
 } from '@backstage/plugin-azure-devops-common';
@@ -27,7 +28,7 @@ import Router from 'express-promise-router';
 import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 
-const DEFAULT_TOP: number = 10;
+const DEFAULT_TOP = 10;
 
 export interface RouterOptions {
   azureDevOpsApi?: AzureDevOpsApi;
@@ -80,31 +81,67 @@ export async function createRouter(
 
   router.get('/repo-builds/:projectName/:repoName', async (req, res) => {
     const { projectName, repoName } = req.params;
+
     const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
+
     const gitRepository = await azureDevOpsApi.getRepoBuilds(
       projectName,
       repoName,
       top,
     );
+
     res.status(200).json(gitRepository);
   });
 
   router.get('/pull-requests/:projectName/:repoName', async (req, res) => {
     const { projectName, repoName } = req.params;
+
     const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
+
     const status = req.query.status
       ? Number(req.query.status)
       : PullRequestStatus.Active;
+
     const pullRequestOptions: PullRequestOptions = {
       top: top,
       status: status,
     };
+
     const gitPullRequest = await azureDevOpsApi.getPullRequests(
       projectName,
       repoName,
       pullRequestOptions,
     );
+
     res.status(200).json(gitPullRequest);
+  });
+
+  router.get('/dashboard-pull-requests/:projectName', async (req, res) => {
+    const { projectName } = req.params;
+
+    const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
+
+    const status = req.query.status
+      ? Number(req.query.status)
+      : PullRequestStatus.Active;
+
+    const pullRequestOptions: PullRequestOptions = {
+      top: top,
+      status: status,
+    };
+
+    const pullRequests: DashboardPullRequest[] =
+      await azureDevOpsApi.getDashboardPullRequests(
+        projectName,
+        pullRequestOptions,
+      );
+
+    res.status(200).json(pullRequests);
+  });
+
+  router.get('/all-teams', async (_req, res) => {
+    const allTeams = await azureDevOpsApi.getAllTeams();
+    res.status(200).json(allTeams);
   });
 
   router.use(errorHandler());

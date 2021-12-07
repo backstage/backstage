@@ -15,9 +15,11 @@
  */
 
 import {
+  AuthorizeResult,
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
+import { ConditionalPolicyDecision } from '../policy';
 import { PermissionRule } from '../types';
 import { createConditionFactory } from './createConditionFactory';
 
@@ -73,11 +75,9 @@ export const createConditionExports = <
   rules: TRules;
 }): {
   conditions: Conditions<TRules>;
-  createConditions: (conditions: PermissionCriteria<PermissionCondition>) => {
-    pluginId: string;
-    resourceType: string;
-    conditions: PermissionCriteria<PermissionCondition>;
-  };
+  createPolicyDecision: (
+    conditions: PermissionCriteria<PermissionCondition>,
+  ) => ConditionalPolicyDecision;
 } => {
   const { pluginId, resourceType, rules } = options;
 
@@ -89,9 +89,10 @@ export const createConditionExports = <
       }),
       {} as Conditions<TRules>,
     ),
-    createConditions: (
+    createPolicyDecision: (
       conditions: PermissionCriteria<PermissionCondition>,
     ) => ({
+      result: AuthorizeResult.CONDITIONAL,
       pluginId,
       resourceType,
       conditions,

@@ -18,17 +18,31 @@ The next step is to add
 [add templates](http://backstage.io/docs/features/software-templates/adding-templates)
 to your Backstage app.
 
-### GitHub
+### Publishing defaults
 
-For GitHub, you can configure who can see the new repositories that are created
-by specifying `visibility` option. Valid options are `public`, `private` and
-`internal`. The `internal` option is for GitHub Enterprise clients, which means
-public within the enterprise.
+Software templates can define _publish_ actions, such as `publish:github`, to
+create new repositories or submit pull / merge requests to existing
+repositories. You can configure the author and commit message through the
+`scaffolder` configuration in `app-config.yaml`:
 
 ```yaml
 scaffolder:
-  github:
-    visibility: public # or 'internal' or 'private'
+  defaultAuthor:
+    name: M.C. Hammer # Defaults to `Scaffolder`
+    email: hammer@donthurtem.com # Defaults to `scaffolder@backstage.io`
+  defaultCommitMessage: "U can't touch this" # Defaults to 'Initial commit'
+```
+
+To configure who can see the new repositories created from software templates,
+add the `repoVisibility` key within a software template:
+
+```yaml
+- id: publish
+  name: Publish
+  action: publish:github
+  input:
+    repoUrl: '{{ parameters.repoUrl }}'
+    repoVisibility: public # or 'internal' or 'private'
 ```
 
 ### Disabling Docker in Docker situation (Optional)
@@ -53,3 +67,30 @@ You can do so by including the following lines in the last step of your
 RUN apt-get update && apt-get install -y python3 python3-pip
 RUN pip3 install cookiecutter
 ```
+
+### Customizing the ScaffolderPage with Grouping and Filtering
+
+Once you have more than a few software templates you may want to customize your
+`ScaffolderPage` by grouping and surfacing certain templates together. You can
+accomplish this by creating `groups` and passing them to your `ScaffolderPage`
+like below
+
+```
+<ScaffolderPage
+  groups={[
+    {
+      title: "Recommended",
+      filter: entity =>
+        entity?.metadata?.tags?.includes('recommended') ?? false,
+    },
+  ]}
+/>
+```
+
+This code will group all templates with the 'recommended' tag together at the
+top of the page above any other templates not filtered by this group or others.
+
+You can also further customize groups by passing in a `titleComponent` instead
+of a `title` which will be a component to use as the header instead of just the
+default `ContentHeader` with the `title` set as it's value.
+![Grouped Templates](../../assets/software-templates/grouped-templates.png)

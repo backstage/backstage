@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.1.7
+
+### Patch Changes
+
+- 59677fadb1: Improvements to API Reference documentation
+
+## 0.1.6
+
+### Patch Changes
+
+- 37dc844728: Include CronJobs and Jobs as default objects returned by the kubernetes backend and add/update relevant types.
+
 ## 0.1.5
 
 ### Patch Changes

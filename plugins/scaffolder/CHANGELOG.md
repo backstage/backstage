@@ -1,5 +1,40 @@
 # @backstage/plugin-scaffolder
 
+## 0.11.13
+
+### Patch Changes
+
+- ed5bef529e: Add group filtering to the scaffolder page so that individuals can surface specific templates to end users ahead of others, or group templates together. This can be accomplished by passing in a `groups` prop to the `ScaffolderPage`
+
+  ```
+  <ScaffolderPage
+    groups={[
+      {
+        title: "Recommended",
+        filter: entity =>
+          entity?.metadata?.tags?.includes('recommended') ?? false,
+      },
+    ]}
+  />
+  ```
+
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
+## 0.11.12
+
+### Patch Changes
+
+- 2d7d165737: Bump `react-jsonschema-form`
+- 9f21236a29: Fixed a missing `await` when throwing server side errors
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
 ## 0.11.11
 
 ### Patch Changes

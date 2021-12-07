@@ -15,10 +15,12 @@
  */
 
 import {
+  DashboardPullRequest,
   PullRequest,
   PullRequestOptions,
   RepoBuild,
   RepoBuildOptions,
+  Team,
 } from '@backstage/plugin-azure-devops-common';
 
 import { createApiRef } from '@backstage/core-plugin-api';
@@ -41,4 +43,10 @@ export interface AzureDevOpsApi {
     repoName: string,
     options?: PullRequestOptions,
   ): Promise<{ items: PullRequest[] }>;
+
+  getDashboardPullRequests(
+    projectName: string,
+  ): Promise<DashboardPullRequest[]>;
+
+  getAllTeams(): Promise<Team[]>;
 }

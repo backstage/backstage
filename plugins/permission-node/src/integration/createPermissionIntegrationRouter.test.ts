@@ -61,7 +61,7 @@ describe('createPermissionIntegrationRouter', () => {
     expect(router).toBeDefined();
   });
 
-  describe('POST /permissions/apply-conditions', () => {
+  describe('POST /.well-known/backstage/permissions/apply-conditions', () => {
     it.each([
       { rule: 'test-rule-1', params: ['abc', 123] },
       {
@@ -94,7 +94,7 @@ describe('createPermissionIntegrationRouter', () => {
       },
     ])('returns 200/ALLOW when criteria match (case %#)', async conditions => {
       const response = await request(app)
-        .post('/permissions/apply-conditions')
+        .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           resourceRef: 'default:test/resource',
           resourceType: 'test-resource',
@@ -135,7 +135,7 @@ describe('createPermissionIntegrationRouter', () => {
       'returns 200/DENY when criteria do not match (case %#)',
       async conditions => {
         const response = await request(app)
-          .post('/permissions/apply-conditions')
+          .post('/.well-known/backstage/permissions/apply-conditions')
           .send({
             resourceRef: 'default:test/resource',
             resourceType: 'test-resource',
@@ -149,7 +149,7 @@ describe('createPermissionIntegrationRouter', () => {
 
     it('returns 400 when called with incorrect resource type', async () => {
       const response = await request(app)
-        .post('/permissions/apply-conditions')
+        .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           resourceRef: 'default:test/resource',
           resourceType: 'test-incorrect-resource',
@@ -168,7 +168,7 @@ describe('createPermissionIntegrationRouter', () => {
       mockGetResource.mockReturnValueOnce(Promise.resolve(undefined));
 
       const response = await request(app)
-        .post('/permissions/apply-conditions')
+        .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           resourceRef: 'default:test/resource',
           resourceType: 'test-resource',
@@ -198,7 +198,7 @@ describe('createPermissionIntegrationRouter', () => {
       { conditions: { anyOf: [] } },
     ])(`returns 400 for invalid input %#`, async input => {
       const response = await request(app)
-        .post('/permissions/apply-conditions')
+        .post('/.well-known/backstage/permissions/apply-conditions')
         .send(input);
 
       expect(response.status).toEqual(400);

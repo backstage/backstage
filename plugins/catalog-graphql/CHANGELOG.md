@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-graphql
 
+## 0.2.14
+
+### Patch Changes
+
+- 6b500622d5: Move to using node-fetch internally instead of cross-fetch
+
 ## 0.2.13
 
 ### Patch Changes

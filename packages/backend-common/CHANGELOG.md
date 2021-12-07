@@ -1,5 +1,37 @@
 # @backstage/backend-common
 
+## 0.9.12
+
+### Patch Changes
+
+- 905dd952ac: Create a `TokenManager` interface and `ServerTokenManager` implementation to generate and validate server tokens for authenticated backend-to-backend API requests.
+- 6b500622d5: Move to using node-fetch internally instead of cross-fetch
+- 54989b671d: Fixed a potential crash in the log redaction code
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/config-loader@0.8.1
+
+## 0.9.11
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/errors@0.1.5
+
 ## 0.9.10
 
 ### Patch Changes

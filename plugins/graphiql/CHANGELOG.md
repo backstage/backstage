@@ -1,5 +1,20 @@
 # @backstage/plugin-graphiql
 
+## 0.2.23
+
+### Patch Changes
+
+- dde1681f33: chore(dependencies): bump `graphiql` package to latest
+
+## 0.2.22
+
+### Patch Changes
+
+- cd398cd4ab: Letting GraphiQL use headers
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
 ## 0.2.21
 
 ### Patch Changes

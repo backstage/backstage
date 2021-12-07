@@ -15,7 +15,7 @@
  */
 
 import { Entity, EntityMeta } from '@backstage/catalog-model';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import { JsonObject } from '@backstage/types';
 
 export interface ReaderEntityMeta extends EntityMeta {
@@ -26,11 +26,14 @@ export interface ReaderEntityMeta extends EntityMeta {
   annotations: Record<string, string>;
   labels: Record<string, string>;
 }
+
 export interface ReaderEntity extends Entity {
   metadata: JsonObject & ReaderEntityMeta;
 }
+
 export class CatalogClient {
   constructor(private baseUrl: string) {}
+
   async list(): Promise<ReaderEntity[]> {
     const res = await fetch(`${this.baseUrl}/catalog/entities`);
     if (!res.ok) {
@@ -39,7 +42,7 @@ export class CatalogClient {
       throw new Error(await res.text());
     }
 
-    const entities: ReaderEntity[] = await res.json();
+    const entities = (await res.json()) as ReaderEntity[];
     return entities;
   }
 }

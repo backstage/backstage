@@ -175,8 +175,16 @@ export function createStatusCheckRouter(options: {
 // @public (undocumented)
 export class DatabaseManager {
   forPlugin(pluginId: string): PluginDatabaseManager;
-  static fromConfig(config: Config): DatabaseManager;
+  static fromConfig(
+    config: Config,
+    options?: DatabaseManagerOptions,
+  ): DatabaseManager;
 }
+
+// @public
+export type DatabaseManagerOptions = {
+  migrations?: PluginDatabaseManager['migrations'];
+};
 
 // @public (undocumented)
 export class DockerContainerRunner implements ContainerRunner {
@@ -395,6 +403,9 @@ export type PluginCacheManager = {
 // @public
 export interface PluginDatabaseManager {
   getClient(): Promise<Knex>;
+  migrations?: {
+    skip?: boolean;
+  };
 }
 
 // @public
@@ -526,6 +537,20 @@ export type SearchResponseFile = {
   content(): Promise<Buffer>;
 };
 
+// @public
+export class ServerTokenManager implements TokenManager {
+  // (undocumented)
+  authenticate(token: string): Promise<void>;
+  // (undocumented)
+  static fromConfig(config: Config): ServerTokenManager;
+  // (undocumented)
+  getToken(): Promise<{
+    token: string;
+  }>;
+  // (undocumented)
+  static noop(): TokenManager;
+}
+
 // @public (undocumented)
 export type ServiceBuilder = {
   loadConfig(config: Config): ServiceBuilder;
@@ -584,6 +609,16 @@ export interface StatusCheckHandlerOptions {
 }
 
 // @public
+export interface TokenManager {
+  // (undocumented)
+  authenticate: (token: string) => Promise<void>;
+  // (undocumented)
+  getToken: () => Promise<{
+    token: string;
+  }>;
+}
+
+// @public
 export type UrlReader = {
   read(url: string): Promise<Buffer>;
   readUrl?(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
@@ -618,4 +653,8 @@ export function useHotCleanup(
 
 // @public
 export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
+
+// Warnings were encountered during analysis:
+//
+// src/database/types.d.ts:23:12 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
 ```

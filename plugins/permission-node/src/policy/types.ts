@@ -48,13 +48,11 @@ export type PolicyAuthorizeRequest = Omit<AuthorizeRequest, 'resourceRef'>;
  * identifiers needed to evaluate the returned conditions.
  * @public
  */
-export type ConditionalPolicyResult = {
+export type ConditionalPolicyDecision = {
   result: AuthorizeResult.CONDITIONAL;
-  conditions: {
-    pluginId: string;
-    resourceType: string;
-    conditions: PermissionCriteria<PermissionCondition>;
-  };
+  pluginId: string;
+  resourceType: string;
+  conditions: PermissionCriteria<PermissionCondition>;
 };
 
 /**
@@ -62,9 +60,9 @@ export type ConditionalPolicyResult = {
  *
  * @public
  */
-export type PolicyResult =
+export type PolicyDecision =
   | { result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }
-  | ConditionalPolicyResult;
+  | ConditionalPolicyDecision;
 
 /**
  * A policy to evaluate authorization requests for any permissioned action performed in Backstage.
@@ -86,5 +84,5 @@ export interface PermissionPolicy {
   handle(
     request: PolicyAuthorizeRequest,
     user?: BackstageIdentity,
-  ): Promise<PolicyResult>;
+  ): Promise<PolicyDecision>;
 }

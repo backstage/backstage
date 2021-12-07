@@ -32,13 +32,11 @@ export type Condition<TRule> = TRule extends PermissionRule<
   : never;
 
 // @public
-export type ConditionalPolicyResult = {
+export type ConditionalPolicyDecision = {
   result: AuthorizeResult.CONDITIONAL;
-  conditions: {
-    pluginId: string;
-    resourceType: string;
-    conditions: PermissionCriteria<PermissionCondition>;
-  };
+  pluginId: string;
+  resourceType: string;
+  conditions: PermissionCriteria<PermissionCondition>;
 };
 
 // @public
@@ -63,11 +61,9 @@ export const createConditionExports: <
   rules: TRules;
 }) => {
   conditions: Conditions<TRules>;
-  createConditions: (conditions: PermissionCriteria<PermissionCondition>) => {
-    pluginId: string;
-    resourceType: string;
-    conditions: PermissionCriteria<PermissionCondition>;
-  };
+  createPolicyDecision: (
+    conditions: PermissionCriteria<PermissionCondition>,
+  ) => ConditionalPolicyDecision;
 };
 
 // @public
@@ -103,7 +99,7 @@ export interface PermissionPolicy {
   handle(
     request: PolicyAuthorizeRequest,
     user?: BackstageIdentity,
-  ): Promise<PolicyResult>;
+  ): Promise<PolicyDecision>;
 }
 
 // @public
@@ -122,9 +118,9 @@ export type PermissionRule<
 export type PolicyAuthorizeRequest = Omit<AuthorizeRequest, 'resourceRef'>;
 
 // @public
-export type PolicyResult =
+export type PolicyDecision =
   | {
       result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
     }
-  | ConditionalPolicyResult;
+  | ConditionalPolicyDecision;
 ```

@@ -12,6 +12,7 @@ export default async function createPlugin({
   logger,
   discovery,
   config,
+  tokenManager,
 }: PluginEnvironment) {
   // Initialize a connection to a search engine.
   const searchEngine = new LunrSearchEngine({ logger });
@@ -21,13 +22,20 @@ export default async function createPlugin({
   // collator gathers entities from the software catalog.
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
+    collator: DefaultCatalogCollator.fromConfig(config, {
+      discovery,
+      tokenManager,
+    }),
   });
 
   // collator gathers entities from techdocs.
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: DefaultTechDocsCollator.fromConfig(config, { discovery, logger }),
+    collator: DefaultTechDocsCollator.fromConfig(config, {
+      discovery,
+      logger,
+      tokenManager,
+    }),
   });
 
   // The scheduler controls when documents are gathered from collators and sent

@@ -1,5 +1,26 @@
 # @backstage/core-components
 
+## 0.7.6
+
+### Patch Changes
+
+- e34f174fc5: Added `<SidebarSubmenu>` and `<SidebarSubmenuItem>` to enable building better sidebars. You can check out the storybook for more inspiration and how to get started.
+
+  Added two new theme props for styling the sidebar too, `navItem.hoverBackground` and `submenu.background`.
+
+- Updated dependencies
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
+## 0.7.5
+
+### Patch Changes
+
+- 157530187a: Pin sidebar by default for easier navigation
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/core-plugin-api@0.2.1
+
 ## 0.7.4
 
 ### Patch Changes

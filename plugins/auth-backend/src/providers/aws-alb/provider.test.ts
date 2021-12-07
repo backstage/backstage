@@ -50,7 +50,7 @@ const mockClaims = {
 };
 
 jest.mock('jose');
-jest.mock('cross-fetch', () => ({
+jest.mock('node-fetch', () => ({
   __esModule: true,
   default: async () => {
     return {

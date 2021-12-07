@@ -64,8 +64,8 @@ export function getAzureCommitsUrl(url: string): string {
 export function getAzureRequestOptions(
   config: AzureIntegrationConfig,
   additionalHeaders?: Record<string, string>,
-): RequestInit {
-  const headers: HeadersInit = additionalHeaders
+): { headers: Record<string, string> } {
+  const headers: Record<string, string> = additionalHeaders
     ? { ...additionalHeaders }
     : {};
 

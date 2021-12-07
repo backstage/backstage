@@ -1,5 +1,25 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.20
+
+### Patch Changes
+
+- 65ddccb5e8: Added apiVersionOverrides config to allow for specifying api versions to use for kubernetes objects
+- f6087fc8f8: Query CronJobs from Kubernetes with apiGroup BatchV1beta1
+- Updated dependencies
+  - @backstage/backend-common@0.9.12
+  - @backstage/plugin-kubernetes-common@0.1.7
+
+## 0.3.19
+
+### Patch Changes
+
+- 37dc844728: Include CronJobs and Jobs as default objects returned by the kubernetes backend and add/update relevant types.
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/plugin-kubernetes-common@0.1.6
+  - @backstage/backend-common@0.9.11
+
 ## 0.3.18
 
 ### Patch Changes

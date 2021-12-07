@@ -1,5 +1,31 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.15
+
+### Patch Changes
+
+- 0398ea25d3: Removed unused scaffolder visibility configuration; this has been moved to publish actions. Deprecated scaffolder provider configuration keys; these should use the integrations configuration instead.
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- c6b44d80ad: Add options to spawn in runCommand helper
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/plugin-catalog-backend@0.19.0
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.5
+  - @backstage/backend-common@0.9.12
+
+## 0.15.14
+
+### Patch Changes
+
+- a096e4c4d7: Switched to executing scaffolder templating in a secure context for any template based on nunjucks, as it is [not secure by default](https://mozilla.github.io/nunjucks/api.html#user-defined-templates-warning).
+- f9352ab606: Removed all usages of `path.resolve` in order to ensure that template paths are resolved in a safe way.
+- e634a47ce5: Fix bug where there was error log lines written when failing to `JSON.parse` things that were not `JSON` values.
+- 42ebbc18c0: Bump gitbeaker to the latest version
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/plugin-catalog-backend@0.18.0
+  - @backstage/backend-common@0.9.11
+
 ## 0.15.13
 
 ### Patch Changes
