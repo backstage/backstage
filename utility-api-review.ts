@@ -5,98 +5,17 @@ import { Observable as Observable_2 } from '@backstage/types';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 
-// @public
-export type AlertApi = {
-  post(alert: AlertMessage): void;
-  alert$(): Observable_2<AlertMessage>;
-};
+// AnalyticsApi:
+// Check with Eric if there are any changes he wants to do to the AnalyticsApi
+// Remove AnyAnalyticsContext?
+// CommonAnalyticsContext fields?
 
-// @public
-export const alertApiRef: ApiRef<AlertApi>;
+// AppTheme:
+// variant -> mode?
 
-// @public
-export type AlertMessage = {
-  message: string;
-  severity?: 'success' | 'info' | 'warning' | 'error';
-};
+// Mark ALL the auth APIs as experimental
 
-// @public
-export type AnalyticsApi = {
-  captureEvent(event: AnalyticsEvent): void;
-};
-
-// @public
-export const analyticsApiRef: ApiRef<AnalyticsApi>;
-
-// @public
-export const AnalyticsContext: ({
-  attributes,
-  children,
-}: {
-  attributes: Partial<AnalyticsContextValue>;
-  children: ReactNode;
-}) => JSX.Element;
-
-// @public
-export type AnalyticsContextValue = CommonAnalyticsContext &
-  AnyAnalyticsContext;
-
-// @public
-export type AnalyticsEvent = {
-  action: string;
-  subject: string;
-  value?: number;
-  attributes?: AnalyticsEventAttributes;
-  context: AnalyticsContextValue;
-};
-
-// @public
-export type AnalyticsEventAttributes = {
-  [attribute in string]: string | boolean | number;
-};
-
-// @public
-export type AnalyticsTracker = {
-  captureEvent: (
-    action: string,
-    subject: string,
-    options?: {
-      value?: number;
-      attributes?: AnalyticsEventAttributes;
-    },
-  ) => void;
-};
-
-// @public
-export type AnyAnalyticsContext = {
-  [param in string]: string | boolean | number | undefined;
-};
-
-// @public
-export type AppTheme = {
-  id: string;
-  title: string;
-  variant: 'light' | 'dark';
-  theme: BackstageTheme;
-  icon?: React.ReactElement;
-  Provider?(props: { children: ReactNode }): JSX.Element | null;
-};
-
-// @public
-export type AppThemeApi = {
-  getInstalledThemes(): AppTheme[];
-  activeThemeId$(): Observable_2<string | undefined>;
-  getActiveThemeId(): string | undefined;
-  setActiveThemeId(themeId?: string): void;
-};
-
-// @public
-export const appThemeApiRef: ApiRef<AppThemeApi>;
-
-// @public
-export const atlassianAuthApiRef: ApiRef<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
->;
+// Remove auth0AuthApiRef
 
 // @public
 export const auth0AuthApiRef: ApiRef<
@@ -156,13 +75,6 @@ export type BackstageUserIdentity = {
 export const bitbucketAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
-
-// @public
-export type CommonAnalyticsContext = {
-  pluginId: string;
-  routeRef: string;
-  extension: string;
-};
 
 // @public
 export type ConfigApi = Config;
