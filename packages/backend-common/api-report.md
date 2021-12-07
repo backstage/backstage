@@ -175,9 +175,16 @@ export function createStatusCheckRouter(options: {
 // @public (undocumented)
 export class DatabaseManager {
   forPlugin(pluginId: string): PluginDatabaseManager;
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  static fromConfig(config: Config, options?: Options): DatabaseManager;
+  static fromConfig(
+    config: Config,
+    options?: DatabaseManagerOptions,
+  ): DatabaseManager;
 }
+
+// @public
+export type DatabaseManagerOptions = {
+  migrations: PluginDatabaseManager['migrations'];
+};
 
 // @public (undocumented)
 export class DockerContainerRunner implements ContainerRunner {

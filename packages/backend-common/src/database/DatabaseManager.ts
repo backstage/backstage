@@ -36,7 +36,12 @@ function pluginPath(pluginId: string): string {
   return `plugin.${pluginId}`;
 }
 
-type Options = {
+/**
+ * Configuration options object.
+ *
+ * @public
+ */
+export type DatabaseManagerOptions = {
   migrations: PluginDatabaseManager['migrations'];
 };
 
@@ -53,7 +58,10 @@ export class DatabaseManager {
    * @param config - The loaded application configuration.
    * @param options - An optional configuration object.
    */
-  static fromConfig(config: Config, options?: Options): DatabaseManager {
+  static fromConfig(
+    config: Config,
+    options?: DatabaseManagerOptions,
+  ): DatabaseManager {
     const databaseConfig = config.getConfig('backend.database');
 
     return new DatabaseManager(
@@ -66,7 +74,7 @@ export class DatabaseManager {
   private constructor(
     private readonly config: Config,
     private readonly prefix: string = 'backstage_plugin_',
-    private readonly options?: Options,
+    private readonly options?: DatabaseManagerOptions,
   ) {}
 
   /**
