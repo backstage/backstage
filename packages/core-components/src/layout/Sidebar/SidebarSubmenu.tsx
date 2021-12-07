@@ -16,7 +16,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
-import React, { PropsWithChildren, ReactNode, useContext } from 'react';
+import React, { ReactNode, useContext } from 'react';
 import {
   SidebarItemWithSubmenuContext,
   sidebarConfig,
@@ -83,16 +83,12 @@ export type SidebarSubmenuProps = {
  *
  * @public
  */
-export const SidebarSubmenu = ({
-  title,
-  children,
-}: PropsWithChildren<SidebarSubmenuProps>) => {
+export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
   const { isOpen } = useContext(SidebarContext);
   const left = isOpen
     ? sidebarConfig.drawerWidthOpen
     : sidebarConfig.drawerWidthClosed;
-  const props = { left: left };
-  const classes = useStyles(props)();
+  const classes = useStyles({ left: left })();
 
   const { isHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   return (
@@ -102,9 +98,9 @@ export const SidebarSubmenu = ({
       })}
     >
       <Typography variant="h5" className={classes.title}>
-        {title}
+        {props.title}
       </Typography>
-      {children}
+      {props.children}
     </div>
   );
 };

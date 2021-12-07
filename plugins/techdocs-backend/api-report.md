@@ -28,15 +28,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 // @public (undocumented)
 export class DefaultTechDocsCollator implements DocumentCollator {
   // @deprecated
-  constructor({
-    discovery,
-    locationTemplate,
-    logger,
-    catalogClient,
-    tokenManager,
-    parallelismLimit,
-    legacyPathCasing,
-  }: TechDocsCollatorOptions);
+  constructor(options: TechDocsCollatorOptions);
   // (undocumented)
   protected applyArgsToFormat(
     format: string,

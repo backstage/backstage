@@ -1982,10 +1982,7 @@ export const SidebarSpacer: React_2.ComponentType<
 >;
 
 // @public
-export const SidebarSubmenu: ({
-  title,
-  children,
-}: PropsWithChildren<SidebarSubmenuProps>) => JSX.Element;
+export const SidebarSubmenu: (props: SidebarSubmenuProps) => JSX.Element;
 
 // @public
 export const SidebarSubmenuItem: (

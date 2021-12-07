@@ -83,11 +83,7 @@ export const createConditionTransformer: <
 ) => ConditionTransformer<TQuery>;
 
 // @public
-export const createPermissionIntegrationRouter: <TResource>({
-  resourceType,
-  rules,
-  getResource,
-}: {
+export const createPermissionIntegrationRouter: <TResource>(options: {
   resourceType: string;
   rules: PermissionRule<TResource, any, unknown[]>[];
   getResource: (resourceRef: string) => Promise<TResource | undefined>;

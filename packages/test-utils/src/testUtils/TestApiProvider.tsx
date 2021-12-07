@@ -120,11 +120,13 @@ export class TestApiRegistry implements ApiHolder {
  *
  * @public
  **/
-export const TestApiProvider = <T extends any[]>({
-  apis,
-  children,
-}: TestApiProviderProps<T>) => {
+export const TestApiProvider = <T extends any[]>(
+  props: TestApiProviderProps<T>,
+) => {
   return (
-    <ApiProvider apis={TestApiRegistry.from(...apis)} children={children} />
+    <ApiProvider
+      apis={TestApiRegistry.from(...props.apis)}
+      children={props.children}
+    />
   );
 };

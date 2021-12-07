@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, PropsWithChildren, useState } from 'react';
+import React, { useCallback, ReactNode, useState } from 'react';
 import { makeStyles, Button } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
 import { usePagerdutyEntity } from '../../hooks';
 import { TriggerDialog } from '../TriggerDialog';
 
-export type TriggerButtonProps = {};
+export type TriggerButtonProps = {
+  children?: ReactNode;
+};
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   buttonStyle: {
@@ -32,9 +34,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export function TriggerButton({
-  children,
-}: PropsWithChildren<TriggerButtonProps>) {
+export function TriggerButton(props: TriggerButtonProps) {
   const { buttonStyle } = useStyles();
   const { integrationKey } = usePagerdutyEntity();
   const [dialogShown, setDialogShown] = useState<boolean>(false);
@@ -56,7 +56,7 @@ export function TriggerButton({
         disabled={disabled}
       >
         {integrationKey
-          ? children ?? 'Create Incident'
+          ? props.children ?? 'Create Incident'
           : 'Missing integration key'}
       </Button>
       {integrationKey && (
