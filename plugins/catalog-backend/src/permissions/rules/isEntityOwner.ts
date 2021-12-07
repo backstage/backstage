@@ -34,7 +34,7 @@ export const isEntityOwner = {
       .some(relation => claims.includes(stringifyEntityRef(relation.target)));
   },
   toQuery: (claims: string[]): EntitiesSearchFilter => ({
-    key: 'spec.owner',
+    key: 'relations.ownedBy',
     values: claims,
   }),
 };
