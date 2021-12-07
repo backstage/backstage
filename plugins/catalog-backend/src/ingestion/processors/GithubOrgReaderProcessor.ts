@@ -17,7 +17,7 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
-  GithubCredentialsProvider,
+  GithubCredentialsProviderFactory,
   GithubCredentialType,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -107,7 +107,8 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       );
     }
 
-    const credentialsProvider = GithubCredentialsProvider.create(gitHubConfig);
+    const credentialsProvider =
+      GithubCredentialsProviderFactory.create(gitHubConfig);
     const { headers, type: tokenType } =
       await credentialsProvider.getCredentials({
         url: orgUrl,

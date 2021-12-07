@@ -23,9 +23,11 @@ export { getGitHubFileFetchUrl, getGitHubRequestOptions } from './core';
 export {
   GithubAppCredentialsMux,
   GithubCredentialsProvider,
+  GithubCredentialsProviderFactory,
 } from './GithubCredentialsProvider';
 export type {
   GithubCredentials,
   GithubCredentialType,
+  IGithubCredentialsProvider,
 } from './GithubCredentialsProvider';
 export { GitHubIntegration, replaceGitHubUrlType } from './GitHubIntegration';

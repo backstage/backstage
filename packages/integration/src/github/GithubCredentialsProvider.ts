@@ -233,6 +233,10 @@ export type GithubCredentials = {
   type: GithubCredentialType;
 };
 
+export interface IGithubCredentialsProvider {
+  getCredentials(opts: { url: string }): Promise<GithubCredentials>;
+}
+
 /**
  * Handles the creation and caching of credentials for GitHub integrations.
  *
@@ -241,8 +245,8 @@ export type GithubCredentials = {
  *
  * TODO: Possibly move this to a backend only package so that it's not used in the frontend by mistake
  */
-export class GithubCredentialsProvider {
-  static create(config: GitHubIntegrationConfig): GithubCredentialsProvider {
+export class GithubCredentialsProvider implements IGithubCredentialsProvider {
+  static create(config: GitHubIntegrationConfig): IGithubCredentialsProvider {
     return new GithubCredentialsProvider(
       new GithubAppCredentialsMux(config),
       config.token,
@@ -292,5 +296,17 @@ export class GithubCredentialsProvider {
       token,
       type,
     };
+  }
+}
+
+export class GithubCredentialsProviderFactory {
+  static provider = GithubCredentialsProvider;
+
+  static setProvider(provider: any) {
+    this.provider = provider;
+  }
+
+  static create(config: GitHubIntegrationConfig): IGithubCredentialsProvider {
+    return this.provider.create(config);
   }
 }

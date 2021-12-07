@@ -16,7 +16,8 @@
 
 import { InputError } from '@backstage/errors';
 import {
-  GithubCredentialsProvider,
+  IGithubCredentialsProvider,
+  GithubCredentialsProviderFactory,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
@@ -34,13 +35,18 @@ export type OctokitIntegration = {
  */
 export class OctokitProvider {
   private readonly integrations: ScmIntegrationRegistry;
-  private readonly credentialsProviders: Map<string, GithubCredentialsProvider>;
+  private readonly credentialsProviders: Map<
+    string,
+    IGithubCredentialsProvider
+  >;
 
   constructor(integrations: ScmIntegrationRegistry) {
     this.integrations = integrations;
     this.credentialsProviders = new Map(
       integrations.github.list().map(integration => {
-        const provider = GithubCredentialsProvider.create(integration.config);
+        const provider = GithubCredentialsProviderFactory.create(
+          integration.config,
+        );
         return [integration.config.host, provider];
       }),
     );

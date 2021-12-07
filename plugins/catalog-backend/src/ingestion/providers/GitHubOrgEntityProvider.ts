@@ -20,7 +20,8 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
-  GithubCredentialsProvider,
+  IGithubCredentialsProvider,
+  GithubCredentialsProviderFactory,
   GitHubIntegrationConfig,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -42,7 +43,7 @@ import { assignGroupsToUsers, buildOrgHierarchy } from '../processors/util/org';
 
 export class GitHubOrgEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
-  private readonly credentialsProvider: GithubCredentialsProvider;
+  private readonly credentialsProvider: IGithubCredentialsProvider;
 
   static fromConfig(
     config: Config,
@@ -77,7 +78,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       logger: Logger;
     },
   ) {
-    this.credentialsProvider = GithubCredentialsProvider.create(
+    this.credentialsProvider = GithubCredentialsProviderFactory.create(
       options.gitHubConfig,
     );
   }
