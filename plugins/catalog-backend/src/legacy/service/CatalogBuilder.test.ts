@@ -49,7 +49,7 @@ describe('CatalogBuilder', () => {
   };
   const env: CatalogEnvironment = {
     logger: getVoidLogger(),
-    database: { getClient: async () => db, migrations: { apply: true } },
+    database: { getClient: async () => db },
     config: new ConfigReader({}),
     reader,
   };

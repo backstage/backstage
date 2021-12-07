@@ -34,16 +34,13 @@ export interface PluginDatabaseManager {
   /**
    * This property is used to control the behavior of database migrations.
    */
-  migrations: {
+  migrations?: {
     /**
-     * apply can be used to determine if database migrations
-     * should be performed.
+     * skip database migrations. Useful if connecting to a read-only database.
      *
-     * Useful if connecting to a read-only database.
-     *
-     * @default true
+     * @default false
      */
-    apply: boolean;
+    skip?: boolean;
   };
 }
 

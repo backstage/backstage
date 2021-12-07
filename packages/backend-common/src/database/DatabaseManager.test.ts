@@ -63,17 +63,17 @@ describe('DatabaseManager', () => {
       const database = DatabaseManager.fromConfig(config);
       const client = database.forPlugin('test');
 
-      expect(client.migrations.apply).toBe(true);
+      expect(client.migrations?.skip).toBe(false);
     });
 
     it('handles migrations options', () => {
       const config = new ConfigReader(backendConfig);
       const database = DatabaseManager.fromConfig(config, {
-        migrations: { apply: false },
+        migrations: { skip: true },
       });
       const client = database.forPlugin('test');
 
-      expect(client.migrations.apply).toBe(false);
+      expect(client.migrations?.skip).toBe(true);
     });
   });
 

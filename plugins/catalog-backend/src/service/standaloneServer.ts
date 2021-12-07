@@ -46,7 +46,7 @@ export async function startStandaloneServer(
   logger.debug('Creating application...');
   const builder = new CatalogBuilder({
     logger,
-    database: { getClient: () => db, migrations: { apply: true } },
+    database: { getClient: () => db },
     config,
     reader,
   });

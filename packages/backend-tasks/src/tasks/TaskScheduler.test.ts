@@ -33,7 +33,6 @@ describe('TaskScheduler', () => {
     const databaseManager: Partial<DatabaseManager> = {
       forPlugin: () => ({
         getClient: async () => knex,
-        migrations: { apply: true },
       }),
     };
     return databaseManager as DatabaseManager;

@@ -42,7 +42,7 @@ function pluginPath(pluginId: string): string {
  * @public
  */
 export type DatabaseManagerOptions = {
-  migrations: PluginDatabaseManager['migrations'];
+  migrations?: PluginDatabaseManager['migrations'];
 };
 
 /** @public */
@@ -92,7 +92,7 @@ export class DatabaseManager {
         return _this.getDatabase(pluginId);
       },
       migrations: {
-        apply: true,
+        skip: false,
         ..._this.options?.migrations,
       },
     };

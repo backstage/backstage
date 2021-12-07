@@ -183,7 +183,7 @@ export class DatabaseManager {
 
 // @public
 export type DatabaseManagerOptions = {
-  migrations: PluginDatabaseManager['migrations'];
+  migrations?: PluginDatabaseManager['migrations'];
 };
 
 // @public (undocumented)
@@ -403,8 +403,8 @@ export type PluginCacheManager = {
 // @public
 export interface PluginDatabaseManager {
   getClient(): Promise<Knex>;
-  migrations: {
-    apply: boolean;
+  migrations?: {
+    skip?: boolean;
   };
 }
 
@@ -656,5 +656,5 @@ export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
 
 // Warnings were encountered during analysis:
 //
-// src/database/types.d.ts:26:12 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
+// src/database/types.d.ts:23:12 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
 ```
