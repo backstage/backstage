@@ -34,6 +34,7 @@ import { LegacyUserIdentity } from './LegacyUserIdentity';
  * @public
  */
 export class UserIdentity implements IdentityApi {
+  private profilePromise?: Promise<ProfileInfo>;
   /**
    * Creates a new IdentityApi that acts as a Guest User.
    *
@@ -110,8 +111,17 @@ export class UserIdentity implements IdentityApi {
 
   /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getProfileInfo} */
   async getProfileInfo(): Promise<ProfileInfo> {
-    const profile = await this.authApi.getProfile();
-    return profile!;
+    if (this.profilePromise) {
+      return await this.profilePromise;
+    }
+
+    try {
+      this.profilePromise = this.authApi.getProfile() as Promise<ProfileInfo>;
+      return await this.profilePromise;
+    } catch (ex) {
+      this.profilePromise = undefined;
+      throw ex;
+    }
   }
 
   /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getBackstageIdentity} */

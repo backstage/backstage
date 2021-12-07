@@ -220,6 +220,7 @@ describe('OAuthAdapter', () => {
       backstageIdentity: {
         id: mockResponseData.backstageIdentity.id,
         token: mockResponseData.backstageIdentity.token,
+        idToken: mockResponseData.backstageIdentity.token,
         identity: {
           ownershipEntityRefs: ['user:default/jimmymarkum'],
           type: 'user',

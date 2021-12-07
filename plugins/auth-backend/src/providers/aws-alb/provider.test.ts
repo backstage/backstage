@@ -139,6 +139,8 @@ describe('AwsAlbAuthProvider', () => {
           id: 'user.name',
           token:
             'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
+          idToken:
+            'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
           identity: {
             ownershipEntityRefs: ['user:default/jimmymarkum'],
             type: 'user',
