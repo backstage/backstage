@@ -2,6 +2,13 @@
 
 Welcome to the apache-airflow plugin!
 
+## Feature Requests & Ideas
+
+- [ ] Add support for running multiple instances of Airflow for monitoring
+      various deployment stages or business domains. ([Suggested by @JGoldman110](https://github.com/backstage/backstage/issues/735#issuecomment-985063468))
+- [ ] Make owner chips in the DAG table clickable, resolving to a user or group
+      in the entity catalog. ([Suggested by @julioz](https://github.com/backstage/backstage/pull/8348#discussion_r764766295))
+
 ## Installation
 
 1. Install the plugin with `yarn` in the root of your Backstage directory
