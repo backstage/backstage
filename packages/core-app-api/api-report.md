@@ -39,6 +39,7 @@ import { FeatureFlagsSaveOptions } from '@backstage/core-plugin-api';
 import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { OAuthRequestApi } from '@backstage/core-plugin-api';
@@ -574,10 +575,10 @@ export type SamlSession = {
 
 // @public
 export type SignInPageProps = {
-  onResult(result: SignInResult): void;
+  onSignInSuccess(identityApi: IdentityApi): void;
 };
 
-// @public
+// @public @deprecated
 export type SignInResult = {
   userId: string;
   profile: ProfileInfo;

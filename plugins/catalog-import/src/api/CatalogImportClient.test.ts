@@ -79,6 +79,9 @@ describe('CatalogImportClient', () => {
     signOut: () => {
       return Promise.resolve();
     },
+    getProfileInfo: jest.fn(),
+    getBackstageIdentity: jest.fn(),
+    getCredentials: jest.fn(),
   };
 
   const scmIntegrationsApi = ScmIntegrations.fromConfig(

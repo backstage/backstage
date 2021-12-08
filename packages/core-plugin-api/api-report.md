@@ -10,6 +10,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
+import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { Observable as Observable_2 } from '@backstage/types';
 import { Observer as Observer_2 } from '@backstage/types';
 import { ProfileInfo as ProfileInfo_2 } from '@backstage/core-plugin-api';
@@ -233,18 +234,21 @@ export type AuthRequestOptions = {
   instantPopup?: boolean;
 };
 
-// @public
-export type BackstageIdentity = {
-  id: string;
-  idToken: string;
-  token: string;
-};
+// @public @deprecated
+export type BackstageIdentity = BackstageIdentityResponse;
 
 // @public
 export type BackstageIdentityApi = {
   getBackstageIdentity(
     options?: AuthRequestOptions,
-  ): Promise<BackstageIdentity | undefined>;
+  ): Promise<BackstageIdentityResponse | undefined>;
+};
+
+// @public
+export type BackstageIdentityResponse = {
+  id: string;
+  token: string;
+  identity: BackstageUserIdentity;
 };
 
 // @public
@@ -259,6 +263,13 @@ export type BackstagePlugin<
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
+};
+
+// @public
+export type BackstageUserIdentity = {
+  type: 'user';
+  userEntityRef: string;
+  ownershipEntityRefs: string[];
 };
 
 // @public
@@ -528,8 +539,13 @@ export type IconComponent = ComponentType<{
 // @public
 export type IdentityApi = {
   getUserId(): string;
-  getProfile(): ProfileInfo;
   getIdToken(): Promise<string | undefined>;
+  getProfile(): ProfileInfo;
+  getProfileInfo(): Promise<ProfileInfo>;
+  getBackstageIdentity(): Promise<BackstageUserIdentity>;
+  getCredentials(): Promise<{
+    token?: string;
+  }>;
   signOut(): Promise<void>;
 };
 
@@ -742,10 +758,10 @@ export enum SessionState {
 
 // @public
 export type SignInPageProps = {
-  onResult(result: SignInResult): void;
+  onSignInSuccess(identityApi: IdentityApi_2): void;
 };
 
-// @public
+// @public @deprecated
 export type SignInResult = {
   userId: string;
   profile: ProfileInfo_2;
