@@ -46,6 +46,7 @@ import {
   SidebarItemWithSubmenuContext,
 } from './config';
 import { SidebarSubmenu } from './SidebarSubmenu';
+import { isLocationMatch } from './utils';
 
 export type SidebarItemClassKey =
   | 'root'
@@ -172,7 +173,7 @@ const useStyles = makeStyles<BackstageTheme>(
 
 function isSidebarItemWithSubmenuActive(
   submenu: ReactNode,
-  locationPathname: string,
+  currentLocation: any,
 ) {
   // Item is active if any of submenu items have active paths
   const toPathnames: string[] = [];
@@ -193,8 +194,8 @@ function isSidebarItemWithSubmenuActive(
     }
   });
   isActive = toPathnames.some(to => {
-    const toPathname = resolvePath(to);
-    return locationPathname === toPathname.pathname;
+    const toLocation = resolvePath(to);
+    return isLocationMatch(currentLocation, toLocation);
   });
   return isActive;
 }
@@ -207,8 +208,8 @@ const SidebarItemWithSubmenu = ({
 }: PropsWithChildren<SidebarItemWithSubmenuProps>) => {
   const classes = useStyles();
   const [isHoveredOn, setIsHoveredOn] = useState(false);
-  const { pathname: locationPathname } = useLocation();
-  const isActive = isSidebarItemWithSubmenuActive(children, locationPathname);
+  const currentLocation = useLocation();
+  const isActive = isSidebarItemWithSubmenuActive(children, currentLocation);
 
   const handleMouseEnter = () => {
     setIsHoveredOn(true);

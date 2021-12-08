@@ -29,6 +29,7 @@ import { BackstageTheme } from '@backstage/theme';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { SidebarItemWithSubmenuContext } from './config';
+import { isLocationMatch } from './utils';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   item: {
@@ -116,13 +117,13 @@ export type SidebarSubmenuItemProps = {
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const { title, to, icon: Icon, dropdownItems } = props;
   const classes = useStyles();
-  const { pathname: locationPathname, search: locationSearch } = useLocation();
-  const { pathname: toPathname, search: toSearch } = useResolvedPath(to);
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
     setIsHoveredOn(false);
   };
-  let isActive = locationPathname === toPathname && toSearch === locationSearch;
+  const toLocation = useResolvedPath(to);
+  const currentLocation = useLocation();
+  let isActive = isLocationMatch(currentLocation, toLocation);
 
   const [showDropDown, setShowDropDown] = useState(false);
   const handleClickDropdown = () => {
@@ -131,9 +132,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
       const resolvedPath = resolvePath(item.to);
-      isActive =
-        locationPathname === resolvedPath.pathname &&
-        locationSearch === toSearch;
+      isActive = isLocationMatch(currentLocation, resolvedPath);
       return isActive;
     });
     return (
