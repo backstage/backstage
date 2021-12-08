@@ -111,7 +111,6 @@ export type ServiceBuilder = {
   /**
    * Disable default error handler
    *
-   * If it's not called, default error handler is used
    */
   disableDefaultErrorHandler(): ServiceBuilder;
 
