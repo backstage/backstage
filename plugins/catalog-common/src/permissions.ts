@@ -19,6 +19,17 @@ import { Permission } from '@backstage/plugin-permission-common';
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
 export const RESOURCE_TYPE_CATALOG_LOCATION = 'catalog-location';
 
+/**
+ * This permission is used to designate actions that involve reading a singular
+ * or multiple entities from the catalog. It can be passed into calls to {@link
+ * @backstage/plugin-permission-common/PermissionClient#authorize} (from the
+ * backend) or to {@link @backstage/plugin-permission-react#usePermission} (from
+ * the frontend).
+ *
+ * If this permission is not authorized, it will appear that the entity does not
+ * exist in the catalog — both in the frontend and in API responses.
+ * @public
+ */
 export const catalogEntityReadPermission: Permission = {
   name: 'catalog.entity.read',
   attributes: {
@@ -27,6 +38,14 @@ export const catalogEntityReadPermission: Permission = {
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
 };
 
+/**
+ * This permission is used to designate actions that involve unregistering an
+ * entity from the catalog. It can be passed into calls to {@link
+ * @backstage/plugin-permission-common/PermissionClient#authorize} (from the
+ * backend) or to {@link @backstage/plugin-permission-react#usePermission} (from
+ * the frontend).
+ * @public
+ */
 export const catalogEntityUnregisterPermission: Permission = {
   name: 'catalog.entity.unregister',
   attributes: {
@@ -35,12 +54,33 @@ export const catalogEntityUnregisterPermission: Permission = {
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
 };
 
+/**
+ * This permission is used to designate refreshing an entity from the catalog.
+ * It can be passed into calls to {@link
+ * @backstage/plugin-permission-common/PermissionClient#authorize} (from the
+ * backend) or to {@link @backstage/plugin-permission-react#usePermission} (from
+ * the frontend).
+ * @public
+ */
 export const catalogEntityRefreshPermission: Permission = {
   name: 'catalog.entity.refresh',
-  attributes: {},
+  attributes: {
+    action: 'update',
+  },
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
 };
 
+/**
+ * This permission is used to designate actions that involve reading a singular
+ * or multiple locations from the catalog. It can be passed into calls to {@link
+ * @backstage/plugin-permission-common/PermissionClient#authorize} (from the
+ * backend) or to {@link @backstage/plugin-permission-react#usePermission} (from
+ * the frontend).
+ *
+ * If this permission is not authorized, it will appear that the location does
+ * not exist in the catalog — both in the frontend and in API responses.
+ * @public
+ */
 export const catalogLocationReadPermission: Permission = {
   name: 'catalog.location.read',
   attributes: {
@@ -49,6 +89,14 @@ export const catalogLocationReadPermission: Permission = {
   resourceType: RESOURCE_TYPE_CATALOG_LOCATION,
 };
 
+/**
+ * This permission is used to designate actions that involve creating a catalog
+ * location. It can be passed into calls to {@link
+ * @backstage/plugin-permission-common/PermissionClient#authorize} (from the
+ * backend) or to {@link @backstage/plugin-permission-react#usePermission} (from
+ * the frontend).
+ * @public
+ */
 export const catalogLocationCreatePermission: Permission = {
   name: 'catalog.location.create',
   attributes: {
@@ -57,6 +105,14 @@ export const catalogLocationCreatePermission: Permission = {
   resourceType: RESOURCE_TYPE_CATALOG_LOCATION,
 };
 
+/**
+ * This permission is used to designate actions that involve deleting a location
+ * from the catalog. It can be passed into calls to {@link
+ * @backstage/plugin-permission-common/PermissionClient#authorize} (from the
+ * backend) or to {@link @backstage/plugin-permission-react#usePermission} (from
+ * the frontend).
+ * @public
+ */
 export const catalogLocationDeletePermission: Permission = {
   name: 'catalog.location.delete',
   attributes: {

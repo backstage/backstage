@@ -5,34 +5,22 @@
 ```ts
 import { Permission } from '@backstage/plugin-permission-common';
 
-// Warning: (ae-missing-release-tag) "catalogEntityReadPermission" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const catalogEntityReadPermission: Permission;
 
-// Warning: (ae-missing-release-tag) "catalogEntityRefreshPermission" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const catalogEntityRefreshPermission: Permission;
 
-// Warning: (ae-missing-release-tag) "catalogEntityUnregisterPermission" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const catalogEntityUnregisterPermission: Permission;
 
-// Warning: (ae-missing-release-tag) "catalogLocationCreatePermission" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const catalogLocationCreatePermission: Permission;
 
-// Warning: (ae-missing-release-tag) "catalogLocationDeletePermission" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const catalogLocationDeletePermission: Permission;
 
-// Warning: (ae-missing-release-tag) "catalogLocationReadPermission" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const catalogLocationReadPermission: Permission;
 
 // Warning: (ae-missing-release-tag) "RESOURCE_TYPE_CATALOG_ENTITY" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
