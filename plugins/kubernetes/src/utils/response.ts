@@ -45,6 +45,12 @@ export const groupResponses = (
         case 'ingresses':
           prev.ingresses.push(...next.resources);
           break;
+        case 'jobs':
+          prev.jobs.push(...next.resources);
+          break;
+        case 'cronjobs':
+          prev.cronJobs.push(...next.resources);
+          break;
         case 'customresources':
           prev.customResources.push(...next.resources);
           break;
@@ -60,6 +66,8 @@ export const groupResponses = (
       configMaps: [],
       horizontalPodAutoscalers: [],
       ingresses: [],
+      jobs: [],
+      cronJobs: [],
       customResources: [],
     } as GroupedResponses,
   );

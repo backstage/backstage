@@ -170,7 +170,13 @@ describe('OpenStackSwiftPublish', () => {
           entity,
           directory: entityRootDir,
         }),
-      ).toBeUndefined();
+      ).toMatchObject({
+        objects: expect.arrayContaining([
+          'test-namespace/TestKind/test-component-name/404.html',
+          `test-namespace/TestKind/test-component-name/index.html`,
+          `test-namespace/TestKind/test-component-name/assets/main.css`,
+        ]),
+      });
     });
 
     it('should fail to publish a directory', async () => {
@@ -241,7 +247,7 @@ describe('OpenStackSwiftPublish', () => {
       mockFs({
         [entityRootDir]: {
           'techdocs_metadata.json':
-            '{"site_name": "backstage", "site_description": "site_content", "etag": "etag"}',
+            '{"site_name": "backstage", "site_description": "site_content", "etag": "etag", "build_timestamp": 612741599}',
         },
       });
 
@@ -249,6 +255,7 @@ describe('OpenStackSwiftPublish', () => {
         site_name: 'backstage',
         site_description: 'site_content',
         etag: 'etag',
+        build_timestamp: 612741599,
       };
       expect(
         await publisher.fetchTechDocsMetadata(entityNameMock),
@@ -263,7 +270,7 @@ describe('OpenStackSwiftPublish', () => {
 
       mockFs({
         [entityRootDir]: {
-          'techdocs_metadata.json': `{'site_name': 'backstage', 'site_description': 'site_content', 'etag': 'etag'}`,
+          'techdocs_metadata.json': `{'site_name': 'backstage', 'site_description': 'site_content', 'etag': 'etag', 'build_timestamp': 612741599}`,
         },
       });
 
@@ -271,6 +278,7 @@ describe('OpenStackSwiftPublish', () => {
         site_name: 'backstage',
         site_description: 'site_content',
         etag: 'etag',
+        build_timestamp: 612741599,
       };
       expect(
         await publisher.fetchTechDocsMetadata(entityNameMock),

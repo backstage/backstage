@@ -6,21 +6,21 @@ description: Details around creating your own custom Software Templates
 
 Templates are stored in the **Software Catalog** under a kind `Template`. You
 can create your own templates with a small `yaml` definition which describes the
-template and it's metadata, along with some input variables that your template
+template and its metadata, along with some input variables that your template
 will need, and then a list of actions which are then executed by the scaffolding
 service.
 
 Let's take a look at a simple example:
 
 ```yaml
-# Notice the v1beta2 version
-apiVersion: backstage.io/v1beta2
+# Notice the v1beta3 version
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 # some metadata about the template itself
 metadata:
-  name: v1beta2-demo
+  name: v1beta3-demo
   title: Test Action template
-  description: scaffolder v1beta2 template demo
+  description: scaffolder v1beta3 template demo
 spec:
   owner: backstage/techdocs-core
   type: service
@@ -66,8 +66,8 @@ spec:
       input:
         url: ./template
         values:
-          name: '{{ parameters.name }}'
-          owner: '{{ parameters.owner }}'
+          name: ${{ parameters.name }}
+          owner: ${{ parameters.owner }}
 
     - id: fetch-docs
       name: Fetch Docs
@@ -81,20 +81,20 @@ spec:
       action: publish:github
       input:
         allowedHosts: ['github.com']
-        description: 'This is {{ parameters.name }}'
-        repoUrl: '{{ parameters.repoUrl }}'
+        description: This is ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
 
     - id: register
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
   # some outputs which are saved along with the job for use in the frontend
   output:
-    remoteUrl: '{{ steps.publish.output.remoteUrl }}'
-    entityRef: '{{ steps.register.output.entityRef }}'
+    remoteUrl: ${{ steps.publish.output.remoteUrl }}
+    entityRef: ${{ steps.register.output.entityRef }}
 ```
 
 Let's dive in and pick apart what each of these sections do and what they are.
@@ -183,12 +183,12 @@ this:
 It would look something like the following in a template:
 
 ```yaml
-apiVersion: backstage.io/v1beta2
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: v1beta2-demo
+  name: v1beta3-demo
   title: Test Action template
-  description: scaffolder v1beta2 template demo
+  description: scaffolder v1beta3 template demo
 spec:
   owner: backstage/techdocs-core
   type: service
@@ -315,12 +315,12 @@ template. These follow the same standard format:
 ```yaml
 - id: fetch-base # A unique id for the step
   name: Fetch Base # A title displayed in the frontend
-  if: '{{ parameters.name }}' # Optional condition, skip the step if not truthy
+  if: ${{ parameters.name }} # Optional condition, skip the step if not truthy
   action: fetch:template # An action to call
   input: # Input that is passed as arguments to the action handler
     url: ./template
     values:
-      name: '{{ parameters.name }}'
+      name: ${{ parameters.name }}
 ```
 
 By default we ship some [built in actions](./builtin-actions.md) that you can
@@ -338,22 +338,19 @@ The main two that are used are the following:
 
 ```yaml
 output:
-  remoteUrl: '{{ steps.publish.output.remoteUrl }}' # link to the remote repository
-  entityRef: '{{ steps.register.output.entityRef }}' # link to the entity that has been ingested to the catalog
+  remoteUrl: ${{ steps.publish.output.remoteUrl }} # link to the remote repository
+  entityRef: ${{ steps.register.output.entityRef }} # link to the entity that has been ingested to the catalog
 ```
 
 ### The templating syntax
 
-You might have noticed variables wrapped in `{{ }}` in the examples. These are
-`handlebars` template strings for linking and gluing the different parts of the
-template together. All the form inputs from the `parameters` section will be
-available by using this template syntax (for example,
-`{{ parameters.firstName }}` inserts the value of `firstName` from the
-parameters). This is great for passing the values from the form into different
-steps and reusing these input variables. To pass arrays or objects use the
-`json` custom [helper](https://handlebarsjs.com/guide/expressions.html#helpers).
-For example, `{{ json parameters.nicknames }}` will insert the result of calling
-`JSON.stringify` on the value of the `nicknames` parameter.
+You might have noticed variables wrapped in `${{ }}` in the examples. These are
+template strings for linking and gluing the different parts of the template
+together. All the form inputs from the `parameters` section will be available by
+using this template syntax (for example, `${{ parameters.firstName }}` inserts
+the value of `firstName` from the parameters). This is great for passing the
+values from the form into different steps and reusing these input variables.
+These template strings preserve the type of the parameter.
 
 As you can see above in the `Outputs` section, `actions` and `steps` can also
 output things. You can grab that output using `steps.$stepId.output.$property`.

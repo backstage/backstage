@@ -7,11 +7,28 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { SvgIconProps } from '@material-ui/core';
 
 // Warning: (ae-missing-release-tag) "azureDevOpsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const azureDevOpsPlugin: BackstagePlugin<{}, {}>;
+
+// Warning: (ae-missing-release-tag) "AzurePullRequestsIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const AzurePullRequestsIcon: (props: SvgIconProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "AzurePullRequestsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const AzurePullRequestsPage: ({
+  projectName,
+  pollingInterval,
+}: {
+  projectName?: string | undefined;
+  pollingInterval?: number | undefined;
+}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityAzurePipelinesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

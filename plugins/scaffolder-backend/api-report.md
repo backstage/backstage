@@ -24,6 +24,7 @@ import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
+import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
@@ -304,11 +305,12 @@ export interface RouterOptions {
 // Warning: (ae-forgotten-export) The symbol "RunCommandOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "runCommand" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export const runCommand: ({
   command,
   args,
   logStream,
+  options,
 }: RunCommandOptions) => Promise<void>;
 
 // @public (undocumented)

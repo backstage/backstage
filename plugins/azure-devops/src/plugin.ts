@@ -16,6 +16,7 @@
 
 import {
   azurePipelinesEntityContentRouteRef,
+  azurePullRequestDashboardRouteRef,
   azurePullRequestsEntityContentRouteRef,
 } from './routes';
 import {
@@ -45,6 +46,15 @@ export const azureDevOpsPlugin = createPlugin({
     }),
   ],
 });
+
+export const AzurePullRequestsPage = azureDevOpsPlugin.provide(
+  createRoutableExtension({
+    name: 'AzurePullRequestsPage',
+    component: () =>
+      import('./components/PullRequestsPage').then(m => m.PullRequestsPage),
+    mountPoint: azurePullRequestDashboardRouteRef,
+  }),
+);
 
 export const EntityAzurePipelinesContent = azureDevOpsPlugin.provide(
   createRoutableExtension({

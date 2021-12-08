@@ -31,6 +31,8 @@ const mockResponseData = {
   },
   backstageIdentity: {
     id: 'foo',
+    token:
+      'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
   },
 };
 
@@ -217,7 +219,13 @@ describe('OAuthAdapter', () => {
       ...mockResponseData,
       backstageIdentity: {
         id: mockResponseData.backstageIdentity.id,
-        token: 'my-id-token',
+        token: mockResponseData.backstageIdentity.token,
+        idToken: mockResponseData.backstageIdentity.token,
+        identity: {
+          ownershipEntityRefs: ['user:default/jimmymarkum'],
+          type: 'user',
+          userEntityRef: 'jimmymarkum',
+        },
       },
     });
   });

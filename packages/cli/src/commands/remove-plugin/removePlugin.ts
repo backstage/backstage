@@ -184,6 +184,12 @@ export const removeReferencesFromAppPackage = async (
 };
 
 export default async () => {
+  console.warn(
+    chalk.yellow(
+      '[DEPRECATED] - The remove-plugin command is deprecated and will be removed in the future.',
+    ),
+  );
+
   const questions: Question[] = [
     {
       type: 'input',

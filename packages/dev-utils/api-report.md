@@ -44,11 +44,9 @@ export type DevAppPageOptions = {
 };
 
 // @public (undocumented)
-export const EntityGridItem: ({
-  entity,
-  classes,
-  ...rest
-}: Omit<GridProps<'div', {}>, 'container' | 'item'> & {
-  entity: Entity;
-}) => JSX.Element;
+export const EntityGridItem: (
+  props: Omit<GridProps, 'item' | 'container'> & {
+    entity: Entity;
+  },
+) => JSX.Element;
 ```

@@ -5,7 +5,7 @@
 ```ts
 import { AuthorizeRequest } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { BackstageIdentity } from '@backstage/plugin-auth-backend';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
@@ -32,13 +32,11 @@ export type Condition<TRule> = TRule extends PermissionRule<
   : never;
 
 // @public
-export type ConditionalPolicyResult = {
+export type ConditionalPolicyDecision = {
   result: AuthorizeResult.CONDITIONAL;
-  conditions: {
-    pluginId: string;
-    resourceType: string;
-    conditions: PermissionCriteria<PermissionCondition>;
-  };
+  pluginId: string;
+  resourceType: string;
+  conditions: PermissionCriteria<PermissionCondition>;
 };
 
 // @public
@@ -63,11 +61,9 @@ export const createConditionExports: <
   rules: TRules;
 }) => {
   conditions: Conditions<TRules>;
-  createConditions: (conditions: PermissionCriteria<PermissionCondition>) => {
-    pluginId: string;
-    resourceType: string;
-    conditions: PermissionCriteria<PermissionCondition>;
-  };
+  createPolicyDecision: (
+    conditions: PermissionCriteria<PermissionCondition>,
+  ) => ConditionalPolicyDecision;
 };
 
 // @public
@@ -87,11 +83,7 @@ export const createConditionTransformer: <
 ) => ConditionTransformer<TQuery>;
 
 // @public
-export const createPermissionIntegrationRouter: <TResource>({
-  resourceType,
-  rules,
-  getResource,
-}: {
+export const createPermissionIntegrationRouter: <TResource>(options: {
   resourceType: string;
   rules: PermissionRule<TResource, any, unknown[]>[];
   getResource: (resourceRef: string) => Promise<TResource | undefined>;
@@ -102,8 +94,8 @@ export interface PermissionPolicy {
   // (undocumented)
   handle(
     request: PolicyAuthorizeRequest,
-    user?: BackstageIdentity,
-  ): Promise<PolicyResult>;
+    user?: BackstageIdentityResponse,
+  ): Promise<PolicyDecision>;
 }
 
 // @public
@@ -122,9 +114,9 @@ export type PermissionRule<
 export type PolicyAuthorizeRequest = Omit<AuthorizeRequest, 'resourceRef'>;
 
 // @public
-export type PolicyResult =
+export type PolicyDecision =
   | {
       result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
     }
-  | ConditionalPolicyResult;
+  | ConditionalPolicyDecision;
 ```

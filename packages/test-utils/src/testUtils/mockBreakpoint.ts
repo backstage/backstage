@@ -15,8 +15,8 @@
  */
 
 /**
- *  This is a mocking method suggested in the Jest Doc's, as it is not implemented in JSDOM yet.
- *  It can be used to mock values when the MUI `useMediaQuery` hook if it is used in a tested component.
+ *  This is a mocking method suggested in the Jest docs, as it is not implemented in JSDOM yet.
+ *  It can be used to mock values for the MUI `useMediaQuery` hook if it is used in a tested component.
  *
  *  For issues checkout the documentation:
  *  https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
@@ -26,11 +26,11 @@
  *
  * @public
  */
-export default function mockBreakpoint({ matches = false }) {
+export default function mockBreakpoint(options: { matches: boolean }) {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: jest.fn().mockImplementation(query => ({
-      matches: matches,
+      matches: options.matches ?? false,
       media: query,
       onchange: null,
       addListener: jest.fn(), // deprecated

@@ -15,12 +15,9 @@
  */
 
 import {
-  AppsV1Api,
-  BatchV1Api,
-  AutoscalingV1Api,
   CoreV1Api,
   KubeConfig,
-  NetworkingV1beta1Api,
+  Metrics,
   CustomObjectsApi,
 } from '@kubernetes/client-node';
 import { ClusterDetails } from '../types/types';
@@ -63,28 +60,10 @@ export class KubernetesClientProvider {
     return kc.makeApiClient(CoreV1Api);
   }
 
-  getAppsClientByClusterDetails(clusterDetails: ClusterDetails) {
+  getMetricsClient(clusterDetails: ClusterDetails) {
     const kc = this.getKubeConfig(clusterDetails);
 
-    return kc.makeApiClient(AppsV1Api);
-  }
-
-  getAutoscalingClientByClusterDetails(clusterDetails: ClusterDetails) {
-    const kc = this.getKubeConfig(clusterDetails);
-
-    return kc.makeApiClient(AutoscalingV1Api);
-  }
-
-  getBatchClientByClusterDetails(clusterDetails: ClusterDetails) {
-    const kc = this.getKubeConfig(clusterDetails);
-
-    return kc.makeApiClient(BatchV1Api);
-  }
-
-  getNetworkingBeta1Client(clusterDetails: ClusterDetails) {
-    const kc = this.getKubeConfig(clusterDetails);
-
-    return kc.makeApiClient(NetworkingV1beta1Api);
+    return new Metrics(kc);
   }
 
   getCustomObjectsClient(clusterDetails: ClusterDetails) {

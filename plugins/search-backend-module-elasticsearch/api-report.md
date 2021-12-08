@@ -11,8 +11,6 @@ import { SearchEngine } from '@backstage/search-common';
 import { SearchQuery } from '@backstage/search-common';
 import { SearchResultSet } from '@backstage/search-common';
 
-// Warning: (ae-missing-release-tag) "ElasticSearchSearchEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class ElasticSearchSearchEngine implements SearchEngine {
   constructor(
@@ -24,12 +22,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   // Warning: (ae-forgotten-export) The symbol "ElasticSearchOptions" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  static fromConfig({
-    logger,
-    config,
-    aliasPostfix,
-    indexPrefix,
-  }: ElasticSearchOptions): Promise<ElasticSearchSearchEngine>;
+  static fromConfig(
+    options: ElasticSearchOptions,
+  ): Promise<ElasticSearchSearchEngine>;
   // (undocumented)
   index(type: string, documents: IndexableDocument[]): Promise<void>;
   // (undocumented)
@@ -41,11 +36,6 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   // Warning: (ae-forgotten-export) The symbol "ConcreteElasticSearchQuery" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  protected translator({
-    term,
-    filters,
-    types,
-    pageCursor,
-  }: SearchQuery): ConcreteElasticSearchQuery;
+  protected translator(query: SearchQuery): ConcreteElasticSearchQuery;
 }
 ```

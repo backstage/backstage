@@ -1,5 +1,13 @@
 # @techdocs/cli
 
+## 0.8.7
+
+### Patch Changes
+
+- e7230ef814: Bump react-dev-utils to v12
+- Updated dependencies
+  - @backstage/backend-common@0.9.12
+
 ## 0.8.6
 
 ### Patch Changes

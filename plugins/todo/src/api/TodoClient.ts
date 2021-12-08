@@ -43,13 +43,8 @@ export class TodoClient implements TodoApi {
     this.identityApi = options.identityApi;
   }
 
-  async listTodos({
-    entity,
-    offset,
-    limit,
-    orderBy,
-    filters,
-  }: TodoListOptions): Promise<TodoListResult> {
+  async listTodos(options: TodoListOptions): Promise<TodoListResult> {
+    const { entity, offset, limit, orderBy, filters } = options;
     const baseUrl = await this.discoveryApi.getBaseUrl('todo');
     const token = await this.identityApi.getIdToken();
 

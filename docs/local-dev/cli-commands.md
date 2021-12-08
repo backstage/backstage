@@ -165,6 +165,7 @@ common example being the `migrations` directory.
 Usage: backstage-cli backend:build [options]
 
 Options:
+  --minify    Minify the generated code
   -h, --help  display help for command
 ```
 
@@ -371,6 +372,7 @@ the monorepo.
 Usage: backstage-cli plugin:build [options]
 
 Options:
+  --minify    Minify the generated code
   -h, --help  display help for command
 ```
 

@@ -39,6 +39,7 @@ import {
 import {
   PublisherBase,
   PublishRequest,
+  PublishResponse,
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
@@ -156,7 +157,11 @@ export class AzureBlobStoragePublish implements PublisherBase {
    * Upload all the files from the generated `directory` to the Azure Blob Storage container.
    * Directory structure used in the container is - entityNamespace/entityKind/entityName/index.html
    */
-  async publish({ entity, directory }: PublishRequest): Promise<void> {
+  async publish({
+    entity,
+    directory,
+  }: PublishRequest): Promise<PublishResponse> {
+    const objects: string[] = [];
     const useLegacyPathCasing = this.legacyPathCasing;
 
     // First, try to retrieve a list of all individual files currently existing
@@ -194,14 +199,14 @@ export class AzureBlobStoragePublish implements PublisherBase {
           const relativeFilePath = path.normalize(
             path.relative(directory, absoluteFilePath),
           );
+          const remotePath = getCloudPathForLocalPath(
+            entity,
+            relativeFilePath,
+            useLegacyPathCasing,
+          );
+          objects.push(remotePath);
           const response = await container
-            .getBlockBlobClient(
-              getCloudPathForLocalPath(
-                entity,
-                relativeFilePath,
-                useLegacyPathCasing,
-              ),
-            )
+            .getBlockBlobClient(remotePath)
             .uploadFile(absoluteFilePath);
 
           if (response._response.status >= 400) {
@@ -264,6 +269,8 @@ export class AzureBlobStoragePublish implements PublisherBase {
       const errorMessage = `Unable to delete file(s) from Azure. ${error}`;
       this.logger.error(errorMessage);
     }
+
+    return { objects };
   }
 
   private download(containerName: string, blobPath: string): Promise<Buffer> {

@@ -14,24 +14,38 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { IndexableDocument } from '@backstage/search-common';
-import { ListItem, ListItemText, Divider } from '@material-ui/core';
+import {
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Box,
+  Divider,
+} from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 
 type Props = {
+  icon?: ReactNode;
+  secondaryAction?: ReactNode;
   result: IndexableDocument;
 };
 
-export const DefaultResultListItem = ({ result }: Props) => {
+export const DefaultResultListItem = ({
+  result,
+  icon,
+  secondaryAction,
+}: Props) => {
   return (
     <Link to={result.location}>
-      <ListItem alignItems="flex-start">
+      <ListItem alignItems="center">
+        {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText
           primaryTypographyProps={{ variant: 'h6' }}
           primary={result.title}
           secondary={result.text}
         />
+        {secondaryAction && <Box alignItems="flex-end">{secondaryAction}</Box>}
       </ListItem>
       <Divider />
     </Link>

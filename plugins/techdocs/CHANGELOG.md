@@ -1,5 +1,16 @@
 # @backstage/plugin-techdocs
 
+## 0.12.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+  - @backstage/plugin-search@0.5.0
+
 ## 0.12.7
 
 ### Patch Changes

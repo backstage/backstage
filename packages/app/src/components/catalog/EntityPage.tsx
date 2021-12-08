@@ -106,10 +106,7 @@ import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
 import BadgeIcon from '@material-ui/icons/CallToAction';
-import {
-  EntityBuildkiteContent,
-  isBuildkiteAvailable,
-} from '@roadiehq/backstage-plugin-buildkite';
+
 import {
   EntityGithubInsightsContent,
   EntityGithubInsightsLanguagesCard,
@@ -172,10 +169,6 @@ export const cicdContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isJenkinsAvailable}>
       <EntityJenkinsContent />
-    </EntitySwitch.Case>
-
-    <EntitySwitch.Case if={isBuildkiteAvailable}>
-      <EntityBuildkiteContent />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case if={isCircleCIAvailable}>
