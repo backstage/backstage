@@ -34,7 +34,7 @@ interface CatalogEntityDocument extends IndexableDocument {
 
 /**
  * @deprecated Upgrade to a more recent `@backstage/search-backend-node` and
- * use DefaultCatalogCollator instead.
+ * use DefaultCatalogCollatorFactory instead.
  */
 export class DefaultCatalogCollator {
   protected discovery: PluginEndpointDiscovery;

@@ -87,7 +87,7 @@ const expectedEntities: Entity[] = [
   },
 ];
 
-describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
+describe('DefaultTechDocsDocumentGenerator with legacyPathCasing configuration', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
   let collator: DefaultTechDocsDocumentGenerator;
 
@@ -151,7 +151,7 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
   });
 });
 
-describe('DefaultTechDocsCollator', () => {
+describe('DefaultTechDocsDocumentGenerator', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
   let collator: DefaultTechDocsDocumentGenerator;
 

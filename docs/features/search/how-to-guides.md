@@ -60,13 +60,14 @@ you should have the `packages/backend/src/plugins/search.ts` file available. If
 so, you can go ahead and follow this guide - if not, start by going through the
 getting started guide.
 
-1. Import the DefaultTechDocsCollator from `@backstage/plugin-techdocs-backend`.
+1. Import the DefaultTechDocsCollatorFactory from
+   `@backstage/plugin-techdocs-backend`.
 
 ```typescript
 import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
 ```
 
-2. Register the DefaultTechDocsCollator with the IndexBuilder.
+2. Register the DefaultTechDocsCollatorFactory with the IndexBuilder.
 
 ```typescript
 indexBuilder.addCollator({

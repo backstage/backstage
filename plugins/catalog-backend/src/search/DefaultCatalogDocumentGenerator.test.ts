@@ -55,7 +55,7 @@ const expectedEntities: Entity[] = [
   },
 ];
 
-describe('DefaultCatalogCollator', () => {
+describe('DefaultCatalogDocumentGenerator', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
   let collator: DefaultCatalogDocumentGenerator;
 
