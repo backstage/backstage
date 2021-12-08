@@ -99,9 +99,10 @@ export type ServiceBuilder = {
   ): ServiceBuilder;
 
   /**
-   * Set the error handler
+   * Sets an additional errorHandler to run before the defaultErrorHandler.
    *
-   * If no handler is given the default one is used
+   * If we want to use only custom errorHandler without defaultErrorHandler we need to
+   * disable the defaultErrorHandler by invoking disableDefaultErrorHandler()
    *
    * @param errorHandler - an error handler
    */
