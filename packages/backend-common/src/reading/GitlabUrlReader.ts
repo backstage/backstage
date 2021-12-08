@@ -20,7 +20,7 @@ import {
   GitLabIntegration,
   ScmIntegrations,
 } from '@backstage/integration';
-import fetch from 'cross-fetch';
+import fetch, { Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
@@ -66,6 +66,7 @@ export class GitlabUrlReader implements UrlReader {
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
+    const { etag, signal } = options ?? {};
     const builtUrl = await getGitLabFileFetchUrl(url, this.integration.config);
 
     let response: Response;
@@ -73,8 +74,15 @@ export class GitlabUrlReader implements UrlReader {
       response = await fetch(builtUrl, {
         headers: {
           ...getGitLabRequestOptions(this.integration.config).headers,
-          ...(options?.etag && { 'If-None-Match': options.etag }),
+          ...(etag && { 'If-None-Match': etag }),
         },
+        // TODO(freben): The signal cast is there because pre-3.x versions of
+        // node-fetch have a very slightly deviating AbortSignal type signature.
+        // The difference does not affect us in practice however. The cast can be
+        // removed after we support ESM for CLI dependencies and migrate to
+        // version 3 of node-fetch.
+        // https://github.com/backstage/backstage/issues/8242
+        ...(signal && { signal: signal as any }),
       });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
@@ -102,6 +110,7 @@ export class GitlabUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
+    const { etag, signal } = options ?? {};
     const { ref, full_name, filepath } = parseGitUrl(url);
 
     // Use GitLab API to get the default branch
@@ -140,7 +149,16 @@ export class GitlabUrlReader implements UrlReader {
           full_name,
         )}/repository/commits?${commitsReqParams.toString()}`,
       ).toString(),
-      getGitLabRequestOptions(this.integration.config),
+      {
+        ...getGitLabRequestOptions(this.integration.config),
+        // TODO(freben): The signal cast is there because pre-3.x versions of
+        // node-fetch have a very slightly deviating AbortSignal type signature.
+        // The difference does not affect us in practice however. The cast can
+        // be removed after we support ESM for CLI dependencies and migrate to
+        // version 3 of node-fetch.
+        // https://github.com/backstage/backstage/issues/8242
+        ...(signal && { signal: signal as any }),
+      },
     );
     if (!commitsGitlabResponse.ok) {
       const message = `Failed to read tree (branch) from ${url}, ${commitsGitlabResponse.status} ${commitsGitlabResponse.statusText}`;
@@ -152,7 +170,7 @@ export class GitlabUrlReader implements UrlReader {
 
     const commitSha = (await commitsGitlabResponse.json())[0].id;
 
-    if (options?.etag && options.etag === commitSha) {
+    if (etag && etag === commitSha) {
       throw new NotModifiedError();
     }
 
@@ -161,7 +179,16 @@ export class GitlabUrlReader implements UrlReader {
       `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
         full_name,
       )}/repository/archive?sha=${branch}`,
-      getGitLabRequestOptions(this.integration.config),
+      {
+        ...getGitLabRequestOptions(this.integration.config),
+        // TODO(freben): The signal cast is there because pre-3.x versions of
+        // node-fetch have a very slightly deviating AbortSignal type signature.
+        // The difference does not affect us in practice however. The cast can
+        // be removed after we support ESM for CLI dependencies and migrate to
+        // version 3 of node-fetch.
+        // https://github.com/backstage/backstage/issues/8242
+        ...(signal && { signal: signal as any }),
+      },
     );
     if (!archiveGitLabResponse.ok) {
       const message = `Failed to read tree (archive) from ${url}, ${archiveGitLabResponse.status} ${archiveGitLabResponse.statusText}`;
@@ -191,6 +218,7 @@ export class GitlabUrlReader implements UrlReader {
 
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,
+      signal: options?.signal,
       filter: path => matcher.match(stripFirstDirectoryFromPath(path)),
     });
     const files = await tree.files();

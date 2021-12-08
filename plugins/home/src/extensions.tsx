@@ -37,11 +37,14 @@ type RendererProps = { title: string } & ComponentParts;
 export function createCardExtension<T>({
   title,
   components,
+  name,
 }: {
   title: string;
   components: () => Promise<ComponentParts>;
+  name?: string;
 }) {
   return createReactExtension({
+    name,
     component: {
       lazy: () =>
         components().then(({ Content, Actions, Settings, ContextProvider }) => {

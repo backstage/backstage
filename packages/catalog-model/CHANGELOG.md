@@ -1,5 +1,11 @@
 # @backstage/catalog-model
 
+## 0.9.7
+
+### Patch Changes
+
+- 8809b6c0dd: Update the json-schema dependency version.
+
 ## 0.9.6
 
 ### Patch Changes

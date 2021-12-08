@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import AtlassianIcon from '@material-ui/icons/AcUnit';
 import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
@@ -22,7 +21,7 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'atlassian',
   title: 'Atlassian',
-  icon: AtlassianIcon,
+  icon: () => null,
 };
 
 /**
@@ -31,12 +30,14 @@ const DEFAULT_PROVIDER = {
  * @public
  */
 export default class AtlassianAuth {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-  }: OAuthApiCreateOptions): typeof atlassianAuthApiRef.T {
+  static create(options: OAuthApiCreateOptions): typeof atlassianAuthApiRef.T {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

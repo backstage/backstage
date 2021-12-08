@@ -73,6 +73,7 @@ export const examplePlugin = createPlugin({
 
 export const ExamplePage = examplePlugin.provide(
   createRoutableExtension({
+    name: 'ExamplePage',
     component: () =>
       import('./components/ExampleComponent').then(m => m.ExampleComponent),
     mountPoint: rootRouteRef,

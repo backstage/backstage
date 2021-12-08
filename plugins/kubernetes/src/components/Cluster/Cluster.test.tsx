@@ -46,6 +46,7 @@ describe('Cluster', () => {
                   resources: oneDeployment.pods,
                 },
               ],
+              podMetrics: [],
               errors: [],
             },
             podsWithErrors: new Set<string>(),

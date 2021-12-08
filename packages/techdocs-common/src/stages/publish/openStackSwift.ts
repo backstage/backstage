@@ -24,10 +24,15 @@ import { SwiftClient } from '@trendyol-js/openstack-swift-sdk';
 import { NotFound } from '@trendyol-js/openstack-swift-sdk/lib/types';
 import { Stream, Readable } from 'stream';
 import { Logger } from 'winston';
-import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import {
+  getFileTreeRecursively,
+  getHeadersForFileExtension,
+  lowerCaseEntityTripletInStoragePath,
+} from './helpers';
 import {
   PublisherBase,
   PublishRequest,
+  PublishResponse,
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
@@ -135,8 +140,13 @@ export class OpenStackSwiftPublish implements PublisherBase {
    * Upload all the files from the generated `directory` to the OpenStack Swift container.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
-  async publish({ entity, directory }: PublishRequest): Promise<void> {
+  async publish({
+    entity,
+    directory,
+  }: PublishRequest): Promise<PublishResponse> {
     try {
+      const objects: string[] = [];
+
       // Note: OpenStack Swift manages creation of parent directories if they do not exist.
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
@@ -157,6 +167,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
         // The / delimiter is intentional since it represents the cloud storage and not the local file system.
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = `${entityRootDir}/${relativeFilePathPosix}`; // Swift container file relative path
+        objects.push(destination);
 
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
         const uploadFile = limiter(async () => {
@@ -174,7 +185,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
       this.logger.info(
         `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
       );
-      return;
+      return { objects };
     } catch (e) {
       const errorMessage = `Unable to upload file(s) to OpenStack Swift. ${e}`;
       this.logger.error(errorMessage);
@@ -288,5 +299,68 @@ export class OpenStackSwiftPublish implements PublisherBase {
       this.logger.warn(err.message);
       return false;
     }
+  }
+
+  async migrateDocsCase({
+    removeOriginal = false,
+    concurrency = 25,
+  }): Promise<void> {
+    // Iterate through every file in the root of the publisher.
+    const allObjects = await this.getAllObjectsFromContainer();
+    const limiter = createLimiter(concurrency);
+    await Promise.all(
+      allObjects.map(f =>
+        limiter(async file => {
+          let newPath;
+          try {
+            newPath = lowerCaseEntityTripletInStoragePath(file);
+          } catch (e) {
+            assertError(e);
+            this.logger.warn(e.message);
+            return;
+          }
+
+          // If all parts are already lowercase, ignore.
+          if (file === newPath) {
+            return;
+          }
+
+          try {
+            this.logger.verbose(`Migrating ${file} to ${newPath}`);
+            await this.storageClient.copy(
+              this.containerName,
+              file,
+              this.containerName,
+              newPath,
+            );
+            if (removeOriginal) {
+              await this.storageClient.delete(this.containerName, file);
+            }
+          } catch (e) {
+            assertError(e);
+            this.logger.warn(`Unable to migrate ${file}: ${e.message}`);
+          }
+        }, f),
+      ),
+    );
+  }
+
+  /**
+   * Returns a list of all object keys from the configured container.
+   */
+  protected async getAllObjectsFromContainer(
+    { prefix } = { prefix: '' },
+  ): Promise<string[]> {
+    let objects: string[] = [];
+    const OSS_MAX_LIMIT = Math.pow(2, 31) - 1;
+
+    const allObjects = await this.storageClient.list(
+      this.containerName,
+      prefix,
+      OSS_MAX_LIMIT,
+    );
+    objects = allObjects.map((object: any) => object.name);
+
+    return objects;
   }
 }

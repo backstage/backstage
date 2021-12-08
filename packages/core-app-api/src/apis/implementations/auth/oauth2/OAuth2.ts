@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import OAuth2Icon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
@@ -33,7 +32,11 @@ import { Observable } from '@backstage/types';
 import { OAuth2Session } from './types';
 import { OAuthApiCreateOptions } from '../types';
 
-type CreateOptions = OAuthApiCreateOptions & {
+/**
+ * OAuth2 create options.
+ * @public
+ */
+export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
 };
 
@@ -51,7 +54,7 @@ export type OAuth2Response = {
 const DEFAULT_PROVIDER = {
   id: 'oauth2',
   title: 'Your Identity Provider',
-  icon: OAuth2Icon,
+  icon: () => null,
 };
 
 /**
@@ -67,14 +70,16 @@ export default class OAuth2
     BackstageIdentityApi,
     SessionApi
 {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    defaultScopes = [],
-    scopeTransform = x => x,
-  }: CreateOptions) {
+  static create(options: OAuth2CreateOptions) {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+      defaultScopes = [],
+      scopeTransform = x => x,
+    } = options;
+
     const connector = new DefaultAuthConnector({
       discoveryApi,
       environment,
@@ -115,6 +120,9 @@ export default class OAuth2
   private readonly sessionManager: SessionManager<OAuth2Session>;
   private readonly scopeTransform: (scopes: string[]) => string[];
 
+  /**
+   * @deprecated will be made private in the future. Use create method instead.
+   */
   constructor(options: {
     sessionManager: SessionManager<OAuth2Session>;
     scopeTransform: (scopes: string[]) => string[];

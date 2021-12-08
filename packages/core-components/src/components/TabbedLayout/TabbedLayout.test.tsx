@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
-import { fireEvent } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { Route, Routes } from 'react-router';
 import { TabbedLayout } from './TabbedLayout';
 

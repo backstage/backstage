@@ -30,6 +30,18 @@ export interface PluginDatabaseManager {
    * stores so that plugins are discouraged from database integration.
    */
   getClient(): Promise<Knex>;
+
+  /**
+   * This property is used to control the behavior of database migrations.
+   */
+  migrations?: {
+    /**
+     * skip database migrations. Useful if connecting to a read-only database.
+     *
+     * @default false
+     */
+    skip?: boolean;
+  };
 }
 
 /**
@@ -45,6 +57,11 @@ export interface DatabaseConnector {
    * database name.
    */
   createNameOverride(name: string): Partial<Knex.Config>;
+  /**
+   * createSchemaOverride provides a partial knex config sufficient to override a
+   * PostgreSQL schema name within utilizing the `searchPath` knex configuration.
+   */
+  createSchemaOverride?(name: string): Partial<Knex.Config>;
   /**
    * parseConnectionString produces a knex connection config object representing
    * a database connection string.
@@ -63,5 +80,17 @@ export interface DatabaseConnector {
   ensureDatabaseExists?(
     dbConfig: Config,
     ...databases: Array<string>
+  ): Promise<void>;
+
+  /**
+   * ensureSchemaExists performs a side-effect to ensure schema names passed in are
+   * present.
+   *
+   * Calling this function on schemas which already exist should do nothing.
+   * Missing schemas should be created if needed.
+   */
+  ensureSchemaExists?(
+    dbConfig: Config,
+    ...schemas: Array<string>
   ): Promise<void>;
 }

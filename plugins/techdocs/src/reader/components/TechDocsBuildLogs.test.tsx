@@ -14,73 +14,70 @@
  * limitations under the License.
  */
 
-import { render } from '@testing-library/react';
-import React from 'react';
+import React, { ReactNode } from 'react';
+import { renderInTestApp } from '@backstage/test-utils';
 import {
   TechDocsBuildLogs,
   TechDocsBuildLogsDrawerContent,
 } from './TechDocsBuildLogs';
 
-// react-lazylog is based on a react-virtualized component which doesn't
-// write the content to the dom, so we mock it.
-jest.mock('react-lazylog', () => {
-  return {
-    LazyLog: ({ text }: { text: string }) => {
-      return <p>{text}</p>;
-    },
-  };
-});
+// The <AutoSizer> inside <LogViewer> needs mocking to render in jsdom
+jest.mock('react-virtualized-auto-sizer', () => ({
+  __esModule: true,
+  default: (props: {
+    children: (size: { width: number; height: number }) => ReactNode;
+  }) => <>{props.children({ width: 400, height: 200 })}</>,
+}));
 
 describe('<TechDocsBuildLogs />', () => {
-  it('should render with button', () => {
-    const rendered = render(<TechDocsBuildLogs buildLog={[]} />);
+  it('should render with button', async () => {
+    const rendered = await renderInTestApp(<TechDocsBuildLogs buildLog={[]} />);
     expect(rendered.getByText(/Show Build Logs/i)).toBeInTheDocument();
     expect(rendered.queryByText(/Build Details/i)).not.toBeInTheDocument();
   });
 
-  it('should open drawer', () => {
-    const rendered = render(<TechDocsBuildLogs buildLog={[]} />);
+  it('should open drawer', async () => {
+    const rendered = await renderInTestApp(<TechDocsBuildLogs buildLog={[]} />);
     rendered.getByText(/Show Build Logs/i).click();
     expect(rendered.getByText(/Build Details/i)).toBeInTheDocument();
   });
 });
 
 describe('<TechDocsBuildLogsDrawerContent />', () => {
-  it('should render with empty log', () => {
+  it('should render with empty log', async () => {
     const onClose = jest.fn();
-    const rendered = render(
+    const rendered = await renderInTestApp(
       <TechDocsBuildLogsDrawerContent buildLog={[]} onClose={onClose} />,
     );
     expect(rendered.getByText(/Build Details/i)).toBeInTheDocument();
-    expect(rendered.getByText(/Waiting for logs.../i)).toBeInTheDocument();
+    expect(
+      await rendered.findByText(/Waiting for logs.../i),
+    ).toBeInTheDocument();
 
     expect(onClose).toBeCalledTimes(0);
   });
 
-  it('should render with empty logs', () => {
+  it('should render logs', async () => {
     const onClose = jest.fn();
-    const rendered = render(
+    const rendered = await renderInTestApp(
       <TechDocsBuildLogsDrawerContent
         buildLog={['Line 1', 'Line 2']}
         onClose={onClose}
       />,
     );
     expect(rendered.getByText(/Build Details/i)).toBeInTheDocument();
-    expect(
-      rendered.queryByText(/Waiting for logs.../i),
-    ).not.toBeInTheDocument();
-    expect(rendered.getByText(/Line 1/i)).toBeInTheDocument();
-    expect(rendered.getByText(/Line 2/i)).toBeInTheDocument();
+    expect(await rendered.findByText(/Line 1/i)).toBeInTheDocument();
+    expect(await rendered.findByText(/Line 2/i)).toBeInTheDocument();
 
     expect(onClose).toBeCalledTimes(0);
   });
 
-  it('should call onClose', () => {
+  it('should call onClose', async () => {
     const onClose = jest.fn();
-    const rendered = render(
+    const rendered = await renderInTestApp(
       <TechDocsBuildLogsDrawerContent buildLog={[]} onClose={onClose} />,
     );
-    rendered.getByRole('button').click();
+    rendered.getByTitle('Close the drawer').click();
 
     expect(onClose).toBeCalledTimes(1);
   });

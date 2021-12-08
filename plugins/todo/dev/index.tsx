@@ -22,8 +22,8 @@ import OfflineIcon from '@material-ui/icons/Storage';
 import React from 'react';
 import { EntityTodoContent, todoApiRef, todoPlugin } from '../src';
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const entity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -60,7 +60,7 @@ createDevApp()
   .registerPlugin(todoPlugin)
   .addPage({
     element: (
-      <ApiProvider apis={ApiRegistry.with(todoApiRef, mockedApi)}>
+      <TestApiProvider apis={[[todoApiRef, mockedApi]]}>
         <EntityProvider entity={entity}>
           <Page themeId="service">
             <Header title="Mocked TODO Data">
@@ -71,7 +71,7 @@ createDevApp()
             </Content>
           </Page>
         </EntityProvider>
-      </ApiProvider>
+      </TestApiProvider>
     ),
     title: 'Entity Todo Content',
     icon: OfflineIcon,

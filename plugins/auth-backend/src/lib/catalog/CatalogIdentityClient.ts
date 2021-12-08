@@ -84,10 +84,8 @@ export class CatalogIdentityClient {
    *
    * Returns a superset of the entity names that can be passed directly to `issueToken` as `ent`.
    */
-  async resolveCatalogMembership({
-    entityRefs,
-    logger,
-  }: MemberClaimQuery): Promise<string[]> {
+  async resolveCatalogMembership(query: MemberClaimQuery): Promise<string[]> {
+    const { entityRefs, logger } = query;
     const resolvedEntityRefs = entityRefs
       .map((ref: string) => {
         try {

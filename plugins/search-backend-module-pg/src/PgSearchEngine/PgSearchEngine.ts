@@ -35,13 +35,11 @@ export type ConcretePgSearchQuery = {
 export class PgSearchEngine implements SearchEngine {
   constructor(private readonly databaseStore: DatabaseStore) {}
 
-  static async from({
-    database,
-  }: {
+  static async from(options: {
     database: PluginDatabaseManager;
   }): Promise<PgSearchEngine> {
     return new PgSearchEngine(
-      await DatabaseDocumentStore.create(await database.getClient()),
+      await DatabaseDocumentStore.create(await options.database.getClient()),
     );
   }
 

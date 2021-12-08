@@ -22,7 +22,7 @@ import { OAuthHandlers } from './types';
 const mockResponseData = {
   providerInfo: {
     accessToken: 'ACCESS_TOKEN',
-    idToken: 'ID_TOKEN',
+    token: 'ID_TOKEN',
     expiresInSeconds: 10,
     scope: 'email',
   },
@@ -31,6 +31,8 @@ const mockResponseData = {
   },
   backstageIdentity: {
     id: 'foo',
+    token:
+      'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
   },
 };
 
@@ -176,7 +178,7 @@ describe('OAuthAdapter', () => {
 
     const mockResponse = {
       cookie: jest.fn().mockReturnThis(),
-      send: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
       status: jest.fn().mockReturnThis(),
     } as unknown as express.Response;
 
@@ -187,6 +189,7 @@ describe('OAuthAdapter', () => {
       '',
       expect.objectContaining({ path: '/auth/test-provider' }),
     );
+    expect(mockResponse.end).toHaveBeenCalledTimes(1);
   });
 
   it('gets new access-token when refreshing', async () => {
@@ -216,7 +219,13 @@ describe('OAuthAdapter', () => {
       ...mockResponseData,
       backstageIdentity: {
         id: mockResponseData.backstageIdentity.id,
-        idToken: 'my-id-token',
+        token: mockResponseData.backstageIdentity.token,
+        idToken: mockResponseData.backstageIdentity.token,
+        identity: {
+          ownershipEntityRefs: ['user:default/jimmymarkum'],
+          type: 'user',
+          userEntityRef: 'jimmymarkum',
+        },
       },
     });
   });
@@ -230,21 +239,14 @@ describe('OAuthAdapter', () => {
 
     const mockRequest = {
       header: () => 'XMLHttpRequest',
-      cookies: {
-        'test-provider-refresh-token': 'token',
-      },
-      query: {},
     } as unknown as express.Request;
 
-    const mockResponse = {
-      send: jest.fn().mockReturnThis(),
-      status: jest.fn().mockReturnThis(),
-    } as unknown as express.Response;
+    const mockResponse = {} as unknown as express.Response;
 
-    await oauthProvider.refresh(mockRequest, mockResponse);
-    expect(mockResponse.send).toHaveBeenCalledTimes(1);
-    expect(mockResponse.send).toHaveBeenCalledWith(
-      'Refresh token not supported for provider: test-provider',
+    await expect(
+      oauthProvider.refresh(mockRequest, mockResponse),
+    ).rejects.toThrow(
+      'Refresh token is not supported for provider test-provider',
     );
   });
 });

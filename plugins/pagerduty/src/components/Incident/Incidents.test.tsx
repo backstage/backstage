@@ -16,15 +16,15 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { Incidents } from './Incidents';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef } from '../../api';
 import { Incident } from '../types';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 
 const mockPagerDutyApi = {
-  getIncidentsByServiceId: () => [],
+  getIncidentsByServiceId: jest.fn(),
 };
-const apis = ApiRegistry.from([[pagerDutyApiRef, mockPagerDutyApi]]);
+const apis = TestApiRegistry.from([pagerDutyApiRef, mockPagerDutyApi]);
 
 describe('Incidents', () => {
   it('Renders an empty state when there are no incidents', async () => {

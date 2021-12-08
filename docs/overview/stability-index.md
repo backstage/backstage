@@ -27,7 +27,7 @@ point building on top of the previous one:
   and the new APIs can be used in parallel. This deprecation must have been
   released for at least two weeks before the deprecated API is removed in a
   minor version bump.
-- **3** - The time limit for the deprecation is 3 months instead of two days.
+- **3** - The time limit for the deprecation is 3 months instead of two weeks.
 
 TL;DR:
 
@@ -174,15 +174,6 @@ Stability: `N/A`
 Utilities for writing tests for Backstage plugins and apps.
 
 Stability: `2`
-
-### `test-utils-core` [GitHub](https://github.com/backstage/backstage/tree/master/packages/test-utils-core/)
-
-Internal testing utilities that are separated out for usage in
-@backstage/core-app-api and @backstage/core-plugin-api. All exports are
-re-exported by @backstage/test-utils. This package should not be depended on
-directly.
-
-Stability: See @backstage/test-utils
 
 ### `theme` [GitHub](https://github.com/backstage/backstage/tree/master/packages/theme/)
 

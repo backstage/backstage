@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const API_ENDPOINT = 'http://localhost:7000/api/search/query';
+const API_ENDPOINT = 'http://localhost:7007/api/search/query';
 
 describe('SearchPage', () => {
   describe('Given a search context with a term, results, and filter values', () => {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { NotFoundError } from '@backstage/errors';
+import { TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { techdocsStorageApiRef } from '../../api';
@@ -38,10 +38,10 @@ describe('useReaderState', () => {
   };
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(techdocsStorageApiRef, techdocsStorageApi);
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider apis={[[techdocsStorageApiRef, techdocsStorageApi]]}>
+        {children}
+      </TestApiProvider>
     );
   });
 

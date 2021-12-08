@@ -39,6 +39,7 @@ import {
 import {
   PublisherBase,
   PublishRequest,
+  PublishResponse,
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
@@ -62,6 +63,7 @@ export class AwsS3Publish implements PublisherBase {
   private readonly legacyPathCasing: boolean;
   private readonly logger: Logger;
   private readonly bucketRootPath: string;
+  private readonly sse?: 'aws:kms' | 'AES256';
 
   constructor(options: {
     storageClient: aws.S3;
@@ -69,12 +71,14 @@ export class AwsS3Publish implements PublisherBase {
     legacyPathCasing: boolean;
     logger: Logger;
     bucketRootPath: string;
+    sse?: 'aws:kms' | 'AES256';
   }) {
     this.storageClient = options.storageClient;
     this.bucketName = options.bucketName;
     this.legacyPathCasing = options.legacyPathCasing;
     this.logger = options.logger;
     this.bucketRootPath = options.bucketRootPath;
+    this.sse = options.sse;
   }
 
   static fromConfig(config: Config, logger: Logger): PublisherBase {
@@ -91,6 +95,11 @@ export class AwsS3Publish implements PublisherBase {
     const bucketRootPath = normalizeExternalStorageRootPath(
       config.getOptionalString('techdocs.publisher.awsS3.bucketRootPath') || '',
     );
+
+    const sse = config.getOptionalString('techdocs.publisher.awsS3.sse') as
+      | 'aws:kms'
+      | 'AES256'
+      | undefined;
 
     // Credentials is an optional config. If missing, the default ways of authenticating AWS SDK V2 will be used.
     // 1. AWS environment variables
@@ -138,6 +147,7 @@ export class AwsS3Publish implements PublisherBase {
       bucketRootPath,
       legacyPathCasing,
       logger,
+      sse,
     });
   }
 
@@ -205,9 +215,14 @@ export class AwsS3Publish implements PublisherBase {
    * Upload all the files from the generated `directory` to the S3 bucket.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
-  async publish({ entity, directory }: PublishRequest): Promise<void> {
+  async publish({
+    entity,
+    directory,
+  }: PublishRequest): Promise<PublishResponse> {
+    const objects: string[] = [];
     const useLegacyPathCasing = this.legacyPathCasing;
     const bucketRootPath = this.bucketRootPath;
+    const sse = this.sse;
 
     // First, try to retrieve a list of all individual files currently existing
     let existingFiles: string[] = [];
@@ -250,8 +265,10 @@ export class AwsS3Publish implements PublisherBase {
               bucketRootPath,
             ),
             Body: fileStream,
-          };
+            ...(sse && { ServerSideEncryption: sse }),
+          } as aws.S3.PutObjectRequest;
 
+          objects.push(params.Key);
           return this.storageClient.upload(params).promise();
         },
         absoluteFilesToUpload,
@@ -300,6 +317,7 @@ export class AwsS3Publish implements PublisherBase {
       const errorMessage = `Unable to delete file(s) from AWS S3. ${error}`;
       this.logger.error(errorMessage);
     }
+    return { objects };
   }
 
   async fetchTechDocsMetadata(

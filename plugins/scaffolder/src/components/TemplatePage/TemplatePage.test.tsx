@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderInTestApp, renderWithEffects } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  renderWithEffects,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
-import { fireEvent, within } from '@testing-library/react';
+import { act, fireEvent, within } from '@testing-library/react';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { MemoryRouter, Route } from 'react-router';
 import { ScaffolderApi, scaffolderApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { TemplatePage } from './TemplatePage';
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
 
 jest.mock('react-router-dom', () => {
@@ -47,10 +50,10 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
 
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };
 
-const apis = ApiRegistry.from([
+const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
   [errorApiRef, errorApiMock],
-]);
+);
 
 describe('TemplatePage', () => {
   beforeEach(() => jest.resetAllMocks());

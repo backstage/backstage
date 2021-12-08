@@ -93,6 +93,7 @@ describe('GkeClusterLocator', () => {
         type: 'gke',
         projectId: 'some-project',
         region: 'some-region',
+        skipMetricsLookup: true,
       });
 
       const sut = GkeClusterLocator.fromConfigWithClient(config, {
@@ -107,6 +108,7 @@ describe('GkeClusterLocator', () => {
           name: 'some-cluster',
           url: 'https://1.2.3.4',
           skipTLSVerify: false,
+          skipMetricsLookup: true,
         },
       ]);
       expect(mockedListClusters).toBeCalledTimes(1);
@@ -143,6 +145,7 @@ describe('GkeClusterLocator', () => {
           name: 'some-cluster',
           url: 'https://1.2.3.4',
           skipTLSVerify: false,
+          skipMetricsLookup: false,
         },
       ]);
       expect(mockedListClusters).toBeCalledTimes(1);
@@ -184,12 +187,14 @@ describe('GkeClusterLocator', () => {
           name: 'some-cluster',
           url: 'https://1.2.3.4',
           skipTLSVerify: false,
+          skipMetricsLookup: false,
         },
         {
           authProvider: 'google',
           name: 'some-other-cluster',
           url: 'https://6.7.8.9',
           skipTLSVerify: false,
+          skipMetricsLookup: false,
         },
       ]);
       expect(mockedListClusters).toBeCalledTimes(1);

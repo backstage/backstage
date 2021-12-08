@@ -105,6 +105,7 @@
           "features/techdocs/configuration",
           "features/techdocs/using-cloud-storage",
           "features/techdocs/configuring-ci-cd",
+          "features/techdocs/cli",
           "features/techdocs/how-to-guides",
           "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
@@ -124,7 +125,11 @@
       {
         "type": "subcategory",
         "label": "Azure",
-        "ids": ["integrations/azure/locations", "integrations/azure/org"]
+        "ids": [
+          "integrations/azure/locations",
+          "integrations/azure/discovery",
+          "integrations/azure/org"
+        ]
       },
       {
         "type": "subcategory",
@@ -151,7 +156,10 @@
       {
         "type": "subcategory",
         "label": "GitLab",
-        "ids": ["integrations/gitlab/locations"]
+        "ids": [
+          "integrations/gitlab/locations",
+          "integrations/gitlab/discovery"
+        ]
       },
       {
         "type": "subcategory",
@@ -253,7 +261,8 @@
         "type": "subcategory",
         "label": "API Reference",
         "ids": ["reference/index"]
-      }
+      },
+      "api/deprecations"
     ],
     "Tutorials": [
       "tutorials/journey",

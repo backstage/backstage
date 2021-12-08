@@ -1,5 +1,92 @@
 # @backstage/test-utils
 
+## 0.1.23
+
+### Patch Changes
+
+- 000190de69: The `ApiRegistry` from `@backstage/core-app-api` class has been deprecated and will be removed in a future release. To replace it, we have introduced two new helpers that are exported from `@backstage/test-utils`, namely `TestApiProvider` and `TestApiRegistry`.
+
+  These two new helpers are more tailored for writing tests and development setups, as they allow for partial implementations of each of the APIs.
+
+  When migrating existing code it is typically best to prefer usage of `TestApiProvider` when possible, so for example the following code:
+
+  ```tsx
+  render(
+    <ApiProvider
+      apis={ApiRegistry.from([
+        [identityApiRef, mockIdentityApi as unknown as IdentityApi]
+      ])}
+    >
+      {...}
+    </ApiProvider>
+  )
+  ```
+
+  Would be migrated to this:
+
+  ```tsx
+  render(
+    <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
+      {...}
+    </TestApiProvider>
+  )
+  ```
+
+  In cases where the `ApiProvider` is used in a more standalone way, for example to reuse a set of APIs across multiple tests, the `TestApiRegistry` can be used instead. Note that the `TestApiRegistry` only has a single static factory method, `.from()`, and it is slightly different from the existing `.from()` method on `ApiRegistry` in that it doesn't require the API pairs to be wrapped in an outer array.
+
+  Usage that looks like this:
+
+  ```ts
+  const apis = ApiRegistry.with(
+    identityApiRef,
+    mockIdentityApi as unknown as IdentityApi,
+  ).with(configApiRef, new ConfigReader({}));
+  ```
+
+  OR like this:
+
+  ```ts
+  const apis = ApiRegistry.from([
+    [identityApiRef, mockIdentityApi as unknown as IdentityApi],
+    [configApiRef, new ConfigReader({})],
+  ]);
+  ```
+
+  Would be migrated to this:
+
+  ```ts
+  const apis = TestApiRegistry.from(
+    [identityApiRef, mockIdentityApi],
+    [configApiRef, new ConfigReader({})],
+  );
+  ```
+
+  If your app is still using the `ApiRegistry` to construct the `apis` for `createApp`, we recommend that you move over to use the new method of supplying API factories instead, using `createApiFactory`.
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.23
+  - @backstage/core-plugin-api@0.2.1
+
+## 0.1.22
+
+### Patch Changes
+
+- 0b1de52732: Migrated to using new `ErrorApiError` and `ErrorApiErrorContext` names.
+- 2dd2a7b2cc: Migrated to using `createSpecializedApp`.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/core-app-api@0.1.21
+
+## 0.1.21
+
+### Patch Changes
+
+- 71fd5cd735: Update Keyboard deprecation with a link to the recommended successor
+- Updated dependencies
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/core-app-api@0.1.20
+
 ## 0.1.20
 
 ### Patch Changes

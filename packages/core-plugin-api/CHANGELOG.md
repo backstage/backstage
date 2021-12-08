@@ -1,5 +1,45 @@
 # @backstage/core-plugin-api
 
+## 0.2.2
+
+### Patch Changes
+
+- b291d0ed7e: Tweaked the logged deprecation warning for `createRouteRef` to hopefully make it more clear.
+- bacb94ea8f: Documented the options of each of the extension creation functions.
+- Updated dependencies
+  - @backstage/theme@0.2.14
+
+## 0.2.1
+
+### Patch Changes
+
+- 950b36393c: Deprecated `register` option of `createPlugin` and the `outputs` methods of the plugin instance.
+
+  Introduces the `featureFlags` property to define your feature flags instead.
+
+## 0.2.0
+
+### Minor Changes
+
+- 7e18ed7f29: Removed the unused `UserFlags` type.
+- 7df99cdb77: Remove exports of unused types(`RouteOptions` and `RoutePath`).
+
+### Patch Changes
+
+- 37ebea2d68: Add deprecation warnings around `title` `icon` and `path` as they are no longer controlled when creating `routeRefs`
+- 2dd2a7b2cc: Deprecated the `theme` property on `AppTheme`, replacing it with `Provider`. See https://backstage.io/docs/api/deprecations#app-theme for more details.
+- b6a4bacdc4: Deprecated the `Error` and `ErrorContext` types, replacing them with identical `ErrorApiError` and `ErrorApiErrorContext` types.
+
+## 0.1.13
+
+### Patch Changes
+
+- 4a336fd292: Deprecate use of extensions without name. Adds a warning to the developer console to prompt integrators to provide names for extensions.
+- 8b4284cd5c: Improve API documentation for @backstage/core-plugin-api
+- e059aea7b9: Deprecate unused ApiRef types
+- Updated dependencies
+  - @backstage/theme@0.2.13
+
 ## 0.1.12
 
 ### Patch Changes

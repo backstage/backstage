@@ -34,7 +34,7 @@ export interface Config {
     legacyUseCaseSensitiveTripletPaths?: boolean;
 
     /**
-     * @example http://localhost:7000/api/techdocs
+     * @example http://localhost:7007/api/techdocs
      * @visibility frontend
      * @deprecated
      */

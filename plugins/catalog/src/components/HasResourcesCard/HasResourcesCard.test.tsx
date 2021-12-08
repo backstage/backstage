@@ -21,28 +21,20 @@ import {
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { HasResourcesCard } from './HasResourcesCard';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<HasResourcesCard />', () => {
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    getLocationByEntity: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  } as any;
+  const getEntities: jest.MockedFunction<CatalogApi['getEntities']> = jest.fn();
   let Wrapper: React.ComponentType;
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(catalogApiRef, catalogApi);
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider apis={[[catalogApiRef, { getEntities }]]}>
+        {children}
+      </TestApiProvider>
     );
   });
 
@@ -92,7 +84,7 @@ describe('<HasResourcesCard />', () => {
         },
       ],
     };
-    catalogApi.getEntities.mockResolvedValue({
+    getEntities.mockResolvedValue({
       items: [
         {
           apiVersion: 'v1',

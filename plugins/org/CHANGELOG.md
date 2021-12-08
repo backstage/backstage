@@ -1,5 +1,24 @@
 # @backstage/plugin-org
 
+## 0.3.29
+
+### Patch Changes
+
+- 2f4a686411: Use email links in the catalog's members list instead of text to display a member's email
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.3.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
 ## 0.3.27
 
 ### Patch Changes

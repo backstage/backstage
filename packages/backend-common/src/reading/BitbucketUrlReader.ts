@@ -23,7 +23,7 @@ import {
   getBitbucketRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
-import fetch from 'cross-fetch';
+import fetch, { Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
@@ -77,18 +77,39 @@ export class BitbucketUrlReader implements UrlReader {
   }
 
   async read(url: string): Promise<Buffer> {
+    const response = await this.readUrl(url);
+    return response.buffer();
+  }
+
+  async readUrl(
+    url: string,
+    options?: ReadUrlOptions,
+  ): Promise<ReadUrlResponse> {
+    // TODO: etag is not supported yet
+    const { signal } = options ?? {};
     const bitbucketUrl = getBitbucketFileFetchUrl(url, this.integration.config);
-    const options = getBitbucketRequestOptions(this.integration.config);
+    const requestOptions = getBitbucketRequestOptions(this.integration.config);
 
     let response: Response;
     try {
-      response = await fetch(bitbucketUrl.toString(), options);
+      response = await fetch(bitbucketUrl.toString(), {
+        ...requestOptions,
+        // TODO(freben): The signal cast is there because pre-3.x versions of
+        // node-fetch have a very slightly deviating AbortSignal type signature.
+        // The difference does not affect us in practice however. The cast can be
+        // removed after we support ESM for CLI dependencies and migrate to
+        // version 3 of node-fetch.
+        // https://github.com/backstage/backstage/issues/8242
+        ...(signal && { signal: signal as any }),
+      });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 
     if (response.ok) {
-      return Buffer.from(await response.arrayBuffer());
+      return {
+        buffer: async () => Buffer.from(await response.arrayBuffer()),
+      };
     }
 
     const message = `${url} could not be read as ${bitbucketUrl}, ${response.status} ${response.statusText}`;
@@ -96,15 +117,6 @@ export class BitbucketUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
-  }
-
-  async readUrl(
-    url: string,
-    _options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
-    // TODO etag is not implemented yet.
-    const buffer = await this.read(url);
-    return { buffer: async () => buffer };
   }
 
   async readTree(

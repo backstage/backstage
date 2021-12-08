@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.1.2
+
+### Patch Changes
+
+- 290fbb3ec2: Add missing API docs to scaffolder action plugins
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@0.15.12
+
 ## 0.1.1
 
 ### Patch Changes

@@ -16,13 +16,12 @@
 
 import { ApiEntity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ApiDocsConfig, apiDocsConfigRef } from '../../config';
 import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
 import { ApiDefinitionCard } from './ApiDefinitionCard';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<ApiDefinitionCard />', () => {
   const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {
@@ -31,10 +30,10 @@ describe('<ApiDefinitionCard />', () => {
   let Wrapper: React.ComponentType;
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(apiDocsConfigRef, apiDocsConfig);
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider apis={[[apiDocsConfigRef, apiDocsConfig]]}>
+        {children}
+      </TestApiProvider>
     );
   });
 

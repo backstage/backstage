@@ -33,8 +33,10 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 
+import { AzurePipelinesIcon } from '../AzurePipelinesIcon';
 import { DateTime } from 'luxon';
 import React from 'react';
+import { getDurationFromDates } from '../../utils/getDurationFromDates';
 
 export const getBuildResultComponent = (result: number | undefined) => {
   switch (result) {
@@ -145,11 +147,26 @@ const columns: TableColumn[] = [
     ),
   },
   {
+    title: 'Duration',
+    field: 'queueTime',
+    width: 'auto',
+    render: (row: Partial<RepoBuild>) => (
+      <Box display="flex" alignItems="center">
+        <Typography>
+          {getDurationFromDates(row.startTime, row.finishTime)}
+        </Typography>
+      </Box>
+    ),
+  },
+  {
     title: 'Age',
     field: 'queueTime',
     width: 'auto',
     render: (row: Partial<RepoBuild>) =>
-      DateTime.fromJSDate(row.queueTime ?? new Date()).toRelative(),
+      (row.queueTime
+        ? DateTime.fromISO(row.queueTime)
+        : DateTime.now()
+      ).toRelative(),
   },
 ];
 
@@ -178,7 +195,13 @@ export const BuildTable = ({ items, loading, error }: BuildTableProps) => {
         pageSize: 5,
         showEmptyDataSourceMessage: !loading,
       }}
-      title={`Builds (${items ? items.length : 0})`}
+      title={
+        <Box display="flex" alignItems="center">
+          <AzurePipelinesIcon style={{ fontSize: 30 }} />
+          <Box mr={1} />
+          Azure Pipelines - Builds ({items ? items.length : 0})
+        </Box>
+      }
       data={items ?? []}
     />
   );

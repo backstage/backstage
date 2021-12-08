@@ -1,5 +1,37 @@
 # @backstage/plugin-circleci
 
+## 0.2.30
+
+### Patch Changes
+
+- 5a46712a7d: Fixed a bug in the `CircleCI` plugin where restarting builds was hard-coded to GitHub rather than introspecting the entity source location.
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
+## 0.2.29
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.2.28
+
+### Patch Changes
+
+- e849f9cc0a: Use `<Progress>` instead of `<LinearProgress />` in combination with `Suspense`.
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
 ## 0.2.27
 
 ### Patch Changes

@@ -26,13 +26,11 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '/search',
-  title: 'search',
+  id: 'search',
 });
 
 export const rootNextRouteRef = createRouteRef({
-  path: '/search-next',
-  title: 'search',
+  id: 'search:next',
 });
 
 export const searchPlugin = createPlugin({
@@ -118,6 +116,18 @@ export const SearchResultNext = searchPlugin.provide(
     name: 'SearchResultNext',
     component: {
       lazy: () => import('./components/SearchResult').then(m => m.SearchResult),
+    },
+  }),
+);
+
+export const SidebarSearchModal = searchPlugin.provide(
+  createComponentExtension({
+    name: 'SidebarSearchModal',
+    component: {
+      lazy: () =>
+        import('./components/SidebarSearchModal').then(
+          m => m.SidebarSearchModal,
+        ),
     },
   }),
 );

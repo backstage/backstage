@@ -15,19 +15,9 @@
  */
 
 //  NEEDS WORK
-import {
-  Button,
-  LinearProgress,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import { Button, LinearProgress, Tooltip, Typography } from '@material-ui/core';
 import React from 'react';
+
 import { useAsync } from 'react-use';
 import { gcpApiRef, Project } from '../../api';
 
@@ -38,11 +28,14 @@ import {
   HeaderLabel,
   Link,
   Page,
+  Table,
   SupportButton,
   WarningPanel,
 } from '@backstage/core-components';
 
 import { useApi } from '@backstage/core-plugin-api';
+
+import { Link as RouterLink } from 'react-router-dom';
 
 const LongText = ({ text, max }: { text: string; max: number }) => {
   if (text.length < max) {
@@ -77,60 +70,59 @@ const PageContents = () => {
     );
   }
 
+  function renderLink(id: string) {
+    return (
+      <Link to={`project?projectId=${encodeURIComponent(id)}`}>
+        <Typography color="primary">
+          <LongText text={id} max={60} />
+        </Typography>
+      </Link>
+    );
+  }
+
   return (
-    <Table component={Paper}>
-      <Table aria-label="GCP Projects table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Project Number</TableCell>
-            <TableCell>Project ID</TableCell>
-            <TableCell>State</TableCell>
-            <TableCell>Creation Time</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {value?.map((project: Project) => (
-            <TableRow key={project.projectId}>
-              <TableCell>
-                <Typography>
-                  <LongText text={project.name} max={30} />
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography>
-                  <LongText text={project?.projectNumber || 'Error'} max={30} />
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Link
-                  to={`project?projectId=${encodeURIComponent(
-                    project.projectId,
-                  )}`}
-                >
-                  <Typography color="primary">
-                    <LongText text={project.projectId} max={60} />
-                  </Typography>
-                </Link>
-              </TableCell>
-              <TableCell>
-                <Typography>
-                  <LongText
-                    text={project?.lifecycleState || 'Error'}
-                    max={30}
-                  />
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography>
-                  <LongText text={project?.createTime || 'Error'} max={30} />
-                </Typography>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Table>
+    <div style={{ height: '95%', width: '100%' }}>
+      <Table
+        columns={[
+          {
+            field: 'name',
+            title: 'Name',
+            defaultSort: 'asc',
+          },
+          {
+            field: 'projectNumber',
+            title: 'Project Number',
+          },
+          {
+            field: 'projectID',
+            title: 'Project ID',
+            render: (rowData: { id: string }) => renderLink(rowData.id),
+          },
+          {
+            field: 'state',
+            title: 'State',
+          },
+          {
+            field: 'creationTime',
+            title: 'Creation Time',
+          },
+        ]}
+        data={
+          value?.map((project: Project) => ({
+            id: project.projectId,
+            name: project.name,
+            projectNumber: project?.projectNumber || 'Error',
+            projectID: project.projectId,
+            state: project?.lifecycleState || 'Error',
+            creationTime: project?.createTime || 'Error',
+          })) || []
+        }
+        options={{
+          pageSize: 5,
+          pageSizeOptions: [5, 10, 25, 50, 100],
+        }}
+      />
+    </div>
   );
 };
 
@@ -141,7 +133,12 @@ export const ProjectListPage = () => (
     </Header>
     <Content>
       <ContentHeader title="">
-        <Button variant="contained" color="primary" href="/gcp-projects/new">
+        <Button
+          component={RouterLink}
+          variant="contained"
+          color="primary"
+          to="new"
+        >
           New Project
         </Button>
         <SupportButton>All your software catalog entities</SupportButton>

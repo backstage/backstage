@@ -61,7 +61,6 @@ describe('DefaultCatalogProcessingEngine', () => {
     });
     const engine = new DefaultCatalogProcessingEngine(
       getVoidLogger(),
-      [],
       db,
       orchestrator,
       stitcher,
@@ -123,7 +122,6 @@ describe('DefaultCatalogProcessingEngine', () => {
     });
     const engine = new DefaultCatalogProcessingEngine(
       getVoidLogger(),
-      [],
       db,
       orchestrator,
       stitcher,
@@ -201,7 +199,6 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     const engine = new DefaultCatalogProcessingEngine(
       getVoidLogger(),
-      [],
       db,
       orchestrator,
       stitcher,
@@ -273,7 +270,6 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     const engine = new DefaultCatalogProcessingEngine(
       getVoidLogger(),
-      [],
       db,
       orchestrator,
       stitcher,

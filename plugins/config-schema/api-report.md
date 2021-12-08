@@ -41,11 +41,9 @@ export const configSchemaPlugin: BackstagePlugin<
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "StaticSchemaLoader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class StaticSchemaLoader implements ConfigSchemaApi {
-  constructor({ url }?: { url?: string });
+  constructor(options?: { url?: string });
   // (undocumented)
   schema$(): Observable<ConfigSchemaResult>;
 }

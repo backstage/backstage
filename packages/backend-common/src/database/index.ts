@@ -28,3 +28,4 @@ export {
 } from './connection';
 
 export type { PluginDatabaseManager } from './types';
+export { isDatabaseConflictError } from './util';

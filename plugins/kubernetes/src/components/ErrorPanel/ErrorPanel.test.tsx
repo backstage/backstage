@@ -51,6 +51,7 @@ describe('ErrorPanel', () => {
                 name: 'THIS_CLUSTER',
               },
               resources: [],
+              podMetrics: [],
               errors: [
                 {
                   errorType: 'SYSTEM_ERROR',

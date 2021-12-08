@@ -1,5 +1,56 @@
 # @backstage/plugin-api-docs
 
+## 0.6.17
+
+### Patch Changes
+
+- dde1681f33: chore(dependencies): bump `graphiql` package to latest
+- ef64a444ca: Update AsyncAPI component to 1.0.0-x releases
+
+## 0.6.16
+
+### Patch Changes
+
+- 752a53d94e: Improve theme integration for OpenApi definition
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
+## 0.6.15
+
+### Patch Changes
+
+- c982fc12cb: Adjusted some styles in the OpenAPI definition, for elements which were barely readable in dark mode.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.6.14
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/plugin-catalog@0.7.3
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.6.13
+
+### Patch Changes
+
+- 044c38e739: Lazy load all API definition widgets. The widgets use libraries like
+  `swagger-ui`, `graphiql`, and `@asyncapi/react-component` which are quite heavy
+  weight. To improve initial load times, the widgets are only loaded once used.
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
 ## 0.6.12
 
 ### Patch Changes

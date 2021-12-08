@@ -28,6 +28,7 @@ type Options = {
   fromPackage?: string;
   mockEnv?: boolean;
   withFilteredKeys?: boolean;
+  fullVisibility?: boolean;
 };
 
 export async function loadCliConfig(options: Options) {
@@ -53,7 +54,7 @@ export async function loadCliConfig(options: Options) {
     packagePaths: [paths.resolveTargetRoot('package.json')],
   });
 
-  const appConfigs = await loadConfig({
+  const { appConfigs } = await loadConfig({
     experimentalEnvFunc: options.mockEnv
       ? async name => process.env[name] || 'x'
       : undefined,
@@ -70,7 +71,9 @@ export async function loadCliConfig(options: Options) {
 
   try {
     const frontendAppConfigs = schema.process(appConfigs, {
-      visibility: ['frontend'],
+      visibility: options.fullVisibility
+        ? ['frontend', 'backend', 'secret']
+        : ['frontend'],
       withFilteredKeys: options.withFilteredKeys,
     });
     const frontendConfig = ConfigReader.fromConfigs(frontendAppConfigs);

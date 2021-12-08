@@ -78,33 +78,29 @@ function stringifyPagination(input: { limit: number; offset: number }) {
 function addCondition(
   queryBuilder: Knex.QueryBuilder,
   db: Knex,
-  { key, matchValueIn, matchValueExists }: EntitiesSearchFilter,
+  filter: EntitiesSearchFilter,
+  negate: boolean = false,
 ) {
   // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
   // make a lot of sense. However, it had abysmal performance on sqlite
   // when datasets grew large, so we're using IN instead.
   const matchQuery = db<DbSearchRow>('search')
     .select('entity_id')
-    .where(function keyFilter() {
-      this.andWhere({ key: key.toLowerCase() });
-      if (matchValueExists !== false && matchValueIn) {
-        if (matchValueIn.length === 1) {
-          this.andWhere({ value: matchValueIn[0].toLowerCase() });
-        } else if (matchValueIn.length > 1) {
+    .where({ key: filter.key.toLowerCase() })
+    .andWhere(function keyFilter() {
+      if (filter.values) {
+        if (filter.values.length === 1) {
+          this.where({ value: filter.values[0].toLowerCase() });
+        } else {
           this.andWhere(
             'value',
             'in',
-            matchValueIn.map(v => v.toLowerCase()),
+            filter.values.map(v => v.toLowerCase()),
           );
         }
       }
     });
-  // Explicitly evaluate matchValueExists as a boolean since it may be undefined
-  queryBuilder.andWhere(
-    'entity_id',
-    matchValueExists === false ? 'not in' : 'in',
-    matchQuery,
-  );
+  queryBuilder.andWhere('entity_id', negate ? 'not in' : 'in', matchQuery);
 }
 
 function isEntitiesSearchFilter(
@@ -113,50 +109,45 @@ function isEntitiesSearchFilter(
   return filter.hasOwnProperty('key');
 }
 
-function isAndEntityFilter(
-  filter: { allOf: EntityFilter[] } | EntityFilter,
-): filter is { allOf: EntityFilter[] } {
-  return filter.hasOwnProperty('allOf');
-}
-
 function isOrEntityFilter(
   filter: { anyOf: EntityFilter[] } | EntityFilter,
 ): filter is { anyOf: EntityFilter[] } {
   return filter.hasOwnProperty('anyOf');
 }
 
+function isNegationEntityFilter(
+  filter: { not: EntityFilter } | EntityFilter,
+): filter is { not: EntityFilter } {
+  return filter.hasOwnProperty('not');
+}
+
 function parseFilter(
   filter: EntityFilter,
   query: Knex.QueryBuilder,
   db: Knex,
+  negate: boolean = false,
 ): Knex.QueryBuilder {
   if (isEntitiesSearchFilter(filter)) {
-    return query.where(function filterFunction() {
-      addCondition(this, db, filter);
+    return query.andWhere(function filterFunction() {
+      addCondition(this, db, filter, negate);
     });
   }
 
-  if (isOrEntityFilter(filter)) {
-    let cumulativeQuery = query;
-    for (const subFilter of filter.anyOf ?? []) {
-      cumulativeQuery = cumulativeQuery.orWhere(subQuery =>
-        parseFilter(subFilter, subQuery, db),
-      );
-    }
-    return cumulativeQuery;
+  if (isNegationEntityFilter(filter)) {
+    return parseFilter(filter.not, query, db, !negate);
   }
 
-  if (isAndEntityFilter(filter)) {
-    let cumulativeQuery = query;
-    for (const subFilter of filter.allOf ?? []) {
-      cumulativeQuery = cumulativeQuery.andWhere(subQuery =>
-        parseFilter(subFilter, subQuery, db),
-      );
+  return query[negate ? 'andWhereNot' : 'andWhere'](function filterFunction() {
+    if (isOrEntityFilter(filter)) {
+      for (const subFilter of filter.anyOf ?? []) {
+        this.orWhere(subQuery => parseFilter(subFilter, subQuery, db));
+      }
+    } else {
+      for (const subFilter of filter.allOf ?? []) {
+        this.andWhere(subQuery => parseFilter(subFilter, subQuery, db));
+      }
     }
-    return cumulativeQuery;
-  }
-
-  return query;
+  });
 }
 
 export class NextEntitiesCatalog implements EntitiesCatalog {

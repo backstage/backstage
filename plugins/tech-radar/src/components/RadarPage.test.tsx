@@ -17,18 +17,17 @@
 import {
   MockErrorApi,
   renderInTestApp,
+  TestApiProvider,
   wrapInTestApp,
 } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
-import { render, waitForElement } from '@testing-library/react';
+import { act, render, waitForElement } from '@testing-library/react';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
 import { RadarPage } from './RadarPage';
 import { TechRadarLoaderResponse, techRadarApiRef, TechRadarApi } from '../api';
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('RadarPage', () => {
@@ -63,9 +62,9 @@ describe('RadarPage', () => {
     const { getByTestId, queryByTestId } = render(
       wrapInTestApp(
         <ThemeProvider theme={lightTheme}>
-          <ApiProvider apis={ApiRegistry.from([[techRadarApiRef, mockClient]])}>
+          <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
             <RadarPage {...techRadarProps} />
-          </ApiProvider>
+          </TestApiProvider>
         </ThemeProvider>,
       ),
     );
@@ -89,9 +88,9 @@ describe('RadarPage', () => {
 
     const { getByText, getByTestId } = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
-        <ApiProvider apis={ApiRegistry.from([[techRadarApiRef, mockClient]])}>
+        <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
           <RadarPage {...techRadarProps} />
-        </ApiProvider>
+        </TestApiProvider>
       </ThemeProvider>,
     );
 
@@ -115,9 +114,9 @@ describe('RadarPage', () => {
 
     const { getByTestId } = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
-        <ApiProvider apis={ApiRegistry.from([[techRadarApiRef, mockClient]])}>
+        <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
           <RadarPage {...techRadarProps} />
-        </ApiProvider>
+        </TestApiProvider>
       </ThemeProvider>,
     );
 
@@ -142,14 +141,14 @@ describe('RadarPage', () => {
 
     const { queryByTestId } = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
-        <ApiProvider
-          apis={ApiRegistry.from([
+        <TestApiProvider
+          apis={[
             [errorApiRef, errorApi],
             [techRadarApiRef, mockClient],
-          ])}
+          ]}
         >
           <RadarPage {...techRadarProps} />
-        </ApiProvider>
+        </TestApiProvider>
       </ThemeProvider>,
     );
 

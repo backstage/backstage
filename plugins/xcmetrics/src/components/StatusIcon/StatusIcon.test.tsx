@@ -17,6 +17,7 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { StatusIcon } from './StatusIcon';
+import { BuildStatus } from '../../api';
 
 describe('StatusIcon', () => {
   it('should render', async () => {
@@ -30,5 +31,12 @@ describe('StatusIcon', () => {
 
     rendered = await renderInTestApp(<StatusIcon buildStatus="stopped" />);
     expect(rendered.getByLabelText('Status warning')).toBeInTheDocument();
+  });
+
+  it('should render invalid statuses', async () => {
+    const rendered = await renderInTestApp(
+      <StatusIcon buildStatus={'invalid' as BuildStatus} />,
+    );
+    expect(rendered.getByLabelText('Status aborted')).toBeInTheDocument();
   });
 });

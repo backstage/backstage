@@ -33,6 +33,17 @@ jest.mock('./helpers', () => ({
   fetchContents: jest.fn(),
 }));
 
+const realFiles = Object.fromEntries(
+  [
+    require.resolve('vm2/lib/fixasync'),
+    resolvePackagePath(
+      '@backstage/plugin-scaffolder-backend',
+      'assets',
+      'nunjucks.js.txt',
+    ),
+  ].map(k => [k, mockFs.load(k)]),
+);
+
 const aBinaryFile = fs.readFileSync(
   resolvePackagePath(
     '@backstage/plugin-scaffolder-backend',
@@ -76,7 +87,9 @@ describe('fetch:template', () => {
   });
 
   beforeEach(() => {
-    mockFs();
+    mockFs({
+      ...realFiles,
+    });
 
     action = createFetchTemplateAction({
       reader: Symbol('UrlReader') as unknown as UrlReader,
@@ -144,11 +157,13 @@ describe('fetch:template', () => {
             name: 'test-project',
             count: 1234,
             itemList: ['first', 'second', 'third'],
+            showDummyFile: false,
           },
         });
 
         mockFetchContents.mockImplementation(({ outputPath }) => {
           mockFs({
+            ...realFiles,
             [outputPath]: {
               'an-executable.sh': mockFs.file({
                 content: '#!/usr/bin/env bash',
@@ -163,6 +178,10 @@ describe('fetch:template', () => {
               },
               '.${{ values.name }}': '${{ values.itemList | dump }}',
               'a-binary-file.png': aBinaryFile,
+              '{% if values.showDummyFile %}dummy-file.txt{% else %}{% endif %}':
+                'dummy file',
+              '${{ "dummy-file2.txt" if values.showDummyFile else "" }}':
+                'some dummy file',
             },
           });
 
@@ -179,6 +198,18 @@ describe('fetch:template', () => {
             fetchUrl: context.input.url,
           }),
         );
+      });
+
+      it('skips empty filename', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/dummy-file.txt`),
+        ).resolves.toEqual(false);
+      });
+
+      it('skips empty filename syntax #2', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/dummy-file2.txt`),
+        ).resolves.toEqual(false);
       });
 
       it('copies files with no templating in names or content successfully', async () => {
@@ -242,6 +273,7 @@ describe('fetch:template', () => {
 
         mockFetchContents.mockImplementation(({ outputPath }) => {
           mockFs({
+            ...realFiles,
             [outputPath]: {
               processed: {
                 'templated-content-${{ values.name }}.txt':
@@ -295,6 +327,7 @@ describe('fetch:template', () => {
 
       mockFetchContents.mockImplementation(({ outputPath }) => {
         mockFs({
+          ...realFiles,
           [outputPath]: {
             '{{ cookiecutter.name }}.txt': 'static content',
             subdir: {
@@ -349,6 +382,7 @@ describe('fetch:template', () => {
 
       mockFetchContents.mockImplementation(({ outputPath }) => {
         mockFs({
+          ...realFiles,
           [outputPath]: {
             'empty-dir-${{ values.count }}': {},
             'static.txt': 'static content',
@@ -430,6 +464,7 @@ describe('fetch:template', () => {
 
       mockFetchContents.mockImplementation(({ outputPath }) => {
         mockFs({
+          ...realFiles,
           [outputPath]: {
             '${{ values.name }}.njk': '${{ values.name }}: ${{ values.count }}',
             '${{ values.name }}.txt.jinja2':

@@ -26,13 +26,15 @@ import {
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
-import { createApp, FlatRoutes } from '@backstage/core-app-api';
+import { createApp } from '@backstage/app-defaults';
+import { FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
+import { AzurePullRequestsPage } from '@backstage/plugin-azure-devops';
 import {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -93,7 +95,6 @@ const app = createApp({
     // Custom icon example
     alert: AlarmIcon,
   },
-
   components: {
     SignInPage: props => {
       return (
@@ -175,7 +176,20 @@ const routes = (
     >
       {techDocsPage}
     </Route>
-    <Route path="/create" element={<ScaffolderPage />}>
+    <Route
+      path="/create"
+      element={
+        <ScaffolderPage
+          groups={[
+            {
+              title: 'Recommended',
+              filter: entity =>
+                entity?.metadata?.tags?.includes('recommended') ?? false,
+            },
+          ]}
+        />
+      }
+    >
       <ScaffolderFieldExtensions>
         <LowerCaseValuePickerFieldExtension />
       </ScaffolderFieldExtensions>
@@ -203,6 +217,7 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
   </FlatRoutes>
 );
 

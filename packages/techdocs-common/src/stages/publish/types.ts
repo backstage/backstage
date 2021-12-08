@@ -32,13 +32,27 @@ export type PublishRequest = {
   directory: string;
 };
 
-/* `remoteUrl` is the URL which serves files from the local publisher's static directory. */
+/**
+ * Response containing metadata about where files were published and what may
+ * have been published or updated.
+ */
 export type PublishResponse = {
+  /**
+   * The URL which serves files from the local publisher's static directory.
+   */
   remoteUrl?: string;
+  /**
+   * The list of objects (specifically their paths) that were published.
+   * Objects do not have a preceding slash, and match how one would load the
+   * object over the `/static/docs/*` TechDocs Backend Plugin endpoint.
+   */
+  objects?: string[];
 } | void;
 
 /**
  * Result for the validation check.
+ *
+ * @public
  */
 export type ReadinessResponse = {
   /** If true, the publisher is able to interact with the backing storage. */
@@ -47,12 +61,14 @@ export type ReadinessResponse = {
 
 /**
  * Type to hold metadata found in techdocs_metadata.json and associated with each site
- * @param etag ETag of the resource used to generate the site. Usually the latest commit sha of the source repository.
+ * @param etag - ETag of the resource used to generate the site. Usually the latest commit sha of the source repository.
  */
 export type TechDocsMetadata = {
   site_name: string;
   site_description: string;
   etag: string;
+  build_timestamp: number;
+  files?: string[];
 };
 
 export type MigrateRequest = {
@@ -72,6 +88,8 @@ export type MigrateRequest = {
  * Base class for a TechDocs publisher (e.g. Local, Google GCS Bucket, AWS S3, etc.)
  * The publisher handles publishing of the generated static files after the prepare and generate steps of TechDocs.
  * It also provides APIs to communicate with the storage service.
+ *
+ * @public
  */
 export interface PublisherBase {
   /**
@@ -85,8 +103,8 @@ export interface PublisherBase {
   /**
    * Store the generated static files onto a storage service (either local filesystem or external service).
    *
-   * @param request Object containing the entity from the service
-   * catalog, and the directory that contains the generated static files from TechDocs.
+   * @param request - Object containing the entity from the service
+   *                  catalog, and the directory that contains the generated static files from TechDocs.
    */
   publish(request: PublishRequest): Promise<PublishResponse>;
 

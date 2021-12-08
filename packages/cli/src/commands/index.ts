@@ -30,7 +30,10 @@ export function registerCommands(program: CommanderStatic) {
     .command('app:build')
     .description('Build an app for a production release')
     .option('--stats', 'Write bundle stats to output directory')
-    .option('--lax', 'Do not require environment variables to be set')
+    .option(
+      '--lax',
+      '[DEPRECATED] - Do not require environment variables to be set',
+    )
     .option(...configOption)
     .action(lazy(() => import('./app/build').then(m => m.default)));
 
@@ -44,6 +47,7 @@ export function registerCommands(program: CommanderStatic) {
   program
     .command('backend:build')
     .description('Build a backend plugin')
+    .option('--minify', 'Minify the generated code')
     .action(lazy(() => import('./backend/build').then(m => m.default)));
 
   program
@@ -56,16 +60,6 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./backend/bundle').then(m => m.default)));
 
   program
-    .command('backend:build-image')
-    .allowUnknownOption(true)
-    .helpOption(', --backstage-cli-help') // Let docker handle --help
-    .option('--build', 'Build packages before packing them into the image')
-    .description(
-      'Bundles the package into a docker image. This command is deprecated and will be removed.',
-    )
-    .action(lazy(() => import('./backend/buildImage').then(m => m.default)));
-
-  program
     .command('backend:dev')
     .description('Start local development server with HMR for the backend')
     .option('--check', 'Enable type checking and linting')
@@ -74,6 +68,30 @@ export function registerCommands(program: CommanderStatic) {
     // We don't actually use the config in the CLI, just pass them on to the NodeJS process
     .option(...configOption)
     .action(lazy(() => import('./backend/dev').then(m => m.default)));
+
+  program
+    .command('create')
+    .storeOptionsAsProperties(false)
+    .description(
+      'Open up an interactive guide to creating new things in your app',
+    )
+    .option(
+      '--select <name>',
+      'Select the thing you want to be creating upfront',
+    )
+    .option(
+      '--option <name>=<value>',
+      'Pre-fill options for the creation process',
+      (opt, arr: string[]) => [...arr, opt],
+      [],
+    )
+    .option('--scope <scope>', 'The scope to use for new packages')
+    .option(
+      '--npm-registry <URL>',
+      'The package registry to use for new packages',
+    )
+    .option('--no-private', 'Do not mark new packages as private')
+    .action(lazy(() => import('./create/create').then(m => m.default)));
 
   program
     .command('create-plugin')
@@ -91,7 +109,7 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('remove-plugin')
-    .description('Removes plugin in the current repository')
+    .description('[DEPRECATED] - Removes plugin in the current repository')
     .action(
       lazy(() => import('./remove-plugin/removePlugin').then(m => m.default)),
     );
@@ -99,6 +117,7 @@ export function registerCommands(program: CommanderStatic) {
   program
     .command('plugin:build')
     .description('Build a plugin')
+    .option('--minify', 'Minify the generated code')
     .action(lazy(() => import('./plugin/build').then(m => m.default)));
 
   program
@@ -172,6 +191,7 @@ export function registerCommands(program: CommanderStatic) {
       'Only load config schema that applies to the given package',
     )
     .option('--lax', 'Do not require environment variables to be set')
+    .option('--frontend', 'Only validate the frontend configuration')
     .option(...configOption)
     .description(
       'Validate that the given configuration loads and matches schema',

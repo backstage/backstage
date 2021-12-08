@@ -1,0 +1,8 @@
+site_name: docs-test-fixture
+site_description: Documentation site test fixture
+
+nav:
+  - HOME: README.md
+
+plugins:
+  - techdocs-core

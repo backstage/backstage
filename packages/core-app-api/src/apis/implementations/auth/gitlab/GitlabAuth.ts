@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import GitlabIcon from '@material-ui/icons/AcUnit';
 import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
@@ -22,7 +21,7 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'gitlab',
   title: 'GitLab',
-  icon: GitlabIcon,
+  icon: () => null,
 };
 
 /**
@@ -31,13 +30,15 @@ const DEFAULT_PROVIDER = {
  * @public
  */
 export default class GitlabAuth {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    defaultScopes = ['read_user'],
-  }: OAuthApiCreateOptions): typeof gitlabAuthApiRef.T {
+  static create(options: OAuthApiCreateOptions): typeof gitlabAuthApiRef.T {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+      defaultScopes = ['read_user'],
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

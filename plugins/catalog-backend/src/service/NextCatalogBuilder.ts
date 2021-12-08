@@ -44,6 +44,7 @@ import {
   CatalogProcessorParser,
   CodeOwnersProcessor,
   FileReaderProcessor,
+  AzureDevOpsDiscoveryProcessor,
   GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
   GitLabDiscoveryProcessor,
@@ -80,6 +81,7 @@ import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { LocationService } from './types';
+import { connectEntityProviders } from '../processing/connectEntityProviders';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -265,7 +267,8 @@ export class NextCatalogBuilder {
    * Sets what entity processors to use. These are responsible for reading,
    * parsing, and processing entities before they are persisted in the catalog.
    *
-   * This function replaces the default set of processors; use with care.
+   * This function replaces the default set of processors, consider using with
+   * {@link NextCatalogBuilder#getDefaultProcessors}; use with care.
    *
    * @param processors One or more processors
    */
@@ -273,6 +276,31 @@ export class NextCatalogBuilder {
     this.processors = [...processors];
     this.processorsReplace = true;
     return this;
+  }
+
+  /**
+   * Returns the default list of entity processors. These are responsible for reading,
+   * parsing, and processing entities before they are persisted in the catalog. Changing
+   * the order of processing can give more control to custom processors.
+   *
+   * Consider using with {@link NextCatalogBuilder#replaceProcessors}
+   *
+   */
+  getDefaultProcessors(): CatalogProcessor[] {
+    const { config, logger, reader } = this.env;
+    const integrations = ScmIntegrations.fromConfig(config);
+
+    return [
+      new FileReaderProcessor(),
+      BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
+      AzureDevOpsDiscoveryProcessor.fromConfig(config, { logger }),
+      GithubDiscoveryProcessor.fromConfig(config, { logger }),
+      GithubOrgReaderProcessor.fromConfig(config, { logger }),
+      GitLabDiscoveryProcessor.fromConfig(config, { logger }),
+      new UrlReaderProcessor({ reader, logger }),
+      CodeOwnersProcessor.fromConfig(config, { logger, reader }),
+      new AnnotateLocationEntityProcessor({ integrations }),
+    ];
   }
 
   /**
@@ -308,7 +336,10 @@ export class NextCatalogBuilder {
     const parser = this.parser || defaultEntityDataParser;
 
     const dbClient = await database.getClient();
-    await applyDatabaseMigrations(dbClient);
+    if (!database.migrations?.skip) {
+      logger.info('Performing database migration');
+      await applyDatabaseMigrations(dbClient);
+    }
 
     const db = new CommonDatabase(dbClient, logger);
 
@@ -339,7 +370,6 @@ export class NextCatalogBuilder {
 
     const processingEngine = new DefaultCatalogProcessingEngine(
       logger,
-      entityProviders,
       processingDatabase,
       orchestrator,
       stitcher,
@@ -364,6 +394,8 @@ export class NextCatalogBuilder {
       logger,
       config,
     });
+
+    await connectEntityProviders(processingDatabase, entityProviders);
 
     return {
       entitiesCatalog,
@@ -392,7 +424,7 @@ export class NextCatalogBuilder {
   }
 
   private buildProcessors(): CatalogProcessor[] {
-    const { config, logger, reader } = this.env;
+    const { config, reader } = this.env;
     const integrations = ScmIntegrations.fromConfig(config);
 
     this.checkDeprecatedReaderProcessors();
@@ -416,16 +448,7 @@ export class NextCatalogBuilder {
 
     // These are only added unless the user replaced them all
     if (!this.processorsReplace) {
-      processors.push(
-        new FileReaderProcessor(),
-        BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
-        GithubDiscoveryProcessor.fromConfig(config, { logger }),
-        GithubOrgReaderProcessor.fromConfig(config, { logger }),
-        GitLabDiscoveryProcessor.fromConfig(config, { logger }),
-        new UrlReaderProcessor({ reader, logger }),
-        CodeOwnersProcessor.fromConfig(config, { logger, reader }),
-        new AnnotateLocationEntityProcessor({ integrations }),
-      );
+      processors.push(...this.getDefaultProcessors());
     }
 
     // Add the ones (if any) that the user added

@@ -49,22 +49,6 @@ export type GeneratorBuilder = {
   get(entity: Entity): GeneratorBase;
 };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-optional-name) The @param should not include a JSDoc-style optional name; it must not be enclosed in '[ ]' brackets.
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-optional-name) The @param should not include a JSDoc-style optional name; it must not be enclosed in '[ ]' brackets.
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (ae-missing-release-tag) "GeneratorRunOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type GeneratorRunOptions = {
   inputDir: string;
@@ -82,10 +66,7 @@ export class Generators implements GeneratorBuilder {
   // (undocumented)
   static fromConfig(
     config: Config,
-    {
-      logger,
-      containerRunner,
-    }: {
+    options: {
       logger: Logger_2;
       containerRunner: ContainerRunner;
     },
@@ -185,13 +166,10 @@ export class Publisher {
   ): Promise<PublisherBase>;
 }
 
-// Warning: (ae-missing-release-tag) "PublisherBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface PublisherBase {
   docsRouter(): express.Handler;
   fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata>;
-  // Warning: (ae-forgotten-export) The symbol "ReadinessResponse" needs to be exported by the entry point index.d.ts
   getReadiness(): Promise<ReadinessResponse>;
   hasDocsBeenGenerated(entityName: Entity): Promise<boolean>;
   // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
@@ -202,7 +180,6 @@ export interface PublisherBase {
   // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
   // Warning: (ae-forgotten-export) The symbol "MigrateRequest" needs to be exported by the entry point index.d.ts
   migrateDocsCase?(migrateRequest: MigrateRequest): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (ae-forgotten-export) The symbol "PublishRequest" needs to be exported by the entry point index.d.ts
   // Warning: (ae-forgotten-export) The symbol "PublishResponse" needs to be exported by the entry point index.d.ts
   publish(request: PublishRequest): Promise<PublishResponse>;
@@ -217,6 +194,11 @@ export type PublisherType =
   | 'awsS3'
   | 'azureBlobStorage'
   | 'openStackSwift';
+
+// @public
+export type ReadinessResponse = {
+  isAvailable: boolean;
+};
 
 // Warning: (ae-missing-release-tag) "RemoteProtocol" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -245,12 +227,7 @@ export interface TechDocsDocument extends IndexableDocument {
 //
 // @public (undocumented)
 export class TechdocsGenerator implements GeneratorBase {
-  constructor({
-    logger,
-    containerRunner,
-    config,
-    scmIntegrations,
-  }: {
+  constructor(options: {
     logger: Logger_2;
     containerRunner: ContainerRunner;
     config: Config;
@@ -260,26 +237,15 @@ export class TechdocsGenerator implements GeneratorBase {
   // (undocumented)
   static fromConfig(
     config: Config,
-    {
-      containerRunner,
-      logger,
-    }: {
+    options: {
       containerRunner: ContainerRunner;
       logger: Logger_2;
     },
   ): TechdocsGenerator;
   // (undocumented)
-  run({
-    inputDir,
-    outputDir,
-    parsedLocationAnnotation,
-    etag,
-    logger: childLogger,
-    logStream,
-  }: GeneratorRunOptions): Promise<void>;
+  run(options: GeneratorRunOptions): Promise<void>;
 }
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-missing-release-tag) "TechDocsMetadata" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -287,6 +253,8 @@ export type TechDocsMetadata = {
   site_name: string;
   site_description: string;
   etag: string;
+  build_timestamp: number;
+  files?: string[];
 };
 
 // Warning: (ae-missing-release-tag) "transformDirLocation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -317,7 +285,7 @@ export class UrlPreparer implements PreparerBase {
 
 // Warnings were encountered during analysis:
 //
-// src/stages/generate/types.d.ts:44:5 - (ae-forgotten-export) The symbol "SupportedGeneratorKey" needs to be exported by the entry point index.d.ts
+// src/stages/generate/types.d.ts:45:5 - (ae-forgotten-export) The symbol "SupportedGeneratorKey" needs to be exported by the entry point index.d.ts
 // src/stages/prepare/types.d.ts:18:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/stages/prepare/types.d.ts:19:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/stages/prepare/types.d.ts:21:33 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag

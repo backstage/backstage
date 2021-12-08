@@ -25,10 +25,24 @@ import {
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/techdocs-common';
+import { TechDocsCache } from '../cache';
 import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 
 jest.mock('../DocsBuilder');
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: async () => {
+    return {
+      json: async () => {
+        return {
+          build_timestamp: 123,
+        };
+      },
+    };
+  },
+}));
 
 const MockedDocsBuilder = DocsBuilder as jest.MockedClass<typeof DocsBuilder>;
 
@@ -52,6 +66,12 @@ describe('DocsSynchronizer', () => {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
   };
+  const cache: jest.Mocked<TechDocsCache> = {
+    get: jest.fn(),
+    set: jest.fn(),
+    invalidate: jest.fn(),
+    invalidateMultiple: jest.fn(),
+  } as unknown as jest.Mocked<TechDocsCache>;
 
   let docsSynchronizer: DocsSynchronizer;
   const mockResponseHandler: jest.Mocked<DocsSynchronizerSyncOpts> = {
@@ -71,6 +91,7 @@ describe('DocsSynchronizer', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+      cache,
     });
   });
 
@@ -191,6 +212,114 @@ describe('DocsSynchronizer', () => {
       expect(mockResponseHandler.finish).toBeCalledTimes(0);
       expect(mockResponseHandler.error).toBeCalledTimes(1);
       expect(mockResponseHandler.error).toBeCalledWith(error);
+    });
+  });
+
+  describe('doCacheSync', () => {
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        uid: '0',
+        name: 'test',
+        namespace: 'default',
+      },
+    };
+
+    it('should not check metadata too often', async () => {
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(false);
+
+      await docsSynchronizer.doCacheSync({
+        responseHandler: mockResponseHandler,
+        discovery,
+        token: undefined,
+        entity,
+      });
+
+      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
+      expect(shouldCheckForUpdate).toBeCalledTimes(1);
+    });
+
+    it('should do nothing if source/cached metadata matches', async () => {
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      (publisher.fetchTechDocsMetadata as jest.Mock).mockResolvedValue({
+        build_timestamp: 123,
+      });
+
+      await docsSynchronizer.doCacheSync({
+        responseHandler: mockResponseHandler,
+        discovery,
+        token: undefined,
+        entity,
+      });
+
+      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
+    });
+
+    it('should invalidate expected files when source/cached metadata differ', async () => {
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      (publisher.fetchTechDocsMetadata as jest.Mock).mockResolvedValue({
+        build_timestamp: 456,
+        files: ['index.html'],
+      });
+
+      await docsSynchronizer.doCacheSync({
+        responseHandler: mockResponseHandler,
+        discovery,
+        token: undefined,
+        entity,
+      });
+
+      expect(mockResponseHandler.finish).toBeCalledWith({ updated: true });
+      expect(cache.invalidateMultiple).toHaveBeenCalledWith([
+        'default/component/test/index.html',
+      ]);
+    });
+
+    it('should invalidate expected files when source/cached metadata differ with legacy casing', async () => {
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      (publisher.fetchTechDocsMetadata as jest.Mock).mockResolvedValue({
+        build_timestamp: 456,
+        files: ['index.html'],
+      });
+
+      const docsSynchronizerWithLegacy = new DocsSynchronizer({
+        publisher,
+        config: new ConfigReader({
+          techdocs: { legacyUseCaseSensitiveTripletPaths: true },
+        }),
+        logger: getVoidLogger(),
+        scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+        cache,
+      });
+
+      await docsSynchronizerWithLegacy.doCacheSync({
+        responseHandler: mockResponseHandler,
+        discovery,
+        token: undefined,
+        entity,
+      });
+
+      expect(mockResponseHandler.finish).toBeCalledWith({ updated: true });
+      expect(cache.invalidateMultiple).toHaveBeenCalledWith([
+        'default/Component/test/index.html',
+      ]);
+    });
+
+    it('should gracefully handle errors', async () => {
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      (publisher.fetchTechDocsMetadata as jest.Mock).mockRejectedValue(
+        new Error(),
+      );
+
+      await docsSynchronizer.doCacheSync({
+        responseHandler: mockResponseHandler,
+        discovery,
+        token: undefined,
+        entity,
+      });
+
+      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
     });
   });
 });

@@ -15,7 +15,7 @@
  */
 
 /**
- * Common functionalities for kubernetes, to be shared between kubernetes and kubernetes-backend plugin
+ * Common functionalities for Kubernetes, to be shared between the `kubernetes` and `kubernetes-backend` plugins
  *
  * @packageDocumentation
  */

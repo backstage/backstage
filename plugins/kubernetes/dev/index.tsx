@@ -29,7 +29,9 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import fixture1 from '../src/__fixtures__/1-deployments.json';
 import fixture2 from '../src/__fixtures__/2-deployments.json';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import fixture3 from '../src/__fixtures__/1-cronjobs.json';
+import fixture4 from '../src/__fixtures__/2-cronjobs.json';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -64,6 +66,7 @@ class MockKubernetesClient implements KubernetesApi {
         {
           cluster: { name: 'mock-cluster' },
           resources: this.resources,
+          podMetrics: [],
           errors: [],
         },
       ],
@@ -80,32 +83,52 @@ createDevApp()
     path: '/fixture-1',
     title: 'Fixture 1',
     element: (
-      <ApiProvider
-        apis={ApiRegistry.with(
-          kubernetesApiRef,
-          new MockKubernetesClient(fixture1),
-        )}
+      <TestApiProvider
+        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture1)]]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityKubernetesContent />
         </EntityProvider>
-      </ApiProvider>
+      </TestApiProvider>
     ),
   })
   .addPage({
     path: '/fixture-2',
     title: 'Fixture 2',
     element: (
-      <ApiProvider
-        apis={ApiRegistry.with(
-          kubernetesApiRef,
-          new MockKubernetesClient(fixture2),
-        )}
+      <TestApiProvider
+        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture2)]]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityKubernetesContent />
         </EntityProvider>
-      </ApiProvider>
+      </TestApiProvider>
+    ),
+  })
+  .addPage({
+    path: '/fixture-3',
+    title: 'Fixture 3',
+    element: (
+      <TestApiProvider
+        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture3)]]}
+      >
+        <EntityProvider entity={mockEntity}>
+          <EntityKubernetesContent />
+        </EntityProvider>
+      </TestApiProvider>
+    ),
+  })
+  .addPage({
+    path: '/fixture-4',
+    title: 'Fixture 4',
+    element: (
+      <TestApiProvider
+        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture4)]]}
+      >
+        <EntityProvider entity={mockEntity}>
+          <EntityKubernetesContent />
+        </EntityProvider>
+      </TestApiProvider>
     ),
   })
   .registerPlugin(kubernetesPlugin)

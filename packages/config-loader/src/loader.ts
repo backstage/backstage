@@ -89,13 +89,24 @@ export type LoadConfigOptions = {
 };
 
 /**
+ * Results of loading configuration files.
+ * @public
+ */
+export type LoadConfigResult = {
+  /**
+   * Array of all loaded configs.
+   */
+  appConfigs: AppConfig[];
+};
+
+/**
  * Load configuration data.
  *
  * @public
  */
 export async function loadConfig(
   options: LoadConfigOptions,
-): Promise<AppConfig[]> {
+): Promise<LoadConfigResult> {
   const { configRoot, experimentalEnvFunc: envFunc, watch, remote } = options;
 
   const configPaths: string[] = options.configTargets
@@ -290,7 +301,9 @@ export async function loadConfig(
     watchRemoteConfig(watch, remote);
   }
 
-  return remote
-    ? [...remoteConfigs, ...fileConfigs, ...envConfigs]
-    : [...fileConfigs, ...envConfigs];
+  return {
+    appConfigs: remote
+      ? [...remoteConfigs, ...fileConfigs, ...envConfigs]
+      : [...fileConfigs, ...envConfigs],
+  };
 }

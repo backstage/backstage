@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  AppsV1Api,
-  AutoscalingV1Api,
-  CoreV1Api,
-  NetworkingV1beta1Api,
-} from '@kubernetes/client-node';
+import { CoreV1Api, topPods } from '@kubernetes/client-node';
 import lodash, { Dictionary } from 'lodash';
 import { Logger } from 'winston';
 import {
@@ -36,12 +31,10 @@ import {
   KubernetesErrorTypes,
 } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
+import { PodStatus } from '@kubernetes/client-node/dist/top';
 
 export interface Clients {
   core: CoreV1Api;
-  apps: AppsV1Api;
-  autoscaling: AutoscalingV1Api;
-  networkingBeta1: NetworkingV1beta1Api;
 }
 
 export interface KubernetesClientBasedFetcherOptions {
@@ -110,10 +103,26 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
   }
 
+  fetchPodMetricsByNamespace(
+    clusterDetails: ClusterDetails,
+    namespace: string,
+  ): Promise<PodStatus[]> {
+    const metricsClient =
+      this.kubernetesClientProvider.getMetricsClient(clusterDetails);
+    const coreApi =
+      this.kubernetesClientProvider.getCoreClientByClusterDetails(
+        clusterDetails,
+      );
+
+    return topPods(coreApi, metricsClient, namespace);
+  }
+
   private captureKubernetesErrorsRethrowOthers(e: any): KubernetesFetchError {
     if (e.response && e.response.statusCode) {
-      this.logger.info(
-        `statusCode=${e.response.statusCode} for resource ${e.response.request.uri.pathname}`,
+      this.logger.warn(
+        `statusCode=${e.response.statusCode} for resource ${
+          e.response.request.uri.pathname
+        } body=[${JSON.stringify(e.response.body)}]`,
       );
       return {
         errorType: statusCodeToErrorType(e.response.statusCode),
@@ -143,6 +152,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         resource.apiVersion,
         resource.plural,
         '',
+        false,
         '',
         '',
         labelSelector,

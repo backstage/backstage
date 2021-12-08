@@ -43,7 +43,7 @@ the project root. Make sure you have run the above mentioned commands first.
 $ yarn dev
 ```
 
-This is going to start two things, the frontend (:3000) and the backend (:7000).
+This is going to start two things, the frontend (:3000) and the backend (:7007).
 
 This should open a local instance of Backstage in your browser, otherwise open
 one of the URLs printed in the terminal.
