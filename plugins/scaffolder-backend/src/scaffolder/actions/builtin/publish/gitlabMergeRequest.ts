@@ -17,7 +17,8 @@ import { createTemplateAction } from '../../createTemplateAction';
 import { readFile } from 'fs-extra';
 import { Gitlab } from '@gitbeaker/node';
 import globby from 'globby';
-import { CommitAction } from '@gitbeaker/core/dist/types/services/Commits';
+import { Types } from '@gitbeaker/core';
+
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
 import { parseRepoUrl } from './util';
@@ -96,7 +97,11 @@ export const createPublishGitlabMergeRequestAction = (options: {
       const { host } = parseRepoUrl(repoUrl, integrations);
       const integrationConfig = integrations.gitlab.byHost(host);
 
-      const actions: CommitAction[] = [];
+      /*	  const a : Types.CommitAction = {
+		  action: 'create',
+		  filePath: ''
+	  };*/
+      const actions: Types.CommitAction[] = [];
 
       const destinationBranch = ctx.input.branchName;
 
@@ -147,9 +152,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
           ctx.input.projectid,
           destinationBranch,
           String(defaultBranch),
-        ).then(branchResponse => {
-          return branchResponse;
-        });
+        );
       } catch (e) {
         throw new InputError(`The branch creation failed ${e}`);
       }
@@ -168,13 +171,13 @@ export const createPublishGitlabMergeRequestAction = (options: {
       }
 
       try {
-        const mergeRequestUrl: any = await api.MergeRequests.create(
+        const mergeRequestUrl = await api.MergeRequests.create(
           ctx.input.projectid,
           destinationBranch,
           String(defaultBranch),
           ctx.input.title,
           { description: ctx.input.description },
-        ).then(mergeRequest => {
+        ).then((mergeRequest: { web_url: string }) => {
           return mergeRequest.web_url;
         });
         ctx.output('projectid', ctx.input.projectid);
