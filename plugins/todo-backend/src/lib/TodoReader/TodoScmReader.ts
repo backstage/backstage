@@ -76,7 +76,8 @@ export class TodoScmReader implements TodoReader {
     this.integrations = options.integrations;
   }
 
-  async readTodos({ url }: ReadTodosOptions): Promise<ReadTodosResult> {
+  async readTodos(options: ReadTodosOptions): Promise<ReadTodosResult> {
+    const { url } = options;
     const inFlightRead = this.inFlightReads.get(url);
     if (inFlightRead) {
       return inFlightRead.then(read => read.result);
@@ -101,9 +102,10 @@ export class TodoScmReader implements TodoReader {
   }
 
   private async doReadTodos(
-    { url }: ReadTodosOptions,
+    options: ReadTodosOptions,
     etag?: string,
   ): Promise<CacheItem> {
+    const { url } = options;
     const tree = await this.reader.readTree(url, {
       etag,
       filter(filePath, info) {

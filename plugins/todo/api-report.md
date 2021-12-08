@@ -26,13 +26,7 @@ export const todoApiRef: ApiRef<TodoApi>;
 export class TodoClient implements TodoApi {
   constructor(options: TodoClientOptions);
   // (undocumented)
-  listTodos({
-    entity,
-    offset,
-    limit,
-    orderBy,
-    filters,
-  }: TodoListOptions): Promise<TodoListResult>;
+  listTodos(options: TodoListOptions): Promise<TodoListResult>;
 }
 
 // @public

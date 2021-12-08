@@ -89,23 +89,13 @@ export type LogFuncs = 'log' | 'warn' | 'error';
 // @public
 export class MockAnalyticsApi implements AnalyticsApi {
   // (undocumented)
-  captureEvent({
-    action,
-    subject,
-    value,
-    attributes,
-    context,
-  }: AnalyticsEvent): void;
+  captureEvent(event: AnalyticsEvent): void;
   // (undocumented)
   getEvents(): AnalyticsEvent[];
 }
 
 // @public
-export function mockBreakpoint({
-  matches,
-}: {
-  matches?: boolean | undefined;
-}): void;
+export function mockBreakpoint(options: { matches: boolean }): void;
 
 // @public
 export class MockErrorApi implements ErrorApi {
@@ -178,10 +168,9 @@ export function setupRequestMockHandlers(worker: {
 export type SyncLogCollector = () => void;
 
 // @public
-export const TestApiProvider: <T extends any[]>({
-  apis,
-  children,
-}: TestApiProviderProps<T>) => JSX.Element;
+export const TestApiProvider: <T extends any[]>(
+  props: TestApiProviderProps<T>,
+) => JSX.Element;
 
 // @public
 export type TestApiProviderProps<TApiPairs extends any[]> = {

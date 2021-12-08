@@ -43,10 +43,7 @@ export type AnalyticsApi = {
 export const analyticsApiRef: ApiRef<AnalyticsApi>;
 
 // @public
-export const AnalyticsContext: ({
-  attributes,
-  children,
-}: {
+export const AnalyticsContext: (options: {
   attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
 }) => JSX.Element;

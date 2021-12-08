@@ -188,18 +188,9 @@ export type DatabaseManagerOptions = {
 
 // @public (undocumented)
 export class DockerContainerRunner implements ContainerRunner {
-  constructor({ dockerClient }: { dockerClient: Docker });
+  constructor(options: { dockerClient: Docker });
   // (undocumented)
-  runContainer({
-    imageName,
-    command,
-    args,
-    logStream,
-    mountDirs,
-    workingDir,
-    envVars,
-    pullImage,
-  }: RunContainerOptions): Promise<void>;
+  runContainer(options: RunContainerOptions): Promise<void>;
 }
 
 // @public
@@ -235,34 +226,17 @@ export function getVoidLogger(): winston.Logger;
 // @public (undocumented)
 export class Git {
   // (undocumented)
-  add({ dir, filepath }: { dir: string; filepath: string }): Promise<void>;
+  add(options: { dir: string; filepath: string }): Promise<void>;
   // (undocumented)
-  addRemote({
-    dir,
-    url,
-    remote,
-  }: {
+  addRemote(options: {
     dir: string;
     remote: string;
     url: string;
   }): Promise<void>;
   // (undocumented)
-  clone({
-    url,
-    dir,
-    ref,
-  }: {
-    url: string;
-    dir: string;
-    ref?: string;
-  }): Promise<void>;
+  clone(options: { url: string; dir: string; ref?: string }): Promise<void>;
   // (undocumented)
-  commit({
-    dir,
-    message,
-    author,
-    committer,
-  }: {
+  commit(options: {
     dir: string;
     message: string;
     author: {
@@ -275,41 +249,22 @@ export class Git {
     };
   }): Promise<string>;
   // (undocumented)
-  currentBranch({
-    dir,
-    fullName,
-  }: {
+  currentBranch(options: {
     dir: string;
     fullName?: boolean;
   }): Promise<string | undefined>;
   // (undocumented)
-  fetch({ dir, remote }: { dir: string; remote?: string }): Promise<void>;
+  fetch(options: { dir: string; remote?: string }): Promise<void>;
   // (undocumented)
-  static fromAuth: ({
-    username,
-    password,
-    logger,
-  }: {
-    username?: string | undefined;
-    password?: string | undefined;
-    logger?: Logger_2 | undefined;
+  static fromAuth: (options: {
+    username?: string;
+    password?: string;
+    logger?: Logger_2;
   }) => Git;
   // (undocumented)
-  init({
-    dir,
-    defaultBranch,
-  }: {
-    dir: string;
-    defaultBranch?: string;
-  }): Promise<void>;
+  init(options: { dir: string; defaultBranch?: string }): Promise<void>;
   // (undocumented)
-  merge({
-    dir,
-    theirs,
-    ours,
-    author,
-    committer,
-  }: {
+  merge(options: {
     dir: string;
     theirs: string;
     ours?: string;
@@ -323,17 +278,11 @@ export class Git {
     };
   }): Promise<MergeResult>;
   // (undocumented)
-  push({ dir, remote }: { dir: string; remote: string }): Promise<PushResult>;
+  push(options: { dir: string; remote: string }): Promise<PushResult>;
   // (undocumented)
-  readCommit({
-    dir,
-    sha,
-  }: {
-    dir: string;
-    sha: string;
-  }): Promise<ReadCommitResult>;
+  readCommit(options: { dir: string; sha: string }): Promise<ReadCommitResult>;
   // (undocumented)
-  resolveRef({ dir, ref }: { dir: string; ref: string }): Promise<string>;
+  resolveRef(options: { dir: string; ref: string }): Promise<string>;
 }
 
 // @public
@@ -634,8 +583,8 @@ export type UrlReaderPredicateTuple = {
 
 // @public
 export class UrlReaders {
-  static create({ logger, config, factories }: UrlReadersOptions): UrlReader;
-  static default({ logger, config, factories }: UrlReadersOptions): UrlReader;
+  static create(options: UrlReadersOptions): UrlReader;
+  static default(options: UrlReadersOptions): UrlReader;
 }
 
 // @public (undocumented)

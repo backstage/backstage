@@ -185,10 +185,7 @@ export class CatalogIdentityClient {
   // Warning: (ae-forgotten-export) The symbol "UserQuery" needs to be exported by the entry point index.d.ts
   findUser(query: UserQuery): Promise<UserEntity>;
   // Warning: (ae-forgotten-export) The symbol "MemberClaimQuery" needs to be exported by the entry point index.d.ts
-  resolveCatalogMembership({
-    entityRefs,
-    logger,
-  }: MemberClaimQuery): Promise<string[]>;
+  resolveCatalogMembership(query: MemberClaimQuery): Promise<string[]>;
 }
 
 // Warning: (ae-missing-release-tag) "createAtlassianProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -270,13 +267,7 @@ export function createOriginFilter(config: Config): (origin: string) => boolean;
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function createRouter({
-  logger,
-  config,
-  discovery,
-  database,
-  providerFactories,
-}: RouterOptions): Promise<express.Router>;
+export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
 export const createSamlProvider: (

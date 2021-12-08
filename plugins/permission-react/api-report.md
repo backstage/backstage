@@ -6,12 +6,13 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AuthorizeRequest } from '@backstage/plugin-permission-common';
 import { AuthorizeResponse } from '@backstage/plugin-permission-common';
+import { ComponentProps } from 'react';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
-import { default as React_2 } from 'react';
-import { RouteProps } from 'react-router';
+import { ReactElement } from 'react';
+import { Route } from 'react-router';
 
 // @public (undocumented)
 export type AsyncPermissionResult = {
@@ -25,11 +26,7 @@ export class IdentityPermissionApi implements PermissionApi {
   // (undocumented)
   authorize(request: AuthorizeRequest): Promise<AuthorizeResponse>;
   // (undocumented)
-  static create({
-    configApi,
-    discoveryApi,
-    identityApi,
-  }: {
+  static create(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
@@ -45,19 +42,13 @@ export type PermissionApi = {
 export const permissionApiRef: ApiRef<PermissionApi>;
 
 // @public
-export const PermissionedRoute: ({
-  permission,
-  resourceRef,
-  errorComponent,
-  ...props
-}: RouteProps & {
-  permission: Permission;
-  resourceRef?: string | undefined;
-  errorComponent?:
-    | React_2.ReactElement<any, string | React_2.JSXElementConstructor<any>>
-    | null
-    | undefined;
-}) => JSX.Element;
+export const PermissionedRoute: (
+  props: ComponentProps<typeof Route> & {
+    permission: Permission;
+    resourceRef?: string;
+    errorComponent?: ReactElement | null;
+  },
+) => JSX.Element;
 
 // @public
 export const usePermission: (

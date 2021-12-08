@@ -39,19 +39,15 @@ export class GoogleAnalytics implements AnalyticsApi {
   /**
    * Instantiate the implementation and initialize ReactGA.
    */
-  private constructor({
-    cdmConfig,
-    trackingId,
-    scriptSrc,
-    testMode,
-    debug,
-  }: {
+  private constructor(options: {
     cdmConfig: CustomDimensionOrMetricConfig[];
     trackingId: string;
     scriptSrc?: string;
     testMode: boolean;
     debug: boolean;
   }) {
+    const { cdmConfig, trackingId, scriptSrc, testMode, debug } = options;
+
     this.cdmConfig = cdmConfig;
 
     // Initialize Google Analytics.
@@ -102,13 +98,8 @@ export class GoogleAnalytics implements AnalyticsApi {
    * pageview and the rest as custom events. All custom dimensions/metrics are
    * applied as they should be (set on pageview, merged object on events).
    */
-  captureEvent({
-    context,
-    action,
-    subject,
-    value,
-    attributes,
-  }: AnalyticsEvent) {
+  captureEvent(event: AnalyticsEvent) {
+    const { context, action, subject, value, attributes } = event;
     const customMetadata = this.getCustomDimensionMetrics(context, attributes);
 
     if (action === 'navigate' && context.extension === 'App') {

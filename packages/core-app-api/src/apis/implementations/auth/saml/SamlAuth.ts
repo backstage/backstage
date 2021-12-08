@@ -52,11 +52,13 @@ const DEFAULT_PROVIDER = {
 export default class SamlAuth
   implements ProfileInfoApi, BackstageIdentityApi, SessionApi
 {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-  }: AuthApiCreateOptions) {
+  static create(options: AuthApiCreateOptions) {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+    } = options;
+
     const connector = new DirectAuthConnector<SamlSession>({
       discoveryApi,
       environment,

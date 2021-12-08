@@ -7,12 +7,16 @@ import express from 'express';
 import { Logger as Logger_2 } from 'winston';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 
-// Warning: (ae-forgotten-export) The symbol "RouterOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function createRouter({
-  engine,
-  logger,
-}: RouterOptions): Promise<express.Router>;
+export function createRouter(options: RouterOptions): Promise<express.Router>;
+
+// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type RouterOptions = {
+  engine: SearchEngine;
+  logger: Logger_2;
+};
 ```
