@@ -15,6 +15,7 @@
  */
 import { ConfigReader } from '@backstage/config';
 import { omit } from 'lodash';
+import path from 'path';
 import {
   createDatabaseClient,
   ensureDatabaseExists,
@@ -284,7 +285,7 @@ describe('DatabaseManager', () => {
       // sqlite3 uses 'filename' instead of 'database'
       expect(overrides).toHaveProperty(
         'connection.filename',
-        `plugin_with_different_client/${pluginId}.sqlite`,
+        path.join('plugin_with_different_client', `${pluginId}.sqlite`),
       );
     });
 
