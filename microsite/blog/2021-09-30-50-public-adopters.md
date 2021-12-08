@@ -1,17 +1,16 @@
 ---
 title: The Big 5-0
 author: Francesco Corti, Spotify
-authorURL: https://github.com/fcorti/
-authorImageURL: https://avatars.githubusercontent.com/u/6010860?v=4
+authorURL: "https://github.com/fcorti/"
+authorImageURL: "https://avatars.githubusercontent.com/u/6010860?v=4"
 ---
-
 We’re excited to celebrate an important milestone for the Backstage community: 50+ [public adopters](https://github.com/backstage/backstage/blob/master/ADOPTERS.md)!
 
 ![Celebrating all of Backstage’s 50+ adopters.](assets/21-09-30/50-public-adopters.png)
 
 Before digging into why we believe this is so important, we want to send a huge “thank you” to all the Backstage adopters and contributors who have helped grow the Backstage community. First, to the publicly listed adopters as your visible support for the project excites others to learn more about Backstage. Second, to those non-listed adopters, many of whom still engage in the community via issues, comments, or code contributions. Thank you!
 
-<!--truncate-->
+truncate
 
 ## Why we care about public adopters
 
@@ -36,10 +35,17 @@ While we’re thrilled to celebrate this milestone, the public adopters list is 
 If you are a Backstage enthusiast, please [join me][news] and the entire Backstage Team in celebrating this milestone. And if you are a Backstage adopter not already listed in the [GitHub page][gh], consider adding your name to better inform the community and participate in the project.
 
 [am]: https://backstage.spotify.com/blog/adopter-spotlight/american-airlines-runway/
+
 [sp]: https://backstage.spotify.com/blog/community-session/splunk-pink-phonebook/
+
 [za]: https://youtu.be/6sg5uMCLxTA
+
 [da]: https://medium.com/dazn-tech/developer-experience-dx-at-dazn-e6de9a0208d2
+
 [ex]: https://backstage.spotify.com/blog/community-session/firehydrant-expedia-loblaw/
+
 [plugins]: https://backstage.io/plugins
+
 [news]: https://mailchi.mp/spotify/backstage-community
+
 [gh]: https://github.com/backstage/backstage/blob/master/ADOPTERS.md

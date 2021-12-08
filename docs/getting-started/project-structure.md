@@ -1,8 +1,9 @@
 ---
 id: project-structure
 title: Backstage Project Structure
-# prettier-ignore
-description: Introduction to files and folders in the Backstage Project repository
+# prettier-ignore: ""
+description:
+  Introduction to files and folders in the Backstage Project repository
 ---
 
 Backstage is a complex project, and the GitHub repository contains many

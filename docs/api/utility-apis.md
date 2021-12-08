@@ -282,15 +282,15 @@ long as they adhere to the contract established by an
 [ApiRef](../reference/core-plugin-api.apiref.md), they are free to choose any
 implementation they want.
 
-The figure below shows the relationship between
-<span style="color: #82b366">different Apps</span>, that provide
-<span style="color: #6c8ebf">different implementations</span> of the
-<span style="color: #9673a6">FooApi</span>.
-<span style="color: #d6b656">Components</span> within Plugins then access the
-<span style="color: #9673a6">FooApi</span> via the
-<span style="color: #b85450">fooApiRef</span>.
+The figure below shows the relationship between <span
+style={{color: "#82b366"}}>different Apps</span>, that provide <span
+style={{color: "#6c8ebf"}}>different implementations</span> of the <span
+style={{color: "#9673a6"}}>FooApi</span>. <span
+style={{color: "#d6b656"}}>Components</span> within Plugins then access the
+<span style={{color: "#9673a6"}}>FooApi</span> via the <span
+style={{color: "#b85450"}}>fooApiRef</span>.
 
-<div style="text-align:center">
+<div style={{textAlign: "center"}}>
 <img src="../assets/utility-apis-fig1.svg" alt="Figure showing the relationship between utility APIs, the apps that provide them, and the plugins that consume them" />
 </div>
 

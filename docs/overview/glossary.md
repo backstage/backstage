@@ -1,8 +1,10 @@
 ---
 id: glossary
 title: Backstage Glossary
-# prettier-ignore
-description: List of all the terms, abbreviations, and phrases used in Backstage, together with their explanations.
+# prettier-ignore: ""
+description:
+  List of all the terms, abbreviations, and phrases used in Backstage, together
+  with their explanations.
 ---
 
 The Backstage Glossary lists all the terms, abbreviations, and phrases used in

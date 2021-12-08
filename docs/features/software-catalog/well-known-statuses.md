@@ -2,8 +2,10 @@
 id: well-known-statuses
 title: Well-known Status fields of Catalog Entities
 sidebar_label: Well-known Statuses
-# prettier-ignore
-description: Lists a number of well known entity statuses, that have defined semantics. They can be attached to catalog entities and consumed by plugins as needed.
+# prettier-ignore: ""
+description:
+  Lists a number of well known entity statuses, that have defined semantics.
+  They can be attached to catalog entities and consumed by plugins as needed.
 ---
 
 This section lists well known

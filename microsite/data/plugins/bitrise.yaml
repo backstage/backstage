@@ -1,9 +1,0 @@
----
-title: Bitrise
-author: SDA SE
-authorUrl: https://sda.se/
-category: CI/CD
-description: View Bitrise builds and download the build artifacts within Backstage.
-documentation: https://github.com/backstage/backstage/blob/master/plugins/bitrise/README.md
-iconUrl: https://avatars.githubusercontent.com/u/7174390?s=400&v=4
-npmPackageName: '@backstage/plugin-bitrise'

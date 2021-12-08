@@ -2,8 +2,9 @@
 id: locations
 title: Azure DevOps Locations
 sidebar_label: Locations
-# prettier-ignore
-description: Integrating source code stored in Azure DevOps into the Backstage catalog
+# prettier-ignore: ""
+description:
+  Integrating source code stored in Azure DevOps into the Backstage catalog
 ---
 
 The Azure DevOps integration supports loading catalog entities from Azure

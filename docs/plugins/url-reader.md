@@ -2,8 +2,10 @@
 id: url-reader
 title: URL Reader
 sidebar_label: URL Reader
-# prettier-ignore
-description: URL Reader is a backend core API responsible for reading files from external locations.
+# prettier-ignore: ""
+description:
+  URL Reader is a backend core API responsible for reading files from external
+  locations.
 ---
 
 ## Concept

@@ -2,8 +2,10 @@
 id: org
 title: Microsoft Azure Active Directory Organizational Data
 sidebar_label: Org Data
-# prettier-ignore
-description: Importing users and groups from a Microsoft Azure Active Directory into Backstage
+# prettier-ignore: ""
+description:
+  Importing users and groups from a Microsoft Azure Active Directory into
+  Backstage
 ---
 
 The Backstage catalog can be set up to ingest organizational data - users and

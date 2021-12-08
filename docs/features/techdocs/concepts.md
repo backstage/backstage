@@ -1,8 +1,10 @@
 ---
 id: concepts
 title: Concepts
-# prettier-ignore
-description: Documentation on concepts that are introduced with Spotify's docs-like-code solution in Backstage
+# prettier-ignore: ""
+description:
+  Documentation on concepts that are introduced with Spotify's docs-like-code
+  solution in Backstage
 ---
 
 This page describes concepts that are introduced with Spotify's docs-like-code

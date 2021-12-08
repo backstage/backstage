@@ -1,6 +1,6 @@
 ---
 id: adrs-adr009
-title: ADR009: Entity References
+title: 'ADR009: Entity References'
 description: Architecture Decision Record (ADR) log on Entity References
 ---
 
@@ -22,7 +22,9 @@ The textual format, as written by humans, to reference entities by name is on
 the following form, where square brackets denote optionality:
 
 ```
+
 [<kind>:][<namespace>/]<name>
+
 ```
 
 That is, it is composed of between one and three parts in this specific order,
@@ -57,7 +59,9 @@ Where entities are referenced by name in the Backstage frontend, the URL
 containing the reference shall take the following form:
 
 ```
+
 :namespace/:kind/:name
+
 ```
 
 All three parts are required under all circumstances. The default value for the

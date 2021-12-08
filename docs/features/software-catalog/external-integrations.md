@@ -1,8 +1,9 @@
 ---
 id: external-integrations
 title: External integrations
-# prettier-ignore
-description: Documentation on External integrations to integrate systems with Backstage
+# prettier-ignore: ""
+description:
+  Documentation on External integrations to integrate systems with Backstage
 ---
 
 Backstage natively supports importing catalog data through the use of

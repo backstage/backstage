@@ -2,8 +2,10 @@
 id: life-of-an-entity
 title: The Life of an Entity
 sidebar_label: The Life of an Entity
-# prettier-ignore
-description: The life cycle of entities, from being introduced into the catalog, through processing, to being removed again
+# prettier-ignore: ""
+description:
+  The life cycle of entities, from being introduced into the catalog, through
+  processing, to being removed again
 ---
 
 This document gives a high level overview of the catalog backend, and the

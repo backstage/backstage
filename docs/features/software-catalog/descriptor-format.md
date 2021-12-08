@@ -2,8 +2,10 @@
 id: descriptor-format
 title: Descriptor Format of Catalog Entities
 sidebar_label: YAML File Format
-# prettier-ignore
-description: Documentation on Descriptor Format of Catalog Entities which describes the default data shape and semantics of catalog entities
+# prettier-ignore: ""
+description:
+  Documentation on Descriptor Format of Catalog Entities which describes the
+  default data shape and semantics of catalog entities
 ---
 
 This section describes the default data shape and semantics of catalog entities.

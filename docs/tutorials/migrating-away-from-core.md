@@ -1,6 +1,6 @@
 ---
 id: migrating-away-from-core
-title: Migrating away from @backstage/core
+title: 'Migrating away from @backstage/core'
 description: Guide on how to migrate to the new Backstage core libraries.
 ---
 

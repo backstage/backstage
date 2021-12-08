@@ -1,8 +1,10 @@
 ---
 id: using-backstage-proxy-within-plugin
 title: Using the Backstage Proxy from Within a Plugin
-# prettier-ignore
-description: Guide on how to create a set of API bindings that interface with a backend via the backstage proxy
+# prettier-ignore: ""
+description:
+  Guide on how to create a set of API bindings that interface with a backend via
+  the backstage proxy
 ---
 
 This guide walks you through setting up a simple proxy to an existing API that

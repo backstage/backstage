@@ -2,8 +2,10 @@
 id: discovery
 title: GitHub Discovery
 sidebar_label: Discovery
-# prettier-ignore
-description: Automatically discovering catalog entities from repositories in a GitHub organization
+# prettier-ignore: ""
+description:
+  Automatically discovering catalog entities from repositories in a GitHub
+  organization
 ---
 
 The GitHub integration has a special discovery processor for discovering catalog

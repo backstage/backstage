@@ -2,8 +2,10 @@
 id: search-overview
 title: Search Documentation
 sidebar_label: Overview
-# prettier-ignore
-description: Backstage Search lets you find the right information you are looking for in the Backstage ecosystem.
+# prettier-ignore: ""
+description:
+  Backstage Search lets you find the right information you are looking for in
+  the Backstage ecosystem.
 ---
 
 # Backstage Search

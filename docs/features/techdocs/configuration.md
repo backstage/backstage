@@ -1,8 +1,9 @@
 ---
 id: configuration
 title: TechDocs Configuration Options
-# prettier-ignore
-description: Reference documentation for configuring TechDocs using app-config.yaml
+# prettier-ignore: ""
+description:
+  Reference documentation for configuring TechDocs using app-config.yaml
 ---
 
 Using the `app-config.yaml` in the Backstage app, you can configure TechDocs

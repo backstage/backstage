@@ -2,8 +2,9 @@
 id: locations
 title: Bitbucket Locations
 sidebar_label: Locations
-# prettier-ignore
-description: Integrating source code stored in Bitbucket into the Backstage catalog
+# prettier-ignore: ""
+description:
+  Integrating source code stored in Bitbucket into the Backstage catalog
 ---
 
 The Bitbucket integration supports loading catalog entities from bitbucket.org

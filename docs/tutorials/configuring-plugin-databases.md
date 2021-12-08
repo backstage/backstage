@@ -1,7 +1,7 @@
 ---
 id: configuring-plugin-databases
 title: Configuring Plugin Databases
-# prettier-ignore
+# prettier-ignore: ""
 description: Guide on how to configure Backstage databases.
 ---
 

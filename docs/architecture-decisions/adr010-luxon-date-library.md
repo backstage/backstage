@@ -1,6 +1,6 @@
 ---
 id: adrs-adr010
-title: ADR010: Use the Luxon Date Library
+title: 'ADR010: Use the Luxon Date Library'
 description: Architecture Decision Record (ADR) for Luxon Date Library
 ---
 
@@ -15,7 +15,7 @@ state issues. On top of this, `momentjs` is
 recommends using one of the more modern alternative libraries.
 
 See
-[[RFC] Standardized Date & Time Library](https://github.com/backstage/backstage/issues/3401).
+[\[RFC\] Standardized Date & Time Library](https://github.com/backstage/backstage/issues/3401).
 
 ## Decision
 

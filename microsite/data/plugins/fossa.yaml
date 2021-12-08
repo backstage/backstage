@@ -1,9 +1,0 @@
----
-title: FOSSA
-author: SDA SE
-authorUrl: https://sda.se/
-category: Quality
-description: View FOSSA license compliance of your components in Backstage.
-documentation: https://github.com/backstage/backstage/blob/master/plugins/fossa/README.md
-iconUrl: https://avatars0.githubusercontent.com/u/9543448?s=400&v=4
-npmPackageName: '@backstage/plugin-fossa'

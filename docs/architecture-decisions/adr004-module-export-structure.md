@@ -1,6 +1,6 @@
 ---
 id: adrs-adr004
-title: ADR004: Module Export Structure
+title: 'ADR004: Module Export Structure'
 description: Architecture Decision Record (ADR) log on Module Export Structure
 ---
 
@@ -9,11 +9,11 @@ description: Architecture Decision Record (ADR) log on Module Export Structure
 With a growing number of exports of packages like `@backstage/core-components`,
 it is becoming more and more difficult to answer questions such as
 
-> Is the export in this module also exported by the package?
+&gt; Is the export in this module also exported by the package?
 
 or
 
-> What is exported from this directory?
+&gt; What is exported from this directory?
 
 We currently do not use any pattern for how to structure exports. There is a mix
 of package-level re-exports deep into the directory tree, shallow re-exports for
@@ -30,6 +30,7 @@ from its own immediate directory children, and only index files will have
 re-exports. This gives a file tree similar to this:
 
 ```text
+
 index.ts
 components/index.ts
           /ComponentX/index.ts
@@ -39,6 +40,7 @@ lib/index.ts
    /UtilityX/index.ts
             /UtilityX.ts
             /helper.ts
+
 ```
 
 To check whether for example `SubComponentY` is exported from the package, it

@@ -2,8 +2,10 @@
 id: techdocs-overview
 title: TechDocs Documentation
 sidebar_label: Overview
-# prettier-ignore
-description: TechDocs is Spotify’s homegrown docs-like-code solution built directly into Backstage
+# prettier-ignore: ""
+description:
+  'TechDocs is Spotify’s homegrown docs-like-code solution built directly into
+  Backstage'
 ---
 
 ## What is it?

@@ -2,8 +2,10 @@
 id: configuration
 title: Configuring Kubernetes integration
 sidebar_label: Configuration
-# prettier-ignore
-description: Configuring the Kubernetes integration for Backstage expose your entity's objects
+# prettier-ignore: ""
+description:
+  Configuring the Kubernetes integration for Backstage expose your entity's
+  objects
 ---
 
 Configuring the Backstage Kubernetes integration involves two steps:

@@ -1,7 +1,8 @@
 ---
 id: adrs-adr002
-title: ADR002: Default Software Catalog File Format
-description: Architecture Decision Record (ADR) log on Default Software Catalog File Format
+title: 'ADR002: Default Software Catalog File Format'
+description:
+  Architecture Decision Record (ADR) log on Default Software Catalog File Format
 ---
 
 ## Background

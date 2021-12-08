@@ -2,8 +2,11 @@
 id: well-known-relations
 title: Well-known Relations between Catalog Entities
 sidebar_label: Well-known Relations
-# prettier-ignore
-description: Documentation that lists a number of well known Relations, that have defined semantics. They can be attached to catalog entities and consumed by plugins as needed.
+# prettier-ignore: ""
+description:
+  Documentation that lists a number of well known Relations, that have defined
+  semantics. They can be attached to catalog entities and consumed by plugins as
+  needed.
 ---
 
 This section lists a number of well known

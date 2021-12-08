@@ -1,9 +1,8 @@
 ---
 title: 'Announcing the Backstage Search platform: a customizable search tool built just for you'
 author: Emma Indal, Spotify
-authorURL: https://www.linkedin.com/in/emma-indal
+authorURL: "https://www.linkedin.com/in/emma-indal"
 ---
-
 ![Backstage Search platform](assets/21-06-24/backstage-search-platform.png)
 
 **TLDR;** The new Backstage Search is now available in alpha, ready for you to start building on. A total rethinking of the core search feature in Backstage, it’s more than just a box you type into — it’s a mini platform all by itself. With its composable frontend and extensible backend, you can design and build the search tool that suits your organization’s needs.
@@ -12,7 +11,7 @@ So, you don’t just get an improved out-of-the-box experience for searching wha
 
 With one query, your teams can find exactly what they’re looking for: anything and everything.
 
-<!--truncate-->
+truncate
 
 ## Search and explore
 
@@ -35,10 +34,10 @@ First, we looked at which jobs to be done belonged to the search plugin itself (
 
 Looking at all these various jobs, we defined four goals for the platform:
 
-- **Flexibility:** Be search engine–agnostic
-- **Simplicity:** Make it easy for content owners to make their content searchable/discoverable
-- **Control:** Allow plugin developers to customize their search results components
-- **Reusability:** Offer reusable components/APIs that other devs can leverage
+-   **Flexibility:** Be search engine–agnostic
+-   **Simplicity:** Make it easy for content owners to make their content searchable/discoverable
+-   **Control:** Allow plugin developers to customize their search results components
+-   **Reusability:** Offer reusable components/APIs that other devs can leverage
 
 Beginning our journey this way — by identifying the jobs to be done first, then defining the product goals from there — we could make sure that the search platform addressed real needs and improved the search experience for both users and plugin developers.
 
@@ -50,10 +49,10 @@ This approach not only created a better search tool for the open source communit
 
 We are now happy and proud to announce our alpha version of the [Backstage Search Platform](https://backstage.io/docs/features/search/architecture), featuring:
 
-- Bring your own search engine (Flexibility)
-- Collators for easily indexing content from plugins and other sources (Simplicity)
-- Composable search page experiences (Control, Reusability)
-- Customize the look and feel of each search result (Control, Reusability)
+-   Bring your own search engine (Flexibility)
+-   Collators for easily indexing content from plugins and other sources (Simplicity)
+-   Composable search page experiences (Control, Reusability)
+-   Customize the look and feel of each search result (Control, Reusability)
 
 ### Bring your own search engine
 
@@ -79,16 +78,16 @@ That's why we have put effort into making your search page experience composable
 
 A good example of the level of customization the platform allows is how list items are displayed in search results. A search result component can be a list, this list can consist of different list items (search results returned from the search engine) — but these list items could look different depending on what the search result returns in terms of its fields.
 
-Let’s say that for an entity returned from the software catalog maybe the most important information to show is the name, while a result returned from the TechDocs plugin should maybe show the text content as the most important information. This can be customized by creating <CustomResultListItem /> components (like TechDocsResultListItem or CatalogResultListItem or whatever list item component you want) and configuring them in the app.
+Let’s say that for an entity returned from the software catalog maybe the most important information to show is the name, while a result returned from the TechDocs plugin should maybe show the text content as the most important information. This can be customized by creating customresultlistitem components (like TechDocsResultListItem or CatalogResultListItem or whatever list item component you want) and configuring them in the app.
 
-If there is no need to customize your search result list items, the <DefaultResultListItem /> component is there for you to reuse.
+If there is no need to customize your search result list items, the  component is there for you to reuse.
 
 ## Getting started with Backstage Search
 
 We put together [a getting started guide](https://backstage.io/docs/features/search/getting-started) that provides two different ways to set up Backstage Search:
 
-- Create a new app and get the most out of the search setup right out of the box, or
-- Add the new Backstage Search setup to your existing Backstage app.
+-   Create a new app and get the most out of the search setup right out of the box, or
+-   Add the new Backstage Search setup to your existing Backstage app.
 
 Whichever situation you’re in, we have you covered.
 

@@ -2,7 +2,7 @@
 id: locations
 sidebar_label: Locations
 title: Amazon Web Services S3 Locations
-# prettier-ignore
+# prettier-ignore: ""
 description: Setting up an integration with Amazon Web Services S3
 ---
 

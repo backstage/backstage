@@ -1,9 +1,8 @@
 ---
 title: How Spotify is helping more companies adopt Backstage
 author: Austin Lamon, Spotify
-authorURL: https://www.linkedin.com/in/austinlamon
+authorURL: "https://www.linkedin.com/in/austinlamon"
 ---
-
 [![The Backstage community is growing! In just over a year, Backstage has gone from a few open source building blocks to a thriving platform used by engineering orgs with thousands of developers. But even with 30+ adopting companies and 400+ contributors, we are still in the very early stages of reaching the platform’s potential.](assets/21-06-22/spotify-backstage-header.gif)](https://backstage.spotify.com/)
 _[backstage.spotify.com](https://backstage.spotify.com)_
 
@@ -13,15 +12,15 @@ In order to grow Backstage further, Spotify is increasing the support we provide
 
 And while Spotify remains committed to maturing the Backstage platform — both as original creator and active maintainer — we also want to make room for the community to take greater ownership. Backstage may have started inside Spotify, but it belongs to all of you. So, we hope you join us in what’s next.
 
-<!--truncate-->
+truncate
 
 ## What’s next: More support for adopters and contributors
 
 Alongside the code contributions, technical support, and community leadership provided by our dedicated (and still growing) Backstage team, Spotify is introducing three additional ways to help lower the barriers to adopting the platform:
 
-1. **New consulting support.** In addition to investing in the Backstage getting started experience and the technical support we already provide, we’re adding [consulting support](https://backstage.spotify.com) for companies who are looking to adopt (or are already in the middle of adopting) Backstage.
-2. **Double the community sessions.** We are creating separate meetups for Backstage adopters and Backstage contributors for more focused discussions. (Come to both!)
-3. **Adding reviewers and maintainers.** We recently introduced [reviewers](https://github.com/backstage/backstage/pull/5137) to the Backstage project to speed up PR reviews and approvals, with the hope of also adding more maintainers in the future.
+1.  **New consulting support.** In addition to investing in the Backstage getting started experience and the technical support we already provide, we’re adding [consulting support](https://backstage.spotify.com) for companies who are looking to adopt (or are already in the middle of adopting) Backstage.
+2.  **Double the community sessions.** We are creating separate meetups for Backstage adopters and Backstage contributors for more focused discussions. (Come to both!)
+3.  **Adding reviewers and maintainers.** We recently introduced [reviewers](https://github.com/backstage/backstage/pull/5137) to the Backstage project to speed up PR reviews and approvals, with the hope of also adding more maintainers in the future.
 
 ## Why Spotify is increasing its investment in open source (and why now)
 
@@ -59,8 +58,8 @@ Earlier this year, we began hosting [Backstage Community Sessions](https://githu
 
 And while these sessions have been a success, the feedback we’ve gotten from the community has been very clear: more frequent and more focused conversations. So, later this summer, we’ll be launching standalone Backstage Adopter Sessions and Backstage Contributor Sessions. We hope this will lead to more useful sessions for everyone — and, of course, you are welcome to attend either or both:
 
-- **For the adopter sessions:** we invite you to share the challenges, learnings, and use cases you’re facing with companies similar to yourselves.
-- **For the contributor sessions:** we invite you to share thoughts, suggestions, and gaps in the Backstage core with the maintainers and reviewers.
+-   **For the adopter sessions:** we invite you to share the challenges, learnings, and use cases you’re facing with companies similar to yourselves.
+-   **For the contributor sessions:** we invite you to share thoughts, suggestions, and gaps in the Backstage core with the maintainers and reviewers.
 
 Speaking of reviewers and maintainers…
 

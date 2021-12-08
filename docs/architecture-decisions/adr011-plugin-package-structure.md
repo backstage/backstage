@@ -1,6 +1,6 @@
 ---
 id: adrs-adr011
-title: ADR011: Plugin Package Structure
+title: 'ADR011: Plugin Package Structure'
 description: Architecture Decision Record (ADR) for Plugin Package Structure
 ---
 
@@ -19,8 +19,8 @@ different frontend plugins
 This results in emerging plugin packages with shared code, like
 `packages/catalog-client` or `packages/techdocs-common`.
 
-> There is a common phrase in software development:
-> [Naming things is hard](https://martinfowler.com/bliki/TwoHardThings.html)
+&gt; There is a common phrase in software development: &gt;
+[Naming things is hard](https://martinfowler.com/bliki/TwoHardThings.html)
 
 To keep the contributed plugins consistent, this Architecture Decision Record
 provides rules for naming plugin packages.

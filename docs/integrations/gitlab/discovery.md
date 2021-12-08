@@ -2,8 +2,9 @@
 id: discovery
 title: GitLab Discovery
 sidebar_label: Discovery
-# prettier-ignore
-description: Automatically discovering catalog entities from repositories in GitLab
+# prettier-ignore: ""
+description:
+  Automatically discovering catalog entities from repositories in GitLab
 ---
 
 The GitLab integration has a special discovery processor for discovering catalog

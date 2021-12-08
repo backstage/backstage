@@ -2,8 +2,9 @@
 id: org
 title: GitHub Organizational Data
 sidebar_label: Org Data
-# prettier-ignore
-description: Importing users and groups from a GitHub organization into Backstage
+# prettier-ignore: ""
+description:
+  Importing users and groups from a GitHub organization into Backstage
 ---
 
 The Backstage catalog can be set up to ingest organizational data - users and
