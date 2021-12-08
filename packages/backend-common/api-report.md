@@ -521,6 +521,8 @@ export type ServiceBuilder = {
   setRequestLoggingHandler(
     requestLoggingHandler: RequestLoggingHandlerFactory,
   ): ServiceBuilder;
+  setErrorHandler(errorHandler: ErrorRequestHandler): ServiceBuilder;
+  disableDefaultErrorHandler(): ServiceBuilder;
   start(): Promise<Server>;
 };
 
