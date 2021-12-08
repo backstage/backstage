@@ -63,7 +63,7 @@ function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
-  const tokenManager = ServerTokenManager.noop();
+  const tokenManager = ServerTokenManager.fromConfig(config);
   const permissions = new PermissionClient({
     discoveryApi: discovery,
     configApi: config,
