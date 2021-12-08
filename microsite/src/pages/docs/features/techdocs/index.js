@@ -1,5 +1,5 @@
 const React = require('react');
-const Redirect = require('../../../../../core/Redirect.js');
+import {Redirect} from '@docusaurus/router';
 
 const siteConfig = require(process.cwd() + '/siteConfig.js');
 
