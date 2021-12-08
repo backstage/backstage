@@ -49,7 +49,7 @@ configuration:
 ```yaml
 proxy:
   '/airflow':
-    target: http://localhost:8080/api/v1
+    target: https://your.airflow.instance.com/api/v1
     headers:
       Authorization: ${AIRFLOW_BASIC_AUTH_HEADER}
 ```
