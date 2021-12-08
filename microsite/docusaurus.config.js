@@ -27,7 +27,6 @@ module.exports={
       "@docusaurus/preset-classic",
       {
         "docs": {
-          "homePageId": "overview/what-is-backstage",
           "showLastUpdateAuthor": true,
           "showLastUpdateTime": true,
           "editUrl": "https://github.com/backstage/backstage/edit/master/docs/",
