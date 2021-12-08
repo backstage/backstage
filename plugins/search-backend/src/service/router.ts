@@ -18,19 +18,24 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { IdentityClient } from '@backstage/plugin-auth-backend';
+import { PermissionClient } from '@backstage/plugin-permission-common';
 import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { PermissionFilteringEngine } from '../PermissionFilteringEngine';
 
 export type RouterOptions = {
   engine: SearchEngine;
+  permissions: PermissionClient;
   logger: Logger;
 };
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { engine, logger } = options;
+  const { engine: inputEngine, permissions, logger } = options;
   const router = Router();
+  const engine = new PermissionFilteringEngine(inputEngine, permissions);
+
   router.get(
     '/query',
     async (
