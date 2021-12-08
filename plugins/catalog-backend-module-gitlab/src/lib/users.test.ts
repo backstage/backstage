@@ -21,7 +21,7 @@ import { rest } from 'msw';
 import { setupServer, SetupServerApi } from 'msw/node';
 import { GitLabClient } from './client';
 
-import { getGroupMembers } from './users';
+import { getGroupMembers, getInstanceUsers } from './users';
 
 const server = setupServer();
 setupRequestMockHandlers(server);
@@ -98,6 +98,72 @@ function setupFakeGroupMembers(
   );
 }
 
+function setupFakeInstanceUsers(srv: SetupServerApi) {
+  srv.use(
+    rest.get(`${MOCK_CONFIG.apiBaseUrl}/users`, (_, res, ctx) => {
+      return res(
+        ctx.set('x-next-page', ''),
+        ctx.json([
+          // only primary email
+          {
+            id: 1,
+            name: 'User One',
+            username: 'user.one',
+            state: 'active',
+            avatar_url: 'https://example.com/avatar/1',
+            web_url: 'https://example.com/user.one',
+            created_at: '2021-12-01T10:00:00.000Z',
+            bot: false,
+            public_email: null,
+            job_title: '',
+            email: 'user.one@example.com',
+          },
+          // only public email
+          {
+            id: 2,
+            name: 'User Two',
+            username: 'user.two',
+            state: 'active',
+            avatar_url: 'https://example.com/avatar/2',
+            web_url: 'https://example.com/user.two',
+            created_at: '2021-12-01T10:00:00.000Z',
+            bot: false,
+            public_email: 'user.two.public@example.com',
+            job_title: '',
+          },
+          // both public and primary email
+          {
+            id: 3,
+            name: 'User Three',
+            username: 'user.three',
+            state: 'active',
+            avatar_url: 'https://example.com/avatar/3',
+            web_url: 'https://example.com/user.three',
+            created_at: '2021-12-01T10:00:00.000Z',
+            bot: false,
+            public_email: 'user.three.public@example.com',
+            email: 'user.three.primary@example.com',
+            job_title: '',
+          },
+          // bot user
+          {
+            id: 4,
+            name: 'Project Bot User',
+            username: 'project_4_bot',
+            state: 'active',
+            avatar_url: 'https://example.com/avatar/4',
+            web_url: 'https://example.com/project_4_bot',
+            created_at: '2021-12-01T10:00:00.000Z',
+            bot: true,
+            public_email: 'project4_bot@example.com',
+            job_title: '',
+          },
+        ]),
+      );
+    }),
+  );
+}
+
 describe('getGroupMembers', () => {
   const TEST_GROUP = 'parent/child';
 
@@ -141,5 +207,61 @@ describe('getGroupMembers', () => {
     const users = await getGroupMembers(client, TEST_GROUP, true, true);
     expect(users).toHaveLength(3);
     expect(users[2]).toHaveProperty('metadata.name', 'blocked.user.three');
+  });
+});
+
+describe('getInstanceUsers', () => {
+  beforeEach(() => {
+    setupFakeInstanceUsers(server);
+  });
+
+  it('should return an array of actual users', async () => {
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+
+    const users = await getInstanceUsers(client);
+    // should exclude bot user
+    expect(users).toHaveLength(3);
+  });
+
+  it('should map response to user entities', async () => {
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+
+    const users = await getInstanceUsers(client);
+    expect(users[0]).toHaveProperty('kind', 'User');
+    expect(users[0]).toHaveProperty('metadata.name', 'user.one');
+    expect(users[0]).toHaveProperty('spec.profile.displayName', 'User One');
+    expect(users[0]).toHaveProperty(
+      'spec.profile.email',
+      'user.one@example.com',
+    );
+    expect(users[0]).toHaveProperty(
+      'spec.profile.picture',
+      'https://example.com/avatar/1',
+    );
+  });
+
+  it('should use appropriate email', async () => {
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+    const users = await getInstanceUsers(client);
+
+    // should use public email if primary unavailable
+    expect(users[1]).toHaveProperty(
+      'spec.profile.email',
+      'user.two.public@example.com',
+    );
+    // should use primary email over public email
+    expect(users[2]).toHaveProperty(
+      'spec.profile.email',
+      'user.three.primary@example.com',
+    );
   });
 });
