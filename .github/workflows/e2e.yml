@@ -35,6 +35,12 @@ jobs:
 
     name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
+      # https://github.com/Automattic/node-canvas/issues/1945
+      - name: Install dependencies to fix temporary issue in canvas build
+        run: |
+          sudo apt update
+          sudo apt install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev librsvg2-dev
+
       - uses: actions/checkout@v2
 
       # Beginning of yarn setup, keep in sync between all workflows, see ci.yml
