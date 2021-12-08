@@ -15,7 +15,7 @@
  */
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import clsx from 'clsx';
+import classnames from 'classnames';
 import React, { ReactNode, useContext } from 'react';
 import {
   SidebarItemWithSubmenuContext,
@@ -93,7 +93,7 @@ export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
   const { isHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   return (
     <div
-      className={clsx(classes.drawer, {
+      className={classnames(classes.drawer, {
         [classes.drawerOpen]: isHoveredOn,
       })}
     >

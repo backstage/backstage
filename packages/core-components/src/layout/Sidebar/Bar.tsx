@@ -16,7 +16,7 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import clsx from 'clsx';
+import classnames from 'classnames';
 import React, { useState, useContext, PropsWithChildren, useRef } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
@@ -172,7 +172,7 @@ export function Sidebar(props: PropsWithChildren<Props>) {
         }}
       >
         <div
-          className={clsx(classes.drawer, {
+          className={classnames(classes.drawer, {
             [classes.drawerOpen]: isOpen,
           })}
         >
