@@ -49,16 +49,13 @@ const getEntity = async (
 ): Promise<Entity | undefined> => {
   const parsed = parseEntityRef(resourceRef);
 
-  const { entities } = await entitiesCatalog.entities(
-    {
-      filter: basicEntityFilter({
-        kind: parsed.kind,
-        'metadata.namespace': parsed.namespace,
-        'metadata.name': parsed.name,
-      }),
-    },
-    false,
-  );
+  const { entities } = await entitiesCatalog.entities({
+    filter: basicEntityFilter({
+      kind: parsed.kind,
+      'metadata.namespace': parsed.namespace,
+      'metadata.name': parsed.name,
+    }),
+  });
 
   if (!entities.length) {
     return undefined;

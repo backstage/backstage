@@ -174,40 +174,34 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
     this.transformConditions = createConditionTransformer(permissionRules);
   }
 
-  async entities(
-    request?: EntitiesRequest,
-    // TODO(authorization-framework - this should be based on whether the request originates from a backend.
-    authorize: boolean = true,
-  ): Promise<EntitiesResponse> {
+  async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const db = this.database;
 
     let entitiesQuery = db<DbFinalEntitiesRow>('final_entities');
 
-    if (authorize) {
-      const authorizeResponse = (
-        await this.permissionApi.authorize(
-          [{ permission: catalogEntityReadPermission }],
-          {
-            token: request?.authorizationToken,
-          },
-        )
-      )[0];
+    // const authorizeResponse = (
+    //   await this.permissionApi.authorize(
+    //     [{ permission: catalogEntityReadPermission }],
+    //     {
+    //       token: request?.authorizationToken,
+    //     },
+    //   )
+    // )[0];
 
-      if (authorizeResponse.result === AuthorizeResult.DENY) {
-        return {
-          entities: [],
-          pageInfo: { hasNextPage: false },
-        };
-      } else if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
-        entitiesQuery = parseFilter(
-          this.transformConditions(
-            authorizeResponse.conditions,
-          ),
-          entitiesQuery,
-          db,
-        );
-      }
-    }
+    // if (authorizeResponse.result === AuthorizeResult.DENY) {
+    //   return {
+    //     entities: [],
+    //     pageInfo: { hasNextPage: false },
+    //   };
+    // } else if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
+    //   entitiesQuery = parseFilter(
+    //     this.transformConditions(
+    //       authorizeResponse.conditions,
+    //     ),
+    //     entitiesQuery,
+    //     db,
+    //   );
+    // }
 
     if (request?.filter) {
       entitiesQuery = parseFilter(request.filter, entitiesQuery, db);
