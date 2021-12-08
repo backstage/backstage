@@ -17,7 +17,7 @@
 import React, { useMemo } from 'react';
 import { AnsiChunk, AnsiLine, ChunkModifiers } from './AnsiProcessor';
 import startCase from 'lodash/startCase';
-import clsx from 'clsx';
+import classnames from 'classnames';
 import { useStyles } from './styles';
 
 export function getModifierClasses(
@@ -160,7 +160,7 @@ export function LogLine({
       chunks.map(({ text, modifiers, highlight }, index) => (
         <span
           key={index}
-          className={clsx(
+          className={classnames(
             getModifierClasses(classes, modifiers),
             highlight !== undefined &&
               (highlight === highlightResultIndex

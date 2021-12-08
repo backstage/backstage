@@ -23,7 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
-import clsx from 'clsx';
+import classnames from 'classnames';
 import React, {
   Children,
   forwardRef,
@@ -253,12 +253,12 @@ const SidebarItemWithSubmenu = ({
     >
       <div
         onMouseLeave={handleMouseLeave}
-        className={clsx(isHoveredOn && classes.highlighted)}
+        className={classnames(isHoveredOn && classes.highlighted)}
       >
         <div
           onMouseEnter={handleMouseEnter}
           data-testid="item-with-submenu"
-          className={clsx(
+          className={classnames(
             classes.root,
             isOpen ? classes.open : classes.closed,
             isActive && classes.selected,
@@ -360,7 +360,10 @@ export const WorkaroundNavLink = React.forwardRef<
       ref={ref}
       aria-current={ariaCurrent}
       style={{ ...style, ...(isActive ? activeStyle : undefined) }}
-      className={clsx([className, isActive ? activeClassName : undefined])}
+      className={classnames([
+        className,
+        isActive ? activeClassName : undefined,
+      ])}
     />
   );
 });
@@ -388,7 +391,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       variant="dot"
       overlap="circular"
       invisible={!hasNotifications}
-      className={clsx({ [classes.closedItemIcon]: !isOpen })}
+      className={classnames({ [classes.closedItemIcon]: !isOpen })}
     >
       <Icon fontSize="small" />
     </Badge>
@@ -414,7 +417,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   const childProps = {
     onClick,
-    className: clsx(
+    className: classnames(
       className,
       classes.root,
       isOpen ? classes.open : classes.closed,

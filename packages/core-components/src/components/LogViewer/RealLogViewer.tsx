@@ -21,7 +21,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import { AnsiProcessor } from './AnsiProcessor';
 import { HEADER_SIZE, useStyles } from './styles';
-import clsx from 'clsx';
+import classnames from 'classnames';
 import { LogLine } from './LogLine';
 import { LogViewerControls } from './LogViewerControls';
 import { useLogViewerSearch } from './useLogViewerSearch';
@@ -62,7 +62,7 @@ export function RealLogViewer(props: RealLogViewerProps) {
       {({ height, width }) => (
         <div
           style={{ width, height }}
-          className={clsx(classes.root, props.className)}
+          className={classnames(classes.root, props.className)}
         >
           <div className={classes.header}>
             <LogViewerControls {...search} />
@@ -82,7 +82,7 @@ export function RealLogViewer(props: RealLogViewerProps) {
               return (
                 <div
                   style={{ ...style }}
-                  className={clsx(classes.line, {
+                  className={classnames(classes.line, {
                     [classes.lineSelected]: selection.isSelected(lineNumber),
                   })}
                 >
