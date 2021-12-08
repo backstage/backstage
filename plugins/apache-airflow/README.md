@@ -4,30 +4,13 @@ Welcome to the apache-airflow plugin!
 
 ## Installation
 
-1. Clone the plugin repository to the plugins directory.
+1. Install the plugin with `yarn` in the root of your Backstage directory
 
 ```sh
-git clone \
-    git@github.com:cmpadden/backstage-apache-airflow-plugin.git \
-    plugins/apache-airflow
+yarn --cwd packages/app add @backstage/plugin-apache-airflow
 ```
 
-2. Add the plugin dependency in `app/package.json`
-
-```diff
---- a/packages/app/package.json
-+++ b/packages/app/package.json
-@@ -11,6 +11,7 @@
-     "@backstage/core-components": "^0.7.4",
-     "@backstage/core-plugin-api": "^1.2.0",
-     "@backstage/integration-react": "^0.1.14",
-+    "@backstage/plugin-apache-airflow": "^0.0.0",
-     "@backstage/plugin-api-docs": "^0.6.14",
-     "@backstage/plugin-azure-devops": "^0.1.4",
-     "@backstage/plugin-badges": "^0.2.14",
-```
-
-3. Import and use the plugin extension in `spp/src/App.tsx`
+2. Import and use the plugin extension in `spp/src/App.tsx`
 
 ```diff
 --- a/packages/app/src/App.tsx
