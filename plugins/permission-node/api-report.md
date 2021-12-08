@@ -7,7 +7,7 @@ import { AuthorizeRequest } from '@backstage/plugin-permission-common';
 import { AuthorizeRequestOptions } from '@backstage/plugin-permission-common';
 import { AuthorizeResponse } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { BackstageIdentity } from '@backstage/plugin-auth-backend';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/plugin-permission-common';
 import { PermissionClient } from '@backstage/plugin-permission-common';

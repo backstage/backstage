@@ -39,7 +39,7 @@
     "@backstage/plugin-jenkins-backend": "^0.1.9",
     "@backstage/plugin-kubernetes-backend": "^0.4.0",
     "@backstage/plugin-kafka-backend": "^0.2.12",
-    "@backstage/plugin-permission-backend": "^0.1.0",
+    "@backstage/plugin-permission-backend": "^0.2.0",
     "@backstage/plugin-permission-common": "^0.2.0",
     "@backstage/plugin-permission-node": "^0.2.0",
     "@backstage/plugin-proxy-backend": "^0.2.14",
