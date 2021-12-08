@@ -22,21 +22,12 @@
   "dependencies": {
     "@backstage/core-components": "^0.7.6",
     "@backstage/core-plugin-api": "^0.2.2",
-    "@backstage/theme": "^0.2.14",
-    "@changesets/cli": "^2.14.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
-    "@microsoft/api-documenter": "^7.13.68",
-    "@microsoft/api-extractor": "^7.18.7",
-    "@microsoft/api-extractor-model": "^7.13.5",
-    "concurrently": "^6.0.0",
     "cross-fetch": "^3.0.6",
-    "lint-staged": "^11.1.2",
-    "prettier": "^2.2.1",
     "qs": "^6.10.1",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "react-use": "^17.2.4"
   },
   "devDependencies": {
