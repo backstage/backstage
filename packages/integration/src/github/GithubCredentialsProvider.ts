@@ -233,6 +233,12 @@ export type GithubCredentials = {
   type: GithubCredentialType;
 };
 
+/**
+ * This allows implementations to be provided to retrieve GitHub credentials.
+ *
+ * @public
+ *
+ */
 export interface IGithubCredentialsProvider {
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
@@ -299,6 +305,12 @@ export class GithubCredentialsProvider implements IGithubCredentialsProvider {
   }
 }
 
+/**
+ * Handles the creation and of GitHub credentials providers.
+ *
+ * @public
+ *
+ */
 export class GithubCredentialsProviderFactory {
   static provider = GithubCredentialsProvider;
 

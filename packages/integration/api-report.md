@@ -198,10 +198,20 @@ export type GithubCredentials = {
 };
 
 // @public
-export class GithubCredentialsProvider {
+export class GithubCredentialsProvider implements IGithubCredentialsProvider {
   // (undocumented)
-  static create(config: GitHubIntegrationConfig): GithubCredentialsProvider;
+  static create(config: GitHubIntegrationConfig): IGithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
+}
+
+// @public
+export class GithubCredentialsProviderFactory {
+  // (undocumented)
+  static create(config: GitHubIntegrationConfig): IGithubCredentialsProvider;
+  // (undocumented)
+  static provider: typeof GithubCredentialsProvider;
+  // (undocumented)
+  static setProvider(provider: any): void;
 }
 
 // @public
@@ -271,6 +281,12 @@ export type GoogleGcsIntegrationConfig = {
   clientEmail?: string;
   privateKey?: string;
 };
+
+// @public
+export interface IGithubCredentialsProvider {
+  // (undocumented)
+  getCredentials(opts: { url: string }): Promise<GithubCredentials>;
+}
 
 // @public
 export interface IntegrationsByType {
