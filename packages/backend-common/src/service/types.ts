@@ -109,8 +109,7 @@ export type ServiceBuilder = {
   setErrorHandler(errorHandler: ErrorRequestHandler): ServiceBuilder;
 
   /**
-   * Disable default error handler
-   *
+   * Disables the default error handler
    */
   disableDefaultErrorHandler(): ServiceBuilder;
 
