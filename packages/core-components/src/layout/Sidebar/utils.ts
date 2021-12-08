@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import { Location, State, Path } from 'history';
+import { Location, Path } from 'history';
 import { isEqual, isMatch } from 'lodash';
 import qs from 'qs';
 
-export function isLocationMatch(
-  currentLocation: Location<State>,
-  toLocation: Path,
-) {
+export function isLocationMatch(currentLocation: Location, toLocation: Path) {
   const toDecodedSearch = new URLSearchParams(toLocation.search).toString();
   const toQueryParameters = qs.parse(toDecodedSearch);
 
