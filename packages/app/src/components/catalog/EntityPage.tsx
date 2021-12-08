@@ -128,7 +128,7 @@ import {
   isNewRelicDashboardAvailable,
   EntityNewRelicDashboard,
   EntityPageNewRelicDashboard,
-} from '@backstage/plugin-new-relic-dashboard';
+} from '@backstage/plugin-newrelic-dashboard';
 
 import React, { ReactNode, useMemo, useState } from 'react';
 
@@ -385,8 +385,8 @@ const serviceEntityPage = (
 
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
-      path="/gitlab"
-      title="Gitlab"
+      path="/newrelic-dashboard"
+      title="New Relic Dashboard"
     >
       <EntityNewRelicDashboard />
     </EntityLayout.Route>
@@ -451,11 +451,12 @@ const websiteEntityPage = (
     </EntityLayout.Route>
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
-      path="/new-relic-dashboard"
+      path="/newrelic-dashboard"
       title="New Relic Dashboard"
     >
       <EntityNewRelicDashboard />
     </EntityLayout.Route>
+
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
     </EntityLayout.Route>
