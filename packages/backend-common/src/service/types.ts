@@ -101,8 +101,8 @@ export type ServiceBuilder = {
   /**
    * Sets an additional errorHandler to run before the defaultErrorHandler.
    *
-   * If we want to use only custom errorHandler without defaultErrorHandler we need to
-   * disable the defaultErrorHandler by invoking disableDefaultErrorHandler()
+   * For execution of only the custom error handler make sure to also invoke disableDefaultErrorHandler()
+   * otherwise the defaultErrorHandler is executed at the end of the error middleware chain.
    *
    * @param errorHandler - an error handler
    */
