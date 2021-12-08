@@ -1,5 +1,11 @@
 # @backstage/plugin-graphiql
 
+## 0.2.23
+
+### Patch Changes
+
+- dde1681f33: chore(dependencies): bump `graphiql` package to latest
+
 ## 0.2.22
 
 ### Patch Changes

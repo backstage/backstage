@@ -47,7 +47,6 @@
     "@material-ui/lab": "4.0.0-alpha.57",
     "@rjsf/core": "^3.2.1",
     "@rjsf/material-ui": "^3.2.1",
-    "@types/react": "*",
     "classnames": "^2.2.6",
     "git-url-parse": "^11.6.0",
     "humanize-duration": "^3.25.1",
@@ -56,14 +55,16 @@
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
     "qs": "^6.9.4",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "react-lazylog": "^4.5.2",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
     "use-immer": "^0.6.0",
     "zen-observable": "^0.8.15"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.10.0",

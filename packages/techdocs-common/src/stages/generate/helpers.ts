@@ -384,7 +384,7 @@ export const createOrUpdateMetadata = async (
   // a form appropriate for invalidating the associated object from cache.
   try {
     json.files = (await getFileTreeRecursively(techdocsMetadataDir)).map(file =>
-      file.replace(`${techdocsMetadataDir}/`, ''),
+      file.replace(`${techdocsMetadataDir}${path.sep}`, ''),
     );
   } catch (err) {
     assertError(err);

@@ -15,23 +15,72 @@
  */
 
 import AsyncApi from '@asyncapi/react-component';
-import '@asyncapi/react-component/lib/styles/fiori.css';
-import { alpha, makeStyles } from '@material-ui/core/styles';
+import '@asyncapi/react-component/styles/default.css';
+import { makeStyles, alpha, darken } from '@material-ui/core/styles';
+import { BackstageTheme } from '@backstage/theme';
 import React from 'react';
+import { useTheme } from '@material-ui/core';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: BackstageTheme) => ({
   root: {
-    '& .asyncapi': {
-      'font-family': 'inherit',
+    fontFamily: 'inherit',
+    '& .bg-white': {
       background: 'none',
     },
-    '& h2': {
-      ...theme.typography.h6,
+    '& .text-4xl': {
+      ...theme.typography.h3,
     },
-    '& .text-teal': {
-      color: theme.palette.primary.main,
+    ' & h2': {
+      ...theme.typography.h4,
+    },
+    '& .border': {
+      borderColor: alpha(theme.palette.border, 0.1),
+    },
+    '& .min-w-min': {
+      minWidth: 'fit-content',
+    },
+    '& .examples': {
+      padding: '1rem',
+    },
+    '& .bg-teal-500': {
+      backgroundColor: theme.palette.status.ok,
+    },
+    '& .bg-blue-500': {
+      backgroundColor: theme.palette.info.main,
+    },
+    '& .bg-blue-400': {
+      backgroundColor: theme.palette.info.light,
+    },
+    '& .bg-indigo-400': {
+      backgroundColor: theme.palette.warning.main,
+    },
+    '& .text-teal-50': {
+      color: theme.palette.status.ok,
+    },
+    '& .text-red-600': {
+      color: theme.palette.error.main,
+    },
+    '& .text-orange-600': {
+      color: theme.palette.warning.main,
+    },
+    '& .text-teal-500': {
+      color: theme.palette.status.ok,
+    },
+    '& .text-blue-500': {
+      color: theme.palette.info.main,
+    },
+    '& .-rotate-90': {
+      '--tw-rotate': '0deg',
     },
     '& button': {
+      ...theme.typography.button,
+      borderRadius: theme.shape.borderRadius,
+      color: theme.palette.primary.main,
+    },
+    '& a': {
+      color: theme.palette.link,
+    },
+    '& a.no-underline': {
       ...theme.typography.button,
       background: 'none',
       boxSizing: 'border-box',
@@ -48,84 +97,47 @@ const useStyles = makeStyles(theme => ({
       border: `1px solid ${alpha(theme.palette.primary.main, 0.5)}`,
       '&:hover': {
         textDecoration: 'none',
-        '&.Mui-disabled': {
-          backgroundColor: 'transparent',
-        },
         border: `1px solid ${theme.palette.primary.main}`,
         backgroundColor: alpha(
           theme.palette.primary.main,
           theme.palette.action.hoverOpacity,
         ),
-        // Reset on touch devices, it doesn't add specificity
-        '@media (hover: none)': {
-          backgroundColor: 'transparent',
-        },
-      },
-      '&.Mui-disabled': {
-        color: theme.palette.action.disabled,
       },
     },
-    '& .asyncapi__collapse-button:hover': {
-      color: theme.palette.primary.main,
-    },
-    '& button.asyncapi__toggle-button': {
-      'min-width': 'inherit',
-    },
-    '& .asyncapi__info-list li': {
-      'border-color': theme.palette.primary.main,
-      '&:hover': {
-        color: theme.palette.text.primary,
-        'border-color': theme.palette.primary.main,
-        'background-color': theme.palette.primary.main,
-      },
-    },
-    '& .asyncapi__info-list li a': {
-      color: theme.palette.primary.main,
-      '&:hover': {
+    '& li.no-underline': {
+      '& a': {
+        textDecoration: 'none',
         color: theme.palette.getContrastText(theme.palette.primary.main),
       },
     },
-    '& .asyncapi__enum': {
-      color: theme.palette.secondary.main,
+  },
+  dark: {
+    '& svg': {
+      fill: theme.palette.text.primary,
     },
-    '& .asyncapi__info, .asyncapi__channel, .asyncapi__channels > div, .asyncapi__schema, .asyncapi__channel-operations-list .asyncapi__messages-list-item .asyncapi__message, .asyncapi__message, .asyncapi__server, .asyncapi__servers > div, .asyncapi__messages > div, .asyncapi__schemas > div':
-      {
-        'background-color': 'inherit',
-      },
-    '& .asyncapi__channel-parameters-header, .asyncapi__channel-operations-header, .asyncapi__channel-operation-oneOf-subscribe-header, .asyncapi__channel-operation-oneOf-publish-header, .asyncapi__channel-operation-message-header,  .asyncapi__message-header, .asyncapi__message-header-title, .asyncapi__message-header-title > h3, .asyncapi__bindings, .asyncapi__bindings-header, .asyncapi__bindings-header > h4':
-      {
-        'background-color': 'inherit',
+    '& .prose': {
+      color: theme.palette.text.secondary,
+      '& h3': {
         color: theme.palette.text.primary,
       },
-    '& .asyncapi__additional-properties-notice': {
-      color: theme.palette.text.hint,
     },
-    '& .asyncapi__code, .asyncapi__code-pre': {
-      background: theme.palette.background.default,
+    '& .bg-gray-100, .bg-gray-200': {
+      backgroundColor: theme.palette.background.default,
     },
-    '& .asyncapi__schema-example-header-title': {
-      color: theme.palette.text.secondary,
+    '& .text-gray-600': {
+      color: theme.palette.grey['50'],
     },
-    '& .asyncapi__message-headers-header, .asyncapi__message-payload-header, .asyncapi__server-variables-header, .asyncapi__server-security-header':
-      {
-        'background-color': 'inherit',
-        color: theme.palette.text.secondary,
+    '& .text-gray-700': {
+      color: theme.palette.grey['100'],
+    },
+    '& .panel--right': {
+      background: darken(theme.palette.navigation.background, 0.1),
+    },
+    '& .examples': {
+      backgroundColor: darken(theme.palette.navigation.background, 0.1),
+      '& pre': {
+        backgroundColor: darken(theme.palette.background.default, 0.2),
       },
-    '& .asyncapi__table-header': {
-      background: theme.palette.background.default,
-    },
-    '& .asyncapi__table-body': {
-      color: theme.palette.text.primary,
-    },
-    '& .asyncapi__server-security-flow': {
-      background: theme.palette.background.default,
-      border: 'none',
-    },
-    '& .asyncapi__server-security-flows-list a': {
-      color: theme.palette.primary.main,
-    },
-    '& .asyncapi__table-row--nested': {
-      color: theme.palette.text.secondary,
     },
   },
 }));
@@ -134,11 +146,15 @@ type Props = {
   definition: string;
 };
 
-export const AsyncApiDefinition = ({ definition }: Props) => {
+export const AsyncApiDefinition = ({ definition }: Props): JSX.Element => {
   const classes = useStyles();
+  const theme = useTheme();
+  const classNames = `${classes.root} ${
+    theme.palette.type === 'dark' ? classes.dark : ''
+  }`;
 
   return (
-    <div className={classes.root}>
+    <div className={classNames}>
       <AsyncApi schema={definition} />
     </div>
   );

@@ -43,16 +43,17 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@octokit/rest": "^18.5.3",
-    "@types/react": "*",
     "git-url-parse": "^11.6.0",
     "js-base64": "^3.6.0",
     "lodash": "^4.17.21",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "react-hook-form": "^7.12.2",
     "react-router": "6.0.0-beta.0",
     "react-use": "^17.2.4",
     "yaml": "^1.10.0"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.10.0",

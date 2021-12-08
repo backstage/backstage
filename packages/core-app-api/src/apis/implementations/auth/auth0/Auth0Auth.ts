@@ -30,13 +30,15 @@ const DEFAULT_PROVIDER = {
  * @public
  */
 export default class Auth0Auth {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    defaultScopes = ['openid', `email`, `profile`],
-  }: OAuthApiCreateOptions): typeof auth0AuthApiRef.T {
+  static create(options: OAuthApiCreateOptions): typeof auth0AuthApiRef.T {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+      defaultScopes = ['openid', `email`, `profile`],
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

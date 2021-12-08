@@ -143,7 +143,10 @@ function findTypesPackage(dep, pkg) {
  */
 function findTypeDepErrors(typeDeps, pkg) {
   const devDeps = mkTypeDepSet(pkg.get('devDependencies'));
-  const deps = mkTypeDepSet(pkg.get('dependencies'));
+  const deps = mkTypeDepSet({
+    ...pkg.get('dependencies'),
+    ...pkg.get('peerDependencies'),
+  });
 
   const errors = [];
   for (const typeDep of typeDeps) {

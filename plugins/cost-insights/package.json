@@ -39,20 +39,21 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@material-ui/styles": "^4.9.6",
-    "@types/react": "*",
     "@types/recharts": "^1.8.14",
     "classnames": "^2.2.6",
     "history": "^5.0.0",
     "luxon": "^2.0.2",
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
     "recharts": "^1.8.5",
     "regression": "^2.0.1",
     "yup": "^0.32.9"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.10.0",
