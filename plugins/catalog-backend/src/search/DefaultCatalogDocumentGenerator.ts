@@ -80,7 +80,7 @@ export class DefaultCatalogDocumentGenerator {
     return formatted.toLowerCase();
   }
 
-  async *execute() {
+  async *execute(): AsyncGenerator<CatalogEntityDocument> {
     const entities = (
       await this.catalogClient.getEntities({
         filter: this.filter,

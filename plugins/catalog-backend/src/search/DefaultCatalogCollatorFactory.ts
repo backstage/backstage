@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery, TokenManager } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { CatalogEntitiesRequest } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/search-common';

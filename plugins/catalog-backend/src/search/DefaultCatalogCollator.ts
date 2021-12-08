@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery, TokenManager } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { Entity, UserEntity } from '@backstage/catalog-model';
 import { IndexableDocument } from '@backstage/search-common';
 import { Config } from '@backstage/config';
@@ -105,18 +108,16 @@ export class DefaultCatalogCollator {
     return documentText;
   }
 
-  async *execute(): AsyncGenerator<CatalogEntityDocument> {
+  async execute() {
     const { token } = await this.tokenManager.getToken();
-    const entities = (
-      await this.catalogClient.getEntities(
-        {
-          filter: this.filter,
-        },
-        { token },
-      )
-    ).items;
-    for (const entity of entities) {
-      yield {
+    const response = await this.catalogClient.getEntities(
+      {
+        filter: this.filter,
+      },
+      { token },
+    );
+    return response.items.map((entity: Entity): CatalogEntityDocument => {
+      return {
         title: entity.metadata.title ?? entity.metadata.name,
         location: this.applyArgsToFormat(this.locationTemplate, {
           namespace: entity.metadata.namespace || 'default',
@@ -130,6 +131,6 @@ export class DefaultCatalogCollator {
         lifecycle: (entity.spec?.lifecycle as string) || '',
         owner: (entity.spec?.owner as string) || '',
       };
-    };
+    });
   }
 }

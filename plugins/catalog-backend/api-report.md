@@ -753,13 +753,9 @@ export type DbPageInfo =
 //
 // @public @deprecated (undocumented)
 export class DefaultCatalogCollator {
-  constructor({
-    discovery,
-    locationTemplate,
-    filter,
-    catalogClient,
-  }: {
+  constructor(options: {
     discovery: PluginEndpointDiscovery;
+    tokenManager: TokenManager;
     locationTemplate?: string;
     filter?: CatalogEntitiesRequest['filter'];
     catalogClient?: CatalogApi;
@@ -784,11 +780,14 @@ export class DefaultCatalogCollator {
     _config: Config,
     options: {
       discovery: PluginEndpointDiscovery;
+      tokenManager: TokenManager;
       filter?: CatalogEntitiesRequest['filter'];
     },
   ): DefaultCatalogCollator;
   // (undocumented)
   protected locationTemplate: string;
+  // (undocumented)
+  protected tokenManager: TokenManager;
   // (undocumented)
   readonly type: string;
 }
@@ -806,8 +805,6 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   ): DefaultCatalogCollatorFactory;
   // (undocumented)
   getCollator(): Promise<Readable>;
-  // (undocumented)
-  protected tokenManager: TokenManager;
   // (undocumented)
   readonly type: string;
 }

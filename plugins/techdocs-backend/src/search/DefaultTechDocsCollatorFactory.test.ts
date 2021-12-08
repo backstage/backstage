@@ -16,6 +16,7 @@
 import {
   getVoidLogger,
   PluginEndpointDiscovery,
+  TokenManager,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { Readable } from 'stream';
@@ -28,7 +29,15 @@ describe('DefaultTechDocsCollatorFactory', () => {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
   };
-  const options = { discovery: mockDiscoveryApi, logger: getVoidLogger() };
+  const mockTokenManager: jest.Mocked<TokenManager> = {
+    getToken: jest.fn().mockResolvedValue({ token: '' }),
+    authenticate: jest.fn(),
+  };
+  const options = {
+    discovery: mockDiscoveryApi,
+    logger: getVoidLogger(),
+    tokenManager: mockTokenManager,
+  };
 
   it('has expected type', () => {
     const factory = DefaultTechDocsCollatorFactory.fromConfig(config, options);

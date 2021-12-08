@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import fetch from 'cross-fetch';
 import unescape from 'lodash/unescape';
@@ -33,6 +36,7 @@ interface MkSearchIndexDoc {
 export type TechDocsCollatorOptions = {
   discovery: PluginEndpointDiscovery;
   logger: Logger;
+  tokenManager: TokenManager;
   locationTemplate?: string;
   catalogClient?: CatalogApi;
   parallelismLimit?: number;

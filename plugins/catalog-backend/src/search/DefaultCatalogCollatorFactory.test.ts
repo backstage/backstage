@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { Readable } from 'stream';
 import { DefaultCatalogDocumentGenerator } from './DefaultCatalogDocumentGenerator';
@@ -25,7 +28,14 @@ describe('DefaultCatalogCollatorFactory', () => {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
   };
-  const options = { discovery: mockDiscoveryApi };
+  const mockTokenManager: jest.Mocked<TokenManager> = {
+    getToken: jest.fn().mockResolvedValue({ token: '' }),
+    authenticate: jest.fn(),
+  };
+  const options = {
+    discovery: mockDiscoveryApi,
+    tokenManager: mockTokenManager,
+  };
 
   it('has expected type', () => {
     const factory = DefaultCatalogCollatorFactory.fromConfig(config, options);

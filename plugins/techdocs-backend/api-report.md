@@ -33,14 +33,7 @@ export class DefaultTechDocsCollator {
   // Warning: (ae-forgotten-export) The symbol "TechDocsCollatorOptions" needs to be exported by the entry point index.d.ts
   //
   // @deprecated
-  constructor({
-    discovery,
-    locationTemplate,
-    logger,
-    catalogClient,
-    parallelismLimit,
-    legacyPathCasing,
-  }: TechDocsCollatorOptions_2);
+  constructor(options: TechDocsCollatorOptions_2);
   // (undocumented)
   protected applyArgsToFormat(
     format: string,

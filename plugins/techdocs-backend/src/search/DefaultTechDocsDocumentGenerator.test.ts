@@ -17,6 +17,7 @@
 import {
   PluginEndpointDiscovery,
   getVoidLogger,
+  TokenManager,
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultTechDocsDocumentGenerator } from './DefaultTechDocsDocumentGenerator';
@@ -89,6 +90,7 @@ const expectedEntities: Entity[] = [
 
 describe('DefaultTechDocsDocumentGenerator with legacyPathCasing configuration', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+  let mockTokenManager: jest.Mocked<TokenManager>;
   let collator: DefaultTechDocsDocumentGenerator;
 
   const worker = setupServer();
@@ -98,6 +100,10 @@ describe('DefaultTechDocsDocumentGenerator with legacyPathCasing configuration',
       getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
       getExternalBaseUrl: jest.fn(),
     };
+    mockTokenManager = {
+      getToken: jest.fn().mockResolvedValue({ token: '' }),
+      authenticate: jest.fn(),
+    };
     const mockConfig = new ConfigReader({
       techdocs: {
         legacyUseCaseSensitiveTripletPaths: true,
@@ -106,6 +112,7 @@ describe('DefaultTechDocsDocumentGenerator with legacyPathCasing configuration',
     collator = DefaultTechDocsDocumentGenerator.fromConfig(mockConfig, {
       discovery: mockDiscoveryApi,
       logger,
+      tokenManager: mockTokenManager,
       legacyPathCasing: true,
     });
 
@@ -153,6 +160,7 @@ describe('DefaultTechDocsDocumentGenerator with legacyPathCasing configuration',
 
 describe('DefaultTechDocsDocumentGenerator', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+  let mockTokenManager: jest.Mocked<TokenManager>;
   let collator: DefaultTechDocsDocumentGenerator;
 
   const worker = setupServer();
@@ -162,11 +170,16 @@ describe('DefaultTechDocsDocumentGenerator', () => {
       getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
       getExternalBaseUrl: jest.fn(),
     };
+    mockTokenManager = {
+      getToken: jest.fn().mockResolvedValue({ token: '' }),
+      authenticate: jest.fn(),
+    };
     collator = DefaultTechDocsDocumentGenerator.fromConfig(
       new ConfigReader({}),
       {
         discovery: mockDiscoveryApi,
         logger,
+        tokenManager: mockTokenManager,
       },
     );
 
@@ -209,6 +222,7 @@ describe('DefaultTechDocsDocumentGenerator', () => {
         discovery: mockDiscoveryApi,
         locationTemplate: '/software/:name',
         logger,
+        tokenManager: mockTokenManager,
       },
     );
 
