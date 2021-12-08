@@ -107,6 +107,9 @@ export async function createNextRouter(
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
+
+        disallowReadonlyMode(readonlyEnabled);
+
         await entitiesCatalog.removeEntityByUid(uid);
         res.status(204).end();
       })
