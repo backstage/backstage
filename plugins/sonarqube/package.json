@@ -44,9 +44,10 @@
     "@material-ui/styles": "^4.10.0",
     "cross-fetch": "^3.0.6",
     "rc-progress": "^3.0.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "react-use": "^17.2.4"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.10.0",

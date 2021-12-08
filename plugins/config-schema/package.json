@@ -31,10 +31,11 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "jsonschema": "^1.2.6",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "react-use": "^17.2.4",
     "zen-observable": "^0.8.15"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.10.0",

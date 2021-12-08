@@ -44,9 +44,10 @@
     "cross-fetch": "^3.0.6",
     "luxon": "^2.0.2",
     "p-limit": "^3.0.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "react-use": "^17.2.4"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.10.0",
