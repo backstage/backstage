@@ -609,6 +609,48 @@ export type LinkProps = LinkProps_2 &
 // @public (undocumented)
 export type LoginRequestListItemClassKey = 'root';
 
+// @public
+export function LogViewer(props: LogViewerProps): JSX.Element;
+
+// @public
+export type LogViewerClassKey =
+  | 'root'
+  | 'header'
+  | 'log'
+  | 'line'
+  | 'lineSelected'
+  | 'lineCopyButton'
+  | 'lineNumber'
+  | 'textHighlight'
+  | 'textSelectedHighlight'
+  | 'modifierBold'
+  | 'modifierItalic'
+  | 'modifierUnderline'
+  | 'modifierForegroundBlack'
+  | 'modifierForegroundRed'
+  | 'modifierForegroundGreen'
+  | 'modifierForegroundYellow'
+  | 'modifierForegroundBlue'
+  | 'modifierForegroundMagenta'
+  | 'modifierForegroundCyan'
+  | 'modifierForegroundWhite'
+  | 'modifierForegroundGrey'
+  | 'modifierBackgroundBlack'
+  | 'modifierBackgroundRed'
+  | 'modifierBackgroundGreen'
+  | 'modifierBackgroundYellow'
+  | 'modifierBackgroundBlue'
+  | 'modifierBackgroundMagenta'
+  | 'modifierBackgroundCyan'
+  | 'modifierBackgroundWhite'
+  | 'modifierBackgroundGrey';
+
+// @public
+export interface LogViewerProps {
+  className?: string;
+  text: string;
+}
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "MarkdownContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
