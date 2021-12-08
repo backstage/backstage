@@ -14,6 +14,29 @@ export enum BuildResult {
   Succeeded = 2,
 }
 
+// Warning: (ae-missing-release-tag) "BuildRun" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BuildRun = {
+  id?: number;
+  title: string;
+  link?: string;
+  status?: BuildStatus;
+  result?: BuildResult;
+  queueTime?: string;
+  startTime?: string;
+  finishTime?: string;
+  source: string;
+  uniqueName?: string;
+};
+
+// Warning: (ae-missing-release-tag) "BuildRunOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BuildRunOptions = {
+  top?: number;
+};
+
 // Warning: (ae-missing-release-tag) "BuildStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
