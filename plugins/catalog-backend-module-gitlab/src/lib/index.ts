@@ -16,4 +16,5 @@
 
 export { GitLabClient, paginated } from './client';
 export { parseGitLabGroupUrl } from './org';
+export { getInstanceUsers, getGroupMembers } from './users';
 export type { GitLabProject } from './types';

@@ -27,6 +27,26 @@ type GroupMember = {
   created_at: string;
 };
 
+/*
+ * Partial GitLab API User Repsonse
+ *
+ * Admin fields are set to optional:
+ * https://docs.gitlab.com/ee/api/users.html#for-admins.
+ */
+type User = {
+  id: number;
+  name: string;
+  username: string;
+  state: string;
+  avatar_url: string;
+  web_url: string;
+  created_at: string;
+  job_title: string;
+  public_email?: string;
+  email?: string;
+  bot?: boolean;
+};
+
 export async function getGroupMembers(
   client: GitLabClient,
   id: string,
@@ -38,7 +58,7 @@ export async function getGroupMembers(
   }`;
   const members = paginated<GroupMember>(
     options => client.pagedRequest(endpoint, options),
-    { blocked },
+    { blocked, per_page: 100 },
   );
 
   const memberUserEntities = [];
@@ -59,4 +79,39 @@ export async function getGroupMembers(
     memberUserEntities.push(entity);
   }
   return memberUserEntities;
+}
+
+export async function getInstanceUsers(
+  client: GitLabClient,
+): Promise<UserEntity[]> {
+  const users = paginated<User>(
+    options => client.pagedRequest('/users', options),
+    { active: true, per_page: 100 },
+  );
+
+  const userEntities = [];
+  for await (const result of users) {
+    // skip over bot users
+    if (result.bot) {
+      continue;
+    }
+
+    const entity: UserEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        name: result.username,
+      },
+      spec: {
+        profile: {},
+        memberOf: [],
+      },
+    };
+    if (result.name) entity.spec.profile!.displayName = result.name;
+    if (result.avatar_url) entity.spec.profile!.picture = result.avatar_url;
+    if (result.public_email) entity.spec.profile!.email = result.public_email;
+    if (result.email) entity.spec.profile!.email = result.email;
+    userEntities.push(entity);
+  }
+  return userEntities;
 }
