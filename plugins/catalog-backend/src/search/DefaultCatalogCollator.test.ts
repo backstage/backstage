@@ -18,7 +18,7 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
+import { catalogEntityReadPermission, Entity } from '@backstage/catalog-model';
 import { DefaultCatalogCollator } from './DefaultCatalogCollator';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
@@ -113,6 +113,10 @@ describe('DefaultCatalogCollator', () => {
       componentType: expectedEntities[0]!.spec!.type,
       lifecycle: expectedEntities[0]!.spec!.lifecycle,
       owner: expectedEntities[0]!.spec!.owner,
+      authorization: {
+        permission: catalogEntityReadPermission,
+        resourceRef: 'component:default/test-entity',
+      },
     });
     expect(documents[1]).toMatchObject({
       title: expectedEntities[1].metadata.title,
@@ -122,6 +126,10 @@ describe('DefaultCatalogCollator', () => {
       componentType: expectedEntities[1]!.spec!.type,
       lifecycle: expectedEntities[1]!.spec!.lifecycle,
       owner: expectedEntities[1]!.spec!.owner,
+      authorization: {
+        permission: catalogEntityReadPermission,
+        resourceRef: 'component:default/test-entity-2',
+      },
     });
   });
 
