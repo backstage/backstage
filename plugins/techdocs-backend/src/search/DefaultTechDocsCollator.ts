@@ -63,24 +63,17 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   /**
    * @deprecated use static fromConfig method instead.
    */
-  constructor({
-    discovery,
-    locationTemplate,
-    logger,
-    catalogClient,
-    tokenManager,
-    parallelismLimit = 10,
-    legacyPathCasing = false,
-  }: TechDocsCollatorOptions) {
-    this.discovery = discovery;
+  constructor(options: TechDocsCollatorOptions) {
+    this.discovery = options.discovery;
     this.locationTemplate =
-      locationTemplate || '/docs/:namespace/:kind/:name/:path';
-    this.logger = logger;
+      options.locationTemplate || '/docs/:namespace/:kind/:name/:path';
+    this.logger = options.logger;
     this.catalogClient =
-      catalogClient || new CatalogClient({ discoveryApi: discovery });
-    this.parallelismLimit = parallelismLimit;
-    this.legacyPathCasing = legacyPathCasing;
-    this.tokenManager = tokenManager;
+      options.catalogClient ||
+      new CatalogClient({ discoveryApi: options.discovery });
+    this.parallelismLimit = options.parallelismLimit ?? 10;
+    this.legacyPathCasing = options.legacyPathCasing ?? false;
+    this.tokenManager = options.tokenManager;
   }
 
   static fromConfig(config: Config, options: TechDocsCollatorOptions) {

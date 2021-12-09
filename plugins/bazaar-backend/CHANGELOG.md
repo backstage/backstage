@@ -1,5 +1,13 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.1.4
+
+### Patch Changes
+
+- 210fcf63ee: Handle migration error when old data is present in the database
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+
 ## 0.1.3
 
 ### Patch Changes

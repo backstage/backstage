@@ -5,7 +5,7 @@
 ```ts
 import { AuthorizeRequest } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { BackstageIdentity } from '@backstage/plugin-auth-backend';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
@@ -83,11 +83,7 @@ export const createConditionTransformer: <
 ) => ConditionTransformer<TQuery>;
 
 // @public
-export const createPermissionIntegrationRouter: <TResource>({
-  resourceType,
-  rules,
-  getResource,
-}: {
+export const createPermissionIntegrationRouter: <TResource>(options: {
   resourceType: string;
   rules: PermissionRule<TResource, any, unknown[]>[];
   getResource: (resourceRef: string) => Promise<TResource | undefined>;
@@ -98,7 +94,7 @@ export interface PermissionPolicy {
   // (undocumented)
   handle(
     request: PolicyAuthorizeRequest,
-    user?: BackstageIdentity,
+    user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision>;
 }
 

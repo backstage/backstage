@@ -116,17 +116,15 @@ const applyConditions = <TResource>(
  * This is used to construct the `createPermissionIntegrationRouter`, a function to add an
  * authorization route to your backend plugin. This route will be called by the `permission-backend`
  * when authorization conditions relating to this plugin need to be evaluated.
+ *
  * @public
  */
-export const createPermissionIntegrationRouter = <TResource>({
-  resourceType,
-  rules,
-  getResource,
-}: {
+export const createPermissionIntegrationRouter = <TResource>(options: {
   resourceType: string;
   rules: PermissionRule<TResource, any>[];
   getResource: (resourceRef: string) => Promise<TResource | undefined>;
 }): Router => {
+  const { resourceType, rules, getResource } = options;
   const router = Router();
 
   const getRule = createGetRule(rules);

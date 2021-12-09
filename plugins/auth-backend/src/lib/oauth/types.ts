@@ -16,7 +16,11 @@
 
 import express from 'express';
 import { Profile as PassportProfile } from 'passport';
-import { AuthResponse, RedirectInfo } from '../../providers/types';
+import {
+  RedirectInfo,
+  BackstageSignInResult,
+  ProfileInfo,
+} from '../../providers/types';
 
 /**
  * Common options for passport.js-based OAuth providers
@@ -47,7 +51,16 @@ export type OAuthResult = {
   refreshToken?: string;
 };
 
-export type OAuthResponse = AuthResponse<OAuthProviderInfo>;
+/**
+ * The expected response from an OAuth flow.
+ *
+ * @public
+ */
+export type OAuthResponse = {
+  profile: ProfileInfo;
+  providerInfo: OAuthProviderInfo;
+  backstageIdentity?: BackstageSignInResult;
+};
 
 export type OAuthProviderInfo = {
   /**
@@ -108,7 +121,7 @@ export interface OAuthHandlers {
    * @param {express.Request} req
    */
   handler(req: express.Request): Promise<{
-    response: AuthResponse<OAuthProviderInfo>;
+    response: OAuthResponse;
     refreshToken?: string;
   }>;
 
@@ -117,7 +130,7 @@ export interface OAuthHandlers {
    * @param {string} refreshToken
    * @param {string} scope
    */
-  refresh?(req: OAuthRefreshRequest): Promise<AuthResponse<OAuthProviderInfo>>;
+  refresh?(req: OAuthRefreshRequest): Promise<OAuthResponse>;
 
   /**
    * (Optional) Sign out of the auth provider.

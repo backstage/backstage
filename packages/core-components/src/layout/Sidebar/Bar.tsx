@@ -16,7 +16,7 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import clsx from 'clsx';
+import classnames from 'classnames';
 import React, { useState, useContext, PropsWithChildren, useRef } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
@@ -163,7 +163,7 @@ const DesktopSidebar = ({
         onMouseLeave={handleClose}
         onBlur={handleClose}
         data-testid="sidebar-root"
-        className={clsx(classes.drawer, {
+        className={classnames(classes.drawer, {
           [classes.drawerOpen]: isOpen,
         })}
       >

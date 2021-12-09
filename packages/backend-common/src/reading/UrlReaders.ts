@@ -46,7 +46,8 @@ export class UrlReaders {
   /**
    * Creates a UrlReader without any known types.
    */
-  static create({ logger, config, factories }: UrlReadersOptions): UrlReader {
+  static create(options: UrlReadersOptions): UrlReader {
+    const { logger, config, factories } = options;
     const mux = new UrlReaderPredicateMux(logger);
     const treeResponseFactory = DefaultReadTreeResponseFactory.create({
       config,
@@ -68,7 +69,8 @@ export class UrlReaders {
    *
    * Any additional factories passed will be loaded before the default ones.
    */
-  static default({ logger, config, factories = [] }: UrlReadersOptions) {
+  static default(options: UrlReadersOptions) {
+    const { logger, config, factories = [] } = options;
     return UrlReaders.create({
       logger,
       config,

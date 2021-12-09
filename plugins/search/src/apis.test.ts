@@ -34,6 +34,9 @@ describe('apis', () => {
     getUserId: jest.fn(),
     getProfile: jest.fn(),
     signOut: jest.fn(),
+    getProfileInfo: jest.fn(),
+    getBackstageIdentity: jest.fn(),
+    getCredentials: jest.fn(),
   });
 
   const client = new SearchClient({

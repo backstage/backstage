@@ -18,7 +18,7 @@ import React from 'react';
 import { GraphiQLPage } from './GraphiQLPage';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
-import { act } from 'react-dom/test-utils';
+import { act } from '@testing-library/react';
 import { renderWithEffects, TestApiProvider } from '@backstage/test-utils';
 import { GraphQLBrowseApi, graphQlBrowseApiRef } from '../../lib/api';
 import { configApiRef } from '@backstage/core-plugin-api';

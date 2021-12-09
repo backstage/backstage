@@ -24,7 +24,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import { IconComponent } from '@backstage/core-plugin-api';
-import clsx from 'clsx';
+import classnames from 'classnames';
 import { BackstageTheme } from '@backstage/theme';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
@@ -149,7 +149,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
         <button
           onClick={handleClickDropdown}
           onTouchStart={e => e.stopPropagation()}
-          className={clsx(
+          className={classnames(
             classes.item,
             isActive ? classes.selected : undefined,
           )}
@@ -193,7 +193,10 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
         component={NavLink}
         to={to}
         underline="none"
-        className={clsx(classes.item, isActive ? classes.selected : undefined)}
+        className={classnames(
+          classes.item,
+          isActive ? classes.selected : undefined,
+        )}
         onClick={closeSubmenu}
         onTouchStart={e => e.stopPropagation()}
       >

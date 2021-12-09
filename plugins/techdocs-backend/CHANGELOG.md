@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.12.0
+
+### Minor Changes
+
+- 1bada775a9: Added the ability for the TechDocs Backend to (optionally) leverage a cache
+  store to improve performance when reading files from a cloud storage provider.
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+  - @backstage/techdocs-common@0.11.0
+
 ## 0.11.0
 
 ### Minor Changes

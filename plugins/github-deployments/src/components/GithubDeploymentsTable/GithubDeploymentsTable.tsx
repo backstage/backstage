@@ -36,12 +36,8 @@ type GithubDeploymentsTableProps = {
   columns: TableColumn<GithubDeployment>[];
 };
 
-export function GithubDeploymentsTable({
-  deployments,
-  isLoading,
-  reload,
-  columns,
-}: GithubDeploymentsTableProps) {
+export function GithubDeploymentsTable(props: GithubDeploymentsTableProps) {
+  const { deployments, isLoading, reload, columns } = props;
   const classes = useStyles();
 
   return (

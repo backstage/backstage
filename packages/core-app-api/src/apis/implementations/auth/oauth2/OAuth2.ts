@@ -70,14 +70,16 @@ export default class OAuth2
     BackstageIdentityApi,
     SessionApi
 {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    defaultScopes = [],
-    scopeTransform = x => x,
-  }: OAuth2CreateOptions) {
+  static create(options: OAuth2CreateOptions) {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+      defaultScopes = [],
+      scopeTransform = x => x,
+    } = options;
+
     const connector = new DefaultAuthConnector({
       discoveryApi,
       environment,

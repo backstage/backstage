@@ -62,13 +62,12 @@ export const useAnalyticsContext = (): AnalyticsContextValue => {
  *
  * @public
  */
-export const AnalyticsContext = ({
-  attributes,
-  children,
-}: {
+export const AnalyticsContext = (options: {
   attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
 }) => {
+  const { attributes, children } = options;
+
   const parentValues = useAnalyticsContext();
   const combinedValue = {
     ...parentValues,

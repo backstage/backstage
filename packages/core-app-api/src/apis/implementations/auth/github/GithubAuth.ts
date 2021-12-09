@@ -56,13 +56,15 @@ const DEFAULT_PROVIDER = {
  * @public
  */
 export default class GithubAuth implements OAuthApi, SessionApi {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    defaultScopes = ['read:user'],
-  }: OAuthApiCreateOptions) {
+  static create(options: OAuthApiCreateOptions) {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+      defaultScopes = ['read:user'],
+    } = options;
+
     const connector = new DefaultAuthConnector({
       discoveryApi,
       environment,

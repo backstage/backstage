@@ -15,11 +15,12 @@
  */
 
 import {
-  BackstageIdentity,
+  BackstageIdentityResponse,
   configApiRef,
   SignInPageProps,
   useApi,
 } from '@backstage/core-plugin-api';
+import { UserIdentity } from './UserIdentity';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -49,7 +50,7 @@ type SingleSignInPageProps = SignInPageProps & {
 export type Props = MultiSignInPageProps | SingleSignInPageProps;
 
 export const MultiSignInPage = ({
-  onResult,
+  onSignInSuccess,
   providers = [],
   title,
   align = 'left',
@@ -60,7 +61,7 @@ export const MultiSignInPage = ({
   const signInProviders = getSignInProviders(providers);
   const [loading, providerElements] = useSignInProviders(
     signInProviders,
-    onResult,
+    onSignInSuccess,
   );
 
   if (loading) {
@@ -87,9 +88,9 @@ export const MultiSignInPage = ({
 };
 
 export const SingleSignInPage = ({
-  onResult,
   provider,
   auto,
+  onSignInSuccess,
 }: SingleSignInPageProps) => {
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
@@ -105,47 +106,42 @@ export const SingleSignInPage = ({
   type LoginOpts = { checkExisting?: boolean; showPopup?: boolean };
   const login = async ({ checkExisting, showPopup }: LoginOpts) => {
     try {
-      let identity: BackstageIdentity | undefined;
+      let identityResponse: BackstageIdentityResponse | undefined;
       if (checkExisting) {
         // Do an initial check if any logged-in session exists
-        identity = await authApi.getBackstageIdentity({
+        identityResponse = await authApi.getBackstageIdentity({
           optional: true,
         });
       }
 
       // If no session exists, show the sign-in page
-      if (!identity && (showPopup || auto)) {
+      if (!identityResponse && (showPopup || auto)) {
         // Unless auto is set to true, this step should not happen.
         // When user intentionally clicks the Sign In button, autoShowPopup is set to true
         setShowLoginPage(true);
-        identity = await authApi.getBackstageIdentity({
+        identityResponse = await authApi.getBackstageIdentity({
           instantPopup: true,
         });
-        if (!identity) {
+        if (!identityResponse) {
           throw new Error(
             `The ${provider.title} provider is not configured to support sign-in`,
           );
         }
       }
 
-      if (!identity) {
+      if (!identityResponse) {
         setShowLoginPage(true);
         return;
       }
 
       const profile = await authApi.getProfile();
-      onResult({
-        userId: identity!.id,
-        profile: profile!,
-        getIdToken: () => {
-          return authApi
-            .getBackstageIdentity()
-            .then(i => i!.token ?? i!.idToken);
-        },
-        signOut: async () => {
-          await authApi.signOut();
-        },
-      });
+      onSignInSuccess(
+        UserIdentity.create({
+          identity: identityResponse.identity,
+          authApi,
+          profile,
+        }),
+      );
     } catch (err: any) {
       // User closed the sign-in modal
       setError(err);
