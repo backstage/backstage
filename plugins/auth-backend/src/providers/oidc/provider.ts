@@ -56,18 +56,21 @@ type OidcImpl = {
   client: Client;
 };
 
-type AuthResult = {
+export type OidcAuthResult = {
   tokenset: TokenSet;
   userinfo: UserinfoResponse;
 };
+
+export type OidcSignInResolver = SignInResolver<OidcAuthResult>;
+export type OidcAuthHandler = AuthHandler<OidcAuthResult>;
 
 export type Options = OAuthProviderOptions & {
   metadataUrl: string;
   scope?: string;
   prompt?: string;
   tokenSignedResponseAlg?: string;
-  signInResolver?: SignInResolver<AuthResult>;
-  authHandler: AuthHandler<AuthResult>;
+  signInResolver?: OidcSignInResolver;
+  authHandler: OidcAuthHandler;
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
   logger: Logger;
@@ -78,8 +81,8 @@ export class OidcAuthProvider implements OAuthHandlers {
   private readonly scope?: string;
   private readonly prompt?: string;
 
-  private readonly signInResolver?: SignInResolver<AuthResult>;
-  private readonly authHandler: AuthHandler<AuthResult>;
+  private readonly signInResolver?: SignInResolver<OidcAuthResult>;
+  private readonly authHandler: AuthHandler<OidcAuthResult>;
   private readonly tokenIssuer: TokenIssuer;
   private readonly catalogIdentityClient: CatalogIdentityClient;
   private readonly logger: Logger;
@@ -113,7 +116,7 @@ export class OidcAuthProvider implements OAuthHandlers {
   ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
     const { strategy } = await this.implementation;
     const strategyResponse = await executeFrameHandlerStrategy<
-      AuthResult,
+      OidcAuthResult,
       PrivateInfo
     >(req, strategy);
     const {
@@ -158,7 +161,7 @@ export class OidcAuthProvider implements OAuthHandlers {
       (
         tokenset: TokenSet,
         userinfo: UserinfoResponse,
-        done: PassportDoneCallback<AuthResult, PrivateInfo>,
+        done: PassportDoneCallback<OidcAuthResult, PrivateInfo>,
       ) => {
         if (typeof done !== 'function') {
           throw new Error(
@@ -180,7 +183,7 @@ export class OidcAuthProvider implements OAuthHandlers {
 
   // Use this function to grab the user profile info from the token
   // Then populate the profile with it
-  private async handleResult(result: AuthResult): Promise<OAuthResponse> {
+  private async handleResult(result: OidcAuthResult): Promise<OAuthResponse> {
     const { profile } = await this.authHandler(result);
     const response: OAuthResponse = {
       providerInfo: {
@@ -210,27 +213,25 @@ export class OidcAuthProvider implements OAuthHandlers {
   }
 }
 
-export const oAuth2DefaultSignInResolver: SignInResolver<AuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
+export const oAuth2DefaultSignInResolver: SignInResolver<OidcAuthResult> =
+  async (info, ctx) => {
+    const { profile } = info;
 
-  if (!profile.email) {
-    throw new Error('Profile contained no email');
-  }
-  const userId = profile.email.split('@')[0];
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: userId, ent: [`user:default/${userId}`] },
-  });
-  return { id: userId, token };
-};
+    if (!profile.email) {
+      throw new Error('Profile contained no email');
+    }
+    const userId = profile.email.split('@')[0];
+    const token = await ctx.tokenIssuer.issueToken({
+      claims: { sub: userId, ent: [`user:default/${userId}`] },
+    });
+    return { id: userId, token };
+  };
 
 export type OidcProviderOptions = {
-  authHandler?: AuthHandler<AuthResult>;
+  authHandler?: AuthHandler<OidcAuthResult>;
 
   signIn?: {
-    resolver?: SignInResolver<AuthResult>;
+    resolver?: SignInResolver<OidcAuthResult>;
   };
 };
 
@@ -260,7 +261,7 @@ export const createOidcProvider = (
         tokenIssuer,
       });
 
-      const authHandler: AuthHandler<AuthResult> = options?.authHandler
+      const authHandler: AuthHandler<OidcAuthResult> = options?.authHandler
         ? options.authHandler
         : async ({ userinfo }) => ({
             profile: {
@@ -271,7 +272,7 @@ export const createOidcProvider = (
           });
       const signInResolverFn =
         options?.signIn?.resolver ?? oAuth2DefaultSignInResolver;
-      const signInResolver: SignInResolver<AuthResult> = info =>
+      const signInResolver: SignInResolver<OidcAuthResult> = info =>
         signInResolverFn(info, {
           catalogIdentityClient,
           tokenIssuer,
