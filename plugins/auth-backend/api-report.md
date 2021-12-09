@@ -47,6 +47,16 @@ export type AtlassianProviderOptions = {
   };
 };
 
+// @public
+export type AuthHandler<AuthResult> = (
+  input: AuthResult,
+) => Promise<AuthHandlerResult>;
+
+// @public
+export type AuthHandlerResult = {
+  profile: ProfileInfo;
+};
+
 // Warning: (ae-missing-release-tag) "AuthProviderFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -533,11 +543,6 @@ export type OAuthState = {
   origin?: string;
 };
 
-// Warning: (ae-missing-release-tag) "OidcAuthHandler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type OidcAuthHandler = AuthHandler<OidcAuthResult>;
-
 // Warning: (ae-missing-release-tag) "OidcAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -546,20 +551,15 @@ export type OidcAuthResult = {
   userinfo: UserinfoResponse;
 };
 
-// Warning: (ae-missing-release-tag) "OidcProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (tsdoc-undefined-tag) The TSDoc tag "@BackstageSignInResult" is not defined in this configuration
 //
-// @public (undocumented)
+// @public
 export type OidcProviderOptions = {
   authHandler?: AuthHandler<OidcAuthResult>;
   signIn?: {
     resolver?: SignInResolver<OidcAuthResult>;
   };
 };
-
-// Warning: (ae-missing-release-tag) "OidcSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type OidcSignInResolver = SignInResolver<OidcAuthResult>;
 
 // Warning: (ae-missing-release-tag) "oktaEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -633,6 +633,22 @@ export type SamlProviderOptions = {
   };
 };
 
+// @public
+export type SignInInfo<AuthResult> = {
+  profile: ProfileInfo;
+  result: AuthResult;
+};
+
+// @public
+export type SignInResolver<AuthResult> = (
+  info: SignInInfo<AuthResult>,
+  context: {
+    tokenIssuer: TokenIssuer;
+    catalogIdentityClient: CatalogIdentityClient;
+    logger: Logger_2;
+  },
+) => Promise<BackstageSignInResult>;
+
 // Warning: (ae-missing-release-tag) "TokenIssuer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -664,8 +680,6 @@ export type WebMessageResponse =
 // Warnings were encountered during analysis:
 //
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
-// src/providers/atlassian/provider.d.ts:37:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
-// src/providers/atlassian/provider.d.ts:42:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
 // src/providers/aws-alb/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "AwsAlbResult" needs to be exported by the entry point index.d.ts
 // src/providers/github/provider.d.ts:71:58 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 // src/providers/github/provider.d.ts:71:90 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag

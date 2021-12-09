@@ -240,6 +240,10 @@ export type ProfileInfo = {
   picture?: string;
 };
 
+/**
+ * type of sign in information context, includes the profile information and authentication result which contains auth. related information
+ * @public
+ */
 export type SignInInfo<AuthResult> = {
   /**
    * The simple profile passed down for use in the frontend.
@@ -252,6 +256,11 @@ export type SignInInfo<AuthResult> = {
   result: AuthResult;
 };
 
+/**
+ * Sign in resolver type describes the function which handles the result of a successful authentication
+ * and must return a valid BackStageSignInResult
+ * @public
+ */
 export type SignInResolver<AuthResult> = (
   info: SignInInfo<AuthResult>,
   context: {
@@ -261,6 +270,10 @@ export type SignInResolver<AuthResult> = (
   },
 ) => Promise<BackstageSignInResult>;
 
+/**
+ * The return type of authentication handler which must contain a valid profile information
+ * @public
+ */
 export type AuthHandlerResult = { profile: ProfileInfo };
 
 /**
@@ -270,6 +283,8 @@ export type AuthHandlerResult = { profile: ProfileInfo };
  *
  * Throwing an error in the function will cause the authentication to fail, making it
  * possible to use this function as a way to limit access to a certain group of users.
+ *
+ * @public
  */
 export type AuthHandler<AuthResult> = (
   input: AuthResult,

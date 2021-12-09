@@ -61,16 +61,13 @@ export type OidcAuthResult = {
   userinfo: UserinfoResponse;
 };
 
-export type OidcSignInResolver = SignInResolver<OidcAuthResult>;
-export type OidcAuthHandler = AuthHandler<OidcAuthResult>;
-
 export type Options = OAuthProviderOptions & {
   metadataUrl: string;
   scope?: string;
   prompt?: string;
   tokenSignedResponseAlg?: string;
-  signInResolver?: OidcSignInResolver;
-  authHandler: OidcAuthHandler;
+  signInResolver?: SignInResolver<OidcAuthResult>;
+  authHandler: AuthHandler<OidcAuthResult>;
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
   logger: Logger;
@@ -227,6 +224,18 @@ export const oAuth2DefaultSignInResolver: SignInResolver<OidcAuthResult> =
     return { id: userId, token };
   };
 
+/**
+ * OIDC provider callback options. An auth handler and a sign in resolver
+ * can be passed while creating a OIDC provider.
+ *
+ * authHandler : called after sign in was successful, a new object must be returned which includes a profile
+ * signInResolver: called after sign in was successful, expects to return a new @BackstageSignInResult
+ *
+ * Both options are optional. There is fallback for authHandler where the default handler expect an e-mail explicitly
+ * otherwise it throws an error
+ *
+ * @public
+ */
 export type OidcProviderOptions = {
   authHandler?: AuthHandler<OidcAuthResult>;
 

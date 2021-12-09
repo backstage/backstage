@@ -34,6 +34,10 @@ export type {
   AuthProviderRouteHandlers,
   AuthProviderFactoryOptions,
   AuthProviderFactory,
+  AuthHandler,
+  AuthHandlerResult,
+  SignInResolver,
+  SignInInfo,
 } from './types';
 
 // These types are needed for a postMessage from the login pop-up

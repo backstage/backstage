@@ -13,10 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type {
-  OidcSignInResolver,
-  OidcAuthHandler,
-  OidcAuthResult,
-  OidcProviderOptions,
-} from './provider';
+export type { OidcAuthResult, OidcProviderOptions } from './provider';
 export { createOidcProvider } from './provider';
