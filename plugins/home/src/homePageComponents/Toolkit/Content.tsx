@@ -65,7 +65,7 @@ export const Content = () => {
   return (
     <List className={classes.toolkit} style={{ textAlign: 'center' }}>
       {tools.map((tool: Tool) => (
-        <Link to={tool.url} className={classes.tool}>
+        <Link key={tool.url} to={tool.url} className={classes.tool}>
           <ListItemIcon className={classes.icon}>{tool.icon}</ListItemIcon>
           <ListItemText className={classes.label}>{tool.label}</ListItemText>
         </Link>
