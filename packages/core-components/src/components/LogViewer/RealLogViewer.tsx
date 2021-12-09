@@ -29,11 +29,11 @@ import { useLogViewerSelection } from './useLogViewerSelection';
 
 export interface RealLogViewerProps {
   text: string;
-  className?: string;
+  classes?: { root?: string };
 }
 
 export function RealLogViewer(props: RealLogViewerProps) {
-  const classes = useStyles();
+  const classes = useStyles({ classes: props.classes });
   const listRef = useRef<FixedSizeList | null>(null);
 
   // The processor keeps state that optimizes appending to the text
@@ -60,10 +60,7 @@ export function RealLogViewer(props: RealLogViewerProps) {
   return (
     <AutoSizer>
       {({ height, width }) => (
-        <div
-          style={{ width, height }}
-          className={classnames(classes.root, props.className)}
-        >
+        <div style={{ width, height }} className={classes.root}>
           <div className={classes.header}>
             <LogViewerControls {...search} />
           </div>

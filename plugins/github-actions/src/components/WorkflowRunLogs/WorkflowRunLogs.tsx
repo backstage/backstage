@@ -133,7 +133,7 @@ export const WorkflowRunLogs = ({
             <div className={classes.modalLogContainer}>
               <LogViewer
                 text={logText ?? 'No Values Found'}
-                className={classes.log}
+                classes={{ root: classes.log }}
               />
             </div>
           </Fade>
@@ -141,7 +141,7 @@ export const WorkflowRunLogs = ({
       </AccordionSummary>
       {logText && (
         <div className={classes.normalLogContainer}>
-          <LogViewer text={logText} className={classes.log} />
+          <LogViewer text={logText} classes={{ root: classes.log }} />
         </div>
       )}
     </Accordion>

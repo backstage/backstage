@@ -34,9 +34,11 @@ export interface LogViewerProps {
    */
   text: string;
   /**
-   * The className to apply to the root LogViewer element inside the auto sizer.
+   * Styling overrides for classes within the LogViewer component.
    */
-  className?: string;
+  classes?: {
+    root?: string;
+  };
 }
 
 /**
