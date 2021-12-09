@@ -39,4 +39,5 @@ collators you are using. Then, make the following changes to your
 If you've written custom collators, decorators, or search engines in your
 Backstage backend instance, you will need to re-implement them as readable,
 transform, and writable streams respectively (including factory classes for
-instantiating them).
+instantiating them). [A how-to guide for refactoring](https://backstage.io/docs/features/search/how-to-guides#rewriting-alpha-style-collators-for-beta)
+existing implementations is available.

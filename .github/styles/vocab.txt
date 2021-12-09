@@ -201,6 +201,8 @@ pageview
 parallelization
 Patrik
 Peloton
+performant
+Performant
 plantuml
 Platformize
 Podman
