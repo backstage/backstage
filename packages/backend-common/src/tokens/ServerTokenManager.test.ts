@@ -153,7 +153,7 @@ describe('ServerTokenManager', () => {
   });
 
   describe('default', () => {
-    describe('NOVE_ENV === production', () => {
+    describe('NODE_ENV === production', () => {
       it('should throw if backend auth configuration is missing', () => {
         expect(() =>
           ServerTokenManager.default({ config: emptyConfig, logger }),
@@ -187,7 +187,7 @@ describe('ServerTokenManager', () => {
       });
     });
 
-    describe('NOVE_ENV === development', () => {
+    describe('NODE_ENV === development', () => {
       const generateSyncSpy = jest.spyOn(JWK, 'generateSync');
 
       beforeEach(() => {
