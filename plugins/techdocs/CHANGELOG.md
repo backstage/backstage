@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs
 
+## 0.12.9
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- d90dad84b0: Switch to using `LogViewer` component from `@backstage/core-components` to display build logs.
+- 3421826ca8: The problem of lowercase entity triplets which causes docs to not load on entity page is fixed.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-catalog@0.7.4
+  - @backstage/integration-react@0.1.15
+  - @backstage/plugin-catalog-react@0.6.5
+  - @backstage/plugin-search@0.5.1
+
 ## 0.12.8
 
 ### Patch Changes

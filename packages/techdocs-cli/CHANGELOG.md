@@ -1,5 +1,13 @@
 # @techdocs/cli
 
+## 0.8.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+  - @backstage/techdocs-common@0.11.0
+
 ## 0.8.7
 
 ### Patch Changes

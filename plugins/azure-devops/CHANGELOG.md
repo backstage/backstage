@@ -1,5 +1,16 @@
 # @backstage/plugin-azure-devops
 
+## 0.1.6
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-catalog-react@0.6.5
+  - @backstage/plugin-azure-devops-common@0.1.2
+
 ## 0.1.5
 
 ### Patch Changes

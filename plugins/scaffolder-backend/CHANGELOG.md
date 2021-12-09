@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.16
+
+### Patch Changes
+
+- 2a3fb13718: Bump esbuild to ^0.14.1
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+  - @backstage/plugin-catalog-backend@0.19.1
+
 ## 0.15.15
 
 ### Patch Changes

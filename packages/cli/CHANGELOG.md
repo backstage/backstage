@@ -1,5 +1,18 @@
 # @backstage/cli
 
+## 0.10.1
+
+### Patch Changes
+
+- 0ebb05eee2: Add cli option to minify the generated code of a plugin or backend package
+
+  ```
+  backstage-cli plugin:build --minify
+  backstage-cli backend:build --minify
+  ```
+
+- cd450844f6: Updated the frontend plugin template to put React dependencies in `peerDependencies` by default, as well as allowing both React v16 and v17. This change can be applied to existing plugins by running `yarn backstage-cli plugin:diff` within the plugin package directory.
+
 ## 0.10.0
 
 ### Minor Changes

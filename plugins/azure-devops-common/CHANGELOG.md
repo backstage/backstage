@@ -1,5 +1,11 @@
 # @backstage/plugin-azure-devops-common
 
+## 0.1.2
+
+### Patch Changes
+
+- a77526afcd: Added getting builds by definition name
+
 ## 0.1.1
 
 ### Patch Changes
