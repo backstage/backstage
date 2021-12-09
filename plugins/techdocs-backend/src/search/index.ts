@@ -18,7 +18,7 @@ export { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory
 export type { TechDocsCollatorOptions } from './DefaultTechDocsDocumentGenerator';
 
 /**
- * todo: stop exporting this in a future release.
+ * todo(backstage/techdocs-core): stop exporting this in a future release.
  */
 export { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
 

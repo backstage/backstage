@@ -16,3 +16,4 @@
 
 export { LunrSearchEngine } from './LunrSearchEngine';
 export type { ConcreteLunrQuery } from './LunrSearchEngine';
+export type { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';

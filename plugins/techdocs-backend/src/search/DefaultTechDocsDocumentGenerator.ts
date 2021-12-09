@@ -50,9 +50,10 @@ type EntityInfo = {
 };
 
 export class DefaultTechDocsDocumentGenerator {
-  protected discovery: PluginEndpointDiscovery;
-  protected locationTemplate: string;
+  private discovery: PluginEndpointDiscovery;
+  private locationTemplate: string;
   private readonly logger: Logger;
+  private readonly tokenManager: TokenManager;
   private readonly catalogClient: CatalogApi;
   private readonly parallelismLimit: number;
   private readonly legacyPathCasing: boolean;
@@ -62,6 +63,7 @@ export class DefaultTechDocsDocumentGenerator {
     discovery,
     locationTemplate,
     logger,
+    tokenManager,
     catalogClient,
     parallelismLimit = 10,
     legacyPathCasing = false,
@@ -70,6 +72,7 @@ export class DefaultTechDocsDocumentGenerator {
     this.locationTemplate =
       locationTemplate || '/docs/:namespace/:kind/:name/:path';
     this.logger = logger;
+    this.tokenManager = tokenManager;
     this.catalogClient =
       catalogClient || new CatalogClient({ discoveryApi: discovery });
     this.parallelismLimit = parallelismLimit;
@@ -87,22 +90,28 @@ export class DefaultTechDocsDocumentGenerator {
     });
   }
 
-  async *execute() {
+  async *execute(): AsyncGenerator<TechDocsDocument, void, undefined> {
     const limit = pLimit(this.parallelismLimit);
     const techDocsBaseUrl = await this.discovery.getBaseUrl('techdocs');
-    const entities = await this.catalogClient.getEntities({
-      fields: [
-        'kind',
-        'namespace',
-        'metadata.annotations',
-        'metadata.name',
-        'metadata.title',
-        'metadata.namespace',
-        'spec.type',
-        'spec.lifecycle',
-        'relations',
-      ],
-    });
+    const { token } = await this.tokenManager.getToken();
+    const entities = await this.catalogClient.getEntities(
+      {
+        fields: [
+          'kind',
+          'namespace',
+          'metadata.annotations',
+          'metadata.name',
+          'metadata.title',
+          'metadata.namespace',
+          'spec.type',
+          'spec.lifecycle',
+          'relations',
+        ],
+      },
+      {
+        token,
+      },
+    );
     const docPromises = entities.items
       .filter(it => it.metadata?.annotations?.['backstage.io/techdocs-ref'])
       .map((entity: Entity) =>

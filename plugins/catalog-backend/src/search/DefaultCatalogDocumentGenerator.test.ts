@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultCatalogDocumentGenerator } from './DefaultCatalogDocumentGenerator';
 import { setupServer } from 'msw/node';
@@ -57,6 +60,7 @@ const expectedEntities: Entity[] = [
 
 describe('DefaultCatalogDocumentGenerator', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+  let mockTokenManager: jest.Mocked<TokenManager>;
   let collator: DefaultCatalogDocumentGenerator;
 
   beforeAll(() => {
@@ -64,8 +68,13 @@ describe('DefaultCatalogDocumentGenerator', () => {
       getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7000'),
       getExternalBaseUrl: jest.fn(),
     };
+    mockTokenManager = {
+      getToken: jest.fn().mockResolvedValue({ token: '' }),
+      authenticate: jest.fn(),
+    };
     collator = new DefaultCatalogDocumentGenerator({
       discovery: mockDiscoveryApi,
+      tokenManager: mockTokenManager,
     });
     server.listen();
   });
@@ -130,6 +139,7 @@ describe('DefaultCatalogDocumentGenerator', () => {
     // Provide an alternate location template.
     collator = new DefaultCatalogDocumentGenerator({
       discovery: mockDiscoveryApi,
+      tokenManager: mockTokenManager,
       locationTemplate: '/software/:name',
     });
 
@@ -148,6 +158,7 @@ describe('DefaultCatalogDocumentGenerator', () => {
       new ConfigReader({}),
       {
         discovery: mockDiscoveryApi,
+        tokenManager: mockTokenManager,
         filter: {
           kind: ['Foo', 'Bar'],
         },

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { IndexableDocument } from '@backstage/search-common';
 import { Config } from '@backstage/config';
 import {
@@ -32,16 +35,17 @@ export interface CatalogEntityDocument extends IndexableDocument {
 }
 
 export class DefaultCatalogDocumentGenerator {
-  protected discovery: PluginEndpointDiscovery;
-  protected locationTemplate: string;
-  protected filter?: CatalogEntitiesRequest['filter'];
-  protected readonly catalogClient: CatalogApi;
+  private tokenManager: TokenManager;
+  private locationTemplate: string;
+  private filter?: CatalogEntitiesRequest['filter'];
+  private readonly catalogClient: CatalogApi;
   public readonly type: string = 'software-catalog';
 
   static fromConfig(
     _config: Config,
     options: {
       discovery: PluginEndpointDiscovery;
+      tokenManager: TokenManager;
       filter?: CatalogEntitiesRequest['filter'];
     },
   ) {
@@ -52,16 +56,18 @@ export class DefaultCatalogDocumentGenerator {
 
   constructor({
     discovery,
+    tokenManager,
     locationTemplate,
     filter,
     catalogClient,
   }: {
     discovery: PluginEndpointDiscovery;
+    tokenManager: TokenManager;
     locationTemplate?: string;
     filter?: CatalogEntitiesRequest['filter'];
     catalogClient?: CatalogApi;
   }) {
-    this.discovery = discovery;
+    this.tokenManager = tokenManager;
     this.locationTemplate =
       locationTemplate || '/catalog/:namespace/:kind/:name';
     this.filter = filter;
@@ -81,10 +87,16 @@ export class DefaultCatalogDocumentGenerator {
   }
 
   async *execute(): AsyncGenerator<CatalogEntityDocument> {
+    const { token } = await this.tokenManager.getToken();
     const entities = (
-      await this.catalogClient.getEntities({
-        filter: this.filter,
-      })
+      await this.catalogClient.getEntities(
+        {
+          filter: this.filter,
+        },
+        {
+          token,
+        },
+      )
     ).items;
     for (const entity of entities) {
       yield {

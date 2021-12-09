@@ -85,8 +85,6 @@ export class PgSearchEngine implements SearchEngine {
   static from(options: {
     database: PluginDatabaseManager;
   }): Promise<PgSearchEngine>;
-  // Warning: (ae-forgotten-export) The symbol "PgSearchEngineIndexer" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   getIndexer(type: string): Promise<PgSearchEngineIndexer>;
   // (undocumented)
@@ -100,6 +98,28 @@ export class PgSearchEngine implements SearchEngine {
   // (undocumented)
   translator(query: SearchQuery): ConcretePgSearchQuery;
 }
+
+// Warning: (ae-missing-release-tag) "PgSearchEngineIndexer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
+  constructor(options: PgSearchEngineIndexerOptions);
+  // (undocumented)
+  finalize(): Promise<void>;
+  // (undocumented)
+  index(documents: IndexableDocument[]): Promise<void>;
+  // (undocumented)
+  initialize(): Promise<void>;
+}
+
+// Warning: (ae-missing-release-tag) "PgSearchEngineIndexerOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PgSearchEngineIndexerOptions = {
+  batchSize: number;
+  type: string;
+  databaseStore: DatabaseStore;
+};
 
 // Warning: (ae-missing-release-tag) "PgSearchQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

@@ -19,7 +19,7 @@ import { IndexableDocument } from '@backstage/search-common';
 import { Knex } from 'knex';
 import { DatabaseStore } from '../database';
 
-type IndexerOptions = {
+export type PgSearchEngineIndexerOptions = {
   batchSize: number;
   type: string;
   databaseStore: DatabaseStore;
@@ -30,7 +30,7 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   private type: string;
   private tx: Knex.Transaction | undefined;
 
-  constructor(options: IndexerOptions) {
+  constructor(options: PgSearchEngineIndexerOptions) {
     super({ batchSize: options.batchSize });
     this.store = options.databaseStore;
     this.type = options.type;

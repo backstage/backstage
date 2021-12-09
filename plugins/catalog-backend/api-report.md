@@ -796,18 +796,25 @@ export class DefaultCatalogCollator {
 //
 // @public (undocumented)
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
-  // Warning: (ae-forgotten-export) The symbol "FactoryOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static fromConfig(
     config: Config,
-    options: FactoryOptions,
+    options: DefaultCatalogCollatorFactoryOptions,
   ): DefaultCatalogCollatorFactory;
   // (undocumented)
   getCollator(): Promise<Readable>;
   // (undocumented)
   readonly type: string;
 }
+
+// Warning: (ae-missing-release-tag) "DefaultCatalogCollatorFactoryOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type DefaultCatalogCollatorFactoryOptions = {
+  discovery: PluginEndpointDiscovery;
+  tokenManager: TokenManager;
+  filter?: CatalogEntitiesRequest['filter'];
+};
 
 // Warning: (ae-missing-release-tag) "DefaultCatalogProcessingOrchestrator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

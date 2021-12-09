@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { assertError } from '@backstage/errors';
 import { IndexableDocument } from '@backstage/search-common';
 import { Transform } from 'stream';
 
@@ -36,7 +37,8 @@ export abstract class DecoratorBase extends Transform {
           await this.initialize();
           done(undefined);
         } catch (e) {
-          done(e as Error);
+          assertError(e);
+          done(e);
         }
       });
     });
@@ -67,6 +69,7 @@ export abstract class DecoratorBase extends Transform {
 
   /**
    * Encapsulates simple transform stream logic.
+   * @internal
    */
   async _transform(
     document: IndexableDocument,
@@ -102,19 +105,22 @@ export abstract class DecoratorBase extends Transform {
       this.push(decorated);
       done();
     } catch (e) {
-      done(e as Error);
+      assertError(e);
+      done(e);
     }
   }
 
   /**
    * Encapsulates finalization and final error handling logic.
+   * @internal
    */
   async _final(done: (error?: Error | null) => void) {
     try {
       await this.finalize();
       done();
     } catch (e) {
-      done(e as Error);
+      assertError(e);
+      done(e);
     }
   }
 }

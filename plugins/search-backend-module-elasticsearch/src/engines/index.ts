@@ -19,3 +19,7 @@ export type {
   ConcreteElasticSearchQuery,
   ElasticSearchClientOptions,
 } from './ElasticSearchSearchEngine';
+export type {
+  ElasticSearchEngineIndexer,
+  ElasticSearchEngineIndexerOptions,
+} from './ElasticSearchEngineIndexer';

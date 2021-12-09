@@ -20,7 +20,7 @@ import { Client } from '@elastic/elasticsearch';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
 
-type IndexerOptions = {
+export type ElasticSearchEngineIndexerOptions = {
   type: string;
   indexPrefix: string;
   indexSeparator: string;
@@ -51,7 +51,7 @@ export class ElasticSearchEngineIndexer extends BatchSearchEngineIndexer {
   private readonly elasticSearchClient: Client;
   private bulkResult: Promise<any>;
 
-  constructor(options: IndexerOptions) {
+  constructor(options: ElasticSearchEngineIndexerOptions) {
     super({ batchSize: 100 });
     this.logger = options.logger;
     this.startTimestamp = process.hrtime();
@@ -61,6 +61,10 @@ export class ElasticSearchEngineIndexer extends BatchSearchEngineIndexer {
     this.indexName = this.constructIndexName(`${Date.now()}`);
     this.alias = options.alias;
     this.elasticSearchClient = options.elasticSearchClient;
+
+    // The ES client bulk helper supports stream-based indexing, but we have to
+    // supply the stream directly to it at instantiation-time. We can't supply
+    // this class itself, so instead, we create this inline stream instead.
     this.sourceStream = new Readable({ objectMode: true });
     this.sourceStream._read = () => {};
 

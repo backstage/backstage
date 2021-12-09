@@ -15,6 +15,7 @@
  */
 
 export { DefaultCatalogCollatorFactory } from './DefaultCatalogCollatorFactory';
+export type { DefaultCatalogCollatorFactoryOptions } from './DefaultCatalogCollatorFactory';
 export type { CatalogEntityDocument } from './DefaultCatalogDocumentGenerator';
 
 /**

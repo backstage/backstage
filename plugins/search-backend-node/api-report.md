@@ -23,15 +23,9 @@ import { Writable } from 'stream';
 // @public
 export abstract class BatchSearchEngineIndexer extends Writable {
   constructor(options: BatchSearchEngineOptions);
-  _final(done: (error?: Error | null) => void): Promise<void>;
   abstract finalize(): Promise<void>;
   abstract index(documents: IndexableDocument[]): Promise<void>;
   abstract initialize(): Promise<void>;
-  _write(
-    doc: IndexableDocument,
-    _e: any,
-    done: (error?: Error | null) => void,
-  ): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "BatchSearchEngineOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -49,14 +43,8 @@ export abstract class DecoratorBase extends Transform {
   abstract decorate(
     document: IndexableDocument,
   ): Promise<IndexableDocument | IndexableDocument[] | undefined>;
-  _final(done: (error?: Error | null) => void): Promise<void>;
   abstract finalize(): Promise<void>;
   abstract initialize(): Promise<void>;
-  _transform(
-    document: IndexableDocument,
-    _: any,
-    done: (error?: Error | null) => void,
-  ): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "IndexBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -86,8 +74,6 @@ export class LunrSearchEngine implements SearchEngine {
   constructor({ logger }: { logger: Logger_2 });
   // (undocumented)
   protected docStore: Record<string, IndexableDocument>;
-  // Warning: (ae-forgotten-export) The symbol "LunrSearchEngineIndexer" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   getIndexer(type: string): Promise<LunrSearchEngineIndexer>;
   // (undocumented)
@@ -102,6 +88,23 @@ export class LunrSearchEngine implements SearchEngine {
   setTranslator(translator: LunrQueryTranslator): void;
   // (undocumented)
   protected translator: QueryTranslator;
+}
+
+// Warning: (ae-missing-release-tag) "LunrSearchEngineIndexer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
+  constructor();
+  // (undocumented)
+  buildIndex(): lunr_2.Index;
+  // (undocumented)
+  finalize(): Promise<void>;
+  // (undocumented)
+  getDocumentStore(): Record<string, IndexableDocument>;
+  // (undocumented)
+  index(documents: IndexableDocument[]): Promise<void>;
+  // (undocumented)
+  initialize(): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "Scheduler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

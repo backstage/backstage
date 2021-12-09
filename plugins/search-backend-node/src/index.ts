@@ -23,6 +23,7 @@
 export { IndexBuilder } from './IndexBuilder';
 export { Scheduler } from './Scheduler';
 export { LunrSearchEngine } from './engines';
+export type { LunrSearchEngineIndexer } from './engines';
 export * from './indexing';
 export * from './test-utils';
 

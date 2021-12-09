@@ -24,7 +24,7 @@ import { DocumentCollatorFactory } from '@backstage/search-common';
 import { Readable } from 'stream';
 import { DefaultCatalogDocumentGenerator } from './DefaultCatalogDocumentGenerator';
 
-type FactoryOptions = {
+export type DefaultCatalogCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
   filter?: CatalogEntitiesRequest['filter'];
@@ -36,12 +36,18 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   private options: any;
   private config: Config;
 
-  private constructor(config: Config, options: FactoryOptions) {
+  private constructor(
+    config: Config,
+    options: DefaultCatalogCollatorFactoryOptions,
+  ) {
     this.config = config;
     this.options = options;
   }
 
-  static fromConfig(config: Config, options: FactoryOptions) {
+  static fromConfig(
+    config: Config,
+    options: DefaultCatalogCollatorFactoryOptions,
+  ) {
     return new DefaultCatalogCollatorFactory(config, options);
   }
 
