@@ -16,9 +16,21 @@
 
 import { IdentityClient } from '@backstage/plugin-auth-backend';
 import { createRouter } from '@backstage/plugin-permission-backend';
-import { SimplePermissionPolicy } from '@backstage/plugin-permission-policy-simple';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyDecision,
+} from '@backstage/plugin-permission-node';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
+
+class AllowAllPermissionPolicy implements PermissionPolicy {
+  async handle(): Promise<PolicyDecision> {
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+  }
+}
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -27,7 +39,7 @@ export default async function createPlugin(
   return await createRouter({
     logger,
     discovery,
-    policy: new SimplePermissionPolicy(),
+    policy: new AllowAllPermissionPolicy(),
     identity: new IdentityClient({
       discovery,
       issuer: await discovery.getExternalBaseUrl('auth'),
