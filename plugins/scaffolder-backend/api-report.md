@@ -179,6 +179,13 @@ export function createPublishGitlabAction(options: {
   config: Config;
 }): TemplateAction<any>;
 
+// Warning: (ae-missing-release-tag) "createPublishGitlabMergeRequestAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createPublishGitlabMergeRequestAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<any>;
+
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
