@@ -115,16 +115,18 @@ export class DatabaseManager {
     const connection = this.getConnectionConfig(pluginId);
 
     if (this.getClientType(pluginId).client === 'sqlite3') {
-      const sqliteFilename = (connection as Knex.Sqlite3ConnectionConfig)
-        ?.filename;
+      const sqliteFilename: string | undefined = (
+        connection as Knex.Sqlite3ConnectionConfig
+      ).filename;
 
-      // if persisting to a file, create separate files per plugin to avoid db migration issues.
-      if (sqliteFilename && sqliteFilename !== ':memory:') {
-        return path.join(sqliteFilename, `${pluginId}.sqlite`);
+      if (sqliteFilename === ':memory:') {
+        return sqliteFilename;
       }
 
-      // sqlite database name should fallback to ':memory:' as a special case
-      return ':memory:';
+      const sqliteDirectory =
+        (connection as { directory?: string }).directory ?? '.';
+
+      return path.join(sqliteDirectory, sqliteFilename ?? `${pluginId}.sqlite`);
     }
 
     const databaseName = (connection as Knex.ConnectionConfig)?.database;
@@ -212,6 +214,17 @@ export class DatabaseManager {
       this.config.get('connection'),
       this.config.getString('client'),
     );
+
+    if (
+      client === 'sqlite3' &&
+      'filename' in baseConnection &&
+      baseConnection.filename !== ':memory:'
+    ) {
+      throw new Error(
+        '`connection.filename` is not supported for the base sqlite connection. Prefer `connection.directory` or provide a filename for the plugin connection instead.',
+      );
+    }
+
     // Databases cannot be shared unless the `pluginDivisionMode` is set to `schema`. The
     // `database` property from the base connection is omitted unless `pluginDivisionMode`
     // is set to `schema`. SQLite3's `filename` property is an exception as this is used as a

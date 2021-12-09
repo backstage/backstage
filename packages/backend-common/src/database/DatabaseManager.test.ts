@@ -171,28 +171,6 @@ describe('DatabaseManager', () => {
       );
     });
 
-    it('uses top level sqlite database filename if plugin config is not present', async () => {
-      const testManager = DatabaseManager.fromConfig(
-        new ConfigReader({
-          backend: {
-            database: {
-              client: 'sqlite3',
-              connection: 'some-file-path',
-            },
-          },
-        }),
-      );
-
-      await testManager.forPlugin('pluginwithoutconfig').getClient();
-      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
-      const [_, overrides] = mockCalls[0];
-
-      expect(overrides).toHaveProperty(
-        'connection.filename',
-        expect.stringContaining('some-file-path'),
-      );
-    });
-
     it('provides an inmemory sqlite database if top level is also inmemory and plugin config is not present', async () => {
       const testManager = DatabaseManager.fromConfig(
         new ConfigReader({
@@ -212,6 +190,110 @@ describe('DatabaseManager', () => {
       expect(overrides).toHaveProperty(
         'connection.filename',
         expect.stringContaining(':memory:'),
+      );
+    });
+
+    it('throws if top level sqlite filename is provided', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'sqlite3',
+              connection: 'some-file-path',
+            },
+          },
+        }),
+      );
+
+      await expect(
+        testManager.forPlugin('pluginwithoutconfig').getClient(),
+      ).rejects.toBeInstanceOf(Error);
+    });
+
+    it('creates plugin-specific sqlite files when plugin config is not present', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'sqlite3',
+              connection: {
+                directory: 'sqlite-files',
+              },
+            },
+          },
+        }),
+      );
+
+      await testManager.forPlugin('pluginwithoutconfig').getClient();
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [_, overrides] = mockCalls[0];
+
+      expect(overrides).toHaveProperty(
+        'connection.filename',
+        path.join('sqlite-files', 'pluginwithoutconfig.sqlite'),
+      );
+    });
+
+    it('uses sqlite directory from top level config and filename from plugin config', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'sqlite3',
+              connection: {
+                directory: 'sqlite-files',
+              },
+              plugin: {
+                test: {
+                  connection: {
+                    filename: 'other.sqlite',
+                  },
+                },
+              },
+            },
+          },
+        }),
+      );
+
+      await testManager.forPlugin('test').getClient();
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [_, overrides] = mockCalls[0];
+
+      expect(overrides).toHaveProperty(
+        'connection.filename',
+        path.join('sqlite-files', 'other.sqlite'),
+      );
+    });
+
+    it('uses sqlite directory and filename from plugin config', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'sqlite3',
+              connection: {
+                directory: 'sqlite-files',
+              },
+              plugin: {
+                test: {
+                  connection: {
+                    directory: 'custom-sqlite-files',
+                    filename: 'other.sqlite',
+                  },
+                },
+              },
+            },
+          },
+        }),
+      );
+
+      await testManager.forPlugin('test').getClient();
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [_, overrides] = mockCalls[0];
+
+      expect(overrides).toHaveProperty(
+        'connection.filename',
+        path.join('custom-sqlite-files', 'other.sqlite'),
       );
     });
 
@@ -285,7 +367,7 @@ describe('DatabaseManager', () => {
       // sqlite3 uses 'filename' instead of 'database'
       expect(overrides).toHaveProperty(
         'connection.filename',
-        path.join('plugin_with_different_client', `${pluginId}.sqlite`),
+        'plugin_with_different_client',
       );
     });
 
