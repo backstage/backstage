@@ -1,5 +1,18 @@
 # @backstage/plugin-permission-backend
 
+## 0.2.1
+
+### Patch Changes
+
+- a036b65c2f: Updated to use the new `BackstageIdentityResponse` type from `@backstage/plugin-auth-backend`.
+
+  The `BackstageIdentityResponse` type is backwards compatible with the `BackstageIdentity`, and provides an additional `identity` field with the claims of the user.
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.5.0
+  - @backstage/backend-common@0.9.13
+  - @backstage/plugin-permission-node@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-github-actions
 
+## 0.4.26
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- cbd20c46f1: Switch to using `LogViewer` component from `@backstage/core-components` to display build logs.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-catalog-react@0.6.5
+
 ## 0.4.25
 
 ### Patch Changes

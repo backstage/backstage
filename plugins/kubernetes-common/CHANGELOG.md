@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.2.0
+
+### Minor Changes
+
+- c010632f88: Add pod metrics lookup and display in pod table.
+
+  ## Backwards incompatible changes
+
+  If your Kubernetes distribution does not have the [metrics server](https://github.com/kubernetes-sigs/metrics-server) installed,
+  you will need to set the `skipMetricsLookup` config flag to `false`.
+
+  See the [configuration docs](https://backstage.io/docs/features/kubernetes/configuration) for more details.
+
 ## 0.1.7
 
 ### Patch Changes

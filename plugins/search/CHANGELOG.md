@@ -1,5 +1,16 @@
 # @backstage/plugin-search
 
+## 0.5.1
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- 382e3a94b3: Export SearchApi interface from plugin
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-catalog-react@0.6.5
+
 ## 0.5.0
 
 ### Minor Changes

@@ -1,5 +1,27 @@
 # @backstage/plugin-kubernetes
 
+## 0.5.0
+
+### Minor Changes
+
+- c010632f88: Add pod metrics lookup and display in pod table.
+
+  ## Backwards incompatible changes
+
+  If your Kubernetes distribution does not have the [metrics server](https://github.com/kubernetes-sigs/metrics-server) installed,
+  you will need to set the `skipMetricsLookup` config flag to `false`.
+
+  See the [configuration docs](https://backstage.io/docs/features/kubernetes/configuration) for more details.
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-kubernetes-common@0.2.0
+  - @backstage/plugin-catalog-react@0.6.5
+
 ## 0.4.22
 
 ### Patch Changes
