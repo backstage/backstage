@@ -19,6 +19,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from './extensions';
+import { Tool } from './homePageComponents/Toolkit';
 
 import { rootRouteRef } from './routes';
 
@@ -79,10 +80,28 @@ export const WelcomeTitle = homePlugin.provide(
   }),
 );
 
+export const HomePageCompanyLogo = homePlugin.provide(
+  createComponentExtension({
+    name: 'CompanyLogo',
+    component: {
+      lazy: () =>
+        import('./homePageComponents/CompanyLogo').then(m => m.CompanyLogo),
+    },
+  }),
+);
+
 export const HomePageRandomJoke = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
     name: 'HomePageRandomJoke',
     title: 'Random Joke',
     components: () => import('./homePageComponents/RandomJoke'),
+  }),
+);
+
+export const HomePageToolkit = homePlugin.provide(
+  createCardExtension<{ tools: Tool[] }>({
+    name: 'HomePageToolkit',
+    title: 'Toolkit',
+    components: () => import('./homePageComponents/Toolkit'),
   }),
 );
