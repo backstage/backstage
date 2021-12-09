@@ -16,7 +16,7 @@
 
 import TemplateBackstageLogo from './TemplateBackstageLogo';
 import TemplateBackstageLogoIcon from './TemplateBackstageLogoIcon';
-import { HomePageToolkit, HomePageCompanyLogo } from '@backstage/plugin-home';
+import { HomePageToolkit, HomePageCompanyLogo } from '../plugin';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { Content, Page, InfoCard } from '@backstage/core-components';
 import {
