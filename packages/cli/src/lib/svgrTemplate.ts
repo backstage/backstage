@@ -19,29 +19,21 @@
  * for SVG to be imported directly as MUI SvgIcon components by suffixing
  * them with .icon.svg
  */
-export function svgrTemplate(
-  { template }: any,
-  _opts: any,
-  { imports, interfaces, componentName, jsx }: any,
-) {
+export function svgrTemplate(variables: any, { tpl }: any) {
   const iconName = {
-    ...componentName,
-    name: `${componentName.name.replace(/icon$/, '')}Icon`,
+    ...variables.componentName,
+    name: `${variables.componentName.replace(/icon$/, '')}Icon`,
   };
 
   const defaultExport = {
     type: 'ExportDefaultDeclaration',
     declaration: iconName,
   };
-
-  const typeScriptTemplate = template.smart({ plugins: ['typescript'] });
-  return typeScriptTemplate.ast`
-${imports}
+  return tpl`
+${variables.imports}
 import SvgIcon from '@material-ui/core/SvgIcon';
 
-${interfaces}
-
-const ${iconName} = props => React.createElement(SvgIcon, props, ${jsx.children});
-
+${variables.interfaces}
+const ${iconName} = props => React.createElement(SvgIcon, props, ${variables.jsx.children});
 ${defaultExport}`;
 }
