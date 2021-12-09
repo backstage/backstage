@@ -1,5 +1,25 @@
 # @backstage/plugin-xcmetrics
 
+## 0.2.12
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- 343ef34599: Handle a case where XCode data from backend (before 0.0.8) could be missing
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+
+## 0.2.11
+
+### Patch Changes
+
+- af09b1e059: Fix bug where invalid build statuses led to crashes
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
 ## 0.2.10
 
 ### Patch Changes

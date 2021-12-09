@@ -20,15 +20,15 @@ import { Logger } from 'winston';
 import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 
-type RouterOptions = {
+export type RouterOptions = {
   engine: SearchEngine;
   logger: Logger;
 };
 
-export async function createRouter({
-  engine,
-  logger,
-}: RouterOptions): Promise<express.Router> {
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const { engine, logger } = options;
   const router = Router();
   router.get(
     '/query',

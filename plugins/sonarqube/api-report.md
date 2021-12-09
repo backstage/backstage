@@ -53,6 +53,4 @@ export { sonarQubePlugin };
 // Warnings were encountered during analysis:
 //
 // src/components/SonarQubeCard/SonarQubeCard.d.ts:11:5 - (ae-forgotten-export) The symbol "DuplicationRating" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
 ```

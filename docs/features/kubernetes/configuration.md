@@ -26,6 +26,7 @@ kubernetes:
           name: minikube
           authProvider: 'serviceAccount'
           skipTLSVerify: false
+          skipMetricsLookup: true
           serviceAccountToken: ${K8S_MINIKUBE_TOKEN}
           dashboardUrl: http://127.0.0.1:64713 # url copied from running the command: minikube service kubernetes-dashboard -n kubernetes-dashboard
           dashboardApp: standard
@@ -37,6 +38,7 @@ kubernetes:
       projectId: 'gke-clusters'
       region: 'europe-west1'
       skipTLSVerify: true
+      skipMetricsLookup: true
 ```
 
 ### `serviceLocatorMethod`
@@ -86,8 +88,13 @@ cluster. Valid values are:
 
 ##### `clusters.\*.skipTLSVerify`
 
-This determines whether or not the Kubernetes client verifies the TLS
-certificate presented by the API server. Defaults to `false`.
+This determines whether the Kubernetes client verifies the TLS certificate
+presented by the API server. Defaults to `false`.
+
+##### `clusters.\*.skipMetricsLookup`
+
+This determines whether the Kubernetes client looks up resource metrics
+CPU/Memory for pods returned by the API server. Defaults to `false`.
 
 ##### `clusters.\*.serviceAccountToken` (optional)
 
@@ -188,8 +195,13 @@ regions.
 
 ##### `skipTLSVerify`
 
-This determines whether or not the Kubernetes client verifies the TLS
-certificate presented by the API server. Defaults to `false`.
+This determines whether the Kubernetes client verifies the TLS certificate
+presented by the API server. Defaults to `false`.
+
+##### `skipMetricsLookup`
+
+This determines whether the Kubernetes client looks up resource metrics
+CPU/Memory for pods returned by the API server. Defaults to `false`.
 
 ### `customResources` (optional)
 

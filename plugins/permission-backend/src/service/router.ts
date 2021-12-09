@@ -23,7 +23,7 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import {
-  BackstageIdentity,
+  BackstageIdentityResponse,
   IdentityClient,
 } from '@backstage/plugin-auth-backend';
 import {
@@ -71,7 +71,7 @@ export interface RouterOptions {
 
 const handleRequest = async (
   { id, resourceRef, ...request }: Identified<AuthorizeRequest>,
-  user: BackstageIdentity | undefined,
+  user: BackstageIdentityResponse | undefined,
   policy: PermissionPolicy,
   permissionIntegrationClient: PermissionIntegrationClient,
   authHeader?: string,

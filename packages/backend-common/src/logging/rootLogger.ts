@@ -54,10 +54,13 @@ export function setRootLoggerRedactionList(redactionList: string[]) {
  * and replaces them with the corresponding identifier.
  */
 function redactLogLine(info: winston.Logform.TransformableInfo) {
-  // TODO(hhogg): The logger is created before the config is loaded,
-  // because the logger is needed in the config loader. There is a risk of
-  // a secret being logged out during the config loading stage.
-  if (redactionRegExp) {
+  // TODO(hhogg): The logger is created before the config is loaded, because the
+  // logger is needed in the config loader. There is a risk of a secret being
+  // logged out during the config loading stage.
+  // TODO(freben): Added a check that info.message actually was a string,
+  // because it turned out that this was not necessarily guaranteed.
+  // https://github.com/backstage/backstage/issues/8306
+  if (redactionRegExp && typeof info.message === 'string') {
     info.message = info.message.replace(redactionRegExp, '[REDACTED]');
   }
 

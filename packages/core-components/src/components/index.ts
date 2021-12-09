@@ -30,6 +30,7 @@ export * from './HeaderIconLinkRow';
 export * from './HorizontalScrollGrid';
 export * from './Lifecycle';
 export * from './Link';
+export * from './LogViewer';
 export * from './MarkdownContent';
 export * from './OAuthRequestDialog';
 export * from './OverflowTooltip';

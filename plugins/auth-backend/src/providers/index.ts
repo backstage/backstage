@@ -19,10 +19,12 @@ export * from './gitlab';
 export * from './google';
 export * from './microsoft';
 export * from './oauth2';
+export * from './oidc';
 export * from './okta';
 export * from './bitbucket';
 export * from './atlassian';
 export * from './aws-alb';
+export * from './saml';
 
 export { factories as defaultAuthProviderFactories } from './factories';
 
@@ -36,4 +38,13 @@ export type {
 
 // These types are needed for a postMessage from the login pop-up
 // to the frontend
-export type { AuthResponse, BackstageIdentity, ProfileInfo } from './types';
+export type {
+  AuthResponse,
+  BackstageIdentity,
+  BackstageUserIdentity,
+  BackstageIdentityResponse,
+  BackstageSignInResult,
+  ProfileInfo,
+} from './types';
+
+export { prepareBackstageIdentityResponse } from './prepareBackstageIdentityResponse';

@@ -30,6 +30,18 @@ export interface PluginDatabaseManager {
    * stores so that plugins are discouraged from database integration.
    */
   getClient(): Promise<Knex>;
+
+  /**
+   * This property is used to control the behavior of database migrations.
+   */
+  migrations?: {
+    /**
+     * skip database migrations. Useful if connecting to a read-only database.
+     *
+     * @default false
+     */
+    skip?: boolean;
+  };
 }
 
 /**

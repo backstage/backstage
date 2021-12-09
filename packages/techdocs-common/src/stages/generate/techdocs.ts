@@ -23,7 +23,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import {
-  addBuildTimestampMetadata,
+  createOrUpdateMetadata,
   getMkdocsYml,
   patchIndexPreBuild,
   patchMkdocsYmlPreBuild,
@@ -52,11 +52,9 @@ export class TechdocsGenerator implements GeneratorBase {
 
   static fromConfig(
     config: Config,
-    {
-      containerRunner,
-      logger,
-    }: { containerRunner: ContainerRunner; logger: Logger },
+    options: { containerRunner: ContainerRunner; logger: Logger },
   ) {
+    const { containerRunner, logger } = options;
     const scmIntegrations = ScmIntegrations.fromConfig(config);
     return new TechdocsGenerator({
       logger,
@@ -66,31 +64,28 @@ export class TechdocsGenerator implements GeneratorBase {
     });
   }
 
-  constructor({
-    logger,
-    containerRunner,
-    config,
-    scmIntegrations,
-  }: {
+  constructor(options: {
     logger: Logger;
     containerRunner: ContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   }) {
-    this.logger = logger;
-    this.options = readGeneratorConfig(config, logger);
-    this.containerRunner = containerRunner;
-    this.scmIntegrations = scmIntegrations;
+    this.logger = options.logger;
+    this.options = readGeneratorConfig(options.config, options.logger);
+    this.containerRunner = options.containerRunner;
+    this.scmIntegrations = options.scmIntegrations;
   }
 
-  public async run({
-    inputDir,
-    outputDir,
-    parsedLocationAnnotation,
-    etag,
-    logger: childLogger,
-    logStream,
-  }: GeneratorRunOptions): Promise<void> {
+  public async run(options: GeneratorRunOptions): Promise<void> {
+    const {
+      inputDir,
+      outputDir,
+      parsedLocationAnnotation,
+      etag,
+      logger: childLogger,
+      logStream,
+    } = options;
+
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
     const { path: mkdocsYmlPath, content } = await getMkdocsYml(inputDir);
 
@@ -164,9 +159,9 @@ export class TechdocsGenerator implements GeneratorBase {
      * Post Generate steps
      */
 
-    // Add build timestamp to techdocs_metadata.json
+    // Add build timestamp and files to techdocs_metadata.json
     // Creates techdocs_metadata.json if file does not exist.
-    await addBuildTimestampMetadata(
+    await createOrUpdateMetadata(
       path.join(outputDir, 'techdocs_metadata.json'),
       childLogger,
     );

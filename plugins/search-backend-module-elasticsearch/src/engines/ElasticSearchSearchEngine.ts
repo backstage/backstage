@@ -64,6 +64,9 @@ function isBlank(str: string) {
   return (isEmpty(str) && !isNumber(str)) || nan(str);
 }
 
+/**
+ * @public
+ */
 export class ElasticSearchSearchEngine implements SearchEngine {
   constructor(
     private readonly elasticSearchClient: Client,
@@ -72,12 +75,14 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     private readonly logger: Logger,
   ) {}
 
-  static async fromConfig({
-    logger,
-    config,
-    aliasPostfix = `search`,
-    indexPrefix = ``,
-  }: ElasticSearchOptions) {
+  static async fromConfig(options: ElasticSearchOptions) {
+    const {
+      logger,
+      config,
+      aliasPostfix = `search`,
+      indexPrefix = ``,
+    } = options;
+
     return new ElasticSearchSearchEngine(
       await ElasticSearchSearchEngine.constructElasticSearchClient(
         logger,
@@ -164,12 +169,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     });
   }
 
-  protected translator({
-    term,
-    filters = {},
-    types,
-    pageCursor,
-  }: SearchQuery): ConcreteElasticSearchQuery {
+  protected translator(query: SearchQuery): ConcreteElasticSearchQuery {
+    const { term, filters = {}, types, pageCursor } = query;
+
     const filter = Object.entries(filters)
       .filter(([_, value]) => Boolean(value))
       .map(([key, value]: [key: string, value: any]) => {
@@ -190,7 +192,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
           'Failed to add filters to query. Unrecognized filter type',
         );
       });
-    const query = isBlank(term)
+    const esbQuery = isBlank(term)
       ? esb.matchAllQuery()
       : esb
           .multiMatchQuery(['*'], term)
@@ -202,7 +204,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     return {
       elasticSearchQuery: esb
         .requestBodySearch()
-        .query(esb.boolQuery().filter(filter).must([query]))
+        .query(esb.boolQuery().filter(filter).must([esbQuery]))
         .from(page * pageSize)
         .size(pageSize)
         .toJSON(),

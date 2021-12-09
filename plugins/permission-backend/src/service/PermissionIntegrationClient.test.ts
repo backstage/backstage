@@ -64,7 +64,7 @@ describe('PermissionIntegrationClient', () => {
       server.listen({ onUnhandledRequest: 'error' });
       server.use(
         rest.post(
-          `${mockBaseUrl}/permissions/apply-conditions`,
+          `${mockBaseUrl}/.well-known/backstage/permissions/apply-conditions`,
           mockApplyConditionsHandler,
         ),
       );

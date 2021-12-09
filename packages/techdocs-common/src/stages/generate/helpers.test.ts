@@ -23,7 +23,7 @@ import os from 'os';
 import path, { resolve as resolvePath } from 'path';
 import { ParsedLocationAnnotation } from '../../helpers';
 import {
-  addBuildTimestampMetadata,
+  createOrUpdateMetadata,
   getGeneratorKey,
   getMkdocsYml,
   getRepoUrlFromLocationAnnotation,
@@ -369,13 +369,15 @@ describe('helpers', () => {
   });
 
   describe('addBuildTimestampMetadata', () => {
+    const mockFiles = {
+      'invalid_techdocs_metadata.json': 'dsds',
+      'techdocs_metadata.json': '{"site_name": "Tech Docs"}',
+    };
+
     beforeEach(() => {
       mockFs.restore();
       mockFs({
-        [rootDir]: {
-          'invalid_techdocs_metadata.json': 'dsds',
-          'techdocs_metadata.json': '{"site_name": "Tech Docs"}',
-        },
+        [rootDir]: mockFiles,
       });
     });
 
@@ -385,7 +387,7 @@ describe('helpers', () => {
 
     it('should create the file if it does not exist', async () => {
       const filePath = path.join(rootDir, 'wrong_techdocs_metadata.json');
-      await addBuildTimestampMetadata(filePath, mockLogger);
+      await createOrUpdateMetadata(filePath, mockLogger);
 
       // Check if the file exists
       await expect(
@@ -397,17 +399,27 @@ describe('helpers', () => {
       const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
 
       await expect(
-        addBuildTimestampMetadata(filePath, mockLogger),
+        createOrUpdateMetadata(filePath, mockLogger),
       ).rejects.toThrowError('Unexpected token d in JSON at position 0');
     });
 
     it('should add build timestamp to the metadata json', async () => {
       const filePath = path.join(rootDir, 'techdocs_metadata.json');
 
-      await addBuildTimestampMetadata(filePath, mockLogger);
+      await createOrUpdateMetadata(filePath, mockLogger);
 
       const json = await fs.readJson(filePath);
       expect(json.build_timestamp).toBeLessThanOrEqual(Date.now());
+    });
+
+    it('should add list of files to the metadata json', async () => {
+      const filePath = path.join(rootDir, 'techdocs_metadata.json');
+
+      await createOrUpdateMetadata(filePath, mockLogger);
+
+      const json = await fs.readJson(filePath);
+      expect(json.files[0]).toEqual(Object.keys(mockFiles)[0]);
+      expect(json.files[1]).toEqual(Object.keys(mockFiles)[1]);
     });
   });
 

@@ -40,6 +40,9 @@ const identityApi: IdentityApi = {
   async signOut() {
     return Promise.resolve();
   },
+  getProfileInfo: jest.fn(),
+  getBackstageIdentity: jest.fn(),
+  getCredentials: jest.fn(),
 };
 const guestIdentityApi: IdentityApi = {
   getUserId() {
@@ -54,6 +57,9 @@ const guestIdentityApi: IdentityApi = {
   async signOut() {
     return Promise.resolve();
   },
+  getProfileInfo: jest.fn(),
+  getBackstageIdentity: jest.fn(),
+  getCredentials: jest.fn(),
 };
 
 describe('CatalogClientWrapper', () => {

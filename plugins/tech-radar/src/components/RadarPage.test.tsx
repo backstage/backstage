@@ -22,9 +22,8 @@ import {
 } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
-import { render, waitForElement } from '@testing-library/react';
+import { act, render, waitForElement } from '@testing-library/react';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
 import { RadarPage } from './RadarPage';
 import { TechRadarLoaderResponse, techRadarApiRef, TechRadarApi } from '../api';

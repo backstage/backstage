@@ -43,6 +43,9 @@ describe('<ImportPage />', () => {
     signOut: () => {
       return Promise.resolve();
     },
+    getProfileInfo: jest.fn(),
+    getBackstageIdentity: jest.fn(),
+    getCredentials: jest.fn(),
   };
 
   let apis: TestApiRegistry;

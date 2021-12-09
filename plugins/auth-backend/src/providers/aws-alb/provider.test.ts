@@ -122,7 +122,11 @@ describe('AwsAlbAuthProvider', () => {
           profile: makeProfileInfo(fullProfile),
         }),
         signInResolver: async () => {
-          return { id: 'user.name', token: 'TOKEN' };
+          return {
+            id: 'user.name',
+            token:
+              'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
+          };
         },
       });
 
@@ -133,7 +137,15 @@ describe('AwsAlbAuthProvider', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         backstageIdentity: {
           id: 'user.name',
-          token: 'TOKEN',
+          token:
+            'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
+          idToken:
+            'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
+          identity: {
+            ownershipEntityRefs: ['user:default/jimmymarkum'],
+            type: 'user',
+            userEntityRef: 'jimmymarkum',
+          },
         },
         profile: {
           displayName: 'User Name',

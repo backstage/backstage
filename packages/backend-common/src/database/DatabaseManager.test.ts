@@ -36,24 +36,44 @@ describe('DatabaseManager', () => {
   afterEach(() => jest.resetAllMocks());
 
   describe('DatabaseManager.fromConfig', () => {
-    it('accesses the backend.database key', () => {
-      const config = new ConfigReader({
-        backend: {
-          database: {
-            client: 'pg',
-            connection: {
-              host: 'localhost',
-              user: 'foo',
-              password: 'bar',
-              database: 'foodb',
-            },
+    const backendConfig = {
+      backend: {
+        database: {
+          client: 'pg',
+          connection: {
+            host: 'localhost',
+            user: 'foo',
+            password: 'bar',
+            database: 'foodb',
           },
         },
-      });
+      },
+    };
+
+    it('accesses the backend.database key', () => {
+      const config = new ConfigReader(backendConfig);
       const getConfigSpy = jest.spyOn(config, 'getConfig');
       DatabaseManager.fromConfig(config);
 
       expect(getConfigSpy).toHaveBeenCalledWith('backend.database');
+    });
+
+    it('handles default options', () => {
+      const config = new ConfigReader(backendConfig);
+      const database = DatabaseManager.fromConfig(config);
+      const client = database.forPlugin('test');
+
+      expect(client.migrations?.skip).toBe(false);
+    });
+
+    it('handles migrations options', () => {
+      const config = new ConfigReader(backendConfig);
+      const database = DatabaseManager.fromConfig(config, {
+        migrations: { skip: true },
+      });
+      const client = database.forPlugin('test');
+
+      expect(client.migrations?.skip).toBe(true);
     });
   });
 
@@ -503,6 +523,43 @@ describe('DatabaseManager', () => {
       expect(overrides).toHaveProperty(
         'connection.database',
         'database_name_overriden',
+      );
+    });
+
+    it('fetches and merges additional knex config', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                database: 'foodb',
+              },
+              knexConfig: {
+                something: false,
+              },
+              plugin: {
+                testdbname: {
+                  knexConfig: {
+                    debug: true,
+                  },
+                },
+              },
+            },
+          },
+        }),
+      );
+      await testManager.forPlugin('testdbname').getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig] = mockCalls[0];
+
+      expect(baseConfig.data).toEqual(
+        expect.objectContaining({
+          debug: true,
+          something: false,
+        }),
       );
     });
   });
