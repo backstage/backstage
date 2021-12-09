@@ -39,11 +39,6 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      # https://github.com/Automattic/node-canvas/issues/1945
-      - name: Install dependencies to fix temporary issue in canvas build
-        run: |
-          sudo apt update
-          sudo apt install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev librsvg2-dev
       - name: yarn install
         run: yarn install --frozen-lockfile
       # End of yarn setup
