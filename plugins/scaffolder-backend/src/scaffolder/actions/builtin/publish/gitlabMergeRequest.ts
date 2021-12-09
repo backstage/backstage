@@ -97,10 +97,6 @@ export const createPublishGitlabMergeRequestAction = (options: {
       const { host } = parseRepoUrl(repoUrl, integrations);
       const integrationConfig = integrations.gitlab.byHost(host);
 
-      /*	  const a : Types.CommitAction = {
-		  action: 'create',
-		  filePath: ''
-	  };*/
       const actions: Types.CommitAction[] = [];
 
       const destinationBranch = ctx.input.branchName;
