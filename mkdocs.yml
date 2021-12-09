@@ -61,7 +61,6 @@ nav:
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Templates (Legacy): 'features/software-templates/legacy.md'
           - Migrating from v1alpha1 to v1beta2 templates: 'features/software-templates/migrating-from-v1alpha1-to-v1beta2.md'
-
       - Backstage Search:
           - Overview: 'features/search/README.md'
           - Getting Started: 'features/search/getting-started.md'
@@ -78,6 +77,7 @@ nav:
           - TechDocs Configuration Options: 'features/techdocs/configuration.md'
           - Using Cloud Storage: 'features/techdocs/using-cloud-storage.md'
           - Configuring CI/CD to generate and publish TechDocs sites: 'features/techdocs/configuring-ci-cd.md'
+          - CLI: 'features/techdocs/cli.md'
           - HOW TO guides: 'features/techdocs/how-to-guides.md'
           - Troubleshooting: 'features/techdocs/troubleshooting.md'
           - FAQ: 'features/techdocs/FAQ.md'
@@ -88,6 +88,7 @@ nav:
           - Discovery: 'integrations/aws-s3/discovery.md'
       - Azure:
           - Locations: 'integrations/azure/locations.md'
+          - Discovery: 'integrations/azure/discovery.md'
           - Org Data: 'integrations/azure/org.md'
       - Bitbucket:
           - Locations: 'integrations/bitbucket/locations.md'
@@ -100,6 +101,7 @@ nav:
           - Org Data: 'integrations/github/org.md'
       - GitLab:
           - Locations: 'integrations/gitlab/locations.md'
+          - Discovery: 'integrations/gitlab/discovery.md'
       - Google GCS:
           - Locations: 'integrations/google-cloud-storage/locations.md'
       - LDAP:
@@ -163,6 +165,7 @@ nav:
   - API Reference:
       - Guides:
           - Utility APIs: 'api/utility-apis.md'
+      - Deprecations: 'api/deprecations.md'
   - Tutorials:
       - Future developer journey: 'tutorials/journey.md'
       - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'

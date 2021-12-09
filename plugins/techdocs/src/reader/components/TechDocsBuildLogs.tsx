@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LogViewer } from '@backstage/core-components';
 import {
   Button,
   createStyles,
@@ -25,9 +26,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
-import * as React from 'react';
-import { useState } from 'react';
-import { LazyLog } from 'react-lazylog';
+import React, { useState } from 'react';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,6 +44,9 @@ const useDrawerStyles = makeStyles((theme: Theme) =>
       height: '100%',
       overflow: 'hidden',
     },
+    logs: {
+      background: theme.palette.background.default,
+    },
   }),
 );
 
@@ -56,6 +58,8 @@ export const TechDocsBuildLogsDrawerContent = ({
   onClose: () => void;
 }) => {
   const classes = useDrawerStyles();
+  const logText =
+    buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n');
   return (
     <Grid
       container
@@ -82,16 +86,7 @@ export const TechDocsBuildLogsDrawerContent = ({
           <Close />
         </IconButton>
       </Grid>
-
-      <LazyLog
-        text={
-          buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n')
-        }
-        extraLines={1}
-        follow
-        selectableLines
-        enableSearch
-      />
+      <LogViewer text={logText} className={classes.logs} />
     </Grid>
   );
 };

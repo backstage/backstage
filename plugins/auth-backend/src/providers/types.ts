@@ -137,42 +137,92 @@ export type AuthProviderFactory = (
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;
   profile: ProfileInfo;
-  backstageIdentity?: BackstageIdentity;
+  backstageIdentity?: BackstageIdentityResponse;
 };
 
-export type BackstageIdentity = {
+/**
+ * User identity information within Backstage.
+ *
+ * @public
+ */
+export type BackstageUserIdentity = {
+  /**
+   * The type of identity that this structure represents. In the frontend app
+   * this will currently always be 'user'.
+   */
+  type: 'user';
+
+  /**
+   * The entityRef of the user in the catalog.
+   * For example User:default/sandra
+   */
+  userEntityRef: string;
+
+  /**
+   * The user and group entities that the user claims ownership through
+   */
+  ownershipEntityRefs: string[];
+};
+
+/**
+ * A representation of a successful Backstage sign-in.
+ *
+ * Compared to the {@link BackstageIdentityResponse} this type omits
+ * the decoded identity information embedded in the token.
+ *
+ * @public
+ */
+export interface BackstageSignInResult {
   /**
    * An opaque ID that uniquely identifies the user within Backstage.
    *
    * This is typically the same as the user entity `metadata.name`.
+   *
+   * @deprecated Use the `identity` field instead
    */
   id: string;
-
-  /**
-   * This is deprecated, use `token` instead.
-   * @deprecated
-   */
-  idToken?: string;
-
-  /**
-   * The token used to authenticate the user within Backstage.
-   */
-  token?: string;
 
   /**
    * The entity that the user is represented by within Backstage.
    *
    * This entity may or may not exist within the Catalog, and it can be used
    * to read and store additional metadata about the user.
+   *
+   * @deprecated Use the `identity` field instead.
    */
   entity?: Entity;
-};
+
+  /**
+   * The token used to authenticate the user within Backstage.
+   */
+  token: string;
+}
+
+/**
+ * The old exported symbol for {@link BackstageSignInResult}.
+ * @public
+ * @deprecated Use the `BackstageSignInResult` type instead.
+ */
+export type BackstageIdentity = BackstageSignInResult;
+
+/**
+ * Response object containing the {@link BackstageUserIdentity} and the token from the authentication provider.
+ * @public
+ */
+export interface BackstageIdentityResponse extends BackstageSignInResult {
+  /**
+   * A plaintext description of the identity that is encapsulated within the token.
+   */
+  identity: BackstageUserIdentity;
+}
 
 /**
  * Used to display login information to user, i.e. sidebar popup.
  *
  * It is also temporarily used as the profile of the signed-in user's Backstage
  * identity, but we want to replace that with data from identity and/org catalog service
+ *
+ * @public
  */
 export type ProfileInfo = {
   /**
@@ -209,7 +259,7 @@ export type SignInResolver<AuthResult> = (
     catalogIdentityClient: CatalogIdentityClient;
     logger: Logger;
   },
-) => Promise<BackstageIdentity>;
+) => Promise<BackstageSignInResult>;
 
 export type AuthHandlerResult = { profile: ProfileInfo };
 

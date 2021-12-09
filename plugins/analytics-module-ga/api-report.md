@@ -17,13 +17,7 @@ export const analyticsModuleGA: BackstagePlugin<{}, {}>;
 //
 // @public
 export class GoogleAnalytics implements AnalyticsApi {
-  captureEvent({
-    context,
-    action,
-    subject,
-    value,
-    attributes,
-  }: AnalyticsEvent): void;
+  captureEvent(event: AnalyticsEvent): void;
   static fromConfig(config: Config): GoogleAnalytics;
 }
 

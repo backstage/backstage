@@ -23,7 +23,7 @@ import {
   Grid,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { ExtensionsV1beta1Ingress } from '@kubernetes/client-node';
+import { V1Ingress } from '@kubernetes/client-node';
 import { IngressDrawer } from './IngressDrawer';
 import { GroupedResponsesContext } from '../../hooks';
 import { StructuredMetadataTable } from '@backstage/core-components';
@@ -31,11 +31,11 @@ import { StructuredMetadataTable } from '@backstage/core-components';
 type IngressesAccordionsProps = {};
 
 type IngressAccordionProps = {
-  ingress: ExtensionsV1beta1Ingress;
+  ingress: V1Ingress;
 };
 
 type IngressSummaryProps = {
-  ingress: ExtensionsV1beta1Ingress;
+  ingress: V1Ingress;
 };
 
 const IngressSummary = ({ ingress }: IngressSummaryProps) => {
@@ -58,7 +58,7 @@ const IngressSummary = ({ ingress }: IngressSummaryProps) => {
 };
 
 type IngressCardProps = {
-  ingress: ExtensionsV1beta1Ingress;
+  ingress: V1Ingress;
 };
 
 const IngressCard = ({ ingress }: IngressCardProps) => {

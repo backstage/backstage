@@ -62,13 +62,6 @@ export type FeatureFlagsSaveOptions = {
 };
 
 /**
- * User flags alias.
- *
- * @public
- */
-export type UserFlags = {};
-
-/**
  * The feature flags API is used to toggle functionality to users across plugins and Backstage.
  *
  * @remarks

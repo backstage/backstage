@@ -5,11 +5,15 @@
 ```ts
 /// <reference types="react" />
 
+import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
+import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
+import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { Observable as Observable_2 } from '@backstage/types';
 import { Observer as Observer_2 } from '@backstage/types';
+import { ProfileInfo as ProfileInfo_2 } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
@@ -40,10 +44,7 @@ export type AnalyticsApi = {
 export const analyticsApiRef: ApiRef<AnalyticsApi>;
 
 // @public
-export const AnalyticsContext: ({
-  attributes,
-  children,
-}: {
+export const AnalyticsContext: (options: {
   attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
 }) => JSX.Element;
@@ -161,13 +162,14 @@ export type AppComponents = {
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
+  ThemeProvider?: ComponentType<{}>;
   SignInPage?: ComponentType<SignInPageProps>;
 };
 
 // @public
 export type AppContext = {
-  getPlugins(): BackstagePlugin<any, any>[];
-  getSystemIcon(key: string): IconComponent | undefined;
+  getPlugins(): BackstagePlugin_2<any, any>[];
+  getSystemIcon(key: string): IconComponent_2 | undefined;
   getComponents(): AppComponents;
 };
 
@@ -178,6 +180,7 @@ export type AppTheme = {
   variant: 'light' | 'dark';
   theme: BackstageTheme;
   icon?: React.ReactElement;
+  Provider?(props: { children: ReactNode }): JSX.Element | null;
 };
 
 // @public
@@ -231,18 +234,21 @@ export type AuthRequestOptions = {
   instantPopup?: boolean;
 };
 
-// @public
-export type BackstageIdentity = {
-  id: string;
-  idToken: string;
-  token: string;
-};
+// @public @deprecated
+export type BackstageIdentity = BackstageIdentityResponse;
 
 // @public
 export type BackstageIdentityApi = {
   getBackstageIdentity(
     options?: AuthRequestOptions,
-  ): Promise<BackstageIdentity | undefined>;
+  ): Promise<BackstageIdentityResponse | undefined>;
+};
+
+// @public
+export type BackstageIdentityResponse = {
+  id: string;
+  token: string;
+  identity: BackstageUserIdentity;
 };
 
 // @public
@@ -253,9 +259,17 @@ export type BackstagePlugin<
   getId(): string;
   output(): PluginOutput[];
   getApis(): Iterable<AnyApiFactory>;
+  getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
+};
+
+// @public
+export type BackstageUserIdentity = {
+  type: 'user';
+  userEntityRef: string;
+  ownershipEntityRefs: string[];
 };
 
 // @public
@@ -399,21 +413,29 @@ export interface ElementCollection {
   }): ElementCollection;
 }
 
-// @public
-type Error_2 = {
-  name: string;
-  message: string;
-  stack?: string;
-};
+// @public @deprecated (undocumented)
+type Error_2 = ErrorApiError;
 export { Error_2 as Error };
 
 // @public
 export type ErrorApi = {
-  post(error: Error_2, context?: ErrorContext): void;
+  post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
   error$(): Observable_2<{
-    error: Error_2;
-    context?: ErrorContext;
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
   }>;
+};
+
+// @public
+export type ErrorApiError = {
+  name: string;
+  message: string;
+  stack?: string;
+};
+
+// @public
+export type ErrorApiErrorContext = {
+  hidden?: boolean;
 };
 
 // @public
@@ -421,15 +443,13 @@ export const errorApiRef: ApiRef<ErrorApi>;
 
 // @public
 export type ErrorBoundaryFallbackProps = {
-  plugin?: BackstagePlugin;
+  plugin?: BackstagePlugin_2;
   error: Error;
   resetError: () => void;
 };
 
-// @public
-export type ErrorContext = {
-  hidden?: boolean;
-};
+// @public @deprecated (undocumented)
+export type ErrorContext = ErrorApiErrorContext;
 
 // @public
 export type Extension<T> = {
@@ -452,7 +472,7 @@ export type FeatureFlag = {
   pluginId: string;
 };
 
-// @public
+// @public @deprecated
 export type FeatureFlagOutput = {
   type: 'feature-flag';
   name: string;
@@ -519,8 +539,13 @@ export type IconComponent = ComponentType<{
 // @public
 export type IdentityApi = {
   getUserId(): string;
-  getProfile(): ProfileInfo;
   getIdToken(): Promise<string | undefined>;
+  getProfile(): ProfileInfo;
+  getProfileInfo(): Promise<ProfileInfo>;
+  getBackstageIdentity(): Promise<BackstageUserIdentity>;
+  getCredentials(): Promise<{
+    token?: string;
+  }>;
   signOut(): Promise<void>;
 };
 
@@ -671,14 +696,20 @@ export type PluginConfig<
   register?(hooks: PluginHooks): void;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
+  featureFlags?: PluginFeatureFlagConfig[];
 };
 
 // @public
+export type PluginFeatureFlagConfig = {
+  name: string;
+};
+
+// @public @deprecated
 export type PluginHooks = {
   featureFlags: FeatureFlagsHooks;
 };
 
-// @public
+// @public @deprecated
 export type PluginOutput = FeatureFlagOutput;
 
 // @public
@@ -697,14 +728,6 @@ export type ProfileInfoApi = {
 export type RouteFunc<Params extends AnyParams> = (
   ...[params]: Params extends undefined ? readonly [] : readonly [Params]
 ) => string;
-
-// @public
-export type RouteOptions = {
-  exact?: boolean;
-};
-
-// @public
-export type RoutePath = string;
 
 // @public
 export type RouteRef<Params extends AnyParams = any> = {
@@ -735,13 +758,13 @@ export enum SessionState {
 
 // @public
 export type SignInPageProps = {
-  onResult(result: SignInResult): void;
+  onSignInSuccess(identityApi: IdentityApi_2): void;
 };
 
-// @public
+// @public @deprecated
 export type SignInResult = {
   userId: string;
-  profile: ProfileInfo;
+  profile: ProfileInfo_2;
   getIdToken?: () => Promise<string>;
   signOut?: () => Promise<void>;
 };
@@ -798,9 +821,6 @@ export function useElementFilter<T>(
   filterFn: (arg: ElementCollection) => T,
   dependencies?: any[],
 ): T;
-
-// @public
-export type UserFlags = {};
 
 // @public
 export function useRouteRef<Optional extends boolean, Params extends AnyParams>(

@@ -35,6 +35,7 @@ import {
 } from '@backstage/plugin-api-docs';
 import {
   EntityAzurePipelinesContent,
+  EntityAzurePullRequestsContent,
   isAzureDevOpsAvailable,
 } from '@backstage/plugin-azure-devops';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
@@ -105,10 +106,7 @@ import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
 import BadgeIcon from '@material-ui/icons/CallToAction';
-import {
-  EntityBuildkiteContent,
-  isBuildkiteAvailable,
-} from '@roadiehq/backstage-plugin-buildkite';
+
 import {
   EntityGithubInsightsContent,
   EntityGithubInsightsLanguagesCard,
@@ -165,10 +163,6 @@ export const cicdContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isJenkinsAvailable}>
       <EntityJenkinsContent />
-    </EntitySwitch.Case>
-
-    <EntitySwitch.Case if={isBuildkiteAvailable}>
-      <EntityBuildkiteContent />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case if={isCircleCIAvailable}>
@@ -260,6 +254,18 @@ const errorsContent = (
 
     <EntitySwitch.Case>
       <EntitySentryContent />
+    </EntitySwitch.Case>
+  </EntitySwitch>
+);
+
+const pullRequestsContent = (
+  <EntitySwitch>
+    <EntitySwitch.Case if={isAzureDevOpsAvailable}>
+      <EntityAzurePullRequestsContent defaultLimit={25} />
+    </EntitySwitch.Case>
+
+    <EntitySwitch.Case>
+      <EntityGithubPullRequestsContent />
     </EntitySwitch.Case>
   </EntitySwitch>
 );
@@ -368,7 +374,7 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">
-      <EntityGithubPullRequestsContent />
+      {pullRequestsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/code-insights" title="Code Insights">
@@ -427,7 +433,7 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">
-      <EntityGithubPullRequestsContent />
+      {pullRequestsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/code-insights" title="Code Insights">

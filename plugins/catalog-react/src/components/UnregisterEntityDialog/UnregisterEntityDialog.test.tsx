@@ -24,7 +24,7 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
 import { entityRouteRef } from '../../routes';
 import { screen, waitFor } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import * as state from './useUnregisterEntityDialogState';
 
 import {
@@ -32,7 +32,6 @@ import {
   alertApiRef,
   DiscoveryApi,
 } from '@backstage/core-plugin-api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('UnregisterEntityDialog', () => {
   const discoveryApi: DiscoveryApi = {
@@ -49,11 +48,6 @@ describe('UnregisterEntityDialog', () => {
     },
   };
 
-  const apis = ApiRegistry.with(
-    catalogApiRef,
-    new CatalogClient({ discoveryApi }),
-  ).with(alertApiRef, alertApi);
-
   const entity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
@@ -68,7 +62,14 @@ describe('UnregisterEntityDialog', () => {
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ApiProvider apis={apis}>{children}</ApiProvider>
+    <TestApiProvider
+      apis={[
+        [catalogApiRef, new CatalogClient({ discoveryApi })],
+        [alertApiRef, alertApi],
+      ]}
+    >
+      {children}
+    </TestApiProvider>
   );
 
   const stateSpy = jest.spyOn(state, 'useUnregisterEntityDialogState');

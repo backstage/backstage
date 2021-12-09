@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import BitbucketIcon from '@material-ui/icons/FormatBold';
 import {
   BackstageIdentity,
   bitbucketAuthApiRef,
@@ -37,7 +36,7 @@ export type BitbucketAuthResponse = {
 const DEFAULT_PROVIDER = {
   id: 'bitbucket',
   title: 'Bitbucket',
-  icon: BitbucketIcon,
+  icon: () => null,
 };
 
 /**
@@ -46,13 +45,15 @@ const DEFAULT_PROVIDER = {
  * @public
  */
 export default class BitbucketAuth {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    defaultScopes = ['team'],
-  }: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T {
+  static create(options: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+      defaultScopes = ['team'],
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

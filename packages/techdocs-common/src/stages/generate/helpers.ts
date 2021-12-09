@@ -27,6 +27,7 @@ import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
 import { SupportedGeneratorKey } from './types';
+import { getFileTreeRecursively } from '../publish/helpers';
 
 // TODO: Implement proper support for more generators.
 export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
@@ -345,14 +346,20 @@ export const patchIndexPreBuild = async ({
 };
 
 /**
- * Update the techdocs_metadata.json to add a new build timestamp metadata. Create the .json file if it doesn't exist.
+ * Create or update the techdocs_metadata.json. Values initialized/updated are:
+ * - The build_timestamp (now)
+ * - The list of files generated
  *
  * @param {string} techdocsMetadataPath File path to techdocs_metadata.json
  */
-export const addBuildTimestampMetadata = async (
+export const createOrUpdateMetadata = async (
   techdocsMetadataPath: string,
   logger: Logger,
 ): Promise<void> => {
+  const techdocsMetadataDir = techdocsMetadataPath
+    .split(path.sep)
+    .slice(0, -1)
+    .join(path.sep);
   // check if file exists, create if it does not.
   try {
     await fs.access(techdocsMetadataPath, fs.constants.F_OK);
@@ -372,6 +379,19 @@ export const addBuildTimestampMetadata = async (
   }
 
   json.build_timestamp = Date.now();
+
+  // Get and write generated files to the metadata JSON. Each file string is in
+  // a form appropriate for invalidating the associated object from cache.
+  try {
+    json.files = (await getFileTreeRecursively(techdocsMetadataDir)).map(file =>
+      file.replace(`${techdocsMetadataDir}${path.sep}`, ''),
+    );
+  } catch (err) {
+    assertError(err);
+    json.files = [];
+    logger.warn(`Unable to add files list to metadata: ${err.message}`);
+  }
+
   await fs.writeJson(techdocsMetadataPath, json);
   return;
 };

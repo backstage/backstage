@@ -1,5 +1,14 @@
 # @backstage/plugin-shortcuts
 
+## 0.1.14
+
+### Patch Changes
+
+- f93e56ae3a: Add tooltip to display shortcut title on hover. This should improve the readability of shortcuts with long names, which are cutoff by ellipsis.
+- Updated dependencies
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
 ## 0.1.13
 
 ### Patch Changes

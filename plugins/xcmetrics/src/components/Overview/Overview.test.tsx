@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { xcmetricsApiRef } from '../../api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { Overview } from './Overview';
 
 jest.mock('../../api/XcmetricsClient');
@@ -33,11 +32,9 @@ jest.mock('../StatusMatrix', () => ({
 describe('Overview', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
-      <ApiProvider
-        apis={ApiRegistry.with(xcmetricsApiRef, client.XcmetricsClient)}
-      >
+      <TestApiProvider apis={[[xcmetricsApiRef, client.XcmetricsClient]]}>
         <Overview />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText('XCMetrics Dashboard')).toBeInTheDocument();
@@ -49,9 +46,9 @@ describe('Overview', () => {
     api.getBuilds = jest.fn().mockResolvedValue([]);
 
     const rendered = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, api)}>
+      <TestApiProvider apis={[[xcmetricsApiRef, api]]}>
         <Overview />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText('No builds to show')).toBeInTheDocument();
@@ -64,9 +61,9 @@ describe('Overview', () => {
     api.getBuilds = jest.fn().mockRejectedValue({ message: errorMessage });
 
     const rendered = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.with(xcmetricsApiRef, api)}>
+      <TestApiProvider apis={[[xcmetricsApiRef, api]]}>
         <Overview />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText(errorMessage)).toBeInTheDocument();

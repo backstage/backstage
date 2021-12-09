@@ -17,17 +17,25 @@
 import React from 'react';
 import { GroupedResponsesContext } from './GroupedResponses';
 import { PodNamesWithErrorsContext } from './PodNamesWithErrors';
+import { PodNamesWithMetricsContext } from './PodNamesWithMetrics';
+import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 
 export const kubernetesProviders = (
-  groupedResponses: any,
-  podsWithErrors: any,
+  groupedResponses: any = undefined,
+  podsWithErrors: Set<string> = new Set<string>(),
+  podNameToMetrics: Map<string, ClientPodStatus> = new Map<
+    string,
+    ClientPodStatus
+  >(),
 ) => {
   return (node: React.ReactNode) => (
     <>
       <GroupedResponsesContext.Provider value={groupedResponses}>
-        <PodNamesWithErrorsContext.Provider value={podsWithErrors}>
-          {node}
-        </PodNamesWithErrorsContext.Provider>
+        <PodNamesWithMetricsContext.Provider value={podNameToMetrics}>
+          <PodNamesWithErrorsContext.Provider value={podsWithErrors}>
+            {node}
+          </PodNamesWithErrorsContext.Provider>
+        </PodNamesWithMetricsContext.Provider>
       </GroupedResponsesContext.Provider>
     </>
   );

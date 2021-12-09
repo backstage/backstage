@@ -4,6 +4,7 @@
   "private": true,
   "bundled": true,
   "dependencies": {
+    "@backstage/app-defaults": "^{{version '@backstage/app-defaults'}}",
     "@backstage/catalog-model": "^{{version '@backstage/catalog-model'}}",
     "@backstage/cli": "^{{version '@backstage/cli'}}",
     "@backstage/core-app-api": "^{{version '@backstage/core-app-api'}}",
@@ -21,7 +22,6 @@
     "@backstage/plugin-tech-radar": "^{{version '@backstage/plugin-tech-radar'}}",
     "@backstage/plugin-techdocs": "^{{version '@backstage/plugin-techdocs'}}",
     "@backstage/plugin-user-settings": "^{{version '@backstage/plugin-user-settings'}}",
-    "@backstage/test-utils": "^{{version '@backstage/test-utils'}}",
     "@backstage/theme": "^{{version '@backstage/theme'}}",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -33,6 +33,7 @@
     "react-use": "^15.3.3"
   },
   "devDependencies": {
+    "@backstage/test-utils": "^{{version '@backstage/test-utils'}}",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.4.1",
     "@testing-library/user-event": "^12.0.7",
@@ -47,11 +48,11 @@
   "scripts": {
     "start": "backstage-cli app:serve",
     "build": "backstage-cli app:build",
-    "test": "backstage-cli test",
-    "lint": "backstage-cli lint",
     "clean": "backstage-cli clean",
+    "test": "backstage-cli test",
     "test:e2e": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:dev",
     "test:e2e:ci": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:run",
+    "lint": "backstage-cli lint",
     "cy:dev": "cypress open",
     "cy:run": "cypress run"
   },

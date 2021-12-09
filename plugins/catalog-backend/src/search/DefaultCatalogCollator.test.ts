@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultCatalogCollator } from './DefaultCatalogCollator';
 import { setupServer } from 'msw/node';
@@ -55,19 +58,27 @@ const expectedEntities: Entity[] = [
 
 describe('DefaultCatalogCollator', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+  let mockTokenManager: jest.Mocked<TokenManager>;
   let collator: DefaultCatalogCollator;
 
   beforeAll(() => {
     mockDiscoveryApi = {
-      getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7000'),
+      getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
       getExternalBaseUrl: jest.fn(),
     };
-    collator = new DefaultCatalogCollator({ discovery: mockDiscoveryApi });
+    mockTokenManager = {
+      getToken: jest.fn().mockResolvedValue({ token: '' }),
+      authenticate: jest.fn(),
+    };
+    collator = new DefaultCatalogCollator({
+      discovery: mockDiscoveryApi,
+      tokenManager: mockTokenManager,
+    });
     server.listen();
   });
   beforeEach(() => {
     server.use(
-      rest.get('http://localhost:7000/entities', (req, res, ctx) => {
+      rest.get('http://localhost:7007/entities', (req, res, ctx) => {
         if (req.url.searchParams.has('filter')) {
           const filter = req.url.searchParams.get('filter');
           if (filter === 'kind=Foo,kind=Bar') {
@@ -118,6 +129,7 @@ describe('DefaultCatalogCollator', () => {
     // Provide an alternate location template.
     collator = new DefaultCatalogCollator({
       discovery: mockDiscoveryApi,
+      tokenManager: mockTokenManager,
       locationTemplate: '/software/:name',
     });
 
@@ -131,6 +143,7 @@ describe('DefaultCatalogCollator', () => {
     // Provide an alternate location template.
     collator = DefaultCatalogCollator.fromConfig(new ConfigReader({}), {
       discovery: mockDiscoveryApi,
+      tokenManager: mockTokenManager,
       filter: {
         kind: ['Foo', 'Bar'],
       },

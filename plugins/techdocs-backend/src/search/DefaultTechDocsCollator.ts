@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { DocumentCollator } from '@backstage/search-common';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import unescape from 'lodash/unescape';
 import { Logger } from 'winston';
 import pLimit from 'p-limit';
@@ -34,6 +37,7 @@ interface MkSearchIndexDoc {
 export type TechDocsCollatorOptions = {
   discovery: PluginEndpointDiscovery;
   logger: Logger;
+  tokenManager: TokenManager;
   locationTemplate?: string;
   catalogClient?: CatalogApi;
   parallelismLimit?: number;
@@ -51,6 +55,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   protected locationTemplate: string;
   private readonly logger: Logger;
   private readonly catalogClient: CatalogApi;
+  private readonly tokenManager: TokenManager;
   private readonly parallelismLimit: number;
   private readonly legacyPathCasing: boolean;
   public readonly type: string = 'techdocs';
@@ -58,22 +63,17 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   /**
    * @deprecated use static fromConfig method instead.
    */
-  constructor({
-    discovery,
-    locationTemplate,
-    logger,
-    catalogClient,
-    parallelismLimit = 10,
-    legacyPathCasing = false,
-  }: TechDocsCollatorOptions) {
-    this.discovery = discovery;
+  constructor(options: TechDocsCollatorOptions) {
+    this.discovery = options.discovery;
     this.locationTemplate =
-      locationTemplate || '/docs/:namespace/:kind/:name/:path';
-    this.logger = logger;
+      options.locationTemplate || '/docs/:namespace/:kind/:name/:path';
+    this.logger = options.logger;
     this.catalogClient =
-      catalogClient || new CatalogClient({ discoveryApi: discovery });
-    this.parallelismLimit = parallelismLimit;
-    this.legacyPathCasing = legacyPathCasing;
+      options.catalogClient ||
+      new CatalogClient({ discoveryApi: options.discovery });
+    this.parallelismLimit = options.parallelismLimit ?? 10;
+    this.legacyPathCasing = options.legacyPathCasing ?? false;
+    this.tokenManager = options.tokenManager;
   }
 
   static fromConfig(config: Config, options: TechDocsCollatorOptions) {
@@ -87,19 +87,23 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   async execute() {
     const limit = pLimit(this.parallelismLimit);
     const techDocsBaseUrl = await this.discovery.getBaseUrl('techdocs');
-    const entities = await this.catalogClient.getEntities({
-      fields: [
-        'kind',
-        'namespace',
-        'metadata.annotations',
-        'metadata.name',
-        'metadata.title',
-        'metadata.namespace',
-        'spec.type',
-        'spec.lifecycle',
-        'relations',
-      ],
-    });
+    const { token } = await this.tokenManager.getToken();
+    const entities = await this.catalogClient.getEntities(
+      {
+        fields: [
+          'kind',
+          'namespace',
+          'metadata.annotations',
+          'metadata.name',
+          'metadata.title',
+          'metadata.namespace',
+          'spec.type',
+          'spec.lifecycle',
+          'relations',
+        ],
+      },
+      { token },
+    );
     const docPromises = entities.items
       .filter(it => it.metadata?.annotations?.['backstage.io/techdocs-ref'])
       .map((entity: Entity) =>

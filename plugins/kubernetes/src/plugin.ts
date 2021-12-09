@@ -28,8 +28,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootCatalogKubernetesRouteRef = createRouteRef({
-  path: '*',
-  title: 'Kubernetes',
+  id: 'kubernetes',
 });
 
 export const kubernetesPlugin = createPlugin({

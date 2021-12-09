@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import SamlIcon from '@material-ui/icons/AcUnit';
 import { DirectAuthConnector } from '../../../../lib/AuthConnector';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
@@ -42,7 +41,7 @@ export type SamlAuthResponse = {
 const DEFAULT_PROVIDER = {
   id: 'saml',
   title: 'SAML',
-  icon: SamlIcon,
+  icon: () => null,
 };
 
 /**
@@ -53,11 +52,13 @@ const DEFAULT_PROVIDER = {
 export default class SamlAuth
   implements ProfileInfoApi, BackstageIdentityApi, SessionApi
 {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-  }: AuthApiCreateOptions) {
+  static create(options: AuthApiCreateOptions) {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+    } = options;
+
     const connector = new DirectAuthConnector<SamlSession>({
       discoveryApi,
       environment,
@@ -80,6 +81,9 @@ export default class SamlAuth
     return this.sessionManager.sessionState$();
   }
 
+  /**
+   * @deprecated will be made private in the future. Use create method instead.
+   */
   constructor(private readonly sessionManager: SessionManager<SamlSession>) {}
 
   async signIn() {

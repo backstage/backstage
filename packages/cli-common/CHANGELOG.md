@@ -1,5 +1,13 @@
 # @backstage/cli-common
 
+## 0.1.6
+
+### Patch Changes
+
+- 677bfc2dd0: Keep backstage.json in sync
+
+  The `versions:bump` script now takes care about updating the `version` property inside `backstage.json` file. The file is created if is not present.
+
 ## 0.1.5
 
 ### Patch Changes

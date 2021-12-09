@@ -1,5 +1,64 @@
 # example-backend
 
+## 0.2.55
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/plugin-scaffolder-backend@0.15.15
+  - @backstage/plugin-auth-backend@0.4.10
+  - @backstage/plugin-kubernetes-backend@0.3.20
+  - @backstage/plugin-badges-backend@0.1.13
+  - @backstage/plugin-catalog-backend@0.19.0
+  - @backstage/plugin-code-coverage-backend@0.1.16
+  - @backstage/plugin-jenkins-backend@0.1.9
+  - @backstage/plugin-tech-insights-backend@0.1.3
+  - @backstage/plugin-techdocs-backend@0.11.0
+  - @backstage/plugin-todo-backend@0.1.14
+  - @backstage/backend-common@0.9.12
+  - @backstage/plugin-azure-devops-backend@0.2.3
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.2
+  - @backstage/plugin-tech-insights-node@0.1.1
+  - example-app@0.2.55
+
+## 0.2.54
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-backend@0.3.19
+  - @backstage/plugin-tech-insights-backend@0.1.2
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.1
+  - @backstage/plugin-auth-backend@0.4.9
+  - @backstage/plugin-scaffolder-backend@0.15.14
+  - @backstage/plugin-catalog-backend@0.18.0
+  - @backstage/plugin-kafka-backend@0.2.12
+  - @backstage/backend-common@0.9.11
+  - @backstage/plugin-azure-devops-backend@0.2.2
+  - @backstage/plugin-badges-backend@0.1.12
+  - @backstage/plugin-code-coverage-backend@0.1.15
+  - @backstage/plugin-jenkins-backend@0.1.8
+  - @backstage/plugin-proxy-backend@0.2.14
+  - @backstage/plugin-rollbar-backend@0.1.16
+  - @backstage/plugin-search-backend@0.2.7
+  - @backstage/plugin-techdocs-backend@0.10.9
+
+## 0.2.52
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/plugin-jenkins-backend@0.1.7
+  - @backstage/plugin-search-backend-module-elasticsearch@0.0.5
+  - @backstage/plugin-scaffolder-backend@0.15.12
+  - @backstage/plugin-azure-devops-backend@0.2.0
+  - @backstage/catalog-client@0.5.1
+  - @backstage/plugin-auth-backend@0.4.7
+  - @backstage/plugin-catalog-backend@0.17.3
+  - @backstage/plugin-scaffolder-backend-module-rails@0.1.7
+
 ## 0.2.50
 
 ### Patch Changes

@@ -44,6 +44,9 @@ describe('TechDocsStorageClient', () => {
     getProfile: jest.fn(),
     getUserId: jest.fn(),
     signOut: jest.fn(),
+    getProfileInfo: jest.fn(),
+    getBackstageIdentity: jest.fn(),
+    getCredentials: jest.fn(),
   };
 
   beforeEach(() => {

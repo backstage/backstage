@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ErrorApi, ErrorContext, AlertApi } from '@backstage/core-plugin-api';
+import {
+  ErrorApi,
+  ErrorApiError,
+  ErrorApiErrorContext,
+  AlertApi,
+} from '@backstage/core-plugin-api';
 
 /**
  * Decorates an ErrorApi by also forwarding error messages
@@ -27,7 +32,7 @@ export class ErrorAlerter implements ErrorApi {
     private readonly errorApi: ErrorApi,
   ) {}
 
-  post(error: Error, context?: ErrorContext) {
+  post(error: ErrorApiError, context?: ErrorApiErrorContext) {
     if (!context?.hidden) {
       this.alertApi.post({ message: error.message, severity: 'error' });
     }

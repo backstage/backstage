@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.11
+
+### Patch Changes
+
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.19.0
+
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.18.0
+
+## 0.2.9
+
+### Patch Changes
+
+- 779d7a2304: Tweak logic for msgraph catalog ingesting for display names with security groups
+
+  Previously security groups that weren't mail enabled were imported with UUIDs, now they use the display name.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.3
+
 ## 0.2.8
 
 ### Patch Changes

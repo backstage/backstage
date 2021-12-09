@@ -17,7 +17,7 @@
 import React from 'react';
 
 import { Entity } from '@backstage/catalog-model';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef, configApiRef } from '@backstage/core-plugin-api';
 import { Card, CardActions, CardContent, CardMedia } from '@material-ui/core';
 import { rootDocsRouteRef } from '../../routes';
 
@@ -26,6 +26,7 @@ import {
   ItemCardGrid,
   ItemCardHeader,
 } from '@backstage/core-components';
+import { toLowerMaybe } from '../../helpers';
 
 export const DocsCardGrid = ({
   entities,
@@ -33,14 +34,7 @@ export const DocsCardGrid = ({
   entities: Entity[] | undefined;
 }) => {
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
-
-  // Lower-case entity triplets by default, but allow override.
-  const toLowerMaybe = useApi(configApiRef).getOptionalBoolean(
-    'techdocs.legacyUseCaseSensitiveTripletPaths',
-  )
-    ? (str: string) => str
-    : (str: string) => str.toLocaleLowerCase();
-
+  const config = useApi(configApiRef);
   if (!entities) return null;
   return (
     <ItemCardGrid data-testid="docs-explore">
@@ -59,9 +53,10 @@ export const DocsCardGrid = ({
                   to={getRouteToReaderPageFor({
                     namespace: toLowerMaybe(
                       entity.metadata.namespace ?? 'default',
+                      config,
                     ),
-                    kind: toLowerMaybe(entity.kind),
-                    name: toLowerMaybe(entity.metadata.name),
+                    kind: toLowerMaybe(entity.kind, config),
+                    name: toLowerMaybe(entity.metadata.name, config),
                   })}
                   color="primary"
                   data-testid="read_docs"

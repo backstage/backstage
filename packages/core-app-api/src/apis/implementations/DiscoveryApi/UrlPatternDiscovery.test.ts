@@ -26,10 +26,10 @@ describe('UrlPatternDiscovery', () => {
 
   it('should use a plain pattern', async () => {
     const discoveryApi = UrlPatternDiscovery.compile(
-      'http://localhost:7000/{{ pluginId }}',
+      'http://localhost:7007/{{ pluginId }}',
     );
     await expect(discoveryApi.getBaseUrl('my-plugin')).resolves.toBe(
-      'http://localhost:7000/my-plugin',
+      'http://localhost:7007/my-plugin',
     );
   });
 

@@ -261,10 +261,13 @@ analytics events captured.
 Use it like this:
 
 ```tsx
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { analyticsApiRef } from '@backstage/core-plugin-api';
-import { MockAnalyticsApi, wrapInTestApp } from '@backstage/test-utils';
 import { render, fireEvent, waitFor } from '@testing-library/react';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
+import {
+  MockAnalyticsApi,
+  TestApiProvider,
+  wrapInTestApp,
+} from '@backstage/test-utils';
 
 describe('SomeComponent', () => {
   it('should capture event on click', () => {
@@ -274,9 +277,9 @@ describe('SomeComponent', () => {
     // Render the component being tested
     const { getByText } = render(
       wrapInTestApp(
-        <ApiProvider apis={ApiRegistry.from([[analyticsApiRef, apiSpy]])}>
+        <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
           <SomeComponentUnderTest />
-        </ApiProvider>,
+        </TestApiProvider>,
       ),
     );
 

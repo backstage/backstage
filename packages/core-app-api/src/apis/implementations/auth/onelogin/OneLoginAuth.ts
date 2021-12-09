@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import OneLoginIcon from '@material-ui/icons/AcUnit';
 import {
   oneloginAuthApiRef,
   OAuthRequestApi,
@@ -23,7 +22,11 @@ import {
 } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 
-type CreateOptions = {
+/**
+ * OneLogin auth provider create options.
+ * @public
+ */
+export type OneLoginAuthCreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
@@ -33,7 +36,7 @@ type CreateOptions = {
 const DEFAULT_PROVIDER = {
   id: 'onelogin',
   title: 'onelogin',
-  icon: OneLoginIcon,
+  icon: () => null,
 };
 
 const OIDC_SCOPES: Set<String> = new Set([
@@ -54,12 +57,16 @@ const SCOPE_PREFIX: string = 'onelogin.';
  * @public
  */
 export default class OneLoginAuth {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-  }: CreateOptions): typeof oneloginAuthApiRef.T {
+  static create(
+    options: OneLoginAuthCreateOptions,
+  ): typeof oneloginAuthApiRef.T {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

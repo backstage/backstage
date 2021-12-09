@@ -71,9 +71,11 @@ export const ComponentTabs: ({
 export function createCardExtension<T>({
   title,
   components,
+  name,
 }: {
   title: string;
   components: () => Promise<ComponentParts>;
+  name?: string;
 }): Extension<
   ({
     Renderer,

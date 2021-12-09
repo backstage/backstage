@@ -15,14 +15,10 @@
  */
 
 import { CatalogClient } from '@backstage/catalog-client';
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import React from 'react';
 import { catalogImportApiRef, CatalogImportClient } from '../../api';
 import { DefaultImportPage } from './DefaultImportPage';
@@ -41,17 +37,18 @@ describe('<DefaultImportPage />', () => {
     signOut: () => {
       return Promise.resolve();
     },
+    getProfileInfo: jest.fn(),
+    getBackstageIdentity: jest.fn(),
+    getCredentials: jest.fn(),
   };
 
-  let apis: ApiRegistry;
+  let apis: TestApiRegistry;
 
   beforeEach(() => {
-    apis = ApiRegistry.with(
-      configApiRef,
-      new ConfigReader({ integrations: {} }),
-    )
-      .with(catalogApiRef, new CatalogClient({ discoveryApi: {} as any }))
-      .with(
+    apis = TestApiRegistry.from(
+      [configApiRef, new ConfigReader({ integrations: {} })],
+      [catalogApiRef, new CatalogClient({ discoveryApi: {} as any })],
+      [
         catalogImportApiRef,
         new CatalogImportClient({
           discoveryApi: {} as any,
@@ -63,7 +60,8 @@ describe('<DefaultImportPage />', () => {
           catalogApi: {} as any,
           configApi: {} as any,
         }),
-      );
+      ],
+    );
   });
 
   it('renders without exploding', async () => {

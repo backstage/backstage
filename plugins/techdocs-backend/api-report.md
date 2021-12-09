@@ -10,10 +10,12 @@ import express from 'express';
 import { GeneratorBuilder } from '@backstage/techdocs-common';
 import { Knex } from 'knex';
 import { Logger as Logger_2 } from 'winston';
+import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PreparerBuilder } from '@backstage/techdocs-common';
 import { PublisherBase } from '@backstage/techdocs-common';
 import { TechDocsDocument } from '@backstage/techdocs-common';
+import { TokenManager } from '@backstage/backend-common';
 
 // Warning: (ae-forgotten-export) The symbol "RouterOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -26,14 +28,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 // @public (undocumented)
 export class DefaultTechDocsCollator implements DocumentCollator {
   // @deprecated
-  constructor({
-    discovery,
-    locationTemplate,
-    logger,
-    catalogClient,
-    parallelismLimit,
-    legacyPathCasing,
-  }: TechDocsCollatorOptions);
+  constructor(options: TechDocsCollatorOptions);
   // (undocumented)
   protected applyArgsToFormat(
     format: string,
@@ -60,6 +55,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
 export type TechDocsCollatorOptions = {
   discovery: PluginEndpointDiscovery;
   logger: Logger_2;
+  tokenManager: TokenManager;
   locationTemplate?: string;
   catalogClient?: CatalogApi;
   parallelismLimit?: number;

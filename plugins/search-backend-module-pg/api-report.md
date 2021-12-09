@@ -77,9 +77,7 @@ export interface DatabaseStore {
 export class PgSearchEngine implements SearchEngine {
   constructor(databaseStore: DatabaseStore);
   // (undocumented)
-  static from({
-    database,
-  }: {
+  static from(options: {
     database: PluginDatabaseManager;
   }): Promise<PgSearchEngine>;
   // (undocumented)

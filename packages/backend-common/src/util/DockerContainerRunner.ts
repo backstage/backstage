@@ -28,20 +28,22 @@ export type UserOptions = {
 export class DockerContainerRunner implements ContainerRunner {
   private readonly dockerClient: Docker;
 
-  constructor({ dockerClient }: { dockerClient: Docker }) {
-    this.dockerClient = dockerClient;
+  constructor(options: { dockerClient: Docker }) {
+    this.dockerClient = options.dockerClient;
   }
 
-  async runContainer({
-    imageName,
-    command,
-    args,
-    logStream = new PassThrough(),
-    mountDirs = {},
-    workingDir,
-    envVars = {},
-    pullImage = true,
-  }: RunContainerOptions) {
+  async runContainer(options: RunContainerOptions) {
+    const {
+      imageName,
+      command,
+      args,
+      logStream = new PassThrough(),
+      mountDirs = {},
+      workingDir,
+      envVars = {},
+      pullImage = true,
+    } = options;
+
     // Show a better error message when Docker is unavailable.
     try {
       await this.dockerClient.ping();

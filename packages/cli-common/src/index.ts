@@ -20,6 +20,6 @@
  * @packageDocumentation
  */
 
-export { findPaths } from './paths';
+export { findPaths, BACKSTAGE_JSON } from './paths';
 export { isChildPath } from './isChildPath';
 export type { Paths, ResolveFunc } from './paths';

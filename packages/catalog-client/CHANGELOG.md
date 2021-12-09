@@ -1,5 +1,19 @@
 # @backstage/catalog-client
 
+## 0.5.2
+
+### Patch Changes
+
+- 3bf2238187: Update to the right version of @backstage/errors
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+
+## 0.5.1
+
+### Patch Changes
+
+- 39e92897e4: Improved API documentation for catalog-client.
+
 ## 0.5.0
 
 ### Minor Changes

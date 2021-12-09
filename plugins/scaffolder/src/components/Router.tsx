@@ -16,7 +16,7 @@
 
 import React, { ComponentType } from 'react';
 import { Routes, Route, useOutlet } from 'react-router';
-import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
@@ -34,9 +34,14 @@ type RouterProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
+  groups?: Array<{
+    title?: string;
+    titleComponent?: React.ReactNode;
+    filter: (entity: Entity) => boolean;
+  }>;
 };
 
-export const Router = ({ TemplateCardComponent }: RouterProps) => {
+export const Router = ({ TemplateCardComponent, groups }: RouterProps) => {
   const outlet = useOutlet();
 
   const customFieldExtensions = useElementFilter(outlet, elements =>
@@ -64,7 +69,10 @@ export const Router = ({ TemplateCardComponent }: RouterProps) => {
       <Route
         path="/"
         element={
-          <ScaffolderPage TemplateCardComponent={TemplateCardComponent} />
+          <ScaffolderPage
+            TemplateCardComponent={TemplateCardComponent}
+            groups={groups}
+          />
         }
       />
       <Route

@@ -31,9 +31,9 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.9.7",
+    "@backstage/backend-common": "^0.9.12",
     "@backstage/config": "^0.1.8",
-    "@backstage/plugin-catalog-graphql": "^0.2.12",
+    "@backstage/plugin-catalog-graphql": "^0.2.14",
     "@graphql-modules/core": "^0.7.17",
     "@types/express": "^4.17.6",
     "apollo-server": "^2.16.1",
@@ -47,7 +47,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.8.0",
+    "@backstage/cli": "^0.10.0",
     "@types/supertest": "^2.0.8",
     "eslint-plugin-graphql": "^4.0.0",
     "msw": "^0.35.0",

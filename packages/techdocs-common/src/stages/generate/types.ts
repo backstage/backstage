@@ -34,12 +34,13 @@ export type GeneratorConfig = {
 /**
  * The values that the generator will receive.
  *
- * @param {string} inputDir The directory of the uncompiled documentation, with the values from the frontend
- * @param {string} outputDir Directory to store generated docs in. Usually - a newly created temporary directory.
- * @param {ParsedLocationAnnotation} parsedLocationAnnotation backstage.io/techdocs-ref annotation of an entity
- * @param {string} etag A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.
- * @param {Logger} [logger] A logger that forwards the messages to the caller to be displayed outside of the backend.
- * @param {Writable} [logStream] A log stream that can send raw log messages to the caller to be displayed outside of the backend..
+ * @public
+ * @param inputDir - The directory of the uncompiled documentation, with the values from the frontend
+ * @param outputDir - Directory to store generated docs in. Usually - a newly created temporary directory.
+ * @param parsedLocationAnnotation - backstage.io/techdocs-ref annotation of an entity
+ * @param etag - A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.
+ * @param logger - A logger that forwards the messages to the caller to be displayed outside of the backend.
+ * @param logStream - A log stream that can send raw log messages to the caller to be displayed outside of the backend.
  */
 export type GeneratorRunOptions = {
   inputDir: string;

@@ -31,8 +31,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogImportApiRef, CatalogImportClient } from './api';
 
 export const rootRouteRef = createRouteRef({
-  path: '',
-  title: 'catalog-import',
+  id: 'catalog-import',
 });
 
 export const catalogImportPlugin = createPlugin({

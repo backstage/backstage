@@ -41,6 +41,7 @@ describe('extensions', () => {
     const Component = () => <div />;
 
     const extension = createReactExtension({
+      name: 'Extension',
       component: {
         sync: Component,
       },
@@ -67,6 +68,7 @@ describe('extensions', () => {
     });
 
     const extension2 = createRoutableExtension({
+      name: 'Extension2',
       component: () => Promise.resolve(Component),
       mountPoint: routeRef,
     });

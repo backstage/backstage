@@ -10,7 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { PropsWithChildren } from 'react';
+import { ReactNode } from 'react';
 
 // Warning: (ae-missing-release-tag) "EntityPagerDutyCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -65,12 +65,7 @@ export class PagerDutyClient implements PagerDutyApi {
   // Warning: (ae-forgotten-export) The symbol "TriggerAlarmRequest" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  triggerAlarm({
-    integrationKey,
-    source,
-    description,
-    userName,
-  }: TriggerAlarmRequest): Promise<Response>;
+  triggerAlarm(request: TriggerAlarmRequest): Promise<Response>;
 }
 
 // Warning: (ae-missing-release-tag) "pagerDutyPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -84,9 +79,7 @@ export { pagerDutyPlugin as plugin };
 // Warning: (ae-missing-release-tag) "TriggerButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function TriggerButton({
-  children,
-}: PropsWithChildren<TriggerButtonProps>): JSX.Element;
+export function TriggerButton(props: TriggerButtonProps): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "UnauthorizedError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

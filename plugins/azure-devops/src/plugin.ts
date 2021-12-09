@@ -15,6 +15,11 @@
  */
 
 import {
+  azurePipelinesEntityContentRouteRef,
+  azurePullRequestDashboardRouteRef,
+  azurePullRequestsEntityContentRouteRef,
+} from './routes';
+import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
@@ -26,7 +31,6 @@ import { AZURE_DEVOPS_ANNOTATION } from './constants';
 import { AzureDevOpsClient } from './api/AzureDevOpsClient';
 import { Entity } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from './api/AzureDevOpsApi';
-import { azureDevOpsRouteRef } from './routes';
 
 export const isAzureDevOpsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_ANNOTATION]);
@@ -41,10 +45,16 @@ export const azureDevOpsPlugin = createPlugin({
         new AzureDevOpsClient({ discoveryApi, identityApi }),
     }),
   ],
-  routes: {
-    entityContent: azureDevOpsRouteRef,
-  },
 });
+
+export const AzurePullRequestsPage = azureDevOpsPlugin.provide(
+  createRoutableExtension({
+    name: 'AzurePullRequestsPage',
+    component: () =>
+      import('./components/PullRequestsPage').then(m => m.PullRequestsPage),
+    mountPoint: azurePullRequestDashboardRouteRef,
+  }),
+);
 
 export const EntityAzurePipelinesContent = azureDevOpsPlugin.provide(
   createRoutableExtension({
@@ -53,6 +63,17 @@ export const EntityAzurePipelinesContent = azureDevOpsPlugin.provide(
       import('./components/EntityPageAzurePipelines').then(
         m => m.EntityPageAzurePipelines,
       ),
-    mountPoint: azureDevOpsRouteRef,
+    mountPoint: azurePipelinesEntityContentRouteRef,
+  }),
+);
+
+export const EntityAzurePullRequestsContent = azureDevOpsPlugin.provide(
+  createRoutableExtension({
+    name: 'EntityAzurePullRequestsContent',
+    component: () =>
+      import('./components/EntityPageAzurePullRequests').then(
+        m => m.EntityPageAzurePullRequests,
+      ),
+    mountPoint: azurePullRequestsEntityContentRouteRef,
   }),
 );

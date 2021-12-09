@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import MicrosoftIcon from '@material-ui/icons/AcUnit';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
@@ -22,7 +21,7 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'microsoft',
   title: 'Microsoft',
-  icon: MicrosoftIcon,
+  icon: () => null,
 };
 
 /**
@@ -31,19 +30,21 @@ const DEFAULT_PROVIDER = {
  * @public
  */
 export default class MicrosoftAuth {
-  static create({
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    discoveryApi,
-    defaultScopes = [
-      'openid',
-      'offline_access',
-      'profile',
-      'email',
-      'User.Read',
-    ],
-  }: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T {
+  static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T {
+    const {
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+      discoveryApi,
+      defaultScopes = [
+        'openid',
+        'offline_access',
+        'profile',
+        'email',
+        'User.Read',
+      ],
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

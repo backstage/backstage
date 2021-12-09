@@ -30,9 +30,9 @@ export function basicEntityFilter(
     const f =
       key in filtersByKey
         ? filtersByKey[key]
-        : (filtersByKey[key] = { key, matchValueIn: [] });
+        : (filtersByKey[key] = { key, values: [] });
 
-    f.matchValueIn!.push(...values);
+    f.values!.push(...values);
   }
 
   return { anyOf: [{ allOf: Object.values(filtersByKey) }] };

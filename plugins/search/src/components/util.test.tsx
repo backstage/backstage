@@ -16,11 +16,10 @@
 
 import React from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { useNavigateToQuery } from './util';
 import { Routes, Route } from 'react-router-dom';
 import { rootRouteRef } from '../plugin';
-import { act } from 'react-dom/test-utils';
 
 const navigate = jest.fn();
 jest.mock('react-router-dom', () => ({

@@ -33,6 +33,7 @@ import {
   SingleHostDiscovery,
   UrlReaders,
   useHotMemoize,
+  ServerTokenManager,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
@@ -48,18 +49,19 @@ import scaffolder from './plugins/scaffolder';
 import proxy from './plugins/proxy';
 import search from './plugins/search';
 import techdocs from './plugins/techdocs';
+import techInsights from './plugins/techInsights';
 import todo from './plugins/todo';
 import graphql from './plugins/graphql';
 import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
-import techInsights from './plugins/techInsights';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
+  const tokenManager = ServerTokenManager.noop();
 
   root.info(`Created UrlReader ${reader}`);
 
@@ -70,7 +72,7 @@ function makeCreateEnv(config: Config) {
     const logger = root.child({ type: 'plugin', plugin });
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
-    return { logger, cache, database, config, reader, discovery };
+    return { logger, cache, database, config, reader, discovery, tokenManager };
   };
 }
 

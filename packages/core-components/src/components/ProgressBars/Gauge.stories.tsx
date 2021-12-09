@@ -53,3 +53,9 @@ export const AbsoluteProgress = () => (
     <Gauge value={89.2} fractional={false} unit="m/s" />
   </div>
 );
+
+export const StaticColor = () => (
+  <div style={containerStyle}>
+    <Gauge getColor={() => '#f0f'} value={0.5} />
+  </div>
+);
