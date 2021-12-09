@@ -53,7 +53,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
           projectid: {
             type: 'string',
             title: 'projectid',
-            description: 'Project ID of the Gitlab Project',
+            description: 'Project ID/Name(slug) of the Gitlab Project',
           },
           title: {
             type: 'string',
@@ -81,7 +81,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
         type: 'object',
         properties: {
           projectid: {
-            title: 'Gitlab Project id',
+            title: 'Gitlab Project id/Name(slug)',
             type: 'string',
           },
           mergeRequestURL: {
