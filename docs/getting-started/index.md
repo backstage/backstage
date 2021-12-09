@@ -58,7 +58,7 @@ The wizard will ask you
   SQLite option.
 
 <p align='center'>
-  <img src='../assets/getting-started/wizard.png' alt='Screenshot of the wizard asking for a name for the app, and a selection menu for the database.'>
+  <img src='../assets/getting-started/wizard.png' alt='Screenshot of the wizard asking for a name for the app, and a selection menu for the database.' />
 </p>
 
 ### Run the Backstage app
@@ -73,7 +73,7 @@ yarn dev
 ```
 
 <p align='center'>
-  <img src='../assets/getting-started/startup.png' alt='Screenshot of the command output, with the message web pack compiled successfully.'>
+  <img src='../assets/getting-started/startup.png' alt='Screenshot of the command output, with the message web pack compiled successfully.'/>
 </p>
 
 It might take a little while, but as soon as the message
@@ -84,7 +84,7 @@ database will be cleared when you restart the app, so you'll most likely want to
 carry on with the database steps.
 
 <p align='center'>
-  <img src='../assets/getting-started/portal.png' alt='Screenshot of the Backstage portal.'>
+  <img src='../assets/getting-started/portal.png' alt='Screenshot of the Backstage portal.'/>
 </p>
 
 The most common next steps are to move to a persistent database, configure

@@ -254,3 +254,19 @@ export enum PullRequestVoteStatus {
   WaitingForAuthor = -5,
   Rejected = -10,
 }
+export type BuildRun = {
+  id?: number;
+  title: string;
+  link?: string;
+  status?: BuildStatus;
+  result?: BuildResult;
+  queueTime?: string;
+  startTime?: string;
+  finishTime?: string;
+  source: string;
+  uniqueName?: string;
+};
+
+export type BuildRunOptions = {
+  top?: number;
+};

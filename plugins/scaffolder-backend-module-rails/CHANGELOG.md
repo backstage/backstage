@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.2.0
+
+### Minor Changes
+
+- 64db0efffe: update publish format from ESM to CJS
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@0.15.16
+  - @backstage/backend-common@0.9.13
+
 ## 0.1.7
 
 ### Patch Changes

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -23,9 +24,15 @@ import {
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/techdocs-common';
+import fetch from 'cross-fetch';
 import { PassThrough } from 'stream';
 import * as winston from 'winston';
-import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
+import { TechDocsCache } from '../cache';
+import {
+  BuildMetadataStorage,
+  DocsBuilder,
+  shouldCheckForUpdate,
+} from '../DocsBuilder';
 
 export type DocsSynchronizerSyncOpts = {
   log: (message: string) => void;
@@ -38,22 +45,26 @@ export class DocsSynchronizer {
   private readonly logger: winston.Logger;
   private readonly config: Config;
   private readonly scmIntegrations: ScmIntegrationRegistry;
+  private readonly cache: TechDocsCache | undefined;
 
   constructor({
     publisher,
     logger,
     config,
     scmIntegrations,
+    cache,
   }: {
     publisher: PublisherBase;
     logger: winston.Logger;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
+    cache: TechDocsCache | undefined;
   }) {
     this.config = config;
     this.logger = logger;
     this.publisher = publisher;
     this.scmIntegrations = scmIntegrations;
+    this.cache = cache;
   }
 
   async doSync({
@@ -104,6 +115,7 @@ export class DocsSynchronizer {
         config: this.config,
         scmIntegrations: this.scmIntegrations,
         logStream,
+        cache: this.cache,
       });
 
       const updated = await docsBuilder.build();
@@ -144,5 +156,77 @@ export class DocsSynchronizer {
     }
 
     finish({ updated: true });
+  }
+
+  async doCacheSync({
+    responseHandler: { finish },
+    discovery,
+    token,
+    entity,
+  }: {
+    responseHandler: DocsSynchronizerSyncOpts;
+    discovery: PluginEndpointDiscovery;
+    token: string | undefined;
+    entity: Entity;
+  }) {
+    // Check if the last update check was too recent.
+    if (!shouldCheckForUpdate(entity.metadata.uid!) || !this.cache) {
+      finish({ updated: false });
+      return;
+    }
+
+    // Fetch techdocs_metadata.json from the publisher and from cache.
+    const baseUrl = await discovery.getBaseUrl('techdocs');
+    const namespace = entity.metadata?.namespace || ENTITY_DEFAULT_NAMESPACE;
+    const kind = entity.kind;
+    const name = entity.metadata.name;
+    const legacyPathCasing =
+      this.config.getOptionalBoolean(
+        'techdocs.legacyUseCaseSensitiveTripletPaths',
+      ) || false;
+    const tripletPath = `${namespace}/${kind}/${name}`;
+    const entityTripletPath = `${
+      legacyPathCasing ? tripletPath : tripletPath.toLocaleLowerCase('en-US')
+    }`;
+    try {
+      const [sourceMetadata, cachedMetadata] = await Promise.all([
+        this.publisher.fetchTechDocsMetadata({ namespace, kind, name }),
+        fetch(
+          `${baseUrl}/static/docs/${entityTripletPath}/techdocs_metadata.json`,
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          },
+        ).then(
+          f =>
+            f.json().catch(() => undefined) as ReturnType<
+              PublisherBase['fetchTechDocsMetadata']
+            >,
+        ),
+      ]);
+
+      // If build timestamps differ, merge their files[] lists and invalidate all objects.
+      if (sourceMetadata.build_timestamp !== cachedMetadata.build_timestamp) {
+        const files = [
+          ...new Set([
+            ...(sourceMetadata.files || []),
+            ...(cachedMetadata.files || []),
+          ]),
+        ].map(f => `${entityTripletPath}/${f}`);
+        await this.cache.invalidateMultiple(files);
+        finish({ updated: true });
+      } else {
+        finish({ updated: false });
+      }
+    } catch (e) {
+      assertError(e);
+      // In case of error, log and allow the user to go about their business.
+      this.logger.error(
+        `Error syncing cache for ${entityTripletPath}: ${e.message}`,
+      );
+      finish({ updated: false });
+    } finally {
+      // Update the last check time for the entity
+      new BuildMetadataStorage(entity.metadata.uid!).setLastUpdated();
+    }
   }
 }

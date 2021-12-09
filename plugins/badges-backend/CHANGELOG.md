@@ -1,5 +1,13 @@
 # @backstage/plugin-badges-backend
 
+## 0.1.13
+
+### Patch Changes
+
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- Updated dependencies
+  - @backstage/backend-common@0.9.12
+
 ## 0.1.12
 
 ### Patch Changes

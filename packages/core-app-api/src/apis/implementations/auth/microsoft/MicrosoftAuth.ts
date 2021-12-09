@@ -30,19 +30,21 @@ const DEFAULT_PROVIDER = {
  * @public
  */
 export default class MicrosoftAuth {
-  static create({
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    discoveryApi,
-    defaultScopes = [
-      'openid',
-      'offline_access',
-      'profile',
-      'email',
-      'User.Read',
-    ],
-  }: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T {
+  static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T {
+    const {
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+      discoveryApi,
+      defaultScopes = [
+        'openid',
+        'offline_access',
+        'profile',
+        'email',
+        'User.Read',
+      ],
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

@@ -10,6 +10,7 @@ import {
   OktaAuth,
   Auth0Auth,
   ConfigReader,
+  LocalStorageFeatureFlags,
 } from '@backstage/core-app-api';
 
 import {
@@ -24,9 +25,11 @@ import {
   oktaAuthApiRef,
   auth0AuthApiRef,
   configApiRef,
+  featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
 
 const configApi = new ConfigReader({});
+const featureFlagsApi = new LocalStorageFeatureFlags();
 const alertApi = new AlertApiForwarder();
 const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
 const identityApi = {
@@ -69,6 +72,7 @@ const oauth2Api = OAuth2.create({
 
 export const apis = [
   [configApiRef, configApi],
+  [featureFlagsApiRef, featureFlagsApi],
   [alertApiRef, alertApi],
   [errorApiRef, errorApi],
   [identityApiRef, identityApi],

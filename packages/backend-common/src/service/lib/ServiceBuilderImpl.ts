@@ -17,7 +17,7 @@
 import { Config } from '@backstage/config';
 import compression from 'compression';
 import cors from 'cors';
-import express, { Router } from 'express';
+import express, { Router, ErrorRequestHandler } from 'express';
 import helmet from 'helmet';
 import * as http from 'http';
 import stoppable from 'stoppable';
@@ -25,7 +25,7 @@ import { Logger } from 'winston';
 import { useHotCleanup } from '../../hot';
 import { getRootLogger } from '../../logging';
 import {
-  errorHandler,
+  errorHandler as defaultErrorHandler,
   notFoundHandler,
   requestLoggingHandler as defaultRequestLoggingHandler,
 } from '../../middleware';
@@ -66,6 +66,8 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private httpsSettings: HttpsSettings | undefined;
   private routers: [string, Router][];
   private requestLoggingHandler: RequestLoggingHandlerFactory | undefined;
+  private errorHandler: ErrorRequestHandler | undefined;
+  private useDefaultErrorHandler: boolean;
   // Reference to the module where builder is created - needed for hot module
   // reloading
   private module: NodeModule;
@@ -73,6 +75,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   constructor(moduleRef: NodeModule) {
     this.routers = [];
     this.module = moduleRef;
+    this.useDefaultErrorHandler = true;
   }
 
   loadConfig(config: Config): ServiceBuilder {
@@ -152,6 +155,16 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
+  setErrorHandler(errorHandler: ErrorRequestHandler) {
+    this.errorHandler = errorHandler;
+    return this;
+  }
+
+  disableDefaultErrorHandler() {
+    this.useDefaultErrorHandler = false;
+    return this;
+  }
+
   async start(): Promise<http.Server> {
     const app = express();
     const { port, host, logger, corsOptions, httpsSettings, helmetOptions } =
@@ -169,7 +182,14 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       app.use(root, route);
     }
     app.use(notFoundHandler());
-    app.use(errorHandler());
+
+    if (this.errorHandler) {
+      app.use(this.errorHandler);
+    }
+
+    if (this.useDefaultErrorHandler) {
+      app.use(defaultErrorHandler());
+    }
 
     const server: http.Server = httpsSettings
       ? await createHttpsServer(app, httpsSettings, logger)

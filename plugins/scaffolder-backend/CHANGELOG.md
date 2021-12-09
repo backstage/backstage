@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.16
+
+### Patch Changes
+
+- 2a3fb13718: Bump esbuild to ^0.14.1
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+  - @backstage/plugin-catalog-backend@0.19.1
+
+## 0.15.15
+
+### Patch Changes
+
+- 0398ea25d3: Removed unused scaffolder visibility configuration; this has been moved to publish actions. Deprecated scaffolder provider configuration keys; these should use the integrations configuration instead.
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- c6b44d80ad: Add options to spawn in runCommand helper
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/plugin-catalog-backend@0.19.0
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.5
+  - @backstage/backend-common@0.9.12
+
 ## 0.15.14
 
 ### Patch Changes

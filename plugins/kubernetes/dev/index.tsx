@@ -66,6 +66,7 @@ class MockKubernetesClient implements KubernetesApi {
         {
           cluster: { name: 'mock-cluster' },
           resources: this.resources,
+          podMetrics: [],
           errors: [],
         },
       ],

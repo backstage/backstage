@@ -47,14 +47,14 @@ describe('KubernetesClientProvider', () => {
     expect(mockGetKubeConfig.mock.calls.length).toBe(1);
   });
 
-  it('can get apps client by cluster details', async () => {
+  it('can get custom objects client by cluster details', async () => {
     const sut = new KubernetesClientProvider();
 
     const mockGetKubeConfig = jest.fn(sut.getKubeConfig.bind({}));
 
     sut.getKubeConfig = mockGetKubeConfig;
 
-    const result = sut.getAppsClientByClusterDetails({
+    const result = sut.getCustomObjectsClient({
       name: 'cluster-name',
       url: 'http://localhost:9999',
       serviceAccountToken: 'TOKEN',

@@ -36,12 +36,12 @@ import {
   getOwnedPodsThroughReplicaSets,
   getMatchingHpa,
 } from '../../utils/owner';
-import { containersReady, totalRestarts } from '../../utils/pod';
 import {
   GroupedResponsesContext,
   PodNamesWithErrorsContext,
 } from '../../hooks';
-import { StatusError, StatusOK, TableColumn } from '@backstage/core-components';
+import { StatusError, StatusOK } from '@backstage/core-components';
+import { READY_COLUMNS, RESOURCE_COLUMNS } from '../Pods/PodsTable';
 
 type DeploymentsAccordionsProps = {
   children?: React.ReactNode;
@@ -61,20 +61,6 @@ type DeploymentSummaryProps = {
   hpa?: V1HorizontalPodAutoscaler;
   children?: React.ReactNode;
 };
-
-const deploymentPodColumns: TableColumn<V1Pod>[] = [
-  {
-    title: 'containers ready',
-    align: 'center',
-    render: containersReady,
-  },
-  {
-    title: 'total restarts',
-    align: 'center',
-    render: totalRestarts,
-    type: 'numeric',
-  },
-];
 
 const DeploymentSummary = ({
   deployment,
@@ -176,7 +162,10 @@ const DeploymentAccordion = ({
         />
       </AccordionSummary>
       <AccordionDetails>
-        <PodsTable pods={ownedPods} extraColumns={deploymentPodColumns} />
+        <PodsTable
+          pods={ownedPods}
+          extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]}
+        />
       </AccordionDetails>
     </Accordion>
   );

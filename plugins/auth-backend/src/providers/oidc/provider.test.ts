@@ -24,7 +24,8 @@ import { setupServer } from 'msw/node';
 import { ClientMetadata, IssuerMetadata } from 'openid-client';
 import { OAuthAdapter } from '../../lib/oauth';
 import { AuthProviderFactoryOptions } from '../types';
-import { createOidcProvider, OidcAuthProvider } from './provider';
+import { createOidcProvider, OidcAuthProvider, Options } from './provider';
+import { getVoidLogger } from '@backstage/backend-common';
 
 const issuerMetadata = {
   issuer: 'https://oidc.test',
@@ -42,7 +43,23 @@ const issuerMetadata = {
   request_object_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
 };
 
-const clientMetadata = {
+const catalogIdentityClient = {
+  findUser: jest.fn(),
+};
+const tokenIssuer = {
+  issueToken: jest.fn(),
+  listPublicKeys: jest.fn(),
+};
+
+const clientMetadata: Options = {
+  authHandler: async input => ({
+    profile: {
+      displayName: input.userinfo.email,
+    },
+  }),
+  catalogIdentityClient: catalogIdentityClient as unknown as any,
+  logger: getVoidLogger(),
+  tokenIssuer: tokenIssuer as unknown as any,
   callbackUrl: 'https://oidc.test/callback',
   clientId: 'testclientid',
   clientSecret: 'testclientsecret',
@@ -160,7 +177,7 @@ describe('OidcAuthProvider', () => {
         ...clientMetadata,
         metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
       },
-    });
+    } as any);
     const options = {
       globalConfig: {
         appUrl: 'https://oidc.test',

@@ -1,5 +1,55 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.12.0
+
+### Minor Changes
+
+- 1bada775a9: Added the ability for the TechDocs Backend to (optionally) leverage a cache
+  store to improve performance when reading files from a cloud storage provider.
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+  - @backstage/techdocs-common@0.11.0
+
+## 0.11.0
+
+### Minor Changes
+
+- 905dd952ac: **BREAKING** `DefaultTechDocsCollator` has a new required option `tokenManager`. See the create-app changelog for how to create a `tokenManager` and add it to the `PluginEnvironment`. It can then be passed to the collator in `createPlugin`:
+
+  ```diff
+  // packages/backend/src/plugins/search.ts
+
+  ...
+  export default async function createPlugin({
+    ...
+  + tokenManager,
+  }: PluginEnvironment) {
+    ...
+
+    indexBuilder.addCollator({
+      defaultRefreshIntervalSeconds: 600,
+      collator: DefaultTechDocsCollator.fromConfig(config, {
+        discovery,
+        logger,
+  +     tokenManager,
+      }),
+    });
+
+    ...
+  }
+  ```
+
+### Patch Changes
+
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/backend-common@0.9.12
+
 ## 0.10.9
 
 ### Patch Changes

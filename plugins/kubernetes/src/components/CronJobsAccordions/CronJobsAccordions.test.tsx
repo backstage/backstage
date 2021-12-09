@@ -23,7 +23,7 @@ import { kubernetesProviders } from '../../hooks/test-utils';
 
 describe('CronJobsAccordions', () => {
   it('should render 1 active cronjobs', async () => {
-    const wrapper = kubernetesProviders(oneCronJobsFixture, []);
+    const wrapper = kubernetesProviders(oneCronJobsFixture, new Set<string>());
 
     const { getByText } = render(
       wrapper(wrapInTestApp(<CronJobsAccordions />)),
@@ -36,7 +36,7 @@ describe('CronJobsAccordions', () => {
   });
 
   it('should render 1 suspended cronjobs', async () => {
-    const wrapper = kubernetesProviders(twoCronJobsFixture, []);
+    const wrapper = kubernetesProviders(twoCronJobsFixture, new Set<string>());
 
     const { getByText } = render(
       wrapper(wrapInTestApp(<CronJobsAccordions />)),

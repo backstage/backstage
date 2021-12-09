@@ -1,5 +1,25 @@
 # @backstage/backend-common
 
+## 0.9.13
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- 5a008576c4: Add possibility to use custom error handler
+- 98a9c35f0c: Add options argument to support additional database migrations configuration
+- 6298de32dd: Add knexConfig config section
+
+## 0.9.12
+
+### Patch Changes
+
+- 905dd952ac: Create a `TokenManager` interface and `ServerTokenManager` implementation to generate and validate server tokens for authenticated backend-to-backend API requests.
+- 6b500622d5: Move to using node-fetch internally instead of cross-fetch
+- 54989b671d: Fixed a potential crash in the log redaction code
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/config-loader@0.8.1
+
 ## 0.9.11
 
 ### Patch Changes

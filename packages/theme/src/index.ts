@@ -15,7 +15,7 @@
  */
 
 /**
- * material-ui theme for use with Backstage.
+ * {@link https://mui.com | material-ui} theme for use with Backstage
  *
  * @packageDocumentation
  */

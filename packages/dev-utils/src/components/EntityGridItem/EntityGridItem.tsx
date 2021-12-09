@@ -35,11 +35,10 @@ const useStyles = makeStyles<BackstageTheme, { entity: Entity }>(theme => ({
 }));
 
 /** @public */
-export const EntityGridItem = ({
-  entity,
-  classes,
-  ...rest
-}: Omit<GridProps, 'item' | 'container'> & { entity: Entity }): JSX.Element => {
+export const EntityGridItem = (
+  props: Omit<GridProps, 'item' | 'container'> & { entity: Entity },
+): JSX.Element => {
+  const { entity, classes, ...rest } = props;
   const itemClasses = useStyles({ entity });
 
   return (

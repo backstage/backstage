@@ -73,6 +73,7 @@ describe('KubernetesContent', () => {
                 resources: oneDeployment.pods,
               },
             ],
+            podMetrics: [],
             errors: [],
           },
         ],
@@ -121,6 +122,7 @@ describe('KubernetesContent', () => {
                 resources: twoDeployments.pods,
               },
             ],
+            podMetrics: [],
             errors: [],
           },
           {
@@ -139,6 +141,7 @@ describe('KubernetesContent', () => {
                 resources: oneDeployment.pods,
               },
             ],
+            podMetrics: [],
             errors: [],
           },
         ],
