@@ -30,6 +30,7 @@ import { createApp } from '@backstage/app-defaults';
 import { FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
+  LayoutProvider,
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core-components';
@@ -225,11 +226,13 @@ const routes = (
 
 const App = () => (
   <AppProvider>
-    <AlertDisplay />
-    <OAuthRequestDialog />
-    <AppRouter>
-      <Root>{routes}</Root>
-    </AppRouter>
+    <LayoutProvider>
+      <AlertDisplay />
+      <OAuthRequestDialog />
+      <AppRouter>
+        <Root>{routes}</Root>
+      </AppRouter>
+    </LayoutProvider>
   </AppProvider>
 );
 
