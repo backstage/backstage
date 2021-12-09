@@ -258,7 +258,6 @@ export const createOAuth2Provider: (
   options?: OAuth2ProviderOptions | undefined,
 ) => AuthProviderFactory;
 
-// Warning: (ae-forgotten-export) The symbol "OidcProviderOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "createOidcProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -533,6 +532,34 @@ export type OAuthState = {
   env: string;
   origin?: string;
 };
+
+// Warning: (ae-missing-release-tag) "OidcAuthHandler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type OidcAuthHandler = AuthHandler<OidcAuthResult>;
+
+// Warning: (ae-missing-release-tag) "OidcAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type OidcAuthResult = {
+  tokenset: TokenSet;
+  userinfo: UserinfoResponse;
+};
+
+// Warning: (ae-missing-release-tag) "OidcProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type OidcProviderOptions = {
+  authHandler?: AuthHandler<OidcAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OidcAuthResult>;
+  };
+};
+
+// Warning: (ae-missing-release-tag) "OidcSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type OidcSignInResolver = SignInResolver<OidcAuthResult>;
 
 // Warning: (ae-missing-release-tag) "oktaEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
