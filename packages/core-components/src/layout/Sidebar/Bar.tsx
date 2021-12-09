@@ -69,7 +69,7 @@ const useStyles = makeStyles<BackstageTheme>(
     visuallyHidden: {
       top: 0,
       position: 'absolute',
-      zIndex: 2,
+      zIndex: 1000,
       transform: 'translateY(-200%)',
       '&:focus': {
         transform: 'translateY(5px)',
@@ -176,13 +176,7 @@ const DesktopSidebar = (props: SidebarProps) => {
 
   return (
     <div style={{}}>
-      <Button
-        onClick={focusContent}
-        variant="contained"
-        className={classnames(classes.visuallyHidden)}
-      >
-        Skip to content
-      </Button>
+      <A11ySkipSidebar />
       <SidebarContext.Provider
         value={{
           isOpen,
@@ -235,6 +229,25 @@ export const Sidebar = (props: SidebarProps) => {
     </DesktopSidebar>
   );
 };
+
+function A11ySkipSidebar() {
+  const { focusContent, contentRef } = useLayoutContent();
+  const classes = useStyles();
+
+  if (!contentRef?.current) {
+    return null;
+  }
+  return (
+    <Button
+      onClick={focusContent}
+      variant="contained"
+      className={classnames(classes.visuallyHidden)}
+    >
+      Skip to content
+    </Button>
+  );
+}
+
 function ignoreChildEvent(handlerFn: (e?: any) => void) {
   // TODO type the event
   return (event: any) => {

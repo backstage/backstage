@@ -17,6 +17,7 @@
 import React, {
   createContext,
   PropsWithChildren,
+  useCallback,
   useContext,
   useRef,
 } from 'react';
@@ -50,9 +51,9 @@ export function LayoutProvider(props: PropsWithChildren<{}>) {
 export function useLayoutContent() {
   const { content } = useContext(LayoutContext);
 
-  const focusContent = () => {
+  const focusContent = useCallback(() => {
     content.contentRef?.current?.focus();
-  };
+  }, [content]);
 
   return { focusContent, contentRef: content.contentRef };
 }
