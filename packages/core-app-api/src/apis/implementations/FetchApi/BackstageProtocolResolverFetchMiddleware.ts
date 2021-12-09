@@ -43,12 +43,17 @@ export class BackstageProtocolResolverFetchMiddleware
   apply(next: FetchFunction): FetchFunction {
     return async (input, init) => {
       const request = new Request(input, init);
-      const { protocol, hostname, pathname, search, hash, username, password } =
-        new URL(request.url);
+      const prefix = 'backstage://';
 
-      if (protocol !== 'backstage:') {
+      if (!request.url.startsWith(prefix)) {
         return next(input, init);
       }
+
+      // Switch to a known protocol, since browser URL parsing misbehaves wildly
+      // on foreign protocols
+      const { hostname, pathname, search, hash, username, password } = new URL(
+        `http://${request.url.substring(prefix.length)}`,
+      );
 
       let base = await this.discovery(hostname);
       if (username || password) {
