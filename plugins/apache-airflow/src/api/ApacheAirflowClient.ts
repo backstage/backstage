@@ -30,13 +30,12 @@ export class ApacheAirflowClient implements ApacheAirflowApi {
   discoveryApi: DiscoveryApi;
   baseUrl: string;
 
-  // TODO - need to better determine how to handle undefined baseUrl
   constructor({
     discoveryApi,
     baseUrl = 'http://localhost:8080',
   }: {
     discoveryApi: DiscoveryApi;
-    baseUrl?: string;
+    baseUrl: string;
   }) {
     this.discoveryApi = discoveryApi;
     this.baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;

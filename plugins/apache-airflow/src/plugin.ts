@@ -36,7 +36,7 @@ export const apacheAirflowPlugin = createPlugin({
       factory: ({ configApi, discoveryApi }) =>
         new ApacheAirflowClient({
           discoveryApi,
-          baseUrl: configApi.getOptionalString('apacheAirflow.baseUrl'),
+          baseUrl: configApi.getString('apacheAirflow.baseUrl'),
         }),
     }),
   ],
