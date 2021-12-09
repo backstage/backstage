@@ -29,6 +29,7 @@ import { BackstageTheme } from '@backstage/theme';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { SidebarItemWithSubmenuContext } from './config';
+import { SidebarContext } from '../..';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   item: {
@@ -123,8 +124,13 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const { pathname: locationPathname } = useLocation();
   const { pathname: toPathname } = useResolvedPath(to);
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
+  const { setOpen } = useContext(SidebarContext);
+
   const closeSubmenu = () => {
     setIsHoveredOn(false);
+    if (setOpen) {
+      setOpen(false);
+    }
   };
 
   let isActive = locationPathname === toPathname;
@@ -142,6 +148,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
       <div className={classes.itemContainer}>
         <button
           onClick={handleClickDropdown}
+          onTouchStart={e => e.stopPropagation()}
           className={clsx(
             classes.item,
             isActive ? classes.selected : undefined,
@@ -166,6 +173,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                 underline="none"
                 className={classes.dropdownItem}
                 onClick={closeSubmenu}
+                onTouchStart={e => e.stopPropagation()}
                 key={key}
               >
                 <Typography className={classes.textContent}>
@@ -187,6 +195,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
         underline="none"
         className={clsx(classes.item, isActive ? classes.selected : undefined)}
         onClick={closeSubmenu}
+        onTouchStart={e => e.stopPropagation()}
       >
         <Icon fontSize="small" />
         <Typography variant="subtitle1" className={classes.label}>

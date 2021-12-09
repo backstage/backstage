@@ -17,6 +17,7 @@
 import { IconComponent, useElementFilter } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, styled, Theme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Badge from '@material-ui/core/Badge';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -46,6 +47,8 @@ import {
   SidebarItemWithSubmenuContext,
 } from './config';
 import { SidebarSubmenu } from './SidebarSubmenu';
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 
 export type SidebarItemClassKey =
   | 'root'
@@ -151,6 +154,9 @@ const useStyles = makeStyles<BackstageTheme>(
       submenuArrow: {
         position: 'absolute',
         right: 0,
+        [theme.breakpoints.down('xs')]: {
+          right: theme.spacing(2),
+        },
       },
       selected: {
         '&$root': {
@@ -274,6 +280,9 @@ const SidebarItemWithSubmenu = ({
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const { pathname: locationPathname } = useLocation();
   const isActive = isSidebarItemWithSubmenuActive(children, locationPathname);
+  const isSmallScreen = useMediaQuery<BackstageTheme>((theme: BackstageTheme) =>
+    theme.breakpoints.down('sm'),
+  );
 
   const handleMouseEnter = () => {
     setIsHoveredOn(true);
@@ -308,6 +317,21 @@ const SidebarItemWithSubmenu = ({
     </>
   );
 
+  const arrowIcon = () => {
+    if (isSmallScreen) {
+      return isHoveredOn ? (
+        <ArrowDropUp fontSize="small" className={classes.submenuArrow} />
+      ) : (
+        <ArrowDropDown fontSize="small" className={classes.submenuArrow} />
+      );
+    }
+    return (
+      !isHoveredOn && (
+        <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
+      )
+    );
+  };
+
   return (
     <SidebarItemWithSubmenuContext.Provider
       value={{
@@ -315,7 +339,11 @@ const SidebarItemWithSubmenu = ({
         setIsHoveredOn,
       }}
     >
-      <div onMouseLeave={handleMouseLeave} onMouseEnter={handleMouseEnter}>
+      <div
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={isHoveredOn ? handleMouseLeave : handleMouseEnter}
+        onMouseEnter={handleMouseEnter}
+      >
         <div
           data-testid="item-with-submenu"
           className={clsx(
@@ -327,9 +355,7 @@ const SidebarItemWithSubmenu = ({
           )}
         >
           {isOpen ? openContent : itemIcon}
-          {!isHoveredOn && (
-            <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
-          )}
+          {arrowIcon()}
         </div>
         {isHoveredOn && children}
       </div>

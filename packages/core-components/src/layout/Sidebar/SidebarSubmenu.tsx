@@ -38,7 +38,13 @@ const useStyles = (props: { left: number }) =>
       flexFlow: 'column nowrap',
       alignItems: 'flex-start',
       position: 'fixed',
-      left: props.left,
+      [theme.breakpoints.up('sm')]: {
+        marginLeft: props.left,
+        transition: theme.transitions.create('margin-left', {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.shortest,
+        }),
+      },
       top: 0,
       bottom: 0,
       padding: 0,
@@ -58,7 +64,7 @@ const useStyles = (props: { left: number }) =>
     },
     drawerOpen: {
       width: submenuConfig.drawerWidthOpen,
-      [theme.breakpoints.down('sm')]: {
+      [theme.breakpoints.down('xs')]: {
         width: '100%',
         position: 'relative',
         paddingLeft: theme.spacing(3),
@@ -99,7 +105,7 @@ export const SidebarSubmenu = ({
   const left = isOpen
     ? sidebarConfig.drawerWidthOpen
     : sidebarConfig.drawerWidthClosed;
-  const props = { left: left };
+  const props = { left };
   const classes = useStyles(props)();
 
   const { isHoveredOn } = useContext(SidebarItemWithSubmenuContext);
