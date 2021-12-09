@@ -56,6 +56,10 @@ type OidcImpl = {
   client: Client;
 };
 
+/**
+ * authentication result for the OIDC which includes the token set and user information (a profile response sent by OIDC server)
+ * @public
+ */
 export type OidcAuthResult = {
   tokenset: TokenSet;
   userinfo: UserinfoResponse;

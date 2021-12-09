@@ -543,9 +543,7 @@ export type OAuthState = {
   origin?: string;
 };
 
-// Warning: (ae-missing-release-tag) "OidcAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type OidcAuthResult = {
   tokenset: TokenSet;
   userinfo: UserinfoResponse;
