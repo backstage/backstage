@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.0.6
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+
 ## 0.0.5
 
 ### Patch Changes

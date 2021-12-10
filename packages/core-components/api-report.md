@@ -647,7 +647,9 @@ export type LogViewerClassKey =
 
 // @public
 export interface LogViewerProps {
-  className?: string;
+  classes?: {
+    root?: string;
+  };
   text: string;
 }
 

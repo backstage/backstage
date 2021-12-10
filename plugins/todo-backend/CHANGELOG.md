@@ -1,5 +1,13 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.15
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+
 ## 0.1.14
 
 ### Patch Changes

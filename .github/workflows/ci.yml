@@ -56,11 +56,6 @@ jobs:
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      # https://github.com/Automattic/node-canvas/issues/1945
-      - name: Install dependencies to fix temporary issue in canvas build
-        run: |
-          sudo apt update
-          sudo apt install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev librsvg2-dev
       - uses: actions/checkout@v2
       - name: fetch branch master
         run: git fetch origin master

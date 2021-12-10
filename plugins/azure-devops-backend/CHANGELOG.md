@@ -1,5 +1,14 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.2.4
+
+### Patch Changes
+
+- a77526afcd: Added getting builds by definition name
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+  - @backstage/plugin-azure-devops-common@0.1.2
+
 ## 0.2.3
 
 ### Patch Changes

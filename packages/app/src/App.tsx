@@ -87,6 +87,7 @@ import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
 import { techDocsPage } from './components/techdocs/TechDocsPage';
+import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 
 const app = createApp({
   apis,
@@ -218,6 +219,7 @@ const routes = (
     />
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
+    <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
   </FlatRoutes>
 );
 

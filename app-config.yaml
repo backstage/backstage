@@ -102,6 +102,11 @@ proxy:
     headers:
       Authorization: ${ILERT_AUTH_HEADER}
 
+  '/airflow':
+    target: https://your.airflow.instance.com/api/v1
+    headers:
+      Authorization: ${AIRFLOW_BASIC_AUTH_HEADER}
+
 organization:
   name: My Company
 
@@ -442,3 +447,6 @@ azureDevOps:
   host: dev.azure.com
   token: my-token
   organization: my-company
+
+apacheAirflow:
+  baseUrl: https://your.airflow.instance.com
