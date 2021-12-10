@@ -92,10 +92,11 @@ entries.push({
     {
       moved: 0,
       ringId: 'use',
-      date: new Date('2020-08-06'),
+      date: new Date('2020-08-06')
     },
   ],
   url: 'https://reactjs.org/',
+  urlTarget: '_blank',
   key: 'react',
   id: 'react',
   title: 'React',
@@ -161,6 +162,7 @@ entries.push({
     {
       ringId: 'use',
       date: new Date('2020-08-06'),
+      description: 'test description'
     },
   ],
   url: '#',
