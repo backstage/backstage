@@ -571,6 +571,11 @@ enum LabelPosition {
   RIGHT = 'r',
 }
 
+// Warning: (ae-missing-release-tag) "LayoutProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function LayoutProvider(props: PropsWithChildren<{}>): JSX.Element;
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Lifecycle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1236,24 +1241,6 @@ export function SidebarPage(props: SidebarPageProps): JSX.Element;
 //
 // @public (undocumented)
 export type SidebarPageClassKey = 'root';
-
-// @public
-export type SidebarPageProps = {
-  children?: React_2.ReactNode;
-};
-
-// @public
-// Warning: (ae-missing-release-tag) "SidebarPageContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function SidebarPageContent(props: PropsWithChildren<{}>): JSX.Element;
-
-// Warning: (ae-missing-release-tag) "SidebarPageContextType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type SidebarPageContextType = {
-  contentRef?: React_2.MutableRefObject<HTMLDivElement | null>;
-};
 
 // Warning: (ae-missing-release-tag) "SidebarPinStateContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -2419,12 +2406,13 @@ export function TrendLine(
     },
 ): JSX.Element | null;
 
-// Warning: (ae-missing-release-tag) "useContentRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "useLayoutContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function useContentRef():
-  | React_2.MutableRefObject<HTMLDivElement | null>
-  | undefined;
+export function useLayoutContent(): {
+  focusContent: () => void;
+  contentRef: React_2.MutableRefObject<HTMLDivElement | null> | undefined;
+};
 
 // Warning: (ae-forgotten-export) The symbol "SetQueryParams" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useQueryParamState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

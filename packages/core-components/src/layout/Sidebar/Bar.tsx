@@ -144,7 +144,6 @@ const DesktopSidebar = (props: SidebarProps) => {
     if (isPinned || disableExpandOnHover) {
       return;
     }
-    focusContent();
     if (hoverTimerRef.current) {
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = undefined;

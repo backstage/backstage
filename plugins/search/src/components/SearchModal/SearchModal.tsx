@@ -24,6 +24,7 @@ import {
   Grid,
   List,
   Paper,
+  useTheme,
 } from '@material-ui/core';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { makeStyles } from '@material-ui/core/styles';
@@ -33,7 +34,7 @@ import { SearchResult } from '../SearchResult';
 import { SearchContextProvider, useSearch } from '../SearchContext';
 import { SearchResultPager } from '../SearchResultPager';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { Link } from '@backstage/core-components';
+import { Link, useLayoutContent } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
 
 export interface SearchModalProps {
@@ -60,10 +61,27 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
   const getSearchLink = useRouteRef(rootRouteRef);
   const classes = useStyles();
 
-  const { term } = useSearch();
+  const { focusContent } = useLayoutContent();
+  const { transitions } = useTheme();
+  const { term, setTerm } = useSearch();
+  const [value, setValue] = useState<string>(term);
+
+  useEffect(() => {
+    setValue(prevValue => (prevValue !== term ? term : prevValue));
+  }, [term]);
+
+  useDebounce(() => setTerm(value), 500, [value]);
+
+  const handleQuery = (newValue: string) => {
+    setValue(newValue);
+  };
+
+  const handleClear = () => setValue('');
 
   const handleResultClick = () => {
     toggleModal();
+    handleClear();
+    setTimeout(focusContent, transitions.duration.leavingScreen);
   };
 
   const handleKeyPress = () => {
@@ -94,7 +112,13 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
           alignItems="center"
         >
           <Grid item>
-            <Link onClick={toggleModal} to={`${getSearchLink()}?query=${term}`}>
+            <Link
+              onClick={() => {
+                toggleModal();
+                setTimeout(focusContent, transitions.duration.leavingScreen);
+              }}
+              to={`${getSearchLink()}?query=${value}`}
+            >
               <span className={classes.viewResultsLink}>View Full Results</span>
               <LaunchIcon color="primary" />
             </Link>

@@ -22,7 +22,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-
 import { sidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
