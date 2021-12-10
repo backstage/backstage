@@ -21,13 +21,13 @@ import FormControl from '@material-ui/core/FormControl';
 import InputBase from '@material-ui/core/InputBase';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
 import {
   createStyles,
   makeStyles,
   Theme,
   withStyles,
 } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
@@ -92,7 +92,14 @@ const useStyles = makeStyles(
       chip: {
         margin: 2,
       },
+
       checkbox: {},
+      select: {
+        '&:hover': {
+          cursor: 'not-allowed',
+        },
+      },
+
       root: {
         display: 'flex',
         flexDirection: 'column',
@@ -101,12 +108,12 @@ const useStyles = makeStyles(
   { name: 'BackstageSelect' },
 );
 
-type Item = {
+export type Item = {
   label: string;
   value: string | number;
 };
 
-type Selection = string | string[] | number | number[];
+export type Selection = string | string[] | number | number[];
 
 export type SelectProps = {
   multiple?: boolean;
@@ -116,6 +123,8 @@ export type SelectProps = {
   selected?: Selection;
   onChange: (arg: Selection) => void;
   triggerReset?: boolean;
+  native?: boolean;
+  disabled?: boolean;
 };
 
 export function SelectComponent(props: SelectProps) {
@@ -127,6 +136,8 @@ export function SelectComponent(props: SelectProps) {
     selected,
     onChange,
     triggerReset,
+    native = false,
+    disabled = false,
   } = props;
   const classes = useStyles();
   const [value, setValue] = useState<Selection>(
@@ -150,6 +161,9 @@ export function SelectComponent(props: SelectProps) {
   };
 
   const handleClick = (event: React.ChangeEvent<any>) => {
+    // if (disabled) {
+    //   return event.preventDefault();
+    // }
     setOpen(previous => {
       if (multiple && !(event.target instanceof HTMLElement)) {
         return true;
@@ -175,6 +189,8 @@ export function SelectComponent(props: SelectProps) {
         <FormControl className={classes.formControl}>
           <Select
             value={value}
+            native={native}
+            disabled={disabled}
             data-testid="select"
             displayEmpty
             multiple={multiple}
@@ -223,19 +239,26 @@ export function SelectComponent(props: SelectProps) {
             {placeholder && !multiple && (
               <MenuItem value={[]}>{placeholder}</MenuItem>
             )}
-            {items &&
-              items.map(item => (
-                <MenuItem key={item.value} value={item.value}>
-                  {multiple && (
-                    <Checkbox
-                      color="primary"
-                      checked={(value as any[]).includes(item.value) || false}
-                      className={classes.checkbox}
-                    />
-                  )}
-                  {item.label}
-                </MenuItem>
-              ))}
+            {native
+              ? items &&
+                items.map(item => (
+                  <option value={item.value} key={item.value}>
+                    {item.label}
+                  </option>
+                ))
+              : items &&
+                items.map(item => (
+                  <MenuItem key={item.value} value={item.value}>
+                    {multiple && (
+                      <Checkbox
+                        color="primary"
+                        checked={(value as any[]).includes(item.value) || false}
+                        className={classes.checkbox}
+                      />
+                    )}
+                    {item.label}
+                  </MenuItem>
+                ))}
           </Select>
         </FormControl>
       </ClickAwayListener>
