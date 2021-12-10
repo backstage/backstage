@@ -43,6 +43,8 @@ import {
   SidebarDivider,
   SidebarSpace,
   SidebarScrollWrapper,
+  SidebarSubmenu,
+  SidebarSubmenuItem,
 } from '@backstage/core-components';
 import { AzurePullRequestsIcon } from '@backstage/plugin-azure-devops';
 
@@ -81,13 +83,27 @@ const SidebarLogo = () => {
 
 export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
-    <Sidebar>
+    <Sidebar disableExpandOnHover>
       <SidebarLogo />
       <SearchContextProvider>
         <SidebarSearchModal />
       </SearchContextProvider>
       <SidebarDivider />
       {/* Global nav, not org-specific */}
+      <SidebarItem icon={HomeIcon} text="Catalog">
+        <SidebarSubmenu title="Catalog">
+          <SidebarSubmenuItem
+            title="Services"
+            to="catalog?x=foo&y=bar"
+            icon={HomeIcon}
+          />
+          <SidebarSubmenuItem
+            title="Libraries"
+            to="catalog?x=foo"
+            icon={HomeIcon}
+          />
+        </SidebarSubmenu>
+      </SidebarItem>
       <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
       <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
       <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
