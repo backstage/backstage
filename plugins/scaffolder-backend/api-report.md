@@ -68,7 +68,7 @@ export const createBuiltinActions: (options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   catalogClient: CatalogApi;
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
   config: Config;
 }) => TemplateAction<any>[];
 
@@ -289,7 +289,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
