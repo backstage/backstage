@@ -43,8 +43,6 @@ import {
   SidebarDivider,
   SidebarSpace,
   SidebarScrollWrapper,
-  SidebarSubmenu,
-  SidebarSubmenuItem,
 } from '@backstage/core-components';
 import { AzurePullRequestsIcon } from '@backstage/plugin-azure-devops';
 
