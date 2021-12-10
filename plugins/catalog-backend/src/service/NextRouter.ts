@@ -78,14 +78,16 @@ export async function createNextRouter(
   if (entitiesCatalog) {
     router
       .get('/entities', async (req, res) => {
+        const pagination = parseEntityPaginationParams(req.query);
+
         const { entities, pageInfo } = await entitiesCatalog.entities({
           filter: parseEntityFilterParams(req.query),
           fields: parseEntityTransformParams(req.query),
-          pagination: parseEntityPaginationParams(req.query),
+          pagination,
         });
 
         // Add a Link header to the next page
-        if (pageInfo.hasNextPage) {
+        if (pageInfo.nextCursor) {
           const url = new URL(`http://ignored${req.url}`);
           url.searchParams.delete('offset');
           url.searchParams.set('after', pageInfo.endCursor);

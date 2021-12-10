@@ -22,58 +22,19 @@ import {
   EntitiesRequest,
   EntitiesResponse,
   EntityAncestryResponse,
-  EntityPagination,
   EntityFilter,
   EntitiesSearchFilter,
+  EntitiesBaseRequest,
+  EntitiesCursorRequest,
+  Cursor,
+  PageInfo,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbSearchRow,
-  DbPageInfo,
 } from '../database/tables';
-
-function parsePagination(input?: EntityPagination): {
-  limit?: number;
-  offset?: number;
-} {
-  if (!input) {
-    return {};
-  }
-
-  let { limit, offset } = input;
-
-  if (input.after !== undefined) {
-    let cursor;
-    try {
-      const json = Buffer.from(input.after, 'base64').toString('utf8');
-      cursor = JSON.parse(json);
-    } catch {
-      throw new InputError('Malformed after cursor, could not be parsed');
-    }
-    if (cursor.limit !== undefined) {
-      if (!Number.isInteger(cursor.limit)) {
-        throw new InputError('Malformed after cursor, limit was not an number');
-      }
-      limit = cursor.limit;
-    }
-    if (cursor.offset !== undefined) {
-      if (!Number.isInteger(cursor.offset)) {
-        throw new InputError('Malformed after cursor, offset was not a number');
-      }
-      offset = cursor.offset;
-    }
-  }
-
-  return { limit, offset };
-}
-
-function stringifyPagination(input: { limit: number; offset: number }) {
-  const json = JSON.stringify({ limit: input.limit, offset: input.offset });
-  const base64 = Buffer.from(json, 'utf8').toString('base64');
-  return base64;
-}
 
 function addCondition(
   queryBuilder: Knex.QueryBuilder,
@@ -151,51 +112,117 @@ function parseFilter(
 }
 
 export class NextEntitiesCatalog implements EntitiesCatalog {
-  constructor(private readonly database: Knex) {}
+  constructor(
+    private readonly database: Knex,
+    private readonly properties: {
+      defaultLimit: number;
+      defaultSortField: string;
+    } = {
+      defaultLimit: Number.MAX_SAFE_INTEGER,
+      defaultSortField: 'metadata.uid',
+    },
+  ) {}
 
-  async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
+  async entities(request: EntitiesRequest = {}): Promise<EntitiesResponse> {
     const db = this.database;
 
-    let entitiesQuery = db<DbFinalEntitiesRow>('final_entities');
-    if (request?.filter) {
-      entitiesQuery = parseFilter(request.filter, entitiesQuery, db);
+    const limit = request?.limit || this.properties.defaultLimit;
+
+    const cursor: Omit<Cursor, 'sortFieldId' | 'previousPage'> & {
+      sortFieldId?: string;
+      previousPage?: number;
+    } = {
+      sortField: this.properties.defaultSortField,
+      sortFieldOrder: 'asc',
+      isPrevious: false,
+      ...parseCursorFromRequest(request),
+    };
+
+    const isFetchingBackwards = cursor.isPrevious;
+
+    /**
+     * all the pages are only used for quickly
+     * detecting the initial batch of items
+     * when navigating backwards without performing
+     * extra operations on the database.
+     */
+    let currentPage = 1;
+    if (cursor.previousPage) {
+      currentPage = isFetchingBackwards
+        ? cursor.previousPage - 1
+        : cursor.previousPage + 1;
     }
+
+    const entitiesQuery = db<DbFinalEntitiesRow & { sort_field: string }>(
+      'final_entities',
+    );
+    if (cursor.filter) {
+      parseFilter(cursor.filter, entitiesQuery, db);
+    }
+
+    const orderSubquery = db('search')
+      .select('value')
+      .where('entity_id', db.ref('final_entities.entity_id'))
+      .andWhere('key', cursor.sortField)
+      .as('sort_field');
 
     // TODO: move final_entities to use entity_ref
-    entitiesQuery = entitiesQuery
-      .select('final_entities.*')
-      .whereNotNull('final_entities.final_entity')
-      .orderBy('entity_id', 'asc');
+    entitiesQuery
+      .select('final_entities.*', orderSubquery)
+      .whereNotNull('final_entities.final_entity');
 
-    const { limit, offset } = parsePagination(request?.pagination);
-    if (limit !== undefined) {
-      entitiesQuery = entitiesQuery.limit(limit + 1);
-    }
-    if (offset !== undefined) {
-      entitiesQuery = entitiesQuery.offset(offset);
-    }
-
-    let rows = await entitiesQuery;
-
-    let pageInfo: DbPageInfo;
-    if (limit === undefined || rows.length <= limit) {
-      pageInfo = { hasNextPage: false };
-    } else {
-      rows = rows.slice(0, -1);
-      pageInfo = {
-        hasNextPage: true,
-        endCursor: stringifyPagination({
-          limit,
-          offset: (offset ?? 0) + limit,
-        }),
-      };
+    if (cursor.sortFieldId) {
+      entitiesQuery.andWhere(
+        'sort_field',
+        cursor.isPrevious ? '<' : '>',
+        cursor.sortFieldId,
+      );
     }
 
-    const dbResponse = rows.map(e => JSON.parse(e.final_entity!));
-
-    const entities = dbResponse.map(e =>
-      request?.fields ? request.fields(e) : e,
+    entitiesQuery.orderBy(
+      'sort_field',
+      isFetchingBackwards
+        ? invertOrder(cursor.sortFieldOrder)
+        : cursor.sortFieldOrder,
     );
+
+    entitiesQuery.limit(isFetchingBackwards ? limit : limit + 1);
+
+    const rows = await (cursor.isPrevious
+      ? db
+          .select('*')
+          .from(entitiesQuery)
+          .orderBy('sort_field', cursor.sortFieldOrder)
+      : entitiesQuery);
+    const pageInfo: PageInfo = {};
+
+    const hasMoreResults = isFetchingBackwards || rows.length > limit;
+
+    // only do this when fetching forward
+    if (rows.length > limit) {
+      rows.length -= 1;
+    }
+
+    if (hasMoreResults) {
+      pageInfo.nextCursor = encodeCursor({
+        ...cursor,
+        sortFieldId: rows[rows.length - 1].sort_field,
+        previousPage: currentPage,
+        isPrevious: false,
+      });
+    }
+    if (rows.length > 0 && currentPage > 1) {
+      pageInfo.prevCursor = encodeCursor({
+        ...cursor,
+        sortFieldId: rows[0].sort_field,
+        previousPage: currentPage,
+        isPrevious: true,
+      });
+    }
+
+    const entities = rows
+      .map(e => JSON.parse(e.final_entity!))
+      .map(e => (request?.fields ? request.fields(e) : e));
 
     return {
       entities,
@@ -276,4 +303,45 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
   async batchAddOrUpdateEntities(): Promise<never> {
     throw new Error('Not implemented');
   }
+}
+
+function encodeCursor(cursor: Cursor) {
+  const json = JSON.stringify(cursor);
+  return Buffer.from(json, 'utf8').toString('base64');
+}
+
+function parseCursorFromRequest(request: EntitiesRequest): Partial<Cursor> {
+  if (isEntitiesBaseRequest(request)) {
+    const { fields, ...cursor } = request;
+    return cursor;
+  }
+  if (isEntitiesCursorRequest(request)) {
+    try {
+      const json = Buffer.from(request.cursor, 'base64').toString('utf8');
+      const cursor = JSON.parse(json);
+      // TODO(vinzscam): validate the shit
+      return cursor as unknown as Cursor;
+    } catch {
+      throw new InputError('Malformed cursor, could not be parsed');
+    }
+  }
+  return {};
+}
+
+function isEntitiesBaseRequest(
+  input: EntitiesRequest | undefined,
+): input is EntitiesBaseRequest {
+  // TODO(vinzscam) expand this
+  return !isEntitiesCursorRequest(input);
+}
+
+function isEntitiesCursorRequest(
+  input: EntitiesRequest | undefined,
+): input is EntitiesCursorRequest {
+  // TODO(vinzscam) expand this
+  return input?.hasOwnProperty('cursor') ?? false;
+}
+
+function invertOrder(order: Cursor['sortFieldOrder']) {
+  return order === 'asc' ? 'desc' : 'asc';
 }

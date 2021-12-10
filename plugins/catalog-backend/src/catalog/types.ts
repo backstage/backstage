@@ -29,15 +29,6 @@ export type EntityFilter =
   | EntitiesSearchFilter;
 
 /**
- * A pagination rule for entities.
- */
-export type EntityPagination = {
-  limit?: number;
-  offset?: number;
-  after?: string;
-};
-
-/**
  * Matches rows in the entities_search table.
  */
 export type EntitiesSearchFilter = {
@@ -57,19 +48,36 @@ export type EntitiesSearchFilter = {
   values?: string[];
 };
 
-export type PageInfo =
-  | {
-      hasNextPage: false;
-    }
-  | {
-      hasNextPage: true;
-      endCursor: string;
-    };
+export type PageInfo = { nextCursor?: string; prevCursor?: string };
 
-export type EntitiesRequest = {
-  filter?: EntityFilter;
+export type EntitiesRequest = EntitiesBaseRequest | EntitiesCursorRequest;
+
+export type EntitiesBaseRequest = {
   fields?: (entity: Entity) => Entity;
-  pagination?: EntityPagination;
+  filter?: EntityFilter;
+  limit?: number;
+  sortField?: string;
+  sortFieldOrder?: 'asc' | 'desc';
+};
+
+export type EntitiesCursorRequest = {
+  fields?: (entity: Entity) => Entity;
+  limit?: number;
+  cursor: string;
+};
+
+export type Cursor = {
+  sortField: string;
+  sortFieldId: string;
+  sortFieldOrder: 'asc' | 'desc';
+  filter?: EntityFilter;
+  isPrevious: boolean;
+  /**
+   * used only for efficiently
+   * finding the initial batch of items
+   * when navigating backwards
+   */
+  previousPage: number;
 };
 
 export type EntitiesResponse = {

@@ -17,7 +17,9 @@
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
+import { template } from 'lodash';
 import { v4 as uuid } from 'uuid';
+import { EntitiesCursorRequest, EntitiesRequest } from '../catalog/types';
 import { applyDatabaseMigrations } from '../database/migrations';
 import {
   DbFinalEntitiesRow,
@@ -465,6 +467,159 @@ describe('NextEntitiesCatalog', () => {
         const { entities } = await catalog.entities(request);
 
         expect(entities.length).toBe(0);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should paginate and navigate between the paginated data accordingly',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+
+        function entityFrom(name: string) {
+          return {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name },
+            spec: { should_include_this: 'yes' },
+          };
+        }
+
+        const names = ['B', 'F', 'A', 'G', 'D', 'C', 'E'];
+        const entities: Entity[] = names.map(entityFrom);
+
+        const notFoundEntities: Entity[] = [
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'something' },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'something else' },
+            spec: {},
+          },
+        ];
+
+        await Promise.all(
+          entities
+            .concat(notFoundEntities)
+            .map(e => addEntityToSearch(knex, e)),
+        );
+
+        const catalog = new NextEntitiesCatalog(knex);
+
+        const filter = {
+          key: 'spec.should_include_this',
+        };
+
+        const limit = 2;
+
+        // initial request
+        const request1: EntitiesRequest = {
+          filter,
+          limit,
+          sortField: 'metadata.name',
+        };
+        const { entities: batch1, pageInfo: pageInfo1 } =
+          await catalog.entities(request1);
+        expect(batch1).toEqual([entityFrom('A'), entityFrom('B')]);
+        expect(pageInfo1).toHaveProperty('nextCursor');
+        expect(pageInfo1).not.toHaveProperty('prevCursor');
+
+        // second request (forward)
+        const request2: EntitiesCursorRequest = {
+          cursor: pageInfo1.nextCursor!,
+          limit,
+        };
+        const { entities: batch2, pageInfo: pageInfo2 } =
+          await catalog.entities(request2);
+        expect(batch2).toEqual([entityFrom('C'), entityFrom('D')]);
+        expect(pageInfo2).toHaveProperty('nextCursor');
+        expect(pageInfo2).toHaveProperty('prevCursor');
+
+        // third request (forward)
+        const request3: EntitiesCursorRequest = {
+          cursor: pageInfo2.nextCursor!,
+          limit,
+        };
+        const { entities: batch3, pageInfo: pageInfo3 } =
+          await catalog.entities(request3);
+        expect(batch3).toEqual([entityFrom('E'), entityFrom('F')]);
+        expect(pageInfo3).toHaveProperty('nextCursor');
+        expect(pageInfo3).toHaveProperty('prevCursor');
+
+        // fourth request (backwards)
+        const request4: EntitiesCursorRequest = {
+          cursor: pageInfo3.prevCursor!,
+          limit,
+        };
+        const { entities: batch4, pageInfo: pageInfo4 } =
+          await catalog.entities(request4);
+        expect(batch4).toEqual([entityFrom('C'), entityFrom('D')]);
+        expect(pageInfo4).toHaveProperty('nextCursor');
+        expect(pageInfo4).toHaveProperty('prevCursor');
+
+        // fifth request (backwards)
+        const request5: EntitiesCursorRequest = {
+          cursor: pageInfo4.prevCursor!,
+          limit,
+        };
+        const { entities: batch5, pageInfo: pageInfo5 } =
+          await catalog.entities(request5);
+        expect(batch5).toEqual([entityFrom('A'), entityFrom('B')]);
+        expect(pageInfo5).toHaveProperty('nextCursor');
+        expect(pageInfo5).not.toHaveProperty('prevCursor');
+        expect(pageInfo5.nextCursor).toEqual(pageInfo5.nextCursor);
+
+        // sixth request (forward)
+        const request6: EntitiesCursorRequest = {
+          cursor: pageInfo5.nextCursor!,
+          limit,
+        };
+        const { entities: batch6, pageInfo: pageInfo6 } =
+          await catalog.entities(request6);
+        expect(batch6).toEqual([entityFrom('C'), entityFrom('D')]);
+        expect(pageInfo6).toHaveProperty('nextCursor');
+        expect(pageInfo6).toHaveProperty('prevCursor');
+
+        // seventh request (forward)
+        const request7: EntitiesCursorRequest = {
+          cursor: pageInfo6.nextCursor!,
+          limit,
+        };
+        const { entities: batch7, pageInfo: pageInfo7 } =
+          await catalog.entities(request7);
+        expect(batch7).toEqual([entityFrom('E'), entityFrom('F')]);
+        expect(pageInfo7).toHaveProperty('nextCursor');
+        expect(pageInfo7).toHaveProperty('prevCursor');
+
+        // seventh.2 request (forward with a different limit)
+        const request7bis: EntitiesCursorRequest = {
+          cursor: pageInfo6.nextCursor!,
+          limit: limit + 1,
+        };
+        const { entities: batch7bis, pageInfo: pageInfo7bis } =
+          await catalog.entities(request7bis);
+        expect(batch7bis).toEqual([
+          entityFrom('E'),
+          entityFrom('F'),
+          entityFrom('G'),
+        ]);
+        expect(pageInfo7bis).not.toHaveProperty('nextCursor');
+        expect(pageInfo7bis).toHaveProperty('prevCursor');
+
+        // last request
+        const request8: EntitiesCursorRequest = {
+          cursor: pageInfo7.nextCursor!,
+          limit,
+        };
+        const { entities: batch8, pageInfo: pageInfo8 } =
+          await catalog.entities(request8);
+        expect(batch8).toEqual([entityFrom('G')]);
+        expect(pageInfo8).not.toHaveProperty('nextCursor');
+        expect(pageInfo8).toHaveProperty('prevCursor');
       },
     );
   });
