@@ -26,10 +26,8 @@ import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
 import classnames from 'classnames';
 import React, {
-  Children,
   forwardRef,
   KeyboardEventHandler,
-  PropsWithChildren,
   ReactNode,
   useContext,
   useState,
@@ -37,7 +35,6 @@ import React, {
 import {
   Link,
   NavLinkProps,
-  resolvePath,
   useLocation,
   useResolvedPath,
 } from 'react-router-dom';
@@ -49,6 +46,7 @@ import {
 import { SidebarSubmenu } from './SidebarSubmenu';
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import { SidebarSubmenuItemProps, SidebarSubmenuProps } from '.';
 
 export type SidebarItemClassKey =
   | 'root'
@@ -84,7 +82,7 @@ const useStyles = makeStyles<BackstageTheme>(
       buttonItem: {
         background: 'none',
         border: 'none',
-        width: 'auto',
+        width: '100%',
         margin: 0,
         padding: 0,
         textAlign: 'inherit',
@@ -152,11 +150,7 @@ const useStyles = makeStyles<BackstageTheme>(
         justifyContent: 'center',
       },
       submenuArrow: {
-        position: 'absolute',
-        right: 0,
-        [theme.breakpoints.down('xs')]: {
-          right: theme.spacing(2),
-        },
+        display: 'flex',
       },
       selected: {
         '&$root': {
@@ -217,152 +211,49 @@ const useStyles = makeStyles<BackstageTheme>(
           textAlign: 'center',
           marginRight: theme.spacing(1),
         },
-        '&$closed': {
-          width: drawerWidthClosed,
-        },
-        '& $closedItemIcon': {
-          paddingRight: selectedIndicatorWidth,
-        },
-        selected: {
-          '&$root': {
-            borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
-            color: theme.palette.navigation.selectedColor,
-          },
-          '&$closed': {
-            width: drawerWidthClosed - selectedIndicatorWidth,
-          },
-          '& $iconContainer': {
-            marginLeft: -selectedIndicatorWidth,
-          },
-        },
       },
     };
   },
   { name: 'BackstageSidebarItem' },
 );
 
-function isSidebarItemWithSubmenuActive(
-  submenu: ReactNode,
+const useLocationMatch = (
+  submenu: React.ReactElement<SidebarSubmenuProps>,
   locationPathname: string,
-) {
-  // Item is active if any of submenu items have active paths
-  const toPathnames: string[] = [];
-  let isActive = false;
-  let submenuItems: ReactNode;
-  Children.forEach(submenu, element => {
-    if (!React.isValidElement(element)) return;
-    submenuItems = element.props.children;
-  });
-  Children.forEach(submenuItems, element => {
-    if (!React.isValidElement(element)) return;
-    if (element.props.dropdownItems) {
-      element.props.dropdownItems.map((item: { to: string }) =>
-        toPathnames.push(item.to),
-      );
-    } else if (element.props.to) {
-      toPathnames.push(element.props.to);
-    }
-  });
-  isActive = toPathnames.some(to => {
-    const toPathname = resolvePath(to);
-    return locationPathname === toPathname.pathname;
-  });
-  return isActive;
-}
-
-const SidebarItemWithSubmenu = ({
-  text,
-  hasNotifications = false,
-  icon: Icon,
-  children,
-}: PropsWithChildren<SidebarItemWithSubmenuProps>) => {
-  const classes = useStyles();
-  const [isHoveredOn, setIsHoveredOn] = useState(false);
-  const { pathname: locationPathname } = useLocation();
-  const isActive = isSidebarItemWithSubmenuActive(children, locationPathname);
-  const isSmallScreen = useMediaQuery<BackstageTheme>((theme: BackstageTheme) =>
-    theme.breakpoints.down('sm'),
+): boolean =>
+  // Evaluates the routes of the SubmenuItems & nested DropdownItems.
+  // The reeveluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization
+  useElementFilter(
+    submenu.props.children,
+    elements => {
+      let isLocationMatch = false;
+      elements
+        .getElements()
+        .forEach(
+          ({
+            props: { to, dropdownItems },
+          }: {
+            props: Partial<SidebarSubmenuItemProps>;
+          }) => {
+            if (!isLocationMatch) {
+              if (dropdownItems?.length) {
+                dropdownItems.forEach(
+                  ({ to: _to }) =>
+                    (isLocationMatch =
+                      isLocationMatch || locationPathname.includes(_to)),
+                );
+                return;
+              }
+              if (to) {
+                isLocationMatch = locationPathname.includes(to);
+              }
+            }
+          },
+        );
+      return isLocationMatch;
+    },
+    [locationPathname],
   );
-
-  const handleMouseEnter = () => {
-    setIsHoveredOn(true);
-  };
-  const handleMouseLeave = () => {
-    setIsHoveredOn(false);
-  };
-
-  const { isOpen } = useContext(SidebarContext);
-  const itemIcon = (
-    <Badge
-      color="secondary"
-      variant="dot"
-      overlap="circular"
-      className={isOpen ? '' : classes.closedItemIcon}
-      invisible={!hasNotifications}
-    >
-      <Icon fontSize="small" />
-    </Badge>
-  );
-  const openContent = (
-    <>
-      <div data-testid="login-button" className={classes.iconContainer}>
-        {itemIcon}
-      </div>
-      {text && (
-        <Typography variant="subtitle2" className={classes.label}>
-          {text}
-        </Typography>
-      )}
-      <div className={classes.secondaryAction}>{}</div>
-    </>
-  );
-
-  const arrowIcon = () => {
-    if (isSmallScreen) {
-      return isHoveredOn ? (
-        <ArrowDropUp fontSize="small" className={classes.submenuArrow} />
-      ) : (
-        <ArrowDropDown fontSize="small" className={classes.submenuArrow} />
-      );
-    }
-    return (
-      !isHoveredOn && (
-        <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
-      )
-    );
-  };
-
-  return (
-    <SidebarItemWithSubmenuContext.Provider
-      value={{
-        isHoveredOn,
-        setIsHoveredOn,
-      }}
-    >
-      <div
-        onMouseLeave={handleMouseLeave}
-        onTouchStart={isHoveredOn ? handleMouseLeave : handleMouseEnter}
-        onMouseEnter={handleMouseEnter}
-        className={classnames(isHoveredOn && classes.highlighted)}
-      >
-        <div
-          data-testid="item-with-submenu"
-          className={classnames(
-            classes.root,
-            isOpen ? classes.open : classes.closed,
-            isActive && classes.selected,
-            classes.highlightable,
-            isHoveredOn && classes.highlighted,
-          )}
-        >
-          {isOpen ? openContent : itemIcon}
-          {arrowIcon()}
-        </div>
-        {isHoveredOn && children}
-      </div>
-    </SidebarItemWithSubmenuContext.Provider>
-  );
-};
 
 type SidebarItemBaseProps = {
   icon: IconComponent;
@@ -455,7 +346,7 @@ export const WorkaroundNavLink = React.forwardRef<
   );
 });
 
-export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
+const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
   const {
     icon: Icon,
     text,
@@ -484,8 +375,6 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     </Badge>
   );
 
-  const closedContent = itemIcon;
-
   const openContent = (
     <>
       <div data-testid="login-button" className={classes.iconContainer}>
@@ -500,7 +389,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     </>
   );
 
-  const content = isOpen ? openContent : closedContent;
+  const content = isOpen ? openContent : itemIcon;
 
   const childProps = {
     onClick,
@@ -512,23 +401,6 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       { [classes.highlightable]: !disableHighlight },
     ),
   };
-
-  // Filter children for SidebarSubmenu components
-  const [submenu] = useElementFilter(children, elements =>
-    elements.getElements().filter(child => child.type === SidebarSubmenu),
-  );
-
-  if (submenu) {
-    return (
-      <SidebarItemWithSubmenu
-        text={text}
-        icon={Icon}
-        hasNotifications={hasNotifications}
-      >
-        {submenu}
-      </SidebarItemWithSubmenu>
-    );
-  }
 
   if (isButtonItem(props)) {
     return (
@@ -550,6 +422,85 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       {content}
     </WorkaroundNavLink>
   );
+});
+
+const SidebarItemWithSubmenu = ({
+  children,
+  ...props
+}: SidebarItemBaseProps & {
+  children: React.ReactElement<SidebarSubmenuProps>;
+}) => {
+  const classes = useStyles();
+  const [isHoveredOn, setIsHoveredOn] = useState(false);
+  const { pathname: locationPathname } = useLocation();
+  const isActive = useLocationMatch(children, locationPathname);
+  const isSmallScreen = useMediaQuery<BackstageTheme>((theme: BackstageTheme) =>
+    theme.breakpoints.down('sm'),
+  );
+
+  const handleMouseEnter = () => {
+    setIsHoveredOn(true);
+  };
+  const handleMouseLeave = () => {
+    setIsHoveredOn(false);
+  };
+
+  const arrowIcon = () => {
+    if (isSmallScreen) {
+      return isHoveredOn ? (
+        <ArrowDropUp fontSize="small" className={classes.submenuArrow} />
+      ) : (
+        <ArrowDropDown fontSize="small" className={classes.submenuArrow} />
+      );
+    }
+    return (
+      !isHoveredOn && (
+        <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
+      )
+    );
+  };
+
+  return (
+    <SidebarItemWithSubmenuContext.Provider
+      value={{
+        isHoveredOn,
+        setIsHoveredOn,
+      }}
+    >
+      <div
+        data-testid="item-with-submenu"
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={isHoveredOn ? handleMouseLeave : handleMouseEnter}
+        onMouseEnter={handleMouseEnter}
+        className={classnames(isHoveredOn && classes.highlighted)}
+      >
+        <SidebarItemBase
+          className={isActive ? classes.selected : ''}
+          {...props}
+        >
+          {arrowIcon()}
+        </SidebarItemBase>
+        {isHoveredOn && children}
+      </div>
+    </SidebarItemWithSubmenuContext.Provider>
+  );
+};
+
+export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
+  // Filter children for SidebarSubmenu components
+  const [submenu] = useElementFilter(props.children, elements =>
+    elements.getElements().filter(child => child.type === SidebarSubmenu),
+  );
+
+  if (submenu) {
+    return (
+      <SidebarItemWithSubmenu {...props}>
+        {submenu as React.ReactElement<SidebarSubmenuProps>}
+      </SidebarItemWithSubmenu>
+    );
+  }
+
+  return <SidebarItemBase {...props} ref={ref} />;
 });
 
 type SidebarSearchFieldProps = {

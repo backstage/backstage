@@ -17,7 +17,13 @@
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import classnames from 'classnames';
-import React, { useState, useContext, PropsWithChildren, useRef } from 'react';
+import React, {
+  useState,
+  useContext,
+  PropsWithChildren,
+  useRef,
+  useEffect,
+} from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
@@ -93,6 +99,7 @@ type Props = {
 const DesktopSidebar = ({
   openDelayMs = sidebarConfig.defaultOpenDelayMs,
   closeDelayMs = sidebarConfig.defaultCloseDelayMs,
+  disableExpandOnHover,
   children,
 }: PropsWithChildren<Props>) => {
   const classes = useStyles();
@@ -103,8 +110,10 @@ const DesktopSidebar = ({
   const hoverTimerRef = useRef<number>();
   const { isPinned } = useContext(SidebarPinStateContext);
 
+  useEffect(() => clearTimeout(hoverTimerRef.current));
+
   const handleOpen = () => {
-    if (isPinned) {
+    if (isPinned || disableExpandOnHover) {
       return;
     }
     if (hoverTimerRef.current) {
@@ -122,7 +131,7 @@ const DesktopSidebar = ({
   };
 
   const handleClose = () => {
-    if (isPinned) {
+    if (isPinned || disableExpandOnHover) {
       return;
     }
     if (hoverTimerRef.current) {
@@ -141,7 +150,6 @@ const DesktopSidebar = ({
 
   const isOpen = (state === State.Open && !isSmallScreen) || isPinned;
 
-  // TODO: Generalize
   const setOpen = (open: boolean) => {
     if (open) {
       handleOpen();
@@ -173,7 +181,11 @@ const DesktopSidebar = ({
   );
 };
 
-export const Sidebar = ({ children }: React.PropsWithChildren<Props>) => {
+export const Sidebar = ({
+  children,
+  openDelayMs,
+  closeDelayMs,
+}: React.PropsWithChildren<Props>) => {
   const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('xs'),
   );
@@ -181,7 +193,9 @@ export const Sidebar = ({ children }: React.PropsWithChildren<Props>) => {
   return isMobileScreen ? (
     <MobileSidebar>{children}</MobileSidebar>
   ) : (
-    <DesktopSidebar>{children}</DesktopSidebar>
+    <DesktopSidebar openDelayMs={openDelayMs} closeDelayMs={closeDelayMs}>
+      {children}
+    </DesktopSidebar>
   );
 };
 

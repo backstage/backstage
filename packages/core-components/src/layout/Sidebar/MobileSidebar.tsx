@@ -118,11 +118,7 @@ export const MobileSidebar = ({ children }: React.PropsWithChildren<{}>) => {
 
   // Filter children for SidebarGroups
   let sidebarGroups = useElementFilter(children, elements =>
-    elements
-      .getElements()
-      .filter(
-        child => React.isValidElement(child) && child.type === SidebarGroup,
-      ),
+    elements.getElements().filter(child => child.type === SidebarGroup),
   );
 
   if (!children) {
@@ -132,7 +128,9 @@ export const MobileSidebar = ({ children }: React.PropsWithChildren<{}>) => {
     // If Sidebar has no SidebarGroup as a children a default
     // SidebarGroup with the complete Sidebar content will be created
     sidebarGroups.push(
-      <SidebarGroup icon={<MenuIcon />}>{children}</SidebarGroup>,
+      <SidebarGroup key="default_menu" icon={<MenuIcon />}>
+        {children}
+      </SidebarGroup>,
     );
   } else {
     // Sort SidebarGroups for the given Priority

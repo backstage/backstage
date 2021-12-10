@@ -77,7 +77,9 @@ const useStyles = (props: { left: number }) =>
       fontWeight: 500,
       color: '#FFF',
       padding: 20,
-      display: 'none',
+      [theme.breakpoints.down('xs')]: {
+        display: 'none',
+      },
     },
   }));
 
