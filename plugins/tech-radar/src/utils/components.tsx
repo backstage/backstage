@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 import React from 'react';
+import { Link } from '@backstage/core-components';
 
 type WithLinkProps = {
   url?: string;
+  urlTarget?: string;
   className: string;
   children: React.ReactNode;
 };
 
 export const WithLink = ({
   url,
+  urlTarget,
   className,
   children,
 }: WithLinkProps): JSX.Element =>
   url ? (
-    <a href={url} className={className}>
+    <Link target={urlTarget} className={className} to={url}>
       {children}
-    </a>
+    </Link>
   ) : (
     <>{children}</>
   );

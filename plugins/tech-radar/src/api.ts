@@ -116,7 +116,7 @@ export interface RadarEntry {
    *
    * Empty is the default and the value possible are the same as W3C definition
    */
-   urlTarget: string;
+   urlTarget?: string;
   /**
    * History of the Entry moving through {@link RadarRing}
    */
