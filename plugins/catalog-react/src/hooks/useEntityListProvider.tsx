@@ -22,7 +22,6 @@ import React, {
   PropsWithChildren,
   useCallback,
   useContext,
-  useMemo,
   useState,
 } from 'react';
 import { useAsyncFn, useDebounce, useMountedState } from 'react-use';
@@ -212,18 +211,15 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
     [],
   );
 
-  const value = useMemo(
-    () => ({
-      filters: outputState.appliedFilters,
-      entities: outputState.entities,
-      backendEntities: outputState.backendEntities,
-      updateFilters,
-      queryParameters: outputState.queryParameters,
-      loading,
-      error,
-    }),
-    [outputState, updateFilters, loading, error],
-  );
+  const value = {
+    filters: outputState.appliedFilters,
+    entities: outputState.entities,
+    backendEntities: outputState.backendEntities,
+    updateFilters,
+    queryParameters: outputState.queryParameters,
+    loading,
+    error,
+  };
 
   return (
     <EntityListContext.Provider value={value}>
