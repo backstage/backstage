@@ -129,7 +129,7 @@ export async function loadConfig(
   if (remote === undefined) {
     if (configUrls.length > 0) {
       throw new Error(
-        `Please make sure you are passing the remote option when loading the configuration. See https://backstage.io/docs/conf/writing#configuration-files for detailed info.`,
+        `Please make sure you are passing the remote option when loading remote configurations. See https://backstage.io/docs/conf/writing#configuration-files for detailed info.`,
       );
     }
   } else if (remote.reloadIntervalSeconds <= 0) {
