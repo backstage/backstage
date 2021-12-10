@@ -185,6 +185,7 @@ export const Sidebar = ({
   children,
   openDelayMs,
   closeDelayMs,
+  disableExpandOnHover,
 }: React.PropsWithChildren<Props>) => {
   const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('xs'),
@@ -193,7 +194,11 @@ export const Sidebar = ({
   return isMobileScreen ? (
     <MobileSidebar>{children}</MobileSidebar>
   ) : (
-    <DesktopSidebar openDelayMs={openDelayMs} closeDelayMs={closeDelayMs}>
+    <DesktopSidebar
+      openDelayMs={openDelayMs}
+      closeDelayMs={closeDelayMs}
+      disableExpandOnHover={disableExpandOnHover}
+    >
       {children}
     </DesktopSidebar>
   );
