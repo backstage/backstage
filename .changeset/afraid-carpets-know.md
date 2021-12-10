@@ -2,4 +2,4 @@
 '@backstage/plugin-search': patch
 ---
 
-Added Overridable Icon for SidebarSearch Component
+Add Optional Props to Override Icon for SidebarSearch Component
