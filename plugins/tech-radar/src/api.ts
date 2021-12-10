@@ -110,6 +110,14 @@ export interface RadarEntry {
    */
   url: string;
   /**
+   * Define the behaviour of the click defined on the url
+   *
+   * @remarks
+   *
+   * Empty is the default and the value possible are the same as W3C definition
+   */
+   urlTarget: string;
+  /**
    * History of the Entry moving through {@link RadarRing}
    */
   timeline: Array<RadarEntrySnapshot>;

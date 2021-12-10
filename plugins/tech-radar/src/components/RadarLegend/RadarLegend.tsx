@@ -116,12 +116,14 @@ const RadarLegend = (props: Props): JSX.Element => {
 
   type RadarLegendLinkProps = {
     url?: string;
+    urlTarget?: string;
     description?: string;
     title?: string;
   };
 
   const RadarLegendLink = ({
     url,
+    urlTarget,
     description,
     title,
   }: RadarLegendLinkProps) => {
@@ -157,6 +159,7 @@ const RadarLegend = (props: Props): JSX.Element => {
               onClose={handleClose}
               title={title ? title : 'no title'}
               url={url}
+              urlTarget={urlTarget}
               description={description}
             />
           )}
@@ -164,7 +167,7 @@ const RadarLegend = (props: Props): JSX.Element => {
       );
     }
     return (
-      <WithLink url={url} className={classes.entryLink}>
+      <WithLink url={url} className={classes.entryLink} urlTarget={urlTarget}>
         <span className={classes.entry}>{title}</span>
       </WithLink>
     );
@@ -196,6 +199,7 @@ const RadarLegend = (props: Props): JSX.Element => {
               >
                 <RadarLegendLink
                   url={entry.url}
+                  urlTarget={entry.urlTarget}
                   title={entry.title}
                   description={entry.description}
                 />

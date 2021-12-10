@@ -25,6 +25,7 @@ export type Props = {
   value: number;
   color: string;
   url?: string;
+  urlTarget?: string;
   moved?: number;
   description?: string;
   title?: string;
@@ -70,6 +71,7 @@ const RadarEntry = (props: Props): JSX.Element => {
     title,
     color,
     url,
+    urlTarget,
     value,
     x,
     y,
@@ -123,7 +125,7 @@ const RadarEntry = (props: Props): JSX.Element => {
           {blip}
         </a>
       ) : (
-        <WithLink url={url} className={classes.link}>
+        <WithLink url={url} className={classes.link} urlTarget={urlTarget}>
           {blip}
         </WithLink>
       )}

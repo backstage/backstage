@@ -27,15 +27,20 @@ export type Props = {
   title: string;
   description: string;
   url?: string;
+  urlTarget?: string;
 };
 
 const RadarDescription = (props: Props): JSX.Element => {
-  const { open, onClose, title, description, url } = props;
+  const { open, onClose, title, description, url, urlTarget } = props;
 
   const handleClick = () => {
     onClose();
     if (url) {
-      window.location.href = url;
+      if (urlTarget) {
+        window.open(url, urlTarget);
+      } else {
+        window.location.href = url;
+      }
     }
   };
 

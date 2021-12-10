@@ -61,6 +61,8 @@ export type Entry = {
   title: string;
   // An URL to a longer description as to why this entry is where it is
   url?: string;
+  // The URL target definition as W3C definition
+  urlTarget?: String;
   // How this entry has recently moved; -1 for "down", +1 for "up", 0 for not moved
   moved?: MovedState;
   // Most recent description to display in the UI
