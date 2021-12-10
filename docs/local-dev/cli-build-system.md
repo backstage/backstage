@@ -1,5 +1,5 @@
 ---
-id: builds-system
+id: cli-build-system
 title: Build System
 description: A deep dive into the Backstage build system
 ---
