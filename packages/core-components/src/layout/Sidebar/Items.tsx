@@ -47,6 +47,7 @@ import {
 } from './config';
 import { SidebarSubmenu } from './SidebarSubmenu';
 import { isLocationMatch } from './utils';
+import { Location } from 'history';
 
 export type SidebarItemClassKey =
   | 'root'
@@ -173,7 +174,7 @@ const useStyles = makeStyles<BackstageTheme>(
 
 function isSidebarItemWithSubmenuActive(
   submenu: ReactNode,
-  currentLocation: any,
+  currentLocation: Location,
 ) {
   // Item is active if any of submenu items have active paths
   const toPathnames: string[] = [];
