@@ -161,9 +161,10 @@ export function SelectComponent(props: SelectProps) {
   };
 
   const handleClick = (event: React.ChangeEvent<any>) => {
-    // if (disabled) {
-    //   return event.preventDefault();
-    // }
+    if (disabled) {
+      event.preventDefault();
+      return;
+    }
     setOpen(previous => {
       if (multiple && !(event.target instanceof HTMLElement)) {
         return true;
