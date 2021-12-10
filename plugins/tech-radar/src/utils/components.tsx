@@ -29,7 +29,7 @@ export const WithLink = ({
   className,
   children,
 }: WithLinkProps): JSX.Element =>
-  url ? (
+  (url && url!== '#') ? (
     <Link target={urlTarget} className={className} to={url}>
       {children}
     </Link>

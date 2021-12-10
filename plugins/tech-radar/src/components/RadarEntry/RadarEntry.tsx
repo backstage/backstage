@@ -110,6 +110,7 @@ const RadarEntry = (props: Props): JSX.Element => {
           title={title ? title : 'no title'}
           description={description ? description : 'no description'}
           url={url}
+          urlTarget={urlTarget}
         />
       )}
       {description ? (

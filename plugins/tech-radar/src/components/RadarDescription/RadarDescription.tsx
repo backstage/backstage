@@ -35,12 +35,12 @@ const RadarDescription = (props: Props): JSX.Element => {
 
   const handleClick = () => {
     onClose();
-    if (url) {
-      if (urlTarget) {
-        window.open(url, urlTarget);
-      } else {
-        window.location.href = url;
-      }
+    if (urlTarget) {
+      console.log('with target' + urlTarget)
+      window.open(url, urlTarget);
+    } else {
+      console.log('no target' + urlTarget)
+      window.location.href = url;
     }
   };
 
@@ -52,13 +52,12 @@ const RadarDescription = (props: Props): JSX.Element => {
       <DialogContent dividers>
         <MarkdownContent content={description} />
       </DialogContent>
-      {url && (
+      {(url && url !== '#') && (
         <DialogActions>
           <Button
             onClick={handleClick}
             color="primary"
             startIcon={<LinkIcon />}
-            href={url}
           >
             LEARN MORE
           </Button>

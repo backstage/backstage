@@ -107,14 +107,14 @@ entries.push({
     {
       moved: 0,
       ringId: 'use',
-      date: new Date('2020-08-06'),
+      date: new Date('2020-08-06')
     },
   ],
   url: '#',
   key: 'code-reviews',
   id: 'code-reviews',
   title: 'Code Reviews',
-  quadrant: 'process',
+  quadrant: 'process'
 });
 entries.push({
   timeline: [
@@ -162,10 +162,11 @@ entries.push({
     {
       ringId: 'use',
       date: new Date('2020-08-06'),
-      description: 'test description'
+      description: 'description'
     },
   ],
-  url: '#',
+  url: 'https://github.com',
+  urlTarget: '_blank',
   key: 'github-actions',
   id: 'github-actions',
   title: 'GitHub Actions',
