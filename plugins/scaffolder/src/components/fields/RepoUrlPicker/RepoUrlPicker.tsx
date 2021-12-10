@@ -20,13 +20,13 @@ import {
   SelectItem,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { FieldProps } from '@rjsf/core';
+import { scaffolderApiRef } from '../../../api';
 import {
   scmIntegrationsApiRef,
   scmAuthApiRef,
 } from '@backstage/integration-react';
-import React, { useCallback, useEffect } from 'react';
-import { FieldProps } from '@rjsf/core';
-import { scaffolderApiRef } from '../../../api';
 import { useAsync } from 'react-use';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
@@ -93,22 +93,44 @@ function serializeFormData(data: {
   return `${data.host}?${params.toString()}`;
 }
 
+interface CustomFieldExtension<ReturnValue, UiOptions extends {} = {}>
+  extends FieldProps<ReturnValue> {
+  uiSchema: {
+    'ui:options'?: UiOptions;
+  };
+}
+
+export interface RepoPickerUiOptions {
+  allowedHosts?: string[];
+  allowedOwners?: string[];
+  requestUserCredentials?: {
+    resultKey: string;
+    additionalScopes?: {
+      github?: string[];
+      gitlab?: string[];
+      bitbucket?: string[];
+      azure?: string[];
+    };
+  };
+}
+
 export const RepoUrlPicker = ({
   onChange,
   uiSchema,
   rawErrors,
   formData,
-}: FieldProps<string>) => {
+}: CustomFieldExtension<string, RepoPickerUiOptions>) => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const integrationApi = useApi(scmIntegrationsApiRef);
   const { setSecret } = useSecretsContext();
   const scmAuthApi = useApi(scmAuthApiRef);
 
-  const allowedHosts = uiSchema['ui:options']?.allowedHosts as string[];
-  const allowedOwners = uiSchema['ui:options']?.allowedOwners as string[];
-
+  const options = useMemo(() => uiSchema['ui:options'] ?? {}, [uiSchema]);
+  const { allowedHosts, allowedOwners, requestUserCredentials } = options;
   const { value: integrations, loading } = useAsync(async () => {
-    return await scaffolderApi.getIntegrationsList({ allowedHosts });
+    return await scaffolderApi.getIntegrationsList({
+      allowedHosts: allowedHosts ?? [],
+    });
   });
 
   const { host, owner, repo, organization, workspace, project } = splitFormData(
@@ -117,23 +139,23 @@ export const RepoUrlPicker = ({
   );
 
   const onBlur = useCallback(() => {
-    const withCredentials = uiSchema['ui:options']?.withCredentials as {
-      key: string;
-    };
-
     const check = async () => {
-      if (withCredentials) {
+      if (requestUserCredentials) {
         if (host && owner && repo) {
           const token = await scmAuthApi.getCredentials({
             url: `https://${host}/${owner}/${repo}`,
+            additionalScope: {
+              repoWrite: true,
+              customScopes: requestUserCredentials.additionalScopes,
+            },
           });
 
-          setSecret({ [withCredentials.key]: token.token });
+          setSecret({ [requestUserCredentials.resultKey]: token.token });
         }
       }
     };
     check();
-  }, [host, owner, repo, scmAuthApi, setSecret, uiSchema]);
+  }, [host, owner, repo, scmAuthApi, setSecret, requestUserCredentials]);
 
   const updateHost = useCallback(
     (value: SelectedItems) => {

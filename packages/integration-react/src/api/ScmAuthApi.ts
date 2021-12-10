@@ -38,7 +38,18 @@ export interface ScmAuthTokenOptions extends AuthRequestOptions {
    *
    * Read access to user, organization, and repositories is always included.
    */
+
   additionalScope?: {
+    /**
+     * Allow an arbitrary list of scopes provided from the user
+     * to request from the provider.
+     */
+    customScopes?: {
+      github?: string[];
+      azure?: string[];
+      bitbucket?: string[];
+      gitlab?: string[];
+    };
     /**
      * Requests access to be able to write repository content, including
      * the ability to create things like issues and pull requests.
