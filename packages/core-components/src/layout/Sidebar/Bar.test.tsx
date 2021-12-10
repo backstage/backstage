@@ -33,7 +33,7 @@ async function renderScalableSidebar() {
     <SidebarPinStateContext.Provider
       value={{ isPinned: false, toggleSidebarPinState: () => {} }}
     >
-      <Sidebar disableExpandOnHover>
+      <Sidebar>
         <SidebarSearchField onSearch={() => {}} to="/search" />
         <SidebarItem icon={MenuBookIcon} onClick={() => {}} text="Catalog">
           <SidebarSubmenu title="Catalog">
