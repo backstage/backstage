@@ -81,6 +81,14 @@ export class LunrSearchEngine implements SearchEngine {
 
         if (filters) {
           Object.entries(filters).forEach(([field, fieldValue]) => {
+            // or
+            q.term(
+              'kind:component +relations.ownedBy:claim1 +relations.ownedBy:claim2',
+              {
+                presence: lunr.Query.presence.REQUIRED,
+              },
+            );
+
             if (!q.allFields.includes(field)) {
               // Throw for unknown field, as this will be a non match
               throw new Error(`unrecognised field ${field}`);

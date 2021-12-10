@@ -31,6 +31,9 @@ import {
   CatalogClient,
   CatalogEntitiesRequest,
 } from '@backstage/catalog-client';
+import assert from 'assert';
+import { EntitiesSearchFilter } from '../catalog';
+import { JsonObject } from '@backstage/types';
 
 export interface CatalogEntityDocument extends IndexableDocument {
   componentType: string;
@@ -39,6 +42,15 @@ export interface CatalogEntityDocument extends IndexableDocument {
   lifecycle: string;
   owner: string;
 }
+
+const entityToDocumentField: Record<string, string> = {
+  'spec.type': 'componentType',
+  'metadata.namespace': 'namespace',
+  kind: 'kind',
+  'spec.lifecycle': 'lifecycle',
+  'spec.owner': 'owner',
+  'relations.ownedBy': 'relations.ownedBy',
+};
 
 export class DefaultCatalogCollator implements DocumentCollator {
   protected discovery: PluginEndpointDiscovery;
@@ -137,5 +149,19 @@ export class DefaultCatalogCollator implements DocumentCollator {
         },
       };
     });
+  }
+
+  transformQuery(query: EntitiesSearchFilter): JsonObject {
+    const documentField = entityToDocumentField[query.key];
+
+    if (!documentField) {
+      throw new Error(
+        `CatalogDocument field is required for authorization: ${query.key}`,
+      );
+    }
+
+    return {
+      [documentField]: query.values,
+    };
   }
 }
