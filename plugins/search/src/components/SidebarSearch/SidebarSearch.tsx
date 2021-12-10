@@ -21,7 +21,7 @@ import { rootRouteRef } from '../../plugin';
 import { SidebarSearchField } from '@backstage/core-components';
 import { useRouteRef, IconComponent } from '@backstage/core-plugin-api';
 
-type SidebarSearchProps = {
+export type SidebarSearchProps = {
   icon?: IconComponent;
 };
 

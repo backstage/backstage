@@ -8,6 +8,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
 import { default as React_2 } from 'react';
@@ -210,10 +211,11 @@ export const SearchType: ({
   defaultValue,
 }: SearchTypeProps) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "SidebarSearchProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SidebarSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SidebarSearch: () => JSX.Element;
+export const SidebarSearch: (props: SidebarSearchProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SidebarSearchModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
