@@ -21,9 +21,12 @@ import {
 import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { FieldProps } from '@rjsf/core';
+import { FieldProps, UiSchema } from '@rjsf/core';
 import React from 'react';
 import { useAsync } from 'react-use';
+
+export const allowArbitraryValues = (uiSchema: UiSchema): boolean =>
+  (uiSchema['ui:options']?.allowArbitraryValues as boolean) ?? true;
 
 export const EntityPicker = ({
   onChange,
@@ -65,7 +68,7 @@ export const EntityPicker = ({
         onChange={onSelect}
         options={entityRefs || []}
         autoSelect
-        freeSolo
+        freeSolo={allowArbitraryValues(uiSchema)}
         renderInput={params => (
           <TextField
             {...params}
