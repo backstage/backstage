@@ -33,16 +33,16 @@ some code should always be as smooth as possible.
 In addition, there are a number of hard and soft requirements that we want to
 support:
 
-- Monorepos - The build system should support multi-package setups.
-- Publishing - It should be possible to build and publish individual packages.
+- Monorepos - The build system should support multi-package setups
+- Publishing - It should be possible to build and publish individual packages
 - Scale - It should scale to hundreds of large packages without excessive wait
-  times.
-- Reloads - The development flow should support quick on-save hot reloads.
-- Simple - Usage should simple, just a single command if possible.
+  times
+- Reloads - The development flow should support quick on-save hot reloads
+- Simple - Usage should simple, just a single command if possible
 - Universal - Development towards both web applications, isomorphic packages,
-  and Node.js.
+  and Node.js
 - Editors - Things like linting and type checking should work when browsing the
-  source code.
+  source code
 
 During the design of the build system this collection of requirements was not
 something that was supported by existing tools like for example `react-scripts`.
@@ -54,14 +54,14 @@ some specialized setups, as well as the scaling requirements.
 We can divide the development flow within Backstage into a couple of different
 steps:
 
-- **Formatting** - Applies a consistent formatting to your source code.
+- **Formatting** - Applies a consistent formatting to your source code
 - **Linting** - Makes sure your code is free from problems that can be detected
-  automatically.
-- **Type Checking** - Validates your TypeScript type annotations.
-- **Testing** - Runs test suites towards your code to catch issues early.
-- **Building** - Compiles the source code in an individual package.
-- **Bundling** - Compiles and combines a package and all of its dependencies
-  into a bundle.
+  automatically
+- **Type Checking** - Verifies that TypeScript types are valid
+- **Testing** - Runs test suites towards your code to catch issues early
+- **Building** - Compiles the source code in an individual package
+- **Bundling** - Combines a package and all of its dependencies into a
+  production-ready bundle
 
 These steps are generally kept isolated form each other, with each step focusing
 on its specific task. For example, we do not do linting or type checking
@@ -115,4 +115,41 @@ order to make this setup work, the entrypoint of each package needs to point to
 the TypeScript source files, which in turn cases some complications during
 publishing that we'll talk about below.
 
-The type checking is generally configured to be incremental
+The type checking is generally configured to be incremental for local
+development, with the output stored in the `dist-types` folder in the repo root.
+This provides a significant speedup when running `tsc` multiple times locally,
+but it does make the initial run a little bit slower. Because of the slower
+initial run we disable incremental type checking in the `tcs:full` Yarn script
+that is included by default in any Backstage app and is intended for use in CI.
+
+Another optimization that is used by default is to skip the checking of library
+types, this means that TypeScript will not verify that types within
+`node_modules` are sound. Disabling this check significantly speeds up type
+checking, but in the end it is still an important check that should not be
+completely omitted, it's just very unlikely to catch issues that are introduced
+during local development. What we opt for instead is to include the check in CI
+through the `tsc:full` script, which will run a full type check, including
+`node_modules`.
+
+For the two reasons mentioned above, it is **highly** recommended to use the
+`tsc:full` script to run type checking in CI.
+
+### Testing
+
+As mentioned above, the Backstage CLI uses [Jest](https://jestjs.io/), which is
+a JavaScript test framework that covers both test execution and assertions. Jest
+executes all tests in Node.js, including frontend browser code. The trick it
+uses is to execute the tests in a Node.js VM using various predefined
+environments, such as one based on [`jsdom`](https://github.com/jsdom/jsdom)
+that helps mimic browser APIs and behavior.
+
+The Backstage CLI has its own command that helps execute tests,
+`backstage-cli test`, as well as it's own configuration at
+`@backstage/cli/config/jest.js`. The command is a relatively thin wrapper around
+running `jest` directly. Its main responsibility is to make sure the included
+configuration is used, as well setting the `NODE_ENV` and `TZ` environment
+variables, and provided some sane default flags like `--watch` if executed
+within a Git repository.
+
+The by far biggest amount of work is done by the Jest configuration included
+with the Backstage CLI. It both takes care of providing a default configuration
