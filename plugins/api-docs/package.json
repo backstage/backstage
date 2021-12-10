@@ -39,7 +39,7 @@
     "@backstage/theme": "^0.2.14",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.60",
     "graphiql": "^1.5.12",
     "graphql": "^16.0.0",
     "isomorphic-form-data": "^2.0.0",
