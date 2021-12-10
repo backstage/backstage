@@ -20,6 +20,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { Button, DialogActions, DialogContent } from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
 import { MarkdownContent } from '@backstage/core-components';
+import { isValidUrl } from '../../utils/components';
 
 export type Props = {
   open: boolean;
@@ -36,10 +37,8 @@ const RadarDescription = (props: Props): JSX.Element => {
   const handleClick = () => {
     onClose();
     if (urlTarget) {
-      console.log('with target' + urlTarget)
       window.open(url, urlTarget);
     } else {
-      console.log('no target' + urlTarget)
       window.location.href = url;
     }
   };
@@ -52,7 +51,7 @@ const RadarDescription = (props: Props): JSX.Element => {
       <DialogContent dividers>
         <MarkdownContent content={description} />
       </DialogContent>
-      {(url && url !== '#') && (
+      {isValidUrl(url) && (
         <DialogActions>
           <Button
             onClick={handleClick}

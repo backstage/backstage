@@ -29,10 +29,14 @@ export const WithLink = ({
   className,
   children,
 }: WithLinkProps): JSX.Element =>
-  (url && url!== '#') ? (
+  isValidUrl(url) ? (
     <Link target={urlTarget} className={className} to={url}>
       {children}
     </Link>
   ) : (
     <>{children}</>
   );
+
+export const isValidUrl = (url: String) => {
+  return (url && url !== '#' && url.length > 0)
+}
