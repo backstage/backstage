@@ -92,13 +92,7 @@ const useStyles = makeStyles(
       chip: {
         margin: 2,
       },
-
       checkbox: {},
-      select: {
-        '&:hover': {
-          cursor: 'not-allowed',
-        },
-      },
 
       root: {
         display: 'flex',
