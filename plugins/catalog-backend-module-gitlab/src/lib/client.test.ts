@@ -133,28 +133,23 @@ describe('GitLabClient', () => {
   });
 
   describe('pagedRequest', () => {
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+
     beforeEach(() => {
       // setup fake paginated endpoint with 4 pages each returning one item
       setupFakeFourPageURL(server, FAKE_PAGED_URL);
     });
 
     it('should provide immediate items within the page', async () => {
-      const client = new GitLabClient({
-        config: MOCK_CONFIG,
-        logger: getVoidLogger(),
-      });
-
       const { items } = await client.pagedRequest(FAKE_PAGED_ENDPOINT);
       // fake page contains exactly one item
       expect(items).toHaveLength(1);
     });
 
     it('should request items for a given page number', async () => {
-      const client = new GitLabClient({
-        config: MOCK_CONFIG,
-        logger: getVoidLogger(),
-      });
-
       const requestedPage = 2;
       const { items, nextPage } = await client.pagedRequest(
         FAKE_PAGED_ENDPOINT,
@@ -169,11 +164,6 @@ describe('GitLabClient', () => {
     });
 
     it('should not have a next page if at the end', async () => {
-      const client = new GitLabClient({
-        config: MOCK_CONFIG,
-        logger: getVoidLogger(),
-      });
-
       const { items, nextPage } = await client.pagedRequest(
         FAKE_PAGED_ENDPOINT,
         {
@@ -194,26 +184,23 @@ describe('GitLabClient', () => {
         }),
       );
 
-      const client = new GitLabClient({
-        config: MOCK_CONFIG,
-        logger: getVoidLogger(),
-      });
       // non-200 status code should throw
       await expect(() => client.pagedRequest(endpoint)).rejects.toThrowError();
     });
   });
 
   describe('listProjects', () => {
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+
     it('should get projects for a given group', async () => {
       setupFakeGroupProjectsEndpoint(
         server,
         MOCK_CONFIG.apiBaseUrl,
         'test-group',
       );
-      const client = new GitLabClient({
-        config: MOCK_CONFIG,
-        logger: getVoidLogger(),
-      });
 
       const groupProjectsGen = paginated(
         options => client.listProjects(options),
@@ -223,15 +210,12 @@ describe('GitLabClient', () => {
       for await (const item of groupProjectsGen) {
         allItems.push(item);
       }
+
       expect(allItems).toHaveLength(1);
     });
 
     it('should get all projects for an instance', async () => {
       setupFakeInstanceProjectsEndpoint(server, MOCK_CONFIG.apiBaseUrl);
-      const client = new GitLabClient({
-        config: MOCK_CONFIG,
-        logger: getVoidLogger(),
-      });
 
       const instanceProjects = paginated(
         options => client.listProjects(options),
@@ -241,6 +225,7 @@ describe('GitLabClient', () => {
       for await (const project of instanceProjects) {
         allProjects.push(project);
       }
+
       expect(allProjects).toHaveLength(2);
     });
   });
