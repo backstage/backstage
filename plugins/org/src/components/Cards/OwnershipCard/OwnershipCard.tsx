@@ -128,10 +128,12 @@ const getQueryParams = (
 
 export const OwnershipCard = ({
   variant,
+  entityFilterKind
 }: {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
   variant?: InfoCardVariants;
+  entityFilterKind?: string[];
 }) => {
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
@@ -142,7 +144,7 @@ export const OwnershipCard = ({
     error,
     value: componentsWithCounters,
   } = useAsync(async () => {
-    const kinds = ['Component', 'API'];
+    const kinds = entityFilterKind ?? ['Component', 'API'];
     const entitiesList = await catalogApi.getEntities({
       filter: {
         kind: kinds,
