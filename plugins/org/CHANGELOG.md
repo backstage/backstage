@@ -1,5 +1,11 @@
 # @backstage/plugin-org
 
+## 0.3.31
+
+### Patch Changes
+
+- added `entityFilterKind` property for `EntityOwnershipCard` 
+
 ## 0.3.30
 
 ### Patch Changes
