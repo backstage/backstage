@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
+import fetch, { RequestInit, Response } from 'node-fetch';
+import { merge } from 'lodash';
 import {
   getGitLabRequestOptions,
   GitLabIntegrationConfig,
@@ -79,25 +80,8 @@ export class GitLabClient {
     endpoint: string,
     options?: ListOptions,
   ): Promise<PagedResponse<T>> {
-    const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
-    for (const key in options) {
-      if (options[key]) {
-        request.searchParams.append(key, options[key]!.toString());
-      }
-    }
-
-    this.logger.debug(`Fetching: ${request.toString()}`);
-    const response = await fetch(
-      request.toString(),
-      getGitLabRequestOptions(this.config),
-    );
-    if (!response.ok) {
-      throw new Error(
-        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
-          response.status
-        } - ${response.statusText}`,
-      );
-    }
+    const queryString = listOptionsToQueryString(options);
+    const response = await this.request(`${endpoint}${queryString}`);
     return response.json().then(items => {
       const nextPage = response.headers.get('x-next-page');
 
@@ -107,6 +91,61 @@ export class GitLabClient {
       } as PagedResponse<any>;
     });
   }
+
+  /**
+   * Performs a request using fetch with pre-configured GitLab options.
+   *
+   * This method can be used to perform authenticated calls to any GitLab
+   * endpoint against the configured GitLab instance. The underlying response is
+   * returned from fetch without modiication. Request options can be overriden
+   * as they are merged to produce the final values; passed in values take
+   * precedence.
+   *
+   * If a request response is not okay, this method will throw an error.
+   *
+   * @param endpoint - The request endpoint, e.g. /user.
+   * @param init - Optional request options which may set or override values.
+   */
+  async request(endpoint: string, init?: RequestInit): Promise<Response> {
+    const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
+
+    this.logger.debug(`Fetching: ${request.toString()}`);
+    const response = await fetch(
+      request.toString(),
+      merge(getGitLabRequestOptions(this.config), init),
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
+          response.status
+        } - ${response.statusText}`,
+      );
+    }
+
+    return response;
+  }
+}
+
+/**
+ * Converts ListOptions for request pagination to a query string.
+ *
+ * The ListOptions type contains fields which control offset based pagination
+ * used by GitLab's API. This function returns a string which may be appended to
+ * absolute or relative URLs. The returned value contains a leading `?` if the
+ * resulting query string is non-empty.
+ *
+ * @params options - The pagination ListOptions to convert.
+ */
+function listOptionsToQueryString(options?: ListOptions): string {
+  const search = new URLSearchParams();
+  for (const key in options) {
+    if (options[key]) {
+      search.append(key, options[key]!.toString());
+    }
+  }
+  const query = search.toString();
+  return query === '' ? '' : `?${query}`;
 }
 
 /**

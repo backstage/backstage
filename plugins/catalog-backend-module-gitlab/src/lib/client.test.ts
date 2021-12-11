@@ -244,6 +244,95 @@ describe('GitLabClient', () => {
       expect(allProjects).toHaveLength(2);
     });
   });
+
+  describe('request', () => {
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+
+    beforeEach(() => {
+      // endpoint which returns 401 if token does not match
+      server.use(
+        rest.get(
+          `${MOCK_CONFIG.apiBaseUrl}/protected-endpoint`,
+          (req, res, ctx) => {
+            return res(
+              ctx.status(
+                req.headers.get('private-token') === MOCK_CONFIG.token
+                  ? 200
+                  : 401,
+              ),
+              ctx.json({ data: 'protected' }),
+            );
+          },
+        ),
+      );
+    });
+
+    it('should return the response json', async () => {
+      // endpoint which returns a json object
+      server.use(
+        rest.get(`${MOCK_CONFIG.apiBaseUrl}/some-endpoint`, (_, res, ctx) => {
+          return res(ctx.json({ data: 'test-data' }));
+        }),
+      );
+
+      const response = await client.request('/some-endpoint', {});
+      await expect(response.json()).resolves.toEqual({ data: 'test-data' });
+    });
+
+    it('should set request options using gitlab config', async () => {
+      const response = await client.request('/protected-endpoint', {});
+      await expect(response.json()).resolves.toEqual({ data: 'protected' });
+    });
+
+    it('should override existing request options if provided', async () => {
+      await expect(
+        client.request('/protected-endpoint', {
+          headers: { 'private-token': 'another-value' },
+        }),
+      ).rejects.toThrow();
+    });
+
+    it('should extend request options with existing', async () => {
+      // endpoint which echos body and sets status 200 if authenticated
+      server.use(
+        rest.post(`${MOCK_CONFIG.apiBaseUrl}/echo`, (req, res, ctx) => {
+          return res(
+            // set status to 401 Not Authorized if token does not match
+            ctx.status(
+              req.headers.get('private-token') === MOCK_CONFIG.token
+                ? 200
+                : 401,
+            ),
+            ctx.json(req.body),
+          );
+        }),
+      );
+
+      const testBody = { something: 'echo' };
+      const response = await client.request('/echo', {
+        method: 'POST',
+        body: JSON.stringify(testBody),
+        headers: { 'content-type': 'application/json' },
+      });
+      // body passed in via init should be echoed as auth token in the existing
+      // client options should be preserved
+      await expect(response.json()).resolves.toEqual(testBody);
+    });
+
+    it('should throw if response is not ok', async () => {
+      // endpoint which always returns HTTP status 500
+      server.use(
+        rest.get(`${MOCK_CONFIG.apiBaseUrl}/error`, (_, res, ctx) => {
+          return res(ctx.status(500), ctx.json({}));
+        }),
+      );
+
+      await expect(client.request('/error', {})).rejects.toThrowError();
+    });
+  });
 });
 
 describe('paginated', () => {
