@@ -258,7 +258,7 @@ export type SignInInfo<AuthResult> = {
 
 /**
  * Sign in resolver type describes the function which handles the result of a successful authentication
- * and must return a valid BackStageSignInResult
+ * and it must return a valid {@link BackstageSignInResult}
  * @public
  */
 export type SignInResolver<AuthResult> = (

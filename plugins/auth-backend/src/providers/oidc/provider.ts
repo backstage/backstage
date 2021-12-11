@@ -233,7 +233,7 @@ export const oAuth2DefaultSignInResolver: SignInResolver<OidcAuthResult> =
  * can be passed while creating a OIDC provider.
  *
  * authHandler : called after sign in was successful, a new object must be returned which includes a profile
- * signInResolver: called after sign in was successful, expects to return a new @BackstageSignInResult
+ * signInResolver: called after sign in was successful, expects to return a new {@link BackstageSignInResult}
  *
  * Both options are optional. There is fallback for authHandler where the default handler expect an e-mail explicitly
  * otherwise it throws an error

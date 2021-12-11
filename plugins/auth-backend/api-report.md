@@ -549,8 +549,6 @@ export type OidcAuthResult = {
   userinfo: UserinfoResponse;
 };
 
-// Warning: (tsdoc-undefined-tag) The TSDoc tag "@BackstageSignInResult" is not defined in this configuration
-//
 // @public
 export type OidcProviderOptions = {
   authHandler?: AuthHandler<OidcAuthResult>;
