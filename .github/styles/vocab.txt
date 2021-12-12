@@ -12,6 +12,7 @@ Atlassian
 automations
 autoscaling
 Autoscaling
+autoselect
 Avro
 backrub
 Bigtable
