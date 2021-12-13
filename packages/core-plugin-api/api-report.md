@@ -211,22 +211,21 @@ export const auth0AuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
+// @public @deprecated (undocumented)
+export type AuthProvider = Omit<AuthProviderInfo, 'id'>;
+
 // @public
-export type AuthProvider = {
+export type AuthProviderInfo = {
+  id: string;
   title: string;
   icon: IconComponent;
 };
 
-// @public
-export type AuthRequester<AuthResponse> = (
-  scopes: Set<string>,
-) => Promise<AuthResponse>;
+// @public @deprecated (undocumented)
+export type AuthRequester<T> = OAuthRequester<T>;
 
-// @public
-export type AuthRequesterOptions<AuthResponse> = {
-  provider: AuthProvider;
-  onAuthRequest(scopes: Set<string>): Promise<AuthResponse>;
-};
+// @public @deprecated (undocumented)
+export type AuthRequesterOptions<T> = OAuthRequesterOptions<T>;
 
 // @public
 export type AuthRequestOptions = {
@@ -598,14 +597,27 @@ export type OAuthApi = {
 
 // @public
 export type OAuthRequestApi = {
-  createAuthRequester<AuthResponse>(
-    options: AuthRequesterOptions<AuthResponse>,
-  ): AuthRequester<AuthResponse>;
+  createAuthRequester<OAuthResponse>(
+    options: OAuthRequesterOptions<OAuthResponse>,
+  ): OAuthRequester<OAuthResponse>;
   authRequest$(): Observable_2<PendingAuthRequest[]>;
 };
 
 // @public
 export const oauthRequestApiRef: ApiRef<OAuthRequestApi>;
+
+// @public
+export type OAuthRequester<TAuthResponse> = (
+  scopes: Set<string>,
+) => Promise<TAuthResponse>;
+
+// @public
+export type OAuthRequesterOptions<TOAuthResponse> = {
+  provider: Omit<AuthProviderInfo, 'id'> & {
+    id?: string;
+  };
+  onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
+};
 
 // @public
 export type OAuthScope = string | string[];
@@ -679,10 +691,15 @@ export type PathParams<S extends string> = {
   [name in ParamNames<S>]: string;
 };
 
+// @public @deprecated (undocumented)
+export type PendingAuthRequest = PendingOAuthRequest;
+
 // @public
-export type PendingAuthRequest = {
-  provider: AuthProvider;
-  reject: () => void;
+export type PendingOAuthRequest = {
+  provider: Omit<AuthProviderInfo, 'id'> & {
+    id?: string;
+  };
+  reject(): void;
   trigger(): Promise<void>;
 };
 

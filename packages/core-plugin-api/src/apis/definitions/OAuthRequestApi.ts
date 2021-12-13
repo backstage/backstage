@@ -14,31 +14,15 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '../../icons/types';
 import { Observable } from '@backstage/types';
 import { ApiRef, createApiRef } from '../system';
+import { AuthProviderInfo } from './auth';
 
 /**
- * Information about the auth provider that we're requesting a login towards.
- *
- * @remarks
- *
- * This should be shown to the user so that they can be informed about what login is being requested
- * before a popup is shown.
- *
  * @public
+ * @deprecated Use AuthProviderInfo instead
  */
-export type AuthProvider = {
-  /**
-   * Title for the auth provider, for example "GitHub"
-   */
-  title: string;
-
-  /**
-   * Icon for the auth provider.
-   */
-  icon: IconComponent;
-};
+export type AuthProvider = Omit<AuthProviderInfo, 'id'>;
 
 /**
  * Describes how to handle auth requests. Both how to show them to the user, and what to do when
@@ -46,18 +30,26 @@ export type AuthProvider = {
  *
  * @public
  */
-export type AuthRequesterOptions<AuthResponse> = {
+export type OAuthRequesterOptions<TOAuthResponse> = {
   /**
    * Information about the auth provider, which will be forwarded to auth requests.
+   *
+   * Not passing in an `id` is deprecated, and it will be required in the future.
    */
-  provider: AuthProvider;
+  provider: Omit<AuthProviderInfo, 'id'> & { id?: string };
 
   /**
    * Implementation of the auth flow, which will be called synchronously when
    * trigger() is called on an auth requests.
    */
-  onAuthRequest(scopes: Set<string>): Promise<AuthResponse>;
+  onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
 };
+
+/**
+ * @public
+ * @deprecated Use OAuthRequesterOptions instead
+ */
+export type AuthRequesterOptions<T> = OAuthRequesterOptions<T>;
 
 /**
  * Function used to trigger new auth requests for a set of scopes.
@@ -65,7 +57,7 @@ export type AuthRequesterOptions<AuthResponse> = {
  * @remarks
  *
  * The returned promise will resolve to the same value returned by the onAuthRequest in the
- * {@link AuthRequesterOptions}. Or rejected, if the request is rejected.
+ * {@link OAuthRequesterOptions}. Or rejected, if the request is rejected.
  *
  * This function can be called multiple times before the promise resolves. All calls
  * will be merged into one request, and the scopes forwarded to the onAuthRequest will be the
@@ -73,9 +65,15 @@ export type AuthRequesterOptions<AuthResponse> = {
  *
  * @public
  */
-export type AuthRequester<AuthResponse> = (
+export type OAuthRequester<TAuthResponse> = (
   scopes: Set<string>,
-) => Promise<AuthResponse>;
+) => Promise<TAuthResponse>;
+
+/**
+ * @public
+ * @deprecated Use OAuthRequester instead
+ */
+export type AuthRequester<T> = OAuthRequester<T>;
 
 /**
  * An pending auth request for a single auth provider. The request will remain in this pending
@@ -88,16 +86,18 @@ export type AuthRequester<AuthResponse> = (
  *
  * @public
  */
-export type PendingAuthRequest = {
+export type PendingOAuthRequest = {
   /**
    * Information about the auth provider, as given in the AuthRequesterOptions
+   *
+   * Not passing in an `id` is deprecated, and it will be required in the future.
    */
-  provider: AuthProvider;
+  provider: Omit<AuthProviderInfo, 'id'> & { id?: string };
 
   /**
    * Rejects the request, causing all pending AuthRequester calls to fail with "RejectedError".
    */
-  reject: () => void;
+  reject(): void;
 
   /**
    * Trigger the auth request to continue the auth flow, by for example showing a popup.
@@ -106,6 +106,12 @@ export type PendingAuthRequest = {
    */
   trigger(): Promise<void>;
 };
+
+/**
+ * @public
+ * @deprecated Use PendingOAuthRequest instead
+ */
+export type PendingAuthRequest = PendingOAuthRequest;
 
 /**
  * Provides helpers for implemented OAuth login flows within Backstage.
@@ -125,9 +131,9 @@ export type OAuthRequestApi = {
    *
    * See AuthRequesterOptions, AuthRequester, and handleAuthRequests for more info.
    */
-  createAuthRequester<AuthResponse>(
-    options: AuthRequesterOptions<AuthResponse>,
-  ): AuthRequester<AuthResponse>;
+  createAuthRequester<OAuthResponse>(
+    options: OAuthRequesterOptions<OAuthResponse>,
+  ): OAuthRequester<OAuthResponse>;
 
   /**
    * Observers pending auth requests. The returned observable will emit all

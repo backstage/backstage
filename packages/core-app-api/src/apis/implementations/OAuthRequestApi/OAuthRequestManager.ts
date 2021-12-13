@@ -39,6 +39,12 @@ export class OAuthRequestManager implements OAuthRequestApi {
   private handlerCount = 0;
 
   createAuthRequester<T>(options: AuthRequesterOptions<T>): AuthRequester<T> {
+    if (!options.provider.id) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'DEPRECATION WARNING: Not passing a provider id to createAuthRequester is deprecated, it will be required in the future',
+      );
+    }
     const handler = new OAuthPendingRequests<T>();
 
     const index = this.handlerCount;
