@@ -129,7 +129,7 @@ async function main() {
           const srcDir = resolvePath(rootPath, packageDir, 'src');
 
           if (await fs.pathExists(srcDir)) {
-            const files = await globby(['**/*.{js,jsx,ts,tsx}'], {
+            const files = await globby(['**/*.{js,jsx,ts,tsx,mjs,cjs}'], {
               cwd: srcDir,
             });
             fileQueue.push(
