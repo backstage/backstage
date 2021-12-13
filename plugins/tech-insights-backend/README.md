@@ -22,7 +22,7 @@ do this by creating a file called `packages/backend/src/plugins/techInsights.ts`
 ```ts
 import {
   createRouter,
-  DefaultTechInsightsBuilder,
+  buildTechInsightsContext,
 } from '@backstage/plugin-tech-insights-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -33,7 +33,7 @@ export default async function createPlugin({
   discovery,
   database,
 }: PluginEnvironment): Promise<Router> {
-  const builder = new DefaultTechInsightsBuilder({
+  const builder = buildTechInsightsContext({
     logger,
     config,
     database,
@@ -42,7 +42,7 @@ export default async function createPlugin({
   });
 
   return await createRouter({
-    ...(await builder.build()),
+    ...(await builder),
     logger,
     config,
   });
@@ -74,10 +74,10 @@ With the `techInsights.ts` router setup in place, add the router to
 At this point the Tech Insights backend is installed in your backend package, but
 you will not have any fact retrievers present in your application. To have the implemented FactRetrieverEngine within this package to be able to retrieve and store fact data into the database, you need to add these.
 
-To create factRetrieverRegistration you need to implement `FactRetriever` interface defined in `@backstage/plugin-tech-insights-common` package. After you have implemented this interface you can wrap that into a registration object like follows:
+To create factRetrieverRegistration you need to implement `FactRetriever` interface defined in `@backstage/plugin-tech-insights-node` package (see [Creating fact retrievers](#creating-fact-retrievers) for details). After you have implemented this interface you can wrap that into a registration object like follows:
 
 ```ts
-import { createFactRetrieverRegistration } from './createFactRetriever';
+import { createFactRetrieverRegistration } from '@backstage/plugin-tech-insights-backend';
 
 const myFactRetriever = {
   /**
@@ -134,6 +134,8 @@ A Fact Retriever consist of four required and one optional parts:
 An example implementation of a FactRetriever could for example be as follows:
 
 ```ts
+import { FactRetriever } from '@backstage/plugin-tech-insights-node';
+
 const myFactRetriever: FactRetriever = {
   id: 'documentation-number-factretriever', // unique identifier of the fact retriever
   version: '0.1.1', // SemVer version number of this fact retriever schema. This should be incremented if the implementation changes

@@ -15,7 +15,7 @@
  */
 
 import { Entity, EntityName } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { TestApiProvider } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
 import React, { PropsWithChildren } from 'react';
 import Observable from 'zen-observable';
@@ -31,11 +31,9 @@ describe('useStarredEntity', () => {
 
   beforeEach(() => {
     wrapper = ({ children }: PropsWithChildren<{}>) => (
-      <ApiProvider
-        apis={ApiRegistry.with(starredEntitiesApiRef, mockStarredEntitiesApi)}
-      >
+      <TestApiProvider apis={[[starredEntitiesApiRef, mockStarredEntitiesApi]]}>
         {children}
-      </ApiProvider>
+      </TestApiProvider>
     );
   });
 

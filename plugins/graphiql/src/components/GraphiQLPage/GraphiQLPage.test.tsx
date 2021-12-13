@@ -18,15 +18,11 @@ import React from 'react';
 import { GraphiQLPage } from './GraphiQLPage';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
-import { act } from 'react-dom/test-utils';
-import { renderWithEffects } from '@backstage/test-utils';
+import { act } from '@testing-library/react';
+import { renderWithEffects, TestApiProvider } from '@backstage/test-utils';
 import { GraphQLBrowseApi, graphQlBrowseApiRef } from '../../lib/api';
 import { configApiRef } from '@backstage/core-plugin-api';
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ConfigReader } from '@backstage/core-app-api';
 
 jest.mock('../GraphiQLBrowser', () => ({
   GraphiQLBrowser: () => '<GraphiQLBrowser />',
@@ -43,17 +39,17 @@ describe('GraphiQLPage', () => {
     };
 
     const rendered = await renderWithEffects(
-      <ApiProvider
-        apis={ApiRegistry.from([
+      <TestApiProvider
+        apis={[
           [graphQlBrowseApiRef, loadingApi],
           [configApiRef, new ConfigReader({})],
-        ])}
+        ]}
       >
         <ThemeProvider theme={lightTheme}>
           <GraphiQLPage />
         </ThemeProvider>
         ,
-      </ApiProvider>,
+      </TestApiProvider>,
     );
     act(() => {
       jest.advanceTimersByTime(250);
@@ -71,16 +67,16 @@ describe('GraphiQLPage', () => {
     };
 
     const rendered = await renderWithEffects(
-      <ApiProvider
-        apis={ApiRegistry.from([
+      <TestApiProvider
+        apis={[
           [graphQlBrowseApiRef, loadingApi],
           [configApiRef, new ConfigReader({})],
-        ])}
+        ]}
       >
         <ThemeProvider theme={lightTheme}>
           <GraphiQLPage />
         </ThemeProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     rendered.getByText('GraphiQL');
@@ -95,16 +91,16 @@ describe('GraphiQLPage', () => {
     };
 
     const rendered = await renderWithEffects(
-      <ApiProvider
-        apis={ApiRegistry.from([
+      <TestApiProvider
+        apis={[
           [graphQlBrowseApiRef, loadingApi],
           [configApiRef, new ConfigReader({})],
-        ])}
+        ]}
       >
         <ThemeProvider theme={lightTheme}>
           <GraphiQLPage />
         </ThemeProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     rendered.getByText('GraphiQL');

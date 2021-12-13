@@ -51,8 +51,27 @@ export type ComponentLoader<T> =
 export function createRoutableExtension<
   T extends (props: any) => JSX.Element | null,
 >(options: {
+  /**
+   * A loader for the component that is rendered by this extension.
+   */
   component: () => Promise<T>;
+
+  /**
+   * The mount point to bind this routable extension to.
+   *
+   * If this extension is placed somewhere in the app element tree of a Backstage
+   * app, callers will be able to route to this extensions by calling,
+   * `useRouteRef` with this mount point.
+   */
   mountPoint: RouteRef;
+
+  /**
+   * The name of this extension that will represent it at runtime. It is for example
+   * used to identify this extension in analytics data.
+   *
+   * If possible the name should always be the same as the name of the exported
+   * variable for this extension.
+   */
   name?: string;
 }): Extension<T> {
   const { component, mountPoint, name } = options;
@@ -127,7 +146,21 @@ export function createRoutableExtension<
  */
 export function createComponentExtension<
   T extends (props: any) => JSX.Element | null,
->(options: { component: ComponentLoader<T>; name?: string }): Extension<T> {
+>(options: {
+  /**
+   * A loader or synchronously supplied component that is rendered by this extension.
+   */
+  component: ComponentLoader<T>;
+
+  /**
+   * The name of this extension that will represent it at runtime. It is for example
+   * used to identify this extension in analytics data.
+   *
+   * If possible the name should always be the same as the name of the exported
+   * variable for this extension.
+   */
+  name?: string;
+}): Extension<T> {
   const { component, name } = options;
   return createReactExtension({ component, name });
 }
@@ -148,8 +181,23 @@ export function createComponentExtension<
 export function createReactExtension<
   T extends (props: any) => JSX.Element | null,
 >(options: {
+  /**
+   * A loader or synchronously supplied component that is rendered by this extension.
+   */
   component: ComponentLoader<T>;
+
+  /**
+   * Additional component data that is attached to the top-level extension component.
+   */
   data?: Record<string, unknown>;
+
+  /**
+   * The name of this extension that will represent it at runtime. It is for example
+   * used to identify this extension in analytics data.
+   *
+   * If possible the name should always be the same as the name of the exported
+   * variable for this extension.
+   */
   name?: string;
 }): Extension<T> {
   const { data = {}, name } = options;

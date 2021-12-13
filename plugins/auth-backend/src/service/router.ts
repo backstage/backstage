@@ -44,13 +44,10 @@ export interface RouterOptions {
   providerFactories?: ProviderFactories;
 }
 
-export async function createRouter({
-  logger,
-  config,
-  discovery,
-  database,
-  providerFactories,
-}: RouterOptions): Promise<express.Router> {
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const { logger, config, discovery, database, providerFactories } = options;
   const router = Router();
 
   const appUrl = config.getString('app.baseUrl');

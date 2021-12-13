@@ -95,20 +95,23 @@ async function getProjectConfig(targetPath, displayName) {
     ...(displayName && { displayName }),
     rootDir: path.resolve(targetPath, 'src'),
     coverageDirectory: path.resolve(targetPath, 'coverage'),
-    collectCoverageFrom: ['**/*.{js,jsx,ts,tsx}', '!**/*.d.ts'],
+    coverageProvider: 'v8',
+    collectCoverageFrom: ['**/*.{js,jsx,ts,tsx,mjs,cjs}', '!**/*.d.ts'],
     moduleNameMapper: {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
     },
 
     transform: {
-      '\\.(js|jsx|ts|tsx)$': require.resolve('./jestSucraseTransform.js'),
+      '\\.(js|jsx|ts|tsx|mjs|cjs)$': require.resolve(
+        './jestSucraseTransform.js',
+      ),
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$':
         require.resolve('./jestFileTransform.js'),
       '\\.(yaml)$': require.resolve('jest-transform-yaml'),
     },
 
     // A bit more opinionated
-    testMatch: ['**/?(*.)test.{js,jsx,mjs,ts,tsx}'],
+    testMatch: ['**/?(*.)test.{js,jsx,ts,tsx,mjs,cjs}'],
 
     transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
   };

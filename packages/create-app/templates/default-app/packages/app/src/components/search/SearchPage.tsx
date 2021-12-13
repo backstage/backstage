@@ -2,10 +2,13 @@ import React from 'react';
 import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
 
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
+import { DocsResultListItem } from '@backstage/plugin-techdocs';
+
 import {
   SearchBar,
   SearchFilter,
   SearchResult,
+  SearchType,
   DefaultResultListItem,
 } from '@backstage/plugin-search';
 import { Content, Header, Page } from '@backstage/core-components';
@@ -39,6 +42,11 @@ const SearchPage = () => {
           </Grid>
           <Grid item xs={3}>
             <Paper className={classes.filters}>
+              <SearchType
+                values={['techdocs', 'software-catalog']}
+                name="type"
+                defaultValue="software-catalog"
+              />
               <SearchFilter.Select
                 className={classes.filter}
                 name="kind"
@@ -60,6 +68,13 @@ const SearchPage = () => {
                       case 'software-catalog':
                         return (
                           <CatalogResultListItem
+                            key={document.location}
+                            result={document}
+                          />
+                        );
+                      case 'techdocs':
+                        return (
+                          <DocsResultListItem
                             key={document.location}
                             result={document}
                           />

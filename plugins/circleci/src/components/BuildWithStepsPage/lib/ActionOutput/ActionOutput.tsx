@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Progress } from '@backstage/core-components';
+import { LogViewer } from '@backstage/core-components';
 import {
   Accordion,
   AccordionDetails,
@@ -24,10 +24,9 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { BuildStepAction } from 'circleci-api';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { durationHumanized } from '../../../../util';
 
-const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 const useStyles = makeStyles({
   accordionDetails: {
     padding: 0,
@@ -85,11 +84,9 @@ export const ActionOutput = ({
         {messages.length === 0 ? (
           'Nothing here...'
         ) : (
-          <Suspense fallback={<Progress />}>
-            <div style={{ height: '20vh', width: '100%' }}>
-              <LazyLog text={messages.join('\n')} extraLines={1} enableSearch />
-            </div>
-          </Suspense>
+          <div style={{ height: '20vh', width: '100%' }}>
+            <LogViewer text={messages.join('\n')} />
+          </div>
         )}
       </AccordionDetails>
     </Accordion>

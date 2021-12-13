@@ -39,21 +39,24 @@ export class GoogleAnalytics implements AnalyticsApi {
   /**
    * Instantiate the implementation and initialize ReactGA.
    */
-  private constructor({
-    cdmConfig,
-    trackingId,
-    testMode,
-    debug,
-  }: {
+  private constructor(options: {
     cdmConfig: CustomDimensionOrMetricConfig[];
     trackingId: string;
+    scriptSrc?: string;
     testMode: boolean;
     debug: boolean;
   }) {
+    const { cdmConfig, trackingId, scriptSrc, testMode, debug } = options;
+
     this.cdmConfig = cdmConfig;
 
     // Initialize Google Analytics.
-    ReactGA.initialize(trackingId, { testMode, debug, titleCase: false });
+    ReactGA.initialize(trackingId, {
+      testMode,
+      debug,
+      gaAddress: scriptSrc,
+      titleCase: false,
+    });
   }
 
   /**
@@ -62,6 +65,7 @@ export class GoogleAnalytics implements AnalyticsApi {
   static fromConfig(config: Config) {
     // Get all necessary configuration.
     const trackingId = config.getString('app.analytics.ga.trackingId');
+    const scriptSrc = config.getOptionalString('app.analytics.ga.scriptSrc');
     const debug = config.getOptionalBoolean('app.analytics.ga.debug') ?? false;
     const testMode =
       config.getOptionalBoolean('app.analytics.ga.testMode') ?? false;
@@ -82,6 +86,7 @@ export class GoogleAnalytics implements AnalyticsApi {
     // Return an implementation instance.
     return new GoogleAnalytics({
       trackingId,
+      scriptSrc,
       cdmConfig,
       testMode,
       debug,
@@ -93,13 +98,8 @@ export class GoogleAnalytics implements AnalyticsApi {
    * pageview and the rest as custom events. All custom dimensions/metrics are
    * applied as they should be (set on pageview, merged object on events).
    */
-  captureEvent({
-    context,
-    action,
-    subject,
-    value,
-    attributes,
-  }: AnalyticsEvent) {
+  captureEvent(event: AnalyticsEvent) {
+    const { context, action, subject, value, attributes } = event;
     const customMetadata = this.getCustomDimensionMetrics(context, attributes);
 
     if (action === 'navigate' && context.extension === 'App') {

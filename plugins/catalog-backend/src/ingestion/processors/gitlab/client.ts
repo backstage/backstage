@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import {
   getGitLabRequestOptions,
   GitLabIntegrationConfig,
 } from '@backstage/integration';
 import { Logger } from 'winston';
+
+export type ListOptions = {
+  [key: string]: string | number | boolean | undefined;
+  group?: string;
+  per_page?: number | undefined;
+  page?: number | undefined;
+};
+
+export type PagedResponse<T> = {
+  items: T[];
+  nextPage?: number;
+};
 
 export class GitLabClient {
   private readonly config: GitLabIntegrationConfig;
@@ -30,12 +42,17 @@ export class GitLabClient {
     this.logger = options.logger;
   }
 
+  /**
+   * Indicates whether the client is for a SaaS or self managed GitLab instance.
+   */
+  isSelfManaged(): boolean {
+    return this.config.host !== 'gitlab.com';
+  }
+
   async listProjects(options?: ListOptions): Promise<PagedResponse<any>> {
     if (options?.group) {
       return this.pagedRequest(
-        `${this.config.apiBaseUrl}/groups/${encodeURIComponent(
-          options?.group,
-        )}/projects`,
+        `/groups/${encodeURIComponent(options?.group)}/projects`,
         {
           ...options,
           include_subgroups: true,
@@ -43,14 +60,26 @@ export class GitLabClient {
       );
     }
 
-    return this.pagedRequest(`${this.config.apiBaseUrl}/projects`, options);
+    return this.pagedRequest(`/projects`, options);
   }
 
-  private async pagedRequest(
+  /**
+   * Performs a request against a given paginated GitLab endpoint.
+   *
+   * This method may be used to perform authenticated REST calls against any
+   * paginated GitLab endpoint which uses X-NEXT-PAGE headers. The return value
+   * can be be used with the {@link paginated} async-generator function to yield
+   * each item from the paged request.
+   *
+   * @see {@link paginated}
+   * @param endpoint - The request endpoint, e.g. /projects.
+   * @param options - Request queryString options which may also include page variables.
+   */
+  async pagedRequest<T = any>(
     endpoint: string,
     options?: ListOptions,
-  ): Promise<PagedResponse<any>> {
-    const request = new URL(endpoint);
+  ): Promise<PagedResponse<T>> {
+    const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
     for (const key in options) {
       if (options[key]) {
         request.searchParams.append(key, options[key]!.toString());
@@ -80,20 +109,20 @@ export class GitLabClient {
   }
 }
 
-export type ListOptions = {
-  [key: string]: string | number | boolean | undefined;
-  group?: string;
-  per_page?: number | undefined;
-  page?: number | undefined;
-};
-
-export type PagedResponse<T> = {
-  items: T[];
-  nextPage?: number;
-};
-
-export async function* paginated(
-  request: (options: ListOptions) => Promise<PagedResponse<any>>,
+/**
+ * Advances through each page and provides each item from a paginated request.
+ *
+ * The async generator function yields each item from repeated calls to the
+ * provided request function. The generator walks through each available page by
+ * setting the page key in the options passed into the request function and
+ * making repeated calls until there are no more pages.
+ *
+ * @see {@link pagedRequest}
+ * @param request - Function which returns a PagedResponse to walk through.
+ * @param options - Initial ListOptions for the request function.
+ */
+export async function* paginated<T = any>(
+  request: (options: ListOptions) => Promise<PagedResponse<T>>,
   options: ListOptions,
 ) {
   let res;

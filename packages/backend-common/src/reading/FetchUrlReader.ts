@@ -15,7 +15,7 @@
  */
 
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import fetch from 'cross-fetch';
+import fetch, { Response } from 'node-fetch';
 import {
   ReaderFactory,
   ReadTreeResponse,
@@ -86,7 +86,13 @@ export class FetchUrlReader implements UrlReader {
         headers: {
           ...(options?.etag && { 'If-None-Match': options.etag }),
         },
-        signal: options?.signal,
+        // TODO(freben): The signal cast is there because pre-3.x versions of
+        // node-fetch have a very slightly deviating AbortSignal type signature.
+        // The difference does not affect us in practice however. The cast can
+        // be removed after we support ESM for CLI dependencies and migrate to
+        // version 3 of node-fetch.
+        // https://github.com/backstage/backstage/issues/8242
+        signal: options?.signal as any,
       });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);

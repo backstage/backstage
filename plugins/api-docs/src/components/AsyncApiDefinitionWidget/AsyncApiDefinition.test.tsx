@@ -18,6 +18,15 @@ import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { AsyncApiDefinition } from './AsyncApiDefinition';
 
+jest.mock('use-resize-observer', () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+  })),
+}));
+
 describe('<AsyncApiDefinition />', () => {
   it('renders asyncapi spec', async () => {
     const definition = `
@@ -45,15 +54,7 @@ components:
 
     expect(getByText(/Account Service/i)).toBeInTheDocument();
     expect(getByText(/user\/signedup/i)).toBeInTheDocument();
-    expect(getByText(/UserSignedUp/i)).toBeInTheDocument();
-    expect(getAllByText(/displayName/i)).toHaveLength(4);
-  });
-
-  it('renders error if definition is missing', async () => {
-    const { getByText } = await renderInTestApp(
-      <AsyncApiDefinition definition="" />,
-    );
-    expect(getByText(/Error/i)).toBeInTheDocument();
-    expect(getByText(/Document can't be null or falsey/i)).toBeInTheDocument();
+    expect(getAllByText(/UserSignedUp/i)).toHaveLength(2);
+    expect(getAllByText(/displayName/i)).toHaveLength(3);
   });
 });

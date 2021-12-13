@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Paper, Grid } from '@material-ui/core';
+import { Paper, Grid, makeStyles } from '@material-ui/core';
 import { SearchBar, SearchContext } from '../index';
 import { MemoryRouter } from 'react-router';
 
@@ -55,6 +55,70 @@ export const CustomPlaceholder = () => {
           <Grid item xs={12}>
             <Paper style={{ padding: '8px 0' }}>
               <SearchBar placeholder="This is a custom placeholder" />
+            </Paper>
+          </Grid>
+        </Grid>
+      </SearchContext.Provider>
+    </MemoryRouter>
+  );
+};
+
+export const Focused = () => {
+  return (
+    <MemoryRouter>
+      {/* @ts-ignore (defaultValue requires more than what is used here) */}
+      <SearchContext.Provider value={defaultValue}>
+        <Grid container direction="row">
+          <Grid item xs={12}>
+            <Paper style={{ padding: '8px 0' }}>
+              {/* decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus */}
+              {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+              <SearchBar autoFocus />
+            </Paper>
+          </Grid>
+        </Grid>
+      </SearchContext.Provider>
+    </MemoryRouter>
+  );
+};
+
+export const WithoutClearButton = () => {
+  return (
+    <MemoryRouter>
+      {/* @ts-ignore (defaultValue requires more than what is used here) */}
+      <SearchContext.Provider value={defaultValue}>
+        <Grid container direction="row">
+          <Grid item xs={12}>
+            <Paper style={{ padding: '8px 0' }}>
+              <SearchBar clearButton={false} />
+            </Paper>
+          </Grid>
+        </Grid>
+      </SearchContext.Provider>
+    </MemoryRouter>
+  );
+};
+
+const useStyles = makeStyles({
+  search: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: '8px 0',
+    borderRadius: '50px',
+    margin: 'auto',
+  },
+});
+
+export const CustomStyles = () => {
+  const classes = useStyles();
+  return (
+    <MemoryRouter>
+      {/* @ts-ignore (defaultValue requires more than what is used here) */}
+      <SearchContext.Provider value={defaultValue}>
+        <Grid container direction="row">
+          <Grid item xs={12}>
+            <Paper className={classes.search}>
+              <SearchBar />
             </Paper>
           </Grid>
         </Grid>

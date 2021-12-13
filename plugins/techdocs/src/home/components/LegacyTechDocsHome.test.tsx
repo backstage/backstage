@@ -15,16 +15,12 @@
  */
 
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { LegacyTechDocsHome } from './LegacyTechDocsHome';
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
 import { rootDocsRouteRef } from '../../routes';
 
@@ -59,10 +55,10 @@ describe('Legacy TechDocs Home', () => {
     },
   });
 
-  const apiRegistry = ApiRegistry.from([
+  const apiRegistry = TestApiRegistry.from(
     [catalogApiRef, mockCatalogApi],
     [configApiRef, configApi],
-  ]);
+  );
 
   it('should render a TechDocs home page', async () => {
     await renderInTestApp(

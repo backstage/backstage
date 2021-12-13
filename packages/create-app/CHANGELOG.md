@@ -1,5 +1,168 @@
 # @backstage/create-app
 
+## 0.4.7
+
+### Patch Changes
+
+- 9603827bb5: Addressed some peer dependency warnings
+- 1bada775a9: TechDocs Backend may now (optionally) leverage a cache store to improve
+  performance when reading content from a cloud storage provider.
+
+  To apply this change to an existing app, pass the cache manager from the plugin
+  environment to the `createRouter` function in your backend:
+
+  ```diff
+  // packages/backend/src/plugins/techdocs.ts
+
+  export default async function createPlugin({
+    logger,
+    config,
+    discovery,
+    reader,
+  +  cache,
+  }: PluginEnvironment): Promise<Router> {
+
+    // ...
+
+    return await createRouter({
+      preparers,
+      generators,
+      publisher,
+      logger,
+      config,
+      discovery,
+  +    cache,
+    });
+  ```
+
+  If your `PluginEnvironment` does not include a cache manager, be sure you've
+  applied [the cache management change][cm-change] to your backend as well.
+
+  [Additional configuration][td-rec-arch] is required if you wish to enable
+  caching in TechDocs.
+
+  [cm-change]: https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md#patch-changes-6
+  [td-rec-arch]: https://backstage.io/docs/features/techdocs/architecture#recommended-deployment
+
+- 4862fbc64f: Bump @spotify/prettier-config
+- 36bb4fb2e9: Removed the `scaffolder.github.visibility` configuration that is no longer used from the default app template.
+
+## 0.4.6
+
+### Patch Changes
+
+- 24d2ce03f3: Search Modal now relies on the Search Context to access state and state setter. If you use the SidebarSearchModal as described in the [getting started documentation](https://backstage.io/docs/features/search/getting-started#using-the-search-modal), make sure to update your code with the SearchContextProvider.
+
+  ```diff
+  export const Root = ({ children }: PropsWithChildren<{}>) => (
+    <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+  -     <SidebarSearchModal />
+  +     <SearchContextProvider>
+  +       <SidebarSearchModal />
+  +     </SearchContextProvider>
+        <SidebarDivider />
+      ...
+  ```
+
+- 905dd952ac: Incorporate usage of the tokenManager into the backend created using `create-app`.
+
+  In existing backends, update the `PluginEnvironment` to include a `tokenManager`:
+
+  ```diff
+  // packages/backend/src/types.ts
+
+  ...
+  import {
+    ...
+  + TokenManager,
+  } from '@backstage/backend-common';
+
+  export type PluginEnvironment = {
+    ...
+  + tokenManager: TokenManager;
+  };
+  ```
+
+  Then, create a `ServerTokenManager`. This can either be a `noop` that requires no secret and validates all requests by default, or one that uses a secret from your `app-config.yaml` to generate and validate tokens.
+
+  ```diff
+  // packages/backend/src/index.ts
+
+  ...
+  import {
+    ...
+  + ServerTokenManager,
+  } from '@backstage/backend-common';
+  ...
+
+  function makeCreateEnv(config: Config) {
+    ...
+    // CHOOSE ONE
+    // TokenManager not requiring a secret
+  + const tokenManager = ServerTokenManager.noop();
+    // OR TokenManager requiring a secret
+  + const tokenManager = ServerTokenManager.fromConfig(config);
+
+    ...
+    return (plugin: string): PluginEnvironment => {
+      ...
+  -   return { logger, cache, database, config, reader, discovery };
+  +   return { logger, cache, database, config, reader, discovery, tokenManager };
+    };
+  }
+  ```
+
+## 0.4.5
+
+### Patch Changes
+
+- dcaeaac174: Cleaned out the `peerDependencies` in the published version of the package, making it much quicker to run `npx @backstage/create-app` as it no longer needs to install a long list of unnecessary.
+- a5a5d7e1f1: DefaultTechDocsCollator is now included in the search backend, and the Search Page updated with the SearchType component that includes the techdocs type
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- 42ebbc18c0: Bump gitbeaker to the latest version
+
+## 0.4.4
+
+### Patch Changes
+
+- 4ebc9fd277: Create backstage.json file
+
+  `@backstage/create-app` will create a new `backstage.json` file. At this point, the file will contain a `version` property, representing the version of `@backstage/create-app` used for creating the application. If the backstage's application has been bootstrapped using an older version of `@backstage/create-app`, the `backstage.json` file can be created and kept in sync, together with all the changes of the latest version of backstage, by running the following script:
+
+  ```bash
+  yarn backstage-cli versions:bump
+  ```
+
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 014cbf8cb9: Migrated the app template use the new `@backstage/app-defaults` for the `createApp` import, since the `createApp` exported by `@backstage/app-core-api` will be removed in the future.
+
+  To migrate an existing application, add the latest version of `@backstage/app-defaults` as a dependency in `packages/app/package.json`, and make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+  -import { createApp, FlatRoutes } from '@backstage/core-app-api';
+  +import { createApp } from '@backstage/app-defaults';
+  +import { FlatRoutes } from '@backstage/core-app-api';
+  ```
+
+- 2163e83fa2: Refactor and add regression tests for create-app tasks
+- Updated dependencies
+  - @backstage/cli-common@0.1.6
+
 ## 0.4.3
 
 ### Patch Changes

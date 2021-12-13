@@ -21,7 +21,7 @@ import {
   SignInResolver,
 } from '../types';
 import express from 'express';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import * as crypto from 'crypto';
 import { KeyObject } from 'crypto';
 import { Logger } from 'winston';
@@ -32,6 +32,7 @@ import { CatalogIdentityClient } from '../../lib/catalog';
 import { Profile as PassportProfile } from 'passport';
 import { makeProfileInfo } from '../../lib/passport';
 import { AuthenticationError } from '@backstage/errors';
+import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 
 export const ALB_JWT_HEADER = 'x-amzn-oidc-data';
 export const ALB_ACCESSTOKEN_HEADER = 'x-amzn-oidc-accesstoken';
@@ -198,7 +199,7 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
         accessToken: result.accessToken,
         expiresInSeconds: result.expiresInSeconds,
       },
-      backstageIdentity,
+      backstageIdentity: prepareBackstageIdentityResponse(backstageIdentity),
       profile,
     };
   }

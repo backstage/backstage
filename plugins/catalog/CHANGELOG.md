@@ -1,5 +1,32 @@
 # @backstage/plugin-catalog
 
+## 0.7.4
+
+### Patch Changes
+
+- 9603827bb5: Addressed some peer dependency warnings
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/integration-react@0.1.15
+  - @backstage/plugin-catalog-react@0.6.5
+
+## 0.7.3
+
+### Patch Changes
+
+- 38d6df6bb9: Remove the "View Api" icon in the AboutCard, as the information is misleading for some users and is
+  duplicated in the tabs above.
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/integration-react@0.1.14
+
 ## 0.7.2
 
 ### Patch Changes

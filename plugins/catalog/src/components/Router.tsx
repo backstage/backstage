@@ -16,8 +16,6 @@
 import { ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
   AsyncEntityProvider,
-  entityRoute,
-  rootRoute,
   useEntity,
   useEntityFromUrl,
 } from '@backstage/plugin-catalog-react';
@@ -87,9 +85,9 @@ export const Router = ({
   EntityPage?: ComponentType;
 }) => (
   <Routes>
-    <Route path={`${rootRoute.path}`} element={<CatalogPage />} />
+    <Route path="/" element={<CatalogPage />} />
     <Route
-      path={`${entityRoute.path}`}
+      path="/:namespace/:kind/:name"
       element={
         <EntityLoader>
           <EntityPageSwitch EntityPage={EntityPage} />

@@ -18,13 +18,12 @@ import React from 'react';
 import { fireEvent } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityKindFilter,
   MockEntityListContextProvider,
 } from '@backstage/plugin-catalog-react';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { renderWithEffects } from '@backstage/test-utils';
+import { ApiProvider } from '@backstage/core-app-api';
+import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
 import { CatalogKindHeader } from './CatalogKindHeader';
 
 const entities: Entity[] = [
@@ -58,9 +57,12 @@ const entities: Entity[] = [
   },
 ];
 
-const apis = ApiRegistry.with(catalogApiRef, {
-  getEntities: jest.fn().mockResolvedValue({ items: entities }),
-} as Partial<CatalogApi>);
+const apis = TestApiRegistry.from([
+  catalogApiRef,
+  {
+    getEntities: jest.fn().mockResolvedValue({ items: entities }),
+  },
+]);
 
 describe('<CatalogKindHeader />', () => {
   it('renders available kinds', async () => {

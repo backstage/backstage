@@ -20,7 +20,7 @@
 // catalog API endpoint and execute the script. It will delete and add
 // back the locations with the correct type one by one.
 
-const BASE_URL = 'http://localhost:7000/api/catalog'; // Change me
+const BASE_URL = 'http://localhost:7007/api/catalog'; // Change me
 
 const deprecatedTypes = [
   'github',
@@ -81,9 +81,9 @@ async function request(method, url, body) {
             return;
           }
           try {
-            const body = Buffer.concat(chunks).toString('utf8').trim();
-            if (body) {
-              resolve(JSON.parse(body));
+            const responseBody = Buffer.concat(chunks).toString('utf8').trim();
+            if (responseBody) {
+              resolve(JSON.parse(responseBody));
             } else {
               resolve();
             }

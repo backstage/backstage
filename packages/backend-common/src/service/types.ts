@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import cors from 'cors';
-import { Router, RequestHandler } from 'express';
+import { Router, RequestHandler, ErrorRequestHandler } from 'express';
 import { Server } from 'http';
 import { Logger } from 'winston';
 
@@ -34,7 +34,7 @@ export type ServiceBuilder = {
    *
    * If no port is specified, the service will first look for an environment
    * variable named PORT and use that if present, otherwise it picks a default
-   * port (7000).
+   * port (7007).
    *
    * @param port - The port to listen on
    */
@@ -97,6 +97,21 @@ export type ServiceBuilder = {
   setRequestLoggingHandler(
     requestLoggingHandler: RequestLoggingHandlerFactory,
   ): ServiceBuilder;
+
+  /**
+   * Sets an additional errorHandler to run before the defaultErrorHandler.
+   *
+   * For execution of only the custom error handler make sure to also invoke disableDefaultErrorHandler()
+   * otherwise the defaultErrorHandler is executed at the end of the error middleware chain.
+   *
+   * @param errorHandler - an error handler
+   */
+  setErrorHandler(errorHandler: ErrorRequestHandler): ServiceBuilder;
+
+  /**
+   * Disables the default error handler
+   */
+  disableDefaultErrorHandler(): ServiceBuilder;
 
   /**
    * Starts the server using the given settings.

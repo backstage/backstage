@@ -54,9 +54,9 @@ export async function getGitLabFileFetchUrl(
  * @param config - The relevant provider config
  * @public
  */
-export function getGitLabRequestOptions(
-  config: GitLabIntegrationConfig,
-): RequestInit {
+export function getGitLabRequestOptions(config: GitLabIntegrationConfig): {
+  headers: Record<string, string>;
+} {
   const { token = '' } = config;
   return {
     headers: {

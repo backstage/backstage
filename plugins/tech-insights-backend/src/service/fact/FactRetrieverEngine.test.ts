@@ -44,7 +44,7 @@ const testFactRetriever: FactRetriever = {
       description: '',
     },
   },
-  handler: async () => {
+  handler: jest.fn(async () => {
     return [
       {
         entity: {
@@ -57,7 +57,7 @@ const testFactRetriever: FactRetriever = {
         },
       },
     ];
-  },
+  }),
 };
 const cadence = '1 * * * *';
 describe('FactRetrieverEngine', () => {
@@ -145,5 +145,8 @@ describe('FactRetrieverEngine', () => {
     const job: any = engine.getJob('test-factretriever');
     job.triggerScheduledJobNow();
     expect(job.cadence!!).toEqual(cadence);
+    expect(testFactRetriever.handler).toHaveBeenCalledWith(
+      expect.objectContaining({ entityFilter: testFactRetriever.entityFilter }),
+    );
   });
 });

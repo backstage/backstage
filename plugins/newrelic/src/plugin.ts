@@ -24,8 +24,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '/newrelic',
-  title: 'newrelic',
+  id: 'newrelic',
 });
 
 export const newRelicPlugin = createPlugin({

@@ -1,5 +1,71 @@
 # @backstage/plugin-techdocs
 
+## 0.12.9
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- d90dad84b0: Switch to using `LogViewer` component from `@backstage/core-components` to display build logs.
+- 3421826ca8: The problem of lowercase entity triplets which causes docs to not load on entity page is fixed.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-catalog@0.7.4
+  - @backstage/integration-react@0.1.15
+  - @backstage/plugin-catalog-react@0.6.5
+  - @backstage/plugin-search@0.5.1
+
+## 0.12.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+  - @backstage/plugin-search@0.5.0
+
+## 0.12.7
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.12.6
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- c1858c4cf9: Fixed entity triplet case handling for certain locales.
+- f7703981a9: Use a better checkbox rendering in a task list.
+- e266687580: Updates reader component used to display techdocs documentation. A previous change made this component not usable out of a page which don't have entityRef in url parameters. Reader component EntityRef parameter is now used instead of url parameters. Techdocs documentation component can now be used in our custom pages.
+- Updated dependencies
+  - @backstage/plugin-catalog@0.7.3
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/plugin-search@0.4.18
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/integration-react@0.1.14
+
 ## 0.12.5
 
 ### Patch Changes

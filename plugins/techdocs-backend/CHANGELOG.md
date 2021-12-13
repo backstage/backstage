@@ -1,5 +1,90 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.12.0
+
+### Minor Changes
+
+- 1bada775a9: Added the ability for the TechDocs Backend to (optionally) leverage a cache
+  store to improve performance when reading files from a cloud storage provider.
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+  - @backstage/techdocs-common@0.11.0
+
+## 0.11.0
+
+### Minor Changes
+
+- 905dd952ac: **BREAKING** `DefaultTechDocsCollator` has a new required option `tokenManager`. See the create-app changelog for how to create a `tokenManager` and add it to the `PluginEnvironment`. It can then be passed to the collator in `createPlugin`:
+
+  ```diff
+  // packages/backend/src/plugins/search.ts
+
+  ...
+  export default async function createPlugin({
+    ...
+  + tokenManager,
+  }: PluginEnvironment) {
+    ...
+
+    indexBuilder.addCollator({
+      defaultRefreshIntervalSeconds: 600,
+      collator: DefaultTechDocsCollator.fromConfig(config, {
+        discovery,
+        logger,
+  +     tokenManager,
+      }),
+    });
+
+    ...
+  }
+  ```
+
+### Patch Changes
+
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/backend-common@0.9.12
+
+## 0.10.9
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/backend-common@0.9.11
+  - @backstage/techdocs-common@0.10.8
+
+## 0.10.8
+
+### Patch Changes
+
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 9e64a7ac1e: Allow amazon web services s3 buckets to pass an server side encryption configuration so they can publish to encrypted buckets
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+  - @backstage/techdocs-common@0.10.7
+
 ## 0.10.7
 
 ### Patch Changes

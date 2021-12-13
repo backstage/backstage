@@ -1,5 +1,60 @@
 # @backstage/core-plugin-api
 
+## 0.3.0
+
+### Minor Changes
+
+- a036b65c2f: The `IdentityApi` has received several updates. The `getUserId`, `getProfile`, and `getIdToken` have all been deprecated.
+
+  The replacement for `getUserId` is the new `getBackstageIdentity` method, which provides both the `userEntityRef` as well as the `ownershipEntityRefs` that are used to resolve ownership. Existing usage of the user ID would typically be using a fixed entity kind and namespace, for example `` `user:default/${identityApi.getUserId()}` ``, this kind of usage should now instead use the `userEntityRef` directly.
+
+  The replacement for `getProfile` is the new async `getProfileInfo`.
+
+  The replacement for `getIdToken` is the new `getCredentials` method, which provides an optional token to the caller like before, but it is now wrapped in an object for forwards compatibility.
+
+  The deprecated `idToken` field of the `BackstageIdentity` type has been removed, leaving only the new `token` field, which should be used instead. The `BackstageIdentity` also received a new `identity` field, which is a decoded version of the information within the token. Furthermore the `BackstageIdentity` has been renamed to `BackstageIdentityResponse`, with the old name being deprecated.
+
+  We expect most of the breaking changes in this update to have low impact since the `IdentityApi` implementation is provided by the app, but it is likely that some tests need to be updated.
+
+  Another breaking change is that the `SignInPage` props have been updated, and the `SignInResult` type is now deprecated. This is unlikely to have any impact on the usage of this package, but it is an important change that you can find more information about in the [`@backstage/core-app-api` CHANGELOG.md](https://github.com/backstage/backstage/blob/master/packages/core-app-api/CHANGELOG.md).
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/version-bridge@0.1.1
+
+## 0.2.2
+
+### Patch Changes
+
+- b291d0ed7e: Tweaked the logged deprecation warning for `createRouteRef` to hopefully make it more clear.
+- bacb94ea8f: Documented the options of each of the extension creation functions.
+- Updated dependencies
+  - @backstage/theme@0.2.14
+
+## 0.2.1
+
+### Patch Changes
+
+- 950b36393c: Deprecated `register` option of `createPlugin` and the `outputs` methods of the plugin instance.
+
+  Introduces the `featureFlags` property to define your feature flags instead.
+
+## 0.2.0
+
+### Minor Changes
+
+- 7e18ed7f29: Removed the unused `UserFlags` type.
+- 7df99cdb77: Remove exports of unused types(`RouteOptions` and `RoutePath`).
+
+### Patch Changes
+
+- 37ebea2d68: Add deprecation warnings around `title` `icon` and `path` as they are no longer controlled when creating `routeRefs`
+- 2dd2a7b2cc: Deprecated the `theme` property on `AppTheme`, replacing it with `Provider`. See https://backstage.io/docs/api/deprecations#app-theme for more details.
+- b6a4bacdc4: Deprecated the `Error` and `ErrorContext` types, replacing them with identical `ErrorApiError` and `ErrorApiErrorContext` types.
+
 ## 0.1.13
 
 ### Patch Changes

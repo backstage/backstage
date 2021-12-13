@@ -61,7 +61,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       },
     },
     {
-      test: /\.(jsx?|mjs)$/,
+      test: /\.(jsx?|mjs|cjs)$/,
       exclude: /node_modules/,
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
@@ -71,7 +71,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       },
     },
     {
-      test: /\.m?js/,
+      test: /\.(js|mjs|cjs)/,
       resolve: {
         fullySpecified: false,
       },

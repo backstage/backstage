@@ -24,16 +24,13 @@ import { useWorkflowRuns } from '../useWorkflowRuns';
 import type { Props as RecentWorkflowRunsCardProps } from './RecentWorkflowRunsCard';
 import { RecentWorkflowRunsCard } from './RecentWorkflowRunsCard';
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ConfigReader } from '@backstage/core-app-api';
 import {
   errorApiRef,
   configApiRef,
   ConfigApi,
 } from '@backstage/core-plugin-api';
+import { TestApiProvider } from '@backstage/test-utils';
 
 jest.mock('../useWorkflowRuns', () => ({
   useWorkflowRuns: jest.fn(),
@@ -82,16 +79,16 @@ describe('<RecentWorkflowRunsCard />', () => {
     render(
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>
-          <ApiProvider
-            apis={ApiRegistry.with(errorApiRef, mockErrorApi).with(
-              configApiRef,
-              configApi,
-            )}
+          <TestApiProvider
+            apis={[
+              [errorApiRef, mockErrorApi],
+              [configApiRef, configApi],
+            ]}
           >
             <EntityProvider entity={props.entity!}>
               <RecentWorkflowRunsCard {...props} />
             </EntityProvider>
-          </ApiProvider>
+          </TestApiProvider>
         </MemoryRouter>
       </ThemeProvider>,
     );

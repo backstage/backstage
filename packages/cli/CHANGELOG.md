@@ -1,5 +1,78 @@
 # @backstage/cli
 
+## 0.10.1
+
+### Patch Changes
+
+- 0ebb05eee2: Add cli option to minify the generated code of a plugin or backend package
+
+  ```
+  backstage-cli plugin:build --minify
+  backstage-cli backend:build --minify
+  ```
+
+- cd450844f6: Updated the frontend plugin template to put React dependencies in `peerDependencies` by default, as well as allowing both React v16 and v17. This change can be applied to existing plugins by running `yarn backstage-cli plugin:diff` within the plugin package directory.
+
+## 0.10.0
+
+### Minor Changes
+
+- ea99ef5198: Remove the `backend:build-image` command from the CLI and added more deprecation warnings to other deprecated fields like `--lax` and `remove-plugin`
+
+### Patch Changes
+
+- e7230ef814: Bump react-dev-utils to v12
+- 416b68675d: build(dependencies): bump `style-loader` from 1.2.1 to 3.3.1
+- Updated dependencies
+  - @backstage/config-loader@0.8.1
+
+## 0.9.1
+
+### Patch Changes
+
+- dde216acf4: Switch the default test coverage provider from the jest default one to `'v8'`, which provides much better coverage information when using the default Backstage test setup. This is considered a bug fix as the current coverage information is often very inaccurate.
+- 719cc87d2f: Disable ES transforms in tests transformed by the `jestSucraseTransform.js`. This is not considered a breaking change since all code is already transpiled this way in the development setup.
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- ee055cf6db: Update the default routes to use id instead of title
+- Updated dependencies
+  - @backstage/errors@0.1.5
+
+## 0.9.0
+
+### Minor Changes
+
+- 25f637f39f: Tweaked style insertion logic to make sure that JSS stylesheets always receive the highest priority.
+
+### Patch Changes
+
+- 677bfc2dd0: Keep backstage.json in sync
+
+  The `versions:bump` script now takes care about updating the `version` property inside `backstage.json` file. The file is created if is not present.
+
+- 8809b6c0dd: Update the json-schema dependency version.
+- fdfd2f8a62: remove double config dep
+- 1e99c73c75: Update internal usage of `configLoader.loadConfig` that now returns an object instead of an array of configs.
+- 6dcfe227a2: Added a scaffolder backend module template for the `create` command.
+- 4ca3542fdd: Fixed a bug where calling `backstage-cli backend:bundle --build-dependencies` with no dependencies to be built would cause all monorepo packages to be built instead.
+- 867ea81d15: bump `@rollup/plugin-commonjs` from 17.1.0 to 21.0.1
+- 16d06f6ac3: Introduces new `backstage-cli create` command to replace `create-plugin` and make space for creating a wider array of things. The create command also adds a new template for creating isomorphic common plugin packages.
+- Updated dependencies
+  - @backstage/config-loader@0.8.0
+  - @backstage/cli-common@0.1.6
+
 ## 0.8.2
 
 ### Patch Changes

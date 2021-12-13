@@ -30,8 +30,9 @@ import { Group, Duration } from '../types';
 
 // TODO(Rugvip): Could be good to have a clear place to put test utils that is linted accordingly
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { TestApiProvider } from '@backstage/test-utils';
 
 type PartialPropsWithChildren<T> = PropsWithChildren<Partial<T>>;
 
@@ -186,6 +187,9 @@ export const MockCostInsightsApiProvider = ({
     getIdToken: jest.fn(),
     getUserId: jest.fn(),
     signOut: jest.fn(),
+    getProfileInfo: jest.fn(),
+    getBackstageIdentity: jest.fn(),
+    getCredentials: jest.fn(),
   };
 
   const defaultCostInsightsApi: CostInsightsApi = {
@@ -199,16 +203,17 @@ export const MockCostInsightsApiProvider = ({
     getUserGroups: jest.fn(),
   };
 
-  // TODO: defaultConfigApiRef: ConfigApiRef
-
-  const defaultContext = ApiRegistry.from([
-    [identityApiRef, { ...defaultIdentityApi, ...context.identityApi }],
-    [
-      costInsightsApiRef,
-      { ...defaultCostInsightsApi, ...context.costInsightsApi },
-    ],
-    // [configApiRef, { ...defaultConfigApiRef, ...context.configApiRef }]
-  ]);
-
-  return <ApiProvider apis={defaultContext}>{children}</ApiProvider>;
+  return (
+    <TestApiProvider
+      apis={[
+        [identityApiRef, { ...defaultIdentityApi, ...context.identityApi }],
+        [
+          costInsightsApiRef,
+          { ...defaultCostInsightsApi, ...context.costInsightsApi },
+        ],
+      ]}
+    >
+      {children}
+    </TestApiProvider>
+  );
 };

@@ -6,6 +6,8 @@ on:
 
 jobs:
   sync:
+    if: github.repository == 'backstage/backstage' # prevent running on forks
+
     runs-on: ubuntu-latest
 
     strategy:

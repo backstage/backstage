@@ -23,7 +23,7 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   EntityKindPicker,
@@ -51,14 +51,26 @@ export type ScaffolderPageProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
+  groups?: Array<{
+    title?: string;
+    titleComponent?: React.ReactNode;
+    filter: (entity: Entity) => boolean;
+  }>;
 };
 
 export const ScaffolderPageContents = ({
   TemplateCardComponent,
+  groups,
 }: ScaffolderPageProps) => {
   const styles = useStyles();
-
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
+  const otherTemplatesGroup = {
+    title: groups ? 'Other Templates' : 'Templates',
+    filter: (entity: Entity) => {
+      const filtered = (groups ?? []).map(group => group.filter(entity));
+      return !filtered.some(result => result === true);
+    },
+  };
 
   return (
     <Page themeId="home">
@@ -96,7 +108,17 @@ export const ScaffolderPageContents = ({
             <EntityTagPicker />
           </div>
           <div>
-            <TemplateList TemplateCardComponent={TemplateCardComponent} />
+            {groups &&
+              groups.map(group => (
+                <TemplateList
+                  TemplateCardComponent={TemplateCardComponent}
+                  group={group}
+                />
+              ))}
+            <TemplateList
+              TemplateCardComponent={TemplateCardComponent}
+              group={otherTemplatesGroup}
+            />
           </div>
         </div>
       </Content>
@@ -106,8 +128,12 @@ export const ScaffolderPageContents = ({
 
 export const ScaffolderPage = ({
   TemplateCardComponent,
+  groups,
 }: ScaffolderPageProps) => (
   <EntityListProvider>
-    <ScaffolderPageContents TemplateCardComponent={TemplateCardComponent} />
+    <ScaffolderPageContents
+      TemplateCardComponent={TemplateCardComponent}
+      groups={groups}
+    />
   </EntityListProvider>
 );

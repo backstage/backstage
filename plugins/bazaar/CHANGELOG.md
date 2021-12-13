@@ -1,5 +1,40 @@
 # @backstage/plugin-bazaar
 
+## 0.1.6
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-catalog@0.7.4
+  - @backstage/plugin-catalog-react@0.6.5
+  - @backstage/cli@0.10.1
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/cli@0.10.0
+  - @backstage/core-plugin-api@0.2.2
+
+## 0.1.4
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- f6ba309d9e: A Bazaar project has been extended with the following fields: size, start date (optional), end date (optional) and a responsible person.
+- Updated dependencies
+  - @backstage/plugin-catalog@0.7.3
+  - @backstage/cli@0.9.0
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
 ## 0.1.3
 
 ### Patch Changes

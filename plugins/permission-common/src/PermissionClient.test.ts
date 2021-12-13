@@ -16,6 +16,7 @@
 
 import { RestContext, rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { ConfigReader } from '@backstage/config';
 import { PermissionClient } from './PermissionClient';
 import { AuthorizeRequest, AuthorizeResult, Identified } from './types/api';
 import { DiscoveryApi } from './types/discovery';
@@ -32,7 +33,7 @@ const discoveryApi: DiscoveryApi = {
 };
 const client: PermissionClient = new PermissionClient({
   discoveryApi,
-  enabled: true,
+  configApi: new ConfigReader({ permission: { enabled: true } }),
 });
 
 const mockPermission: Permission = {
@@ -145,7 +146,7 @@ describe('PermissionClient', () => {
       ).rejects.toThrowError(/invalid input/i);
     });
 
-    it('should allow all when authorization is not enabled', async () => {
+    it('should allow all when permission.enabled is false', async () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
           const responses = req.body.map((a: Identified<AuthorizeRequest>) => ({
@@ -156,7 +157,32 @@ describe('PermissionClient', () => {
           return res(json(responses));
         },
       );
-      const disabled = new PermissionClient({ discoveryApi, enabled: false });
+      const disabled = new PermissionClient({
+        discoveryApi,
+        configApi: new ConfigReader({ permission: { enabled: false } }),
+      });
+      const response = await disabled.authorize([mockAuthorizeRequest]);
+      expect(response[0]).toEqual(
+        expect.objectContaining({ result: AuthorizeResult.ALLOW }),
+      );
+      expect(mockAuthorizeHandler).not.toBeCalled();
+    });
+
+    it('should allow all when permission.enabled is not configured', async () => {
+      mockAuthorizeHandler.mockImplementationOnce(
+        (req, res, { json }: RestContext) => {
+          const responses = req.body.map((a: Identified<AuthorizeRequest>) => ({
+            id: a.id,
+            outcome: AuthorizeResult.DENY,
+          }));
+
+          return res(json(responses));
+        },
+      );
+      const disabled = new PermissionClient({
+        discoveryApi,
+        configApi: new ConfigReader({}),
+      });
       const response = await disabled.authorize([mockAuthorizeRequest]);
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),

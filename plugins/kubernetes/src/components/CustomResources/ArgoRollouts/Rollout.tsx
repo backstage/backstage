@@ -41,6 +41,7 @@ import {
   getOwnedPodsThroughReplicaSets,
 } from '../../../utils/owner';
 import { StatusError, StatusOK } from '@backstage/core-components';
+import { READY_COLUMNS, RESOURCE_COLUMNS } from '../../Pods/PodsTable';
 
 type RolloutAccordionsProps = {
   rollouts: any[];
@@ -237,7 +238,10 @@ const RolloutAccordion = ({
             />
           </div>
           <div>
-            <PodsTable pods={ownedPods} />
+            <PodsTable
+              pods={ownedPods}
+              extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]}
+            />
           </div>
         </div>
       </AccordionDetails>

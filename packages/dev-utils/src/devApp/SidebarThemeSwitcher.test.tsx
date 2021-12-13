@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+
 import { AppThemeApi, appThemeApiRef } from '@backstage/core-plugin-api';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { BackstageTheme } from '@backstage/theme';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -24,7 +24,6 @@ import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 
 describe('SidebarThemeSwitcher', () => {
   let appThemeApi: jest.Mocked<AppThemeApi>;
-  let apiRegistry: ApiRegistry;
 
   beforeEach(() => {
     appThemeApi = {
@@ -51,15 +50,13 @@ describe('SidebarThemeSwitcher', () => {
         theme: {} as unknown as BackstageTheme,
       },
     ]);
-
-    apiRegistry = ApiRegistry.with(appThemeApiRef, appThemeApi);
   });
 
   it('should display current theme', async () => {
     const { getByLabelText, getByRole, getByText } = await renderInTestApp(
-      <ApiProvider apis={apiRegistry}>
+      <TestApiProvider apis={[[appThemeApiRef, appThemeApi]]}>
         <SidebarThemeSwitcher />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     const button = getByLabelText('Switch Theme');
@@ -76,9 +73,9 @@ describe('SidebarThemeSwitcher', () => {
 
   it('should select different theme', async () => {
     const { getByLabelText, getByRole, getByText } = await renderInTestApp(
-      <ApiProvider apis={apiRegistry}>
+      <TestApiProvider apis={[[appThemeApiRef, appThemeApi]]}>
         <SidebarThemeSwitcher />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     const button = getByLabelText('Switch Theme');

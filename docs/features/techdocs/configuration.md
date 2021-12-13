@@ -135,14 +135,30 @@ techdocs:
   # the old, case-sensitive entity triplet behavior.
   legacyUseCaseSensitiveTripletPaths: false
 
+  # techdocs.cache is optional, and is only recommended when you've configured
+  # an external techdocs.publisher.type above. Also requires backend.cache to
+  # be configured with a valid cache store.
+  cache:
+    # Represents the number of milliseconds a statically built asset should
+    # stay cached. Cache invalidation is handled automatically by the frontend,
+    # which compares the build times in cached metadata vs. canonical storage,
+    # allowing long TTLs (e.g. 1 month/year)
+    ttl: 3600000
+
+    # (Optional) The time (in milliseconds) that the TechDocs backend will wait
+    # for a cache service to respond before continuing on as though the cached
+    # object was not found (e.g. when the cache sercice is unavailable). The
+    # default value is 1000
+    readTimeout: 500
+
   # (Optional and Legacy) TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc.
   # You don't have to specify this anymore.
 
-  requestUrl: http://localhost:7000/api/techdocs
+  requestUrl: http://localhost:7007/api/techdocs
 
   # (Optional and Legacy) Just another route in techdocs-backend where TechDocs requests the static files from. This URL uses an HTTP middleware
   # to serve files from either a local directory or an External storage provider.
   # You don't have to specify this anymore.
 
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  storageUrl: http://localhost:7007/api/techdocs/static/docs
 ```

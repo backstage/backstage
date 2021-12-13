@@ -1,5 +1,57 @@
 # @backstage/core-components
 
+## 0.8.0
+
+### Minor Changes
+
+- a036b65c2f: The `SignInPage` has been updated to use the new `onSignInSuccess` callback that was introduced in the same release. While existing code will usually continue to work, it is technically a breaking change because of the dependency on `SignInProps` from the `@backstage/core-plugin-api`. For more information on this change and instructions on how to migrate existing code, see the [`@backstage/core-app-api` CHANGELOG.md](https://github.com/backstage/backstage/blob/master/packages/core-app-api/CHANGELOG.md).
+
+  Added a new `UserIdentity` class which helps create implementations of the `IdentityApi`. It provides a couple of static factory methods such as the most relevant `create`, and `createGuest` to create an `IdentityApi` for a guest user.
+
+  Also provides a deprecated `fromLegacy` method to create an `IdentityApi` from the now deprecated `SignInResult`. This method will be removed in the future when `SignInResult` is also removed.
+
+### Patch Changes
+
+- 9603827bb5: Addressed some peer dependency warnings
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- e839500286: Introduce new `LogViewer` component that can be used to display logs. It supports copying, searching, filtering, and displaying text with ANSI color escape codes.
+- 1357ac30f1: Standardize on `classnames` instead of both that and `clsx`.
+- e5976071ea: Use ellipsis style for overflowed text in sidebar menu
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.0
+
+## 0.7.6
+
+### Patch Changes
+
+- e34f174fc5: Added `<SidebarSubmenu>` and `<SidebarSubmenuItem>` to enable building better sidebars. You can check out the storybook for more inspiration and how to get started.
+
+  Added two new theme props for styling the sidebar too, `navItem.hoverBackground` and `submenu.background`.
+
+- Updated dependencies
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
+## 0.7.5
+
+### Patch Changes
+
+- 157530187a: Pin sidebar by default for easier navigation
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/core-plugin-api@0.2.1
+
+## 0.7.4
+
+### Patch Changes
+
+- 274a4fc633: Add Props Icon for Sidebar Item SidebarSearchField and Settings
+- 682945e233: Changing the `Header` styles to use more theme variables. With this the title `font-size` will not change on resizing the window.
+- 892c1d9202: Update OAuthAdapter to create identity.token from identity.idToken if it does not exist, and prevent overwrites to identity.toke. Update login page commonProvider to prefer .token over .idToken
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.0
+
 ## 0.7.3
 
 ### Patch Changes

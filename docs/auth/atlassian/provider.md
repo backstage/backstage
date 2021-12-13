@@ -28,7 +28,7 @@ Name your integration and click on the `Create` button.
 
 Settings for local development:
 
-- Callback URL: `http://localhost:7000/api/auth/atlassian`
+- Callback URL: `http://localhost:7007/api/auth/atlassian`
 - Use rotating refresh tokens
 - For permissions, you **must** enable `View user profile` for the currently
   logged-in user, under `User identity API`

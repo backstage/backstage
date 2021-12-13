@@ -27,6 +27,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigReader } from '@backstage/config';
+import { createApp as createApp_2 } from '@backstage/app-defaults';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
@@ -38,6 +39,7 @@ import { FeatureFlagsSaveOptions } from '@backstage/core-plugin-api';
 import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { OAuthRequestApi } from '@backstage/core-plugin-api';
@@ -45,7 +47,6 @@ import { Observable } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
-import { OptionalAppOptions } from '@backstage/app-defaults';
 import { PendingAuthRequest } from '@backstage/core-plugin-api';
 import { PluginOutput } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
@@ -126,7 +127,7 @@ export type ApiProviderProps = {
   children: ReactNode;
 };
 
-// @public
+// @public @deprecated
 export class ApiRegistry implements ApiHolder {
   constructor(apis: Map<string, unknown>);
   // Warning: (ae-forgotten-export) The symbol "ApiRegistryBuilder" needs to be exported by the entry point index.d.ts
@@ -250,24 +251,13 @@ export class AppThemeSelector implements AppThemeApi {
 // @public
 export class AtlassianAuth {
   // (undocumented)
-  static create({
-    discoveryApi,
-    environment,
-    provider,
-    oauthRequestApi,
-  }: OAuthApiCreateOptions): typeof atlassianAuthApiRef.T;
+  static create(options: OAuthApiCreateOptions): typeof atlassianAuthApiRef.T;
 }
 
-// @public
+// @public @deprecated
 export class Auth0Auth {
   // (undocumented)
-  static create({
-    discoveryApi,
-    environment,
-    provider,
-    oauthRequestApi,
-    defaultScopes,
-  }: OAuthApiCreateOptions): typeof auth0AuthApiRef.T;
+  static create(options: OAuthApiCreateOptions): typeof auth0AuthApiRef.T;
 }
 
 // @public
@@ -303,13 +293,7 @@ export type BackstagePluginWithAnyOutput = Omit<
 // @public
 export class BitbucketAuth {
   // (undocumented)
-  static create({
-    discoveryApi,
-    environment,
-    provider,
-    oauthRequestApi,
-    defaultScopes,
-  }: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T;
+  static create(options: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T;
 }
 
 // @public
@@ -332,7 +316,9 @@ export type BootErrorPageProps = {
 export { ConfigReader };
 
 // @public @deprecated
-export function createApp(options?: OptionalAppOptions): BackstageApp;
+export function createApp(
+  options?: Parameters<typeof createApp_2>[0],
+): BackstageApp & AppContext;
 
 // @public
 export function createSpecializedApp(options: AppOptions): BackstageApp;
@@ -400,13 +386,7 @@ export class GithubAuth implements OAuthApi, SessionApi {
   // @deprecated
   constructor(sessionManager: SessionManager<GithubSession>);
   // (undocumented)
-  static create({
-    discoveryApi,
-    environment,
-    provider,
-    oauthRequestApi,
-    defaultScopes,
-  }: OAuthApiCreateOptions): GithubAuth;
+  static create(options: OAuthApiCreateOptions): GithubAuth;
   // (undocumented)
   getAccessToken(scope?: string, options?: AuthRequestOptions): Promise<string>;
   // (undocumented)
@@ -439,25 +419,13 @@ export type GithubSession = {
 // @public
 export class GitlabAuth {
   // (undocumented)
-  static create({
-    discoveryApi,
-    environment,
-    provider,
-    oauthRequestApi,
-    defaultScopes,
-  }: OAuthApiCreateOptions): typeof gitlabAuthApiRef.T;
+  static create(options: OAuthApiCreateOptions): typeof gitlabAuthApiRef.T;
 }
 
 // @public
 export class GoogleAuth {
   // (undocumented)
-  static create({
-    discoveryApi,
-    oauthRequestApi,
-    environment,
-    provider,
-    defaultScopes,
-  }: OAuthApiCreateOptions): typeof googleAuthApiRef.T;
+  static create(options: OAuthApiCreateOptions): typeof googleAuthApiRef.T;
 }
 
 // @public
@@ -475,13 +443,7 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
 // @public
 export class MicrosoftAuth {
   // (undocumented)
-  static create({
-    environment,
-    provider,
-    oauthRequestApi,
-    discoveryApi,
-    defaultScopes,
-  }: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T;
+  static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T;
 }
 
 // @public
@@ -505,14 +467,7 @@ export class OAuth2
     scopeTransform: (scopes: string[]) => string[];
   });
   // (undocumented)
-  static create({
-    discoveryApi,
-    environment,
-    provider,
-    oauthRequestApi,
-    defaultScopes,
-    scopeTransform,
-  }: OAuth2CreateOptions): OAuth2;
+  static create(options: OAuth2CreateOptions): OAuth2;
   // (undocumented)
   getAccessToken(
     scope?: string | string[],
@@ -568,24 +523,15 @@ export class OAuthRequestManager implements OAuthRequestApi {
 // @public
 export class OktaAuth {
   // (undocumented)
-  static create({
-    discoveryApi,
-    environment,
-    provider,
-    oauthRequestApi,
-    defaultScopes,
-  }: OAuthApiCreateOptions): typeof oktaAuthApiRef.T;
+  static create(options: OAuthApiCreateOptions): typeof oktaAuthApiRef.T;
 }
 
 // @public
 export class OneLoginAuth {
   // (undocumented)
-  static create({
-    discoveryApi,
-    environment,
-    provider,
-    oauthRequestApi,
-  }: OneLoginAuthCreateOptions): typeof oneloginAuthApiRef.T;
+  static create(
+    options: OneLoginAuthCreateOptions,
+  ): typeof oneloginAuthApiRef.T;
 }
 
 // @public
@@ -605,11 +551,7 @@ export class SamlAuth
   // @deprecated
   constructor(sessionManager: SessionManager<SamlSession>);
   // (undocumented)
-  static create({
-    discoveryApi,
-    environment,
-    provider,
-  }: AuthApiCreateOptions): SamlAuth;
+  static create(options: AuthApiCreateOptions): SamlAuth;
   // (undocumented)
   getBackstageIdentity(
     options?: AuthRequestOptions,
@@ -633,10 +575,10 @@ export type SamlSession = {
 
 // @public
 export type SignInPageProps = {
-  onResult(result: SignInResult): void;
+  onSignInSuccess(identityApi: IdentityApi): void;
 };
 
-// @public
+// @public @deprecated
 export type SignInResult = {
   userId: string;
   profile: ProfileInfo;

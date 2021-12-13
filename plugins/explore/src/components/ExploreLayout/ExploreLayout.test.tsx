@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  FeatureFlagged,
-} from '@backstage/core-app-api';
+import { FeatureFlagged } from '@backstage/core-app-api';
 import {
   FeatureFlagsApi,
   featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ExploreLayout } from './ExploreLayout';
@@ -35,11 +31,11 @@ const featureFlagsApi: jest.Mocked<FeatureFlagsApi> = {
   registerFlag: jest.fn(),
 };
 
-const mockApis = ApiRegistry.with(featureFlagsApiRef, featureFlagsApi);
-
 describe('<ExploreLayout />', () => {
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ApiProvider apis={mockApis}>{children}</ApiProvider>
+    <TestApiProvider apis={[[featureFlagsApiRef, featureFlagsApi]]}>
+      {children}
+    </TestApiProvider>
   );
 
   afterEach(() => {

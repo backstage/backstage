@@ -1,5 +1,68 @@
 # @backstage/plugin-scaffolder
 
+## 0.11.14
+
+### Patch Changes
+
+- 6845cce533: Can specify allowedOwners to the RepoUrlPicker picker in a template definition
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- 2edcf7738f: Fix bug with setting owner in RepoUrlPicker causing validation failure
+- b291c3176e: Switch to using `LogViewer` component from `@backstage/core-components` to display scaffolder logs.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/integration-react@0.1.15
+  - @backstage/plugin-catalog-react@0.6.5
+
+## 0.11.13
+
+### Patch Changes
+
+- ed5bef529e: Add group filtering to the scaffolder page so that individuals can surface specific templates to end users ahead of others, or group templates together. This can be accomplished by passing in a `groups` prop to the `ScaffolderPage`
+
+  ```
+  <ScaffolderPage
+    groups={[
+      {
+        title: "Recommended",
+        filter: entity =>
+          entity?.metadata?.tags?.includes('recommended') ?? false,
+      },
+    ]}
+  />
+  ```
+
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
+## 0.11.12
+
+### Patch Changes
+
+- 2d7d165737: Bump `react-jsonschema-form`
+- 9f21236a29: Fixed a missing `await` when throwing server side errors
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.11.11
+
+### Patch Changes
+
+- 8809b6c0dd: Update the json-schema dependency version.
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/integration-react@0.1.14
+
 ## 0.11.10
 
 ### Patch Changes

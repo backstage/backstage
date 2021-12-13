@@ -16,7 +16,7 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import {
   AsyncEntityProvider,
@@ -26,10 +26,13 @@ import {
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
-import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
-import { fireEvent } from '@testing-library/react';
+import {
+  MockStorageApi,
+  renderInTestApp,
+  TestApiRegistry,
+} from '@backstage/test-utils';
+import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { Route, Routes } from 'react-router';
 import { EntityLayout } from './EntityLayout';
 
@@ -40,12 +43,14 @@ const mockEntity = {
   },
 } as Entity;
 
-const mockApis = ApiRegistry.with(catalogApiRef, {} as CatalogApi)
-  .with(alertApiRef, {} as AlertApi)
-  .with(
+const mockApis = TestApiRegistry.from(
+  [catalogApiRef, {} as CatalogApi],
+  [alertApiRef, {} as AlertApi],
+  [
     starredEntitiesApiRef,
     new DefaultStarredEntitiesApi({ storageApi: MockStorageApi.create() }),
-  );
+  ],
+);
 
 describe('EntityLayout', () => {
   it('renders simplest case', async () => {

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React from 'react';
 import SearchIcon from '@material-ui/icons/Search';
-import { SearchModal } from '../SearchModal';
 import { SidebarItem } from '@backstage/core-components';
+import { SearchModal } from '../SearchModal';
+import { useSearch } from '../SearchContext';
 
 export const SidebarSearchModal = () => {
-  const [open, setOpen] = useState<boolean>(false);
-  const toggleModal = (): void => setOpen(prevState => !prevState);
+  const { open, toggleModal } = useSearch();
 
   return (
     <>

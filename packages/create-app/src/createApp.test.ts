@@ -59,7 +59,7 @@ describe('command entrypoint', () => {
 
   test('should call expected tasks with no path option', async () => {
     const cmd = {} as unknown as Command;
-    await createApp(cmd);
+    await createApp(cmd, '1.0.0');
     expect(checkAppExistsMock).toHaveBeenCalled();
     expect(createTemporaryAppFolderMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
@@ -69,7 +69,7 @@ describe('command entrypoint', () => {
 
   it('should call expected tasks with path option', async () => {
     const cmd = { path: 'myDirectory' } as unknown as Command;
-    await createApp(cmd);
+    await createApp(cmd, '1.0.0');
     expect(checkPathExistsMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(buildAppMock).toHaveBeenCalled();
@@ -77,7 +77,7 @@ describe('command entrypoint', () => {
 
   it('should not call `buildAppTask` when `skipInstall` is supplied', async () => {
     const cmd = { skipInstall: true } as unknown as Command;
-    await createApp(cmd);
+    await createApp(cmd, '1.0.0');
     expect(buildAppMock).not.toHaveBeenCalled();
   });
 });

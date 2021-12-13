@@ -26,8 +26,8 @@ import {
   MockEntityListContextProvider,
 } from '@backstage/plugin-catalog-react';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { renderWithEffects } from '@backstage/test-utils';
+import { ApiProvider } from '@backstage/core-app-api';
+import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
 
 const entities: Entity[] = [
   {
@@ -62,7 +62,7 @@ const entities: Entity[] = [
   },
 ];
 
-const apis = ApiRegistry.from([
+const apis = TestApiRegistry.from(
   [
     catalogApiRef,
     {
@@ -77,7 +77,7 @@ const apis = ApiRegistry.from([
       post: jest.fn(),
     } as unknown as AlertApi,
   ],
-]);
+);
 
 describe('<TemplateTypePicker/>', () => {
   it('renders available entity types', async () => {

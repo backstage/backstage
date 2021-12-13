@@ -32,17 +32,19 @@ const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
  * @public
  */
 export default class GoogleAuth {
-  static create({
-    discoveryApi,
-    oauthRequestApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    defaultScopes = [
-      'openid',
-      `${SCOPE_PREFIX}userinfo.email`,
-      `${SCOPE_PREFIX}userinfo.profile`,
-    ],
-  }: OAuthApiCreateOptions): typeof googleAuthApiRef.T {
+  static create(options: OAuthApiCreateOptions): typeof googleAuthApiRef.T {
+    const {
+      discoveryApi,
+      oauthRequestApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      defaultScopes = [
+        'openid',
+        `${SCOPE_PREFIX}userinfo.email`,
+        `${SCOPE_PREFIX}userinfo.profile`,
+      ],
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

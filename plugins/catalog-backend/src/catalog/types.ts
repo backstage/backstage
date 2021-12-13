@@ -25,6 +25,7 @@ import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
 export type EntityFilter =
   | { allOf: EntityFilter[] }
   | { anyOf: EntityFilter[] }
+  | { not: EntityFilter }
   | EntitiesSearchFilter;
 
 /**
@@ -50,16 +51,10 @@ export type EntitiesSearchFilter = {
   /**
    * Match on plain equality of values.
    *
-   * If undefined, this factor is not taken into account. Otherwise, match on
-   * values that are equal to any of the given array items. Matches are always
-   * case insensitive.
+   * Match on values that are equal to any of the given array items. Matches are
+   * always case insensitive.
    */
-  matchValueIn?: string[];
-
-  /**
-   * Match on existence of key.
-   */
-  matchValueExists?: boolean;
+  values?: string[];
 };
 
 export type PageInfo =

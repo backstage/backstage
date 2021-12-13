@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Progress } from '@backstage/core-components';
+import { LogViewer } from '@backstage/core-components';
 import {
   Button,
   createStyles,
@@ -26,9 +26,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
-import React, { Suspense, useState } from 'react';
-
-const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
+import React, { useState } from 'react';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,6 +44,9 @@ const useDrawerStyles = makeStyles((theme: Theme) =>
       height: '100%',
       overflow: 'hidden',
     },
+    logs: {
+      background: theme.palette.background.default,
+    },
   }),
 );
 
@@ -57,6 +58,8 @@ export const TechDocsBuildLogsDrawerContent = ({
   onClose: () => void;
 }) => {
   const classes = useDrawerStyles();
+  const logText =
+    buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n');
   return (
     <Grid
       container
@@ -83,18 +86,7 @@ export const TechDocsBuildLogsDrawerContent = ({
           <Close />
         </IconButton>
       </Grid>
-
-      <Suspense fallback={<Progress />}>
-        <LazyLog
-          text={
-            buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n')
-          }
-          extraLines={1}
-          follow
-          selectableLines
-          enableSearch
-        />
-      </Suspense>
+      <LogViewer text={logText} classes={{ root: classes.logs }} />
     </Grid>
   );
 };

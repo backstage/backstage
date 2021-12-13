@@ -112,7 +112,7 @@ export class TodoScmReader implements TodoReader {
     options: Omit<Options, 'integrations'>,
   ): TodoScmReader;
   // (undocumented)
-  readTodos({ url }: ReadTodosOptions): Promise<ReadTodosResult>;
+  readTodos(options: ReadTodosOptions): Promise<ReadTodosResult>;
 }
 
 // Warning: (ae-missing-release-tag) "TodoService" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

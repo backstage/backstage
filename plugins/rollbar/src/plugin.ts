@@ -26,8 +26,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '',
-  title: 'Rollbar',
+  id: 'rollbar',
 });
 
 export const rollbarPlugin = createPlugin({

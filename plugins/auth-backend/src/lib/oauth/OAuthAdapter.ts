@@ -19,10 +19,16 @@ import crypto from 'crypto';
 import { URL } from 'url';
 import {
   AuthProviderRouteHandlers,
-  BackstageIdentity,
   AuthProviderConfig,
+  BackstageIdentityResponse,
+  BackstageSignInResult,
 } from '../../providers/types';
-import { InputError, isError, NotAllowedError } from '@backstage/errors';
+import {
+  AuthenticationError,
+  InputError,
+  isError,
+  NotAllowedError,
+} from '@backstage/errors';
 import { TokenIssuer } from '../../identity/types';
 import { readState, verifyNonce } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
@@ -32,6 +38,7 @@ import {
   OAuthRefreshRequest,
   OAuthState,
 } from './types';
+import { prepareBackstageIdentityResponse } from '../../providers/prepareBackstageIdentityResponse';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -145,12 +152,12 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         this.setRefreshTokenCookie(res, refreshToken);
       }
 
-      await this.populateIdentity(response.backstageIdentity);
+      const identity = await this.populateIdentity(response.backstageIdentity);
 
       // post message back to popup if successful
       return postMessageResponse(res, appOrigin, {
         type: 'authorization_response',
-        response,
+        response: { ...response, backstageIdentity: identity },
       });
     } catch (error) {
       const { name, message } = isError(error)
@@ -166,29 +173,24 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
   async logout(req: express.Request, res: express.Response): Promise<void> {
     if (!ensuresXRequestedWith(req)) {
-      res.status(401).send('Invalid X-Requested-With header');
-      return;
+      throw new AuthenticationError('Invalid X-Requested-With header');
     }
 
     // remove refresh token cookie if it is set
     this.removeRefreshTokenCookie(res);
 
-    res.status(200).send('logout!');
+    res.status(200).end();
   }
 
   async refresh(req: express.Request, res: express.Response): Promise<void> {
     if (!ensuresXRequestedWith(req)) {
-      res.status(401).send('Invalid X-Requested-With header');
-      return;
+      throw new AuthenticationError('Invalid X-Requested-With header');
     }
 
     if (!this.handlers.refresh || this.options.disableRefresh) {
-      res
-        .status(400)
-        .send(
-          `Refresh token not supported for provider: ${this.options.providerId}`,
-        );
-      return;
+      throw new InputError(
+        `Refresh token is not supported for provider ${this.options.providerId}`,
+      );
     }
 
     try {
@@ -197,7 +199,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
       // throw error if refresh token is missing in the request
       if (!refreshToken) {
-        throw new Error('Missing session cookie');
+        throw new InputError('Missing session cookie');
       }
 
       const scope = req.query.scope?.toString() ?? '';
@@ -209,7 +211,9 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         forwardReq as OAuthRefreshRequest,
       );
 
-      await this.populateIdentity(response.backstageIdentity);
+      const backstageIdentity = await this.populateIdentity(
+        response.backstageIdentity,
+      );
 
       if (
         response.providerInfo.refreshToken &&
@@ -218,9 +222,9 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         this.setRefreshTokenCookie(res, response.providerInfo.refreshToken);
       }
 
-      res.status(200).json(response);
+      res.status(200).json({ ...response, backstageIdentity });
     } catch (error) {
-      res.status(401).send(String(error));
+      throw new AuthenticationError('Refresh failed', error);
     }
   }
 
@@ -228,18 +232,22 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
    * If the response from the OAuth provider includes a Backstage identity, we
    * make sure it's populated with all the information we can derive from the user ID.
    */
-  private async populateIdentity(identity?: BackstageIdentity) {
+  private async populateIdentity(
+    identity?: BackstageSignInResult,
+  ): Promise<BackstageIdentityResponse | undefined> {
     if (!identity) {
-      return;
+      return undefined;
     }
 
-    if (!(identity.token || identity.idToken)) {
-      identity.token = await this.options.tokenIssuer.issueToken({
-        claims: { sub: identity.id },
-      });
-    } else if (!identity.token && identity.idToken) {
-      identity.token = identity.idToken;
+    if (identity.token) {
+      return prepareBackstageIdentityResponse(identity);
     }
+
+    const token = await this.options.tokenIssuer.issueToken({
+      claims: { sub: identity.id },
+    });
+
+    return prepareBackstageIdentityResponse({ ...identity, token });
   }
 
   private setNonceCookie = (res: express.Response, nonce: string) => {
