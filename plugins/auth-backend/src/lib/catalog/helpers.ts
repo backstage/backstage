@@ -20,7 +20,6 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { TokenParams } from '../../identity';
-import { BackstageUserIdentity } from '../../providers/types';
 
 export function getEntityClaims(entity: UserEntity): TokenParams['claims'] {
   const userRef = stringifyEntityRef(entity);
@@ -38,8 +37,4 @@ export function getEntityClaims(entity: UserEntity): TokenParams['claims'] {
     sub: userRef,
     ent: [userRef, ...membershipRefs],
   };
-}
-
-export function getIdentityClaims(identity: BackstageUserIdentity): string[] {
-  return identity.ownershipEntityRefs;
 }
