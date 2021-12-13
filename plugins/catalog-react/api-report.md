@@ -536,6 +536,7 @@ export const EntityRefLink: React_2.ForwardRefExoticComponent<
     | 'TypographyClasses'
     | 'entityRef'
     | 'defaultKind'
+    | 'subRoutePath'
   > &
     React_2.RefAttributes<any>
 >;
