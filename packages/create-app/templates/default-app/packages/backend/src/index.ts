@@ -38,7 +38,7 @@ function makeCreateEnv(config: Config) {
 
   const cacheManager = CacheManager.fromConfig(config);
   const databaseManager = DatabaseManager.fromConfig(config);
-  const tokenManager = ServerTokenManager.default({ config, logger: root });
+  const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
 
   return (plugin: string): PluginEnvironment => {
     const logger = root.child({ type: 'plugin', plugin });

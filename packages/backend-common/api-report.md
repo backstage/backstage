@@ -491,10 +491,12 @@ export class ServerTokenManager implements TokenManager {
   // (undocumented)
   authenticate(token: string): Promise<void>;
   // (undocumented)
-  static default(options: {
-    config: Config;
-    logger: Logger_2;
-  }): ServerTokenManager;
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger_2;
+    },
+  ): ServerTokenManager;
   // (undocumented)
   getToken(): Promise<{
     token: string;

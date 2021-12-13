@@ -43,7 +43,7 @@ function makeCreateEnv(config: Config) {
 
   const cacheManager = CacheManager.fromConfig(config);
   const databaseManager = DatabaseManager.fromConfig(config);
-+ const tokenManager = ServerTokenManager.default({ config, logger: root });
++ const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
 ```
 
 With this `tokenManager`, you can then generate a server token for requests:

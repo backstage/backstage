@@ -38,8 +38,7 @@ describe('ServerTokenManager', () => {
 
   describe('getToken', () => {
     it('should return a token', async () => {
-      const tokenManager = ServerTokenManager.default({
-        config: configWithSecret,
+      const tokenManager = ServerTokenManager.fromConfig(configWithSecret, {
         logger,
       });
       expect((await tokenManager.getToken()).token).toBeDefined();
@@ -48,8 +47,7 @@ describe('ServerTokenManager', () => {
 
   describe('authenticate', () => {
     it('should not throw if token is valid', async () => {
-      const tokenManager = ServerTokenManager.default({
-        config: configWithSecret,
+      const tokenManager = ServerTokenManager.fromConfig(configWithSecret, {
         logger,
       });
       const { token } = await tokenManager.getToken();
@@ -57,8 +55,7 @@ describe('ServerTokenManager', () => {
     });
 
     it('should throw if token is invalid', async () => {
-      const tokenManager = ServerTokenManager.default({
-        config: configWithSecret,
+      const tokenManager = ServerTokenManager.fromConfig(configWithSecret, {
         logger,
       });
       await expect(
@@ -67,12 +64,10 @@ describe('ServerTokenManager', () => {
     });
 
     it('should validate server tokens created by a different instance using the same secret', async () => {
-      const tokenManager1 = ServerTokenManager.default({
-        config: configWithSecret,
+      const tokenManager1 = ServerTokenManager.fromConfig(configWithSecret, {
         logger,
       });
-      const tokenManager2 = ServerTokenManager.default({
-        config: configWithSecret,
+      const tokenManager2 = ServerTokenManager.fromConfig(configWithSecret, {
         logger,
       });
 
@@ -82,26 +77,26 @@ describe('ServerTokenManager', () => {
     });
 
     it('should validate server tokens created using any of the secrets', async () => {
-      const tokenManager1 = ServerTokenManager.default({
-        config: new ConfigReader({
+      const tokenManager1 = ServerTokenManager.fromConfig(
+        new ConfigReader({
           backend: { auth: { keys: [{ secret: 'a1b2c3' }] } },
         }),
-        logger,
-      });
-      const tokenManager2 = ServerTokenManager.default({
-        config: new ConfigReader({
+        { logger },
+      );
+      const tokenManager2 = ServerTokenManager.fromConfig(
+        new ConfigReader({
           backend: { auth: { keys: [{ secret: 'd4e5f6' }] } },
         }),
-        logger,
-      });
-      const tokenManager3 = ServerTokenManager.default({
-        config: new ConfigReader({
+        { logger },
+      );
+      const tokenManager3 = ServerTokenManager.fromConfig(
+        new ConfigReader({
           backend: {
             auth: { keys: [{ secret: 'a1b2c3' }, { secret: 'd4e5f6' }] },
           },
         }),
-        logger,
-      });
+        { logger },
+      );
 
       const { token: token1 } = await tokenManager1.getToken();
       await expect(tokenManager3.authenticate(token1)).resolves.not.toThrow();
@@ -111,18 +106,18 @@ describe('ServerTokenManager', () => {
     });
 
     it('should throw for server tokens created using a different secret', async () => {
-      const tokenManager1 = ServerTokenManager.default({
-        config: new ConfigReader({
+      const tokenManager1 = ServerTokenManager.fromConfig(
+        new ConfigReader({
           backend: { auth: { keys: [{ secret: 'a1b2c3' }] } },
         }),
-        logger,
-      });
-      const tokenManager2 = ServerTokenManager.default({
-        config: new ConfigReader({
+        { logger },
+      );
+      const tokenManager2 = ServerTokenManager.fromConfig(
+        new ConfigReader({
           backend: { auth: { keys: [{ secret: 'd4e5f6' }] } },
         }),
-        logger,
-      });
+        { logger },
+      );
 
       const { token } = await tokenManager1.getToken();
 
@@ -133,14 +128,13 @@ describe('ServerTokenManager', () => {
 
     it('should throw for server tokens created by a different generated secret', async () => {
       (process.env as any).NODE_ENV = 'development';
-      const tokenManager1 = ServerTokenManager.default({
-        config: new ConfigReader({
+      const tokenManager1 = ServerTokenManager.fromConfig(
+        new ConfigReader({
           backend: { auth: { keys: [{ secret: 'a1b2c3' }] } },
         }),
-        logger,
-      });
-      const tokenManager2 = ServerTokenManager.default({
-        config: emptyConfig,
+        { logger },
+      );
+      const tokenManager2 = ServerTokenManager.fromConfig(emptyConfig, {
         logger,
       });
 
@@ -156,33 +150,33 @@ describe('ServerTokenManager', () => {
     describe('NODE_ENV === production', () => {
       it('should throw if backend auth configuration is missing', () => {
         expect(() =>
-          ServerTokenManager.default({ config: emptyConfig, logger }),
+          ServerTokenManager.fromConfig(emptyConfig, { logger }),
         ).toThrow();
       });
 
       it('should throw if no keys are included in the configuration', () => {
         expect(() =>
-          ServerTokenManager.default({
-            config: new ConfigReader({
+          ServerTokenManager.fromConfig(
+            new ConfigReader({
               backend: { auth: { keys: [] } },
             }),
-            logger,
-          }),
+            { logger },
+          ),
         ).toThrow();
       });
 
       it('should throw if any key is missing a secret property', () => {
         expect(() =>
-          ServerTokenManager.default({
-            config: new ConfigReader({
+          ServerTokenManager.fromConfig(
+            new ConfigReader({
               backend: {
                 auth: {
                   keys: [{ secret: '123' }, {}, { secret: '789' }],
                 },
               },
             }),
-            logger,
-          }),
+            { logger },
+          ),
         ).toThrow();
       });
     });
@@ -199,27 +193,24 @@ describe('ServerTokenManager', () => {
       });
 
       it('should generate a key if no config is provided', () => {
-        ServerTokenManager.default({
-          config: emptyConfig,
-          logger,
-        });
+        ServerTokenManager.fromConfig(emptyConfig, { logger });
 
         expect(generateSyncSpy).toHaveBeenCalledWith('oct', 192);
       });
 
       it('should generate a key if no keys are provided in the configuration', () => {
-        ServerTokenManager.default({
-          config: new ConfigReader({
+        ServerTokenManager.fromConfig(
+          new ConfigReader({
             backend: { auth: { keys: [] } },
           }),
-          logger,
-        });
+          { logger },
+        );
 
         expect(generateSyncSpy).toHaveBeenCalledWith('oct', 192);
       });
 
       it('should use provided secrets if config is provided', () => {
-        ServerTokenManager.default({ config: configWithSecret, logger });
+        ServerTokenManager.fromConfig(configWithSecret, { logger });
         expect(generateSyncSpy).not.toHaveBeenCalled();
       });
     });

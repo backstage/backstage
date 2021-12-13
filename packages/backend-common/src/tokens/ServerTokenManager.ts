@@ -30,8 +30,8 @@ export class ServerTokenManager implements TokenManager {
   private readonly verificationKeys: JWKS.KeyStore;
   private readonly signingKey: JWK.Key;
 
-  static default(options: { config: Config; logger: Logger }) {
-    const { config, logger } = options;
+  static fromConfig(config: Config, options: { logger: Logger }) {
+    const { logger } = options;
 
     if (process.env.NODE_ENV === 'development') {
       let secrets: string[] = [];
