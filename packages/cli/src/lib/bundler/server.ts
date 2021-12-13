@@ -61,12 +61,15 @@ export async function serveBundle(options: ServeOptions) {
         // See https://github.com/facebookincubator/create-react-app/issues/387.
         disableDotRule: true,
       },
-      https: url.protocol === 'https:',
+      https: false,
       host,
       port,
       proxy: pkg.proxy,
       // When the dev server is behind a proxy, the host and public hostname differ
       allowedHosts: [url.hostname],
+      client: {
+        webSocketURL: 'auto://0.0.0.0:0/ws'
+      }
     } as any,
   );
 
