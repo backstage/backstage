@@ -134,7 +134,7 @@
     "@types/recursive-readdir": "^2.2.0",
     "@types/rollup-plugin-peer-deps-external": "^2.2.0",
     "@types/rollup-plugin-postcss": "^2.0.0",
-    "@types/tar": "^4.0.3",
+    "@types/tar": "^6.1.1",
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/webpack": "^5.28.0",
     "@types/webpack-dev-server": "^3.11.5",
@@ -217,6 +217,11 @@
             "type": "object",
             "description": "Listening configuration for local development",
             "properties": {
+              "https": {
+                "type": "boolean",
+                "visibility": "frontend",
+                "description": "The protocol that the frontend should be use. Only used for local development."
+              },
               "host": {
                 "type": "string",
                 "visibility": "frontend",
