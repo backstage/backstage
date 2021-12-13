@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
-import {
-  Content,
-  ContentHeader,
-  SupportButton,
-  Progress,
-} from '@backstage/core-components';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { Content, SupportButton } from '@backstage/core-components';
 import { AddProjectDialog } from '../AddProjectDialog';
-import { AlertBanner } from '../AlertBanner';
 import { ProjectPreview } from '../ProjectPreview/ProjectPreview';
-import { Button, makeStyles, Link } from '@material-ui/core';
+import { Button, makeStyles } from '@material-ui/core';
 import { useAsyncFn } from 'react-use';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
@@ -32,14 +26,34 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
+import SearchBar from 'material-ui-search-bar';
+import { sortByDate, sortByMembers, sortByName } from '../../util/sortMethods';
+import { SortMethodSelector } from '../SortMethodSelector';
+import { fetchCatalogItems } from '../../util/fetchMethods';
+import { parseBazaarProject } from '../../util/parseMethods';
 
 const useStyles = makeStyles({
+  button: { width: '12rem' },
   container: {
     marginTop: '2rem',
   },
+  header: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: '0 auto',
+    marginBottom: '1.2rem',
+  },
+  search: {
+    marginRight: '1rem',
+    height: '2.5rem',
+    width: '35rem',
+  },
 });
 
-const filterCatalogEntities = (
+const getUnlinkedCatalogEntities = (
   bazaarProjects: BazaarProject[],
   catalogEntities: Entity[],
 ) => {
@@ -47,68 +61,69 @@ const filterCatalogEntities = (
     (project: BazaarProject) => project.entityRef,
   );
 
-  const filtered = catalogEntities.filter((entity: Entity) => {
+  return catalogEntities.filter((entity: Entity) => {
     return !bazaarProjectRefs?.includes(stringifyEntityRef(entity));
   });
-
-  return filtered;
 };
 
 export const SortView = () => {
-  const classes = useStyles();
-  const [openAdd, setOpenAdd] = useState(false);
-  const [openNoProjects, setOpenNoProjects] = useState(false);
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
-  const [filteredCatalogEntites, setFilteredCatalogEntities] =
+  const classes = useStyles();
+  const sortMethods = [sortByDate, sortByName, sortByMembers];
+  const [sortMethodNbr, setSortMethodNbr] = useState(0);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const [unlinkedCatalogEntities, setUnlinkedCatalogEntities] =
     useState<Entity[]>();
 
-  const compareProjectsByDate = (
-    a: BazaarProject,
-    b: BazaarProject,
-  ): number => {
-    const dateA = new Date(a.updatedAt!).getTime();
-    const dateB = new Date(b.updatedAt!).getTime();
-    return dateB - dateA;
-  };
-
-  const handleCloseNoProjects = () => {
-    setOpenNoProjects(false);
-  };
-
   const [catalogEntities, fetchCatalogEntities] = useAsyncFn(async () => {
-    const entities = await catalogApi.getEntities({
-      filter: {
-        kind: ['Component', 'Resource'],
-      },
-      fields: ['kind', 'metadata.name', 'metadata.namespace'],
-    });
-
-    return entities.items;
+    return await fetchCatalogItems(catalogApi);
   });
 
   const [bazaarProjects, fetchBazaarProjects] = useAsyncFn(async () => {
-    const response = await bazaarApi.getEntities();
+    const response = await bazaarApi.getProjects();
     const dbProjects: BazaarProject[] = [];
 
     response.data.forEach((project: any) => {
-      dbProjects.push({
-        entityRef: project.entity_ref,
-        name: project.name,
-        status: project.status,
-        announcement: project.announcement,
-        community: project.community,
-        updatedAt: project.updated_at,
-        membersCount: project.members_count,
-        size: project.size,
-        startDate: project.startDate,
-        endDate: project.endDate,
-        responsible: project.responsible,
-      });
+      dbProjects.push(parseBazaarProject(project));
     });
 
     return dbProjects;
   });
+
+  const catalogEntityRefs = catalogEntities.value?.map((project: Entity) =>
+    stringifyEntityRef(project),
+  );
+
+  const getSearchResults = () => {
+    return bazaarProjects.value
+      ?.filter(project => project.name.includes(searchValue))
+      .sort(sortMethods[sortMethodNbr]);
+  };
+
+  useEffect(() => {
+    const filterBrokenLinks = () => {
+      if (catalogEntityRefs) {
+        bazaarProjects.value?.forEach(async (project: BazaarProject) => {
+          if (project.entityRef) {
+            if (!catalogEntityRefs?.includes(project.entityRef as string)) {
+              await bazaarApi.updateProject({
+                ...project,
+                entityRef: null,
+              });
+            }
+          }
+        });
+      }
+    };
+    filterBrokenLinks();
+  }, [
+    bazaarApi,
+    bazaarProjects.value,
+    catalogEntityRefs,
+    catalogEntities.value,
+  ]);
 
   useEffect(() => {
     fetchCatalogEntities();
@@ -116,17 +131,21 @@ export const SortView = () => {
   }, [fetchBazaarProjects, fetchCatalogEntities]);
 
   useEffect(() => {
-    const filteredCatalogEntities = filterCatalogEntities(
+    const unlinkedCEntities = getUnlinkedCatalogEntities(
       bazaarProjects.value || [],
       catalogEntities.value || [],
     );
 
-    if (filteredCatalogEntities) {
-      setFilteredCatalogEntities(filteredCatalogEntities);
+    if (unlinkedCEntities) {
+      setUnlinkedCatalogEntities(unlinkedCEntities);
     }
   }, [bazaarProjects, catalogEntities]);
 
-  if (catalogEntities.loading || bazaarProjects.loading) return <Progress />;
+  const handleSortMethodChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSortMethodNbr(
+      typeof event.target.value === 'number' ? event.target.value : 0,
+    );
+  };
 
   if (catalogEntities.error)
     return <Alert severity="error">{catalogEntities.error.message}</Alert>;
@@ -136,38 +155,34 @@ export const SortView = () => {
 
   return (
     <Content noPadding>
-      <AlertBanner
-        open={openNoProjects}
-        message={
-          <div>
-            No project available. Please{' '}
-            <Link
-              style={{ color: 'inherit', fontWeight: 'bold' }}
-              href="/create"
-            >
-              create a project
-            </Link>{' '}
-            from a template first.
-          </div>
-        }
-        handleClose={handleCloseNoProjects}
-      />
-      <ContentHeader title="Latest updated">
+      <div className={classes.header}>
+        <SortMethodSelector
+          sortMethodNbr={sortMethodNbr}
+          handleSortMethodChange={handleSortMethodChange}
+        />
+
+        <SearchBar
+          className={classes.search}
+          value={searchValue}
+          onChange={newSortMethod => {
+            setSearchValue(newSortMethod);
+          }}
+          onCancelSearch={() => {
+            setSearchValue('');
+          }}
+        />
         <Button
+          className={classes.button}
           variant="contained"
           color="primary"
           onClick={() => {
-            if (filteredCatalogEntites?.length !== 0) {
-              setOpenAdd(true);
-            } else {
-              setOpenNoProjects(true);
-            }
+            setOpenAdd(true);
           }}
         >
           Add project
         </Button>
         <AddProjectDialog
-          catalogEntities={filteredCatalogEntites || []}
+          catalogEntities={unlinkedCatalogEntities || []}
           handleClose={() => {
             setOpenAdd(false);
           }}
@@ -176,10 +191,11 @@ export const SortView = () => {
           fetchCatalogEntities={fetchCatalogEntities}
         />
         <SupportButton />
-      </ContentHeader>
+      </div>
       <ProjectPreview
-        bazaarProjects={bazaarProjects.value || []}
-        sortingMethod={compareProjectsByDate}
+        bazaarProjects={getSearchResults() || []}
+        fetchBazaarProjects={fetchBazaarProjects}
+        catalogEntities={unlinkedCatalogEntities || []}
       />
       <Content noPadding className={classes.container} />
     </Content>

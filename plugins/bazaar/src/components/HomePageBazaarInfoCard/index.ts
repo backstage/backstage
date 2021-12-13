@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { AlertBanner } from './AlertBanner';
+export { HomePageBazaarInfoCard } from './HomePageBazaarInfoCard';

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { DeleteProjectDialog } from './DeleteProjectDialog';
+export { SortMethodSelector } from './SortMethodSelector';

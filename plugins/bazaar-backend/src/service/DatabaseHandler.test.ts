@@ -22,7 +22,7 @@ const bazaarProject: any = {
   entityRef: 'ref1',
   community: '',
   status: 'proposed',
-  announcement: 'a',
+  description: 'a',
   membersCount: 0,
   startDate: '2021-11-07T13:27:00.000Z',
   endDate: null,
@@ -50,7 +50,7 @@ describe('DatabaseHandler', () => {
       await knex('metadata').insert({
         entity_ref: bazaarProject.entityRef,
         name: bazaarProject.name,
-        announcement: bazaarProject.announcement,
+        description: bazaarProject.description,
         community: bazaarProject.community,
         status: bazaarProject.status,
         updated_at: new Date().toISOString(),
@@ -60,10 +60,10 @@ describe('DatabaseHandler', () => {
         responsible: bazaarProject.responsible,
       });
 
-      const res = await dbHandler.getMetadata('ref1');
+      const res = await dbHandler.getMetadataByRef('ref1');
 
       expect(res).toHaveLength(1);
-      expect(res[0].announcement).toEqual('a');
+      expect(res[0].description).toEqual('a');
       expect(res[0].community).toEqual('');
       expect(res[0].status).toEqual('proposed');
       expect(res[0].start_date).toEqual('2021-11-07T13:27:00.000Z');
