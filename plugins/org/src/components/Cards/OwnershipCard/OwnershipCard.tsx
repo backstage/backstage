@@ -128,7 +128,7 @@ const getQueryParams = (
 
 export const OwnershipCard = ({
   variant,
-  entityFilterKind
+  entityFilterKind,
 }: {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
@@ -165,7 +165,9 @@ export const OwnershipCard = ({
     const counts = ownedEntitiesList.reduce(
       (acc: EntityTypeProps[], ownedEntity) => {
         const match = acc.find(
-          x => x.kind === ownedEntity.kind && x.type === (ownedEntity.spec?.type ?? ownedEntity.kind),
+          x =>
+            x.kind === ownedEntity.kind &&
+            x.type === (ownedEntity.spec?.type ?? ownedEntity.kind),
         );
         if (match) {
           match.count += 1;

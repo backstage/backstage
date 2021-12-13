@@ -352,7 +352,7 @@ describe('OwnershipCardWithCustomFilterDefinition', () => {
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={groupEntity}>
-          <OwnershipCard entityFilterKind={['API','system']} />
+          <OwnershipCard entityFilterKind={['API', 'system']} />
         </EntityProvider>
       </TestApiProvider>,
       {
