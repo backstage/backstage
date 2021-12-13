@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi } from '@backstage/core-plugin-api';
-import {
-  catalogApiRef,
-  formatEntityRefTitle,
-  useEntityOwnership,
-} from '@backstage/plugin-catalog-react';
+import { formatEntityRefTitle } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { FieldProps } from '@rjsf/core';
 import React from 'react';
-import { useAsync } from 'react-use';
+import { useOwnedEntities } from './useOwnedEntities';
 
 export const OwnedEntityPicker = ({
   onChange,
@@ -37,24 +32,16 @@ export const OwnedEntityPicker = ({
 }: FieldProps<string>) => {
   const allowedKinds = uiSchema['ui:options']?.allowedKinds as string[];
   const defaultKind = uiSchema['ui:options']?.defaultKind as string | undefined;
-  const catalogApi = useApi(catalogApiRef);
-  const { isOwnedEntity } = useEntityOwnership();
+  const { ownedEntities, loading } = useOwnedEntities(allowedKinds);
 
-  const { value: entities, loading } = useAsync(() =>
-    catalogApi.getEntities(
-      allowedKinds ? { filter: { kind: allowedKinds } } : undefined,
-    ),
-  );
-
-  const entityRefs = entities?.items
-    .map(e =>
-      isOwnedEntity(e) ? formatEntityRefTitle(e, { defaultKind }) : null,
-    )
+  const entityRefs = ownedEntities?.items
+    .map(e => formatEntityRefTitle(e, { defaultKind }))
     .filter(n => n);
 
   const onSelect = (_: any, value: string | null) => {
     onChange(value || '');
   };
+
   return (
     <FormControl
       margin="normal"
