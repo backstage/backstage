@@ -8382,6 +8382,14 @@
     "@types/minipass" "*"
     "@types/node" "*"
 
+"@types/tar@^6.1.1":
+  version "6.1.1"
+  resolved "https://registry.npmjs.org/@types/tar/-/tar-6.1.1.tgz#ab341ec1f149d7eb2a4f4ded56ff85f0d4fe7cb5"
+  integrity sha512-8mto3YZfVpqB1CHMaYz1TUYIQfZFbh/QbEq5Hsn6D0ilCfqRVCdalmc89B7vi3jhl9UYIk+dWDABShNfOkv5HA==
+  dependencies:
+    "@types/minipass" "*"
+    "@types/node" "*"
+
 "@types/tern@*":
   version "0.23.3"
   resolved "https://registry.npmjs.org/@types/tern/-/tern-0.23.3.tgz#4b54538f04a88c9ff79de1f6f94f575a7f339460"
