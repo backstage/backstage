@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import { ServerTokenManager } from '@backstage/backend-common';
+import { TokenManager, ServerTokenManager } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import {
-  AuthorizeRequest,
   AuthorizeRequestOptions,
-  AuthorizeResponse,
-  AuthorizeResult,
   DiscoveryApi,
   PermissionClient,
 } from '@backstage/plugin-permission-common';
@@ -31,26 +28,36 @@ import {
  * @public
  */
 export class ServerPermissionClient extends PermissionClient {
-  private readonly serverTokenManager: ServerTokenManager;
+  private readonly serverTokenManager: TokenManager;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     configApi: Config;
-    serverTokenManager: ServerTokenManager;
+    serverTokenManager: TokenManager;
   }) {
     const { discoveryApi, configApi, serverTokenManager } = options;
     super({ discoveryApi, configApi });
+
+    if (this.enabled && !(serverTokenManager instanceof ServerTokenManager)) {
+      throw new Error(
+        'You must configure at least one key in backend.auth.keys if permissions are enabled.',
+      );
+    }
     this.serverTokenManager = serverTokenManager;
   }
 
-  async authorize(
-    requests: AuthorizeRequest[],
-    options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeResponse[]> {
-    if (await this.isValidServerToken(options?.token)) {
-      return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
+  async shouldBypass(options?: AuthorizeRequestOptions): Promise<boolean> {
+    // Call super first in order to check if permissions are enabled before
+    // validating the server token. That way when permissions are disabled, the
+    // noop token manager can be used without fouling up the logic inside the
+    // ServerPermissionClient, because the code path won't be reached.
+    if (await super.shouldBypass(options)) {
+      return true;
     }
-    return super.authorize(requests, options);
+    if (await this.isValidServerToken(options?.token)) {
+      return true;
+    }
+    return false;
   }
 
   private async isValidServerToken(

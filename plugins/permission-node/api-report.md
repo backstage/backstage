@@ -5,7 +5,6 @@
 ```ts
 import { AuthorizeRequest } from '@backstage/plugin-permission-common';
 import { AuthorizeRequestOptions } from '@backstage/plugin-permission-common';
-import { AuthorizeResponse } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
 import { Config } from '@backstage/config';
@@ -14,7 +13,7 @@ import { PermissionClient } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
-import { ServerTokenManager } from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export type ApplyConditionsRequest = {
@@ -131,12 +130,9 @@ export class ServerPermissionClient extends PermissionClient {
   constructor(options: {
     discoveryApi: DiscoveryApi;
     configApi: Config;
-    serverTokenManager: ServerTokenManager;
+    serverTokenManager: TokenManager;
   });
   // (undocumented)
-  authorize(
-    requests: AuthorizeRequest[],
-    options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeResponse[]>;
+  shouldBypass(options?: AuthorizeRequestOptions): Promise<boolean>;
 }
 ```

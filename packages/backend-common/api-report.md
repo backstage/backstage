@@ -501,6 +501,8 @@ export class ServerTokenManager implements TokenManager {
   getToken(): Promise<{
     token: string;
   }>;
+  // (undocumented)
+  static noop(): TokenManager;
 }
 
 // @public (undocumented)

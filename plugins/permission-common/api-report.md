@@ -74,6 +74,10 @@ export class PermissionClient {
     requests: AuthorizeRequest[],
     options?: AuthorizeRequestOptions,
   ): Promise<AuthorizeResponse[]>;
+  // (undocumented)
+  protected readonly enabled: boolean;
+  // (undocumented)
+  protected shouldBypass(_options?: AuthorizeRequestOptions): Promise<boolean>;
 }
 
 // @public

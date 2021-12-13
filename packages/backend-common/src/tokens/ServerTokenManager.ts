@@ -20,6 +20,14 @@ import { AuthenticationError } from '@backstage/errors';
 import { TokenManager } from './types';
 import { Logger } from 'winston';
 
+class NoopTokenManager implements TokenManager {
+  async getToken() {
+    return { token: '' };
+  }
+
+  async authenticate() {}
+}
+
 /**
  * Creates and validates tokens for use during backend-to-backend
  * authentication.
@@ -29,6 +37,10 @@ import { Logger } from 'winston';
 export class ServerTokenManager implements TokenManager {
   private readonly verificationKeys: JWKS.KeyStore;
   private readonly signingKey: JWK.Key;
+
+  static noop(): TokenManager {
+    return new NoopTokenManager();
+  }
 
   static fromConfig(config: Config, options: { logger: Logger }) {
     const { logger } = options;

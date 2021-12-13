@@ -72,7 +72,7 @@ export type AuthorizeRequestOptions = {
  * @public
  */
 export class PermissionClient {
-  private readonly enabled: boolean;
+  protected readonly enabled: boolean;
   private readonly discoveryApi: DiscoveryApi;
 
   constructor(options: { discoveryApi: DiscoveryApi; configApi: Config }) {
@@ -106,7 +106,7 @@ export class PermissionClient {
     // but no resourceRef. That way clients who aren't prepared to handle filtering according
     // to conditions can be guaranteed that they won't unexpectedly get a CONDITIONAL response.
 
-    if (!this.enabled) {
+    if (await this.shouldBypass(options)) {
       return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
@@ -139,6 +139,12 @@ export class PermissionClient {
     }, {} as Record<string, Identified<AuthorizeResponse>>);
 
     return identifiedRequests.map(request => responsesById[request.id]);
+  }
+
+  protected async shouldBypass(
+    _options?: AuthorizeRequestOptions,
+  ): Promise<boolean> {
+    return !this.enabled;
   }
 
   private getAuthorizationHeader(token?: string): Record<string, string> {
