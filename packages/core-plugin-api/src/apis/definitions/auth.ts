@@ -282,14 +282,14 @@ export type SessionApi = {
 /**
  * Provides authentication towards Google APIs and identities.
  *
+ * @alpha This API is **EXPERIMENTAL** and might change in the future.
+ *
  * @remarks
  *
  * See {@link https://developers.google.com/identity/protocols/googlescopes} for a full list of supported scopes.
  *
  * Note that the ID token payload is only guaranteed to contain the user's numerical Google ID,
  * email and expiration information. Do not rely on any other fields, as they might not be present.
- *
- * @public
  */
 export const googleAuthApiRef: ApiRef<
   OAuthApi &
@@ -304,12 +304,12 @@ export const googleAuthApiRef: ApiRef<
 /**
  * Provides authentication towards GitHub APIs.
  *
+ * @alpha This API is **EXPERIMENTAL** and might change in the future.
+ *
  * @remarks
  *
  * See {@link https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/}
  * for a full list of supported scopes.
- *
- * @public
  */
 export const githubAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
@@ -320,12 +320,12 @@ export const githubAuthApiRef: ApiRef<
 /**
  * Provides authentication towards Okta APIs.
  *
+ * @alpha This API is **EXPERIMENTAL** and might change in the future.
+ *
  * @remarks
  *
  * See {@link https://developer.okta.com/docs/guides/implement-oauth-for-okta/scopes/}
  * for a full list of supported scopes.
- *
- * @public
  */
 export const oktaAuthApiRef: ApiRef<
   OAuthApi &
@@ -340,12 +340,12 @@ export const oktaAuthApiRef: ApiRef<
 /**
  * Provides authentication towards GitLab APIs.
  *
+ * @alpha This API is **EXPERIMENTAL** and might change in the future.
+ *
  * @remarks
  *
  * See {@link https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#limiting-scopes-of-a-personal-access-token}
  * for a full list of supported scopes.
- *
- * @public
  */
 export const gitlabAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
@@ -362,6 +362,7 @@ export const gitlabAuthApiRef: ApiRef<
  * for a full list of supported scopes.
  *
  * @public
+ * @deprecated See https://backstage.io/docs/api/deprecations#generic-auth-api-refs
  */
 export const auth0AuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
@@ -372,13 +373,13 @@ export const auth0AuthApiRef: ApiRef<
 /**
  * Provides authentication towards Microsoft APIs and identities.
  *
+ * @alpha This API is **EXPERIMENTAL** and might change in the future.
+ *
  * @remarks
  *
  * For more info and a full list of supported scopes, see:
  * - {@link https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent}
  * - {@link https://docs.microsoft.com/en-us/graph/permissions-reference}
- *
- * @public
  */
 export const microsoftAuthApiRef: ApiRef<
   OAuthApi &
@@ -394,6 +395,7 @@ export const microsoftAuthApiRef: ApiRef<
  * Provides authentication for custom identity providers.
  *
  * @public
+ * @deprecated See https://backstage.io/docs/api/deprecations#generic-auth-api-refs
  */
 export const oauth2ApiRef: ApiRef<
   OAuthApi &
@@ -409,6 +411,7 @@ export const oauth2ApiRef: ApiRef<
  * Provides authentication for custom OpenID Connect identity providers.
  *
  * @public
+ * @deprecated See https://backstage.io/docs/api/deprecations#generic-auth-api-refs
  */
 export const oidcAuthApiRef: ApiRef<
   OAuthApi &
@@ -424,6 +427,7 @@ export const oidcAuthApiRef: ApiRef<
  * Provides authentication for SAML-based identity providers.
  *
  * @public
+ * @deprecated See https://backstage.io/docs/api/deprecations#generic-auth-api-refs
  */
 export const samlAuthApiRef: ApiRef<
   ProfileInfoApi & BackstageIdentityApi & SessionApi
@@ -434,7 +438,7 @@ export const samlAuthApiRef: ApiRef<
 /**
  * Provides authentication towards OneLogin APIs.
  *
- * @public
+ * @alpha This API is **EXPERIMENTAL** and might change in the future.
  */
 export const oneloginAuthApiRef: ApiRef<
   OAuthApi &
@@ -449,12 +453,11 @@ export const oneloginAuthApiRef: ApiRef<
 /**
  * Provides authentication towards Bitbucket APIs.
  *
+ * @alpha This API is **EXPERIMENTAL** and might change in the future.
  * @remarks
  *
  * See {@link https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/}
  * for a full list of supported scopes.
- *
- * @public
  */
 export const bitbucketAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
@@ -465,12 +468,11 @@ export const bitbucketAuthApiRef: ApiRef<
 /**
  * Provides authentication towards Atlassian APIs.
  *
+ * @alpha This API is **EXPERIMENTAL** and might change in the future.
  * @remarks
  *
  * See {@link https://developer.atlassian.com/cloud/jira/platform/scopes-for-connect-and-oauth-2-3LO-apps/}
  * for a full list of supported scopes.
- *
- * @public
  */
 export const atlassianAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi

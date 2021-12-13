@@ -194,7 +194,7 @@ export type AppThemeApi = {
 // @public
 export const appThemeApiRef: ApiRef<AppThemeApi>;
 
-// @public
+// @alpha
 export const atlassianAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
@@ -206,7 +206,7 @@ export function attachComponentData<P>(
   data: unknown,
 ): void;
 
-// @public
+// @public @deprecated
 export const auth0AuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
@@ -272,7 +272,7 @@ export type BackstageUserIdentity = {
   ownershipEntityRefs: string[];
 };
 
-// @public
+// @alpha
 export const bitbucketAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
@@ -512,17 +512,17 @@ export function getComponentData<T>(
   type: string,
 ): T | undefined;
 
-// @public
+// @alpha
 export const githubAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
-// @public
+// @alpha
 export const gitlabAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
-// @public
+// @alpha
 export const googleAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -570,7 +570,7 @@ export type MergeParams<
   P2 extends AnyParams,
 > = (P1[keyof P1] extends never ? {} : P1) & (P2 extends undefined ? {} : P2);
 
-// @public
+// @alpha
 export const microsoftAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -579,7 +579,7 @@ export const microsoftAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
+// @public @deprecated
 export const oauth2ApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -616,7 +616,7 @@ export type Observable<T> = Observable_2<T>;
 // @public @deprecated
 export type Observer<T> = Observer_2<T>;
 
-// @public
+// @public @deprecated
 export const oidcAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -625,7 +625,7 @@ export const oidcAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
+// @alpha
 export const oktaAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -637,7 +637,7 @@ export const oktaAuthApiRef: ApiRef<
 // @public
 export type OldIconComponent = ComponentType<SvgIconProps>;
 
-// @public
+// @alpha
 export const oneloginAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -738,7 +738,7 @@ export type RouteRef<Params extends AnyParams = any> = {
   title?: string;
 };
 
-// @public
+// @public @deprecated
 export const samlAuthApiRef: ApiRef<
   ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
