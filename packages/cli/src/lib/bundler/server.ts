@@ -25,6 +25,8 @@ import { resolveBundlingPaths } from './paths';
 export async function serveBundle(options: ServeOptions) {
   const url = resolveBaseUrl(options.frontendConfig);
 
+  const https =
+    options.frontendConfig.getOptionalBoolean('app.listen.https') || url.protocol === 'https:';
   const host =
     options.frontendConfig.getOptionalString('app.listen.host') || url.hostname;
   const port =
@@ -61,7 +63,7 @@ export async function serveBundle(options: ServeOptions) {
         // See https://github.com/facebookincubator/create-react-app/issues/387.
         disableDotRule: true,
       },
-      https: false,
+      https: https,
       host,
       port,
       proxy: pkg.proxy,
