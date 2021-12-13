@@ -254,7 +254,7 @@ export class AtlassianAuth {
   static create(options: OAuthApiCreateOptions): typeof atlassianAuthApiRef.T;
 }
 
-// @public
+// @public @deprecated
 export class Auth0Auth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof auth0AuthApiRef.T;
