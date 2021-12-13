@@ -36,9 +36,7 @@ export default {
       wrapInTestApp(
         <>
           <TestApiProvider apis={[[searchApiRef, {query: () => Promise.resolve({results: []})}]]}>
-            <SearchContextProvider>
               <Story />
-            </SearchContextProvider>
           </TestApiProvider>
         </>,
         {
