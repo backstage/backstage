@@ -76,7 +76,7 @@ const handleRequest = async (
   permissionIntegrationClient: PermissionIntegrationClient,
   authHeader?: string,
 ): Promise<Identified<AuthorizeResponse>> => {
-  const response = await policy.handle(request, user);
+  const response = await policy.handle(request, user?.identity);
 
   if (response.result === AuthorizeResult.CONDITIONAL) {
     // Sanity check that any resource provided matches the one expected by the permission
