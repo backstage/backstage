@@ -146,7 +146,7 @@ export type OAuthRequestApi = {
    * If a auth is triggered, and the auth handler resolves successfully, then all currently pending
    * AuthRequester calls will resolve to the value returned by the onAuthRequest call.
    */
-  authRequest$(): Observable<PendingAuthRequest[]>;
+  authRequest$(): Observable<PendingOAuthRequest[]>;
 };
 
 /**

@@ -600,7 +600,7 @@ export type OAuthRequestApi = {
   createAuthRequester<OAuthResponse>(
     options: OAuthRequesterOptions<OAuthResponse>,
   ): OAuthRequester<OAuthResponse>;
-  authRequest$(): Observable_2<PendingAuthRequest[]>;
+  authRequest$(): Observable_2<PendingOAuthRequest[]>;
 };
 
 // @public
