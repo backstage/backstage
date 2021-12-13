@@ -15,7 +15,7 @@
  */
 
 import {
-  BackstageIdentity,
+  BackstageIdentityResponse,
   getIdentityClaims,
 } from '@backstage/plugin-auth-backend';
 import {
@@ -41,7 +41,7 @@ const isComponentType = createConditionFactory(isComponentTypeRule);
 export class SimplePermissionPolicy implements PermissionPolicy {
   async handle(
     request: Omit<AuthorizeRequest, 'resourceRef'>,
-    identity?: BackstageIdentity,
+    identity?: BackstageIdentityResponse,
   ): Promise<PolicyDecision> {
     if (request.permission.name === techdocsReadPermission.name) {
       return {
@@ -59,7 +59,7 @@ export class SimplePermissionPolicy implements PermissionPolicy {
       if (request.permission.attributes.action === 'read') {
         return createCatalogPolicyDecision({
           anyOf: [
-            isEntityOwner(getIdentityClaims(identity)),
+            isEntityOwner(getIdentityClaims(identity.identity)),
             isComponentType(['website']),
             isEntityKind(['template']),
           ],
@@ -67,7 +67,7 @@ export class SimplePermissionPolicy implements PermissionPolicy {
       }
 
       return createCatalogPolicyDecision(
-        isEntityOwner(getIdentityClaims(identity)),
+        isEntityOwner(getIdentityClaims(identity.identity)),
       );
     }
 
