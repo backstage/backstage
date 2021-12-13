@@ -15,4 +15,4 @@
  */
 
 export { CatalogIdentityClient } from './CatalogIdentityClient';
-export { getEntityClaims, getIdentityClaims } from './helpers';
+export { getEntityClaims } from './helpers';
