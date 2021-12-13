@@ -20,11 +20,8 @@ export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
 export const RESOURCE_TYPE_CATALOG_LOCATION = 'catalog-location';
 
 /**
- * This permission is used to designate actions that involve reading a singular
- * or multiple entities from the catalog. It can be passed into calls to {@link
- * @backstage/plugin-permission-common/PermissionClient#authorize} (from the
- * backend) or to {@link @backstage/plugin-permission-react#usePermission} (from
- * the frontend).
+ * This permission is used to authorize actions that involve reading one or more
+ * entities from the catalog.
  *
  * If this permission is not authorized, it will appear that the entity does not
  * exist in the catalog — both in the frontend and in API responses.
@@ -39,11 +36,8 @@ export const catalogEntityReadPermission: Permission = {
 };
 
 /**
- * This permission is used to designate actions that involve unregistering an
- * entity from the catalog. It can be passed into calls to {@link
- * @backstage/plugin-permission-common/PermissionClient#authorize} (from the
- * backend) or to {@link @backstage/plugin-permission-react#usePermission} (from
- * the frontend).
+ * This permission is used to designate actions that involve unregistering one
+ * or more entities from the catalog.
  * @public
  */
 export const catalogEntityUnregisterPermission: Permission = {
@@ -55,11 +49,8 @@ export const catalogEntityUnregisterPermission: Permission = {
 };
 
 /**
- * This permission is used to designate refreshing an entity from the catalog.
- * It can be passed into calls to {@link
- * @backstage/plugin-permission-common/PermissionClient#authorize} (from the
- * backend) or to {@link @backstage/plugin-permission-react#usePermission} (from
- * the frontend).
+ * This permission is used to designate refreshing one or more entities from the
+ * catalog.
  * @public
  */
 export const catalogEntityRefreshPermission: Permission = {
@@ -71,11 +62,8 @@ export const catalogEntityRefreshPermission: Permission = {
 };
 
 /**
- * This permission is used to designate actions that involve reading a singular
- * or multiple locations from the catalog. It can be passed into calls to {@link
- * @backstage/plugin-permission-common/PermissionClient#authorize} (from the
- * backend) or to {@link @backstage/plugin-permission-react#usePermission} (from
- * the frontend).
+ * This permission is used to designate actions that involve reading one or more
+ * locations from the catalog.
  *
  * If this permission is not authorized, it will appear that the location does
  * not exist in the catalog — both in the frontend and in API responses.
@@ -90,11 +78,8 @@ export const catalogLocationReadPermission: Permission = {
 };
 
 /**
- * This permission is used to designate actions that involve creating a catalog
- * location. It can be passed into calls to {@link
- * @backstage/plugin-permission-common/PermissionClient#authorize} (from the
- * backend) or to {@link @backstage/plugin-permission-react#usePermission} (from
- * the frontend).
+ * This permission is used to designate actions that involve creating catalog
+ * locations.
  * @public
  */
 export const catalogLocationCreatePermission: Permission = {
@@ -106,11 +91,8 @@ export const catalogLocationCreatePermission: Permission = {
 };
 
 /**
- * This permission is used to designate actions that involve deleting a location
- * from the catalog. It can be passed into calls to {@link
- * @backstage/plugin-permission-common/PermissionClient#authorize} (from the
- * backend) or to {@link @backstage/plugin-permission-react#usePermission} (from
- * the frontend).
+ * This permission is used to designate actions that involve deleting locations
+ * from the catalog.
  * @public
  */
 export const catalogLocationDeletePermission: Permission = {
