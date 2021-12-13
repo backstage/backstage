@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-react
 
+## 0.6.6
+
+### Patch Changes
+
+- 4c0f0b2003: Removed dependency on `@backstage/core-app-api`.
+
 ## 0.6.5
 
 ### Patch Changes
