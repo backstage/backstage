@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { Entity, GroupEntity, UserEntity } from '@backstage/catalog-model';
 import {
   CatalogApi,
   catalogApiRef,
@@ -51,6 +51,7 @@ describe('OwnershipCard', () => {
 
   const items = [
     {
+      apiVersion: 'backstage.io/v1alpha1',
       kind: 'API',
       metadata: {
         name: 'my-api',
@@ -108,23 +109,7 @@ describe('OwnershipCard', () => {
         },
       ],
     },
-    {
-      kind: 'system',
-      metadata: {
-        name: 'my-systen',
-      },
-      relations: [
-        {
-          type: 'ownedBy',
-          target: {
-            name: 'my-team',
-            namespace: 'default',
-            kind: 'Group',
-          },
-        },
-      ],
-    },
-  ] as any;
+  ] as Entity[];
 
   it('displays entity counts', async () => {
     const catalogApi: jest.Mocked<CatalogApi> = {
@@ -148,6 +133,17 @@ describe('OwnershipCard', () => {
       },
     );
 
+    expect(catalogApi.getEntities).toHaveBeenCalledWith({
+      filter: { kind: ['Component', 'API'] },
+      fields: [
+        'kind',
+        'metadata.name',
+        'metadata.namespace',
+        'spec.type',
+        'relations',
+      ],
+    });
+
     expect(getByText('OPENAPI')).toBeInTheDocument();
     expect(
       queryByText(getByText('OPENAPI').parentElement!, '1'),
@@ -160,7 +156,63 @@ describe('OwnershipCard', () => {
     expect(
       queryByText(getByText('LIBRARY').parentElement!, '1'),
     ).toBeInTheDocument();
-    expect(getByText('SYSTEM')).not.toBeInTheDocument();
+  });
+
+  it('applies CustomFilterDefinition', async () => {
+    const catalogApi: jest.Mocked<CatalogApi> = {
+      getEntities: jest.fn(),
+    } as any;
+
+    catalogApi.getEntities.mockResolvedValue({
+      items: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'system',
+          metadata: {
+            name: 'my-systen',
+          },
+          relations: [
+            {
+              type: 'ownedBy',
+              target: {
+                name: 'my-team',
+                namespace: 'default',
+                kind: 'Group',
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityProvider entity={groupEntity}>
+          <OwnershipCard entityFilterKind={['API', 'System']} />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/create': catalogRouteRef,
+        },
+      },
+    );
+
+    expect(catalogApi.getEntities).toHaveBeenCalledWith({
+      filter: { kind: ['API', 'System'] },
+      fields: [
+        'kind',
+        'metadata.name',
+        'metadata.namespace',
+        'spec.type',
+        'relations',
+      ],
+    });
+
+    expect(getByText('SYSTEM')).toBeInTheDocument();
+    expect(
+      queryByText(getByText('SYSTEM').parentElement!, '1'),
+    ).toBeInTheDocument();
   });
 
   it('links to the catalog with the group filter', async () => {
@@ -237,140 +289,5 @@ describe('OwnershipCard', () => {
       'href',
       '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D%5B0%5D=user%3Athe-user&filters%5Bowners%5D%5B1%5D=my-team&filters%5Buser%5D=all',
     );
-  });
-});
-
-describe('OwnershipCardWithCustomFilterDefinition', () => {
-  const groupEntity: GroupEntity = {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Group',
-    metadata: {
-      name: 'my-team',
-    },
-    spec: {
-      type: 'team',
-      children: [],
-    },
-    relations: [
-      {
-        type: 'memberOf',
-        target: {
-          kind: 'group',
-          name: 'ExampleGroup',
-          namespace: 'default',
-        },
-      },
-    ],
-  };
-
-  const items = [
-    {
-      kind: 'API',
-      metadata: {
-        name: 'my-api',
-      },
-      spec: {
-        type: 'openapi',
-      },
-      relations: [
-        {
-          type: 'ownedBy',
-          target: {
-            name: 'my-team',
-            namespace: 'default',
-            kind: 'Group',
-          },
-        },
-      ],
-    },
-    {
-      kind: 'Component',
-      metadata: {
-        name: 'my-service',
-      },
-      spec: {
-        type: 'service',
-      },
-      relations: [
-        {
-          type: 'ownedBy',
-          target: {
-            name: 'my-team',
-            namespace: 'default',
-            kind: 'Group',
-          },
-        },
-      ],
-    },
-    {
-      kind: 'Component',
-      metadata: {
-        name: 'my-library',
-        namespace: 'other-namespace',
-      },
-      spec: {
-        type: 'library',
-      },
-      relations: [
-        {
-          type: 'ownedBy',
-          target: {
-            name: 'my-team',
-            namespace: 'default',
-            kind: 'Group',
-          },
-        },
-      ],
-    },
-    {
-      kind: 'system',
-      metadata: {
-        name: 'my-systen',
-      },
-      relations: [
-        {
-          type: 'ownedBy',
-          target: {
-            name: 'my-team',
-            namespace: 'default',
-            kind: 'Group',
-          },
-        },
-      ],
-    },
-  ] as any;
-
-  it('displays entity counts', async () => {
-    const catalogApi: jest.Mocked<CatalogApi> = {
-      getEntities: jest.fn(),
-    } as any;
-
-    catalogApi.getEntities.mockResolvedValue({
-      items,
-    });
-
-    const { getByText } = await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
-        <EntityProvider entity={groupEntity}>
-          <OwnershipCard entityFilterKind={['API', 'system']} />
-        </EntityProvider>
-      </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/create': catalogRouteRef,
-        },
-      },
-    );
-
-    expect(getByText('OPENAPI')).toBeInTheDocument();
-    expect(
-      queryByText(getByText('OPENAPI').parentElement!, '1'),
-    ).toBeInTheDocument();
-    expect(getByText('SERVICE')).not.toBeInTheDocument();
-    expect(getByText('LIBRARY')).not.toBeInTheDocument();
-    expect(getByText('SYSTEM')).toBeInTheDocument();
-    expect(
-      queryByText(getByText('SYSTEM').parentElement!, '1'),
-    ).toBeInTheDocument();
   });
 });
