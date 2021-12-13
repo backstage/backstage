@@ -185,4 +185,32 @@ describe('<EntityRefLink />', () => {
       '/catalog/test/component/software',
     );
   });
+
+  it('renders link for entity with defined subRoutePath', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const subRoute = '/sub-route';
+    const { getByText } = await renderInTestApp(
+      <EntityRefLink entityRef={entity} subRoutePath={subRoute} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
+    expect(getByText('component:software')).toHaveAttribute(
+      'href',
+      '/catalog/default/component/software/sub-route',
+    );
+  });
 });

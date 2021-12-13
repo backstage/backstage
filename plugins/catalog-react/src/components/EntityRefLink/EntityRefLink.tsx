@@ -25,16 +25,26 @@ import { Link, LinkProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Tooltip } from '@material-ui/core';
 
+type SubRoutePath = `${'#' | '/'}${string}`;
+
 export type EntityRefLinkProps = {
   entityRef: Entity | EntityName;
   defaultKind?: string;
   title?: string;
   children?: React.ReactNode;
+  subRoutePath?: SubRoutePath;
 } & Omit<LinkProps, 'to'>;
 
 export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
   (props, ref) => {
-    const { entityRef, defaultKind, title, children, ...linkProps } = props;
+    const {
+      entityRef,
+      defaultKind,
+      title,
+      children,
+      subRoutePath,
+      ...linkProps
+    } = props;
     const entityRoute = useRouteRef(entityRouteRef);
 
     let kind;
@@ -59,12 +69,13 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
         namespace?.toLocaleLowerCase('en-US') ?? ENTITY_DEFAULT_NAMESPACE,
       name,
     };
+    const linkUrl = `${entityRoute(routeParams)}${subRoutePath ?? ''}`;
     const formattedEntityRefTitle = formatEntityRefTitle(entityRef, {
       defaultKind,
     });
 
     const link = (
-      <Link {...linkProps} ref={ref} to={entityRoute(routeParams)}>
+      <Link {...linkProps} ref={ref} to={linkUrl}>
         {children}
         {!children && (title ?? formattedEntityRefTitle)}
       </Link>
