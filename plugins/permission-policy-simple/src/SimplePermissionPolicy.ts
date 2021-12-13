@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  BackstageUserIdentity,
-  getIdentityClaims,
-} from '@backstage/plugin-auth-backend';
+import { BackstageUserIdentity } from '@backstage/plugin-auth-backend';
 import {
   AuthorizeRequest,
   AuthorizeResult,
@@ -59,7 +56,7 @@ export class SimplePermissionPolicy implements PermissionPolicy {
       if (request.permission.attributes.action === 'read') {
         return createCatalogPolicyDecision({
           anyOf: [
-            isEntityOwner(getIdentityClaims(identity)),
+            isEntityOwner(identity.ownershipEntityRefs),
             isComponentType(['website']),
             isEntityKind(['template']),
           ],
@@ -67,7 +64,7 @@ export class SimplePermissionPolicy implements PermissionPolicy {
       }
 
       return createCatalogPolicyDecision(
-        isEntityOwner(getIdentityClaims(identity)),
+        isEntityOwner(identity.ownershipEntityRefs),
       );
     }
 
