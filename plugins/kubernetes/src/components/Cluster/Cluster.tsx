@@ -40,9 +40,9 @@ import {
   PodNamesWithErrorsContext,
 } from '../../hooks';
 
-import { StatusError, StatusOK, TableColumn } from '@backstage/core-components';
-import { V1Pod } from '@kubernetes/client-node';
+import { StatusError, StatusOK } from '@backstage/core-components';
 import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
+import { CustomisationProps } from '../../api/types';
 
 type ClusterSummaryProps = {
   clusterName: string;
@@ -108,14 +108,14 @@ const ClusterSummary = ({
 type ClusterProps = {
   clusterObjects: ClusterObjects;
   podsWithErrors: Set<string>;
+  customisationProps?: CustomisationProps;
   children?: React.ReactNode;
-  customPodTableColumns?: TableColumn<V1Pod>[];
 };
 
 export const Cluster = ({
   clusterObjects,
   podsWithErrors,
-  customPodTableColumns,
+  customisationProps,
 }: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
   const podNameToMetrics = clusterObjects.podMetrics
@@ -147,7 +147,7 @@ export const Cluster = ({
                   </Grid>
                   <Grid item>
                     <DeploymentsAccordions
-                      customPodTableColumns={customPodTableColumns}
+                      customisationProps={customisationProps}
                     />
                   </Grid>
                   <Grid item>

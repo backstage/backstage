@@ -32,3 +32,7 @@ export interface KubernetesApi {
   ): Promise<ObjectsByEntityResponse>;
   getClusters(): Promise<{ name: string; authProvider: string }[]>;
 }
+
+export function CustomisationProps(customPodTableColumns) {
+  this.customPodTableColumns = customPodTableColumns;
+}

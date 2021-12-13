@@ -23,23 +23,18 @@ import { DetectedError, detectErrors } from '../error-detection';
 import { Cluster } from './Cluster';
 import EmptyStateImage from '../assets/emptystate.svg';
 import { useKubernetesObjects } from '../hooks';
-import {
-  Content,
-  Page,
-  Progress,
-  TableColumn,
-} from '@backstage/core-components';
-import { V1Pod } from '@kubernetes/client-node';
+import { Content, Page, Progress } from '@backstage/core-components';
+import { CustomisationProps } from '../api/types';
 
 type KubernetesContentProps = {
   entity: Entity;
+  customisationProps?: CustomisationProps;
   children?: React.ReactNode;
-  customPodTableColumns?: TableColumn<V1Pod>[];
 };
 
 export const KubernetesContent = ({
   entity,
-  customPodTableColumns,
+  customisationProps,
 }: KubernetesContentProps) => {
   const { kubernetesObjects, error } = useKubernetesObjects(entity);
 
@@ -130,7 +125,7 @@ export const KubernetesContent = ({
                       <Cluster
                         clusterObjects={item}
                         podsWithErrors={podsWithErrors}
-                        customPodTableColumns={customPodTableColumns}
+                        customisationProps={customisationProps}
                       />
                     </Grid>
                   );

@@ -26,7 +26,6 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {
   V1Deployment,
-  V1Pod,
   V1HorizontalPodAutoscaler,
 } from '@kubernetes/client-node';
 import { PodsTable } from '../Pods';
@@ -42,9 +41,10 @@ import {
 } from '../../hooks';
 import { StatusError, StatusOK } from '@backstage/core-components';
 import { READY_COLUMNS, RESOURCE_COLUMNS } from '../Pods/PodsTable';
+import { CustomisationProps } from '../../api/types';
 
 type DeploymentsAccordionsProps = {
-  customPodTableColumns?: TableColumn<V1Pod>[];
+  customisationProps?: CustomisationProps;
   children?: React.ReactNode;
 };
 
@@ -52,7 +52,7 @@ type DeploymentAccordionProps = {
   deployment: V1Deployment;
   ownedPods: V1Pod[];
   matchingHpa?: V1HorizontalPodAutoscaler;
-  customPodTableColumns?: TableColumn<V1Pod>[];
+  customisationProps?: CustomisationProps;
   children?: React.ReactNode;
 };
 
@@ -146,13 +146,15 @@ const DeploymentAccordion = ({
   deployment,
   ownedPods,
   matchingHpa,
-  customPodTableColumns,
+  customisationProps,
 }: DeploymentAccordionProps) => {
   const podNamesWithErrors = useContext(PodNamesWithErrorsContext);
 
   const podsWithErrors = ownedPods.filter(p =>
     podNamesWithErrors.has(p.metadata?.name ?? ''),
   );
+
+  const customColumns = customisationProps?.customPodTableColumns || [];
 
   return (
     <Accordion TransitionProps={{ unmountOnExit: true }}>
@@ -168,7 +170,7 @@ const DeploymentAccordion = ({
         <PodsTable
           pods={ownedPods}
           extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]}
-          customColumns={customPodTableColumns}
+          customColumns={customColumns}
         />
       </AccordionDetails>
     </Accordion>
@@ -176,7 +178,7 @@ const DeploymentAccordion = ({
 };
 
 export const DeploymentsAccordions = ({
-  customPodTableColumns,
+  customisationProps,
 }: DeploymentsAccordionsProps) => {
   const groupedResponses = useContext(GroupedResponsesContext);
 
@@ -202,7 +204,7 @@ export const DeploymentsAccordions = ({
                 groupedResponses.pods,
               )}
               deployment={deployment}
-              customPodTableColumns={customPodTableColumns}
+              customisationProps={customisationProps}
             />
           </Grid>
         </Grid>

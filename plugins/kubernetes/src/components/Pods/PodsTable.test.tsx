@@ -22,14 +22,12 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { PodsTable, READY_COLUMNS, RESOURCE_COLUMNS } from './PodsTable';
 import { kubernetesProviders } from '../../hooks/test-utils';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
+import { V1Pod } from '@kubernetes/client-node';
+import { TableColumn } from '@backstage/core-components';
 
 const customColumns: TableColumn<V1Pod>[] = [
   {
-    title: 'custom_column',
-    align: 'center',
-  },
-  {
-    title: 'custom_column_2',
+    title: 'Custom Column',
     align: 'center',
   },
 ];
@@ -207,8 +205,7 @@ describe('PodsTable', () => {
     expect(getByText('status')).toBeInTheDocument();
     expect(getByText('CPU usage %')).toBeInTheDocument();
     expect(getByText('Memory usage %')).toBeInTheDocument();
-    expect(getByText('custom_column')).toBeInTheDocument();
-    expect(getByText('custom_column_2')).toBeInTheDocument();
+    expect(getByText('Custom Column')).toBeInTheDocument();
 
     // values
     expect(getByText('dice-roller-6c8646bfd-2m5hv')).toBeInTheDocument();
