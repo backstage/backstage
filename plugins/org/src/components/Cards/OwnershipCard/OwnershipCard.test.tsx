@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  CatalogEntitiesRequest,
+  CatalogListResponse,
+} from '@backstage/catalog-client';
 import { Entity, GroupEntity, UserEntity } from '@backstage/catalog-model';
 import {
   CatalogApi,
@@ -25,6 +29,97 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { queryByText } from '@testing-library/react';
 import React from 'react';
 import { OwnershipCard } from './OwnershipCard';
+
+const items = [
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'API',
+    metadata: {
+      name: 'my-api',
+    },
+    spec: {
+      type: 'openapi',
+    },
+    relations: [
+      {
+        type: 'ownedBy',
+        target: {
+          name: 'my-team',
+          namespace: 'default',
+          kind: 'Group',
+        },
+      },
+    ],
+  },
+  {
+    kind: 'Component',
+    metadata: {
+      name: 'my-service',
+    },
+    spec: {
+      type: 'service',
+    },
+    relations: [
+      {
+        type: 'ownedBy',
+        target: {
+          name: 'my-team',
+          namespace: 'default',
+          kind: 'Group',
+        },
+      },
+    ],
+  },
+  {
+    kind: 'Component',
+    metadata: {
+      name: 'my-library',
+      namespace: 'other-namespace',
+    },
+    spec: {
+      type: 'library',
+    },
+    relations: [
+      {
+        type: 'ownedBy',
+        target: {
+          name: 'my-team',
+          namespace: 'default',
+          kind: 'Group',
+        },
+      },
+    ],
+  },
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'System',
+    metadata: {
+      name: 'my-system',
+    },
+    relations: [
+      {
+        type: 'ownedBy',
+        target: {
+          name: 'my-team',
+          namespace: 'default',
+          kind: 'Group',
+        },
+      },
+    ],
+  },
+] as Entity[];
+
+const getEntitiesMock = (
+  request?: CatalogEntitiesRequest,
+): Promise<CatalogListResponse<Entity>> => {
+  const filterKinds =
+    !Array.isArray(request?.filter) && Array.isArray(request?.filter?.kind)
+      ? request?.filter?.kind ?? []
+      : []; // we expect the request to be like { filter: { kind: ['API','System'], .... }
+  return Promise.resolve({
+    items: items.filter(item => filterKinds.find(k => k === item.kind)),
+  } as CatalogListResponse<Entity>);
+};
 
 describe('OwnershipCard', () => {
   const groupEntity: GroupEntity = {
@@ -49,76 +144,12 @@ describe('OwnershipCard', () => {
     ],
   };
 
-  const items = [
-    {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'API',
-      metadata: {
-        name: 'my-api',
-      },
-      spec: {
-        type: 'openapi',
-      },
-      relations: [
-        {
-          type: 'ownedBy',
-          target: {
-            name: 'my-team',
-            namespace: 'default',
-            kind: 'Group',
-          },
-        },
-      ],
-    },
-    {
-      kind: 'Component',
-      metadata: {
-        name: 'my-service',
-      },
-      spec: {
-        type: 'service',
-      },
-      relations: [
-        {
-          type: 'ownedBy',
-          target: {
-            name: 'my-team',
-            namespace: 'default',
-            kind: 'Group',
-          },
-        },
-      ],
-    },
-    {
-      kind: 'Component',
-      metadata: {
-        name: 'my-library',
-        namespace: 'other-namespace',
-      },
-      spec: {
-        type: 'library',
-      },
-      relations: [
-        {
-          type: 'ownedBy',
-          target: {
-            name: 'my-team',
-            namespace: 'default',
-            kind: 'Group',
-          },
-        },
-      ],
-    },
-  ] as Entity[];
-
   it('displays entity counts', async () => {
     const catalogApi: jest.Mocked<CatalogApi> = {
       getEntities: jest.fn(),
     } as any;
 
-    catalogApi.getEntities.mockResolvedValue({
-      items,
-    });
+    catalogApi.getEntities.mockImplementation(getEntitiesMock);
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -156,6 +187,7 @@ describe('OwnershipCard', () => {
     expect(
       queryByText(getByText('LIBRARY').parentElement!, '1'),
     ).toBeInTheDocument();
+    expect(() => getByText('SYSTEM')).toThrowError();
   });
 
   it('applies CustomFilterDefinition', async () => {
@@ -163,27 +195,7 @@ describe('OwnershipCard', () => {
       getEntities: jest.fn(),
     } as any;
 
-    catalogApi.getEntities.mockResolvedValue({
-      items: [
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'system',
-          metadata: {
-            name: 'my-systen',
-          },
-          relations: [
-            {
-              type: 'ownedBy',
-              target: {
-                name: 'my-team',
-                namespace: 'default',
-                kind: 'Group',
-              },
-            },
-          ],
-        },
-      ],
-    });
+    catalogApi.getEntities.mockImplementation(getEntitiesMock);
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -198,21 +210,15 @@ describe('OwnershipCard', () => {
       },
     );
 
-    expect(catalogApi.getEntities).toHaveBeenCalledWith({
-      filter: { kind: ['API', 'System'] },
-      fields: [
-        'kind',
-        'metadata.name',
-        'metadata.namespace',
-        'spec.type',
-        'relations',
-      ],
-    });
-
     expect(getByText('SYSTEM')).toBeInTheDocument();
     expect(
       queryByText(getByText('SYSTEM').parentElement!, '1'),
     ).toBeInTheDocument();
+    expect(getByText('OPENAPI')).toBeInTheDocument();
+    expect(
+      queryByText(getByText('OPENAPI').parentElement!, '1'),
+    ).toBeInTheDocument();
+    expect(() => getByText('LIBRARY')).toThrowError();
   });
 
   it('links to the catalog with the group filter', async () => {
@@ -220,9 +226,7 @@ describe('OwnershipCard', () => {
       getEntities: jest.fn(),
     } as any;
 
-    catalogApi.getEntities.mockResolvedValue({
-      items,
-    });
+    catalogApi.getEntities.mockImplementation(getEntitiesMock);
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -268,9 +272,7 @@ describe('OwnershipCard', () => {
       getEntities: jest.fn(),
     } as any;
 
-    catalogApi.getEntities.mockResolvedValue({
-      items,
-    });
+    catalogApi.getEntities.mockImplementation(getEntitiesMock);
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
