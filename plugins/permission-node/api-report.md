@@ -5,7 +5,7 @@
 ```ts
 import { AuthorizeRequest } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
+import { BackstageUserIdentity } from '@backstage/plugin-auth-backend';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
@@ -94,7 +94,7 @@ export interface PermissionPolicy {
   // (undocumented)
   handle(
     request: PolicyAuthorizeRequest,
-    user?: BackstageIdentityResponse,
+    user?: BackstageUserIdentity,
   ): Promise<PolicyDecision>;
 }
 
