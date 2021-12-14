@@ -5,21 +5,24 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-const React = require('react');
-const Components = props => <div {...props}></div>;
-import Layout from "@theme/Layout";
-const Block = Components.Block;
-const ActionBlock = Components.ActionBlock;
-const Breakpoint = Components.Breakpoint;
-const BulletLine = Components.BulletLine;
-const Banner = Components.Banner;
+import React from 'react';
+import Layout from '@theme/Layout';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import {
+  Block,
+  ActionBlock,
+  Breakpoint,
+  BulletLine,
+  Banner,
+} from '@site/src/core/Components';
 
-class Index extends React.Component {
-  render() {
-    const { config: siteConfig } = this.props;
-    const { baseUrl } = siteConfig;
+export default function Index() {
+  const context = useDocusaurusContext();
+  const { siteConfig } = context;
+  const baseUrl = siteConfig.baseUrl;
 
-    return (
+  return (
+    <Layout title={siteConfig.title} description={siteConfig.tagline}>
       <main className="MainContent">
         <Banner.Container>
           <Banner.Dismissable storageKey="2021-10-07-software-templates-techdocs-beta">
@@ -566,8 +569,6 @@ class Index extends React.Component {
           </Block.Container>
         </Block>
       </main>
-    );
-  }
+    </Layout>
+  );
 }
-
-export default props => <Layout><Index {...props} /></Layout>;
