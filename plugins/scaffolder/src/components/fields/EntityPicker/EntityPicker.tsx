@@ -57,9 +57,9 @@ export const EntityPicker = ({
 
   useEffect(() => {
     if (entityRefs?.length === 1) {
-      onSelect('', entityRefs[0]);
+      onChange(entityRefs[0]);
     }
-  }, [entityRefs, onSelect]);
+  }, [entityRefs, onChange]);
 
   return (
     <FormControl
