@@ -26,7 +26,7 @@ export async function serveBundle(options: ServeOptions) {
   const url = resolveBaseUrl(options.frontendConfig);
 
   const https =
-    options.frontendConfig.getOptionalBoolean('app.listen.https') || url.protocol === 'https:';
+    options.frontendConfig.getOptionalBoolean('app.listen.https') ?? url.protocol === 'https:';
   const host =
     options.frontendConfig.getOptionalString('app.listen.host') || url.hostname;
   const port =
