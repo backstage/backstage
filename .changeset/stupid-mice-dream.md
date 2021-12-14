@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Add Missing Overridable Components Type for SidebarSpace, SidebarSpacer, and SidebarDivider Components.
+Add Missing Override Components Type for SidebarSpace, SidebarSpacer, and SidebarDivider Components.
