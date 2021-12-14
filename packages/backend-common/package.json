@@ -94,7 +94,7 @@
     "@types/recursive-readdir": "^2.2.0",
     "@types/stoppable": "^1.1.0",
     "@types/supertest": "^2.0.8",
-    "@types/tar": "^4.0.3",
+    "@types/tar": "^6.1.1",
     "@types/unzipper": "^0.10.3",
     "@types/webpack-env": "^1.15.2",
     "aws-sdk-mock": "^5.2.1",
