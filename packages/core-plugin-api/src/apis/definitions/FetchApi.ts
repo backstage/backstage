@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
 import { ApiRef, createApiRef } from '../system';
 
 /**

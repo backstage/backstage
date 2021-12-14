@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-import crossFetch from 'cross-fetch';
-
-/**
- * The type of a fetch call.
- *
- * @public
- */
-export type FetchFunction = typeof crossFetch;
-
 /**
  * A middleware that modifies the behavior of an ongoing fetch.
  *
@@ -35,5 +26,5 @@ export interface FetchMiddleware {
    * @param next - The next, inner, implementation, that this middleware shall
    *               call out to as part of the request cycle.
    */
-  apply(next: FetchFunction): FetchFunction;
+  apply(next: typeof fetch): typeof fetch;
 }

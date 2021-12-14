@@ -24,9 +24,9 @@ import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
+import { Config } from '@backstage/config';
 import { ConfigReader } from '@backstage/config';
 import { createApp as createApp_2 } from '@backstage/app-defaults';
-import crossFetch from 'cross-fetch';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
@@ -291,14 +291,6 @@ export type BackstagePluginWithAnyOutput = Omit<
 };
 
 // @public
-export class BackstageProtocolResolverFetchMiddleware
-  implements FetchMiddleware
-{
-  constructor(discovery: (pluginId: string) => Promise<string>);
-  apply(next: FetchFunction): FetchFunction;
-}
-
-// @public
 export class BitbucketAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T;
@@ -327,6 +319,12 @@ export { ConfigReader };
 export function createApp(
   options?: Parameters<typeof createApp_2>[0],
 ): BackstageApp & AppContext;
+
+// @public
+export function createFetchApi(options: {
+  baseImplementation?: typeof fetch | undefined;
+  middleware?: FetchMiddleware | FetchMiddleware[] | undefined;
+}): FetchApi;
 
 // @public
 export function createSpecializedApp(options: AppOptions): BackstageApp;
@@ -380,21 +378,24 @@ export type FeatureFlaggedProps = {
 );
 
 // @public
-export class FetchApiBuilder {
-  // (undocumented)
-  build(): FetchApi;
-  // (undocumented)
-  static create(): FetchApiBuilder;
-  // (undocumented)
-  with(middleware: FetchMiddleware): FetchApiBuilder;
+export interface FetchMiddleware {
+  apply(next: typeof fetch): typeof fetch;
 }
 
 // @public
-export type FetchFunction = typeof crossFetch;
-
-// @public
-export interface FetchMiddleware {
-  apply(next: FetchFunction): FetchFunction;
+export class FetchMiddlewares {
+  static injectIdentityAuth(options: {
+    identityApi: IdentityApi;
+    config?: Config;
+    urlPrefixAllowlist?: string[];
+    header?: {
+      name: string;
+      value: (backstageToken: string) => string;
+    };
+  }): FetchMiddleware;
+  static resolvePluginProtocol(options: {
+    discoveryApi: DiscoveryApi;
+  }): FetchMiddleware;
 }
 
 // @public
@@ -452,13 +453,6 @@ export class GitlabAuth {
 export class GoogleAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof googleAuthApiRef.T;
-}
-
-// @public
-export class IdentityAwareFetchMiddleware implements FetchMiddleware {
-  constructor(tokenFunction: () => Promise<string | undefined>);
-  apply(next: FetchFunction): FetchFunction;
-  setHeaderName(name: string): IdentityAwareFetchMiddleware;
 }
 
 // @public

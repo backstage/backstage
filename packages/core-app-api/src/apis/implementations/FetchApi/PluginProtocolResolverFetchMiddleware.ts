@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { FetchFunction, FetchMiddleware } from './types';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { FetchMiddleware } from './types';
 
 function join(left: string, right: string): string {
   if (!right || right === '/') {
@@ -25,25 +26,16 @@ function join(left: string, right: string): string {
 }
 
 /**
- * Handles translation from backstage://some-plugin-id/<path> to concrete
- * http(s) URLs.
- *
- * @public
+ * Handles translation from plugin://some-plugin-id/<path> to concrete http(s)
+ * URLs.
  */
-export class BackstageProtocolResolverFetchMiddleware
-  implements FetchMiddleware
-{
-  constructor(
-    private readonly discovery: (pluginId: string) => Promise<string>,
-  ) {}
+export class PluginProtocolResolverFetchMiddleware implements FetchMiddleware {
+  constructor(private readonly discoveryApi: DiscoveryApi) {}
 
-  /**
-   * {@inheritdoc FetchMiddleware.apply}
-   */
-  apply(next: FetchFunction): FetchFunction {
+  apply(next: typeof fetch): typeof fetch {
     return async (input, init) => {
       const request = new Request(input, init);
-      const prefix = 'backstage://';
+      const prefix = 'plugin://';
 
       if (!request.url.startsWith(prefix)) {
         return next(input, init);
@@ -55,7 +47,7 @@ export class BackstageProtocolResolverFetchMiddleware
         `http://${request.url.substring(prefix.length)}`,
       );
 
-      let base = await this.discovery(hostname);
+      let base = await this.discoveryApi.getBaseUrl(hostname);
       if (username || password) {
         const baseUrl = new URL(base);
         const authority = `${username}${password ? `:${password}` : ''}@`;

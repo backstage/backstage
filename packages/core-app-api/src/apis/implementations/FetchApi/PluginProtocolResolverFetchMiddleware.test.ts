@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { BackstageProtocolResolverFetchMiddleware } from './BackstageProtocolResolverFetchMiddleware';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { PluginProtocolResolverFetchMiddleware } from './PluginProtocolResolverFetchMiddleware';
 
-describe('BackstageProtocolResolverFetchMiddleware', () => {
+describe('PluginProtocolResolverFetchMiddleware', () => {
   it.each([['https://passthrough.com/a']])(
     'passes through regular URLs, %p',
-    async (url: string) => {
+    async url => {
       const resolve = jest.fn();
-      const middleware = new BackstageProtocolResolverFetchMiddleware(resolve);
+      const discoveryApi = { getBaseUrl: resolve } as unknown as DiscoveryApi;
+      const middleware = new PluginProtocolResolverFetchMiddleware(
+        discoveryApi,
+      );
       const inner = jest.fn();
       const outer = middleware.apply(inner);
 
@@ -33,38 +37,38 @@ describe('BackstageProtocolResolverFetchMiddleware', () => {
 
   it.each([
     [
-      'backstage://my-plugin/sub/path',
+      'plugin://my-plugin/sub/path',
       'my-plugin',
       'https://real.com/base',
       'https://real.com/base/sub/path',
     ],
     [
-      'backstage://my-plugin/sub/path/',
+      'plugin://my-plugin/sub/path/',
       'my-plugin',
       'https://real.com/base/',
       'https://real.com/base/sub/path/',
     ],
-    ['backstage://x', 'x', 'http://real.com:8080', 'http://real.com:8080'],
+    ['plugin://x', 'x', 'http://real.com:8080', 'http://real.com:8080'],
     [
-      'backstage://x/a/b?c=d&e=f#g',
+      'plugin://x/a/b?c=d&e=f#g',
       'x',
       'https://real.com/base',
       'https://real.com/base/a/b?c=d&e=f#g',
     ],
     [
-      'backstage://x?c=d&e=f#g',
+      'plugin://x?c=d&e=f#g',
       'x',
       'https://real.com:8080/base',
       'https://real.com:8080/base?c=d&e=f#g',
     ],
     [
-      'backstage://username:password@x?c=d&e=f#g',
+      'plugin://username:password@x?c=d&e=f#g',
       'x',
       'https://real.com:8080/base',
       'https://username:password@real.com:8080/base?c=d&e=f#g',
     ],
     [
-      'backstage://x?c=d&e=f#g',
+      'plugin://x?c=d&e=f#g',
       'x',
       'https://username:password@real.com:8080/base',
       'https://username:password@real.com:8080/base?c=d&e=f#g',
@@ -73,7 +77,10 @@ describe('BackstageProtocolResolverFetchMiddleware', () => {
     'resolves backstage URLs, %p',
     async (original, host, resolved, result) => {
       const resolve = jest.fn();
-      const middleware = new BackstageProtocolResolverFetchMiddleware(resolve);
+      const discoveryApi = { getBaseUrl: resolve } as unknown as DiscoveryApi;
+      const middleware = new PluginProtocolResolverFetchMiddleware(
+        discoveryApi,
+      );
       const inner = jest.fn();
       const outer = middleware.apply(inner);
 

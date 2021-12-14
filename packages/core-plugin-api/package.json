@@ -34,7 +34,6 @@
     "@backstage/types": "^0.1.1",
     "@backstage/version-bridge": "^0.1.1",
     "@material-ui/core": "^4.12.2",
-    "cross-fetch": "^3.0.6",
     "history": "^5.0.0",
     "prop-types": "^15.7.2",
     "react-router-dom": "6.0.0-beta.0",
@@ -57,6 +56,7 @@
     "@types/node": "^14.14.32",
     "@types/prop-types": "^15.7.3",
     "@types/zen-observable": "^0.8.0",
+    "cross-fetch": "^3.0.6",
     "msw": "^0.35.0"
   },
   "files": [

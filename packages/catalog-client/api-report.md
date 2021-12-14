@@ -5,7 +5,6 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
-import { default as fetch_2 } from 'cross-fetch';
 import { Location as Location_2 } from '@backstage/catalog-model';
 
 // @public
@@ -159,6 +158,6 @@ export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
 
 // @public
 export type FetchApi = {
-  fetch: typeof fetch_2;
+  fetch: typeof fetch;
 };
 ```

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
-
 /**
  * This is a copy of FetchApi, to avoid importing core-plugin-api.
  *
