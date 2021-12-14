@@ -61,6 +61,11 @@ describe('createRouter', () => {
           return Promise.resolve({
             id: 'test-user',
             token,
+            identity: {
+              type: 'user',
+              userEntityRef: 'test-user',
+              ownershipEntityRefs: ['user:default/test-user'],
+            },
           });
         }),
       } as unknown as IdentityClient,
