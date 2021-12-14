@@ -16,6 +16,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAsync } from 'react-use';
+import isEqual from 'lodash/isEqual';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../api';
 import { useEntityListProvider } from './useEntityListProvider';
@@ -107,7 +108,9 @@ export function useEntityTypeFilter(): EntityTypeReturn {
     const stillValidTypes = selectedTypes.filter(value =>
       newTypes.includes(value),
     );
-    setSelectedTypes(stillValidTypes);
+    if (!isEqual(selectedTypes, stillValidTypes)) {
+      setSelectedTypes(stillValidTypes);
+    }
   }, [loading, kind, selectedTypes, setSelectedTypes, entities]);
 
   useEffect(() => {

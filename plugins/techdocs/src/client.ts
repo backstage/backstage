@@ -263,9 +263,11 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     const { kind, namespace, name } = entityId;
 
     const apiOrigin = await this.getApiOrigin();
+    const newBaseUrl = `${apiOrigin}/static/docs/${namespace}/${kind}/${name}/${path}`;
+
     return new URL(
       oldBaseUrl,
-      `${apiOrigin}/static/docs/${namespace}/${kind}/${name}/${path}`,
+      newBaseUrl.endsWith('/') ? newBaseUrl : `${newBaseUrl}/`,
     ).toString();
   }
 }

@@ -67,4 +67,16 @@ ignore:
         reason: Prototype pollution is not an effective attack against a CLI as it already executes arbitrary code
         expires: 2022-03-06T17:18:55.019Z
         created: 2021-09-06T17:18:55.027Z
+
+  'snyk:lic:npm:rollup-plugin-dts:LGPL-3.0':
+    - '*':
+        reason: Backstage itself does not redistribute this dependency in minified form
+        expires: 2031-09-06T17:18:55.027Z
+        created: 2021-09-06T17:18:55.027Z
+
+  'snyk:lic:npm:axe-core:MPL-2.0':
+    - '*':
+        reason: Backstage itself does not redistribute this dependency in minified form
+        expires: 2031-09-06T17:18:55.027Z
+        created: 2021-09-06T17:18:55.027Z
 patch: {}
