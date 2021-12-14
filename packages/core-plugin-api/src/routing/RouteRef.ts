@@ -36,48 +36,10 @@ export class RouteRefImpl<Params extends AnyParams>
   constructor(
     private readonly id: string,
     readonly params: ParamKeys<Params>,
-    private readonly config: {
-      /** @deprecated */
-      path?: string;
-      /** @deprecated */
-      icon?: OldIconComponent;
-      /** @deprecated */
-      title?: string;
-    },
-  ) {
-    if (config.path) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `DEPRECATION WARNING: Passing a path to createRouteRef is deprecated, please remove the path for ${this}.`,
-      );
-    }
-
-    if (config.icon) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `DEPRECATION WARNING: Passing an icon to createRouteRef is deprecated, please remove the icon for ${this}.`,
-      );
-    }
-
-    if (config.title) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `DEPRECATION WARNING: Passing a title to createRouteRef is deprecated, please remove the title for ${this}.`,
-      );
-    }
-  }
-
-  /** @deprecated use `useRouteRef` instead */
-  get path() {
-    return this.config.path ?? '';
-  }
-
-  get icon() {
-    return this.config.icon;
-  }
+  ) {}
 
   get title() {
-    return this.config.title ?? this.id;
+    return this.id;
   }
 
   toString() {
@@ -104,20 +66,13 @@ export function createRouteRef<
   id?: string;
   /** A list of parameter names that the path that this route ref is bound to must contain */
   params?: ParamKey[];
-  /** @deprecated Route refs no longer decide their own path */
-  path?: string;
-  /** @deprecated Route refs no longer decide their own icon */
-  icon?: OldIconComponent;
-  /** @deprecated Route refs no longer decide their own title */
-  title?: string;
 }): RouteRef<OptionalParams<Params>> {
-  const id = config.id || config.title;
+  const id = config.id;
   if (!id) {
     throw new Error('RouteRef must be provided a non-empty id');
   }
   return new RouteRefImpl(
     id,
     (config.params ?? []) as ParamKeys<OptionalParams<Params>>,
-    config,
   );
 }
