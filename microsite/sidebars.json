@@ -257,11 +257,6 @@
         "label": "Guides",
         "items": ["api/utility-apis"]
       },
-      {
-        "type": "category",
-        "label": "API Reference",
-        "items": ["reference/index"]
-      },
       "api/deprecations"
     ],
     "Tutorials": [
