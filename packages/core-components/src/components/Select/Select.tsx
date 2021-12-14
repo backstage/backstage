@@ -32,6 +32,7 @@ import React, { useEffect, useState } from 'react';
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
 
+/** @public */
 export type SelectInputBaseClassKey = 'root' | 'input';
 
 const BootstrapInput = withStyles(
@@ -60,6 +61,7 @@ const BootstrapInput = withStyles(
   { name: 'BackstageSelectInputBase' },
 )(InputBase);
 
+/** @public */
 export type SelectClassKey =
   | 'formControl'
   | 'label'
@@ -102,11 +104,13 @@ const useStyles = makeStyles(
   { name: 'BackstageSelect' },
 );
 
+/** @public */
 export type SelectItem = {
   label: string;
   value: string | number;
 };
 
+/** @public */
 export type SelectedItems = string | string[] | number | number[];
 
 export type SelectProps = {
@@ -121,6 +125,7 @@ export type SelectProps = {
   disabled?: boolean;
 };
 
+/** @public */
 export function SelectComponent(props: SelectProps) {
   const {
     multiple,
