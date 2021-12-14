@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackstageUserIdentity } from '@backstage/plugin-auth-backend';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
 import {
   AuthorizeRequest,
   AuthorizeResult,
@@ -38,7 +38,7 @@ const isComponentType = createConditionFactory(isComponentTypeRule);
 export class SimplePermissionPolicy implements PermissionPolicy {
   async handle(
     request: Omit<AuthorizeRequest, 'resourceRef'>,
-    identity?: BackstageUserIdentity,
+    user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision> {
     if (request.permission.name === techdocsReadPermission.name) {
       return {
@@ -47,12 +47,13 @@ export class SimplePermissionPolicy implements PermissionPolicy {
     }
 
     if (request.permission.resourceType === RESOURCE_TYPE_CATALOG_ENTITY) {
-      if (!identity) {
+      if (!user) {
         return {
           result: AuthorizeResult.DENY,
         };
       }
 
+      const { identity } = user;
       if (request.permission.attributes.action === 'read') {
         return createCatalogPolicyDecision({
           anyOf: [
@@ -68,7 +69,7 @@ export class SimplePermissionPolicy implements PermissionPolicy {
       );
     }
 
-    if (identity) {
+    if (user) {
       return {
         result: AuthorizeResult.ALLOW,
       };
