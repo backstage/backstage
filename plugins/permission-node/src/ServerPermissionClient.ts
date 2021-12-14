@@ -38,7 +38,12 @@ export class ServerPermissionClient extends PermissionClient {
     const { discoveryApi, configApi, serverTokenManager } = options;
     super({ discoveryApi, configApi });
 
-    if (this.enabled && !(serverTokenManager instanceof ServerTokenManager)) {
+    if (
+      this.enabled &&
+      // TODO: Find a cleaner way of ensuring usage of SERVER token manager when
+      // permissions are enabled.
+      serverTokenManager instanceof ServerTokenManager.noop().constructor
+    ) {
       throw new Error(
         'You must configure at least one key in backend.auth.keys if permissions are enabled.',
       );

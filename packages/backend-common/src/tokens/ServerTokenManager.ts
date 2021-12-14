@@ -45,35 +45,25 @@ export class ServerTokenManager implements TokenManager {
   static fromConfig(config: Config, options: { logger: Logger }) {
     const { logger } = options;
 
-    if (process.env.NODE_ENV === 'development') {
-      let secrets: string[] = [];
-      try {
-        secrets = this.getSecrets(config);
-      } catch {
-        // For development, if a secret has not been configured, we auto generate a secret instead of throwing.
-      }
-
-      if (!secrets.length) {
-        const generatedDevOnlyKey = JWK.generateSync('oct', 24 * 8);
-        if (generatedDevOnlyKey.k === undefined) {
-          throw new Error('No key generated');
-        }
-        logger.warn(
-          'Generated a secret for backend-to-backend authentication: DEVELOPMENT USE ONLY. You must configure a secret before deploying to production.',
-        );
-        return new ServerTokenManager([generatedDevOnlyKey.k]);
-      }
-      return new ServerTokenManager(secrets);
+    const keys = config.getOptionalConfigArray('backend.auth.keys');
+    if (keys?.length) {
+      return new ServerTokenManager(keys.map(key => key.getString('secret')));
+    }
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error(
+        'You must configure at least one key in backend.auth.keys for production.',
+      );
     }
 
-    const secrets = this.getSecrets(config);
-    return new ServerTokenManager(secrets);
-  }
-
-  private static getSecrets(config: Config) {
-    return config
-      .getConfigArray('backend.auth.keys')
-      .map(key => key.getString('secret'));
+    // For development, if a secret has not been configured, we auto generate a secret instead of throwing.
+    const generatedDevOnlyKey = JWK.generateSync('oct', 24 * 8);
+    if (generatedDevOnlyKey.k === undefined) {
+      throw new Error('No key generated');
+    }
+    logger.warn(
+      'Generated a secret for backend-to-backend authentication: DEVELOPMENT USE ONLY.',
+    );
+    return new ServerTokenManager([generatedDevOnlyKey.k]);
   }
 
   private constructor(secrets: string[]) {
