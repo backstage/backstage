@@ -15,7 +15,6 @@
  */
 
 import { sortMembers } from './sortMethods';
-import { CatalogApi } from '@backstage/catalog-client';
 import { parseMember } from './parseMethods';
 import { BazaarProject, Member } from '../types';
 import { BazaarApi } from '../api';
@@ -38,9 +37,7 @@ export const fetchProjectMembers = async (
   return [];
 };
 
-export const fetchCatalogItems = async (
-  catalogApi: CatalogApi,
-): Promise<Entity[]> => {
+export const fetchCatalogItems = async (catalogApi: any): Promise<Entity[]> => {
   const entities = await catalogApi.getEntities({
     filter: {
       kind: ['Component', 'Resource'],

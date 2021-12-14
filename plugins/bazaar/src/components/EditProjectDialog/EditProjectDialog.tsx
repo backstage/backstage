@@ -29,7 +29,6 @@ type Props = {
   handleEditClose: () => void;
   handleCardClose?: () => void;
   fetchBazaarProject: () => Promise<BazaarProject | null>;
-  fetchBazaarProjects?: () => void;
 };
 
 const useStyles = makeStyles({
@@ -45,7 +44,6 @@ export const EditProjectDialog = ({
   handleEditClose,
   handleCardClose,
   fetchBazaarProject,
-  fetchBazaarProjects,
 }: Props) => {
   const classes = useStyles();
   const bazaarApi = useApi(bazaarApiRef);
@@ -67,7 +65,7 @@ export const EditProjectDialog = ({
     await bazaarApi.deleteProject(bazaarProject.id);
 
     handleDeleteClose();
-    if (fetchBazaarProjects) fetchBazaarProjects();
+    fetchBazaarProject();
   };
 
   useEffect(() => {

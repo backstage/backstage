@@ -112,7 +112,6 @@ export const ProjectDialog = ({
             }}
             inputType="description"
             helperText="please enter a description"
-            placeholder="Describe who you are and what skills you are looking for"
           />
 
           <InputSelector

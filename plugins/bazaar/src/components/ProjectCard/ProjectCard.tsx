@@ -74,7 +74,6 @@ export const ProjectCard = ({
       <Dialog fullWidth onClose={handleClose} open={openCard}>
         <HomePageBazaarInfoCard
           initProject={project}
-          fetchBazaarProjects={fetchBazaarProjects}
           handleClose={handleClose}
           initEntity={catalogEntities[0] || null}
         />

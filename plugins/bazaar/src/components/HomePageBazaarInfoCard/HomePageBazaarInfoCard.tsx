@@ -52,7 +52,6 @@ import {
 
 import { ConfirmationDialog } from '../ConfirmationDialog/ConfirmationDialog';
 import { CardContentFields } from '../CardContentFields/CardContentFields';
-
 import { LinkProjectDialog } from '../LinkProjectDialog';
 import {
   fetchCatalogItems,
@@ -62,14 +61,12 @@ import { parseBazaarResponse } from '../../util/parseMethods';
 
 type Props = {
   initProject: BazaarProject;
-  fetchBazaarProjects: () => Promise<BazaarProject[]>;
   handleClose: () => void;
   initEntity: Entity;
 };
 
 export const HomePageBazaarInfoCard = ({
   initProject,
-  fetchBazaarProjects,
   handleClose,
   initEntity,
 }: Props) => {
@@ -104,33 +101,41 @@ export const HomePageBazaarInfoCard = ({
     return fetchProjectMembers(bazaarApi, bazaarProject.value ?? initProject);
   });
 
+  const [userId, fetchUserId] = useAsyncFn(async () => {
+    return await (
+      await identity.getProfileInfo()
+    ).displayName;
+  });
+
   useEffect(() => {
     fetchMembers();
     fetchBazaarProject();
     fetchCatalogEntities();
-  }, [fetchMembers, fetchBazaarProject, fetchCatalogEntities]);
+    fetchUserId();
+  }, [fetchMembers, fetchBazaarProject, fetchCatalogEntities, fetchUserId]);
 
   useEffect(() => {
-    if (members.value) {
-      const isBazaarMember =
-        members?.value
-          ?.map((member: Member) => member.userId)
-          .indexOf(identity.getUserId()) >= 0;
-      setIsMember(isBazaarMember);
+    if (userId.value) {
+      if (members.value) {
+        const isBazaarMember =
+          members?.value
+            ?.map((member: Member) => member.userId)
+            .indexOf(userId.value) >= 0;
+        setIsMember(isBazaarMember);
+      }
     }
-  }, [bazaarProject.value, members, identity]);
+  }, [bazaarProject.value, members, identity, userId.value]);
 
   const handleMembersClick = async () => {
-    if (!isMember) {
-      await bazaarApi.addMember(bazaarProject.value!.id, identity.getUserId());
-    } else {
-      await bazaarApi.deleteMember(
-        bazaarProject.value!.id,
-        identity.getUserId(),
-      );
+    if (userId.value) {
+      if (!isMember) {
+        await bazaarApi.addMember(bazaarProject.value!.id, userId.value);
+      } else {
+        await bazaarApi.deleteMember(bazaarProject.value!.id, userId.value);
+      }
+      setIsMember(!isMember);
+      fetchMembers();
     }
-    setIsMember(!isMember);
-    fetchMembers();
   };
 
   const getEntityPageLink = () => {
@@ -236,7 +241,6 @@ export const HomePageBazaarInfoCard = ({
           handleEditClose={() => setOpenEdit(false)}
           handleCardClose={handleClose}
           fetchBazaarProject={fetchBazaarProject}
-          fetchBazaarProjects={fetchBazaarProjects}
         />
 
         <CardHeader

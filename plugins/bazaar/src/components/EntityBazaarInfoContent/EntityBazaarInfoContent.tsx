@@ -57,29 +57,40 @@ export const EntityBazaarInfoContent = ({
       : [];
   });
 
+  const [userId, fetchUserId] = useAsyncFn(async () => {
+    return await (
+      await identity.getProfileInfo()
+    ).displayName;
+  });
+
   useEffect(() => {
     fetchMembers();
-  }, [fetchMembers]);
+    fetchUserId();
+  }, [fetchMembers, fetchUserId]);
 
   useEffect(() => {
-    if (members.value) {
-      const isBazaarMember =
-        members.value
-          ?.map((member: Member) => member.userId)
-          .indexOf(identity.getUserId()) >= 0;
+    if (userId.value) {
+      if (members.value) {
+        const isBazaarMember =
+          members.value
+            ?.map((member: Member) => member.userId)
+            .indexOf(userId.value) >= 0;
 
-      setIsMember(isBazaarMember);
+        setIsMember(isBazaarMember);
+      }
     }
-  }, [bazaarProject, members, identity]);
+  }, [bazaarProject, members, identity, userId.value]);
 
   const handleMembersClick = async () => {
-    if (!isMember) {
-      await bazaarApi.addMember(bazaarProject?.id!, identity.getUserId());
-    } else {
-      await bazaarApi.deleteMember(bazaarProject!.id, identity.getUserId());
+    if (userId.value) {
+      if (!isMember) {
+        await bazaarApi.addMember(bazaarProject?.id!, userId.value);
+      } else {
+        await bazaarApi.deleteMember(bazaarProject!.id, userId.value);
+      }
+      setIsMember(!isMember);
+      fetchMembers();
     }
-    setIsMember(!isMember);
-    fetchMembers();
   };
 
   const links: IconLinkVerticalProps[] = [
