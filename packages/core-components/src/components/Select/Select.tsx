@@ -107,15 +107,15 @@ export type SelectItem = {
   value: string | number;
 };
 
-export type Selection = string | string[] | number | number[];
+export type SelectedItems = string | string[] | number | number[];
 
 export type SelectProps = {
   multiple?: boolean;
   items: SelectItem[];
   label: string;
   placeholder?: string;
-  selected?: Selection;
-  onChange: (arg: Selection) => void;
+  selected?: SelectedItems;
+  onChange: (arg: SelectedItems) => void;
   triggerReset?: boolean;
   native?: boolean;
   disabled?: boolean;
@@ -134,7 +134,7 @@ export function SelectComponent(props: SelectProps) {
     disabled = false,
   } = props;
   const classes = useStyles();
-  const [value, setValue] = useState<Selection>(
+  const [value, setValue] = useState<SelectedItems>(
     selected || (multiple ? [] : ''),
   );
   const [isOpen, setOpen] = useState(false);
@@ -150,8 +150,8 @@ export function SelectComponent(props: SelectProps) {
   }, [selected]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setValue(event.target.value as Selection);
-    onChange(event.target.value as Selection);
+    setValue(event.target.value as SelectedItems);
+    onChange(event.target.value as SelectedItems);
   };
 
   const handleClick = (event: React.ChangeEvent<any>) => {

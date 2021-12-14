@@ -16,7 +16,7 @@
 import {
   Progress,
   Select,
-  Selection,
+  SelectedItems,
   SelectItem,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
@@ -109,7 +109,7 @@ export const RepoUrlPicker = ({
     allowedOwners,
   );
   const updateHost = useCallback(
-    (value: Selection) => {
+    (value: SelectedItems) => {
       onChange(
         serializeFormData({
           host: value as string,
@@ -125,7 +125,7 @@ export const RepoUrlPicker = ({
   );
 
   const updateOwnerSelect = useCallback(
-    (value: Selection) =>
+    (value: SelectedItems) =>
       onChange(
         serializeFormData({
           host,
