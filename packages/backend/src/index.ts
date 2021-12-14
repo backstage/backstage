@@ -78,7 +78,16 @@ function makeCreateEnv(config: Config) {
     const logger = root.child({ type: 'plugin', plugin });
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
-    return { logger, cache, database, config, reader, discovery, tokenManager, permissions };
+    return {
+      logger,
+      cache,
+      database,
+      config,
+      reader,
+      discovery,
+      tokenManager,
+      permissions,
+    };
   };
 }
 

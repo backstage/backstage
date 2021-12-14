@@ -200,9 +200,7 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
         };
       } else if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
         entitiesQuery = parseFilter(
-          this.transformConditions(
-            authorizeResponse.conditions,
-          ),
+          this.transformConditions(authorizeResponse.conditions),
           entitiesQuery,
           db,
         );
