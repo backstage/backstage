@@ -151,9 +151,13 @@ describe('createRouter', () => {
           },
         },
         {
-          type: 'user',
-          userEntityRef: 'test-user',
-          ownershipEntityRefs: ['user:default/test-user'],
+          id: 'test-user',
+          token: 'test-token',
+          identity: {
+            type: 'user',
+            userEntityRef: 'test-user',
+            ownershipEntityRefs: ['user:default/test-user'],
+          },
         },
       );
       expect(response.body).toEqual([

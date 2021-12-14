@@ -20,7 +20,7 @@ import {
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import { BackstageUserIdentity } from '@backstage/plugin-auth-backend';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
 
 /**
  * An authorization request to be evaluated by the {@link PermissionPolicy}.
@@ -83,6 +83,6 @@ export type PolicyDecision =
 export interface PermissionPolicy {
   handle(
     request: PolicyAuthorizeRequest,
-    user?: BackstageUserIdentity,
+    user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision>;
 }

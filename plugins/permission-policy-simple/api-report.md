@@ -4,7 +4,7 @@
 
 ```ts
 import { AuthorizeRequest } from '@backstage/plugin-permission-common';
-import { BackstageUserIdentity } from '@backstage/plugin-auth-backend';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
 import { EntitiesSearchFilter } from '@backstage/plugin-catalog-backend';
 import { Entity } from '@backstage/catalog-model';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -28,7 +28,7 @@ export class SimplePermissionPolicy implements PermissionPolicy {
   // (undocumented)
   handle(
     request: Omit<AuthorizeRequest, 'resourceRef'>,
-    identity?: BackstageUserIdentity,
+    user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision>;
 }
 
