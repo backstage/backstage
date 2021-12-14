@@ -107,6 +107,11 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     );
   }
 
+  /**
+   * Create a custom search client from the derived elastic search
+   * configuration. This need not be the same client that the engine uses
+   * internally.
+   */
   newClient<T>(create: (options: ElasticSearchClientOptions) => T): T {
     return create(this.elasticSearchClientOptions);
   }
