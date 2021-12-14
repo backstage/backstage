@@ -102,7 +102,7 @@ const useStyles = makeStyles(
   { name: 'BackstageSelect' },
 );
 
-export type Item = {
+export type SelectItem = {
   label: string;
   value: string | number;
 };
@@ -111,7 +111,7 @@ export type Selection = string | string[] | number | number[];
 
 export type SelectProps = {
   multiple?: boolean;
-  items: Item[];
+  items: SelectItem[];
   label: string;
   placeholder?: string;
   selected?: Selection;

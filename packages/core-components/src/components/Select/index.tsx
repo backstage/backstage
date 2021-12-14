@@ -16,10 +16,10 @@
 
 export { SelectComponent as Select } from './Select';
 export type {
-  Item,
   SelectClassKey,
   SelectInputBaseClassKey,
   Selection,
+  SelectItem,
 } from './Select';
 export type { ClosedDropdownClassKey } from './static/ClosedDropdown';
 export type { OpenedDropdownClassKey } from './static/OpenedDropdown';

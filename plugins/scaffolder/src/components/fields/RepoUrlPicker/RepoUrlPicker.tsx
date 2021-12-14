@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Item, Progress, Select, Selection } from '@backstage/core-components';
+import {
+  Progress,
+  Select,
+  Selection,
+  SelectItem,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import FormControl from '@material-ui/core/FormControl';
@@ -237,13 +242,13 @@ export const RepoUrlPicker = ({
     return <Progress />;
   }
 
-  const hostsOptions: Item[] = integrations
+  const hostsOptions: SelectItem[] = integrations
     ? integrations
         .filter(i => allowedHosts?.includes(i.host))
         .map(i => ({ label: i.title, value: i.host }))
     : [{ label: 'Loading...', value: 'loading' }];
 
-  const ownersOptions: Item[] = allowedOwners
+  const ownersOptions: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
 
