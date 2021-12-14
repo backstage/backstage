@@ -17,18 +17,25 @@
 import { TokenManager, ServerTokenManager } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import {
+  AuthorizeRequest,
   AuthorizeRequestOptions,
+  AuthorizeResponse,
+  AuthorizeResult,
   DiscoveryApi,
   PermissionClient,
+  PermissionClientInterface,
 } from '@backstage/plugin-permission-common';
 
 /**
- * A server side {@link @backstage/plugin-permission-common#PermissionClient}
- * that allows all backend-to-backend requests.
+ * A thin wrapper around
+ * {@link @backstage/plugin-permission-common#PermissionClient} that allows all
+ * backend-to-backend requests.
  * @public
  */
-export class ServerPermissionClient extends PermissionClient {
+export class ServerPermissionClient implements PermissionClientInterface {
   private readonly serverTokenManager: TokenManager;
+  private readonly permissionClient: PermissionClient;
+  private readonly permissionEnabled: boolean;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
@@ -36,10 +43,12 @@ export class ServerPermissionClient extends PermissionClient {
     serverTokenManager: TokenManager;
   }) {
     const { discoveryApi, configApi, serverTokenManager } = options;
-    super({ discoveryApi, configApi });
+    this.permissionClient = new PermissionClient({ discoveryApi, configApi });
+    this.permissionEnabled =
+      options.configApi.getOptionalBoolean('permission.enabled') ?? false;
 
     if (
-      this.enabled &&
+      this.permissionEnabled &&
       // TODO: Find a cleaner way of ensuring usage of SERVER token manager when
       // permissions are enabled.
       serverTokenManager instanceof ServerTokenManager.noop().constructor
@@ -51,18 +60,21 @@ export class ServerPermissionClient extends PermissionClient {
     this.serverTokenManager = serverTokenManager;
   }
 
-  async shouldBypass(options?: AuthorizeRequestOptions): Promise<boolean> {
-    // Call super first in order to check if permissions are enabled before
-    // validating the server token. That way when permissions are disabled, the
-    // noop token manager can be used without fouling up the logic inside the
-    // ServerPermissionClient, because the code path won't be reached.
-    if (await super.shouldBypass(options)) {
-      return true;
+  async authorize(
+    requests: AuthorizeRequest[],
+    options?: AuthorizeRequestOptions,
+  ): Promise<AuthorizeResponse[]> {
+    // Check if permissions are enabled before validating the server token. That
+    // way when permissions are disabled, the noop token manager can be used
+    // without fouling up the logic inside the ServerPermissionClient, because
+    // the code path won't be reached.
+    if (
+      !this.permissionEnabled ||
+      (await this.isValidServerToken(options?.token))
+    ) {
+      return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
-    if (await this.isValidServerToken(options?.token)) {
-      return true;
-    }
-    return false;
+    return this.permissionClient.authorize(requests, options);
   }
 
   private async isValidServerToken(

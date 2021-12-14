@@ -28,6 +28,10 @@ import {
   PermissionCondition,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
+import {
+  PermissionClientInterface,
+  AuthorizeRequestOptions,
+} from './types/permission';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -60,19 +64,11 @@ const responseSchema = z.array(
 );
 
 /**
- * Options for authorization requests; currently only an optional auth token.
- * @public
- */
-export type AuthorizeRequestOptions = {
-  token?: string;
-};
-
-/**
  * An isomorphic client for requesting authorization for Backstage permissions.
  * @public
  */
-export class PermissionClient {
-  protected readonly enabled: boolean;
+export class PermissionClient implements PermissionClientInterface {
+  private readonly enabled: boolean;
   private readonly discoveryApi: DiscoveryApi;
 
   constructor(options: { discoveryApi: DiscoveryApi; configApi: Config }) {
@@ -106,7 +102,7 @@ export class PermissionClient {
     // but no resourceRef. That way clients who aren't prepared to handle filtering according
     // to conditions can be guaranteed that they won't unexpectedly get a CONDITIONAL response.
 
-    if (await this.shouldBypass(options)) {
+    if (!this.enabled) {
       return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
@@ -139,12 +135,6 @@ export class PermissionClient {
     }, {} as Record<string, Identified<AuthorizeResponse>>);
 
     return identifiedRequests.map(request => responsesById[request.id]);
-  }
-
-  protected async shouldBypass(
-    _options?: AuthorizeRequestOptions,
-  ): Promise<boolean> {
-    return !this.enabled;
   }
 
   private getAuthorizationHeader(token?: string): Record<string, string> {

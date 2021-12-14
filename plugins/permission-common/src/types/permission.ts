@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { AuthorizeRequest, AuthorizeResponse } from './api';
+
 /**
  * The attributes related to a given permission; these should be generic and widely applicable to
  * all permissions in the system.
@@ -38,4 +40,19 @@ export type Permission = {
   name: string;
   attributes: PermissionAttributes;
   resourceType?: string;
+};
+
+export interface PermissionClientInterface {
+  authorize(
+    requests: AuthorizeRequest[],
+    options?: AuthorizeRequestOptions,
+  ): Promise<AuthorizeResponse[]>;
+}
+
+/**
+ * Options for authorization requests; currently only an optional auth token.
+ * @public
+ */
+export type AuthorizeRequestOptions = {
+  token?: string;
 };
