@@ -13,17 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { catalogApiRef } from './../api';
 import {
-  catalogApiRef,
   loadCatalogOwnerRefs,
   loadIdentityOwnerRefs,
-} from '@backstage/plugin-catalog-react';
+} from './useEntityOwnership';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { CatalogListResponse } from '@backstage/catalog-client';
 import { useAsync } from 'react-use';
 import { useMemo } from 'react';
 
+/**
+ * Takes the relevant parts of the Backstage identity, and translates them into
+ * a list of entities which are owned by the user. Takes an optional parameter
+ * to filter the entities based on allowedKinds
+ *
+ * @public
+ *
+ * @param allowedKinds - Array of allowed kinds to filter the entities
+ * @returns CatalogListResponse<Entity>
+ */
 export function useOwnedEntities(allowedKinds?: string[]): {
   loading: boolean;
   ownedEntities: CatalogListResponse<Entity> | undefined;
@@ -52,6 +62,7 @@ export function useOwnedEntities(allowedKinds?: string[]): {
     );
     return catalogs;
   }, []);
+
   const ownedEntities = useMemo(() => {
     return refs;
   }, [refs]);

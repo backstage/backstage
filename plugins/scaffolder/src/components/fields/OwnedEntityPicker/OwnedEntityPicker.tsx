@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { formatEntityRefTitle } from '@backstage/plugin-catalog-react';
+import {
+  formatEntityRefTitle,
+  useOwnedEntities,
+} from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { FieldProps } from '@rjsf/core';
 import React from 'react';
-import { useOwnedEntities } from './useOwnedEntities';
 
 export const OwnedEntityPicker = ({
   onChange,
