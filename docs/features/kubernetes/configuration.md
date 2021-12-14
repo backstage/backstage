@@ -263,6 +263,7 @@ following objects:
 - replicasets
 - horizontalpodautoscalers
 - ingresses
+- cronjobs
 
 ## Surfacing your Kubernetes components as part of an entity
 
