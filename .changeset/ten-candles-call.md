@@ -1,6 +1,6 @@
 ---
-'@backstage/core-components': minor
-'@backstage/plugin-scaffolder': minor
+'@backstage/core-components': patch
+'@backstage/plugin-scaffolder': patch
 ---
 
 In @backstage/plugin-scaffolder - When user will have one option available in hostUrl or owner - autoselect and select component should be readonly.
