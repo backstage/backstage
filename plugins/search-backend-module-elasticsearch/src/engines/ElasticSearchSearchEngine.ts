@@ -107,19 +107,6 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     );
   }
 
-  /**
-   * Re-use the configuration of this search engine in order to construct other
-   * elastic search clients. This is useful if you want to create a client that
-   * talks to the same search cluster as your search engine, but you want to
-   * provide queries and receive results using a completely different format
-   * such as Relay pagination, or faceted search.
-   *
-   * ```javascript
-   * import { Client } from '@elastic/elastic-search';
-   *
-   * let client = engine.newClient(options => new Client(options));
-   * ```
-   */
   newClient<T>(create: (options: ElasticSearchClientOptions) => T): T {
     return create(this.elasticSearchClientOptions);
   }
