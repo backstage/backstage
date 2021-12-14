@@ -70,4 +70,14 @@ export type Filter =
   | CreatedByTeamsFilter
   | AllFilter;
 
+export type {
+  AssignedToUserFilter,
+  CreatedByUserFilter,
+  AssignedToTeamFilter,
+  CreatedByTeamFilter,
+  AssignedToTeamsFilter,
+  CreatedByTeamsFilter,
+  AllFilter,
+};
+
 export type PullRequestFilter = (pullRequest: DashboardPullRequest) => boolean;
