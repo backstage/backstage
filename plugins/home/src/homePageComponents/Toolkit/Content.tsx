@@ -29,17 +29,16 @@ const useStyles = makeStyles(theme => ({
   toolkit: {
     display: 'flex',
     flexWrap: 'wrap',
+    textAlign: 'center',
   },
   tool: {
     margin: theme.spacing(0.5, 1),
   },
   label: {
-    '& span': {
-      marginTop: theme.spacing(1),
-      fontSize: '0.9em',
-      lineHeight: '1.25',
-      color: theme.palette.text.secondary,
-    },
+    marginTop: theme.spacing(1),
+    fontSize: '0.9em',
+    lineHeight: '1.25',
+    color: theme.palette.text.secondary,
   },
   icon: {
     width: '64px',
@@ -63,11 +62,14 @@ export const Content = () => {
   const { tools } = useTools();
 
   return (
-    <List className={classes.toolkit} style={{ textAlign: 'center' }}>
+    <List className={classes.toolkit}>
       {tools.map((tool: Tool) => (
         <Link key={tool.url} to={tool.url} className={classes.tool}>
           <ListItemIcon className={classes.icon}>{tool.icon}</ListItemIcon>
-          <ListItemText className={classes.label}>{tool.label}</ListItemText>
+          <ListItemText
+            secondaryTypographyProps={{ className: classes.label }}
+            secondary={tool.label}
+          />
         </Link>
       ))}
     </List>
