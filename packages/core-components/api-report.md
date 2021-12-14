@@ -528,14 +528,6 @@ export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
 // @public (undocumented)
 export function IntroCard(props: IntroCardProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "Item" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type Item = {
-  label: string;
-  value: string | number;
-};
-
 // Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
 // Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 // Warning: (ae-forgotten-export) The symbol "ItemCardProps" needs to be exported by the entry point index.d.ts
@@ -848,6 +840,14 @@ export type SelectInputBaseClassKey = 'root' | 'input';
 // @public (undocumented)
 type Selection_2 = string | string[] | number | number[];
 export { Selection_2 as Selection };
+
+// Warning: (ae-missing-release-tag) "SelectItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SelectItem = {
+  label: string;
+  value: string | number;
+};
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Sidebar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
