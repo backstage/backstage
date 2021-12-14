@@ -11,19 +11,17 @@ import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
-import { Observable as Observable_2 } from '@backstage/types';
-import { Observer as Observer_2 } from '@backstage/types';
+import { Observable } from '@backstage/types';
 import { ProfileInfo as ProfileInfo_2 } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
-import { Subscription as Subscription_2 } from '@backstage/types';
 import { SvgIconProps } from '@material-ui/core';
 
 // @public
 export type AlertApi = {
   post(alert: AlertMessage): void;
-  alert$(): Observable_2<AlertMessage>;
+  alert$(): Observable<AlertMessage>;
 };
 
 // @public
@@ -141,7 +139,6 @@ export type ApiRef<T> = {
 // @public
 export type ApiRefConfig = {
   id: string;
-  description?: string;
 };
 
 // @public
@@ -175,7 +172,7 @@ export type AppTheme = {
 // @public
 export type AppThemeApi = {
   getInstalledThemes(): AppTheme[];
-  activeThemeId$(): Observable_2<string | undefined>;
+  activeThemeId$(): Observable<string | undefined>;
   getActiveThemeId(): string | undefined;
   setActiveThemeId(themeId?: string): void;
 };
@@ -364,9 +361,6 @@ export function createRouteRef<
 >(config: {
   id?: string;
   params?: ParamKey[];
-  path?: string;
-  icon?: OldIconComponent;
-  title?: string;
 }): RouteRef<OptionalParams<Params>>;
 
 // @public
@@ -408,7 +402,7 @@ export { Error_2 as Error };
 // @public
 export type ErrorApi = {
   post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
-  error$(): Observable_2<{
+  error$(): Observable<{
     error: ErrorApiError;
     context?: ErrorApiErrorContext;
   }>;
@@ -597,7 +591,7 @@ export type OAuthRequestApi = {
   createAuthRequester<OAuthResponse>(
     options: OAuthRequesterOptions<OAuthResponse>,
   ): OAuthRequester<OAuthResponse>;
-  authRequest$(): Observable_2<PendingOAuthRequest[]>;
+  authRequest$(): Observable<PendingOAuthRequest[]>;
 };
 
 // @public
@@ -618,12 +612,6 @@ export type OAuthRequesterOptions<TOAuthResponse> = {
 
 // @public
 export type OAuthScope = string | string[];
-
-// @public @deprecated
-export type Observable<T> = Observable_2<T>;
-
-// @public @deprecated
-export type Observer<T> = Observer_2<T>;
 
 // @public @deprecated
 export const oidcAuthApiRef: ApiRef<
@@ -747,9 +735,6 @@ export type RouteFunc<Params extends AnyParams> = (
 export type RouteRef<Params extends AnyParams = any> = {
   $$routeRefType: 'absolute';
   params: ParamKeys<Params>;
-  path: string;
-  icon?: OldIconComponent;
-  title?: string;
 };
 
 // @public @deprecated
@@ -761,7 +746,7 @@ export const samlAuthApiRef: ApiRef<
 export type SessionApi = {
   signIn(): Promise<void>;
   signOut(): Promise<void>;
-  sessionState$(): Observable_2<SessionState>;
+  sessionState$(): Observable<SessionState>;
 };
 
 // @public
@@ -787,7 +772,7 @@ export type SignInResult = {
 export interface StorageApi {
   forBucket(name: string): StorageApi;
   get<T>(key: string): T | undefined;
-  observe$<T>(key: string): Observable_2<StorageValueChange<T>>;
+  observe$<T>(key: string): Observable<StorageValueChange<T>>;
   remove(key: string): Promise<void>;
   set(key: string, data: any): Promise<void>;
 }
@@ -808,9 +793,6 @@ export type SubRouteRef<Params extends AnyParams = any> = {
   path: string;
   params: ParamKeys<Params>;
 };
-
-// @public @deprecated
-export type Subscription = Subscription_2;
 
 // @public
 export type TypesToApiRefs<T> = {
