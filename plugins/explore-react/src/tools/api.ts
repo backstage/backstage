@@ -18,7 +18,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const exploreToolsConfigRef = createApiRef<ExploreToolsConfig>({
   id: 'plugin.explore.toolsconfig',
-  description: 'Used to configure tools displayed in the explore plugin',
 });
 
 export type ExploreTool = {
