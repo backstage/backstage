@@ -7,6 +7,7 @@ import {
   TokenManager,
   UrlReader,
 } from '@backstage/backend-common';
+import { PermissionClient } from '@backstage/plugin-permission-common';
 
 export type PluginEnvironment = {
   logger: Logger;
@@ -16,4 +17,5 @@ export type PluginEnvironment = {
   reader: UrlReader;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
+  permissions: PermissionClient;
 };

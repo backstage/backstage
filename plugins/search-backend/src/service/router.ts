@@ -17,11 +17,15 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { Config } from '@backstage/config';
+import { PermissionClient } from '@backstage/plugin-permission-common';
 import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 
 export type RouterOptions = {
   engine: SearchEngine;
+  permissions: PermissionClient;
+  config: Config;
   logger: Logger;
 };
 
