@@ -204,29 +204,6 @@ export type AppRouteBinder = <
 ) => void;
 
 /**
- * Internal helper type that represents a plugin with any type of output.
- *
- * @public
- * @remarks
- * @deprecated Will be removed
- *
- * The `type: string` type is there to handle output from newer or older plugin
- * API versions that might not be supported by this version of the app API, but
- * we don't want to break at the type checking level. We only use this more
- * permissive type for the `createApp` options, as we otherwise want to stick
- * to using the type for the outputs that we know about in this version of the
- * app api.
- *
- * TODO(freben): This should be marked internal but that's not supported by the api report generation tools yet
- */
-export type BackstagePluginWithAnyOutput = Omit<
-  BackstagePlugin<any, any>,
-  'output'
-> & {
-  output(): (PluginOutput | { type: string })[];
-};
-
-/**
  * The options accepted by {@link createApp}.
  *
  * @public

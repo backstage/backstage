@@ -282,19 +282,6 @@ export type BackstageApp = {
   getRouter(): ComponentType<{}>;
 };
 
-// @public @deprecated
-export type BackstagePluginWithAnyOutput = Omit<
-  BackstagePlugin<any, any>,
-  'output'
-> & {
-  output(): (
-    | PluginOutput
-    | {
-        type: string;
-      }
-  )[];
-};
-
 // @public
 export class BitbucketAuth {
   // (undocumented)
