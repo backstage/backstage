@@ -6,7 +6,6 @@
 /// <reference types="react" />
 
 import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
@@ -164,7 +163,6 @@ export type AppTheme = {
   id: string;
   title: string;
   variant: 'light' | 'dark';
-  theme: BackstageTheme;
   icon?: React.ReactElement;
   Provider?(props: { children: ReactNode }): JSX.Element | null;
 };

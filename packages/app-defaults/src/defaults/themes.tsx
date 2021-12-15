@@ -28,7 +28,6 @@ export const themes: AppTheme[] = [
     title: 'Light Theme',
     variant: 'light',
     icon: <LightIcon />,
-    theme: lightTheme,
     Provider: ({ children }) => (
       <ThemeProvider theme={lightTheme}>
         <CssBaseline>{children}</CssBaseline>
@@ -40,7 +39,6 @@ export const themes: AppTheme[] = [
     title: 'Dark Theme',
     variant: 'dark',
     icon: <DarkIcon />,
-    theme: darkTheme,
     Provider: ({ children }) => (
       <ThemeProvider theme={darkTheme}>
         <CssBaseline>{children}</CssBaseline>

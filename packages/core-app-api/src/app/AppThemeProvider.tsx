@@ -15,8 +15,6 @@
  */
 
 import React, { useMemo, useEffect, useState, PropsWithChildren } from 'react';
-import { ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import { useApi, appThemeApiRef, AppTheme } from '@backstage/core-plugin-api';
 import { useObservable } from 'react-use';
 
@@ -90,20 +88,9 @@ export function AppThemeProvider({ children }: PropsWithChildren<{}>) {
     throw new Error('App has no themes');
   }
 
-  if (appTheme.Provider) {
-    return <appTheme.Provider children={children} />;
+  if (!appTheme.Provider) {
+    throw new Error('App has no theme provider');
   }
 
-  // eslint-disable-next-line no-console
-  console.warn(
-    "DEPRECATION WARNING: A provided app theme is using the deprecated 'theme' property " +
-      'and should be migrated to use a Provider instead. ' +
-      'See https://backstage.io/docs/api/deprecations#app-theme for more info.',
-  );
-
-  return (
-    <ThemeProvider theme={appTheme.theme}>
-      <CssBaseline>{children}</CssBaseline>
-    </ThemeProvider>
-  );
+  return <appTheme.Provider children={children} />;
 }

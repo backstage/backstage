@@ -16,7 +16,6 @@
 
 import { ReactNode } from 'react';
 import { ApiRef, createApiRef } from '../system';
-import { BackstageTheme } from '@backstage/theme';
 import { Observable } from '@backstage/types';
 
 /**
@@ -39,12 +38,6 @@ export type AppTheme = {
    * Theme variant
    */
   variant: 'light' | 'dark';
-
-  /**
-   * The specialized MaterialUI theme instance.
-   * @deprecated use Provider instead, see https://backstage.io/docs/api/deprecations#app-theme
-   */
-  theme: BackstageTheme;
 
   /**
    * An Icon for the theme mode setting.
