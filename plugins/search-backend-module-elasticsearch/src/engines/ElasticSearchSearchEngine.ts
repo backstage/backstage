@@ -72,15 +72,16 @@ function isBlank(str: string) {
  * @public
  */
 export class ElasticSearchSearchEngine implements SearchEngine {
-  private readonly elasticSearchClient: Client = this.newClient(
-    options => new Client(options),
-  );
+  private readonly elasticSearchClient: Client;
+
   constructor(
     private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
     private readonly aliasPostfix: string,
     private readonly indexPrefix: string,
     private readonly logger: Logger,
-  ) {}
+  ) {
+    this.elasticSearchClient = this.newClient(options => new Client(options));
+  }
 
   static async fromConfig({
     logger,
