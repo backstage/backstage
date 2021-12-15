@@ -30,8 +30,9 @@ import { SearchBarBase } from '../SearchBar';
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResult } from '../SearchResult';
 import { SearchContextProvider, useSearch } from '../SearchContext';
+import { SearchRefineResultsPrompt } from '../SearchRefineResultsPrompt';
 import { SearchResultPager } from '../SearchResultPager';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
 
@@ -63,6 +64,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
 
   const { term, setTerm } = useSearch();
   const [value, setValue] = useState<string>(term);
+  const config = useApi(configApiRef);
 
   useEffect(() => {
     setValue(prevValue => (prevValue !== term ? term : prevValue));
@@ -144,14 +146,20 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
             </List>
           )}
         </SearchResult>
+        {config.getOptionalBoolean('permission.enabled') ? (
+          <SearchRefineResultsPrompt />
+        ) : null}
       </DialogContent>
-      <DialogActions className={classes.dialogActionsContainer}>
-        <Grid container direction="row">
-          <Grid item xs={12}>
-            <SearchResultPager />
+
+      {!config.getOptionalBoolean('permission.enabled') ? (
+        <DialogActions className={classes.dialogActionsContainer}>
+          <Grid container direction="row">
+            <Grid item xs={12}>
+              <SearchResultPager />
+            </Grid>
           </Grid>
-        </Grid>
-      </DialogActions>
+        </DialogActions>
+      ) : null}
     </Dialog>
   );
 };
