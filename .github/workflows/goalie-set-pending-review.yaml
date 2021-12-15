@@ -1,0 +1,22 @@
+# when a PR is opened, let's add the pending-review label
+name: Set pending review label
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['awaiting-review']
+            })
+
+            
+           
