@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-export { PullRequestsPage } from './PullRequestsPage';
-export type { PullRequestColumnConfig } from './lib/types';
-export { FilterType } from './lib/filters';
-export type {
-  BaseFilter,
-  Filter,
-  PullRequestFilter,
-  AssignedToUserFilter,
-  CreatedByUserFilter,
-  AssignedToTeamFilter,
-  CreatedByTeamFilter,
-  AssignedToTeamsFilter,
-  CreatedByTeamsFilter,
-  AllFilter,
-} from './lib/filters';
+import { BaseFilter, FilterType, PullRequestFilter } from './types';
+
+import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
+
+export type AllFilter = BaseFilter & {
+  type: FilterType.All;
+};
+
+export function createAllFilter(): PullRequestFilter {
+  return (_pullRequest: DashboardPullRequest): boolean => true;
+}

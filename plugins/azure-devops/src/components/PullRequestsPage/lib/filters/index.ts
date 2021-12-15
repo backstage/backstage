@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-export { PullRequestsPage } from './PullRequestsPage';
-export type { PullRequestColumnConfig } from './lib/types';
-export { FilterType } from './lib/filters';
+export { createFilter } from './createFilter';
+export { FilterTypes, FilterType } from './types';
 export type {
   BaseFilter,
   Filter,
@@ -28,4 +27,4 @@ export type {
   AssignedToTeamsFilter,
   CreatedByTeamsFilter,
   AllFilter,
-} from './lib/filters';
+} from './types';

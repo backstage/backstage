@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 
-export { PullRequestsPage } from './PullRequestsPage';
-export type { PullRequestColumnConfig } from './lib/types';
-export { FilterType } from './lib/filters';
-export type {
-  BaseFilter,
-  Filter,
-  PullRequestFilter,
-  AssignedToUserFilter,
-  CreatedByUserFilter,
-  AssignedToTeamFilter,
-  CreatedByTeamFilter,
-  AssignedToTeamsFilter,
-  CreatedByTeamsFilter,
-  AllFilter,
-} from './lib/filters';
+import { Filter, FilterType } from '../filters';
+
+import { useUserEmail } from '../../../../hooks';
+
+export function useFilterProcessor(): (filters: Filter[]) => Filter[] {
+  const userEmail = useUserEmail();
+
+  return (filters: Filter[]): Filter[] => {
+    for (const filter of filters) {
+      switch (filter.type) {
+        case FilterType.AssignedToCurrentUser:
+        case FilterType.CreatedByCurrentUser:
+          filter.email = userEmail;
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    return filters;
+  };
+}
