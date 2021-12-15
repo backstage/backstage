@@ -50,6 +50,5 @@ export default async function createPlugin({
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),
     logger,
-    discovery,
   });
 }

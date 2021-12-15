@@ -19,32 +19,24 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 export type RouterOptions = {
   engine: SearchEngine;
   logger: Logger;
-  discovery: PluginEndpointDiscovery;
-  allowedLocationProtocols?: string[];
 };
 
-const defaultAllowedLocationProtocols = ['http:', 'https:'];
+const allowedLocationProtocols = ['http:', 'https:'];
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const {
-    engine,
-    logger,
-    discovery,
-    allowedLocationProtocols = defaultAllowedLocationProtocols,
-  } = options;
-  const baseUrl = await discovery.getExternalBaseUrl('');
+  const { engine, logger } = options;
 
   const filterResultSet = ({ results, ...resultSet }: SearchResultSet) => ({
     ...resultSet,
     results: results.filter(result => {
-      const protocol = new URL(result.document.location, baseUrl).protocol;
+      const protocol = new URL(result.document.location, 'https://example.com')
+        .protocol;
       const isAllowed = allowedLocationProtocols.includes(protocol);
       if (!isAllowed) {
         logger.info(

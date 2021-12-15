@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createServiceBuilder,
-  loadBackendConfig,
-  SingleHostDiscovery,
-} from '@backstage/backend-common';
+import { createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
@@ -37,8 +33,6 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'search-backend' });
-  const config = await loadBackendConfig({ logger, argv: process.argv });
-  const discovery = SingleHostDiscovery.fromConfig(config);
   const searchEngine = new LunrSearchEngine({ logger });
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
   logger.debug('Starting application server...');
@@ -48,7 +42,6 @@ export async function startStandaloneServer(
   const router = await createRouter({
     engine: indexBuilder.getSearchEngine(),
     logger,
-    discovery,
   });
 
   let service = createServiceBuilder(module)

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  getVoidLogger,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import {
   IndexBuilder,
   LunrSearchEngine,
@@ -30,22 +27,16 @@ import { createRouter } from './router';
 
 describe('createRouter', () => {
   let app: express.Express;
-  let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
   let mockSearchEngine: jest.Mocked<SearchEngine>;
 
   beforeAll(async () => {
     const logger = getVoidLogger();
     const searchEngine = new LunrSearchEngine({ logger });
     const indexBuilder = new IndexBuilder({ logger, searchEngine });
-    mockDiscoveryApi = {
-      getBaseUrl: jest.fn(),
-      getExternalBaseUrl: jest.fn().mockResolvedValue('http://localhost:3000/'),
-    };
 
     const router = await createRouter({
       engine: indexBuilder.getSearchEngine(),
       logger,
-      discovery: mockDiscoveryApi,
     });
     app = express().use(router);
   });
@@ -65,12 +56,6 @@ describe('createRouter', () => {
     describe('search result filtering', () => {
       beforeAll(async () => {
         const logger = getVoidLogger();
-        mockDiscoveryApi = {
-          getBaseUrl: jest.fn(),
-          getExternalBaseUrl: jest
-            .fn()
-            .mockResolvedValue('http://localhost:3000/'),
-        };
         mockSearchEngine = {
           index: jest.fn(),
           setTranslator: jest.fn(),
@@ -84,7 +69,6 @@ describe('createRouter', () => {
         const router = await createRouter({
           engine: indexBuilder.getSearchEngine(),
           logger,
-          discovery: mockDiscoveryApi,
         });
         app = express().use(router);
       });

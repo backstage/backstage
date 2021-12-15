@@ -5,7 +5,6 @@
 ```ts
 import express from 'express';
 import { Logger as Logger_2 } from 'winston';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -19,7 +18,5 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 export type RouterOptions = {
   engine: SearchEngine;
   logger: Logger_2;
-  discovery: PluginEndpointDiscovery;
-  allowedLocationProtocols?: string[];
 };
 ```
