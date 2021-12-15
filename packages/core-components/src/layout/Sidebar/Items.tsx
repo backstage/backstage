@@ -548,6 +548,8 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
   );
 }
 
+export type SidebarSpaceClassKey = 'root';
+
 export const SidebarSpace = styled('div')(
   {
     flex: 1,
@@ -555,12 +557,16 @@ export const SidebarSpace = styled('div')(
   { name: 'BackstageSidebarSpace' },
 );
 
+export type SidebarSpacerClassKey = 'root';
+
 export const SidebarSpacer = styled('div')(
   {
     height: 8,
   },
   { name: 'BackstageSidebarSpacer' },
 );
+
+export type SidebarDividerClassKey = 'root';
 
 export const SidebarDivider = styled('hr')(
   {
