@@ -22,7 +22,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { NEWRELIC_GUID } from './constants';
 
 export const isNewRelicDashboardAvailable = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[NEWRELIC_GUID]);
+  Boolean(entity?.metadata?.annotations?.[NEWRELIC_GUID]);
 
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */

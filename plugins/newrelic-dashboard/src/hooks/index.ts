@@ -20,8 +20,8 @@ import { NEWRELIC_GUID } from '../constants';
 export function useNewRelicDashboardEntity() {
   const { entity } = useEntity();
   const integrationKey: string | undefined =
-    entity.metadata.annotations?.[NEWRELIC_GUID];
-  const name: string | undefined = entity.metadata.name;
+    entity?.metadata?.annotations?.[NEWRELIC_GUID];
+  const name: string | undefined = entity?.metadata?.name;
 
   return { integrationKey, name };
 }
