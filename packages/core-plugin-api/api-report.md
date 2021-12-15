@@ -35,25 +35,26 @@ export type AlertMessage = {
   severity?: 'success' | 'info' | 'warning' | 'error';
 };
 
-// @public
+// @alpha
 export type AnalyticsApi = {
   captureEvent(event: AnalyticsEvent): void;
 };
 
-// @public
+// @alpha
 export const analyticsApiRef: ApiRef<AnalyticsApi>;
 
-// @public
+// @alpha
 export const AnalyticsContext: (options: {
   attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
 }) => JSX.Element;
 
-// @public
-export type AnalyticsContextValue = CommonAnalyticsContext &
-  AnyAnalyticsContext;
+// @alpha
+export type AnalyticsContextValue = CommonAnalyticsContext & {
+  [param in string]: string | boolean | number | undefined;
+};
 
-// @public
+// @alpha
 export type AnalyticsEvent = {
   action: string;
   subject: string;
@@ -62,12 +63,12 @@ export type AnalyticsEvent = {
   context: AnalyticsContextValue;
 };
 
-// @public
+// @alpha
 export type AnalyticsEventAttributes = {
   [attribute in string]: string | boolean | number;
 };
 
-// @public
+// @alpha
 export type AnalyticsTracker = {
   captureEvent: (
     action: string,
@@ -79,7 +80,7 @@ export type AnalyticsTracker = {
   ) => void;
 };
 
-// @public
+// @public @deprecated
 export type AnyAnalyticsContext = {
   [param in string]: string | boolean | number | undefined;
 };
@@ -282,7 +283,7 @@ export type BootErrorPageProps = {
   error: Error;
 };
 
-// @public
+// @alpha
 export type CommonAnalyticsContext = {
   pluginId: string;
   routeRef: string;
@@ -820,7 +821,7 @@ export type TypesToApiRefs<T> = {
   [key in keyof T]: ApiRef<T[key]>;
 };
 
-// @public
+// @alpha
 export function useAnalytics(): AnalyticsTracker;
 
 // @public
