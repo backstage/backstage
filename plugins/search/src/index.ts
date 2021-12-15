@@ -31,6 +31,7 @@ export {
   SearchFilterNext,
   SearchModal,
   SearchPage as Router,
+  SearchResultFooter,
   SearchResultPager,
   SearchType,
   SidebarSearch,
