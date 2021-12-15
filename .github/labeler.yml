@@ -1,0 +1,9 @@
+catalog:
+  - plugins/catalog/**/*
+  - plugins/catalog-*/**/*
+scaffolder:
+  - plugins/scaffolder/**/*
+  - plugins/scaffolder-*/**/*
+search:
+  - plugins/search/**/*
+  - plugins/search-*/**/*
