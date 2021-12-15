@@ -16,6 +16,7 @@
 import { JsonObject, JsonValue } from '@backstage/types';
 import { LinearProgress } from '@material-ui/core';
 import { FormValidation, IChangeEvent } from '@rjsf/core';
+import qs from 'qs';
 import React, { useCallback, useState } from 'react';
 import { generatePath, Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
@@ -120,7 +121,12 @@ export const TemplatePage = ({
   const navigate = useNavigate();
   const rootLink = useRouteRef(rootRouteRef);
   const { schema, loading, error } = useTemplateParameterSchema(templateName);
-  const [formState, setFormState] = useState({});
+  const query = qs.parse(window.location.search, {
+    ignoreQueryPrefix: true,
+  });
+  const [formState, setFormState] = useState(
+    (query.formData ?? {}) as Record<string, any>,
+  );
   const handleFormReset = () => setFormState({});
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState(e.formData),

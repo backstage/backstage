@@ -25,7 +25,11 @@ import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSpecV1beta2 } from '@backstage/plugin-scaffolder-common';
+import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { TemplateMetadata } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
@@ -432,52 +436,11 @@ export type TaskSecrets = {
   token: string | undefined;
 };
 
-// @public
-export type TaskSpec = TaskSpecV1beta2 | TaskSpecV1beta3;
+export { TaskSpec };
 
-// @public
-export interface TaskSpecV1beta2 {
-  // (undocumented)
-  apiVersion: 'backstage.io/v1beta2';
-  // (undocumented)
-  baseUrl?: string;
-  // (undocumented)
-  metadata?: TemplateMetadata;
-  // (undocumented)
-  output: {
-    [name: string]: string;
-  };
-  // (undocumented)
-  steps: Array<{
-    id: string;
-    name: string;
-    action: string;
-    input?: JsonObject;
-    if?: string | boolean;
-  }>;
-  // (undocumented)
-  values: JsonObject;
-}
+export { TaskSpecV1beta2 };
 
-// @public
-export interface TaskSpecV1beta3 {
-  // (undocumented)
-  apiVersion: 'scaffolder.backstage.io/v1beta3';
-  // (undocumented)
-  baseUrl?: string;
-  // (undocumented)
-  metadata?: TemplateMetadata;
-  // (undocumented)
-  output: {
-    [name: string]: JsonValue;
-  };
-  // (undocumented)
-  parameters: JsonObject;
-  // Warning: (ae-forgotten-export) The symbol "TaskStep" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
-  steps: TaskStep[];
-}
+export { TaskSpecV1beta3 };
 
 // @public
 export interface TaskState {
@@ -573,8 +536,5 @@ export class TemplateActionRegistry {
   ): void;
 }
 
-// @public
-export type TemplateMetadata = {
-  name: string;
-};
+export { TemplateMetadata };
 ```
