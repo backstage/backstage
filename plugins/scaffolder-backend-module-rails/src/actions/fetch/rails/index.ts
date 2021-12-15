@@ -96,6 +96,16 @@ export function createFetchRailsAction(options: {
                     description: "Don't run Webpack install",
                     type: 'boolean',
                   },
+                  skipTest: {
+                    title: 'skipTest',
+                    description: 'Skip test files',
+                    type: 'boolean',
+                  },
+                  force: {
+                    title: 'force',
+                    description: 'Overwrite files that already exist',
+                    type: 'boolean',
+                  },
                   api: {
                     title: 'api',
                     description: 'Preconfigure smaller stack for API only apps',
