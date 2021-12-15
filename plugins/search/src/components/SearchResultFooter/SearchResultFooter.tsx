@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-export * from './DefaultResultListItem';
-export * from './Filters';
-export * from './SearchBar';
-export * from './SearchContext';
-export * from './SearchFilter';
-export * from './SearchModal';
-export * from './SearchPage';
-export * from './SearchRefineResultsPrompt';
-export * from './SearchResult';
-export * from './SearchResultFooter';
-export * from './SearchResultPager';
-export * from './SearchType';
-export * from './SidebarSearch';
-export * from './SidebarSearchModal';
+import React from 'react';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { SearchRefineResultsPrompt } from '../SearchRefineResultsPrompt';
+import { SearchResultPager } from '../SearchResultPager';
+
+export const SearchResultFooter = () => {
+  const config = useApi(configApiRef);
+
+  if (config.getOptionalBoolean('permission.enabled')) {
+    return <SearchRefineResultsPrompt />;
+  }
+
+  return <SearchResultPager />;
+};

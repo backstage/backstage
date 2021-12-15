@@ -194,6 +194,11 @@ export const SearchResult: ({
   children: (results: { results: SearchResult_2[] }) => JSX.Element;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "SearchResultFooter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const SearchResultFooter: () => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "SearchResultPager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
