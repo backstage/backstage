@@ -16,7 +16,4 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               labels: ['awaiting-review']
-            })
-
-            
-           
+            });

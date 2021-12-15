@@ -23,7 +23,6 @@ jobs:
       - uses: actions/github-script@v5
         id: fix-labels
         with:
-
           script: |
             const isReviewer = ${{steps.get-reviewers.outputs.result}}.some(({login}) => login === context.actor);
             const isAuthor = context.payload.pull_request.user.login === context.actor
