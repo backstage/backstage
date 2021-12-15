@@ -1,0 +1,76 @@
+# when a PR is opened, let's add the pending-review label
+name: Set pending review label
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['awaiting-review']
+            })
+---
+# on a review from someone in the reviewers group, remove the awaiting-review label and add the awaiting-author label
+name: Update labels for awaiting review
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v5
+        id: get-reviewers
+        with:
+          github-token: ${{ secrets.ORG_READ }}
+          script: |
+            const {data: reviewerMembers} = await github.rest.teams.listMembersInOrg({
+              org: context.payload.organization.login,
+              team_slug: 'reviewers'
+            });
+            return reviewerMembers;
+      - uses: actions/github-script@v5
+        id: fix-labels
+        with:
+
+          script: |
+            const isReviewer = ${{steps.get-reviewers.outputs.result}}.some(({login}) => login === context.actor);
+            const isAuthor = context.payload.pull_request.user.login === context.actor
+             if (isAuthor) {
+              github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'awaiting-author'
+              }).catch(() => {});
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ['awaiting-review']
+              });
+            } else if (isReviewer) {
+              github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'awaiting-review'
+              }).catch(() => {});
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ['awaiting-author']
+              });
+            }
+            
+           
