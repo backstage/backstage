@@ -63,7 +63,7 @@ export async function serveBundle(options: ServeOptions) {
         // See https://github.com/facebookincubator/create-react-app/issues/387.
         disableDotRule: true,
       },
-      https: https,
+      https,
       host,
       port,
       proxy: pkg.proxy,
