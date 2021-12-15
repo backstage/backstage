@@ -23,7 +23,11 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Entity, TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, NotFoundError } from '@backstage/errors';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  GithubCredentialsProviderFactory,
+  IGithubCredentialsProviderFactory,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -57,6 +61,7 @@ export interface RouterOptions {
   taskWorkers?: number;
   containerRunner: ContainerRunner;
   taskBroker?: TaskBroker;
+  githubCredentialsProviderFactory?: IGithubCredentialsProviderFactory;
 }
 
 function isSupportedTemplate(
@@ -83,6 +88,7 @@ export async function createRouter(
     actions,
     containerRunner,
     taskWorkers,
+    githubCredentialsProviderFactory,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -122,6 +128,9 @@ export async function createRouter(
         containerRunner,
         reader,
         config,
+        githubCredentialsProviderFactory:
+          githubCredentialsProviderFactory ||
+          new GithubCredentialsProviderFactory(),
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));

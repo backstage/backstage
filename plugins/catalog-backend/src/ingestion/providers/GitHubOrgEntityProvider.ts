@@ -24,12 +24,14 @@ import {
   GithubCredentialsProviderFactory,
   GitHubIntegrationConfig,
   ScmIntegrations,
+  IGithubCredentialsProviderFactory,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { merge } from 'lodash';
 import { Logger } from 'winston';
 import {
   EntityProvider,
+  EntityProviderBuilder,
   EntityProviderConnection,
 } from '../../providers/types';
 import {
@@ -67,6 +69,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       orgUrl: options.orgUrl,
       logger,
       gitHubConfig,
+      githubCredentialsProviderFactory: new GithubCredentialsProviderFactory(),
     });
   }
 
@@ -76,9 +79,10 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       orgUrl: string;
       gitHubConfig: GitHubIntegrationConfig;
       logger: Logger;
+      githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
     },
   ) {
-    this.credentialsProvider = GithubCredentialsProviderFactory.create(
+    this.credentialsProvider = options.githubCredentialsProviderFactory.create(
       options.gitHubConfig,
     );
   }
@@ -178,4 +182,40 @@ export function withLocations(
     },
     entity,
   ) as Entity;
+}
+
+export class GitHubOrgEntityProviderBuilder implements EntityProviderBuilder {
+  private githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+
+  constructor(
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+  ) {
+    this.githubCredentialsProviderFactory = githubCredentialsProviderFactory;
+  }
+
+  fromConfig(
+    config: Config,
+    options: { id: string; orgUrl: string; logger: Logger },
+  ): EntityProvider {
+    const integrations = ScmIntegrations.fromConfig(config);
+    const gitHubConfig = integrations.github.byUrl(options.orgUrl)?.config;
+
+    if (!gitHubConfig) {
+      throw new Error(
+        `There is no GitHub Org provider that matches ${options.orgUrl}. Please add a configuration for an integration.`,
+      );
+    }
+
+    const logger = options.logger.child({
+      target: options.orgUrl,
+    });
+
+    return new GitHubOrgEntityProvider({
+      id: options.id,
+      orgUrl: options.orgUrl,
+      logger,
+      gitHubConfig,
+      githubCredentialsProviderFactory: this.githubCredentialsProviderFactory,
+    });
+  }
 }

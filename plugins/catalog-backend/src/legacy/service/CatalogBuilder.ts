@@ -24,7 +24,10 @@ import {
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  GithubCredentialsProviderFactory,
+  ScmIntegrations,
+} from '@backstage/integration';
 import lodash from 'lodash';
 import { EntitiesCatalog } from '../../catalog';
 import {
@@ -41,15 +44,14 @@ import {
   CatalogProcessorParser,
   CodeOwnersProcessor,
   FileReaderProcessor,
-  GithubDiscoveryProcessor,
   AzureDevOpsDiscoveryProcessor,
-  GithubOrgReaderProcessor,
   GitLabDiscoveryProcessor,
   LocationEntityProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
   StaticLocationProcessor,
   UrlReaderProcessor,
+  GithubOrgReaderProcessorBuilder,
 } from '../../ingestion';
 import {
   HigherOrderOperation,
@@ -66,6 +68,7 @@ import {
 import { defaultEntityDataParser } from '../../ingestion/processors/util/parse';
 import { LocationAnalyzer } from '../../ingestion/types';
 import { CatalogEnvironment, NextCatalogBuilder } from '../../service';
+import { GithubDiscoveryProcessorBuilder } from '../../ingestion/processors/GithubDiscoveryProcessor';
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.
@@ -314,12 +317,18 @@ export class CatalogBuilder {
 
     // These are only added unless the user replaced them all
     if (!this.processorsReplace) {
+      const githubCredentialsProviderFactory =
+        new GithubCredentialsProviderFactory();
       processors.push(
         new FileReaderProcessor(),
         BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
-        GithubDiscoveryProcessor.fromConfig(config, { logger }),
+        new GithubDiscoveryProcessorBuilder(
+          githubCredentialsProviderFactory,
+        ).fromConfig(config, { logger }),
         AzureDevOpsDiscoveryProcessor.fromConfig(config, { logger }),
-        GithubOrgReaderProcessor.fromConfig(config, { logger }),
+        new GithubOrgReaderProcessorBuilder(
+          githubCredentialsProviderFactory,
+        ).fromConfig(config, { logger }),
         GitLabDiscoveryProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
         CodeOwnersProcessor.fromConfig(config, { logger, reader }),

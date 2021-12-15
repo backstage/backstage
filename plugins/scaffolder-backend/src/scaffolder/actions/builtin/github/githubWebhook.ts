@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  IGithubCredentialsProviderFactory,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
 import { OctokitProvider } from './OctokitProvider';
 import { emitterEventNames } from '@octokit/webhooks';
@@ -24,9 +27,17 @@ type ContentType = 'form' | 'json';
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
+  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
 }) {
-  const { integrations, defaultWebhookSecret } = options;
-  const octokitProvider = new OctokitProvider(integrations);
+  const {
+    githubCredentialsProviderFactory,
+    integrations,
+    defaultWebhookSecret,
+  } = options;
+  const octokitProvider = new OctokitProvider(
+    githubCredentialsProviderFactory,
+    integrations,
+  );
   const eventNames = emitterEventNames.filter(event => !event.includes('.'));
 
   return createTemplateAction<{

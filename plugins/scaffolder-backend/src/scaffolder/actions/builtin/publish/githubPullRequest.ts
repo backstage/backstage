@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import { parseRepoUrl, isExecutable } from './util';
 
 import {
-  GithubCredentialsProviderFactory,
+  IGithubCredentialsProviderFactory,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { zipObject } from 'lodash';
@@ -61,6 +61,7 @@ export type ClientFactoryInput = {
   host: string;
   owner: string;
   repo: string;
+  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
 };
 
 export const defaultClientFactory = async ({
@@ -68,6 +69,7 @@ export const defaultClientFactory = async ({
   owner,
   repo,
   host = 'github.com',
+  githubCredentialsProviderFactory,
 }: ClientFactoryInput): Promise<PullRequestCreator> => {
   const integrationConfig = integrations.github.byHost(host)?.config;
 
@@ -76,7 +78,7 @@ export const defaultClientFactory = async ({
   }
 
   const credentialsProvider =
-    GithubCredentialsProviderFactory.create(integrationConfig);
+    githubCredentialsProviderFactory.create(integrationConfig);
 
   if (!credentialsProvider) {
     throw new InputError(
@@ -107,11 +109,13 @@ export const defaultClientFactory = async ({
 interface CreateGithubPullRequestActionOptions {
   integrations: ScmIntegrationRegistry;
   clientFactory?: (input: ClientFactoryInput) => Promise<PullRequestCreator>;
+  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
 }
 
 export const createPublishGithubPullRequestAction = ({
   integrations,
   clientFactory = defaultClientFactory,
+  githubCredentialsProviderFactory,
 }: CreateGithubPullRequestActionOptions) => {
   return createTemplateAction<GithubPullRequestActionInput>({
     id: 'publish:github:pull-request',
@@ -183,7 +187,13 @@ export const createPublishGithubPullRequestAction = ({
         );
       }
 
-      const client = await clientFactory({ integrations, host, owner, repo });
+      const client = await clientFactory({
+        githubCredentialsProviderFactory,
+        integrations,
+        host,
+        owner,
+        repo,
+      });
       const fileRoot = sourcePath
         ? resolveSafeChildPath(ctx.workspacePath, sourcePath)
         : ctx.workspacePath;

@@ -18,6 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import {
   GithubCredentialsProvider,
+  GithubCredentialsProviderFactory,
   GitHubIntegrationConfig,
 } from '@backstage/integration';
 import { GitHubOrgEntityProvider } from '.';
@@ -102,6 +103,8 @@ describe('GitHubOrgEntityProvider', () => {
         orgUrl: 'https://github.com/backstage',
         gitHubConfig,
         logger,
+        githubCredentialsProviderFactory:
+          new GithubCredentialsProviderFactory(),
       });
 
       entityProvider.connect(entityProviderConnection);

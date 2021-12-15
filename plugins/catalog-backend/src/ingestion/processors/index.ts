@@ -25,10 +25,19 @@ export { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
 export { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 export { CodeOwnersProcessor } from './CodeOwnersProcessor';
 export { FileReaderProcessor } from './FileReaderProcessor';
-export { GithubDiscoveryProcessor } from './GithubDiscoveryProcessor';
+export {
+  GithubDiscoveryProcessor,
+  GithubDiscoveryProcessorBuilder,
+} from './GithubDiscoveryProcessor';
 export { AzureDevOpsDiscoveryProcessor } from './AzureDevOpsDiscoveryProcessor';
-export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
-export { GithubMultiOrgReaderProcessor } from './GithubMultiOrgReaderProcessor';
+export {
+  GithubOrgReaderProcessor,
+  GithubOrgReaderProcessorBuilder,
+} from './GithubOrgReaderProcessor';
+export {
+  GithubMultiOrgReaderProcessor,
+  GithubMultiOrgReaderProcessorBuilder,
+} from './GithubMultiOrgReaderProcessor';
 export { GitLabDiscoveryProcessor } from './GitLabDiscoveryProcessor';
 export { LocationEntityProcessor } from './LocationEntityProcessor';
 export type { LocationEntityProcessorOptions } from './LocationEntityProcessor';

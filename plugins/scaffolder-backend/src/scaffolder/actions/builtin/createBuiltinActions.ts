@@ -16,7 +16,10 @@
 
 import { ContainerRunner, UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  IGithubCredentialsProviderFactory,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { Config } from '@backstage/config';
 import {
   createCatalogWriteAction,
@@ -48,9 +51,16 @@ export const createBuiltinActions = (options: {
   catalogClient: CatalogApi;
   containerRunner: ContainerRunner;
   config: Config;
+  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
 }) => {
-  const { reader, integrations, containerRunner, catalogClient, config } =
-    options;
+  const {
+    githubCredentialsProviderFactory,
+    reader,
+    integrations,
+    containerRunner,
+    catalogClient,
+    config,
+  } = options;
 
   return [
     createFetchPlainAction({
@@ -69,9 +79,11 @@ export const createBuiltinActions = (options: {
     createPublishGithubAction({
       integrations,
       config,
+      githubCredentialsProviderFactory,
     }),
     createPublishGithubPullRequestAction({
       integrations,
+      githubCredentialsProviderFactory,
     }),
     createPublishGitlabAction({
       integrations,
@@ -92,9 +104,11 @@ export const createBuiltinActions = (options: {
     createFilesystemRenameAction(),
     createGithubActionsDispatchAction({
       integrations,
+      githubCredentialsProviderFactory,
     }),
     createGithubWebhookAction({
       integrations,
+      githubCredentialsProviderFactory,
     }),
   ];
 };

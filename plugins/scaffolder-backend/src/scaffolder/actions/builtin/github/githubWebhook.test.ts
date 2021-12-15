@@ -17,7 +17,10 @@
 jest.mock('@octokit/rest');
 
 import { createGithubWebhookAction } from './githubWebhook';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  GithubCredentialsProviderFactory,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
@@ -37,6 +40,7 @@ describe('github:repository:webhook:create', () => {
   const action = createGithubWebhookAction({
     integrations,
     defaultWebhookSecret,
+    githubCredentialsProviderFactory: new GithubCredentialsProviderFactory(),
   });
 
   const mockContext = {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export {
-  readGitHubIntegrationConfig,
-  readGitHubIntegrationConfigs,
-} from './config';
-export type { GithubAppConfig, GitHubIntegrationConfig } from './config';
-export { getGitHubFileFetchUrl, getGitHubRequestOptions } from './core';
-export {
+import { GitHubIntegrationConfig } from './config';
+import {
   GithubAppCredentialsMux,
   GithubCredentialsProvider,
-} from './GithubCredentialsProvider';
-export { GithubCredentialsProviderFactory } from './GithubCredentialsProviderFactory';
-export type { IGithubCredentialsProviderFactory } from './GithubCredentialsProviderFactory';
-export type {
-  GithubCredentials,
-  GithubCredentialType,
   IGithubCredentialsProvider,
 } from './GithubCredentialsProvider';
-export { GitHubIntegration, replaceGitHubUrlType } from './GitHubIntegration';
+
+/**
+ * This allows implementations to be provided to retrieve GitHub credentials.
+ *
+ * @public
+ *
+ */
+export interface IGithubCredentialsProviderFactory {
+  create(opts: any): IGithubCredentialsProvider;
+}
+
+export class GithubCredentialsProviderFactory
+  implements IGithubCredentialsProviderFactory
+{
+  create(config: GitHubIntegrationConfig): IGithubCredentialsProvider {
+    return new GithubCredentialsProvider(
+      new GithubAppCredentialsMux(config),
+      config.token,
+    );
+  }
+}

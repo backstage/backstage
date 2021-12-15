@@ -259,7 +259,7 @@ export class GithubCredentialsProvider implements IGithubCredentialsProvider {
     );
   }
 
-  private constructor(
+  public constructor(
     private readonly githubAppCredentialsMux: GithubAppCredentialsMux,
     private readonly token?: string,
   ) {}
@@ -302,23 +302,5 @@ export class GithubCredentialsProvider implements IGithubCredentialsProvider {
       token,
       type,
     };
-  }
-}
-
-/**
- * Handles the creation and of GitHub credentials providers.
- *
- * @public
- *
- */
-export class GithubCredentialsProviderFactory {
-  static provider = GithubCredentialsProvider;
-
-  static setProvider(provider: any) {
-    this.provider = provider;
-  }
-
-  static create(config: GitHubIntegrationConfig): IGithubCredentialsProvider {
-    return this.provider.create(config);
   }
 }

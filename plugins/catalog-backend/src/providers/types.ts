@@ -15,6 +15,8 @@
  */
 
 import { DeferredEntity } from '../processing';
+import { Config } from '@backstage/config';
+import { Logger } from 'winston';
 
 export type EntityProviderMutation =
   | { type: 'full'; entities: DeferredEntity[] }
@@ -27,4 +29,11 @@ export interface EntityProviderConnection {
 export interface EntityProvider {
   getProviderName(): string;
   connect(connection: EntityProviderConnection): Promise<void>;
+}
+
+export interface EntityProviderBuilder {
+  fromConfig(
+    config: Config,
+    options: { id: string; orgUrl: string; logger: Logger },
+  ): EntityProvider;
 }

@@ -18,6 +18,7 @@ import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
+  GithubCredentialsProviderFactory,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -48,6 +49,8 @@ describe('GithubOrgReaderProcessor', () => {
       const processor = new GithubOrgReaderProcessor({
         integrations,
         logger,
+        githubCredentialsProviderFactory:
+          new GithubCredentialsProviderFactory(),
       });
       const location: LocationSpec = {
         type: 'github-org',
@@ -94,6 +97,8 @@ describe('GithubOrgReaderProcessor', () => {
       const processor = new GithubOrgReaderProcessor({
         integrations,
         logger,
+        githubCredentialsProviderFactory:
+          new GithubCredentialsProviderFactory(),
       });
       const location: LocationSpec = {
         type: 'github-org',
@@ -142,6 +147,8 @@ describe('GithubOrgReaderProcessor', () => {
       const processor = new GithubOrgReaderProcessor({
         integrations,
         logger,
+        githubCredentialsProviderFactory:
+          new GithubCredentialsProviderFactory(),
       });
       const location: LocationSpec = {
         type: 'github-org',

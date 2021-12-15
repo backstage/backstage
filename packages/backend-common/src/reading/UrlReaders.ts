@@ -20,12 +20,13 @@ import { ReaderFactory, UrlReader } from './types';
 import { UrlReaderPredicateMux } from './UrlReaderPredicateMux';
 import { AzureUrlReader } from './AzureUrlReader';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
-import { GithubUrlReader } from './GithubUrlReader';
+import { GithubUrlReaderFactory } from './GithubUrlReader';
 import { GitlabUrlReader } from './GitlabUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { FetchUrlReader } from './FetchUrlReader';
 import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
 import { AwsS3UrlReader } from './AwsS3UrlReader';
+import { GithubCredentialsProviderFactory } from '@backstage/integration';
 
 /** @public */
 export type UrlReadersOptions = {
@@ -75,7 +76,8 @@ export class UrlReaders {
       factories: factories.concat([
         AzureUrlReader.factory,
         BitbucketUrlReader.factory,
-        GithubUrlReader.factory,
+        new GithubUrlReaderFactory(new GithubCredentialsProviderFactory())
+          .factory,
         GitlabUrlReader.factory,
         GoogleGcsUrlReader.factory,
         AwsS3UrlReader.factory,

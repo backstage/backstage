@@ -20,6 +20,7 @@ import {
   GithubAppCredentialsMux,
   GithubCredentialsProviderFactory,
   GitHubIntegrationConfig,
+  IGithubCredentialsProviderFactory,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -31,7 +32,11 @@ import {
   readGithubMultiOrgConfig,
 } from './github';
 import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import {
+  CatalogProcessor,
+  CatalogProcessorBuilder,
+  CatalogProcessorEmit,
+} from './types';
 import { buildOrgHierarchy } from './util/org';
 
 /**
@@ -44,7 +49,9 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly orgs: GithubMultiOrgConfig;
   private readonly logger: Logger;
+  private readonly githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
 
+  // deprecated
   static fromConfig(config: Config, options: { logger: Logger }) {
     const c = config.getOptionalConfig('catalog.processors.githubMultiOrg');
     const integrations = ScmIntegrations.fromConfig(config);
@@ -53,6 +60,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
       ...options,
       integrations,
       orgs: c ? readGithubMultiOrgConfig(c) : [],
+      githubCredentialsProviderFactory: new GithubCredentialsProviderFactory(),
     });
   }
 
@@ -60,10 +68,13 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     integrations: ScmIntegrations;
     logger: Logger;
     orgs: GithubMultiOrgConfig;
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
   }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
     this.orgs = options.orgs;
+    this.githubCredentialsProviderFactory =
+      options.githubCredentialsProviderFactory;
   }
 
   async readLocation(
@@ -87,7 +98,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     const allUsersMap = new Map();
     const baseUrl = new URL(location.target).origin;
     const credentialsProvider =
-      GithubCredentialsProviderFactory.create(gitHubConfig);
+      this.githubCredentialsProviderFactory.create(gitHubConfig);
 
     const orgsToProcess = this.orgs.length
       ? this.orgs
@@ -181,5 +192,29 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
           : undefined,
       )
       .filter(Boolean) as GithubMultiOrgConfig;
+  }
+}
+
+export class GithubMultiOrgReaderProcessorBuilder
+  implements CatalogProcessorBuilder
+{
+  private githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+
+  constructor(
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+  ) {
+    this.githubCredentialsProviderFactory = githubCredentialsProviderFactory;
+  }
+
+  fromConfig(config: Config, options: { logger: Logger }) {
+    const c = config.getOptionalConfig('catalog.processors.githubMultiOrg');
+    const integrations = ScmIntegrations.fromConfig(config);
+
+    return new GithubMultiOrgReaderProcessor({
+      ...options,
+      integrations,
+      orgs: c ? readGithubMultiOrgConfig(c) : [],
+      githubCredentialsProviderFactory: this.githubCredentialsProviderFactory,
+    });
   }
 }

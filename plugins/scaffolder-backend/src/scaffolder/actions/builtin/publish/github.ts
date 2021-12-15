@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  IGithubCredentialsProviderFactory,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
@@ -30,9 +33,13 @@ type Collaborator = { access: Permission; username: string };
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
+  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
 }) {
-  const { integrations, config } = options;
-  const octokitProvider = new OctokitProvider(integrations);
+  const { githubCredentialsProviderFactory, integrations, config } = options;
+  const octokitProvider = new OctokitProvider(
+    githubCredentialsProviderFactory,
+    integrations,
+  );
 
   return createTemplateAction<{
     repoUrl: string;

@@ -25,7 +25,10 @@ import {
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  GithubCredentialsProviderFactory,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
 import lodash from 'lodash';
@@ -45,8 +48,8 @@ import {
   CodeOwnersProcessor,
   FileReaderProcessor,
   AzureDevOpsDiscoveryProcessor,
-  GithubDiscoveryProcessor,
-  GithubOrgReaderProcessor,
+  GithubDiscoveryProcessorBuilder,
+  GithubOrgReaderProcessorBuilder,
   GitLabDiscoveryProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
@@ -289,13 +292,19 @@ export class NextCatalogBuilder {
   getDefaultProcessors(): CatalogProcessor[] {
     const { config, logger, reader } = this.env;
     const integrations = ScmIntegrations.fromConfig(config);
+    const githubCredentialsProviderFactory =
+      new GithubCredentialsProviderFactory();
 
     return [
       new FileReaderProcessor(),
       BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
       AzureDevOpsDiscoveryProcessor.fromConfig(config, { logger }),
-      GithubDiscoveryProcessor.fromConfig(config, { logger }),
-      GithubOrgReaderProcessor.fromConfig(config, { logger }),
+      new GithubDiscoveryProcessorBuilder(
+        githubCredentialsProviderFactory,
+      ).fromConfig(config, { logger }),
+      new GithubOrgReaderProcessorBuilder(
+        githubCredentialsProviderFactory,
+      ).fromConfig(config, { logger }),
       GitLabDiscoveryProcessor.fromConfig(config, { logger }),
       new UrlReaderProcessor({ reader, logger }),
       CodeOwnersProcessor.fromConfig(config, { logger, reader }),

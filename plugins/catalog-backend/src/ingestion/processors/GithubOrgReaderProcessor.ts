@@ -19,6 +19,7 @@ import { Config } from '@backstage/config';
 import {
   GithubCredentialsProviderFactory,
   GithubCredentialType,
+  IGithubCredentialsProviderFactory,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -29,7 +30,11 @@ import {
   parseGitHubOrgUrl,
 } from './github';
 import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import {
+  CatalogProcessor,
+  CatalogProcessorBuilder,
+  CatalogProcessorEmit,
+} from './types';
 import { assignGroupsToUsers, buildOrgHierarchy } from './util/org';
 
 type GraphQL = typeof graphql;
@@ -40,6 +45,7 @@ type GraphQL = typeof graphql;
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
+  private readonly githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -47,12 +53,19 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     return new GithubOrgReaderProcessor({
       ...options,
       integrations,
+      githubCredentialsProviderFactory: new GithubCredentialsProviderFactory(),
     });
   }
 
-  constructor(options: { integrations: ScmIntegrations; logger: Logger }) {
+  constructor(options: {
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+    integrations: ScmIntegrations;
+    logger: Logger;
+  }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
+    this.githubCredentialsProviderFactory =
+      options.githubCredentialsProviderFactory;
   }
 
   async readLocation(
@@ -108,7 +121,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     }
 
     const credentialsProvider =
-      GithubCredentialsProviderFactory.create(gitHubConfig);
+      this.githubCredentialsProviderFactory.create(gitHubConfig);
     const { headers, type: tokenType } =
       await credentialsProvider.getCredentials({
         url: orgUrl,
@@ -120,5 +133,27 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     });
 
     return { client, tokenType };
+  }
+}
+
+export class GithubOrgReaderProcessorBuilder
+  implements CatalogProcessorBuilder
+{
+  private githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+
+  constructor(
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+  ) {
+    this.githubCredentialsProviderFactory = githubCredentialsProviderFactory;
+  }
+
+  fromConfig(config: Config, options: { logger: Logger }) {
+    const integrations = ScmIntegrations.fromConfig(config);
+
+    return new GithubOrgReaderProcessor({
+      ...options,
+      integrations,
+      githubCredentialsProviderFactory: this.githubCredentialsProviderFactory,
+    });
   }
 }

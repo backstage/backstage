@@ -20,6 +20,12 @@ import {
   LocationSpec,
 } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
+import { Config } from '@backstage/config';
+import { Logger } from 'winston';
+
+export type CatalogProcessorBuilder = {
+  fromConfig(config: Config, options: { logger: Logger }): CatalogProcessor;
+};
 
 export type CatalogProcessor = {
   /**

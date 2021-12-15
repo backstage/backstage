@@ -16,9 +16,13 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
-import { GithubDiscoveryProcessor, parseUrl } from './GithubDiscoveryProcessor';
+import {
+  GithubDiscoveryProcessorBuilder,
+  parseUrl,
+} from './GithubDiscoveryProcessor';
 import { getOrganizationRepositories } from './github';
 import { ConfigReader } from '@backstage/config';
+import { GithubCredentialsProviderFactory } from '@backstage/integration';
 
 jest.mock('./github');
 const mockGetOrganizationRepositories =
@@ -67,7 +71,9 @@ describe('GithubDiscoveryProcessor', () => {
 
   describe('reject unrelated entries', () => {
     it('rejects unknown types', async () => {
-      const processor = GithubDiscoveryProcessor.fromConfig(
+      const processor = new GithubDiscoveryProcessorBuilder(
+        new GithubCredentialsProviderFactory(),
+      ).fromConfig(
         new ConfigReader({
           integrations: {
             github: [{ host: 'github.com', token: 'blob' }],
@@ -85,7 +91,9 @@ describe('GithubDiscoveryProcessor', () => {
     });
 
     it('rejects unknown targets', async () => {
-      const processor = GithubDiscoveryProcessor.fromConfig(
+      const processor = new GithubDiscoveryProcessorBuilder(
+        new GithubCredentialsProviderFactory(),
+      ).fromConfig(
         new ConfigReader({
           integrations: {
             github: [
@@ -109,7 +117,9 @@ describe('GithubDiscoveryProcessor', () => {
   });
 
   describe('handles repositories', () => {
-    const processor = GithubDiscoveryProcessor.fromConfig(
+    const processor = new GithubDiscoveryProcessorBuilder(
+      new GithubCredentialsProviderFactory(),
+    ).fromConfig(
       new ConfigReader({
         integrations: {
           github: [{ host: 'github.com', token: 'blob' }],

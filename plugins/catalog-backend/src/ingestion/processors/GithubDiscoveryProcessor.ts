@@ -17,14 +17,19 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
-  GithubCredentialsProviderFactory,
+  IGithubCredentialsProviderFactory,
   ScmIntegrations,
+  GithubCredentialsProviderFactory,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
 import { getOrganizationRepositories } from './github';
 import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import {
+  CatalogProcessor,
+  CatalogProcessorBuilder,
+  CatalogProcessorEmit,
+} from './types';
 
 /**
  * Extracts repositories out of a GitHub org.
@@ -43,6 +48,7 @@ import { CatalogProcessor, CatalogProcessorEmit } from './types';
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
+  private readonly githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -50,12 +56,19 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     return new GithubDiscoveryProcessor({
       ...options,
       integrations,
+      githubCredentialsProviderFactory: new GithubCredentialsProviderFactory(),
     });
   }
 
-  constructor(options: { integrations: ScmIntegrations; logger: Logger }) {
+  constructor(options: {
+    integrations: ScmIntegrations;
+    logger: Logger;
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
+    this.githubCredentialsProviderFactory =
+      options.githubCredentialsProviderFactory;
   }
 
   async readLocation(
@@ -84,9 +97,9 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     // about how to handle the wild card which is special for this processor.
     const orgUrl = `https://${host}/${org}`;
 
-    const { headers } = await GithubCredentialsProviderFactory.create(
-      gitHubConfig,
-    ).getCredentials({ url: orgUrl });
+    const { headers } = await this.githubCredentialsProviderFactory
+      .create(gitHubConfig)
+      .getCredentials({ url: orgUrl });
 
     const client = graphql.defaults({
       baseUrl: gitHubConfig.apiBaseUrl,
@@ -178,4 +191,25 @@ export function parseUrl(urlString: string): {
 
 export function escapeRegExp(str: string): RegExp {
   return new RegExp(`^${str.replace(/\*/g, '.*')}$`);
+}
+
+export class GithubDiscoveryProcessorBuilder
+  implements CatalogProcessorBuilder
+{
+  private githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  constructor(
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+  ) {
+    this.githubCredentialsProviderFactory = githubCredentialsProviderFactory;
+  }
+
+  fromConfig(config: Config, options: { logger: Logger }) {
+    const integrations = ScmIntegrations.fromConfig(config);
+
+    return new GithubDiscoveryProcessor({
+      ...options,
+      integrations,
+      githubCredentialsProviderFactory: this.githubCredentialsProviderFactory,
+    });
+  }
 }
