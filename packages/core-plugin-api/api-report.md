@@ -144,18 +144,6 @@ export type ApiRefConfig = {
   description?: string;
 };
 
-// @public @deprecated
-export type ApiRefsToTypes<
-  T extends {
-    [key in string]: ApiRef<unknown>;
-  },
-> = {
-  [key in keyof T]: ApiRefType<T[key]>;
-};
-
-// @public @deprecated
-export type ApiRefType<T> = T extends ApiRef<infer U> ? U : never;
-
 // @public
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
