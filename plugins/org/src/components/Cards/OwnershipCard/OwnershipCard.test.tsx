@@ -115,7 +115,7 @@ const getEntitiesMock = (
   const filterKinds =
     !Array.isArray(request?.filter) && Array.isArray(request?.filter?.kind)
       ? request?.filter?.kind ?? []
-      : []; // we expect the request to be like { filter: { kind: ['API','System'], .... }
+      : []; // we expect the request to be like { filter: { kind: ['API','System'], .... }. If changed in OwnerShipCard, let's change in also here
   return Promise.resolve({
     items: items.filter(item => filterKinds.find(k => k === item.kind)),
   } as CatalogListResponse<Entity>);
