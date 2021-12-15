@@ -69,15 +69,12 @@ export const EntityBazaarInfoContent = ({
   }, [fetchMembers, fetchUserId]);
 
   useEffect(() => {
-    if (userId.value) {
-      if (members.value) {
-        const isBazaarMember =
-          members.value
-            ?.map((member: Member) => member.userId)
-            .indexOf(userId.value) >= 0;
-
-        setIsMember(isBazaarMember);
-      }
+    if (members.value && userId.value) {
+      setIsMember(
+        members.value
+          ?.map((member: Member) => member.userId)
+          .indexOf(userId.value) >= 0,
+      );
     }
   }, [bazaarProject, members, identity, userId.value]);
 

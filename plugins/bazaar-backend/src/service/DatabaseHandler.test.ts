@@ -29,6 +29,7 @@ const bazaarProject: any = {
   size: 'small',
   responsible: 'r',
 };
+
 describe('DatabaseHandler', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
