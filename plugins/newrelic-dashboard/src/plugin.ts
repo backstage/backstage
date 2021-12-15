@@ -43,6 +43,7 @@ export const newRelicDashboardPlugin = createPlugin({
 
 export const EntityNewRelicDashboard = newRelicDashboardPlugin.provide(
   createRoutableExtension({
+    name: 'EntityNewRelicDashboardPage',
     component: () => import('./Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
@@ -50,6 +51,7 @@ export const EntityNewRelicDashboard = newRelicDashboardPlugin.provide(
 
 export const EntityPageNewRelicDashboard = newRelicDashboardPlugin.provide(
   createRoutableExtension({
+    name: 'EntityNewRelicDashboardListComponent',
     component: () =>
       import('./components/NewRelicDashboard/DashboardEntityList').then(
         m => m.DashboardEntityList,
