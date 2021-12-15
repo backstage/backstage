@@ -81,10 +81,9 @@ export default class SamlAuth
     return this.sessionManager.sessionState$();
   }
 
-  /**
-   * @deprecated will be made private in the future. Use create method instead.
-   */
-  constructor(private readonly sessionManager: SessionManager<SamlSession>) {}
+  private constructor(
+    private readonly sessionManager: SessionManager<SamlSession>,
+  ) {}
 
   async signIn() {
     await this.getBackstageIdentity({});

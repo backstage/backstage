@@ -395,10 +395,6 @@ export type FlatRoutesProps = {
 
 // @public
 export class GithubAuth implements OAuthApi, SessionApi {
-  // Warning: (ae-forgotten-export) The symbol "SessionManager" needs to be exported by the entry point index.d.ts
-  //
-  // @deprecated
-  constructor(sessionManager: SessionManager<GithubSession>);
   // (undocumented)
   static create(options: OAuthApiCreateOptions): GithubAuth;
   // (undocumented)
@@ -475,11 +471,6 @@ export class OAuth2
     BackstageIdentityApi,
     SessionApi
 {
-  // @deprecated
-  constructor(options: {
-    sessionManager: SessionManager<OAuth2Session>;
-    scopeTransform: (scopes: string[]) => string[];
-  });
   // (undocumented)
   static create(options: OAuth2CreateOptions): OAuth2;
   // (undocumented)
@@ -560,8 +551,6 @@ export type OneLoginAuthCreateOptions = {
 export class SamlAuth
   implements ProfileInfoApi, BackstageIdentityApi, SessionApi
 {
-  // @deprecated
-  constructor(sessionManager: SessionManager<SamlSession>);
   // (undocumented)
   static create(options: AuthApiCreateOptions): SamlAuth;
   // (undocumented)
