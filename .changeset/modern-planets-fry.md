@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-newrelic-dashboard': minor
+'@backstage/plugin-newrelic-dashboard': major
 ---
 
-changed the plugin name
+Created a New Plugin , which imports dashboard links and snapshots from New Relic
