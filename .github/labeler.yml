@@ -1,6 +1,7 @@
 catalog:
   - plugins/catalog/**/*
   - plugins/catalog-*/**/*
+  - packages/catalog-*/**/*
 scaffolder:
   - plugins/scaffolder/**/*
   - plugins/scaffolder-*/**/*
