@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Box, IconButton, Link, Typography, Tooltip } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Box, IconButton, Link, Tooltip, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
 import { Link as RouterLink } from 'react-router-dom';
 import { JenkinsRunStatus } from '../Status';
 import { useBuilds } from '../../../useBuilds';
 import { buildRouteRef } from '../../../../plugin';
-import { Table, TableColumn } from '@backstage/core-components';
+import { Progress, Table, TableColumn } from '@backstage/core-components';
 import { Project } from '../../../../api/JenkinsApi';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 const FailCount = ({ count }: { count: number }): JSX.Element | null => {
   if (count !== 0) {
@@ -173,13 +173,51 @@ const generatedColumns: TableColumn[] = [
   {
     title: 'Actions',
     sorting: false,
-    render: (row: Partial<Project>) => (
-      <Tooltip title="Rerun build">
-        <IconButton onClick={row.onRestartClick}>
-          <RetryIcon />
-        </IconButton>
-      </Tooltip>
-    ),
+    render: (row: Partial<Project>) => {
+      const ActionWrapper = () => {
+        const [isLoadingRebuild, setIsLoadingRebuild] = useState(false);
+        const alertApi = useApi(alertApiRef);
+
+        const onRebuild = async () => {
+          if (row.onRestartClick) {
+            setIsLoadingRebuild(true);
+            try {
+              const response = await row.onRestartClick();
+              const body = (await response.json()) as {
+                error?: { message: string };
+              };
+              if (response.status !== 200) {
+                alertApi.post({
+                  message: `Jenkins re-build has been failed. Reason: ${body.error?.message}`,
+                  severity: 'error',
+                });
+              } else {
+                alertApi.post({
+                  message: 'Jenkins re-build has been successfully executed',
+                  severity: 'success',
+                });
+              }
+            } finally {
+              setIsLoadingRebuild(false);
+            }
+          }
+        };
+
+        return (
+          <Tooltip title="Rerun build">
+            <>
+              {isLoadingRebuild && <Progress />}
+              {!isLoadingRebuild && (
+                <IconButton onClick={onRebuild}>
+                  <RetryIcon />
+                </IconButton>
+              )}
+            </>
+          </Tooltip>
+        );
+      };
+      return <ActionWrapper />;
+    },
     width: '10%',
   },
 ];

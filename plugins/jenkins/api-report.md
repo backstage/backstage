@@ -9,8 +9,8 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
-import { EntityRef } from '@backstage/catalog-model';
+import type { EntityName } from '@backstage/catalog-model';
+import type { EntityRef } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -72,7 +72,7 @@ export interface JenkinsApi {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
-  }): Promise<void>;
+  }): Promise<Response>;
 }
 
 // Warning: (ae-missing-release-tag) "jenkinsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -117,7 +117,7 @@ export class JenkinsClient implements JenkinsApi {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
-  }): Promise<void>;
+  }): Promise<Response>;
 }
 
 // Warning: (ae-missing-release-tag) "jenkinsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

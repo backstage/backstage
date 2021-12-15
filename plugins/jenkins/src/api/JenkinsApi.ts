@@ -19,7 +19,7 @@ import {
   DiscoveryApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
-import { EntityName, EntityRef } from '@backstage/catalog-model';
+import type { EntityName, EntityRef } from '@backstage/catalog-model';
 
 export const jenkinsApiRef = createApiRef<JenkinsApi>({
   id: 'plugin.jenkins.service2',
@@ -66,7 +66,7 @@ export interface Project {
   inQueue: string;
   // added by us
   status: string; // == inQueue ? 'queued' : lastBuild.building ? 'running' : lastBuild.result,
-  onRestartClick: () => Promise<void>; // TODO rename to handle.* ? also, should this be on lastBuild?
+  onRestartClick: () => Promise<Response>; // TODO rename to handle.* ? also, should this be on lastBuild?
 }
 
 export interface JenkinsApi {
@@ -106,7 +106,7 @@ export interface JenkinsApi {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
-  }): Promise<void>;
+  }): Promise<Response>;
 }
 
 export class JenkinsClient implements JenkinsApi {
@@ -140,7 +140,7 @@ export class JenkinsClient implements JenkinsApi {
       url.searchParams.append('branch', filter.branch);
     }
 
-    const idToken = await this.identityApi.getIdToken();
+    const idToken = await this.getToken();
     const response = await fetch(url.href, {
       method: 'GET',
       headers: {
@@ -151,8 +151,8 @@ export class JenkinsClient implements JenkinsApi {
     return (
       (await response.json()).projects?.map((p: Project) => ({
         ...p,
-        onRestartClick: async () => {
-          await this.retry({
+        onRestartClick: () => {
+          return this.retry({
             entity,
             jobFullName: p.fullName,
             buildNumber: String(p.lastBuild.number),
@@ -179,7 +179,7 @@ export class JenkinsClient implements JenkinsApi {
       jobFullName,
     )}/${encodeURIComponent(buildNumber)}`;
 
-    const idToken = await this.identityApi.getIdToken();
+    const idToken = await this.getToken();
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -198,7 +198,7 @@ export class JenkinsClient implements JenkinsApi {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
-  }): Promise<void> {
+  }): Promise<Response> {
     const url = `${await this.discoveryApi.getBaseUrl(
       'jenkins',
     )}/v1/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(
@@ -207,12 +207,17 @@ export class JenkinsClient implements JenkinsApi {
       jobFullName,
     )}/${encodeURIComponent(buildNumber)}:rebuild`;
 
-    const idToken = await this.identityApi.getIdToken();
-    await fetch(url, {
+    const idToken = await this.getToken();
+    return fetch(url, {
       method: 'POST',
       headers: {
         ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
     });
+  }
+
+  private async getToken() {
+    const { token } = await this.identityApi.getCredentials();
+    return token;
   }
 }
