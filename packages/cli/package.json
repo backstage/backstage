@@ -220,7 +220,7 @@
               "https": {
                 "type": "boolean",
                 "visibility": "frontend",
-                "description": "The protocol that the frontend should be use. Only used for local development."
+                "description": "Whether the frontend should be served over HTTPS. Only used for local development."
               },
               "host": {
                 "type": "string",
