@@ -18,9 +18,11 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 import { PermissionClient } from '@backstage/plugin-permission-common';
 import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { filterUnauthorized } from '../filterUnauthorized';
 
 export type RouterOptions = {
   engine: SearchEngine;
@@ -32,8 +34,9 @@ export type RouterOptions = {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { engine, logger } = options;
+  const { engine, permissions, config, logger } = options;
   const router = Router();
+
   router.get(
     '/query',
     async (
@@ -49,9 +52,38 @@ export async function createRouter(
         }`,
       );
 
+      const token = IdentityClient.getBearerToken(req.header('authorization'));
+      const permissionsEnabled =
+        config.getOptionalBoolean('permission.enabled');
+
+      if (permissionsEnabled && pageCursor) {
+        res.status(400).end('Pagination of search results is not supported.');
+        return;
+      }
+
       try {
-        const results = await engine?.query(req.query);
-        res.send(results);
+        const resultSet = await engine.query(req.query);
+
+        if (permissionsEnabled) {
+          resultSet.results = await filterUnauthorized({
+            entries: resultSet.results,
+            toAuthorizeRequest: result => result.document.authorization,
+            requestOptions: { token },
+            permissions,
+          });
+          delete resultSet.previousPageCursor;
+          delete resultSet.nextPageCursor;
+        }
+
+        resultSet.results = resultSet.results.map(result => ({
+          ...result,
+          document: {
+            ...result.document,
+            authorization: undefined,
+          },
+        }));
+
+        res.send(resultSet);
       } catch (err) {
         throw new Error(
           `There was a problem performing the search query. ${err}`,
