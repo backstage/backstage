@@ -17,8 +17,6 @@ import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '@backstage/core-plugin-api';
 import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
 import { auth0AuthApiRef } from '@backstage/core-plugin-api';
-import { AuthProvider } from '@backstage/core-plugin-api';
-import { AuthRequester } from '@backstage/core-plugin-api';
 import { AuthProviderInfo } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentity } from '@backstage/core-plugin-api';
@@ -51,7 +49,7 @@ import { Observable } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
-import { PendingOAuthRequest, PermissionApi } from '@backstage/core-plugin-api';
+import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { PluginOutput } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
@@ -455,21 +453,6 @@ export class GitlabAuth {
 export class GoogleAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof googleAuthApiRef.T;
-}
-
-// Warning: (ae-missing-release-tag) "IdentityPermissionApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export class IdentityPermissionApi implements PermissionApi {
-  constructor(
-    discoveryApi: DiscoveryApi,
-    identityApi: IdentityApi,
-    configApi: ConfigApi,
-  );
-  // (undocumented)
-  authorize(
-    requests: Array<AuthorizeRequest>,
-  ): Promise<Array<AuthorizeResponse>>;
 }
 
 // @public
