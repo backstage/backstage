@@ -16,5 +16,5 @@
 import { createRouteRef } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  title: 'new-relic-dashboard',
+  id: 'new-relic-dashboard',
 });
