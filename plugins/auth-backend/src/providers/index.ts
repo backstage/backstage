@@ -23,6 +23,7 @@ export * from './gitlab';
 export * from './google';
 export * from './microsoft';
 export * from './oauth2';
+export * from './oauth2-proxy';
 export * from './oidc';
 export * from './okta';
 export * from './onelogin';
@@ -38,6 +39,7 @@ export type {
   AuthProviderFactoryOptions,
   AuthProviderFactory,
   AuthHandler,
+  AuthContext,
   AuthHandlerResult,
   SignInResolver,
   SignInInfo,

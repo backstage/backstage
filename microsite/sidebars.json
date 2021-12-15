@@ -228,7 +228,8 @@
           "auth/gitlab/provider",
           "auth/google/provider",
           "auth/okta/provider",
-          "auth/onelogin/provider"
+          "auth/onelogin/provider",
+          "auth/oauth2-proxy/provider"
         ]
       },
       "auth/add-auth-provider",

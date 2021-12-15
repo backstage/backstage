@@ -60,8 +60,16 @@ export type Auth0ProviderOptions = {
 };
 
 // @public
+export type AuthContext = {
+  tokenIssuer: TokenIssuer;
+  catalogIdentityClient: CatalogIdentityClient;
+  logger: Logger_2;
+};
+
+// @public
 export type AuthHandler<TAuthResult> = (
   input: TAuthResult,
+  context?: AuthContext,
 ) => Promise<AuthHandlerResult>;
 
 // @public
@@ -270,6 +278,11 @@ export const createOAuth2Provider: (
   options?: OAuth2ProviderOptions | undefined,
 ) => AuthProviderFactory;
 
+// @public
+export const createOauth2ProxyProvider: <JWTPayload>(
+  options: Oauth2ProxyProviderOptions<JWTPayload>,
+) => AuthProviderFactory;
+
 // Warning: (ae-missing-release-tag) "createOidcProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -434,6 +447,20 @@ export type OAuth2ProviderOptions = {
   signIn?: {
     resolver?: SignInResolver<OAuthResult>;
   };
+};
+
+// @public
+export type Oauth2ProxyProviderOptions<JWTPayload> = {
+  authHandler: AuthHandler<OAuth2ProxyResult<JWTPayload>>;
+  signIn: {
+    resolver: SignInResolver<OAuth2ProxyResult<JWTPayload>>;
+  };
+};
+
+// @public
+export type OAuth2ProxyResult<JWTPayload> = {
+  fullProfile: JWTPayload;
+  accessToken: string;
 };
 
 // Warning: (ae-missing-release-tag) "OAuthAdapter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -664,11 +691,7 @@ export type SignInInfo<TAuthResult> = {
 // @public
 export type SignInResolver<TAuthResult> = (
   info: SignInInfo<TAuthResult>,
-  context: {
-    tokenIssuer: TokenIssuer;
-    catalogIdentityClient: CatalogIdentityClient;
-    logger: Logger_2;
-  },
+  context: AuthContext,
 ) => Promise<BackstageSignInResult>;
 
 // Warning: (ae-missing-release-tag) "TokenIssuer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -704,5 +727,5 @@ export type WebMessageResponse =
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
 // src/providers/aws-alb/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "AwsAlbResult" needs to be exported by the entry point index.d.ts
 // src/providers/github/provider.d.ts:81:5 - (ae-forgotten-export) The symbol "StateEncoder" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:88:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
+// src/providers/types.d.ts:98:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
 ```

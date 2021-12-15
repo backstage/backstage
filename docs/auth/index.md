@@ -25,6 +25,7 @@ Backstage comes with many common authentication providers in the core library:
 - [Google](google/provider.md)
 - [Okta](okta/provider.md)
 - [OneLogin](onelogin/provider.md)
+- [OAuth2Proxy](oauth2-proxy/provider.md)
 
 These built-in providers handle the authentication flow for a particular service
 including required scopes, callbacks, etc. These providers are each added to a

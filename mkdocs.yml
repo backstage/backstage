@@ -144,6 +144,7 @@ nav:
           - Google: 'auth/google/provider.md'
           - Okta: 'auth/okta/provider.md'
           - OneLogin: 'auth/onelogin/provider.md'
+          - OAuth2Proxy: 'auth/oauth2-proxy/provider.md'
           - Bitbucket: 'auth/bitbucket/provider.md'
       - Adding authentication providers: 'auth/add-auth-provider.md'
       - Using authentication and identity: 'auth/using-auth.md'
