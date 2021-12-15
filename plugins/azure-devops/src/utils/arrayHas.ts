@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-export { PullRequestsPage } from './PullRequestsPage';
-export type { PullRequestColumnConfig } from './lib/types';
-export { FilterType } from './lib/filters';
-export type {
-  BaseFilter,
-  Filter,
-  PullRequestFilter,
-  AssignedToUserFilter,
-  CreatedByUserFilter,
-  AssignedToTeamFilter,
-  CreatedByTeamFilter,
-  AssignedToTeamsFilter,
-  CreatedByTeamsFilter,
-  AllFilter,
-} from './lib/filters';
+export function arrayHas<T>(arr: T[], value: T): boolean {
+  return new Set<T>(arr).has(value);
+}
+
+export function stringArrayHas(
+  arr: Array<string | undefined>,
+  value: string | undefined,
+  ignoreCase: boolean = false,
+): boolean {
+  if (ignoreCase) {
+    return arrayHas(
+      arr.map(a => a?.toLocaleLowerCase('en-US')),
+      value?.toLocaleLowerCase('en-US'),
+    );
+  }
+
+  return arrayHas(arr, value);
+}

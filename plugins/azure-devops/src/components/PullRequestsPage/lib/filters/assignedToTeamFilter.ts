@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-import { Filter, PullRequestFilter } from './filters';
+import { BaseFilter, FilterType, PullRequestFilter } from './types';
 
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
+import { stringArrayHas } from '../../../../utils';
 
-export interface PullRequestColumnConfig {
-  title: string;
-  filters: Filter[];
-  simplified?: boolean;
-}
+export type AssignedToTeamFilter = BaseFilter & {
+  type: FilterType.AssignedToTeam;
+  teamId: string;
+};
 
-export interface PullRequestGroupConfig {
-  title: string;
-  filter: PullRequestFilter;
-  simplified?: boolean;
-}
+export function createAssignedToTeamFilter(
+  filter: AssignedToTeamFilter,
+): PullRequestFilter {
+  return (pullRequest: DashboardPullRequest): boolean => {
+    const reviewerIds = pullRequest.reviewers?.map(reviewer => reviewer.id);
 
-export interface PullRequestGroup {
-  title: string;
-  pullRequests: DashboardPullRequest[];
-  simplified?: boolean;
+    if (!reviewerIds) {
+      return false;
+    }
+
+    return stringArrayHas(reviewerIds, filter.teamId, true);
+  };
 }

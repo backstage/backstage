@@ -19,24 +19,12 @@ import {
   PullRequestVoteStatus,
   Reviewer,
 } from '@backstage/plugin-azure-devops-common';
+import { Filter, createFilter } from './filters';
 import {
-  PullRequestFilter,
+  PullRequestColumnConfig,
   PullRequestGroup,
   PullRequestGroupConfig,
 } from './types';
-
-/**
- * Creates a filter that matches pull requests created by `userEmail`.
- * @param userEmail an email to filter by.
- * @returns a filter for pull requests created by `userEmail`.
- */
-export function getCreatedByUserFilter(
-  userEmail: string | undefined,
-): PullRequestFilter {
-  return (pullRequest: DashboardPullRequest): boolean =>
-    pullRequest.createdBy?.uniqueName?.toLocaleLowerCase() ===
-    userEmail?.toLocaleLowerCase();
-}
 
 /**
  * Filters a reviewer based on vote status and if the reviewer is required.
@@ -97,9 +85,13 @@ export function arrayExtract<T>(arr: T[], filter: (value: T) => unknown): T[] {
  * @returns a list of pull request groups.
  */
 export function getPullRequestGroups(
-  pullRequests: DashboardPullRequest[],
+  pullRequests: DashboardPullRequest[] | undefined,
   configs: PullRequestGroupConfig[],
-): PullRequestGroup[] {
+): PullRequestGroup[] | undefined {
+  if (!pullRequests) {
+    return undefined;
+  }
+
   const remainingPullRequests: DashboardPullRequest[] = [...pullRequests];
   const pullRequestGroups: PullRequestGroup[] = [];
 
@@ -114,4 +106,18 @@ export function getPullRequestGroups(
   });
 
   return pullRequestGroups;
+}
+
+export function getPullRequestGroupConfigs(
+  columnConfigs: PullRequestColumnConfig[],
+  filterProcessor: (filters: Filter[]) => Filter[],
+): PullRequestGroupConfig[] {
+  return columnConfigs.map(columnConfig => {
+    const filters = filterProcessor(columnConfig.filters);
+    return {
+      title: columnConfig.title,
+      filter: createFilter(filters),
+      simplified: columnConfig.simplified,
+    };
+  });
 }
