@@ -208,6 +208,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.mycompany.com/projects/backstage/repos/backstage/browse/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -217,6 +218,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.mycompany.com/projects/demo/repos/demo/browse/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -242,6 +244,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.mycompany.com/projects/backstage/repos/techdocs-cli/browse/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -263,6 +266,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.mycompany.com/projects/backstage/repos/test/browse/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -291,6 +295,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.mycompany.com/projects/backstage/repos/techdocs-cli/browse/catalog-info.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -334,6 +339,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.org/myworkspace/repository-one/src/master/catalog-info.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -343,6 +349,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.org/myworkspace/repository-two/src/master/catalog-info.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -370,6 +377,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.org/myworkspace/repository-one/src/master/my/nested/path/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -379,6 +387,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.org/myworkspace/repository-two/src/master/my/nested/path/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -406,6 +415,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.org/myworkspace/repository-one/src/master/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -415,6 +425,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.org/myworkspace/repository-two/src/master/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -441,6 +452,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.org/myworkspace/repository-one/src/master/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -468,6 +480,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.org/myworkspace/repository-three/src/master/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -493,6 +506,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.org/myworkspace/repository-one/src/master/catalog-info.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -528,6 +542,7 @@ describe('BitbucketDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://bitbucket.org/myworkspace/repository-one/src/master/catalog-info.yaml',
+          presence: 'optional',
         },
         optional: true,
       });

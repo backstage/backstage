@@ -157,6 +157,7 @@ describe('GithubDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://github.com/backstage/backstage/blob/master/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -165,6 +166,7 @@ describe('GithubDiscoveryProcessor', () => {
         location: {
           type: 'url',
           target: 'https://github.com/backstage/demo/blob/master/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -197,6 +199,7 @@ describe('GithubDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://github.com/backstage/tech-docs/blob/main/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -251,6 +254,7 @@ describe('GithubDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -306,6 +310,7 @@ describe('GithubDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://github.com/backstage/techdocs-cli/blob/master/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -315,6 +320,7 @@ describe('GithubDiscoveryProcessor', () => {
           type: 'url',
           target:
             'https://github.com/backstage/techdocs-container/blob/master/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
@@ -370,6 +376,7 @@ describe('GithubDiscoveryProcessor', () => {
         location: {
           type: 'url',
           target: 'https://github.com/backstage/test/blob/master/catalog.yaml',
+          presence: 'optional',
         },
         optional: true,
       });
