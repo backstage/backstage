@@ -395,10 +395,6 @@ export interface ElementCollection {
   }): ElementCollection;
 }
 
-// @public @deprecated (undocumented)
-type Error_2 = ErrorApiError;
-export { Error_2 as Error };
-
 // @public
 export type ErrorApi = {
   post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
@@ -429,9 +425,6 @@ export type ErrorBoundaryFallbackProps = {
   error: Error;
   resetError: () => void;
 };
-
-// @public @deprecated (undocumented)
-export type ErrorContext = ErrorApiErrorContext;
 
 // @public
 export type Extension<T> = {
