@@ -110,7 +110,7 @@ export class CatalogClient implements CatalogApi {
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>> {
-    const { filter = [], fields = [] } = request ?? {};
+    const { filter = [], fields = [], offset, limit, after } = request ?? {};
     const filterItems = [filter].flat();
     const params: string[] = [];
 
@@ -139,6 +139,16 @@ export class CatalogClient implements CatalogApi {
 
     if (fields.length) {
       params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
+    }
+
+    if (offset !== undefined) {
+      params.push(`offset=${offset}`);
+    }
+    if (limit !== undefined) {
+      params.push(`limit=${limit}`);
+    }
+    if (after !== undefined) {
+      params.push(`after=${encodeURIComponent(after)}`);
     }
 
     const query = params.length ? `?${params.join('&')}` : '';
