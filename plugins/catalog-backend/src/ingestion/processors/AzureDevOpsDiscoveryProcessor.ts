@@ -95,6 +95,7 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
           {
             type: 'url',
             target: `${baseUrl}/${org}/${project}/_git/${file.repository.name}?path=${file.path}`,
+            presence: 'optional',
           },
           // Not all locations may actually exist, since the user defined them as a wildcard pattern.
           // Thus, we emit them as optional and let the downstream processor find them while not outputting
