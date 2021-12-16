@@ -2,6 +2,9 @@
 
 Welcome to the apache-airflow plugin!
 
+This plugin serves as frontend to the REST API exposed by Apache Airflow.  
+Note only [Airflow v2 (and later)](https://airflow.apache.org/docs/apache-airflow/stable/deprecated-rest-api-ref.html) integrate with the plugin.
+
 ## Feature Requests & Ideas
 
 - [ ] Add support for running multiple instances of Airflow for monitoring
