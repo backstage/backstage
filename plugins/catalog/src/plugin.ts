@@ -22,7 +22,6 @@ import {
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
-import { CatalogClientWrapper } from './CatalogClientWrapper';
 import { createComponentRouteRef, viewTechDocRouteRef } from './routes';
 import {
   createApiFactory,
@@ -30,7 +29,7 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
-  identityApiRef,
+  fetchApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
 
@@ -39,14 +38,13 @@ export const catalogPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: catalogApiRef,
-      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-      factory: ({ discoveryApi, identityApi }) =>
-        new CatalogClientWrapper({
-          client: new CatalogClient({ discoveryApi }),
-          identityApi,
-        }),
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new CatalogClient({ discoveryApi, fetchApi }),
     }),
-
     createApiFactory({
       api: starredEntitiesApiRef,
       deps: { storageApi: storageApiRef },

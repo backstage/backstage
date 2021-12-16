@@ -507,6 +507,14 @@ export enum FeatureFlagState {
 }
 
 // @public
+export type FetchApi = {
+  fetch: typeof fetch;
+};
+
+// @public
+export const fetchApiRef: ApiRef<FetchApi>;
+
+// @public
 export function getComponentData<T>(
   node: ReactNode,
   type: string,

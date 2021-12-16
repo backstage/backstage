@@ -71,7 +71,7 @@ export interface CatalogApi {
 
 // @public
 export class CatalogClient implements CatalogApi {
-  constructor(options: { discoveryApi: DiscoveryApi });
+  constructor(options: { discoveryApi: DiscoveryApi; fetchApi?: FetchApi });
   addLocation(
     { type, target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,
@@ -155,4 +155,9 @@ export type DiscoveryApi = {
 // @public
 export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
+
+// @public
+export type FetchApi = {
+  fetch: typeof fetch;
+};
 ```

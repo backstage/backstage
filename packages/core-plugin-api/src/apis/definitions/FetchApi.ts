@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-// This folder contains implementations for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
+import { ApiRef, createApiRef } from '../system';
 
-export * from './auth';
+/**
+ * A wrapper for the fetch API, that has additional behaviors such as the
+ * ability to automatically inject auth information where necessary.
+ *
+ * @public
+ */
+export type FetchApi = {
+  fetch: typeof fetch;
+};
 
-export * from './AlertApi';
-export * from './AnalyticsApi';
-export * from './AppThemeApi';
-export * from './ConfigApi';
-export * from './DiscoveryApi';
-export * from './ErrorApi';
-export * from './FeatureFlagsApi';
-export * from './FetchApi';
-export * from './OAuthRequestApi';
-export * from './StorageApi';
+/**
+ * A wrapper for the fetch API, that has additional behaviors such as the
+ * ability to automatically inject auth information where necessary.
+ *
+ * @public
+ */
+export const fetchApiRef: ApiRef<FetchApi> = createApiRef({
+  id: 'core.fetch',
+});
