@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { IconComponent, useApp } from '@backstage/core-plugin-api';
 import MuiBrokenImageIcon from '@material-ui/icons/BrokenImage';
 import React, { ComponentProps } from 'react';
-import { useApp, IconComponent } from '@backstage/core-plugin-api';
 
 type IconComponentProps = ComponentProps<IconComponent>;
 
@@ -27,7 +27,13 @@ function useSystemIcon(key: string, props: IconComponentProps) {
 }
 
 // Should match the list of overridable system icon keys in @backstage/core-app-api
-/** @public */
+/**
+ * Broken Image {@link https://materialui.co/icon/broken-image | Icon} from material UI library
+ *
+ * @public
+ * @remarks
+ *
+ */
 export function BrokenImageIcon(props: IconComponentProps) {
   return useSystemIcon('brokenImage', props);
 }
