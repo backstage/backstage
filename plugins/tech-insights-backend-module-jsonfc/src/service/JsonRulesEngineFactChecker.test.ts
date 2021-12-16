@@ -142,16 +142,14 @@ const latestSchemasMock = jest.fn().mockImplementation(() => [
   },
 ]);
 const factsBetweenTimestampsByIdsMock = jest.fn();
-const latestFactsByIdsMock = jest.fn().mockImplementation(() =>
-  Promise.resolve({
-    ['test-factretriever']: {
-      id: 'test-factretriever',
-      facts: {
-        testnumberfact: 3,
-      },
+const latestFactsByIdsMock = jest.fn().mockResolvedValue({
+  ['test-factretriever']: {
+    id: 'test-factretriever',
+    facts: {
+      testnumberfact: 3,
     },
-  }),
-);
+  },
+});
 const mockCheckRegistry = {
   getAll(checks: string[]) {
     return checks.flatMap(check => testChecks[check]);
