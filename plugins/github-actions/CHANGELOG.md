@@ -1,5 +1,16 @@
 # @backstage/plugin-github-actions
 
+## 0.4.27
+
+### Patch Changes
+
+- 89bd772b00: Show empty state only when workflow API call has completed
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.1
+  - @backstage/core-components@0.8.1
+  - @backstage/catalog-model@0.9.8
+  - @backstage/plugin-catalog-react@0.6.7
+
 ## 0.4.26
 
 ### Patch Changes

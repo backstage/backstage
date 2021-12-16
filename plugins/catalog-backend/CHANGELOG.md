@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend
 
+## 0.19.2
+
+### Patch Changes
+
+- 3368f27aef: Fixed the handling of optional locations so that the catalog no longer logs `NotFoundError`s for missing optional locations.
+- Updated dependencies
+  - @backstage/backend-common@0.9.14
+  - @backstage/catalog-model@0.9.8
+
 ## 0.19.1
 
 ### Patch Changes
