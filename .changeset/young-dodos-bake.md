@@ -1,5 +1,5 @@
 ---
-'@backstage/core-plugin-api': patch
+'@backstage/core-plugin-api': minor
 ---
 
-Remove deprecated types `ApiRefType` and `ApiRefsToTypes`
+Removed deprecated types `ApiRefType` and `ApiRefsToTypes`

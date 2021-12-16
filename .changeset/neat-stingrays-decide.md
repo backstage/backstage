@@ -1,5 +1,5 @@
 ---
-'@backstage/test-utils': patch
+'@backstage/test-utils': minor
 ---
 
-Remove deprecated `Keyboard` class which has been superseded by `@testing-library/user-event#userEvent`
+Removed deprecated `Keyboard` class which has been superseded by `@testing-library/user-event#userEvent`
