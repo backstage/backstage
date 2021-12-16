@@ -53,6 +53,7 @@ configs
 const
 cookiecutter
 cron
+cronjobs
 css
 Datadog
 dataflow
