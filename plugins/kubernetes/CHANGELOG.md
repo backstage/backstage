@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes
 
+## 0.5.1
+
+### Patch Changes
+
+- 6f0c850a86: Fixed styling bug for the CronJobsAccordions and updated Completed pods to display a green dot.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.1
+  - @backstage/core-components@0.8.1
+  - @backstage/catalog-model@0.9.8
+  - @backstage/plugin-catalog-react@0.6.7
+
 ## 0.5.0
 
 ### Minor Changes
