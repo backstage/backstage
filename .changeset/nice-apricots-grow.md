@@ -1,5 +1,5 @@
 ---
-'@backstage/core-plugin-api': patch
+'@backstage/core-plugin-api': minor
 ---
 
 - Removed deprecated option `description` from `ApiRefConfig`
