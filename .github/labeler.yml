@@ -8,3 +8,4 @@ scaffolder:
 search:
   - plugins/search/**/*
   - plugins/search-*/**/*
+  - packages/search-*/**/*
