@@ -121,6 +121,9 @@ export type CatalogEntitiesRequest = {
     | Record<string, string | symbol | (string | symbol)[]>
     | undefined;
   fields?: string[] | undefined;
+  offset?: number;
+  limit?: number;
+  after?: string;
 };
 
 // @public
