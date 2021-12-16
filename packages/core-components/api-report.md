@@ -89,7 +89,7 @@ export type BackstageOverrides = Overrides & {
 // @public (undocumented)
 export type BoldHeaderClassKey = 'root' | 'title' | 'subheader';
 
-// @public (undocumented)
+// @public
 export function BottomLink(props: BottomLinkProps): JSX.Element;
 
 // @public (undocumented)
