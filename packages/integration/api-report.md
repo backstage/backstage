@@ -208,9 +208,7 @@ export class GithubCredentialsProvider implements IGithubCredentialsProvider {
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
-// Warning: (ae-missing-release-tag) "GithubCredentialsProviderFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class GithubCredentialsProviderFactory
   implements IGithubCredentialsProviderFactory
 {

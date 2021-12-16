@@ -1047,9 +1047,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// Warning: (ae-missing-release-tag) "GithubDiscoveryProcessorBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class GithubDiscoveryProcessorBuilder
   implements CatalogProcessorBuilder
 {
@@ -1160,9 +1158,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// Warning: (ae-missing-release-tag) "GithubOrgReaderProcessorBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class GithubOrgReaderProcessorBuilder
   implements CatalogProcessorBuilder
 {
