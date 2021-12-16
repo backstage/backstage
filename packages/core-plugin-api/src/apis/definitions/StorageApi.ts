@@ -85,12 +85,15 @@ export interface StorageApi {
    *
    * @remarks
    *
-   * The returned observable will immediately emit a value snapshot when
-   * subscribed to, even if the presence of the value is unknown at that time.
+   * The observable will only emit values when the value changes in the underlying
+   * storage, although multiple values with the same shape may be emitted in a row.
    *
-   * The values emitted by the observe method aim to keep reference equality
-   * across snapshots if the value is unchanged. This means that it is important
-   * not to mutate the returned values, and they may be frozen as a precaution.
+   * If a {@link StorageApi.snapshot} of a key is retrieved and the presence is
+   * `'unknown'`, then you are guaranteed to receive a snapshot with a known
+   * presence, as long as you observe the key within the same tick.
+   *
+   * Since the emitted values are shared across all subscribers, it is important
+   * not to mutate the returned values. The values may be frozen as a precaution.
    *
    * @param key - Unique key associated with the data
    */
