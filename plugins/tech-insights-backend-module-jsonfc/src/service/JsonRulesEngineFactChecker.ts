@@ -88,7 +88,13 @@ export class JsonRulesEngineFactChecker
     techInsightChecks.forEach(techInsightCheck => {
       const rule = techInsightCheck.rule;
       rule.name = techInsightCheck.id;
-      engine.addRule({ ...techInsightCheck.rule, event: noopEvent });
+      // Only run checks that have all the facts available:
+      const hasAllFacts = techInsightCheck.factIds.every(
+        retrieverId => !!facts[retrieverId],
+      );
+      if (hasAllFacts) {
+        engine.addRule({ ...techInsightCheck.rule, event: noopEvent });
+      }
     });
     const factValues = Object.values(facts).reduce(
       (acc, it) => ({ ...acc, ...it.facts }),
