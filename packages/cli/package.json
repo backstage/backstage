@@ -33,7 +33,7 @@
     "@backstage/config-loader": "^0.8.1",
     "@backstage/errors": "^0.1.5",
     "@backstage/types": "^0.1.1",
-    "@hot-loader/react-dom": "^16.13.0",
+    "@hot-loader/react-dom": "^17.0.1",
     "@lerna/package-graph": "^4.0.0",
     "@lerna/project": "^4.0.0",
     "@octokit/request": "^5.4.12",
