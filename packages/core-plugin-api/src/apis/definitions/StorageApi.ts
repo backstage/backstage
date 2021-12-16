@@ -38,7 +38,10 @@ export type StorageValueSnapshot<TValue extends JsonValue> =
       newValue?: TValue;
     };
 
-/** @deprecated Use StorageValueSnapshot instead */
+/**
+ * @public
+ * @deprecated Use StorageValueSnapshot instead
+ */
 export type StorageValueChange<TValue extends JsonValue> =
   StorageValueSnapshot<TValue>;
 
