@@ -12,6 +12,7 @@ Atlassian
 automations
 autoscaling
 Autoscaling
+autoselect
 Avro
 backrub
 Bigtable
@@ -53,6 +54,7 @@ configs
 const
 cookiecutter
 cron
+cronjobs
 css
 Datadog
 dataflow
