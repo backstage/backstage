@@ -24,12 +24,7 @@ import { NEWRELIC_GUID } from './constants';
 export const isNewRelicDashboardAvailable = (entity: Entity) =>
   Boolean(entity?.metadata?.annotations?.[NEWRELIC_GUID]);
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
-
-export const Router = (_props: Props) => {
+export const Router = () => {
   const { entity } = useEntity();
 
   if (isNewRelicDashboardAvailable(entity)) {
@@ -40,7 +35,7 @@ export const Router = (_props: Props) => {
     <>
       <MissingAnnotationEmptyState annotation={NEWRELIC_GUID} />
       <Button variant="contained" color="primary" href="#">
-        Read NewRelic Dashboard Plugin Docs
+        Read New Relic Dashboard Plugin Docs
       </Button>
     </>
   );
