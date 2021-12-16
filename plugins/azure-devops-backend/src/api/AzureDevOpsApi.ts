@@ -28,6 +28,7 @@ import {
   PullRequestOptions,
   RepoBuild,
   Team,
+  TeamMember,
 } from '@backstage/plugin-azure-devops-common';
 import {
   GitPullRequest,
@@ -40,9 +41,9 @@ import {
   getArtifactId,
 } from '../utils';
 
+import { TeamMember as AdoTeamMember } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import { Logger } from 'winston';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
-import { TeamMember } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import { WebApi } from 'azure-devops-node-api';
 import { WebApiTeam } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 
@@ -228,22 +229,19 @@ export class AzureDevOpsApi {
     const client = await this.webApi.getCoreApi();
     const webApiTeams: WebApiTeam[] = await client.getAllTeams();
 
-    const teams: Team[] = await Promise.all(
-      webApiTeams.map(async team => ({
-        id: team.id,
-        name: team.name,
-        memberIds: await this.getTeamMemberIds(team),
-      })),
-    );
+    const teams: Team[] = webApiTeams.map(team => ({
+      id: team.id,
+      name: team.name,
+      projectId: team.projectId,
+      projectName: team.projectName,
+    }));
 
     return teams.sort((a, b) =>
       a.name && b.name ? a.name.localeCompare(b.name) : 0,
     );
   }
 
-  private async getTeamMemberIds(
-    team: WebApiTeam,
-  ): Promise<string[] | undefined> {
+  public async getTeamMembers(team: Team): Promise<TeamMember[] | undefined> {
     this.logger?.debug(`Getting team member ids for team '${team.name}'.`);
 
     if (!team.projectId || !team.id) {
@@ -252,15 +250,17 @@ export class AzureDevOpsApi {
 
     const client = await this.webApi.getCoreApi();
 
-    const teamMembers: TeamMember[] =
+    const teamMembers: AdoTeamMember[] =
       await client.getTeamMembersWithExtendedProperties(
         team.projectId,
         team.id,
       );
 
-    return teamMembers
-      .map(teamMember => teamMember.identity?.id)
-      .filter((id): id is string => Boolean(id));
+    return teamMembers.map(teamMember => ({
+      id: teamMember.identity?.id,
+      displayName: teamMember.identity?.displayName,
+      uniqueName: teamMember.identity?.uniqueName,
+    }));
   }
 
   public async getBuildDefinitions(

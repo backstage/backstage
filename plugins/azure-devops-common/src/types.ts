@@ -178,7 +178,16 @@ export interface Repository {
 export interface Team {
   id?: string;
   name?: string;
-  memberIds?: string[];
+  projectId?: string;
+  projectName?: string;
+  members?: string[];
+}
+
+export interface TeamMember {
+  id?: string;
+  displayName?: string;
+  uniqueName?: string;
+  memberOf?: string[];
 }
 
 /**
