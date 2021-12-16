@@ -31,6 +31,7 @@ export {
   EntityPickerFieldExtension,
   EntityNamePickerFieldExtension,
   OwnerPickerFieldExtension,
+  OwnedEntityPickerFieldExtension,
   RepoUrlPickerFieldExtension,
   ScaffolderPage,
   scaffolderPlugin as plugin,
@@ -42,6 +43,7 @@ export {
   OwnerPicker,
   RepoUrlPicker,
   TextValuePicker,
+  OwnedEntityPicker,
 } from './components/fields';
 export { FavouriteTemplate } from './components/FavouriteTemplate';
 export { TemplateList } from './components/TemplateList';

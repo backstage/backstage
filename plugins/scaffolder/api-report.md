@@ -96,6 +96,24 @@ export type FieldExtensionOptions<T = any> = {
   validation?: CustomFieldValidator<T>;
 };
 
+// Warning: (ae-missing-release-tag) "OwnedEntityPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const OwnedEntityPicker: ({
+  onChange,
+  schema: { title, description },
+  required,
+  uiSchema,
+  rawErrors,
+  formData,
+  idSchema,
+}: FieldProps<string>) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "OwnedEntityPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const OwnedEntityPickerFieldExtension: () => null;
+
 // Warning: (ae-missing-release-tag) "OwnerPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
