@@ -136,6 +136,11 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
   }
 }
 
+/**
+ * Builds GitHub org reader processors
+ *
+ * @public
+ */
 export class GithubOrgReaderProcessorBuilder
   implements CatalogProcessorBuilder
 {

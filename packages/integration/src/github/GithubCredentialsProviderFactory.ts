@@ -30,6 +30,12 @@ export interface IGithubCredentialsProviderFactory {
   create(opts: any): IGithubCredentialsProvider;
 }
 
+/**
+ * Default factory implementation to retrieve credentials using the app or token config.
+ *
+ * @public
+ *
+ */
 export class GithubCredentialsProviderFactory
   implements IGithubCredentialsProviderFactory
 {

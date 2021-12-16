@@ -193,6 +193,11 @@ export function escapeRegExp(str: string): RegExp {
   return new RegExp(`^${str.replace(/\*/g, '.*')}$`);
 }
 
+/**
+ * Builder class to create GitHub discovery processors
+ *
+ * @public
+ **/
 export class GithubDiscoveryProcessorBuilder
   implements CatalogProcessorBuilder
 {

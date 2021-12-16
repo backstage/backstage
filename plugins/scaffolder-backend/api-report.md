@@ -14,6 +14,7 @@ import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-back
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
+import { IGithubCredentialsProviderFactory } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
@@ -70,6 +71,7 @@ export const createBuiltinActions: (options: {
   catalogClient: CatalogApi;
   containerRunner: ContainerRunner;
   config: Config;
+  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
 }) => TemplateAction<any>[];
 
 // Warning: (ae-missing-release-tag) "createCatalogRegisterAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -123,6 +125,7 @@ export const createFilesystemRenameAction: () => TemplateAction<any>;
 // @public (undocumented)
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrationRegistry;
+  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
 }): TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createGithubWebhookAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -131,6 +134,7 @@ export function createGithubActionsDispatchAction(options: {
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
+  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
 }): TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createPublishAzureAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -160,6 +164,7 @@ export function createPublishFileAction(): TemplateAction<any>;
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
+  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
 }): TemplateAction<any>;
 
 // Warning: (ae-forgotten-export) The symbol "CreateGithubPullRequestActionOptions" needs to be exported by the entry point index.d.ts
@@ -169,6 +174,7 @@ export function createPublishGithubAction(options: {
 export const createPublishGithubPullRequestAction: ({
   integrations,
   clientFactory,
+  githubCredentialsProviderFactory,
 }: CreateGithubPullRequestActionOptions) => TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createPublishGitlabAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -274,7 +280,10 @@ export function fetchContents({
 //
 // @public
 export class OctokitProvider {
-  constructor(integrations: ScmIntegrationRegistry);
+  constructor(
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+    integrations: ScmIntegrationRegistry,
+  );
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (ae-forgotten-export) The symbol "OctokitIntegration" needs to be exported by the entry point index.d.ts
   getOctokit(repoUrl: string): Promise<OctokitIntegration>;
@@ -292,6 +301,8 @@ export interface RouterOptions {
   containerRunner: ContainerRunner;
   // (undocumented)
   database: PluginDatabaseManager;
+  // (undocumented)
+  githubCredentialsProviderFactory?: IGithubCredentialsProviderFactory;
   // (undocumented)
   logger: Logger_2;
   // (undocumented)

@@ -17,6 +17,7 @@ import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
 import { GitHubIntegrationConfig } from '@backstage/integration';
+import { IGithubCredentialsProviderFactory } from '@backstage/integration';
 import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -352,6 +353,18 @@ export type CatalogProcessor = {
     location: LocationSpec,
     emit: CatalogProcessorEmit,
   ): Promise<void>;
+};
+
+// Warning: (ae-missing-release-tag) "CatalogProcessorBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CatalogProcessorBuilder = {
+  fromConfig(
+    config: Config,
+    options: {
+      logger: Logger_2;
+    },
+  ): CatalogProcessor;
 };
 
 // @public
@@ -1014,7 +1027,11 @@ function generalError(
 //
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
-  constructor(options: { integrations: ScmIntegrations; logger: Logger_2 });
+  constructor(options: {
+    integrations: ScmIntegrations;
+    logger: Logger_2;
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  });
   // (undocumented)
   static fromConfig(
     config: Config,
@@ -1030,12 +1047,31 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
+// Warning: (ae-missing-release-tag) "GithubDiscoveryProcessorBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class GithubDiscoveryProcessorBuilder
+  implements CatalogProcessorBuilder
+{
+  constructor(
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+  );
+  // (undocumented)
+  fromConfig(
+    config: Config,
+    options: {
+      logger: Logger_2;
+    },
+  ): GithubDiscoveryProcessor;
+}
+
 // @alpha
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrations;
     logger: Logger_2;
     orgs: GithubMultiOrgConfig;
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
   });
   // (undocumented)
   static fromConfig(
@@ -1052,6 +1088,26 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
+// Warning: (ae-missing-release-tag) "GithubMultiOrgReaderProcessorBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class GithubMultiOrgReaderProcessorBuilder
+  implements CatalogProcessorBuilder
+{
+  constructor(
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+  );
+  // Warning: (ae-incompatible-release-tags) The symbol "fromConfig" is marked as @public, but its signature references "GithubMultiOrgReaderProcessor" which is marked as @alpha
+  //
+  // (undocumented)
+  fromConfig(
+    config: Config,
+    options: {
+      logger: Logger_2;
+    },
+  ): GithubMultiOrgReaderProcessor;
+}
+
 // Warning: (ae-missing-release-tag) "GitHubOrgEntityProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -1061,6 +1117,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     orgUrl: string;
     gitHubConfig: GitHubIntegrationConfig;
     logger: Logger_2;
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
   });
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -1083,7 +1140,11 @@ export class GitHubOrgEntityProvider implements EntityProvider {
 //
 // @public
 export class GithubOrgReaderProcessor implements CatalogProcessor {
-  constructor(options: { integrations: ScmIntegrations; logger: Logger_2 });
+  constructor(options: {
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+    integrations: ScmIntegrations;
+    logger: Logger_2;
+  });
   // (undocumented)
   static fromConfig(
     config: Config,
@@ -1097,6 +1158,24 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     _optional: boolean,
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
+}
+
+// Warning: (ae-missing-release-tag) "GithubOrgReaderProcessorBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class GithubOrgReaderProcessorBuilder
+  implements CatalogProcessorBuilder
+{
+  constructor(
+    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+  );
+  // (undocumented)
+  fromConfig(
+    config: Config,
+    options: {
+      logger: Logger_2;
+    },
+  ): GithubOrgReaderProcessor;
 }
 
 // Warning: (ae-missing-release-tag) "GitLabDiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1577,7 +1656,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
 // src/catalog/types.d.ts:94:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/catalog/types.d.ts:95:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/catalog/types.d.ts:96:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:23:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
+// src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:24:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
 // src/ingestion/types.d.ts:8:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/legacy/database/types.d.ts:98:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/legacy/database/types.d.ts:104:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

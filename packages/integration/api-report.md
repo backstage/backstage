@@ -199,19 +199,23 @@ export type GithubCredentials = {
 
 // @public
 export class GithubCredentialsProvider implements IGithubCredentialsProvider {
+  constructor(
+    githubAppCredentialsMux: GithubAppCredentialsMux,
+    token?: string | undefined,
+  );
   // (undocumented)
   static create(config: GitHubIntegrationConfig): IGithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
-// @public
-export class GithubCredentialsProviderFactory {
+// Warning: (ae-missing-release-tag) "GithubCredentialsProviderFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class GithubCredentialsProviderFactory
+  implements IGithubCredentialsProviderFactory
+{
   // (undocumented)
-  static create(config: GitHubIntegrationConfig): IGithubCredentialsProvider;
-  // (undocumented)
-  static provider: typeof GithubCredentialsProvider;
-  // (undocumented)
-  static setProvider(provider: any): void;
+  create(config: GitHubIntegrationConfig): IGithubCredentialsProvider;
 }
 
 // @public
@@ -286,6 +290,12 @@ export type GoogleGcsIntegrationConfig = {
 export interface IGithubCredentialsProvider {
   // (undocumented)
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
+}
+
+// @public
+export interface IGithubCredentialsProviderFactory {
+  // (undocumented)
+  create(opts: any): IGithubCredentialsProvider;
 }
 
 // @public
