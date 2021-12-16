@@ -73,28 +73,6 @@ describe('sqlite3', () => {
       });
     });
 
-    it('builds a persistent connection per database', () => {
-      expect(
-        buildSqliteDatabaseConfig(
-          createConfig({
-            filename: path.join('path', 'to', 'foo'),
-          }),
-          {
-            connection: {
-              database: 'my-database',
-            },
-          },
-        ),
-      ).toEqual({
-        client: 'sqlite3',
-        connection: {
-          filename: path.join('path', 'to', 'foo', 'my-database.sqlite'),
-          database: 'my-database',
-        },
-        useNullAsDefault: true,
-      });
-    });
-
     it('replaces the connection with an override', () => {
       expect(
         buildSqliteDatabaseConfig(createConfig(':memory:'), {

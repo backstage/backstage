@@ -1,5 +1,15 @@
 # @backstage/core-app-api
 
+## 0.2.1
+
+### Patch Changes
+
+- c11ce4f552: Deprecated `Auth0Auth`, pointing to using `OAuth2` directly instead.
+- 9d6503e86c: Switched out usage of deprecated `OAuthRequestApi` types from `@backstage/core-plugin-api`.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.1
+  - @backstage/core-components@0.8.1
+
 ## 0.2.0
 
 ### Minor Changes

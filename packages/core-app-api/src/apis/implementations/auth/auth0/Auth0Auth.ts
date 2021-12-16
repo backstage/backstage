@@ -28,6 +28,23 @@ const DEFAULT_PROVIDER = {
  * Implements the OAuth flow to Auth0 products.
  *
  * @public
+ * @deprecated Use {@link OAuth2} instead
+ *
+ * @example
+ *
+ * ```ts
+ * OAuth2.create({
+ *   discoveryApi,
+ *   oauthRequestApi,
+ *   provider: {
+ *     id: 'auth0',
+ *     title: 'Auth0',
+ *     icon: () => null,
+ *   },
+ *   defaultScopes: ['openid', 'email', 'profile'],
+ *   environment: configApi.getOptionalString('auth.environment'),
+ * })
+ * ```
  */
 export default class Auth0Auth {
   static create(options: OAuthApiCreateOptions): typeof auth0AuthApiRef.T {

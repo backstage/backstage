@@ -68,7 +68,7 @@ export const createBuiltinActions: (options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   catalogClient: CatalogApi;
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
   config: Config;
 }) => TemplateAction<any>[];
 
@@ -178,6 +178,13 @@ export function createPublishGitlabAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
 }): TemplateAction<any>;
+
+// Warning: (ae-missing-release-tag) "createPublishGitlabMergeRequestAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createPublishGitlabMergeRequestAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -289,7 +296,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)

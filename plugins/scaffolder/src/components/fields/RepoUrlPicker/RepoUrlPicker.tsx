@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useEffect } from 'react';
-import { FieldProps } from '@rjsf/core';
-import { scaffolderApiRef } from '../../../api';
+import {
+  Progress,
+  Select,
+  SelectedItems,
+  SelectItem,
+} from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import { useAsync } from 'react-use';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-
-import { useApi } from '@backstage/core-plugin-api';
-import { Progress } from '@backstage/core-components';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import { FieldProps } from '@rjsf/core';
+import React, { useCallback, useEffect } from 'react';
+import { useAsync } from 'react-use';
+import { scaffolderApiRef } from '../../../api';
 
 function splitFormData(url: string | undefined, allowedOwners?: string[]) {
   let host = undefined;
@@ -106,10 +109,10 @@ export const RepoUrlPicker = ({
     allowedOwners,
   );
   const updateHost = useCallback(
-    (evt: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    (value: SelectedItems) => {
       onChange(
         serializeFormData({
-          host: evt.target.value as string,
+          host: value as string,
           owner,
           repo,
           organization,
@@ -119,6 +122,21 @@ export const RepoUrlPicker = ({
       );
     },
     [onChange, owner, repo, organization, workspace, project],
+  );
+
+  const updateOwnerSelect = useCallback(
+    (value: SelectedItems) =>
+      onChange(
+        serializeFormData({
+          host,
+          owner: value as string,
+          repo,
+          organization,
+          workspace,
+          project,
+        }),
+      ),
+    [onChange, host, repo, organization, workspace, project],
   );
 
   const updateOwner = useCallback(
@@ -224,6 +242,16 @@ export const RepoUrlPicker = ({
     return <Progress />;
   }
 
+  const hostsOptions: SelectItem[] = integrations
+    ? integrations
+        .filter(i => allowedHosts?.includes(i.host))
+        .map(i => ({ label: i.title, value: i.host }))
+    : [{ label: 'Loading...', value: 'loading' }];
+
+  const ownersOptions: SelectItem[] = allowedOwners
+    ? allowedOwners.map(i => ({ label: i, value: i }))
+    : [{ label: 'Loading...', value: 'loading' }];
+
   return (
     <>
       <FormControl
@@ -231,20 +259,15 @@ export const RepoUrlPicker = ({
         required
         error={rawErrors?.length > 0 && !host}
       >
-        <InputLabel htmlFor="hostInput">Host</InputLabel>
-        <Select native id="hostInput" onChange={updateHost} value={host}>
-          {integrations ? (
-            integrations
-              .filter(i => allowedHosts?.includes(i.host))
-              .map(i => (
-                <option key={i.host} value={i.host}>
-                  {i.title}
-                </option>
-              ))
-          ) : (
-            <p>loading</p>
-          )}
-        </Select>
+        <Select
+          native
+          disabled={hostsOptions.length === 1}
+          label="Host"
+          onChange={updateHost}
+          selected={host}
+          items={hostsOptions}
+        />
+
         <FormHelperText>
           The host where the repository will be created
         </FormHelperText>
@@ -330,24 +353,15 @@ export const RepoUrlPicker = ({
               required
               error={rawErrors?.length > 0 && !owner}
             >
-              <InputLabel htmlFor="ownerInput">Owner Available</InputLabel>
               <Select
                 native
-                id="ownerInput"
-                onChange={updateOwner}
-                value={owner}
-              >
-                {allowedOwners ? (
-                  allowedOwners.map(i => (
-                    <option key={i} value={i}>
-                      {i}
-                    </option>
-                  ))
-                ) : (
-                  <p>loading</p>
-                )}
-                ;
-              </Select>
+                label="Owner Available"
+                onChange={updateOwnerSelect}
+                disabled={ownersOptions.length === 1}
+                selected={owner}
+                items={ownersOptions}
+              />
+
               <FormHelperText>
                 The organization, user or project that this repo will belong to
               </FormHelperText>

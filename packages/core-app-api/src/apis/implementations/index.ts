@@ -27,5 +27,6 @@ export * from './ConfigApi';
 export * from './DiscoveryApi';
 export * from './ErrorApi';
 export * from './FeatureFlagsApi';
+export * from './FetchApi';
 export * from './OAuthRequestApi';
 export * from './StorageApi';

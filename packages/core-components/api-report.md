@@ -814,13 +814,10 @@ export type ResponseErrorPanelClassKey = 'text' | 'divider';
 export function RoutedTabs(props: { routes: SubRoute_2[] }): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SelectProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SelectComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function Select(props: SelectProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SelectClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type SelectClassKey =
   | 'formControl'
@@ -830,10 +827,17 @@ export type SelectClassKey =
   | 'checkbox'
   | 'root';
 
-// Warning: (ae-missing-release-tag) "SelectInputBaseClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type SelectedItems = string | string[] | number | number[];
+
 // @public (undocumented)
 export type SelectInputBaseClassKey = 'root' | 'input';
+
+// @public (undocumented)
+export type SelectItem = {
+  label: string;
+  value: string | number;
+};
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Sidebar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1151,6 +1155,11 @@ export const SidebarDivider: React_2.ComponentType<
       className?: string | undefined;
     }
 >;
+
+// Warning: (ae-missing-release-tag) "SidebarDividerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarDividerClassKey = 'root';
 
 // @public
 export const SidebarExpandButton: () => JSX.Element | null;
@@ -1760,6 +1769,11 @@ export const SidebarSpace: React_2.ComponentType<
     }
 >;
 
+// Warning: (ae-missing-release-tag) "SidebarSpaceClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarSpaceClassKey = 'root';
+
 // Warning: (ae-missing-release-tag) "SidebarSpacer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -2028,6 +2042,11 @@ export const SidebarSpacer: React_2.ComponentType<
       className?: string | undefined;
     }
 >;
+
+// Warning: (ae-missing-release-tag) "SidebarSpacerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarSpacerClassKey = 'root';
 
 // @public
 export const SidebarSubmenu: (props: SidebarSubmenuProps) => JSX.Element;

@@ -17,8 +17,6 @@
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
-import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
-import WebOutlinedIcon from '@material-ui/icons/WebOutlined';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import {
@@ -34,7 +32,7 @@ import {
 import { SidebarSubmenuItem } from './SidebarSubmenuItem';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import CloudQueueIcon from '@material-ui/icons/CloudQueue';
-import SettingsApplications from '@material-ui/icons/SettingsApplications';
+import AppsIcon from '@material-ui/icons/Apps';
 import AcUnitIcon from '@material-ui/icons/AcUnit';
 import { SidebarSubmenu } from './SidebarSubmenu';
 
@@ -76,17 +74,7 @@ export const SampleScalableSidebar = () => (
         <SidebarSubmenu title="Catalog">
           <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
           <SidebarSubmenuItem title="APIs" to="/2" icon={CloudQueueIcon} />
-          <SidebarSubmenuItem
-            title="Services"
-            to="/3"
-            icon={SettingsApplications}
-          />
-          <SidebarSubmenuItem
-            title="Libraries"
-            to="/4"
-            icon={LibraryBooksOutlinedIcon}
-          />
-          <SidebarSubmenuItem title="Websites" to="/5" icon={WebOutlinedIcon} />
+          <SidebarSubmenuItem title="Components" to="/3" icon={AppsIcon} />
           <SidebarSubmenuItem
             title="Misc"
             to="/6"

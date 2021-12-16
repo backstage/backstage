@@ -132,6 +132,8 @@ import {
 
 import React, { ReactNode, useMemo, useState } from 'react';
 
+const customEntityFilterKind = ['Component', 'API', 'System'];
+
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
 
@@ -552,7 +554,10 @@ const userPage = (
           <EntityUserProfileCard variant="gridItem" />
         </Grid>
         <Grid item xs={12} md={6}>
-          <EntityOwnershipCard variant="gridItem" />
+          <EntityOwnershipCard
+            variant="gridItem"
+            entityFilterKind={customEntityFilterKind}
+          />
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -568,7 +573,10 @@ const groupPage = (
           <EntityGroupProfileCard variant="gridItem" />
         </Grid>
         <Grid item xs={12} md={6}>
-          <EntityOwnershipCard variant="gridItem" />
+          <EntityOwnershipCard
+            variant="gridItem"
+            entityFilterKind={customEntityFilterKind}
+          />
         </Grid>
         <Grid item xs={12}>
           <EntityMembersListCard />

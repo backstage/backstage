@@ -1,5 +1,12 @@
 # @backstage/backend-common
 
+## 0.9.14
+
+### Patch Changes
+
+- fe24bc9a32: Each plugin now saves to a separate sqlite database file when `connection.filename` is provided in the sqlite config.
+  Any existing sqlite database files will be ignored.
+
 ## 0.9.13
 
 ### Patch Changes

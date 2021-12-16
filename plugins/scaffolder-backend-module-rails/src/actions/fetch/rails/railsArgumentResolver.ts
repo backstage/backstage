@@ -51,6 +51,8 @@ export type RailsRunOptions = {
   railsVersion?: RailsVersion;
   skipBundle?: boolean;
   skipWebpackInstall?: boolean;
+  skipTest?: boolean;
+  force?: boolean;
 };
 
 export const railsArgumentResolver = (
@@ -74,6 +76,14 @@ export const railsArgumentResolver = (
 
   if (options?.skipWebpackInstall) {
     argumentsToRun.push('--skip-webpack-install');
+  }
+
+  if (options?.skipTest) {
+    argumentsToRun.push('--skip-test');
+  }
+
+  if (options?.force) {
+    argumentsToRun.push('--force');
   }
 
   if (

@@ -1,5 +1,16 @@
 # @backstage/plugin-org
 
+## 0.3.31
+
+### Patch Changes
+
+- fe86adbcd2: Added `entityFilterKind` property for `EntityOwnershipCard`
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.1
+  - @backstage/core-components@0.8.1
+  - @backstage/catalog-model@0.9.8
+  - @backstage/plugin-catalog-react@0.6.7
+
 ## 0.3.30
 
 ### Patch Changes

@@ -35,7 +35,6 @@ import {
 import { Program } from 'typescript';
 import {
   DocNode,
-  DocSection,
   IDocNodeContainerParameters,
   TSDocTagSyntaxKind,
 } from '@microsoft/tsdoc';
@@ -51,7 +50,6 @@ import { DocHeading } from '@microsoft/api-documenter/lib/nodes/DocHeading';
 import { CustomMarkdownEmitter } from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
-import { DocTableCell } from '@microsoft/api-documenter/lib/nodes/DocTableCell';
 
 const tmpDir = resolvePath(__dirname, '../node_modules/.cache/api-extractor');
 
@@ -605,18 +603,9 @@ async function buildDocs({
       });
 
       for (const apiMember of apiModel.members) {
-        // This is a workaround for this check failing: https://github.com/microsoft/rushstack/blob/915aca8d8847b65981892f44f0544ccb00752792/apps/api-documenter/src/documenters/MarkdownDocumenter.ts#L991
-        const description = new DocSection({ configuration });
-        if (apiMember.tsdocComment !== undefined) {
-          this._appendAndMergeSection(
-            description,
-            apiMember.tsdocComment.summarySection,
-          );
-        }
-
         const row = new DocTableRow({ configuration }, [
           this._createTitleCell(apiMember),
-          new DocTableCell({ configuration }, description.nodes),
+          this._createDescriptionCell(apiMember),
         ]);
 
         if (apiMember.kind === 'Package') {

@@ -33,9 +33,11 @@ export const EntityMembersListCard: (_props: {
 // @public (undocumented)
 export const EntityOwnershipCard: ({
   variant,
+  entityFilterKind,
 }: {
   entity?: Entity | undefined;
   variant?: InfoCardVariants | undefined;
+  entityFilterKind?: string[] | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityUserProfileCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -75,9 +77,11 @@ export { orgPlugin as plugin };
 // @public (undocumented)
 export const OwnershipCard: ({
   variant,
+  entityFilterKind,
 }: {
   entity?: Entity | undefined;
   variant?: InfoCardVariants | undefined;
+  entityFilterKind?: string[] | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "UserProfileCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
