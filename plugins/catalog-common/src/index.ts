@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
+/**
+ * Provides shared objects useful for interacting with the catalog and its
+ * entities, such as catalog permissions.
+ *
+ * @packageDocumentation
+ */
+
 export {
   RESOURCE_TYPE_CATALOG_ENTITY,
   RESOURCE_TYPE_CATALOG_LOCATION,
   catalogEntityReadPermission,
-  catalogEntityUnregisterPermission,
+  catalogEntityDeletePermission,
   catalogEntityRefreshPermission,
   catalogLocationReadPermission,
   catalogLocationCreatePermission,

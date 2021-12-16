@@ -16,7 +16,16 @@
 
 import { Permission } from '@backstage/plugin-permission-common';
 
+/**
+ * {@link https://backstage.io/docs/features/software-catalog/software-catalog-overview}
+ * @public
+ */
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
+
+/**
+ * {@link https://backstage.io/docs/features/software-catalog/descriptor-format#kind-location}
+ * @public
+ */
 export const RESOURCE_TYPE_CATALOG_LOCATION = 'catalog-location';
 
 /**
@@ -36,12 +45,12 @@ export const catalogEntityReadPermission: Permission = {
 };
 
 /**
- * This permission is used to designate actions that involve unregistering one
- * or more entities from the catalog.
+ * This permission is used to designate actions that involve removing one or
+ * more entities from the catalog.
  * @public
  */
-export const catalogEntityUnregisterPermission: Permission = {
-  name: 'catalog.entity.unregister',
+export const catalogEntityDeletePermission: Permission = {
+  name: 'catalog.entity.delete',
   attributes: {
     action: 'delete',
   },

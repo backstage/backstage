@@ -6,13 +6,13 @@
 import { Permission } from '@backstage/plugin-permission-common';
 
 // @public
+export const catalogEntityDeletePermission: Permission;
+
+// @public
 export const catalogEntityReadPermission: Permission;
 
 // @public
 export const catalogEntityRefreshPermission: Permission;
-
-// @public
-export const catalogEntityUnregisterPermission: Permission;
 
 // @public
 export const catalogLocationCreatePermission: Permission;
@@ -23,15 +23,9 @@ export const catalogLocationDeletePermission: Permission;
 // @public
 export const catalogLocationReadPermission: Permission;
 
-// Warning: (ae-missing-release-tag) "RESOURCE_TYPE_CATALOG_ENTITY" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
 
-// Warning: (ae-missing-release-tag) "RESOURCE_TYPE_CATALOG_LOCATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const RESOURCE_TYPE_CATALOG_LOCATION = 'catalog-location';
-
-// (No @packageDocumentation comment for this package)
 ```
