@@ -13,7 +13,7 @@ jobs:
       - uses: actions/github-script@v5
         id: get-reviewers
         with:
-          github-token: ${{ secrets.ORG_READ }}
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
             const {data: reviewerMembers} = await github.rest.teams.listMembersInOrg({
               org: context.payload.organization.login,
