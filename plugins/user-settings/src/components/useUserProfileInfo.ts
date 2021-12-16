@@ -14,13 +14,36 @@
  * limitations under the License.
  */
 
-import { useApi, identityApiRef } from '@backstage/core-plugin-api';
+import {
+  useApi,
+  identityApiRef,
+  BackstageUserIdentity,
+  ProfileInfo,
+} from '@backstage/core-plugin-api';
+import { useEffect, useState } from 'react';
 
 export const useUserProfile = () => {
   const identityApi = useApi(identityApiRef);
-  const userId = identityApi.getUserId();
-  const profile = identityApi.getProfile();
-  const displayName = profile.displayName ?? userId;
+
+  const [displayName, setDisplayName] = useState<
+    string | BackstageUserIdentity
+  >('');
+  const [profile, setProfile] = useState<ProfileInfo>({});
+
+  const getUserProfile = async () => {
+    const backstageIdentity = await identityApi.getBackstageIdentity();
+    const profileInfo = await identityApi.getProfileInfo();
+    const name = profileInfo.displayName ?? backstageIdentity;
+
+    setDisplayName(name);
+    setProfile(profileInfo);
+  };
+
+  useEffect(() => {
+    if (!displayName) {
+      getUserProfile();
+    }
+  });
 
   return { profile, displayName };
 };
