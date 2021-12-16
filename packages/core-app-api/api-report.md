@@ -200,8 +200,6 @@ export type AppIcons = {
   warning: IconComponent;
 };
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-app-api" does not have an export "createApp"
-//
 // @public
 export type AppOptions = {
   apis?: Iterable<AnyApiFactory>;
@@ -223,8 +221,6 @@ export type AppOptions = {
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 };
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-app-api" does not have an export "createApp"
-//
 // @public
 export type AppRouteBinder = <
   ExternalRoutes extends {
@@ -272,8 +268,6 @@ export type AuthApiCreateOptions = {
   provider?: AuthProviderInfo;
 };
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-app-api" does not have an export "createApp"
-//
 // @public
 export type BackstageApp = {
   getPlugins(): BackstagePlugin<any, any>[];

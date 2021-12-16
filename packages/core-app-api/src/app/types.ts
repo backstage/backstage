@@ -189,7 +189,7 @@ type TargetRouteMap<
 
 /**
  * A function that can bind from external routes of a given plugin, to concrete
- * routes of other plugins. See {@link createApp}.
+ * routes of other plugins. See {@link createSpecializedApp}.
  *
  * @public
  */
@@ -204,7 +204,7 @@ export type AppRouteBinder = <
 ) => void;
 
 /**
- * The options accepted by {@link createApp}.
+ * The options accepted by {@link createSpecializedApp}.
  *
  * @public
  */
@@ -306,7 +306,7 @@ export type AppOptions = {
 };
 
 /**
- * The public API of the output of {@link createApp}.
+ * The public API of the output of {@link createSpecializedApp}.
  *
  * @public
  */
