@@ -32,14 +32,14 @@ import {
   isNewRelicDashboardAvailable,
   EntityNewRelicDashboard,
   EntityPageNewRelicDashboard,
-} from '@internal/plugin-new-relic-dashboard';
+} from '@backstage/plugin-newrelic-dashboard';
 
 const serviceEntityPage = (
   <EntityLayout>
     {/* other tabs... */}
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
-      path="/new-relic-dashboard"
+      path="/newrelic-dashboard"
       title="New Relic Dashboard"
     >
       <EntityNewRelicDashboard />
