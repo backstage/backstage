@@ -27,6 +27,8 @@ describe('railsArgumentResolver', () => {
       [{ api: true }, ['--api']],
       [{ skipBundle: true }, ['--skip-bundle']],
       [{ skipWebpackInstall: true }, ['--skip-webpack-install']],
+      [{ skipTest: true }, ['--skip-test']],
+      [{ force: true }, ['--force']],
       [{ webpacker: 'vue' }, ['--webpack', 'vue']],
       [{ database: 'postgresql' }, ['--database', 'postgresql']],
       [{ railsVersion: 'dev' }, ['--dev']],
