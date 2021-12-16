@@ -16,11 +16,11 @@
 
 import {
   getGitHubFileFetchUrl,
-  IGithubCredentialsProvider,
+  GithubCredentialsProvider,
   GitHubIntegration,
   ScmIntegrations,
-  GithubCredentialsProvider,
-  IGithubCredentialsProviderFactory,
+  DefaultGithubCredentialsProvider,
+  GithubCredentialsProviderFactory,
 } from '@backstage/integration';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import fetch, { RequestInit, Response } from 'node-fetch';
@@ -60,7 +60,7 @@ export class GithubUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
     return integrations.github.list().map(integration => {
-      const credentialsProvider = GithubCredentialsProvider.create(
+      const credentialsProvider = DefaultGithubCredentialsProvider.create(
         integration.config,
       );
 
@@ -77,7 +77,7 @@ export class GithubUrlReader implements UrlReader {
     private readonly integration: GitHubIntegration,
     private readonly deps: {
       treeResponseFactory: ReadTreeResponseFactory;
-      credentialsProvider: IGithubCredentialsProvider;
+      credentialsProvider: GithubCredentialsProvider;
     },
   ) {
     if (!integration.config.apiBaseUrl && !integration.config.rawBaseUrl) {
@@ -351,8 +351,8 @@ export class GithubUrlReader implements UrlReader {
 }
 
 export class GithubUrlReaderFactory {
-  private credsProviderFactory: IGithubCredentialsProviderFactory;
-  constructor(credsProviderFactory: IGithubCredentialsProviderFactory) {
+  private credsProviderFactory: GithubCredentialsProviderFactory;
+  constructor(credsProviderFactory: GithubCredentialsProviderFactory) {
     this.credsProviderFactory = credsProviderFactory;
   }
 

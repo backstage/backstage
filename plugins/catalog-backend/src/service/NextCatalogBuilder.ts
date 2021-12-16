@@ -26,7 +26,7 @@ import {
   Validators,
 } from '@backstage/catalog-model';
 import {
-  GithubCredentialsProviderFactory,
+  DefaultGithubCredentialsProviderFactory,
   ScmIntegrations,
 } from '@backstage/integration';
 import { createHash } from 'crypto';
@@ -293,7 +293,7 @@ export class NextCatalogBuilder {
     const { config, logger, reader } = this.env;
     const integrations = ScmIntegrations.fromConfig(config);
     const githubCredentialsProviderFactory =
-      new GithubCredentialsProviderFactory();
+      new DefaultGithubCredentialsProviderFactory();
 
     return [
       new FileReaderProcessor(),

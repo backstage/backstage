@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  IGithubCredentialsProviderFactory,
+  GithubCredentialsProviderFactory,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
@@ -22,7 +22,7 @@ import { OctokitProvider } from './OctokitProvider';
 
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrationRegistry;
-  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
 }) {
   const { githubCredentialsProviderFactory, integrations } = options;
   const octokitProvider = new OctokitProvider(

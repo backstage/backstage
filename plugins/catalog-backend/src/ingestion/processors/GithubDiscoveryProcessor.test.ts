@@ -22,7 +22,7 @@ import {
 } from './GithubDiscoveryProcessor';
 import { getOrganizationRepositories } from './github';
 import { ConfigReader } from '@backstage/config';
-import { GithubCredentialsProviderFactory } from '@backstage/integration';
+import { DefaultGithubCredentialsProviderFactory } from '@backstage/integration';
 
 jest.mock('./github');
 const mockGetOrganizationRepositories =
@@ -72,7 +72,7 @@ describe('GithubDiscoveryProcessor', () => {
   describe('reject unrelated entries', () => {
     it('rejects unknown types', async () => {
       const processor = new GithubDiscoveryProcessorBuilder(
-        new GithubCredentialsProviderFactory(),
+        new DefaultGithubCredentialsProviderFactory(),
       ).fromConfig(
         new ConfigReader({
           integrations: {
@@ -92,7 +92,7 @@ describe('GithubDiscoveryProcessor', () => {
 
     it('rejects unknown targets', async () => {
       const processor = new GithubDiscoveryProcessorBuilder(
-        new GithubCredentialsProviderFactory(),
+        new DefaultGithubCredentialsProviderFactory(),
       ).fromConfig(
         new ConfigReader({
           integrations: {
@@ -118,7 +118,7 @@ describe('GithubDiscoveryProcessor', () => {
 
   describe('handles repositories', () => {
     const processor = new GithubDiscoveryProcessorBuilder(
-      new GithubCredentialsProviderFactory(),
+      new DefaultGithubCredentialsProviderFactory(),
     ).fromConfig(
       new ConfigReader({
         integrations: {

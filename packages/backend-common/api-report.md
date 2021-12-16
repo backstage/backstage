@@ -15,9 +15,9 @@ import cors from 'cors';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
+import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
-import { IGithubCredentialsProvider } from '@backstage/integration';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
@@ -342,7 +342,7 @@ export class GithubUrlReader implements UrlReader {
     integration: GitHubIntegration,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
-      credentialsProvider: IGithubCredentialsProvider;
+      credentialsProvider: GithubCredentialsProvider;
     },
   );
   // (undocumented)

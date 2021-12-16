@@ -17,8 +17,8 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
-  GithubCredentialsProvider,
-  GithubCredentialsProviderFactory,
+  DefaultGithubCredentialsProvider,
+  DefaultGithubCredentialsProviderFactory,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -50,7 +50,7 @@ describe('GithubOrgReaderProcessor', () => {
         integrations,
         logger,
         githubCredentialsProviderFactory:
-          new GithubCredentialsProviderFactory(),
+          new DefaultGithubCredentialsProviderFactory(),
       });
       const location: LocationSpec = {
         type: 'github-org',
@@ -65,7 +65,7 @@ describe('GithubOrgReaderProcessor', () => {
 
     it('should not query for email addresses when GitHub Apps is used for authentication', async () => {
       const githubCredentialsProviderFactory =
-        new GithubCredentialsProviderFactory();
+        new DefaultGithubCredentialsProviderFactory();
 
       const mockGetCredentials = jest.fn().mockReturnValue({
         headers: { token: 'blah' },
@@ -142,7 +142,7 @@ describe('GithubOrgReaderProcessor', () => {
 
       (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-      jest.spyOn(GithubCredentialsProvider, 'create').mockReturnValue({
+      jest.spyOn(DefaultGithubCredentialsProvider, 'create').mockReturnValue({
         getCredentials: mockGetCredentials,
       } as any);
 
@@ -150,7 +150,7 @@ describe('GithubOrgReaderProcessor', () => {
         integrations,
         logger,
         githubCredentialsProviderFactory:
-          new GithubCredentialsProviderFactory(),
+          new DefaultGithubCredentialsProviderFactory(),
       });
       const location: LocationSpec = {
         type: 'github-org',

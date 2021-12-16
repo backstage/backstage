@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import { parseRepoUrl, isExecutable } from './util';
 
 import {
-  IGithubCredentialsProviderFactory,
+  GithubCredentialsProviderFactory,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { zipObject } from 'lodash';
@@ -61,7 +61,7 @@ export type ClientFactoryInput = {
   host: string;
   owner: string;
   repo: string;
-  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
 };
 
 export const defaultClientFactory = async ({
@@ -109,7 +109,7 @@ export const defaultClientFactory = async ({
 interface CreateGithubPullRequestActionOptions {
   integrations: ScmIntegrationRegistry;
   clientFactory?: (input: ClientFactoryInput) => Promise<PullRequestCreator>;
-  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
 }
 
 export const createPublishGithubPullRequestAction = ({

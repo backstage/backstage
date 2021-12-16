@@ -18,7 +18,7 @@ jest.mock('@octokit/rest');
 
 import { createGithubActionsDispatchAction } from './githubActionsDispatch';
 import {
-  GithubCredentialsProviderFactory,
+  DefaultGithubCredentialsProviderFactory,
   ScmIntegrations,
 } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
@@ -38,7 +38,8 @@ describe('github:actions:dispatch', () => {
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createGithubActionsDispatchAction({
     integrations,
-    githubCredentialsProviderFactory: new GithubCredentialsProviderFactory(),
+    githubCredentialsProviderFactory:
+      new DefaultGithubCredentialsProviderFactory(),
   });
 
   const mockContext = {

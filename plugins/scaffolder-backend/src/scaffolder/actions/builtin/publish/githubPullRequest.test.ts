@@ -17,7 +17,7 @@
 import { getRootLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
-  GithubCredentialsProviderFactory,
+  DefaultGithubCredentialsProviderFactory,
   ScmIntegrations,
 } from '@backstage/integration';
 import mockFs from 'mock-fs';
@@ -60,7 +60,8 @@ describe('createPublishGithubPullRequestAction', () => {
     instance = createPublishGithubPullRequestAction({
       integrations,
       clientFactory,
-      githubCredentialsProviderFactory: new GithubCredentialsProviderFactory(),
+      githubCredentialsProviderFactory:
+        new DefaultGithubCredentialsProviderFactory(),
     });
   });
 

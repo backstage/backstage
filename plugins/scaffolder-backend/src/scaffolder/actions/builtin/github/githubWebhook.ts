@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  IGithubCredentialsProviderFactory,
+  GithubCredentialsProviderFactory,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
@@ -27,7 +27,7 @@ type ContentType = 'form' | 'json';
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
-  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
 }) {
   const {
     githubCredentialsProviderFactory,

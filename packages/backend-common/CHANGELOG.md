@@ -769,7 +769,7 @@
   Usage:
 
   ```javascript
-  const credentialsProvider = new GithubCredentialsProvider(config);
+  const credentialsProvider = new DefaultGithubCredentialsProvider(config);
   const { token, headers } = await credentialsProvider.getCredentials({
     url: 'https://github.com/',
   });

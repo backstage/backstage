@@ -22,13 +22,13 @@ export type { GithubAppConfig, GitHubIntegrationConfig } from './config';
 export { getGitHubFileFetchUrl, getGitHubRequestOptions } from './core';
 export {
   GithubAppCredentialsMux,
-  GithubCredentialsProvider,
-} from './GithubCredentialsProvider';
-export { GithubCredentialsProviderFactory } from './GithubCredentialsProviderFactory';
-export type { IGithubCredentialsProviderFactory } from './GithubCredentialsProviderFactory';
+  DefaultGithubCredentialsProvider,
+} from './DefaultGithubCredentialsProvider';
+export { DefaultGithubCredentialsProviderFactory } from './DefaultGithubCredentialsProviderFactory';
+export type { GithubCredentialsProviderFactory } from './DefaultGithubCredentialsProviderFactory';
 export type {
   GithubCredentials,
   GithubCredentialType,
-  IGithubCredentialsProvider,
-} from './GithubCredentialsProvider';
+  GithubCredentialsProvider,
+} from './DefaultGithubCredentialsProvider';
 export { GitHubIntegration, replaceGitHubUrlType } from './GitHubIntegration';

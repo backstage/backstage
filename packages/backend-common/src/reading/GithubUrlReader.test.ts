@@ -16,7 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import {
-  GithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
   GitHubIntegration,
   readGitHubIntegrationConfig,
 } from '@backstage/integration';
@@ -43,7 +43,7 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
 
 const mockCredentialsProvider = {
   getCredentials: jest.fn().mockResolvedValue({ headers: {} }),
-} as unknown as GithubCredentialsProvider;
+} as unknown as DefaultGithubCredentialsProvider;
 
 const githubProcessor = new GithubUrlReader(
   new GitHubIntegration(

@@ -239,7 +239,7 @@ export type GithubCredentials = {
  * @public
  *
  */
-export interface IGithubCredentialsProvider {
+export interface GithubCredentialsProvider {
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
@@ -251,9 +251,11 @@ export interface IGithubCredentialsProvider {
  *
  * TODO: Possibly move this to a backend only package so that it's not used in the frontend by mistake
  */
-export class GithubCredentialsProvider implements IGithubCredentialsProvider {
-  static create(config: GitHubIntegrationConfig): IGithubCredentialsProvider {
-    return new GithubCredentialsProvider(
+export class DefaultGithubCredentialsProvider
+  implements GithubCredentialsProvider
+{
+  static create(config: GitHubIntegrationConfig): GithubCredentialsProvider {
+    return new DefaultGithubCredentialsProvider(
       new GithubAppCredentialsMux(config),
       config.token,
     );

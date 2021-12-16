@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  IGithubCredentialsProviderFactory,
+  GithubCredentialsProviderFactory,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import {
@@ -33,7 +33,7 @@ type Collaborator = { access: Permission; username: string };
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
 }) {
   const { githubCredentialsProviderFactory, integrations, config } = options;
   const octokitProvider = new OctokitProvider(

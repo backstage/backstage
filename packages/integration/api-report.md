@@ -93,6 +93,27 @@ export type BitbucketIntegrationConfig = {
 };
 
 // @public
+export class DefaultGithubCredentialsProvider
+  implements GithubCredentialsProvider
+{
+  constructor(
+    githubAppCredentialsMux: GithubAppCredentialsMux,
+    token?: string | undefined,
+  );
+  // (undocumented)
+  static create(config: GitHubIntegrationConfig): GithubCredentialsProvider;
+  getCredentials(opts: { url: string }): Promise<GithubCredentials>;
+}
+
+// @public
+export class DefaultGithubCredentialsProviderFactory
+  implements GithubCredentialsProviderFactory
+{
+  // (undocumented)
+  create(config: GitHubIntegrationConfig): GithubCredentialsProvider;
+}
+
+// @public
 export function defaultScmResolveUrl(options: {
   url: string;
   base: string;
@@ -198,22 +219,15 @@ export type GithubCredentials = {
 };
 
 // @public
-export class GithubCredentialsProvider implements IGithubCredentialsProvider {
-  constructor(
-    githubAppCredentialsMux: GithubAppCredentialsMux,
-    token?: string | undefined,
-  );
+export interface GithubCredentialsProvider {
   // (undocumented)
-  static create(config: GitHubIntegrationConfig): IGithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
 // @public
-export class GithubCredentialsProviderFactory
-  implements IGithubCredentialsProviderFactory
-{
+export interface GithubCredentialsProviderFactory {
   // (undocumented)
-  create(config: GitHubIntegrationConfig): IGithubCredentialsProvider;
+  create(opts: any): GithubCredentialsProvider;
 }
 
 // @public
@@ -283,18 +297,6 @@ export type GoogleGcsIntegrationConfig = {
   clientEmail?: string;
   privateKey?: string;
 };
-
-// @public
-export interface IGithubCredentialsProvider {
-  // (undocumented)
-  getCredentials(opts: { url: string }): Promise<GithubCredentials>;
-}
-
-// @public
-export interface IGithubCredentialsProviderFactory {
-  // (undocumented)
-  create(opts: any): IGithubCredentialsProvider;
-}
 
 // @public
 export interface IntegrationsByType {

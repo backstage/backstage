@@ -17,9 +17,9 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
-  GithubCredentialsProviderFactory,
+  DefaultGithubCredentialsProviderFactory,
   GithubCredentialType,
-  IGithubCredentialsProviderFactory,
+  GithubCredentialsProviderFactory,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -45,7 +45,7 @@ type GraphQL = typeof graphql;
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
-  private readonly githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  private readonly githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -53,12 +53,13 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     return new GithubOrgReaderProcessor({
       ...options,
       integrations,
-      githubCredentialsProviderFactory: new GithubCredentialsProviderFactory(),
+      githubCredentialsProviderFactory:
+        new DefaultGithubCredentialsProviderFactory(),
     });
   }
 
   constructor(options: {
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
     integrations: ScmIntegrations;
     logger: Logger;
   }) {
@@ -144,10 +145,10 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
 export class GithubOrgReaderProcessorBuilder
   implements CatalogProcessorBuilder
 {
-  private githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  private githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
 
   constructor(
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory,
   ) {
     this.githubCredentialsProviderFactory = githubCredentialsProviderFactory;
   }

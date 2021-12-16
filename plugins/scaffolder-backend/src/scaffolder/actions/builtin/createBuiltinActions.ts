@@ -17,7 +17,7 @@
 import { ContainerRunner, UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
-  IGithubCredentialsProviderFactory,
+  GithubCredentialsProviderFactory,
   ScmIntegrations,
 } from '@backstage/integration';
 import { Config } from '@backstage/config';
@@ -51,7 +51,7 @@ export const createBuiltinActions = (options: {
   catalogClient: CatalogApi;
   containerRunner: ContainerRunner;
   config: Config;
-  githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
 }) => {
   const {
     githubCredentialsProviderFactory,

@@ -16,8 +16,8 @@ import { EntityName } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
+import { GithubCredentialsProviderFactory } from '@backstage/integration';
 import { GitHubIntegrationConfig } from '@backstage/integration';
-import { IGithubCredentialsProviderFactory } from '@backstage/integration';
 import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -1030,7 +1030,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrations;
     logger: Logger_2;
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
   });
   // (undocumented)
   static fromConfig(
@@ -1052,7 +1052,7 @@ export class GithubDiscoveryProcessorBuilder
   implements CatalogProcessorBuilder
 {
   constructor(
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory,
   );
   // (undocumented)
   fromConfig(
@@ -1069,7 +1069,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     integrations: ScmIntegrations;
     logger: Logger_2;
     orgs: GithubMultiOrgConfig;
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
   });
   // (undocumented)
   static fromConfig(
@@ -1093,7 +1093,7 @@ export class GithubMultiOrgReaderProcessorBuilder
   implements CatalogProcessorBuilder
 {
   constructor(
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory,
   );
   // Warning: (ae-incompatible-release-tags) The symbol "fromConfig" is marked as @public, but its signature references "GithubMultiOrgReaderProcessor" which is marked as @alpha
   //
@@ -1115,7 +1115,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     orgUrl: string;
     gitHubConfig: GitHubIntegrationConfig;
     logger: Logger_2;
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
   });
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -1139,7 +1139,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
 // @public
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
     integrations: ScmIntegrations;
     logger: Logger_2;
   });
@@ -1163,7 +1163,7 @@ export class GithubOrgReaderProcessorBuilder
   implements CatalogProcessorBuilder
 {
   constructor(
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory,
   );
   // (undocumented)
   fromConfig(

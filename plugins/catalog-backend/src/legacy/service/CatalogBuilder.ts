@@ -25,7 +25,7 @@ import {
   Validators,
 } from '@backstage/catalog-model';
 import {
-  GithubCredentialsProviderFactory,
+  DefaultGithubCredentialsProviderFactory,
   ScmIntegrations,
 } from '@backstage/integration';
 import lodash from 'lodash';
@@ -318,7 +318,7 @@ export class CatalogBuilder {
     // These are only added unless the user replaced them all
     if (!this.processorsReplace) {
       const githubCredentialsProviderFactory =
-        new GithubCredentialsProviderFactory();
+        new DefaultGithubCredentialsProviderFactory();
       processors.push(
         new FileReaderProcessor(),
         BitbucketDiscoveryProcessor.fromConfig(config, { logger }),

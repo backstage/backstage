@@ -24,8 +24,8 @@ import { Entity, TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, NotFoundError } from '@backstage/errors';
 import {
+  DefaultGithubCredentialsProviderFactory,
   GithubCredentialsProviderFactory,
-  IGithubCredentialsProviderFactory,
   ScmIntegrations,
 } from '@backstage/integration';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -61,7 +61,7 @@ export interface RouterOptions {
   taskWorkers?: number;
   containerRunner: ContainerRunner;
   taskBroker?: TaskBroker;
-  githubCredentialsProviderFactory?: IGithubCredentialsProviderFactory;
+  githubCredentialsProviderFactory?: GithubCredentialsProviderFactory;
 }
 
 function isSupportedTemplate(
@@ -130,7 +130,7 @@ export async function createRouter(
         config,
         githubCredentialsProviderFactory:
           githubCredentialsProviderFactory ||
-          new GithubCredentialsProviderFactory(),
+          new DefaultGithubCredentialsProviderFactory(),
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));

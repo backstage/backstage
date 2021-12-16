@@ -18,9 +18,9 @@ import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   GithubAppCredentialsMux,
-  GithubCredentialsProviderFactory,
+  DefaultGithubCredentialsProviderFactory,
   GitHubIntegrationConfig,
-  IGithubCredentialsProviderFactory,
+  GithubCredentialsProviderFactory,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -49,7 +49,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly orgs: GithubMultiOrgConfig;
   private readonly logger: Logger;
-  private readonly githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  private readonly githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
 
   // deprecated
   static fromConfig(config: Config, options: { logger: Logger }) {
@@ -60,7 +60,8 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
       ...options,
       integrations,
       orgs: c ? readGithubMultiOrgConfig(c) : [],
-      githubCredentialsProviderFactory: new GithubCredentialsProviderFactory(),
+      githubCredentialsProviderFactory:
+        new DefaultGithubCredentialsProviderFactory(),
     });
   }
 
@@ -68,7 +69,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     integrations: ScmIntegrations;
     logger: Logger;
     orgs: GithubMultiOrgConfig;
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
   }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
@@ -198,10 +199,10 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
 export class GithubMultiOrgReaderProcessorBuilder
   implements CatalogProcessorBuilder
 {
-  private githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  private githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
 
   constructor(
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory,
   ) {
     this.githubCredentialsProviderFactory = githubCredentialsProviderFactory;
   }

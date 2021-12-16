@@ -17,9 +17,9 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
-  IGithubCredentialsProviderFactory,
-  ScmIntegrations,
   GithubCredentialsProviderFactory,
+  ScmIntegrations,
+  DefaultGithubCredentialsProviderFactory,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
@@ -48,7 +48,7 @@ import {
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
-  private readonly githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  private readonly githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -56,14 +56,15 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     return new GithubDiscoveryProcessor({
       ...options,
       integrations,
-      githubCredentialsProviderFactory: new GithubCredentialsProviderFactory(),
+      githubCredentialsProviderFactory:
+        new DefaultGithubCredentialsProviderFactory(),
     });
   }
 
   constructor(options: {
     integrations: ScmIntegrations;
     logger: Logger;
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
   }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
@@ -201,9 +202,9 @@ export function escapeRegExp(str: string): RegExp {
 export class GithubDiscoveryProcessorBuilder
   implements CatalogProcessorBuilder
 {
-  private githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  private githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
   constructor(
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory,
   ) {
     this.githubCredentialsProviderFactory = githubCredentialsProviderFactory;
   }

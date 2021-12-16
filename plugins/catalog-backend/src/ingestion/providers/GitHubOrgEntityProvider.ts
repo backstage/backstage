@@ -20,11 +20,11 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
-  IGithubCredentialsProvider,
-  GithubCredentialsProviderFactory,
+  GithubCredentialsProvider,
+  DefaultGithubCredentialsProviderFactory,
   GitHubIntegrationConfig,
   ScmIntegrations,
-  IGithubCredentialsProviderFactory,
+  GithubCredentialsProviderFactory,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { merge } from 'lodash';
@@ -45,7 +45,7 @@ import { assignGroupsToUsers, buildOrgHierarchy } from '../processors/util/org';
 
 export class GitHubOrgEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
-  private readonly credentialsProvider: IGithubCredentialsProvider;
+  private readonly credentialsProvider: GithubCredentialsProvider;
 
   static fromConfig(
     config: Config,
@@ -69,7 +69,8 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       orgUrl: options.orgUrl,
       logger,
       gitHubConfig,
-      githubCredentialsProviderFactory: new GithubCredentialsProviderFactory(),
+      githubCredentialsProviderFactory:
+        new DefaultGithubCredentialsProviderFactory(),
     });
   }
 
@@ -79,7 +80,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       orgUrl: string;
       gitHubConfig: GitHubIntegrationConfig;
       logger: Logger;
-      githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+      githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
     },
   ) {
     this.credentialsProvider = options.githubCredentialsProviderFactory.create(
@@ -185,10 +186,10 @@ export function withLocations(
 }
 
 export class GitHubOrgEntityProviderBuilder implements EntityProviderBuilder {
-  private githubCredentialsProviderFactory: IGithubCredentialsProviderFactory;
+  private githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
 
   constructor(
-    githubCredentialsProviderFactory: IGithubCredentialsProviderFactory,
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory,
   ) {
     this.githubCredentialsProviderFactory = githubCredentialsProviderFactory;
   }

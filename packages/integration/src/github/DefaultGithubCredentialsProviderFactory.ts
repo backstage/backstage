@@ -16,9 +16,9 @@
 import { GitHubIntegrationConfig } from './config';
 import {
   GithubAppCredentialsMux,
+  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
-  IGithubCredentialsProvider,
-} from './GithubCredentialsProvider';
+} from './DefaultGithubCredentialsProvider';
 
 /**
  * This allows implementations to be provided to retrieve GitHub credentials.
@@ -26,8 +26,8 @@ import {
  * @public
  *
  */
-export interface IGithubCredentialsProviderFactory {
-  create(opts: any): IGithubCredentialsProvider;
+export interface GithubCredentialsProviderFactory {
+  create(opts: any): GithubCredentialsProvider;
 }
 
 /**
@@ -36,11 +36,11 @@ export interface IGithubCredentialsProviderFactory {
  * @public
  *
  */
-export class GithubCredentialsProviderFactory
-  implements IGithubCredentialsProviderFactory
+export class DefaultGithubCredentialsProviderFactory
+  implements GithubCredentialsProviderFactory
 {
-  create(config: GitHubIntegrationConfig): IGithubCredentialsProvider {
-    return new GithubCredentialsProvider(
+  create(config: GitHubIntegrationConfig): GithubCredentialsProvider {
+    return new DefaultGithubCredentialsProvider(
       new GithubAppCredentialsMux(config),
       config.token,
     );

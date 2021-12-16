@@ -26,7 +26,7 @@ import { DefaultReadTreeResponseFactory } from './tree';
 import { FetchUrlReader } from './FetchUrlReader';
 import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
 import { AwsS3UrlReader } from './AwsS3UrlReader';
-import { GithubCredentialsProviderFactory } from '@backstage/integration';
+import { DefaultGithubCredentialsProviderFactory } from '@backstage/integration';
 
 /** @public */
 export type UrlReadersOptions = {
@@ -76,8 +76,9 @@ export class UrlReaders {
       factories: factories.concat([
         AzureUrlReader.factory,
         BitbucketUrlReader.factory,
-        new GithubUrlReaderFactory(new GithubCredentialsProviderFactory())
-          .factory,
+        new GithubUrlReaderFactory(
+          new DefaultGithubCredentialsProviderFactory(),
+        ).factory,
         GitlabUrlReader.factory,
         GoogleGcsUrlReader.factory,
         AwsS3UrlReader.factory,
