@@ -20,6 +20,8 @@ import {
   IdentityApi,
 } from '@backstage/core-plugin-api';
 import type { EntityName, EntityRef } from '@backstage/catalog-model';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { ResponseError } from '@backstage/errors';
 
 export const jenkinsApiRef = createApiRef<JenkinsApi>({
   id: 'plugin.jenkins.service2',
@@ -66,7 +68,7 @@ export interface Project {
   inQueue: string;
   // added by us
   status: string; // == inQueue ? 'queued' : lastBuild.building ? 'running' : lastBuild.result,
-  onRestartClick: () => Promise<Response>; // TODO rename to handle.* ? also, should this be on lastBuild?
+  onRestartClick: () => Promise<void>; // TODO rename to handle.* ? also, should this be on lastBuild?
 }
 
 export interface JenkinsApi {
@@ -106,7 +108,7 @@ export interface JenkinsApi {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
-  }): Promise<Response>;
+  }): Promise<void>;
 }
 
 export class JenkinsClient implements JenkinsApi {
@@ -198,7 +200,7 @@ export class JenkinsClient implements JenkinsApi {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
-  }): Promise<Response> {
+  }): Promise<void> {
     const url = `${await this.discoveryApi.getBaseUrl(
       'jenkins',
     )}/v1/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(
@@ -208,12 +210,16 @@ export class JenkinsClient implements JenkinsApi {
     )}/${encodeURIComponent(buildNumber)}:rebuild`;
 
     const idToken = await this.getToken();
-    return fetch(url, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
     });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
   }
 
   private async getToken() {

@@ -24,6 +24,8 @@ import { buildRouteRef } from '../../../../plugin';
 import { Progress, Table, TableColumn } from '@backstage/core-components';
 import { Project } from '../../../../api/JenkinsApi';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { ResponseError } from '@backstage/errors';
 
 const FailCount = ({ count }: { count: number }): JSX.Element | null => {
   if (count !== 0) {
@@ -182,19 +184,16 @@ const generatedColumns: TableColumn[] = [
           if (row.onRestartClick) {
             setIsLoadingRebuild(true);
             try {
-              const response = await row.onRestartClick();
-              const body = (await response.json()) as {
-                error?: { message: string };
-              };
-              if (response.status !== 200) {
+              await row.onRestartClick();
+              alertApi.post({
+                message: 'Jenkins re-build has been successfully executed',
+                severity: 'success',
+              });
+            } catch (e) {
+              if (e instanceof ResponseError) {
                 alertApi.post({
-                  message: `Jenkins re-build has been failed. Reason: ${body.error?.message}`,
+                  message: `Jenkins re-build has been failed. Error: ${e.message}`,
                   severity: 'error',
-                });
-              } else {
-                alertApi.post({
-                  message: 'Jenkins re-build has been successfully executed',
-                  severity: 'success',
                 });
               }
             } finally {
