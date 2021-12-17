@@ -14,4 +14,4 @@
 '@backstage/plugin-sonarqube': patch
 ---
 
-Fixed Link component import and usage. Now using backstage verion of Link
+Prefer using `Link` from `@backstage/core-components` rather than material-UI.

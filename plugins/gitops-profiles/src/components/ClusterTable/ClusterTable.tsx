@@ -24,7 +24,7 @@ const columns: TableColumn[] = [
     field: 'name',
     highlight: true,
     render: (componentData: any) => (
-      <Link to={`/gitops-cluster/${componentData.name}`}>
+      <Link to={`/gitops-cluster/${encodeURIComponent(componentData.name)}`}>
         {componentData.name}
       </Link>
     ),

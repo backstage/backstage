@@ -38,9 +38,7 @@ const DefaultEntityPage = () => (
           <Typography variant="body1">
             To override this component with your custom implementation, read
             docs on{' '}
-            <Link target="_blank" to="https://backstage.io/docs">
-              backstage.io/docs
-            </Link>
+            <Link to="https://backstage.io/docs">backstage.io/docs</Link>
           </Typography>
         </Content>
       }

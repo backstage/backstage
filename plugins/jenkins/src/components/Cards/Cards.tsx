@@ -67,7 +67,7 @@ const WidgetContent = ({
         'latest run': displayDate,
         duration: displayDuration,
         link: (
-          <Link to={latestRun.lastBuild.url} target="_blank">
+          <Link to={latestRun.lastBuild.url}>
             See more on Jenkins{' '}
             <ExternalLinkIcon className={classes.externalLinkIcon} />
           </Link>

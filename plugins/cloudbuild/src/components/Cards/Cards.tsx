@@ -63,7 +63,7 @@ const WidgetContent = ({
         ),
         message: lastRun.message,
         url: (
-          <Link to={lastRun.googleUrl ?? ''} target="_blank">
+          <Link to={lastRun.googleUrl ?? ''}>
             See more on Google{' '}
             <ExternalLinkIcon className={classes.externalLinkIcon} />
           </Link>

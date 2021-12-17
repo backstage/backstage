@@ -80,14 +80,11 @@ export function ErrorPage(props: IErrorPageProps) {
           Looks like someone dropped the mic!
         </Typography>
         <Typography variant="h6">
-          <Link to=".." data-testid="go-back-link">
+          <Link to="#" data-testid="go-back-link" onClick={() => navigate(-1)}>
             Go back
           </Link>
-          ... or please{' '}
-          <Link to={support.url} rel="noopener noreferrer">
-            contact support
-          </Link>{' '}
-          if you think this is a bug.
+          ... or please <Link to={support.url}>contact support</Link> if you
+          think this is a bug.
         </Typography>
       </Grid>
     </Grid>

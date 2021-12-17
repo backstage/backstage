@@ -94,6 +94,7 @@ export const WithLink = () => (
     </TestApiProvider>
   </div>
 );
+
 export const Fixed = () => (
   <div style={containerStyle}>
     <TestApiProvider apis={apis}>
@@ -106,6 +107,7 @@ export const Fixed = () => (
     </TestApiProvider>
   </div>
 );
+
 export const Warning = () => (
   <div style={containerStyle}>
     <TestApiProvider apis={apis}>

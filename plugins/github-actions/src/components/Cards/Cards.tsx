@@ -71,7 +71,7 @@ const WidgetContent = ({
         ),
         message: lastRun.message,
         url: (
-          <Link to={lastRun.githubUrl ?? ''} target="_blank">
+          <Link to={lastRun.githubUrl ?? ''}>
             See more on GitHub{' '}
             <ExternalLinkIcon className={classes.externalLinkIcon} />
           </Link>

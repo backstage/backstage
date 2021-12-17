@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Progress, Table, TableColumn } from '@backstage/core-components';
+import { Link, Progress, Table, TableColumn } from '@backstage/core-components';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { Box, IconButton, Link, Tooltip, Typography } from '@material-ui/core';
+import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import { default as React, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { Project } from '../../../../api/JenkinsApi';
 import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
 import { buildRouteRef } from '../../../../plugin';
@@ -107,7 +106,6 @@ const generatedColumns: TableColumn[] = [
 
         return (
           <Link
-            component={RouterLink}
             to={routeLink({
               jobFullName: encodeURIComponent(row.fullName),
               buildNumber: String(row.lastBuild?.number),
@@ -127,7 +125,7 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<Project>) => (
       <>
         <p>
-          <Link to={row.lastBuild?.source?.url || ''} target="_blank">
+          <Link to={row.lastBuild?.source?.url ?? ''}>
             {row.lastBuild?.source?.branchName}
           </Link>
         </p>
@@ -154,7 +152,7 @@ const generatedColumns: TableColumn[] = [
         <>
           <p>
             {row.lastBuild?.tests && (
-              <Link to={row.lastBuild?.tests.testUrl || ''} target="_blank">
+              <Link to={row.lastBuild?.tests.testUrl ?? ''}>
                 {row.lastBuild?.tests.passed} / {row.lastBuild?.tests.total}{' '}
                 passed
                 <FailSkippedWidget

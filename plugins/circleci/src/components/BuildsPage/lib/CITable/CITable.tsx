@@ -121,9 +121,7 @@ const SourceInfo = ({ build }: { build: CITableBuildInfo }) => {
         <Typography variant="button">{source?.branchName}</Typography>
         <Typography variant="body1">
           {source?.commit?.url !== undefined ? (
-            <Link to={source?.commit?.url} target="_blank">
-              {source?.commit.shortHash}
-            </Link>
+            <Link to={source?.commit?.url}>{source?.commit.shortHash}</Link>
           ) : (
             source?.commit.shortHash
           )}
@@ -169,7 +167,7 @@ const generatedColumns: TableColumn[] = [
     field: 'buildName',
     highlight: true,
     render: (row: Partial<CITableBuildInfo>) => (
-      <Link to={row?.buildUrl!} target="_blank">
+      <Link to={row?.buildUrl ?? ''}>
         <Box display="flex" alignItems="center">
           <LaunchIcon fontSize="small" color="disabled" />
           <Box mr={1} />
