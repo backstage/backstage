@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { InfoCard, InfoCardVariants } from '../../layout/InfoCard';
+import React from 'react';
 import { BottomLinkProps } from '../../layout/BottomLink';
+import { InfoCard, InfoCardVariants } from '../../layout/InfoCard';
 import { Gauge, GaugePropsGetColor } from './Gauge';
 
 type Props = {
@@ -44,7 +44,13 @@ const useStyles = makeStyles(
   { name: 'BackstageGaugeCard' },
 );
 
-/** @public */
+/**
+ * {@link Gauge | Gauge} with header, subheader and footer
+ *
+ * @public
+ * @remarks
+ *
+ */
 export function GaugeCard(props: Props) {
   const classes = useStyles(props);
   const { title, subheader, progress, inverse, deepLink, variant, getColor } =

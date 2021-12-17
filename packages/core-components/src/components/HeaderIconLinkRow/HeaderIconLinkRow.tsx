@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
-import { makeStyles } from '@material-ui/core/styles';
 
 /** @public */
 export type HeaderIconLinkRowClassKey = 'links';
@@ -37,7 +37,13 @@ type Props = {
   links: IconLinkVerticalProps[];
 };
 
-/** @public */
+/**
+ * List of links mapped to {@link IconLinkVertical | IconLinkVertical}
+ *
+ * @public
+ * @remarks
+ *
+ */
 export function HeaderIconLinkRow(props: Props) {
   const { links } = props;
   const classes = useStyles();

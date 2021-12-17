@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { BackstagePalette, BackstageTheme } from '@backstage/theme';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Circle } from 'rc-progress';
 import React from 'react';
 
@@ -96,7 +96,14 @@ export const getProgressColor: GaugePropsGetColor = ({
   return palette.status.ok;
 };
 
-/** @public */
+/**
+ * Circular Progress Bar
+ *
+ * @public
+ * @remarks
+ *
+ */
+
 export function Gauge(props: GaugeProps) {
   const { getColor = getProgressColor } = props;
   const classes = useStyles(props);

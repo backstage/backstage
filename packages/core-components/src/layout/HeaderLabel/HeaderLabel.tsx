@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
 /** @public */
@@ -60,7 +60,13 @@ type HeaderLabelProps = {
   url?: string;
 };
 
-/** @public */
+/**
+ * Additional label to main {@link Header | Header}
+ *
+ * @public
+ * @remarks
+ *
+ */
 export function HeaderLabel(props: HeaderLabelProps) {
   const { label, value, url } = props;
   const classes = useStyles();
