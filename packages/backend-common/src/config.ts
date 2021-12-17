@@ -202,7 +202,6 @@ export async function loadBackendConfig(options: {
   const config = new ObservableConfigProxy(options.logger);
   const { appConfigs } = await loadConfig({
     configRoot: paths.targetRoot,
-    configPaths: [],
     configTargets: configTargets,
     watch: {
       onChange(newConfigs) {
