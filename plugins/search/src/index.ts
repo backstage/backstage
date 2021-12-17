@@ -46,6 +46,7 @@ export type {
   FiltersState,
   SearchBarProps,
   SearchBarBaseProps,
+  SearchModalProps,
 } from './components';
 export {
   DefaultResultListItem,
