@@ -300,8 +300,8 @@ export const patchMkdocsYmlPreBuild = async (
 
 /**
  * Update docs/index.md file before TechDocs generator uses it to generate docs site,
- * falling back to docs/README.md or README.md in case a default docs/index.md
- * is not provided.
+ * falling back to README.md or readme.md or docs/readme.md in case a default docs/index.md
+ * or docs/README.md is not provided.
  */
 export const patchIndexPreBuild = async ({
   inputDir,
