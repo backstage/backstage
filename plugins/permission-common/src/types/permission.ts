@@ -42,7 +42,11 @@ export type Permission = {
   resourceType?: string;
 };
 
-export interface PermissionClientInterface {
+/**
+ * A client interacting with the permission backend can implement this authorizer interface.
+ * @public
+ */
+export interface PermissionAuthorizer {
   authorize(
     requests: AuthorizeRequest[],
     options?: AuthorizeRequestOptions,
@@ -50,7 +54,7 @@ export interface PermissionClientInterface {
 }
 
 /**
- * Options for authorization requests; currently only an optional auth token.
+ * Options for authorization requests.
  * @public
  */
 export type AuthorizeRequestOptions = {

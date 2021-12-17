@@ -5,13 +5,14 @@
 ```ts
 import { AuthorizeRequest } from '@backstage/plugin-permission-common';
 import { AuthorizeRequestOptions } from '@backstage/plugin-permission-common';
+import { AuthorizeResponse } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
 import { Config } from '@backstage/config';
-import { DiscoveryApi } from '@backstage/plugin-permission-common';
-import { PermissionClient } from '@backstage/plugin-permission-common';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Router } from 'express';
 import { TokenManager } from '@backstage/backend-common';
 
@@ -126,13 +127,17 @@ export type PolicyDecision =
   | ConditionalPolicyDecision;
 
 // @public
-export class ServerPermissionClient extends PermissionClient {
-  constructor(options: {
-    discoveryApi: DiscoveryApi;
-    configApi: Config;
-    serverTokenManager: TokenManager;
-  });
+export class ServerPermissionClient implements PermissionAuthorizer {
   // (undocumented)
-  shouldBypass(options?: AuthorizeRequestOptions): Promise<boolean>;
+  authorize(
+    requests: AuthorizeRequest[],
+    options?: AuthorizeRequestOptions,
+  ): Promise<AuthorizeResponse[]>;
+  // (undocumented)
+  static create(options: {
+    discovery: PluginEndpointDiscovery;
+    config: Config;
+    tokenManager: TokenManager;
+  }): ServerPermissionClient;
 }
 ```

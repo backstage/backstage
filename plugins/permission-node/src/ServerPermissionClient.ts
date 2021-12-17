@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-import { TokenManager, ServerTokenManager } from '@backstage/backend-common';
+import {
+  TokenManager,
+  ServerTokenManager,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import {
   AuthorizeRequest,
   AuthorizeRequestOptions,
   AuthorizeResponse,
   AuthorizeResult,
-  DiscoveryApi,
   PermissionClient,
-  PermissionClientInterface,
+  PermissionAuthorizer,
 } from '@backstage/plugin-permission-common';
 
 /**
@@ -32,32 +35,47 @@ import {
  * backend-to-backend requests.
  * @public
  */
-export class ServerPermissionClient implements PermissionClientInterface {
-  private readonly serverTokenManager: TokenManager;
+export class ServerPermissionClient implements PermissionAuthorizer {
   private readonly permissionClient: PermissionClient;
+  private readonly tokenManager: TokenManager;
   private readonly permissionEnabled: boolean;
 
-  constructor(options: {
-    discoveryApi: DiscoveryApi;
-    configApi: Config;
-    serverTokenManager: TokenManager;
+  static create(options: {
+    discovery: PluginEndpointDiscovery;
+    config: Config;
+    tokenManager: TokenManager;
   }) {
-    const { discoveryApi, configApi, serverTokenManager } = options;
-    this.permissionClient = new PermissionClient({ discoveryApi, configApi });
-    this.permissionEnabled =
-      options.configApi.getOptionalBoolean('permission.enabled') ?? false;
+    const { discovery, config, tokenManager } = options;
+    const permissionClient = new PermissionClient({ discovery, config });
+    const permissionEnabled =
+      config.getOptionalBoolean('permission.enabled') ?? false;
 
     if (
-      this.permissionEnabled &&
+      permissionEnabled &&
       // TODO: Find a cleaner way of ensuring usage of SERVER token manager when
       // permissions are enabled.
-      serverTokenManager instanceof ServerTokenManager.noop().constructor
+      tokenManager instanceof ServerTokenManager.noop().constructor
     ) {
       throw new Error(
         'You must configure at least one key in backend.auth.keys if permissions are enabled.',
       );
     }
-    this.serverTokenManager = serverTokenManager;
+
+    return new ServerPermissionClient({
+      permissionClient,
+      tokenManager,
+      permissionEnabled,
+    });
+  }
+
+  private constructor(options: {
+    permissionClient: PermissionClient;
+    tokenManager: TokenManager;
+    permissionEnabled: boolean;
+  }) {
+    this.permissionClient = options.permissionClient;
+    this.tokenManager = options.tokenManager;
+    this.permissionEnabled = options.permissionEnabled;
   }
 
   async authorize(
@@ -83,7 +101,7 @@ export class ServerPermissionClient implements PermissionClientInterface {
     if (!token) {
       return false;
     }
-    return this.serverTokenManager
+    return this.tokenManager
       .authenticate(token)
       .then(() => true)
       .catch(() => false);

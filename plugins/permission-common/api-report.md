@@ -68,16 +68,21 @@ export type PermissionAttributes = {
 };
 
 // @public
-export class PermissionClient {
-  constructor(options: { discoveryApi: DiscoveryApi; configApi: Config });
+export interface PermissionAuthorizer {
+  // (undocumented)
   authorize(
     requests: AuthorizeRequest[],
     options?: AuthorizeRequestOptions,
   ): Promise<AuthorizeResponse[]>;
-  // (undocumented)
-  protected readonly enabled: boolean;
-  // (undocumented)
-  protected shouldBypass(_options?: AuthorizeRequestOptions): Promise<boolean>;
+}
+
+// @public
+export class PermissionClient implements PermissionAuthorizer {
+  constructor(options: { discovery: DiscoveryApi; config: Config });
+  authorize(
+    requests: AuthorizeRequest[],
+    options?: AuthorizeRequestOptions,
+  ): Promise<AuthorizeResponse[]>;
 }
 
 // @public

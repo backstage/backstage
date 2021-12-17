@@ -27,9 +27,9 @@ export class IdentityPermissionApi implements PermissionApi {
   authorize(request: AuthorizeRequest): Promise<AuthorizeResponse>;
   // (undocumented)
   static create(options: {
-    configApi: Config;
-    discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
+    config: Config;
+    discovery: DiscoveryApi;
+    identity: IdentityApi;
   }): IdentityPermissionApi;
 }
 

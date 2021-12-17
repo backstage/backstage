@@ -64,10 +64,10 @@ function makeCreateEnv(config: Config) {
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
   const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
-  const permissions = new ServerPermissionClient({
-    discoveryApi: discovery,
-    configApi: config,
-    serverTokenManager: tokenManager,
+  const permissions = ServerPermissionClient.create({
+    discovery,
+    config,
+    tokenManager,
   });
 
   root.info(`Created UrlReader ${reader}`);

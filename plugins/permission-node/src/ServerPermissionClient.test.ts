@@ -16,14 +16,17 @@
 
 import { ServerPermissionClient } from '.';
 import {
-  DiscoveryApi,
   Permission,
   Identified,
   AuthorizeRequest,
   AuthorizeResult,
 } from '@backstage/plugin-permission-common';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger, ServerTokenManager } from '@backstage/backend-common';
+import {
+  getVoidLogger,
+  PluginEndpointDiscovery,
+  ServerTokenManager,
+} from '@backstage/backend-common';
 import { setupServer } from 'msw/node';
 import { RestContext, rest } from 'msw';
 
@@ -37,8 +40,11 @@ const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
   return res(json(responses));
 });
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
-const discoveryApi: DiscoveryApi = {
+const discovery: PluginEndpointDiscovery = {
   async getBaseUrl() {
+    return mockBaseUrl;
+  },
+  async getExternalBaseUrl() {
     return mockBaseUrl;
   },
 };
@@ -62,10 +68,10 @@ describe('ServerPermissionClient', () => {
   afterEach(() => server.resetHandlers());
 
   it('should bypass authorization if permissions are disabled', async () => {
-    const client = new ServerPermissionClient({
-      discoveryApi,
-      configApi: new ConfigReader({}),
-      serverTokenManager: ServerTokenManager.noop(),
+    const client = ServerPermissionClient.create({
+      discovery,
+      config: new ConfigReader({}),
+      tokenManager: ServerTokenManager.noop(),
     });
 
     await client.authorize([{ permission: testPermission }]);
@@ -75,10 +81,10 @@ describe('ServerPermissionClient', () => {
 
   it('should bypass authorization if permissions are enabled and request has valid server token', async () => {
     const tokenManager = ServerTokenManager.fromConfig(config, { logger });
-    const client = new ServerPermissionClient({
-      discoveryApi,
-      configApi: config,
-      serverTokenManager: tokenManager,
+    const client = ServerPermissionClient.create({
+      discovery,
+      config,
+      tokenManager,
     });
 
     await client.authorize([{ permission: testPermission }], {
@@ -90,10 +96,10 @@ describe('ServerPermissionClient', () => {
 
   it('should authorize normally if permissions are enabled and request does not have valid server token', async () => {
     const tokenManager = ServerTokenManager.fromConfig(config, { logger });
-    const client = new ServerPermissionClient({
-      discoveryApi,
-      configApi: config,
-      serverTokenManager: tokenManager,
+    const client = ServerPermissionClient.create({
+      discovery,
+      config,
+      tokenManager,
     });
 
     await client.authorize([{ permission: testPermission }], {
@@ -104,13 +110,12 @@ describe('ServerPermissionClient', () => {
   });
 
   it('should error if permissions are enabled but a no-op token manager is configured', async () => {
-    expect(
-      () =>
-        new ServerPermissionClient({
-          discoveryApi,
-          configApi: config,
-          serverTokenManager: ServerTokenManager.noop(),
-        }),
+    expect(() =>
+      ServerPermissionClient.create({
+        discovery,
+        config,
+        tokenManager: ServerTokenManager.noop(),
+      }),
     ).toThrowError(
       'You must configure at least one key in backend.auth.keys if permissions are enabled.',
     );

@@ -26,6 +26,6 @@ export type { DiscoveryApi } from './discovery';
 export type {
   PermissionAttributes,
   Permission,
-  PermissionClientInterface,
+  PermissionAuthorizer,
   AuthorizeRequestOptions,
 } from './permission';
