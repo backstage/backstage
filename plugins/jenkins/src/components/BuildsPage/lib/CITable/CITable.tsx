@@ -186,13 +186,13 @@ const generatedColumns: TableColumn[] = [
             try {
               await row.onRestartClick();
               alertApi.post({
-                message: 'Jenkins re-build has been successfully executed',
+                message: 'Jenkins re-build has successfully executed',
                 severity: 'success',
               });
             } catch (e) {
               if (e instanceof ResponseError) {
                 alertApi.post({
-                  message: `Jenkins re-build has been failed. Error: ${e.message}`,
+                  message: `Jenkins re-build has failed. Error: ${e.message}`,
                   severity: 'error',
                 });
               }

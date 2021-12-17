@@ -72,7 +72,7 @@ export interface JenkinsApi {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
-  }): Promise<Response>;
+  }): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "jenkinsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -117,7 +117,7 @@ export class JenkinsClient implements JenkinsApi {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
-  }): Promise<Response>;
+  }): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "jenkinsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
