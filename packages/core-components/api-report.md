@@ -309,7 +309,7 @@ export function EmailIcon(props: IconComponentProps): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function EmptyState(props: Props_2): JSX.Element;
 
 // @public (undocumented)
@@ -331,7 +331,7 @@ export type ErrorBoundaryProps = {
 
 // Warning: (ae-forgotten-export) The symbol "IErrorPageProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function ErrorPage(props: IErrorPageProps): JSX.Element;
 
 // @public (undocumented)
@@ -364,7 +364,7 @@ export type FeatureCalloutCircleClassKey =
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function FeatureCalloutCircular(
   props: PropsWithChildren<Props_4>,
 ): JSX.Element;
@@ -372,12 +372,12 @@ export function FeatureCalloutCircular(
 // @public (undocumented)
 export type FiltersContainerClassKey = 'root' | 'title';
 
-// @public (undocumented)
+// @public
 export function Gauge(props: GaugeProps): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function GaugeCard(props: Props_10): JSX.Element;
 
 // @public (undocumented)
@@ -415,7 +415,7 @@ export function GroupIcon(props: IconComponentProps): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function Header(props: PropsWithChildren<Props_14>): JSX.Element;
 
 // @public (undocumented)
@@ -431,8 +431,9 @@ export type HeaderClassKey =
   | 'breadcrumbTitle';
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "IconLinkVertical"
 //
-// @public (undocumented)
+// @public
 export function HeaderIconLinkRow(props: Props_5): JSX.Element;
 
 // @public (undocumented)
@@ -440,7 +441,7 @@ export type HeaderIconLinkRowClassKey = 'links';
 
 // Warning: (ae-forgotten-export) The symbol "HeaderLabelProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function HeaderLabel(props: HeaderLabelProps): JSX.Element;
 
 // @public (undocumented)
@@ -448,7 +449,7 @@ export type HeaderLabelClassKey = 'root' | 'label' | 'value';
 
 // Warning: (ae-forgotten-export) The symbol "HeaderTabsProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function HeaderTabs(props: HeaderTabsProps): JSX.Element;
 
 // @public (undocumented)
@@ -466,7 +467,7 @@ export function HomepageTimer(_props: {}): JSX.Element | null;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function HorizontalScrollGrid(
   props: PropsWithChildren<Props_6>,
 ): JSX.Element;
@@ -506,7 +507,7 @@ export type IconLinkVerticalProps = {
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function InfoCard(props: Props_15): JSX.Element;
 
 // @public (undocumented)

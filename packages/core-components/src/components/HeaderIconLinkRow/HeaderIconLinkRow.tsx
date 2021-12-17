@@ -38,7 +38,7 @@ type Props = {
 };
 
 /**
- * List of links mapped to {@link IconLinkVertical | IconLinkVertical}
+ * HTML nav tag with links mapped inside
  *
  * @public
  * @remarks
