@@ -99,6 +99,7 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
       getExternalBaseUrl: jest.fn(),
     };
     mockTokenManager = {
+      isSecure: true,
       getToken: jest.fn().mockResolvedValue({ token: '' }),
       authenticate: jest.fn(),
     };
@@ -165,6 +166,7 @@ describe('DefaultTechDocsCollator', () => {
       getExternalBaseUrl: jest.fn(),
     };
     mockTokenManager = {
+      isSecure: true,
       getToken: jest.fn().mockResolvedValue({ token: '' }),
       authenticate: jest.fn(),
     };

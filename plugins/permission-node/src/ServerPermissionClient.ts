@@ -16,7 +16,6 @@
 
 import {
   TokenManager,
-  ServerTokenManager,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
@@ -50,12 +49,7 @@ export class ServerPermissionClient implements PermissionAuthorizer {
     const permissionEnabled =
       config.getOptionalBoolean('permission.enabled') ?? false;
 
-    if (
-      permissionEnabled &&
-      // TODO: Find a cleaner way of ensuring usage of SERVER token manager when
-      // permissions are enabled.
-      tokenManager instanceof ServerTokenManager.noop().constructor
-    ) {
+    if (permissionEnabled && !tokenManager.isSecure) {
       throw new Error(
         'You must configure at least one key in backend.auth.keys if permissions are enabled.',
       );

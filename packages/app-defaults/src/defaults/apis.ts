@@ -61,7 +61,6 @@ import {
   oidcAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
-  identityApiRef,
 } from '@backstage/core-plugin-api';
 import {
   permissionApiRef,
