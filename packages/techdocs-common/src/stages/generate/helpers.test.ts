@@ -308,20 +308,17 @@ describe('helpers', () => {
       mockFs.restore();
     });
 
-    it("should use docs/README.md if docs/index.md doesn't exists", async () => {
+    it('should have no effect if docs/README.md exists', async () => {
       mockFs({
         '/docs/README.md': 'docs/README.md content',
-        '/README.md': 'main README.md content',
       });
 
       await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
 
-      expect(fs.readFileSync('/docs/index.md', 'utf-8')).toEqual(
+      expect(fs.readFileSync('/docs/README.md', 'utf-8')).toEqual(
         'docs/README.md content',
       );
-      expect(warn.mock.calls).toEqual([
-        [`${path.normalize('docs/index.md')} not found.`],
-      ]);
+      expect(warn).not.toHaveBeenCalledWith();
       mockFs.restore();
     });
 
@@ -336,8 +333,7 @@ describe('helpers', () => {
         'main README.md content',
       );
       expect(warn.mock.calls).toEqual([
-        [`${path.normalize('docs/index.md')} not found.`],
-        [`${path.normalize('docs/README.md')} not found.`],
+        ['No index.md or README.md found in /docs.'],
         [`${path.normalize('docs/readme.md')} not found.`],
       ]);
       mockFs.restore();
@@ -349,17 +345,24 @@ describe('helpers', () => {
       await patchIndexPreBuild({ inputDir: '/', logger: mockLogger });
 
       expect(() => fs.readFileSync('/docs/index.md', 'utf-8')).toThrow();
-      const paths = [
+      const targets = [
         path.normalize('docs/index.md'),
         path.normalize('docs/README.md'),
+      ];
+      const fallbacks = [
         path.normalize('docs/readme.md'),
         'README.md',
         'readme.md',
       ];
       expect(warn.mock.calls).toEqual([
-        ...paths.map(p => [`${p} not found.`]),
+        ['No index.md or README.md found in /docs.'],
+        ...fallbacks.map(p => [`${p} not found.`]),
         [
-          `Could not find any techdocs' index file. Please make sure at least one of ${paths
+          `Could not find any techdocs' index file. Please make sure at least one of ${[
+            targets,
+            fallbacks,
+          ]
+            .flat()
             .map(p => path.sep + p)
             .join(' ')} exists.`,
         ],

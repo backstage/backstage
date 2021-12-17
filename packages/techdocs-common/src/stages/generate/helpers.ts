@@ -314,13 +314,16 @@ export const patchIndexPreBuild = async ({
 }) => {
   const docsPath = path.join(inputDir, docsDir);
   const indexMdPath = path.join(docsPath, 'index.md');
+  const readmeMdPath = path.join(docsPath, 'README.md');
 
-  if (await fs.pathExists(indexMdPath)) {
+  if (
+    (await fs.pathExists(indexMdPath)) ||
+    (await fs.pathExists(readmeMdPath))
+  ) {
     return;
   }
-  logger.warn(`${path.join(docsDir, 'index.md')} not found.`);
+  logger.warn(`No index.md or README.md found in ${docsPath}.`);
   const fallbacks = [
-    path.join(docsPath, 'README.md'),
     path.join(docsPath, 'readme.md'),
     path.join(inputDir, 'README.md'),
     path.join(inputDir, 'readme.md'),
@@ -339,6 +342,7 @@ export const patchIndexPreBuild = async ({
   logger.warn(
     `Could not find any techdocs' index file. Please make sure at least one of ${[
       indexMdPath,
+      readmeMdPath,
       ...fallbacks,
     ].join(' ')} exists.`,
   );
