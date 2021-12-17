@@ -18,7 +18,7 @@ import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   GithubAppCredentialsMux,
-  GithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
   GitHubIntegrationConfig,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -86,7 +86,8 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
 
     const allUsersMap = new Map();
     const baseUrl = new URL(location.target).origin;
-    const credentialsProvider = GithubCredentialsProvider.create(gitHubConfig);
+    const credentialsProvider =
+      DefaultGithubCredentialsProvider.create(gitHubConfig);
 
     const orgsToProcess = this.orgs.length
       ? this.orgs

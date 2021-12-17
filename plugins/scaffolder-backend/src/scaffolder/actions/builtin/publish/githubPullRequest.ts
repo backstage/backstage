@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import { parseRepoUrl, isExecutable } from './util';
 
 import {
-  GithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { zipObject } from 'lodash';
@@ -76,7 +76,7 @@ export const defaultClientFactory = async ({
   }
 
   const credentialsProvider =
-    GithubCredentialsProvider.create(integrationConfig);
+    DefaultGithubCredentialsProvider.create(integrationConfig);
 
   if (!credentialsProvider) {
     throw new InputError(

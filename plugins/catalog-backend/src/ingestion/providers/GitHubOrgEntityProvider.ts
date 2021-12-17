@@ -20,6 +20,7 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
+  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   GitHubIntegrationConfig,
   ScmIntegrations,
@@ -77,7 +78,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       logger: Logger;
     },
   ) {
-    this.credentialsProvider = GithubCredentialsProvider.create(
+    this.credentialsProvider = DefaultGithubCredentialsProvider.create(
       options.gitHubConfig,
     );
   }

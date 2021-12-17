@@ -17,7 +17,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
-  GithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -87,7 +87,7 @@ describe('GithubOrgReaderProcessor', () => {
 
       (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-      jest.spyOn(GithubCredentialsProvider, 'create').mockReturnValue({
+      jest.spyOn(DefaultGithubCredentialsProvider, 'create').mockReturnValue({
         getCredentials: mockGetCredentials,
       } as any);
 
@@ -135,7 +135,7 @@ describe('GithubOrgReaderProcessor', () => {
 
       (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-      jest.spyOn(GithubCredentialsProvider, 'create').mockReturnValue({
+      jest.spyOn(DefaultGithubCredentialsProvider, 'create').mockReturnValue({
         getCredentials: mockGetCredentials,
       } as any);
 

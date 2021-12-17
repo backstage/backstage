@@ -22,10 +22,11 @@ export type { GithubAppConfig, GitHubIntegrationConfig } from './config';
 export { getGitHubFileFetchUrl, getGitHubRequestOptions } from './core';
 export {
   GithubAppCredentialsMux,
-  GithubCredentialsProvider,
-} from './GithubCredentialsProvider';
+  DefaultGithubCredentialsProvider,
+} from './DefaultGithubCredentialsProvider';
 export type {
   GithubCredentials,
+  GithubCredentialsProvider,
   GithubCredentialType,
 } from './GithubCredentialsProvider';
 export { GitHubIntegration, replaceGitHubUrlType } from './GitHubIntegration';
