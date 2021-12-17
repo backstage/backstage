@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-react
 
+## 0.6.6
+
+### Patch Changes
+
+- 4c0f0b2003: Removed dependency on `@backstage/core-app-api`.
+
+## 0.6.5
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- 69034b4419: Fix typo in catalog-react package.json
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/core-app-api@0.2.0
+  - @backstage/version-bridge@0.1.1
+
 ## 0.6.4
 
 ### Patch Changes

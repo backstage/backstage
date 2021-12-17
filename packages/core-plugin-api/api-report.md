@@ -10,6 +10,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
+import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { Observable as Observable_2 } from '@backstage/types';
 import { Observer as Observer_2 } from '@backstage/types';
 import { ProfileInfo as ProfileInfo_2 } from '@backstage/core-plugin-api';
@@ -43,10 +44,7 @@ export type AnalyticsApi = {
 export const analyticsApiRef: ApiRef<AnalyticsApi>;
 
 // @public
-export const AnalyticsContext: ({
-  attributes,
-  children,
-}: {
+export const AnalyticsContext: (options: {
   attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
 }) => JSX.Element;
@@ -196,7 +194,7 @@ export type AppThemeApi = {
 // @public
 export const appThemeApiRef: ApiRef<AppThemeApi>;
 
-// @public
+// @alpha
 export const atlassianAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
@@ -208,27 +206,26 @@ export function attachComponentData<P>(
   data: unknown,
 ): void;
 
-// @public
+// @public @deprecated
 export const auth0AuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
+// @public @deprecated (undocumented)
+export type AuthProvider = Omit<AuthProviderInfo, 'id'>;
+
 // @public
-export type AuthProvider = {
+export type AuthProviderInfo = {
+  id: string;
   title: string;
   icon: IconComponent;
 };
 
-// @public
-export type AuthRequester<AuthResponse> = (
-  scopes: Set<string>,
-) => Promise<AuthResponse>;
+// @public @deprecated (undocumented)
+export type AuthRequester<T> = OAuthRequester<T>;
 
-// @public
-export type AuthRequesterOptions<AuthResponse> = {
-  provider: AuthProvider;
-  onAuthRequest(scopes: Set<string>): Promise<AuthResponse>;
-};
+// @public @deprecated (undocumented)
+export type AuthRequesterOptions<T> = OAuthRequesterOptions<T>;
 
 // @public
 export type AuthRequestOptions = {
@@ -236,18 +233,21 @@ export type AuthRequestOptions = {
   instantPopup?: boolean;
 };
 
-// @public
-export type BackstageIdentity = {
-  id: string;
-  idToken: string;
-  token: string;
-};
+// @public @deprecated
+export type BackstageIdentity = BackstageIdentityResponse;
 
 // @public
 export type BackstageIdentityApi = {
   getBackstageIdentity(
     options?: AuthRequestOptions,
-  ): Promise<BackstageIdentity | undefined>;
+  ): Promise<BackstageIdentityResponse | undefined>;
+};
+
+// @public
+export type BackstageIdentityResponse = {
+  id: string;
+  token: string;
+  identity: BackstageUserIdentity;
 };
 
 // @public
@@ -265,6 +265,13 @@ export type BackstagePlugin<
 };
 
 // @public
+export type BackstageUserIdentity = {
+  type: 'user';
+  userEntityRef: string;
+  ownershipEntityRefs: string[];
+};
+
+// @alpha
 export const bitbucketAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
@@ -504,17 +511,17 @@ export function getComponentData<T>(
   type: string,
 ): T | undefined;
 
-// @public
+// @alpha
 export const githubAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
-// @public
+// @alpha
 export const gitlabAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
-// @public
+// @alpha
 export const googleAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -531,8 +538,13 @@ export type IconComponent = ComponentType<{
 // @public
 export type IdentityApi = {
   getUserId(): string;
-  getProfile(): ProfileInfo;
   getIdToken(): Promise<string | undefined>;
+  getProfile(): ProfileInfo;
+  getProfileInfo(): Promise<ProfileInfo>;
+  getBackstageIdentity(): Promise<BackstageUserIdentity>;
+  getCredentials(): Promise<{
+    token?: string;
+  }>;
   signOut(): Promise<void>;
 };
 
@@ -557,7 +569,7 @@ export type MergeParams<
   P2 extends AnyParams,
 > = (P1[keyof P1] extends never ? {} : P1) & (P2 extends undefined ? {} : P2);
 
-// @public
+// @alpha
 export const microsoftAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -566,7 +578,7 @@ export const microsoftAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
+// @public @deprecated
 export const oauth2ApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -585,14 +597,27 @@ export type OAuthApi = {
 
 // @public
 export type OAuthRequestApi = {
-  createAuthRequester<AuthResponse>(
-    options: AuthRequesterOptions<AuthResponse>,
-  ): AuthRequester<AuthResponse>;
-  authRequest$(): Observable_2<PendingAuthRequest[]>;
+  createAuthRequester<OAuthResponse>(
+    options: OAuthRequesterOptions<OAuthResponse>,
+  ): OAuthRequester<OAuthResponse>;
+  authRequest$(): Observable_2<PendingOAuthRequest[]>;
 };
 
 // @public
 export const oauthRequestApiRef: ApiRef<OAuthRequestApi>;
+
+// @public
+export type OAuthRequester<TAuthResponse> = (
+  scopes: Set<string>,
+) => Promise<TAuthResponse>;
+
+// @public
+export type OAuthRequesterOptions<TOAuthResponse> = {
+  provider: Omit<AuthProviderInfo, 'id'> & {
+    id?: string;
+  };
+  onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
+};
 
 // @public
 export type OAuthScope = string | string[];
@@ -603,7 +628,7 @@ export type Observable<T> = Observable_2<T>;
 // @public @deprecated
 export type Observer<T> = Observer_2<T>;
 
-// @public
+// @public @deprecated
 export const oidcAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -612,7 +637,7 @@ export const oidcAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
+// @alpha
 export const oktaAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -624,7 +649,7 @@ export const oktaAuthApiRef: ApiRef<
 // @public
 export type OldIconComponent = ComponentType<SvgIconProps>;
 
-// @public
+// @alpha
 export const oneloginAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -666,10 +691,15 @@ export type PathParams<S extends string> = {
   [name in ParamNames<S>]: string;
 };
 
+// @public @deprecated (undocumented)
+export type PendingAuthRequest = PendingOAuthRequest;
+
 // @public
-export type PendingAuthRequest = {
-  provider: AuthProvider;
-  reject: () => void;
+export type PendingOAuthRequest = {
+  provider: Omit<AuthProviderInfo, 'id'> & {
+    id?: string;
+  };
+  reject(): void;
   trigger(): Promise<void>;
 };
 
@@ -725,7 +755,7 @@ export type RouteRef<Params extends AnyParams = any> = {
   title?: string;
 };
 
-// @public
+// @public @deprecated
 export const samlAuthApiRef: ApiRef<
   ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
@@ -745,10 +775,10 @@ export enum SessionState {
 
 // @public
 export type SignInPageProps = {
-  onResult(result: SignInResult): void;
+  onSignInSuccess(identityApi: IdentityApi_2): void;
 };
 
-// @public
+// @public @deprecated
 export type SignInResult = {
   userId: string;
   profile: ProfileInfo_2;

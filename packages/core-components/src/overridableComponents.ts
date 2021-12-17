@@ -34,6 +34,7 @@ import {
   LifecycleClassKey,
   MarkdownContentClassKey,
   LoginRequestListItemClassKey,
+  LogViewerClassKey,
   OAuthRequestDialogClassKey,
   OverflowTooltipClassKey,
   GaugeClassKey,
@@ -110,6 +111,7 @@ type BackstageComponentsNameToClassKey = {
   BackstageLifecycle: LifecycleClassKey;
   BackstageMarkdownContent: MarkdownContentClassKey;
   BackstageLoginRequestListItem: LoginRequestListItemClassKey;
+  BackstageLogViewer: LogViewerClassKey;
   OAuthRequestDialog: OAuthRequestDialogClassKey;
   BackstageOverflowTooltip: OverflowTooltipClassKey;
   BackstageGauge: GaugeClassKey;

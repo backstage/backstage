@@ -187,6 +187,9 @@ export const MockCostInsightsApiProvider = ({
     getIdToken: jest.fn(),
     getUserId: jest.fn(),
     signOut: jest.fn(),
+    getProfileInfo: jest.fn(),
+    getBackstageIdentity: jest.fn(),
+    getCredentials: jest.fn(),
   };
 
   const defaultCostInsightsApi: CostInsightsApi = {

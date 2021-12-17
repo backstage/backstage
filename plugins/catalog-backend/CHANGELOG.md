@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend
 
+## 0.19.1
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- 6bccc7d794: The `pagedRequest` method in the GitLab ingestion client is now public for re-use and may be used to make other calls to the GitLab API. Developers can now pass in a type into the GitLab `paginated` and `pagedRequest` functions as generics instead of forcing `any` (defaults to `any` to maintain compatibility). The `GitLabClient` now provides a `isSelfManaged` convenience method.
+- 0e4daaa753: Reject catalog entities that have duplicate fields that vary only in casing.
+- 98a9c35f0c: Honor database migration configuration
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+
 ## 0.19.0
 
 ### Minor Changes

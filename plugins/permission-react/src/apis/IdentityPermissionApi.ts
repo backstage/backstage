@@ -34,15 +34,12 @@ export class IdentityPermissionApi implements PermissionApi {
     private readonly identityApi: IdentityApi,
   ) {}
 
-  static create({
-    configApi,
-    discoveryApi,
-    identityApi,
-  }: {
+  static create(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
   }) {
+    const { configApi, discoveryApi, identityApi } = options;
     const permissionClient = new PermissionClient({ discoveryApi, configApi });
     return new IdentityPermissionApi(permissionClient, identityApi);
   }

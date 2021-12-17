@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { act } from 'react-dom/test-utils';
+import { act } from '@testing-library/react';
 
 import { Progress } from './Progress';
 

@@ -1,5 +1,17 @@
 # @backstage/plugin-permission-node
 
+## 0.2.1
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- a036b65c2f: Updated to use the new `BackstageIdentityResponse` type from `@backstage/plugin-auth-backend`.
+
+  The `BackstageIdentityResponse` type is backwards compatible with the `BackstageIdentity`, and provides an additional `identity` field with the claims of the user.
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.5.0
+
 ## 0.2.0
 
 ### Minor Changes

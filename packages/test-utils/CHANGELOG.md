@@ -1,5 +1,15 @@
 # @backstage/test-utils
 
+## 0.1.24
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/core-app-api@0.2.0
+
 ## 0.1.23
 
 ### Patch Changes

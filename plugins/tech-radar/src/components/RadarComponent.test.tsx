@@ -15,10 +15,9 @@
  */
 
 import React from 'react';
-import { render, waitForElement } from '@testing-library/react';
+import { act, render, waitForElement } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
-import { act } from 'react-dom/test-utils';
 import { TestApiProvider, withLogCollector } from '@backstage/test-utils';
 
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';

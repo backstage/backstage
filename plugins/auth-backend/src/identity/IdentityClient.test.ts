@@ -96,7 +96,15 @@ describe('IdentityClient', () => {
     it('should accept fresh token', async () => {
       const token = await factory.issueToken({ claims: { sub: 'foo' } });
       const response = await client.authenticate(token);
-      expect(response).toEqual({ id: 'foo', idToken: token });
+      expect(response).toEqual({
+        id: 'foo',
+        token: token,
+        identity: {
+          ownershipEntityRefs: [],
+          type: 'user',
+          userEntityRef: 'foo',
+        },
+      });
     });
 
     it('should throw on incorrect issuer', async () => {
@@ -159,7 +167,15 @@ describe('IdentityClient', () => {
       jest.spyOn(Date, 'now').mockImplementation(() => fixedTime);
       const token = await factory.issueToken({ claims: { sub: 'foo' } });
       const response = await client.authenticate(token);
-      expect(response).toEqual({ id: 'foo', idToken: token });
+      expect(response).toEqual({
+        id: 'foo',
+        token: token,
+        identity: {
+          ownershipEntityRefs: [],
+          type: 'user',
+          userEntityRef: 'foo',
+        },
+      });
     });
 
     it('should not be fooled by the none algorithm', async () => {

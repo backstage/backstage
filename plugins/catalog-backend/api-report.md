@@ -752,13 +752,7 @@ export type DbPageInfo =
 //
 // @public (undocumented)
 export class DefaultCatalogCollator implements DocumentCollator {
-  constructor({
-    discovery,
-    locationTemplate,
-    filter,
-    catalogClient,
-    tokenManager,
-  }: {
+  constructor(options: {
     discovery: PluginEndpointDiscovery;
     tokenManager: TokenManager;
     locationTemplate?: string;

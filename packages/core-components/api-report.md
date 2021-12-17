@@ -9,6 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstagePalette } from '@backstage/theme';
 import { BackstageTheme } from '@backstage/theme';
+import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { ButtonProps as ButtonProps_2 } from '@material-ui/core/Button';
 import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
@@ -20,6 +21,7 @@ import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinearProgressProps } from '@material-ui/core/LinearProgress';
 import { LinkProps as LinkProps_2 } from '@material-ui/core/Link';
 import { LinkProps as LinkProps_3 } from 'react-router-dom';
@@ -27,6 +29,7 @@ import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import { MaterialTableProps } from '@material-table/core';
 import { NavLinkProps } from 'react-router-dom';
 import { Overrides } from '@material-ui/core/styles/overrides';
+import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
@@ -35,6 +38,7 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { SignInPageProps } from '@backstage/core-plugin-api';
+import { SignInResult } from '@backstage/core-plugin-api';
 import { SparklinesLineProps } from 'react-sparklines';
 import { SparklinesProps } from 'react-sparklines';
 import { StyledComponentProps } from '@material-ui/core/styles';
@@ -604,6 +608,50 @@ export type LinkProps = LinkProps_2 &
 //
 // @public (undocumented)
 export type LoginRequestListItemClassKey = 'root';
+
+// @public
+export function LogViewer(props: LogViewerProps): JSX.Element;
+
+// @public
+export type LogViewerClassKey =
+  | 'root'
+  | 'header'
+  | 'log'
+  | 'line'
+  | 'lineSelected'
+  | 'lineCopyButton'
+  | 'lineNumber'
+  | 'textHighlight'
+  | 'textSelectedHighlight'
+  | 'modifierBold'
+  | 'modifierItalic'
+  | 'modifierUnderline'
+  | 'modifierForegroundBlack'
+  | 'modifierForegroundRed'
+  | 'modifierForegroundGreen'
+  | 'modifierForegroundYellow'
+  | 'modifierForegroundBlue'
+  | 'modifierForegroundMagenta'
+  | 'modifierForegroundCyan'
+  | 'modifierForegroundWhite'
+  | 'modifierForegroundGrey'
+  | 'modifierBackgroundBlack'
+  | 'modifierBackgroundRed'
+  | 'modifierBackgroundGreen'
+  | 'modifierBackgroundYellow'
+  | 'modifierBackgroundBlue'
+  | 'modifierBackgroundMagenta'
+  | 'modifierBackgroundCyan'
+  | 'modifierBackgroundWhite'
+  | 'modifierBackgroundGrey';
+
+// @public
+export interface LogViewerProps {
+  classes?: {
+    root?: string;
+  };
+  text: string;
+}
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "MarkdownContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1982,10 +2030,7 @@ export const SidebarSpacer: React_2.ComponentType<
 >;
 
 // @public
-export const SidebarSubmenu: ({
-  title,
-  children,
-}: PropsWithChildren<SidebarSubmenuProps>) => JSX.Element;
+export const SidebarSubmenu: (props: SidebarSubmenuProps) => JSX.Element;
 
 // @public
 export const SidebarSubmenuItem: (
@@ -2316,6 +2361,33 @@ export function useQueryParamState<T>(
 
 // @public (undocumented)
 export function UserIcon(props: IconComponentProps): JSX.Element;
+
+// @public
+export class UserIdentity implements IdentityApi {
+  static create(options: {
+    identity: BackstageUserIdentity;
+    authApi: ProfileInfoApi & BackstageIdentityApi & SessionApi;
+    profile?: ProfileInfo;
+  }): IdentityApi;
+  static createGuest(): IdentityApi;
+  static fromLegacy(result: SignInResult): IdentityApi;
+  // (undocumented)
+  getBackstageIdentity(): Promise<BackstageUserIdentity>;
+  // (undocumented)
+  getCredentials(): Promise<{
+    token?: string | undefined;
+  }>;
+  // (undocumented)
+  getIdToken(): Promise<string | undefined>;
+  // (undocumented)
+  getProfile(): ProfileInfo;
+  // (undocumented)
+  getProfileInfo(): Promise<ProfileInfo>;
+  // (undocumented)
+  getUserId(): string;
+  // (undocumented)
+  signOut(): Promise<void>;
+}
 
 // Warning: (ae-missing-release-tag) "useSupportConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

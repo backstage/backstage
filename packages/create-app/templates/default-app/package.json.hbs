@@ -31,14 +31,14 @@
   },
   "devDependencies": {
     "@backstage/cli": "^{{version '@backstage/cli'}}",
-    "@spotify/prettier-config": "^11.0.0",
+    "@spotify/prettier-config": "^12.0.0",
     "concurrently": "^6.0.0",
     "lerna": "^4.0.0",
     "prettier": "^2.3.2"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
       "eslint --fix",
       "prettier --write"
     ],

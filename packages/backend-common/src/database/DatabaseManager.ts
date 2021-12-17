@@ -28,6 +28,7 @@ import {
   normalizeConnection,
 } from './connection';
 import { PluginDatabaseManager } from './types';
+import path from 'path';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -35,6 +36,15 @@ import { PluginDatabaseManager } from './types';
 function pluginPath(pluginId: string): string {
   return `plugin.${pluginId}`;
 }
+
+/**
+ * Configuration options object.
+ *
+ * @public
+ */
+export type DatabaseManagerOptions = {
+  migrations?: PluginDatabaseManager['migrations'];
+};
 
 /** @public */
 export class DatabaseManager {
@@ -47,19 +57,25 @@ export class DatabaseManager {
    * names if config is not provided.
    *
    * @param config - The loaded application configuration.
+   * @param options - An optional configuration object.
    */
-  static fromConfig(config: Config): DatabaseManager {
+  static fromConfig(
+    config: Config,
+    options?: DatabaseManagerOptions,
+  ): DatabaseManager {
     const databaseConfig = config.getConfig('backend.database');
 
     return new DatabaseManager(
       databaseConfig,
       databaseConfig.getOptionalString('prefix'),
+      options,
     );
   }
 
   private constructor(
     private readonly config: Config,
     private readonly prefix: string = 'backstage_plugin_',
+    private readonly options?: DatabaseManagerOptions,
   ) {}
 
   /**
@@ -75,6 +91,10 @@ export class DatabaseManager {
     return {
       getClient(): Promise<Knex> {
         return _this.getDatabase(pluginId);
+      },
+      migrations: {
+        skip: false,
+        ..._this.options?.migrations,
       },
     };
   }
@@ -95,10 +115,18 @@ export class DatabaseManager {
     const connection = this.getConnectionConfig(pluginId);
 
     if (this.getClientType(pluginId).client === 'sqlite3') {
-      // sqlite database name should fallback to ':memory:' as a special case
-      return (
-        (connection as Knex.Sqlite3ConnectionConfig)?.filename ?? ':memory:'
-      );
+      const sqliteFilename: string | undefined = (
+        connection as Knex.Sqlite3ConnectionConfig
+      ).filename;
+
+      if (sqliteFilename === ':memory:') {
+        return sqliteFilename;
+      }
+
+      const sqliteDirectory =
+        (connection as { directory?: string }).directory ?? '.';
+
+      return path.join(sqliteDirectory, sqliteFilename ?? `${pluginId}.sqlite`);
     }
 
     const databaseName = (connection as Knex.ConnectionConfig)?.database;
@@ -186,6 +214,17 @@ export class DatabaseManager {
       this.config.get('connection'),
       this.config.getString('client'),
     );
+
+    if (
+      client === 'sqlite3' &&
+      'filename' in baseConnection &&
+      baseConnection.filename !== ':memory:'
+    ) {
+      throw new Error(
+        '`connection.filename` is not supported for the base sqlite connection. Prefer `connection.directory` or provide a filename for the plugin connection instead.',
+      );
+    }
+
     // Databases cannot be shared unless the `pluginDivisionMode` is set to `schema`. The
     // `database` property from the base connection is omitted unless `pluginDivisionMode`
     // is set to `schema`. SQLite3's `filename` property is an exception as this is used as a

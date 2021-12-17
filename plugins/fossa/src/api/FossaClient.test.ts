@@ -24,20 +24,11 @@ import { UrlPatternDiscovery } from '@backstage/core-app-api';
 
 const server = setupServer();
 
-const identityApi: IdentityApi = {
-  getUserId() {
-    return 'jane-fonda';
-  },
-  getProfile() {
-    return { email: 'jane-fonda@spotify.com' };
-  },
+const identityApi = {
   async getIdToken() {
     return Promise.resolve('fake-id-token');
   },
-  async signOut() {
-    return Promise.resolve();
-  },
-};
+} as IdentityApi;
 
 describe('FossaClient', () => {
   setupRequestMockHandlers(server);

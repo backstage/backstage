@@ -44,6 +44,9 @@ describe('TechDocsStorageClient', () => {
     getProfile: jest.fn(),
     getUserId: jest.fn(),
     signOut: jest.fn(),
+    getProfileInfo: jest.fn(),
+    getBackstageIdentity: jest.fn(),
+    getCredentials: jest.fn(),
   };
 
   beforeEach(() => {
@@ -56,6 +59,12 @@ describe('TechDocsStorageClient', () => {
 
     await expect(
       storageApi.getBaseUrl('test.js', mockEntity, ''),
+    ).resolves.toEqual(
+      `${mockBaseUrl}/static/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
+    );
+
+    await expect(
+      storageApi.getBaseUrl('../test.js', mockEntity, 'some-docs-path'),
     ).resolves.toEqual(
       `${mockBaseUrl}/static/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
     );
