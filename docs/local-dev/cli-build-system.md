@@ -152,4 +152,47 @@ variables, and provided some sane default flags like `--watch` if executed
 within a Git repository.
 
 The by far biggest amount of work is done by the Jest configuration included
-with the Backstage CLI. It both takes care of providing a default configuration
+with the Backstage CLI. It both takes care of providing a default Jest
+configuration, as well as allowing for configuration overrides to be defined in
+each `package.json`. How this can be done in practice is discussed in the
+configuration section below.
+
+### Building
+
+The primary purpose of the build process is to prepare packages for publishing,
+although it is also used as part of the backend bundling process which we will
+discuss below. Since it's only used in these two cases, any Backstage app that
+does not use the Backend parts of the project may not need to interact with the
+build process at all. It can nevertheless be useful to know how it works, since
+all of the published Backstage packages are built using this process.
+
+The build is currently using [Rollup](https://rollupjs.org/) and executes in
+complete isolation for each individual package. There are currently three
+different commands in the Backstage CLI that invokes the build process,
+`plugin:build`, `backend:build`, and simply `build`. The two former are
+pre-configured commands for frontend and backend plugins, while the `build`
+command provides more control over the output. It is likely that the two
+specialized commands disappear in the future, leaving just the `build` command.
+
+There are three different possible outputs of the build process: JavaScript in
+CommonJS module format, JavaScript in ESM format, and type declarations. Each
+invocation of a build command will write one or more of these outputs to the
+`dist` folder in the package, and in addition copy any asset files like
+stylesheets or images. For more details on what syntax and file formats are
+supported by the build process, see the transpilation section below.
+
+When building CommonJS or ESM output, the build commands will always use
+`src/index.ts` as the entrypoint. All dependencies of the package will be marked
+as external, meaning that in general it is only the contents of the `src` folder
+that ends up being compiled and output to `dist`, any imported external
+dependencies, even within the monorepo, will stay intact.
+
+The build of the type definitions works quite differently. The entrypoint of the
+type definition build is the relative location of the package within the
+`dist-types` folder in the project root. This means that it is important to run
+type checking before building any packages with type definitions, and that
+emitting type declarations must be enable in the TypeScript configuration. The
+reason for the type definition build step is to strip out all types but the ones
+that are exported from the package, leaving a much cleaner type definition file
+and making sure that the type definitions are in sync with the generated
+JavaScript.
