@@ -21,7 +21,6 @@ import {
   ParamKeys,
   OptionalParams,
 } from './types';
-import { OldIconComponent } from '../icons/types';
 
 /**
  * @internal
