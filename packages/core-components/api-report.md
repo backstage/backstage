@@ -431,7 +431,6 @@ export type HeaderClassKey =
   | 'breadcrumbTitle';
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "IconLinkVertical"
 //
 // @public
 export function HeaderIconLinkRow(props: Props_5): JSX.Element;
@@ -525,7 +524,7 @@ export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
 
 // Warning: (ae-forgotten-export) The symbol "IntroCardProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function IntroCard(props: IntroCardProps): JSX.Element;
 
 // Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
