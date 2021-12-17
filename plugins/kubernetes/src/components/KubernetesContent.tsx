@@ -28,7 +28,7 @@ import { CustomisationProps } from '../api/types';
 
 type KubernetesContentProps = {
   entity: Entity;
-  customisationProps?: CustomisationProps;
+  customisationProps?: typeof CustomisationProps;
   children?: React.ReactNode;
 };
 
