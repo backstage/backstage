@@ -90,10 +90,18 @@ export class JsonRulesEngineFactChecker
       rule.name = techInsightCheck.id;
       // Only run checks that have all the facts available:
       const hasAllFacts = techInsightCheck.factIds.every(
-        factId => !!facts[factId],
+        factId => facts[factId],
       );
       if (hasAllFacts) {
         engine.addRule({ ...techInsightCheck.rule, event: noopEvent });
+      } else {
+        this.logger.warn(
+          `Skipping ${
+            rule.name
+          } due to missing facts: ${techInsightCheck.factIds
+            .filter(factId => !facts[factId])
+            .join(', ')}`,
+        );
       }
     });
     const factValues = Object.values(facts).reduce(
