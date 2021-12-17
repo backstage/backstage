@@ -104,7 +104,7 @@ export type BottomLinkProps = {
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function Breadcrumbs(props: Props_20): JSX.Element;
 
 // @public (undocumented)
