@@ -45,7 +45,7 @@ export type LoadConfigOptionsWatch = {
 
 export type LoadConfigOptionsRemote = {
   /**
-   * An optional remote config reloading period, in seconds
+   * A remote config reloading period, in seconds
    */
   reloadIntervalSeconds: number;
 };
@@ -114,8 +114,16 @@ export async function loadConfig(
     .filter((e): e is { url: string } => e.hasOwnProperty('url'))
     .map(configTarget => configTarget.url);
 
-  if (remote === undefined && configUrls.length > 0) {
-    throw new Error(`Remote config detected but this feature is turned off`);
+  if (remote === undefined) {
+    if (configUrls.length > 0) {
+      throw new Error(
+        `Please make sure you are passing the remote option when loading remote configurations. See https://backstage.io/docs/conf/writing#configuration-files for detailed info.`,
+      );
+    }
+  } else if (remote.reloadIntervalSeconds <= 0) {
+    throw new Error(
+      `Remote config must be contain a non zero reloadIntervalSeconds: <seconds> value`,
+    );
   }
 
   // If no paths are provided, we default to reading
