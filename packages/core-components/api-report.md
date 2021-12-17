@@ -115,7 +115,7 @@ export type BreadcrumbsStyledBoxClassKey = 'root';
 
 // Warning: (ae-forgotten-export) The symbol "IconComponentProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function BrokenImageIcon(props: IconComponentProps): JSX.Element;
 
 // @public
@@ -129,7 +129,7 @@ export type CardActionsTopRightClassKey = 'root';
 
 // Warning: (ae-forgotten-export) The symbol "CardTabProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function CardTab(props: PropsWithChildren<CardTabProps>): JSX.Element;
 
 // @public (undocumented)
@@ -159,14 +159,13 @@ export interface CodeSnippetProps {
 }
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "Content" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export function Content(props: PropsWithChildren<Props_13>): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "ContentHeaderProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function ContentHeader(
   props: PropsWithChildren<ContentHeaderProps>,
 ): JSX.Element;

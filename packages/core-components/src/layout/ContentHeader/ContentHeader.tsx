@@ -18,9 +18,9 @@
  * TODO favoriteable capability
  */
 
-import React, { PropsWithChildren, ReactNode } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 
 /** @public */
@@ -94,7 +94,14 @@ type ContentHeaderProps = {
   textAlign?: 'left' | 'right' | 'center';
 };
 
-/** @public */
+/**
+ * Wrapper of material-ui h2 Typography component with body2 description
+ *
+ * @public
+ * @remarks
+ *
+ */
+
 export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
   const {
     description,

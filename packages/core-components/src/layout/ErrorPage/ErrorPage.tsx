@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
-import { MicDrop } from './MicDrop';
+import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import React from 'react';
 import { useNavigate } from 'react-router';
 import { useSupportConfig } from '../../hooks';
+import { MicDrop } from './MicDrop';
 
 interface IErrorPageProps {
   status: string;
@@ -55,7 +55,13 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageErrorPage' },
 );
 
-/** @public */
+/**
+ * Error page with status and description
+ *
+ * @public
+ * @remarks
+ *
+ */
 export function ErrorPage(props: IErrorPageProps) {
   const { status, statusMessage, additionalInfo } = props;
   const classes = useStyles();
