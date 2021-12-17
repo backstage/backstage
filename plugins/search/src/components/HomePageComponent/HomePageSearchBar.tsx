@@ -17,7 +17,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { SearchBarBase } from '../SearchBar';
+import { SearchBarBase, SearchBarBaseProps } from '../SearchBar';
 import { useNavigateToQuery } from '../util';
 
 const useStyles = makeStyles({
@@ -28,14 +28,21 @@ const useStyles = makeStyles({
   },
 });
 
-type Props = {
-  placeholder?: string;
-};
+export type HomePageSearchBarProps = Partial<
+  Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>
+>;
 
-export const HomePageSearchBar = ({ placeholder }: Props) => {
+export const HomePageSearchBar = ({
+  className: defaultClassName,
+  ...props
+}: HomePageSearchBarProps) => {
+  const classes = useStyles();
   const [query, setQuery] = React.useState('');
   const handleSearch = useNavigateToQuery();
-  const classes = useStyles();
+
+  const className = defaultClassName
+    ? `${classes.searchBar} ${defaultClassName}`
+    : classes.searchBar;
 
   const handleSubmit = () => {
     handleSearch({ query });
@@ -50,11 +57,11 @@ export const HomePageSearchBar = ({ placeholder }: Props) => {
 
   return (
     <SearchBarBase
+      className={className}
+      value={query}
       onSubmit={handleSubmit}
       onChange={handleChange}
-      value={query}
-      className={classes.searchBar}
-      placeholder={placeholder}
+      {...props}
     />
   );
 };
