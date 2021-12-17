@@ -2381,7 +2381,7 @@
     remark-gfm "^1.0.0"
     zen-observable "^0.8.15"
 
-"@backstage/core-components@^0.7.0", "@backstage/core-components@^0.7.6":
+"@backstage/core-components@^0.7.6":
   version "0.7.6"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.7.6.tgz#2d29480b13c607c8ea8a2821a06326bd05ca3db8"
   integrity sha512-aB0ndQDxjNW8Tkzs0rhABd8qF2wLC9f0PWKT3RMh5Tovmg6Y/OOhj+YDzlsPrYJFLwfIwFDC4iA+H1WdkFe7tg==
@@ -5511,17 +5511,17 @@
   resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-3.2.1.tgz#84fbf322485aee3a84101e189161f0687779ec8d"
   integrity sha512-8UiDeDbjCImFSfOegGu13otQ7OdP9FOYpcLjeouppnhs+MPeIEAtYS+jCcBKmi3reyTagC15/KVSRhde1wS1vg==
 
-"@roadiehq/backstage-plugin-github-insights@^1.1.23":
-  version "1.2.2"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.2.2.tgz#09d958ed15adbb598afda34187f45deedec2264d"
-  integrity sha512-ybomCU/3NIQJYahp/E78wl+JuzpwkRkhyeCcySLA45GaCz/mEqAGSs4xDZancpV2ls6nxV3mKUw/DL9afmMGAw==
+"@roadiehq/backstage-plugin-github-insights@^1.2.2":
+  version "1.3.4"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.3.4.tgz#dc7b8e50186f52c704964c06a77604b512e83444"
+  integrity sha512-wVri2Z5sKgyVQDt68WAi3H2IdkAzRljMLnuwYu/CWnCQkprcIJlIknzZK5aNjtMnNhKZDY+mHMgEPydl85Tjxw==
   dependencies:
-    "@backstage/catalog-model" "^0.9.0"
-    "@backstage/core-app-api" "^0.1.3"
-    "@backstage/core-components" "^0.7.0"
-    "@backstage/core-plugin-api" "^0.1.3"
+    "@backstage/catalog-model" "^0.9.7"
+    "@backstage/core-app-api" "^0.2.0"
+    "@backstage/core-components" "^0.8.0"
+    "@backstage/core-plugin-api" "^0.3.0"
     "@backstage/integration-react" "^0.1.10"
-    "@backstage/plugin-catalog-react" "^0.6.0"
+    "@backstage/plugin-catalog-react" "^0.6.5"
     "@backstage/theme" "^0.2.7"
     "@date-io/core" "2.10.7"
     "@material-ui/core" "^4.11.0"
