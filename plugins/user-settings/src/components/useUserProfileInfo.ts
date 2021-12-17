@@ -15,35 +15,38 @@
  */
 
 import {
-  useApi,
+  alertApiRef,
   identityApiRef,
-  BackstageUserIdentity,
-  ProfileInfo,
+  useApi,
 } from '@backstage/core-plugin-api';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useAsync } from 'react-use';
 
 export const useUserProfile = () => {
   const identityApi = useApi(identityApiRef);
+  const alertApi = useApi(alertApiRef);
 
-  const [displayName, setDisplayName] = useState<
-    string | BackstageUserIdentity
-  >('');
-  const [profile, setProfile] = useState<ProfileInfo>({});
-
-  const getUserProfile = async () => {
-    const backstageIdentity = await identityApi.getBackstageIdentity();
-    const profileInfo = await identityApi.getProfileInfo();
-    const name = profileInfo.displayName ?? backstageIdentity;
-
-    setDisplayName(name);
-    setProfile(profileInfo);
-  };
+  const { value, loading, error } = useAsync(async () => {
+    return {
+      profile: await identityApi.getProfileInfo(),
+      identity: await identityApi.getBackstageIdentity(),
+    };
+  }, []);
 
   useEffect(() => {
-    if (!displayName) {
-      getUserProfile();
+    if (error) {
+      alertApi.post({
+        message: `Failed to load user identity: ${error}`,
+        severity: "error",
+      });
     }
-  });
+  }, [error, alertApi]);
 
-  return { profile, displayName };
+  return {
+    profile: loading ? {} : value!.profile,
+    displayName: loading
+      ? ''
+      : value!.profile.displayName ?? value!.identity.userEntityRef,
+    loading,
+  };
 };
