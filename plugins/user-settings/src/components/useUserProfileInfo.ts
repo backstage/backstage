@@ -17,6 +17,7 @@
 import {
   alertApiRef,
   identityApiRef,
+  ProfileInfo,
   useApi,
 } from '@backstage/core-plugin-api';
 import { useEffect } from 'react';
@@ -37,16 +38,22 @@ export const useUserProfile = () => {
     if (error) {
       alertApi.post({
         message: `Failed to load user identity: ${error}`,
-        severity: "error",
+        severity: 'error',
       });
     }
   }, [error, alertApi]);
 
+  if (loading || error) {
+    return {
+      profile: {} as ProfileInfo,
+      displayName: '',
+      loading,
+    };
+  }
+
   return {
-    profile: loading ? {} : value!.profile,
-    displayName: loading
-      ? ''
-      : value!.profile.displayName ?? value!.identity.userEntityRef,
+    profile: value!.profile,
+    displayName: value!.profile.displayName ?? value!.identity.userEntityRef,
     loading,
   };
 };
