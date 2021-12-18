@@ -35,25 +35,26 @@ export type AlertMessage = {
   severity?: 'success' | 'info' | 'warning' | 'error';
 };
 
-// @public
+// @alpha
 export type AnalyticsApi = {
   captureEvent(event: AnalyticsEvent): void;
 };
 
-// @public
+// @alpha
 export const analyticsApiRef: ApiRef<AnalyticsApi>;
 
-// @public
+// @alpha
 export const AnalyticsContext: (options: {
   attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
 }) => JSX.Element;
 
-// @public
-export type AnalyticsContextValue = CommonAnalyticsContext &
-  AnyAnalyticsContext;
+// @alpha
+export type AnalyticsContextValue = CommonAnalyticsContext & {
+  [param in string]: string | boolean | number | undefined;
+};
 
-// @public
+// @alpha
 export type AnalyticsEvent = {
   action: string;
   subject: string;
@@ -62,12 +63,12 @@ export type AnalyticsEvent = {
   context: AnalyticsContextValue;
 };
 
-// @public
+// @alpha
 export type AnalyticsEventAttributes = {
   [attribute in string]: string | boolean | number;
 };
 
-// @public
+// @alpha
 export type AnalyticsTracker = {
   captureEvent: (
     action: string,
@@ -79,7 +80,7 @@ export type AnalyticsTracker = {
   ) => void;
 };
 
-// @public
+// @public @deprecated
 export type AnyAnalyticsContext = {
   [param in string]: string | boolean | number | undefined;
 };
@@ -143,18 +144,6 @@ export type ApiRefConfig = {
   description?: string;
 };
 
-// @public @deprecated
-export type ApiRefsToTypes<
-  T extends {
-    [key in string]: ApiRef<unknown>;
-  },
-> = {
-  [key in keyof T]: ApiRefType<T[key]>;
-};
-
-// @public @deprecated
-export type ApiRefType<T> = T extends ApiRef<infer U> ? U : never;
-
 // @public
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
@@ -211,22 +200,21 @@ export const auth0AuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
+// @public @deprecated (undocumented)
+export type AuthProvider = Omit<AuthProviderInfo, 'id'>;
+
 // @public
-export type AuthProvider = {
+export type AuthProviderInfo = {
+  id: string;
   title: string;
   icon: IconComponent;
 };
 
-// @public
-export type AuthRequester<AuthResponse> = (
-  scopes: Set<string>,
-) => Promise<AuthResponse>;
+// @public @deprecated (undocumented)
+export type AuthRequester<T> = OAuthRequester<T>;
 
-// @public
-export type AuthRequesterOptions<AuthResponse> = {
-  provider: AuthProvider;
-  onAuthRequest(scopes: Set<string>): Promise<AuthResponse>;
-};
+// @public @deprecated (undocumented)
+export type AuthRequesterOptions<T> = OAuthRequesterOptions<T>;
 
 // @public
 export type AuthRequestOptions = {
@@ -283,7 +271,7 @@ export type BootErrorPageProps = {
   error: Error;
 };
 
-// @public
+// @alpha
 export type CommonAnalyticsContext = {
   pluginId: string;
   routeRef: string;
@@ -507,6 +495,14 @@ export enum FeatureFlagState {
 }
 
 // @public
+export type FetchApi = {
+  fetch: typeof fetch;
+};
+
+// @public
+export const fetchApiRef: ApiRef<FetchApi>;
+
+// @public
 export function getComponentData<T>(
   node: ReactNode,
   type: string,
@@ -598,14 +594,27 @@ export type OAuthApi = {
 
 // @public
 export type OAuthRequestApi = {
-  createAuthRequester<AuthResponse>(
-    options: AuthRequesterOptions<AuthResponse>,
-  ): AuthRequester<AuthResponse>;
-  authRequest$(): Observable_2<PendingAuthRequest[]>;
+  createAuthRequester<OAuthResponse>(
+    options: OAuthRequesterOptions<OAuthResponse>,
+  ): OAuthRequester<OAuthResponse>;
+  authRequest$(): Observable_2<PendingOAuthRequest[]>;
 };
 
 // @public
 export const oauthRequestApiRef: ApiRef<OAuthRequestApi>;
+
+// @public
+export type OAuthRequester<TAuthResponse> = (
+  scopes: Set<string>,
+) => Promise<TAuthResponse>;
+
+// @public
+export type OAuthRequesterOptions<TOAuthResponse> = {
+  provider: Omit<AuthProviderInfo, 'id'> & {
+    id?: string;
+  };
+  onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
+};
 
 // @public
 export type OAuthScope = string | string[];
@@ -679,10 +688,15 @@ export type PathParams<S extends string> = {
   [name in ParamNames<S>]: string;
 };
 
+// @public @deprecated (undocumented)
+export type PendingAuthRequest = PendingOAuthRequest;
+
 // @public
-export type PendingAuthRequest = {
-  provider: AuthProvider;
-  reject: () => void;
+export type PendingOAuthRequest = {
+  provider: Omit<AuthProviderInfo, 'id'> & {
+    id?: string;
+  };
+  reject(): void;
   trigger(): Promise<void>;
 };
 
@@ -803,7 +817,7 @@ export type TypesToApiRefs<T> = {
   [key in keyof T]: ApiRef<T[key]>;
 };
 
-// @public
+// @alpha
 export function useAnalytics(): AnalyticsTracker;
 
 // @public

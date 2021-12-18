@@ -55,7 +55,7 @@ export interface RouterOptions {
   catalogClient: CatalogApi;
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
   taskBroker?: TaskBroker;
 }
 

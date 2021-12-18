@@ -201,6 +201,7 @@ describe('GitlabDiscoveryProcessor', () => {
           location: {
             type: 'url',
             target: 'https://gitlab.fake/1/-/blob/main/catalog-info.yaml',
+            presence: 'optional',
           },
           optional: true,
         },
@@ -209,6 +210,7 @@ describe('GitlabDiscoveryProcessor', () => {
           location: {
             type: 'url',
             target: 'https://gitlab.fake/2/-/blob/master/catalog-info.yaml',
+            presence: 'optional',
           },
           optional: true,
         },
@@ -246,6 +248,7 @@ describe('GitlabDiscoveryProcessor', () => {
           location: {
             type: 'url',
             target: 'https://gitlab.fake/1/-/blob/master/catalog-info.yaml',
+            presence: 'optional',
           },
           optional: true,
         },

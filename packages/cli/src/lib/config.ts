@@ -59,7 +59,6 @@ export async function loadCliConfig(options: Options) {
       ? async name => process.env[name] || 'x'
       : undefined,
     configRoot: paths.targetRoot,
-    configPaths: [],
     configTargets: configTargets,
   });
 

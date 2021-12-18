@@ -81,6 +81,7 @@ export function locationSpecToLocationEntity(
     spec: {
       type: location.type,
       target: location.target,
+      presence: location.presence,
     },
   };
 

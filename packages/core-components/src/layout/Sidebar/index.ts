@@ -33,7 +33,12 @@ export {
   SidebarSpacer,
   SidebarScrollWrapper,
 } from './Items';
-export type { SidebarItemClassKey } from './Items';
+export type {
+  SidebarItemClassKey,
+  SidebarSpaceClassKey,
+  SidebarSpacerClassKey,
+  SidebarDividerClassKey,
+} from './Items';
 export { IntroCard, SidebarIntro } from './Intro';
 export type { SidebarIntroClassKey } from './Intro';
 export {

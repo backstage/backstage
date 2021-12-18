@@ -67,7 +67,7 @@ production build.
 
 ## Configuration Files
 
-It is possible to have multiple configuration files (bundled and/or remote),
+It is possible to have multiple configuration files (bundled and/or remote\*),
 both to support different environments, but also to define configuration that is
 local to specific packages. The configuration files to load are selected using a
 `--config <local-path|url>` flag, and it is possible to load any number of
@@ -76,6 +76,9 @@ example `package/backend`. This means that to select a config file in the repo
 root when running the backend, you would use `--config ../../my-config.yaml`,
 and for config file on a config server you would use
 `--config https://some.domain.io/app-config.yaml`
+
+**Note**: In case URLs are passed, it is also needed to set the remote option in
+the loadBackendConfig call.
 
 If no `config` flags are specified, the default behavior is to load
 `app-config.yaml` and, if it exists, `app-config.local.yaml` from the repo root.

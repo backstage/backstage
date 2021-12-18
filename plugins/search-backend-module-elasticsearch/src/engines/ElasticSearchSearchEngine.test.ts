@@ -15,7 +15,6 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { SearchEngine } from '@backstage/search-common';
 import { Client } from '@elastic/elasticsearch';
 import Mock from '@elastic/elasticsearch-mock';
 import {
@@ -33,28 +32,31 @@ class ElasticSearchSearchEngineForTranslatorTests extends ElasticSearchSearchEng
 }
 
 const mock = new Mock();
-const client = new Client({
+const options = {
   node: 'http://localhost:9200',
   Connection: mock.getConnection(),
-});
+};
 
 describe('ElasticSearchSearchEngine', () => {
-  let testSearchEngine: SearchEngine;
+  let testSearchEngine: ElasticSearchSearchEngine;
   let inspectableSearchEngine: ElasticSearchSearchEngineForTranslatorTests;
+  let client: Client;
 
   beforeEach(() => {
     testSearchEngine = new ElasticSearchSearchEngine(
-      client,
+      options,
       'search',
       '',
       getVoidLogger(),
     );
     inspectableSearchEngine = new ElasticSearchSearchEngineForTranslatorTests(
-      client,
+      options,
       'search',
       '',
       getVoidLogger(),
     );
+    // eslint-disable-next-line dot-notation
+    client = testSearchEngine['elasticSearchClient'];
   });
 
   describe('queryTranslator', () => {

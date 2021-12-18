@@ -24,7 +24,7 @@ jobs:
             recent activity from the author. It will be closed if no further activity occurs.
             If you are the author and the PR has been closed, feel free to re-open the PR and continue the contribution!
           days-before-pr-stale: 7
-          days-before-pr-close: 3
+          days-before-pr-close: 5
           exempt-pr-labels: reviewer-approved,awaiting-review
           stale-pr-label: stale
           operations-per-run: 100

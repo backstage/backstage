@@ -1,5 +1,19 @@
 # @backstage/core-plugin-api
 
+## 0.3.1
+
+### Patch Changes
+
+- 18d4f500af: Deprecated the `AnyAnalyticsContext` type and mark the `AnalyticsApi` experimental.
+- 8a7372cfd5: Deprecated `auth0AuthApiRef`, `oauth2ApiRef`, `oidcAuthApiRef`, `samlAuthApiRef`, and marked the rest of the auth `ApiRef`s as experimental. For more information on how to address the deprecations, see https://backstage.io/docs/api/deprecations#generic-auth-api-refs.
+- 760791a642: Renamed `AuthProvider` to `AuthProviderInfo` and add a required 'id' property to match the majority of usage. The `AuthProvider` type without the `id` property still exists but is deprecated, and all usage of it without an `id` is deprecated as well. For example, calling `createAuthRequest` without a `provider.id` is deprecated and it will be required in the future.
+
+  The following types have been renamed. The old names are still exported but deprecated, and are scheduled for removal in a future release.
+
+  - Renamed `AuthRequesterOptions` to `OAuthRequesterOptions`
+  - Renamed `AuthRequester` to `OAuthRequester`
+  - Renamed `PendingAuthRequest` to `PendingOAuthRequest`
+
 ## 0.3.0
 
 ### Minor Changes

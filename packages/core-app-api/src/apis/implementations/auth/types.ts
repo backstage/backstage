@@ -15,7 +15,7 @@
  */
 
 import {
-  AuthProvider,
+  AuthProviderInfo,
   DiscoveryApi,
   OAuthRequestApi,
 } from '@backstage/core-plugin-api';
@@ -36,5 +36,5 @@ export type OAuthApiCreateOptions = AuthApiCreateOptions & {
 export type AuthApiCreateOptions = {
   discoveryApi: DiscoveryApi;
   environment?: string;
-  provider?: AuthProvider & { id: string };
+  provider?: AuthProviderInfo;
 };

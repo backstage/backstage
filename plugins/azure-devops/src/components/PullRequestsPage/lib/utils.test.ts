@@ -19,33 +19,7 @@ import {
   PullRequestVoteStatus,
   Reviewer,
 } from '@backstage/plugin-azure-devops-common';
-import {
-  arrayExtract,
-  getCreatedByUserFilter,
-  getPullRequestGroups,
-  reviewerFilter,
-} from './utils';
-
-describe('getCreatedByUserFilter', () => {
-  it('should filter if pull request is created by user', () => {
-    const userEmail = 'user1@backstage.com';
-    const pr = {
-      createdBy: { uniqueName: userEmail },
-    } as DashboardPullRequest;
-    const result = getCreatedByUserFilter(userEmail)(pr);
-    expect(result).toBe(true);
-  });
-
-  it('should not filter if pull request is not created by user', () => {
-    const userEmail1 = 'user1@backstage.com';
-    const userEmail2 = 'user2@backstage.com';
-    const pr = {
-      createdBy: { uniqueName: userEmail1 },
-    } as DashboardPullRequest;
-    const result = getCreatedByUserFilter(userEmail2)(pr);
-    expect(result).toBe(false);
-  });
-});
+import { arrayExtract, getPullRequestGroups, reviewerFilter } from './utils';
 
 describe('reviewerFilter', () => {
   it('should return false if reviewer has no vote and is not required', () => {
@@ -128,11 +102,15 @@ describe('getPullRequestGroups', () => {
     ];
 
     const configs = [
-      { title: 'Created by me', filter: getCreatedByUserFilter(userEmail) },
+      {
+        title: 'Created by me',
+        filter: (pullRequest: DashboardPullRequest): boolean =>
+          pullRequest.createdBy?.uniqueName === userEmail,
+      },
       { title: 'Other PRs', filter: (_: unknown) => true, simplified: true },
     ];
 
-    const result = getPullRequestGroups(pullRequests, configs);
+    const result = getPullRequestGroups(pullRequests, configs) ?? [];
 
     expect(result.length).toBe(2);
 

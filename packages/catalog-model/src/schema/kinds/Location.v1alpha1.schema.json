@@ -59,6 +59,13 @@
                 ],
                 "minLength": 1
               }
+            },
+            "presence": {
+              "type": "string",
+              "description": "Whether the presence of the location target is required and it should be considered an error if it can not be found",
+              "default": "required",
+              "examples": ["required"],
+              "enum": ["required", "optional"]
             }
           }
         }

@@ -215,6 +215,7 @@ function convertReviewer(
   return {
     id: identityRef.id,
     displayName: identityRef.displayName,
+    uniqueName: identityRef.uniqueName,
     imageUrl: getAvatarUrl(identityRef),
     isRequired: identityRef.isRequired,
     isContainer: identityRef.isContainer,

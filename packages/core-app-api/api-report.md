@@ -17,15 +17,14 @@ import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '@backstage/core-plugin-api';
 import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
 import { auth0AuthApiRef } from '@backstage/core-plugin-api';
-import { AuthProvider } from '@backstage/core-plugin-api';
-import { AuthRequester } from '@backstage/core-plugin-api';
-import { AuthRequesterOptions } from '@backstage/core-plugin-api';
+import { AuthProviderInfo } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentity } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
+import { Config } from '@backstage/config';
 import { ConfigReader } from '@backstage/config';
 import { createApp as createApp_2 } from '@backstage/app-defaults';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
@@ -36,6 +35,7 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FeatureFlagsApi } from '@backstage/core-plugin-api';
 import { FeatureFlagsSaveOptions } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -43,11 +43,13 @@ import { IdentityApi } from '@backstage/core-plugin-api';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { OAuthRequestApi } from '@backstage/core-plugin-api';
+import { OAuthRequester } from '@backstage/core-plugin-api';
+import { OAuthRequesterOptions } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
-import { PendingAuthRequest } from '@backstage/core-plugin-api';
+import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { PluginOutput } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
@@ -264,9 +266,7 @@ export class Auth0Auth {
 export type AuthApiCreateOptions = {
   discoveryApi: DiscoveryApi;
   environment?: string;
-  provider?: AuthProvider & {
-    id: string;
-  };
+  provider?: AuthProviderInfo;
 };
 
 // @public
@@ -321,6 +321,12 @@ export function createApp(
 ): BackstageApp & AppContext;
 
 // @public
+export function createFetchApi(options: {
+  baseImplementation?: typeof fetch | undefined;
+  middleware?: FetchMiddleware | FetchMiddleware[] | undefined;
+}): FetchApi;
+
+// @public
 export function createSpecializedApp(options: AppOptions): BackstageApp;
 
 // @public
@@ -370,6 +376,27 @@ export type FeatureFlaggedProps = {
       without: string;
     }
 );
+
+// @public
+export interface FetchMiddleware {
+  apply(next: typeof fetch): typeof fetch;
+}
+
+// @public
+export class FetchMiddlewares {
+  static injectIdentityAuth(options: {
+    identityApi: IdentityApi;
+    config?: Config;
+    urlPrefixAllowlist?: string[];
+    header?: {
+      name: string;
+      value: (backstageToken: string) => string;
+    };
+  }): FetchMiddleware;
+  static resolvePluginProtocol(options: {
+    discoveryApi: DiscoveryApi;
+  }): FetchMiddleware;
+}
 
 // @public
 export const FlatRoutes: (props: FlatRoutesProps) => JSX.Element | null;
@@ -515,9 +542,9 @@ export type OAuthApiCreateOptions = AuthApiCreateOptions & {
 // @public
 export class OAuthRequestManager implements OAuthRequestApi {
   // (undocumented)
-  authRequest$(): Observable<PendingAuthRequest[]>;
+  authRequest$(): Observable<PendingOAuthRequest[]>;
   // (undocumented)
-  createAuthRequester<T>(options: AuthRequesterOptions<T>): AuthRequester<T>;
+  createAuthRequester<T>(options: OAuthRequesterOptions<T>): OAuthRequester<T>;
 }
 
 // @public
@@ -539,9 +566,7 @@ export type OneLoginAuthCreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
-  provider?: AuthProvider & {
-    id: string;
-  };
+  provider?: AuthProviderInfo;
 };
 
 // @public
