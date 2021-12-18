@@ -20,7 +20,6 @@ import {
   IdentityApi,
 } from '@backstage/core-plugin-api';
 import type { EntityName, EntityRef } from '@backstage/catalog-model';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { ResponseError } from '@backstage/errors';
 
 export const jenkinsApiRef = createApiRef<JenkinsApi>({
