@@ -15,7 +15,7 @@
  */
 
 import { GithubCredentials, GithubCredentialsProvider } from './types';
-import { ScmIntegrationRegistry } from '../registry';
+import { ScmIntegrationRegistry } from '../ScmIntegrationRegistry';
 import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubCredentialsProvider';
 
 /**

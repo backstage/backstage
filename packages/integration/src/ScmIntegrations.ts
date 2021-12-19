@@ -20,9 +20,13 @@ import { AzureIntegration } from './azure/AzureIntegration';
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
 import { GitHubIntegration } from './github/GitHubIntegration';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
-import { defaultScmResolveUrl } from './helpers';
-import { ScmIntegration, ScmIntegrationsGroup } from './types';
-import { ScmIntegrationRegistry } from './registry';
+import {
+  defaultScmParseUrl,
+  defaultScmResolveUrl,
+  parseShorthandScmUrl,
+} from './helpers';
+import { ScmIntegrationRegistry } from './ScmIntegrationRegistry';
+import { ScmIntegration, ScmIntegrationsGroup, ScmLocation } from './types';
 
 /**
  * The set of supported integrations.
@@ -117,5 +121,14 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
     }
 
     return integration.resolveEditUrl(url);
+  }
+
+  parseUrl(url: string): ScmLocation {
+    const shorthand = parseShorthandScmUrl(url);
+    if (shorthand) {
+      return shorthand;
+    }
+
+    return defaultScmParseUrl(url);
   }
 }

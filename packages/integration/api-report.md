@@ -106,6 +106,9 @@ export class DefaultGithubCredentialsProvider
 }
 
 // @public
+export function defaultScmParseUrl(url: string): ScmLocation;
+
+// @public
 export function defaultScmResolveUrl(options: {
   url: string;
   base: string;
@@ -384,6 +387,7 @@ export interface ScmIntegrationRegistry
   github: ScmIntegrationsGroup<GitHubIntegration>;
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
+  parseUrl(url: string): ScmLocation;
   resolveEditUrl(url: string): string;
   resolveUrl(options: {
     url: string;
@@ -414,6 +418,8 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   // (undocumented)
   list(): ScmIntegration[];
   // (undocumented)
+  parseUrl(url: string): ScmLocation;
+  // (undocumented)
   resolveEditUrl(url: string): string;
   // (undocumented)
   resolveUrl(options: {
@@ -434,6 +440,24 @@ export interface ScmIntegrationsGroup<T extends ScmIntegration> {
   byUrl(url: string | URL): T | undefined;
   list(): T[];
 }
+
+// @public
+export type ScmLocation = {
+  url: {
+    host: string;
+    root: string;
+  };
+  repository: {
+    organization: string | undefined;
+    owner: string;
+    name: string;
+  };
+  target: {
+    ref: string | undefined;
+    path: string | undefined;
+    pathType: string | undefined;
+  };
+};
 
 // @public
 export class SingleInstanceGithubCredentialsProvider

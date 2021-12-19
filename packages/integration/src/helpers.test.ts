@@ -19,6 +19,8 @@ import {
   basicIntegrations,
   defaultScmResolveUrl,
   isValidHost,
+  defaultScmParseUrl,
+  parseShorthandScmUrl,
 } from './helpers';
 
 describe('basicIntegrations', () => {
@@ -179,5 +181,96 @@ describe('defaultScmResolveUrl', () => {
         base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/a.yaml?at=master',
       }),
     ).toBe('https://b.com/b.yaml');
+  });
+});
+
+describe('defaultScmParseUrl', () => {
+  it('handles well known good URLs', () => {
+    expect(
+      defaultScmParseUrl(
+        'https://github.com/backstage/community/blob/main/README.md',
+      ),
+    ).toEqual({
+      url: {
+        host: 'github.com',
+        root: 'https://github.com',
+      },
+      repository: {
+        // TODO(freben): GitHub returning an organization is actually
+        // unexpected, but since it's a quirk of the underlying library, we'll
+        // let it through for now rather than writing special case code to
+        // exclude it.
+        organization: 'backstage',
+        owner: 'backstage',
+        name: 'community',
+      },
+      target: {
+        ref: 'main',
+        path: '/README.md',
+        pathType: 'blob',
+      },
+    });
+  });
+});
+
+describe('parseShorthandScmUrl', () => {
+  it('returns false for things that do not look like a shorthand', () => {
+    expect(parseShorthandScmUrl(7 as any)).toEqual(false);
+    expect(parseShorthandScmUrl('')).toEqual(false);
+    expect(
+      parseShorthandScmUrl(
+        'https://github.com/backstage/community/blob/main/README.md',
+      ),
+    ).toEqual(false);
+  });
+
+  it('extract all parts of shorthands', () => {
+    expect(
+      parseShorthandScmUrl(
+        'git.company.com/root?organization=spotify&owner=backstage&name=community&ref=main&path=%C3%A2.md&pathType=blob',
+      ),
+    ).toEqual({
+      url: {
+        host: 'git.company.com',
+        root: 'https://git.company.com/root',
+      },
+      repository: {
+        organization: 'spotify',
+        owner: 'backstage',
+        name: 'community',
+      },
+      target: {
+        ref: 'main',
+        path: '/â.md',
+        pathType: 'blob',
+      },
+    });
+  });
+
+  it('works with and without protocol', () => {
+    expect((parseShorthandScmUrl('a.com?owner=x&name=y') as any).url.root).toBe(
+      'https://a.com',
+    );
+    expect(
+      (parseShorthandScmUrl('https://a.com?owner=x&name=y') as any).url.root,
+    ).toBe('https://a.com');
+    expect(
+      (parseShorthandScmUrl('http://a.com?owner=x&name=y') as any).url.root,
+    ).toBe('http://a.com');
+  });
+
+  it('handles all forms of paths correctly', () => {
+    expect(
+      (parseShorthandScmUrl('a.com?owner=x&name=y') as any).target.path,
+    ).toBe(undefined);
+    expect(
+      (parseShorthandScmUrl('a.com?owner=x&name=y&path=') as any).target.path,
+    ).toBe(undefined);
+    expect(
+      (parseShorthandScmUrl('a.com?owner=x&name=y&path=a') as any).target.path,
+    ).toBe('/a');
+    expect(
+      (parseShorthandScmUrl('a.com?owner=x&name=y&path=/a') as any).target.path,
+    ).toBe('/a');
   });
 });

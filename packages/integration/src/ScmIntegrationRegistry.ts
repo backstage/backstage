@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ScmIntegration, ScmIntegrationsGroup } from './types';
 import { AwsS3Integration } from './awsS3/AwsS3Integration';
 import { AzureIntegration } from './azure/AzureIntegration';
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
 import { GitHubIntegration } from './github/GitHubIntegration';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
+import { ScmIntegration, ScmIntegrationsGroup, ScmLocation } from './types';
 
 /**
  * Holds all registered SCM integrations, of all types.
@@ -73,4 +73,11 @@ export interface ScmIntegrationRegistry
    * @param url - The absolute URL to the file that should be edited.
    */
   resolveEditUrl(url: string): string;
+
+  /**
+   * Takes a URL and parses it into its constituent parts.
+   *
+   * @param url - The URL to parse
+   */
+  parseUrl(url: string): ScmLocation;
 }

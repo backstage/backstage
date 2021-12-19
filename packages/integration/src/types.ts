@@ -108,3 +108,33 @@ export interface ScmIntegrationsGroup<T extends ScmIntegration> {
 export type ScmIntegrationsFactory<T extends ScmIntegration> = (options: {
   config: Config;
 }) => ScmIntegrationsGroup<T>;
+
+/**
+ * References an SCM based location.
+ *
+ * @public
+ */
+export type ScmLocation = {
+  url: {
+    /** The host name of the SCM integration, e.g. "github.com". */
+    host: string;
+    /** The root URL of the SCM integration, including protocol and root path, e.g. "https://dev.example.com:8080/git". */
+    root: string;
+  };
+  repository: {
+    /** The organization the repository owner belongs to, if any (only applies to some providers). */
+    organization: string | undefined;
+    /** The repository owner. */
+    owner: string;
+    /** The repository name. */
+    name: string;
+  };
+  target: {
+    /** The targeted ref (e.g. "master" or "dev"). */
+    ref: string | undefined;
+    /** The file path relative to the repo root, if any, including the leading slash. */
+    path: string | undefined;
+    /** The type of file path, if any, e.g. "blob" or "edit" */
+    pathType: string | undefined;
+  };
+};

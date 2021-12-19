@@ -16,7 +16,8 @@
 
 import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
-import { ScmIntegration, ScmIntegrationsGroup } from './types';
+import { InputError } from '@backstage/errors';
+import { ScmIntegration, ScmIntegrationsGroup, ScmLocation } from './types';
 
 /** Checks whether the given argument is a valid URL hostname */
 export function isValidHost(host: string): boolean {
@@ -59,8 +60,8 @@ export function basicIntegrations<T extends ScmIntegration>(
 }
 
 /**
- * Default implementation of {@link ScmIntegration} `resolveUrl`, that only
- * works with URL pathname based providers.
+ * Default implementation of {@link ScmIntegration.resolveUrl}, that only works
+ * with URL pathname based providers.
  *
  * @public
  */
@@ -84,10 +85,12 @@ export function defaultScmResolveUrl(options: {
 
   if (url.startsWith('/')) {
     // If it is an absolute path, move relative to the repo root
-    const { filepath } = parseGitUrl(base);
+    const {
+      target: { path },
+    } = defaultScmParseUrl(base);
     updated = new URL(base);
     const repoRootPath = trimEnd(
-      updated.pathname.substring(0, updated.pathname.length - filepath.length),
+      updated.pathname.substring(0, updated.pathname.length - path!.length),
       '/',
     );
     updated.pathname = `${repoRootPath}${url}`;
@@ -103,4 +106,117 @@ export function defaultScmResolveUrl(options: {
     updated.hash = `L${lineNumber}`;
   }
   return updated.toString();
+}
+
+/**
+ * Default implementation of {@link ScmIntegrationRegistry.parseUrl}.
+ *
+ * @public
+ */
+export function defaultScmParseUrl(url: string): ScmLocation {
+  try {
+    const result = parseGitUrl(url);
+    const raw = new URL(url);
+
+    if (!result.owner || !result.name) {
+      throw new TypeError('Missing repository owner or name');
+    }
+
+    return {
+      url: {
+        host: raw.hostname,
+        root: `${raw.protocol}//${raw.host}`,
+      },
+      repository: {
+        organization: result.organization || undefined,
+        owner: result.owner,
+        name: result.name,
+      },
+      target: {
+        ref: result.ref || undefined,
+        path: ensureLeadingSlash(result.filepath),
+        pathType: result.filepathtype || undefined,
+      },
+    };
+  } catch (error) {
+    throw new InputError(`Unparseable URL, ${error}`);
+  }
+}
+
+/**
+ * Parses a special-format shorthand URL. Returns false if not a valid shorthand
+ * URL.
+ *
+ * @remarks
+ *
+ * These shorthands are formed only from the base URL of a provider (with or
+ * without a protocol), and any number of the following query parameters:
+ * - organization
+ * - owner
+ * - name
+ * - ref
+ * - path
+ * - pathType
+ *
+ * @exampleValue github.com?owner=backstage&name=backstage&ref=master&path=%2Fapp-config.yaml&pathType=blob
+ *
+ * @public
+ */
+export function parseShorthandScmUrl(url: string): ScmLocation | false {
+  try {
+    // Support shorthands both with and without a protocol part
+    const urlWithProtocol = url.includes('://') ? url : `https://${url}`;
+    const raw = new URL(urlWithProtocol);
+
+    // Exclude things that just plain don't look like a shorthand or aren't
+    // supported
+    if (
+      raw.hash ||
+      raw.username ||
+      raw.password ||
+      raw.pathname.split('/').length > 2
+    ) {
+      return false;
+    }
+
+    const organization = raw.searchParams.get('organization');
+    const owner = raw.searchParams.get('owner');
+    const name = raw.searchParams.get('name');
+    const ref = raw.searchParams.get('ref');
+    const path = raw.searchParams.get('path');
+    const pathType = raw.searchParams.get('pathType');
+
+    // These are required to exist and be non-empty
+    if (!owner || !name) {
+      return false;
+    }
+
+    return {
+      url: {
+        host: raw.hostname,
+        root: `${raw.protocol}//${raw.host}${raw.pathname}`.replace(/\/$/, ''),
+      },
+      repository: {
+        organization: organization || undefined,
+        owner,
+        name,
+      },
+      target: {
+        ref: ref || undefined,
+        path: ensureLeadingSlash(path),
+        pathType: pathType || undefined,
+      },
+    };
+  } catch {
+    return false;
+  }
+}
+
+function ensureLeadingSlash(p: unknown): string | undefined {
+  if (typeof p !== 'string' || !p) {
+    return undefined;
+  } else if (!p.startsWith('/')) {
+    return `/${p}`;
+  }
+  return p;
 }
