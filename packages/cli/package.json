@@ -213,6 +213,26 @@
               "applicationId"
             ]
           },
+          "analytics": {
+            "type": "object",
+            "description": "Analytics related properties",
+            "properties": {
+              "segment": {
+                "type": "object",
+                "description": "Segment.io related configuration values",
+                "properties": {
+                  "writeKey": {
+                    "type": "string",
+                    "visibility": "frontend",
+                    "description": "Segment writeKey used to send events to Segment.io"
+                  }
+                },
+                "required": [
+                  "writeKey"
+                ]
+              }
+            }
+          },
           "listen": {
             "type": "object",
             "description": "Listening configuration for local development",

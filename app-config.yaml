@@ -7,6 +7,9 @@ app:
   #  applicationId: qwerty
   #   site: # datadoghq.eu default = datadoghq.com
   #   env: # optional
+  # analytics:
+  #   segment:
+  #     writeKey: 'XXXXXXXXXX'
 
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage

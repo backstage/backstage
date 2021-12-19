@@ -151,6 +151,13 @@ export async function createConfig(
             ),
             site: frontendConfig.getOptionalString('app.datadogRum.site'),
           },
+          analytics: {
+            segment: {
+              writeKey: frontendConfig.getOptionalString(
+                'app.analytics.segment.writeKey',
+              ),
+            },
+          },
         },
       },
     }),
