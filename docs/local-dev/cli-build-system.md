@@ -196,3 +196,52 @@ reason for the type definition build step is to strip out all types but the ones
 that are exported from the package, leaving a much cleaner type definition file
 and making sure that the type definitions are in sync with the generated
 JavaScript.
+
+### Bundling
+
+The goal of the bundling process is to combine multiple packages together into a
+single runtime unit. The way this is done varies between frontend and backend,
+and local development versus production deployment. Because of that we will be
+covering each of these cases individually.
+
+#### Frontend Development Bundling
+
+There are two different commands that starts the frontend development bundling,
+`app:serve`, which serves an app and uses `src/index.*` as the entrypoint, and
+`plugin:serve`, which serves a plugin and uses `dev/index.*` as the entrypoint.
+These are typically invoked via the `yarn start` script, and are intended for
+local development only. When running the bundle command, a development server
+will be set up that listens to the protocol, host and port set by `app.baseUrl`
+in the configuration. If needed it is also possible to override the listening
+options through the `app.listen` configuration.
+
+The frontend development bundling is currently based on
+[Webpack](https://webpack.js.org/) and
+[Webpack Dev Server](https://webpack.js.org/configuration/dev-server/). The
+Webpack configuration itself varies very little between the frontend development
+and production bundling, and we'll dive more into the configuration in the
+production section below. The main differences are that `process.env.NODE_ENV`
+is set to `'development'`, minification is disabled, and there is support for
+[React Hot Loader](https://github.com/gaearon/react-hot-loader).
+
+#### Frontend Production Bundling
+
+The frontend production bundling creates your typical web content bundle, all
+contained within a single folder, ready for static serving. It is invoked using
+the `app:build` command, and unlike the development bundling there is no way to
+build a production bundle of an individual plugin. The output of the bundling
+process is written to the `dist` folder in the package.
+
+Just like the development bundling, the production bundling is based on
+[Webpack](https://webpack.js.org/). It also uses the
+
+While the output of the production bundling is written to the `dist` folder The
+output of the bundling process is split into two types of files. The first is a
+set of generic assets with plain names in the root of the `dist/` folder. You
+will want to serve these with short-lived caching or no caching at all. The
+second is a set of files with hashes in their names in the `dist/static/` folder
+that are intended to be cached for a much longer time
+
+#### Backend Development Bundling
+
+#### Backend Production Bundling
