@@ -1,6 +1,6 @@
 # New Relic Dashboard Plugin
 
-Welcome to the new-relic-dashboard plugin!
+Welcome to the newrelic-dashboard plugin!
 
 ## Features
 
