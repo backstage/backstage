@@ -146,6 +146,7 @@ export class JenkinsApiImpl {
       baseUrl: jenkinsInfo.baseUrl,
       headers: jenkinsInfo.headers,
       promisify: true,
+      crumbIssuer: jenkinsInfo.crumbIssuer,
     }) as any;
   }
 
