@@ -25,17 +25,14 @@ import { getDashboardParentGuidQuery } from '../queries/getDashboardParentGuidQu
 import { getDashboardSnapshotQuery } from '../queries/getDashboardSnapshotQuery';
 
 export class NewRelicDashboardClient implements NewRelicDashboardApi {
-  discoveryApi: DiscoveryApi;
-  baseUrl: string;
+  private readonly discoveryApi: DiscoveryApi;
   constructor({
     discoveryApi,
-    baseUrl = 'https://api.newrelic.com/graphql/',
   }: {
     discoveryApi: DiscoveryApi;
     baseUrl?: string;
   }) {
     this.discoveryApi = discoveryApi;
-    this.baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   }
 
   private async callApi<T>(
