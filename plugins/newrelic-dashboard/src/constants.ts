@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const NEWRELIC_GUID = 'newrelic.com/dashboard-guid';
+export const NEWRELIC_GUID_ANNOTATION = 'newrelic.com/dashboard-guid';

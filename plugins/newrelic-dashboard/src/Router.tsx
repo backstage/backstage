@@ -19,10 +19,10 @@ import { MissingAnnotationEmptyState } from '@backstage/core-components';
 import { Button } from '@material-ui/core';
 import { NewRelicDashboard } from './components/NewRelicDashboard';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { NEWRELIC_GUID } from './constants';
+import { NEWRELIC_GUID_ANNOTATION } from './constants';
 
 export const isNewRelicDashboardAvailable = (entity: Entity) =>
-  Boolean(entity?.metadata?.annotations?.[NEWRELIC_GUID]);
+  Boolean(entity?.metadata?.annotations?.[NEWRELIC_GUID_ANNOTATION]);
 
 export const Router = () => {
   const { entity } = useEntity();
@@ -33,7 +33,7 @@ export const Router = () => {
 
   return (
     <>
-      <MissingAnnotationEmptyState annotation={NEWRELIC_GUID} />
+      <MissingAnnotationEmptyState annotation={NEWRELIC_GUID_ANNOTATION} />
       <Button variant="contained" color="primary" href="#">
         Read New Relic Dashboard Plugin Docs
       </Button>
