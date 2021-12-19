@@ -19,7 +19,7 @@ To generate a New Relic API Key , you can visit this [link](https://one.newrelic
 // app-config.yaml
 proxy:
   '/newrelic/apm/api':
-    target: https://api.newrelic.com/v2
+    target: https://api.newrelic.com
     headers:
       X-Api-Key: ${NEW_RELIC_USER_KEY}
 ```
