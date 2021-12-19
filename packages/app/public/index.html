@@ -47,13 +47,12 @@
         min-height: 100%;
       }
     </style>
-    <title><%= app.title %></title>
+    <title><%= config.getString('app.title') %></title>
 
-    <% if (app.googleAnalyticsTrackingId && typeof
-    app.googleAnalyticsTrackingId==='string' ) { %>
+    <% if (config.has('app.googleAnalyticsTrackingId')) { %>
     <script
       async
-      src="https://www.googletagmanager.com/gtag/js?id=<%= app.googleAnalyticsTrackingId %>"
+      src="https://www.googletagmanager.com/gtag/js?id=<%= config.getString('app.googleAnalyticsTrackingId') %>"
     ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -62,10 +61,12 @@
       }
       gtag('js', new Date());
 
-      gtag('config', '<%= app.googleAnalyticsTrackingId %>');
+      gtag(
+        'config',
+        '<%= config.getString("app.googleAnalyticsTrackingId") %>',
+      );
     </script>
-    <% } %> <% if (app.datadogRum.clientToken && app.datadogRum.applicationId )
-    { %>
+    <% } %> <% if (config.has('app.datadogRum')) { %>
     <script>
       (function (h, o, u, n, d) {
         h = h[d] = h[d] || {
@@ -88,11 +89,12 @@
       );
       DD_RUM.onReady(function () {
         DD_RUM.init({
-          clientToken: '<%= app.datadogRum.clientToken %>',
-          applicationId: '<%= app.datadogRum.applicationId %>',
-          site: '<%= app.datadogRum.site %>' || 'datadoghq.com',
+          clientToken: '<%= config.getString("app.datadogRum.clientToken") %>',
+          applicationId:
+            '<%= config.getString("app.datadogRum.applicationId") %>',
+          site: '<%= config.getOptionalString("app.datadogRum.site") || "datadoghq.com" %>',
           service: 'backstage',
-          env: '<%= app.datadogRum.env %>',
+          env: '<%= config.getString("app.datadogRum.env") %>',
           sampleRate: 100,
           trackInteractions: true,
         });
