@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { Box, Grid, makeStyles, Typography } from '@material-ui/core';
-import { NewRelicDashboardApiRef } from '../../api';
+import { newRelicDashboardApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
 import { Progress, InfoCard, Link } from '@backstage/core-components';
@@ -38,7 +38,7 @@ const useStyles = makeStyles({
 export const DashboardEntityList = () => {
   const DashboardEntity = useNewRelicDashboardEntity();
   const classes = useStyles();
-  const NewRelicDashboardAPI = useApi(NewRelicDashboardApiRef);
+  const NewRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const { value, loading, error } = useAsync(async (): Promise<any> => {
     const dashboardObject: any = NewRelicDashboardAPI.getDashboardEntity(
       String(DashboardEntity?.integrationKey),

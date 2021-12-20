@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { Grid, Tab, Tabs, makeStyles } from '@material-ui/core';
-import { NewRelicDashboardApiRef } from '../../../api';
+import { newRelicDashboardApiRef } from '../../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
 import { Progress } from '@backstage/core-components';
@@ -80,7 +80,7 @@ const useStyles = makeStyles(
 );
 export const DashboardSnapshotList = ({ guid }: Props) => {
   const styles = useStyles();
-  const NewRelicDashboardAPI = useApi(NewRelicDashboardApiRef);
+  const NewRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const { value, loading, error } = useAsync(async (): Promise<any> => {
     const dashboardObject: any = NewRelicDashboardAPI.getDashboardEntity(guid);
     return dashboardObject;

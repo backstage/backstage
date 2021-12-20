@@ -29,7 +29,7 @@ export interface DashboardSnapshotSummary {
 export interface SnapshotDetailsSummary {
   getSnapshotDetails: SnapshotDetails[];
 }
-export const NewRelicDashboardApiRef = createApiRef<NewRelicDashboardApi>({
+export const newRelicDashboardApiRef = createApiRef<NewRelicDashboardApi>({
   id: 'plugin.newrelicdashboard.service',
   description: 'Used by the New Relic Dashboard plugin to make requests',
 });

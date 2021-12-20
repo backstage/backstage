@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 export type { NewRelicDashboardApi } from './NewRelicDashboardApi';
-export { NewRelicDashboardApiRef } from './NewRelicDashboardApi';
+export { newRelicDashboardApiRef } from './NewRelicDashboardApi';
 export { NewRelicDashboardClient } from './NewRelicDashboardClient';
