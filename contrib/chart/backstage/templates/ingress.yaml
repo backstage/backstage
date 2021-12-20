@@ -7,7 +7,7 @@
 apiVersion: networking.k8s.io/v1beta1
 {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
 apiVersion: networking.k8s.io/v1
-{{- end }}
+{{- end }}  
 kind: Ingress
 metadata:
   name: {{ include "backstage.fullname" . }}-ingress
@@ -29,7 +29,6 @@ spec:
         - {{ $frontendUrl.host }}
         - {{ $backendUrl.host }}
         - {{ $lighthouseUrl.host }}
-
   rules:
     - host: {{ $frontendUrl.host }}
       http:
@@ -41,7 +40,7 @@ spec:
               servicePort: 80
               {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
               service:
-                name: {{ include "frontend.service.name" . }}
+                name: {{ include "frontend.serviceName" . }}
                 port:
                   number: 80
               {{- end }}
@@ -54,7 +53,7 @@ spec:
               servicePort: 80
               {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
               service:
-                name: {{ include "backend.service.name" . }}
+                name: {{ include "backend.serviceName" . }}
                 port:
                   number: 80
               {{- end }}
@@ -70,7 +69,7 @@ spec:
               servicePort: 80
               {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
               service:
-                name: {{ include "backend.service.name" . }}
+                name: {{ include "backend.serviceName" . }}
                 port:
                   number: 80
               {{- end }}                            
@@ -88,14 +87,18 @@ spec:
               servicePort: 80
               {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
               service:
-                name: {{ include "lighthouse.service.name" . }}
+                name: {{ include "lighthouse.serviceName" . }}
                 port:
                   number: 80
               {{- end }}                 
 {{- else }}
 {{/* Route lighthouse by path with re-write rules when it is hosted under the same hostname */}}
 ---
+{{- if lt .Capabilities.KubeVersion.Minor "19" }}
 apiVersion: networking.k8s.io/v1beta1
+{{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+apiVersion: networking.k8s.io/v1
+{{- end }}
 kind: Ingress
 metadata:
   name: {{ include "backstage.fullname" . }}-ingress-lighthouse
@@ -126,7 +129,7 @@ spec:
               servicePort: 80
               {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
               service:
-                name: {{ include "lighthouse.service.name" . }}
+                name: {{ include "lighthouse.serviceName" . }}
                 port:
                   number: 80
               {{- end }}               
