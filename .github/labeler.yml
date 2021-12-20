@@ -9,3 +9,13 @@ search:
   - plugins/search/**/*
   - plugins/search-*/**/*
   - packages/search-*/**/*
+docs-like-code:
+  - plugins/techdocs/**/*
+  - plugins/techdocs-*/**/*
+  - packages/techdocs-*/**/*
+documentation:
+  - docs/**/*
+microsite:
+  - microsite/**/*
+auth:
+  - plugins/auth-backend/**/*
