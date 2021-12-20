@@ -29,6 +29,7 @@ import { IdentityClient } from '@backstage/plugin-auth-backend';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
+import { keyBy } from 'lodash';
 import { Logger } from 'winston';
 import yn from 'yn';
 import { EntitiesCatalog } from '../catalog';
@@ -46,19 +47,12 @@ import { RefreshService, RefreshOptions, LocationService } from './types';
 const getEntities = async (
   resourceRefs: string[],
   entitiesCatalog: EntitiesCatalog,
-): Promise<Record<string, Entity>> => {
-  const inputRefs: Map<string, string> = new Map(
-    resourceRefs.map(resourceRef => [
-      stringifyEntityRef(parseEntityRef(resourceRef)),
-      resourceRef,
-    ]),
-  );
-
+): Promise<Array<Entity | undefined>> => {
   const { entities } = await entitiesCatalog.entities(
     {
       filter: {
-        anyOf: Array.from(inputRefs.keys()).map(entityRef => {
-          const { kind, namespace, name } = parseEntityRef(entityRef);
+        anyOf: resourceRefs.map(resourceRef => {
+          const { kind, namespace, name } = parseEntityRef(resourceRef);
 
           return basicEntityFilter({
             kind,
@@ -71,19 +65,12 @@ const getEntities = async (
     false,
   );
 
-  if (!entities.length) {
-    return {};
-  }
+  const entitiesByRef = keyBy(entities, stringifyEntityRef);
 
-  return entities.reduce((acc, entity) => {
-    const inputRef = inputRefs.get(stringifyEntityRef(entity));
-
-    if (inputRef) {
-      acc[inputRef] = entity;
-    }
-
-    return acc;
-  }, {} as Record<string, Entity>);
+  return resourceRefs.map(
+    resourceRef =>
+      entitiesByRef[stringifyEntityRef(parseEntityRef(resourceRef))],
+  );
 };
 
 export interface NextRouterOptions {
