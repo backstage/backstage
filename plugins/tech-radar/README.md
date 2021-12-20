@@ -64,6 +64,10 @@ export interface TechRadarPageProps {
 }
 ```
 
+### Radar properties
+
+When defining the radar entries you can see the available properties on the file [api](./src/api.ts)
+
 ## Frequently Asked Questions
 
 ### Who created the Tech Radar?
