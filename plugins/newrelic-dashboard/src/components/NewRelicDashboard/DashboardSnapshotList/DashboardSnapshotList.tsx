@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { Grid, Tab, Tabs, makeStyles } from '@material-ui/core';
 import { newRelicDashboardApiRef } from '../../../api';
 import { useApi } from '@backstage/core-plugin-api';
@@ -85,7 +85,7 @@ export const DashboardSnapshotList = ({ guid }: Props) => {
     const dashboardObject: any = newRelicDashboardAPI.getDashboardEntity(guid);
     return dashboardObject;
   }, []);
-  const [value1, setValue1] = React.useState(0);
+  const [value1, setValue1] = useState<number>(0);
   const handleChange = ({}: React.ChangeEvent<{}>, newValue: number) => {
     setValue1(newValue);
   };
