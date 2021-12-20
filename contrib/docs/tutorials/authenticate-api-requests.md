@@ -13,7 +13,7 @@ As techdocs HTML pages load assets without an Authorization header the code belo
 
 import cookieParser from 'cookie-parser';
 import { Request, Response, NextFunction } from 'express';
-import { JWT } from 'jose';
+import jwt_decode from 'jwt-decode';
 import { URL } from 'url';
 import { IdentityClient } from '@backstage/plugin-auth-backend';
 
@@ -24,7 +24,7 @@ function setTokenCookie(
   options: { token: string; secure: boolean; cookieDomain: string },
 ) {
   try {
-    const payload = JWT.decode(options.token) as object & {
+    const payload = jwt_decode(options.token) as any & {
       exp: number;
     };
     res.cookie(`token`, options.token, {
@@ -160,16 +160,15 @@ const app = createApp({
           providers={['guest', 'custom', ...providers]}
           title="Select a sign-in method"
           align="center"
-          onResult={async result => {
-            // When logged in, set a token cookie
-            if (typeof result.getIdToken !== 'undefined') {
+          onSignInSuccess={async (identityApi: IdentityApi) => {
+            if (typeof identityApi?.getIdToken !== 'undefined') {
               setTokenCookie(
                 await discoveryApi.getBaseUrl('cookie'),
-                result.getIdToken,
+                identityApi.getIdToken.bind(identityApi),
               );
             }
-            // Forward results
-            props.onResult(result);
+
+            props.onSignInSuccess(identityApi);
           }}
         />
       );
