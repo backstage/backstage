@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Box, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Box, makeStyles, Typography } from '@material-ui/core';
 import { newRelicDashboardApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
