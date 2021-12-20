@@ -16,12 +16,13 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
 import { Page, Content } from '@backstage/core-components';
-import { useNewRelicDashboardEntity } from '../../hooks';
 import { DashboardEntityList } from './DashboardEntityList';
 import { DashboardSnapshotList } from './DashboardSnapshotList';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { NEWRELIC_GUID_ANNOTATION } from '../../constants';
 
 export const NewRelicDashboard = () => {
-  const entity = useNewRelicDashboardEntity();
+  const { entity } = useEntity();
   return (
     <Page themeId="home">
       <Content>
@@ -30,7 +31,11 @@ export const NewRelicDashboard = () => {
             <DashboardEntityList />
           </Grid>
           <Grid item xs={12}>
-            <DashboardSnapshotList guid={String(entity.integrationKey)} />
+            <DashboardSnapshotList
+              guid={String(
+                entity.metadata.annotations?.[NEWRELIC_GUID_ANNOTATION],
+              )}
+            />
           </Grid>
         </Grid>
       </Content>

@@ -25,9 +25,10 @@ import {
   ErrorPanel,
 } from '@backstage/core-components';
 import DesktopMac from '@material-ui/icons/DesktopMac';
-import { useNewRelicDashboardEntity } from '../../hooks';
 import { DashboardEntitySummary } from '../../api/NewRelicDashboardApi';
 import { ResultEntity } from '../../types/DashboardEntity';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { NEWRELIC_GUID_ANNOTATION } from './../../constants';
 
 const useStyles = makeStyles({
   svgIcon: {
@@ -40,7 +41,7 @@ const useStyles = makeStyles({
   },
 });
 export const DashboardEntityList = () => {
-  const DashboardEntity = useNewRelicDashboardEntity();
+  const { entity } = useEntity();
   const classes = useStyles();
   const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const { value, loading, error } = useAsync(async (): Promise<
@@ -48,10 +49,10 @@ export const DashboardEntityList = () => {
   > => {
     const dashboardObject: Promise<DashboardEntitySummary | undefined> =
       newRelicDashboardAPI.getDashboardEntity(
-        String(DashboardEntity?.integrationKey),
+        String(entity.metadata.annotations?.[NEWRELIC_GUID_ANNOTATION]),
       );
     return dashboardObject;
-  }, [DashboardEntity?.integrationKey]);
+  }, [entity.metadata.annotations?.[NEWRELIC_GUID_ANNOTATION]]);
   if (loading) {
     return <Progress />;
   }
@@ -68,7 +69,7 @@ export const DashboardEntityList = () => {
           <>No Dashboard Pages found with the specified Dashboard GUID</>
         )}
       {value?.getDashboardEntity?.data.actor.entitySearch.results.entities?.map(
-        (entity: ResultEntity) => {
+        (entityResult: ResultEntity) => {
           return (
             <Box style={{ margin: '10px' }} display="flex">
               <Box mr={1} className={classes.svgIcon}>
@@ -77,7 +78,7 @@ export const DashboardEntityList = () => {
                 </Typography>
               </Box>
               <Box flexGrow="1">
-                <Link to={entity.permalink}>{entity.name}</Link>
+                <Link to={entityResult.permalink}>{entityResult.name}</Link>
               </Box>
             </Box>
           );
