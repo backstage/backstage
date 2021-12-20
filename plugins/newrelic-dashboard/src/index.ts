@@ -15,7 +15,7 @@
  */
 export {
   newRelicDashboardPlugin,
-  EntityNewRelicDashboard,
-  EntityPageNewRelicDashboard,
+  EntityNewRelicDashboardCard,
+  EntityNewRelicDashboardContent,
 } from './plugin';
 export { isNewRelicDashboardAvailable } from './Router';

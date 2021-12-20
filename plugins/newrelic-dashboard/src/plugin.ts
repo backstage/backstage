@@ -15,10 +15,10 @@
  */
 import {
   createPlugin,
-  createRoutableExtension,
   configApiRef,
   createApiFactory,
   discoveryApiRef,
+  createComponentExtension,
 } from '@backstage/core-plugin-api';
 import { newRelicDashboardApiRef, NewRelicDashboardClient } from './api';
 import { rootRouteRef } from './routes';
@@ -40,22 +40,23 @@ export const newRelicDashboardPlugin = createPlugin({
     }),
   ],
 });
-
-export const EntityNewRelicDashboard = newRelicDashboardPlugin.provide(
-  createRoutableExtension({
+export const EntityNewRelicDashboardContent = newRelicDashboardPlugin.provide(
+  createComponentExtension({
     name: 'EntityNewRelicDashboardPage',
-    component: () => import('./Router').then(m => m.Router),
-    mountPoint: rootRouteRef,
+    component: {
+      lazy: () => import('./Router').then(m => m.Router),
+    },
   }),
 );
 
-export const EntityPageNewRelicDashboard = newRelicDashboardPlugin.provide(
-  createRoutableExtension({
+export const EntityNewRelicDashboardCard = newRelicDashboardPlugin.provide(
+  createComponentExtension({
     name: 'EntityNewRelicDashboardListComponent',
-    component: () =>
-      import('./components/NewRelicDashboard/DashboardEntityList').then(
-        m => m.DashboardEntityList,
-      ),
-    mountPoint: rootRouteRef,
+    component: {
+      lazy: () =>
+        import('./components/NewRelicDashboard/DashboardEntityList').then(
+          m => m.DashboardEntityList,
+        ),
+    },
   }),
 );

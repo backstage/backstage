@@ -126,8 +126,8 @@ import {
 } from '@roadiehq/backstage-plugin-travis-ci';
 import {
   isNewRelicDashboardAvailable,
-  EntityNewRelicDashboard,
-  EntityPageNewRelicDashboard,
+  EntityNewRelicDashboardContent,
+  EntityNewRelicDashboardCard,
 } from '@backstage/plugin-newrelic-dashboard';
 
 import React, { ReactNode, useMemo, useState } from 'react';
@@ -300,7 +300,7 @@ const overviewContent = (
     <EntitySwitch>
       <EntitySwitch.Case if={isNewRelicDashboardAvailable}>
         <Grid item md={6} xs={12}>
-          <EntityPageNewRelicDashboard />
+          <EntityNewRelicDashboardCard />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
@@ -390,7 +390,7 @@ const serviceEntityPage = (
       path="/newrelic-dashboard"
       title="New Relic Dashboard"
     >
-      <EntityNewRelicDashboard />
+      <EntityNewRelicDashboardContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
@@ -456,7 +456,7 @@ const websiteEntityPage = (
       path="/newrelic-dashboard"
       title="New Relic Dashboard"
     >
-      <EntityNewRelicDashboard />
+      <EntityNewRelicDashboardContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
