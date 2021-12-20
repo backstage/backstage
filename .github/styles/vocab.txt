@@ -97,6 +97,7 @@ Fiverr
 gitbeaker
 GitHub
 GitLab
+Gource
 Grafana
 graphql
 GraphQL
