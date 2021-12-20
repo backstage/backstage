@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ServerPermissionClient } from '.';
+import { ServerPermissionClient } from './ServerPermissionClient';
 import {
   Permission,
   Identified,
