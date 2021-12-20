@@ -52,35 +52,31 @@ export const DashboardEntityList = () => {
     return <Alert severity="error">{error.message}</Alert>;
   }
   return (
-    <Grid container spacing={3} direction="column">
-      <Grid item xs={12}>
-        <InfoCard title="New Relic Dashboard Pages" variant="gridItem">
-          {value?.getDashboardEntity === undefined &&
-            'Unauthorized Request , please check API Key'}
-          {value?.getDashboardEntity?.data.actor.entitySearch.results.entities
-            .length <= 0 && (
-            <>No Dashboard Pages found with the specified Dashboard GUID</>
-          )}
-          {value?.getDashboardEntity?.data.actor.entitySearch.results.entities?.map(
-            (entity: any) => {
-              return (
-                <Box style={{ margin: '10px' }} display="flex">
-                  <Box mr={1} className={classes.svgIcon}>
-                    <Typography component="div">
-                      <DesktopMac />
-                    </Typography>
-                  </Box>
-                  <Box flexGrow="1">
-                    <Link to={entity.permalink} target="_blank" rel="noopener">
-                      {entity.name}
-                    </Link>
-                  </Box>
-                </Box>
-              );
-            },
-          )}
-        </InfoCard>
-      </Grid>
-    </Grid>
+    <InfoCard title="New Relic Dashboard Pages" variant="gridItem">
+      {value?.getDashboardEntity === undefined &&
+        'Unauthorized Request , please check API Key'}
+      {value?.getDashboardEntity?.data.actor.entitySearch.results.entities
+        .length <= 0 && (
+        <>No Dashboard Pages found with the specified Dashboard GUID</>
+      )}
+      {value?.getDashboardEntity?.data.actor.entitySearch.results.entities?.map(
+        (entity: any) => {
+          return (
+            <Box style={{ margin: '10px' }} display="flex">
+              <Box mr={1} className={classes.svgIcon}>
+                <Typography component="div">
+                  <DesktopMac />
+                </Typography>
+              </Box>
+              <Box flexGrow="1">
+                <Link to={entity.permalink} target="_blank" rel="noopener">
+                  {entity.name}
+                </Link>
+              </Box>
+            </Box>
+          );
+        },
+      )}
+    </InfoCard>
   );
 };
