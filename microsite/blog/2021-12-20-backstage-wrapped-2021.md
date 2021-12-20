@@ -112,7 +112,7 @@ This was the first year Spotify hosted [Backstage Community Sessions][meetups], 
 
 Until then, [grab this Backstage Zoom background][zoom] to use at the next Community Session.
 
-![Backstage Zoom Background](<assets/21-12-20/Backstage-background-02-(2021).png>)
+![Backstage Zoom Background](assets/21-12-20/Backstage-background-02-2021.png)
 
 See you then! Happy holidays from everyone on the Backstage team at Spotify!
 
