@@ -83,7 +83,7 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
 
   async getDashboardSnapshot(
     guid: string,
-    duration: Number,
+    duration: number,
   ): Promise<DashboardSnapshotSummary | undefined> {
     const DashboardSnapshotValue = await this.callApi<DashboardSnapshot>(
       getDashboardSnapshotQuery,

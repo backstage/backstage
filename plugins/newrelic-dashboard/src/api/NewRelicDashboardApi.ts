@@ -38,6 +38,6 @@ export type NewRelicDashboardApi = {
   getDashboardEntity(guid: string): Promise<DashboardEntitySummary | undefined>;
   getDashboardSnapshot(
     guid: string,
-    duration: Number,
+    duration: number,
   ): Promise<DashboardSnapshotSummary | undefined>;
 };

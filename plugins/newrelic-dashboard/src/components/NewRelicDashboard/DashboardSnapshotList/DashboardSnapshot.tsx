@@ -25,7 +25,7 @@ type Props = {
   guid: string;
   name: string;
   permalink: string;
-  duration: Number;
+  duration: number;
 };
 
 export const DashboardSnapshot = ({
