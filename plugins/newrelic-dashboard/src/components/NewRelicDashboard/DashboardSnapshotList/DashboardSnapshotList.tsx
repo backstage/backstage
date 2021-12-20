@@ -133,7 +133,7 @@ export const DashboardSnapshotList = ({ guid }: Props) => {
                 name={Entity.name}
                 permalink={Entity.permalink}
                 guid={Entity.guid}
-                duration={2000000000}
+                duration={26297430000}
               />
             </TabPanel>
           );
