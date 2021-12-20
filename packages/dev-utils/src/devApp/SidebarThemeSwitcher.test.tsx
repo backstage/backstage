@@ -40,11 +40,13 @@ describe('SidebarThemeSwitcher', () => {
         id: 'dark',
         title: 'Dark Theme',
         variant: 'dark',
+        Provider: jest.fn(),
       },
       {
         id: 'light',
         title: 'Light Theme',
         variant: 'light',
+        Provider: jest.fn(),
       },
     ]);
   });

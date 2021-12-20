@@ -44,7 +44,7 @@ export type AppTheme = {
    */
   icon?: React.ReactElement;
 
-  Provider?(props: { children: ReactNode }): JSX.Element | null;
+  Provider(props: { children: ReactNode }): JSX.Element | null;
 };
 
 /**

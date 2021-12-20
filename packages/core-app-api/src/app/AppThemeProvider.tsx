@@ -87,9 +87,6 @@ export function AppThemeProvider({ children }: PropsWithChildren<{}>) {
   if (!appTheme) {
     throw new Error('App has no themes');
   }
-  if (!appTheme.Provider) {
-    throw new Error('App has no theme provider');
-  }
 
   return <appTheme.Provider children={children} />;
 }

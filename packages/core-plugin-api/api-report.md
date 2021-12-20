@@ -164,7 +164,7 @@ export type AppTheme = {
   title: string;
   variant: 'light' | 'dark';
   icon?: React.ReactElement;
-  Provider?(props: { children: ReactNode }): JSX.Element | null;
+  Provider(props: { children: ReactNode }): JSX.Element | null;
 };
 
 // @public
