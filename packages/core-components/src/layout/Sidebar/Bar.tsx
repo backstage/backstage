@@ -103,14 +103,13 @@ const DesktopSidebar = ({
   children,
 }: PropsWithChildren<Props>) => {
   const classes = useStyles();
-  const isSmallScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.down('md'),
+  const isSmallScreen = useMediaQuery<BackstageTheme>(
+    theme => theme.breakpoints.down('md'),
+    { noSsr: true },
   );
   const [state, setState] = useState(State.Closed);
   const hoverTimerRef = useRef<number>();
   const { isPinned } = useContext(SidebarPinStateContext);
-
-  useEffect(() => clearTimeout(hoverTimerRef.current));
 
   const handleOpen = () => {
     if (isPinned || disableExpandOnHover) {
@@ -152,9 +151,9 @@ const DesktopSidebar = ({
 
   const setOpen = (open: boolean) => {
     if (open) {
-      handleOpen();
+      setState(State.Open);
     } else {
-      handleClose();
+      setState(State.Closed);
     }
   };
 
@@ -187,8 +186,9 @@ export const Sidebar = ({
   closeDelayMs,
   disableExpandOnHover,
 }: React.PropsWithChildren<Props>) => {
-  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.down('xs'),
+  const isMobileScreen = useMediaQuery<BackstageTheme>(
+    theme => theme.breakpoints.down('xs'),
+    { noSsr: true },
   );
 
   return isMobileScreen ? (
@@ -214,8 +214,9 @@ export const SidebarExpandButton = () => {
   const classes = useStyles();
   const { isOpen, setOpen } = useContext(SidebarContext);
   const { isPinned } = useContext(SidebarPinStateContext);
-  const isSmallScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.down('md'),
+  const isSmallScreen = useMediaQuery<BackstageTheme>(
+    theme => theme.breakpoints.down('md'),
+    { noSsr: true },
   );
 
   if (isPinned || isSmallScreen || !setOpen) {

@@ -77,34 +77,37 @@ export const SampleScalableSidebar = () => (
     <Sidebar disableExpandOnHover>
       <SidebarSearchField onSearch={handleSearch} to="/search" />
       <SidebarDivider />
-      <SidebarItem icon={MenuBookIcon} text="Catalog">
-        <SidebarSubmenu title="Catalog">
-          <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
-          <SidebarSubmenuItem title="APIs" to="/2" icon={CloudQueueIcon} />
-          <SidebarSubmenuItem title="Components" to="/3" icon={AppsIcon} />
-          <SidebarSubmenuItem
-            title="Misc"
-            to="/6"
-            icon={AcUnitIcon}
-            dropdownItems={[
-              {
-                title: 'Lorem Ipsum',
-                to: '/7',
-              },
-              {
-                title: 'Lorem Ipsum',
-                to: '/8',
-              },
-            ]}
-          />
-        </SidebarSubmenu>
-      </SidebarItem>
-      <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
-      <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
+      <SidebarGroup label="Menu" icon={<MenuIcon />}>
+        <SidebarItem icon={MenuBookIcon} text="Catalog">
+          <SidebarSubmenu title="Catalog">
+            <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
+            <SidebarSubmenuItem title="APIs" to="/2" icon={CloudQueueIcon} />
+            <SidebarSubmenuItem title="Components" to="/3" icon={AppsIcon} />
+            <SidebarSubmenuItem
+              title="Misc"
+              to="/6"
+              icon={AcUnitIcon}
+              dropdownItems={[
+                {
+                  title: 'Lorem Ipsum',
+                  to: '/7',
+                },
+                {
+                  title: 'Lorem Ipsum',
+                  to: '/8',
+                },
+              ]}
+            />
+          </SidebarSubmenu>
+        </SidebarItem>
+        <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
+        <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
+      </SidebarGroup>
       <SidebarDivider />
       <SidebarIntro />
       <SidebarSpace />
       <SidebarExpandButton />
     </Sidebar>
+    Test
   </SidebarPage>
 );
