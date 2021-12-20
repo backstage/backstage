@@ -50,8 +50,8 @@ import {
   SidebarSubmenuProps,
   SidebarSubmenu,
 } from '.';
-import { isLocationMatch } from './utils';
-import { Location } from 'history';
+import DoubleArrowLeft from './icons/DoubleArrowLeft';
+import DoubleArrowRight from './icons/DoubleArrowRight';
 
 export type SidebarItemClassKey =
   | 'root'
@@ -156,6 +156,19 @@ const useStyles = makeStyles<BackstageTheme>(
       },
       submenuArrow: {
         display: 'flex',
+      },
+      expandButton: {
+        background: 'none',
+        border: 'none',
+        color: theme.palette.navigation.color,
+        width: '100%',
+        cursor: 'pointer',
+        position: 'relative',
+        height: 48,
+      },
+      arrows: {
+        position: 'absolute',
+        right: 10,
       },
       selected: {
         '&$root': {
@@ -706,3 +719,39 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
     '&:hover': scrollbarStyles,
   };
 });
+
+/**
+ * A button which allows you to expand the sidebar when clicked.
+ * Use optionally to replace sidebar's expand-on-hover feature with expand-on-click.
+ *
+ * @public
+ */
+export const SidebarExpandButton = () => {
+  const classes = useStyles();
+  const { isOpen, setOpen } = useContext(SidebarContext);
+  const isSmallScreen = useMediaQuery<BackstageTheme>(
+    theme => theme.breakpoints.down('md'),
+    { noSsr: true },
+  );
+
+  if (isSmallScreen || !setOpen) {
+    return null;
+  }
+
+  const handleClick = () => {
+    setOpen(!isOpen);
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className={classes.expandButton}
+      aria-label="Expand Sidebar"
+      data-testid="sidebar-expand-button"
+    >
+      <div className={classes.arrows}>
+        {isOpen ? <DoubleArrowLeft /> : <DoubleArrowRight />}
+      </div>
+    </button>
+  );
+};

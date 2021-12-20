@@ -17,19 +17,11 @@
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import classnames from 'classnames';
-import React, {
-  useState,
-  useContext,
-  PropsWithChildren,
-  useRef,
-  useEffect,
-} from 'react';
+import React, { useState, useContext, PropsWithChildren, useRef } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
 import { MobileSidebar } from './MobileSidebar';
-import DoubleArrowRight from './icons/DoubleArrowRight';
-import DoubleArrowLeft from './icons/DoubleArrowLeft';
 
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
 
@@ -59,19 +51,6 @@ const useStyles = makeStyles<BackstageTheme>(
       '&::-webkit-scrollbar': {
         display: 'none',
       },
-    },
-    expandButton: {
-      background: 'none',
-      border: 'none',
-      color: theme.palette.navigation.color,
-      width: '100%',
-      cursor: 'pointer',
-      position: 'relative',
-      height: 48,
-    },
-    arrows: {
-      position: 'absolute',
-      right: 10,
     },
     drawerOpen: {
       width: sidebarConfig.drawerWidthOpen,
@@ -109,7 +88,9 @@ const DesktopSidebar = ({
   );
   const [state, setState] = useState(State.Closed);
   const hoverTimerRef = useRef<number>();
-  const { isPinned } = useContext(SidebarPinStateContext);
+  const { isPinned, toggleSidebarPinState } = useContext(
+    SidebarPinStateContext,
+  );
 
   const handleOpen = () => {
     if (isPinned || disableExpandOnHover) {
@@ -152,8 +133,10 @@ const DesktopSidebar = ({
   const setOpen = (open: boolean) => {
     if (open) {
       setState(State.Open);
+      toggleSidebarPinState();
     } else {
       setState(State.Closed);
+      toggleSidebarPinState();
     }
   };
 
@@ -201,42 +184,5 @@ export const Sidebar = ({
     >
       {children}
     </DesktopSidebar>
-  );
-};
-
-/**
- * A button which allows you to expand the sidebar when clicked.
- * Use optionally to replace sidebar's expand-on-hover feature with expand-on-click.
- *
- * @public
- */
-export const SidebarExpandButton = () => {
-  const classes = useStyles();
-  const { isOpen, setOpen } = useContext(SidebarContext);
-  const { isPinned } = useContext(SidebarPinStateContext);
-  const isSmallScreen = useMediaQuery<BackstageTheme>(
-    theme => theme.breakpoints.down('md'),
-    { noSsr: true },
-  );
-
-  if (isPinned || isSmallScreen || !setOpen) {
-    return null;
-  }
-
-  const handleClick = () => {
-    setOpen(!isOpen);
-  };
-
-  return (
-    <button
-      onClick={handleClick}
-      className={classes.expandButton}
-      aria-label="Expand Sidebar"
-      data-testid="sidebar-expand-button"
-    >
-      <div className={classes.arrows}>
-        {isOpen ? <DoubleArrowLeft /> : <DoubleArrowRight />}
-      </div>
-    </button>
   );
 };

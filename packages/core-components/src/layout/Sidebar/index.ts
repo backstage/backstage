@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { Sidebar, SidebarExpandButton } from './Bar';
+export { Sidebar } from './Bar';
 export { MobileSidebar } from './MobileSidebar';
 export { SidebarGroup } from './SidebarGroup';
 export type { SidebarGroupProps } from './SidebarGroup';
@@ -35,6 +35,7 @@ export {
   SidebarSpace,
   SidebarSpacer,
   SidebarScrollWrapper,
+  SidebarExpandButton,
 } from './Items';
 export type {
   SidebarItemClassKey,
