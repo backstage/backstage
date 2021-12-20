@@ -22,7 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import React, { useState } from 'react';
 import { isError } from '@backstage/errors';
-import { PendingAuthRequest } from '@backstage/core-plugin-api';
+import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 
 export type LoginRequestListItemClassKey = 'root';
 
@@ -36,7 +36,7 @@ const useItemStyles = makeStyles<Theme>(
 );
 
 type RowProps = {
-  request: PendingAuthRequest;
+  request: PendingOAuthRequest;
   busy: boolean;
   setBusy: (busy: boolean) => void;
 };

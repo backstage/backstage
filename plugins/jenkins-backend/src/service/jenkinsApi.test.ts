@@ -411,4 +411,17 @@ describe('JenkinsApi', () => {
     });
     expect(mockedJenkinsClient.job.build).toBeCalledWith(jobFullName);
   });
+
+  it('buildProject with crumbIssuer option', async () => {
+    const info: JenkinsInfo = { ...jenkinsInfo, crumbIssuer: true };
+    await jenkinsApi.buildProject(info, jobFullName);
+
+    expect(mockedJenkins).toHaveBeenCalledWith({
+      baseUrl: jenkinsInfo.baseUrl,
+      headers: jenkinsInfo.headers,
+      promisify: true,
+      crumbIssuer: true,
+    });
+    expect(mockedJenkinsClient.job.build).toBeCalledWith(jobFullName);
+  });
 });

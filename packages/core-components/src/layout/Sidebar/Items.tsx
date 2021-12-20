@@ -46,6 +46,8 @@ import {
   SidebarItemWithSubmenuContext,
 } from './config';
 import { SidebarSubmenu } from './SidebarSubmenu';
+import { isLocationMatch } from './utils';
+import { Location } from 'history';
 
 export type SidebarItemClassKey =
   | 'root'
@@ -172,7 +174,7 @@ const useStyles = makeStyles<BackstageTheme>(
 
 function isSidebarItemWithSubmenuActive(
   submenu: ReactNode,
-  locationPathname: string,
+  currentLocation: Location,
 ) {
   // Item is active if any of submenu items have active paths
   const toPathnames: string[] = [];
@@ -193,8 +195,8 @@ function isSidebarItemWithSubmenuActive(
     }
   });
   isActive = toPathnames.some(to => {
-    const toPathname = resolvePath(to);
-    return locationPathname === toPathname.pathname;
+    const toLocation = resolvePath(to);
+    return isLocationMatch(currentLocation, toLocation);
   });
   return isActive;
 }
@@ -207,8 +209,8 @@ const SidebarItemWithSubmenu = ({
 }: PropsWithChildren<SidebarItemWithSubmenuProps>) => {
   const classes = useStyles();
   const [isHoveredOn, setIsHoveredOn] = useState(false);
-  const { pathname: locationPathname } = useLocation();
-  const isActive = isSidebarItemWithSubmenuActive(children, locationPathname);
+  const currentLocation = useLocation();
+  const isActive = isSidebarItemWithSubmenuActive(children, currentLocation);
 
   const handleMouseEnter = () => {
     setIsHoveredOn(true);
@@ -548,6 +550,8 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
   );
 }
 
+export type SidebarSpaceClassKey = 'root';
+
 export const SidebarSpace = styled('div')(
   {
     flex: 1,
@@ -555,12 +559,16 @@ export const SidebarSpace = styled('div')(
   { name: 'BackstageSidebarSpace' },
 );
 
+export type SidebarSpacerClassKey = 'root';
+
 export const SidebarSpacer = styled('div')(
   {
     height: 8,
   },
   { name: 'BackstageSidebarSpacer' },
 );
+
+export type SidebarDividerClassKey = 'root';
 
 export const SidebarDivider = styled('hr')(
   {

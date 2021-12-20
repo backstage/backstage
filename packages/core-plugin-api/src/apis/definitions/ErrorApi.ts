@@ -41,7 +41,15 @@ export type Error = ErrorApiError;
  * @public
  */
 export type ErrorApiErrorContext = {
-  // If set to true, this error should not be displayed to the user. Defaults to false.
+  /**
+   * If set to true, this error should not be displayed to the user.
+   *
+   * Hidden errors are typically not displayed in the UI, but the ErrorApi
+   * implementation may still report them to error tracking services
+   * or other utilities that care about all errors.
+   *
+   * @defaultValue false
+   */
   hidden?: boolean;
 };
 

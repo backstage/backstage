@@ -148,9 +148,9 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
                   <Grid item>
                     <ServicesAccordions />
                   </Grid>
-                </Grid>
-                <Grid item>
-                  <CronJobsAccordions />
+                  <Grid item>
+                    <CronJobsAccordions />
+                  </Grid>
                 </Grid>
               </AccordionDetails>
             </Accordion>

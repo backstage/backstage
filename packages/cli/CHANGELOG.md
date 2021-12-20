@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.10.2
+
+### Patch Changes
+
+- 25dfc2d483: Add support for `.cjs` and `.mjs` extensions in local and dependency modules.
+
 ## 0.10.1
 
 ### Patch Changes
