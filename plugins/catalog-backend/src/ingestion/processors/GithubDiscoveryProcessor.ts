@@ -17,7 +17,7 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
-  DefaultGithubCredentialsProvider,
+  SingleInstanceGithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -84,7 +84,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     // about how to handle the wild card which is special for this processor.
     const orgUrl = `https://${host}/${org}`;
 
-    const { headers } = await DefaultGithubCredentialsProvider.create(
+    const { headers } = await SingleInstanceGithubCredentialsProvider.create(
       gitHubConfig,
     ).getCredentials({ url: orgUrl });
 

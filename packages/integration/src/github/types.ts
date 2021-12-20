@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { GitHubIntegrationConfig } from './config';
+
 /**
  * The type of credentials produced by the credential provider.
  *
@@ -41,3 +43,13 @@ export type GithubCredentials = {
 export interface GithubCredentialsProvider {
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
+
+/**
+ * This allows implementations to provide factories to create credential providers
+ *
+ * @public
+ *
+ */
+export type GithubCredentialsProviderFactory = (
+  config: GitHubIntegrationConfig,
+) => GithubCredentialsProvider;

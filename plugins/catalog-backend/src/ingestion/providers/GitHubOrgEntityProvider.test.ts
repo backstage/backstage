@@ -17,7 +17,7 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import {
-  DefaultGithubCredentialsProvider,
+  SingleInstanceGithubCredentialsProvider,
   GitHubIntegrationConfig,
 } from '@backstage/integration';
 import { GitHubOrgEntityProvider } from '.';
@@ -93,9 +93,11 @@ describe('GitHubOrgEntityProvider', () => {
         type: 'app',
       });
 
-      jest.spyOn(DefaultGithubCredentialsProvider, 'create').mockReturnValue({
-        getCredentials: mockGetCredentials,
-      } as any);
+      jest
+        .spyOn(SingleInstanceGithubCredentialsProvider, 'create')
+        .mockReturnValue({
+          getCredentials: mockGetCredentials,
+        } as any);
 
       const entityProvider = new GitHubOrgEntityProvider({
         id: 'my-id',

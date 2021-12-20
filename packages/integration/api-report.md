@@ -93,17 +93,6 @@ export type BitbucketIntegrationConfig = {
 };
 
 // @public
-export class DefaultGithubCredentialsProvider
-  implements GithubCredentialsProvider
-{
-  // (undocumented)
-  static create(
-    config: GitHubIntegrationConfig,
-  ): DefaultGithubCredentialsProvider;
-  getCredentials(opts: { url: string }): Promise<GithubCredentials>;
-}
-
-// @public
 export function defaultScmResolveUrl(options: {
   url: string;
   base: string;
@@ -213,6 +202,11 @@ export interface GithubCredentialsProvider {
   // (undocumented)
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
+
+// @public
+export type GithubCredentialsProviderFactory = (
+  config: GitHubIntegrationConfig,
+) => GithubCredentialsProvider;
 
 // @public
 export type GithubCredentialType = 'app' | 'token';
@@ -431,6 +425,15 @@ export interface ScmIntegrationsGroup<T extends ScmIntegration> {
   byHost(host: string): T | undefined;
   byUrl(url: string | URL): T | undefined;
   list(): T[];
+}
+
+// @public
+export class SingleInstanceGithubCredentialsProvider
+  implements GithubCredentialsProvider
+{
+  // (undocumented)
+  static create: GithubCredentialsProviderFactory;
+  getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
 // Warnings were encountered during analysis:
