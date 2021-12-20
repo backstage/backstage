@@ -69,9 +69,7 @@ export const DashboardEntityList = () => {
                 </Typography>
               </Box>
               <Box flexGrow="1">
-                <Link to={entity.permalink} target="_blank" rel="noopener">
-                  {entity.name}
-                </Link>
+                <Link to={entity.permalink}>{entity.name}</Link>
               </Box>
             </Box>
           );
