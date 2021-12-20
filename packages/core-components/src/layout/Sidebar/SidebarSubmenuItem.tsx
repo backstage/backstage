@@ -30,6 +30,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { SidebarItemWithSubmenuContext } from './config';
 import { SidebarContext } from '../..';
+import { isLocationMatch } from './utils';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   item: {
@@ -121,8 +122,6 @@ export type SidebarSubmenuItemProps = {
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const { title, to, icon: Icon, dropdownItems } = props;
   const classes = useStyles();
-  const { pathname: locationPathname } = useLocation();
-  const { pathname: toPathname } = useResolvedPath(to);
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const { setOpen } = useContext(SidebarContext);
 
@@ -132,8 +131,9 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
       setOpen(false);
     }
   };
-
-  let isActive = locationPathname === toPathname;
+  const toLocation = useResolvedPath(to);
+  const currentLocation = useLocation();
+  let isActive = isLocationMatch(currentLocation, toLocation);
 
   const [showDropDown, setShowDropDown] = useState(false);
   const handleClickDropdown = () => {
@@ -142,7 +142,8 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
       const resolvedPath = resolvePath(item.to);
-      isActive = locationPathname === resolvedPath.pathname;
+      isActive = isLocationMatch(currentLocation, resolvedPath);
+      return isActive;
     });
     return (
       <div className={classes.itemContainer}>

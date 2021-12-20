@@ -1,5 +1,12 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.0.7
+
+### Patch Changes
+
+- 68512f5178: Add `newClient()` method to re-use the configuration of the elastic search
+  engine with custom clients
+
 ## 0.0.6
 
 ### Patch Changes

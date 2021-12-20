@@ -325,6 +325,7 @@ interface LocationEntityV1alpha1 extends Entity {
     type?: string;
     target?: string;
     targets?: string[];
+    presence?: 'required' | 'optional';
   };
 }
 export { LocationEntityV1alpha1 as LocationEntity };

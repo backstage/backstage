@@ -36,6 +36,7 @@ import {
   createPublishGithubAction,
   createPublishGithubPullRequestAction,
   createPublishGitlabAction,
+  createPublishGitlabMergeRequestAction,
 } from './publish';
 import {
   createGithubActionsDispatchAction,
@@ -46,21 +47,16 @@ export const createBuiltinActions = (options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   catalogClient: CatalogApi;
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
   config: Config;
 }) => {
   const { reader, integrations, containerRunner, catalogClient, config } =
     options;
 
-  return [
+  const actions = [
     createFetchPlainAction({
       reader,
       integrations,
-    }),
-    createFetchCookiecutterAction({
-      reader,
-      integrations,
-      containerRunner,
     }),
     createFetchTemplateAction({
       integrations,
@@ -76,6 +72,9 @@ export const createBuiltinActions = (options: {
     createPublishGitlabAction({
       integrations,
       config,
+    }),
+    createPublishGitlabMergeRequestAction({
+      integrations,
     }),
     createPublishBitbucketAction({
       integrations,
@@ -97,4 +96,16 @@ export const createBuiltinActions = (options: {
       integrations,
     }),
   ];
+
+  if (containerRunner) {
+    actions.push(
+      createFetchCookiecutterAction({
+        reader,
+        integrations,
+        containerRunner,
+      }),
+    );
+  }
+
+  return actions;
 };

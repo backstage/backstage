@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-org",
   "description": "A Backstage plugin that helps you create entity pages for your organization",
-  "version": "0.3.30",
+  "version": "0.3.31",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -21,10 +21,10 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^0.9.7",
-    "@backstage/core-components": "^0.8.0",
-    "@backstage/core-plugin-api": "^0.3.0",
-    "@backstage/plugin-catalog-react": "^0.6.5",
+    "@backstage/catalog-model": "^0.9.8",
+    "@backstage/core-components": "^0.8.1",
+    "@backstage/core-plugin-api": "^0.3.1",
+    "@backstage/plugin-catalog-react": "^0.6.7",
     "@backstage/theme": "^0.2.14",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -38,8 +38,9 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.10.1",
-    "@backstage/core-app-api": "^0.2.0",
+    "@backstage/cli": "^0.10.2",
+    "@backstage/core-app-api": "^0.2.1",
+    "@backstage/catalog-client": "^0.5.2",
     "@backstage/dev-utils": "^0.2.14",
     "@backstage/test-utils": "^0.1.24",
     "@testing-library/jest-dom": "^5.10.1",

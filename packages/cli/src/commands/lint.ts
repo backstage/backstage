@@ -20,7 +20,7 @@ import { paths } from '../lib/paths';
 
 export default async (cmd: Command, cmdArgs: string[]) => {
   const args = [
-    '--ext=js,jsx,ts,tsx',
+    '--ext=js,jsx,ts,tsx,mjs,cjs',
     '--max-warnings=0',
     `--format=${cmd.format}`,
     ...(cmdArgs ?? [paths.targetDir]),

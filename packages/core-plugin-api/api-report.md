@@ -35,25 +35,26 @@ export type AlertMessage = {
   severity?: 'success' | 'info' | 'warning' | 'error';
 };
 
-// @public
+// @alpha
 export type AnalyticsApi = {
   captureEvent(event: AnalyticsEvent): void;
 };
 
-// @public
+// @alpha
 export const analyticsApiRef: ApiRef<AnalyticsApi>;
 
-// @public
+// @alpha
 export const AnalyticsContext: (options: {
   attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
 }) => JSX.Element;
 
-// @public
-export type AnalyticsContextValue = CommonAnalyticsContext &
-  AnyAnalyticsContext;
+// @alpha
+export type AnalyticsContextValue = CommonAnalyticsContext & {
+  [param in string]: string | boolean | number | undefined;
+};
 
-// @public
+// @alpha
 export type AnalyticsEvent = {
   action: string;
   subject: string;
@@ -62,12 +63,12 @@ export type AnalyticsEvent = {
   context: AnalyticsContextValue;
 };
 
-// @public
+// @alpha
 export type AnalyticsEventAttributes = {
   [attribute in string]: string | boolean | number;
 };
 
-// @public
+// @alpha
 export type AnalyticsTracker = {
   captureEvent: (
     action: string,
@@ -79,7 +80,7 @@ export type AnalyticsTracker = {
   ) => void;
 };
 
-// @public
+// @public @deprecated
 export type AnyAnalyticsContext = {
   [param in string]: string | boolean | number | undefined;
 };
@@ -194,7 +195,7 @@ export type AppThemeApi = {
 // @public
 export const appThemeApiRef: ApiRef<AppThemeApi>;
 
-// @public
+// @alpha
 export const atlassianAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
@@ -206,27 +207,26 @@ export function attachComponentData<P>(
   data: unknown,
 ): void;
 
-// @public
+// @public @deprecated
 export const auth0AuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
+// @public @deprecated (undocumented)
+export type AuthProvider = Omit<AuthProviderInfo, 'id'>;
+
 // @public
-export type AuthProvider = {
+export type AuthProviderInfo = {
+  id: string;
   title: string;
   icon: IconComponent;
 };
 
-// @public
-export type AuthRequester<AuthResponse> = (
-  scopes: Set<string>,
-) => Promise<AuthResponse>;
+// @public @deprecated (undocumented)
+export type AuthRequester<T> = OAuthRequester<T>;
 
-// @public
-export type AuthRequesterOptions<AuthResponse> = {
-  provider: AuthProvider;
-  onAuthRequest(scopes: Set<string>): Promise<AuthResponse>;
-};
+// @public @deprecated (undocumented)
+export type AuthRequesterOptions<T> = OAuthRequesterOptions<T>;
 
 // @public
 export type AuthRequestOptions = {
@@ -272,7 +272,7 @@ export type BackstageUserIdentity = {
   ownershipEntityRefs: string[];
 };
 
-// @public
+// @alpha
 export const bitbucketAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
@@ -283,7 +283,7 @@ export type BootErrorPageProps = {
   error: Error;
 };
 
-// @public
+// @alpha
 export type CommonAnalyticsContext = {
   pluginId: string;
   routeRef: string;
@@ -512,17 +512,17 @@ export function getComponentData<T>(
   type: string,
 ): T | undefined;
 
-// @public
+// @alpha
 export const githubAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
-// @public
+// @alpha
 export const gitlabAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
-// @public
+// @alpha
 export const googleAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -570,7 +570,7 @@ export type MergeParams<
   P2 extends AnyParams,
 > = (P1[keyof P1] extends never ? {} : P1) & (P2 extends undefined ? {} : P2);
 
-// @public
+// @alpha
 export const microsoftAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -579,7 +579,7 @@ export const microsoftAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
+// @public @deprecated
 export const oauth2ApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -598,14 +598,27 @@ export type OAuthApi = {
 
 // @public
 export type OAuthRequestApi = {
-  createAuthRequester<AuthResponse>(
-    options: AuthRequesterOptions<AuthResponse>,
-  ): AuthRequester<AuthResponse>;
-  authRequest$(): Observable_2<PendingAuthRequest[]>;
+  createAuthRequester<OAuthResponse>(
+    options: OAuthRequesterOptions<OAuthResponse>,
+  ): OAuthRequester<OAuthResponse>;
+  authRequest$(): Observable_2<PendingOAuthRequest[]>;
 };
 
 // @public
 export const oauthRequestApiRef: ApiRef<OAuthRequestApi>;
+
+// @public
+export type OAuthRequester<TAuthResponse> = (
+  scopes: Set<string>,
+) => Promise<TAuthResponse>;
+
+// @public
+export type OAuthRequesterOptions<TOAuthResponse> = {
+  provider: Omit<AuthProviderInfo, 'id'> & {
+    id?: string;
+  };
+  onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
+};
 
 // @public
 export type OAuthScope = string | string[];
@@ -616,7 +629,7 @@ export type Observable<T> = Observable_2<T>;
 // @public @deprecated
 export type Observer<T> = Observer_2<T>;
 
-// @public
+// @public @deprecated
 export const oidcAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -625,7 +638,7 @@ export const oidcAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
+// @alpha
 export const oktaAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -637,7 +650,7 @@ export const oktaAuthApiRef: ApiRef<
 // @public
 export type OldIconComponent = ComponentType<SvgIconProps>;
 
-// @public
+// @alpha
 export const oneloginAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -679,10 +692,15 @@ export type PathParams<S extends string> = {
   [name in ParamNames<S>]: string;
 };
 
+// @public @deprecated (undocumented)
+export type PendingAuthRequest = PendingOAuthRequest;
+
 // @public
-export type PendingAuthRequest = {
-  provider: AuthProvider;
-  reject: () => void;
+export type PendingOAuthRequest = {
+  provider: Omit<AuthProviderInfo, 'id'> & {
+    id?: string;
+  };
+  reject(): void;
   trigger(): Promise<void>;
 };
 
@@ -738,7 +756,7 @@ export type RouteRef<Params extends AnyParams = any> = {
   title?: string;
 };
 
-// @public
+// @public @deprecated
 export const samlAuthApiRef: ApiRef<
   ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
@@ -803,7 +821,7 @@ export type TypesToApiRefs<T> = {
   [key in keyof T]: ApiRef<T[key]>;
 };
 
-// @public
+// @alpha
 export function useAnalytics(): AnalyticsTracker;
 
 // @public

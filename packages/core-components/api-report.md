@@ -1166,6 +1166,11 @@ export const SidebarDivider: React_2.ComponentType<
     }
 >;
 
+// Warning: (ae-missing-release-tag) "SidebarDividerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarDividerClassKey = 'root';
+
 // @public
 export const SidebarExpandButton: () => JSX.Element | null;
 
@@ -1795,6 +1800,11 @@ export const SidebarSpace: React_2.ComponentType<
     }
 >;
 
+// Warning: (ae-missing-release-tag) "SidebarSpaceClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarSpaceClassKey = 'root';
+
 // Warning: (ae-missing-release-tag) "SidebarSpacer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -2063,6 +2073,11 @@ export const SidebarSpacer: React_2.ComponentType<
       className?: string | undefined;
     }
 >;
+
+// Warning: (ae-missing-release-tag) "SidebarSpacerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarSpacerClassKey = 'root';
 
 // @public
 export const SidebarSubmenu: (props: SidebarSubmenuProps) => JSX.Element;

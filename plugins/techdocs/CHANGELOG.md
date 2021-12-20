@@ -1,5 +1,16 @@
 # @backstage/plugin-techdocs
 
+## 0.12.10
+
+### Patch Changes
+
+- e7cce2b603: Fix issue where assets weren't being fetched from the correct URL path for doc URLs without trailing slashes
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.1
+  - @backstage/core-components@0.8.1
+  - @backstage/catalog-model@0.9.8
+  - @backstage/plugin-catalog-react@0.6.7
+
 ## 0.12.9
 
 ### Patch Changes

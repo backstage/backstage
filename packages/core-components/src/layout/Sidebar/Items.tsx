@@ -24,6 +24,8 @@ import Typography from '@material-ui/core/Typography';
 import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import classnames from 'classnames';
 import React, {
   forwardRef,
@@ -43,10 +45,13 @@ import {
   SidebarContext,
   SidebarItemWithSubmenuContext,
 } from './config';
-import { SidebarSubmenu } from './SidebarSubmenu';
-import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import { SidebarSubmenuItemProps, SidebarSubmenuProps } from '.';
+import {
+  SidebarSubmenuItemProps,
+  SidebarSubmenuProps,
+  SidebarSubmenu,
+} from '.';
+import { isLocationMatch } from './utils';
+import { Location } from 'history';
 
 export type SidebarItemClassKey =
   | 'root'
@@ -226,7 +231,7 @@ const useLocationMatch = (
   useElementFilter(
     submenu.props.children,
     elements => {
-      let isLocationMatch = false;
+      let active = false;
       elements
         .getElements()
         .forEach(
@@ -235,25 +240,97 @@ const useLocationMatch = (
           }: {
             props: Partial<SidebarSubmenuItemProps>;
           }) => {
-            if (!isLocationMatch) {
+            if (!active) {
               if (dropdownItems?.length) {
                 dropdownItems.forEach(
                   ({ to: _to }) =>
-                    (isLocationMatch =
-                      isLocationMatch || locationPathname.includes(_to)),
+                    (active = active || locationPathname.includes(_to)),
                 );
                 return;
               }
               if (to) {
-                isLocationMatch = locationPathname.includes(to);
+                active = locationPathname.includes(to);
               }
             }
           },
         );
-      return isLocationMatch;
+      return active;
     },
     [locationPathname],
   );
+/*
+function isSidebarItemWithSubmenuActive(
+  submenu: ReactNode,
+  currentLocation: Location,
+) {
+  // Item is active if any of submenu items have active paths
+  const toPathnames: string[] = [];
+  let isActive = false;
+  let submenuItems: ReactNode;
+  Children.forEach(submenu, element => {
+    if (!React.isValidElement(element)) return;
+    submenuItems = element.props.children;
+  });
+  Children.forEach(submenuItems, element => {
+    if (!React.isValidElement(element)) return;
+    if (element.props.dropdownItems) {
+      element.props.dropdownItems.map((item: { to: string }) =>
+        toPathnames.push(item.to),
+      );
+    } else if (element.props.to) {
+      toPathnames.push(element.props.to);
+    }
+  });
+  isActive = toPathnames.some(to => {
+    const toLocation = resolvePath(to);
+    return isLocationMatch(currentLocation, toLocation);
+  });
+  return isActive;
+}
+
+const SidebarItemWithSubmenu = ({
+  text,
+  hasNotifications = false,
+  icon: Icon,
+  children,
+}: PropsWithChildren<SidebarItemWithSubmenuProps>) => {
+  const classes = useStyles();
+  const [isHoveredOn, setIsHoveredOn] = useState(false);
+  const currentLocation = useLocation();
+  const isActive = isSidebarItemWithSubmenuActive(children, currentLocation);
+
+  const handleMouseEnter = () => {
+    setIsHoveredOn(true);
+  };
+  const handleMouseLeave = () => {
+    setIsHoveredOn(false);
+  };
+
+  const { isOpen } = useContext(SidebarContext);
+  const itemIcon = (
+    <Badge
+      color="secondary"
+      variant="dot"
+      overlap="circular"
+      className={isOpen ? '' : classes.closedItemIcon}
+      invisible={!hasNotifications}
+    >
+      <Icon fontSize="small" />
+    </Badge>
+  );
+  const openContent = (
+    <>
+      <div data-testid="login-button" className={classes.iconContainer}>
+        {itemIcon}
+      </div>
+      {text && (
+        <Typography variant="subtitle2" className={classes.label}>
+          {text}
+        </Typography>
+      )}
+      <div className={classes.secondaryAction}>{}</div>
+    </>
+  );*/
 
 type SidebarItemBaseProps = {
   icon: IconComponent;
@@ -570,6 +647,8 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
   );
 }
 
+export type SidebarSpaceClassKey = 'root';
+
 export const SidebarSpace = styled('div')(
   {
     flex: 1,
@@ -577,12 +656,16 @@ export const SidebarSpace = styled('div')(
   { name: 'BackstageSidebarSpace' },
 );
 
+export type SidebarSpacerClassKey = 'root';
+
 export const SidebarSpacer = styled('div')(
   {
     height: 8,
   },
   { name: 'BackstageSidebarSpacer' },
 );
+
+export type SidebarDividerClassKey = 'root';
 
 export const SidebarDivider = styled('hr')(
   {
