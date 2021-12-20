@@ -36,14 +36,28 @@ spec:
         paths:
           - path: /
             backend:
+              {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "frontend.serviceName" . }}
               servicePort: 80
+              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+              service:
+                name: {{ include "frontend.service.name" . }}
+                port:
+                  number: 80
+              {{- end }}
           {{/* Route the backend inside the same hostname as the frontend when they are the same */}}
           {{- if eq $frontendUrl.host $backendUrl.host}}
           - path: /api
             backend:
+              {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "backend.serviceName" . }}
               servicePort: 80
+              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+              service:
+                name: {{ include "backend.service.name" . }}
+                port:
+                  number: 80
+              {{- end }}
           {{/* Route the backend through a different host */}}
           {{- else -}}
     - host: {{ $backendUrl.host }}
@@ -51,8 +65,15 @@ spec:
         paths:
           - path: {{ $backendUrl.path | default "/" }}
             backend:
+              {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "backend.serviceName" . }}
               servicePort: 80
+              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+              service:
+                name: {{ include "backend.service.name" . }}
+                port:
+                  number: 80
+              {{- end }}                            
          {{- end }}
 
 {{/* Route lighthouse through a different host */}}
@@ -62,8 +83,15 @@ spec:
         paths:
           - path: {{ $lighthouseUrl.path | default "/" }}
             backend:
+              {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "lighthouse.serviceName" . }}
               servicePort: 80
+              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+              service:
+                name: {{ include "lighthouse.service.name" . }}
+                port:
+                  number: 80
+              {{- end }}                 
 {{- else }}
 {{/* Route lighthouse by path with re-write rules when it is hosted under the same hostname */}}
 ---
@@ -93,6 +121,13 @@ spec:
         paths:
           - path: {{$lighthouseUrl.path}}(/|$)(.*)
             backend:
+              {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "lighthouse.serviceName" . }}
               servicePort: 80
+              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+              service:
+                name: {{ include "lighthouse.service.name" . }}
+                port:
+                  number: 80
+              {{- end }}               
 {{- end }}
