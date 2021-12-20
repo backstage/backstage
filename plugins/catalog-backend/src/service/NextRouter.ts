@@ -43,28 +43,47 @@ import {
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
 import { RefreshService, RefreshOptions, LocationService } from './types';
 
-const getEntity = async (
-  resourceRef: string,
+const getEntities = async (
+  resourceRefs: string[],
   entitiesCatalog: EntitiesCatalog,
-): Promise<Entity | undefined> => {
-  const parsed = parseEntityRef(resourceRef);
+): Promise<Record<string, Entity>> => {
+  const inputRefs: Map<string, string> = new Map(
+    resourceRefs.map(resourceRef => [
+      stringifyEntityRef(parseEntityRef(resourceRef)),
+      resourceRef,
+    ]),
+  );
 
   const { entities } = await entitiesCatalog.entities(
     {
-      filter: basicEntityFilter({
-        kind: parsed.kind,
-        'metadata.namespace': parsed.namespace,
-        'metadata.name': parsed.name,
-      }),
+      filter: {
+        anyOf: Array.from(inputRefs.keys()).map(entityRef => {
+          const { kind, namespace, name } = parseEntityRef(entityRef);
+
+          return basicEntityFilter({
+            kind,
+            'metadata.namespace': namespace,
+            'metadata.name': name,
+          });
+        }),
+      },
     },
     false,
   );
 
   if (!entities.length) {
-    return undefined;
+    return {};
   }
 
-  return entities[0];
+  return entities.reduce((acc, entity) => {
+    const inputRef = inputRefs.get(stringifyEntityRef(entity));
+
+    if (inputRef) {
+      acc[inputRef] = entity;
+    }
+
+    return acc;
+  }, {} as Record<string, Entity>);
 };
 
 export interface NextRouterOptions {
@@ -112,7 +131,8 @@ export async function createNextRouter(
       .use(
         createPermissionIntegrationRouter({
           resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-          getResource: resourceRef => getEntity(resourceRef, entitiesCatalog),
+          getResources: async resourceRefs =>
+            getEntities(resourceRefs, entitiesCatalog),
           rules: permissionRules,
         }),
       )
