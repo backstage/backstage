@@ -70,8 +70,6 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
   async getDashboardEntity(
     guid: String,
   ): Promise<DashboardEntitySummary | undefined> {
-    //  let query = "parentId ='"+guid+"'"
-    //  query = `parentId ='${guid}'`
     const DashboardEntityList = await this.callApi<DashboardEntity>(
       getDashboardParentGuidQuery,
       {
