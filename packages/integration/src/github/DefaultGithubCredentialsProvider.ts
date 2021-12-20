@@ -23,7 +23,7 @@ import {
   GithubCredentials,
   GithubCredentialsProvider,
   GithubCredentialType,
-} from './GithubCredentialsProvider';
+} from './types';
 
 type InstallationData = {
   installationId: number;

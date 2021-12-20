@@ -16,7 +16,7 @@
 
 import parseGitUrl from 'git-url-parse';
 import { GitHubIntegrationConfig } from './config';
-import { GithubCredentials } from './GithubCredentialsProvider';
+import { GithubCredentials } from './types';
 
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
