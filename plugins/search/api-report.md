@@ -211,19 +211,31 @@ export const SearchType: ({
   defaultValue,
 }: SearchTypeProps) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "SidebarSearchProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SidebarSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const SidebarSearch: (props: SidebarSearchProps) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "SidebarSearchModalProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SidebarSearchModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const SidebarSearchModal: (
   props: SidebarSearchModalProps,
 ) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "SidebarSearchModalProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarSearchModalProps = {
+  icon?: IconComponent;
+};
+
+// Warning: (ae-missing-release-tag) "SidebarSearchProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarSearchProps = {
+  icon?: IconComponent;
+};
 
 // Warning: (ae-forgotten-export) The symbol "SearchContextValue" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
