@@ -17,7 +17,12 @@ import React from 'react';
 import { Box, Grid } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
-import { InfoCard, Progress, ErrorPanel } from '@backstage/core-components';
+import {
+  InfoCard,
+  Progress,
+  ErrorPanel,
+  Link,
+} from '@backstage/core-components';
 import { newRelicDashboardApiRef } from '../../../api';
 import { DashboardSnapshotSummary } from './../../../api/NewRelicDashboardApi';
 
@@ -48,21 +53,27 @@ export const DashboardSnapshot = ({
   if (error) {
     return <ErrorPanel title={error.name} defaultExpanded error={error} />;
   }
+  const url =
+    value?.getDashboardSnapshot?.data?.dashboardCreateSnapshotUrl?.replace(
+      /PDF$/,
+      'png',
+    );
   return (
     <Grid container style={{ marginTop: '30px' }}>
       <InfoCard variant="gridItem" title={name}>
         <Box display="flex">
           <Box flexGrow="1">
-            <a target="_blank" href={permalink}>
-              <img
-                alt={`${name} Dashbord`}
-                style={{ border: 'solid 1px black' }}
-                src={`${value?.getDashboardSnapshot?.data?.dashboardCreateSnapshotUrl?.replace(
-                  /...$/,
-                  'png',
-                )}`}
-              />
-            </a>
+            <Link to={permalink}>
+              {url ? (
+                <img
+                  alt={`${name} Dashbord`}
+                  style={{ border: 'solid 1px black' }}
+                  src={url}
+                />
+              ) : (
+                'Dashboard loading... , click here to open if it didnt render correctly'
+              )}
+            </Link>
           </Box>
         </Box>
       </InfoCard>
