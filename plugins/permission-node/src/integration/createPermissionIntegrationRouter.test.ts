@@ -22,10 +22,7 @@ import { createPermissionIntegrationRouter } from './createPermissionIntegration
 const mockGetResources: jest.MockedFunction<
   Parameters<typeof createPermissionIntegrationRouter>[0]['getResources']
 > = jest.fn(async resourceRefs =>
-  resourceRefs.reduce(
-    (acc, resourceRef) => ({ ...acc, [resourceRef]: { id: resourceRef } }),
-    {},
-  ),
+  resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
 const testRule1 = {
@@ -251,7 +248,9 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     it('returns 200/DENY when resource is not found', async () => {
-      mockGetResources.mockReturnValueOnce(Promise.resolve({}));
+      mockGetResources.mockImplementationOnce(async resourceRefs =>
+        resourceRefs.map(() => undefined),
+      );
 
       const response = await request(app)
         .post('/.well-known/backstage/permissions/apply-conditions')
