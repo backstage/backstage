@@ -68,7 +68,7 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
   }
 
   async getDashboardEntity(
-    guid: String,
+    guid: string,
   ): Promise<DashboardEntitySummary | undefined> {
     const DashboardEntityList = await this.callApi<DashboardEntity>(
       getDashboardParentGuidQuery,
@@ -82,7 +82,7 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
   }
 
   async getDashboardSnapshot(
-    guid: String,
+    guid: string,
     duration: Number,
   ): Promise<DashboardSnapshotSummary | undefined> {
     const DashboardSnapshotValue = await this.callApi<DashboardSnapshot>(

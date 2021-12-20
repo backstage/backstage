@@ -22,8 +22,8 @@ import { newRelicDashboardApiRef } from '../../../api';
 import Alert from '@material-ui/lab/Alert';
 
 type Props = {
-  guid: String;
-  name: String;
+  guid: string;
+  name: string;
   permalink: string;
   duration: Number;
 };

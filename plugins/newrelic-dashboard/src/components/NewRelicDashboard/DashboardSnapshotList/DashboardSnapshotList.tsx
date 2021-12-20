@@ -50,7 +50,7 @@ function a11yProps(index: number) {
   };
 }
 type Props = {
-  guid: String;
+  guid: string;
 };
 const useStyles = makeStyles(
   theme => ({
