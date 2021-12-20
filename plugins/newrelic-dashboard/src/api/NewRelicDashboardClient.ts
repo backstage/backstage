@@ -23,6 +23,7 @@ import { DashboardEntity } from '../types/DashboardEntity';
 import { DashboardSnapshot } from '../types/DashboardSnapshot';
 import { getDashboardParentGuidQuery } from '../queries/getDashboardParentGuidQuery';
 import { getDashboardSnapshotQuery } from '../queries/getDashboardSnapshotQuery';
+import { ResponseError } from '@backstage/errors';
 
 export class NewRelicDashboardClient implements NewRelicDashboardApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -59,7 +60,11 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
     if (response.status === 200) {
       return (await response.json()) as T;
     }
-    return undefined;
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    } else {
+      return undefined;
+    }
   }
 
   async getDashboardEntity(
