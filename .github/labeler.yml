@@ -19,3 +19,6 @@ microsite:
   - microsite/**/*
 auth:
   - plugins/auth-backend/**/*
+  - packages/core-app-api/src/apis/implementations/auth/**/*
+  - packages/core-app-api/src/lib/Auth*/**/*
+  - packages/core-plugin-api/src/apis/definitions/auth.ts
