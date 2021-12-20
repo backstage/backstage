@@ -155,12 +155,13 @@ async function loadPeerPluginDeps(
 }
 
 export default async (pluginId?: string, cmd?: Command) => {
+  const from = pluginId || cmd?.from;
   // TODO(himanshu): If no plugin id is provided, it should list all plugins available. Maybe in some other command?
-  if (!pluginId && !cmd?.from) {
+  if (!from) {
     throw new Error(
       'Missing both <plugin-id> or a package.json file path in the --from flag.',
     );
   }
-  const pkg = await loadPackageJson(pluginId || cmd?.from);
+  const pkg = await loadPackageJson(from);
   await installPluginAndPeerPlugins(pkg);
 };
