@@ -16,6 +16,7 @@
 
 export type {
   ConditionalPolicyDecision,
+  DefinitivePolicyDecision,
   PermissionPolicy,
   PolicyAuthorizeRequest,
   PolicyDecision,

@@ -6,21 +6,26 @@
 import { AuthorizeRequest } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
+import express from 'express';
+import { Identified } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
-import { Router } from 'express';
 
 // @public
-export type ApplyConditionsRequest = {
+export type ApplyConditionsRequest = ApplyConditionsRequestEntry[];
+
+// @public
+export type ApplyConditionsRequestEntry = Identified<{
   resourceRef: string;
   resourceType: string;
   conditions: PermissionCriteria<PermissionCondition>;
-};
+}>;
 
 // @public
-export type ApplyConditionsResponse = {
-  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
-};
+export type ApplyConditionsResponse = ApplyConditionsResponseEntry[];
+
+// @public
+export type ApplyConditionsResponseEntry = Identified<DefinitivePolicyDecision>;
 
 // @public
 export type Condition<TRule> = TRule extends PermissionRule<
@@ -87,7 +92,12 @@ export const createPermissionIntegrationRouter: <TResource>(options: {
   resourceType: string;
   rules: PermissionRule<TResource, any, unknown[]>[];
   getResource: (resourceRef: string) => Promise<TResource | undefined>;
-}) => Router;
+}) => express.Router;
+
+// @public
+export type DefinitivePolicyDecision = {
+  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+};
 
 // @public
 export interface PermissionPolicy {
@@ -115,8 +125,6 @@ export type PolicyAuthorizeRequest = Omit<AuthorizeRequest, 'resourceRef'>;
 
 // @public
 export type PolicyDecision =
-  | {
-      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
-    }
+  | DefinitivePolicyDecision
   | ConditionalPolicyDecision;
 ```

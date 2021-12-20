@@ -14,22 +14,37 @@
  * limitations under the License.
  */
 
+import { groupBy, keyBy } from 'lodash';
 import fetch from 'node-fetch';
 import { z } from 'zod';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import {
+  AuthorizeResponse,
   AuthorizeResult,
-  PermissionCondition,
-  PermissionCriteria,
+  Identified,
 } from '@backstage/plugin-permission-common';
 import {
-  ApplyConditionsRequest,
   ApplyConditionsResponse,
+  ConditionalPolicyDecision,
+  PolicyDecision,
 } from '@backstage/plugin-permission-node';
 
-const responseSchema = z.object({
-  result: z.literal(AuthorizeResult.ALLOW).or(z.literal(AuthorizeResult.DENY)),
-});
+const responseSchema = z.array(
+  z.object({
+    id: z.string(),
+    result: z
+      .literal(AuthorizeResult.ALLOW)
+      .or(z.literal(AuthorizeResult.DENY)),
+  }),
+);
+
+export type ResourcePolicyDecision = Identified<
+  PolicyDecision & { resourceRef?: string }
+>;
+
+type ConditionalResourcePolicyDecision = Identified<
+  ConditionalPolicyDecision & { resourceRef: string }
+>;
 
 export class PermissionIntegrationClient {
   private readonly discovery: PluginEndpointDiscovery;
@@ -39,32 +54,39 @@ export class PermissionIntegrationClient {
   }
 
   async applyConditions(
-    {
-      pluginId,
-      resourceRef,
-      resourceType,
-      conditions,
-    }: {
-      resourceRef: string;
-      pluginId: string;
-      resourceType: string;
-      conditions: PermissionCriteria<PermissionCondition>;
-    },
+    decisions: ResourcePolicyDecision[],
+    authHeader?: string,
+  ): Promise<Identified<AuthorizeResponse>[]> {
+    const responses = await Promise.all(
+      this.groupRequestsByPluginId(decisions).map(([pluginId, requests]) =>
+        this.makeRequest(pluginId, requests, authHeader),
+      ),
+    );
+
+    const responseIndex = keyBy(responses.flat(), 'id');
+
+    return decisions.map(decision => responseIndex[decision.id] ?? decision);
+  }
+
+  private async makeRequest(
+    pluginId: string,
+    decisions: ConditionalResourcePolicyDecision[],
     authHeader?: string,
   ): Promise<ApplyConditionsResponse> {
     const endpoint = `${await this.discovery.getBaseUrl(
       pluginId,
     )}/.well-known/backstage/permissions/apply-conditions`;
 
-    const request: ApplyConditionsRequest = {
-      resourceRef,
-      resourceType,
-      conditions,
-    };
-
     const response = await fetch(endpoint, {
       method: 'POST',
-      body: JSON.stringify(request),
+      body: JSON.stringify(
+        decisions.map(({ id, resourceRef, resourceType, conditions }) => ({
+          id,
+          resourceRef,
+          resourceType,
+          conditions,
+        })),
+      ),
       headers: {
         ...(authHeader ? { authorization: authHeader } : {}),
         'content-type': 'application/json',
@@ -78,5 +100,20 @@ export class PermissionIntegrationClient {
     }
 
     return responseSchema.parse(await response.json());
+  }
+
+  private groupRequestsByPluginId(
+    decisions: ResourcePolicyDecision[],
+  ): [string, ConditionalResourcePolicyDecision[]][] {
+    return Object.entries(
+      groupBy(
+        decisions.filter(
+          (decision): decision is ConditionalResourcePolicyDecision =>
+            decision.result === AuthorizeResult.CONDITIONAL &&
+            !!decision.resourceRef,
+        ),
+        'pluginId',
+      ),
+    );
   }
 }

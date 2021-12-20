@@ -16,16 +16,12 @@
 
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import express, { Express, Router } from 'express';
-import request from 'supertest';
+import request, { Response } from 'supertest';
 import { createPermissionIntegrationRouter } from './createPermissionIntegrationRouter';
 
 const mockGetResource: jest.MockedFunction<
-  (resourceRef: string) => Promise<any>
-> = jest.fn((resourceRef: string) =>
-  Promise.resolve({
-    resourceRef,
-  }),
-);
+  Parameters<typeof createPermissionIntegrationRouter>[0]['getResource']
+> = jest.fn(async resourceRef => ({ id: resourceRef }));
 
 const testRule1 = {
   name: 'test-rule-1',
@@ -47,7 +43,7 @@ describe('createPermissionIntegrationRouter', () => {
   let app: Express;
   let router: Router;
 
-  beforeEach(() => {
+  beforeAll(() => {
     router = createPermissionIntegrationRouter({
       resourceType: 'test-resource',
       getResource: mockGetResource,
@@ -55,6 +51,10 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     app = express().use(router);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('works', async () => {
@@ -70,7 +70,6 @@ describe('createPermissionIntegrationRouter', () => {
           { rule: 'test-rule-2', params: [{}] },
         ],
       },
-
       {
         not: { rule: 'test-rule-2', params: [{}] },
       },
@@ -95,14 +94,22 @@ describe('createPermissionIntegrationRouter', () => {
     ])('returns 200/ALLOW when criteria match (case %#)', async conditions => {
       const response = await request(app)
         .post('/.well-known/backstage/permissions/apply-conditions')
-        .send({
-          resourceRef: 'default:test/resource',
-          resourceType: 'test-resource',
-          conditions,
-        });
+        .send([
+          {
+            id: '123',
+            resourceRef: 'default:test/resource',
+            resourceType: 'test-resource',
+            conditions,
+          },
+        ]);
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual({ result: AuthorizeResult.ALLOW });
+      expect(response.body).toEqual([
+        {
+          id: '123',
+          result: AuthorizeResult.ALLOW,
+        },
+      ]);
     });
 
     it.each([
@@ -136,27 +143,92 @@ describe('createPermissionIntegrationRouter', () => {
       async conditions => {
         const response = await request(app)
           .post('/.well-known/backstage/permissions/apply-conditions')
-          .send({
-            resourceRef: 'default:test/resource',
-            resourceType: 'test-resource',
-            conditions,
-          });
+          .send([
+            {
+              id: '123',
+              resourceRef: 'default:test/resource',
+              resourceType: 'test-resource',
+              conditions,
+            },
+          ]);
 
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({ result: AuthorizeResult.DENY });
+        expect(response.body).toEqual([
+          { id: '123', result: AuthorizeResult.DENY },
+        ]);
       },
     );
+
+    describe('batched requests', () => {
+      let response: Response;
+
+      beforeEach(async () => {
+        response = await request(app)
+          .post('/.well-known/backstage/permissions/apply-conditions')
+          .send([
+            {
+              id: '123',
+              resourceRef: 'default:test/resource-1',
+              resourceType: 'test-resource',
+              conditions: { rule: 'test-rule-1', params: [] },
+            },
+            {
+              id: '234',
+              resourceRef: 'default:test/resource-1',
+              resourceType: 'test-resource',
+              conditions: { rule: 'test-rule-2', params: [] },
+            },
+            {
+              id: '345',
+              resourceRef: 'default:test/resource-2',
+              resourceType: 'test-resource',
+              conditions: { not: { rule: 'test-rule-1', params: [] } },
+            },
+            {
+              id: '456',
+              resourceRef: 'default:test/resource-3',
+              resourceType: 'test-resource',
+              conditions: { not: { rule: 'test-rule-2', params: [] } },
+            },
+            {
+              id: '567',
+              resourceRef: 'default:test/resource-4',
+              resourceType: 'test-resource',
+              conditions: {
+                anyOf: [
+                  { rule: 'test-rule-1', params: [] },
+                  { rule: 'test-rule-2', params: [] },
+                ],
+              },
+            },
+          ]);
+      });
+
+      it('processes batched requests', () => {
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual([
+          { id: '123', result: AuthorizeResult.ALLOW },
+          { id: '234', result: AuthorizeResult.DENY },
+          { id: '345', result: AuthorizeResult.DENY },
+          { id: '456', result: AuthorizeResult.ALLOW },
+          { id: '567', result: AuthorizeResult.ALLOW },
+        ]);
+      });
+    });
 
     it('returns 400 when called with incorrect resource type', async () => {
       const response = await request(app)
         .post('/.well-known/backstage/permissions/apply-conditions')
-        .send({
-          resourceRef: 'default:test/resource',
-          resourceType: 'test-incorrect-resource',
-          conditions: {
-            anyOf: [],
+        .send([
+          {
+            id: '123',
+            resourceRef: 'default:test/resource',
+            resourceType: 'test-incorrect-resource',
+            conditions: {
+              anyOf: [],
+            },
           },
-        });
+        ]);
 
       expect(response.status).toEqual(400);
       expect(response.error && response.error.text).toMatch(
@@ -164,47 +236,50 @@ describe('createPermissionIntegrationRouter', () => {
       );
     });
 
-    it('returns 400 when resource is not found', async () => {
+    it('returns 200/DENY when resource is not found', async () => {
       mockGetResource.mockReturnValueOnce(Promise.resolve(undefined));
 
       const response = await request(app)
         .post('/.well-known/backstage/permissions/apply-conditions')
-        .send({
-          resourceRef: 'default:test/resource',
-          resourceType: 'test-resource',
-          conditions: {
-            not: {
-              rule: 'testRule1',
-              params: ['a', 1],
-            },
+        .send([
+          {
+            id: '123',
+            resourceRef: 'default:test/resource',
+            resourceType: 'test-resource',
+            conditions: { rule: 'testRule1', params: [] },
           },
-        });
+        ]);
 
-      expect(response.status).toEqual(400);
-      expect(response.error && response.error.text).toMatch(
-        /resource for ref default:test\/resource not found/i,
-      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([
+        {
+          id: '123',
+          result: AuthorizeResult.DENY,
+        },
+      ]);
     });
 
     it.each([
       undefined,
+      '',
       {},
       { resourceType: 'test-resource-type' },
-      { resourceRef: 'test/resource-ref' },
-      {
-        resourceType: 'test-resource-type',
-        resourceRef: 'test/resource-ref',
-      },
-      { conditions: { anyOf: [] } },
+      [{ resourceType: 'test-resource-type' }],
+      [{ resourceRef: 'test/resource-ref' }],
+      [
+        {
+          resourceType: 'test-resource-type',
+          resourceRef: 'test/resource-ref',
+        },
+      ],
+      [{ conditions: { anyOf: [] } }],
     ])(`returns 400 for invalid input %#`, async input => {
       const response = await request(app)
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send(input);
 
       expect(response.status).toEqual(400);
-      expect(response.error && response.error.text).toMatch(
-        /invalid request body/i,
-      );
+      expect(response.error && response.error.text).toMatch(/invalid/i);
     });
   });
 });
