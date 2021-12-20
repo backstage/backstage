@@ -38,7 +38,7 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
 
   private async callApi<T>(
     query: string,
-    variables: { [key in string]: any },
+    variables: { [key in string]: string | number },
   ): Promise<T | undefined> {
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');

@@ -21,6 +21,8 @@ import { useAsync } from 'react-use';
 import { Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import { DashboardSnapshot } from './DashboardSnapshot';
+import { DashboardEntitySummary } from '../../../api/NewRelicDashboardApi';
+import { ResultEntity } from '../../../types/DashboardEntity';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -81,8 +83,11 @@ const useStyles = makeStyles(
 export const DashboardSnapshotList = ({ guid }: Props) => {
   const styles = useStyles();
   const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
-  const { value, loading, error } = useAsync(async (): Promise<any> => {
-    const dashboardObject: any = newRelicDashboardAPI.getDashboardEntity(guid);
+  const { value, loading, error } = useAsync(async (): Promise<
+    DashboardEntitySummary | undefined
+  > => {
+    const dashboardObject: Promise<DashboardEntitySummary | undefined> =
+      newRelicDashboardAPI.getDashboardEntity(guid);
     return dashboardObject;
   }, []);
   const [value1, setValue1] = useState<number>(0);
@@ -110,7 +115,7 @@ export const DashboardSnapshotList = ({ guid }: Props) => {
         style={{ width: '100%' }}
       >
         {value?.getDashboardEntity?.data?.actor.entitySearch.results.entities?.map(
-          (Entity: any, index: any) => {
+          (Entity: ResultEntity, index: number) => {
             return (
               <Tab
                 label={Entity.name}
@@ -126,7 +131,7 @@ export const DashboardSnapshotList = ({ guid }: Props) => {
         )}
       </Tabs>
       {value?.getDashboardEntity?.data?.actor.entitySearch.results.entities?.map(
-        (Entity: any, index: any) => {
+        (Entity: ResultEntity, index: number) => {
           return (
             <TabPanel value1={value1} index={index}>
               <DashboardSnapshot

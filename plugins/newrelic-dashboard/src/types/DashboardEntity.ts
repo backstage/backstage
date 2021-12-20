@@ -19,14 +19,15 @@ export type DashboardEntity = {
     actor: {
       entitySearch: {
         results: {
-          entities: [
-            {
-              guid: string;
-              permalink: string;
-            },
-          ];
+          entities: [ResultEntity];
         };
       };
     };
   };
+};
+
+export type ResultEntity = {
+  guid: string;
+  permalink: string;
+  name: string;
 };

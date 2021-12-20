@@ -20,6 +20,7 @@ import { useAsync } from 'react-use';
 import { InfoCard, Progress } from '@backstage/core-components';
 import { newRelicDashboardApiRef } from '../../../api';
 import Alert from '@material-ui/lab/Alert';
+import { DashboardSnapshotSummary } from './../../../api/NewRelicDashboardApi';
 
 type Props = {
   guid: string;
@@ -35,11 +36,11 @@ export const DashboardSnapshot = ({
   duration,
 }: Props) => {
   const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
-  const { value, loading, error } = useAsync(async (): Promise<any> => {
-    const dashboardObject: any = newRelicDashboardAPI.getDashboardSnapshot(
-      guid,
-      duration,
-    );
+  const { value, loading, error } = useAsync(async (): Promise<
+    DashboardSnapshotSummary | undefined
+  > => {
+    const dashboardObject: Promise<DashboardSnapshotSummary | undefined> =
+      newRelicDashboardAPI.getDashboardSnapshot(guid, duration);
     return dashboardObject;
   }, []);
   if (loading) {

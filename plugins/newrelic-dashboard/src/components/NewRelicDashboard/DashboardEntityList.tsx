@@ -19,11 +19,11 @@ import { newRelicDashboardApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
 import { Progress, InfoCard, Link } from '@backstage/core-components';
-
 import Alert from '@material-ui/lab/Alert';
-
 import DesktopMac from '@material-ui/icons/DesktopMac';
 import { useNewRelicDashboardEntity } from '../../hooks';
+import { DashboardEntitySummary } from '../../api/NewRelicDashboardApi';
+import { ResultEntity } from '../../types/DashboardEntity';
 
 const useStyles = makeStyles({
   svgIcon: {
@@ -39,10 +39,13 @@ export const DashboardEntityList = () => {
   const DashboardEntity = useNewRelicDashboardEntity();
   const classes = useStyles();
   const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
-  const { value, loading, error } = useAsync(async (): Promise<any> => {
-    const dashboardObject: any = newRelicDashboardAPI.getDashboardEntity(
-      String(DashboardEntity?.integrationKey),
-    );
+  const { value, loading, error } = useAsync(async (): Promise<
+    DashboardEntitySummary | undefined
+  > => {
+    const dashboardObject: Promise<DashboardEntitySummary | undefined> =
+      newRelicDashboardAPI.getDashboardEntity(
+        String(DashboardEntity?.integrationKey),
+      );
     return dashboardObject;
   }, []);
   if (loading) {
@@ -55,12 +58,13 @@ export const DashboardEntityList = () => {
     <InfoCard title="New Relic Dashboard Pages" variant="gridItem">
       {value?.getDashboardEntity === undefined &&
         'Unauthorized Request , please check API Key'}
-      {value?.getDashboardEntity?.data.actor.entitySearch.results.entities
-        .length <= 0 && (
-        <>No Dashboard Pages found with the specified Dashboard GUID</>
-      )}
+      {value?.getDashboardEntity !== undefined &&
+        value?.getDashboardEntity?.data.actor.entitySearch.results?.entities
+          ?.length <= 0 && (
+          <>No Dashboard Pages found with the specified Dashboard GUID</>
+        )}
       {value?.getDashboardEntity?.data.actor.entitySearch.results.entities?.map(
-        (entity: any) => {
+        (entity: ResultEntity) => {
           return (
             <Box style={{ margin: '10px' }} display="flex">
               <Box mr={1} className={classes.svgIcon}>
