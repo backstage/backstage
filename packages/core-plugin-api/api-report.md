@@ -357,7 +357,7 @@ export function createRouteRef<
   },
   ParamKey extends string = never,
 >(config: {
-  id?: string;
+  id: string;
   params?: ParamKey[];
 }): RouteRef<OptionalParams<Params>>;
 

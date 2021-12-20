@@ -62,16 +62,12 @@ export function createRouteRef<
   ParamKey extends string = never,
 >(config: {
   /** The id of the route ref, used to identify it when printed */
-  id?: string;
+  id: string;
   /** A list of parameter names that the path that this route ref is bound to must contain */
   params?: ParamKey[];
 }): RouteRef<OptionalParams<Params>> {
-  const id = config.id;
-  if (!id) {
-    throw new Error('RouteRef must be provided a non-empty id');
-  }
   return new RouteRefImpl(
-    id,
+    config.id,
     (config.params ?? []) as ParamKeys<OptionalParams<Params>>,
   );
 }
