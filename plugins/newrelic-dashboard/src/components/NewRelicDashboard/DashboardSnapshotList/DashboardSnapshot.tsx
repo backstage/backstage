@@ -17,9 +17,8 @@ import React from 'react';
 import { Box, Grid } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
-import { InfoCard, Progress } from '@backstage/core-components';
+import { InfoCard, Progress, ErrorPanel } from '@backstage/core-components';
 import { newRelicDashboardApiRef } from '../../../api';
-import Alert from '@material-ui/lab/Alert';
 import { DashboardSnapshotSummary } from './../../../api/NewRelicDashboardApi';
 
 type Props = {
@@ -47,7 +46,7 @@ export const DashboardSnapshot = ({
     return <Progress />;
   }
   if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ErrorPanel title={error.name} defaultExpanded error={error} />;
   }
   return (
     <Grid container style={{ marginTop: '30px' }}>

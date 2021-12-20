@@ -18,8 +18,7 @@ import { Grid, Tab, Tabs, makeStyles } from '@material-ui/core';
 import { newRelicDashboardApiRef } from '../../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
-import { Progress } from '@backstage/core-components';
-import Alert from '@material-ui/lab/Alert';
+import { Progress, ErrorPanel } from '@backstage/core-components';
 import { DashboardSnapshot } from './DashboardSnapshot';
 import { DashboardEntitySummary } from '../../../api/NewRelicDashboardApi';
 import { ResultEntity } from '../../../types/DashboardEntity';
@@ -99,7 +98,7 @@ export const DashboardSnapshotList = ({ guid }: Props) => {
     return <Progress />;
   }
   if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ErrorPanel title={error.name} defaultExpanded error={error} />;
   }
   return (
     <Grid container direction="column">

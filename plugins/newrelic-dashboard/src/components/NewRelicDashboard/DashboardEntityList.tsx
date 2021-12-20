@@ -18,8 +18,12 @@ import { Box, makeStyles, Typography } from '@material-ui/core';
 import { newRelicDashboardApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
-import { Progress, InfoCard, Link } from '@backstage/core-components';
-import Alert from '@material-ui/lab/Alert';
+import {
+  Progress,
+  InfoCard,
+  Link,
+  ErrorPanel,
+} from '@backstage/core-components';
 import DesktopMac from '@material-ui/icons/DesktopMac';
 import { useNewRelicDashboardEntity } from '../../hooks';
 import { DashboardEntitySummary } from '../../api/NewRelicDashboardApi';
@@ -52,7 +56,7 @@ export const DashboardEntityList = () => {
     return <Progress />;
   }
   if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ErrorPanel title={error.name} defaultExpanded error={error} />;
   }
   return (
     <InfoCard title="New Relic Dashboard Pages" variant="gridItem">
