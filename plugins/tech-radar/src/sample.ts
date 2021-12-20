@@ -51,7 +51,7 @@ entries.push({
   title: 'JavaScript',
   quadrant: 'languages',
   description:
-    'Excepteur **sint** occaecat *cupidatat* non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n```ts\nconst x = "3";\n```\n'
+    'Excepteur **sint** occaecat *cupidatat* non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n```ts\nconst x = "3";\n```\n',
 });
 entries.push({
   timeline: [
@@ -92,11 +92,10 @@ entries.push({
     {
       moved: 0,
       ringId: 'use',
-      date: new Date('2020-08-06')
+      date: new Date('2020-08-06'),
     },
   ],
   url: 'https://reactjs.org/',
-  urlTarget: '_blank',
   key: 'react',
   id: 'react',
   title: 'React',
@@ -107,14 +106,14 @@ entries.push({
     {
       moved: 0,
       ringId: 'use',
-      date: new Date('2020-08-06')
+      date: new Date('2020-08-06'),
     },
   ],
   url: '#',
   key: 'code-reviews',
   id: 'code-reviews',
   title: 'Code Reviews',
-  quadrant: 'process'
+  quadrant: 'process',
 });
 entries.push({
   timeline: [
@@ -162,11 +161,10 @@ entries.push({
     {
       ringId: 'use',
       date: new Date('2020-08-06'),
-      description: 'long description'
+      description: 'long description',
     },
   ],
   url: 'https://github.com',
-  urlTarget: '_blank',
   key: 'github-actions',
   id: 'github-actions',
   title: 'GitHub Actions',

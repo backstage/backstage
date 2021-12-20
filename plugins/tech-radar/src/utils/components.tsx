@@ -13,30 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+
 import { Link } from '@backstage/core-components';
+import React from 'react';
 
 type WithLinkProps = {
   url?: string;
-  urlTarget?: string;
   className: string;
   children: React.ReactNode;
 };
 
+export function isValidUrl(url: string | undefined): url is string {
+  return Boolean(url && url !== '#' && url.length > 0);
+}
+
 export const WithLink = ({
   url,
-  urlTarget,
   className,
   children,
 }: WithLinkProps): JSX.Element =>
   isValidUrl(url) ? (
-    <Link target={urlTarget} className={className} to={url}>
+    <Link className={className} to={url}>
       {children}
     </Link>
   ) : (
     <>{children}</>
   );
-
-export const isValidUrl = (url: String) => {
-  return (url && url !== '#' && url.length > 0)
-}

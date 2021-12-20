@@ -122,7 +122,6 @@ export function RadarComponent(props: TechRadarComponentProps) {
         moved: entry.timeline[0].moved,
         description: entry.description || entry.timeline[0].description,
         url: entry.url,
-        urlTarget: entry.urlTarget
       }));
   };
 

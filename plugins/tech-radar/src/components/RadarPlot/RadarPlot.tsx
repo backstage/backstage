@@ -73,7 +73,6 @@ const RadarPlot = (props: Props): JSX.Element => {
             color={entry.color || ''}
             value={(entry?.index || 0) + 1}
             url={entry.url}
-            urlTarget={entry.urlTarget}
             description={entry.description}
             moved={entry.moved}
             title={entry.title}
