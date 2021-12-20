@@ -36,6 +36,19 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
 export type PolicyAuthorizeRequest = Omit<AuthorizeRequest, 'resourceRef'>;
 
 /**
+ * A definitive result to an authorization request, returned by the {@link PermissionPolicy}.
+ *
+ * @remarks
+ *
+ * This indicates that the policy unconditionally allows (or denies) the request.
+ *
+ * @public
+ */
+export type DefinitivePolicyDecision = {
+  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+};
+
+/**
  * A conditional result to an authorization request, returned by the {@link PermissionPolicy}.
  *
  * @remarks
@@ -61,7 +74,7 @@ export type ConditionalPolicyDecision = {
  * @public
  */
 export type PolicyDecision =
-  | { result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }
+  | DefinitivePolicyDecision
   | ConditionalPolicyDecision;
 
 /**

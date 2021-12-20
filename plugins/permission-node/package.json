@@ -31,10 +31,12 @@
   "dependencies": {
     "@backstage/backend-common": "^0.10.1",
     "@backstage/config": "^0.1.11",
+    "@backstage/errors": "^0.1.5",
     "@backstage/plugin-auth-backend": "^0.6.0",
     "@backstage/plugin-permission-common": "^0.3.0",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
     "zod": "^3.11.6"
   },
   "devDependencies": {

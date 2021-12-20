@@ -19,14 +19,34 @@ import request from 'supertest';
 import { getVoidLogger } from '@backstage/backend-common';
 import { IdentityClient } from '@backstage/plugin-auth-backend';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { ApplyConditionsResponse } from '@backstage/plugin-permission-node';
+import { ApplyConditionsResponseEntry } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
 import { createRouter } from './router';
 
 const mockApplyConditions: jest.MockedFunction<
   InstanceType<typeof PermissionIntegrationClient>['applyConditions']
-> = jest.fn();
+> = jest.fn(async decisions =>
+  decisions.map(decision => {
+    if (
+      decision.result === AuthorizeResult.CONDITIONAL &&
+      decision.resourceRef
+    ) {
+      return { id: decision.id, result: AuthorizeResult.DENY as const };
+    }
+
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      return {
+        id: decision.id,
+        result: decision.result,
+        conditions: decision.conditions,
+      };
+    }
+
+    return decision;
+  }),
+);
+
 jest.mock('./PermissionIntegrationClient', () => ({
   PermissionIntegrationClient: jest.fn(() => ({
     applyConditions: mockApplyConditions,
@@ -34,7 +54,7 @@ jest.mock('./PermissionIntegrationClient', () => ({
 }));
 
 const policy = {
-  handle: jest.fn().mockImplementation((_req, identity) => {
+  handle: jest.fn().mockImplementation(async (_req, identity) => {
     if (identity) {
       return { result: AuthorizeResult.ALLOW };
     }
@@ -159,7 +179,7 @@ describe('createRouter', () => {
 
     describe('conditional policy result', () => {
       beforeEach(() => {
-        policy.handle.mockReturnValueOnce({
+        policy.handle.mockResolvedValue({
           result: AuthorizeResult.CONDITIONAL,
           pluginId: 'test-plugin',
           resourceType: 'test-resource-1',
@@ -193,15 +213,22 @@ describe('createRouter', () => {
         ]);
       });
 
-      it.each<ApplyConditionsResponse['result']>([
+      it.each<ApplyConditionsResponseEntry['result']>([
         AuthorizeResult.ALLOW,
         AuthorizeResult.DENY,
       ])(
         'applies conditions and returns %s if resourceRef is supplied',
         async result => {
-          mockApplyConditions.mockResolvedValueOnce({
-            result,
-          });
+          mockApplyConditions.mockResolvedValueOnce([
+            {
+              id: '123',
+              result,
+            },
+            {
+              id: '234',
+              result,
+            },
+          ]);
 
           const response = await request(app)
             .post('/authorize')
@@ -216,15 +243,35 @@ describe('createRouter', () => {
                   attributes: {},
                 },
               },
+              {
+                id: '234',
+                resourceRef: 'test/resource',
+                permission: {
+                  name: 'test.permission',
+                  resourceType: 'test-resource-1',
+                  attributes: {},
+                },
+              },
             ]);
 
           expect(mockApplyConditions).toHaveBeenCalledWith(
-            {
-              pluginId: 'test-plugin',
-              resourceType: 'test-resource-1',
-              resourceRef: 'test/resource',
-              conditions: { anyOf: [{ rule: 'test-rule', params: ['abc'] }] },
-            },
+            [
+              expect.objectContaining({
+                id: '123',
+                result: AuthorizeResult.CONDITIONAL,
+                pluginId: 'test-plugin',
+                resourceType: 'test-resource-1',
+                resourceRef: 'test/resource',
+                conditions: { anyOf: [{ rule: 'test-rule', params: ['abc'] }] },
+              }),
+              expect.objectContaining({
+                id: '234',
+                pluginId: 'test-plugin',
+                resourceType: 'test-resource-1',
+                resourceRef: 'test/resource',
+                conditions: { anyOf: [{ rule: 'test-rule', params: ['abc'] }] },
+              }),
+            ],
             'Bearer test-token',
           );
 
@@ -232,6 +279,10 @@ describe('createRouter', () => {
           expect(response.body).toEqual([
             {
               id: '123',
+              result,
+            },
+            {
+              id: '234',
               result,
             },
           ]);
@@ -247,10 +298,10 @@ describe('createRouter', () => {
       [{ id: '123' }],
       [{ id: '123', permission: { name: 'test.permission' } }],
       [{ id: '123', permission: { attributes: { invalid: 'attribute' } } }],
-    ])('returns a 500 error for invalid request %#', async requestBody => {
+    ])('returns a 400 error for invalid request %#', async requestBody => {
       const response = await request(app).post('/authorize').send(requestBody);
 
-      expect(response.status).toEqual(500);
+      expect(response.status).toEqual(400);
       expect(response.body).toEqual(
         expect.objectContaining({
           error: expect.objectContaining({
@@ -261,7 +312,7 @@ describe('createRouter', () => {
     });
 
     it('returns a 500 error if the policy returns a different resourceType', async () => {
-      policy.handle.mockReturnValueOnce({
+      policy.handle.mockResolvedValueOnce({
         result: AuthorizeResult.CONDITIONAL,
         pluginId: 'test-plugin',
         resourceType: 'test-resource-2',

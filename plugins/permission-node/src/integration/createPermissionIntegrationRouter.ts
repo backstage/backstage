@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import express, { Response, Router } from 'express';
+import express, { Response } from 'express';
+import Router from 'express-promise-router';
 import { z } from 'zod';
+import { InputError } from '@backstage/errors';
+import { errorHandler } from '@backstage/backend-common';
 import {
   AuthorizeResult,
+  Identified,
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
@@ -28,6 +32,7 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from './util';
+import { DefinitivePolicyDecision } from '../policy/types';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -43,11 +48,14 @@ const permissionCriteriaSchema: z.ZodSchema<
   ]),
 );
 
-const applyConditionsRequestSchema = z.object({
-  resourceRef: z.string(),
-  resourceType: z.string(),
-  conditions: permissionCriteriaSchema,
-});
+const applyConditionsRequestSchema = z.array(
+  z.object({
+    id: z.string(),
+    resourceRef: z.string(),
+    resourceType: z.string(),
+    conditions: permissionCriteriaSchema,
+  }),
+);
 
 /**
  * A request to load the referenced resource and apply conditions in order to
@@ -55,11 +63,18 @@ const applyConditionsRequestSchema = z.object({
  *
  * @public
  */
-export type ApplyConditionsRequest = {
+export type ApplyConditionsRequestEntry = Identified<{
   resourceRef: string;
   resourceType: string;
   conditions: PermissionCriteria<PermissionCondition>;
-};
+}>;
+
+/**
+ * A batch of {@link ApplyConditionsRequestEntry} objects.
+ *
+ * @public
+ */
+export type ApplyConditionsRequest = ApplyConditionsRequestEntry[];
 
 /**
  * The result of applying the conditions, expressed as a definitive authorize
@@ -67,15 +82,27 @@ export type ApplyConditionsRequest = {
  *
  * @public
  */
-export type ApplyConditionsResponse = {
-  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
-};
+export type ApplyConditionsResponseEntry = Identified<DefinitivePolicyDecision>;
+
+/**
+ * A batch of {@link ApplyConditionsResponseEntry} objects.
+ *
+ * @public
+ */
+export type ApplyConditionsResponse = ApplyConditionsResponseEntry[];
 
 const applyConditions = <TResource>(
   criteria: PermissionCriteria<PermissionCondition>,
   resource: TResource,
   getRule: (name: string) => PermissionRule<TResource, unknown>,
 ): boolean => {
+  // If resource was not found, deny. This avoids leaking information from the
+  // apply-conditions API which would allow a user to differentiate between
+  // non-existent resources and resources to which they do not have access.
+  if (typeof resource === 'undefined') {
+    return false;
+  }
+
   if (isAndCriteria(criteria)) {
     return criteria.allOf.every(child =>
       applyConditions(child, resource, getRule),
@@ -92,30 +119,37 @@ const applyConditions = <TResource>(
 };
 
 /**
- * Create an express Router which provides an authorization route to allow integration between the
- * permission backend and other Backstage backend plugins. Plugin owners that wish to support
- * conditional authorization for their resources should add the router created by this function
- * to their express app inside their `createRouter` implementation.
+ * Create an express Router which provides an authorization route to allow
+ * integration between the permission backend and other Backstage backend
+ * plugins. Plugin owners that wish to support conditional authorization for
+ * their resources should add the router created by this function to their
+ * express app inside their `createRouter` implementation.
  *
  * @remarks
  *
- * To make this concrete, we can use the Backstage software catalog as an example. The catalog has
- * conditional rules around access to specific _entities_ in the catalog. The _type_ of resource is
- * captured here as `resourceType`, a string identifier (`catalog-entity` in this example) that can
- * be provided with permission definitions. This is merely a _type_ to verify that conditions in an
- * authorization policy are constructed correctly, not a reference to a specific resource.
+ * To make this concrete, we can use the Backstage software catalog as an
+ * example. The catalog has conditional rules around access to specific
+ * _entities_ in the catalog. The _type_ of resource is captured here as
+ * `resourceType`, a string identifier (`catalog-entity` in this example) that
+ * can be provided with permission definitions. This is merely a _type_ to
+ * verify that conditions in an authorization policy are constructed correctly,
+ * not a reference to a specific resource.
  *
- * The `rules` parameter is an array of {@link PermissionRule}s that introduce conditional
- * filtering logic for resources; for the catalog, these are things like `isEntityOwner` or
- * `hasAnnotation`. Rules describe how to filter a list of resources, and the `conditions` returned
- * allow these rules to be applied with specific parameters (such as 'group:default/team-a', or
+ * The `rules` parameter is an array of {@link PermissionRule}s that introduce
+ * conditional filtering logic for resources; for the catalog, these are things
+ * like `isEntityOwner` or `hasAnnotation`. Rules describe how to filter a list
+ * of resources, and the `conditions` returned allow these rules to be applied
+ * with specific parameters (such as 'group:default/team-a', or
  * 'backstage.io/edit-url').
  *
- * The `getResource` argument should load a resource by reference. For the catalog, this is an
- * {@link @backstage/catalog-model#EntityRef}. For other plugins, this can be any serialized format.
- * This is used to construct the `createPermissionIntegrationRouter`, a function to add an
- * authorization route to your backend plugin. This route will be called by the `permission-backend`
- * when authorization conditions relating to this plugin need to be evaluated.
+ * The `getResources` argument should load resources based on a reference
+ * identifier. For the catalog, this is an
+ * {@link @backstage/catalog-model#EntityRef}. For other plugins, this can be
+ * any serialized format. This is used to construct the
+ * `createPermissionIntegrationRouter`, a function to add an authorization route
+ * to your backend plugin. This function will be called by the
+ * `permission-backend` when authorization conditions relating to this plugin
+ * need to be evaluated.
  *
  * @public
  */
@@ -123,53 +157,60 @@ export const createPermissionIntegrationRouter = <TResource>(options: {
   resourceType: string;
   rules: PermissionRule<TResource, any>[];
   getResource: (resourceRef: string) => Promise<TResource | undefined>;
-}): Router => {
+}): express.Router => {
   const { resourceType, rules, getResource } = options;
   const router = Router();
 
   const getRule = createGetRule(rules);
 
+  const assertValidResourceTypes = (requests: ApplyConditionsRequest) => {
+    const invalidResourceType = requests.find(
+      request => request.resourceType !== resourceType,
+    )?.resourceType;
+
+    if (invalidResourceType) {
+      throw new InputError(`Unexpected resource type: ${invalidResourceType}.`);
+    }
+  };
+
+  router.use(express.json());
+
   router.post(
     '/.well-known/backstage/permissions/apply-conditions',
-    express.json(),
-    async (
-      req,
-      res: Response<
-        | {
-            result: Omit<AuthorizeResult, AuthorizeResult.CONDITIONAL>;
-          }
-        | string
-      >,
-    ) => {
+    async (req, res: Response<ApplyConditionsResponse | string>) => {
       const parseResult = applyConditionsRequestSchema.safeParse(req.body);
 
       if (!parseResult.success) {
-        return res.status(400).send(`Invalid request body.`);
+        throw new InputError(parseResult.error.toString());
       }
 
-      const { data: body } = parseResult;
+      const body = parseResult.data;
 
-      if (body.resourceType !== resourceType) {
-        return res
-          .status(400)
-          .send(`Unexpected resource type: ${body.resourceType}.`);
+      assertValidResourceTypes(body);
+
+      const resources = {} as Record<string, TResource | undefined>;
+      for (const { resourceRef } of body) {
+        if (!resources[resourceRef]) {
+          resources[resourceRef] = await getResource(resourceRef);
+        }
       }
 
-      const resource = await getResource(body.resourceRef);
-
-      if (!resource) {
-        return res
-          .status(400)
-          .send(`Resource for ref ${body.resourceRef} not found.`);
-      }
-
-      return res.status(200).json({
-        result: applyConditions(body.conditions, resource, getRule)
-          ? AuthorizeResult.ALLOW
-          : AuthorizeResult.DENY,
-      });
+      return res.status(200).json(
+        body.map(request => ({
+          id: request.id,
+          result: applyConditions(
+            request.conditions,
+            resources[request.resourceRef],
+            getRule,
+          )
+            ? AuthorizeResult.ALLOW
+            : AuthorizeResult.DENY,
+        })),
+      );
     },
   );
+
+  router.use(errorHandler());
 
   return router;
 };

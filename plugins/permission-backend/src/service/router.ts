@@ -22,6 +22,7 @@ import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import {
   BackstageIdentityResponse,
   IdentityClient,
@@ -32,7 +33,10 @@ import {
   AuthorizeRequest,
   Identified,
 } from '@backstage/plugin-permission-common';
-import { PermissionPolicy } from '@backstage/plugin-permission-node';
+import {
+  PermissionPolicy,
+  PolicyDecision,
+} from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
 const requestSchema: z.ZodSchema<Identified<AuthorizeRequest>[]> = z.array(
@@ -69,46 +73,55 @@ export interface RouterOptions {
   identity: IdentityClient;
 }
 
-const handleRequest = async (
-  { id, resourceRef, ...request }: Identified<AuthorizeRequest>,
-  user: BackstageIdentityResponse | undefined,
+const applyPolicy = async (
   policy: PermissionPolicy,
-  permissionIntegrationClient: PermissionIntegrationClient,
-  authHeader?: string,
-): Promise<Identified<AuthorizeResponse>> => {
-  const response = await policy.handle(request, user);
+  requests: Identified<AuthorizeRequest>[],
+  user: BackstageIdentityResponse | undefined,
+): Promise<Identified<PolicyDecision & { resourceRef?: string }>[]> => {
+  return Promise.all(
+    requests.map(({ id, resourceRef, ...authorizeRequest }) =>
+      policy.handle(authorizeRequest, user).then(decision => ({
+        id,
+        ...(decision.result === AuthorizeResult.CONDITIONAL
+          ? { resourceRef }
+          : {}),
+        ...decision,
+      })),
+    ),
+  );
+};
 
-  if (response.result === AuthorizeResult.CONDITIONAL) {
+const assertMatchingResourceTypes = (
+  requests: AuthorizeRequest[],
+  decisions: PolicyDecision[],
+) => {
+  requests.forEach((request, index) => {
+    const decision = decisions[index];
+
     // Sanity check that any resource provided matches the one expected by the permission
-    if (request.permission.resourceType !== response.resourceType) {
+    if (
+      decision.result === AuthorizeResult.CONDITIONAL &&
+      decision.resourceType !== request.permission.resourceType
+    ) {
       throw new Error(
         `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
       );
     }
+  });
+};
 
-    if (resourceRef) {
-      return {
-        id,
-        ...(await permissionIntegrationClient.applyConditions(
-          {
-            resourceRef,
-            pluginId: response.pluginId,
-            resourceType: response.resourceType,
-            conditions: response.conditions,
-          },
-          authHeader,
-        )),
-      };
-    }
+const handleRequest = async (
+  requests: Identified<AuthorizeRequest>[],
+  user: BackstageIdentityResponse | undefined,
+  policy: PermissionPolicy,
+  permissionIntegrationClient: PermissionIntegrationClient,
+  authHeader?: string,
+): Promise<Identified<AuthorizeResponse>[]> => {
+  const decisions = await applyPolicy(policy, requests, user);
 
-    return {
-      id,
-      result: AuthorizeResult.CONDITIONAL,
-      conditions: response.conditions,
-    };
-  }
+  assertMatchingResourceTypes(requests, decisions);
 
-  return { id, ...response };
+  return permissionIntegrationClient.applyConditions(decisions, authHeader);
 };
 
 /**
@@ -142,24 +155,27 @@ export async function createRouter(
       const token = IdentityClient.getBearerToken(req.header('authorization'));
       const user = token ? await identity.authenticate(token) : undefined;
 
-      const body = requestSchema.parse(req.body);
+      const parseResult = requestSchema.safeParse(req.body);
+
+      if (!parseResult.success) {
+        throw new InputError(parseResult.error.toString());
+      }
+
+      const body = parseResult.data;
 
       res.json(
-        await Promise.all(
-          body.map(request =>
-            handleRequest(
-              request,
-              user,
-              policy,
-              permissionIntegrationClient,
-              req.header('authorization'),
-            ),
-          ),
+        await handleRequest(
+          body,
+          user,
+          policy,
+          permissionIntegrationClient,
+          req.header('authorization'),
         ),
       );
     },
   );
 
   router.use(errorHandler());
+
   return router;
 }
