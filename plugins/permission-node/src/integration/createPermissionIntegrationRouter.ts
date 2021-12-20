@@ -156,9 +156,9 @@ const applyConditions = <TResource>(
 export const createPermissionIntegrationRouter = <TResource>(options: {
   resourceType: string;
   rules: PermissionRule<TResource, any>[];
-  getResource: (resourceRef: string) => Promise<TResource | undefined>;
+  getResources: (resourceRefs: string[]) => Promise<Record<string, TResource>>;
 }): express.Router => {
-  const { resourceType, rules, getResource } = options;
+  const { resourceType, rules, getResources } = options;
   const router = Router();
 
   const getRule = createGetRule(rules);
@@ -188,12 +188,9 @@ export const createPermissionIntegrationRouter = <TResource>(options: {
 
       assertValidResourceTypes(body);
 
-      const resources = {} as Record<string, TResource | undefined>;
-      for (const { resourceRef } of body) {
-        if (!resources[resourceRef]) {
-          resources[resourceRef] = await getResource(resourceRef);
-        }
-      }
+      const resources = await getResources(
+        Array.from(new Set(body.map(({ resourceRef }) => resourceRef))),
+      );
 
       return res.status(200).json(
         body.map(request => ({

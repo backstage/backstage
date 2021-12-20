@@ -275,7 +275,11 @@ describe('PermissionIntegrationClient', () => {
       router.use(
         createPermissionIntegrationRouter({
           resourceType: 'test-resource',
-          getResource: async resourceRef => ({ id: resourceRef }),
+          getResources: async resourceRefs =>
+            resourceRefs.reduce((acc, ref) => {
+              acc[ref] = { id: ref };
+              return acc;
+            }, {} as Record<string, { id: string }>),
           rules: [
             {
               name: 'RULE_1',

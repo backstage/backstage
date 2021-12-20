@@ -19,9 +19,14 @@ import express, { Express, Router } from 'express';
 import request, { Response } from 'supertest';
 import { createPermissionIntegrationRouter } from './createPermissionIntegrationRouter';
 
-const mockGetResource: jest.MockedFunction<
-  Parameters<typeof createPermissionIntegrationRouter>[0]['getResource']
-> = jest.fn(async resourceRef => ({ id: resourceRef }));
+const mockGetResources: jest.MockedFunction<
+  Parameters<typeof createPermissionIntegrationRouter>[0]['getResources']
+> = jest.fn(async resourceRefs =>
+  resourceRefs.reduce(
+    (acc, resourceRef) => ({ ...acc, [resourceRef]: { id: resourceRef } }),
+    {},
+  ),
+);
 
 const testRule1 = {
   name: 'test-rule-1',
@@ -46,7 +51,7 @@ describe('createPermissionIntegrationRouter', () => {
   beforeAll(() => {
     router = createPermissionIntegrationRouter({
       resourceType: 'test-resource',
-      getResource: mockGetResource,
+      getResources: mockGetResources,
       rules: [testRule1, testRule2],
     });
 
@@ -214,6 +219,15 @@ describe('createPermissionIntegrationRouter', () => {
           { id: '567', result: AuthorizeResult.ALLOW },
         ]);
       });
+
+      it('calls getResources for all required resources at once', () => {
+        expect(mockGetResources).toHaveBeenCalledWith([
+          'default:test/resource-1',
+          'default:test/resource-2',
+          'default:test/resource-3',
+          'default:test/resource-4',
+        ]);
+      });
     });
 
     it('returns 400 when called with incorrect resource type', async () => {
@@ -237,7 +251,7 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     it('returns 200/DENY when resource is not found', async () => {
-      mockGetResource.mockReturnValueOnce(Promise.resolve(undefined));
+      mockGetResources.mockReturnValueOnce(Promise.resolve({}));
 
       const response = await request(app)
         .post('/.well-known/backstage/permissions/apply-conditions')
