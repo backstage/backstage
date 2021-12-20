@@ -97,7 +97,7 @@ export const createConditionTransformer: <
 export const createPermissionIntegrationRouter: <TResource>(options: {
   resourceType: string;
   rules: PermissionRule<TResource, any, unknown[]>[];
-  getResources: (resourceRefs: string[]) => Promise<Record<string, TResource>>;
+  getResources: (resourceRefs: string[]) => Promise<(TResource | undefined)[]>;
 }) => express.Router;
 
 // @public
