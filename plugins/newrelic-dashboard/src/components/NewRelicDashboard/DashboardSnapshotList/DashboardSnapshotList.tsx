@@ -88,7 +88,7 @@ export const DashboardSnapshotList = ({ guid }: Props) => {
     const dashboardObject: Promise<DashboardEntitySummary | undefined> =
       newRelicDashboardAPI.getDashboardEntity(guid);
     return dashboardObject;
-  }, []);
+  }, [guid]);
   const [value1, setValue1] = useState<number>(0);
   const handleChange = ({}: React.ChangeEvent<{}>, newValue: number) => {
     setValue1(newValue);

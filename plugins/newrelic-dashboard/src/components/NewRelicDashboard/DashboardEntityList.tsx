@@ -51,7 +51,7 @@ export const DashboardEntityList = () => {
         String(DashboardEntity?.integrationKey),
       );
     return dashboardObject;
-  }, []);
+  }, [DashboardEntity?.integrationKey]);
   if (loading) {
     return <Progress />;
   }

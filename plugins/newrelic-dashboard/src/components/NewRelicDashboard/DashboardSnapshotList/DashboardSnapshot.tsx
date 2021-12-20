@@ -41,7 +41,7 @@ export const DashboardSnapshot = ({
     const dashboardObject: Promise<DashboardSnapshotSummary | undefined> =
       newRelicDashboardAPI.getDashboardSnapshot(guid, duration);
     return dashboardObject;
-  }, []);
+  }, [guid, duration]);
   if (loading) {
     return <Progress />;
   }
