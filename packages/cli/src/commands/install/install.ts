@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Step, PackageWithInstallRecipe } from './types';
+import {
+  Step,
+  PackageWithInstallRecipe,
+  PeerPluginDependencies,
+} from './types';
 import { fetchPackageInfo } from '../../lib/versioning';
 import { NotFoundError } from '../../lib/errors';
 import * as stepDefinitionMap from './steps';
@@ -52,7 +56,10 @@ type Steps = Array<{
 }>;
 
 class PluginInstaller {
-  static async resolveSteps(pkg: PackageWithInstallRecipe) {
+  static async resolveSteps(
+    pkg: PackageWithInstallRecipe,
+    versionToInstall?: string,
+  ) {
     const steps: Steps = [];
 
     // collectDependencies
@@ -62,7 +69,7 @@ class PluginInstaller {
       target: 'packages/app',
       type: 'dependencies' as const,
       name: pkg.name,
-      query: `^${pkg.version}`,
+      query: versionToInstall || `^${pkg.version}`,
     });
     steps.push({
       type: 'dependencies',
@@ -97,22 +104,64 @@ class PluginInstaller {
   }
 }
 
-export default async (pluginId?: string, cmd?: Command) => {
-  // TODO(himanshu): If no plugin id is provided, it should list all plugins available. Maybe in some other command?
+async function installPluginAndPeerPlugins(pkg: PackageWithInstallRecipe) {
+  const pluginDeps: PeerPluginDependencies = new Map();
+  pluginDeps.set(pkg.name, { pkg });
+  await loadPeerPluginDeps(pkg, pluginDeps);
 
-  let pkg: PackageWithInstallRecipe;
-  if (pluginId) {
-    pkg = await fetchPluginPackage(pluginId);
-  } else if (cmd?.from) {
-    // TODO(himanshu): Also support reading directly from url
-    pkg = await fs.readJson(cmd.from);
-  } else {
+  console.log(`Installing ${pkg.name} AND any peer plugin dependencies.`);
+  for (const [_pluginDepName, pluginDep] of pluginDeps.entries()) {
+    const { pkg: pluginDepPkg, versionToInstall } = pluginDep;
+    console.log(
+      `Installing plugin: ${pluginDepPkg.name}: ${
+        versionToInstall || pluginDepPkg.version
+      }`,
+    );
+    const steps = await PluginInstaller.resolveSteps(
+      pluginDepPkg,
+      versionToInstall,
+    );
+    const installer = new PluginInstaller(steps);
+    await installer.run();
+  }
+}
+
+async function loadPackageJson(
+  plugin: string,
+): Promise<PackageWithInstallRecipe> {
+  if (plugin.endsWith('package.json')) {
+    // Install from local package if pluginId is a package.json file - needs to be absolute path
+    return await fs.readJson(plugin);
+  }
+  return await fetchPluginPackage(plugin);
+}
+
+async function loadPeerPluginDeps(
+  pkg: PackageWithInstallRecipe,
+  pluginMap: PeerPluginDependencies,
+) {
+  for (const [pluginId, pluginVersion] of Object.entries(
+    pkg.experimentalInstallationRecipe?.peerPluginDependencies ?? {},
+  )) {
+    const depPkg = await loadPackageJson(pluginId);
+    if (!pluginMap.get(depPkg.name)) {
+      pluginMap.set(depPkg.name, {
+        pkg: depPkg,
+        versionToInstall: pluginVersion,
+      });
+      await loadPeerPluginDeps(depPkg, pluginMap);
+    }
+  }
+}
+
+export default async (pluginId?: string, cmd?: Command) => {
+  const from = pluginId || cmd?.from;
+  // TODO(himanshu): If no plugin id is provided, it should list all plugins available. Maybe in some other command?
+  if (!from) {
     throw new Error(
       'Missing both <plugin-id> or a package.json file path in the --from flag.',
     );
   }
-
-  const steps = await PluginInstaller.resolveSteps(pkg);
-  const installer = new PluginInstaller(steps);
-  await installer.run();
+  const pkg = await loadPackageJson(from);
+  await installPluginAndPeerPlugins(pkg);
 };
