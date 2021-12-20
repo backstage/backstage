@@ -80,9 +80,9 @@ const useStyles = makeStyles(
 );
 export const DashboardSnapshotList = ({ guid }: Props) => {
   const styles = useStyles();
-  const NewRelicDashboardAPI = useApi(newRelicDashboardApiRef);
+  const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const { value, loading, error } = useAsync(async (): Promise<any> => {
-    const dashboardObject: any = NewRelicDashboardAPI.getDashboardEntity(guid);
+    const dashboardObject: any = newRelicDashboardAPI.getDashboardEntity(guid);
     return dashboardObject;
   }, []);
   const [value1, setValue1] = React.useState(0);

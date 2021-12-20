@@ -34,9 +34,9 @@ export const DashboardSnapshot = ({
   permalink,
   duration,
 }: Props) => {
-  const NewRelicDashboardAPI = useApi(newRelicDashboardApiRef);
+  const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const { value, loading, error } = useAsync(async (): Promise<any> => {
-    const dashboardObject: any = NewRelicDashboardAPI.getDashboardSnapshot(
+    const dashboardObject: any = newRelicDashboardAPI.getDashboardSnapshot(
       guid,
       duration,
     );

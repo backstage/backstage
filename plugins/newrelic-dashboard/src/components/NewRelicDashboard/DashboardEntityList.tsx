@@ -38,9 +38,9 @@ const useStyles = makeStyles({
 export const DashboardEntityList = () => {
   const DashboardEntity = useNewRelicDashboardEntity();
   const classes = useStyles();
-  const NewRelicDashboardAPI = useApi(newRelicDashboardApiRef);
+  const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const { value, loading, error } = useAsync(async (): Promise<any> => {
-    const dashboardObject: any = NewRelicDashboardAPI.getDashboardEntity(
+    const dashboardObject: any = newRelicDashboardAPI.getDashboardEntity(
       String(DashboardEntity?.integrationKey),
     );
     return dashboardObject;
