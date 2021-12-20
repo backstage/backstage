@@ -34,6 +34,9 @@ spec:
       http:
         paths:
           - path: /
+            {{- if ge .Capabilities.KubeVersion.Minor "19" }}
+            pathType: Prefix
+            {{- end }}
             backend:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "frontend.serviceName" . }}
@@ -47,6 +50,9 @@ spec:
           {{/* Route the backend inside the same hostname as the frontend when they are the same */}}
           {{- if eq $frontendUrl.host $backendUrl.host}}
           - path: /api
+            {{- if ge .Capabilities.KubeVersion.Minor "19" }}
+            pathType: Prefix
+            {{- end }}
             backend:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "backend.serviceName" . }}
@@ -63,6 +69,9 @@ spec:
       http:
         paths:
           - path: {{ $backendUrl.path | default "/" }}
+            {{- if ge .Capabilities.KubeVersion.Minor "19" }}
+            pathType: Prefix
+            {{- end }}
             backend:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "backend.serviceName" . }}
@@ -81,6 +90,9 @@ spec:
       http:
         paths:
           - path: {{ $lighthouseUrl.path | default "/" }}
+            {{- if ge .Capabilities.KubeVersion.Minor "19" }}
+            pathType: Prefix
+            {{- end }}
             backend:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "lighthouse.serviceName" . }}
@@ -123,6 +135,9 @@ spec:
       http:
         paths:
           - path: {{ $lighthouseUrl.path }}(/|$)(.*)
+            {{- if ge .Capabilities.KubeVersion.Minor "19" }}
+            pathType: Prefix
+            {{- end }}
             backend:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "lighthouse.serviceName" . }}
