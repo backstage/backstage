@@ -15,12 +15,12 @@
  */
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-import { NEWRELIC_GUID } from '../constants';
+import { NEWRELIC_GUID_ANNOTATION } from '../constants';
 
 export function useNewRelicDashboardEntity() {
   const { entity } = useEntity();
   const integrationKey: string | undefined =
-    entity?.metadata?.annotations?.[NEWRELIC_GUID];
+    entity?.metadata?.annotations?.[NEWRELIC_GUID_ANNOTATION];
   const name: string | undefined = entity?.metadata?.name;
 
   return { integrationKey, name };
