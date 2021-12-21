@@ -88,10 +88,10 @@ carry on with the database steps.
 </p>
 
 In the next part of this tutorial, you'll learn how to change to a persistent
- database, configure authentication, and add your first integration. Continue
- with [getting started: Configuring Backstage](configuration.md).
+database, configure authentication, and add your first integration. Continue
+with [getting started: Configuring Backstage](configuration.md).
 
-Share your experiences, comments, or suggestions with us: 
+Share your experiences, comments, or suggestions with us:
 [on discord](https://discord.gg/EBHEGzX), file issues for any
 [feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
 or
