@@ -31,7 +31,6 @@ export interface SnapshotDetailsSummary {
 }
 export const newRelicDashboardApiRef = createApiRef<NewRelicDashboardApi>({
   id: 'plugin.newrelicdashboard.service',
-  description: 'Used by the New Relic Dashboard plugin to make requests',
 });
 
 export type NewRelicDashboardApi = {
