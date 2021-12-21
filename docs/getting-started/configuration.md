@@ -145,7 +145,7 @@ Take note of the `Client ID` and the `Client Secret`. Open `app-config.yaml`,
 and add your `clientId` and `clientSecret` to this file. It should end up
 looking like this:
 
-```
+```yaml
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
   environment: development
@@ -162,7 +162,7 @@ change the sign-in page, this you actually need to add in the source code.
 
 Open `packages/app/src/App.tsx` and below the last `import` line, add:
 
-```
+```typescript
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
 import { SignInProviderConfig, SignInPage } from '@backstage/core-components';
 
@@ -176,7 +176,7 @@ const githubProvider: SignInProviderConfig = {
 
 Search for `const app = createApp({` in this file, and below `apis,` add:
 
-```
+```typescript
 components: {
    SignInPage: props => (
      <SignInPage
@@ -224,7 +224,7 @@ enough.
 In the `app-config.yaml`, search for `integrations:` and add your token, like we
 did in below example:
 
-```
+```yaml
 integrations:
   github:
     - host: github.com
@@ -288,7 +288,7 @@ otherwise something went terribly wrong.
 - For the repository name, type `tutorial`. Go to the next step
 
 <p align='center'>
-  <img src='../assets/getting-started/b-scaffold-2.png' alt='Software template deployment input screen asking for the github username, and name of the new repo to create' />
+  <img src='../assets/getting-started/b-scaffold-2.png' alt='Software template deployment input screen asking for the GitHub username, and name of the new repo to create' />
 </p>
 
 - Review the details of this new service, and press `Create` if you want to
