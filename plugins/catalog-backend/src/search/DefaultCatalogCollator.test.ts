@@ -67,7 +67,6 @@ describe('DefaultCatalogCollator', () => {
       getExternalBaseUrl: jest.fn(),
     };
     mockTokenManager = {
-      isSecure: true,
       getToken: jest.fn().mockResolvedValue({ token: '' }),
       authenticate: jest.fn(),
     };

@@ -502,8 +502,6 @@ export class ServerTokenManager implements TokenManager {
     token: string;
   }>;
   // (undocumented)
-  readonly isSecure: boolean;
-  // (undocumented)
   static noop(): TokenManager;
 }
 
@@ -574,7 +572,6 @@ export interface TokenManager {
   getToken: () => Promise<{
     token: string;
   }>;
-  isSecure: boolean;
 }
 
 // @public

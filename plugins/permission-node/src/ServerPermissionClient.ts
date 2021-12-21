@@ -51,7 +51,10 @@ export class ServerPermissionClient implements PermissionAuthorizer {
     const permissionEnabled =
       config.getOptionalBoolean('permission.enabled') ?? false;
 
-    if (permissionEnabled && !tokenManager.isSecure) {
+    if (
+      permissionEnabled &&
+      (tokenManager as any).isInsecureServerTokenManager
+    ) {
       throw new Error(
         'You must configure at least one key in backend.auth.keys if permissions are enabled.',
       );

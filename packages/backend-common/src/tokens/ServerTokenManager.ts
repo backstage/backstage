@@ -21,7 +21,7 @@ import { TokenManager } from './types';
 import { Logger } from 'winston';
 
 class NoopTokenManager implements TokenManager {
-  public readonly isSecure: boolean = false;
+  public readonly isInsecureServerTokenManager: boolean = true;
 
   async getToken() {
     return { token: '' };
@@ -39,7 +39,6 @@ class NoopTokenManager implements TokenManager {
 export class ServerTokenManager implements TokenManager {
   private readonly verificationKeys: JWKS.KeyStore;
   private readonly signingKey: JWK.Key;
-  public readonly isSecure: boolean = true;
 
   static noop(): TokenManager {
     return new NoopTokenManager();

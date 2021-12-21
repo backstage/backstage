@@ -20,12 +20,6 @@
  * @public
  */
 export interface TokenManager {
-  /**
-   * This property should be true when the token manager is expected to only
-   * authenticate tokens created by itself, or an equivalently-constructed
-   * instance.
-   */
-  isSecure: boolean;
   getToken: () => Promise<{ token: string }>;
   authenticate: (token: string) => Promise<void>;
 }
