@@ -134,10 +134,12 @@ export class ServerPermissionClient implements PermissionAuthorizer {
     options?: AuthorizeRequestOptions,
   ): Promise<AuthorizeResponse[]>;
   // (undocumented)
-  static create(options: {
-    discovery: PluginEndpointDiscovery;
-    config: Config;
-    tokenManager: TokenManager;
-  }): ServerPermissionClient;
+  static fromConfig(
+    config: Config,
+    options: {
+      discovery: PluginEndpointDiscovery;
+      tokenManager: TokenManager;
+    },
+  ): ServerPermissionClient;
 }
 ```

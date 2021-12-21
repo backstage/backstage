@@ -39,12 +39,14 @@ export class ServerPermissionClient implements PermissionAuthorizer {
   private readonly tokenManager: TokenManager;
   private readonly permissionEnabled: boolean;
 
-  static create(options: {
-    discovery: PluginEndpointDiscovery;
-    config: Config;
-    tokenManager: TokenManager;
-  }) {
-    const { discovery, config, tokenManager } = options;
+  static fromConfig(
+    config: Config,
+    options: {
+      discovery: PluginEndpointDiscovery;
+      tokenManager: TokenManager;
+    },
+  ) {
+    const { discovery, tokenManager } = options;
     const permissionClient = new PermissionClient({ discovery, config });
     const permissionEnabled =
       config.getOptionalBoolean('permission.enabled') ?? false;

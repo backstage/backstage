@@ -68,9 +68,8 @@ describe('ServerPermissionClient', () => {
   afterEach(() => server.resetHandlers());
 
   it('should bypass authorization if permissions are disabled', async () => {
-    const client = ServerPermissionClient.create({
+    const client = ServerPermissionClient.fromConfig(new ConfigReader({}), {
       discovery,
-      config: new ConfigReader({}),
       tokenManager: ServerTokenManager.noop(),
     });
 
@@ -81,9 +80,8 @@ describe('ServerPermissionClient', () => {
 
   it('should bypass authorization if permissions are enabled and request has valid server token', async () => {
     const tokenManager = ServerTokenManager.fromConfig(config, { logger });
-    const client = ServerPermissionClient.create({
+    const client = ServerPermissionClient.fromConfig(config, {
       discovery,
-      config,
       tokenManager,
     });
 
@@ -96,9 +94,8 @@ describe('ServerPermissionClient', () => {
 
   it('should authorize normally if permissions are enabled and request does not have valid server token', async () => {
     const tokenManager = ServerTokenManager.fromConfig(config, { logger });
-    const client = ServerPermissionClient.create({
+    const client = ServerPermissionClient.fromConfig(config, {
       discovery,
-      config,
       tokenManager,
     });
 
@@ -111,9 +108,8 @@ describe('ServerPermissionClient', () => {
 
   it('should error if permissions are enabled but a no-op token manager is configured', async () => {
     expect(() =>
-      ServerPermissionClient.create({
+      ServerPermissionClient.fromConfig(config, {
         discovery,
-        config,
         tokenManager: ServerTokenManager.noop(),
       }),
     ).toThrowError(
