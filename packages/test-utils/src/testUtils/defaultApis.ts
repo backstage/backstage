@@ -270,11 +270,11 @@ export const defaultApis = [
   createApiFactory({
     api: permissionApiRef,
     deps: {
-      discoveryApi: discoveryApiRef,
-      identityApi: identityApiRef,
-      configApi: configApiRef,
+      discovery: discoveryApiRef,
+      identity: identityApiRef,
+      config: configApiRef,
     },
-    factory: ({ discoveryApi, identityApi, configApi }) =>
-      IdentityPermissionApi.create({ configApi, discoveryApi, identityApi }),
+    factory: ({ discovery, identity, config }) =>
+      IdentityPermissionApi.create({ config, discovery, identity }),
   }),
 ];

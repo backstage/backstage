@@ -20,14 +20,6 @@ import { SimplePermissionPolicy } from '@backstage/plugin-permission-policy-simp
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-class AllowAllPermissionPolicy implements PermissionPolicy {
-  async handle(): Promise<PolicyDecision> {
-    return {
-      result: AuthorizeResult.ALLOW,
-    };
-  }
-}
-
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {

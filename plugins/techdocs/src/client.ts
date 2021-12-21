@@ -138,8 +138,8 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     this.discoveryApi = discoveryApi;
     this.identityApi = identityApi;
     this.permissionApi = new PermissionClient({
-      discoveryApi,
-      configApi,
+      discovery: discoveryApi,
+      config: configApi,
     });
   }
 

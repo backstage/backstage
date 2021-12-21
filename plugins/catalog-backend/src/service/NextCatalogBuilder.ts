@@ -80,7 +80,7 @@ import { DefaultRefreshService } from './DefaultRefreshService';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
-import { PermissionClient } from '@backstage/plugin-permission-common';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { LocationService } from './types';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
 import { CatalogPermissionRule } from '../permissions/types';
@@ -91,7 +91,7 @@ export type CatalogEnvironment = {
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
-  permissions: PermissionClient;
+  permissions: PermissionAuthorizer;
 };
 
 /**

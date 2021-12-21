@@ -44,10 +44,10 @@ export async function startStandaloneServer(
   const db = useHotMemoize(module, () =>
     DatabaseManager.createInMemoryDatabaseConnection(),
   );
-  const discoveryApi = SingleHostDiscovery.fromConfig(config);
+  const discovery = SingleHostDiscovery.fromConfig(config);
   const permissions = new PermissionClient({
-    discoveryApi,
-    configApi: config,
+    discovery,
+    config,
   });
 
   logger.debug('Creating application...');

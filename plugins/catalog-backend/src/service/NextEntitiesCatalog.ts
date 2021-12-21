@@ -22,7 +22,7 @@ import {
 import { InputError, NotFoundError } from '@backstage/errors';
 import {
   AuthorizeResult,
-  PermissionClient,
+  PermissionAuthorizer,
 } from '@backstage/plugin-permission-common';
 import {
   ConditionTransformer,
@@ -168,7 +168,7 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
 
   constructor(
     private readonly database: Knex,
-    private readonly permissionApi: PermissionClient,
+    private readonly permissionApi: PermissionAuthorizer,
     permissionRules: CatalogPermissionRule[],
   ) {
     this.transformConditions = createConditionTransformer(permissionRules);

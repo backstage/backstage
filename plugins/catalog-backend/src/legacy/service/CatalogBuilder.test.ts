@@ -42,7 +42,7 @@ const dummyEntity = {
 
 const dummyEntityYaml = yaml.stringify(dummyEntity);
 
-const discoveryApi: DiscoveryApi = {
+const discovery: DiscoveryApi = {
   async getBaseUrl(_pluginId) {
     return 'http://example.com';
   },
@@ -54,15 +54,15 @@ describe('CatalogBuilder', () => {
     readTree: jest.fn(),
     search: jest.fn(),
   };
-  const configReader = new ConfigReader({});
+  const config = new ConfigReader({});
   const env: CatalogEnvironment = {
     logger: getVoidLogger(),
     database: { getClient: async () => db },
-    config: configReader,
+    config: config,
     reader,
     permissions: new PermissionClient({
-      discoveryApi,
-      configApi: configReader,
+      discovery,
+      config,
     }),
   };
 
