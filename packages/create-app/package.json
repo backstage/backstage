@@ -49,6 +49,7 @@
   },
   "peerDependencies": {
     "@backstage/backend-common": "*",
+    "@backstage/backend-tasks": "*",
     "@backstage/catalog-client": "*",
     "@backstage/catalog-model": "*",
     "@backstage/cli": "*",
