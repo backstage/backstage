@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import chalk from 'chalk';
 import { resolve as resolvePath } from 'path';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -130,28 +131,38 @@ export async function createConfig(
     }),
   );
 
+  const deprecatedAppConfig = {
+    title: frontendConfig.getString('app.title'),
+    baseUrl: validBaseUrl.href,
+    googleAnalyticsTrackingId: frontendConfig.getOptionalString(
+      'app.googleAnalyticsTrackingId',
+    ),
+    datadogRum: {
+      env: frontendConfig.getOptionalString('app.datadogRum.env'),
+      clientToken: frontendConfig.getOptionalString(
+        'app.datadogRum.clientToken',
+      ),
+      applicationId: frontendConfig.getOptionalString(
+        'app.datadogRum.applicationId',
+      ),
+      site: frontendConfig.getOptionalString('app.datadogRum.site'),
+    },
+  };
+
   plugins.push(
     new HtmlWebpackPlugin({
       template: paths.targetHtml,
       templateParameters: {
         publicPath: validBaseUrl.pathname.replace(/\/$/, ''),
-        app: {
-          title: frontendConfig.getString('app.title'),
-          baseUrl: validBaseUrl.href,
-          googleAnalyticsTrackingId: frontendConfig.getOptionalString(
-            'app.googleAnalyticsTrackingId',
-          ),
-          datadogRum: {
-            env: frontendConfig.getOptionalString('app.datadogRum.env'),
-            clientToken: frontendConfig.getOptionalString(
-              'app.datadogRum.clientToken',
+        get app() {
+          console.warn(
+            chalk.red(
+              'DEPRECATION WARNING: using `app.<key>` in the index.html template is deprecated, use `config.getString("app.<key>")` instead.',
             ),
-            applicationId: frontendConfig.getOptionalString(
-              'app.datadogRum.applicationId',
-            ),
-            site: frontendConfig.getOptionalString('app.datadogRum.site'),
-          },
+          );
+          return deprecatedAppConfig;
         },
+        config: frontendConfig,
       },
     }),
   );
