@@ -60,7 +60,7 @@ export class ServerTokenManager implements TokenManager {
     // For development, if a secret has not been configured, we auto generate a secret instead of throwing.
     const generatedDevOnlyKey = JWK.generateSync('oct', 24 * 8);
     if (generatedDevOnlyKey.k === undefined) {
-      throw new Error('No key generated');
+      throw new Error('Internal error, JWK key generation returned no data');
     }
     logger.warn(
       'Generated a secret for backend-to-backend authentication: DEVELOPMENT USE ONLY.',
