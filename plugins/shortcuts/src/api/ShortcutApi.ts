@@ -20,7 +20,6 @@ import { Observable } from '@backstage/types';
 
 export const shortcutsApiRef = createApiRef<ShortcutApi>({
   id: 'plugin.shortcuts.api',
-  description: 'API to handle shortcuts in a Backstage Sidebar',
 });
 
 export interface ShortcutApi {

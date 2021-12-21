@@ -93,15 +93,6 @@ export type MockStorageBucket = {
   [key: string]: any;
 };
 
-// @public @deprecated (undocumented)
-export const msw: {
-  setupDefaultHandlers: (worker: {
-    listen: (t: any) => void;
-    close: () => void;
-    resetHandlers: () => void;
-  }) => void;
-};
-
 // @public
 export function renderInTestApp(
   Component: ComponentType | ReactNode,

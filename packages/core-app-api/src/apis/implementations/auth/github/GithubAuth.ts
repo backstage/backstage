@@ -118,10 +118,9 @@ export default class GithubAuth implements OAuthApi, SessionApi {
     return new GithubAuth(sessionManagerMux);
   }
 
-  /**
-   * @deprecated will be made private in the future. Use create method instead.
-   */
-  constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
+  private constructor(
+    private readonly sessionManager: SessionManager<GithubSession>,
+  ) {}
 
   async signIn() {
     await this.getAccessToken();

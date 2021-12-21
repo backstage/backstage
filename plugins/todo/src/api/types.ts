@@ -107,5 +107,4 @@ export interface TodoApi {
  */
 export const todoApiRef = createApiRef<TodoApi>({
   id: 'plugin.todo.api',
-  description: 'Lists TODOs',
 });

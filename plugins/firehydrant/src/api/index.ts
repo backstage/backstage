@@ -39,7 +39,6 @@ export interface FireHydrantAPI {
 
 export const fireHydrantApiRef = createApiRef<FireHydrantAPI>({
   id: 'plugin.firehydrant.service',
-  description: 'Used by FireHydrant plugin for requests',
 });
 
 export type Options = {
