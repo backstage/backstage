@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
-import { GithubSession } from './types';
 import {
+  AuthRequestOptions,
+  BackstageIdentity,
   OAuthApi,
+  ProfileInfo,
   SessionApi,
   SessionState,
-  ProfileInfo,
-  BackstageIdentity,
-  AuthRequestOptions,
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
-import { SessionManager } from '../../../../lib/AuthSessionManager/types';
+import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import {
   AuthSessionStore,
   RefreshingAuthSessionManager,
   StaticAuthSessionManager,
 } from '../../../../lib/AuthSessionManager';
-import { OAuthApiCreateOptions } from '../types';
 import { OptionalRefreshSessionManagerMux } from '../../../../lib/AuthSessionManager/OptionalRefreshSessionManagerMux';
+import { SessionManager } from '../../../../lib/AuthSessionManager/types';
+import { OAuthApiCreateOptions } from '../types';
+import { GithubSession, githubSessionSchema } from './types';
 
 export type GithubAuthResponse = {
   providerInfo: {
@@ -105,6 +105,7 @@ export default class GithubAuth implements OAuthApi, SessionApi {
         sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
       }),
       storageKey: `${provider.id}Session`,
+      schema: githubSessionSchema,
       sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
     });
 
