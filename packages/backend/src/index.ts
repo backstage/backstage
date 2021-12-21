@@ -36,7 +36,6 @@ import {
   ServerTokenManager,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { PermissionClient } from '@backstage/plugin-permission-common';
 import healthcheck from './plugins/healthcheck';
 import { metricsInit, metricsHandler } from './metrics';
 import auth from './plugins/auth';
@@ -47,7 +46,6 @@ import kubernetes from './plugins/kubernetes';
 import kafka from './plugins/kafka';
 import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
-import permission from './plugins/permission';
 import proxy from './plugins/proxy';
 import search from './plugins/search';
 import techdocs from './plugins/techdocs';
@@ -57,16 +55,18 @@ import graphql from './plugins/graphql';
 import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
+import permission from './plugins/permission';
 import { PluginEnvironment } from './types';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
-  const tokenManager = ServerTokenManager.noop();
-  const permissions = new PermissionClient({
-    discoveryApi: discovery,
-    configApi: config,
+  const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
+  const permissions = ServerPermissionClient.fromConfig(config, {
+    discovery,
+    tokenManager,
   });
 
   root.info(`Created UrlReader ${reader}`);
@@ -115,7 +115,6 @@ async function main() {
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
   const azureDevOpsEnv = useHotMemoize(module, () => createEnv('azure-devops'));
-  const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
   const searchEnv = useHotMemoize(module, () => createEnv('search'));
@@ -130,6 +129,7 @@ async function main() {
   const techInsightsEnv = useHotMemoize(module, () =>
     createEnv('tech-insights'),
   );
+  const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -149,6 +149,7 @@ async function main() {
   apiRouter.use('/graphql', await graphql(graphqlEnv));
   apiRouter.use('/badges', await badges(badgesEnv));
   apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
+  apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
