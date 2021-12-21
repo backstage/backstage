@@ -22,7 +22,6 @@ import {
 import {
   Box,
   Grid,
-  Link,
   List,
   ListItem,
   ListItemIcon,
@@ -34,7 +33,12 @@ import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
-import { Avatar, InfoCard, InfoCardVariants } from '@backstage/core-components';
+import {
+  Avatar,
+  InfoCard,
+  InfoCardVariants,
+  Link,
+} from '@backstage/core-components';
 
 const CardTitle = ({ title }: { title?: string }) =>
   title ? (
@@ -83,7 +87,7 @@ export const UserProfileCard = ({
                   </Tooltip>
                 </ListItemIcon>
                 <ListItemText>
-                  <Link href={emailHref}>{profile.email}</Link>
+                  <Link to={emailHref ?? ''}>{profile.email}</Link>
                 </ListItemText>
               </ListItem>
             )}

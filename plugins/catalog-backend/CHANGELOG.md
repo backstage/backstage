@@ -1,5 +1,60 @@
 # @backstage/plugin-catalog-backend
 
+## 0.19.2
+
+### Patch Changes
+
+- 3368f27aef: Fixed the handling of optional locations so that the catalog no longer logs `NotFoundError`s for missing optional locations.
+- Updated dependencies
+  - @backstage/backend-common@0.9.14
+  - @backstage/catalog-model@0.9.8
+
+## 0.19.1
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- 6bccc7d794: The `pagedRequest` method in the GitLab ingestion client is now public for re-use and may be used to make other calls to the GitLab API. Developers can now pass in a type into the GitLab `paginated` and `pagedRequest` functions as generics instead of forcing `any` (defaults to `any` to maintain compatibility). The `GitLabClient` now provides a `isSelfManaged` convenience method.
+- 0e4daaa753: Reject catalog entities that have duplicate fields that vary only in casing.
+- 98a9c35f0c: Honor database migration configuration
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+
+## 0.19.0
+
+### Minor Changes
+
+- 905dd952ac: **BREAKING** `DefaultCatalogCollator` has a new required option `tokenManager`. See the create-app changelog for how to create a `tokenManager` and add it to the `PluginEnvironment`. It can then be passed to the collator in `createPlugin`:
+
+  ```diff
+  // packages/backend/src/plugins/search.ts
+
+  ...
+  export default async function createPlugin({
+    ...
+  + tokenManager,
+  }: PluginEnvironment) {
+    ...
+
+    indexBuilder.addCollator({
+      defaultRefreshIntervalSeconds: 600,
+      collator: DefaultCatalogCollator.fromConfig(config, {
+        discovery,
+  +     tokenManager,
+      }),
+    });
+
+    ...
+  }
+  ```
+
+### Patch Changes
+
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/backend-common@0.9.12
+
 ## 0.18.0
 
 ### Minor Changes

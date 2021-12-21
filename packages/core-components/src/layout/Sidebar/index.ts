@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-export { Sidebar } from './Bar';
+export { Sidebar, SidebarExpandButton } from './Bar';
+export { SidebarSubmenuItem } from './SidebarSubmenuItem';
+export { SidebarSubmenu } from './SidebarSubmenu';
+export type { SidebarSubmenuProps } from './SidebarSubmenu';
+export type {
+  SidebarSubmenuItemProps,
+  SidebarSubmenuItemDropdownItem,
+} from './SidebarSubmenuItem';
 export type { SidebarClassKey } from './Bar';
 export { SidebarPage, SidebarPinStateContext } from './Page';
 export type { SidebarPinStateContextType, SidebarPageClassKey } from './Page';
@@ -26,7 +33,12 @@ export {
   SidebarSpacer,
   SidebarScrollWrapper,
 } from './Items';
-export type { SidebarItemClassKey } from './Items';
+export type {
+  SidebarItemClassKey,
+  SidebarSpaceClassKey,
+  SidebarSpacerClassKey,
+  SidebarDividerClassKey,
+} from './Items';
 export { IntroCard, SidebarIntro } from './Intro';
 export type { SidebarIntroClassKey } from './Intro';
 export {

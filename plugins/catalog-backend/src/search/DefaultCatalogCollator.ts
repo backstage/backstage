@@ -56,19 +56,16 @@ export class DefaultCatalogCollator implements DocumentCollator {
     });
   }
 
-  constructor({
-    discovery,
-    locationTemplate,
-    filter,
-    catalogClient,
-    tokenManager,
-  }: {
+  constructor(options: {
     discovery: PluginEndpointDiscovery;
     tokenManager: TokenManager;
     locationTemplate?: string;
     filter?: CatalogEntitiesRequest['filter'];
     catalogClient?: CatalogApi;
   }) {
+    const { discovery, locationTemplate, filter, catalogClient, tokenManager } =
+      options;
+
     this.discovery = discovery;
     this.locationTemplate =
       locationTemplate || '/catalog/:namespace/:kind/:name';

@@ -162,7 +162,7 @@ export function useBuilds() {
         vcs: {
           owner: owner,
           repo: repo,
-          type: GitType.GITHUB,
+          type: mapVcsType(vcs),
         },
       });
     } catch (e) {

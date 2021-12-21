@@ -1,5 +1,26 @@
 # @backstage/plugin-org
 
+## 0.3.31
+
+### Patch Changes
+
+- fe86adbcd2: Added `entityFilterKind` property for `EntityOwnershipCard`
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.1
+  - @backstage/core-components@0.8.1
+  - @backstage/catalog-model@0.9.8
+  - @backstage/plugin-catalog-react@0.6.7
+
+## 0.3.30
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-catalog-react@0.6.5
+
 ## 0.3.29
 
 ### Patch Changes

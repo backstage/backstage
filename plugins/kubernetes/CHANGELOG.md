@@ -1,5 +1,49 @@
 # @backstage/plugin-kubernetes
 
+## 0.5.1
+
+### Patch Changes
+
+- 6f0c850a86: Fixed styling bug for the CronJobsAccordions and updated Completed pods to display a green dot.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.1
+  - @backstage/core-components@0.8.1
+  - @backstage/catalog-model@0.9.8
+  - @backstage/plugin-catalog-react@0.6.7
+
+## 0.5.0
+
+### Minor Changes
+
+- c010632f88: Add pod metrics lookup and display in pod table.
+
+  ## Backwards incompatible changes
+
+  If your Kubernetes distribution does not have the [metrics server](https://github.com/kubernetes-sigs/metrics-server) installed,
+  you will need to set the `skipMetricsLookup` config flag to `false`.
+
+  See the [configuration docs](https://backstage.io/docs/features/kubernetes/configuration) for more details.
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-kubernetes-common@0.2.0
+  - @backstage/plugin-catalog-react@0.6.5
+
+## 0.4.22
+
+### Patch Changes
+
+- 86ed770308: Added accordions to display information on Jobs and CronJobs in the kubernetes plugin. Updated the PodsTable with fewer default columns and the ability to pass in additional ones depending on the use case.
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+  - @backstage/plugin-kubernetes-common@0.1.7
+
 ## 0.4.21
 
 ### Patch Changes

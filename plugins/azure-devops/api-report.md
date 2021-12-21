@@ -6,12 +6,135 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import { Entity } from '@backstage/catalog-model';
+import { SvgIconProps } from '@material-ui/core';
+
+// Warning: (ae-missing-release-tag) "AllFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AllFilter = BaseFilter & {
+  type: FilterType.All;
+};
+
+// Warning: (ae-missing-release-tag) "AssignedToTeamFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AssignedToTeamFilter = BaseFilter & {
+  type: FilterType.AssignedToTeam;
+  teamId: string;
+};
+
+// Warning: (ae-missing-release-tag) "AssignedToTeamsFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AssignedToTeamsFilter = BaseFilter &
+  (
+    | {
+        type: FilterType.AssignedToTeams;
+        teamIds: string[];
+      }
+    | {
+        type: FilterType.AssignedToCurrentUsersTeams;
+        teamIds?: string[];
+      }
+  );
+
+// Warning: (ae-missing-release-tag) "AssignedToUserFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AssignedToUserFilter = BaseFilter &
+  (
+    | {
+        type: FilterType.AssignedToUser;
+        email: string;
+      }
+    | {
+        type: FilterType.AssignedToCurrentUser;
+        email?: string;
+      }
+  );
 
 // Warning: (ae-missing-release-tag) "azureDevOpsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const azureDevOpsPlugin: BackstagePlugin<{}, {}>;
+
+// Warning: (ae-missing-release-tag) "AzurePullRequestsIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const AzurePullRequestsIcon: (props: SvgIconProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "AzurePullRequestsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const AzurePullRequestsPage: ({
+  projectName,
+  pollingInterval,
+  defaultColumnConfigs,
+}: {
+  projectName?: string | undefined;
+  pollingInterval?: number | undefined;
+  defaultColumnConfigs?: PullRequestColumnConfig[] | undefined;
+}) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "BaseFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type BaseFilter = {
+  type: FilterType;
+};
+
+// Warning: (ae-missing-release-tag) "CreatedByTeamFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CreatedByTeamFilter = BaseFilter &
+  ({
+    type: FilterType.CreatedByTeam;
+  } & (
+    | {
+        teamId: string;
+      }
+    | {
+        teamName: string;
+      }
+  ));
+
+// Warning: (ae-missing-release-tag) "CreatedByTeamsFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CreatedByTeamsFilter = BaseFilter &
+  (
+    | ({
+        type: FilterType.CreatedByTeams;
+      } & (
+        | {
+            teamIds: string[];
+          }
+        | {
+            teamNames: string[];
+          }
+      ))
+    | {
+        type: FilterType.CreatedByCurrentUsersTeams;
+        teamIds?: string[];
+      }
+  );
+
+// Warning: (ae-missing-release-tag) "CreatedByUserFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CreatedByUserFilter = BaseFilter &
+  (
+    | {
+        type: FilterType.CreatedByUser;
+        email: string;
+      }
+    | {
+        type: FilterType.CreatedByCurrentUser;
+        email?: string;
+      }
+  );
 
 // Warning: (ae-missing-release-tag) "EntityAzurePipelinesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -31,10 +154,67 @@ export const EntityAzurePullRequestsContent: ({
   defaultLimit?: number | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "Filter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type Filter =
+  | AssignedToUserFilter
+  | CreatedByUserFilter
+  | AssignedToTeamFilter
+  | CreatedByTeamFilter
+  | AssignedToTeamsFilter
+  | CreatedByTeamsFilter
+  | AllFilter;
+
+// Warning: (ae-missing-release-tag) "FilterType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export enum FilterType {
+  // (undocumented)
+  All = 'All',
+  // (undocumented)
+  AssignedToCurrentUser = 'AssignedToCurrentUser',
+  // (undocumented)
+  AssignedToCurrentUsersTeams = 'AssignedToCurrentUsersTeams',
+  // (undocumented)
+  AssignedToTeam = 'AssignedToTeam',
+  // (undocumented)
+  AssignedToTeams = 'AssignedToTeams',
+  // (undocumented)
+  AssignedToUser = 'AssignedToUser',
+  // (undocumented)
+  CreatedByCurrentUser = 'CreatedByCurrentUser',
+  // (undocumented)
+  CreatedByCurrentUsersTeams = 'CreatedByCurrentUsersTeams',
+  // (undocumented)
+  CreatedByTeam = 'CreatedByTeam',
+  // (undocumented)
+  CreatedByTeams = 'CreatedByTeams',
+  // (undocumented)
+  CreatedByUser = 'CreatedByUser',
+}
+
 // Warning: (ae-missing-release-tag) "isAzureDevOpsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const isAzureDevOpsAvailable: (entity: Entity) => boolean;
+
+// Warning: (ae-missing-release-tag) "PullRequestColumnConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface PullRequestColumnConfig {
+  // (undocumented)
+  filters: Filter[];
+  // (undocumented)
+  simplified?: boolean;
+  // (undocumented)
+  title: string;
+}
+
+// Warning: (ae-missing-release-tag) "PullRequestFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PullRequestFilter = (pullRequest: DashboardPullRequest) => boolean;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -163,7 +163,7 @@ export type Xcode = {
 export type BuildResponse = {
   build: Build;
   targets: Target[];
-  xcode: Xcode;
+  xcode?: Xcode; // Can be undefined if XCMetrics version < v0.0.8
 };
 
 export type BuildFilters = {
@@ -193,5 +193,4 @@ export interface XcmetricsApi {
 
 export const xcmetricsApiRef = createApiRef<XcmetricsApi>({
   id: 'plugin.xcmetrics.api',
-  description: 'Used by the XCMetrics plugin to make requests',
 });

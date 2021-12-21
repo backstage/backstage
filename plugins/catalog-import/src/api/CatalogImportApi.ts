@@ -20,7 +20,6 @@ import { PartialEntity } from '../types';
 
 export const catalogImportApiRef = createApiRef<CatalogImportApi>({
   id: 'plugin.catalog-import.service',
-  description: 'Used by the catalog import plugin to make requests',
 });
 
 // result of the analyze state

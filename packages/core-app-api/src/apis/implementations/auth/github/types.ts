@@ -15,6 +15,7 @@
  */
 
 import { ProfileInfo, BackstageIdentity } from '@backstage/core-plugin-api';
+import { z } from 'zod';
 
 /**
  * Session information for GitHub auth.
@@ -30,3 +31,25 @@ export type GithubSession = {
   profile: ProfileInfo;
   backstageIdentity: BackstageIdentity;
 };
+
+export const githubSessionSchema: z.ZodSchema<GithubSession> = z.object({
+  providerInfo: z.object({
+    accessToken: z.string(),
+    scopes: z.set(z.string()),
+    expiresAt: z.date().optional(),
+  }),
+  profile: z.object({
+    email: z.string().optional(),
+    displayName: z.string().optional(),
+    picture: z.string().optional(),
+  }),
+  backstageIdentity: z.object({
+    id: z.string(),
+    token: z.string(),
+    identity: z.object({
+      type: z.literal('user'),
+      userEntityRef: z.string(),
+      ownershipEntityRefs: z.array(z.string()),
+    }),
+  }),
+});

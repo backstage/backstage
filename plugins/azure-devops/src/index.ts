@@ -13,9 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export {
   azureDevOpsPlugin,
   EntityAzurePipelinesContent,
   EntityAzurePullRequestsContent,
   isAzureDevOpsAvailable,
+  AzurePullRequestsPage,
 } from './plugin';
+
+export { AzurePullRequestsIcon } from './components/AzurePullRequestsIcon';
+
+export { FilterType } from './components/PullRequestsPage';
+export type {
+  PullRequestColumnConfig,
+  BaseFilter,
+  Filter,
+  PullRequestFilter,
+  AssignedToUserFilter,
+  CreatedByUserFilter,
+  AssignedToTeamFilter,
+  CreatedByTeamFilter,
+  AssignedToTeamsFilter,
+  CreatedByTeamsFilter,
+  AllFilter,
+} from './components/PullRequestsPage';

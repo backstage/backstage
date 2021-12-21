@@ -15,9 +15,10 @@
  */
 
 import React from 'react';
-import { List, Link, ListItem } from '@material-ui/core';
+import { List, ListItem } from '@material-ui/core';
 import { SearchResult, SearchContext, DefaultResultListItem } from '../index';
 import { MemoryRouter } from 'react-router';
+import { Link } from '@backstage/core-components';
 
 export default {
   title: 'Plugins/Search/SearchResult',
@@ -79,7 +80,7 @@ export const Default = () => {
                   default:
                     return (
                       <ListItem>
-                        <Link href={document.location}>
+                        <Link to={document.location}>
                           {document.title} - {document.text}
                         </Link>
                       </ListItem>

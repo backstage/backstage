@@ -1,5 +1,53 @@
 # @backstage/core-plugin-api
 
+## 0.3.1
+
+### Patch Changes
+
+- 18d4f500af: Deprecated the `AnyAnalyticsContext` type and mark the `AnalyticsApi` experimental.
+- 8a7372cfd5: Deprecated `auth0AuthApiRef`, `oauth2ApiRef`, `oidcAuthApiRef`, `samlAuthApiRef`, and marked the rest of the auth `ApiRef`s as experimental. For more information on how to address the deprecations, see https://backstage.io/docs/api/deprecations#generic-auth-api-refs.
+- 760791a642: Renamed `AuthProvider` to `AuthProviderInfo` and add a required 'id' property to match the majority of usage. The `AuthProvider` type without the `id` property still exists but is deprecated, and all usage of it without an `id` is deprecated as well. For example, calling `createAuthRequest` without a `provider.id` is deprecated and it will be required in the future.
+
+  The following types have been renamed. The old names are still exported but deprecated, and are scheduled for removal in a future release.
+
+  - Renamed `AuthRequesterOptions` to `OAuthRequesterOptions`
+  - Renamed `AuthRequester` to `OAuthRequester`
+  - Renamed `PendingAuthRequest` to `PendingOAuthRequest`
+
+## 0.3.0
+
+### Minor Changes
+
+- a036b65c2f: The `IdentityApi` has received several updates. The `getUserId`, `getProfile`, and `getIdToken` have all been deprecated.
+
+  The replacement for `getUserId` is the new `getBackstageIdentity` method, which provides both the `userEntityRef` as well as the `ownershipEntityRefs` that are used to resolve ownership. Existing usage of the user ID would typically be using a fixed entity kind and namespace, for example `` `user:default/${identityApi.getUserId()}` ``, this kind of usage should now instead use the `userEntityRef` directly.
+
+  The replacement for `getProfile` is the new async `getProfileInfo`.
+
+  The replacement for `getIdToken` is the new `getCredentials` method, which provides an optional token to the caller like before, but it is now wrapped in an object for forwards compatibility.
+
+  The deprecated `idToken` field of the `BackstageIdentity` type has been removed, leaving only the new `token` field, which should be used instead. The `BackstageIdentity` also received a new `identity` field, which is a decoded version of the information within the token. Furthermore the `BackstageIdentity` has been renamed to `BackstageIdentityResponse`, with the old name being deprecated.
+
+  We expect most of the breaking changes in this update to have low impact since the `IdentityApi` implementation is provided by the app, but it is likely that some tests need to be updated.
+
+  Another breaking change is that the `SignInPage` props have been updated, and the `SignInResult` type is now deprecated. This is unlikely to have any impact on the usage of this package, but it is an important change that you can find more information about in the [`@backstage/core-app-api` CHANGELOG.md](https://github.com/backstage/backstage/blob/master/packages/core-app-api/CHANGELOG.md).
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/version-bridge@0.1.1
+
+## 0.2.2
+
+### Patch Changes
+
+- b291d0ed7e: Tweaked the logged deprecation warning for `createRouteRef` to hopefully make it more clear.
+- bacb94ea8f: Documented the options of each of the extension creation functions.
+- Updated dependencies
+  - @backstage/theme@0.2.14
+
 ## 0.2.1
 
 ### Patch Changes

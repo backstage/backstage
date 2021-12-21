@@ -16,16 +16,25 @@
 
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
+import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import {
   Sidebar,
   SidebarDivider,
+  SidebarExpandButton,
   SidebarIntro,
   SidebarItem,
+  SidebarPage,
   SidebarSearchField,
   SidebarSpace,
 } from '.';
+import { SidebarSubmenuItem } from './SidebarSubmenuItem';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import CloudQueueIcon from '@material-ui/icons/CloudQueue';
+import AppsIcon from '@material-ui/icons/Apps';
+import AcUnitIcon from '@material-ui/icons/AcUnit';
+import { SidebarSubmenu } from './SidebarSubmenu';
 
 export default {
   title: 'Layout/Sidebar',
@@ -43,14 +52,52 @@ const handleSearch = (input: string) => {
 };
 
 export const SampleSidebar = () => (
-  <Sidebar>
-    <SidebarSearchField onSearch={handleSearch} to="/search" />
-    <SidebarDivider />
-    <SidebarItem icon={HomeOutlinedIcon} to="#" text="Home" />
-    <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
-    <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
-    <SidebarDivider />
-    <SidebarIntro />
-    <SidebarSpace />
-  </Sidebar>
+  <SidebarPage>
+    <Sidebar>
+      <SidebarSearchField onSearch={handleSearch} to="/search" />
+      <SidebarDivider />
+      <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
+      <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
+      <SidebarDivider />
+      <SidebarIntro />
+      <SidebarSpace />
+    </Sidebar>
+  </SidebarPage>
+);
+
+export const SampleScalableSidebar = () => (
+  <SidebarPage>
+    <Sidebar disableExpandOnHover>
+      <SidebarSearchField onSearch={handleSearch} to="/search" />
+      <SidebarDivider />
+      <SidebarItem icon={MenuBookIcon} text="Catalog">
+        <SidebarSubmenu title="Catalog">
+          <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
+          <SidebarSubmenuItem title="APIs" to="/2" icon={CloudQueueIcon} />
+          <SidebarSubmenuItem title="Components" to="/3" icon={AppsIcon} />
+          <SidebarSubmenuItem
+            title="Misc"
+            to="/6"
+            icon={AcUnitIcon}
+            dropdownItems={[
+              {
+                title: 'Lorem Ipsum',
+                to: '/7',
+              },
+              {
+                title: 'Lorem Ipsum',
+                to: '/8',
+              },
+            ]}
+          />
+        </SidebarSubmenu>
+      </SidebarItem>
+      <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
+      <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
+      <SidebarDivider />
+      <SidebarIntro />
+      <SidebarSpace />
+      <SidebarExpandButton />
+    </Sidebar>
+  </SidebarPage>
 );

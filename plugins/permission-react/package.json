@@ -1,0 +1,51 @@
+{
+  "name": "@backstage/plugin-permission-react",
+  "version": "0.1.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/permission-react"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "scripts": {
+    "build": "backstage-cli build",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
+    "clean": "backstage-cli clean"
+  },
+  "dependencies": {
+    "@backstage/config": "^0.1.11",
+    "@backstage/core-plugin-api": "^0.3.0",
+    "@backstage/plugin-permission-common": "^0.2.0",
+    "cross-fetch": "^3.0.6",
+    "react-router": "6.0.0-beta.0",
+    "react-use": "^17.2.4"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.10.1",
+    "@backstage/test-utils": "^0.1.24",
+    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/react": "^11.2.5",
+    "@types/jest": "^26.0.7"
+  },
+  "files": [
+    "dist"
+  ]
+}

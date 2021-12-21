@@ -54,7 +54,7 @@ export class PermissionIntegrationClient {
   ): Promise<ApplyConditionsResponse> {
     const endpoint = `${await this.discovery.getBaseUrl(
       pluginId,
-    )}/permissions/apply-conditions`;
+    )}/.well-known/backstage/permissions/apply-conditions`;
 
     const request: ApplyConditionsRequest = {
       resourceRef,

@@ -65,7 +65,7 @@ export default async (cmd: Command, version: string): Promise<void> => {
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
 
-  // Use `--path` argument as applicaiton directory when specified, otherwise
+  // Use `--path` argument as application directory when specified, otherwise
   // create a directory using `answers.name`
   const appDir = cmd.path
     ? resolvePath(paths.targetDir, cmd.path)

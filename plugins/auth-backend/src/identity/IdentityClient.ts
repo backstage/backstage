@@ -16,8 +16,9 @@
 
 import fetch from 'node-fetch';
 import { JWK, JWT, JWKS, JSONWebKey } from 'jose';
-import { BackstageIdentity } from '../providers';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { AuthenticationError } from '@backstage/errors';
+import { BackstageIdentityResponse } from '../providers/types';
 
 const CLOCK_MARGIN_S = 10;
 
@@ -45,15 +46,17 @@ export class IdentityClient {
    * Returns a BackstageIdentity (user) matching the token.
    * The method throws an error if verification fails.
    */
-  async authenticate(token: string | undefined): Promise<BackstageIdentity> {
+  async authenticate(
+    token: string | undefined,
+  ): Promise<BackstageIdentityResponse> {
     // Extract token from header
     if (!token) {
-      throw new Error('No token specified');
+      throw new AuthenticationError('No token specified');
     }
     // Get signing key matching token
     const key = await this.getKey(token);
     if (!key) {
-      throw new Error('No signing key matching token found');
+      throw new AuthenticationError('No signing key matching token found');
     }
     // Verify token claims and signature
     // Note: Claims must match those set by TokenFactory when issuing tokens
@@ -62,12 +65,21 @@ export class IdentityClient {
       algorithms: ['ES256'],
       audience: 'backstage',
       issuer: this.issuer,
-    }) as { sub: string };
+    }) as { sub: string; ent: string[] };
     // Verified, return the matching user as BackstageIdentity
     // TODO: Settle internal user format/properties
-    const user: BackstageIdentity = {
+    if (!decoded.sub) {
+      throw new AuthenticationError('No user sub found in token');
+    }
+
+    const user: BackstageIdentityResponse = {
       id: decoded.sub,
-      idToken: token,
+      token,
+      identity: {
+        type: 'user',
+        userEntityRef: decoded.sub,
+        ownershipEntityRefs: decoded.ent ?? [],
+      },
     };
     return user;
   }

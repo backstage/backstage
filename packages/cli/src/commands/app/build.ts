@@ -20,8 +20,17 @@ import { buildBundle } from '../../lib/bundler';
 import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
 import { loadCliConfig } from '../../lib/config';
 import { paths } from '../../lib/paths';
+import chalk from 'chalk';
 
 export default async (cmd: Command) => {
+  if (cmd.lax) {
+    console.warn(
+      chalk.yellow(
+        `[DEPRECATED] - The --lax option is deprecated and will be removed in the future. Please open an issue towards https://github.com/backstage/backstage that describes your use-case if you need the flag to stay around.`,
+      ),
+    );
+  }
+
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
   await buildBundle({
     entry: 'src/index',

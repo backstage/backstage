@@ -80,15 +80,12 @@ const GithubDeploymentsComponent = ({
   );
 };
 
-export const GithubDeploymentsCard = ({
-  last,
-  lastStatuses,
-  columns,
-}: {
+export const GithubDeploymentsCard = (props: {
   last?: number;
   lastStatuses?: number;
   columns?: TableColumn<GithubDeployment>[];
 }) => {
+  const { last, lastStatuses, columns } = props;
   const { entity } = useEntity();
   const [host] = [
     entity?.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION],

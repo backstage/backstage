@@ -1,5 +1,133 @@
 # @backstage/create-app
 
+## 0.4.8
+
+### Patch Changes
+
+- 25dfc2d483: Updated the root `package.json` to include files with `.cjs` and `.mjs` extensions in the `"lint-staged"` configuration.
+
+  To make this change to an existing app, apply the following changes to the `package.json` file:
+
+  ```diff
+   "lint-staged": {
+  -    "*.{js,jsx,ts,tsx}": [
+  +    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+  ```
+
+## 0.4.7
+
+### Patch Changes
+
+- 9603827bb5: Addressed some peer dependency warnings
+- 1bada775a9: TechDocs Backend may now (optionally) leverage a cache store to improve
+  performance when reading content from a cloud storage provider.
+
+  To apply this change to an existing app, pass the cache manager from the plugin
+  environment to the `createRouter` function in your backend:
+
+  ```diff
+  // packages/backend/src/plugins/techdocs.ts
+
+  export default async function createPlugin({
+    logger,
+    config,
+    discovery,
+    reader,
+  +  cache,
+  }: PluginEnvironment): Promise<Router> {
+
+    // ...
+
+    return await createRouter({
+      preparers,
+      generators,
+      publisher,
+      logger,
+      config,
+      discovery,
+  +    cache,
+    });
+  ```
+
+  If your `PluginEnvironment` does not include a cache manager, be sure you've
+  applied [the cache management change][cm-change] to your backend as well.
+
+  [Additional configuration][td-rec-arch] is required if you wish to enable
+  caching in TechDocs.
+
+  [cm-change]: https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md#patch-changes-6
+  [td-rec-arch]: https://backstage.io/docs/features/techdocs/architecture#recommended-deployment
+
+- 4862fbc64f: Bump @spotify/prettier-config
+- 36bb4fb2e9: Removed the `scaffolder.github.visibility` configuration that is no longer used from the default app template.
+
+## 0.4.6
+
+### Patch Changes
+
+- 24d2ce03f3: Search Modal now relies on the Search Context to access state and state setter. If you use the SidebarSearchModal as described in the [getting started documentation](https://backstage.io/docs/features/search/getting-started#using-the-search-modal), make sure to update your code with the SearchContextProvider.
+
+  ```diff
+  export const Root = ({ children }: PropsWithChildren<{}>) => (
+    <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+  -     <SidebarSearchModal />
+  +     <SearchContextProvider>
+  +       <SidebarSearchModal />
+  +     </SearchContextProvider>
+        <SidebarDivider />
+      ...
+  ```
+
+- 905dd952ac: Incorporate usage of the tokenManager into the backend created using `create-app`.
+
+  In existing backends, update the `PluginEnvironment` to include a `tokenManager`:
+
+  ```diff
+  // packages/backend/src/types.ts
+
+  ...
+  import {
+    ...
+  + TokenManager,
+  } from '@backstage/backend-common';
+
+  export type PluginEnvironment = {
+    ...
+  + tokenManager: TokenManager;
+  };
+  ```
+
+  Then, create a `ServerTokenManager`. This can either be a `noop` that requires no secret and validates all requests by default, or one that uses a secret from your `app-config.yaml` to generate and validate tokens.
+
+  ```diff
+  // packages/backend/src/index.ts
+
+  ...
+  import {
+    ...
+  + ServerTokenManager,
+  } from '@backstage/backend-common';
+  ...
+
+  function makeCreateEnv(config: Config) {
+    ...
+    // CHOOSE ONE
+    // TokenManager not requiring a secret
+  + const tokenManager = ServerTokenManager.noop();
+    // OR TokenManager requiring a secret
+  + const tokenManager = ServerTokenManager.fromConfig(config);
+
+    ...
+    return (plugin: string): PluginEnvironment => {
+      ...
+  -   return { logger, cache, database, config, reader, discovery };
+  +   return { logger, cache, database, config, reader, discovery, tokenManager };
+    };
+  }
+  ```
+
 ## 0.4.5
 
 ### Patch Changes

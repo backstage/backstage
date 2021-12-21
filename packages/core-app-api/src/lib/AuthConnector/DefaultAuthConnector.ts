@@ -15,9 +15,9 @@
  */
 
 import {
-  AuthRequester,
+  OAuthRequester,
   OAuthRequestApi,
-  AuthProvider,
+  AuthProviderInfo,
   DiscoveryApi,
 } from '@backstage/core-plugin-api';
 import { showLoginPopup } from '../loginPopup';
@@ -36,7 +36,7 @@ type Options<AuthSession> = {
    * Information about the auth provider to be shown to the user.
    * The ID Must match the backend auth plugin configuration, for example 'google'.
    */
-  provider: AuthProvider & { id: string };
+  provider: AuthProviderInfo;
   /**
    * API used to instantiate an auth requester.
    */
@@ -65,9 +65,9 @@ export class DefaultAuthConnector<AuthSession>
 {
   private readonly discoveryApi: DiscoveryApi;
   private readonly environment: string;
-  private readonly provider: AuthProvider & { id: string };
+  private readonly provider: AuthProviderInfo;
   private readonly joinScopesFunc: (scopes: Set<string>) => string;
-  private readonly authRequester: AuthRequester<AuthSession>;
+  private readonly authRequester: OAuthRequester<AuthSession>;
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
 
   constructor(options: Options<AuthSession>) {

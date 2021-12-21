@@ -26,6 +26,7 @@ kubernetes:
           name: minikube
           authProvider: 'serviceAccount'
           skipTLSVerify: false
+          skipMetricsLookup: true
           serviceAccountToken: ${K8S_MINIKUBE_TOKEN}
           dashboardUrl: http://127.0.0.1:64713 # url copied from running the command: minikube service kubernetes-dashboard -n kubernetes-dashboard
           dashboardApp: standard
@@ -37,6 +38,7 @@ kubernetes:
       projectId: 'gke-clusters'
       region: 'europe-west1'
       skipTLSVerify: true
+      skipMetricsLookup: true
 ```
 
 ### `serviceLocatorMethod`
@@ -86,8 +88,13 @@ cluster. Valid values are:
 
 ##### `clusters.\*.skipTLSVerify`
 
-This determines whether or not the Kubernetes client verifies the TLS
-certificate presented by the API server. Defaults to `false`.
+This determines whether the Kubernetes client verifies the TLS certificate
+presented by the API server. Defaults to `false`.
+
+##### `clusters.\*.skipMetricsLookup`
+
+This determines whether the Kubernetes client looks up resource metrics
+CPU/Memory for pods returned by the API server. Defaults to `false`.
 
 ##### `clusters.\*.serviceAccountToken` (optional)
 
@@ -188,8 +195,13 @@ regions.
 
 ##### `skipTLSVerify`
 
-This determines whether or not the Kubernetes client verifies the TLS
-certificate presented by the API server. Defaults to `false`.
+This determines whether the Kubernetes client verifies the TLS certificate
+presented by the API server. Defaults to `false`.
+
+##### `skipMetricsLookup`
+
+This determines whether the Kubernetes client looks up resource metrics
+CPU/Memory for pods returned by the API server. Defaults to `false`.
 
 ### `customResources` (optional)
 
@@ -219,6 +231,26 @@ The custom resource's apiVersion.
 
 The plural representing the custom resource.
 
+### `apiVersionOverrides` (optional)
+
+Overrides for the API versions used to make requests for the corresponding
+objects. If using a legacy Kubernetes version, you may use this config to
+override the default API versions to ones that are supported by your cluster.
+
+Example:
+
+```yaml
+---
+kubernetes:
+  apiVersionOverrides:
+    cronjobs: 'v1beta1'
+```
+
+For more information on which API versions are supported by your cluster, please
+view the Kubernetes API docs for your Kubernetes version (e.g.
+[API Groups for v1.22](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#-strong-api-groups-strong-)
+)
+
 ### Role Based Access Control
 
 The current RBAC permissions required are read-only cluster wide, for the
@@ -231,6 +263,12 @@ following objects:
 - replicasets
 - horizontalpodautoscalers
 - ingresses
+
+The following RBAC permissions are required on the batch API group for the
+following objects:
+
+- jobs
+- cronjobs
 
 ## Surfacing your Kubernetes components as part of an entity
 

@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
-import { GithubSession } from './types';
 import {
+  AuthRequestOptions,
+  BackstageIdentity,
   OAuthApi,
+  ProfileInfo,
   SessionApi,
   SessionState,
-  ProfileInfo,
-  BackstageIdentity,
-  AuthRequestOptions,
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
-import { SessionManager } from '../../../../lib/AuthSessionManager/types';
+import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import {
   AuthSessionStore,
   RefreshingAuthSessionManager,
   StaticAuthSessionManager,
 } from '../../../../lib/AuthSessionManager';
-import { OAuthApiCreateOptions } from '../types';
 import { OptionalRefreshSessionManagerMux } from '../../../../lib/AuthSessionManager/OptionalRefreshSessionManagerMux';
+import { SessionManager } from '../../../../lib/AuthSessionManager/types';
+import { OAuthApiCreateOptions } from '../types';
+import { GithubSession, githubSessionSchema } from './types';
 
 export type GithubAuthResponse = {
   providerInfo: {
@@ -56,13 +56,15 @@ const DEFAULT_PROVIDER = {
  * @public
  */
 export default class GithubAuth implements OAuthApi, SessionApi {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    defaultScopes = ['read:user'],
-  }: OAuthApiCreateOptions) {
+  static create(options: OAuthApiCreateOptions) {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+      defaultScopes = ['read:user'],
+    } = options;
+
     const connector = new DefaultAuthConnector({
       discoveryApi,
       environment,
@@ -103,6 +105,7 @@ export default class GithubAuth implements OAuthApi, SessionApi {
         sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
       }),
       storageKey: `${provider.id}Session`,
+      schema: githubSessionSchema,
       sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
     });
 
@@ -116,10 +119,9 @@ export default class GithubAuth implements OAuthApi, SessionApi {
     return new GithubAuth(sessionManagerMux);
   }
 
-  /**
-   * @deprecated will be made private in the future. Use create method instead.
-   */
-  constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
+  private constructor(
+    private readonly sessionManager: SessionManager<GithubSession>,
+  ) {}
 
   async signIn() {
     await this.getAccessToken();

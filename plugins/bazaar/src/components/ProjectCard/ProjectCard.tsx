@@ -14,85 +14,94 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ItemCardHeader } from '@backstage/core-components';
 import {
   Card,
   CardActionArea,
   CardContent,
+  Dialog,
   makeStyles,
   Typography,
 } from '@material-ui/core';
 import { StatusTag } from '../StatusTag/StatusTag';
-import { Link as RouterLink } from 'react-router-dom';
-import { catalogRouteRef } from '@backstage/plugin-catalog-react';
-import { useRouteRef } from '@backstage/core-plugin-api';
 import { BazaarProject } from '../../types';
-import { parseEntityName } from '@backstage/catalog-model';
 import { DateTime } from 'luxon';
+import { HomePageBazaarInfoCard } from '../HomePageBazaarInfoCard';
+import { Entity } from '@backstage/catalog-model';
 
 const useStyles = makeStyles({
   statusTag: {
     display: 'inline-block',
     whiteSpace: 'nowrap',
-    marginBottom: '0.5rem',
-  },
-  announcement: {
-    display: '-webkit-box',
-    WebkitLineClamp: 5,
-    WebkitBoxOrient: 'vertical',
     marginBottom: '0.8rem',
+  },
+  description: {
+    display: '-webkit-box',
+    WebkitLineClamp: 7,
+    WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
+    backgroundColor: '',
   },
   memberCount: {
     float: 'right',
   },
+  content: { height: '13rem', marginBottom: '-0.5rem' },
 });
 
 type Props = {
-  bazaarProject: BazaarProject;
+  project: BazaarProject;
+  fetchBazaarProjects: () => Promise<BazaarProject[]>;
+  catalogEntities: Entity[];
 };
 
-export const ProjectCard = ({ bazaarProject }: Props) => {
+export const ProjectCard = ({
+  project,
+  fetchBazaarProjects,
+  catalogEntities,
+}: Props) => {
   const classes = useStyles();
-  const { entityRef, name, status, updatedAt, announcement, membersCount } =
-    bazaarProject;
-  const catalogLink = useRouteRef(catalogRouteRef);
-  const { namespace, kind } = parseEntityName(entityRef);
+  const [openCard, setOpenCard] = useState(false);
+  const { id, name, status, updatedAt, description, membersCount } = project;
+
+  const handleClose = () => {
+    setOpenCard(false);
+    fetchBazaarProjects();
+  };
 
   return (
-    <Card key={entityRef as string}>
-      <CardActionArea
-        style={{
-          height: '100%',
-          overflow: 'hidden',
-          width: '100%',
-        }}
-        component={RouterLink}
-        to={`${catalogLink()}/${namespace}/${kind}/${name}`}
-      >
-        <ItemCardHeader
-          title={name}
-          subtitle={`updated ${DateTime.fromISO(
-            new Date(updatedAt!).toISOString(),
-          ).toRelative({
-            base: DateTime.now(),
-          })}`}
+    <div>
+      <Dialog fullWidth onClose={handleClose} open={openCard}>
+        <HomePageBazaarInfoCard
+          initProject={project}
+          handleClose={handleClose}
+          initEntity={catalogEntities[0] || null}
         />
-        <CardContent style={{ height: '12rem' }}>
-          <StatusTag styles={classes.statusTag} status={status} />
-          <Typography variant="body2" className={classes.memberCount}>
-            {membersCount === 1
-              ? `${membersCount} member`
-              : `${membersCount} members`}
-          </Typography>
-          <div style={{ minHeight: '6.5rem', maxHeight: '6.5rem' }}>
-            <Typography variant="body2" className={classes.announcement}>
-              {announcement}
+      </Dialog>
+
+      <Card key={id}>
+        <CardActionArea onClick={() => setOpenCard(true)}>
+          <ItemCardHeader
+            title={name}
+            subtitle={`updated ${DateTime.fromISO(
+              new Date(updatedAt!).toISOString(),
+            ).toRelative({
+              base: DateTime.now(),
+            })}`}
+          />
+          <CardContent className={classes.content}>
+            <StatusTag styles={classes.statusTag} status={status} />
+            <Typography variant="body2" className={classes.memberCount}>
+              {Number(membersCount) === Number(1)
+                ? `${membersCount} member`
+                : `${membersCount} members`}
             </Typography>
-          </div>
-        </CardContent>
-      </CardActionArea>
-    </Card>
+            <Typography variant="body2" className={classes.description}>
+              {description}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    </div>
   );
 };

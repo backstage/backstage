@@ -52,6 +52,8 @@ export interface JenkinsInfo {
   // (undocumented)
   baseUrl: string;
   // (undocumented)
+  crumbIssuer?: boolean;
+  // (undocumented)
   headers?: Record<string, string | string[]>;
   // (undocumented)
   jobFullName: string;
@@ -76,6 +78,8 @@ export interface JenkinsInstanceConfig {
   apiKey: string;
   // (undocumented)
   baseUrl: string;
+  // (undocumented)
+  crumbIssuer?: boolean;
   // (undocumented)
   name: string;
   // (undocumented)

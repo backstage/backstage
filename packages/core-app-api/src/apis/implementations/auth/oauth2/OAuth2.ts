@@ -70,14 +70,16 @@ export default class OAuth2
     BackstageIdentityApi,
     SessionApi
 {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    defaultScopes = [],
-    scopeTransform = x => x,
-  }: OAuth2CreateOptions) {
+  static create(options: OAuth2CreateOptions) {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+      defaultScopes = [],
+      scopeTransform = x => x,
+    } = options;
+
     const connector = new DefaultAuthConnector({
       discoveryApi,
       environment,
@@ -118,10 +120,7 @@ export default class OAuth2
   private readonly sessionManager: SessionManager<OAuth2Session>;
   private readonly scopeTransform: (scopes: string[]) => string[];
 
-  /**
-   * @deprecated will be made private in the future. Use create method instead.
-   */
-  constructor(options: {
+  private constructor(options: {
     sessionManager: SessionManager<OAuth2Session>;
     scopeTransform: (scopes: string[]) => string[];
   }) {

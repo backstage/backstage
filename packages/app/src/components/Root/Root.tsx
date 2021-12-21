@@ -29,7 +29,10 @@ import LogoIcon from './LogoIcon';
 import { NavLink } from 'react-router-dom';
 import { GraphiQLIcon } from '@backstage/plugin-graphiql';
 import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
-import { SidebarSearchModal } from '@backstage/plugin-search';
+import {
+  SidebarSearchModal,
+  SearchContextProvider,
+} from '@backstage/plugin-search';
 import { Shortcuts } from '@backstage/plugin-shortcuts';
 import {
   Sidebar,
@@ -41,6 +44,7 @@ import {
   SidebarSpace,
   SidebarScrollWrapper,
 } from '@backstage/core-components';
+import { AzurePullRequestsIcon } from '@backstage/plugin-azure-devops';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -79,7 +83,9 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
-      <SidebarSearchModal />
+      <SearchContextProvider>
+        <SidebarSearchModal />
+      </SearchContextProvider>
       <SidebarDivider />
       {/* Global nav, not org-specific */}
       <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
@@ -94,6 +100,11 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
         <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
         <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
+        <SidebarItem
+          icon={AzurePullRequestsIcon}
+          to="azure-pull-requests"
+          text="Azure PRs"
+        />
       </SidebarScrollWrapper>
       <SidebarDivider />
       <Shortcuts />

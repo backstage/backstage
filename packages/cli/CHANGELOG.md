@@ -1,5 +1,37 @@
 # @backstage/cli
 
+## 0.10.2
+
+### Patch Changes
+
+- 25dfc2d483: Add support for `.cjs` and `.mjs` extensions in local and dependency modules.
+
+## 0.10.1
+
+### Patch Changes
+
+- 0ebb05eee2: Add cli option to minify the generated code of a plugin or backend package
+
+  ```
+  backstage-cli plugin:build --minify
+  backstage-cli backend:build --minify
+  ```
+
+- cd450844f6: Updated the frontend plugin template to put React dependencies in `peerDependencies` by default, as well as allowing both React v16 and v17. This change can be applied to existing plugins by running `yarn backstage-cli plugin:diff` within the plugin package directory.
+
+## 0.10.0
+
+### Minor Changes
+
+- ea99ef5198: Remove the `backend:build-image` command from the CLI and added more deprecation warnings to other deprecated fields like `--lax` and `remove-plugin`
+
+### Patch Changes
+
+- e7230ef814: Bump react-dev-utils to v12
+- 416b68675d: build(dependencies): bump `style-loader` from 1.2.1 to 3.3.1
+- Updated dependencies
+  - @backstage/config-loader@0.8.1
+
 ## 0.9.1
 
 ### Patch Changes

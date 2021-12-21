@@ -34,6 +34,7 @@ import {
   SignInPage,
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
+import { AzurePullRequestsPage } from '@backstage/plugin-azure-devops';
 import {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -86,6 +87,7 @@ import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
 import { techDocsPage } from './components/techdocs/TechDocsPage';
+import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 
 const app = createApp({
   apis,
@@ -216,6 +218,8 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
+    <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
   </FlatRoutes>
 );
 

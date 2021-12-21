@@ -21,6 +21,7 @@
  */
 
 export { searchApiRef } from './apis';
+export type { SearchApi } from './apis';
 export {
   Filters,
   FiltersButton,
@@ -35,7 +36,11 @@ export {
   SidebarSearch,
   useSearch,
 } from './components';
-export type { SearchModalProps } from './components';
+export type {
+  SearchModalProps,
+  SidebarSearchModalProps,
+  SidebarSearchProps,
+} from './components';
 export type { FiltersState } from './components';
 export {
   DefaultResultListItem,

@@ -1,5 +1,47 @@
 # @backstage/plugin-auth-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- 699c2e9ddc: export minimal typescript types for OIDC provider
+- Updated dependencies
+  - @backstage/backend-common@0.9.14
+  - @backstage/catalog-model@0.9.8
+
+## 0.5.0
+
+### Minor Changes
+
+- a036b65c2f: **BREAKING CHANGE** The `idToken` field of `BackstageIdentity` has been removed, with the `token` taking its place. This means you may need to update existing `signIn.resolver` implementations to return an `token` rather than an `idToken`. This also applies to custom auth providers.
+
+  The `BackstageIdentity` type has been deprecated and will be removed in the future. Taking its place is the new `BackstageSignInResult` type with the same shape.
+
+  This change also introduces the new `BackstageIdentityResponse` that mirrors the type with the same name from `@backstage/core-plugin-api`. The `BackstageIdentityResponse` type is different from the `BackstageSignInResult` in that it also has a `identity` field which is of type `BackstageUserIdentity` and is a decoded version of the information within the token.
+
+  When implementing a custom auth provider that is not based on the `OAuthAdapter` you may need to convert `BackstageSignInResult` into a `BackstageIdentityResponse`, this can be done using the new `prepareBackstageIdentityResponse` function.
+
+### Patch Changes
+
+- 8f461e6043: Fixes potential bug introduced in `0.4.10` which causes `OAuth2AuthProvider` to authenticate using credentials in both POST payload and headers.
+  This might break some stricter OAuth2 implementations so there is now a `includeBasicAuth` config option that can manually be set to `true` to enable this behavior.
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/test-utils@0.1.24
+  - @backstage/backend-common@0.9.13
+
+## 0.4.10
+
+### Patch Changes
+
+- 4bf4111902: Migrated the SAML provider to implement the `authHandler` and `signIn.resolver` options.
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- 36fa32216f: Added signIn and authHandler resolver for oidc provider
+- 7071dce02d: Expose catalog lib in plugin-auth-backend, i.e `CatalogIdentityClient` class is exposed now.
+- 1b69ed44f2: Added custom OAuth2.0 authorization header for generic oauth2 provider.
+- Updated dependencies
+  - @backstage/backend-common@0.9.12
+
 ## 0.4.9
 
 ### Patch Changes

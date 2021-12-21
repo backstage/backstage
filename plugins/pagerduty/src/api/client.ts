@@ -35,7 +35,6 @@ export class UnauthorizedError extends Error {}
 
 export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
   id: 'plugin.pagerduty.api',
-  description: 'Used to fetch data from PagerDuty API',
 });
 
 export class PagerDutyClient implements PagerDutyApi {
@@ -91,12 +90,9 @@ export class PagerDutyClient implements PagerDutyApi {
     return oncalls;
   }
 
-  triggerAlarm({
-    integrationKey,
-    source,
-    description,
-    userName,
-  }: TriggerAlarmRequest): Promise<Response> {
+  triggerAlarm(request: TriggerAlarmRequest): Promise<Response> {
+    const { integrationKey, source, description, userName } = request;
+
     const body = JSON.stringify({
       event_action: 'trigger',
       routing_key: integrationKey,

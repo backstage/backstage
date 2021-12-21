@@ -43,12 +43,14 @@ import {
   AppThemeApi,
   ConfigApi,
   featureFlagsApiRef,
+  IdentityApi,
   identityApiRef,
   BackstagePlugin,
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
 } from '@backstage/core-plugin-api';
+import { UserIdentity } from '@backstage/core-components';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
   childDiscoverer,
@@ -66,7 +68,7 @@ import { RoutingProvider } from '../routing/RoutingProvider';
 import { RouteTracker } from '../routing/RouteTracker';
 import { validateRoutes } from '../routing/validation';
 import { AppContextProvider } from './AppContext';
-import { AppIdentity } from './AppIdentity';
+import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
 import {
   AppComponents,
   AppConfigLoader,
@@ -75,7 +77,6 @@ import {
   AppRouteBinder,
   BackstageApp,
   SignInPageProps,
-  SignInResult,
 } from './types';
 import { AppThemeProvider } from './AppThemeProvider';
 import { defaultConfigLoader } from './defaultConfigLoader';
@@ -189,7 +190,7 @@ export class AppManager implements BackstageApp {
   private readonly defaultApis: Iterable<AnyApiFactory>;
   private readonly bindRoutes: AppOptions['bindRoutes'];
 
-  private readonly identityApi = new AppIdentity();
+  private readonly appIdentityProxy = new AppIdentityProxy();
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
 
   constructor(options: AppOptions) {
@@ -344,14 +345,14 @@ export class AppManager implements BackstageApp {
       component: ComponentType<SignInPageProps>;
       children: ReactElement;
     }) => {
-      const [result, setResult] = useState<SignInResult>();
+      const [identityApi, setIdentityApi] = useState<IdentityApi>();
 
-      if (result) {
-        this.identityApi.setSignInResult(result);
-        return children;
+      if (!identityApi) {
+        return <Component onSignInSuccess={setIdentityApi} />;
       }
 
-      return <Component onResult={setResult} />;
+      this.appIdentityProxy.setTarget(identityApi);
+      return children;
     };
 
     const AppRouter = ({ children }: PropsWithChildren<{}>) => {
@@ -360,13 +361,7 @@ export class AppManager implements BackstageApp {
 
       // If the app hasn't configured a sign-in page, we just continue as guest.
       if (!SignInPageComponent) {
-        this.identityApi.setSignInResult({
-          userId: 'guest',
-          profile: {
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          },
-        });
+        this.appIdentityProxy.setTarget(UserIdentity.createGuest());
 
         return (
           <RouterComponent>
@@ -430,7 +425,7 @@ export class AppManager implements BackstageApp {
     this.apiFactoryRegistry.register('static', {
       api: identityApiRef,
       deps: {},
-      factory: () => this.identityApi,
+      factory: () => this.appIdentityProxy,
     });
 
     // It's possible to replace the feature flag API, but since we must have at least

@@ -34,6 +34,7 @@ import {
   LifecycleClassKey,
   MarkdownContentClassKey,
   LoginRequestListItemClassKey,
+  LogViewerClassKey,
   OAuthRequestDialogClassKey,
   OverflowTooltipClassKey,
   GaugeClassKey,
@@ -82,6 +83,9 @@ import {
   ItemCardHeaderClassKey,
   PageClassKey,
   SidebarClassKey,
+  SidebarSpaceClassKey,
+  SidebarSpacerClassKey,
+  SidebarDividerClassKey,
   SidebarIntroClassKey,
   SidebarItemClassKey,
   SidebarPageClassKey,
@@ -110,6 +114,7 @@ type BackstageComponentsNameToClassKey = {
   BackstageLifecycle: LifecycleClassKey;
   BackstageMarkdownContent: MarkdownContentClassKey;
   BackstageLoginRequestListItem: LoginRequestListItemClassKey;
+  BackstageLogViewer: LogViewerClassKey;
   OAuthRequestDialog: OAuthRequestDialogClassKey;
   BackstageOverflowTooltip: OverflowTooltipClassKey;
   BackstageGauge: GaugeClassKey;
@@ -155,6 +160,9 @@ type BackstageComponentsNameToClassKey = {
   BackstageItemCardHeader: ItemCardHeaderClassKey;
   BackstagePage: PageClassKey;
   BackstageSidebar: SidebarClassKey;
+  BackstageSidebarSpace: SidebarSpaceClassKey;
+  BackstageSidebarSpacer: SidebarSpacerClassKey;
+  BackstageSidebarDivider: SidebarDividerClassKey;
   BackstageSidebarIntro: SidebarIntroClassKey;
   BackstageSidebarItem: SidebarItemClassKey;
   BackstageSidebarPage: SidebarPageClassKey;

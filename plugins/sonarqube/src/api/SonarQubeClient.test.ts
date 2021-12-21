@@ -37,6 +37,9 @@ const identityApiAuthenticated: IdentityApi = {
   async signOut() {
     return Promise.resolve();
   },
+  getProfileInfo: jest.fn(),
+  getBackstageIdentity: jest.fn(),
+  getCredentials: jest.fn(),
 };
 const identityApiGuest: IdentityApi = {
   getUserId() {
@@ -51,6 +54,9 @@ const identityApiGuest: IdentityApi = {
   async signOut() {
     return Promise.resolve();
   },
+  getProfileInfo: jest.fn(),
+  getBackstageIdentity: jest.fn(),
+  getCredentials: jest.fn(),
 };
 
 describe('SonarQubeClient', () => {

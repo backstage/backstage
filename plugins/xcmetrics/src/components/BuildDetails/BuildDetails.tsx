@@ -78,7 +78,7 @@ export const BuildDetails = ({
         {formatStatus(build.buildStatus)}
       </>
     ),
-    xcode: `${xcode.version} (${xcode.buildNumber})`,
+    xcode: xcode ? `${xcode.version} (${xcode.buildNumber})` : 'Unknown',
     CI: build.isCi,
   };
 

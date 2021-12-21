@@ -42,13 +42,15 @@ const OKTA_SCOPE_PREFIX: string = 'okta.';
  * @public
  */
 export default class OktaAuth {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    defaultScopes = ['openid', 'email', 'profile', 'offline_access'],
-  }: OAuthApiCreateOptions): typeof oktaAuthApiRef.T {
+  static create(options: OAuthApiCreateOptions): typeof oktaAuthApiRef.T {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+      defaultScopes = ['openid', 'email', 'profile', 'offline_access'],
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

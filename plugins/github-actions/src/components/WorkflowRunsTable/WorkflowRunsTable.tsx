@@ -172,8 +172,9 @@ export const WorkflowRunsTable = ({
     });
 
   const githubHost = hostname || 'github.com';
+  const hasNoRuns = !loading && !tableProps.loading && !runs;
 
-  return !runs ? (
+  return hasNoRuns ? (
     <EmptyState
       missing="data"
       title="No Workflow Data"

@@ -336,7 +336,10 @@ export class NextCatalogBuilder {
     const parser = this.parser || defaultEntityDataParser;
 
     const dbClient = await database.getClient();
-    await applyDatabaseMigrations(dbClient);
+    if (!database.migrations?.skip) {
+      logger.info('Performing database migration');
+      await applyDatabaseMigrations(dbClient);
+    }
 
     const db = new CommonDatabase(dbClient, logger);
 

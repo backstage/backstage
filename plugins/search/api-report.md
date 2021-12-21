@@ -8,10 +8,12 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchQuery } from '@backstage/search-common';
 import { SearchResult as SearchResult_2 } from '@backstage/search-common';
@@ -22,7 +24,11 @@ import { SearchResultSet } from '@backstage/search-common';
 // @public (undocumented)
 export const DefaultResultListItem: ({
   result,
+  icon,
+  secondaryAction,
 }: {
+  icon?: ReactNode;
+  secondaryAction?: ReactNode;
   result: IndexableDocument;
 }) => JSX.Element;
 
@@ -69,7 +75,14 @@ export const HomePageSearchBar: ({
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "SearchApi" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "SearchApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface SearchApi {
+  // (undocumented)
+  query(query: SearchQuery): Promise<SearchResultSet>;
+}
+
 // Warning: (ae-missing-release-tag) "searchApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -84,6 +97,7 @@ export const SearchBar: ({
   className,
   debounceTime,
   placeholder,
+  clearButton,
 }: Props) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SearchBarNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -94,11 +108,13 @@ export const SearchBarNext: ({
   className,
   debounceTime,
   placeholder,
+  clearButton,
 }: {
   autoFocus?: boolean | undefined;
   className?: string | undefined;
   debounceTime?: number | undefined;
   placeholder?: string | undefined;
+  clearButton?: boolean | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SearchContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -198,12 +214,28 @@ export const SearchType: ({
 // Warning: (ae-missing-release-tag) "SidebarSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SidebarSearch: () => JSX.Element;
+export const SidebarSearch: (props: SidebarSearchProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SidebarSearchModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SidebarSearchModal: () => JSX.Element;
+export const SidebarSearchModal: (
+  props: SidebarSearchModalProps,
+) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "SidebarSearchModalProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarSearchModalProps = {
+  icon?: IconComponent;
+};
+
+// Warning: (ae-missing-release-tag) "SidebarSearchProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarSearchProps = {
+  icon?: IconComponent;
+};
 
 // Warning: (ae-forgotten-export) The symbol "SearchContextValue" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -213,7 +245,7 @@ export const useSearch: () => SearchContextValue;
 
 // Warnings were encountered during analysis:
 //
-// src/components/SearchContext/SearchContext.d.ts:21:5 - (ae-forgotten-export) The symbol "SettableSearchContext" needs to be exported by the entry point index.d.ts
+// src/components/SearchContext/SearchContext.d.ts:23:5 - (ae-forgotten-export) The symbol "SettableSearchContext" needs to be exported by the entry point index.d.ts
 // src/components/SearchFilter/SearchFilter.d.ts:13:5 - (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // src/components/SearchFilter/SearchFilter.d.ts:14:5 - (ae-forgotten-export) The symbol "Component" needs to be exported by the entry point index.d.ts
 ```

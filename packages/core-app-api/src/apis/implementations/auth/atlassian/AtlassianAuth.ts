@@ -30,12 +30,14 @@ const DEFAULT_PROVIDER = {
  * @public
  */
 export default class AtlassianAuth {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-  }: OAuthApiCreateOptions): typeof atlassianAuthApiRef.T {
+  static create(options: OAuthApiCreateOptions): typeof atlassianAuthApiRef.T {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

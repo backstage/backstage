@@ -34,52 +34,6 @@ export type ErrorWithContext = {
   context?: ErrorApiErrorContext;
 };
 
-// @public @deprecated (undocumented)
-export class Keyboard {
-  constructor(
-    target: any,
-    {
-      debug,
-    }?: {
-      debug?: boolean | undefined;
-    },
-  );
-  // (undocumented)
-  click(): Promise<void>;
-  // (undocumented)
-  debug: boolean;
-  // (undocumented)
-  document: any;
-  // (undocumented)
-  enter(value: any): Promise<void>;
-  // (undocumented)
-  escape(): Promise<void>;
-  // (undocumented)
-  get focused(): any;
-  // (undocumented)
-  static fromReadableInput(input: any): any;
-  // (undocumented)
-  _log(message: any, ...args: any[]): void;
-  // (undocumented)
-  _pretty(element: any): string;
-  // (undocumented)
-  send(chars: any): Promise<void>;
-  // (undocumented)
-  _sendKey(key: any, charCode: any, action: any): Promise<void>;
-  // (undocumented)
-  tab(): Promise<void>;
-  // (undocumented)
-  static toReadableInput(chars: any): any;
-  // (undocumented)
-  toString(): string;
-  // (undocumented)
-  static type(target: any, input: any): Promise<void>;
-  // (undocumented)
-  type(input: any): Promise<void>;
-  // (undocumented)
-  static typeDebug(target: any, input: any): Promise<void>;
-}
-
 // @public
 export type LogCollector = AsyncLogCollector | SyncLogCollector;
 
@@ -89,23 +43,13 @@ export type LogFuncs = 'log' | 'warn' | 'error';
 // @public
 export class MockAnalyticsApi implements AnalyticsApi {
   // (undocumented)
-  captureEvent({
-    action,
-    subject,
-    value,
-    attributes,
-    context,
-  }: AnalyticsEvent): void;
+  captureEvent(event: AnalyticsEvent): void;
   // (undocumented)
   getEvents(): AnalyticsEvent[];
 }
 
 // @public
-export function mockBreakpoint({
-  matches,
-}: {
-  matches?: boolean | undefined;
-}): void;
+export function mockBreakpoint(options: { matches: boolean }): void;
 
 // @public
 export class MockErrorApi implements ErrorApi {
@@ -149,15 +93,6 @@ export type MockStorageBucket = {
   [key: string]: any;
 };
 
-// @public @deprecated (undocumented)
-export const msw: {
-  setupDefaultHandlers: (worker: {
-    listen: (t: any) => void;
-    close: () => void;
-    resetHandlers: () => void;
-  }) => void;
-};
-
 // @public
 export function renderInTestApp(
   Component: ComponentType | ReactNode,
@@ -178,10 +113,9 @@ export function setupRequestMockHandlers(worker: {
 export type SyncLogCollector = () => void;
 
 // @public
-export const TestApiProvider: <T extends any[]>({
-  apis,
-  children,
-}: TestApiProviderProps<T>) => JSX.Element;
+export const TestApiProvider: <T extends any[]>(
+  props: TestApiProviderProps<T>,
+) => JSX.Element;
 
 // @public
 export type TestApiProviderProps<TApiPairs extends any[]> = {

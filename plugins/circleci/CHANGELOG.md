@@ -1,5 +1,26 @@
 # @backstage/plugin-circleci
 
+## 0.2.31
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- 56d04330c4: Switch to using `LogViewer` component from `@backstage/core-components` to display action output.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-catalog-react@0.6.5
+
+## 0.2.30
+
+### Patch Changes
+
+- 5a46712a7d: Fixed a bug in the `CircleCI` plugin where restarting builds was hard-coded to GitHub rather than introspecting the entity source location.
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
 ## 0.2.29
 
 ### Patch Changes

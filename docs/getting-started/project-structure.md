@@ -166,12 +166,8 @@ are separated out into their own folder, see further down.
   plugin and [techdocs-cli](https://github.com/backstage/techdocs-cli).
 
 - [`test-utils/`](https://github.com/backstage/backstage/tree/master/packages/test-utils) -
-  This package contains more general purpose testing facilities for testing a
+  This package contains general purpose testing facilities for testing a
   Backstage App or its plugins.
-
-- [`test-utils-core/`](https://github.com/backstage/backstage/tree/master/packages/test-utils-core) -
-  This package contains specific testing facilities used when testing Backstage
-  core internals.
 
 - [`theme/`](https://github.com/backstage/backstage/tree/master/packages/theme) -
   Holds the Backstage Theme.

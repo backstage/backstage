@@ -45,9 +45,7 @@ export function loadConfig(
 // @public
 export type LoadConfigOptions = {
   configRoot: string;
-  configPaths: string[];
   configTargets: ConfigTarget[];
-  env?: string;
   experimentalEnvFunc?: (name: string) => Promise<string | undefined>;
   remote?: LoadConfigOptionsRemote;
   watch?: LoadConfigOptionsWatch;
@@ -103,8 +101,4 @@ export type TransformFunc<T extends number | string | boolean> = (
     visibility: ConfigVisibility;
   },
 ) => T | undefined;
-
-// Warnings were encountered during analysis:
-//
-// src/loader.d.ts:33:5 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/config-loader" does not have an export "configTargets"
 ```

@@ -52,6 +52,7 @@ describe('ConfigClusterLocator', () => {
         serviceAccountToken: undefined,
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
+        skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
       },
@@ -67,6 +68,7 @@ describe('ConfigClusterLocator', () => {
           url: 'http://localhost:8080',
           authProvider: 'serviceAccount',
           skipTLSVerify: false,
+          skipMetricsLookup: true,
           dashboardUrl: 'https://k8s.foo.com',
         },
         {
@@ -74,6 +76,7 @@ describe('ConfigClusterLocator', () => {
           url: 'http://localhost:8081',
           authProvider: 'google',
           skipTLSVerify: true,
+          skipMetricsLookup: false,
         },
       ],
     });
@@ -90,6 +93,7 @@ describe('ConfigClusterLocator', () => {
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
         skipTLSVerify: false,
+        skipMetricsLookup: true,
         caData: undefined,
       },
       {
@@ -98,6 +102,7 @@ describe('ConfigClusterLocator', () => {
         url: 'http://localhost:8081',
         authProvider: 'google',
         skipTLSVerify: true,
+        skipMetricsLookup: false,
         caData: undefined,
       },
     ]);
@@ -144,6 +149,7 @@ describe('ConfigClusterLocator', () => {
         url: 'http://localhost:8080',
         authProvider: 'aws',
         skipTLSVerify: false,
+        skipMetricsLookup: false,
         caData: undefined,
       },
       {
@@ -154,6 +160,7 @@ describe('ConfigClusterLocator', () => {
         url: 'http://localhost:8081',
         authProvider: 'aws',
         skipTLSVerify: true,
+        skipMetricsLookup: false,
         caData: undefined,
       },
       {
@@ -164,6 +171,7 @@ describe('ConfigClusterLocator', () => {
         serviceAccountToken: undefined,
         authProvider: 'aws',
         skipTLSVerify: true,
+        skipMetricsLookup: false,
         caData: undefined,
       },
     ]);

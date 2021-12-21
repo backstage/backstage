@@ -18,9 +18,15 @@ import express from 'express';
 import crypto from 'crypto';
 import { URL } from 'url';
 import {
+  ENTITY_DEFAULT_NAMESPACE,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import {
   AuthProviderRouteHandlers,
-  BackstageIdentity,
   AuthProviderConfig,
+  BackstageIdentityResponse,
+  BackstageSignInResult,
 } from '../../providers/types';
 import {
   AuthenticationError,
@@ -37,6 +43,7 @@ import {
   OAuthRefreshRequest,
   OAuthState,
 } from './types';
+import { prepareBackstageIdentityResponse } from '../../providers/prepareBackstageIdentityResponse';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
@@ -150,12 +157,12 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         this.setRefreshTokenCookie(res, refreshToken);
       }
 
-      await this.populateIdentity(response.backstageIdentity);
+      const identity = await this.populateIdentity(response.backstageIdentity);
 
       // post message back to popup if successful
       return postMessageResponse(res, appOrigin, {
         type: 'authorization_response',
-        response,
+        response: { ...response, backstageIdentity: identity },
       });
     } catch (error) {
       const { name, message } = isError(error)
@@ -209,7 +216,9 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         forwardReq as OAuthRefreshRequest,
       );
 
-      await this.populateIdentity(response.backstageIdentity);
+      const backstageIdentity = await this.populateIdentity(
+        response.backstageIdentity,
+      );
 
       if (
         response.providerInfo.refreshToken &&
@@ -218,7 +227,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
         this.setRefreshTokenCookie(res, response.providerInfo.refreshToken);
       }
 
-      res.status(200).json(response);
+      res.status(200).json({ ...response, backstageIdentity });
     } catch (error) {
       throw new AuthenticationError('Refresh failed', error);
     }
@@ -228,18 +237,28 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
    * If the response from the OAuth provider includes a Backstage identity, we
    * make sure it's populated with all the information we can derive from the user ID.
    */
-  private async populateIdentity(identity?: BackstageIdentity) {
+  private async populateIdentity(
+    identity?: BackstageSignInResult,
+  ): Promise<BackstageIdentityResponse | undefined> {
     if (!identity) {
-      return;
+      return undefined;
     }
 
-    if (!(identity.token || identity.idToken)) {
-      identity.token = await this.options.tokenIssuer.issueToken({
-        claims: { sub: identity.id },
-      });
-    } else if (!identity.token && identity.idToken) {
-      identity.token = identity.idToken;
+    if (identity.token) {
+      return prepareBackstageIdentityResponse(identity);
     }
+
+    const userEntityRef = stringifyEntityRef(
+      parseEntityRef(identity.id, {
+        defaultKind: 'user',
+        defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+      }),
+    );
+    const token = await this.options.tokenIssuer.issueToken({
+      claims: { sub: userEntityRef },
+    });
+
+    return prepareBackstageIdentityResponse({ ...identity, token });
   }
 
   private setNonceCookie = (res: express.Response, nonce: string) => {

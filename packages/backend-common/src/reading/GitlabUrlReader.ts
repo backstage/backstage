@@ -20,7 +20,7 @@ import {
   GitLabIntegration,
   ScmIntegrations,
 } from '@backstage/integration';
-import fetch from 'cross-fetch';
+import fetch, { Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
@@ -76,7 +76,13 @@ export class GitlabUrlReader implements UrlReader {
           ...getGitLabRequestOptions(this.integration.config).headers,
           ...(etag && { 'If-None-Match': etag }),
         },
-        ...(signal && { signal }),
+        // TODO(freben): The signal cast is there because pre-3.x versions of
+        // node-fetch have a very slightly deviating AbortSignal type signature.
+        // The difference does not affect us in practice however. The cast can be
+        // removed after we support ESM for CLI dependencies and migrate to
+        // version 3 of node-fetch.
+        // https://github.com/backstage/backstage/issues/8242
+        ...(signal && { signal: signal as any }),
       });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
@@ -145,7 +151,13 @@ export class GitlabUrlReader implements UrlReader {
       ).toString(),
       {
         ...getGitLabRequestOptions(this.integration.config),
-        ...(signal && { signal }),
+        // TODO(freben): The signal cast is there because pre-3.x versions of
+        // node-fetch have a very slightly deviating AbortSignal type signature.
+        // The difference does not affect us in practice however. The cast can
+        // be removed after we support ESM for CLI dependencies and migrate to
+        // version 3 of node-fetch.
+        // https://github.com/backstage/backstage/issues/8242
+        ...(signal && { signal: signal as any }),
       },
     );
     if (!commitsGitlabResponse.ok) {
@@ -169,7 +181,13 @@ export class GitlabUrlReader implements UrlReader {
       )}/repository/archive?sha=${branch}`,
       {
         ...getGitLabRequestOptions(this.integration.config),
-        ...(signal && { signal }),
+        // TODO(freben): The signal cast is there because pre-3.x versions of
+        // node-fetch have a very slightly deviating AbortSignal type signature.
+        // The difference does not affect us in practice however. The cast can
+        // be removed after we support ESM for CLI dependencies and migrate to
+        // version 3 of node-fetch.
+        // https://github.com/backstage/backstage/issues/8242
+        ...(signal && { signal: signal as any }),
       },
     );
     if (!archiveGitLabResponse.ok) {

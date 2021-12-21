@@ -1,5 +1,71 @@
 # @backstage/core-app-api
 
+## 0.2.1
+
+### Patch Changes
+
+- c11ce4f552: Deprecated `Auth0Auth`, pointing to using `OAuth2` directly instead.
+- 9d6503e86c: Switched out usage of deprecated `OAuthRequestApi` types from `@backstage/core-plugin-api`.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.1
+  - @backstage/core-components@0.8.1
+
+## 0.2.0
+
+### Minor Changes
+
+- a036b65c2f: **BREAKING CHANGE**
+
+  The app `SignInPage` component has been updated to switch out the `onResult` callback for a new `onSignInSuccess` callback. This is an immediate breaking change without any deprecation period, as it was deemed to be the way of making this change that had the lowest impact.
+
+  The new `onSignInSuccess` callback directly accepts an implementation of an `IdentityApi`, rather than a `SignInResult`. The `SignInPage` from `@backstage/core-component` has been updated to fit this new API, and as long as you pass on `props` directly you should not see any breakage.
+
+  However, if you implement your own custom `SignInPage`, then this will be a breaking change and you need to migrate over to using the new callback. While doing so you can take advantage of the `UserIdentity.fromLegacy` helper from `@backstage/core-components` to make the migration simpler by still using the `SignInResult` type. This helper is also deprecated though and is only provided for immediate migration. Long-term it will be necessary to build the `IdentityApi` using for example `UserIdentity.create` instead.
+
+  The following is an example of how you can migrate existing usage immediately using `UserIdentity.fromLegacy`:
+
+  ```ts
+  onResult(signInResult);
+  // becomes
+  onSignInSuccess(UserIdentity.fromLegacy(signInResult));
+  ```
+
+  The following is an example of how implement the new `onSignInSuccess` callback of the `SignInPage` using `UserIdentity.create`:
+
+  ```ts
+  const identityResponse = await authApi.getBackstageIdentity();
+  // Profile is optional and will be removed, but allows the
+  // synchronous getProfile method of the IdentityApi to be used.
+  const profile = await authApi.getProfile();
+  onSignInSuccess(
+    UserIdentity.create({
+      identity: identityResponse.identity,
+      authApi,
+      profile,
+    }),
+  );
+  ```
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/app-defaults@0.1.2
+  - @backstage/version-bridge@0.1.1
+
+## 0.1.24
+
+### Patch Changes
+
+- 0e7f256034: Fixed a bug where `useRouteRef` would fail in situations where relative navigation was needed and the app was is mounted on a sub-path. This would typically show up as a failure to navigate to a tab on an entity page.
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
 ## 0.1.23
 
 ### Patch Changes

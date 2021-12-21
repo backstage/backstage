@@ -24,12 +24,14 @@ const DEFAULT_URL = 'config-schema.json';
 
 /**
  * A ConfigSchemaApi implementation that loads the configuration from a URL.
+ *
+ * @public
  */
 export class StaticSchemaLoader implements ConfigSchemaApi {
   private readonly url: string;
 
-  constructor({ url = DEFAULT_URL }: { url?: string } = {}) {
-    this.url = url;
+  constructor(options: { url?: string } = {}) {
+    this.url = options?.url ?? DEFAULT_URL;
   }
 
   schema$(): Observable<ConfigSchemaResult> {

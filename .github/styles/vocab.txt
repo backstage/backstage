@@ -12,6 +12,7 @@ Atlassian
 automations
 autoscaling
 Autoscaling
+autoselect
 Avro
 backrub
 Bigtable
@@ -53,6 +54,7 @@ configs
 const
 cookiecutter
 cron
+cronjobs
 css
 Datadog
 dataflow
@@ -90,10 +92,12 @@ Figma
 firehydrant
 FireHydrant
 Firekube
+Firestore
 Fiverr
 gitbeaker
 GitHub
 GitLab
+Gource
 Grafana
 graphql
 GraphQL
@@ -187,6 +191,7 @@ OAuth
 octokit
 oidc
 Okta
+Oldsberg
 onboarding
 Onboarding
 OpenShift
@@ -194,6 +199,8 @@ orgs
 pagerduty
 pageview
 parallelization
+Patrik
+Peloton
 plantuml
 Platformize
 Podman
@@ -293,6 +300,7 @@ truthy
 typeahead
 ui
 unbreak
+Unconference
 unmanaged
 unregister
 unregistration
@@ -304,6 +312,7 @@ utils
 validator
 validators
 varchar
+Wayfair
 Weaveworks
 Webpack
 winston
@@ -316,4 +325,3 @@ Zalando
 Zhou
 zoomable
 zsh
-Firestore

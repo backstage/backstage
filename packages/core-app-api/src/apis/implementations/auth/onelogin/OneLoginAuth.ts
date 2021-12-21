@@ -17,7 +17,7 @@
 import {
   oneloginAuthApiRef,
   OAuthRequestApi,
-  AuthProvider,
+  AuthProviderInfo,
   DiscoveryApi,
 } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
@@ -30,7 +30,7 @@ export type OneLoginAuthCreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
-  provider?: AuthProvider & { id: string };
+  provider?: AuthProviderInfo;
 };
 
 const DEFAULT_PROVIDER = {
@@ -57,12 +57,16 @@ const SCOPE_PREFIX: string = 'onelogin.';
  * @public
  */
 export default class OneLoginAuth {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-  }: OneLoginAuthCreateOptions): typeof oneloginAuthApiRef.T {
+  static create(
+    options: OneLoginAuthCreateOptions,
+  ): typeof oneloginAuthApiRef.T {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

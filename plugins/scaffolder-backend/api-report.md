@@ -24,6 +24,7 @@ import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
+import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
@@ -67,7 +68,7 @@ export const createBuiltinActions: (options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   catalogClient: CatalogApi;
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
   config: Config;
 }) => TemplateAction<any>[];
 
@@ -177,6 +178,13 @@ export function createPublishGitlabAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
 }): TemplateAction<any>;
+
+// Warning: (ae-missing-release-tag) "createPublishGitlabMergeRequestAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createPublishGitlabMergeRequestAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -288,7 +296,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
@@ -304,11 +312,12 @@ export interface RouterOptions {
 // Warning: (ae-forgotten-export) The symbol "RunCommandOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "runCommand" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export const runCommand: ({
   command,
   args,
   logStream,
+  options,
 }: RunCommandOptions) => Promise<void>;
 
 // @public (undocumented)

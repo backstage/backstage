@@ -66,7 +66,7 @@ export type BackstageOverrides = Overrides & {
 
 // Warning: (ae-missing-release-tag) "CatalogClientWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export class CatalogClientWrapper implements CatalogApi {
   constructor(options: { client: CatalogClient; identityApi: IdentityApi });
   // (undocumented)
