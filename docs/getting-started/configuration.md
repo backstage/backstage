@@ -116,7 +116,7 @@ as advertised.
 If you want to read more about the database configuration, here's some helpful
 links:
 
-- [Configuring Plugin Databases](../tutorials/configuring-plugin-databases#privileges)
+- [Configuring Plugin Databases](../tutorials/configuring-plugin-databases.md#privileges)
 - [Read more about Knex](http://knexjs.org/), which is the library we use for
   the database backend
 
@@ -128,7 +128,7 @@ Backstage, feel free to follow
 
 For this tutorial we choose to use GitHub, a free service most of you might be
 familiar with. For other options, see
-[the auth provider documentation](../auth/github/provider#create-an-oauth-app-on-github).
+[the auth provider documentation](../auth/github/provider.md#create-an-oauth-app-on-github).
 
 Go to
 [https://github.com/settings/applications/new](https://github.com/settings/applications/new)
@@ -195,8 +195,8 @@ To learn more about Authentication in Backstage, there's the following docs you
 could read:
 
 - [Adding Authentication](../auth/)
-- [Adding a new Authentication Provider](../auth/add-auth-provider)
-- [Using authentication and identity](../auth/using-auth)
+- [Adding a new Authentication Provider](../auth/add-auth-provider.md)
+- [Using authentication and identity](../auth/using-auth.md)
 - [Using organizational data from GitHub](../integrations/github/org.md)
 
 ### Setting up a GitHub Integration
@@ -236,7 +236,7 @@ That's settled. This information will be leveraged by other plugins.
 Some helpful links, for if you want to learn more about:
 
 - [Other available integrations](../integrations/)
-- [Using GitHub Apps instead of a Personal Access Token](../plugins/github-apps#docsNav)
+- [Using GitHub Apps instead of a Personal Access Token](../plugins/github-apps.md#docsNav)
 
 ### Explore what we've done so far
 
