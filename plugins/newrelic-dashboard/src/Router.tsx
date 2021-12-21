@@ -34,7 +34,11 @@ export const Router = () => {
   return (
     <>
       <MissingAnnotationEmptyState annotation={NEWRELIC_GUID_ANNOTATION} />
-      <Button variant="contained" color="primary" href="#">
+      <Button
+        variant="contained"
+        color="primary"
+        href="https://github.com/backstage/backstage/tree/master/plugins/newrelic-dashboard"
+      >
         Read New Relic Dashboard Plugin Docs
       </Button>
     </>
