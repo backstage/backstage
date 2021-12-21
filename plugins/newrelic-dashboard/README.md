@@ -18,7 +18,7 @@ To generate a New Relic API Key , you can visit this [link](https://one.newrelic
 ```
 // app-config.yaml
 proxy:
-  '/newrelic/apm/api':
+  '/newrelic/api':
     target: https://api.newrelic.com
     headers:
       X-Api-Key: ${NEW_RELIC_USER_KEY}
@@ -30,8 +30,8 @@ proxy:
 // In packages/app/src/components/catalog/EntityPage.tsx
 import {
   isNewRelicDashboardAvailable,
-  EntityNewRelicDashboard,
-  EntityPageNewRelicDashboard,
+  EntityNewRelicDashboardContent,
+  EntityNewRelicDashboardCard,
 } from '@backstage/plugin-newrelic-dashboard';
 
 const serviceEntityPage = (
@@ -42,7 +42,7 @@ const serviceEntityPage = (
       path="/newrelic-dashboard"
       title="New Relic Dashboard"
     >
-      <EntityNewRelicDashboard />
+      <EntityNewRelicDashboardContent />
     </EntityLayout.Route>
 ```
 
@@ -54,7 +54,7 @@ const overviewContent = (
     <EntitySwitch>
       <EntitySwitch.Case if={isNewRelicDashboardAvailable}>
         <Grid item md={6} xs={12}>
-          <EntityPageNewRelicDashboard />
+          <EntityNewRelicDashboardCard />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
