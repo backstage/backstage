@@ -55,7 +55,7 @@ export const DashboardSnapshot = ({
   }
   const url =
     value?.getDashboardSnapshot?.data?.dashboardCreateSnapshotUrl?.replace(
-      /PDF$/,
+      /\pdf$/i,
       'png',
     );
   return (
