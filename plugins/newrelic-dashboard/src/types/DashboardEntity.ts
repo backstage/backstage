@@ -19,7 +19,7 @@ export type DashboardEntity = {
     actor: {
       entitySearch: {
         results: {
-          entities: [ResultEntity];
+          entities: Array<ResultEntity>;
         };
       };
     };
