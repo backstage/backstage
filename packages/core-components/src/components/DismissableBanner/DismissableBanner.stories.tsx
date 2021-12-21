@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { DismissableBanner } from './DismissableBanner';
-import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { WebStorage } from '@backstage/core-app-api';
 import {
@@ -25,6 +24,7 @@ import {
   StorageApi,
 } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
+import { Link } from '../Link';
 
 export default {
   title: 'Feedback/DismissableBanner',
@@ -83,7 +83,7 @@ export const WithLink = () => (
         message={
           <Typography>
             This is a dismissable banner with a link:{' '}
-            <Link href="http://example.com" color="textPrimary">
+            <Link to="http://example.com" color="textPrimary">
               example.com
             </Link>
           </Typography>
@@ -94,6 +94,7 @@ export const WithLink = () => (
     </TestApiProvider>
   </div>
 );
+
 export const Fixed = () => (
   <div style={containerStyle}>
     <TestApiProvider apis={apis}>
@@ -106,6 +107,7 @@ export const Fixed = () => (
     </TestApiProvider>
   </div>
 );
+
 export const Warning = () => (
   <div style={containerStyle}>
     <TestApiProvider apis={apis}>
