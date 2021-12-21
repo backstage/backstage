@@ -121,12 +121,13 @@ export const TemplatePage = ({
   const navigate = useNavigate();
   const rootLink = useRouteRef(rootRouteRef);
   const { schema, loading, error } = useTemplateParameterSchema(templateName);
-  const query = qs.parse(window.location.search, {
-    ignoreQueryPrefix: true,
+  const [formState, setFormState] = useState<Record<string, any>>(() => {
+    const query = qs.parse(window.location.search, {
+      ignoreQueryPrefix: true,
+    });
+
+    return query.formData ?? {};
   });
-  const [formState, setFormState] = useState(
-    (query.formData ?? {}) as Record<string, any>,
-  );
   const handleFormReset = () => setFormState({});
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState(e.formData),
@@ -135,6 +136,18 @@ export const TemplatePage = ({
 
   const handleCreate = async () => {
     const id = await scaffolderApi.scaffold(templateName, formState);
+
+    const formParams = qs.stringify(
+      { formData: formState },
+      { addQueryPrefix: true },
+    );
+    const newUrl = `${window.location.pathname}${formParams}`;
+    // We use direct history manipulation since useSearchParams and
+    // useNavigate in react-router-dom cause unnecessary extra rerenders.
+    // Also make sure to replace the state rather than pushing to avoid
+    // extra back/forward slots.
+    window.history?.replaceState(null, document.title, newUrl);
+
     navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
   };
 
