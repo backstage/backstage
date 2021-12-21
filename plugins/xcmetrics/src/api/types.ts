@@ -193,5 +193,4 @@ export interface XcmetricsApi {
 
 export const xcmetricsApiRef = createApiRef<XcmetricsApi>({
   id: 'plugin.xcmetrics.api',
-  description: 'Used by the XCMetrics plugin to make requests',
 });

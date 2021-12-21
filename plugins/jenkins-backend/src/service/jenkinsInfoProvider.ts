@@ -38,6 +38,7 @@ export interface JenkinsInfo {
   baseUrl: string;
   headers?: Record<string, string | string[]>;
   jobFullName: string; // TODO: make this an array
+  crumbIssuer?: boolean;
 }
 
 export interface JenkinsInstanceConfig {
@@ -45,6 +46,7 @@ export interface JenkinsInstanceConfig {
   baseUrl: string;
   username: string;
   apiKey: string;
+  crumbIssuer?: boolean;
 }
 
 /**
@@ -70,6 +72,7 @@ export class JenkinsConfig {
         baseUrl: c.getString('baseUrl'),
         username: c.getString('username'),
         apiKey: c.getString('apiKey'),
+        crumbIssuer: c.getOptionalBoolean('crumbIssuer'),
       })) || [];
 
     // load unnamed default config
@@ -81,6 +84,7 @@ export class JenkinsConfig {
     const baseUrl = jenkinsConfig.getOptionalString('baseUrl');
     const username = jenkinsConfig.getOptionalString('username');
     const apiKey = jenkinsConfig.getOptionalString('apiKey');
+    const crumbIssuer = jenkinsConfig.getOptionalBoolean('crumbIssuer');
 
     if (hasNamedDefault && (baseUrl || username || apiKey)) {
       throw new Error(
@@ -98,12 +102,13 @@ export class JenkinsConfig {
 
     if (unnamedAllPresent) {
       const unnamedInstanceConfig = [
-        { name: DEFAULT_JENKINS_NAME, baseUrl, username, apiKey },
+        { name: DEFAULT_JENKINS_NAME, baseUrl, username, apiKey, crumbIssuer },
       ] as {
         name: string;
         baseUrl: string;
         username: string;
         apiKey: string;
+        crumbIssuer: boolean;
       }[];
 
       return new JenkinsConfig([
@@ -227,6 +232,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
         Authorization: `Basic ${creds}`,
       },
       jobFullName,
+      crumbIssuer: instanceConfig.crumbIssuer,
     };
   }
 

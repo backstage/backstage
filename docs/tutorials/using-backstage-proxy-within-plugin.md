@@ -99,7 +99,6 @@ export interface MyAwesomeApi {
 
 export const myAwesomeApiRef = createApiRef<MyAwesomeApi>({
   id: 'plugin.my-awesome-api.service',
-  description: 'Example API definition',
 });
 ```
 

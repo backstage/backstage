@@ -21,6 +21,8 @@ import {
   wrapInTestApp,
 } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
+import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
@@ -30,7 +32,11 @@ const mockTheme: AppTheme = {
   id: 'light-theme',
   title: 'Mock Theme',
   variant: 'light',
-  theme: lightTheme,
+  Provider: ({ children }) => (
+    <ThemeProvider theme={lightTheme}>
+      <CssBaseline>{children}</CssBaseline>
+    </ThemeProvider>
+  ),
 };
 
 const apiRegistry = TestApiRegistry.from([

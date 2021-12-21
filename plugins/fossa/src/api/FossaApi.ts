@@ -26,7 +26,6 @@ export interface FindingSummary {
 
 export const fossaApiRef = createApiRef<FossaApi>({
   id: 'plugin.fossa.service',
-  description: 'Used by the Fossa plugin to make requests',
 });
 
 export type FossaApi = {

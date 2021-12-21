@@ -19,7 +19,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const gcpApiRef = createApiRef<GcpApi>({
   id: 'plugin.gcpprojects.service',
-  description: 'Used by the GCP Projects plugin to make requests',
 });
 
 export type GcpApi = {

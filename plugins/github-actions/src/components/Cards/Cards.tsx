@@ -18,7 +18,6 @@ import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   LinearProgress,
-  Link,
   makeStyles,
   Theme,
   Typography,
@@ -34,6 +33,7 @@ import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   InfoCard,
   InfoCardVariants,
+  Link,
   StructuredMetadataTable,
 } from '@backstage/core-components';
 
@@ -71,7 +71,7 @@ const WidgetContent = ({
         ),
         message: lastRun.message,
         url: (
-          <Link href={lastRun.githubUrl} target="_blank">
+          <Link to={lastRun.githubUrl ?? ''}>
             See more on GitHub{' '}
             <ExternalLinkIcon className={classes.externalLinkIcon} />
           </Link>

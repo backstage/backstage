@@ -16,11 +16,11 @@
 
 import { BackstageTheme } from '@backstage/theme';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useNavigate } from 'react-router';
+import { Link } from '../../components/Link';
 import { useSupportConfig } from '../../hooks';
 import { MicDrop } from './MicDrop';
 
@@ -86,14 +86,11 @@ export function ErrorPage(props: IErrorPageProps) {
           Looks like someone dropped the mic!
         </Typography>
         <Typography variant="h6">
-          <Link data-testid="go-back-link" onClick={() => navigate(-1)}>
+          <Link to="#" data-testid="go-back-link" onClick={() => navigate(-1)}>
             Go back
           </Link>
-          ... or please{' '}
-          <Link href={support.url} rel="noopener noreferrer">
-            contact support
-          </Link>{' '}
-          if you think this is a bug.
+          ... or please <Link to={support.url}>contact support</Link> if you
+          think this is a bug.
         </Typography>
       </Grid>
     </Grid>

@@ -14,33 +14,34 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   createApiRef,
   DiscoveryApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
-import { BazaarProject } from './types';
 
 export const bazaarApiRef = createApiRef<BazaarApi>({
   id: 'bazaar',
-  description: 'Used to make requests towards the bazaar backend',
 });
 
 export interface BazaarApi {
-  updateMetadata(bazaarProject: BazaarProject): Promise<any>;
+  updateProject(bazaarProject: any): Promise<any>;
 
-  getMetadata(entity: Entity): Promise<any>;
+  addProject(bazaarProject: any): Promise<any>;
 
-  getMembers(entity: Entity): Promise<any>;
+  getProjectById(id: number): Promise<any>;
 
-  deleteMember(entity: Entity): Promise<void>;
+  getProjectByRef(entityRef: string): Promise<any>;
 
-  addMember(entity: Entity): Promise<void>;
+  getMembers(id: number): Promise<any>;
 
-  getEntities(): Promise<any>;
+  deleteMember(id: number, userId: string): Promise<void>;
 
-  deleteEntity(bazaarProject: BazaarProject): Promise<void>;
+  addMember(id: number, userId: string): Promise<void>;
+
+  getProjects(): Promise<any>;
+
+  deleteProject(id: number): Promise<void>;
 }
 
 export class BazaarClient implements BazaarApi {
@@ -55,10 +56,10 @@ export class BazaarClient implements BazaarApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  async updateMetadata(bazaarProject: BazaarProject): Promise<any> {
+  async updateProject(bazaarProject: any): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
-    return await fetch(`${baseUrl}/metadata`, {
+    return await fetch(`${baseUrl}/projects`, {
       method: 'PUT',
       headers: {
         Accept: 'application/json',
@@ -68,11 +69,34 @@ export class BazaarClient implements BazaarApi {
     }).then(resp => resp.json());
   }
 
-  async getMetadata(entity: Entity): Promise<any> {
+  async addProject(bazaarProject: any): Promise<any> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
+
+    return await fetch(`${baseUrl}/projects`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bazaarProject),
+    }).then(resp => resp.json());
+  }
+
+  async getProjectById(id: number): Promise<any> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
+
+    const response = await fetch(`${baseUrl}/projects/id/${id}`, {
+      method: 'GET',
+    });
+
+    return response.ok ? response : null;
+  }
+
+  async getProjectByRef(entityRef: string): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
     const response = await fetch(
-      `${baseUrl}/metadata/${encodeURIComponent(stringifyEntityRef(entity))}`,
+      `${baseUrl}/projects/ref/${encodeURIComponent(entityRef)}`,
       {
         method: 'GET',
       },
@@ -81,60 +105,49 @@ export class BazaarClient implements BazaarApi {
     return response.ok ? response : null;
   }
 
-  async getMembers(entity: Entity): Promise<any> {
+  async getMembers(id: number): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
-    return await fetch(
-      `${baseUrl}/members/${encodeURIComponent(stringifyEntityRef(entity))}`,
-      {
-        method: 'GET',
-      },
-    ).then(resp => resp.json());
+    return await fetch(`${baseUrl}/projects/${id}/members`, {
+      method: 'GET',
+    }).then(resp => resp.json());
   }
 
-  async addMember(entity: Entity): Promise<void> {
+  async addMember(id: number, userId: string): Promise<void> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
-    await fetch(`${baseUrl}/member`, {
+    await fetch(`${baseUrl}/projects/${id}/member/${userId}`, {
       method: 'PUT',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        entity_ref: stringifyEntityRef(entity),
-        user_id: this.identityApi.getUserId(),
         picture: this.identityApi.getProfile()?.picture,
       }),
     });
   }
 
-  async deleteMember(entity: Entity): Promise<void> {
+  async deleteMember(id: number, userId: string): Promise<void> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
-    await fetch(
-      `${baseUrl}/member/${encodeURIComponent(
-        stringifyEntityRef(entity),
-      )}/${this.identityApi.getUserId()}`,
-      {
-        method: 'DELETE',
-      },
-    );
+    await fetch(`${baseUrl}/projects/${id}/member/${userId}`, {
+      method: 'DELETE',
+    });
   }
 
-  async getEntities(): Promise<any> {
+  async getProjects(): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
-    return await fetch(`${baseUrl}/entities`, {
+    return await fetch(`${baseUrl}/projects`, {
       method: 'GET',
     }).then(resp => resp.json());
   }
 
-  async deleteEntity(bazaarProject: BazaarProject): Promise<void> {
+  async deleteProject(id: number): Promise<void> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
-    const entityRef = bazaarProject.entityRef as string;
 
-    await fetch(`${baseUrl}/metadata/${encodeURIComponent(entityRef)}`, {
+    await fetch(`${baseUrl}/projects/${id}`, {
       method: 'DELETE',
     });
   }
