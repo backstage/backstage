@@ -59,7 +59,6 @@ const useStyles = makeStyles<BackstageTheme>(
  * Error page with status and description
  *
  * @public
- * @remarks
  *
  */
 export function ErrorPage(props: IErrorPageProps) {

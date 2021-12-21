@@ -112,7 +112,6 @@ type Placement = {
  * One-time, round 'telescope' animation showing new feature.
  *
  * @public
- * @remarks
  *
  */
 export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {

@@ -92,7 +92,6 @@ type IntroCardProps = {
  * Closable card with information from Navigation Sidebar
  *
  * @public
- * @remarks
  *
  */
 

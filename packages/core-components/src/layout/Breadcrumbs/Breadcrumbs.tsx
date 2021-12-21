@@ -55,7 +55,6 @@ const StyledBox = withStyles(
  * Breadcrumbs component to show navigation hierarchical structure
  *
  * @public
- * @remarks
  *
  */
 export function Breadcrumbs(props: Props) {

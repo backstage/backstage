@@ -202,7 +202,6 @@ function useSmoothScroll(
  * Horizontal scrollable component with arrows to navigate
  *
  * @public
- * @remarks
  *
  */
 export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {

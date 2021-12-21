@@ -61,10 +61,9 @@ type HeaderLabelProps = {
 };
 
 /**
- * Additional label to main {@link Header | Header}
+ * Additional label to main {@link Header}
  *
  * @public
- * @remarks
  *
  */
 export function HeaderLabel(props: HeaderLabelProps) {

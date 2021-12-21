@@ -95,10 +95,9 @@ type ContentHeaderProps = {
 };
 
 /**
- * Wrapper of material-ui h2 Typography component with body2 description
+ *  A header at the top inside a {@link Content}.
  *
  * @public
- * @remarks
  *
  */
 

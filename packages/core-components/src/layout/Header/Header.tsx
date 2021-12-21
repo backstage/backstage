@@ -193,7 +193,6 @@ const SubtitleFragment = ({ classes, subtitle }: SubtitleFragmentProps) => {
  * Backstage main header with abstract color background in multiple variants
  *
  * @public
- * @remarks
  *
  */
 export function Header(props: PropsWithChildren<Props>) {

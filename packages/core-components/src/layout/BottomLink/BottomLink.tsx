@@ -51,10 +51,9 @@ export type BottomLinkProps = {
 };
 
 /**
- * Footer with link used in  {@link InfoCard | InfoCard } and {@link TabbedCard | TabbedCard}
+ * Footer with link used in  {@link InfoCard } and {@link TabbedCard}
  *
  * @public
- * @remarks
  *
  */
 export function BottomLink(props: BottomLinkProps) {

@@ -100,7 +100,6 @@ export const getProgressColor: GaugePropsGetColor = ({
  * Circular Progress Bar
  *
  * @public
- * @remarks
  *
  */
 

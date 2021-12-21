@@ -50,7 +50,6 @@ type Props = {
  * Various placeholder views for empty state pages
  *
  * @public
- * @remarks
  *
  */
 export function EmptyState(props: Props) {

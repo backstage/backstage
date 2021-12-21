@@ -150,10 +150,9 @@ type CardTabProps = TabProps & {
 };
 
 /**
- * Card tab component used in {@link TabbedCard | TabbedCard}
+ * Card tab component used in {@link TabbedCard}
  *
  * @public
- * @remarks
  *
  */
 export function CardTab(props: PropsWithChildren<CardTabProps>) {

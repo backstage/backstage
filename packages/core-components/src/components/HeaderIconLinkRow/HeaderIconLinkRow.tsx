@@ -41,7 +41,6 @@ type Props = {
  * HTML nav tag with links mapped inside
  *
  * @public
- * @remarks
  *
  */
 export function HeaderIconLinkRow(props: Props) {

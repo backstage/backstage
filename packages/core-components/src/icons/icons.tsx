@@ -28,10 +28,9 @@ function useSystemIcon(key: string, props: IconComponentProps) {
 
 // Should match the list of overridable system icon keys in @backstage/core-app-api
 /**
- * Broken Image Icon from material UI library
+ * Broken Image Icon
  *
  * @public
- * @remarks
  *
  */
 export function BrokenImageIcon(props: IconComponentProps) {

@@ -72,7 +72,6 @@ type HeaderTabsProps = {
  * Horizontal Tabs component
  *
  * @public
- * @remarks
  *
  */
 export function HeaderTabs(props: HeaderTabsProps) {

@@ -148,7 +148,6 @@ type Props = {
  * Material-ui card with header , content and actions footer
  *
  * @public
- * @remarks
  *
  */
 export function InfoCard(props: Props): JSX.Element {

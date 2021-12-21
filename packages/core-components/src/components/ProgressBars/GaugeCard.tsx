@@ -45,10 +45,9 @@ const useStyles = makeStyles(
 );
 
 /**
- * {@link Gauge | Gauge} with header, subheader and footer
+ * {@link Gauge} with header, subheader and footer
  *
  * @public
- * @remarks
  *
  */
 export function GaugeCard(props: Props) {

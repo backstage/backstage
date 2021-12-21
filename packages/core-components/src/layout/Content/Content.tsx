@@ -54,10 +54,9 @@ type Props = {
 };
 
 /**
- * HTML article tag wrapped with text alignment properties and custom className
+ * The main content part inside a {@link Page}.
  *
  * @public
- * @remarks
  *
  */
 
