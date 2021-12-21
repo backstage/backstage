@@ -27,8 +27,12 @@ export type FetchApi = {
 };
 
 /**
- * A wrapper for the fetch API, that has additional behaviors such as the
- * ability to automatically inject auth information where necessary.
+ * The {@link ApiRef} of {@link FetchApi}.
+ *
+ * @remarks
+ *
+ * This is a wrapper for the fetch API, that has additional behaviors such as
+ * the ability to automatically inject auth information where necessary.
  *
  * @public
  */
