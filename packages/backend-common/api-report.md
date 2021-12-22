@@ -493,7 +493,12 @@ export class ServerTokenManager implements TokenManager {
   // (undocumented)
   authenticate(token: string): Promise<void>;
   // (undocumented)
-  static fromConfig(config: Config): ServerTokenManager;
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger_2;
+    },
+  ): ServerTokenManager;
   // (undocumented)
   getToken(): Promise<{
     token: string;

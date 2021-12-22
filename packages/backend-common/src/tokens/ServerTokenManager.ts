@@ -18,8 +18,11 @@ import { JWKS, JWK, JWT } from 'jose';
 import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
 import { TokenManager } from './types';
+import { Logger } from 'winston';
 
 class NoopTokenManager implements TokenManager {
+  public readonly isInsecureServerTokenManager: boolean = true;
+
   async getToken() {
     return { token: '' };
   }
@@ -41,16 +44,32 @@ export class ServerTokenManager implements TokenManager {
     return new NoopTokenManager();
   }
 
-  static fromConfig(config: Config) {
-    return new ServerTokenManager(
-      config
-        .getConfigArray('backend.auth.keys')
-        .map(key => key.getString('secret')),
+  static fromConfig(config: Config, options: { logger: Logger }) {
+    const { logger } = options;
+
+    const keys = config.getOptionalConfigArray('backend.auth.keys');
+    if (keys?.length) {
+      return new ServerTokenManager(keys.map(key => key.getString('secret')));
+    }
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error(
+        'You must configure at least one key in backend.auth.keys for production.',
+      );
+    }
+
+    // For development, if a secret has not been configured, we auto generate a secret instead of throwing.
+    const generatedDevOnlyKey = JWK.generateSync('oct', 24 * 8);
+    if (generatedDevOnlyKey.k === undefined) {
+      throw new Error('Internal error, JWK key generation returned no data');
+    }
+    logger.warn(
+      'Generated a secret for backend-to-backend authentication: DEVELOPMENT USE ONLY.',
     );
+    return new ServerTokenManager([generatedDevOnlyKey.k]);
   }
 
-  private constructor(secrets?: string[]) {
-    if (!secrets?.length) {
+  private constructor(secrets: string[]) {
+    if (!secrets.length) {
       throw new Error(
         'No secrets provided when constructing ServerTokenManager',
       );
