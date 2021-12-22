@@ -42,8 +42,10 @@ import {
 } from '../../hooks';
 import { StatusError, StatusOK } from '@backstage/core-components';
 import { READY_COLUMNS, RESOURCE_COLUMNS } from '../Pods/PodsTable';
+import { CustomisationProps } from '../../api/types';
 
 type DeploymentsAccordionsProps = {
+  customisationProps?: typeof CustomisationProps;
   children?: React.ReactNode;
 };
 
@@ -51,6 +53,7 @@ type DeploymentAccordionProps = {
   deployment: V1Deployment;
   ownedPods: V1Pod[];
   matchingHpa?: V1HorizontalPodAutoscaler;
+  customisationProps?: typeof CustomisationProps;
   children?: React.ReactNode;
 };
 
@@ -144,12 +147,15 @@ const DeploymentAccordion = ({
   deployment,
   ownedPods,
   matchingHpa,
+  customisationProps,
 }: DeploymentAccordionProps) => {
   const podNamesWithErrors = useContext(PodNamesWithErrorsContext);
 
   const podsWithErrors = ownedPods.filter(p =>
     podNamesWithErrors.has(p.metadata?.name ?? ''),
   );
+
+  const customColumns = customisationProps?.customPodTableColumns || [];
 
   return (
     <Accordion TransitionProps={{ unmountOnExit: true }}>
@@ -165,13 +171,16 @@ const DeploymentAccordion = ({
         <PodsTable
           pods={ownedPods}
           extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]}
+          customColumns={customColumns}
         />
       </AccordionDetails>
     </Accordion>
   );
 };
 
-export const DeploymentsAccordions = ({}: DeploymentsAccordionsProps) => {
+export const DeploymentsAccordions = ({
+  customisationProps,
+}: DeploymentsAccordionsProps) => {
   const groupedResponses = useContext(GroupedResponsesContext);
 
   return (
@@ -196,6 +205,7 @@ export const DeploymentsAccordions = ({}: DeploymentsAccordionsProps) => {
                 groupedResponses.pods,
               )}
               deployment={deployment}
+              customisationProps={customisationProps}
             />
           </Grid>
         </Grid>

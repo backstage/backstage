@@ -22,6 +22,15 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { PodsTable, READY_COLUMNS, RESOURCE_COLUMNS } from './PodsTable';
 import { kubernetesProviders } from '../../hooks/test-utils';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
+import { V1Pod } from '@kubernetes/client-node';
+import { TableColumn } from '@backstage/core-components';
+
+const customColumns: TableColumn<V1Pod>[] = [
+  {
+    title: 'Custom Column',
+    align: 'center',
+  },
+];
 
 describe('PodsTable', () => {
   it('should render pod', async () => {
@@ -176,5 +185,34 @@ describe('PodsTable', () => {
     expect(getByText('Container: side-car')).toBeInTheDocument();
     expect(getByText('Container: other-side-car')).toBeInTheDocument();
     expect(getAllByText('CrashLoopBackOff')).toHaveLength(2);
+  });
+  it('should render additional custom columns', async () => {
+    const { getByText, getAllByText } = render(
+      wrapInTestApp(
+        <PodsTable
+          pods={[pod as any]}
+          extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]}
+          customColumns={customColumns}
+        />,
+      ),
+    );
+
+    // titles
+    expect(getByText('name')).toBeInTheDocument();
+    expect(getByText('phase')).toBeInTheDocument();
+    expect(getByText('containers ready')).toBeInTheDocument();
+    expect(getByText('total restarts')).toBeInTheDocument();
+    expect(getByText('status')).toBeInTheDocument();
+    expect(getByText('CPU usage %')).toBeInTheDocument();
+    expect(getByText('Memory usage %')).toBeInTheDocument();
+    expect(getByText('Custom Column')).toBeInTheDocument();
+
+    // values
+    expect(getByText('dice-roller-6c8646bfd-2m5hv')).toBeInTheDocument();
+    expect(getByText('Running')).toBeInTheDocument();
+    expect(getByText('1/1')).toBeInTheDocument();
+    expect(getByText('0')).toBeInTheDocument();
+    expect(getByText('OK')).toBeInTheDocument();
+    expect(getAllByText('unknown')).toHaveLength(2);
   });
 });

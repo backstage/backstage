@@ -42,6 +42,7 @@ import {
 
 import { StatusError, StatusOK } from '@backstage/core-components';
 import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
+import { CustomisationProps } from '../../api/types';
 
 type ClusterSummaryProps = {
   clusterName: string;
@@ -107,10 +108,15 @@ const ClusterSummary = ({
 type ClusterProps = {
   clusterObjects: ClusterObjects;
   podsWithErrors: Set<string>;
+  customisationProps?: typeof CustomisationProps;
   children?: React.ReactNode;
 };
 
-export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
+export const Cluster = ({
+  clusterObjects,
+  podsWithErrors,
+  customisationProps,
+}: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
   const podNameToMetrics = clusterObjects.podMetrics
     .flat()
@@ -140,7 +146,9 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
                     <CustomResources />
                   </Grid>
                   <Grid item>
-                    <DeploymentsAccordions />
+                    <DeploymentsAccordions
+                      customisationProps={customisationProps}
+                    />
                   </Grid>
                   <Grid item>
                     <IngressesAccordions />

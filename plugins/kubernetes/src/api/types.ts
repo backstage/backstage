@@ -19,6 +19,8 @@ import {
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
 import { createApiRef } from '@backstage/core-plugin-api';
+import { V1Pod } from '@kubernetes/client-node';
+import { TableColumn } from '@backstage/core-components';
 
 export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',
@@ -29,4 +31,10 @@ export interface KubernetesApi {
     requestBody: KubernetesRequestBody,
   ): Promise<ObjectsByEntityResponse>;
   getClusters(): Promise<{ name: string; authProvider: string }[]>;
+}
+
+export class CustomisationProps {
+  constructor(customPodTableColumns: TableColumn<V1Pod>[]) {
+    this.customPodTableColumns = customPodTableColumns;
+  }
 }

@@ -34,6 +34,7 @@ export type PodColumns = 'READY' | 'RESOURCE';
 type PodsTablesProps = {
   pods: V1Pod[];
   extraColumns?: PodColumns[];
+  customColumns?: TableColumn<V1Pod>[];
   children?: React.ReactNode;
 };
 
@@ -67,7 +68,11 @@ const READY: TableColumn<V1Pod>[] = [
   },
 ];
 
-export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
+export const PodsTable = ({
+  pods,
+  extraColumns = [],
+  customColumns = [],
+}: PodsTablesProps) => {
   const podNamesWithMetrics = useContext(PodNamesWithMetricsContext);
   const columns: TableColumn<V1Pod>[] = [...DEFAULT_COLUMNS];
 
@@ -102,6 +107,9 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
       },
     ];
     columns.push(...resourceColumns);
+  }
+  if (customColumns.length) {
+    columns.push(...customColumns);
   }
 
   const tableStyle = {
