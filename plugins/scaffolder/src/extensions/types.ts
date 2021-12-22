@@ -29,3 +29,10 @@ export type FieldExtensionOptions<T = any> = {
   component: (props: FieldProps<T>) => JSX.Element | null;
   validation?: CustomFieldValidator<T>;
 };
+
+export interface CustomFieldExtension<ReturnValue, UiOptions extends {} = {}>
+  extends FieldProps<ReturnValue> {
+  uiSchema: {
+    'ui:options'?: UiOptions;
+  };
+}
