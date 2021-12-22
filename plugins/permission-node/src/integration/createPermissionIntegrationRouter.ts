@@ -93,13 +93,13 @@ export type ApplyConditionsResponse = ApplyConditionsResponseEntry[];
 
 const applyConditions = <TResource>(
   criteria: PermissionCriteria<PermissionCondition>,
-  resource: TResource,
+  resource: TResource | undefined,
   getRule: (name: string) => PermissionRule<TResource, unknown>,
 ): boolean => {
   // If resource was not found, deny. This avoids leaking information from the
   // apply-conditions API which would allow a user to differentiate between
   // non-existent resources and resources to which they do not have access.
-  if (typeof resource === 'undefined') {
+  if (resource === undefined) {
     return false;
   }
 
