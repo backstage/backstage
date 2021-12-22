@@ -40,26 +40,36 @@ export const BitbucketRepoPicker = ({
 }) => {
   return (
     <>
+      {host === 'bitbucket.org' && (
+        <FormControl
+          margin="normal"
+          required
+          error={rawErrors?.length > 0 && !workspace}
+        >
+          <InputLabel htmlFor="workspaceInput">Workspace</InputLabel>
+          <Input
+            id="workspaceInput"
+            onChange={e => onWorkspaceChange(e.target.value)}
+            value={workspace}
+          />
+          <FormHelperText>
+            The Organization that this repo will belong to
+          </FormHelperText>
+        </FormControl>
+      )}
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !project && !workspace}
+        error={rawErrors?.length > 0 && !project}
       >
-        <InputLabel htmlFor="ownerInput">
-          {host === 'bitbucket.org' ? 'Workspace' : 'Project'}
-        </InputLabel>
+        <InputLabel htmlFor="projectInput">Project</InputLabel>
         <Input
-          id="ownerInput"
-          onChange={e => {
-            return host === 'bitbucket.org'
-              ? onWorkspaceChange(e.target.value)
-              : onProjectChange(e.target.value);
-          }}
-          value={host === 'bitbucket.org' ? workspace : project}
+          id="projectInput"
+          onChange={e => onProjectChange(e.target.value)}
+          value={project}
         />
         <FormHelperText>
-          The {host === 'bitbucket.org' ? 'Workspace' : 'Project'}that this repo
-          will belong to
+          The Project that this repo will belong to
         </FormHelperText>
       </FormControl>
       <FormControl
