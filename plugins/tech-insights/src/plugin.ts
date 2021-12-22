@@ -31,8 +31,9 @@ export const techInsightsPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: techInsightsApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new TechInsightsClient({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+      factory: ({ discoveryApi, identityApi }) =>
+        new TechInsightsClient({ discoveryApi, identityApi }),
     }),
   ],
   routes: {
