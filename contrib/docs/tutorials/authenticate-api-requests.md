@@ -13,7 +13,7 @@ As techdocs HTML pages load assets without an Authorization header the code belo
 
 import cookieParser from 'cookie-parser';
 import { Request, Response, NextFunction } from 'express';
-import { JWT } from 'jose';
+import jwtDecoder from 'jwt-decode';
 import { URL } from 'url';
 import { IdentityClient } from '@backstage/plugin-auth-backend';
 
@@ -24,7 +24,7 @@ function setTokenCookie(
   options: { token: string; secure: boolean; cookieDomain: string },
 ) {
   try {
-    const payload = JWT.decode(options.token) as object & {
+    const payload = jwtDecoder(options.token) as any & {
       exp: number;
     };
     res.cookie(`token`, options.token, {
@@ -129,8 +129,15 @@ function msUntilExpiry(token: string): number {
 
 // Calls the specified url regularly using an auth token to set a token cookie
 // to authorize regular HTTP requests when loading techdocs
-async function setTokenCookie(url: string, getIdToken: () => Promise<string>) {
-  const token = await getIdToken();
+async function setTokenCookie(url: string, identityApi: IdentityApi) {
+  const { token } = await identityApi.getCredentials();
+  if (!token) {
+    // In some cases, the token might be undefined - we will wait 10 seconds
+    // to try this again.
+    setTimeout(setTokenCookie, 10 * 1000, url, identityApi);
+    return;
+  }
+
   await fetch(url, {
     mode: 'cors',
     credentials: 'include',
@@ -138,11 +145,12 @@ async function setTokenCookie(url: string, getIdToken: () => Promise<string>) {
       Authorization: `Bearer ${token}`,
     },
   });
+
   // Call this function again a few minutes before the token expires
   const ms = msUntilExpiry(token) - 4 * 60 * 1000;
   setTimeout(
     () => {
-      setTokenCookie(url, getIdToken);
+      setTokenCookie(url, identityApi);
     },
     ms > 0 ? ms : 10000,
   );
@@ -160,16 +168,13 @@ const app = createApp({
           providers={['guest', 'custom', ...providers]}
           title="Select a sign-in method"
           align="center"
-          onResult={async result => {
-            // When logged in, set a token cookie
-            if (typeof result.getIdToken !== 'undefined') {
-              setTokenCookie(
-                await discoveryApi.getBaseUrl('cookie'),
-                result.getIdToken,
-              );
-            }
-            // Forward results
-            props.onResult(result);
+          onSignInSuccess={async (identityApi: IdentityApi) => {
+            setTokenCookie(
+              await discoveryApi.getBaseUrl('cookie'),
+              identityApi,
+            );
+
+            props.onSignInSuccess(identityApi);
           }}
         />
       );
