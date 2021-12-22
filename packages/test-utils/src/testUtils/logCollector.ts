@@ -73,7 +73,6 @@ export function withLogCollector<T extends LogFuncs>(
 /**
  * Log collector that collect logs either from a sync or async collector.
  * @public
- * @deprecated import from test-utils instead
  * */
 export function withLogCollector(
   logsToCollect: LogFuncs[] | LogCollector,

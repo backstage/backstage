@@ -41,8 +41,7 @@ export async function performMigrationToTheNewBucket({
     // nothing to do
     return;
   }
-
-  const targetEntities = new Set(target.get('entityRefs') ?? []);
+  const targetEntities = new Set(target.get<string[]>('entityRefs') ?? []);
 
   oldStarredEntities
     .filter(isString)

@@ -17,49 +17,48 @@
 import React from 'react';
 import { Control, UseFormSetValue } from 'react-hook-form';
 import { FormValues } from '../../types';
-import { Typography } from '@material-ui/core';
 import { DateSelector } from '../DateSelector/DateSelector';
+import { Typography, makeStyles } from '@material-ui/core';
 
 type Props = {
   control: Control<FormValues, object>;
   setValue: UseFormSetValue<FormValues>;
 };
 
+const useStyles = makeStyles({
+  container: {
+    marginTop: '0.25rem',
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  startDate: {
+    float: 'left',
+  },
+  endDate: {
+    float: 'right',
+  },
+  dash: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: '1.5rem',
+    margin: '0 1rem',
+  },
+});
+
 export const DoubleDateSelector = ({ control, setValue }: Props) => {
+  const classes = useStyles();
+
   return (
-    <div
-      style={{
-        marginTop: '0.25rem',
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-      }}
-    >
-      <div
-        style={{
-          float: 'left',
-        }}
-      >
+    <div className={classes.container}>
+      <div className={classes.startDate}>
         <DateSelector name="startDate" control={control} setValue={setValue} />
       </div>
 
-      <Typography
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: '1.5rem',
-          margin: '0 1rem',
-        }}
-      >
-        -
-      </Typography>
-      <div
-        style={{
-          float: 'right',
-        }}
-      >
+      <Typography className={classes.dash}>-</Typography>
+      <div className={classes.endDate}>
         <DateSelector name="endDate" control={control} setValue={setValue} />
       </div>
     </div>

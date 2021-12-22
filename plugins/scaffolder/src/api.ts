@@ -30,7 +30,6 @@ import { ListActionsResponse, ScaffolderTask, Status } from './types';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   id: 'plugin.scaffolder.service',
-  description: 'Used to make requests towards the scaffolder backend',
 });
 
 type TemplateParameterSchema = {

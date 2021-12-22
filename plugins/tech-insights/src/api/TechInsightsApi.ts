@@ -22,7 +22,6 @@ import { EntityName } from '@backstage/catalog-model';
 
 export const techInsightsApiRef = createApiRef<TechInsightsApi>({
   id: 'plugin.techinsights.service',
-  description: 'Used by the tech insights plugin to make requests',
 });
 
 export interface TechInsightsApi {

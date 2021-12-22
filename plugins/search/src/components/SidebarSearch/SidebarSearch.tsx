@@ -19,9 +19,13 @@ import { useNavigate } from 'react-router-dom';
 import { rootRouteRef } from '../../plugin';
 
 import { SidebarSearchField } from '@backstage/core-components';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useRouteRef, IconComponent } from '@backstage/core-plugin-api';
 
-export const SidebarSearch = () => {
+export type SidebarSearchProps = {
+  icon?: IconComponent;
+};
+
+export const SidebarSearch = (props: SidebarSearchProps) => {
   const searchRoute = useRouteRef(rootRouteRef);
   const navigate = useNavigate();
   const handleSearch = useCallback(
@@ -33,5 +37,11 @@ export const SidebarSearch = () => {
     [navigate, searchRoute],
   );
 
-  return <SidebarSearchField onSearch={handleSearch} to="/search" />;
+  return (
+    <SidebarSearchField
+      icon={props.icon}
+      onSearch={handleSearch}
+      to="/search"
+    />
+  );
 };

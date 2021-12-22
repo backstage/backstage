@@ -1,6 +1,7 @@
 ---
 id: adrs-adr011
-title: ADR011: Plugin Package Structure
+title: 'ADR011: Plugin Package Structure'
+# prettier-ignore
 description: Architecture Decision Record (ADR) for Plugin Package Structure
 ---
 
