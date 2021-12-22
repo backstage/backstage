@@ -58,7 +58,7 @@ export const SearchBarBase = ({
   onChange,
   onKeyDown,
   onSubmit,
-  debounceTime = 0,
+  debounceTime = 200,
   clearButton = true,
   fullWidth = true,
   value: defaultValue,

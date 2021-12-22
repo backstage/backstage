@@ -82,7 +82,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
     >
       <DialogTitle>
         <Paper className={classes.container}>
-          <SearchBar className={classes.input} debounceTime={500} />
+          <SearchBar className={classes.input} />
         </Paper>
       </DialogTitle>
       <DialogContent>
