@@ -123,6 +123,11 @@ export class DefaultTechDocsCollator implements DocumentCollator {
                 techDocsBaseUrl,
                 entityInfo,
               ),
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              },
             );
             const searchIndex = await searchIndexResponse.json();
 
