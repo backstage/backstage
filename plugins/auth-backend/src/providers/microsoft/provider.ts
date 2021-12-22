@@ -45,7 +45,7 @@ import {
   SignInResolver,
 } from '../types';
 import { Logger } from 'winston';
-import got from 'got';
+import fetch from 'node-fetch';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -173,19 +173,18 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
 
   private getUserPhoto(accessToken: string): Promise<string | undefined> {
     return new Promise(resolve => {
-      got
-        .get('https://graph.microsoft.com/v1.0/me/photos/48x48/$value', {
-          encoding: 'binary',
-          responseType: 'buffer',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then(photoData => {
-          const photoURL = `data:image/jpeg;base64,${Buffer.from(
-            photoData.body,
+      fetch('https://graph.microsoft.com/v1.0/me/photos/48x48/$value', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => {
+          console.log(Buffer.from(arrayBuffer).toString('utf-8'));
+          const imageUrl = `data:image/jpeg;base64,${Buffer.from(
+            arrayBuffer,
           ).toString('base64')}`;
-          resolve(photoURL);
+          resolve(imageUrl);
         })
         .catch(error => {
           this.logger.warn(

@@ -46,7 +46,6 @@
     "express-promise-router": "^4.1.0",
     "express-session": "^1.17.1",
     "fs-extra": "9.1.0",
-    "got": "^11.5.2",
     "helmet": "^4.0.0",
     "jose": "^1.27.1",
     "jwt-decode": "^3.1.0",
