@@ -18,6 +18,7 @@ import {
   createRoutableExtension,
   createApiFactory,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 import { rootRouteRef } from './routes';
 import { techInsightsApiRef } from './api/TechInsightsApi';
