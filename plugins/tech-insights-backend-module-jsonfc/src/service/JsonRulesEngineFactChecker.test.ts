@@ -409,7 +409,7 @@ describe('JsonRulesEngineFactChecker', () => {
 
     [testChecks.broken[0], testChecks.invalidCustomOperator[0]].forEach(
       check => {
-        it(`should succeed on invalid rule: ${check.name}`, async () => {
+        it(`should fail on broken rules: ${check.name}`, async () => {
           const validationResponse = await factChecker.validate(
             testChecks.broken[0],
           );
