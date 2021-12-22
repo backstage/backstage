@@ -131,36 +131,42 @@ export async function createConfig(
     }),
   );
 
-  const deprecatedAppConfig = {
-    title: frontendConfig.getString('app.title'),
-    baseUrl: validBaseUrl.href,
-    googleAnalyticsTrackingId: frontendConfig.getOptionalString(
-      'app.googleAnalyticsTrackingId',
-    ),
-    datadogRum: {
-      env: frontendConfig.getOptionalString('app.datadogRum.env'),
-      clientToken: frontendConfig.getOptionalString(
-        'app.datadogRum.clientToken',
-      ),
-      applicationId: frontendConfig.getOptionalString(
-        'app.datadogRum.applicationId',
-      ),
-      site: frontendConfig.getOptionalString('app.datadogRum.site'),
-    },
-  };
-
+  const appParamDeprecationMsg = chalk.red(
+    'DEPRECATION WARNING: using `app.<key>` in the index.html template is deprecated, use `config.getString("app.<key>")` instead.',
+  );
   plugins.push(
     new HtmlWebpackPlugin({
       template: paths.targetHtml,
       templateParameters: {
         publicPath: validBaseUrl.pathname.replace(/\/$/, ''),
-        get app() {
-          console.warn(
-            chalk.red(
-              'DEPRECATION WARNING: using `app.<key>` in the index.html template is deprecated, use `config.getString("app.<key>")` instead.',
-            ),
-          );
-          return deprecatedAppConfig;
+        app: {
+          get title() {
+            console.warn(appParamDeprecationMsg);
+            return frontendConfig.getString('app.title');
+          },
+          get baseUrl() {
+            console.warn(appParamDeprecationMsg);
+            return validBaseUrl.href;
+          },
+          get googleAnalyticsTrackingId() {
+            console.warn(appParamDeprecationMsg);
+            return frontendConfig.getOptionalString(
+              'app.googleAnalyticsTrackingId',
+            );
+          },
+          get datadogRum() {
+            console.warn(appParamDeprecationMsg);
+            return {
+              env: frontendConfig.getOptionalString('app.datadogRum.env'),
+              clientToken: frontendConfig.getOptionalString(
+                'app.datadogRum.clientToken',
+              ),
+              applicationId: frontendConfig.getOptionalString(
+                'app.datadogRum.applicationId',
+              ),
+              site: frontendConfig.getOptionalString('app.datadogRum.site'),
+            };
+          },
         },
         config: frontendConfig,
       },
