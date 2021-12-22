@@ -17,31 +17,25 @@ catalog:
 {{- if .Values.backend.demoData }}
   locations:
     # Backstage example components
-    - type: github
+    - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
     # Example component for github-actions
-    - type: github
+    - type: url
       target: https://github.com/backstage/backstage/blob/master/plugins/github-actions/examples/sample.yaml
     # Example component for techdocs
-    - type: github
+    - type: url
       target: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
     # Backstage example APIs
-    - type: github
+    - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
     # Backstage example templates
-    - type: github
+    - type: url
       target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
 {{- else }}
-  locations: []
+  locations:
+    - type: gitlab-discovery
+      target: https://gitlab.com/citihub/blob/main/catalog-info.yaml      
 {{- end }}
-
-auth:
-  providers:
-    microsoft: null
-
-scaffolder:
-  azure: null
-
 
 sentry:
   organization: {{ .Values.appConfig.sentry.organization | quote }}

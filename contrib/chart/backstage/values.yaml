@@ -23,8 +23,8 @@ backend:
   demoData: true
   replicaCount: 1
   image:
-    repository: martinaif/backstage-k8s-demo-backend
-    tag: 20210423T1550
+    repository: citihub/backstage
+    tag: "20211216"
     pullPolicy: IfNotPresent
   containerPort: 7007
   serviceType: ClusterIP
