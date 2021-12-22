@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { Grid, makeStyles, Paper } from '@material-ui/core';
 import React from 'react';
-import { Paper, Grid, makeStyles } from '@material-ui/core';
-import { SearchBar, SearchContext } from '../index';
 import { MemoryRouter } from 'react-router';
+import { SearchContext } from '../SearchContext';
+import { SearchBar } from './SearchBar';
 
 export default {
   title: 'Plugins/Search/SearchBar',

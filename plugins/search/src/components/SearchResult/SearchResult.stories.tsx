@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { List, ListItem } from '@material-ui/core';
-import { SearchResult, SearchContext, DefaultResultListItem } from '../index';
-import { MemoryRouter } from 'react-router';
 import { Link } from '@backstage/core-components';
+import { List, ListItem } from '@material-ui/core';
+import React from 'react';
+import { MemoryRouter } from 'react-router';
+import { DefaultResultListItem } from '../DefaultResultListItem';
+import { SearchContext } from '../SearchContext';
+import { SearchResult } from './SearchResult';
 
 export default {
   title: 'Plugins/Search/SearchResult',

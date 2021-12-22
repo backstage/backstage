@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { Button } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import GroupIcon from '@material-ui/icons/Group';
-import { Button } from '@backstage/core-components';
-import { DefaultResultListItem } from '../index';
+import React from 'react';
 import { MemoryRouter } from 'react-router';
+import { DefaultResultListItem } from './DefaultResultListItem';
 
 export default {
   title: 'Plugins/Search/DefaultResultListItem',
