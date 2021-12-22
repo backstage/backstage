@@ -15,17 +15,7 @@
  */
 
 import React from 'react';
-import {
-  createStyles,
-  Theme,
-  withStyles,
-  WithStyles,
-} from '@material-ui/core/styles';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import CloseIcon from '@material-ui/icons/Close';
-import { Button, Dialog, Typography, IconButton } from '@material-ui/core';
+import { Button, Dialog } from '@material-ui/core';
 import {
   useForm,
   SubmitHandler,
@@ -36,61 +26,11 @@ import { InputField } from '../InputField/InputField';
 import { InputSelector } from '../InputSelector/InputSelector';
 import { FormValues } from '../../types';
 import { DoubleDateSelector } from '../DoubleDateSelector/DoubleDateSelector';
-
-const styles = (theme: Theme) =>
-  createStyles({
-    root: {
-      margin: 0,
-      padding: theme.spacing(2),
-    },
-    closeButton: {
-      position: 'absolute',
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-      color: theme.palette.grey[500],
-    },
-  });
-
-/*
-  DialogTitleProps, DialogTitle, DialogContent and DialogActions 
-  are copied from the git-release plugin
-*/
-export interface DialogTitleProps extends WithStyles<typeof styles> {
-  id: string;
-  children: React.ReactNode;
-  onClose: () => void;
-}
-
-const DialogTitle = withStyles(styles)((props: DialogTitleProps) => {
-  const { children, classes, onClose, ...other } = props;
-  return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
-      {onClose ? (
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={onClose}
-        >
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </MuiDialogTitle>
-  );
-});
-
-const DialogContent = withStyles((theme: Theme) => ({
-  root: {
-    padding: theme.spacing(2),
-  },
-}))(MuiDialogContent);
-
-const DialogActions = withStyles((theme: Theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(1),
-  },
-}))(MuiDialogActions);
+import {
+  CustomDialogTitle,
+  DialogActions,
+  DialogContent,
+} from '../CustomDialogTitle';
 
 type Props = {
   handleSave: (
@@ -102,6 +42,7 @@ type Props = {
   defaultValues: FormValues;
   open: boolean;
   projectSelector?: JSX.Element;
+  deleteButton?: JSX.Element;
   handleClose: () => void;
 };
 
@@ -112,6 +53,7 @@ export const ProjectDialog = ({
   defaultValues,
   open,
   projectSelector,
+  deleteButton,
   handleClose,
 }: Props) => {
   const {
@@ -123,16 +65,16 @@ export const ProjectDialog = ({
     setValue,
   } = useForm<FormValues>({
     mode: 'onChange',
-    defaultValues: defaultValues,
+    defaultValues,
   });
 
-  const handleCloseAndClear = () => {
-    handleClose();
-    reset(defaultValues);
+  const handleSaveForm = () => {
+    handleSave(getValues, reset);
   };
 
-  const handleSaveProject = () => {
-    handleSave(getValues, reset);
+  const handleCloseDialog = () => {
+    handleClose();
+    reset(defaultValues);
   };
 
   return (
@@ -140,25 +82,36 @@ export const ProjectDialog = ({
       <Dialog
         fullWidth
         maxWidth="xs"
-        onClose={handleCloseAndClear}
+        onClose={handleCloseDialog}
         aria-labelledby="customized-dialog-title"
         open={open}
       >
-        <DialogTitle id="customized-dialog-title" onClose={handleCloseAndClear}>
+        <CustomDialogTitle
+          id="customized-dialog-title"
+          onClose={handleCloseDialog}
+        >
           {title}
-        </DialogTitle>
-        <DialogContent dividers>
-          {isAddForm && projectSelector}
+        </CustomDialogTitle>
+        <DialogContent style={{ padding: '1rem', paddingTop: '0rem' }} dividers>
+          <InputField
+            error={errors.name}
+            control={control}
+            rules={{
+              required: true,
+              pattern: RegExp('^[a-zA-Z0-9_-]*$'),
+            }}
+            inputType="name"
+            helperText="please enter a url safe project name"
+          />
 
           <InputField
-            error={errors.announcement}
+            error={errors.description}
             control={control}
             rules={{
               required: true,
             }}
-            inputType="announcement"
-            helperText="please enter an announcement"
-            placeholder="Describe who you are and what skills you are looking for"
+            inputType="description"
+            helperText="please enter a description"
           />
 
           <InputSelector
@@ -184,7 +137,7 @@ export const ProjectDialog = ({
             placeholder="Contact person of the project"
           />
 
-          <DoubleDateSelector setValue={setValue} control={control} />
+          {isAddForm && projectSelector}
 
           <InputField
             error={errors.community}
@@ -197,11 +150,14 @@ export const ProjectDialog = ({
             helperText="please enter a link starting with http/https"
             placeholder="Community link to e.g. Teams or Discord"
           />
+
+          <DoubleDateSelector setValue={setValue} control={control} />
         </DialogContent>
 
         <DialogActions>
+          {!isAddForm && deleteButton}
           <Button
-            onClick={handleSubmit(handleSaveProject)}
+            onClick={handleSubmit(handleSaveForm)}
             color="primary"
             type="submit"
           >

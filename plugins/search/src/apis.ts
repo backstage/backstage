@@ -25,7 +25,6 @@ import qs from 'qs';
 
 export const searchApiRef = createApiRef<SearchApi>({
   id: 'plugin.search.queryservice',
-  description: 'Used to make requests against the search API',
 });
 
 export interface SearchApi {

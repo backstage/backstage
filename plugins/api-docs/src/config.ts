@@ -20,7 +20,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const apiDocsConfigRef = createApiRef<ApiDocsConfig>({
   id: 'plugin.api-docs.config',
-  description: 'Used to configure api-docs widgets',
 });
 
 export interface ApiDocsConfig {

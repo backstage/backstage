@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { withLogCollector } from '@backstage/test-utils';
+import { z } from 'zod';
 import { AuthSessionStore } from './AuthSessionStore';
 import { SessionManager } from './types';
 
 const defaultOptions = {
   storageKey: 'my-key',
+  schema: z.any(),
   sessionScopes: (session: string) => new Set(session.split(' ')),
 };
 
@@ -146,5 +150,49 @@ describe('GheAuth AuthSessionStore', () => {
     const store = new AuthSessionStore({ manager, ...defaultOptions });
     store.sessionState$();
     expect(manager.sessionState$).toHaveBeenCalled();
+  });
+
+  it('should schema-validate stored data', async () => {
+    const manager = new MockManager();
+
+    const firstStore = new AuthSessionStore<boolean>({
+      manager,
+      storageKey: 'a',
+      schema: z.boolean(),
+      sessionScopes: () => new Set(),
+    });
+    const secondStore = new AuthSessionStore<number>({
+      manager,
+      storageKey: 'a',
+      schema: z.number(),
+      sessionScopes: () => new Set(),
+    });
+
+    firstStore.setSession(true);
+    await expect(firstStore.getSession({})).resolves.toBe(true);
+
+    await expect(
+      withLogCollector(async () => {
+        await expect(secondStore.getSession({})).resolves.toBeUndefined();
+      }),
+    ).resolves.toMatchObject({
+      log: [
+        expect.stringContaining(
+          'Failed to load session from local storage because it did not conform to the expected schema',
+        ),
+      ],
+    });
+
+    await expect(
+      withLogCollector(async () => {
+        await secondStore.setSession('no' as any);
+      }),
+    ).resolves.toMatchObject({
+      warn: [
+        expect.stringContaining(
+          'Failed to save session to local storage because it did not conform to the expected schema',
+        ),
+      ],
+    });
   });
 });

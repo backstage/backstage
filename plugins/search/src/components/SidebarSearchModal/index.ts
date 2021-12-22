@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { SidebarSearchModal } from './SidebarSearchModal';
+export type { SidebarSearchModalProps } from './SidebarSearchModal';

@@ -222,6 +222,8 @@ export type ReadTreeResponse = {
   /**
    * Extracts the tree response into a directory and returns the path of the
    * directory.
+   *
+   * **NOTE**: It is the responsibility of the caller to remove the directory after use.
    */
   dir(options?: ReadTreeResponseDirOptions): Promise<string>;
 

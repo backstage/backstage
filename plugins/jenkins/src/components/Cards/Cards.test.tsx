@@ -35,7 +35,7 @@ describe('<LatestRunCard />', () => {
   const jenkinsApi: Partial<JenkinsApi> = {
     getProjects: () =>
       Promise.resolve([
-        { lastBuild: { timestamp: 0, status: 'success' } },
+        { lastBuild: { timestamp: 0, status: 'success', url: 'foo' } },
       ] as Project[]),
   };
 

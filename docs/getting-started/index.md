@@ -87,14 +87,11 @@ carry on with the database steps.
   <img src='../assets/getting-started/portal.png' alt='Screenshot of the Backstage portal.'/>
 </p>
 
-The most common next steps are to move to a persistent database, configure
-authentication, and add a plugin:
+In the next part of this tutorial, you'll learn how to change to a persistent
+database, configure authentication, and add your first integration. Continue
+with [getting started: Configuring Backstage](configuration.md).
 
-- [Switching from SQLite to PostgresQL](https://backstage.io/docs/tutorials/switching-sqlite-postgres)
-- [Setting up Authentication](https://backstage.io/docs/auth/)
-- [Adding a plugin](https://backstage.io/docs/getting-started/configure-app-with-plugins)
-
-Congratulations! That should be it. Let us know how it went:
+Share your experiences, comments, or suggestions with us:
 [on discord](https://discord.gg/EBHEGzX), file issues for any
 [feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
 or

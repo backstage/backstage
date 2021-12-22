@@ -12,13 +12,14 @@ import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
-import { StorageValueChange } from '@backstage/core-plugin-api';
+import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 
 // @public
 export type AsyncLogCollector = () => Promise<void>;
@@ -81,25 +82,18 @@ export class MockStorageApi implements StorageApi {
   // (undocumented)
   get<T>(key: string): T | undefined;
   // (undocumented)
-  observe$<T>(key: string): Observable<StorageValueChange<T>>;
+  observe$<T>(key: string): Observable<StorageValueSnapshot<T>>;
   // (undocumented)
   remove(key: string): Promise<void>;
   // (undocumented)
   set<T>(key: string, data: T): Promise<void>;
+  // (undocumented)
+  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
 
 // @public
 export type MockStorageBucket = {
   [key: string]: any;
-};
-
-// @public @deprecated (undocumented)
-export const msw: {
-  setupDefaultHandlers: (worker: {
-    listen: (t: any) => void;
-    close: () => void;
-    resetHandlers: () => void;
-  }) => void;
 };
 
 // @public
