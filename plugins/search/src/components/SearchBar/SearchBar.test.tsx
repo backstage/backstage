@@ -101,6 +101,9 @@ describe('SearchBar', () => {
   });
 
   it('Updates term state when text is entered', async () => {
+    jest.useFakeTimers();
+    const defaultDebounceTime = 200;
+
     render(
       <ApiProvider apis={apiRegistry}>
         <SearchContextProvider initialState={initialState}>
@@ -115,6 +118,10 @@ describe('SearchBar', () => {
     const value = 'value';
 
     userEvent.type(textbox, value);
+
+    act(() => {
+      jest.advanceTimersByTime(defaultDebounceTime);
+    });
 
     await waitFor(() => {
       expect(textbox).toHaveValue(value);
