@@ -40,7 +40,7 @@ spec:
               servicePort: 80
           {{/* Route the backend inside the same hostname as the frontend when they are the same */}}
           {{- if eq $frontendUrl.host $backendUrl.host}}
-          - path: /api
+          - path: /api/
             backend:
               serviceName: {{ include "backend.serviceName" . }}
               servicePort: 80
