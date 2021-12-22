@@ -64,6 +64,7 @@ nav:
       - Backstage Search:
           - Overview: 'features/search/README.md'
           - Getting Started: 'features/search/getting-started.md'
+          - Getting Started, configuring Backstage: 'features/search/configuration.md'
           - Concepts: 'features/search/concepts.md'
           - Search Architecture: 'features/search/architecture.md'
           - Search Engines: 'features/search/search-engines.md'
