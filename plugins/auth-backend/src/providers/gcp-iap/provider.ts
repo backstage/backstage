@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
+import { CatalogApi } from '@backstage/catalog-client';
+import express from 'express';
+import { OAuth2Client } from 'google-auth-library';
+import { Logger } from 'winston';
 import {
-  AuthProviderRouteHandlers,
+  AuthProviderFactory,
   AuthProviderFactoryOptions,
+  AuthProviderRouteHandlers,
   ExperimentalIdentityResolver,
 } from '../types';
-
-import express from 'express';
-
-import { Logger } from 'winston';
-import { CatalogApi } from '@backstage/catalog-client';
-
-import { OAuth2Client } from 'google-auth-library';
 
 const IAP_JWT_HEADER = 'x-goog-iap-jwt-assertion';
 
@@ -47,6 +45,7 @@ export class GcpIAPProvider implements AuthProviderRouteHandlers {
     this.catalogClient = catalogClient;
     this.options = options;
   }
+
   frameHandler(): Promise<void> {
     return Promise.resolve(undefined);
   }
@@ -102,7 +101,9 @@ export class GcpIAPProvider implements AuthProviderRouteHandlers {
   }
 }
 
-export const createGcpIAPProvider = (_options?: GcpIAPProviderOptions) => {
+export function createGcpIapProvider(
+  _options?: GcpIAPProviderOptions,
+): AuthProviderFactory {
   return ({
     logger,
     catalogApi,
@@ -111,13 +112,13 @@ export const createGcpIAPProvider = (_options?: GcpIAPProviderOptions) => {
   }: AuthProviderFactoryOptions) => {
     const audience = config.getString('audience');
     if (identityResolver !== undefined) {
-      return new GcpIAPProvider(logger, catalogApi, {
-        audience,
-        identityResolutionCallback: identityResolver,
-      });
+      throw new Error(
+        'Identity resolver is required to use this authentication provider',
+      );
     }
-    throw new Error(
-      'Identity resolver is required to use this authentication provider',
-    );
+    return new GcpIAPProvider(logger, catalogApi, {
+      audience,
+      identityResolutionCallback: identityResolver,
+    });
   };
-};
+}

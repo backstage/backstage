@@ -45,6 +45,10 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "express-session": "^1.17.1",
+<<<<<<< HEAD
+=======
+    "fs-extra": "9.1.0",
+>>>>>>> 4d5fd11228 (first minor cleanups)
     "google-auth-library": "^7.2.0",
     "helmet": "^4.0.0",
     "jose": "^1.27.1",

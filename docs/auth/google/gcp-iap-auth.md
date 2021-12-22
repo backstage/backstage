@@ -2,15 +2,15 @@
 id: provider
 title: Google Identity Aware Proxy Provider
 sidebar_label: Google IAP
-description:
-  Adding Google Identity Aware Proxy as an authentication provider in Backstage
+# prettier-ignore
+description: Adding Google Identity-Aware Proxy as an authentication provider in Backstage
 ---
 
-# Using Google Identity Aware Proxy to authenticate requests
+# Using Google Identity-Aware Proxy to authenticate requests
 
-Backstage allows offloading the responsibility of authenticating users to an
+Backstage allows offloading the responsibility of authenticating users to the
 Google HTTPS Load Balancer & [IAP](https://cloud.google.com/iap), leveraging the
-authentication support on IAP.
+authentication support on the latter.
 
 This tutorial shows how to use authentication on an ALB sitting in front of
 Backstage.
@@ -24,10 +24,11 @@ configured to serve the frontend app from the backend.
 
 ### Frontend
 
-The Backstage App needs a SignInPage when authentication is required. When using
-IAP Proxy authentication Backstage will only be loaded once the user has
-successfully authenticated; we won't need to display a SignIn page, however we
-will need to create a dummy SignIn component that can refresh the token.
+The Backstage App needs a `SignInPage` to be configured. When using IAP Proxy
+authentication Backstage will only be loaded once the user has successfully
+authenticated; we won't need to display a sign-in page as such, however we will
+need to create a dummy `SignInPage` component that can decode and refresh the
+token.
 
 - edit `packages/app/src/App.tsx`
 - import the following two additional definitions from `@backstage/core`:
@@ -52,6 +53,7 @@ const refreshToken = async ({ props, discoveryApiConfig, config }) => {
     });
     return;
   }
+
   try {
     const request = await fetch(`${baseUrl}/gcp-iap/refresh`, {
       headers: {
@@ -76,6 +78,7 @@ const refreshToken = async ({ props, discoveryApiConfig, config }) => {
     });
   }
 };
+
 const DummySignInComponent: any = (props: any) => {
   try {
     const config = useApi(configApiRef);
@@ -94,7 +97,7 @@ When using ALB auth it is not possible to leverage the built-in auth config
 discovery mechanism implemented in the app created by default; bespoke logic
 needs to be implemented.
 
-- replace the content of `packages/backend/plugin/auth.ts` with the below
+- Replace the content of `packages/backend/plugin/auth.ts` with the below
 
 ```ts
 // imports are relative - as this was tested out in repo directly
