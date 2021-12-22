@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { SearchBarBase, SearchBarBaseProps } from '../SearchBar';
@@ -28,16 +28,26 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * Props for {@link HomePageSearchBar}.
+ *
+ * @public
+ */
 export type HomePageSearchBarProps = Partial<
   Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>
 >;
 
+/**
+ * The search bar created specifically for the composable home page
+ *
+ * @public
+ */
 export const HomePageSearchBar = ({
   className: defaultClassName,
   ...props
 }: HomePageSearchBarProps) => {
   const classes = useStyles();
-  const [query, setQuery] = React.useState('');
+  const [query, setQuery] = useState('');
   const handleSearch = useNavigateToQuery();
 
   const className = defaultClassName
@@ -48,7 +58,7 @@ export const HomePageSearchBar = ({
     handleSearch({ query });
   };
 
-  const handleChange = React.useCallback(
+  const handleChange = useCallback(
     value => {
       setQuery(value);
     },

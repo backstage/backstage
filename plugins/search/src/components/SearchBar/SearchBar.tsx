@@ -34,6 +34,11 @@ import ClearButton from '@material-ui/icons/Clear';
 
 import { useSearch } from '../SearchContext';
 
+/**
+ * Props for {@link SearchBarBase}.
+ *
+ * @public
+ */
 export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
   debounceTime?: number;
   clearButton?: boolean;
@@ -42,6 +47,13 @@ export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
   onChange: (value: string) => void;
 };
 
+/**
+ * All search boxes exported by the search plugin are based on the <SearchBarBase />,
+ * and this one is based on the <InputBase /> component from Material UI.
+ * Recommended if you don't use Search Provider or Search Context.
+ *
+ * @public
+ */
 export const SearchBarBase = ({
   onChange,
   onKeyDown,
@@ -122,8 +134,18 @@ export const SearchBarBase = ({
   );
 };
 
+/**
+ * Props for {@link SearchBar}.
+ *
+ * @public
+ */
 export type SearchBarProps = Partial<SearchBarBaseProps>;
 
+/**
+ * Recommended search bar when you use the Search Provider or Search Context.
+ *
+ * @public
+ */
 export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
   const { term, setTerm } = useSearch();
 

@@ -70,9 +70,7 @@ export const HomePageSearchBar: ({
   ...props
 }: Partial<Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>>) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "HomePageSearchBarProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type HomePageSearchBarProps = Partial<
   Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>
 >;
@@ -95,14 +93,10 @@ export interface SearchApi {
 // @public (undocumented)
 export const searchApiRef: ApiRef<SearchApi>;
 
-// Warning: (ae-missing-release-tag) "SearchBar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const SearchBar: ({ onChange, ...props }: SearchBarProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SearchBarBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const SearchBarBase: ({
   onChange,
   onKeyDown,
@@ -116,9 +110,7 @@ export const SearchBarBase: ({
   ...props
 }: SearchBarBaseProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SearchBarBaseProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
   debounceTime?: number;
   clearButton?: boolean;
@@ -135,9 +127,7 @@ export const SearchBarNext: ({
   ...props
 }: Partial<SearchBarBaseProps>) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SearchBarProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type SearchBarProps = Partial<SearchBarBaseProps>;
 
 // Warning: (ae-missing-release-tag) "SearchContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
