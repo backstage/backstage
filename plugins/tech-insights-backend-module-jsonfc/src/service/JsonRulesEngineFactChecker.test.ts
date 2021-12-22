@@ -52,6 +52,26 @@ const testChecks: Record<string, TechInsightJsonRuleCheck[]> = {
       name: 'brokenTestCheck2',
       type: JSON_RULE_ENGINE_CHECK_TYPE,
       description: 'Second Broken Check For Testing',
+      factIds: ['test-factretriever'],
+      rule: {
+        conditions: {
+          any: [
+            {
+              fact: 'somefact',
+              operator: 'lessThan',
+              value: 1,
+            },
+          ],
+        },
+      },
+    },
+  ],
+  brokennotfound: [
+    {
+      id: 'brokenTestCheckNotFound',
+      name: 'brokenTestCheckNotFound',
+      type: JSON_RULE_ENGINE_CHECK_TYPE,
+      description: 'Third Broken Check For Testing',
       factIds: ['non-existing-factretriever'],
       rule: {
         conditions: {
@@ -122,7 +142,14 @@ const latestSchemasMock = jest.fn().mockImplementation(() => [
   },
 ]);
 const factsBetweenTimestampsByIdsMock = jest.fn();
-const latestFactsByIdsMock = jest.fn().mockImplementation(() => ({}));
+const latestFactsByIdsMock = jest.fn().mockResolvedValue({
+  ['test-factretriever']: {
+    id: 'test-factretriever',
+    facts: {
+      testnumberfact: 3,
+    },
+  },
+});
 const mockCheckRegistry = {
   getAll(checks: string[]) {
     return checks.flatMap(check => testChecks[check]);
@@ -156,17 +183,22 @@ describe('JsonRulesEngineFactChecker', () => {
         'Failed to run rules engine, Undefined fact: somefact',
       );
     });
-    it('should respond with result, facts, fact schemas and checks', async () => {
-      latestFactsByIdsMock.mockImplementation(() =>
-        Promise.resolve({
-          ['test-factretriever']: {
-            id: 'test-factretriever',
-            facts: {
-              testnumberfact: 3,
-            },
-          },
+
+    it('should skip checks where fact data is missing', async () => {
+      const skipped = async () =>
+        await factChecker.runChecks('a/a/a', ['brokennotfound']);
+      await expect(skipped()).resolves.toEqual([]);
+
+      const partial = async () =>
+        await factChecker.runChecks('a/a/a', ['brokennotfound', 'simple']);
+      await expect(partial()).resolves.toEqual([
+        expect.objectContaining({
+          check: expect.objectContaining({ id: 'simpleTestCheck' }),
         }),
-      );
+      ]);
+    });
+
+    it('should respond with result, facts, fact schemas and checks', async () => {
       const results = await factChecker.runChecks('a/a/a', ['simple']);
       expect(results).toHaveLength(1);
       expect(results[0]).toMatchObject({
@@ -203,16 +235,6 @@ describe('JsonRulesEngineFactChecker', () => {
     });
 
     it('should gracefully handle multiple check at once', async () => {
-      latestFactsByIdsMock.mockImplementation(() =>
-        Promise.resolve({
-          ['test-factretriever']: {
-            id: 'test-factretriever',
-            facts: {
-              testnumberfact: 3,
-            },
-          },
-        }),
-      );
       const results = await factChecker.runChecks('a/a/a', [
         'simple',
         'simple2',
