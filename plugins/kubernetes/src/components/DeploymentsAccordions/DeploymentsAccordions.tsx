@@ -27,6 +27,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {
   V1Deployment,
   V1HorizontalPodAutoscaler,
+  V1Pod,
 } from '@kubernetes/client-node';
 import { PodsTable } from '../Pods';
 import { DeploymentDrawer } from './DeploymentDrawer';
