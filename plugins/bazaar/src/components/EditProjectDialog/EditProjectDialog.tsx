@@ -15,81 +15,119 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
-import { BazaarProject, FormValues, Size, Status } from '../../types';
+import { BazaarProject, FormValues } from '../../types';
 import { bazaarApiRef } from '../../api';
 import { UseFormGetValues } from 'react-hook-form';
+import { ConfirmationDialog } from '../ConfirmationDialog';
+import { Button, makeStyles } from '@material-ui/core';
 
 type Props = {
-  entity: Entity;
   bazaarProject: BazaarProject;
+  openEdit: boolean;
+  handleEditClose: () => void;
+  handleCardClose?: () => void;
   fetchBazaarProject: () => Promise<BazaarProject | null>;
-  open: boolean;
-  handleClose: () => void;
-  isAddForm: boolean;
 };
 
+const useStyles = makeStyles({
+  button: {
+    marginLeft: '0',
+    marginRight: 'auto',
+  },
+});
+
 export const EditProjectDialog = ({
-  entity,
   bazaarProject,
+  openEdit,
+  handleEditClose,
+  handleCardClose,
   fetchBazaarProject,
-  open,
-  handleClose,
 }: Props) => {
+  const classes = useStyles();
+  const bazaarApi = useApi(bazaarApiRef);
+  const [openDelete, setOpenDelete] = useState(false);
   const [defaultValues, setDefaultValues] = useState<FormValues>({
-    announcement: bazaarProject.announcement,
-    community: bazaarProject.community,
-    status: bazaarProject.status,
-    size: bazaarProject.size,
-    startDate: bazaarProject?.startDate ?? null,
-    endDate: bazaarProject?.endDate ?? null,
-    responsible: bazaarProject.responsible,
+    ...bazaarProject,
+    startDate: bazaarProject.startDate ?? null,
+    endDate: bazaarProject.endDate ?? null,
   });
 
-  const bazaarApi = useApi(bazaarApiRef);
+  const handleDeleteClose = () => {
+    setOpenDelete(false);
+    handleEditClose();
+
+    if (handleCardClose) handleCardClose();
+  };
+
+  const handleDeleteSubmit = async () => {
+    await bazaarApi.deleteProject(bazaarProject.id);
+
+    handleDeleteClose();
+    fetchBazaarProject();
+  };
 
   useEffect(() => {
     setDefaultValues({
-      announcement: bazaarProject.announcement,
-      community: bazaarProject.community,
-      status: bazaarProject.status,
-      size: bazaarProject.size,
-      startDate: bazaarProject?.startDate ?? null,
-      endDate: bazaarProject?.endDate ?? null,
-      responsible: bazaarProject.responsible,
+      ...bazaarProject,
+      startDate: bazaarProject.startDate ?? null,
+      endDate: bazaarProject.endDate ?? null,
     });
   }, [bazaarProject]);
 
-  const handleSave: any = async (getValues: UseFormGetValues<FormValues>) => {
+  const handleEditSubmit: any = async (
+    getValues: UseFormGetValues<FormValues>,
+  ) => {
     const formValues = getValues();
 
-    const updateResponse = await bazaarApi.updateMetadata({
-      name: entity.metadata.name,
-      entityRef: stringifyEntityRef(entity),
-      announcement: formValues.announcement,
-      status: formValues.status as Status,
-      community: formValues.community,
+    const updateResponse = await bazaarApi.updateProject({
+      ...formValues,
+      id: bazaarProject.id,
+      entityRef: bazaarProject.entityRef,
       membersCount: bazaarProject.membersCount,
-      size: formValues.size as Size,
       startDate: formValues?.startDate ?? null,
       endDate: formValues?.endDate ?? null,
-      responsible: formValues.responsible,
     });
 
     if (updateResponse.status === 'ok') fetchBazaarProject();
-    handleClose();
+    handleEditClose();
   };
 
   return (
-    <ProjectDialog
-      title="Edit project"
-      handleSave={handleSave}
-      isAddForm={false}
-      defaultValues={defaultValues}
-      open={open}
-      handleClose={handleClose}
-    />
+    <div>
+      <ConfirmationDialog
+        open={openDelete}
+        handleClose={handleDeleteClose}
+        message={[
+          'Are you sure you want to delete ',
+          <b>{bazaarProject.name}</b>,
+          ' from the Bazaar?',
+        ]}
+        type="delete"
+        handleSubmit={handleDeleteSubmit}
+      />
+
+      <ProjectDialog
+        title="Edit project"
+        handleSave={handleEditSubmit}
+        isAddForm={false}
+        defaultValues={defaultValues}
+        open={openEdit}
+        handleClose={handleEditClose}
+        deleteButton={
+          <Button
+            color="primary"
+            type="submit"
+            className={classes.button}
+            onClick={() => {
+              setOpenDelete(true);
+            }}
+          >
+            Delete project
+          </Button>
+        }
+      />
+    </div>
   );
 };

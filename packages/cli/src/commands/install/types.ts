@@ -38,6 +38,7 @@ export type SerializedStep = {
 export type InstallationRecipe = {
   type?: 'frontend' | 'backend';
   steps: SerializedStep[];
+  peerPluginDependencies: { [pluginId: string]: string };
 };
 
 /** package.json data */
@@ -45,6 +46,14 @@ export type PackageWithInstallRecipe = YarnInfoInspectData & {
   version: string;
   experimentalInstallationRecipe?: InstallationRecipe;
 };
+
+export type PeerPluginDependencies = Map<
+  string,
+  {
+    pkg: PackageWithInstallRecipe;
+    versionToInstall?: string;
+  }
+>;
 
 export interface Step {
   run(): Promise<void>;

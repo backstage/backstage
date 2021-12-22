@@ -46,7 +46,6 @@ export function loadConfig(
 export type LoadConfigOptions = {
   configRoot: string;
   configTargets: ConfigTarget[];
-  env?: string;
   experimentalEnvFunc?: (name: string) => Promise<string | undefined>;
   remote?: LoadConfigOptionsRemote;
   watch?: LoadConfigOptionsWatch;

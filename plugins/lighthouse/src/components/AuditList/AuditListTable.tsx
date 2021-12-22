@@ -22,10 +22,15 @@ import {
   CATEGORY_LABELS,
   buildSparklinesDataForItem,
 } from '../../utils';
-import { Link, generatePath } from 'react-router-dom';
+import { generatePath } from 'react-router-dom';
 import AuditStatusIcon from '../AuditStatusIcon';
 
-import { Table, TableColumn, TrendLine } from '@backstage/core-components';
+import {
+  Link,
+  Table,
+  TableColumn,
+  TrendLine,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 const columns: TableColumn[] = [

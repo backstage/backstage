@@ -36,7 +36,11 @@ export {
   SidebarSearch,
   useSearch,
 } from './components';
-export type { SearchModalProps } from './components';
+export type {
+  SearchModalProps,
+  SidebarSearchModalProps,
+  SidebarSearchProps,
+} from './components';
 export type { FiltersState } from './components';
 export {
   DefaultResultListItem,

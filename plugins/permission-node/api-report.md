@@ -4,11 +4,17 @@
 
 ```ts
 import { AuthorizeRequest } from '@backstage/plugin-permission-common';
+import { AuthorizeRequestOptions } from '@backstage/plugin-permission-common';
+import { AuthorizeResponse } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
+import { Config } from '@backstage/config';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Router } from 'express';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export type ApplyConditionsRequest = {
@@ -119,4 +125,21 @@ export type PolicyDecision =
       result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
     }
   | ConditionalPolicyDecision;
+
+// @public
+export class ServerPermissionClient implements PermissionAuthorizer {
+  // (undocumented)
+  authorize(
+    requests: AuthorizeRequest[],
+    options?: AuthorizeRequestOptions,
+  ): Promise<AuthorizeResponse[]>;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      discovery: PluginEndpointDiscovery;
+      tokenManager: TokenManager;
+    },
+  ): ServerPermissionClient;
+}
 ```

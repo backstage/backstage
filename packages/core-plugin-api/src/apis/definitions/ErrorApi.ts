@@ -30,12 +30,6 @@ export type ErrorApiError = {
 };
 
 /**
- * @public
- * @deprecated Use ErrorApiError instead
- */
-export type Error = ErrorApiError;
-
-/**
  * Provides additional information about an error that was posted to the application.
  *
  * @public
@@ -52,12 +46,6 @@ export type ErrorApiErrorContext = {
    */
   hidden?: boolean;
 };
-
-/**
- * @public
- * @deprecated Use ErrorApiErrorContext instead
- */
-export type ErrorContext = ErrorApiErrorContext;
 
 /**
  * The error API is used to report errors to the app, and display them to the user.
