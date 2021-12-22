@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import React from 'react';
 import { EmptyStateImage } from './EmptyStateImage';
 
 /** @public */
@@ -46,7 +46,12 @@ type Props = {
   action?: JSX.Element;
 };
 
-/** @public */
+/**
+ * Various placeholder views for empty state pages
+ *
+ * @public
+ *
+ */
 export function EmptyState(props: Props) {
   const { title, description, missing, action } = props;
   const classes = useStyles();

@@ -17,10 +17,10 @@
 // TODO(blam): Remove this implementation when the Tabs are ready
 // This is just a temporary solution to implementing tabs for now
 
-import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TabUI, { TabProps } from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
+import React, { useEffect, useState } from 'react';
 
 /** @public */
 export type HeaderTabsClassKey =
@@ -68,7 +68,12 @@ type HeaderTabsProps = {
   selectedIndex?: number;
 };
 
-/** @public */
+/**
+ * Horizontal Tabs component
+ *
+ * @public
+ *
+ */
 export function HeaderTabs(props: HeaderTabsProps) {
   const { tabs, onChange, selectedIndex } = props;
   const [selectedTab, setSelectedTab] = useState<number>(selectedIndex ?? 0);
