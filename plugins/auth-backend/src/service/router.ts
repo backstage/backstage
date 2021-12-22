@@ -68,8 +68,15 @@ export async function createRouter(
   if (secret) {
     router.use(cookieParser(secret));
     // TODO: Configure the server-side session storage.  The default MemoryStore is not designed for production
-    const enforceCookieSSL = process.env.NODE_ENV === 'production';
-    router.use(session({ secret, saveUninitialized: false, resave: false, cookie: { secure: enforceCookieSSL } }));
+    const enforceCookieSSL = authUrl.startsWith('https');
+    router.use(
+      session({
+        secret,
+        saveUninitialized: false,
+        resave: false,
+        cookie: { secure: enforceCookieSSL },
+      }),
+    );
     router.use(passport.initialize());
     router.use(passport.session());
   } else {
