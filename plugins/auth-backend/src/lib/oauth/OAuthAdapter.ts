@@ -18,6 +18,11 @@ import express from 'express';
 import crypto from 'crypto';
 import { URL } from 'url';
 import {
+  ENTITY_DEFAULT_NAMESPACE,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import {
   AuthProviderRouteHandlers,
   AuthProviderConfig,
   BackstageIdentityResponse,
@@ -243,8 +248,14 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       return prepareBackstageIdentityResponse(identity);
     }
 
+    const userEntityRef = stringifyEntityRef(
+      parseEntityRef(identity.id, {
+        defaultKind: 'user',
+        defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+      }),
+    );
     const token = await this.options.tokenIssuer.issueToken({
-      claims: { sub: identity.id },
+      claims: { sub: userEntityRef },
     });
 
     return prepareBackstageIdentityResponse({ ...identity, token });

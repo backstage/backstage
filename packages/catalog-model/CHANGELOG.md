@@ -1,5 +1,11 @@
 # @backstage/catalog-model
 
+## 0.9.8
+
+### Patch Changes
+
+- ad7338bb48: Added an optional `presence` field to Location spec, which describes whether the target of a location is required to exist or not. It defaults to `'required'`, which is the current behaviour of the catalog.
+
 ## 0.9.7
 
 ### Patch Changes

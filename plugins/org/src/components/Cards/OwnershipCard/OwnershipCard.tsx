@@ -40,6 +40,7 @@ import {
 } from '@material-ui/core';
 import qs from 'qs';
 import React from 'react';
+import pluralize from 'pluralize';
 import { useAsync } from 'react-use';
 
 type EntityTypeProps = {
@@ -96,7 +97,7 @@ const EntityCountTile = ({
           {counter}
         </Typography>
         <Typography className={classes.bold} variant="h6">
-          {name}
+          {pluralize(name, counter)}
         </Typography>
       </Box>
     </Link>
@@ -128,10 +129,12 @@ const getQueryParams = (
 
 export const OwnershipCard = ({
   variant,
+  entityFilterKind,
 }: {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
   variant?: InfoCardVariants;
+  entityFilterKind?: string[];
 }) => {
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
@@ -142,7 +145,7 @@ export const OwnershipCard = ({
     error,
     value: componentsWithCounters,
   } = useAsync(async () => {
-    const kinds = ['Component', 'API'];
+    const kinds = entityFilterKind ?? ['Component', 'API'];
     const entitiesList = await catalogApi.getEntities({
       filter: {
         kind: kinds,
@@ -162,17 +165,17 @@ export const OwnershipCard = ({
 
     const counts = ownedEntitiesList.reduce(
       (acc: EntityTypeProps[], ownedEntity) => {
-        if (typeof ownedEntity.spec?.type !== 'string') return acc;
-
         const match = acc.find(
-          x => x.kind === ownedEntity.kind && x.type === ownedEntity.spec?.type,
+          x =>
+            x.kind === ownedEntity.kind &&
+            x.type === (ownedEntity.spec?.type ?? ownedEntity.kind),
         );
         if (match) {
           match.count += 1;
         } else {
           acc.push({
             kind: ownedEntity.kind,
-            type: ownedEntity.spec?.type,
+            type: ownedEntity.spec?.type?.toString() ?? ownedEntity.kind,
             count: 1,
           });
         }

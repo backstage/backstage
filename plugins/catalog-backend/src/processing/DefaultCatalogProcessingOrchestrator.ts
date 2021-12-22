@@ -284,7 +284,7 @@ export class DefaultCatalogProcessingOrchestrator
     entity: LocationEntity,
     context: Context,
   ): Promise<void> {
-    const { type = context.location.type } = entity.spec;
+    const { type = context.location.type, presence = 'required' } = entity.spec;
     const targets = new Array<string>();
     if (entity.spec.target) {
       targets.push(entity.spec.target);
@@ -318,9 +318,9 @@ export class DefaultCatalogProcessingOrchestrator
               {
                 type,
                 target,
-                presence: 'required',
+                presence,
               },
-              false,
+              presence === 'optional',
               context.collector.onEmit,
               this.options.parser,
               context.cache.forProcessor(processor, target),

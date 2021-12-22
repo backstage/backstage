@@ -1,5 +1,15 @@
 # @backstage/core-components
 
+## 0.8.1
+
+### Patch Changes
+
+- 2c17e5b073: Items in `<SidebarSubmenu>` are now only active when their full path is active (including search parameters).
+- 9d6503e86c: Switched out usage of deprecated `OAuthRequestApi` types from `@backstage/core-plugin-api`.
+- 1680a1c5ac: Add Missing Override Components Type for SidebarSpace, SidebarSpacer, and SidebarDivider Components.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.1
+
 ## 0.8.0
 
 ### Minor Changes

@@ -142,23 +142,6 @@ export type AnyRouteRef =
   | SubRouteRef<any>
   | ExternalRouteRef<any, any>;
 
-// TODO(Rugvip): None of these should be found in the wild anymore, remove in next minor release
-/**
- * @deprecated
- * @internal
- */
-export type ConcreteRoute = {};
-/**
- * @deprecated
- * @internal
- */
-export type AbsoluteRouteRef = RouteRef<{}>;
-/**
- * @deprecated
- * @internal
- */
-export type MutableRouteRef = RouteRef<{}>;
-
 /**
  * A duplicate of the react-router RouteObject, but with routeRef added
  * @internal

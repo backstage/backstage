@@ -21,56 +21,17 @@ import {
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { PullRequestGroup, PullRequestGroupConfig } from './lib/types';
-import React, { useEffect, useState } from 'react';
-import { getCreatedByUserFilter, getPullRequestGroups } from './lib/utils';
-import { useDashboardPullRequests, useUserEmail } from '../../hooks';
+import { PullRequestColumnConfig, PullRequestGroup } from './lib/types';
+import React, { useState } from 'react';
+import { getPullRequestGroupConfigs, getPullRequestGroups } from './lib/utils';
 
-import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
+import { FilterType } from './lib/filters';
 import { PullRequestGrid } from './lib/PullRequestGrid';
-
-function usePullRequestGroupConfigs(
-  userEmail: string | undefined,
-): PullRequestGroupConfig[] {
-  const [pullRequestGroupConfigs, setPullRequestGroupConfigs] = useState<
-    PullRequestGroupConfig[]
-  >([]);
-
-  useEffect(() => {
-    const prGroupConfigs: PullRequestGroupConfig[] = [
-      { title: 'Created by me', filter: getCreatedByUserFilter(userEmail) },
-      { title: 'Other PRs', filter: _ => true, simplified: false },
-    ];
-
-    setPullRequestGroupConfigs(prGroupConfigs);
-  }, [userEmail]);
-
-  return pullRequestGroupConfigs;
-}
-
-function usePullRequestGroups(
-  pullRequests: DashboardPullRequest[] | undefined,
-  pullRequestGroupConfigs: PullRequestGroupConfig[],
-): PullRequestGroup[] {
-  const [pullRequestGroups, setPullRequestGroups] = useState<
-    PullRequestGroup[]
-  >([]);
-
-  useEffect(() => {
-    if (pullRequests) {
-      const groups = getPullRequestGroups(
-        pullRequests,
-        pullRequestGroupConfigs,
-      );
-      setPullRequestGroups(groups);
-    }
-  }, [pullRequests, pullRequestGroupConfigs]);
-
-  return pullRequestGroups;
-}
+import { useDashboardPullRequests } from '../../hooks';
+import { useFilterProcessor } from './lib/hooks';
 
 type PullRequestsPageContentProps = {
-  pullRequestGroups: PullRequestGroup[];
+  pullRequestGroups: PullRequestGroup[] | undefined;
   loading: boolean;
   error?: Error;
 };
@@ -80,7 +41,7 @@ const PullRequestsPageContent = ({
   loading,
   error,
 }: PullRequestsPageContentProps) => {
-  if (loading && pullRequestGroups.length <= 0) {
+  if (loading && (!pullRequestGroups || pullRequestGroups.length <= 0)) {
     return <Progress />;
   }
 
@@ -88,25 +49,50 @@ const PullRequestsPageContent = ({
     return <ResponseErrorPanel error={error} />;
   }
 
-  return <PullRequestGrid pullRequestGroups={pullRequestGroups} />;
+  return <PullRequestGrid pullRequestGroups={pullRequestGroups ?? []} />;
 };
+
+const DEFAULT_COLUMN_CONFIGS: PullRequestColumnConfig[] = [
+  {
+    title: 'Created by me',
+    filters: [{ type: FilterType.CreatedByCurrentUser }],
+    simplified: false,
+  },
+  {
+    title: 'Other PRs',
+    filters: [{ type: FilterType.All }],
+    simplified: true,
+  },
+];
 
 type PullRequestsPageProps = {
   projectName?: string;
   pollingInterval?: number;
+  defaultColumnConfigs?: PullRequestColumnConfig[];
 };
 
 export const PullRequestsPage = ({
   projectName,
   pollingInterval,
+  defaultColumnConfigs,
 }: PullRequestsPageProps) => {
   const { pullRequests, loading, error } = useDashboardPullRequests(
     projectName,
     pollingInterval,
   );
-  const userEmail = useUserEmail();
-  const pullRequestGroupConfigs = usePullRequestGroupConfigs(userEmail);
-  const pullRequestGroups = usePullRequestGroups(
+
+  const [columnConfigs] = useState(
+    defaultColumnConfigs ?? DEFAULT_COLUMN_CONFIGS,
+  );
+
+  const filterProcessor = useFilterProcessor();
+
+  const pullRequestGroupConfigs = getPullRequestGroupConfigs(
+    columnConfigs,
+    filterProcessor,
+  );
+
+  const pullRequestGroups = getPullRequestGroups(
     pullRequests,
     pullRequestGroupConfigs,
   );

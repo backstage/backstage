@@ -156,9 +156,9 @@ export const Cluster = ({
                   <Grid item>
                     <ServicesAccordions />
                   </Grid>
-                </Grid>
-                <Grid item>
-                  <CronJobsAccordions />
+                  <Grid item>
+                    <CronJobsAccordions />
+                  </Grid>
                 </Grid>
               </AccordionDetails>
             </Accordion>

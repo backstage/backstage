@@ -145,6 +145,7 @@ export interface DashboardPullRequest {
 export interface Reviewer {
   id?: string;
   displayName?: string;
+  uniqueName?: string;
   imageUrl?: string;
   isRequired?: boolean;
   isContainer?: boolean;
@@ -164,6 +165,8 @@ export interface CreatedBy {
   displayName?: string;
   uniqueName?: string;
   imageUrl?: string;
+  teamIds?: string[];
+  teamNames?: string[];
 }
 
 export interface Repository {

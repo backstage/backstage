@@ -24,17 +24,6 @@ import {
 import { OldIconComponent } from '../icons/types';
 
 /**
- * @deprecated
- * @internal
- */
-export type RouteRefConfig<Params extends AnyParams> = {
-  params?: ParamKeys<Params>;
-  path?: string;
-  icon?: OldIconComponent;
-  title: string;
-};
-
-/**
  * @internal
  */
 export class RouteRefImpl<Params extends AnyParams>
