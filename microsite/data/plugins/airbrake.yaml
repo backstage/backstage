@@ -1,0 +1,9 @@
+---
+title: Airbrake
+author: Simply Business
+authorUrl: https://sbtech.simplybusiness.co.uk/
+category: Monitoring
+description: Access Airbrake error monitoring and other integrations from within Backstage
+documentation: https://github.com/backstage/backstage/blob/master/plugins/api-docs/README.md
+iconUrl: img/airbrake.svg
+npmPackageName: '@backstage/plugin-airbrake'
