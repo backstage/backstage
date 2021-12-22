@@ -11,6 +11,7 @@
     "@backstage/core-components": "^0.8.2",
     "@backstage/core-plugin-api": "^0.4.0",
     "@backstage/integration-react": "^0.1.16",
+    "@backstage/plugin-airbrake": "^0.0.0",
     "@backstage/plugin-api-docs": "^0.6.19",
     "@backstage/plugin-azure-devops": "^0.1.8",
     "@backstage/plugin-apache-airflow": "^0.1.1",
