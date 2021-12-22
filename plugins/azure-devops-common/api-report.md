@@ -61,6 +61,10 @@ export interface CreatedBy {
   // (undocumented)
   imageUrl?: string;
   // (undocumented)
+  teamIds?: string[];
+  // (undocumented)
+  teamNames?: string[];
+  // (undocumented)
   uniqueName?: string;
 }
 
@@ -253,6 +257,8 @@ export interface Reviewer {
   isContainer?: boolean;
   // (undocumented)
   isRequired?: boolean;
+  // (undocumented)
+  uniqueName?: string;
   // (undocumented)
   voteStatus: PullRequestVoteStatus;
 }

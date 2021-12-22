@@ -30,6 +30,7 @@ import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
 import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
+import * as fieldOverrides from './FieldOverrides';
 
 const Form = withTheme(MuiTheme);
 type Step = {
@@ -152,7 +153,7 @@ export const MultistepJsonForm = ({
               <StepContent key={title}>
                 <Form
                   showErrorList={false}
-                  fields={fields}
+                  fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}
                   noHtml5Validate
                   formData={formData}

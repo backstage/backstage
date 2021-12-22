@@ -1,5 +1,19 @@
 # example-backend
 
+## 0.2.57
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-elasticsearch@0.0.7
+  - @backstage/plugin-catalog-backend@0.19.2
+  - @backstage/plugin-scaffolder-backend@0.15.17
+  - @backstage/backend-common@0.9.14
+  - @backstage/plugin-azure-devops-backend@0.2.5
+  - @backstage/plugin-auth-backend@0.5.1
+  - @backstage/catalog-model@0.9.8
+  - example-app@0.2.57
+
 ## 0.2.56
 
 ### Patch Changes

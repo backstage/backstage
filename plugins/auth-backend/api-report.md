@@ -47,6 +47,16 @@ export type AtlassianProviderOptions = {
   };
 };
 
+// @public
+export type AuthHandler<AuthResult> = (
+  input: AuthResult,
+) => Promise<AuthHandlerResult>;
+
+// @public
+export type AuthHandlerResult = {
+  profile: ProfileInfo;
+};
+
 // Warning: (ae-missing-release-tag) "AuthProviderFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -258,7 +268,6 @@ export const createOAuth2Provider: (
   options?: OAuth2ProviderOptions | undefined,
 ) => AuthProviderFactory;
 
-// Warning: (ae-forgotten-export) The symbol "OidcProviderOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "createOidcProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -534,6 +543,20 @@ export type OAuthState = {
   origin?: string;
 };
 
+// @public
+export type OidcAuthResult = {
+  tokenset: TokenSet;
+  userinfo: UserinfoResponse;
+};
+
+// @public
+export type OidcProviderOptions = {
+  authHandler?: AuthHandler<OidcAuthResult>;
+  signIn?: {
+    resolver?: SignInResolver<OidcAuthResult>;
+  };
+};
+
 // Warning: (ae-missing-release-tag) "oktaEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -606,6 +629,22 @@ export type SamlProviderOptions = {
   };
 };
 
+// @public
+export type SignInInfo<AuthResult> = {
+  profile: ProfileInfo;
+  result: AuthResult;
+};
+
+// @public
+export type SignInResolver<AuthResult> = (
+  info: SignInInfo<AuthResult>,
+  context: {
+    tokenIssuer: TokenIssuer;
+    catalogIdentityClient: CatalogIdentityClient;
+    logger: Logger_2;
+  },
+) => Promise<BackstageSignInResult>;
+
 // Warning: (ae-missing-release-tag) "TokenIssuer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -637,8 +676,6 @@ export type WebMessageResponse =
 // Warnings were encountered during analysis:
 //
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
-// src/providers/atlassian/provider.d.ts:37:5 - (ae-forgotten-export) The symbol "AuthHandler" needs to be exported by the entry point index.d.ts
-// src/providers/atlassian/provider.d.ts:42:9 - (ae-forgotten-export) The symbol "SignInResolver" needs to be exported by the entry point index.d.ts
 // src/providers/aws-alb/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "AwsAlbResult" needs to be exported by the entry point index.d.ts
 // src/providers/github/provider.d.ts:71:58 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 // src/providers/github/provider.d.ts:71:90 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag

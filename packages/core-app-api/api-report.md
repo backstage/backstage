@@ -17,17 +17,15 @@ import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '@backstage/core-plugin-api';
 import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
 import { auth0AuthApiRef } from '@backstage/core-plugin-api';
-import { AuthProvider } from '@backstage/core-plugin-api';
-import { AuthRequester } from '@backstage/core-plugin-api';
-import { AuthRequesterOptions } from '@backstage/core-plugin-api';
+import { AuthProviderInfo } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentity } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
+import { Config } from '@backstage/config';
 import { ConfigReader } from '@backstage/config';
-import { createApp as createApp_2 } from '@backstage/app-defaults';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
@@ -36,18 +34,22 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FeatureFlagsApi } from '@backstage/core-plugin-api';
 import { FeatureFlagsSaveOptions } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { JsonValue } from '@backstage/types';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { OAuthRequestApi } from '@backstage/core-plugin-api';
+import { OAuthRequester } from '@backstage/core-plugin-api';
+import { OAuthRequesterOptions } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
-import { PendingAuthRequest } from '@backstage/core-plugin-api';
+import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { PluginOutput } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
@@ -58,7 +60,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { SessionState } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
-import { StorageValueChange } from '@backstage/core-plugin-api';
+import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 
 // @public
@@ -254,7 +256,7 @@ export class AtlassianAuth {
   static create(options: OAuthApiCreateOptions): typeof atlassianAuthApiRef.T;
 }
 
-// @public
+// @public @deprecated
 export class Auth0Auth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof auth0AuthApiRef.T;
@@ -264,9 +266,7 @@ export class Auth0Auth {
 export type AuthApiCreateOptions = {
   discoveryApi: DiscoveryApi;
   environment?: string;
-  provider?: AuthProvider & {
-    id: string;
-  };
+  provider?: AuthProviderInfo;
 };
 
 // @public
@@ -275,19 +275,6 @@ export type BackstageApp = {
   getSystemIcon(key: string): IconComponent | undefined;
   getProvider(): ComponentType<{}>;
   getRouter(): ComponentType<{}>;
-};
-
-// @public @deprecated
-export type BackstagePluginWithAnyOutput = Omit<
-  BackstagePlugin<any, any>,
-  'output'
-> & {
-  output(): (
-    | PluginOutput
-    | {
-        type: string;
-      }
-  )[];
 };
 
 // @public
@@ -315,10 +302,11 @@ export type BootErrorPageProps = {
 
 export { ConfigReader };
 
-// @public @deprecated
-export function createApp(
-  options?: Parameters<typeof createApp_2>[0],
-): BackstageApp & AppContext;
+// @public
+export function createFetchApi(options: {
+  baseImplementation?: typeof fetch | undefined;
+  middleware?: FetchMiddleware | FetchMiddleware[] | undefined;
+}): FetchApi;
 
 // @public
 export function createSpecializedApp(options: AppOptions): BackstageApp;
@@ -372,6 +360,27 @@ export type FeatureFlaggedProps = {
 );
 
 // @public
+export interface FetchMiddleware {
+  apply(next: typeof fetch): typeof fetch;
+}
+
+// @public
+export class FetchMiddlewares {
+  static injectIdentityAuth(options: {
+    identityApi: IdentityApi;
+    config?: Config;
+    urlPrefixAllowlist?: string[];
+    header?: {
+      name: string;
+      value: (backstageToken: string) => string;
+    };
+  }): FetchMiddleware;
+  static resolvePluginProtocol(options: {
+    discoveryApi: DiscoveryApi;
+  }): FetchMiddleware;
+}
+
+// @public
 export const FlatRoutes: (props: FlatRoutesProps) => JSX.Element | null;
 
 // @public
@@ -381,10 +390,6 @@ export type FlatRoutesProps = {
 
 // @public
 export class GithubAuth implements OAuthApi, SessionApi {
-  // Warning: (ae-forgotten-export) The symbol "SessionManager" needs to be exported by the entry point index.d.ts
-  //
-  // @deprecated
-  constructor(sessionManager: SessionManager<GithubSession>);
   // (undocumented)
   static create(options: OAuthApiCreateOptions): GithubAuth;
   // (undocumented)
@@ -461,11 +466,6 @@ export class OAuth2
     BackstageIdentityApi,
     SessionApi
 {
-  // @deprecated
-  constructor(options: {
-    sessionManager: SessionManager<OAuth2Session>;
-    scopeTransform: (scopes: string[]) => string[];
-  });
   // (undocumented)
   static create(options: OAuth2CreateOptions): OAuth2;
   // (undocumented)
@@ -515,9 +515,9 @@ export type OAuthApiCreateOptions = AuthApiCreateOptions & {
 // @public
 export class OAuthRequestManager implements OAuthRequestApi {
   // (undocumented)
-  authRequest$(): Observable<PendingAuthRequest[]>;
+  authRequest$(): Observable<PendingOAuthRequest[]>;
   // (undocumented)
-  createAuthRequester<T>(options: AuthRequesterOptions<T>): AuthRequester<T>;
+  createAuthRequester<T>(options: OAuthRequesterOptions<T>): OAuthRequester<T>;
 }
 
 // @public
@@ -539,17 +539,13 @@ export type OneLoginAuthCreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
-  provider?: AuthProvider & {
-    id: string;
-  };
+  provider?: AuthProviderInfo;
 };
 
 // @public
 export class SamlAuth
   implements ProfileInfoApi, BackstageIdentityApi, SessionApi
 {
-  // @deprecated
-  constructor(sessionManager: SessionManager<SamlSession>);
   // (undocumented)
   static create(options: AuthApiCreateOptions): SamlAuth;
   // (undocumented)
@@ -611,10 +607,12 @@ export class WebStorage implements StorageApi {
   // (undocumented)
   get<T>(key: string): T | undefined;
   // (undocumented)
-  observe$<T>(key: string): Observable<StorageValueChange<T>>;
+  observe$<T>(key: string): Observable<StorageValueSnapshot<T>>;
   // (undocumented)
   remove(key: string): Promise<void>;
   // (undocumented)
   set<T>(key: string, data: T): Promise<void>;
+  // (undocumented)
+  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
 ```

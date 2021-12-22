@@ -25,7 +25,7 @@ type Rules = {
 };
 
 type Props = {
-  inputType: 'announcement' | 'community' | 'responsible';
+  inputType: 'description' | 'community' | 'responsible' | 'name';
   error?: FieldError | undefined;
   control: Control<FormValues, object>;
   helperText?: string;

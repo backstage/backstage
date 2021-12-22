@@ -264,6 +264,12 @@ following objects:
 - horizontalpodautoscalers
 - ingresses
 
+The following RBAC permissions are required on the batch API group for the
+following objects:
+
+- jobs
+- cronjobs
+
 ## Surfacing your Kubernetes components as part of an entity
 
 There are two ways to surface your Kubernetes components as part of an entity.

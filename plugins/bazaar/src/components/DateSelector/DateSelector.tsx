@@ -45,7 +45,6 @@ export const DateSelector = ({ name, control, setValue }: Props) => {
         <FormControl>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <KeyboardDatePicker
-              disablePast
               disableToolbar
               format="dd-MM-yyyy"
               label={label}

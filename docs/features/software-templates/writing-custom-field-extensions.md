@@ -26,7 +26,7 @@ You can create your own Field Extension by using the
 `API` like below:
 
 ```tsx
-//packages/app/scaffolder/MyCustomExtension/MyCustomExtension.tsx
+//packages/app/src/scaffolder/MyCustomExtension/MyCustomExtension.tsx
 import React from 'react';
 import { FieldProps, FieldValidation } from '@rjsf/core';
 import FormControl from '@material-ui/core/FormControl';
@@ -68,7 +68,7 @@ export const myCustomValidation = (
 ```
 
 ```tsx
-// packages/app/scaffolder/MyCustomExtension/extensions.ts
+// packages/app/src/scaffolder/MyCustomExtension/extensions.ts
 
 /*
   This is where the magic happens and creates the custom field extension.
@@ -94,7 +94,7 @@ export const MyCustomFieldExtension = plugin.provide(
 ```
 
 ```tsx
-// packages/app/scaffolder/MyCustomExtension/index.ts
+// packages/app/src/scaffolder/MyCustomExtension/index.ts
 
 export { MyCustomFieldExtension } from './extension';
 ```
@@ -102,7 +102,7 @@ export { MyCustomFieldExtension } from './extension';
 Once all these files are in place, you then need to provide your custom
 extension to the `scaffolder` plugin.
 
-You do this in `packages/app/App.tsx`. You need to provide the
+You do this in `packages/app/src/App.tsx`. You need to provide the
 `customFieldExtensions` as children to the `ScaffolderPage`.
 
 ```tsx
@@ -118,7 +118,7 @@ const routes = (
 Should look something like this instead:
 
 ```tsx
-import { MyCustomFieldExtension } from './scafffolder/MyCustomExtension';
+import { MyCustomFieldExtension } from './scaffolder/MyCustomExtension';
 const routes = (
   <FlatRoutes>
     ...

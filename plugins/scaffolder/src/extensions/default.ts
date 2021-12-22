@@ -24,6 +24,7 @@ import {
   RepoUrlPicker,
 } from '../components/fields/RepoUrlPicker';
 import { FieldExtensionOptions } from './types';
+import { OwnedEntityPicker } from '../components/fields/OwnedEntityPicker';
 
 export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: FieldExtensionOptions[] = [
   {
@@ -43,5 +44,9 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: FieldExtensionOptions[] = [
   {
     component: OwnerPicker,
     name: 'OwnerPicker',
+  },
+  {
+    component: OwnedEntityPicker,
+    name: 'OwnedEntityPicker',
   },
 ];

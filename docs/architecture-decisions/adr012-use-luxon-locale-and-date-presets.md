@@ -1,6 +1,7 @@
 ---
 id: adrs-adr012
-title: ADR012: Use Luxon.toLocaleString and date/time presets
+title: 'ADR012: Use Luxon.toLocaleString and date/time presets'
+# prettier-ignore
 description: Architecture Decision Record (ADR) for using Luxon's toLocaleString method and date/time presets for displaying dates and times
 ---
 

@@ -19,7 +19,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const sentryApiRef = createApiRef<SentryApi>({
   id: 'plugin.sentry.service',
-  description: 'Used by the Sentry plugin to make requests',
 });
 
 export interface SentryApi {

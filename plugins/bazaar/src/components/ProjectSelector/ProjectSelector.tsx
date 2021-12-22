@@ -17,38 +17,44 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Autocomplete } from '@material-ui/lab';
-import { TextField } from '@material-ui/core';
+import { TextField, makeStyles } from '@material-ui/core';
 
 type Props = {
-  entities: Entity[];
-  value: string;
+  catalogEntities: Entity[];
   onChange: (entity: Entity) => void;
-  isFormInvalid: boolean;
+  disableClearable: boolean;
+  defaultValue: Entity | null | undefined;
+  label: string;
 };
 
+const useStyles = makeStyles({
+  container: { width: '100%', minWidth: '22rem' },
+  autocomplete: { overflow: 'hidden' },
+});
+
 export const ProjectSelector = ({
-  entities,
-  value,
+  catalogEntities,
   onChange,
-  isFormInvalid,
+  disableClearable,
+  defaultValue,
+  label,
 }: Props) => {
+  const classes = useStyles();
   return (
-    <Autocomplete
-      defaultValue={entities[0]}
-      options={entities}
-      getOptionLabel={option => option?.metadata?.name}
-      renderOption={option => <span>{option?.metadata?.name}</span>}
-      renderInput={params => (
-        <TextField
-          error={isFormInvalid && value === ''}
-          helperText={
-            isFormInvalid && value === '' ? 'Please select a project' : ''
-          }
-          {...params}
-          label="Select a project *"
-        />
-      )}
-      onChange={(_, data) => onChange(data!)}
-    />
+    <div className={classes.container}>
+      <Autocomplete
+        className={classes.autocomplete}
+        fullWidth
+        disableClearable={disableClearable}
+        defaultValue={defaultValue}
+        options={catalogEntities}
+        getOptionLabel={option => option?.metadata?.name}
+        renderOption={option => <span>{option?.metadata?.name}</span>}
+        renderInput={params => <TextField {...params} label={label} />}
+        onChange={(_, data) => {
+          onChange(data!);
+        }}
+      />
+    </div>
   );
 };

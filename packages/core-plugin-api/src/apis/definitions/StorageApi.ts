@@ -15,55 +15,108 @@
  */
 
 import { ApiRef, createApiRef } from '../system';
-import { Observable } from '@backstage/types';
+import { JsonValue, Observable } from '@backstage/types';
 
 /**
- * Describes a value change event.
+ * A snapshot in time of the current known value of a storage key.
  *
  * @public
  */
-export type StorageValueChange<T = any> = {
-  key: string;
-  newValue?: T;
-};
+export type StorageValueSnapshot<TValue extends JsonValue> =
+  | {
+      key: string;
+      presence: 'unknown' | 'absent';
+      value?: undefined;
+      /** @deprecated Use `value` instead */
+      newValue?: undefined;
+    }
+  | {
+      key: string;
+      presence: 'present';
+      value: TValue;
+      /** @deprecated Use `value` instead */
+      newValue?: TValue;
+    };
 
 /**
- * Provides key-value persistence API.
+ * @public
+ * @deprecated Use StorageValueSnapshot instead
+ */
+export type StorageValueChange<TValue extends JsonValue> =
+  StorageValueSnapshot<TValue>;
+
+/**
+ * Provides a key-value persistence API.
  *
  * @public
  */
 export interface StorageApi {
   /**
    * Create a bucket to store data in.
+   *
    * @param name - Namespace for the storage to be stored under,
-   *                      will inherit previous namespaces too
+   *               will inherit previous namespaces too
    */
   forBucket(name: string): StorageApi;
 
   /**
    * Get the current value for persistent data, use observe$ to be notified of updates.
+   *
+   * @deprecated Use `snapshot` instead.
    * @param key - Unique key associated with the data.
    */
-  get<T>(key: string): T | undefined;
+  get<T extends JsonValue>(key: string): T | undefined;
 
   /**
    * Remove persistent data.
+   *
    * @param key - Unique key associated with the data.
    */
   remove(key: string): Promise<void>;
 
   /**
-   * Save persistent data, and emit messages to anyone that is using observe$ for this key
+   * Save persistent data, and emit messages to anyone that is using
+   * {@link StorageApi.observe$} for this key.
+   *
    * @param key - Unique key associated with the data.
    * @param data - The data to be stored under the key.
    */
-  set(key: string, data: any): Promise<void>;
+  set<T extends JsonValue>(key: string, data: T): Promise<void>;
 
   /**
-   * Observe changes on a particular key in the bucket
+   * Observe the value over time for a particular key in the current bucket.
+   *
+   * @remarks
+   *
+   * The observable will only emit values when the value changes in the underlying
+   * storage, although multiple values with the same shape may be emitted in a row.
+   *
+   * If a {@link StorageApi.snapshot} of a key is retrieved and the presence is
+   * `'unknown'`, then you are guaranteed to receive a snapshot with a known
+   * presence, as long as you observe the key within the same tick.
+   *
+   * Since the emitted values are shared across all subscribers, it is important
+   * not to mutate the returned values. The values may be frozen as a precaution.
+   *
    * @param key - Unique key associated with the data
    */
-  observe$<T>(key: string): Observable<StorageValueChange<T>>;
+  observe$<T extends JsonValue>(
+    key: string,
+  ): Observable<StorageValueSnapshot<T>>;
+
+  /**
+   * Returns an immediate snapshot value for the given key, if possible.
+   *
+   * @remarks
+   *
+   * Combine with {@link StorageApi.observe$} to get notified of value changes.
+   *
+   * Note that this method is synchronous, and some underlying storages may be
+   * unable to retrieve a value using this method - the result may or may not
+   * consistently have a presence of 'unknown'. Use {@link StorageApi.observe$}
+   * to be sure to receive an actual value eventually.
+   */
+  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
 
 /**

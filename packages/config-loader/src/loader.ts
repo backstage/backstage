@@ -45,7 +45,7 @@ export type LoadConfigOptionsWatch = {
 
 export type LoadConfigOptionsRemote = {
   /**
-   * An optional remote config reloading period, in seconds
+   * A remote config reloading period, in seconds
    */
   reloadIntervalSeconds: number;
 };
@@ -59,16 +59,8 @@ export type LoadConfigOptions = {
   // The root directory of the config loading context. Used to find default configs.
   configRoot: string;
 
-  /** Absolute paths to load config files from. Configs from earlier paths have lower priority.
-   * @deprecated Use {@link configTargets} instead.
-   */
-  configPaths: string[];
-
   // Paths to load config files from. Configs from earlier paths have lower priority.
   configTargets: ConfigTarget[];
-
-  /** @deprecated This option has been removed */
-  env?: string;
 
   /**
    * Custom environment variable loading function
@@ -114,20 +106,21 @@ export async function loadConfig(
     .filter((e): e is { path: string } => e.hasOwnProperty('path'))
     .map(configTarget => configTarget.path);
 
-  // Append deprecated configPaths to the absolute config paths received via configTargets.
-  options.configPaths.forEach(cp => {
-    if (!configPaths.includes(cp)) {
-      configPaths.push(cp);
-    }
-  });
-
   const configUrls: string[] = options.configTargets
     .slice()
     .filter((e): e is { url: string } => e.hasOwnProperty('url'))
     .map(configTarget => configTarget.url);
 
-  if (remote === undefined && configUrls.length > 0) {
-    throw new Error(`Remote config detected but this feature is turned off`);
+  if (remote === undefined) {
+    if (configUrls.length > 0) {
+      throw new Error(
+        `Please make sure you are passing the remote option when loading remote configurations. See https://backstage.io/docs/conf/writing#configuration-files for detailed info.`,
+      );
+    }
+  } else if (remote.reloadIntervalSeconds <= 0) {
+    throw new Error(
+      `Remote config must be contain a non zero reloadIntervalSeconds: <seconds> value`,
+    );
   }
 
   // If no paths are provided, we default to reading

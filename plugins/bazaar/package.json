@@ -23,8 +23,8 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.9.7",
     "@backstage/cli": "^0.10.1",
-    "@backstage/core-components": "^0.8.0",
-    "@backstage/core-plugin-api": "^0.3.0",
+    "@backstage/core-components": "^0.8.1",
+    "@backstage/core-plugin-api": "^0.3.1",
     "@backstage/plugin-catalog": "^0.7.4",
     "@backstage/plugin-catalog-react": "^0.6.5",
     "@date-io/luxon": "1.x",
@@ -34,6 +34,7 @@
     "@material-ui/pickers": "^3.3.10",
     "@testing-library/jest-dom": "^5.10.1",
     "luxon": "^2.0.2",
+    "material-ui-search-bar": "^1.0.0",
     "react-hook-form": "^7.13.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4"
@@ -42,7 +43,7 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.10.1",
+    "@backstage/cli": "^0.10.2",
     "@backstage/dev-utils": "^0.2.14",
     "@testing-library/jest-dom": "^5.10.1",
     "cross-fetch": "^3.0.6"

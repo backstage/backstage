@@ -15,10 +15,10 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
+import { Link } from '../../components/Link';
 
 /** @public */
 export type HeaderLabelClassKey = 'root' | 'label' | 'value';
@@ -74,7 +74,7 @@ export function HeaderLabel(props: HeaderLabelProps) {
     <Grid item>
       <span className={classes.root}>
         <Typography className={classes.label}>{label}</Typography>
-        {url ? <Link href={url}>{content}</Link> : content}
+        {url ? <Link to={url}>{content}</Link> : content}
       </span>
     </Grid>
   );

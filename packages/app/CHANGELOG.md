@@ -1,5 +1,23 @@
 # example-app
 
+## 0.2.57
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-github-actions@0.4.27
+  - @backstage/core-app-api@0.2.1
+  - @backstage/plugin-kubernetes@0.5.1
+  - @backstage/core-plugin-api@0.3.1
+  - @backstage/core-components@0.8.1
+  - @backstage/plugin-org@0.3.31
+  - @backstage/plugin-azure-devops@0.1.7
+  - @backstage/cli@0.10.2
+  - @backstage/catalog-model@0.9.8
+  - @backstage/plugin-techdocs@0.12.10
+  - @backstage/plugin-catalog-react@0.6.7
+  - @backstage/plugin-apache-airflow@0.1.0
+
 ## 0.2.56
 
 ### Patch Changes

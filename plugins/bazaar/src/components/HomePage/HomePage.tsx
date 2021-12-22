@@ -36,11 +36,7 @@ export const HomePage = () => {
 
   return (
     <div>
-      <Header
-        data-testid="bazaar-header"
-        title="Bazaar"
-        subtitle="Marketplace for inner source projects"
-      />
+      <Header title="Bazaar" subtitle="Marketplace for inner source projects" />
       <RoutedTabs routes={tabContent} />
     </div>
   );

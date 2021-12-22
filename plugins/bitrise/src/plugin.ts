@@ -26,8 +26,6 @@ import {
 
 export const bitriseApiRef = createApiRef<BitriseApi>({
   id: 'plugin.bitrise.service',
-  description:
-    'Used by the BitriseCI plugin to retrieve information about builds.',
 });
 
 export const bitrisePlugin = createPlugin({
