@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogActions,
@@ -26,7 +26,7 @@ import {
 } from '@material-ui/core';
 import { Launch } from '@material-ui/icons/';
 import { makeStyles } from '@material-ui/core/styles';
-import { SearchBarBase } from '../SearchBar';
+import { SearchBar } from '../SearchBar';
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResult } from '../SearchResult';
 import { SearchContextProvider, useSearch } from '../SearchContext';
@@ -34,8 +34,6 @@ import { SearchResultPager } from '../SearchResultPager';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
-
-import { useDebounce } from 'react-use';
 
 export interface SearchModalProps {
   open?: boolean;
@@ -61,24 +59,10 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
   const getSearchLink = useRouteRef(rootRouteRef);
   const classes = useStyles();
 
-  const { term, setTerm } = useSearch();
-  const [value, setValue] = useState<string>(term);
-
-  useEffect(() => {
-    setValue(prevValue => (prevValue !== term ? term : prevValue));
-  }, [term]);
-
-  useDebounce(() => setTerm(value), 500, [value]);
-
-  const handleQuery = (newValue: string) => {
-    setValue(newValue);
-  };
-
-  const handleClear = () => setValue('');
+  const { term } = useSearch();
 
   const handleResultClick = () => {
     toggleModal();
-    handleClear();
   };
 
   const handleKeyPress = () => {
@@ -98,12 +82,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
     >
       <DialogTitle>
         <Paper className={classes.container}>
-          <SearchBarBase
-            className={classes.input}
-            value={value}
-            onChange={handleQuery}
-            onClear={handleClear}
-          />
+          <SearchBar className={classes.input} />
         </Paper>
       </DialogTitle>
       <DialogContent>
@@ -114,10 +93,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
           alignItems="center"
         >
           <Grid item>
-            <Link
-              onClick={toggleModal}
-              to={`${getSearchLink()}?query=${value}`}
-            >
+            <Link onClick={toggleModal} to={`${getSearchLink()}?query=${term}`}>
               <span className={classes.viewResultsLink}>View Full Results</span>
               <Launch color="primary" />
             </Link>
