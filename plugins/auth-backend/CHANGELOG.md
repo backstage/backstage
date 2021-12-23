@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend
 
+## 0.5.2
+
+### Patch Changes
+
+- 24a67e3e2e: Fixed the fallback identity population to correctly generate an entity reference for `userEntityRef` if no token is provided.
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/test-utils@0.2.0
+  - @backstage/catalog-client@0.5.3
+
 ## 0.5.1
 
 ### Patch Changes

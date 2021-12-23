@@ -2203,6 +2203,26 @@
     react-use "^17.2.4"
     zen-observable "^0.8.15"
 
+"@backstage/core-app-api@^0.2.0":
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/@backstage/core-app-api/-/core-app-api-0.2.1.tgz#cdaaee797834d0efaaf56110d3e48fa57f4195ce"
+  integrity sha512-883TxnfDWLgYd91NxEPMUnXQsvZRCObl/MTagErhkhRSty3VEf8Aeh2bAEzzv+oHq+Zde284zBs8PFnf3AN2vw==
+  dependencies:
+    "@backstage/app-defaults" "^0.1.2"
+    "@backstage/config" "^0.1.11"
+    "@backstage/core-components" "^0.8.1"
+    "@backstage/core-plugin-api" "^0.3.1"
+    "@backstage/theme" "^0.2.14"
+    "@backstage/types" "^0.1.1"
+    "@backstage/version-bridge" "^0.1.1"
+    "@material-ui/core" "^4.12.2"
+    "@material-ui/icons" "^4.9.1"
+    "@types/prop-types" "^15.7.3"
+    prop-types "^15.7.2"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+    zen-observable "^0.8.15"
+
 "@backstage/core-components@^0.3.0":
   version "0.3.3"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.3.3.tgz#ec63eac6d789303f90219857849fa1cefe4e0dde"
@@ -2455,6 +2475,22 @@
     history "^5.0.0"
     prop-types "^15.7.2"
     react "^16.12.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+    zen-observable "^0.8.15"
+
+"@backstage/core-plugin-api@^0.3.0", "@backstage/core-plugin-api@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-0.3.1.tgz#b26402b1570b532e3d61817e6e6fca3b6450e3d8"
+  integrity sha512-beHcA6LQH0sTqEV76hZOCGU+H0zVLC0p5nRF6uHGY23ogL/7/Ab5uJUVqKVijWrCBil3uCHN+XsSOQf2ZVN/Lw==
+  dependencies:
+    "@backstage/config" "^0.1.11"
+    "@backstage/theme" "^0.2.14"
+    "@backstage/types" "^0.1.1"
+    "@backstage/version-bridge" "^0.1.1"
+    "@material-ui/core" "^4.12.2"
+    history "^5.0.0"
+    prop-types "^15.7.2"
     react-router-dom "6.0.0-beta.0"
     react-use "^17.2.4"
     zen-observable "^0.8.15"

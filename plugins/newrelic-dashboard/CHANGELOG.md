@@ -1,0 +1,11 @@
+# @backstage/plugin-newrelic-dashboard
+
+## 0.1.1
+
+### Patch Changes
+
+- c38a47cd08: Created a New Plugin , which imports dashboard links and snapshots from New Relic
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2

@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes
 
+## 0.5.2
+
+### Patch Changes
+
+- 610614a06d: Includes `KubernetesBackendClient` in the export to allow developers to use it externally.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
 ## 0.5.1
 
 ### Patch Changes

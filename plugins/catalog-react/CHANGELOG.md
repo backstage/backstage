@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-react
 
+## 0.6.8
+
+### Patch Changes
+
+- 3491a36ab9: added useOwnedEntities hook to get the list of entities of the logged-in user
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/core-components@0.8.2
+  - @backstage/catalog-client@0.5.3
+
 ## 0.6.7
 
 ### Patch Changes
