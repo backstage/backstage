@@ -26,14 +26,14 @@ const server = setupServer();
 const token = 'fake-token';
 
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
-const discoveryApi: DiscoveryApi = {
+const discovery: DiscoveryApi = {
   async getBaseUrl() {
     return mockBaseUrl;
   },
 };
 const client: PermissionClient = new PermissionClient({
-  discoveryApi,
-  configApi: new ConfigReader({ permission: { enabled: true } }),
+  discovery,
+  config: new ConfigReader({ permission: { enabled: true } }),
 });
 
 const mockPermission: Permission = {
@@ -158,8 +158,8 @@ describe('PermissionClient', () => {
         },
       );
       const disabled = new PermissionClient({
-        discoveryApi,
-        configApi: new ConfigReader({ permission: { enabled: false } }),
+        discovery,
+        config: new ConfigReader({ permission: { enabled: false } }),
       });
       const response = await disabled.authorize([mockAuthorizeRequest]);
       expect(response[0]).toEqual(
@@ -180,8 +180,8 @@ describe('PermissionClient', () => {
         },
       );
       const disabled = new PermissionClient({
-        discoveryApi,
-        configApi: new ConfigReader({}),
+        discovery,
+        config: new ConfigReader({}),
       });
       const response = await disabled.authorize([mockAuthorizeRequest]);
       expect(response[0]).toEqual(

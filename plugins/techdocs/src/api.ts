@@ -20,12 +20,10 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
   id: 'plugin.techdocs.storageservice',
-  description: 'Used to make requests towards the techdocs storage',
 });
 
 export const techdocsApiRef = createApiRef<TechDocsApi>({
   id: 'plugin.techdocs.service',
-  description: 'Used to make requests towards techdocs API',
 });
 
 export type SyncResult = 'cached' | 'updated';

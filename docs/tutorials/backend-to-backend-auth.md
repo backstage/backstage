@@ -22,6 +22,10 @@ resulting value.
 node -p 'require("crypto").randomBytes(24).toString("base64")'
 ```
 
+**NOTE**: For ease of development, we auto-generate a key for you if you haven't
+configured a secret in dev mode. You _must set your own secret_ in order for
+backend-to-backend authentication to work in production.
+
 Requests originating from a backend plugin can be authenticated by decorating
 them with a backend token. Backend tokens can be generated using a
 `TokenManager`, which can be passed to plugin backends via the
@@ -43,7 +47,7 @@ function makeCreateEnv(config: Config) {
   const cacheManager = CacheManager.fromConfig(config);
   const databaseManager = DatabaseManager.fromConfig(config);
 - const tokenManager = ServerTokenManager.noop();
-+ const tokenManager = ServerTokenManager.fromConfig(config);
++ const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
 ```
 
 With this `tokenManager`, you can then generate a server token for requests:

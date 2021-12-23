@@ -1,0 +1,9 @@
+---
+title: 'Azure Pipelines'
+author: Keyloop
+authorUrl: https://keyloop.com/
+category: CI/CD
+description: Easily view your Azure Pipelines within the Software Catalog
+documentation: https://github.com/backstage/backstage/blob/master/plugins/azure-devops/README.md
+iconUrl: img/azure-pipelines.svg
+npmPackageName: '@backstage/plugin-azure-devops'

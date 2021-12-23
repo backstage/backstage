@@ -119,5 +119,6 @@ export const UserSettingsThemeToggle: () => JSX.Element;
 export const useUserProfile: () => {
   profile: ProfileInfo;
   displayName: string;
+  loading: boolean;
 };
 ```

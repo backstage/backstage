@@ -35,13 +35,13 @@ export class IdentityPermissionApi implements PermissionApi {
   ) {}
 
   static create(options: {
-    configApi: Config;
-    discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
+    config: Config;
+    discovery: DiscoveryApi;
+    identity: IdentityApi;
   }) {
-    const { configApi, discoveryApi, identityApi } = options;
-    const permissionClient = new PermissionClient({ discoveryApi, configApi });
-    return new IdentityPermissionApi(permissionClient, identityApi);
+    const { config, discovery, identity } = options;
+    const permissionClient = new PermissionClient({ discovery, config });
+    return new IdentityPermissionApi(permissionClient, identity);
   }
 
   async authorize(request: AuthorizeRequest): Promise<AuthorizeResponse> {
