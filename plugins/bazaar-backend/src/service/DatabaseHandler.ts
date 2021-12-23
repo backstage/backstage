@@ -44,10 +44,10 @@ export class DatabaseHandler {
   }
 
   private columns = [
-    'members.entity_ref',
+    'metadata.id',
     'metadata.entity_ref',
     'metadata.name',
-    'metadata.announcement',
+    'metadata.description',
     'metadata.status',
     'metadata.updated_at',
     'metadata.community',
@@ -57,40 +57,52 @@ export class DatabaseHandler {
     'metadata.responsible',
   ];
 
-  async getMembers(entityRef: string) {
+  async getMembers(id: string) {
     return await this.database
       .select('*')
       .from('members')
-      .where({ entity_ref: entityRef });
+      .where({ item_id: id });
   }
 
-  async addMember(userId: string, entityRef: string, picture?: string) {
+  async addMember(id: number, userId: string, picture?: string) {
     await this.database
       .insert({
-        entity_ref: entityRef,
+        item_id: id,
         user_id: userId,
         picture: picture,
       })
       .into('members');
   }
 
-  async deleteMember(userId: string, entityRef: string) {
+  async deleteMember(id: number, userId: string) {
     return await this.database('members')
-      .where({ entity_ref: decodeURIComponent(entityRef) })
+      .where({ item_id: id })
       .andWhere('user_id', userId)
       .del();
   }
 
-  async getMetadata(entityRef: string) {
+  async getMetadataById(id: number) {
     const coalesce = this.database.raw(
-      'coalesce(count(members.entity_ref), 0) as members_count',
+      'coalesce(count(members.item_id), 0) as members_count',
+    );
+
+    return await this.database('metadata')
+      .select([...this.columns, coalesce])
+      .where({ 'metadata.id': id })
+      .groupBy(this.columns)
+      .leftJoin('members', 'metadata.id', '=', 'members.item_id');
+  }
+
+  async getMetadataByRef(entityRef: string) {
+    const coalesce = this.database.raw(
+      'coalesce(count(members.item_id), 0) as members_count',
     );
 
     return await this.database('metadata')
       .select([...this.columns, coalesce])
       .where({ 'metadata.entity_ref': entityRef })
       .groupBy(this.columns)
-      .leftJoin('members', 'metadata.entity_ref', '=', 'members.entity_ref');
+      .leftJoin('members', 'metadata.id', '=', 'members.item_id');
   }
 
   async insertMetadata(bazaarProject: any) {
@@ -98,7 +110,7 @@ export class DatabaseHandler {
       name,
       entityRef,
       community,
-      announcement,
+      description,
       status,
       size,
       startDate,
@@ -108,11 +120,11 @@ export class DatabaseHandler {
 
     await this.database
       .insert({
-        name: name,
+        name,
         entity_ref: entityRef,
-        community: community,
-        announcement: announcement,
-        status: status,
+        community,
+        description,
+        status,
         updated_at: new Date().toISOString(),
         size,
         start_date: startDate,
@@ -124,9 +136,11 @@ export class DatabaseHandler {
 
   async updateMetadata(bazaarProject: any) {
     const {
+      name,
+      id,
       entityRef,
       community,
-      announcement,
+      description,
       status,
       size,
       startDate,
@@ -134,34 +148,32 @@ export class DatabaseHandler {
       responsible,
     } = bazaarProject;
 
-    return await this.database('metadata')
-      .where({ entity_ref: entityRef })
-      .update({
-        announcement: announcement,
-        community: community,
-        status: status,
-        updated_at: new Date().toISOString(),
-        size,
-        start_date: startDate,
-        end_date: endDate,
-        responsible,
-      });
+    return await this.database('metadata').where({ id: id }).update({
+      name,
+      entity_ref: entityRef,
+      description,
+      community,
+      status,
+      updated_at: new Date().toISOString(),
+      size,
+      start_date: startDate,
+      end_date: endDate,
+      responsible,
+    });
   }
 
-  async deleteMetadata(entityRef: string) {
-    return await this.database('metadata')
-      .where({ entity_ref: entityRef })
-      .del();
+  async deleteMetadata(id: number) {
+    return await this.database('metadata').where({ id: id }).del();
   }
 
-  async getEntities() {
+  async getProjects() {
     const coalesce = this.database.raw(
-      'coalesce(count(members.entity_ref), 0) as members_count',
+      'coalesce(count(members.item_id), 0) as members_count',
     );
 
     return await this.database('metadata')
       .select([...this.columns, coalesce])
       .groupBy(this.columns)
-      .leftJoin('members', 'metadata.entity_ref', '=', 'members.entity_ref');
+      .leftJoin('members', 'metadata.id', '=', 'members.item_id');
   }
 }

@@ -150,12 +150,19 @@ export class TarArchiveResponse implements ReadTreeResponse {
     // When no subPath is given, remove just 1 top level directory
     const strip = this.subPath ? this.subPath.split('/').length : 1;
 
+    let filterError: Error | undefined = undefined;
+
     await pipeline(
       this.stream,
       tar.extract({
         strip,
         cwd: dir,
         filter: (path, stat) => {
+          // Filter errors will short-circuit the rest of the filtering and then throw
+          if (filterError) {
+            return false;
+          }
+
           // File path relative to the root extracted directory. Will remove the
           // top level dir name from the path since its name is hard to predetermine.
           const relativePath = stripFirstDirectoryFromPath(path);
@@ -164,12 +171,26 @@ export class TarArchiveResponse implements ReadTreeResponse {
           }
           if (this.filter) {
             const innerPath = path.split('/').slice(strip).join('/');
-            return this.filter(innerPath, { size: stat.size });
+            try {
+              return this.filter(innerPath, { size: stat.size });
+            } catch (error) {
+              filterError = error;
+              return false;
+            }
           }
           return true;
         },
       }),
     );
+
+    if (filterError) {
+      // If the dir was provided we don't want to remove it, but if it wasn't it means
+      // we created a temporary directory and we should remove it.
+      if (!options?.targetDir) {
+        await fs.remove(dir).catch(() => {});
+      }
+      throw filterError;
+    }
 
     return dir;
   }

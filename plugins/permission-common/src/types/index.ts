@@ -23,4 +23,9 @@ export type {
   PermissionCriteria,
 } from './api';
 export type { DiscoveryApi } from './discovery';
-export type { PermissionAttributes, Permission } from './permission';
+export type {
+  PermissionAttributes,
+  Permission,
+  PermissionAuthorizer,
+  AuthorizeRequestOptions,
+} from './permission';

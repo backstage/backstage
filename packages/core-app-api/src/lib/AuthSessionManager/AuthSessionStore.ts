@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ZodSchema } from 'zod';
 import {
   MutableSessionManager,
   SessionScopesFunc,
@@ -27,6 +28,8 @@ type Options<T> = {
   manager: MutableSessionManager<T>;
   /** Storage key to use to store sessions */
   storageKey: string;
+  /** The schema used to validate the stored data */
+  schema: ZodSchema<T>;
   /** Used to get the scope of the session */
   sessionScopes?: SessionScopesFunc<T>;
   /** Used to check if the session needs to be refreshed, defaults to never refresh */
@@ -42,6 +45,7 @@ type Options<T> = {
 export class AuthSessionStore<T> implements MutableSessionManager<T> {
   private readonly manager: MutableSessionManager<T>;
   private readonly storageKey: string;
+  private readonly schema: ZodSchema<T>;
   private readonly sessionShouldRefreshFunc: SessionShouldRefreshFunc<T>;
   private readonly helper: SessionScopeHelper<T>;
 
@@ -49,12 +53,14 @@ export class AuthSessionStore<T> implements MutableSessionManager<T> {
     const {
       manager,
       storageKey,
+      schema,
       sessionScopes,
       sessionShouldRefresh = () => false,
     } = options;
 
     this.manager = manager;
     this.storageKey = storageKey;
+    this.schema = schema;
     this.sessionShouldRefreshFunc = sessionShouldRefresh;
     this.helper = new SessionScopeHelper({
       sessionScopes,
@@ -104,7 +110,16 @@ export class AuthSessionStore<T> implements MutableSessionManager<T> {
           }
           return value;
         });
-        return session;
+
+        try {
+          return this.schema.parse(session);
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.log(
+            `Failed to load session from local storage because it did not conform to the expected schema, ${e}`,
+          );
+          throw e;
+        }
       }
 
       return undefined;
@@ -117,19 +132,30 @@ export class AuthSessionStore<T> implements MutableSessionManager<T> {
   private saveSession(session: T | undefined) {
     if (session === undefined) {
       localStorage.removeItem(this.storageKey);
-    } else {
-      localStorage.setItem(
-        this.storageKey,
-        JSON.stringify(session, (_key, value) => {
-          if (value instanceof Set) {
-            return {
-              __type: 'Set',
-              __value: Array.from(value),
-            };
-          }
-          return value;
-        }),
-      );
+      return;
     }
+
+    try {
+      this.schema.parse(session);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Failed to save session to local storage because it did not conform to the expected schema, ${e}`,
+      );
+      return;
+    }
+
+    localStorage.setItem(
+      this.storageKey,
+      JSON.stringify(session, (_key, value) => {
+        if (value instanceof Set) {
+          return {
+            __type: 'Set',
+            __value: Array.from(value),
+          };
+        }
+        return value;
+      }),
+    );
   }
 }

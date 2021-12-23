@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import { DirectAuthConnector } from '../../../../lib/AuthConnector';
-import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
-  ProfileInfo,
-  BackstageIdentity,
-  SessionState,
   AuthRequestOptions,
-  ProfileInfoApi,
+  BackstageIdentity,
   BackstageIdentityApi,
+  ProfileInfo,
+  ProfileInfoApi,
   SessionApi,
+  SessionState,
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
-import { SamlSession } from './types';
+import { DirectAuthConnector } from '../../../../lib/AuthConnector';
 import {
   AuthSessionStore,
   StaticAuthSessionManager,
 } from '../../../../lib/AuthSessionManager';
+import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { AuthApiCreateOptions } from '../types';
+import { SamlSession, samlSessionSchema } from './types';
 
 export type SamlAuthResponse = {
   profile: ProfileInfo;
@@ -72,6 +72,7 @@ export default class SamlAuth
     const authSessionStore = new AuthSessionStore<SamlSession>({
       manager: sessionManager,
       storageKey: `${provider.id}Session`,
+      schema: samlSessionSchema,
     });
 
     return new SamlAuth(authSessionStore);
@@ -81,10 +82,9 @@ export default class SamlAuth
     return this.sessionManager.sessionState$();
   }
 
-  /**
-   * @deprecated will be made private in the future. Use create method instead.
-   */
-  constructor(private readonly sessionManager: SessionManager<SamlSession>) {}
+  private constructor(
+    private readonly sessionManager: SessionManager<SamlSession>,
+  ) {}
 
   async signIn() {
     await this.getBackstageIdentity({});

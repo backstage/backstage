@@ -28,6 +28,10 @@ import {
   PermissionCondition,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
+import {
+  PermissionAuthorizer,
+  AuthorizeRequestOptions,
+} from './types/permission';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -60,25 +64,17 @@ const responseSchema = z.array(
 );
 
 /**
- * Options for authorization requests; currently only an optional auth token.
- * @public
- */
-export type AuthorizeRequestOptions = {
-  token?: string;
-};
-
-/**
  * An isomorphic client for requesting authorization for Backstage permissions.
  * @public
  */
-export class PermissionClient {
+export class PermissionClient implements PermissionAuthorizer {
   private readonly enabled: boolean;
-  private readonly discoveryApi: DiscoveryApi;
+  private readonly discovery: DiscoveryApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi; configApi: Config }) {
-    this.discoveryApi = options.discoveryApi;
+  constructor(options: { discovery: DiscoveryApi; config: Config }) {
+    this.discovery = options.discovery;
     this.enabled =
-      options.configApi.getOptionalBoolean('permission.enabled') ?? false;
+      options.config.getOptionalBoolean('permission.enabled') ?? false;
   }
 
   /**
@@ -117,7 +113,7 @@ export class PermissionClient {
       }),
     );
 
-    const permissionApi = await this.discoveryApi.getBaseUrl('permission');
+    const permissionApi = await this.discovery.getBaseUrl('permission');
     const response = await fetch(`${permissionApi}/authorize`, {
       method: 'POST',
       body: JSON.stringify(identifiedRequests),

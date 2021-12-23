@@ -148,5 +148,4 @@ export type CostInsightsApi = {
 
 export const costInsightsApiRef = createApiRef<CostInsightsApi>({
   id: 'plugin.costinsights.service',
-  description: 'Provides cost data and alerts for the cost-insights plugin',
 });

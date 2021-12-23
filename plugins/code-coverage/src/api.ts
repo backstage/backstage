@@ -34,7 +34,6 @@ export type CodeCoverageApi = {
 
 export const codeCoverageApiRef = createApiRef<CodeCoverageApi>({
   id: 'plugin.code-coverage.service',
-  description: 'Used by the code coverage plugin to make requests',
 });
 
 export class CodeCoverageRestApi implements CodeCoverageApi {
