@@ -15,7 +15,7 @@
  */
 import { AirbrakePage, airbrakePlugin } from './index';
 
-describe('The demo index page', () => {
+describe('The Airbrake plugin index file', () => {
   it('exports the plugin and page', async () => {
     expect(AirbrakePage).toBeTruthy();
     expect(airbrakePlugin).toBeTruthy();
