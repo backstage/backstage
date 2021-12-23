@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { StorageApi, StorageValueChange } from '@backstage/core-plugin-api';
-import { Observable } from '@backstage/types';
+import { StorageApi, StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { JsonValue, Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 
 /**
@@ -62,20 +62,48 @@ export class MockStorageApi implements StorageApi {
   }
 
   get<T>(key: string): T | undefined {
-    return this.data[this.getKeyName(key)];
+    return this.snapshot(key).value as T | undefined;
+  }
+
+  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T> {
+    if (this.data.hasOwnProperty(this.getKeyName(key))) {
+      const data = this.data[this.getKeyName(key)];
+      return {
+        key,
+        presence: 'present',
+        value: data,
+        newValue: data,
+      };
+    }
+    return {
+      key,
+      presence: 'absent',
+      value: undefined,
+      newValue: undefined,
+    };
   }
 
   async set<T>(key: string, data: T): Promise<void> {
     this.data[this.getKeyName(key)] = data;
-    this.notifyChanges({ key, newValue: data });
+    this.notifyChanges({
+      key,
+      presence: 'present',
+      value: data,
+      newValue: data,
+    });
   }
 
   async remove(key: string): Promise<void> {
     delete this.data[this.getKeyName(key)];
-    this.notifyChanges({ key, newValue: undefined });
+    this.notifyChanges({
+      key,
+      presence: 'absent',
+      value: undefined,
+      newValue: undefined,
+    });
   }
 
-  observe$<T>(key: string): Observable<StorageValueChange<T>> {
+  observe$<T>(key: string): Observable<StorageValueSnapshot<T>> {
     return this.observable.filter(({ key: messageKey }) => messageKey === key);
   }
 
@@ -83,22 +111,22 @@ export class MockStorageApi implements StorageApi {
     return `${this.namespace}/${encodeURIComponent(key)}`;
   }
 
-  private notifyChanges<T>(message: StorageValueChange<T>) {
+  private notifyChanges<T>(message: StorageValueSnapshot<T>) {
     for (const subscription of this.subscribers) {
       subscription.next(message);
     }
   }
 
   private subscribers = new Set<
-    ZenObservable.SubscriptionObserver<StorageValueChange>
+    ZenObservable.SubscriptionObserver<StorageValueSnapshot<JsonValue>>
   >();
 
-  private readonly observable = new ObservableImpl<StorageValueChange>(
-    subscriber => {
-      this.subscribers.add(subscriber);
-      return () => {
-        this.subscribers.delete(subscriber);
-      };
-    },
-  );
+  private readonly observable = new ObservableImpl<
+    StorageValueSnapshot<JsonValue>
+  >(subscriber => {
+    this.subscribers.add(subscriber);
+    return () => {
+      this.subscribers.delete(subscriber);
+    };
+  });
 }

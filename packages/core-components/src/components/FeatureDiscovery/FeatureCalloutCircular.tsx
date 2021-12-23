@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React, {
   PropsWithChildren,
@@ -108,7 +108,12 @@ type Placement = {
   textWidth: number;
 };
 
-/** @public */
+/**
+ * One-time, round 'telescope' animation showing new feature.
+ *
+ * @public
+ *
+ */
 export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {
   const { featureId, title, description, children } = props;
   const { show, hide } = useShowCallout(featureId);

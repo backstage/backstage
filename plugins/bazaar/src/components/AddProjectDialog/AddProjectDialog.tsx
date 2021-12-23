@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { UseFormReset, UseFormGetValues } from 'react-hook-form';
 import { useApi } from '@backstage/core-plugin-api';
@@ -39,18 +39,13 @@ export const AddProjectDialog = ({
   fetchCatalogEntities,
 }: Props) => {
   const bazaarApi = useApi(bazaarApiRef);
-  const [selectedEntity, setSelectedEntity] = useState(
-    catalogEntities ? catalogEntities[0] : null,
-  );
-
-  useEffect(() => {
-    setSelectedEntity(catalogEntities ? catalogEntities[0] : null);
-  }, [catalogEntities]);
+  const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
 
   const defaultValues = {
+    name: '',
     title: 'Add project',
     community: '',
-    announcement: '',
+    description: '',
     status: 'proposed' as Status,
     size: 'medium' as Size,
     responsible: '',
@@ -58,59 +53,48 @@ export const AddProjectDialog = ({
     endDate: null,
   };
 
-  const handleListItemClick = (entity: Entity) => {
+  const handleEntityClick = (entity: Entity) => {
     setSelectedEntity(entity);
   };
 
-  const handleCloseDialog = () => {
-    setSelectedEntity(catalogEntities ? catalogEntities[0] : null);
-    handleClose();
-  };
-
-  const handleSave: any = async (
+  const handleSubmit: any = async (
     getValues: UseFormGetValues<FormValues>,
     reset: UseFormReset<FormValues>,
   ) => {
     const formValues = getValues();
+    const response = await bazaarApi.addProject({
+      ...formValues,
+      entityRef: selectedEntity ? stringifyEntityRef(selectedEntity) : null,
+      startDate: formValues.startDate ?? null,
+      endDate: formValues.endDate ?? null,
+    } as BazaarProject);
 
-    if (selectedEntity) {
-      await bazaarApi.updateMetadata({
-        name: selectedEntity.metadata.name,
-        entityRef: stringifyEntityRef(selectedEntity),
-        announcement: formValues.announcement,
-        status: formValues.status,
-        community: formValues.community,
-        membersCount: 0,
-        size: formValues.size,
-        startDate: formValues.startDate ?? null,
-        endDate: formValues.endDate ?? null,
-        responsible: formValues.responsible,
-      } as BazaarProject);
-
+    if (response.status === 'ok') {
       fetchBazaarProjects();
       fetchCatalogEntities();
-
-      handleClose();
-      reset(defaultValues);
     }
+
+    handleClose();
+    reset(defaultValues);
   };
 
   return (
     <ProjectDialog
-      handleSave={handleSave}
+      handleSave={handleSubmit}
       title="Add project"
       isAddForm
       defaultValues={defaultValues}
       open={open}
       projectSelector={
         <ProjectSelector
-          value={selectedEntity?.metadata?.name || ''}
-          onChange={handleListItemClick}
-          isFormInvalid={selectedEntity === null}
-          entities={catalogEntities || []}
+          onChange={handleEntityClick}
+          catalogEntities={catalogEntities || []}
+          disableClearable={false}
+          defaultValue={null}
+          label="Select a project"
         />
       }
-      handleClose={handleCloseDialog}
+      handleClose={handleClose}
     />
   );
 };

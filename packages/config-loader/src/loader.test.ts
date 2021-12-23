@@ -119,7 +119,6 @@ describe('loadConfig', () => {
       loadConfig({
         configRoot: '/root',
         configTargets: [],
-        env: 'production',
       }),
     ).resolves.toEqual({
       appConfigs: [
@@ -146,7 +145,6 @@ describe('loadConfig', () => {
       loadConfig({
         configRoot: '/root',
         configTargets: [{ url: configUrl }],
-        env: 'production',
         remote: {
           reloadIntervalSeconds: 30,
         },
@@ -175,7 +173,6 @@ describe('loadConfig', () => {
           { path: '/root/app-config.yaml' },
           { path: '/root/app-config2.yaml' },
         ],
-        env: 'production',
       }),
     ).resolves.toEqual({
       appConfigs: [
@@ -208,7 +205,6 @@ describe('loadConfig', () => {
       loadConfig({
         configRoot: '/root',
         configTargets: [{ path: '/root/app-config.yaml' }],
-        env: 'production',
       }),
     ).resolves.toEqual({
       appConfigs: [
@@ -234,7 +230,6 @@ describe('loadConfig', () => {
           { path: '/root/app-config.yaml' },
           { path: '/root/app-config.development.yaml' },
         ],
-        env: 'development',
       }),
     ).resolves.toEqual({
       appConfigs: [
@@ -273,7 +268,6 @@ describe('loadConfig', () => {
       loadConfig({
         configRoot: '/root',
         configTargets: [{ path: '/root/app-config.substitute.yaml' }],
-        env: 'development',
       }),
     ).resolves.toEqual({
       appConfigs: [

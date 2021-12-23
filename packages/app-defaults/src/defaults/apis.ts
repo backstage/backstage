@@ -62,6 +62,10 @@ import {
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  permissionApiRef,
+  IdentityPermissionApi,
+} from '@backstage/plugin-permission-react';
 
 export const apis = [
   createApiFactory({
@@ -295,5 +299,15 @@ export const apis = [
         environment: configApi.getOptionalString('auth.environment'),
       });
     },
+  }),
+  createApiFactory({
+    api: permissionApiRef,
+    deps: {
+      discovery: discoveryApiRef,
+      identity: identityApiRef,
+      config: configApiRef,
+    },
+    factory: ({ config, discovery, identity }) =>
+      IdentityPermissionApi.create({ config, discovery, identity }),
   }),
 ];

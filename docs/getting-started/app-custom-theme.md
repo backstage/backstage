@@ -54,7 +54,7 @@ For example, adding the theme that we created in the previous section can be
 done like this:
 
 ```ts
-import { createApp } from '@backstage/core-app-api';
+import { createApp } from '@backstage/app-defaults';
 
 const app = createApp({
   apis: ...,

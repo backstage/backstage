@@ -16,10 +16,10 @@
 
 import {
   StorageApi,
-  StorageValueChange,
+  StorageValueSnapshot,
   ErrorApi,
 } from '@backstage/core-plugin-api';
-import { Observable } from '@backstage/types';
+import { JsonValue, Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 
 const buckets = new Map<string, WebStorage>();
@@ -43,16 +43,29 @@ export class WebStorage implements StorageApi {
   }
 
   get<T>(key: string): T | undefined {
+    return this.snapshot(key).value as T | undefined;
+  }
+
+  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T> {
+    let value = undefined;
+    let presence: 'present' | 'absent' = 'absent';
     try {
-      const storage = JSON.parse(localStorage.getItem(this.getKeyName(key))!);
-      return storage ?? undefined;
+      const item = localStorage.getItem(this.getKeyName(key));
+      if (item) {
+        value = JSON.parse(item, (_key, val) => {
+          if (typeof val === 'object' && val !== null) {
+            Object.freeze(val);
+          }
+          return val;
+        });
+        presence = 'present';
+      }
     } catch (e) {
       this.errorApi.post(
         new Error(`Error when parsing JSON config from storage for: ${key}`),
       );
     }
-
-    return undefined;
+    return { key, value, newValue: value, presence };
   }
 
   forBucket(name: string): WebStorage {
@@ -64,16 +77,16 @@ export class WebStorage implements StorageApi {
   }
 
   async set<T>(key: string, data: T): Promise<void> {
-    localStorage.setItem(this.getKeyName(key), JSON.stringify(data, null, 2));
-    this.notifyChanges({ key, newValue: data });
+    localStorage.setItem(this.getKeyName(key), JSON.stringify(data));
+    this.notifyChanges(key);
   }
 
   async remove(key: string): Promise<void> {
     localStorage.removeItem(this.getKeyName(key));
-    this.notifyChanges({ key, newValue: undefined });
+    this.notifyChanges(key);
   }
 
-  observe$<T>(key: string): Observable<StorageValueChange<T>> {
+  observe$<T>(key: string): Observable<StorageValueSnapshot<T>> {
     return this.observable.filter(({ key: messageKey }) => messageKey === key);
   }
 
@@ -81,22 +94,23 @@ export class WebStorage implements StorageApi {
     return `${this.namespace}/${encodeURIComponent(key)}`;
   }
 
-  private notifyChanges<T>(message: StorageValueChange<T>) {
+  private notifyChanges(key: string) {
+    const snapshot = this.snapshot(key);
     for (const subscription of this.subscribers) {
-      subscription.next(message);
+      subscription.next(snapshot);
     }
   }
 
   private subscribers = new Set<
-    ZenObservable.SubscriptionObserver<StorageValueChange>
+    ZenObservable.SubscriptionObserver<StorageValueSnapshot<JsonValue>>
   >();
 
-  private readonly observable = new ObservableImpl<StorageValueChange>(
-    subscriber => {
-      this.subscribers.add(subscriber);
-      return () => {
-        this.subscribers.delete(subscriber);
-      };
-    },
-  );
+  private readonly observable = new ObservableImpl<
+    StorageValueSnapshot<JsonValue>
+  >(subscriber => {
+    this.subscribers.add(subscriber);
+    return () => {
+      this.subscribers.delete(subscriber);
+    };
+  });
 }

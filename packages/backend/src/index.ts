@@ -55,13 +55,19 @@ import graphql from './plugins/graphql';
 import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
+import permission from './plugins/permission';
 import { PluginEnvironment } from './types';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
-  const tokenManager = ServerTokenManager.noop();
+  const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
+  const permissions = ServerPermissionClient.fromConfig(config, {
+    discovery,
+    tokenManager,
+  });
 
   root.info(`Created UrlReader ${reader}`);
 
@@ -72,7 +78,16 @@ function makeCreateEnv(config: Config) {
     const logger = root.child({ type: 'plugin', plugin });
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
-    return { logger, cache, database, config, reader, discovery, tokenManager };
+    return {
+      logger,
+      cache,
+      database,
+      config,
+      reader,
+      discovery,
+      tokenManager,
+      permissions,
+    };
   };
 }
 
@@ -114,6 +129,7 @@ async function main() {
   const techInsightsEnv = useHotMemoize(module, () =>
     createEnv('tech-insights'),
   );
+  const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -132,6 +148,7 @@ async function main() {
   apiRouter.use('/graphql', await graphql(graphqlEnv));
   apiRouter.use('/badges', await badges(badgesEnv));
   apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
+  apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)

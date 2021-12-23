@@ -74,6 +74,11 @@ proxy:
     headers:
       X-Api-Key: ${NEW_RELIC_REST_API_KEY}
 
+  '/newrelic/api':
+    target: https://api.newrelic.com
+    headers:
+      X-Api-Key: ${NEW_RELIC_USER_KEY}
+
   '/pagerduty':
     target: https://api.pagerduty.com
     headers:

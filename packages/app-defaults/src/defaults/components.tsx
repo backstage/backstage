@@ -73,7 +73,7 @@ const DefaultErrorBoundaryFallback = ({
 };
 
 /**
- * Creates a set of default components to pass along to {@link @backstage/core-app-api#createApp}.
+ * Creates a set of default components to pass along to {@link @backstage/core-app-api#createSpecializedApp}.
  *
  * @public
  */

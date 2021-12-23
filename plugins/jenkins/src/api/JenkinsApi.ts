@@ -24,7 +24,6 @@ import { ResponseError } from '@backstage/errors';
 
 export const jenkinsApiRef = createApiRef<JenkinsApi>({
   id: 'plugin.jenkins.service2',
-  description: 'Used by the Jenkins plugin to make requests',
 });
 
 export interface Build {

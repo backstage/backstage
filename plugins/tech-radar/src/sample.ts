@@ -161,9 +161,10 @@ entries.push({
     {
       ringId: 'use',
       date: new Date('2020-08-06'),
+      description: 'long description',
     },
   ],
-  url: '#',
+  url: 'https://github.com',
   key: 'github-actions',
   id: 'github-actions',
   title: 'GitHub Actions',
