@@ -8,11 +8,11 @@ To make this change to an existing app, apply the following changes to the `app/
 Remove internal style
 
 ```diff
- - <style>
- -  #root {
- -    min-height: 100%;
- -  }
- - </style>
+- <style>
+-  #root {
+-    min-height: 100%;
+-  }
+- </style>
 ```
 
 Remove inline style from the body tag
