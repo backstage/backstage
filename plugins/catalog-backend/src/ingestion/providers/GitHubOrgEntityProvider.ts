@@ -28,10 +28,7 @@ import {
 import { graphql } from '@octokit/graphql';
 import { merge } from 'lodash';
 import { Logger } from 'winston';
-import {
-  EntityProvider,
-  EntityProviderConnection,
-} from '../../providers/types';
+import { EntityProvider, EntityProviderConnection } from '../../providers';
 import {
   getOrganizationTeams,
   getOrganizationUsers,

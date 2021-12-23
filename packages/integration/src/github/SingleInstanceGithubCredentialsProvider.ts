@@ -22,6 +22,7 @@ import { DateTime } from 'luxon';
 import {
   GithubCredentials,
   GithubCredentialsProvider,
+  GithubCredentialsProviderFactory,
   GithubCredentialType,
 } from './types';
 
@@ -231,9 +232,7 @@ export class GithubAppCredentialsMux {
 export class SingleInstanceGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
-  static create: (
-    config: GitHubIntegrationConfig,
-  ) => GithubCredentialsProvider = config => {
+  static create: GithubCredentialsProviderFactory = config => {
     return new SingleInstanceGithubCredentialsProvider(
       new GithubAppCredentialsMux(config),
       config.token,

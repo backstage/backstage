@@ -16,6 +16,7 @@ import { EntityName } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
+import { GithubCredentialsProviderFactory } from '@backstage/integration';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
@@ -1008,12 +1009,17 @@ function generalError(
 //
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
-  constructor(options: { integrations: ScmIntegrations; logger: Logger_2 });
+  constructor(options: {
+    integrations: ScmIntegrations;
+    logger: Logger_2;
+    githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
+  });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
+      githubCredentialsProviderFactory?: GithubCredentialsProviderFactory;
     },
   ): GithubDiscoveryProcessor;
   // (undocumented)
