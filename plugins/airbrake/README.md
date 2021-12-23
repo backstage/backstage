@@ -2,6 +2,8 @@
 
 Welcome to the Airbrake plugin!
 
+This is a plugin providing connectivity between Backstage and Airbrake (https://airbrake.io/).
+
 _This plugin is currently not fit for use as it is work in progress_
 
 ## Getting started
