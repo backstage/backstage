@@ -40,14 +40,11 @@ export {
 export type {
   SearchModalProps,
   SidebarSearchModalProps,
+  HomePageSearchBarProps,
   SidebarSearchProps,
-} from './components';
-export type {
   FiltersState,
   SearchBarProps,
   SearchBarBaseProps,
-  SearchModalProps,
-  HomePageSearchBarProps,
 } from './components';
 export {
   DefaultResultListItem,
