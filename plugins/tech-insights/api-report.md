@@ -5,11 +5,21 @@
 ```ts
 /// <reference types="react" />
 
+import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { CheckResult } from '@backstage/plugin-tech-insights-common';
+import { EntityName } from '@backstage/catalog-model';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export const EntityTechInsightsScorecardContent: () => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "TechInsightsApi" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "techInsightsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const techInsightsApiRef: ApiRef<TechInsightsApi>;
 
 // @public (undocumented)
 export const techInsightsPlugin: BackstagePlugin<

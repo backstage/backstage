@@ -17,3 +17,5 @@ export {
   techInsightsPlugin,
   EntityTechInsightsScorecardContent,
 } from './plugin';
+
+export { techInsightsApiRef } from './api/TechInsightsApi';
