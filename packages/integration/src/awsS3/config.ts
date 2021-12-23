@@ -17,7 +17,7 @@
 import { Config } from '@backstage/config';
 import { isValidHost } from '../helpers';
 
-const AMAZON_AWS_HOST = 'amazonaws.com';
+export const AMAZON_AWS_HOST = 'amazonaws.com';
 
 /**
  * The configuration parameters for a single AWS S3 provider.
@@ -28,7 +28,9 @@ export type AwsS3IntegrationConfig = {
   /**
    * The host of the target that this matches on, e.g. "amazonaws.com"
    *
-   * Currently only "amazonaws.com" is supported.
+   * If validateHost is true, "amazonaws.com" host is enforced. To test with localstack or similar AWS S3 emulators,
+   * setting validateHost to false allows hosts like "localhost:4566". Set ssl to false to access emulated S3
+   * endpoint over http (vs https). In that case, S3 urls would look like "http://<bucket>.localhost:4566/<path>".
    */
   host: string;
 
@@ -46,6 +48,16 @@ export type AwsS3IntegrationConfig = {
    * roleArn
    */
   roleArn?: string;
+
+  /**
+   * validateHost
+   */
+  validateHost: boolean;
+
+  /**
+   * ssl
+   */
+  ssl: boolean;
 };
 
 /**
@@ -62,6 +74,8 @@ export function readAwsS3IntegrationConfig(
   const accessKeyId = config.getOptionalString('accessKeyId');
   const secretAccessKey = config.getOptionalString('secretAccessKey');
   const roleArn = config.getOptionalString('roleArn');
+  const validateHost = config.getOptionalBoolean('validateHost') ?? true;
+  const ssl = config.getOptionalBoolean('ssl') ?? true;
 
   if (!isValidHost(host)) {
     throw new Error(
@@ -69,7 +83,7 @@ export function readAwsS3IntegrationConfig(
     );
   }
 
-  return { host, accessKeyId, secretAccessKey, roleArn };
+  return { host, accessKeyId, secretAccessKey, roleArn, validateHost, ssl };
 }
 
 /**
@@ -90,6 +104,8 @@ export function readAwsS3IntegrationConfigs(
   if (!result.some(c => c.host === AMAZON_AWS_HOST)) {
     result.push({
       host: AMAZON_AWS_HOST,
+      validateHost: true,
+      ssl: true,
     });
   }
   return result;

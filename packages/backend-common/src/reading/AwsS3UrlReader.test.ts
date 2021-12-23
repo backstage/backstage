@@ -332,4 +332,47 @@ describe('AwsS3UrlReader', () => {
       expect(body.toString().trim()).toBe('site_name: Test');
     });
   });
+
+  describe('readNonAwsHost', () => {
+    let awsS3UrlReader: AwsS3UrlReader;
+
+    beforeAll(() => {
+      AWSMock.setSDKInstance(aws);
+      AWSMock.mock(
+        'S3',
+        'getObject',
+        Buffer.from(
+          require('fs').readFileSync(
+            path.resolve(
+              __dirname,
+              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+            ),
+          ),
+        ),
+      );
+
+      const s3 = new aws.S3();
+      awsS3UrlReader = new AwsS3UrlReader(
+        new AwsS3Integration(
+          readAwsS3IntegrationConfig(
+            new ConfigReader({
+              host: 'localhost:4566',
+              accessKeyId: 'fake-access-key',
+              secretAccessKey: 'fake-secret-key',
+              validateHost: false,
+              ssl: false,
+            }),
+          ),
+        ),
+        { s3, treeResponseFactory },
+      );
+    });
+
+    it('returns contents of an object in a bucket', async () => {
+      const response = await awsS3UrlReader.read(
+        'http://test-bucket.localhost:4566/awsS3-mock-object.yaml',
+      );
+      expect(response.toString().trim()).toBe('site_name: Test');
+    });
+  });
 });

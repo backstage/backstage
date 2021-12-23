@@ -27,12 +27,17 @@ import {
   UrlReader,
 } from './types';
 import getRawBody from 'raw-body';
-import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
+import {
+  AwsS3Integration,
+  ScmIntegrations,
+  AMAZON_AWS_HOST,
+} from '@backstage/integration';
 import { ForwardedError, NotModifiedError } from '@backstage/errors';
 import { ListObjectsV2Output, ObjectList } from 'aws-sdk/clients/s3';
 
 const parseURL = (
   url: string,
+  validateHost: boolean,
 ): { path: string; bucket: string; region: string } => {
   let { host, pathname } = new URL(url);
 
@@ -47,15 +52,23 @@ const parseURL = (
    * Format of a Valid S3 URL: https://bucket-name.s3.Region.amazonaws.com/keyname
    */
   const validHost = new RegExp(
-    /^[a-z\d][a-z\d\.-]{1,61}[a-z\d]\.s3\.[a-z\d-]+\.amazonaws.com$/,
+    /^[a-z\d][a-z\d.-]{1,61}[a-z\d]\.s3\.[a-z\d-]+\.amazonaws.com$/,
   );
-  if (!validHost.test(host)) {
-    throw new Error(`not a valid AWS S3 URL: ${url}`);
-  }
 
-  const [bucket] = host.split(/\.s3\.[a-z\d-]+\.amazonaws.com/);
-  host = host.substring(bucket.length);
-  const [, , region, ,] = host.split('.');
+  let bucket;
+  let region;
+
+  if (!validHost.test(host)) {
+    if (validateHost) {
+      throw new Error(`not a valid AWS S3 URL: ${url}`);
+    }
+    [bucket] = host.split('.');
+    region = 'none';
+  } else {
+    [bucket] = host.split(/\.s3\.[a-z\d-]+\.amazonaws.com/);
+    host = host.substring(bucket.length);
+    [, , region, ,] = host.split('.');
+  }
 
   return {
     path: pathname,
@@ -70,9 +83,17 @@ export class AwsS3UrlReader implements UrlReader {
 
     return integrations.awsS3.list().map(integration => {
       const creds = AwsS3UrlReader.buildCredentials(integration);
+      const defaultHost = integration.config.host === AMAZON_AWS_HOST;
+
       const s3 = new S3({
         apiVersion: '2006-03-01',
         credentials: creds,
+        endpoint: defaultHost
+          ? undefined
+          : `${integration.config.ssl ? 'https://' : 'http://'}${
+              integration.config.host
+            }`,
+        s3ForcePathStyle: !defaultHost,
       });
       const reader = new AwsS3UrlReader(integration, {
         s3,
@@ -138,7 +159,10 @@ export class AwsS3UrlReader implements UrlReader {
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
     try {
-      const { path, bucket, region } = parseURL(url);
+      const { path, bucket, region } = parseURL(
+        url,
+        this.integration.config.validateHost,
+      );
       aws.config.update({ region: region });
 
       let params;
@@ -178,7 +202,10 @@ export class AwsS3UrlReader implements UrlReader {
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
     try {
-      const { path, bucket, region } = parseURL(url);
+      const { path, bucket, region } = parseURL(
+        url,
+        this.integration.config.validateHost,
+      );
       const allObjects: ObjectList = [];
       const responses = [];
       let continuationToken: string | undefined;
