@@ -42,6 +42,13 @@ export class CacheManager {
     none: this.getNoneClient,
   };
 
+  /**
+   * Shared memory store for the in-memory cache client. Sharing the same Map
+   * instance ensures get/set/delete operations hit the same store, regardless
+   * of where/when a client is instantiated.
+   */
+  private readonly memoryStore = new Map();
+
   private readonly logger: Logger;
   private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
@@ -133,6 +140,7 @@ export class CacheManager {
     return new Keyv({
       namespace: pluginId,
       ttl: defaultTtl,
+      store: this.memoryStore,
     });
   }
 
