@@ -30,11 +30,7 @@ catalog:
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
     # Backstage example templates
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
-{{- else }}
-  locations:
-    - type: gitlab-discovery
-      target: https://gitlab.com/citihub/blob/main/catalog-info.yaml      
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml   
 {{- end }}
 
 sentry:

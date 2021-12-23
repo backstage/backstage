@@ -5,9 +5,9 @@
 {{/* Determine the api type for the ingress */}}
 {{- if lt .Capabilities.KubeVersion.Minor "19" }}
 apiVersion: networking.k8s.io/v1beta1
-{{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+{{- else }}
 apiVersion: networking.k8s.io/v1
-{{- end }}  
+{{- end }}
 kind: Ingress
 metadata:
   name: {{ include "backstage.fullname" . }}-ingress
@@ -41,7 +41,7 @@ spec:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "frontend.serviceName" . }}
               servicePort: 80
-              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+              {{- else }}
               service:
                 name: {{ include "frontend.serviceName" . }}
                 port:
@@ -49,7 +49,7 @@ spec:
               {{- end }}
           {{/* Route the backend inside the same hostname as the frontend when they are the same */}}
           {{- if eq $frontendUrl.host $backendUrl.host}}
-          - path: /api
+          - path: /api/
             {{- if ge .Capabilities.KubeVersion.Minor "19" }}
             pathType: Prefix
             {{- end }}
@@ -57,7 +57,7 @@ spec:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "backend.serviceName" . }}
               servicePort: 80
-              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+              {{- else }}
               service:
                 name: {{ include "backend.serviceName" . }}
                 port:
@@ -76,7 +76,7 @@ spec:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "backend.serviceName" . }}
               servicePort: 80
-              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+              {{- else }}
               service:
                 name: {{ include "backend.serviceName" . }}
                 port:
@@ -97,7 +97,7 @@ spec:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "lighthouse.serviceName" . }}
               servicePort: 80
-              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+              {{- else }}
               service:
                 name: {{ include "lighthouse.serviceName" . }}
                 port:
@@ -108,7 +108,7 @@ spec:
 ---
 {{- if lt .Capabilities.KubeVersion.Minor "19" }}
 apiVersion: networking.k8s.io/v1beta1
-{{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+{{- else }}
 apiVersion: networking.k8s.io/v1
 {{- end }}
 kind: Ingress
@@ -142,7 +142,7 @@ spec:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "lighthouse.serviceName" . }}
               servicePort: 80
-              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
+              {{- else }}
               service:
                 name: {{ include "lighthouse.serviceName" . }}
                 port:
