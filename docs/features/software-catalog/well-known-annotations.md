@@ -204,6 +204,24 @@ browser when viewing that user.
 This annotation can be used on a [User entity](descriptor-format.md#kind-user)
 to note that it originated from that user on GitHub.
 
+### gocd.org/pipelines
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    gocd.org/pipelines: backstage,backstage-pr,backstage-builder
+```
+
+The value of this annotation is a comma-separated list of the GoCD pipeline
+names to fetch CI/CD information for.
+
+The pipeline name is usually defined in the `gocd.yml` file for the pipeline
+definition.
+
+Specifying this annotation will enable GoCD related features in Backstage for
+that entity.
+
 ### sentry.io/project-slug
 
 ```yaml
