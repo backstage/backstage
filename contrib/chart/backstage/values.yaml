@@ -6,8 +6,8 @@ frontend:
   enabled: true
   replicaCount: 1
   image:
-    repository: martinaif/backstage-k8s-demo-frontend
-    tag: test1
+    repository: citihub/backstage-frontend
+    tag: "20211216"
     pullPolicy: IfNotPresent
   containerPort: 80
   serviceType: ClusterIP
