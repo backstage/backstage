@@ -282,27 +282,17 @@ describe('JsonRulesEngineFactChecker', () => {
     });
 
     it('should use custom operators when defined', async () => {
-      latestFactsByIdsMock.mockImplementation(() =>
-        Promise.resolve({
-          ['test-factretriever']: {
-            id: 'test-factretriever',
-            facts: {
-              testnumberfact: 4,
-            },
-          },
-        }),
-      );
       const results = await factChecker.runChecks('a/a/a', ['customOperator']);
       expect(results).toHaveLength(1);
       expect(results[0]).toMatchObject({
         facts: {
           testnumberfact: {
-            value: 4,
+            value: 3,
             type: 'integer',
             description: '',
           },
         },
-        result: true,
+        result: false,
         check: {
           id: 'customOperatorTestCheck',
           type: JSON_RULE_ENGINE_CHECK_TYPE,
@@ -314,9 +304,9 @@ describe('JsonRulesEngineFactChecker', () => {
               all: [
                 {
                   fact: 'testnumberfact',
-                  factResult: 4,
+                  factResult: 3,
                   operator: 'isDivisibleBy',
-                  result: true,
+                  result: false,
                   value: 2,
                 },
               ],
