@@ -19,6 +19,11 @@ import { GithubAppConfig, GitHubIntegrationConfig } from './config';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
+import {
+  GithubCredentials,
+  GithubCredentialsProvider,
+  GithubCredentialType,
+} from './types';
 
 type InstallationData = {
   installationId: number;
@@ -216,24 +221,6 @@ export class GithubAppCredentialsMux {
 }
 
 /**
- * The type of credentials produced by the credential provider.
- *
- * @public
- */
-export type GithubCredentialType = 'app' | 'token';
-
-/**
- * A set of credentials information for a GitHub integration.
- *
- * @public
- */
-export type GithubCredentials = {
-  headers?: { [name: string]: string };
-  token?: string;
-  type: GithubCredentialType;
-};
-
-/**
  * Handles the creation and caching of credentials for GitHub integrations.
  *
  * @public
@@ -241,13 +228,17 @@ export type GithubCredentials = {
  *
  * TODO: Possibly move this to a backend only package so that it's not used in the frontend by mistake
  */
-export class GithubCredentialsProvider {
-  static create(config: GitHubIntegrationConfig): GithubCredentialsProvider {
-    return new GithubCredentialsProvider(
+export class SingleInstanceGithubCredentialsProvider
+  implements GithubCredentialsProvider
+{
+  static create: (
+    config: GitHubIntegrationConfig,
+  ) => GithubCredentialsProvider = config => {
+    return new SingleInstanceGithubCredentialsProvider(
       new GithubAppCredentialsMux(config),
       config.token,
     );
-  }
+  };
 
   private constructor(
     private readonly githubAppCredentialsMux: GithubAppCredentialsMux,

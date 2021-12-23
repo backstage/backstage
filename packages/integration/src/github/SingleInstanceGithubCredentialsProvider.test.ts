@@ -31,11 +31,11 @@ jest.doMock('@octokit/rest', () => {
   return { Octokit };
 });
 
-import { GithubCredentialsProvider } from './GithubCredentialsProvider';
+import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubCredentialsProvider';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
 
-const github = GithubCredentialsProvider.create({
+const github = SingleInstanceGithubCredentialsProvider.create({
   host: 'github.com',
   apps: [
     {
@@ -49,7 +49,7 @@ const github = GithubCredentialsProvider.create({
   token: 'hardcoded_token',
 });
 
-describe('GithubCredentialsProvider tests', () => {
+describe('DefaultGithubCredentialsProvider tests', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -204,7 +204,7 @@ describe('GithubCredentialsProvider tests', () => {
   });
 
   it('should return the default token if no app is configured', async () => {
-    const githubProvider = GithubCredentialsProvider.create({
+    const githubProvider = SingleInstanceGithubCredentialsProvider.create({
       host: 'github.com',
       apps: [],
       token: 'fallback_token',
@@ -218,7 +218,7 @@ describe('GithubCredentialsProvider tests', () => {
   });
 
   it('should return the configured token if there are no installations', async () => {
-    const githubProvider = GithubCredentialsProvider.create({
+    const githubProvider = SingleInstanceGithubCredentialsProvider.create({
       host: 'github.com',
       apps: [
         {
@@ -243,7 +243,7 @@ describe('GithubCredentialsProvider tests', () => {
   });
 
   it('should return undefined if no token or apps are configured', async () => {
-    const githubProvider = GithubCredentialsProvider.create({
+    const githubProvider = SingleInstanceGithubCredentialsProvider.create({
       host: 'github.com',
     });
 

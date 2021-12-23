@@ -16,7 +16,7 @@
 
 import { GitHubIntegrationConfig } from './config';
 import { getGitHubFileFetchUrl, getGitHubRequestOptions } from './core';
-import { GithubCredentials } from './GithubCredentialsProvider';
+import { GithubCredentials } from './types';
 
 describe('github core', () => {
   const appCredentials: GithubCredentials = {
