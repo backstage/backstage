@@ -1,5 +1,46 @@
 # @backstage/backend-common
 
+## 0.10.0
+
+### Minor Changes
+
+- 2f8a9b665f: Auto-generate secrets for backend-to-backend auth in local development environments.
+
+  When NODE_ENV is 'development', the ServerTokenManager will now generate a secret for backend-to-backend auth to make it simpler to work locally on Backstage instances that use backend-to-backend auth. For production deployments, a secret must still be manually configured as described in [the backend-to-backend auth tutorial](https://backstage.io/docs/tutorials/backend-to-backend-auth).
+
+  After the change, the static `fromConfig` method on the `ServerTokenManager` requires a logger.
+
+  ```diff
+  -  const tokenManager = ServerTokenManager.fromConfig(config);
+  +  const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
+  ```
+
+### Patch Changes
+
+- 776180b740: Fixed bug in backend-common to allow passing of remote option in order to enable passing remote url in --config option. The remote option should be passed along with reloadIntervalSeconds from packages/backend/src/index.ts (Updated the file as well)
+
+  These changes are needed in `packages/backend/src/index.ts` if remote URLs are desired to be passed in --config option and read and watch remote files for config.
+
+  ```diff
+  @@ -86,7 +86,11 @@ async function main() {
+     const config = await loadBackendConfig({
+       argv: process.argv,
+       logger,
+  +    remote: {
+  +      reloadIntervalSeconds: 60 * 10 // Check remote config changes every 10 minutes. Change to your desired interval in seconds
+  +    }
+     });
+  +
+     const createEnv = makeCreateEnv(config);
+
+     const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
+  ```
+
+- 2462b9e275: Ensure temporary directories are cleaned up if an error is thrown in the `filter` callback of the `UrlReader.readTree` options.
+- 2f6d8ec3b6: Updated the `ReadTreeResponse` documentation to clarify that the caller of `dir()` is responsible for removing the directory after use.
+- Updated dependencies
+  - @backstage/config-loader@0.9.0
+
 ## 0.9.14
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder
 
+## 0.11.15
+
+### Patch Changes
+
+- c5eb756760: Fix a small browser console warning
+- ff5ff57883: EntityPicker can require an existing entity be selected by disallowing arbitrary values
+- 0f645a7947: Added OwnedEntityPicker field which displays Owned Entities in options
+- b646a73fe0: In @backstage/plugin-scaffolder - When user will have one option available in hostUrl or owner - autoselect and select component should be readonly.
+
+  in @backstage/core-components - Select component has extended API with few more props: native : boolean, disabled: boolean. native - if set to true - Select component will use native browser select picker (not rendered by Material UI lib ).
+  disabled - if set to true - action on component will not be possible.
+
+- 7a4bd2ceac: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- 4c269c7c23: Add DescriptionField override to support Markdown
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+  - @backstage/catalog-client@0.5.3
+  - @backstage/integration-react@0.1.16
+
 ## 0.11.14
 
 ### Patch Changes

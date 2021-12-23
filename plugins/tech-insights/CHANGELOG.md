@@ -1,5 +1,17 @@
 # @backstage/plugin-tech-insights
 
+## 0.1.2
+
+### Patch Changes
+
+- 6ff4408fa6: RunChecks endpoint now handles missing retriever data in checks. Instead of
+  showing server errors, the checks will be shown for checks whose retrievers have
+  data, and a warning will be shown if no checks are returned.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
 ## 0.1.1
 
 ### Patch Changes

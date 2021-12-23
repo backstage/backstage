@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-plugin-api",
   "description": "Core API used by Backstage plugins",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -45,9 +45,9 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.10.2",
-    "@backstage/core-app-api": "^0.2.1",
-    "@backstage/test-utils": "^0.1.24",
+    "@backstage/cli": "^0.10.3",
+    "@backstage/core-app-api": "^0.3.0",
+    "@backstage/test-utils": "^0.2.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^7.0.2",

@@ -1,5 +1,12 @@
 # @backstage/plugin-kafka-backend
 
+## 0.2.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+
 ## 0.2.12
 
 ### Patch Changes

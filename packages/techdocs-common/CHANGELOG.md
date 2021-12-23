@@ -1,5 +1,12 @@
 # @backstage/techdocs-common
 
+## 0.11.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+
 ## 0.11.0
 
 ### Minor Changes
