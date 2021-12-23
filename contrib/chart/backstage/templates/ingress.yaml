@@ -41,11 +41,7 @@ spec:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "frontend.serviceName" . }}
               servicePort: 80
-<<<<<<< HEAD
               {{- else }}
-=======
-              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
->>>>>>> 6ff1fef0132526004023f2b6df5f5a91997b72d2
               service:
                 name: {{ include "frontend.serviceName" . }}
                 port:
@@ -53,11 +49,7 @@ spec:
               {{- end }}
           {{/* Route the backend inside the same hostname as the frontend when they are the same */}}
           {{- if eq $frontendUrl.host $backendUrl.host}}
-<<<<<<< HEAD
           - path: /api/
-=======
-          - path: /api
->>>>>>> 6ff1fef0132526004023f2b6df5f5a91997b72d2
             {{- if ge .Capabilities.KubeVersion.Minor "19" }}
             pathType: Prefix
             {{- end }}
@@ -65,11 +57,7 @@ spec:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "backend.serviceName" . }}
               servicePort: 80
-<<<<<<< HEAD
               {{- else }}
-=======
-              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
->>>>>>> 6ff1fef0132526004023f2b6df5f5a91997b72d2
               service:
                 name: {{ include "backend.serviceName" . }}
                 port:
@@ -88,11 +76,7 @@ spec:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "backend.serviceName" . }}
               servicePort: 80
-<<<<<<< HEAD
               {{- else }}
-=======
-              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
->>>>>>> 6ff1fef0132526004023f2b6df5f5a91997b72d2
               service:
                 name: {{ include "backend.serviceName" . }}
                 port:
@@ -113,11 +97,7 @@ spec:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "lighthouse.serviceName" . }}
               servicePort: 80
-<<<<<<< HEAD
               {{- else }}
-=======
-              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
->>>>>>> 6ff1fef0132526004023f2b6df5f5a91997b72d2
               service:
                 name: {{ include "lighthouse.serviceName" . }}
                 port:
@@ -128,11 +108,7 @@ spec:
 ---
 {{- if lt .Capabilities.KubeVersion.Minor "19" }}
 apiVersion: networking.k8s.io/v1beta1
-<<<<<<< HEAD
 {{- else }}
-=======
-{{- else if ge .Capabilities.KubeVersion.Minor "19" }}
->>>>>>> 6ff1fef0132526004023f2b6df5f5a91997b72d2
 apiVersion: networking.k8s.io/v1
 {{- end }}
 kind: Ingress
@@ -166,11 +142,7 @@ spec:
               {{- if lt .Capabilities.KubeVersion.Minor "19" }}
               serviceName: {{ include "lighthouse.serviceName" . }}
               servicePort: 80
-<<<<<<< HEAD
               {{- else }}
-=======
-              {{- else if ge .Capabilities.KubeVersion.Minor "19" }}
->>>>>>> 6ff1fef0132526004023f2b6df5f5a91997b72d2
               service:
                 name: {{ include "lighthouse.serviceName" . }}
                 port:
