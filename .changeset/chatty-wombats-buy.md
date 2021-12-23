@@ -4,7 +4,8 @@
 
 removed inline and internal CSS from index.html
 
-To make this change to an existing app, apply the following changes to the `app/public/index.html` file:
+To make this change to an existing app, apply the following changes to the `packages/app/public/index.html` file:
+
 Remove internal style
 
 ```diff
