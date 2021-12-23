@@ -2,7 +2,7 @@
 
 Welcome to the Airbrake plugin!
 
-_This plugin is currently WIP_
+_This plugin is currently not fit for use as it is work in progress_
 
 ## Getting started
 
