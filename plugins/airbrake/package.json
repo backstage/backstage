@@ -32,6 +32,7 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
+    "@backstage/app-defaults": "^0.1.2",
     "@backstage/cli": "^0.10.2",
     "@backstage/core-app-api": "^0.2.1",
     "@backstage/dev-utils": "^0.2.14",
@@ -42,7 +43,8 @@
     "@types/jest": "*",
     "@types/node": "*",
     "msw": "^0.35.0",
-    "cross-fetch": "^3.0.6"
+    "cross-fetch": "^3.0.6",
+    "react-router": "6.0.0-beta.0"
   },
   "files": [
     "dist"

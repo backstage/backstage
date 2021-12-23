@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { airbrakePlugin } from './plugin';
+import { AirbrakePage, airbrakePlugin } from './index';
 
-describe('airbrake', () => {
-  it('should export plugin', () => {
-    expect(airbrakePlugin).toBeDefined();
+describe('The demo index page', () => {
+  it('exports the plugin and page', async () => {
+    expect(AirbrakePage).toBeTruthy();
+    expect(airbrakePlugin).toBeTruthy();
   });
 });
