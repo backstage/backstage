@@ -41,8 +41,10 @@ proxy:
   '/gocd':
     target: '<go cd server host>/go/api'
     allowedMethods: ['GET']
+    allowedHeaders: ['Authorization', 'Accept']
     headers:
-      Authorization: ${GOCD_AUTH_TOKEN}
+      Authorization: Basic ${GOCD_AUTH_TOKEN}
+      Accept: application/vnd.go.cd+json
 ```
 
 You should also include the `gocd` section to allow for the plugin to redirect back to GoCD pipelines in your deployed instance:
