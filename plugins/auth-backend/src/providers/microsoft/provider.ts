@@ -180,7 +180,6 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
       })
         .then(response => response.arrayBuffer())
         .then(arrayBuffer => {
-          console.log(Buffer.from(arrayBuffer).toString('utf-8'));
           const imageUrl = `data:image/jpeg;base64,${Buffer.from(
             arrayBuffer,
           ).toString('base64')}`;
