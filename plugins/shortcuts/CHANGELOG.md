@@ -1,5 +1,11 @@
 # @backstage/plugin-shortcuts
 
+## 0.1.17
+
+### Patch Changes
+
+- b50cbd047b: Properly read saved shortcuts from StorageApi
+
 ## 0.1.16
 
 ### Patch Changes
