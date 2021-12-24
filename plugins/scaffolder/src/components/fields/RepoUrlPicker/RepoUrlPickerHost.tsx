@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 import React, { useEffect } from 'react';
-import {
-  Progress,
-  Select,
-  SelectedItems,
-  SelectItem,
-} from '@backstage/core-components';
+import { Progress, Select, SelectItem } from '@backstage/core-components';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { useApi } from '@backstage/core-plugin-api';
@@ -75,6 +70,7 @@ export const RepoUrlPickerHost = ({
           onChange={s => onChange(String(Array.isArray(s) ? s[0] : s))}
           selected={host}
           items={hostsOptions}
+          data-testid="host-select"
         />
 
         <FormHelperText>
