@@ -24,7 +24,6 @@ import {
 
 export const gocdApiRef = createApiRef<GoCdApi>({
   id: 'plugin.gocd.service',
-  description: 'Used by the GoCD plugin to retrieve information about builds.',
 });
 
 export const gocdPlugin = createPlugin({
