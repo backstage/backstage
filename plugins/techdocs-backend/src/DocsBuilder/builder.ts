@@ -175,6 +175,7 @@ export class DocsBuilder {
     const outputDir = await fs.mkdtemp(
       path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
     );
+    await fs.chmod(outputDir, 0o775);
 
     const parsedLocationAnnotation = getLocationForEntity(
       this.entity,
