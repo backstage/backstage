@@ -21,7 +21,9 @@ import { AuthProviderInfo } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentity } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
+import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
@@ -386,6 +388,41 @@ export const FlatRoutes: (props: FlatRoutesProps) => JSX.Element | null;
 // @public
 export type FlatRoutesProps = {
   children: ReactNode;
+};
+
+// @public
+export class GcpIapIdentity implements IdentityApi {
+  constructor(session: GcpIapSession);
+  static fromResponse(data: unknown): GcpIapIdentity;
+  // (undocumented)
+  getBackstageIdentity(): Promise<BackstageUserIdentity>;
+  // (undocumented)
+  getCredentials(): Promise<{
+    token?: string | undefined;
+  }>;
+  // (undocumented)
+  getIdToken(): Promise<string | undefined>;
+  // (undocumented)
+  getProfile(): ProfileInfo;
+  // (undocumented)
+  getProfileInfo(): Promise<ProfileInfo>;
+  // (undocumented)
+  getUserId(): string;
+  // (undocumented)
+  signOut(): Promise<void>;
+}
+
+// @public
+export type GcpIapSession = {
+  providerInfo: {
+    iapToken: {
+      sub: string;
+      email: string;
+      [key: string]: unknown;
+    };
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
 // @public

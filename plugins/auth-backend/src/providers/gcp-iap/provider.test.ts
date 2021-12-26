@@ -16,107 +16,61 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
-import { AuthResponse } from '../types';
-import { GcpIAPProvider } from './provider';
-
-jest.mock('google-auth-library');
-
-const identityResolutionCallbackMock = async (): Promise<AuthResponse<any>> => {
-  return {
-    backstageIdentity: {
-      id: 'foo',
-      idToken: '',
-    },
-    profile: {
-      displayName: 'Foo Bar',
-    },
-    providerInfo: {},
-  };
-};
-
-const identityResolutionCallbackRejectedMock = async (): Promise<
-  AuthResponse<any>
-> => {
-  throw new Error('failed');
-};
+import request from 'supertest';
+import { GcpIapProvider } from './provider';
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe('GcpIAPProvider', () => {
-  const catalogApi = {
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    addLocation: jest.fn(),
-    removeLocationById: jest.fn(),
-    getEntities: jest.fn(),
-    getOriginLocationByEntity: jest.fn(),
-    getLocationByEntity: jest.fn(),
-    getLocationById: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    getEntityByName: jest.fn(),
-  };
+describe('GcpIapProvider', () => {
+  const authHandler = jest.fn();
+  const signInResolver = jest.fn();
+  const tokenValidator = jest.fn();
+  const logger = getVoidLogger();
 
-  const mockRequest = {
-    header: jest.fn(() => {
-      return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImZvbyIsImlzcyI6ImZvbyJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.T2BNS4G-6RoiFnXc8Q8TiwdWzTpNitY8jcsGM3N3-Yo';
-    }),
-  } as unknown as express.Request;
-  const mockRequestWithoutJwt = {
-    header: jest.fn(() => {
-      return undefined;
-    }),
-  } as unknown as express.Request;
-  const mockResponse = {
-    end: jest.fn(),
-    header: () => jest.fn(),
-    json: jest.fn().mockReturnThis(),
-    status: jest.fn(),
-  } as unknown as express.Response;
-
-  describe('should transform to type OAuthResponse', () => {
-    it('when JWT is valid and identity is resolved successfully', async () => {
-      const provider = new GcpIAPProvider(getVoidLogger(), catalogApi, {
-        identityResolutionCallback: identityResolutionCallbackMock,
-        audience: 'foo',
-      });
-
-      await provider.refresh(mockRequest, mockResponse);
-
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        backstageIdentity: {
-          id: 'foo',
-          idToken: '',
-        },
-        profile: {
-          displayName: 'Foo Bar',
-        },
-        providerInfo: {},
-      });
-    });
-  });
-  describe('should fail when', () => {
-    it('JWT is missing', async () => {
-      const provider = new GcpIAPProvider(getVoidLogger(), catalogApi, {
-        identityResolutionCallback: identityResolutionCallbackMock,
-        audience: 'foo',
-      });
-
-      await provider.refresh(mockRequestWithoutJwt, mockResponse);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
+  it('runs the happy path', async () => {
+    const provider = new GcpIapProvider({
+      authHandler,
+      signInResolver,
+      tokenValidator,
+      tokenIssuer: {} as any,
+      catalogIdentityClient: {} as any,
+      logger,
     });
 
-    it('identity resolution callback rejects', async () => {
-      const provider = new GcpIAPProvider(getVoidLogger(), catalogApi, {
-        identityResolutionCallback: identityResolutionCallbackRejectedMock,
-        audience: 'foo',
-      });
+    // { "sub": "user:default/me", "ent": ["group:default/home"] }
+    const backstageToken =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvbWUiLCJlbnQiOlsiZ3JvdXA6ZGVmYXVsdC9ob21lIl19.CbmAKzFErGmtsnpRxyPc7dHv7WEjb5lY6206YCzR_Rc';
+    const iapToken = { sub: 's', email: 'e@mail.com' };
 
-      await provider.refresh(mockRequest, mockResponse);
+    authHandler.mockResolvedValueOnce({ email: 'e@mail.com' });
+    signInResolver.mockResolvedValueOnce({ id: 'i', token: backstageToken });
+    tokenValidator.mockResolvedValueOnce(iapToken);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.end).toHaveBeenCalledTimes(1);
+    const app = express();
+    app.use('/refresh', provider.refresh.bind(provider));
+
+    const response = await request(app)
+      .get('/refresh')
+      .set('x-goog-iap-jwt-assertion', 'token');
+
+    expect(response.status).toBe(200);
+    expect(response.get('content-type')).toBe(
+      'application/json; charset=utf-8',
+    );
+    expect(response.body).toEqual({
+      backstageIdentity: {
+        id: 'i',
+        idToken: backstageToken,
+        token: backstageToken,
+        identity: {
+          type: 'user',
+          userEntityRef: 'user:default/me',
+          ownershipEntityRefs: ['group:default/home'],
+        },
+      },
+      providerInfo: { iapToken },
     });
   });
 });

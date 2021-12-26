@@ -27,6 +27,7 @@ export * from './oidc';
 export * from './okta';
 export * from './onelogin';
 export * from './saml';
+export * from './gcp-iap';
 
 export { factories as defaultAuthProviderFactories } from './factories';
 

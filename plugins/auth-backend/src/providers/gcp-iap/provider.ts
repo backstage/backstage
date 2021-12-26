@@ -14,111 +14,112 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
 import express from 'express';
-import { OAuth2Client } from 'google-auth-library';
+import { TokenPayload } from 'google-auth-library';
 import { Logger } from 'winston';
+import { TokenIssuer } from '../../identity/types';
+import { CatalogIdentityClient } from '../../lib/catalog';
+import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 import {
+  AuthHandler,
   AuthProviderFactory,
-  AuthProviderFactoryOptions,
   AuthProviderRouteHandlers,
-  ExperimentalIdentityResolver,
+  SignInResolver,
 } from '../types';
+import {
+  createTokenValidator,
+  defaultAuthHandler,
+  parseRequestToken,
+} from './helpers';
+import {
+  GcpIapProviderOptions,
+  GcpIapResponse,
+  GcpIapResult,
+  IAP_JWT_HEADER,
+} from './types';
 
-const IAP_JWT_HEADER = 'x-goog-iap-jwt-assertion';
+export class GcpIapProvider implements AuthProviderRouteHandlers {
+  private readonly authHandler: AuthHandler<GcpIapResult>;
+  private readonly signInResolver: SignInResolver<GcpIapResult>;
+  private readonly tokenValidator: (token: string) => Promise<TokenPayload>;
+  private readonly tokenIssuer: TokenIssuer;
+  private readonly catalogIdentityClient: CatalogIdentityClient;
+  private readonly logger: Logger;
 
-export type GcpIAPProviderOptions = {
-  audience: string;
-  identityResolutionCallback: ExperimentalIdentityResolver;
-};
-export class GcpIAPProvider implements AuthProviderRouteHandlers {
-  private logger: Logger;
-  private options: GcpIAPProviderOptions;
-  private readonly catalogClient: CatalogApi;
-
-  constructor(
-    logger: Logger,
-    catalogClient: CatalogApi,
-    options: GcpIAPProviderOptions,
-  ) {
-    this.logger = logger;
-    this.catalogClient = catalogClient;
-    this.options = options;
+  constructor(options: {
+    authHandler: AuthHandler<GcpIapResult>;
+    signInResolver: SignInResolver<GcpIapResult>;
+    tokenValidator: (token: string) => Promise<TokenPayload>;
+    tokenIssuer: TokenIssuer;
+    catalogIdentityClient: CatalogIdentityClient;
+    logger: Logger;
+  }) {
+    this.authHandler = options.authHandler;
+    this.signInResolver = options.signInResolver;
+    this.tokenValidator = options.tokenValidator;
+    this.tokenIssuer = options.tokenIssuer;
+    this.catalogIdentityClient = options.catalogIdentityClient;
+    this.logger = options.logger;
   }
 
-  frameHandler(): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+  async start() {}
+
+  async frameHandler() {}
 
   async refresh(req: express.Request, res: express.Response): Promise<void> {
-    const expectedAudience = this.options.audience;
-    const jwtToken = req.header(IAP_JWT_HEADER);
-    if (jwtToken === undefined) {
-      res.status(401);
-      res.end();
-      return;
-    }
-    const oAuth2Client = new OAuth2Client();
-    const verify = async () => {
-      const response = await oAuth2Client.getIapPublicKeys();
-      const ticket = await oAuth2Client.verifySignedJwtWithCertsAsync(
-        jwtToken,
-        response.pubkeys,
-        expectedAudience,
-        ['https://cloud.google.com/iap'],
-      );
-      return ticket.getPayload();
+    const result = await parseRequestToken(
+      req.header(IAP_JWT_HEADER),
+      this.tokenValidator,
+    );
+
+    const { profile } = await this.authHandler(result);
+
+    const backstageIdentity = await this.signInResolver(
+      { profile, result },
+      {
+        tokenIssuer: this.tokenIssuer,
+        catalogIdentityClient: this.catalogIdentityClient,
+        logger: this.logger,
+      },
+    );
+
+    const response: GcpIapResponse = {
+      providerInfo: { iapToken: result.iapToken },
+      profile,
+      backstageIdentity: prepareBackstageIdentityResponse(backstageIdentity),
     };
 
-    try {
-      const user = await verify();
-      if (user === undefined) {
-        this.logger.error('gcp iap proxy user returned undefined');
-        res.status(401);
-        res.end();
-        return;
-      }
-      const resolvedEntity = await this.options.identityResolutionCallback(
-        {
-          email: user.email,
-        },
-        this.catalogClient,
-      );
-      res.json(resolvedEntity);
-    } catch (e) {
-      this.logger.error('Verification failed with', e);
-
-      res.status(401);
-      res.end();
-      return;
-    }
-    res.status(200);
-    res.end();
-  }
-
-  start(): Promise<void> {
-    return Promise.resolve(undefined);
+    res.json(response);
   }
 }
 
+/**
+ * Creates an auth provider for Google Identity-Aware Proxy.
+ *
+ * @public
+ */
 export function createGcpIapProvider(
-  _options?: GcpIAPProviderOptions,
+  options: GcpIapProviderOptions,
 ): AuthProviderFactory {
-  return ({
-    logger,
-    catalogApi,
-    config,
-    identityResolver,
-  }: AuthProviderFactoryOptions) => {
+  return ({ config, tokenIssuer, catalogApi, logger }) => {
     const audience = config.getString('audience');
-    if (identityResolver !== undefined) {
-      throw new Error(
-        'Identity resolver is required to use this authentication provider',
-      );
-    }
-    return new GcpIAPProvider(logger, catalogApi, {
-      audience,
-      identityResolutionCallback: identityResolver,
+
+    const authHandler = options.authHandler ?? defaultAuthHandler;
+    const signInResolver = options.signIn.resolver;
+    const tokenValidator = createTokenValidator(audience);
+
+    const catalogIdentityClient = new CatalogIdentityClient({
+      catalogApi,
+      tokenIssuer,
+    });
+
+    return new GcpIapProvider({
+      authHandler,
+      signInResolver,
+      tokenValidator,
+      tokenIssuer,
+      catalogIdentityClient,
+      logger,
     });
   };
 }

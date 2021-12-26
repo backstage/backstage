@@ -1,6 +1,6 @@
 ---
 id: provider
-title: Google Identity Aware Proxy Provider
+title: Google Identity-Aware Proxy Provider
 sidebar_label: Google IAP
 # prettier-ignore
 description: Adding Google Identity-Aware Proxy as an authentication provider in Backstage
@@ -12,103 +12,76 @@ Backstage allows offloading the responsibility of authenticating users to the
 Google HTTPS Load Balancer & [IAP](https://cloud.google.com/iap), leveraging the
 authentication support on the latter.
 
-This tutorial shows how to use authentication on an ALB sitting in front of
+This tutorial shows how to use authentication on an IAP sitting in front of
 Backstage.
 
 It is assumed an IAP is already serving traffic in front of a Backstage instance
 configured to serve the frontend app from the backend.
 
-## Infrastructure setup
+## Frontend Changes
 
-## Backstage changes
-
-### Frontend
-
-The Backstage App needs a `SignInPage` to be configured. When using IAP Proxy
+The Backstage app needs a `SignInPage` to be configured. When using IAP Proxy
 authentication Backstage will only be loaded once the user has successfully
 authenticated; we won't need to display a sign-in page as such, however we will
-need to create a dummy `SignInPage` component that can decode and refresh the
-token.
+need to create a dummy `SignInPage` component that can fetch the token and other
+information from the backend.
 
-- edit `packages/app/src/App.tsx`
-- import the following two additional definitions from `@backstage/core`:
-  `useApi`, `configApiRef`; these will be used to check whether Backstage is
-  running locally or behind an ALB
-- add the following definition just before the app is created
-  (`const app = createApp`):
+Create a sign-in page component in your app, for example in
+`packages/app/src/components/SignInPage.tsx`.
 
-```ts
-const refreshToken = async ({ props, discoveryApiConfig, config }) => {
-  const baseUrl = await discoveryApiConfig.getBaseUrl('auth');
-  const shouldAuth = !!config.getOptionalConfig('auth.providers.gcp-iap');
+```tsx
+import { GcpIapIdentity } from '@backstage/core-app-api';
+import { ErrorPanel, Progress } from '@backstage/core-components';
+import {
+  discoveryApiRef,
+  fetchApiRef,
+  SignInPageProps,
+  useApi,
+} from '@backstage/core-plugin-api';
+import { ResponseError } from '@backstage/errors';
+import React from 'react';
+import { useAsync } from 'react-use';
 
-  if (!shouldAuth) {
-    props.onResult({
-      userId: 'guest',
-      profile: {
-        email: 'guest@example.com',
-        displayName: 'Guest',
-        picture: '',
-      },
-    });
-    return;
-  }
+export const GcpIapSignInPage = (props: SignInPageProps) => {
+  const discovery = useApi(discoveryApiRef);
+  const { fetch } = useApi(fetchApiRef);
 
-  try {
-    const request = await fetch(`${baseUrl}/gcp-iap/refresh`, {
-      headers: {
-        'x-requested-with': 'XMLHttpRequest',
-      },
+  const { loading, error } = useAsync(async () => {
+    const base = await discovery.getBaseUrl('auth');
+    const response = await fetch(`${base}/gcp-iap/refresh`, {
+      headers: { 'x-requested-with': 'XMLHttpRequest' },
       credentials: 'include',
     });
-    const data = await request.json();
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+    props.onSignInSuccess(GcpIapIdentity.fromResponse(await response.json()));
+  }, []);
 
-    props.onResult({
-      userId: data.backstageIdentity.id ?? 'nouser@ms.at',
-      profile: data.profile ?? 'nouser@ms.at',
-    });
-  } catch (e) {
-    props.onResult({
-      userId: 'guest',
-      profile: {
-        email: 'guest@example.com',
-        displayName: 'Guest',
-        picture: '',
-      },
-    });
-  }
-};
-
-const DummySignInComponent: any = (props: any) => {
-  try {
-    const config = useApi(configApiRef);
-    const discoveryApiConfig = useApi(discoveryApiRef);
-    refreshToken({ props, discoveryApiConfig, config });
-    return <div />;
-  } catch (err) {
-    return <div>{err.message}</div>;
-  }
+  if (loading) return <Progress />;
+  if (error) return <ErrorPanel error={error} />;
+  return null;
 };
 ```
 
-### Backend
+Pass this sign in page to your `createApp` function, in
+`packages/app/src/App.tsx`.
 
-When using ALB auth it is not possible to leverage the built-in auth config
-discovery mechanism implemented in the app created by default; bespoke logic
-needs to be implemented.
+```diff
++import { GcpIapSignInPage } from './components/SignInPage';
 
-- Replace the content of `packages/backend/plugin/auth.ts` with the below
+ const app = createApp({
+   components: {
++    SignInPage: GcpIapSignInPage
+```
+
+## Backend Changes
+
+- Add a `providerFactories` entry to the router in
+  `packages/backend/plugin/auth.ts`.
 
 ```ts
-// imports are relative - as this was tested out in repo directly
-import { createGcpIAPProvider } from './../providers/gcp-iap/provider';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-import {
-  createRouter,
-  AuthResponse,
-  AuthProviderFactoryOptions,
-} from '@backstage/plugin-auth-backend';
+import { createGcpIapProvider } from '@backstage/plugin-auth-backend';
 
 export default async function createPlugin({
   logger,
@@ -116,48 +89,49 @@ export default async function createPlugin({
   config,
   discovery,
 }: PluginEnvironment): Promise<Router> {
-  const identityResolver = (payload: any): Promise<AuthResponse<any>> => {
-    return Promise.resolve({
-      providerInfo: {},
-      profile: {
-        email: payload.email,
-        displayName: payload.name,
-        picture: payload.picture,
-      },
-      backstageIdentity: {
-        id: payload.email,
-      },
-    });
-  };
   return await createRouter({
     logger,
     config,
     database,
     discovery,
     providerFactories: {
-      'gcp-iap': (options: AuthProviderFactoryOptions) => {
-        return createGcpIAPProvider({ ...options, identityResolver })({
-          ...options,
-          identityResolver,
-        });
-      },
+      'gcp-iap': createGcpIapProvider({
+        // Replace the auth handler if you want to customize the returned user
+        // profile info (can be left out; default implementation shown below
+        // which only returns the email.
+        async authHandler({ iapToken }) {
+          return { profile: { email: iapToken.email } };
+        },
+        signIn: {
+          // You need to supply an identity resolver, that takes the profile
+          // and the IAP token and produces the Backstage token with the
+          // relevant user info.
+          async resolver({ profile, result: { iapToken } }, ctx) {
+            // Somehow compute the Backstage token claims, just some dummy code
+            // shown here, but you may want to query your LDAP server, or
+            // GSuite or similar, based on the IAP token sub/email claims
+            const id = `user:default/${iapToken.email.split('@')[0]}`;
+            const fullEnt = ['group:default/team-name'];
+            const token = await ctx.tokenIssuer.issueToken({
+              claims: { sub: id, ent: fullEnt },
+            });
+            return { id, token };
+          },
+        },
+      }),
     },
   });
 }
 ```
 
-### Configuration
+## Configuration
 
-Use the following `auth` configuration when running Backstage on AWS:
+Use the following `auth` configuration:
 
 ```yaml
 auth:
   providers:
     gcp-iap:
-      audience: '/projects/0123456/global/backendServices/1242345678765434567'
+      audience:
+        '/projects/<project number>/global/backendServices/<backend service id>'
 ```
-
-## Conclusion
-
-Once it's deployed, after going through the AAD authentication flow, Backstage
-should display the AAD user details.

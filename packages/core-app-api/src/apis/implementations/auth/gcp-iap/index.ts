@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { createAwsAlbProvider } from './provider';
-export type { AwsAlbProviderOptions } from './provider';
+export { GcpIapIdentity } from './GcpIapIdentity';
+export type { GcpIapSession } from './types';

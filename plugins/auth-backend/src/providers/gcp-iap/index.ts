@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
-export { createGcpIAPProvider } from './provider';
-export type { GcpIAPProviderOptions } from './provider';
+export { createGcpIapProvider } from './provider';
+export type {
+  GcpIapProviderOptions,
+  GcpIapResult,
+  GcpIapTokenInfo,
+} from './types';
