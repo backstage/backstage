@@ -145,6 +145,11 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
                   techDocsBaseUrl,
                   entityInfo,
                 ),
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                },
               );
               const searchIndex = await searchIndexResponse.json();
 
