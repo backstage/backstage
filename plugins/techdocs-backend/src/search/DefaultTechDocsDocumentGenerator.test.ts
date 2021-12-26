@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultTechDocsDocumentGenerator } from './DefaultTechDocsDocumentGenerator';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { Readable } from 'stream';
@@ -94,7 +94,7 @@ describe('DefaultTechDocsDocumentGenerator with legacyPathCasing configuration',
   let collator: DefaultTechDocsDocumentGenerator;
 
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
   beforeEach(() => {
     mockDiscoveryApi = {
       getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
@@ -164,7 +164,7 @@ describe('DefaultTechDocsDocumentGenerator', () => {
   let collator: DefaultTechDocsDocumentGenerator;
 
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
   beforeEach(() => {
     mockDiscoveryApi = {
       getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),

@@ -136,13 +136,15 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   // Warning: (ae-forgotten-export) The symbol "ElasticSearchOptions" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  static fromConfig(
-    options: ElasticSearchOptions,
-  ): Promise<ElasticSearchSearchEngine>;
-  // Warning: (ae-forgotten-export) The symbol "ElasticSearchEngineIndexer" needs to be exported by the entry point index.d.ts
-  //
-  newClient<T>(create: (options: ElasticSearchClientOptions) => T): T;
+  static fromConfig({
+    logger,
+    config,
+    aliasPostfix,
+    indexPrefix,
+  }: ElasticSearchOptions): Promise<ElasticSearchSearchEngine>;
+  // (undocumented)
   getIndexer(type: string): Promise<ElasticSearchEngineIndexer>;
+  newClient<T>(create: (options: ElasticSearchClientOptions) => T): T;
   // (undocumented)
   query(query: SearchQuery): Promise<SearchResultSet>;
   // Warning: (ae-forgotten-export) The symbol "ElasticSearchQueryTranslator" needs to be exported by the entry point index.d.ts

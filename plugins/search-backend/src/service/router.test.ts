@@ -57,7 +57,7 @@ describe('createRouter', () => {
       beforeAll(async () => {
         const logger = getVoidLogger();
         mockSearchEngine = {
-          index: jest.fn(),
+          getIndexer: jest.fn(),
           setTranslator: jest.fn(),
           query: jest.fn(),
         };
