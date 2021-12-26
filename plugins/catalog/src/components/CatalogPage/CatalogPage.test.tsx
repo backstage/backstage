@@ -181,7 +181,7 @@ describe('CatalogPage', () => {
       { title: 'Bar', field: 'entity.bar' },
       { title: 'Baz', field: 'entity.spec.lifecycle' },
     ];
-    const { getByTestId, getAllByRole } = await renderWrapped(
+    const { getAllByRole } = await renderWrapped(
       <CatalogPage columns={columns} />,
     );
 
