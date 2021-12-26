@@ -798,7 +798,7 @@ export class DefaultCatalogCollator {
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   static fromConfig(
-    config: Config,
+    _config: Config,
     options: DefaultCatalogCollatorFactoryOptions,
   ): DefaultCatalogCollatorFactory;
   // (undocumented)
@@ -813,7 +813,9 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
 export type DefaultCatalogCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
+  locationTemplate?: string;
   filter?: CatalogEntitiesRequest['filter'];
+  catalogClient?: CatalogApi;
 };
 
 // Warning: (ae-missing-release-tag) "DefaultCatalogProcessingOrchestrator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

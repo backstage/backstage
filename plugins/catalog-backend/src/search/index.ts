@@ -16,7 +16,7 @@
 
 export { DefaultCatalogCollatorFactory } from './DefaultCatalogCollatorFactory';
 export type { DefaultCatalogCollatorFactoryOptions } from './DefaultCatalogCollatorFactory';
-export type { CatalogEntityDocument } from './DefaultCatalogDocumentGenerator';
+export type { CatalogEntityDocument } from './DefaultCatalogCollatorFactory';
 
 /**
  * todo(backstage/techdocs-core): stop exporting this in a future release.

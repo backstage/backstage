@@ -18,44 +18,120 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-import { CatalogEntitiesRequest } from '@backstage/catalog-client';
+import { Entity, UserEntity } from '@backstage/catalog-model';
+import {
+  DocumentCollatorFactory,
+  IndexableDocument,
+} from '@backstage/search-common';
 import { Config } from '@backstage/config';
-import { DocumentCollatorFactory } from '@backstage/search-common';
+import {
+  CatalogApi,
+  CatalogClient,
+  CatalogEntitiesRequest,
+} from '@backstage/catalog-client';
 import { Readable } from 'stream';
-import { DefaultCatalogDocumentGenerator } from './DefaultCatalogDocumentGenerator';
+
+export interface CatalogEntityDocument extends IndexableDocument {
+  componentType: string;
+  namespace: string;
+  kind: string;
+  lifecycle: string;
+  owner: string;
+}
 
 export type DefaultCatalogCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
+  locationTemplate?: string;
   filter?: CatalogEntitiesRequest['filter'];
+  catalogClient?: CatalogApi;
 };
 
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'software-catalog';
 
-  private options: any;
-  private config: Config;
-
-  private constructor(
-    config: Config,
-    options: DefaultCatalogCollatorFactoryOptions,
-  ) {
-    this.config = config;
-    this.options = options;
-  }
+  private locationTemplate: string;
+  private filter?: CatalogEntitiesRequest['filter'];
+  private readonly catalogClient: CatalogApi;
+  private tokenManager: TokenManager;
 
   static fromConfig(
-    config: Config,
+    _config: Config,
     options: DefaultCatalogCollatorFactoryOptions,
   ) {
-    return new DefaultCatalogCollatorFactory(config, options);
+    return new DefaultCatalogCollatorFactory(options);
   }
 
-  async getCollator() {
-    const collator = DefaultCatalogDocumentGenerator.fromConfig(
-      this.config,
-      this.options,
-    );
-    return Readable.from(collator.execute());
+  private constructor(options: DefaultCatalogCollatorFactoryOptions) {
+    const { discovery, locationTemplate, filter, catalogClient, tokenManager } =
+      options;
+
+    this.locationTemplate =
+      locationTemplate || '/catalog/:namespace/:kind/:name';
+    this.filter = filter;
+    this.catalogClient =
+      catalogClient || new CatalogClient({ discoveryApi: discovery });
+    this.tokenManager = tokenManager;
+  }
+
+  async getCollator(): Promise<Readable> {
+    return Readable.from(this.execute());
+  }
+
+  private applyArgsToFormat(
+    format: string,
+    args: Record<string, string>,
+  ): string {
+    let formatted = format;
+    for (const [key, value] of Object.entries(args)) {
+      formatted = formatted.replace(`:${key}`, value);
+    }
+    return formatted.toLowerCase();
+  }
+
+  private isUserEntity(entity: Entity): entity is UserEntity {
+    return entity.kind.toLocaleUpperCase('en-US') === 'USER';
+  }
+
+  private getDocumentText(entity: Entity): string {
+    let documentText = entity.metadata.description || '';
+    if (this.isUserEntity(entity)) {
+      if (entity.spec?.profile?.displayName && documentText) {
+        // combine displayName and description
+        const displayName = entity.spec?.profile?.displayName;
+        documentText = displayName.concat(' : ', documentText);
+      } else {
+        documentText = entity.spec?.profile?.displayName || documentText;
+      }
+    }
+    return documentText;
+  }
+
+  private async *execute(): AsyncGenerator<CatalogEntityDocument> {
+    const { token } = await this.tokenManager.getToken();
+    const entities = (
+      await this.catalogClient.getEntities(
+        {
+          filter: this.filter,
+        },
+        { token },
+      )
+    ).items;
+    for (const entity of entities) {
+      yield {
+        title: entity.metadata.title ?? entity.metadata.name,
+        location: this.applyArgsToFormat(this.locationTemplate, {
+          namespace: entity.metadata.namespace || 'default',
+          kind: entity.kind,
+          name: entity.metadata.name,
+        }),
+        text: this.getDocumentText(entity),
+        componentType: entity.spec?.type?.toString() || 'other',
+        namespace: entity.metadata.namespace || 'default',
+        kind: entity.kind,
+        lifecycle: (entity.spec?.lifecycle as string) || '',
+        owner: (entity.spec?.owner as string) || '',
+      };
+    }
   }
 }
