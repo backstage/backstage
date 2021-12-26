@@ -815,6 +815,7 @@ export type DefaultCatalogCollatorFactoryOptions = {
   tokenManager: TokenManager;
   locationTemplate?: string;
   filter?: CatalogEntitiesRequest['filter'];
+  batchSize?: number;
   catalogClient?: CatalogApi;
 };
 

@@ -87,7 +87,11 @@ describe('DefaultCatalogCollatorFactory', () => {
           }
           throw new Error('Unexpected filter parameter');
         }
-        return res(ctx.json(expectedEntities));
+
+        // Imitate offset/limit pagination.
+        const offset = parseInt(req.url.searchParams.get('offset') || '0', 10);
+        const limit = parseInt(req.url.searchParams.get('limit') || '500', 10);
+        return res(ctx.json(expectedEntities.slice(offset, limit + offset)));
       }),
     );
   });
@@ -179,6 +183,25 @@ describe('DefaultCatalogCollatorFactory', () => {
 
       // The simulated 'Foo,Bar' filter should return in an empty list
       expect(documents).toHaveLength(0);
+    });
+
+    it('paginates through catalog entities using batchSize', async () => {
+      factory = DefaultCatalogCollatorFactory.fromConfig(config, {
+        ...options,
+        batchSize: 1,
+      });
+      collator = await factory.getCollator();
+
+      const pipeline = TestPipeline.withSubject(collator);
+      const { documents } = await pipeline.execute();
+
+      expect(documents).toHaveLength(expectedEntities.length);
+      expect(documents[0].location).toBe(
+        '/catalog/default/component/test-entity',
+      );
+      expect(documents[1].location).toBe(
+        '/catalog/default/component/test-entity-2',
+      );
     });
   });
 });

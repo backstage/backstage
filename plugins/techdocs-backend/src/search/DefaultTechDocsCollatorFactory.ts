@@ -91,73 +91,92 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
     const limit = pLimit(this.parallelismLimit);
     const techDocsBaseUrl = await this.discovery.getBaseUrl('techdocs');
     const { token } = await this.tokenManager.getToken();
-    const entities = await this.catalogClient.getEntities(
-      {
-        fields: [
-          'kind',
-          'namespace',
-          'metadata.annotations',
-          'metadata.name',
-          'metadata.title',
-          'metadata.namespace',
-          'spec.type',
-          'spec.lifecycle',
-          'relations',
-        ],
-      },
-      { token },
-    );
-    const docPromises = entities.items
-      .filter(it => it.metadata?.annotations?.['backstage.io/techdocs-ref'])
-      .map((entity: Entity) =>
-        limit(async (): Promise<TechDocsDocument[]> => {
-          const entityInfo =
-            DefaultTechDocsCollatorFactory.handleEntityInfoCasing(
-              this.legacyPathCasing,
-              {
+    let entitiesRetrieved = 0;
+    let moreEntitiesToGet = true;
+
+    // Offset/limit pagination is used on the Catalog Client in order to
+    // limit (and allow some control over) memory used by the search backend
+    // at index-time. The batchSize is calculated as a factor of the given
+    // parallelism limit to simplify configuration.
+    const batchSize = this.parallelismLimit * 50;
+    while (moreEntitiesToGet) {
+      const entities = (
+        await this.catalogClient.getEntities(
+          {
+            fields: [
+              'kind',
+              'namespace',
+              'metadata.annotations',
+              'metadata.name',
+              'metadata.title',
+              'metadata.namespace',
+              'spec.type',
+              'spec.lifecycle',
+              'relations',
+            ],
+            limit: batchSize,
+            offset: entitiesRetrieved,
+          },
+          { token },
+        )
+      ).items;
+
+      // Control looping through entity batches.
+      moreEntitiesToGet = entities.length === batchSize;
+      entitiesRetrieved += entities.length;
+
+      const docPromises = entities
+        .filter(it => it.metadata?.annotations?.['backstage.io/techdocs-ref'])
+        .map((entity: Entity) =>
+          limit(async (): Promise<TechDocsDocument[]> => {
+            const entityInfo =
+              DefaultTechDocsCollatorFactory.handleEntityInfoCasing(
+                this.legacyPathCasing,
+                {
+                  kind: entity.kind,
+                  namespace: entity.metadata.namespace || 'default',
+                  name: entity.metadata.name,
+                },
+              );
+
+            try {
+              const searchIndexResponse = await fetch(
+                DefaultTechDocsCollatorFactory.constructDocsIndexUrl(
+                  techDocsBaseUrl,
+                  entityInfo,
+                ),
+              );
+              const searchIndex = await searchIndexResponse.json();
+
+              return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
+                title: unescape(doc.title),
+                text: unescape(doc.text || ''),
+                location: this.applyArgsToFormat(this.locationTemplate, {
+                  ...entityInfo,
+                  path: doc.location,
+                }),
+                path: doc.location,
                 kind: entity.kind,
                 namespace: entity.metadata.namespace || 'default',
                 name: entity.metadata.name,
-              },
-            );
-
-          try {
-            const searchIndexResponse = await fetch(
-              DefaultTechDocsCollatorFactory.constructDocsIndexUrl(
-                techDocsBaseUrl,
-                entityInfo,
-              ),
-            );
-            const searchIndex = await searchIndexResponse.json();
-
-            return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
-              title: unescape(doc.title),
-              text: unescape(doc.text || ''),
-              location: this.applyArgsToFormat(this.locationTemplate, {
-                ...entityInfo,
-                path: doc.location,
-              }),
-              path: doc.location,
-              kind: entity.kind,
-              namespace: entity.metadata.namespace || 'default',
-              name: entity.metadata.name,
-              entityTitle: entity.metadata.title,
-              componentType: entity.spec?.type?.toString() || 'other',
-              lifecycle: (entity.spec?.lifecycle as string) || '',
-              owner:
-                entity.relations?.find(r => r.type === RELATION_OWNED_BY)
-                  ?.target?.name || '',
-            }));
-          } catch (e) {
-            this.logger.debug(
-              `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
-              e,
-            );
-            return [];
-          }
-        }),
-      );
-    yield* (await Promise.all(docPromises)).flat();
+                entityTitle: entity.metadata.title,
+                componentType: entity.spec?.type?.toString() || 'other',
+                lifecycle: (entity.spec?.lifecycle as string) || '',
+                owner:
+                  entity.relations?.find(r => r.type === RELATION_OWNED_BY)
+                    ?.target?.name || '',
+              }));
+            } catch (e) {
+              this.logger.debug(
+                `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
+                e,
+              );
+              return [];
+            }
+          }),
+        );
+      yield* (await Promise.all(docPromises)).flat();
+    }
   }
 
   private applyArgsToFormat(

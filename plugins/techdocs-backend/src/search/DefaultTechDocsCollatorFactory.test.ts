@@ -124,9 +124,31 @@ describe('DefaultTechDocsCollatorFactory', () => {
           'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
           (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
         ),
-        rest.get('http://test-backend/entities', (_, res, ctx) =>
-          res(ctx.status(200), ctx.json(expectedEntities)),
-        ),
+        rest.get('http://test-backend/entities', (req, res, ctx) => {
+          // Imitate offset/limit pagination.
+          const offset = parseInt(
+            req.url.searchParams.get('offset') || '0',
+            10,
+          );
+          const limit = parseInt(
+            req.url.searchParams.get('limit') || '500',
+            10,
+          );
+
+          // Limit 50 corresponds to a case testing pagination.
+          if (limit === 50) {
+            // Return 50 copies of invalid entities on the first request.
+            if (offset === 0) {
+              return res(ctx.status(200), ctx.json(Array(50).fill({})));
+            }
+            // Then just the regular 2 on the second.
+            return res(ctx.status(200), ctx.json(expectedEntities));
+          }
+          return res(
+            ctx.status(200),
+            ctx.json(expectedEntities.slice(offset, limit + offset)),
+          );
+        }),
       );
     });
 
@@ -178,6 +200,23 @@ describe('DefaultTechDocsCollatorFactory', () => {
       expect(documents[0]).toMatchObject({
         location: '/software/test-entity-with-docs',
       });
+    });
+
+    it('paginates through catalog entities using batchSize', async () => {
+      // A parallelismLimit of 1 is a catalog limit of 50 per request. Code
+      // above in the /entities handler ensures valid entities are only
+      // returned on the second page.
+      factory = DefaultTechDocsCollatorFactory.fromConfig(config, {
+        ...options,
+        parallelismLimit: 1,
+      });
+      collator = await factory.getCollator();
+
+      const pipeline = TestPipeline.withSubject(collator);
+      const { documents } = await pipeline.execute();
+
+      // Only 1 entity with TechDocs configured multipled by 3 pages.
+      expect(documents).toHaveLength(3);
     });
 
     describe('with legacyPathCasing configuration', () => {

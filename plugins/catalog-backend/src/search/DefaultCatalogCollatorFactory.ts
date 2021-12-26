@@ -44,6 +44,7 @@ export type DefaultCatalogCollatorFactoryOptions = {
   tokenManager: TokenManager;
   locationTemplate?: string;
   filter?: CatalogEntitiesRequest['filter'];
+  batchSize?: number;
   catalogClient?: CatalogApi;
 };
 
@@ -52,6 +53,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
 
   private locationTemplate: string;
   private filter?: CatalogEntitiesRequest['filter'];
+  private batchSize: number;
   private readonly catalogClient: CatalogApi;
   private tokenManager: TokenManager;
 
@@ -63,12 +65,19 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   }
 
   private constructor(options: DefaultCatalogCollatorFactoryOptions) {
-    const { discovery, locationTemplate, filter, catalogClient, tokenManager } =
-      options;
+    const {
+      batchSize,
+      discovery,
+      locationTemplate,
+      filter,
+      catalogClient,
+      tokenManager,
+    } = options;
 
     this.locationTemplate =
       locationTemplate || '/catalog/:namespace/:kind/:name';
     this.filter = filter;
+    this.batchSize = batchSize || 500;
     this.catalogClient =
       catalogClient || new CatalogClient({ discoveryApi: discovery });
     this.tokenManager = tokenManager;
@@ -109,29 +118,44 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
 
   private async *execute(): AsyncGenerator<CatalogEntityDocument> {
     const { token } = await this.tokenManager.getToken();
-    const entities = (
-      await this.catalogClient.getEntities(
-        {
-          filter: this.filter,
-        },
-        { token },
-      )
-    ).items;
-    for (const entity of entities) {
-      yield {
-        title: entity.metadata.title ?? entity.metadata.name,
-        location: this.applyArgsToFormat(this.locationTemplate, {
+    let entitiesRetrieved = 0;
+    let moreEntitiesToGet = true;
+
+    // Offset/limit pagination is used on the Catalog Client in order to
+    // limit (and allow some control over) memory used by the search backend
+    // at index-time.
+    while (moreEntitiesToGet) {
+      const entities = (
+        await this.catalogClient.getEntities(
+          {
+            filter: this.filter,
+            limit: this.batchSize,
+            offset: entitiesRetrieved,
+          },
+          { token },
+        )
+      ).items;
+
+      // Control looping through entity batches.
+      moreEntitiesToGet = entities.length === this.batchSize;
+      entitiesRetrieved += entities.length;
+
+      for (const entity of entities) {
+        yield {
+          title: entity.metadata.title ?? entity.metadata.name,
+          location: this.applyArgsToFormat(this.locationTemplate, {
+            namespace: entity.metadata.namespace || 'default',
+            kind: entity.kind,
+            name: entity.metadata.name,
+          }),
+          text: this.getDocumentText(entity),
+          componentType: entity.spec?.type?.toString() || 'other',
           namespace: entity.metadata.namespace || 'default',
           kind: entity.kind,
-          name: entity.metadata.name,
-        }),
-        text: this.getDocumentText(entity),
-        componentType: entity.spec?.type?.toString() || 'other',
-        namespace: entity.metadata.namespace || 'default',
-        kind: entity.kind,
-        lifecycle: (entity.spec?.lifecycle as string) || '',
-        owner: (entity.spec?.owner as string) || '',
-      };
+          lifecycle: (entity.spec?.lifecycle as string) || '',
+          owner: (entity.spec?.owner as string) || '',
+        };
+      }
     }
   }
 }
