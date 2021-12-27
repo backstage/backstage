@@ -34,14 +34,51 @@ export const safeLinksHook = (node: Element) => {
   return node;
 };
 
+const filterIframeHook = (allowedIframeHosts: string[]) => (node: Element) => {
+  if (node.nodeName === 'IFRAME') {
+    const src = node.getAttribute('src');
+    if (!src) {
+      node.remove();
+      return node;
+    }
+
+    try {
+      const srcUrl = new URL(src);
+      const isMatch = allowedIframeHosts.some(host => srcUrl.host === host);
+      if (!isMatch) {
+        node.remove();
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn(`Invalid iframe src, ${error}`);
+      node.remove();
+    }
+  }
+  return node;
+};
+
+import { Config } from '@backstage/config';
 import DOMPurify from 'dompurify';
 import type { Transformer } from './transformer';
 
-export const sanitizeDOM = (): Transformer => {
+export const sanitizeDOM = (config?: Config): Transformer => {
+  const allowedIframeHosts =
+    config?.getOptionalStringArray('allowedIframeHosts') || [];
+
   return dom => {
     DOMPurify.addHook('afterSanitizeAttributes', safeLinksHook);
+    const addTags = ['link'];
+
+    if (allowedIframeHosts.length > 0) {
+      DOMPurify.addHook(
+        'beforeSanitizeElements',
+        filterIframeHook(allowedIframeHosts),
+      );
+      addTags.push('iframe');
+    }
+
     return DOMPurify.sanitize(dom.innerHTML, {
-      ADD_TAGS: ['link'],
+      ADD_TAGS: addTags,
       FORBID_TAGS: ['style'],
       WHOLE_DOCUMENT: true,
       RETURN_DOM: true,
