@@ -117,8 +117,8 @@ Note that you should specify the app used for the dashboard using the
 resources, otherwise it will assume that you're running the standard one.
 
 Note also that this attribute is optional for some kinds of dashboards, such as
-GKE, which requires additional informations specified in the
-`dashboardParameters` option.
+GKE, which requires additional parameters specified in the `dashboardParameters`
+option.
 
 ##### `clusters.\*.dashboardApp` (optional)
 
@@ -154,8 +154,8 @@ for real examples.
 
 Specifies additional information for the selected `dashboardApp` formatter.
 
-Note that, eventhough `dashboardParameters` is optional for some formatters, it
-is mandatory for others, such as GKE.
+Note that, even though `dashboardParameters` is optional, it might be mandatory
+for some dashboards, such as GKE.
 
 ###### required parameters for GKE
 
