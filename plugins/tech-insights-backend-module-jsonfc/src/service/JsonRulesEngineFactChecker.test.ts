@@ -24,6 +24,7 @@ import {
 } from '../index';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TechInsightJsonRuleCheck } from '../types';
+import { Operator } from 'json-rules-engine';
 
 const testChecks: Record<string, TechInsightJsonRuleCheck[]> = {
   broken: [
@@ -127,6 +128,49 @@ const testChecks: Record<string, TechInsightJsonRuleCheck[]> = {
       },
     },
   ],
+
+  customOperator: [
+    {
+      id: 'customOperatorTestCheck',
+      name: 'customOperatorTestCheck',
+      type: JSON_RULE_ENGINE_CHECK_TYPE,
+      description: 'Check For Testing using Custom Operator',
+      factIds: ['test-factretriever'],
+      rule: {
+        conditions: {
+          all: [
+            {
+              fact: 'testnumberfact',
+              operator: 'isDivisibleBy',
+              value: 2,
+            },
+          ],
+        },
+      },
+    },
+  ],
+
+  invalidCustomOperator: [
+    {
+      id: 'invalidCustomOperatorTestCheck',
+      name: 'invalidCustomOperatorTestCheck',
+      type: JSON_RULE_ENGINE_CHECK_TYPE,
+      description:
+        'Check For Testing using a Custom Operator that is not registered',
+      factIds: ['test-factretriever'],
+      rule: {
+        conditions: {
+          all: [
+            {
+              fact: 'testnumberfact',
+              operator: 'isOdd',
+              value: 2,
+            },
+          ],
+        },
+      },
+    },
+  ],
 };
 
 const latestSchemasMock = jest.fn().mockImplementation(() => [
@@ -166,6 +210,9 @@ describe('JsonRulesEngineFactChecker', () => {
   const factChecker = new JsonRulesEngineFactCheckerFactory({
     checkRegistry: mockCheckRegistry,
     checks: [],
+    operators: [
+      new Operator<number, number>('isDivisibleBy', (a, b) => a % b === 0),
+    ],
     logger: getVoidLogger(),
   }).construct(mockRepository);
 
@@ -225,6 +272,42 @@ describe('JsonRulesEngineFactChecker', () => {
                   operator: 'lessThan',
                   result: true,
                   value: 5,
+                },
+              ],
+              priority: 1,
+            },
+          },
+        },
+      });
+    });
+
+    it('should use custom operators when defined', async () => {
+      const results = await factChecker.runChecks('a/a/a', ['customOperator']);
+      expect(results).toHaveLength(1);
+      expect(results[0]).toMatchObject({
+        facts: {
+          testnumberfact: {
+            value: 3,
+            type: 'integer',
+            description: '',
+          },
+        },
+        result: false,
+        check: {
+          id: 'customOperatorTestCheck',
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
+          name: 'customOperatorTestCheck',
+          description: 'Check For Testing using Custom Operator',
+          factIds: ['test-factretriever'],
+          rule: {
+            conditions: {
+              all: [
+                {
+                  fact: 'testnumberfact',
+                  factResult: 3,
+                  operator: 'isDivisibleBy',
+                  result: false,
+                  value: 2,
                 },
               ],
               priority: 1,
@@ -307,17 +390,22 @@ describe('JsonRulesEngineFactChecker', () => {
   });
 
   describe('when validating checks', () => {
-    it('should succeed on valid rules', async () => {
-      const validationResponse = await factChecker.validate(
-        testChecks.simple[0],
-      );
-      expect(validationResponse.valid).toBeTruthy();
+    [testChecks.simple[0], testChecks.customOperator[0]].forEach(check => {
+      it(`should succeed on valid rule: ${check.name}`, async () => {
+        const validationResponse = await factChecker.validate(check);
+        expect(validationResponse.valid).toBeTruthy();
+      });
     });
-    it('should fail on broken rules', async () => {
-      const validationResponse = await factChecker.validate(
-        testChecks.broken[0],
-      );
-      expect(validationResponse.valid).toBeFalsy();
-    });
+
+    [testChecks.broken[0], testChecks.invalidCustomOperator[0]].forEach(
+      check => {
+        it(`should fail on broken rules: ${check.name}`, async () => {
+          const validationResponse = await factChecker.validate(
+            testChecks.broken[0],
+          );
+          expect(validationResponse.valid).toBeFalsy();
+        });
+      },
+    );
   });
 });
