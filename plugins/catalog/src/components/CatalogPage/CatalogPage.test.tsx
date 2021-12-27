@@ -228,7 +228,6 @@ describe('CatalogPage', () => {
     );
     fireEvent.click(getByTestId('user-picker-owned'));
     expect(await findByText(/Owned \(1\)/)).toBeInTheDocument();
-    expect(await findByText(/Owned \(1\)/)).toBeInTheDocument();
     expect(await findByTitle(/Foo Action/)).toBeInTheDocument();
     expect(await findByTitle(/Bar Action/)).toBeInTheDocument();
     expect((await findByTitle(/Bar Action/)).firstChild).toBeDisabled();
