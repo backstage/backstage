@@ -43,3 +43,4 @@
 /.changeset/techdocs-*                      @backstage/techdocs-core
 /cypress/src/integration/plugins/techdocs.spec.ts   @backstage/techdocs-core
 /plugins/apache-airflow                     @backstage/reviewers @cmpadden
+/plugins/newrelic-dashboard                 @backstage/reviewers @mufaddal7
