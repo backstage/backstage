@@ -91,6 +91,8 @@ export const exampleCheck: TechInsightJsonRuleCheck = {
 json-rules-engine supports a limited [number of built-in operators](https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#operators) that can be used in conditions. You can add your own operators by adding them to the `operators` array in the `JsonRulesEngineFactCheckerFactory` constructor. For example:
 
 ```diff
++ import { Operator } from 'json-rules-engine';
+
 const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
    checks: [],
    logger,
