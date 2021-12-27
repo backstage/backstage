@@ -31,6 +31,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
 import { EntityTagFilter } from '../../filters';
 
+export type CatalogReactEntityTagPickerClassKey = 'input';
+
 const useStyles = makeStyles(
   {
     input: {},

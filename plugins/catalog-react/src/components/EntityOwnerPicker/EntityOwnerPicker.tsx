@@ -33,6 +33,8 @@ import { EntityOwnerFilter } from '../../filters';
 import { getEntityRelations } from '../../utils';
 import { formatEntityRefTitle } from '../EntityRefLink';
 
+export type CatalogReactEntityOwnerPickerClassKey = 'input';
+
 const useStyles = makeStyles(
   {
     input: {},

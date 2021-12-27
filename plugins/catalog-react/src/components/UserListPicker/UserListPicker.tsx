@@ -43,6 +43,13 @@ import {
 import { UserListFilterKind } from '../../types';
 import { reduceEntityFilters } from '../../utils';
 
+export type CatalogReactUserListPickerClassKey =
+  | 'root'
+  | 'title'
+  | 'listIcon'
+  | 'menuItem'
+  | 'groupWrapper';
+
 const useStyles = makeStyles<Theme>(
   theme => ({
     root: {

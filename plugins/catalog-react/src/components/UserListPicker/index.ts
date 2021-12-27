@@ -15,3 +15,4 @@
  */
 
 export { UserListPicker } from './UserListPicker';
+export type { CatalogReactUserListPickerClassKey } from './UserListPicker';
