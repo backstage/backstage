@@ -220,7 +220,6 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('versions:check')
-    .option('--prefix <glob>', 'Override glob for matching packages to upgrade')
     .option('--fix', 'Fix any auto-fixable versioning problems')
     .description('Check Backstage package versioning')
     .action(lazy(() => import('./versions/lint').then(m => m.default)));
