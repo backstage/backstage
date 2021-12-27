@@ -1,5 +1,13 @@
 # @backstage/plugin-rollbar-backend
 
+## 0.1.17
+
+### Patch Changes
+
+- 58d07a070c: Bump `axios`
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+
 ## 0.1.16
 
 ### Patch Changes

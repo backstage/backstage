@@ -16,6 +16,7 @@
 
 import { InputError } from '@backstage/errors';
 import {
+  SingleInstanceGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
@@ -40,7 +41,9 @@ export class OctokitProvider {
     this.integrations = integrations;
     this.credentialsProviders = new Map(
       integrations.github.list().map(integration => {
-        const provider = GithubCredentialsProvider.create(integration.config);
+        const provider = SingleInstanceGithubCredentialsProvider.create(
+          integration.config,
+        );
         return [integration.config.host, provider];
       }),
     );

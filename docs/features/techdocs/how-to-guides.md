@@ -421,3 +421,24 @@ folder (/docs) or replace the content in this file.
 > on how you have configured your `template.yaml`
 
 Done! You now have support for TechDocs in your own software template!
+
+## how to enable iframes in TechDocs
+
+Techdocs uses the [DOMPurify](https://github.com/cure53/DOMPurify) to sanitizes
+HTML and prevents XSS attacks
+
+It's possible to allow some iframes based on a list of allowed hosts. To do
+this, add the allowed hosts in the `techdocs.sanitizer.allowedIframeHosts`
+configuration of your `app-config.yaml`
+
+E.g.
+
+```yaml
+techdocs:
+  sanitizer:
+    allowedIframeHosts:
+      - drive.google.com
+```
+
+This way, all iframes where the host of src attribute is in the
+`sanitizer.allowedIframeHosts` list will be displayed

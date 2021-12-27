@@ -37,7 +37,7 @@ const SearchPage = () => {
         <Grid container direction="row">
           <Grid item xs={12}>
             <Paper className={classes.bar}>
-              <SearchBar debounceTime={100} />
+              <SearchBar />
             </Paper>
           </Grid>
           <Grid item xs={3}>

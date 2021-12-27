@@ -26,6 +26,7 @@ export {
   Filters,
   FiltersButton,
   SearchBar,
+  SearchBarBase,
   SearchContextProvider,
   SearchFilter,
   SearchFilterNext,
@@ -39,9 +40,12 @@ export {
 export type {
   SearchModalProps,
   SidebarSearchModalProps,
+  HomePageSearchBarProps,
   SidebarSearchProps,
+  FiltersState,
+  SearchBarProps,
+  SearchBarBaseProps,
 } from './components';
-export type { FiltersState } from './components';
 export {
   DefaultResultListItem,
   HomePageSearchBar,

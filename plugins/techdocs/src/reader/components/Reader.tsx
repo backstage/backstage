@@ -28,7 +28,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Grid, makeStyles, useTheme } from '@material-ui/core';
 
 import { EntityName } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
 
@@ -137,6 +137,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
   const theme = useTheme<BackstageTheme>();
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  const techdocsSanitizer = useApi(configApiRef);
   const { namespace = '', kind = '', name = '' } = entityRef;
   const { state, path, content: rawPage } = useTechDocsReader();
 
@@ -170,7 +171,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
   const preRender = useCallback(
     (rawContent: string, contentPath: string) =>
       transformer(rawContent, [
-        sanitizeDOM(),
+        sanitizeDOM(techdocsSanitizer.getOptionalConfig('techdocs.sanitizer')),
         addBaseUrl({
           techdocsStorageApi,
           entityId: {
@@ -319,6 +320,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
       namespace,
       scmIntegrationsApi,
       techdocsStorageApi,
+      techdocsSanitizer,
       theme.palette.action.disabledBackground,
       theme.palette.background.default,
       theme.palette.background.paper,

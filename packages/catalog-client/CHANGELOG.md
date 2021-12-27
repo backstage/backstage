@@ -1,5 +1,12 @@
 # @backstage/catalog-client
 
+## 0.5.3
+
+### Patch Changes
+
+- 7927005152: Add the ability to supply a custom `fetchApi`. In the default frontend app setup, this will use the `fetchApiRef` implementation.
+- 5463c03b35: Add support for passing paging parameters to the getEntities call of the catalog client
+
 ## 0.5.2
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-org
 
+## 0.3.32
+
+### Patch Changes
+
+- 6f263c2cbc: Fixed bug in OwnershipCard component where text wasn't correctly pluralized
+- 7a4bd2ceac: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
 ## 0.3.31
 
 ### Patch Changes

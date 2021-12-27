@@ -1,5 +1,28 @@
 # @backstage/plugin-search
 
+## 0.5.2
+
+### Patch Changes
+
+- 3d98955c8a: Add Optional Props to Override Icon for SidebarSearch and SidebarSearchModal Component
+- 49a696d720: Standardizes the component used as a search box in the search modal and in the composable home page.
+
+  After these changes, all search boxes exported by the search plugin are based on the `<SearchBarBase />` component, and this one is based on the `<InputBase />` component of the Material UI. This means that when you use SearchBarBase or one of its derived components (like `SearchBar` and `HomePageSearchBar`) you can pass all properties accepted by InputBase that have not been replaced by the props type of those components.
+
+  For example:
+
+  ```jsx
+  <SearchInputBase color="secondary" debouceTime={500} />
+  ```
+
+  The `color` property is inherited from `InputBaseProps` type and `debouceTime` defined by `SearchBarBaseProps`.
+
+- 7a4bd2ceac: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
 ## 0.5.1
 
 ### Patch Changes

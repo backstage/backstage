@@ -17,7 +17,7 @@
 import { TechInsightsApi } from './TechInsightsApi';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Check } from './types';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { EntityName } from '@backstage/catalog-model';
 
@@ -28,13 +28,16 @@ import {
 
 export type Options = {
   discoveryApi: DiscoveryApi;
+  identityApi: IdentityApi;
 };
 
 export class TechInsightsClient implements TechInsightsApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
   }
 
   getScorecardsDefinition(
@@ -47,7 +50,14 @@ export class TechInsightsClient implements TechInsightsApi {
 
   async getAllChecks(): Promise<Check[]> {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');
-    const response = await fetch(`${url}/checks`);
+    const token = await this.identityApi.getIdToken();
+    const response = await fetch(`${url}/checks`, {
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : undefined,
+    });
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
@@ -59,6 +69,7 @@ export class TechInsightsClient implements TechInsightsApi {
     checks: Check[],
   ): Promise<CheckResult[]> {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');
+    const token = await this.identityApi.getIdToken();
     const { namespace, kind, name } = entityParams;
     const allChecks = checks ? checks : await this.getAllChecks();
     const checkIds = allChecks.map((check: Check) => check.id);
@@ -71,6 +82,7 @@ export class TechInsightsClient implements TechInsightsApi {
         body: JSON.stringify({ checks: checkIds }),
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
       },
     );
