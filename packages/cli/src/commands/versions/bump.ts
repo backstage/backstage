@@ -100,11 +100,15 @@ export default async (cmd: Command) => {
     }
   });
 
-  // Only check @backstage packages and friends, we don't want this to do a full update of all deps
   const filter = (name: string) => minimatch(name, prefix);
 
   // Check for updates of transitive backstage dependencies
   await workerThreads(16, lockfile.keys(), async name => {
+    // Only check @backstage packages and friends, we don't want this to do a full update of all deps
+    if (!filter(name)) {
+      return;
+    }
+
     let target: string;
     try {
       target = await findTargetVersion(name);
