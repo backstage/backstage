@@ -38,6 +38,8 @@ const DEP_TYPES = [
   'optionalDependencies',
 ];
 
+const DEFAULT_PREFIX_GLOB = '@backstage/*';
+
 type PkgVersionInfo = {
   range: string;
   target: string;
@@ -51,7 +53,10 @@ export default async (cmd: Command) => {
   let prefix = cmd.prefix;
 
   if (!prefix) {
-    prefix = '@backstage/*';
+    console.log(`Using default prefix glob ${DEFAULT_PREFIX_GLOB}`);
+    prefix = DEFAULT_PREFIX_GLOB;
+  } else {
+    console.log(`Using custom prefix glob ${prefix}`);
   }
 
   const findTargetVersion = createVersionFinder();

@@ -129,6 +129,7 @@ describe('bump', () => {
       await bump({ prefix: null } as Command);
     });
     expect(logs.filter(Boolean)).toEqual([
+      'Using default prefix glob @backstage/*',
       'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/core-api',
@@ -254,6 +255,7 @@ describe('bump', () => {
       await bump({ prefix: '@{backstage,backstage-extra}/*' } as any);
     });
     expect(logs.filter(Boolean)).toEqual([
+      'Using custom prefix glob @{backstage,backstage-extra}/*',
       'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage-extra/custom-two',
       'Checking for updates of @backstage-extra/custom',
@@ -350,6 +352,7 @@ describe('bump', () => {
       await bump({ prefix: null } as any);
     });
     expect(logs.filter(Boolean)).toEqual([
+      'Using default prefix glob @backstage/*',
       'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/core',
       'Package info not found, ignoring package @backstage/theme',
