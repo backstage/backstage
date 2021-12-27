@@ -189,12 +189,14 @@ describe('CatalogPage', () => {
       c => c.tagName === 'SPAN',
     );
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
-
     expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
   }, 20_000);
 
   it('should render the default actions of an item in the grid', async () => {
-    const { findByTitle, findByText } = await renderWrapped(<CatalogPage />);
+    const { getByTestId, findByTitle, findByText } = await renderWrapped(
+      <CatalogPage />,
+    );
+    fireEvent.click(getByTestId('user-picker-owned'));
     expect(await findByText(/Owned \(1\)/)).toBeInTheDocument();
     expect(await findByTitle(/View/)).toBeInTheDocument();
     expect(await findByTitle(/Edit/)).toBeInTheDocument();
@@ -221,9 +223,10 @@ describe('CatalogPage', () => {
       },
     ];
 
-    const { findByTitle, findByText } = await renderWrapped(
+    const { getByTestId, findByTitle, findByText } = await renderWrapped(
       <CatalogPage actions={actions} />,
     );
+    fireEvent.click(getByTestId('user-picker-owned'));
     expect(await findByText(/Owned \(1\)/)).toBeInTheDocument();
     expect(await findByTitle(/Foo Action/)).toBeInTheDocument();
     expect(await findByTitle(/Bar Action/)).toBeInTheDocument();
@@ -235,6 +238,7 @@ describe('CatalogPage', () => {
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
     const { findByText, getByTestId } = await renderWrapped(<CatalogPage />);
+    fireEvent.click(getByTestId('user-picker-owned'));
     await expect(findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
     fireEvent.click(getByTestId('user-picker-all'));
     await expect(findByText(/All \(2\)/)).resolves.toBeInTheDocument();
@@ -250,7 +254,8 @@ describe('CatalogPage', () => {
   // this test is for fixing the bug after favoriting an entity, the matching
   // entities defaulting to "owned" filter and not based on the selected filter
   it('should render the correct entities filtered on the selected filter', async () => {
-    await renderWrapped(<CatalogPage />);
+    const { getByTestId } = await renderWrapped(<CatalogPage />);
+    fireEvent.click(getByTestId('user-picker-owned'));
     await expect(screen.findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
     fireEvent.click(screen.getByTestId('user-picker-starred'));
     await expect(
