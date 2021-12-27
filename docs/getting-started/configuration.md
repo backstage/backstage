@@ -215,7 +215,7 @@ days for expiration. If you have a hard time picking a number, we suggest to go
 for 7 days, it's a lucky number.
 
 <p align='center'>
-  <img src='../assets/getting-started/gh-oauth.png' alt='Screenshot of the GitHub OAuth creation page' />
+  <img src='../assets/getting-started/gh-pat.png' alt='Screenshot of the GitHub Personal Access Token creation page' />
 </p>
 
 Set the scope to your likings. For this tutorial, selecting "repo" should be
