@@ -224,6 +224,20 @@ export const SearchType: ({
   defaultValue,
 }: SearchTypeProps) => JSX.Element;
 
+// @public
+export const SearchTypeFacet: (props: SearchTypeFacetProps) => JSX.Element;
+
+// @public (undocumented)
+export type SearchTypeFacetProps = {
+  name: string;
+  types: Array<{
+    value: string;
+    name: string;
+    icon: JSX.Element;
+  }>;
+  defaultValue?: string;
+};
+
 // Warning: (ae-missing-release-tag) "SidebarSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
