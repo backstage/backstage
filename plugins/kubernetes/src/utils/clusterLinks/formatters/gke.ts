@@ -15,6 +15,60 @@
  */
 import { ClusterLinksFormatterOptions } from '../../../types/types';
 
-export function gkeFormatter(_options: ClusterLinksFormatterOptions): URL {
-  throw new Error('GKE formatter is not yet implemented. Please, contribute!');
+const kindMappings: Record<string, string> = {
+  deployment: 'deployment',
+  pod: 'pod',
+  ingress: 'ingress',
+  service: 'service',
+  horizontalpodautoscaler: 'deployment',
+};
+
+export function gkeFormatter(options: ClusterLinksFormatterOptions): URL {
+  if (!options.dashboardParameters) {
+    throw new Error('GKE dashboard requires a dashboardParameters option');
+  }
+  const args = options.dashboardParameters;
+  if (!args.projectId) {
+    throw new Error(
+      'GKE dashboard requires a "projectId" in the dashboardParameters option',
+    );
+  }
+  if (!args.region) {
+    throw new Error(
+      'GKE dashboard requires a "region" in the dashboardParameters option',
+    );
+  }
+  if (!args.clusterName) {
+    throw new Error(
+      'GKE dashboard requires a "clusterName" in the dashboardParameters option',
+    );
+  }
+  const basePath = new URL('https://console.cloud.google.com/');
+  const region = encodeURIComponent(args.region);
+  const clusterName = encodeURIComponent(args.clusterName);
+  const name = encodeURIComponent(options.object.metadata?.name ?? '');
+  const namespace = encodeURIComponent(
+    options.object.metadata?.namespace ?? '',
+  );
+  const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
+  if (!basePath.pathname.endsWith('/')) {
+    // a dashboard url with a path should end with a slash otherwise
+    // the new combined URL will replace the last segment with the appended path!
+    // https://foobar.com/abc/def + k8s/cluster/projects/test  --> https://foobar.com/abc/k8s/cluster/projects/test
+    // https://foobar.com/abc/def/ + k8s/cluster/projects/test --> https://foobar.com/abc/def/k8s/cluster/projects/test
+    basePath.pathname += '/';
+  }
+  let path = '';
+  if (namespace && name && validKind) {
+    const kindsWithDetails = ['ingress', 'pod'];
+    const landingPage = kindsWithDetails.includes(validKind)
+      ? 'details'
+      : 'overview';
+    path = `kubernetes/${validKind}/${region}/${clusterName}/${namespace}/${name}/${landingPage}`;
+  } else {
+    path = `kubernetes/clusters/details/${region}/${clusterName}/details`;
+  }
+  const result = new URL(path, basePath);
+  result.searchParams.set('project', args.projectId);
+  return result;
 }

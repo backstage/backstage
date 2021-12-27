@@ -43,7 +43,8 @@ export interface GroupedResponses extends DeploymentResources {
 }
 
 export interface ClusterLinksFormatterOptions {
-  dashboardUrl: URL;
+  dashboardUrl?: URL;
+  dashboardParameters?: any;
   object: any;
   kind: string;
 }

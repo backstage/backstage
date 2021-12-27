@@ -19,15 +19,16 @@ import { defaultFormatterName, clusterLinksFormatters } from './formatters';
 export type FormatClusterLinkOptions = {
   dashboardUrl?: string;
   dashboardApp?: string;
+  dashboardParameters?: any;
   object: any;
   kind: string;
 };
 
 export function formatClusterLink(options: FormatClusterLinkOptions) {
-  if (!options.dashboardUrl) {
+  if (!options.dashboardUrl && !options.dashboardParameters) {
     return undefined;
   }
-  if (!options.object) {
+  if (options.dashboardUrl && !options.object) {
     return options.dashboardUrl;
   }
   const app = options.dashboardApp || defaultFormatterName;
@@ -36,7 +37,10 @@ export function formatClusterLink(options: FormatClusterLinkOptions) {
     throw new Error(`Could not find Kubernetes dashboard app named '${app}'`);
   }
   const url = formatter({
-    dashboardUrl: new URL(options.dashboardUrl),
+    dashboardUrl: options.dashboardUrl
+      ? new URL(options.dashboardUrl)
+      : undefined,
+    dashboardParameters: options.dashboardParameters,
     object: options.object,
     kind: options.kind,
   });

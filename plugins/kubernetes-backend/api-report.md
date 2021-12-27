@@ -31,6 +31,7 @@ export interface ClusterDetails {
   // (undocumented)
   caData?: string | undefined;
   dashboardApp?: string;
+  dashboardParameters?: any;
   dashboardUrl?: string;
   name: string;
   // (undocumented)

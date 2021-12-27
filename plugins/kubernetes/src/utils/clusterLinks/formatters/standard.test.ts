@@ -23,6 +23,19 @@ function formatUrl(url: URL) {
 }
 
 describe('clusterLinks - standard formatter', () => {
+  it('should provide a dashboardUrl in the options', () => {
+    expect(() =>
+      standardFormatter({
+        object: {
+          metadata: {
+            name: 'foobar',
+            namespace: 'bar',
+          },
+        },
+        kind: 'Deployment',
+      }),
+    ).toThrowError('standard dashboard requires a dashboardUrl option');
+  });
   it('should return an url on the workloads when there is a namespace only', () => {
     const url = standardFormatter({
       dashboardUrl: new URL('https://k8s.foo.com'),
@@ -65,6 +78,21 @@ describe('clusterLinks - standard formatter', () => {
     });
     expect(formatUrl(url)).toBe(
       'https://k8s.foo.com/#/deployment/bar/foobar?namespace=bar',
+    );
+  });
+  it('should return an url on the pod', () => {
+    const url = standardFormatter({
+      dashboardUrl: new URL('https://k8s.foo.com/'),
+      object: {
+        metadata: {
+          name: 'foobar',
+          namespace: 'bar',
+        },
+      },
+      kind: 'Pod',
+    });
+    expect(formatUrl(url)).toBe(
+      'https://k8s.foo.com/#/pod/bar/foobar?namespace=bar',
     );
   });
   it('should return an url on the deployment with a prefix 1', () => {
