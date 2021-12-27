@@ -138,6 +138,7 @@ export function registerCommands(program: CommanderStatic) {
     .command('build')
     .description('Build a package for publishing')
     .option('--outputs <formats>', 'List of formats to output [types,cjs,esm]')
+    .option('--minify', 'Minify the generated code')
     .action(lazy(() => import('./build').then(m => m.default)));
 
   program
