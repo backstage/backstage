@@ -84,12 +84,18 @@ export class MockStorageApi implements StorageApi {
   }
 
   async set<T>(key: string, data: T): Promise<void> {
-    this.data[this.getKeyName(key)] = data;
+    const serialized = JSON.parse(JSON.stringify(data), (_key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        Object.freeze(value);
+      }
+      return value;
+    });
+    this.data[this.getKeyName(key)] = serialized;
     this.notifyChanges({
       key,
       presence: 'present',
-      value: data,
-      newValue: data,
+      value: serialized,
+      newValue: serialized,
     });
   }
 
