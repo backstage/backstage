@@ -19,12 +19,14 @@ import { IconButton } from '@material-ui/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
+import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { StorageApi } from '@backstage/core-plugin-api';
+import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { UserEntity } from '@backstage/catalog-model';
@@ -52,6 +54,15 @@ export interface AsyncEntityProviderProps {
   refresh?: VoidFunction;
 }
 
+// Warning: (ae-forgotten-export) The symbol "BackstageComponentsNameToClassKey" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type BackstageOverrides = Overrides & {
+  [Name in keyof BackstageComponentsNameToClassKey]?: Partial<
+    StyleRules<BackstageComponentsNameToClassKey[Name]>
+  >;
+};
+
 export { CATALOG_FILTER_EXISTS };
 
 export { CatalogApi };
@@ -60,6 +71,36 @@ export { CatalogApi };
 //
 // @public (undocumented)
 export const catalogApiRef: ApiRef<CatalogApi>;
+
+// Warning: (ae-missing-release-tag) "CatalogReactEntityLifecyclePickerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CatalogReactEntityLifecyclePickerClassKey = 'input';
+
+// Warning: (ae-missing-release-tag) "CatalogReactEntityOwnerPickerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CatalogReactEntityOwnerPickerClassKey = 'input';
+
+// Warning: (ae-missing-release-tag) "CatalogReactEntitySearchBarClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';
+
+// Warning: (ae-missing-release-tag) "CatalogReactEntityTagPickerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CatalogReactEntityTagPickerClassKey = 'input';
+
+// Warning: (ae-missing-release-tag) "CatalogReactUserListPickerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CatalogReactUserListPickerClassKey =
+  | 'root'
+  | 'title'
+  | 'listIcon'
+  | 'menuItem'
+  | 'groupWrapper';
 
 // Warning: (ae-missing-release-tag) "catalogRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
