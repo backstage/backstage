@@ -17,6 +17,8 @@
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import semver from 'semver';
+import minimatch from 'minimatch';
+import { Command } from 'commander';
 import { isError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 import { run } from '../../lib/run';
@@ -26,7 +28,7 @@ import {
   fetchPackageInfo,
   Lockfile,
 } from '../../lib/versioning';
-import { includedFilter, forbiddenDuplicatesFilter } from './lint';
+import { forbiddenDuplicatesFilter } from './lint';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
 
 const DEP_TYPES = [
@@ -43,14 +45,19 @@ type PkgVersionInfo = {
   location: string;
 };
 
-export default async () => {
+export default async (cmd: Command) => {
   const lockfilePath = paths.resolveTargetRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
+  let prefix = cmd.prefix;
+
+  if (!prefix) {
+    prefix = '@backstage/*';
+  }
 
   const findTargetVersion = createVersionFinder();
 
   // First we discover all Backstage dependencies within our own repo
-  const dependencyMap = await mapDependencies(paths.targetDir);
+  const dependencyMap = await mapDependencies(paths.targetDir, prefix);
 
   // Next check with the package registry to see which dependency ranges we need to bump
   const versionBumps = new Map<string, PkgVersionInfo[]>();
@@ -88,13 +95,11 @@ export default async () => {
     }
   });
 
+  // Only check @backstage packages and friends, we don't want this to do a full update of all deps
+  const filter = (name: string) => minimatch(name, prefix);
+
   // Check for updates of transitive backstage dependencies
   await workerThreads(16, lockfile.keys(), async name => {
-    // Only check @backstage packages and friends, we don't want this to do a full update of all deps
-    if (!includedFilter(name)) {
-      return;
-    }
-
     let target: string;
     try {
       target = await findTargetVersion(name);
@@ -237,7 +242,7 @@ export default async () => {
   // Finally we make sure the new lockfile doesn't have any duplicates
   const dedupLockfile = await Lockfile.load(lockfilePath);
   const result = dedupLockfile.analyze({
-    filter: includedFilter,
+    filter,
   });
 
   if (result.newVersions.length > 0) {
