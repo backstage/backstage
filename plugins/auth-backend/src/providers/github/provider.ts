@@ -129,26 +129,26 @@ export class GithubAuthProvider implements OAuthHandlers {
     };
   }
 
-  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
-    const {
-      accessToken,
-      refreshToken: newRefreshToken,
-      params,
-    } = await executeRefreshTokenStrategy(
-      this._strategy,
-      req.refreshToken,
-      req.scope,
-    );
+  async refresh(req: OAuthRefreshRequest) {
+    const { accessToken, refreshToken, params } =
+      await executeRefreshTokenStrategy(
+        this._strategy,
+        req.refreshToken,
+        req.scope,
+      );
     const fullProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
     );
-    return this.handleResult({
-      fullProfile,
-      params,
-      accessToken,
-      refreshToken: newRefreshToken,
-    });
+
+    return {
+      response: await this.handleResult({
+        fullProfile,
+        params,
+        accessToken,
+      }),
+      refreshToken,
+    };
   }
 
   private async handleResult(result: GithubOAuthResult) {
@@ -158,7 +158,6 @@ export class GithubAuthProvider implements OAuthHandlers {
     const response: OAuthResponse = {
       providerInfo: {
         accessToken: result.accessToken,
-        refreshToken: result.refreshToken, // GitHub expires the old refresh token when used
         scope: result.params.scope,
         expiresInSeconds:
           expiresInStr === undefined ? undefined : Number(expiresInStr),

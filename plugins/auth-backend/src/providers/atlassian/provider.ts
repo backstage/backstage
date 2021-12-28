@@ -107,9 +107,7 @@ export class AtlassianAuthProvider implements OAuthHandlers {
     });
   }
 
-  async handler(
-    req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+  async handler(req: express.Request) {
     const { result } = await executeFrameHandlerStrategy<OAuthResult>(
       req,
       this._strategy,
@@ -117,7 +115,7 @@ export class AtlassianAuthProvider implements OAuthHandlers {
 
     return {
       response: await this.handleResult(result),
-      refreshToken: result.refreshToken ?? '',
+      refreshToken: result.refreshToken,
     };
   }
 
@@ -128,7 +126,6 @@ export class AtlassianAuthProvider implements OAuthHandlers {
       providerInfo: {
         idToken: result.params.id_token,
         accessToken: result.accessToken,
-        refreshToken: result.refreshToken,
         scope: result.params.scope,
         expiresInSeconds: result.params.expires_in,
       },
@@ -152,28 +149,27 @@ export class AtlassianAuthProvider implements OAuthHandlers {
     return response;
   }
 
-  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
-    const {
-      accessToken,
-      params,
-      refreshToken: newRefreshToken,
-    } = await executeRefreshTokenStrategy(
-      this._strategy,
-      req.refreshToken,
-      req.scope,
-    );
+  async refresh(req: OAuthRefreshRequest) {
+    const { accessToken, params, refreshToken } =
+      await executeRefreshTokenStrategy(
+        this._strategy,
+        req.refreshToken,
+        req.scope,
+      );
 
     const fullProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
     );
 
-    return this.handleResult({
-      fullProfile,
-      params,
-      accessToken,
-      refreshToken: newRefreshToken,
-    });
+    return {
+      response: await this.handleResult({
+        fullProfile,
+        params,
+        accessToken,
+      }),
+      refreshToken,
+    };
   }
 }
 
