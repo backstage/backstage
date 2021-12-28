@@ -15,7 +15,7 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, AnalyticsContext } from '@backstage/core-plugin-api';
 import { SearchResultSet } from '@backstage/search-common';
 import React, {
   createContext,
@@ -130,7 +130,11 @@ export const SearchContextProvider = ({
     fetchPreviousPage: hasPreviousPage ? fetchPreviousPage : undefined,
   };
 
-  return <SearchContext.Provider value={value} children={children} />;
+  return (
+    <AnalyticsContext attributes={{ searchTypes: types.sort().join(',') }}>
+      <SearchContext.Provider value={value} children={children} />
+    </AnalyticsContext>
+  );
 };
 
 export const useSearch = () => {

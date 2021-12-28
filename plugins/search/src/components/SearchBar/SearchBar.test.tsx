@@ -314,7 +314,7 @@ describe('SearchBar', () => {
         extension: 'App',
         pluginId: 'root',
         routeRef: 'unknown',
-        types: 'techdocs,software-catalog',
+        searchTypes: 'software-catalog,techdocs',
       },
       subject: 'value',
     });
