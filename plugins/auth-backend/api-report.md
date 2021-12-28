@@ -47,6 +47,14 @@ export type AtlassianProviderOptions = {
   };
 };
 
+// @public (undocumented)
+export type Auth0ProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver: SignInResolver<OAuthResult>;
+  };
+};
+
 // @public
 export type AuthHandler<AuthResult> = (
   input: AuthResult,
@@ -219,6 +227,11 @@ export const createAtlassianProvider: (
   options?: AtlassianProviderOptions | undefined,
 ) => AuthProviderFactory;
 
+// @public (undocumented)
+export const createAuth0Provider: (
+  options?: Auth0ProviderOptions | undefined,
+) => AuthProviderFactory;
+
 // Warning: (ae-missing-release-tag) "createAwsAlbProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -280,6 +293,11 @@ export const createOidcProvider: (
 // @public (undocumented)
 export const createOktaProvider: (
   _options?: OktaProviderOptions | undefined,
+) => AuthProviderFactory;
+
+// @public (undocumented)
+export const createOneLoginProvider: (
+  options?: OneLoginProviderOptions | undefined,
 ) => AuthProviderFactory;
 
 // Warning: (ae-missing-release-tag) "createOriginFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -569,6 +587,14 @@ export type OktaProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
     resolver?: SignInResolver<OAuthResult>;
+  };
+};
+
+// @public (undocumented)
+export type OneLoginProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver: SignInResolver<OAuthResult>;
   };
 };
 

@@ -195,6 +195,7 @@ const defaultSignInResolver: SignInResolver<OAuthResult> = async (
   return { id, token };
 };
 
+/** @public */
 export type OneLoginProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -213,6 +214,7 @@ export type OneLoginProviderOptions = {
   };
 };
 
+/** @public */
 export const createOneLoginProvider = (
   options?: OneLoginProviderOptions,
 ): AuthProviderFactory => {

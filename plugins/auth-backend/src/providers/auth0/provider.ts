@@ -197,6 +197,7 @@ const defaultSignInResolver: SignInResolver<OAuthResult> = async (
   return { id, token };
 };
 
+/** @public */
 export type Auth0ProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -215,6 +216,7 @@ export type Auth0ProviderOptions = {
   };
 };
 
+/** @public */
 export const createAuth0Provider = (
   options?: Auth0ProviderOptions,
 ): AuthProviderFactory => {
