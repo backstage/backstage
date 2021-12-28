@@ -276,7 +276,13 @@ describe('SearchBar', () => {
 
     render(
       <ApiProvider apis={apiRegistry}>
-        <SearchContextProvider initialState={initialState}>
+        <SearchContextProvider
+          initialState={{
+            term: '',
+            types: ['techdocs', 'software-catalog'],
+            filters: {},
+          }}
+        >
           <SearchBar debounceTime={debounceTime} />
         </SearchContextProvider>
         ,
@@ -302,9 +308,14 @@ describe('SearchBar', () => {
     await waitFor(() => expect(textbox).toHaveValue(value));
 
     expect(analyticsApiSpy.getEvents()).toHaveLength(1);
-    expect(analyticsApiSpy.getEvents()[0]).toMatchObject({
+    expect(analyticsApiSpy.getEvents()[0]).toEqual({
       action: 'search',
-      context: { extension: 'App', pluginId: 'root', routeRef: 'unknown' },
+      context: {
+        extension: 'App',
+        pluginId: 'root',
+        routeRef: 'unknown',
+        types: 'techdocs,software-catalog',
+      },
       subject: 'value',
     });
   });

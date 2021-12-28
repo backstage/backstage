@@ -22,7 +22,12 @@ import React, {
   useCallback,
 } from 'react';
 import { useDebounce } from 'react-use';
-import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  AnalyticsContext,
+  useAnalytics,
+  useApi,
+} from '@backstage/core-plugin-api';
 import {
   InputBase,
   InputBaseProps,
@@ -156,7 +161,7 @@ export type SearchBarProps = Partial<SearchBarBaseProps>;
  * @public
  */
 export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
-  const { term, setTerm } = useSearch();
+  const { term, setTerm, types } = useSearch();
 
   const handleChange = (newValue: string) => {
     if (onChange) {
@@ -166,5 +171,9 @@ export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
     }
   };
 
-  return <SearchBarBase value={term} onChange={handleChange} {...props} />;
+  return (
+    <AnalyticsContext attributes={{ types: types.join(',') }}>
+      <SearchBarBase value={term} onChange={handleChange} {...props} />
+    </AnalyticsContext>
+  );
 };
