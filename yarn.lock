@@ -2542,24 +2542,6 @@
     react-router "6.0.0-beta.0"
     react-use "^17.2.4"
 
-"@backstage/test-utils@^0.1.24":
-  version "0.1.24"
-  resolved "https://registry.npmjs.org/@backstage/test-utils/-/test-utils-0.1.24.tgz#1af2ea1fe3daa7df5545cc6d41271d59c2076f48"
-  integrity sha512-zfqhY5AS8tNOFoP8Kmpb3zE1vCbbHCXwsvxtTEq7UsRJiGpzTMN7pn+GQpddMgMHJc+IB0y25Xflw3grNEKTbA==
-  dependencies:
-    "@backstage/core-app-api" "^0.2.0"
-    "@backstage/core-plugin-api" "^0.3.0"
-    "@backstage/theme" "^0.2.14"
-    "@backstage/types" "^0.1.1"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.11.2"
-    "@testing-library/jest-dom" "^5.10.1"
-    "@testing-library/react" "^11.2.5"
-    "@testing-library/user-event" "^13.1.8"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    zen-observable "^0.8.15"
-
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
