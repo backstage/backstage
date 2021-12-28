@@ -54,12 +54,12 @@ export interface AsyncEntityProviderProps {
   refresh?: VoidFunction;
 }
 
-// Warning: (ae-forgotten-export) The symbol "BackstageComponentsNameToClassKey" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "CatalogReactComponentsNameToClassKey" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type BackstageOverrides = Overrides & {
-  [Name in keyof BackstageComponentsNameToClassKey]?: Partial<
-    StyleRules<BackstageComponentsNameToClassKey[Name]>
+  [Name in keyof CatalogReactComponentsNameToClassKey]?: Partial<
+    StyleRules<CatalogReactComponentsNameToClassKey[Name]>
   >;
 };
 
@@ -72,28 +72,18 @@ export { CatalogApi };
 // @public (undocumented)
 export const catalogApiRef: ApiRef<CatalogApi>;
 
-// Warning: (ae-missing-release-tag) "CatalogReactEntityLifecyclePickerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CatalogReactEntityLifecyclePickerClassKey = 'input';
 
-// Warning: (ae-missing-release-tag) "CatalogReactEntityOwnerPickerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
 
-// Warning: (ae-missing-release-tag) "CatalogReactEntitySearchBarClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';
 
-// Warning: (ae-missing-release-tag) "CatalogReactEntityTagPickerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CatalogReactEntityTagPickerClassKey = 'input';
 
-// Warning: (ae-missing-release-tag) "CatalogReactUserListPickerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CatalogReactUserListPickerClassKey =
   | 'root'

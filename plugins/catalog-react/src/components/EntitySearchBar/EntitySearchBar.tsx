@@ -29,6 +29,7 @@ import { useDebounce } from 'react-use';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
 
+/** @public */
 export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';
 
 const useStyles = makeStyles(

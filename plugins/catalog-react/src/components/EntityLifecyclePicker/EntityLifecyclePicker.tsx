@@ -31,6 +31,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
 import { EntityLifecycleFilter } from '../../filters';
 
+/** @public */
 export type CatalogReactEntityLifecyclePickerClassKey = 'input';
 
 const useStyles = makeStyles(

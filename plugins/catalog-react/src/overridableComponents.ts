@@ -24,7 +24,7 @@ import {
   CatalogReactEntityOwnerPickerClassKey,
 } from './components';
 
-type BackstageComponentsNameToClassKey = {
+type CatalogReactComponentsNameToClassKey = {
   CatalogReactUserListPicker: CatalogReactUserListPickerClassKey;
   CatalogReactEntityLifecyclePicker: CatalogReactEntityLifecyclePickerClassKey;
   CatalogReactEntitySearchBar: CatalogReactEntitySearchBarClassKey;
@@ -34,7 +34,7 @@ type BackstageComponentsNameToClassKey = {
 
 /** @public */
 export type BackstageOverrides = Overrides & {
-  [Name in keyof BackstageComponentsNameToClassKey]?: Partial<
-    StyleRules<BackstageComponentsNameToClassKey[Name]>
+  [Name in keyof CatalogReactComponentsNameToClassKey]?: Partial<
+    StyleRules<CatalogReactComponentsNameToClassKey[Name]>
   >;
 };
