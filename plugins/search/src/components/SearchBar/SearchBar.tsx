@@ -67,6 +67,7 @@ export const SearchBarBase = ({
   ...props
 }: SearchBarBaseProps) => {
   const configApi = useApi(configApiRef);
+  const analytics = useAnalytics();
   const [value, setValue] = useState<string>(defaultValue as string);
 
   useEffect(() => {
@@ -75,7 +76,15 @@ export const SearchBarBase = ({
     );
   }, [defaultValue]);
 
-  useDebounce(() => onChange(value), debounceTime, [value]);
+  useDebounce(
+    () => {
+      // Capture analytics search event with search term provided as value
+      analytics.captureEvent('search', value);
+      onChange(value);
+    },
+    debounceTime,
+    [value],
+  );
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -147,12 +156,9 @@ export type SearchBarProps = Partial<SearchBarBaseProps>;
  * @public
  */
 export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
-  const analytics = useAnalytics();
   const { term, setTerm } = useSearch();
 
   const handleChange = (newValue: string) => {
-    // Catpure analytics search event with search term provided as value
-    analytics.captureEvent('search', newValue);
     if (onChange) {
       onChange(newValue);
     } else {
