@@ -51,13 +51,6 @@ export function gkeFormatter(options: ClusterLinksFormatterOptions): URL {
     options.object.metadata?.namespace ?? '',
   );
   const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
-  if (!basePath.pathname.endsWith('/')) {
-    // a dashboard url with a path should end with a slash otherwise
-    // the new combined URL will replace the last segment with the appended path!
-    // https://foobar.com/abc/def + k8s/cluster/projects/test  --> https://foobar.com/abc/k8s/cluster/projects/test
-    // https://foobar.com/abc/def/ + k8s/cluster/projects/test --> https://foobar.com/abc/def/k8s/cluster/projects/test
-    basePath.pathname += '/';
-  }
   let path = '';
   if (namespace && name && validKind) {
     const kindsWithDetails = ['ingress', 'pod'];
