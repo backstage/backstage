@@ -148,11 +148,12 @@ export class OktaAuthProvider implements OAuthHandlers {
   }
 
   async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
-    const { accessToken, params } = await executeRefreshTokenStrategy(
-      this._strategy,
-      req.refreshToken,
-      req.scope,
-    );
+    const { accessToken, refreshToken, params } =
+      await executeRefreshTokenStrategy(
+        this._strategy,
+        req.refreshToken,
+        req.scope,
+      );
 
     const fullProfile = await executeFetchUserProfileStrategy(
       this._strategy,
@@ -163,7 +164,7 @@ export class OktaAuthProvider implements OAuthHandlers {
       fullProfile,
       params,
       accessToken,
-      refreshToken: req.refreshToken,
+      refreshToken,
     });
   }
 
@@ -176,6 +177,7 @@ export class OktaAuthProvider implements OAuthHandlers {
         accessToken: result.accessToken,
         scope: result.params.scope,
         expiresInSeconds: result.params.expires_in,
+        refreshToken: result.refreshToken,
       },
       profile,
     };
