@@ -93,7 +93,7 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
   const handleClick = (type: string) => {
     return () => {
       setTypes(type !== '' ? [type] : []);
-      setPageCursor('');
+      setPageCursor(undefined);
       setExpanded(false);
     };
   };
