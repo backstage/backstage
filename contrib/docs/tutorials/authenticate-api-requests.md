@@ -13,7 +13,7 @@ As techdocs HTML pages load assets without an Authorization header the code belo
 
 import cookieParser from 'cookie-parser';
 import { Request, Response, NextFunction } from 'express';
-import jwtDecoder from 'jwt-decode';
+import { JWT } from 'jose';
 import { URL } from 'url';
 import { IdentityClient } from '@backstage/plugin-auth-backend';
 
@@ -24,7 +24,7 @@ function setTokenCookie(
   options: { token: string; secure: boolean; cookieDomain: string },
 ) {
   try {
-    const payload = jwtDecoder(options.token) as any & {
+    const payload = JWT.decode(options.token) as object & {
       exp: number;
     };
     res.cookie(`token`, options.token, {
@@ -132,9 +132,6 @@ function msUntilExpiry(token: string): number {
 async function setTokenCookie(url: string, identityApi: IdentityApi) {
   const { token } = await identityApi.getCredentials();
   if (!token) {
-    // In some cases, the token might be undefined - we will wait 10 seconds
-    // to try this again.
-    setTimeout(setTokenCookie, 10 * 1000, url, identityApi);
     return;
   }
 
