@@ -108,6 +108,5 @@ export const SampleScalableSidebar = () => (
       <SidebarSpace />
       <SidebarExpandButton />
     </Sidebar>
-    Test
   </SidebarPage>
 );

@@ -26,12 +26,16 @@ import { Sidebar } from './Bar';
 import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
 import { SidebarSubmenuItem } from './SidebarSubmenuItem';
 import { SidebarSubmenu } from './SidebarSubmenu';
-import { SidebarPinStateContext } from '.';
+import { SidebarStateContext } from '.';
 
 async function renderScalableSidebar() {
   await renderInTestApp(
-    <SidebarPinStateContext.Provider
-      value={{ isPinned: false, toggleSidebarPinState: () => {} }}
+    <SidebarStateContext.Provider
+      value={{
+        isPinned: false,
+        isMobile: false,
+        toggleSidebarPinState: () => {},
+      }}
     >
       <Sidebar>
         <SidebarSearchField onSearch={() => {}} to="/search" />
@@ -58,7 +62,7 @@ async function renderScalableSidebar() {
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
         <SidebarExpandButton />
       </Sidebar>
-    </SidebarPinStateContext.Provider>,
+    </SidebarStateContext.Provider>,
   );
 }
 

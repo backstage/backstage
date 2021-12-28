@@ -20,9 +20,10 @@ import classnames from 'classnames';
 import React, { useState, useContext, PropsWithChildren, useRef } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
-import { SidebarPinStateContext } from './Page';
+import { SidebarStateContext } from './Page';
 import { MobileSidebar } from './MobileSidebar';
 
+/** @public */
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
 
 const useStyles = makeStyles<BackstageTheme>(
@@ -69,7 +70,8 @@ enum State {
   Open,
 }
 
-type Props = {
+/** @public */
+export type SidebarProps = {
   openDelayMs?: number;
   closeDelayMs?: number;
   disableExpandOnHover?: boolean;
@@ -80,7 +82,7 @@ const DesktopSidebar = ({
   closeDelayMs = sidebarConfig.defaultCloseDelayMs,
   disableExpandOnHover,
   children,
-}: PropsWithChildren<Props>) => {
+}: PropsWithChildren<SidebarProps>) => {
   const classes = useStyles();
   const isSmallScreen = useMediaQuery<BackstageTheme>(
     theme => theme.breakpoints.down('md'),
@@ -88,9 +90,7 @@ const DesktopSidebar = ({
   );
   const [state, setState] = useState(State.Closed);
   const hoverTimerRef = useRef<number>();
-  const { isPinned, toggleSidebarPinState } = useContext(
-    SidebarPinStateContext,
-  );
+  const { isPinned, toggleSidebarPinState } = useContext(SidebarStateContext);
 
   const handleOpen = () => {
     if (isPinned || disableExpandOnHover) {
@@ -163,18 +163,12 @@ const DesktopSidebar = ({
   );
 };
 
-export const Sidebar = ({
-  children,
-  openDelayMs,
-  closeDelayMs,
-  disableExpandOnHover,
-}: React.PropsWithChildren<Props>) => {
-  const isMobileScreen = useMediaQuery<BackstageTheme>(
-    theme => theme.breakpoints.down('xs'),
-    { noSsr: true },
-  );
+/** @public */
+export const Sidebar = (props: React.PropsWithChildren<SidebarProps>) => {
+  const { children, openDelayMs, closeDelayMs, disableExpandOnHover } = props;
+  const { isMobile } = useContext(SidebarStateContext);
 
-  return isMobileScreen ? (
+  return isMobile ? (
     <MobileSidebar>{children}</MobileSidebar>
   ) : (
     <DesktopSidebar

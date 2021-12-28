@@ -24,6 +24,7 @@ import React, {
 import { sidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 export type SidebarPageClassKey = 'root';
 
@@ -46,17 +47,19 @@ const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
   { name: 'BackstageSidebarPage' },
 );
 
-export type SidebarPinStateContextType = {
+/** @public */
+export type SidebarStateContextType = {
   isPinned: boolean;
   toggleSidebarPinState: () => any;
+  isMobile: boolean;
 };
 
-export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
-  {
-    isPinned: true,
-    toggleSidebarPinState: () => {},
-  },
-);
+/** @public */
+export const SidebarStateContext = createContext<SidebarStateContextType>({
+  isPinned: true,
+  toggleSidebarPinState: () => {},
+  isMobile: false,
+});
 
 export function SidebarPage(props: PropsWithChildren<{}>) {
   const [isPinned, setIsPinned] = useState(() =>
@@ -67,17 +70,23 @@ export function SidebarPage(props: PropsWithChildren<{}>) {
     LocalStorage.setSidebarPinState(isPinned);
   }, [isPinned]);
 
+  const isMobile = useMediaQuery<BackstageTheme>(
+    theme => theme.breakpoints.down('xs'),
+    { noSsr: true },
+  );
+
   const toggleSidebarPinState = () => setIsPinned(!isPinned);
 
   const classes = useStyles({ isPinned });
   return (
-    <SidebarPinStateContext.Provider
+    <SidebarStateContext.Provider
       value={{
         isPinned,
         toggleSidebarPinState,
+        isMobile,
       }}
     >
       <div className={classes.root}>{props.children}</div>
-    </SidebarPinStateContext.Provider>
+    </SidebarStateContext.Provider>
   );
 }

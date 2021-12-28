@@ -20,6 +20,7 @@ import BottomNavigation from '@material-ui/core/BottomNavigation';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -43,7 +44,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 1000,
+    zIndex: theme.zIndex.snackbar,
     // SidebarDivider color
     borderTop: '1px solid #383838',
   },
@@ -51,11 +52,10 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   overlay: {
     background: theme.palette.navigation.background,
     width: '100%',
-    flex: '0 1 auto',
+    bottom: `${sidebarConfig.mobileSidebarHeight}px`,
     height: `calc(100% - ${sidebarConfig.mobileSidebarHeight}px)`,
+    flex: '0 1 auto',
     overflow: 'auto',
-    position: 'fixed',
-    zIndex: 500,
   },
 
   overlayHeader: {
@@ -63,7 +63,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     color: theme.palette.bursts.fontColor,
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
+    padding: theme.spacing(2, 3),
   },
 
   overlayHeaderClose: {
@@ -81,12 +81,22 @@ const sortSidebarGroupsForPriority = (children: React.ReactElement[]) =>
 const OverlayMenu = ({
   children,
   label = 'Menu',
+  open,
   onClose,
-}: React.PropsWithChildren<{ label?: string; onClose: () => void }>) => {
+}: React.PropsWithChildren<{
+  label?: string;
+  onClose: () => void;
+  open: boolean;
+}>) => {
   const classes = useStyles();
 
   return (
-    <Box className={classes.overlay}>
+    <Drawer
+      anchor="bottom"
+      open={open}
+      onClose={onClose}
+      classes={{ paperAnchorBottom: classes.overlay }}
+    >
       <Box className={classes.overlayHeader}>
         <Typography variant="h3">{label}</Typography>
         <IconButton
@@ -97,7 +107,7 @@ const OverlayMenu = ({
         </IconButton>
       </Box>
       <Box>{children}</Box>
-    </Box>
+    </Drawer>
   );
 };
 
@@ -106,7 +116,9 @@ export const MobileSidebarContext = createContext<MobileSidebarContextType>({
   setSelectedMenuItemIndex: () => {},
 });
 
-export const MobileSidebar = ({ children }: React.PropsWithChildren<{}>) => {
+/** @public */
+export const MobileSidebar = (props: React.PropsWithChildren<{}>) => {
+  const { children } = props;
   const classes = useStyles();
   const location = useLocation();
   const [selectedMenuItemIndex, setSelectedMenuItemIndex] =
@@ -146,12 +158,19 @@ export const MobileSidebar = ({ children }: React.PropsWithChildren<{}>) => {
       <MobileSidebarContext.Provider
         value={{ selectedMenuItemIndex, setSelectedMenuItemIndex }}
       >
-        {shouldShowGroupChildren && (
-          <OverlayMenu
-            {...sidebarGroups[selectedMenuItemIndex].props}
-            onClose={() => setSelectedMenuItemIndex(-1)}
-          />
-        )}
+        <OverlayMenu
+          label={
+            sidebarGroups[selectedMenuItemIndex]
+              ? (sidebarGroups[selectedMenuItemIndex].props.label as string)
+              : ''
+          }
+          open={shouldShowGroupChildren}
+          onClose={() => setSelectedMenuItemIndex(-1)}
+        >
+          {sidebarGroups[selectedMenuItemIndex] &&
+            (sidebarGroups[selectedMenuItemIndex].props
+              .children as React.ReactChildren)}
+        </OverlayMenu>
         <BottomNavigation
           className={classes.root}
           data-testid="mobile-sidebar-root"

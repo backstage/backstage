@@ -20,13 +20,14 @@ import BottomNavigationAction, {
   BottomNavigationActionProps,
 } from '@material-ui/core/BottomNavigationAction';
 import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
+import { SidebarStateContext } from '.';
 import { Link } from '../../components';
 import { sidebarConfig } from './config';
 import { MobileSidebarContext } from './MobileSidebar';
 
+/** @public */
 export interface SidebarGroupProps extends BottomNavigationActionProps {
   to?: string;
   priority?: number;
@@ -35,7 +36,7 @@ export interface SidebarGroupProps extends BottomNavigationActionProps {
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     flexGrow: 0,
-    margin: `0 ${theme.spacing(2)}px`,
+    margin: theme.spacing(0, 2),
     color: theme.palette.navigation.color,
   },
 
@@ -50,7 +51,8 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-const MobileSidebarGroup = ({ to, label, icon, value }: SidebarGroupProps) => {
+const MobileSidebarGroup = (props: SidebarGroupProps) => {
+  const { to, label, icon, value } = props;
   const classes = useStyles();
   const location = useLocation();
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
@@ -86,18 +88,14 @@ const MobileSidebarGroup = ({ to, label, icon, value }: SidebarGroupProps) => {
   );
 };
 
-export const SidebarGroup = ({
-  children,
-  to,
-  label,
-  icon,
-  value,
-}: React.PropsWithChildren<SidebarGroupProps>) => {
-  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.down('xs'),
-  );
+/** @public */
+export const SidebarGroup = (
+  props: React.PropsWithChildren<SidebarGroupProps>,
+) => {
+  const { children, to, label, icon, value } = props;
+  const { isMobile } = useContext(SidebarStateContext);
 
-  return isMobileScreen ? (
+  return isMobile ? (
     <MobileSidebarGroup to={to} label={label} icon={icon} value={value} />
   ) : (
     <>{children}</>

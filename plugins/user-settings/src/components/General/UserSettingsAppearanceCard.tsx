@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InfoCard } from '@backstage/core-components';
-import { BackstageTheme } from '@backstage/theme';
-import { List, useMediaQuery } from '@material-ui/core';
-import React from 'react';
+import { InfoCard, SidebarStateContext } from '@backstage/core-components';
+import { List } from '@material-ui/core';
+import React, { useContext } from 'react';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 
 export const UserSettingsAppearanceCard = () => {
-  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.down('xs'),
-  );
+  const isMobile = useContext(SidebarStateContext);
 
   return (
     <InfoCard title="Appearance" variant="gridItem">
       <List dense>
         <UserSettingsThemeToggle />
-        {!isMobileScreen && <UserSettingsPinToggle />}
+        {!isMobile && <UserSettingsPinToggle />}
       </List>
     </InfoCard>
   );

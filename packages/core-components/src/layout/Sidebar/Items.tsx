@@ -39,6 +39,7 @@ import {
   NavLinkProps,
   useLocation,
   useResolvedPath,
+  resolvePath,
 } from 'react-router-dom';
 import {
   sidebarConfig,
@@ -52,6 +53,8 @@ import {
 } from '.';
 import DoubleArrowLeft from './icons/DoubleArrowLeft';
 import DoubleArrowRight from './icons/DoubleArrowRight';
+import { isLocationMatch } from './utils';
+import { Location } from 'history';
 
 export type SidebarItemClassKey =
   | 'root'
@@ -140,7 +143,7 @@ const useStyles = makeStyles<BackstageTheme>(
         fontSize: theme.typography.fontSize,
       },
       searchFieldHTMLInput: {
-        padding: `${theme.spacing(2)} 0 ${theme.spacing(2)}`,
+        padding: theme.spacing(2, 0, 2),
       },
       searchContainer: {
         width: drawerWidthOpen - iconContainerWidth,
@@ -219,7 +222,7 @@ const useStyles = makeStyles<BackstageTheme>(
           fontSize: theme.typography.fontSize,
         },
         searchFieldHTMLInput: {
-          padding: `${theme.spacing(2)} 0 ${theme.spacing(2)}`,
+          padding: theme.spacing(2, 0, 2),
         },
         searchContainer: {
           width: drawerWidthOpen - iconContainerWidth,
@@ -237,7 +240,7 @@ const useStyles = makeStyles<BackstageTheme>(
 
 const useLocationMatch = (
   submenu: React.ReactElement<SidebarSubmenuProps>,
-  locationPathname: string,
+  location: Location,
 ): boolean =>
   // Evaluates the routes of the SubmenuItems & nested DropdownItems.
   // The reeveluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization
@@ -257,93 +260,21 @@ const useLocationMatch = (
               if (dropdownItems?.length) {
                 dropdownItems.forEach(
                   ({ to: _to }) =>
-                    (active = active || locationPathname.includes(_to)),
+                    (active =
+                      active || isLocationMatch(location, resolvePath(_to))),
                 );
                 return;
               }
               if (to) {
-                active = locationPathname.includes(to);
+                active = isLocationMatch(location, resolvePath(to));
               }
             }
           },
         );
       return active;
     },
-    [locationPathname],
+    [location.pathname],
   );
-/*
-function isSidebarItemWithSubmenuActive(
-  submenu: ReactNode,
-  currentLocation: Location,
-) {
-  // Item is active if any of submenu items have active paths
-  const toPathnames: string[] = [];
-  let isActive = false;
-  let submenuItems: ReactNode;
-  Children.forEach(submenu, element => {
-    if (!React.isValidElement(element)) return;
-    submenuItems = element.props.children;
-  });
-  Children.forEach(submenuItems, element => {
-    if (!React.isValidElement(element)) return;
-    if (element.props.dropdownItems) {
-      element.props.dropdownItems.map((item: { to: string }) =>
-        toPathnames.push(item.to),
-      );
-    } else if (element.props.to) {
-      toPathnames.push(element.props.to);
-    }
-  });
-  isActive = toPathnames.some(to => {
-    const toLocation = resolvePath(to);
-    return isLocationMatch(currentLocation, toLocation);
-  });
-  return isActive;
-}
-
-const SidebarItemWithSubmenu = ({
-  text,
-  hasNotifications = false,
-  icon: Icon,
-  children,
-}: PropsWithChildren<SidebarItemWithSubmenuProps>) => {
-  const classes = useStyles();
-  const [isHoveredOn, setIsHoveredOn] = useState(false);
-  const currentLocation = useLocation();
-  const isActive = isSidebarItemWithSubmenuActive(children, currentLocation);
-
-  const handleMouseEnter = () => {
-    setIsHoveredOn(true);
-  };
-  const handleMouseLeave = () => {
-    setIsHoveredOn(false);
-  };
-
-  const { isOpen } = useContext(SidebarContext);
-  const itemIcon = (
-    <Badge
-      color="secondary"
-      variant="dot"
-      overlap="circular"
-      className={isOpen ? '' : classes.closedItemIcon}
-      invisible={!hasNotifications}
-    >
-      <Icon fontSize="small" />
-    </Badge>
-  );
-  const openContent = (
-    <>
-      <div data-testid="login-button" className={classes.iconContainer}>
-        {itemIcon}
-      </div>
-      {text && (
-        <Typography variant="subtitle2" className={classes.label}>
-          {text}
-        </Typography>
-      )}
-      <div className={classes.secondaryAction}>{}</div>
-    </>
-  );*/
 
 type SidebarItemBaseProps = {
   icon: IconComponent;
@@ -522,8 +453,8 @@ const SidebarItemWithSubmenu = ({
 }) => {
   const classes = useStyles();
   const [isHoveredOn, setIsHoveredOn] = useState(false);
-  const { pathname: locationPathname } = useLocation();
-  const isActive = useLocationMatch(children, locationPathname);
+  const location = useLocation();
+  const isActive = useLocationMatch(children, location);
   const isSmallScreen = useMediaQuery<BackstageTheme>((theme: BackstageTheme) =>
     theme.breakpoints.down('sm'),
   );

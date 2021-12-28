@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { Header, Page, TabbedLayout } from '@backstage/core-components';
-import { BackstageTheme } from '@backstage/theme';
-import { useMediaQuery } from '@material-ui/core';
-import React from 'react';
+import {
+  Header,
+  Page,
+  SidebarStateContext,
+  TabbedLayout,
+} from '@backstage/core-components';
+import React, { useContext } from 'react';
 import { UserSettingsAuthProviders } from './AuthProviders';
 import { UserSettingsFeatureFlags } from './FeatureFlags';
 import { UserSettingsGeneral } from './General';
@@ -27,13 +30,11 @@ type Props = {
 };
 
 export const SettingsPage = ({ providerSettings }: Props) => {
-  const isMobileScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.down('xs'),
-  );
+  const { isMobile } = useContext(SidebarStateContext);
 
   return (
     <Page themeId="home">
-      {!isMobileScreen && <Header title="Settings" />}
+      {!isMobile && <Header title="Settings" />}
       <TabbedLayout>
         <TabbedLayout.Route path="general" title="General">
           <UserSettingsGeneral />

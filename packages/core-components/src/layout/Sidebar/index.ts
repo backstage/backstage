@@ -25,9 +25,15 @@ export type {
   SidebarSubmenuItemProps,
   SidebarSubmenuItemDropdownItem,
 } from './SidebarSubmenuItem';
-export type { SidebarClassKey } from './Bar';
-export { SidebarPage, SidebarPinStateContext } from './Page';
-export type { SidebarPinStateContextType, SidebarPageClassKey } from './Page';
+export type { SidebarClassKey, SidebarProps } from './Bar';
+export {
+  SidebarPage,
+  SidebarStateContext as SidebarStateContext,
+} from './Page';
+export type {
+  SidebarStateContextType as SidebarStateContextType,
+  SidebarPageClassKey,
+} from './Page';
 export {
   SidebarDivider,
   SidebarItem,
