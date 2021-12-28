@@ -20,15 +20,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 
-export const gcpIapSessionSchema = z.object({
-  providerInfo: z.object({
-    iapToken: z
-      .object({
-        sub: z.string(),
-        email: z.string(),
-      })
-      .catchall(z.unknown()),
-  }),
+export const delegatedSessionSchema = z.object({
+  providerInfo: z.object({}).catchall(z.unknown()).optional(),
   profile: z.object({
     email: z.string().optional(),
     displayName: z.string().optional(),
@@ -46,18 +39,13 @@ export const gcpIapSessionSchema = z.object({
 });
 
 /**
- * Session information for Google Identity-Aware Proxy auth.
+ * Generic session information for delegated sign-in providers, e.g. common
+ * reverse authenticating proxy implementations.
  *
  * @public
  */
-export type GcpIapSession = {
-  providerInfo: {
-    iapToken: {
-      sub: string;
-      email: string;
-      [key: string]: unknown;
-    };
-  };
+export type DelegatedSession = {
+  providerInfo?: { [key: string]: unknown };
   profile: ProfileInfo;
   backstageIdentity: BackstageIdentityResponse;
 };

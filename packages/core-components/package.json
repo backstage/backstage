@@ -64,7 +64,8 @@
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "remark-gfm": "^2.0.0",
-    "zen-observable": "^0.8.15"
+    "zen-observable": "^0.8.15",
+    "zod": "^3.11.6"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",

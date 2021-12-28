@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { GcpIapIdentity } from './GcpIapIdentity';
-export type { GcpIapSession } from './types';
+export { DelegatedSignInPage } from './DelegatedSignInPage';
+export type { DelegatedSignInPageProps } from './DelegatedSignInPage';

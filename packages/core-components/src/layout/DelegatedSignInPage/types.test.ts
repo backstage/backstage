@@ -15,16 +15,12 @@
  */
 
 import { TypeOf } from 'zod';
-import { GcpIapSession, gcpIapSessionSchema } from './types';
+import { DelegatedSession, delegatedSessionSchema } from './types';
 
 describe('types', () => {
-  const responseData: GcpIapSession = {
+  const responseData: DelegatedSession = {
     providerInfo: {
-      iapToken: {
-        sub: 's',
-        email: 'e',
-        other: 7,
-      },
+      stuff: 1,
     },
     profile: {
       email: 'e',
@@ -43,8 +39,8 @@ describe('types', () => {
   };
 
   it('has a compatible schema type', () => {
-    function f(_b: TypeOf<typeof gcpIapSessionSchema>) {}
+    function f(_b: TypeOf<typeof delegatedSessionSchema>) {}
     f(responseData); // no tsc errors
-    expect(gcpIapSessionSchema.parse(responseData)).toEqual(responseData);
+    expect(delegatedSessionSchema.parse(responseData)).toEqual(responseData);
   });
 });
