@@ -594,7 +594,7 @@ Usage: backstage-cli versions:bump [options]
 
 Options:
   -h, --help  display help for command
-  -p, --prefix Override glob for matching packages to upgrade
+  -p, --pattern Override glob for matching packages to upgrade
 ```
 
 ## versions:check

@@ -64,7 +64,7 @@ export async function fetchPackageInfo(
 /** Map all dependencies in the repo as dependency => dependents */
 export async function mapDependencies(
   targetDir: string,
-  prefixGlob: string,
+  pattern: string,
 ): Promise<Map<string, PkgVersionInfo[]>> {
   const { Project } = require('@lerna/project');
   const project = new Project(targetDir);
@@ -77,7 +77,7 @@ export async function mapDependencies(
     );
 
     for (const [name, range] of deps) {
-      if (minimatch(name, prefixGlob)) {
+      if (minimatch(name, pattern)) {
         dependencyMap.set(
           name,
           (dependencyMap.get(name) ?? []).concat({

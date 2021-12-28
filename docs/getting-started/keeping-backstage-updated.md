@@ -22,11 +22,11 @@ yarn backstage-cli versions:bump
 The reason for bumping all `@backstage` packages at once is to maintain the
 dependencies that they have between each other.
 
-If you are using other plugins you can pass in the `--prefix` option to update
+If you are using other plugins you can pass in the `--pattern` option to update
 more than just the `@backstage/*` dependencies.
 
 ```bash
-yarn backstage-cli versions:bump --prefix '@{backstage,roadiehq}/*'
+yarn backstage-cli versions:bump --pattern '@{backstage,roadiehq}/*'
 ```
 
 ## Following create-app template changes

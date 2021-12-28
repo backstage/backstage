@@ -126,10 +126,10 @@ describe('bump', () => {
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
 
     const { log: logs } = await withLogCollector(['log'], async () => {
-      await bump({ prefix: null } as Command);
+      await bump({ pattern: null } as Command);
     });
     expect(logs.filter(Boolean)).toEqual([
-      'Using default prefix glob @backstage/*',
+      'Using default pattern glob @backstage/*',
       'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/core-api',
@@ -182,7 +182,7 @@ describe('bump', () => {
     });
   });
 
-  it('should bump backstage dependencies and dependencies matching prefix glob', async () => {
+  it('should bump backstage dependencies and dependencies matching pattern glob', async () => {
     // Make sure all modules involved in package discovery are in the module cache before we mock fs
     await mapDependencies(paths.targetDir, '@backstage/*');
     const customLockfileMock = `${lockfileMock}
@@ -252,10 +252,10 @@ describe('bump', () => {
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
 
     const { log: logs } = await withLogCollector(['log'], async () => {
-      await bump({ prefix: '@{backstage,backstage-extra}/*' } as any);
+      await bump({ pattern: '@{backstage,backstage-extra}/*' } as any);
     });
     expect(logs.filter(Boolean)).toEqual([
-      'Using custom prefix glob @{backstage,backstage-extra}/*',
+      'Using custom pattern glob @{backstage,backstage-extra}/*',
       'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage-extra/custom-two',
       'Checking for updates of @backstage-extra/custom',
@@ -349,10 +349,10 @@ describe('bump', () => {
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
 
     const { log: logs } = await withLogCollector(['log'], async () => {
-      await bump({ prefix: null } as any);
+      await bump({ pattern: null } as any);
     });
     expect(logs.filter(Boolean)).toEqual([
-      'Using default prefix glob @backstage/*',
+      'Using default pattern glob @backstage/*',
       'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/core',
       'Package info not found, ignoring package @backstage/theme',

@@ -38,7 +38,7 @@ const DEP_TYPES = [
   'optionalDependencies',
 ];
 
-const DEFAULT_PREFIX_GLOB = '@backstage/*';
+const DEFAULT_PATTERN_GLOB = '@backstage/*';
 
 type PkgVersionInfo = {
   range: string;
@@ -50,19 +50,19 @@ type PkgVersionInfo = {
 export default async (cmd: Command) => {
   const lockfilePath = paths.resolveTargetRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
-  let prefix = cmd.prefix;
+  let pattern = cmd.pattern;
 
-  if (!prefix) {
-    console.log(`Using default prefix glob ${DEFAULT_PREFIX_GLOB}`);
-    prefix = DEFAULT_PREFIX_GLOB;
+  if (!pattern) {
+    console.log(`Using default pattern glob ${DEFAULT_PATTERN_GLOB}`);
+    pattern = DEFAULT_PATTERN_GLOB;
   } else {
-    console.log(`Using custom prefix glob ${prefix}`);
+    console.log(`Using custom pattern glob ${pattern}`);
   }
 
   const findTargetVersion = createVersionFinder();
 
   // First we discover all Backstage dependencies within our own repo
-  const dependencyMap = await mapDependencies(paths.targetDir, prefix);
+  const dependencyMap = await mapDependencies(paths.targetDir, pattern);
 
   // Next check with the package registry to see which dependency ranges we need to bump
   const versionBumps = new Map<string, PkgVersionInfo[]>();
@@ -100,7 +100,7 @@ export default async (cmd: Command) => {
     }
   });
 
-  const filter = (name: string) => minimatch(name, prefix);
+  const filter = (name: string) => minimatch(name, pattern);
 
   // Check for updates of transitive backstage dependencies
   await workerThreads(16, lockfile.keys(), async name => {
