@@ -125,7 +125,9 @@ export function readAwsS3IntegrationConfigs(
   // If no explicit amazonaws.com integration was added, put one in the list as
   // a convenience
   if (!result.some(c => c.host === AMAZON_AWS_HOST)) {
-    result.push({ host: AMAZON_AWS_HOST });
+    result.push({
+      host: AMAZON_AWS_HOST,
+    });
   }
   return result;
 }
