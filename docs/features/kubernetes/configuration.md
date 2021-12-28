@@ -39,6 +39,7 @@ kubernetes:
       region: 'europe-west1'
       skipTLSVerify: true
       skipMetricsLookup: true
+      exposeDashboard: true
 ```
 
 ### `serviceLocatorMethod`

@@ -45,7 +45,7 @@ describe('clusterLinks - GKE formatter', () => {
         kind: 'Deployment',
       }),
     ).toThrowError(
-      'GKE dashboard requires a "projectId" in the dashboardParameters option',
+      'GKE dashboard requires a "projectId" of type string in the dashboardParameters option',
     );
   });
   it('should provide a region in the dashboardParameters options', () => {
@@ -64,7 +64,7 @@ describe('clusterLinks - GKE formatter', () => {
         kind: 'Deployment',
       }),
     ).toThrowError(
-      'GKE dashboard requires a "region" in the dashboardParameters option',
+      'GKE dashboard requires a "region" of type string in the dashboardParameters option',
     );
   });
   it('should provide a clusterName in the dashboardParameters options', () => {
@@ -83,7 +83,7 @@ describe('clusterLinks - GKE formatter', () => {
         kind: 'Deployment',
       }),
     ).toThrowError(
-      'GKE dashboard requires a "clusterName" in the dashboardParameters option',
+      'GKE dashboard requires a "clusterName" of type string in the dashboardParameters option',
     );
   });
   it('should return an url on the cluster when there is a namespace only', () => {

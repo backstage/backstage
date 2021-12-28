@@ -28,19 +28,19 @@ export function gkeFormatter(options: ClusterLinksFormatterOptions): URL {
     throw new Error('GKE dashboard requires a dashboardParameters option');
   }
   const args = options.dashboardParameters;
-  if (!args.projectId) {
+  if (typeof args.projectId !== 'string') {
     throw new Error(
-      'GKE dashboard requires a "projectId" in the dashboardParameters option',
+      'GKE dashboard requires a "projectId" of type string in the dashboardParameters option',
     );
   }
-  if (!args.region) {
+  if (typeof args.region !== 'string') {
     throw new Error(
-      'GKE dashboard requires a "region" in the dashboardParameters option',
+      'GKE dashboard requires a "region" of type string in the dashboardParameters option',
     );
   }
-  if (!args.clusterName) {
+  if (typeof args.clusterName !== 'string') {
     throw new Error(
-      'GKE dashboard requires a "clusterName" in the dashboardParameters option',
+      'GKE dashboard requires a "clusterName" of type string in the dashboardParameters option',
     );
   }
   const basePath = new URL('https://console.cloud.google.com/');

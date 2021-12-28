@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { JsonObject } from '@backstage/types';
 import {
   V1ConfigMap,
   V1CronJob,
@@ -69,7 +70,7 @@ export interface ClusterAttributes {
    * Specifies specific parameters used by some dashboard URL formatters.
    * This is used by the GKE formatter which requires the project, region and cluster name.
    */
-  dashboardParameters?: any;
+  dashboardParameters?: JsonObject;
 }
 
 export interface ClusterObjects {

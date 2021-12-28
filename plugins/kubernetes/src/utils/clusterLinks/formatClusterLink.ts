@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import type { JsonObject } from '@backstage/types';
 import { defaultFormatterName, clusterLinksFormatters } from './formatters';
 
 export type FormatClusterLinkOptions = {
   dashboardUrl?: string;
   dashboardApp?: string;
-  dashboardParameters?: any;
+  dashboardParameters?: JsonObject;
   object: any;
   kind: string;
 };

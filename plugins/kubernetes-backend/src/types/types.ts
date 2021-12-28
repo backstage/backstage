@@ -15,6 +15,7 @@
  */
 
 import { Logger } from 'winston';
+import type { JsonObject } from '@backstage/types';
 import type {
   FetchResponse,
   KubernetesFetchError,
@@ -135,7 +136,7 @@ export interface ClusterDetails {
    * This is used by the GKE formatter which requires the project, region and cluster name.
    * @see dashboardApp
    */
-  dashboardParameters?: any;
+  dashboardParameters?: JsonObject;
 }
 
 export interface GKEClusterDetails extends ClusterDetails {}
