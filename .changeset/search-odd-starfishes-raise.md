@@ -2,4 +2,4 @@
 '@backstage/plugin-search': patch
 ---
 
-Captures Google Analytics Events for SearchBar if app config is provided.
+Captures the search term entered in the SearchBar as a `search` event.
