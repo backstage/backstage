@@ -22,7 +22,7 @@ import React, {
   useCallback,
 } from 'react';
 import { useDebounce } from 'react-use';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   InputBase,
   InputBaseProps,
@@ -147,11 +147,17 @@ export type SearchBarProps = Partial<SearchBarBaseProps>;
  * @public
  */
 export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
+  const configApi = useApi(configApiRef);
+  const analytics = useAnalytics();
   const { term, setTerm } = useSearch();
 
   const handleChange = (newValue: string) => {
     setTerm(newValue);
     if (onChange) onChange(newValue);
+    if (configApi.getOptionalConfig('app.analytics.ga')) {
+      // only capture GA events if analytics configuration is provided
+      analytics.captureEvent('search', newValue);
+    }
   };
 
   return <SearchBarBase value={term} onChange={handleChange} {...props} />;
