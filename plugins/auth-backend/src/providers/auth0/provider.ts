@@ -113,9 +113,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
     });
   }
 
-  async handler(
-    req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+  async handler(req: express.Request) {
     const { result, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResult,
       PrivateInfo
@@ -127,24 +125,27 @@ export class Auth0AuthProvider implements OAuthHandlers {
     };
   }
 
-  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
-    const { accessToken, params } = await executeRefreshTokenStrategy(
-      this._strategy,
-      req.refreshToken,
-      req.scope,
-    );
+  async refresh(req: OAuthRefreshRequest) {
+    const { accessToken, refreshToken, params } =
+      await executeRefreshTokenStrategy(
+        this._strategy,
+        req.refreshToken,
+        req.scope,
+      );
 
     const fullProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
     );
 
-    return this.handleResult({
-      fullProfile,
-      params,
-      accessToken,
-      refreshToken: req.refreshToken,
-    });
+    return {
+      response: await this.handleResult({
+        fullProfile,
+        params,
+        accessToken,
+      }),
+      refreshToken,
+    };
   }
 
   private async handleResult(result: OAuthResult) {

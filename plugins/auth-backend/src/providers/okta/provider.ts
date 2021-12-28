@@ -133,9 +133,7 @@ export class OktaAuthProvider implements OAuthHandlers {
     });
   }
 
-  async handler(
-    req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+  async handler(req: express.Request) {
     const { result, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResult,
       PrivateInfo
@@ -147,7 +145,7 @@ export class OktaAuthProvider implements OAuthHandlers {
     };
   }
 
-  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
+  async refresh(req: OAuthRefreshRequest) {
     const { accessToken, refreshToken, params } =
       await executeRefreshTokenStrategy(
         this._strategy,
@@ -160,12 +158,14 @@ export class OktaAuthProvider implements OAuthHandlers {
       accessToken,
     );
 
-    return this.handleResult({
-      fullProfile,
-      params,
-      accessToken,
+    return {
+      response: await this.handleResult({
+        fullProfile,
+        params,
+        accessToken,
+      }),
       refreshToken,
-    });
+    };
   }
 
   private async handleResult(result: OAuthResult) {
@@ -177,7 +177,6 @@ export class OktaAuthProvider implements OAuthHandlers {
         accessToken: result.accessToken,
         scope: result.params.scope,
         expiresInSeconds: result.params.expires_in,
-        refreshToken: result.refreshToken,
       },
       profile,
     };

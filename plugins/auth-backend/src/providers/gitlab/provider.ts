@@ -132,9 +132,7 @@ export class GitlabAuthProvider implements OAuthHandlers {
     });
   }
 
-  async handler(
-    req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+  async handler(req: express.Request) {
     const { result, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResult,
       PrivateInfo
@@ -146,28 +144,26 @@ export class GitlabAuthProvider implements OAuthHandlers {
     };
   }
 
-  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
-    const {
-      accessToken,
-      refreshToken: newRefreshToken,
-      params,
-    } = await executeRefreshTokenStrategy(
-      this._strategy,
-      req.refreshToken,
-      req.scope,
-    );
+  async refresh(req: OAuthRefreshRequest) {
+    const { accessToken, refreshToken, params } =
+      await executeRefreshTokenStrategy(
+        this._strategy,
+        req.refreshToken,
+        req.scope,
+      );
 
     const fullProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
     );
-
-    return this.handleResult({
-      fullProfile,
-      params,
-      accessToken,
-      refreshToken: newRefreshToken,
-    });
+    return {
+      response: await this.handleResult({
+        fullProfile,
+        params,
+        accessToken,
+      }),
+      refreshToken,
+    };
   }
 
   private async handleResult(result: OAuthResult): Promise<OAuthResponse> {
@@ -177,7 +173,6 @@ export class GitlabAuthProvider implements OAuthHandlers {
       providerInfo: {
         idToken: result.params.id_token,
         accessToken: result.accessToken,
-        refreshToken: result.refreshToken, // GitLab expires the old refresh token when used
         scope: result.params.scope,
         expiresInSeconds: result.params.expires_in,
       },
