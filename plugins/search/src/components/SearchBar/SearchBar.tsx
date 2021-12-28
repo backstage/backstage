@@ -152,11 +152,14 @@ export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
   const { term, setTerm } = useSearch();
 
   const handleChange = (newValue: string) => {
-    setTerm(newValue);
-    if (onChange) onChange(newValue);
     if (configApi.getOptionalConfig('app.analytics.ga')) {
       // only capture GA events if analytics configuration is provided
       analytics.captureEvent('search', newValue);
+    }
+    if (onChange) {
+      onChange(newValue);
+    } else {
+      setTerm(newValue);
     }
   };
 
