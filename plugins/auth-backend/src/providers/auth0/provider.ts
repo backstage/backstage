@@ -178,10 +178,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
   }
 }
 
-const defaultSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
+const defaultSignInResolver: SignInResolver<OAuthResult> = async info => {
   const { profile } = info;
 
   if (!profile.email) {
@@ -190,11 +187,7 @@ const defaultSignInResolver: SignInResolver<OAuthResult> = async (
 
   const id = profile.email.split('@')[0];
 
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: id, ent: [`user:default/${id}`] },
-  });
-
-  return { id, token };
+  return { id, token: '' };
 };
 
 /** @public */
