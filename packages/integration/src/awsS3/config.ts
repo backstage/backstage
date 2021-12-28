@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 
-export const AMAZON_AWS_HOST = 'amazonaws.com';
+const AMAZON_AWS_HOST = 'amazonaws.com';
 
 /**
  * The configuration parameters for a single AWS S3 provider.
@@ -83,12 +83,12 @@ export function readAwsS3IntegrationConfig(
       pathname = url.pathname;
     } catch {
       throw new Error(
-        `Invalid awsS3 integration config, endpoint '${endpoint}' is not a valid URL`,
+        `invalid awsS3 integration config, endpoint '${endpoint}' is not a valid URL`,
       );
     }
     if (pathname !== '/') {
       throw new Error(
-        `Invalid awsS3 integration config, endpoints cannot contain path, got '${endpoint}'`,
+        `invalid awsS3 integration config, endpoints cannot contain path, got '${endpoint}'`,
       );
     }
   } else {

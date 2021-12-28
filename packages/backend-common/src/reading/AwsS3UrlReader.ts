@@ -30,7 +30,6 @@ import getRawBody from 'raw-body';
 import {
   AwsS3Integration,
   ScmIntegrations,
-  AMAZON_AWS_HOST,
   AwsS3IntegrationConfig,
 } from '@backstage/integration';
 import { ForwardedError, NotModifiedError } from '@backstage/errors';
@@ -75,9 +74,9 @@ const parseURL = (
   }
 
   // Only extract region from *.amazonaws.com hosts
-  if (config.host === AMAZON_AWS_HOST) {
+  if (config.host === 'amazonaws.com') {
     // At this point bucket prefix is removed from host for virtual hosted URLs
-    const match = host.match(/^s3\.([a-z\d-]+)\.amazonaws.com$/);
+    const match = host.match(/^s3\.([a-z\d-]+)\.amazonaws\.com$/);
     if (!match) {
       throw new Error(
         `invalid AWS S3 URL, cannot parse region from host in ${url}`,
@@ -105,10 +104,7 @@ export class AwsS3UrlReader implements UrlReader {
       const s3 = new S3({
         apiVersion: '2006-03-01',
         credentials: creds,
-        endpoint:
-          integration.config.host === AMAZON_AWS_HOST
-            ? undefined
-            : integration.config.endpoint,
+        endpoint: integration.config.endpoint,
         s3ForcePathStyle: integration.config.s3ForcePathStyle,
       });
       const reader = new AwsS3UrlReader(integration, {
