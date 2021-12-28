@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
-import { Button } from '@material-ui/core';
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { SearchModal } from '../index';
-import { useSearch, SearchContextProvider } from '../SearchContext';
+import { Button } from '@material-ui/core';
+import React, { ComponentType } from 'react';
 import { searchApiRef } from '../../apis';
 import { rootRouteRef } from '../../plugin';
+import { SearchContextProvider, useSearch } from '../SearchContext';
+import { SearchModal } from './SearchModal';
 
 const mockSearchApi = {
   query: () =>

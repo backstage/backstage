@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Grid, Paper } from '@material-ui/core';
-import { SearchFilter, SearchContext } from '../index';
+import React from 'react';
 import { MemoryRouter } from 'react-router';
+import { SearchContext } from '../SearchContext';
+import { SearchFilter } from './SearchFilter';
 
 export default {
   title: 'Plugins/Search/SearchFilter',
