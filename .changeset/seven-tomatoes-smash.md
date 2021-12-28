@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-techdocs-backend': minor
+'@backstage/plugin-techdocs-backend': patch
 ---
 
-fixes api auth bug in techdocs backend
+Add support for API auth in DefaultTechDocsCollator
