@@ -2,4 +2,4 @@
 '@backstage/plugin-tech-insights': patch
 ---
 
-expose apiRef
+Export `techInsightsApiRef` and associated types.
