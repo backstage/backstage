@@ -25,6 +25,7 @@ export * from './microsoft';
 export * from './oauth2';
 export * from './oidc';
 export * from './okta';
+export * from './onelogin';
 export * from './saml';
 
 export { factories as defaultAuthProviderFactories } from './factories';
