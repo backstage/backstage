@@ -230,7 +230,7 @@ You can do so by including the following lines in the last step of your
 
 ```Dockerfile
 RUN apt-get update && apt-get install -y python3 python3-pip
-RUN pip3 install mkdocs-techdocs-core==0.0.16
+RUN pip3 install mkdocs-techdocs-core==0.2.1
 ```
 
 Please be aware that the version requirement could change, you need to check our
