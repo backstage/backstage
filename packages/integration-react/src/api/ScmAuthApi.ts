@@ -20,6 +20,13 @@ import {
   AuthRequestOptions,
 } from '@backstage/core-plugin-api';
 
+export type ScmProviderName =
+  | 'generic'
+  | 'github'
+  | 'azure'
+  | 'bitbucket'
+  | 'gitlab';
+
 /**
  * The options that control a {@link ScmAuthApi.getCredentials} call.
  *
@@ -44,6 +51,12 @@ export interface ScmAuthTokenOptions extends AuthRequestOptions {
      * the ability to create things like issues and pull requests.
      */
     repoWrite?: boolean;
+
+    /*
+     * Additional scopes to request per provider. On top of the `repoWrite` or other scopes that
+     * may also be requested from the caller.
+     */
+    customScopes?: Record<Partial<ScmProviderName>, string[]>;
   };
 }
 
