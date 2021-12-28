@@ -71,7 +71,7 @@ export class TechInsightsClient implements TechInsightsApi {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');
     const token = await this.identityApi.getIdToken();
     const { namespace, kind, name } = entityParams;
-    const checkIds = checks ? checks.map((check: Check) => check.id) : [];
+    const checkIds = checks ? checks.map(check => check.id) : [];
     const requestBody = { checks: checkIds.length > 0 ? checkIds : null };
     const response = await fetch(
       `${url}/checks/run/${encodeURIComponent(namespace)}/${encodeURIComponent(
