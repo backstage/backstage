@@ -24,7 +24,8 @@ import {
   CatalogReactEntityOwnerPickerClassKey,
 } from './components';
 
-type CatalogReactComponentsNameToClassKey = {
+/** @public */
+export type CatalogReactComponentsNameToClassKey = {
   CatalogReactUserListPicker: CatalogReactUserListPickerClassKey;
   CatalogReactEntityLifecyclePicker: CatalogReactEntityLifecyclePickerClassKey;
   CatalogReactEntitySearchBar: CatalogReactEntitySearchBarClassKey;

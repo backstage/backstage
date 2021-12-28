@@ -54,8 +54,6 @@ export interface AsyncEntityProviderProps {
   refresh?: VoidFunction;
 }
 
-// Warning: (ae-forgotten-export) The symbol "CatalogReactComponentsNameToClassKey" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export type BackstageOverrides = Overrides & {
   [Name in keyof CatalogReactComponentsNameToClassKey]?: Partial<
@@ -71,6 +69,15 @@ export { CatalogApi };
 //
 // @public (undocumented)
 export const catalogApiRef: ApiRef<CatalogApi>;
+
+// @public (undocumented)
+export type CatalogReactComponentsNameToClassKey = {
+  CatalogReactUserListPicker: CatalogReactUserListPickerClassKey;
+  CatalogReactEntityLifecyclePicker: CatalogReactEntityLifecyclePickerClassKey;
+  CatalogReactEntitySearchBar: CatalogReactEntitySearchBarClassKey;
+  CatalogReactEntityTagPicker: CatalogReactEntityTagPickerClassKey;
+  CatalogReactEntityOwnerPicker: CatalogReactEntityOwnerPickerClassKey;
+};
 
 // @public (undocumented)
 export type CatalogReactEntityLifecyclePickerClassKey = 'input';
