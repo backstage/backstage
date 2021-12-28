@@ -17,7 +17,7 @@
 import express from 'express';
 import { THOUSAND_DAYS_MS, TEN_MINUTES_MS, OAuthAdapter } from './OAuthAdapter';
 import { encodeState } from './helpers';
-import { OAuthHandlers } from './types';
+import { OAuthHandlers, OAuthResponse } from './types';
 
 const mockResponseData = {
   providerInfo: {
@@ -35,6 +35,12 @@ const mockResponseData = {
       'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
   },
 };
+
+function mkTokenBody(payload: unknown): string {
+  return Buffer.from(JSON.stringify(payload), 'utf8')
+    .toString('base64')
+    .replace(/=/g, '');
+}
 
 describe('OAuthAdapter', () => {
   class MyAuthProvider implements OAuthHandlers {
@@ -248,5 +254,87 @@ describe('OAuthAdapter', () => {
     ).rejects.toThrow(
       'Refresh token is not supported for provider test-provider',
     );
+  });
+
+  it('correctly populates incomplete identities', async () => {
+    const mockRefresh = jest.fn<Promise<OAuthResponse>, [express.Request]>();
+
+    const oauthProvider = new OAuthAdapter(
+      {
+        refresh: mockRefresh,
+        start: jest.fn(),
+        handler: jest.fn(),
+      } as OAuthHandlers,
+      {
+        ...oAuthProviderOptions,
+        tokenIssuer: {
+          issueToken: async ({ claims }) => `a.${mkTokenBody(claims)}.a`,
+          listPublicKeys: async () => ({ keys: [] }),
+        },
+        disableRefresh: false,
+        isOriginAllowed: () => false,
+      },
+    );
+
+    const mockRequest = {
+      header: () => 'XMLHttpRequest',
+      cookies: {
+        'test-provider-refresh-token': 'token',
+      },
+      query: {},
+    } as unknown as express.Request;
+
+    const mockResponse = {
+      json: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis(),
+    } as unknown as express.Response;
+
+    // Without a token
+    mockRefresh.mockResolvedValueOnce({
+      ...mockResponseData,
+      backstageIdentity: {
+        id: 'foo',
+        token: '',
+      },
+    });
+    await oauthProvider.refresh(mockRequest, mockResponse);
+    expect(mockResponse.json).toHaveBeenCalledTimes(1);
+    expect(mockResponse.json).toHaveBeenLastCalledWith({
+      ...mockResponseData,
+      backstageIdentity: {
+        id: 'foo',
+        token: `a.${mkTokenBody({ sub: 'user:default/foo' })}.a`,
+        idToken: `a.${mkTokenBody({ sub: 'user:default/foo' })}.a`,
+        identity: {
+          type: 'user',
+          userEntityRef: 'user:default/foo',
+          ownershipEntityRefs: [],
+        },
+      },
+    });
+
+    // With a token
+    mockRefresh.mockResolvedValueOnce({
+      ...mockResponseData,
+      backstageIdentity: {
+        id: 'foo',
+        token: `z.${mkTokenBody({ sub: 'user:my-ns/foo' })}.z`,
+      },
+    });
+    await oauthProvider.refresh(mockRequest, mockResponse);
+    expect(mockResponse.json).toHaveBeenCalledTimes(2);
+    expect(mockResponse.json).toHaveBeenLastCalledWith({
+      ...mockResponseData,
+      backstageIdentity: {
+        id: 'foo',
+        token: `z.${mkTokenBody({ sub: 'user:my-ns/foo' })}.z`,
+        idToken: `z.${mkTokenBody({ sub: 'user:my-ns/foo' })}.z`,
+        identity: {
+          type: 'user',
+          userEntityRef: 'user:my-ns/foo',
+          ownershipEntityRefs: [],
+        },
+      },
+    });
   });
 });

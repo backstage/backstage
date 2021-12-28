@@ -21,6 +21,7 @@ import { GitLabIntegration } from '@backstage/integration';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { Logger as Logger_2 } from 'winston';
 import { MergeResult } from 'isomorphic-git';
 import { PushResult } from 'isomorphic-git';
@@ -338,6 +339,7 @@ export function isDatabaseConflictError(e: unknown): boolean;
 // @public
 export function loadBackendConfig(options: {
   logger: Logger_2;
+  remote?: LoadConfigOptionsRemote;
   argv: string[];
 }): Promise<Config>;
 
@@ -491,7 +493,12 @@ export class ServerTokenManager implements TokenManager {
   // (undocumented)
   authenticate(token: string): Promise<void>;
   // (undocumented)
-  static fromConfig(config: Config): ServerTokenManager;
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger_2;
+    },
+  ): ServerTokenManager;
   // (undocumented)
   getToken(): Promise<{
     token: string;

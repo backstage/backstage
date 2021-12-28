@@ -1,5 +1,18 @@
 # @backstage/plugin-permission-node
 
+## 0.2.2
+
+### Patch Changes
+
+- 2f8a9b665f: Add `ServerPermissionClient`, which implements `PermissionAuthorizer` from @backstage/plugin-permission-common. This implementation skips authorization entirely when the supplied token is a valid backend-to-backend token, thereby allowing backend-to-backend systems to communicate without authorization.
+
+  The `ServerPermissionClient` should always be used over the standard `PermissionClient` in plugin backends.
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/plugin-auth-backend@0.5.2
+  - @backstage/plugin-permission-common@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes

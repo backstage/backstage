@@ -1,5 +1,14 @@
 # @backstage/plugin-config-schema
 
+## 0.1.16
+
+### Patch Changes
+
+- c5eb756760: Fix a small browser console warning
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/core-components@0.8.2
+
 ## 0.1.15
 
 ### Patch Changes

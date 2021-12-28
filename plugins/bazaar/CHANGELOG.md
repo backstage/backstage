@@ -1,5 +1,17 @@
 # @backstage/plugin-bazaar
 
+## 0.1.7
+
+### Patch Changes
+
+- 26926bb7a7: made the linkage between a Bazaar project to a catalog Entity optional
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+  - @backstage/cli@0.10.3
+  - @backstage/plugin-catalog@0.7.5
+
 ## 0.1.6
 
 ### Patch Changes

@@ -69,61 +69,42 @@ const overviewContent = (
 
 ### Layout
 
-The latest modified Bazaar projects are displayed in the Bazaar landing page, located at the Bazaar icon in the sidebar. Each project is represented as a card containing its most relevant data to give an overview of the project. The list of project is paginated.
+The latest modified Bazaar projects are displayed in the Bazaar landing page, located at the Bazaar icon in the sidebar. Each project is represented as a card containing its most relevant data to give an overview of the project. It is also possible to sort in alphabetical order or on the number of members. Here you can also search or add project to the Bazaar.
 
-![home](media/bazaar_pr_fullscreen.png)
+![home](media/layout.png)
 
 ### Workflow
 
-To add a project to the Bazaar, you need to create a project with one of the templates in Backstage. Click the add project-button, choose the project and fill in the form.
+To add a project to the bazaar, simply click on the `add-project` button and fill in the form.
 
 The following fields are mandatory:
 
-- announcement - present your idea and what skills you are looking for
+- name - name of the project on URL safe format
+- description - present your idea and what skills you are looking for
 - status - whether or not the project has started
 - size - small, medium or large
 - responsible - main contact person of the project
 
 The other fields are:
 
+- project - link Bazaar project to existing entity in the catalog
+- community link - link to where the project members can communicate, e.g. Teams or Discord link
 - start date
 - end date
-- community link - link where the project members can chat, e.g. Teams or Discord link
 
-When the project is added, you will see the Bazaar information in the Bazaar card on the entity page. There you can join a project, edit or delete it.
+When clicking on a Bazaar project a card containing the Bazaar information will show up. If the Bazaar project is linked to an entity, the card is also visible on that entity's EntityPage. From that card it is possible to either link or unlink an entity to a project, edit or delete the project and join the project if it seems interesting to you. Once you have joined a project, you will get access to the community link if it exists.
 
-### Database
-
-The metadata related to the Bazaar is stored in a database. Right now there are two tables, one for storing the metadata and one for storing the members of a Bazaar project.
-
-**metadata**:
-
-- name - name of the entity
-- entity_ref - namespace/kind/name of the entity
-- announcement - announcement of the project and its current need of skills/team member
-- status - status of the project, 'proposed' or 'ongoing'
-- updated_at - date when the Bazaar information was last modified (ISO 8601 format)
-- size - small, medium or large
-- start_date - date when the project is estimated to start (ISO 8601 format)
-- end_date - date when the project is estimated to end (ISO 8601 format)
-- responsible - main contact person of the project
-
-**members**:
-
-- entity_ref - namespace/kind/name of the entity
-- user_name
-- join_date - date when the user joined the project (ISO 8601 format)
+![home](media/demo.gif)
 
 ## Future work and ideas
 
 - Workflow
 
-  - Make it possible to add a Bazaar project without linking it to a Backstage entity, this would make it easier to just add an idea to the Bazaar.
+  - Make it possible for multiple Bazaar project to link to the same catalog entity
 
 - Bazaar landing page
 
   - Add a tab 'My page', where your personal data is displayed. For example: your projects and its latest activities etc.
-  - Make it possible to sort the project based on e.g. the number of members
 
 - Bazaar tab on the EntityPage
 
@@ -133,6 +114,3 @@ The metadata related to the Bazaar is stored in a database. Right now there are 
 - Dialogues
 
   - Extend the dialogue for adding a project with more fields, e.g. the possibility to add images
-
-- Testing
-  - Add tests to all the components

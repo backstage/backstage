@@ -30,6 +30,13 @@ import { IdentityApi } from '@backstage/core-plugin-api';
 
 /**
  * CatalogClient wrapper that injects identity token for all requests
+ *
+ * @deprecated The default catalog client now uses the `fetchApiRef`
+ * implementation, which in turn by default issues tokens just the same as this
+ * class used to assist in doing. If you use a custom `fetchApiRef`
+ * implementation that does NOT issue tokens, or use a custom `catalogApiRef`
+ * implementation which does not use the default `fetchApiRef`, you can wrap
+ * your catalog API in this class to get back the old behavior.
  */
 export class CatalogClientWrapper implements CatalogApi {
   private readonly identityApi: IdentityApi;

@@ -90,7 +90,7 @@ export type BackstageOverrides = Overrides & {
 // @public (undocumented)
 export type BoldHeaderClassKey = 'root' | 'title' | 'subheader';
 
-// @public (undocumented)
+// @public
 export function BottomLink(props: BottomLinkProps): JSX.Element;
 
 // @public (undocumented)
@@ -105,7 +105,7 @@ export type BottomLinkProps = {
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function Breadcrumbs(props: Props_19): JSX.Element;
 
 // @public (undocumented)
@@ -116,7 +116,7 @@ export type BreadcrumbsStyledBoxClassKey = 'root';
 
 // Warning: (ae-forgotten-export) The symbol "IconComponentProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function BrokenImageIcon(props: IconComponentProps): JSX.Element;
 
 // @public
@@ -130,7 +130,7 @@ export type CardActionsTopRightClassKey = 'root';
 
 // Warning: (ae-forgotten-export) The symbol "CardTabProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function CardTab(props: PropsWithChildren<CardTabProps>): JSX.Element;
 
 // @public (undocumented)
@@ -160,14 +160,13 @@ export interface CodeSnippetProps {
 }
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "Content" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export function Content(props: PropsWithChildren<Props_13>): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "ContentHeaderProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function ContentHeader(
   props: PropsWithChildren<ContentHeaderProps>,
 ): JSX.Element;
@@ -311,7 +310,7 @@ export function EmailIcon(props: IconComponentProps): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function EmptyState(props: Props_2): JSX.Element;
 
 // @public (undocumented)
@@ -333,7 +332,7 @@ export type ErrorBoundaryProps = {
 
 // Warning: (ae-forgotten-export) The symbol "IErrorPageProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function ErrorPage(props: IErrorPageProps): JSX.Element;
 
 // @public (undocumented)
@@ -366,7 +365,7 @@ export type FeatureCalloutCircleClassKey =
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function FeatureCalloutCircular(
   props: PropsWithChildren<Props_4>,
 ): JSX.Element;
@@ -374,12 +373,12 @@ export function FeatureCalloutCircular(
 // @public (undocumented)
 export type FiltersContainerClassKey = 'root' | 'title';
 
-// @public (undocumented)
+// @public
 export function Gauge(props: GaugeProps): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function GaugeCard(props: Props_10): JSX.Element;
 
 // @public (undocumented)
@@ -417,7 +416,7 @@ export function GroupIcon(props: IconComponentProps): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function Header(props: PropsWithChildren<Props_14>): JSX.Element;
 
 // @public (undocumented)
@@ -434,7 +433,7 @@ export type HeaderClassKey =
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function HeaderIconLinkRow(props: Props_5): JSX.Element;
 
 // @public (undocumented)
@@ -442,7 +441,7 @@ export type HeaderIconLinkRowClassKey = 'links';
 
 // Warning: (ae-forgotten-export) The symbol "HeaderLabelProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function HeaderLabel(props: HeaderLabelProps): JSX.Element;
 
 // @public (undocumented)
@@ -450,7 +449,7 @@ export type HeaderLabelClassKey = 'root' | 'label' | 'value';
 
 // Warning: (ae-forgotten-export) The symbol "HeaderTabsProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function HeaderTabs(props: HeaderTabsProps): JSX.Element;
 
 // @public (undocumented)
@@ -468,7 +467,7 @@ export function HomepageTimer(_props: {}): JSX.Element | null;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function HorizontalScrollGrid(
   props: PropsWithChildren<Props_6>,
 ): JSX.Element;
@@ -508,7 +507,7 @@ export type IconLinkVerticalProps = {
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function InfoCard(props: Props_15): JSX.Element;
 
 // @public (undocumented)
@@ -526,7 +525,7 @@ export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
 
 // Warning: (ae-forgotten-export) The symbol "IntroCardProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function IntroCard(props: IntroCardProps): JSX.Element;
 
 // Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
@@ -820,13 +819,10 @@ export type ResponseErrorPanelClassKey = 'text' | 'divider';
 export function RoutedTabs(props: { routes: SubRoute_2[] }): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SelectProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SelectComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function Select(props: SelectProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SelectClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type SelectClassKey =
   | 'formControl'
@@ -836,10 +832,17 @@ export type SelectClassKey =
   | 'checkbox'
   | 'root';
 
-// Warning: (ae-missing-release-tag) "SelectInputBaseClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type SelectedItems = string | string[] | number | number[];
+
 // @public (undocumented)
 export type SelectInputBaseClassKey = 'root' | 'input';
+
+// @public (undocumented)
+export type SelectItem = {
+  label: string;
+  value: string | number;
+};
 
 // @public (undocumented)
 export const Sidebar: (

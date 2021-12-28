@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { OldIconComponent } from '../icons/types';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 /**
@@ -85,14 +84,6 @@ export type RouteRef<Params extends AnyParams = any> = {
   $$routeRefType: 'absolute'; // See routeRefType above
 
   params: ParamKeys<Params>;
-
-  // TODO(Rugvip): Remove all of these once plugins don't rely on the path
-  /** @deprecated paths are no longer accessed directly from RouteRefs, use useRouteRef instead */
-  path: string;
-  /** @deprecated icons are no longer accessed via RouteRefs */
-  icon?: OldIconComponent;
-  /** @deprecated titles are no longer accessed via RouteRefs */
-  title?: string;
 };
 
 /**
@@ -141,23 +132,6 @@ export type AnyRouteRef =
   | RouteRef<any>
   | SubRouteRef<any>
   | ExternalRouteRef<any, any>;
-
-// TODO(Rugvip): None of these should be found in the wild anymore, remove in next minor release
-/**
- * @deprecated
- * @internal
- */
-export type ConcreteRoute = {};
-/**
- * @deprecated
- * @internal
- */
-export type AbsoluteRouteRef = RouteRef<{}>;
-/**
- * @deprecated
- * @internal
- */
-export type MutableRouteRef = RouteRef<{}>;
 
 /**
  * A duplicate of the react-router RouteObject, but with routeRef added

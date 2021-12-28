@@ -22,3 +22,4 @@
 export * from './integration';
 export * from './policy';
 export * from './types';
+export { ServerPermissionClient } from './ServerPermissionClient';

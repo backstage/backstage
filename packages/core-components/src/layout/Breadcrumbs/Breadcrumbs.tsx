@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { withStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
+import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Popover from '@material-ui/core/Popover';
+import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import React, { ComponentProps, Fragment } from 'react';
 
 type Props = ComponentProps<typeof MaterialBreadcrumbs>;
@@ -51,7 +51,12 @@ const StyledBox = withStyles(
   { name: 'BackstageBreadcrumbsStyledBox' },
 )(Box);
 
-/** @public */
+/**
+ * Breadcrumbs component to show navigation hierarchical structure
+ *
+ * @public
+ *
+ */
 export function Breadcrumbs(props: Props) {
   const { children, ...restProps } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(

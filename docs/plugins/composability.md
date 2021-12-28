@@ -368,7 +368,7 @@ The following is an example of creation and usage of a parameterized route:
 ```tsx
 // Creation of a parameterized route
 const myRouteRef = createRouteRef({
-  title: 'My Named Route',
+  id: 'myroute',
   params: ['name']
 })
 

@@ -34,6 +34,8 @@ import {
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
+  createFetchApi,
+  FetchMiddlewares,
 } from '@backstage/core-app-api';
 
 import {
@@ -42,6 +44,8 @@ import {
   analyticsApiRef,
   errorApiRef,
   discoveryApiRef,
+  fetchApiRef,
+  identityApiRef,
   oauthRequestApiRef,
   googleAuthApiRef,
   githubAuthApiRef,
@@ -58,6 +62,10 @@ import {
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  permissionApiRef,
+  IdentityPermissionApi,
+} from '@backstage/plugin-permission-react';
 
 export const apis = [
   createApiFactory({
@@ -91,6 +99,27 @@ export const apis = [
     api: storageApiRef,
     deps: { errorApi: errorApiRef },
     factory: ({ errorApi }) => WebStorage.create({ errorApi }),
+  }),
+  createApiFactory({
+    api: fetchApiRef,
+    deps: {
+      configApi: configApiRef,
+      identityApi: identityApiRef,
+      discoveryApi: discoveryApiRef,
+    },
+    factory: ({ configApi, identityApi, discoveryApi }) => {
+      return createFetchApi({
+        middleware: [
+          FetchMiddlewares.resolvePluginProtocol({
+            discoveryApi,
+          }),
+          FetchMiddlewares.injectIdentityAuth({
+            identityApi,
+            config: configApi,
+          }),
+        ],
+      });
+    },
   }),
   createApiFactory({
     api: oauthRequestApiRef,
@@ -270,5 +299,15 @@ export const apis = [
         environment: configApi.getOptionalString('auth.environment'),
       });
     },
+  }),
+  createApiFactory({
+    api: permissionApiRef,
+    deps: {
+      discovery: discoveryApiRef,
+      identity: identityApiRef,
+      config: configApiRef,
+    },
+    factory: ({ config, discovery, identity }) =>
+      IdentityPermissionApi.create({ config, discovery, identity }),
   }),
 ];

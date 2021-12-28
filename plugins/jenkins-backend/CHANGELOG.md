@@ -1,5 +1,14 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.10
+
+### Patch Changes
+
+- eb3fd85d3e: feature: add crumbIssuer option to Jenkins (optional) configuration, improve the UI to show a notification after executing the action re-build
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/catalog-client@0.5.3
+
 ## 0.1.9
 
 ### Patch Changes

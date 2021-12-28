@@ -35,7 +35,6 @@ export class UnauthorizedError extends Error {}
 
 export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
   id: 'plugin.pagerduty.api',
-  description: 'Used to fetch data from PagerDuty API',
 });
 
 export class PagerDutyClient implements PagerDutyApi {

@@ -1,5 +1,14 @@
 # @backstage/plugin-user-settings
 
+## 0.3.14
+
+### Patch Changes
+
+- 2a374057f5: Fix undefined identity bug in UserSettingsProfileCard caused by using deprecated methods of the IdentityApi
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/core-components@0.8.2
+
 ## 0.3.13
 
 ### Patch Changes

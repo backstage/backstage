@@ -15,7 +15,7 @@
  */
 
 /**
- * This is a copy of the core DiscoveryApi, to avoid importing core.
+ * This is a copy of the DiscoveryApi, to avoid importing core-plugin-api.
  *
  * @public
  */

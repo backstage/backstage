@@ -20,6 +20,9 @@ import { OAuthResult } from '../../lib/oauth';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TokenIssuer } from '../../identity/types';
 import { CatalogIdentityClient } from '../../lib/catalog';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 
 const mockFrameHandler = jest.spyOn(
   helpers,
@@ -28,8 +31,62 @@ const mockFrameHandler = jest.spyOn(
   () => Promise<{ result: OAuthResult; privateInfo: any }>
 >;
 
+const mockResult = {
+  result: {
+    fullProfile: {
+      emails: [
+        {
+          type: 'work',
+          value: 'conrad@example.com',
+        },
+      ],
+      displayName: 'Conrad',
+      name: {
+        familyName: 'Ribas',
+        givenName: 'Francisco',
+      },
+      id: 'conrad',
+      provider: 'microsoft',
+      photos: [
+        {
+          value: 'some-data',
+        },
+      ],
+    },
+    params: {
+      id_token: 'idToken',
+      scope: 'scope',
+      expires_in: 123,
+    },
+    accessToken: 'accessToken',
+  },
+  privateInfo: {
+    refreshToken: 'wacka',
+  },
+};
+
+const server = setupServer();
+setupRequestMockHandlers(server);
+
+const setupHandlers = () => {
+  server.use(
+    rest.get(
+      'https://graph.microsoft.com/v1.0/me/photos/*',
+      async (_, res, ctx) => {
+        const imageBuffer = new Uint8Array([104, 111, 119, 100, 121]).buffer;
+        return res(
+          ctx.set('Content-Length', imageBuffer.byteLength.toString()),
+          ctx.set('Content-Type', 'image/jpeg'),
+          ctx.body(imageBuffer),
+        );
+      },
+    ),
+  );
+};
+
 describe('createMicrosoftProvider', () => {
   it('should auth', async () => {
+    setupHandlers();
     const tokenIssuer = {
       issueToken: jest.fn(),
       listPublicKeys: jest.fn(),
@@ -55,39 +112,7 @@ describe('createMicrosoftProvider', () => {
       callbackUrl: 'mock',
     });
 
-    mockFrameHandler.mockResolvedValueOnce({
-      result: {
-        fullProfile: {
-          emails: [
-            {
-              type: 'work',
-              value: 'conrad@example.com',
-            },
-          ],
-          displayName: 'Conrad',
-          name: {
-            familyName: 'Ribas',
-            givenName: 'Francisco',
-          },
-          id: 'conrad',
-          provider: 'microsoft',
-          photos: [
-            {
-              value: 'some-data',
-            },
-          ],
-        },
-        params: {
-          id_token: 'idToken',
-          scope: 'scope',
-          expires_in: 123,
-        },
-        accessToken: 'accessToken',
-      },
-      privateInfo: {
-        refreshToken: 'wacka',
-      },
-    });
+    mockFrameHandler.mockResolvedValueOnce(mockResult);
     const { response } = await provider.handler({} as any);
     expect(response).toEqual({
       providerInfo: {
@@ -102,5 +127,46 @@ describe('createMicrosoftProvider', () => {
         picture: 'http://microsoft.com/lols',
       },
     });
+  });
+
+  it('should return the base64 encoded photo data of the profile', async () => {
+    setupHandlers();
+    const tokenIssuer = {
+      issueToken: jest.fn(),
+      listPublicKeys: jest.fn(),
+    };
+    const catalogIdentityClient = {
+      findUser: jest.fn(),
+    };
+
+    const provider = new MicrosoftAuthProvider({
+      logger: getVoidLogger(),
+      catalogIdentityClient:
+        catalogIdentityClient as unknown as CatalogIdentityClient,
+      tokenIssuer: tokenIssuer as unknown as TokenIssuer,
+      authHandler: async ({ fullProfile }) => ({
+        profile: {
+          email: fullProfile.emails![0]!.value,
+          displayName: fullProfile.displayName,
+          picture: 'http://microsoft.com/lols',
+        },
+      }),
+      clientId: 'mock',
+      clientSecret: 'mock',
+      callbackUrl: 'mock',
+      // define resolver to return user `info` for photo validation
+      signInResolver: async (info, _) => {
+        return {
+          id: 'user.name',
+          token: 'token',
+          info: info,
+        };
+      },
+    });
+    mockFrameHandler.mockResolvedValueOnce(mockResult);
+    const { response } = await provider.handler({} as any);
+    const overloadedIdentity = response.backstageIdentity as any;
+    const photo = overloadedIdentity.info.result.fullProfile.photos[0];
+    expect(photo.value).toEqual('data:image/jpeg;base64,aG93ZHk=');
   });
 });

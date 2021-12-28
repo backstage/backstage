@@ -128,8 +128,8 @@ the core APIs. The core APIs are the ones exported by
 [configApiRef](../reference/core-plugin-api.configapiref.md).
 
 The core APIs are loaded for any app created with
-[createApp](../reference/core-app-api.createapp.md) from
-[@backstage/core-plugin-api](../reference/core-plugin-api.md), which means that
+[createApp](../reference/app-defaults.createapp.md) from
+[@backstage/core-plugin-api](../reference/app-defaults.md), which means that
 there is no step that needs to be taken to include these APIs in an app.
 
 ### Plugin APIs
@@ -168,7 +168,7 @@ Lastly, the app itself is the final point where APIs can be added, and what has
 the final say in what APIs will be loaded at runtime. The app may override the
 factories for any of the core or plugin APIs, with the exception of the config,
 app theme, and identity APIs. These are static APIs that are tied into the
-[createApp](../reference/core-app-api.createapp.md) implementation, and
+[createApp](../reference/app-defaults.createapp.md) implementation, and
 therefore not possible to override.
 
 Overriding APIs is useful for apps that want to switch out behavior to tailor it
@@ -313,7 +313,7 @@ The common development environment for plugins is included in
 [createDevApp](../reference/dev-utils.createdevapp.md) function creates an
 application with implementations for all core APIs already present. Contrary to
 the method for wiring up Utility API implementations in an app created with
-[createApp](../reference/core-app-api.createapp.md),
+[createApp](../reference/app-defaults.createapp.md),
 [createDevApp](../reference/dev-utils.createdevapp.md) uses automatic dependency
 injection. This is to make it possible to replace any API implementation, and
 having that be reflected in dependents of that API.

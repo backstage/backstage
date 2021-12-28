@@ -19,11 +19,11 @@ import {
   DiscoveryApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
-import { EntityName, EntityRef } from '@backstage/catalog-model';
+import type { EntityName, EntityRef } from '@backstage/catalog-model';
+import { ResponseError } from '@backstage/errors';
 
 export const jenkinsApiRef = createApiRef<JenkinsApi>({
   id: 'plugin.jenkins.service2',
-  description: 'Used by the Jenkins plugin to make requests',
 });
 
 export interface Build {
@@ -140,7 +140,7 @@ export class JenkinsClient implements JenkinsApi {
       url.searchParams.append('branch', filter.branch);
     }
 
-    const idToken = await this.identityApi.getIdToken();
+    const idToken = await this.getToken();
     const response = await fetch(url.href, {
       method: 'GET',
       headers: {
@@ -151,8 +151,8 @@ export class JenkinsClient implements JenkinsApi {
     return (
       (await response.json()).projects?.map((p: Project) => ({
         ...p,
-        onRestartClick: async () => {
-          await this.retry({
+        onRestartClick: () => {
+          return this.retry({
             entity,
             jobFullName: p.fullName,
             buildNumber: String(p.lastBuild.number),
@@ -179,7 +179,7 @@ export class JenkinsClient implements JenkinsApi {
       jobFullName,
     )}/${encodeURIComponent(buildNumber)}`;
 
-    const idToken = await this.identityApi.getIdToken();
+    const idToken = await this.getToken();
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -207,12 +207,21 @@ export class JenkinsClient implements JenkinsApi {
       jobFullName,
     )}/${encodeURIComponent(buildNumber)}:rebuild`;
 
-    const idToken = await this.identityApi.getIdToken();
-    await fetch(url, {
+    const idToken = await this.getToken();
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
     });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+  }
+
+  private async getToken() {
+    const { token } = await this.identityApi.getCredentials();
+    return token;
   }
 }

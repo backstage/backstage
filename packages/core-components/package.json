@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.11",
-    "@backstage/core-plugin-api": "^0.3.1",
+    "@backstage/core-plugin-api": "^0.4.0",
     "@backstage/errors": "^0.1.5",
     "@backstage/theme": "^0.2.14",
     "@material-table/core": "^3.1.0",
@@ -51,7 +51,7 @@
     "pluralize": "^8.0.0",
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",
-    "rc-progress": "^3.0.0",
+    "rc-progress": "3.1.4",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.12.2",
     "react-markdown": "^7.0.1",
@@ -72,9 +72,9 @@
     "react-dom": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/core-app-api": "^0.2.1",
-    "@backstage/cli": "^0.10.2",
-    "@backstage/test-utils": "^0.1.24",
+    "@backstage/core-app-api": "^0.3.0",
+    "@backstage/cli": "^0.10.3",
+    "@backstage/test-utils": "^0.2.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^7.0.2",

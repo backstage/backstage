@@ -1,5 +1,14 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.1.5
+
+### Patch Changes
+
+- 26926bb7a7: made the linkage between a Bazaar project to a catalog Entity optional
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/backend-test-utils@0.1.11
+
 ## 0.1.4
 
 ### Patch Changes

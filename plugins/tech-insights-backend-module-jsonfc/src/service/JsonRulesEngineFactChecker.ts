@@ -23,11 +23,16 @@ import {
   CheckValidationResponse,
 } from '@backstage/plugin-tech-insights-node';
 import { FactResponse } from '@backstage/plugin-tech-insights-common';
-import { Engine, EngineResult, TopLevelCondition } from 'json-rules-engine';
+import {
+  Engine,
+  EngineResult,
+  Operator,
+  TopLevelCondition,
+} from 'json-rules-engine';
 import { DefaultCheckRegistry } from './CheckRegistry';
 import { Logger } from 'winston';
 import { pick } from 'lodash';
-import Ajv from 'ajv';
+import Ajv, { SchemaObject } from 'ajv';
 import * as validationSchema from './validation-schema.json';
 import { JSON_RULE_ENGINE_CHECK_TYPE } from '../constants';
 
@@ -46,6 +51,7 @@ export type JsonRulesEngineFactCheckerOptions = {
   repository: TechInsightsStore;
   logger: Logger;
   checkRegistry?: TechInsightCheckRegistry<any>;
+  operators?: Operator[];
 };
 
 /**
@@ -60,15 +66,27 @@ export class JsonRulesEngineFactChecker
   private readonly checkRegistry: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
   private repository: TechInsightsStore;
   private readonly logger: Logger;
+  private readonly validationSchema: SchemaObject;
+  private readonly operators: Operator[];
 
   constructor({
     checks,
     repository,
     logger,
     checkRegistry,
+    operators,
   }: JsonRulesEngineFactCheckerOptions) {
     this.repository = repository;
     this.logger = logger;
+    this.operators = operators || [];
+    this.validationSchema = JSON.parse(JSON.stringify(validationSchema));
+
+    this.operators.forEach(op => {
+      this.validationSchema.definitions.condition.properties.operator.anyOf.push(
+        { const: op.name },
+      );
+    });
+
     checks.forEach(check => this.validate(check));
     this.checkRegistry =
       checkRegistry ??
@@ -80,6 +98,10 @@ export class JsonRulesEngineFactChecker
     checks?: string[],
   ): Promise<JsonRuleBooleanCheckResult[]> {
     const engine = new Engine();
+    this.operators.forEach(op => {
+      engine.addOperator(op);
+    });
+
     const techInsightChecks = checks
       ? await this.checkRegistry.getAll(checks)
       : await this.checkRegistry.list();
@@ -88,7 +110,21 @@ export class JsonRulesEngineFactChecker
     techInsightChecks.forEach(techInsightCheck => {
       const rule = techInsightCheck.rule;
       rule.name = techInsightCheck.id;
-      engine.addRule({ ...techInsightCheck.rule, event: noopEvent });
+      // Only run checks that have all the facts available:
+      const hasAllFacts = techInsightCheck.factIds.every(
+        factId => facts[factId],
+      );
+      if (hasAllFacts) {
+        engine.addRule({ ...techInsightCheck.rule, event: noopEvent });
+      } else {
+        this.logger.warn(
+          `Skipping ${
+            rule.name
+          } due to missing facts: ${techInsightCheck.factIds
+            .filter(factId => !facts[factId])
+            .join(', ')}`,
+        );
+      }
     });
     const factValues = Object.values(facts).reduce(
       (acc, it) => ({ ...acc, ...it.facts }),
@@ -111,7 +147,7 @@ export class JsonRulesEngineFactChecker
     check: TechInsightJsonRuleCheck,
   ): Promise<CheckValidationResponse> {
     const ajv = new Ajv({ verbose: true });
-    const validator = ajv.compile(validationSchema);
+    const validator = ajv.compile(this.validationSchema);
     const isValidToSchema = validator(check.rule);
     if (check.type !== JSON_RULE_ENGINE_CHECK_TYPE) {
       const msg = `Only ${JSON_RULE_ENGINE_CHECK_TYPE} checks can be registered to this fact checker`;
@@ -303,6 +339,7 @@ export type JsonRulesEngineFactCheckerFactoryOptions = {
   checks: TechInsightJsonRuleCheck[];
   logger: Logger;
   checkRegistry?: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
+  operators?: Operator[];
 };
 
 /**
@@ -316,15 +353,18 @@ export class JsonRulesEngineFactCheckerFactory {
   private readonly checks: TechInsightJsonRuleCheck[];
   private readonly logger: Logger;
   private readonly checkRegistry?: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
+  private readonly operators?: Operator[];
 
   constructor({
     checks,
     logger,
     checkRegistry,
+    operators,
   }: JsonRulesEngineFactCheckerFactoryOptions) {
     this.logger = logger;
     this.checks = checks;
     this.checkRegistry = checkRegistry;
+    this.operators = operators;
   }
 
   /**
@@ -338,6 +378,7 @@ export class JsonRulesEngineFactCheckerFactory {
       logger: this.logger,
       checkRegistry: this.checkRegistry,
       repository,
+      operators: this.operators,
     });
   }
 }
