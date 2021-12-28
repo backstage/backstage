@@ -147,15 +147,12 @@ export type SearchBarProps = Partial<SearchBarBaseProps>;
  * @public
  */
 export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
-  const configApi = useApi(configApiRef);
   const analytics = useAnalytics();
   const { term, setTerm } = useSearch();
 
   const handleChange = (newValue: string) => {
-    if (configApi.getOptionalConfig('app.analytics.ga')) {
-      // only capture GA events if analytics configuration is provided
-      analytics.captureEvent('search', newValue);
-    }
+    // Catpure analytics search event with search term provided as value
+    analytics.captureEvent('search', newValue);
     if (onChange) {
       onChange(newValue);
     } else {
