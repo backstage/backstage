@@ -26,7 +26,11 @@ export {
   createScaffolderFieldExtension,
   ScaffolderFieldExtensions,
 } from './extensions';
-export type { CustomFieldValidator, FieldExtensionOptions } from './extensions';
+export type {
+  CustomFieldValidator,
+  FieldExtensionOptions,
+  CustomFieldExtension,
+} from './extensions';
 export {
   EntityPickerFieldExtension,
   EntityNamePickerFieldExtension,

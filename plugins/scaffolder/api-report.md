@@ -36,6 +36,17 @@ export function createScaffolderFieldExtension<T = any>(
   options: FieldExtensionOptions<T>,
 ): Extension<() => null>;
 
+// Warning: (ae-missing-release-tag) "CustomFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CustomFieldExtension<ReturnValue, UiOptions extends {} = {}>
+  extends FieldProps<ReturnValue> {
+  // (undocumented)
+  uiSchema: {
+    'ui:options'?: UiOptions;
+  };
+}
+
 // Warning: (ae-missing-release-tag) "CustomFieldValidator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -128,15 +139,16 @@ export const OwnerPicker: ({
 // @public (undocumented)
 export const OwnerPickerFieldExtension: () => null;
 
+// Warning: (ae-forgotten-export) The symbol "RepoUrlPickerUiOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "RepoUrlPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const RepoUrlPicker: ({
-  onChange,
   uiSchema,
+  onChange,
   rawErrors,
   formData,
-}: FieldProps<string>) => JSX.Element;
+}: CustomFieldExtension<string, RepoUrlPickerUiOptions>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "RepoUrlPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
