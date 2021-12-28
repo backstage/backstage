@@ -24,7 +24,6 @@ export * from './SearchPage';
 export * from './SearchResult';
 export * from './SearchResultPager';
 export * from './SearchType';
-export * from './SearchTypeFacet';
 export * from './SidebarSearch';
 export * from './SidebarSearchModal';
 export * from './HomePageComponent';

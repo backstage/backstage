@@ -29,7 +29,7 @@ import {
   SearchFilter,
   SearchResult,
   SearchResultPager,
-  SearchTypeFacet,
+  SearchType,
 } from '@backstage/plugin-search';
 import { DocsResultListItem } from '@backstage/plugin-techdocs';
 import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
@@ -63,7 +63,7 @@ const SearchPage = () => {
             </Paper>
           </Grid>
           <Grid item xs={3}>
-            <SearchTypeFacet
+            <SearchType.Accordion
               name="Result Type"
               defaultValue="software-catalog"
               types={[

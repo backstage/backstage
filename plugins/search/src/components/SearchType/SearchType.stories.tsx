@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
+import CatalogIcon from '@material-ui/icons/MenuBook';
+import DocsIcon from '@material-ui/icons/Description';
+import UsersGroupsIcon from '@material-ui/icons/Person';
 
 import { SearchType } from '../index';
 import { SearchContext } from '../SearchContext';
@@ -31,6 +34,25 @@ export const Default = () => {
   return (
     <SearchContext.Provider value={{ types, setTypes } as any}>
       <SearchType name="Search type" values={values} defaultValue={values[0]} />
+    </SearchContext.Provider>
+  );
+};
+
+export const Accordion = () => {
+  const [types, setTypes] = useState<string[]>([]);
+  const setPageCursor = () => {};
+
+  return (
+    <SearchContext.Provider value={{ types, setTypes, setPageCursor } as any}>
+      <SearchType.Accordion
+        name="Result Types"
+        defaultValue="value-1"
+        types={[
+          { value: 'value-1', name: 'Value One', icon: <CatalogIcon /> },
+          { value: 'value-2', name: 'Value Two', icon: <DocsIcon /> },
+          { value: 'value-3', name: 'Value Three', icon: <UsersGroupsIcon /> },
+        ]}
+      />
     </SearchContext.Provider>
   );
 };

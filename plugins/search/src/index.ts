@@ -34,7 +34,6 @@ export {
   SearchPage as Router,
   SearchResultPager,
   SearchType,
-  SearchTypeFacet,
   SidebarSearch,
   useSearch,
 } from './components';
@@ -46,7 +45,8 @@ export type {
   FiltersState,
   SearchBarProps,
   SearchBarBaseProps,
-  SearchTypeFacetProps,
+  SearchTypeAccordionProps,
+  SearchTypeProps,
 } from './components';
 export {
   DefaultResultListItem,

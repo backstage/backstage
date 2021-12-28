@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  ChangeEvent,
-  cloneElement,
-  Fragment,
-  useEffect,
-  useState,
-} from 'react';
+import React, { cloneElement, Fragment, useEffect, useState } from 'react';
 import { useSearch } from '../SearchContext';
 import {
   Accordion,
@@ -79,8 +73,7 @@ const useStyles = makeStyles(theme => ({
 /**
  * @public
  */
-export type SearchTypeFacetProps = {
-  /* what about this? */
+export type SearchTypeAccordionProps = {
   name: string;
   types: Array<{
     value: string;
@@ -90,23 +83,17 @@ export type SearchTypeFacetProps = {
   defaultValue?: string;
 };
 
-/**
- * A control surface for the search query's "types" property, displayed as a
- * single-select collapsible accordion suitable for use in faceted search UIs.
- * @public
- */
-export const SearchTypeFacet = (props: SearchTypeFacetProps) => {
+export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
   const classes = useStyles();
   const { setPageCursor, setTypes, types } = useSearch();
   const [expanded, setExpanded] = useState(true);
   const { defaultValue, name, types: givenTypes } = props;
 
-  const handleChange = (_event: ChangeEvent<{}>, newExpanded: boolean) =>
-    setExpanded(newExpanded);
+  const toggleExpanded = () => setExpanded(prevState => !prevState);
   const handleClick = (type: string) => {
     return () => {
       setTypes(type !== '' ? [type] : []);
-      setPageCursor('0');
+      setPageCursor('');
       setExpanded(false);
     };
   };
@@ -136,7 +123,7 @@ export const SearchTypeFacet = (props: SearchTypeFacetProps) => {
         <Accordion
           className={classes.accordion}
           expanded={expanded}
-          onChange={handleChange}
+          onChange={toggleExpanded}
         >
           <AccordionSummary
             classes={{
@@ -162,7 +149,10 @@ export const SearchTypeFacet = (props: SearchTypeFacetProps) => {
                 <Fragment key={type.value}>
                   <Divider />
                   <ListItem
-                    selected={types.includes(type.value)}
+                    selected={
+                      types[0] === type.value ||
+                      (types.length === 0 && type.value === '')
+                    }
                     onClick={handleClick(type.value)}
                     button
                   >
