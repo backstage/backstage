@@ -26,3 +26,16 @@ catalog:
 ```
 
 Note the `s3-discovery` type, as this is not a regular `url` processor.
+
+As this processor is not one of the default providers, you will also need to add the below:
+
+```javascript
+/* packages/backend/src/plugins/catalog.ts */
+  
+import { AwsS3DiscoveryProcessor} from '@backstage/plugin-catalog-backend';
+
+
+const builder = await CatalogBuilder.create(env);
+/** ... other processors ... */
+builder.addProcessor(new AwsS3DiscoveryProcessor(env.reader))
+```
