@@ -185,6 +185,8 @@ nav:
       - ADR009 - Entity References: 'architecture-decisions/adr009-entity-references.md'
       - ADR010 - Luxon Date Library: 'architecture-decisions/adr010-luxon-date-library.md'
       - ADR011 - Plugin Package Structure: 'architecture-decisions/adr011-plugin-package-structure.md'
+      - ADR012 - Plugin Package Structure: 'architecture-decisions/adr012-use-luxon-locale-and-date-presets.md'
+      - ADR013 - Plugin Package Structure: 'architecture-decisions/adr013-use-node-fetch.md'
   - Support:
       - Backstage Project Structure: 'support/project-structure.md'
   - Glossary: glossary.md

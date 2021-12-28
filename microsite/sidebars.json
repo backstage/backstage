@@ -285,7 +285,8 @@
       "architecture-decisions/adrs-adr009",
       "architecture-decisions/adrs-adr010",
       "architecture-decisions/adrs-adr011",
-      "architecture-decisions/adrs-adr012"
+      "architecture-decisions/adrs-adr012",
+      "architecture-decisions/adrs-adr013"
     ],
     "FAQ": ["FAQ"]
   }
