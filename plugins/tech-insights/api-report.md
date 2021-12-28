@@ -12,13 +12,40 @@ import { EntityName } from '@backstage/catalog-model';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// @public
+export type Check = {
+  id: string;
+  type: string;
+  name: string;
+  description: string;
+  factIds: string[];
+};
+
+// @public
+export type CheckResultRenderer = {
+  type: string;
+  title: string;
+  description: string;
+  component: React_2.ReactElement;
+};
+
 // @public (undocumented)
 export const EntityTechInsightsScorecardContent: () => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "TechInsightsApi" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "techInsightsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export interface TechInsightsApi {
+  // (undocumented)
+  getAllChecks(): Promise<Check[]>;
+  // (undocumented)
+  getScorecardsDefinition: (
+    type: string,
+    value: CheckResult[],
+  ) => CheckResultRenderer | undefined;
+  // (undocumented)
+  runChecks(entityParams: EntityName, checks?: Check[]): Promise<CheckResult[]>;
+}
+
+// @public
 export const techInsightsApiRef: ApiRef<TechInsightsApi>;
 
 // @public (undocumented)
