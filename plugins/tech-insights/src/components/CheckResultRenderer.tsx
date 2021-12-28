@@ -18,6 +18,11 @@ import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import React from 'react';
 import { BooleanCheck } from './BooleanCheck';
 
+/**
+ * Defines a react component that is responsible for rendering a results of a given type.
+ *
+ * @public
+ */
 export type CheckResultRenderer = {
   type: string;
   title: string;
