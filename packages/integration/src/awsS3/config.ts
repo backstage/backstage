@@ -15,7 +15,6 @@
  */
 
 import { Config } from '@backstage/config';
-import { isValidHost } from '../helpers';
 
 export const AMAZON_AWS_HOST = 'amazonaws.com';
 
@@ -26,38 +25,40 @@ export const AMAZON_AWS_HOST = 'amazonaws.com';
  */
 export type AwsS3IntegrationConfig = {
   /**
-   * The host of the target that this matches on, e.g. "amazonaws.com"
-   *
-   * If validateHost is true, "amazonaws.com" host is enforced. To test with localstack or similar AWS S3 emulators,
-   * setting validateHost to false allows hosts like "localhost:4566". Set ssl to false to access emulated S3
-   * endpoint over http (vs https). In that case, S3 urls would look like "http://<bucket>.localhost:4566/<path>".
+   * Host, derived from endpoint, and defaults to amazonaws.com
    */
   host: string;
 
   /**
-   * accessKeyId
+   * (Optional) AWS Endpoint.
+   * The endpoint URI to send requests to. The default endpoint is built from the configured region.
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
+   *
+   * Supports non-AWS providers, e.g. for LocalStack, endpoint may look like http://localhost:4566
+   */
+  endpoint?: string;
+
+  /**
+   * (Optional) Whether to use path style URLs when communicating with S3.
+   * Defaults to false.
+   * This allows providers like LocalStack, Minio and Wasabi (and possibly others) to be used.
+   */
+  s3ForcePathStyle?: boolean;
+
+  /**
+   * (Optional) User access key id
    */
   accessKeyId?: string;
 
   /**
-   * secretAccessKey
+   * (Optional) User secret access key
    */
   secretAccessKey?: string;
 
   /**
-   * roleArn
+   * (Optional) ARN of role to be assumed
    */
   roleArn?: string;
-
-  /**
-   * validateHost
-   */
-  validateHost: boolean;
-
-  /**
-   * ssl
-   */
-  ssl: boolean;
 };
 
 /**
@@ -70,20 +71,42 @@ export type AwsS3IntegrationConfig = {
 export function readAwsS3IntegrationConfig(
   config: Config,
 ): AwsS3IntegrationConfig {
-  const host = config.getOptionalString('host') ?? AMAZON_AWS_HOST;
+  const endpoint = config.getOptionalString('endpoint');
+  const s3ForcePathStyle =
+    config.getOptionalBoolean('s3ForcePathStyle') ?? false;
+  let host;
+  let pathname;
+  if (endpoint) {
+    try {
+      const url = new URL(endpoint);
+      host = url.host;
+      pathname = url.pathname;
+    } catch {
+      throw new Error(
+        `Invalid awsS3 integration config, endpoint '${endpoint}' is not a valid URL`,
+      );
+    }
+    if (pathname !== '/') {
+      throw new Error(
+        `Invalid awsS3 integration config, endpoints cannot contain path, got '${endpoint}'`,
+      );
+    }
+  } else {
+    host = AMAZON_AWS_HOST;
+  }
+
   const accessKeyId = config.getOptionalString('accessKeyId');
   const secretAccessKey = config.getOptionalString('secretAccessKey');
   const roleArn = config.getOptionalString('roleArn');
-  const validateHost = config.getOptionalBoolean('validateHost') ?? true;
-  const ssl = config.getOptionalBoolean('ssl') ?? true;
 
-  if (!isValidHost(host)) {
-    throw new Error(
-      `Invalid awsS3 integration config, '${host}' is not a valid host`,
-    );
-  }
-
-  return { host, accessKeyId, secretAccessKey, roleArn, validateHost, ssl };
+  return {
+    host,
+    endpoint,
+    s3ForcePathStyle,
+    accessKeyId,
+    secretAccessKey,
+    roleArn,
+  };
 }
 
 /**
@@ -102,11 +125,7 @@ export function readAwsS3IntegrationConfigs(
   // If no explicit amazonaws.com integration was added, put one in the list as
   // a convenience
   if (!result.some(c => c.host === AMAZON_AWS_HOST)) {
-    result.push({
-      host: AMAZON_AWS_HOST,
-      validateHost: true,
-      ssl: true,
-    });
+    result.push({ host: AMAZON_AWS_HOST });
   }
   return result;
 }

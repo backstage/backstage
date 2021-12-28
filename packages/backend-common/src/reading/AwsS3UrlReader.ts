@@ -31,13 +31,14 @@ import {
   AwsS3Integration,
   ScmIntegrations,
   AMAZON_AWS_HOST,
+  AwsS3IntegrationConfig,
 } from '@backstage/integration';
 import { ForwardedError, NotModifiedError } from '@backstage/errors';
 import { ListObjectsV2Output, ObjectList } from 'aws-sdk/clients/s3';
 
 const parseURL = (
   url: string,
-  validateHost: boolean,
+  config: AwsS3IntegrationConfig,
 ): { path: string; bucket: string; region: string } => {
   let { host, pathname } = new URL(url);
 
@@ -47,27 +48,44 @@ const parseURL = (
    */
   pathname = pathname.substr(1);
 
-  /**
-   * Checks that the given URL is a valid S3 object url.
-   * Format of a Valid S3 URL: https://bucket-name.s3.Region.amazonaws.com/keyname
-   */
-  const validHost = new RegExp(
-    /^[a-z\d][a-z\d.-]{1,61}[a-z\d]\.s3\.[a-z\d-]+\.amazonaws.com$/,
-  );
-
   let bucket;
   let region;
 
-  if (!validHost.test(host)) {
-    if (validateHost) {
-      throw new Error(`not a valid AWS S3 URL: ${url}`);
+  /**
+   * Path style URLs: https://s3.Region.amazonaws.com/bucket-name/key-name
+   * Virtual hosted style URLs: https://bucket-name.s3.Region.amazonaws.com/key-name
+   * See https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html#path-style-access
+   */
+  if (config.s3ForcePathStyle) {
+    if (pathname.indexOf('/') < 0) {
+      throw new Error(
+        `invalid path-style AWS S3 URL, ${url} does not contain bucket in the path`,
+      );
+    }
+    [bucket] = pathname.split('/');
+    pathname = pathname.substr(bucket.length + 1);
+  } else {
+    if (host.indexOf('.') < 0) {
+      throw new Error(
+        `invalid virtual hosted-style AWS S3 URL, ${url} does not contain bucket prefix in the host`,
+      );
     }
     [bucket] = host.split('.');
-    region = 'none';
+    host = host.substr(bucket.length + 1);
+  }
+
+  // Only extract region from *.amazonaws.com hosts
+  if (config.host === AMAZON_AWS_HOST) {
+    // At this point bucket prefix is removed from host for virtual hosted URLs
+    const match = host.match(/^s3\.([a-z\d-]+)\.amazonaws.com$/);
+    if (!match) {
+      throw new Error(
+        `invalid AWS S3 URL, cannot parse region from host in ${url}`,
+      );
+    }
+    region = match[1];
   } else {
-    [bucket] = host.split(/\.s3\.[a-z\d-]+\.amazonaws.com/);
-    host = host.substring(bucket.length);
-    [, , region, ,] = host.split('.');
+    region = '';
   }
 
   return {
@@ -83,17 +101,15 @@ export class AwsS3UrlReader implements UrlReader {
 
     return integrations.awsS3.list().map(integration => {
       const creds = AwsS3UrlReader.buildCredentials(integration);
-      const defaultHost = integration.config.host === AMAZON_AWS_HOST;
 
       const s3 = new S3({
         apiVersion: '2006-03-01',
         credentials: creds,
-        endpoint: defaultHost
-          ? undefined
-          : `${integration.config.ssl ? 'https://' : 'http://'}${
-              integration.config.host
-            }`,
-        s3ForcePathStyle: !defaultHost,
+        endpoint:
+          integration.config.host === AMAZON_AWS_HOST
+            ? undefined
+            : integration.config.endpoint,
+        s3ForcePathStyle: integration.config.s3ForcePathStyle,
       });
       const reader = new AwsS3UrlReader(integration, {
         s3,
@@ -159,10 +175,7 @@ export class AwsS3UrlReader implements UrlReader {
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
     try {
-      const { path, bucket, region } = parseURL(
-        url,
-        this.integration.config.validateHost,
-      );
+      const { path, bucket, region } = parseURL(url, this.integration.config);
       aws.config.update({ region: region });
 
       let params;
@@ -202,10 +215,7 @@ export class AwsS3UrlReader implements UrlReader {
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
     try {
-      const { path, bucket, region } = parseURL(
-        url,
-        this.integration.config.validateHost,
-      );
+      const { path, bucket, region } = parseURL(url, this.integration.config);
       const allObjects: ObjectList = [];
       const responses = [];
       let continuationToken: string | undefined;
