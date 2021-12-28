@@ -2,4 +2,4 @@
 '@backstage/plugin-tech-insights': patch
 ---
 
-remove unecessary http request when running all checks
+remove unnecessary http request when running all checks
