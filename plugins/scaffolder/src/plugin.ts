@@ -36,6 +36,7 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker';
+import { EntityTagsPicker } from './components/fields/EntityTagsPicker';
 
 export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',
@@ -101,5 +102,16 @@ export const OwnedEntityPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: OwnedEntityPicker,
     name: 'OwnedEntityPicker',
+  }),
+);
+
+/**
+ * EntityTagsPickerFieldExtension
+ * @public
+ */
+export const EntityTagsPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: EntityTagsPicker,
+    name: 'EntityTagsPicker',
   }),
 );
