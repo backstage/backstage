@@ -40,10 +40,13 @@
     "fs-extra": "9.1.0",
     "helmet": "^4.0.0",
     "knex": "^0.95.1",
+    "lodash": "^4.17.21",
+    "luxon": "^2.0.2",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "^0.1.13",
     "@backstage/cli": "^0.11.0",
     "@backstage/types": "^0.1.1",
     "@types/supertest": "^2.0.8",

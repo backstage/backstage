@@ -20,22 +20,20 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
-  return knex.schema.createTable('static_asset_cache', table => {
+  return knex.schema.createTable('static_assets_cache', table => {
     table.comment(
       'A cache of static assets that where previously deployed and may still be lazy-loaded by clients',
     );
-    table
-      .string('path')
-      .primary()
-      .notNullable()
-      .comment('The path of the file');
+    table.text('path').primary().notNullable().comment('The path of the file');
     table
       .dateTime('last_modified_at')
+      .defaultTo(knex.fn.now())
       .notNullable()
       .comment(
         'Timestamp of when the asset was most recently seen in a deployment',
       );
     table.binary('content').notNullable().comment('The asset content');
+    table.index('last_modified_at', 'static_asset_cache_last_modified_at_idx');
   });
 };
 
@@ -43,5 +41,8 @@ exports.up = async function up(knex) {
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  return knex.schema.dropTable('static_asset_cache');
+  await knex.schema.alterTable('static_assets_cache', table => {
+    table.dropIndex([], 'static_asset_cache_last_modified_at_idx');
+  });
+  await knex.schema.dropTable('static_assets_cache');
 };
