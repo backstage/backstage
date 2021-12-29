@@ -285,7 +285,6 @@ describe('SearchBar', () => {
         >
           <SearchBar debounceTime={debounceTime} />
         </SearchContextProvider>
-        ,
       </ApiProvider>,
     );
 
@@ -317,6 +316,29 @@ describe('SearchBar', () => {
         searchTypes: 'software-catalog,techdocs',
       },
       subject: 'value',
+    });
+
+    userEvent.clear(textbox);
+
+    // make sure new term is captured
+    userEvent.type(textbox, 'new value');
+
+    act(() => {
+      jest.advanceTimersByTime(debounceTime);
+    });
+
+    await waitFor(() => expect(textbox).toHaveValue('new value'));
+
+    expect(analyticsApiSpy.getEvents()).toHaveLength(2);
+    expect(analyticsApiSpy.getEvents()[1]).toEqual({
+      action: 'search',
+      context: {
+        extension: 'App',
+        pluginId: 'root',
+        routeRef: 'unknown',
+        searchTypes: 'software-catalog,techdocs',
+      },
+      subject: 'new value',
     });
   });
 });

@@ -22,7 +22,7 @@ import React, {
   useCallback,
 } from 'react';
 import { useDebounce } from 'react-use';
-import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   InputBase,
   InputBaseProps,
@@ -33,6 +33,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
 
 import { useSearch } from '../SearchContext';
+import { TrackSearch } from '../SearchTracker';
 
 /**
  * Props for {@link SearchBarBase}.
@@ -67,7 +68,6 @@ export const SearchBarBase = ({
   ...props
 }: SearchBarBaseProps) => {
   const configApi = useApi(configApiRef);
-  const analytics = useAnalytics();
   const [value, setValue] = useState<string>(defaultValue as string);
 
   useEffect(() => {
@@ -76,15 +76,7 @@ export const SearchBarBase = ({
     );
   }, [defaultValue]);
 
-  useDebounce(
-    () => {
-      // Capture analytics search event with search term provided as value
-      analytics.captureEvent('search', value);
-      onChange(value);
-    },
-    debounceTime,
-    [value],
-  );
+  useDebounce(() => onChange(value), debounceTime, [value]);
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -128,18 +120,20 @@ export const SearchBarBase = ({
   );
 
   return (
-    <InputBase
-      data-testid="search-bar-next"
-      value={value}
-      placeholder={placeholder}
-      startAdornment={startAdornment}
-      endAdornment={clearButton ? endAdornment : defaultEndAdornment}
-      inputProps={{ 'aria-label': 'Search', ...defaultInputProps }}
-      fullWidth={fullWidth}
-      onChange={handleChange}
-      onKeyDown={handleKeyDown}
-      {...props}
-    />
+    <TrackSearch>
+      <InputBase
+        data-testid="search-bar-next"
+        value={value}
+        placeholder={placeholder}
+        startAdornment={startAdornment}
+        endAdornment={clearButton ? endAdornment : defaultEndAdornment}
+        inputProps={{ 'aria-label': 'Search', ...defaultInputProps }}
+        fullWidth={fullWidth}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        {...props}
+      />
+    </TrackSearch>
   );
 };
 
