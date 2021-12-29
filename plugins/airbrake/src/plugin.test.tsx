@@ -52,8 +52,6 @@ describe('Airbrake', () => {
         </AppRouter>
       </AppProvider>,
     );
-    expect(rendered.getAllByRole('heading', { name: 'Airbrake' }).length).toBe(
-      2,
-    );
+    expect(rendered.getByText('ChunkLoadError')).toBeInTheDocument();
   });
 });
