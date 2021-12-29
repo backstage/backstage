@@ -14,5 +14,23 @@
  * limitations under the License.
  */
 
-export { SearchType } from './SearchType';
-export type { SearchTypeAccordionProps, SearchTypeProps } from './SearchType';
+import React, { useEffect } from 'react';
+import { useAnalytics } from '@backstage/core-plugin-api';
+import { useSearch } from '../SearchContext';
+
+/**
+ * Capture search event on term change.
+ */
+export const TrackSearch = ({ children }: { children: React.ReactChild }) => {
+  const analytics = useAnalytics();
+  const { term } = useSearch();
+
+  useEffect(() => {
+    if (term) {
+      // Capture analytics search event with search term provided as value
+      analytics.captureEvent('search', term);
+    }
+  }, [analytics, term]);
+
+  return <>{children}</>;
+};

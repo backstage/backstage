@@ -14,48 +14,42 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
-import { Button } from '@material-ui/core';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { SearchModal } from '../index';
-import { useSearch, SearchContextProvider } from '../SearchContext';
-import { searchApiRef } from '../../apis';
+import { Button } from '@material-ui/core';
+import React, { ComponentType } from 'react';
 import { rootRouteRef } from '../../plugin';
+import { useSearch } from '../SearchContext';
+import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchModal } from './SearchModal';
 
-const mockSearchApi = {
-  query: () =>
-    Promise.resolve({
-      results: [
-        {
-          type: 'custom-result-item',
-          document: {
-            location: 'search/search-result-1',
-            title: 'Search Result 1',
-            text: 'some text from the search result',
-          },
-        },
-        {
-          type: 'no-custom-result-item',
-          document: {
-            location: 'search/search-result-2',
-            title: 'Search Result 2',
-            text: 'some text from the search result',
-          },
-        },
-        {
-          type: 'no-custom-result-item',
-          document: {
-            location: 'search/search-result-3',
-            title: 'Search Result 3',
-            text: 'some text from the search result',
-          },
-        },
-      ],
-    }),
+const mockResults = {
+  results: [
+    {
+      type: 'custom-result-item',
+      document: {
+        location: 'search/search-result-1',
+        title: 'Search Result 1',
+        text: 'some text from the search result',
+      },
+    },
+    {
+      type: 'no-custom-result-item',
+      document: {
+        location: 'search/search-result-2',
+        title: 'Search Result 2',
+        text: 'some text from the search result',
+      },
+    },
+    {
+      type: 'no-custom-result-item',
+      document: {
+        location: 'search/search-result-3',
+        title: 'Search Result 3',
+        text: 'some text from the search result',
+      },
+    },
+  ],
 };
-
-const apiRegistry = () => ApiRegistry.from([[searchApiRef, mockSearchApi]]);
 
 export default {
   title: 'Plugins/Search/SearchModal',
@@ -63,13 +57,9 @@ export default {
   decorators: [
     (Story: ComponentType<{}>) =>
       wrapInTestApp(
-        <>
-          <ApiProvider apis={apiRegistry()}>
-            <SearchContextProvider>
-              <Story />
-            </SearchContextProvider>
-          </ApiProvider>
-        </>,
+        <SearchContextProvider mockedResults={mockResults}>
+          <Story />
+        </SearchContextProvider>,
         { mountedRoutes: { '/search': rootRouteRef } },
       ),
   ],

@@ -25,6 +25,10 @@ import {
 } from '@material-ui/core';
 import React, { ChangeEvent } from 'react';
 import { useEffectOnce } from 'react-use';
+import {
+  SearchTypeAccordion,
+  SearchTypeAccordionProps,
+} from './SearchType.Accordion';
 import { useSearch } from '../SearchContext';
 
 const useStyles = makeStyles(theme => ({
@@ -41,6 +45,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+/**
+ * @public
+ */
 export type SearchTypeProps = {
   className?: string;
   name: string;
@@ -48,12 +55,8 @@ export type SearchTypeProps = {
   defaultValue?: string[] | string | null;
 };
 
-const SearchType = ({
-  values = [],
-  className,
-  name,
-  defaultValue,
-}: SearchTypeProps) => {
+const SearchType = (props: SearchTypeProps) => {
+  const { className, defaultValue, name, values = [] } = props;
   const classes = useStyles();
   const { types, setTypes } = useSearch();
 
@@ -112,4 +115,14 @@ const SearchType = ({
   );
 };
 
+/**
+ * A control surface for the search query's "types" property, displayed as a
+ * single-select collapsible accordion suitable for use in faceted search UIs.
+ * @public
+ */
+SearchType.Accordion = (props: SearchTypeAccordionProps) => {
+  return <SearchTypeAccordion {...props} />;
+};
+
 export { SearchType };
+export type { SearchTypeAccordionProps };
