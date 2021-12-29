@@ -13,7 +13,7 @@
     "build": "backstage-cli plugin:build",
     "start": "backstage-cli plugin:serve",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
+    "test": "backstage-cli test --coverage",
     "diff": "backstage-cli plugin:diff",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
@@ -50,5 +50,15 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
+  }
 }
