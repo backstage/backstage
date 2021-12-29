@@ -25,7 +25,10 @@ type QueryResultProps = {
 };
 
 /**
- * Utility context provider only for use in Storybook stories.
+ * Utility context provider only for use in Storybook stories. You should use
+ * the real `<SearchContextProvider>` exported by `@backstage/plugin-search` in
+ * your app instead of this! In some cases (like the search page) it may
+ * already be provided on your behalf.
  */
 export const SearchContextProvider = (
   props: ComponentProps<typeof RealSearchContextProvider> & QueryResultProps,

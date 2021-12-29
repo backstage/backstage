@@ -15,13 +15,19 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { ApiProvider } from '@backstage/core-app-api';
+import { TestApiRegistry } from '@backstage/test-utils';
+import { act, render } from '@testing-library/react';
 import user from '@testing-library/user-event';
 
-import { SearchContext } from '../SearchContext';
+import { searchApiRef } from '../../apis';
+import { SearchContext, SearchContextProvider } from '../SearchContext';
 import { SearchType } from './SearchType';
 
 describe('SearchType.Accordion', () => {
+  const query = jest.fn();
+  const mockApis = TestApiRegistry.from([searchApiRef, { query }]);
+
   const contextSpy = {
     result: { loading: false, value: { results: [] } },
     term: '',
@@ -42,14 +48,20 @@ describe('SearchType.Accordion', () => {
   };
 
   beforeEach(() => {
+    query.mockResolvedValue({ results: [] });
+  });
+
+  afterEach(() => {
     jest.resetAllMocks();
   });
 
-  it('should render as expected', () => {
+  it('should render as expected', async () => {
     const { getByText } = render(
-      <SearchContext.Provider value={contextSpy}>
-        <SearchType.Accordion name={expectedLabel} types={[expectedType]} />
-      </SearchContext.Provider>,
+      <ApiProvider apis={mockApis}>
+        <SearchContextProvider>
+          <SearchType.Accordion name={expectedLabel} types={[expectedType]} />
+        </SearchContextProvider>
+      </ApiProvider>,
     );
 
     // The given label should be rendered.
@@ -63,6 +75,8 @@ describe('SearchType.Accordion', () => {
 
     // The given type is also visible
     expect(getByText(expectedType.name)).toBeInTheDocument();
+
+    await act(() => Promise.resolve());
   });
 
   it('should set entire types array when a type is selected', () => {
