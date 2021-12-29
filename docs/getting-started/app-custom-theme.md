@@ -89,7 +89,7 @@ import {
   shapes,
 } from '@backstage/theme';
 
-const customTheme = createTheme({
+const myTheme = createTheme({
   palette: {
     ...lightTheme.palette,
     primary: {
@@ -200,6 +200,16 @@ export const createCustomThemeOverrides = (
   };
 };
 
+const overriddenTheme = {
+  ...lightTheme,
+  overrides: {
+    // These are the overrides that Backstage applies to `material-ui` components
+    ...lightTheme.overrides,
+    // These are your custom overrides, either to `material-ui` or Backstage components.
+    ...createCustomThemeOverrides(lightTheme),
+  },
+};
+
 const app = createApp({
   apis: ...,
   plugins: ...,
@@ -207,15 +217,11 @@ const app = createApp({
     id: 'my-theme',
     title: 'My Custom Theme',
     variant: 'light',
-    theme: {
-      ...lightTheme,
-      overrides: {
-        // These are the overrides that Backstage applies to `material-ui` components
-        ...lightTheme.overrides,
-        // These are your custom overrides, either to `material-ui` or Backstage components.
-        ...createCustomThemeOverrides(lightTheme),
-      },
-    },
+    Provider: ({ children }) => (
+      <ThemeProvider theme={overriddenTheme}>
+        <CssBaseline>{children}</CssBaseline>
+      </ThemeProvider>
+    ),
   }]
 });
 ```
