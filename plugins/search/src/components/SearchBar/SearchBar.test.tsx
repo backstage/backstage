@@ -218,7 +218,7 @@ describe('SearchBar', () => {
     );
   });
 
-  it('does not capture google analytics event if not enabled in app', async () => {
+  it('does not capture analytics event if not enabled in app', async () => {
     jest.useFakeTimers();
 
     const debounceTime = 600;
@@ -251,7 +251,7 @@ describe('SearchBar', () => {
     expect(analyticsApiSpy.getEvents()).toHaveLength(0);
   });
 
-  it('captures google analytics events if enabled in app', async () => {
+  it('captures analytics events if enabled in app', async () => {
     jest.useFakeTimers();
 
     const debounceTime = 600;
