@@ -15,3 +15,4 @@
  */
 
 export { SearchType } from './SearchType';
+export type { SearchTypeAccordionProps, SearchTypeProps } from './SearchType';

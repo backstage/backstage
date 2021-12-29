@@ -25,6 +25,17 @@ import { DefaultResultListItem } from './DefaultResultListItem';
 export default {
   title: 'Plugins/Search/DefaultResultListItem',
   component: DefaultResultListItem,
+  decorators: [
+    (Story: () => JSX.Element) => (
+      <MemoryRouter>
+        <Grid container direction="row">
+          <Grid item xs={12}>
+            <Story />
+          </Grid>
+        </Grid>
+      </MemoryRouter>
+    ),
+  ],
 };
 
 const mockSearchResult = {
@@ -35,54 +46,34 @@ const mockSearchResult = {
 };
 
 export const Default = () => {
-  return (
-    <MemoryRouter>
-      <Grid container direction="row">
-        <Grid item xs={12}>
-          <DefaultResultListItem result={mockSearchResult} />
-        </Grid>
-      </Grid>
-    </MemoryRouter>
-  );
+  return <DefaultResultListItem result={mockSearchResult} />;
 };
 
 export const WithIcon = () => {
   return (
-    <MemoryRouter>
-      <Grid container direction="row">
-        <Grid item xs={12}>
-          <DefaultResultListItem
-            result={mockSearchResult}
-            icon={<FindInPageIcon color="primary" />}
-          />
-        </Grid>
-      </Grid>
-    </MemoryRouter>
+    <DefaultResultListItem
+      result={mockSearchResult}
+      icon={<FindInPageIcon color="primary" />}
+    />
   );
 };
 
 export const WithSecondaryAction = () => {
   return (
-    <MemoryRouter>
-      <Grid container direction="row">
-        <Grid item xs={12}>
-          <DefaultResultListItem
-            result={mockSearchResult}
-            secondaryAction={
-              <Button
-                to="#"
-                size="small"
-                aria-label="owner"
-                variant="text"
-                startIcon={<GroupIcon />}
-                style={{ textTransform: 'lowercase' }}
-              >
-                {mockSearchResult.owner}
-              </Button>
-            }
-          />
-        </Grid>
-      </Grid>
-    </MemoryRouter>
+    <DefaultResultListItem
+      result={mockSearchResult}
+      secondaryAction={
+        <Button
+          to="#"
+          size="small"
+          aria-label="owner"
+          variant="text"
+          startIcon={<GroupIcon />}
+          style={{ textTransform: 'lowercase' }}
+        >
+          {mockSearchResult.owner}
+        </Button>
+      }
+    />
   );
 };

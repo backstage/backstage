@@ -38,6 +38,10 @@ export type { SearchModalProps } from './components/SearchModal';
 export { SearchPage as Router } from './components/SearchPage';
 export { SearchResultPager } from './components/SearchResultPager';
 export { SearchType } from './components/SearchType';
+export type {
+  SearchTypeAccordionProps,
+  SearchTypeProps,
+} from './components/SearchType';
 export { SidebarSearch } from './components/SidebarSearch';
 export type { SidebarSearchProps } from './components/SidebarSearch';
 export type { SidebarSearchModalProps } from './components/SidebarSearchModal';

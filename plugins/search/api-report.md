@@ -213,16 +213,32 @@ export const SearchResult: ({
 // @public (undocumented)
 export const SearchResultPager: () => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "SearchTypeProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SearchType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SearchType: ({
-  values,
-  className,
-  name,
-  defaultValue,
-}: SearchTypeProps) => JSX.Element;
+export const SearchType: {
+  (props: SearchTypeProps): JSX.Element;
+  Accordion(props: SearchTypeAccordionProps): JSX.Element;
+};
+
+// @public (undocumented)
+export type SearchTypeAccordionProps = {
+  name: string;
+  types: Array<{
+    value: string;
+    name: string;
+    icon: JSX.Element;
+  }>;
+  defaultValue?: string;
+};
+
+// @public (undocumented)
+export type SearchTypeProps = {
+  className?: string;
+  name: string;
+  values?: string[];
+  defaultValue?: string[] | string | null;
+};
 
 // Warning: (ae-missing-release-tag) "SidebarSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

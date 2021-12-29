@@ -15,56 +15,44 @@
  */
 
 import { Grid, Paper } from '@material-ui/core';
-import React from 'react';
-import { MemoryRouter } from 'react-router';
-import { SearchContext } from '../SearchContext';
+import React, { ComponentType } from 'react';
+import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
 import { SearchFilter } from './SearchFilter';
 
 export default {
   title: 'Plugins/Search/SearchFilter',
   component: SearchFilter,
-};
-
-const defaultValue = {
-  filters: {},
+  decorators: [
+    (Story: ComponentType<{}>) => (
+      <SearchContextProvider>
+        <Grid container direction="row">
+          <Grid item xs={4}>
+            <Story />
+          </Grid>
+        </Grid>
+      </SearchContextProvider>
+    ),
+  ],
 };
 
 export const CheckBoxFilter = () => {
   return (
-    <MemoryRouter>
-      {/* @ts-ignore (defaultValue requires more than what is used here) */}
-      <SearchContext.Provider value={defaultValue}>
-        <Grid container direction="row">
-          <Grid item xs={4}>
-            <Paper style={{ padding: 10 }}>
-              <SearchFilter.Checkbox
-                name="Search Checkbox Filter"
-                values={['value1', 'value2']}
-              />
-            </Paper>
-          </Grid>
-        </Grid>
-      </SearchContext.Provider>
-    </MemoryRouter>
+    <Paper style={{ padding: 10 }}>
+      <SearchFilter.Checkbox
+        name="Search Checkbox Filter"
+        values={['value1', 'value2']}
+      />
+    </Paper>
   );
 };
 
 export const SelectFilter = () => {
   return (
-    <MemoryRouter>
-      {/* @ts-ignore (defaultValue requires more than what is used here) */}
-      <SearchContext.Provider value={defaultValue}>
-        <Grid container direction="row">
-          <Grid item xs={4}>
-            <Paper style={{ padding: 10 }}>
-              <SearchFilter.Select
-                name="Search Select Filter"
-                values={['value1', 'value2']}
-              />
-            </Paper>
-          </Grid>
-        </Grid>
-      </SearchContext.Provider>
-    </MemoryRouter>
+    <Paper style={{ padding: 10 }}>
+      <SearchFilter.Select
+        name="Search Select Filter"
+        values={['value1', 'value2']}
+      />
+    </Paper>
   );
 };
