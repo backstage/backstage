@@ -39,6 +39,7 @@
     "express-promise-router": "^4.1.0",
     "fs-extra": "9.1.0",
     "helmet": "^4.0.0",
+    "knex": "^0.95.1",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
@@ -51,6 +52,7 @@
   },
   "files": [
     "dist",
+    "migrations/**/*.{js,d.ts}",
     "static"
   ]
 }
