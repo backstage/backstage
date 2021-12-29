@@ -45,8 +45,9 @@ export interface RouterOptions {
   logger: Logger;
 
   /**
-   * The plugin database manager which of provided, the app-backend will use to cache previously
-   * deployed static assets.
+   * If a database is provided it will be used to cache previously deployed static assets.
+   *
+   * This is a built-in alternative to using a `staticFallbackHandler`.
    */
   database?: PluginDatabaseManager;
 
@@ -64,6 +65,11 @@ export interface RouterOptions {
    * This can be used to avoid issues with clients on older deployment versions trying to access lazy
    * loaded content that is no longer present. Typically the requests would fall back to a long-term
    * object store where all recently deployed versions of the app are present.
+   *
+   * Another option is to provide a `database` that will take care of storing the static assets instead.
+   *
+   * If both `database` and `staticFallbackHandler` are provided, the `database` will attempt to serve
+   * static assets first, and if they are not found, the `staticFallbackHandler` will be called.
    */
   staticFallbackHandler?: express.Handler;
 
