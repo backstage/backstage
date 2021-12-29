@@ -17,17 +17,22 @@
 import { errorHandler } from '@backstage/backend-common';
 import {
   analyzeLocationSchema,
+  Entity,
   locationSpecSchema,
+  parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
 import { EntitiesCatalog } from '../catalog';
 import { LocationAnalyzer } from '../ingestion/types';
+import { CatalogPermissionRule } from '../permissions/types';
 import {
   basicEntityFilter,
   parseEntityFilterParams,
@@ -37,6 +42,27 @@ import {
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
 import { RefreshService, RefreshOptions, LocationService } from './types';
 
+const getEntity = async (
+  resourceRef: string,
+  entitiesCatalog: EntitiesCatalog,
+): Promise<Entity | undefined> => {
+  const parsed = parseEntityRef(resourceRef);
+
+  const { entities } = await entitiesCatalog.entities({
+    filter: basicEntityFilter({
+      kind: parsed.kind,
+      'metadata.namespace': parsed.namespace,
+      'metadata.name': parsed.name,
+    }),
+  });
+
+  if (!entities.length) {
+    return undefined;
+  }
+
+  return entities[0];
+};
+
 export interface NextRouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationAnalyzer?: LocationAnalyzer;
@@ -44,6 +70,7 @@ export interface NextRouterOptions {
   refreshService?: RefreshService;
   logger: Logger;
   config: Config;
+  permissionRules?: CatalogPermissionRule[];
 }
 
 export async function createNextRouter(
@@ -56,6 +83,7 @@ export async function createNextRouter(
     refreshService,
     config,
     logger,
+    permissionRules,
   } = options;
 
   const router = Router();
@@ -77,6 +105,13 @@ export async function createNextRouter(
 
   if (entitiesCatalog) {
     router
+      .use(
+        createPermissionIntegrationRouter({
+          resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+          getResource: resourceRef => getEntity(resourceRef, entitiesCatalog),
+          rules: permissionRules ?? [],
+        }),
+      )
       .get('/entities', async (req, res) => {
         const { entities, pageInfo } = await entitiesCatalog.entities({
           filter: parseEntityFilterParams(req.query),

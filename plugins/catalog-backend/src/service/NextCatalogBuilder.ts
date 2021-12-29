@@ -82,6 +82,8 @@ import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { LocationService } from './types';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
+import { CatalogPermissionRule } from '../permissions/types';
+import * as catalogPermissionRules from '../permissions/rules';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -125,6 +127,7 @@ export class NextCatalogBuilder {
       maxSeconds: 150,
     });
   private locationAnalyzer: LocationAnalyzer | undefined = undefined;
+  private permissionRules: CatalogPermissionRule[];
 
   constructor(env: CatalogEnvironment) {
     this.env = env;
@@ -136,6 +139,7 @@ export class NextCatalogBuilder {
     this.processors = [];
     this.processorsReplace = false;
     this.parser = undefined;
+    this.permissionRules = Object.values(catalogPermissionRules);
   }
 
   /**
@@ -318,6 +322,17 @@ export class NextCatalogBuilder {
   }
 
   /**
+   * Adds additional permission rules. Permission rules are used to evaluate
+   * catalog resources against queries. See
+   * {@link @backstage/plugin-permission-node#PermissionRule}.
+   *
+   * @param permissionRules additional permission rules
+   */
+  addPermissionRules(...permissionRules: CatalogPermissionRule[]) {
+    this.permissionRules.push(...permissionRules);
+  }
+
+  /**
    * Wires up and returns all of the component parts of the catalog
    */
   async build(): Promise<{
@@ -393,6 +408,7 @@ export class NextCatalogBuilder {
       refreshService,
       logger,
       config,
+      permissionRules: this.permissionRules,
     });
 
     await connectEntityProviders(processingDatabase, entityProviders);
