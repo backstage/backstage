@@ -94,14 +94,16 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     };
     for await (const project of projects) {
       result.scanned++;
-      if (
-        !(
-          project.archived ||
-          (branch === '*' && project.default_branch === undefined)
-        )
-      ) {
-        result.matches.push(project);
+
+      if (project.archived) {
+        continue;
       }
+
+      if (branch === '*' && project.default_branch === undefined) {
+        continue;
+      }
+
+      result.matches.push(project);
     }
 
     for (const project of result.matches) {
