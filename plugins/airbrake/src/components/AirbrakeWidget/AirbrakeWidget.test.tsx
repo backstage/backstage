@@ -31,7 +31,7 @@ describe('AirbrakeWidget', () => {
     expect(exampleData.groups.length).toBeGreaterThan(0);
     for (const group of exampleData.groups) {
       expect(
-        await table.findByText(group.errors[0].message),
+        await table.getByText(group.errors[0].message),
       ).toBeInTheDocument();
     }
   });

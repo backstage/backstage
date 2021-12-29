@@ -65,8 +65,7 @@ export default {
       errors: [
         {
           type: 'ChunkLoadError',
-          message:
-            'Loading chunk 7764 failed.\n(error: https://example.com/static/react-syntax-highlighter/lowlight-import.9ac339f2.chunk.js)',
+          message: 'Loading chunk 7764 failed.',
           backtrace: [
             {
               file: '/PROJECT_ROOT/static/runtime.069c874d.js',

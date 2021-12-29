@@ -15,12 +15,35 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { airbrakePlugin, AirbrakePage } from '../src/plugin';
+import { AirbrakePage, airbrakePlugin } from '../src/plugin';
+import {
+  Content,
+  ContentHeader,
+  Header,
+  HeaderLabel,
+  Page,
+  SupportButton,
+} from '@backstage/core-components';
 
 createDevApp()
   .registerPlugin(airbrakePlugin)
   .addPage({
-    element: <AirbrakePage />,
+    element: (
+      <Page themeId="tool">
+        <Header title="Airbrake" subtitle="Errors in your application">
+          <HeaderLabel label="Owner" value="Owner" />
+          <HeaderLabel label="Lifecycle" value="Alpha" />
+        </Header>
+        <Content>
+          <ContentHeader title="Airbrake">
+            <SupportButton>
+              A description of your plugin goes here.
+            </SupportButton>
+          </ContentHeader>
+          <AirbrakePage />
+        </Content>
+      </Page>
+    ),
     title: 'Root Page',
     path: '/airbrake',
   })
