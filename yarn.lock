@@ -7886,15 +7886,7 @@
   resolved "https://registry.npmjs.org/@types/node-cron/-/node-cron-3.0.0.tgz#f946cefb5c05c64f460090f6be97bd50460c8898"
   integrity sha512-RNBIyVwa/1v2r8/SqK8tadH2sJlFRAo5Ghac/cOcCv4Kp94m0I03UmAh9WVhCqS9ZdB84dF3x47p9aTw8E4c4A==
 
-"@types/node-fetch@^2.5.0", "@types/node-fetch@^2.5.7":
-  version "2.5.8"
-  resolved "https://registry.npmjs.org/@types/node-fetch/-/node-fetch-2.5.8.tgz#e199c835d234c7eb0846f6618012e558544ee2fb"
-  integrity sha512-fbjI6ja0N5ZA8TV53RUqzsKNkl9fv8Oj3T7zxW7FGv1GSH7gwJaNF8dzCjrqKaxKeUpTz4yT1DaJFq/omNpGfw==
-  dependencies:
-    "@types/node" "*"
-    form-data "^3.0.0"
-
-"@types/node-fetch@^2.5.12":
+"@types/node-fetch@^2.5.0", "@types/node-fetch@^2.5.12", "@types/node-fetch@^2.5.7":
   version "2.5.12"
   resolved "https://registry.npmjs.org/@types/node-fetch/-/node-fetch-2.5.12.tgz#8a6f779b1d4e60b7a57fb6fd48d84fb545b9cc66"
   integrity sha512-MKgC4dlq4kKNa/mYrwpKfzQMB5X3ee5U6fSprkKpToBqBmX4nFZL9cW5jl6sWn+xpRJ7ypWh2yyqqr8UUCstSw==
