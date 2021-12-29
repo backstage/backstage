@@ -55,6 +55,8 @@ done like this:
 
 ```ts
 import { createApp } from '@backstage/app-defaults';
+import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 const app = createApp({
   apis: ...,
@@ -63,7 +65,11 @@ const app = createApp({
     id: 'my-theme',
     title: 'My Custom Theme',
     variant: 'light',
-    theme: myTheme,
+    Provider: ({ children }) => (
+      <ThemeProvider theme={myTheme}>
+        <CssBaseline>{children}</CssBaseline>
+      </ThemeProvider>
+    ),
   }]
 })
 ```
@@ -76,60 +82,67 @@ want to use the default themes, they are exported as `lightTheme` and
 ## Example of a custom theme
 
 ```ts
-const themeOptions = createThemeOptions({
+import {
+  createTheme,
+  genPageTheme,
+  lightTheme,
+  shapes,
+} from '@backstage/theme';
+
+const myTheme = createTheme({
   palette: {
     ...lightTheme.palette,
     primary: {
-      main: '#123456',
+      main: '#343b58',
     },
     secondary: {
-      main: '#123456',
+      main: '#565a6e',
     },
     error: {
-      main: '#123456',
+      main: '#8c4351',
     },
     warning: {
-      main: '#123456',
+      main: '#8f5e15',
     },
     info: {
-      main: '#123456',
+      main: '#34548a',
     },
     success: {
-      main: '#123456',
+      main: '#485e30',
     },
     background: {
-      default: '#123456',
-      paper: '#123456',
+      default: '#d5d6db',
+      paper: '#d5d6db',
     },
     banner: {
-      info: '#123456',
-      error: '#123456',
-      text: '#123456',
-      link: '#123456',
+      info: '#34548a',
+      error: '#8c4351',
+      text: '#343b58',
+      link: '#565a6e',
     },
-    errorBackground: '#123456',
-    warningBackground: '#123456',
-    infoBackground: '#123456',
+    errorBackground: '#8c4351',
+    warningBackground: '#8f5e15',
+    infoBackground: '#343b58',
     navigation: {
-      background: '#123456',
-      indicator: '#123456',
-      color: '#123456',
-      selectedColor: '#123456',
+      background: '#343b58',
+      indicator: '#8f5e15',
+      color: '#d5d6db',
+      selectedColor: '#ffffff',
     },
   },
   defaultPageTheme: 'home',
-  fontFamily: 'Comic Sans',
+  fontFamily: 'Comic Sans MS',
   /* below drives the header colors */
   pageTheme: {
-    home: genPageTheme(['#123456', '#123456'], shapes.wave),
-    documentation: genPageTheme(['#123456', '#123456'], shapes.wave2),
-    tool: genPageTheme(['#123456', '#123456'], shapes.round),
-    service: genPageTheme(['#123456', '#123456'], shapes.wave),
-    website: genPageTheme(['#123456', '#123456'], shapes.wave),
-    library: genPageTheme(['#123456', '#123456'], shapes.wave),
-    other: genPageTheme(['#123456', '#123456'], shapes.wave),
-    app: genPageTheme(['#123456', '#123456'], shapes.wave),
-    apis: genPageTheme(['#123456', '#123456'], shapes.wave),
+    home: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    documentation: genPageTheme(['#8c4351', '#343b58'], shapes.wave2),
+    tool: genPageTheme(['#8c4351', '#343b58'], shapes.round),
+    service: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    website: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    library: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    other: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    app: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    apis: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
   },
 });
 ```
@@ -187,6 +200,16 @@ export const createCustomThemeOverrides = (
   };
 };
 
+const overriddenTheme = {
+  ...lightTheme,
+  overrides: {
+    // These are the overrides that Backstage applies to `material-ui` components
+    ...lightTheme.overrides,
+    // These are your custom overrides, either to `material-ui` or Backstage components.
+    ...createCustomThemeOverrides(lightTheme),
+  },
+};
+
 const app = createApp({
   apis: ...,
   plugins: ...,
@@ -194,15 +217,11 @@ const app = createApp({
     id: 'my-theme',
     title: 'My Custom Theme',
     variant: 'light',
-    theme: {
-      ...lightTheme,
-      overrides: {
-        // These are the overrides that Backstage applies to `material-ui` components
-        ...lightTheme.overrides,
-        // These are your custom overrides, either to `material-ui` or Backstage components.
-        ...createCustomThemeOverrides(lightTheme),
-      },
-    },
+    Provider: ({ children }) => (
+      <ThemeProvider theme={overriddenTheme}>
+        <CssBaseline>{children}</CssBaseline>
+      </ThemeProvider>
+    ),
   }]
 });
 ```
