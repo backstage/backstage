@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-export { StaticAssetsStore } from './StaticAssetsStore';
-export type { StaticAsset, StaticAssetInput } from './types';
-export { findStaticAssets } from './findStaticAssets';
-export { createStaticAssetsStoreMiddleware } from './createStaticAssetsStoreMiddleware';
+export const CACHE_CONTROL_NO_CACHE = 'no-store, max-age=0';
+export const CACHE_CONTROL_MAX_CACHE = 'public, max-age=1209600'; // 14 days
