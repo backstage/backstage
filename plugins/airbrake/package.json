@@ -26,12 +26,14 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
-    "react-use": "^17.2.4"
+    "react-use": "^17.2.4",
+    "object-hash": "^2.2.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
+    "@types/object-hash": "^2.2.1",
     "@backstage/app-defaults": "^0.1.2",
     "@backstage/cli": "^0.10.2",
     "@backstage/core-app-api": "^0.2.1",
