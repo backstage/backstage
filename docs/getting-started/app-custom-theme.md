@@ -53,7 +53,7 @@ To add a custom theme to your Backstage app, you pass it as configuration to
 For example, adding the theme that we created in the previous section can be
 done like this:
 
-```ts
+```tsx
 import { createApp } from '@backstage/app-defaults';
 
 const app = createApp({
@@ -63,7 +63,11 @@ const app = createApp({
     id: 'my-theme',
     title: 'My Custom Theme',
     variant: 'light',
-    theme: myTheme,
+    Provider: ({ children }) => (
+      <ThemeProvider theme={myTheme}>
+        <CssBaseline>{children}</CssBaseline>
+      </ThemeProvider>
+    ),
   }]
 })
 ```
@@ -162,7 +166,7 @@ wouldn't be enough to alter the `box-shadow` property or to add css rules that
 aren't already defined like a margin. For these cases you should also create an
 override.
 
-```ts
+```tsx
 import { createApp } from '@backstage/core-app-api';
 import { BackstageTheme, lightTheme } from '@backstage/theme';
 /**
@@ -187,6 +191,16 @@ export const createCustomThemeOverrides = (
   };
 };
 
+const customTheme: BackstageTheme = {
+  ...lightTheme,
+  overrides: {
+    // These are the overrides that Backstage applies to `material-ui` components
+    ...lightTheme.overrides,
+    // These are your custom overrides, either to `material-ui` or Backstage components.
+    ...createCustomThemeOverrides(lightTheme),
+  },
+}
+
 const app = createApp({
   apis: ...,
   plugins: ...,
@@ -194,15 +208,11 @@ const app = createApp({
     id: 'my-theme',
     title: 'My Custom Theme',
     variant: 'light',
-    theme: {
-      ...lightTheme,
-      overrides: {
-        // These are the overrides that Backstage applies to `material-ui` components
-        ...lightTheme.overrides,
-        // These are your custom overrides, either to `material-ui` or Backstage components.
-        ...createCustomThemeOverrides(lightTheme),
-      },
-    },
+    Provider: ({ children }) => (
+      <ThemeProvider theme={customTheme}>
+        <CssBaseline>{children}</CssBaseline>
+      </ThemeProvider>
+    ),
   }]
 });
 ```
