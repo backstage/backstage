@@ -30,3 +30,5 @@ export const templateEntityV1beta3Schema: JSONSchema = v1beta3Schema as Omit<
   JSONSchema,
   'examples'
 >;
+
+export * from './TaskSpec';

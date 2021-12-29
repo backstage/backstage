@@ -27,10 +27,13 @@ export class AtlassianAuthProvider implements OAuthHandlers {
   // (undocumented)
   handler(req: express.Request): Promise<{
     response: OAuthResponse;
-    refreshToken: string;
+    refreshToken: string | undefined;
   }>;
   // (undocumented)
-  refresh(req: OAuthRefreshRequest): Promise<OAuthResponse>;
+  refresh(req: OAuthRefreshRequest): Promise<{
+    response: OAuthResponse;
+    refreshToken: string | undefined;
+  }>;
   // Warning: (ae-forgotten-export) The symbol "RedirectInfo" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
@@ -41,6 +44,14 @@ export class AtlassianAuthProvider implements OAuthHandlers {
 //
 // @public (undocumented)
 export type AtlassianProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver: SignInResolver<OAuthResult>;
+  };
+};
+
+// @public (undocumented)
+export type Auth0ProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
     resolver: SignInResolver<OAuthResult>;
@@ -219,6 +230,11 @@ export const createAtlassianProvider: (
   options?: AtlassianProviderOptions | undefined,
 ) => AuthProviderFactory;
 
+// @public (undocumented)
+export const createAuth0Provider: (
+  options?: Auth0ProviderOptions | undefined,
+) => AuthProviderFactory;
+
 // Warning: (ae-missing-release-tag) "createAwsAlbProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -280,6 +296,11 @@ export const createOidcProvider: (
 // @public (undocumented)
 export const createOktaProvider: (
   _options?: OktaProviderOptions | undefined,
+) => AuthProviderFactory;
+
+// @public (undocumented)
+export const createOneLoginProvider: (
+  options?: OneLoginProviderOptions | undefined,
 ) => AuthProviderFactory;
 
 // Warning: (ae-missing-release-tag) "createOriginFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -470,7 +491,10 @@ export interface OAuthHandlers {
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  refresh?(req: OAuthRefreshRequest): Promise<OAuthResponse>;
+  refresh?(req: OAuthRefreshRequest): Promise<{
+    response: OAuthResponse;
+    refreshToken?: string;
+  }>;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -485,7 +509,6 @@ export type OAuthProviderInfo = {
   idToken?: string;
   expiresInSeconds?: number;
   scope: string;
-  refreshToken?: string;
 };
 
 // Warning: (ae-missing-release-tag) "OAuthProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -569,6 +592,14 @@ export type OktaProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
     resolver?: SignInResolver<OAuthResult>;
+  };
+};
+
+// @public (undocumented)
+export type OneLoginProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+  signIn?: {
+    resolver: SignInResolver<OAuthResult>;
   };
 };
 
@@ -677,11 +708,11 @@ export type WebMessageResponse =
 //
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
 // src/providers/aws-alb/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "AwsAlbResult" needs to be exported by the entry point index.d.ts
-// src/providers/github/provider.d.ts:71:58 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// src/providers/github/provider.d.ts:71:90 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// src/providers/github/provider.d.ts:71:89 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/providers/github/provider.d.ts:71:67 - (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
-// src/providers/github/provider.d.ts:71:68 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// src/providers/github/provider.d.ts:78:5 - (ae-forgotten-export) The symbol "StateEncoder" needs to be exported by the entry point index.d.ts
+// src/providers/github/provider.d.ts:74:58 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/providers/github/provider.d.ts:74:90 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/providers/github/provider.d.ts:74:89 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// src/providers/github/provider.d.ts:74:67 - (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
+// src/providers/github/provider.d.ts:74:68 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// src/providers/github/provider.d.ts:81:5 - (ae-forgotten-export) The symbol "StateEncoder" needs to be exported by the entry point index.d.ts
 // src/providers/types.d.ts:100:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
 ```

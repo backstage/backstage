@@ -57,7 +57,10 @@ describe('OAuthAdapter', () => {
       };
     }
     async refresh() {
-      return mockResponseData;
+      return {
+        response: mockResponseData,
+        refreshToken: 'token',
+      };
     }
   }
   const providerInstance = new MyAuthProvider();
@@ -257,7 +260,10 @@ describe('OAuthAdapter', () => {
   });
 
   it('correctly populates incomplete identities', async () => {
-    const mockRefresh = jest.fn<Promise<OAuthResponse>, [express.Request]>();
+    const mockRefresh = jest.fn<
+      Promise<{ response: OAuthResponse }>,
+      [express.Request]
+    >();
 
     const oauthProvider = new OAuthAdapter(
       {
@@ -291,10 +297,12 @@ describe('OAuthAdapter', () => {
 
     // Without a token
     mockRefresh.mockResolvedValueOnce({
-      ...mockResponseData,
-      backstageIdentity: {
-        id: 'foo',
-        token: '',
+      response: {
+        ...mockResponseData,
+        backstageIdentity: {
+          id: 'foo',
+          token: '',
+        },
       },
     });
     await oauthProvider.refresh(mockRequest, mockResponse);
@@ -315,10 +323,12 @@ describe('OAuthAdapter', () => {
 
     // With a token
     mockRefresh.mockResolvedValueOnce({
-      ...mockResponseData,
-      backstageIdentity: {
-        id: 'foo',
-        token: `z.${mkTokenBody({ sub: 'user:my-ns/foo' })}.z`,
+      response: {
+        ...mockResponseData,
+        backstageIdentity: {
+          id: 'foo',
+          token: `z.${mkTokenBody({ sub: 'user:my-ns/foo' })}.z`,
+        },
       },
     });
     await oauthProvider.refresh(mockRequest, mockResponse);

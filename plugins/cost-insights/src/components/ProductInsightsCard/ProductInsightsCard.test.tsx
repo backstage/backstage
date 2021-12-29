@@ -15,15 +15,14 @@
  */
 
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { ProductInsightsCard } from './ProductInsightsCard';
-import { CostInsightsApi } from '../../api';
+import { CostInsightsApi, costInsightsApiRef } from '../../api';
 import {
   createMockEntity,
   mockDefaultLoadingState,
   MockComputeEngine,
   MockConfigProvider,
-  MockCostInsightsApiProvider,
   MockCurrencyProvider,
   MockBillingDateProvider,
   MockScrollProvider,
@@ -55,7 +54,7 @@ const renderProductInsightsCardInTestApp = async (
   onSelectAsync = jest.fn(() => Promise.resolve(mockProductCost)),
 ) =>
   await renderInTestApp(
-    <MockCostInsightsApiProvider costInsightsApi={costInsightsApi(entity)}>
+    <TestApiProvider apis={[[costInsightsApiRef, costInsightsApi(entity)]]}>
       <MockConfigProvider>
         <MockCurrencyProvider>
           <MockLoadingProvider state={mockDefaultLoadingState}>
@@ -71,7 +70,7 @@ const renderProductInsightsCardInTestApp = async (
           </MockLoadingProvider>
         </MockCurrencyProvider>
       </MockConfigProvider>
-    </MockCostInsightsApiProvider>,
+    </TestApiProvider>,
   );
 
 describe('<ProductInsightsCard/>', () => {

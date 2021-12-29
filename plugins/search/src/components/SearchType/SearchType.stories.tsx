@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ComponentType } from 'react';
+
 import { Grid, Paper } from '@material-ui/core';
 import CatalogIcon from '@material-ui/icons/MenuBook';
 import DocsIcon from '@material-ui/icons/Description';
 import UsersGroupsIcon from '@material-ui/icons/Person';
-
-import { SearchType } from '../index';
+import React, { ComponentType } from 'react';
 import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchType } from './SearchType';
 
 export default {
   title: 'Plugins/Search/SearchType',

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
-import { Button } from '@material-ui/core';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { SearchModal } from '../index';
-import { useSearch } from '../SearchContext';
+import { Button } from '@material-ui/core';
+import React, { ComponentType } from 'react';
 import { rootRouteRef } from '../../plugin';
+import { useSearch } from '../SearchContext';
 import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchModal } from './SearchModal';
 
 const mockResults = {
   results: [

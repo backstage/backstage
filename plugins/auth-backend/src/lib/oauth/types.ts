@@ -79,10 +79,6 @@ export type OAuthProviderInfo = {
    * Scopes granted for the access token.
    */
   scope: string;
-  /**
-   * A refresh token issued for the signed in user
-   */
-  refreshToken?: string;
 };
 
 export type OAuthState = {
@@ -130,7 +126,10 @@ export interface OAuthHandlers {
    * @param {string} refreshToken
    * @param {string} scope
    */
-  refresh?(req: OAuthRefreshRequest): Promise<OAuthResponse>;
+  refresh?(req: OAuthRefreshRequest): Promise<{
+    response: OAuthResponse;
+    refreshToken?: string;
+  }>;
 
   /**
    * (Optional) Sign out of the auth provider.

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
 import { Grid, Paper } from '@material-ui/core';
-import { SearchFilter } from '../index';
+import React, { ComponentType } from 'react';
 import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchFilter } from './SearchFilter';
 
 export default {
   title: 'Plugins/Search/SearchFilter',

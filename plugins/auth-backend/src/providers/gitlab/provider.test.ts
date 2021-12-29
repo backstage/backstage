@@ -184,23 +184,25 @@ describe('GitlabAuthProvider', () => {
       ],
     });
 
-    const response = await provider.refresh({} as any);
+    const result = await provider.refresh({} as any);
 
-    expect(response).toEqual({
-      backstageIdentity: {
-        id: 'mockuser',
+    expect(result).toEqual({
+      response: {
+        backstageIdentity: {
+          id: 'mockuser',
+        },
+        profile: {
+          displayName: 'Mocked User',
+          email: 'mockuser@gmail.com',
+          picture: 'http://gitlab.com/lols',
+        },
+        providerInfo: {
+          accessToken: 'a.b.c',
+          idToken: 'my-id',
+          scope: 'read_user',
+        },
       },
-      profile: {
-        displayName: 'Mocked User',
-        email: 'mockuser@gmail.com',
-        picture: 'http://gitlab.com/lols',
-      },
-      providerInfo: {
-        accessToken: 'a.b.c',
-        idToken: 'my-id',
-        refreshToken: 'dont-forget-to-send-refresh',
-        scope: 'read_user',
-      },
+      refreshToken: 'dont-forget-to-send-refresh',
     });
   });
 });

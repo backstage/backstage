@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
-import { List, ListItem } from '@material-ui/core';
-import { SearchResult, DefaultResultListItem } from '../index';
-import { MemoryRouter } from 'react-router';
 import { Link } from '@backstage/core-components';
+import { List, ListItem } from '@material-ui/core';
+import React, { ComponentType } from 'react';
+import { MemoryRouter } from 'react-router';
+import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchResult } from './SearchResult';
 
 const mockResults = {
   results: [
