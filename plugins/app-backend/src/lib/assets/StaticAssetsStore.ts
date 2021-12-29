@@ -19,22 +19,12 @@ import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import partition from 'lodash/partition';
+import { StaticAsset, StaticAssetInput } from './types';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-app-backend',
   'migrations',
 );
-
-export interface StaticAssetInput {
-  path: string;
-  content(): Promise<Buffer>;
-}
-
-export interface StaticAsset {
-  path: string;
-  content: Buffer;
-  lastModifiedAt: Date;
-}
 
 interface StaticAssetRow {
   path: string;

@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
-export { StaticAssetsStore } from './StaticAssetsStore';
-export type { StaticAsset, StaticAssetInput } from './types';
-export { findStaticAssets } from './findStaticAssets';
+export interface StaticAssetInput {
+  path: string;
+  content(): Promise<Buffer>;
+}
+
+export interface StaticAsset {
+  path: string;
+  content: Buffer;
+  lastModifiedAt: Date;
+}

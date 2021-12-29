@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
-export { StaticAssetsStore } from './StaticAssetsStore';
-export type { StaticAsset, StaticAssetInput } from './types';
-export { findStaticAssets } from './findStaticAssets';
+import fs from 'fs-extra';
+import globby from 'globby';
+import { StaticAssetInput } from './types';
+import { resolveSafeChildPath } from '@backstage/backend-common';
+
+export async function findStaticAssets(
+  staticDir: string,
+): Promise<StaticAssetInput[]> {
+  const assetPaths = await globby('**/*', {
+    ignore: ['**/*.map'], // Ignore source maps since they're quite large
+    cwd: staticDir,
+    dot: true,
+  });
+
+  return assetPaths.map(path => ({
+    path,
+    content: async () => fs.readFile(resolveSafeChildPath(staticDir, path)),
+  }));
+}
