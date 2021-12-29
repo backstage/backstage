@@ -14,42 +14,35 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Typography, Grid } from '@material-ui/core';
-import {
-  InfoCard,
-  Header,
-  Page,
-  Content,
-  ContentHeader,
-  HeaderLabel,
-  SupportButton,
-} from '@backstage/core-components';
+import { Grid, Typography } from '@material-ui/core';
+import { InfoCard } from '@backstage/core-components';
 import exampleData from './ExampleData';
 import hash from 'object-hash';
+import { makeStyles } from '@material-ui/core/styles';
+import { BackstageTheme } from '@backstage/theme';
+
+const useStyles = makeStyles<BackstageTheme>(() => ({
+  multilineText: {
+    whiteSpace: 'pre-wrap',
+  },
+}));
 
 export const AirbrakeWidget = () => {
+  const classes = useStyles();
+
   return (
-    <Page themeId="tool">
-      <Header title="Airbrake" subtitle="Errors in your application">
-        <HeaderLabel label="Owner" value="Owner" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      <Content>
-        <ContentHeader title="Airbrake">
-          <SupportButton>A description of your plugin goes here.</SupportButton>
-        </ContentHeader>
-        <Grid container spacing={3} direction="column">
-          {exampleData.groups.map(group => (
-            <Grid item key={group.id}>
-              {group.errors.map(error => (
-                <InfoCard title={error.type} key={hash(error)}>
-                  <Typography variant="body1">{error.message}</Typography>
-                </InfoCard>
-              ))}
-            </Grid>
+    <Grid container spacing={3} direction="column">
+      {exampleData.groups.map(group => (
+        <Grid item key={group.id}>
+          {group.errors.map(error => (
+            <InfoCard title={error.type} key={hash(error)}>
+              <Typography variant="body1" className={classes.multilineText}>
+                {error.message}
+              </Typography>
+            </InfoCard>
           ))}
         </Grid>
-      </Content>
-    </Page>
+      ))}
+    </Grid>
   );
 };
