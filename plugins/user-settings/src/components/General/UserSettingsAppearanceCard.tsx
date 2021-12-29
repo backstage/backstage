@@ -20,7 +20,7 @@ import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 
 export const UserSettingsAppearanceCard = () => {
-  const isMobile = useContext(SidebarStateContext);
+  const { isMobile } = useContext(SidebarStateContext);
 
   return (
     <InfoCard title="Appearance" variant="gridItem">

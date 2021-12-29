@@ -47,14 +47,22 @@ const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
   { name: 'BackstageSidebarPage' },
 );
 
-/** @public */
+/**
+ * Type of `SidebarStateContext`
+ *
+ * @public
+ */
 export type SidebarStateContextType = {
   isPinned: boolean;
   toggleSidebarPinState: () => any;
   isMobile: boolean;
 };
 
-/** @public */
+/**
+ * Contains the state on how the `Sidebar` is rendered
+ *
+ * @public
+ */
 export const SidebarStateContext = createContext<SidebarStateContextType>({
   isPinned: true,
   toggleSidebarPinState: () => {},

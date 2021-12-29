@@ -20,32 +20,42 @@ import LayersIcon from '@material-ui/icons/Layers';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
-import { SidebarItem } from './Items';
-import { MobileSidebarContext } from './MobileSidebar';
-import { SidebarGroup } from './SidebarGroup';
+import {
+  MobileSidebarContext,
+  SidebarGroup,
+  SidebarItem,
+  SidebarPage,
+} from '.';
 
 const SidebarGroupWithItems = () => (
-  <SidebarGroup icon={<HomeIcon />} label="Menu">
-    <SidebarItem icon={HomeIcon} to="/one" text="Home" />
-    <SidebarItem icon={LayersIcon} to="/two" text="Explore" />
-    <SidebarItem icon={LibraryBooks} to="/three" text="Docs" />
-  </SidebarGroup>
+  <SidebarPage>
+    <SidebarGroup icon={<HomeIcon />} label="Menu">
+      <SidebarItem icon={HomeIcon} to="/one" text="Home" />
+      <SidebarItem icon={LayersIcon} to="/two" text="Explore" />
+      <SidebarItem icon={LibraryBooks} to="/three" text="Docs" />
+    </SidebarGroup>
+  </SidebarPage>
 );
 
 describe('<SidebarGroup />', () => {
-  it('should render Items in BottomNavigationAciton on small screens', async () => {
+  it('should render Items in BottomNavigationAction on small screens', async () => {
     mockBreakpoint({ matches: true });
-    const { findByRole, container } = await renderInTestApp(
+    const { getByRole, getAllByRole } = await renderInTestApp(
       <SidebarGroupWithItems />,
     );
-    expect(container.childNodes.length).toBe(1);
-    expect(await findByRole('button')).toBeVisible();
+    expect(getAllByRole('button').length).toEqual(1);
+    expect(getByRole('button')).toBeVisible();
   });
 
   it('should render Items without wrapper on bigger screens', async () => {
     mockBreakpoint({ matches: false });
-    const { container } = await renderInTestApp(<SidebarGroupWithItems />);
-    expect(container.childNodes.length).toBe(3);
+    const { getByRole, queryByRole } = await renderInTestApp(
+      <SidebarGroupWithItems />,
+    );
+    expect(queryByRole('button')).not.toBeInTheDocument();
+    expect(getByRole('link', { name: 'Home' })).toBeVisible();
+    expect(getByRole('link', { name: 'Explore' })).toBeVisible();
+    expect(getByRole('link', { name: 'Docs' })).toBeVisible();
   });
 
   it('should trigger update of MobileSidebarContext', async () => {

@@ -36,7 +36,7 @@ const useStyles = makeStyles<BackstageTheme>(
       left: 0,
       top: 0,
       bottom: 0,
-      zIndex: 1000,
+      zIndex: theme.zIndex.appBar,
       background: theme.palette.navigation.background,
       overflowX: 'hidden',
       msOverflowStyle: 'none',
@@ -77,12 +77,23 @@ export type SidebarProps = {
   disableExpandOnHover?: boolean;
 };
 
-const DesktopSidebar = ({
-  openDelayMs = sidebarConfig.defaultOpenDelayMs,
-  closeDelayMs = sidebarConfig.defaultCloseDelayMs,
-  disableExpandOnHover,
-  children,
-}: PropsWithChildren<SidebarProps>) => {
+/**
+ * Places the Sidebar & wraps the children providing context weather the `Sidebar` is open or not.
+ *
+ * Handles & delays hover events for expanding the `Sidebar`
+ *
+ * @param props `disableExpandOnHover` disables the default hover behaviour;
+ * `openDelayMs` & `closeDelayMs` set delay until sidebar will open/close on hover
+ * @returns
+ * @internal
+ */
+const DesktopSidebar = (props: PropsWithChildren<SidebarProps>) => {
+  const {
+    openDelayMs = sidebarConfig.defaultOpenDelayMs,
+    closeDelayMs = sidebarConfig.defaultCloseDelayMs,
+    disableExpandOnHover,
+    children,
+  } = props;
   const classes = useStyles();
   const isSmallScreen = useMediaQuery<BackstageTheme>(
     theme => theme.breakpoints.down('md'),
@@ -130,6 +141,9 @@ const DesktopSidebar = ({
 
   const isOpen = (state === State.Open && !isSmallScreen) || isPinned;
 
+  /**
+   * Close/Open Sidebar directily without delays. Also toggles `SidebarPinState` to avoid hidden content behind Sidebar.
+   */
   const setOpen = (open: boolean) => {
     if (open) {
       setState(State.Open);
@@ -163,7 +177,11 @@ const DesktopSidebar = ({
   );
 };
 
-/** @public */
+/**
+ * Passing children into the desktop or mobile sidebar depending on the context
+ *
+ * @public
+ */
 export const Sidebar = (props: React.PropsWithChildren<SidebarProps>) => {
   const { children, openDelayMs, closeDelayMs, disableExpandOnHover } = props;
   const { isMobile } = useContext(SidebarStateContext);

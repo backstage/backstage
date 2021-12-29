@@ -37,9 +37,9 @@ import React, {
 import {
   Link,
   NavLinkProps,
+  resolvePath,
   useLocation,
   useResolvedPath,
-  resolvePath,
 } from 'react-router-dom';
 import {
   sidebarConfig,
@@ -56,11 +56,14 @@ import DoubleArrowRight from './icons/DoubleArrowRight';
 import { isLocationMatch } from './utils';
 import { Location } from 'history';
 
+/** @public */
 export type SidebarItemClassKey =
   | 'root'
   | 'buttonItem'
   | 'closed'
   | 'open'
+  | 'highlightable'
+  | 'highlighted'
   | 'label'
   | 'iconContainer'
   | 'searchRoot'
@@ -68,6 +71,10 @@ export type SidebarItemClassKey =
   | 'searchFieldHTMLInput'
   | 'searchContainer'
   | 'secondaryAction'
+  | 'closedItemIcon'
+  | 'submenuArrow'
+  | 'expandButton'
+  | 'arrows'
   | 'selected';
 
 const useStyles = makeStyles<BackstageTheme>(
@@ -238,12 +245,18 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageSidebarItem' },
 );
 
+/**
+ * Evaluates the routes of the SubmenuItems & nested DropdownItems.
+ * The reeveluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization.
+ *
+ * @param submenu SidebarSubmenu component
+ * @param location Location
+ * @returns boolean
+ */
 const useLocationMatch = (
   submenu: React.ReactElement<SidebarSubmenuProps>,
   location: Location,
 ): boolean =>
-  // Evaluates the routes of the SubmenuItems & nested DropdownItems.
-  // The reeveluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization
   useElementFilter(
     submenu.props.children,
     elements => {
@@ -367,6 +380,9 @@ export const WorkaroundNavLink = React.forwardRef<
   );
 });
 
+/**
+ * Common component used by SidebarItem & SidebarItemWithSubmenu
+ */
 const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
   const {
     icon: Icon,
@@ -507,6 +523,11 @@ const SidebarItemWithSubmenu = ({
   );
 };
 
+/**
+ * Creates a `SidebarItem`
+ *
+ * If children contain a `SidebarSubmenu` component the `SidebarItem` will have a expandable submenu
+ */
 export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   // Filter children for SidebarSubmenu components
   const [submenu] = useElementFilter(props.children, elements =>
@@ -654,6 +675,8 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
 /**
  * A button which allows you to expand the sidebar when clicked.
  * Use optionally to replace sidebar's expand-on-hover feature with expand-on-click.
+ *
+ * If you are using this you might want to set the `disableExpandOnHover` of the `Sidebar` to `true`.
  *
  * @public
  */

@@ -700,10 +700,19 @@ export function MissingAnnotationEmptyState(props: Props_3): JSX.Element;
 // @public (undocumented)
 export type MissingAnnotationEmptyStateClassKey = 'code';
 
-// @public (undocumented)
+// @public
 export const MobileSidebar: (
   props: React_2.PropsWithChildren<{}>,
 ) => JSX.Element | null;
+
+// @public
+export const MobileSidebarContext: React_2.Context<MobileSidebarContextType>;
+
+// @public
+export type MobileSidebarContextType = {
+  selectedMenuItemIndex: number;
+  setSelectedMenuItemIndex: React_2.Dispatch<React_2.SetStateAction<number>>;
+};
 
 // Warning: (ae-missing-release-tag) "OAuthRequestDialog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -844,7 +853,7 @@ export type SelectItem = {
   value: string | number;
 };
 
-// @public (undocumented)
+// @public
 export const Sidebar: (
   props: React_2.PropsWithChildren<SidebarProps>,
 ) => JSX.Element;
@@ -879,12 +888,12 @@ export const sidebarConfig: {
 
 // Warning: (ae-missing-release-tag) "SidebarContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export const SidebarContext: Context<SidebarContextType>;
 
 // Warning: (ae-missing-release-tag) "SidebarContextType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export type SidebarContextType = {
   isOpen: boolean;
   setOpen?: (open: boolean) => void;
@@ -1167,16 +1176,14 @@ export type SidebarDividerClassKey = 'root';
 // @public
 export const SidebarExpandButton: () => JSX.Element | null;
 
-// @public (undocumented)
+// @public
 export const SidebarGroup: (
   props: React_2.PropsWithChildren<SidebarGroupProps>,
 ) => JSX.Element;
 
-// @public (undocumented)
+// @public
 export interface SidebarGroupProps extends BottomNavigationActionProps {
-  // (undocumented)
   priority?: number;
-  // (undocumented)
   to?: string;
 }
 
@@ -1196,19 +1203,19 @@ export type SidebarIntroClassKey =
 // Warning: (ae-forgotten-export) The symbol "SidebarItemProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SidebarItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export const SidebarItem: React_2.ForwardRefExoticComponent<
   SidebarItemProps & React_2.RefAttributes<any>
 >;
 
-// Warning: (ae-missing-release-tag) "SidebarItemClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type SidebarItemClassKey =
   | 'root'
   | 'buttonItem'
   | 'closed'
   | 'open'
+  | 'highlightable'
+  | 'highlighted'
   | 'label'
   | 'iconContainer'
   | 'searchRoot'
@@ -1216,6 +1223,10 @@ export type SidebarItemClassKey =
   | 'searchFieldHTMLInput'
   | 'searchContainer'
   | 'secondaryAction'
+  | 'closedItemIcon'
+  | 'submenuArrow'
+  | 'expandButton'
+  | 'arrows'
   | 'selected';
 
 // Warning: (ae-missing-release-tag) "SidebarPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -2058,10 +2069,10 @@ export const SidebarSpacer: React_2.ComponentType<
 // @public (undocumented)
 export type SidebarSpacerClassKey = 'root';
 
-// @public (undocumented)
+// @public
 export const SidebarStateContext: React_2.Context<SidebarStateContextType>;
 
-// @public (undocumented)
+// @public
 export type SidebarStateContextType = {
   isPinned: boolean;
   toggleSidebarPinState: () => any;

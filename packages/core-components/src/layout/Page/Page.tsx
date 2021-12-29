@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import React, { PropsWithChildren } from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import React, { PropsWithChildren } from 'react';
 
 export type PageClassKey = 'root';
 

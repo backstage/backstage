@@ -27,9 +27,20 @@ import { Link } from '../../components';
 import { sidebarConfig } from './config';
 import { MobileSidebarContext } from './MobileSidebar';
 
-/** @public */
+/**
+ * Props for the `SidebarGroup`
+ *
+ * @public
+ */
 export interface SidebarGroupProps extends BottomNavigationActionProps {
+  /**
+   * If the `SidebarGroup` should be a `Link`, `to` should be a pathname to that location
+   */
   to?: string;
+  /**
+   * If the `SidebarGroups` should be in a different order than in the normal `Sidebar`, you can provide
+   * each `SidebarGroup` it's own priority to reorder them.
+   */
   priority?: number;
 }
 
@@ -51,6 +62,13 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
+/**
+ * Returns a MUI `BottomNavigationAction`, which is aware of the current location & the selected item in the `BottomNavigation`,
+ * such that it will highlight a `MobileSidebarGroup` either on location change or if the selected item changes.
+ *
+ * @param props `to`: pathname of link; `value`: index of the selected item
+ * @internal
+ */
 const MobileSidebarGroup = (props: SidebarGroupProps) => {
   const { to, label, icon, value } = props;
   const classes = useStyles();
@@ -88,7 +106,14 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
   );
 };
 
-/** @public */
+/**
+ * Groups items of the `Sidebar` together.
+ *
+ * On bigger screens, this won't have any effect at the moment.
+ * On small screens, it will add an action to the bottom navigation - either triggering an overlay menu or acting as a link
+ *
+ * @public
+ */
 export const SidebarGroup = (
   props: React.PropsWithChildren<SidebarGroupProps>,
 ) => {

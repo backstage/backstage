@@ -21,32 +21,39 @@ import LayersIcon from '@material-ui/icons/Layers';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
-import { Sidebar } from './Bar';
-import { SidebarItem } from './Items';
-import { MobileSidebar } from './MobileSidebar';
-import { SidebarGroup } from './SidebarGroup';
+import {
+  MobileSidebar,
+  Sidebar,
+  SidebarGroup,
+  SidebarItem,
+  SidebarPage,
+} from '.';
 
 const MobileSidebarWithGroups = () => (
-  <MobileSidebar>
-    <h1>Header</h1>
-    <SidebarGroup icon={<HomeIcon />} label="Menu">
-      <SidebarItem icon={HomeIcon} to="/" text="Home" />
-      <SidebarItem icon={LayersIcon} to="/" text="Explore" />
-      <SidebarItem icon={LibraryBooks} to="/" text="Docs" />
-    </SidebarGroup>
-    <div>Content</div>
-    <div>More Content</div>
-    <SidebarGroup icon={<CreateComponentIcon />} label="Create" to="#" />
-    <footer>Footer</footer>
-  </MobileSidebar>
+  <SidebarPage>
+    <MobileSidebar>
+      <h1>Header</h1>
+      <SidebarGroup icon={<HomeIcon />} label="Menu">
+        <SidebarItem icon={HomeIcon} to="/" text="Home" />
+        <SidebarItem icon={LayersIcon} to="/" text="Explore" />
+        <SidebarItem icon={LibraryBooks} to="/" text="Docs" />
+      </SidebarGroup>
+      <div>Content</div>
+      <div>More Content</div>
+      <SidebarGroup icon={<CreateComponentIcon />} label="Create" to="#" />
+      <footer>Footer</footer>
+    </MobileSidebar>
+  </SidebarPage>
 );
 
 const MobileSidebarWithoutGroups = () => (
-  <MobileSidebar>
-    <SidebarItem icon={HomeIcon} to="/one" text="Home" />
-    <SidebarItem icon={LayersIcon} to="/two" text="Explore" />
-    <SidebarItem icon={LibraryBooks} to="/three" text="Docs" />
-  </MobileSidebar>
+  <SidebarPage>
+    <MobileSidebar>
+      <SidebarItem icon={HomeIcon} to="/one" text="Home" />
+      <SidebarItem icon={LayersIcon} to="/two" text="Explore" />
+      <SidebarItem icon={LibraryBooks} to="/three" text="Docs" />
+    </MobileSidebar>
+  </SidebarPage>
 );
 
 describe('<MobileSidebar />', () => {
@@ -56,9 +63,11 @@ describe('<MobileSidebar />', () => {
 
   it('should render MobileSidebar on smaller screens', async () => {
     const { getByTestId } = await renderInTestApp(
-      <Sidebar>
-        <SidebarItem icon={HomeIcon} to="/one" text="Home" />
-      </Sidebar>,
+      <SidebarPage>
+        <Sidebar>
+          <SidebarItem icon={HomeIcon} to="/one" text="Home" />
+        </Sidebar>
+      </SidebarPage>,
     );
     expect(getByTestId('mobile-sidebar-root')).toBeVisible();
   });

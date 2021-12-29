@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
+import AcUnitIcon from '@material-ui/icons/AcUnit';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
-import AcUnitIcon from '@material-ui/icons/AcUnit';
-import { Sidebar } from './Bar';
-import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
-import { SidebarSubmenuItem } from './SidebarSubmenuItem';
-import { SidebarSubmenu } from './SidebarSubmenu';
-import { SidebarStateContext } from '.';
+import React from 'react';
+import {
+  Sidebar,
+  SidebarExpandButton,
+  SidebarItem,
+  SidebarSearchField,
+  SidebarStateContext,
+  SidebarSubmenu,
+  SidebarSubmenuItem,
+} from '.';
 
 async function renderScalableSidebar() {
   await renderInTestApp(
@@ -37,7 +41,7 @@ async function renderScalableSidebar() {
         toggleSidebarPinState: () => {},
       }}
     >
-      <Sidebar>
+      <Sidebar disableExpandOnHover>
         <SidebarSearchField onSearch={() => {}} to="/search" />
         <SidebarItem icon={MenuBookIcon} onClick={() => {}} text="Catalog">
           <SidebarSubmenu title="Catalog">

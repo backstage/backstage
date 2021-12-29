@@ -31,7 +31,12 @@ import { SidebarContext } from '.';
 import { sidebarConfig } from './config';
 import { SidebarGroup } from './SidebarGroup';
 
-type MobileSidebarContextType = {
+/**
+ * Type of `MobileSidebarContext`
+ *
+ * @public
+ */
+export type MobileSidebarContextType = {
   selectedMenuItemIndex: number;
   setSelectedMenuItemIndex: React.Dispatch<React.SetStateAction<number>>;
 };
@@ -111,12 +116,25 @@ const OverlayMenu = ({
   );
 };
 
+/**
+ * Context on which `SidebarGroup` is currently selected
+ *
+ * @public
+ */
 export const MobileSidebarContext = createContext<MobileSidebarContextType>({
   selectedMenuItemIndex: -1,
   setSelectedMenuItemIndex: () => {},
 });
 
-/** @public */
+/**
+ * A navigation component for mobile screens, which sticks to the bottom.
+ *
+ * It alternates the normal sidebar by grouping the `SidebarItems` based on provided `SidebarGroups`
+ * either rendering them as a link or an overlay menu.
+ * If no `SidebarGroups` are provided the sidebar content is wrapped in an default overlay menu.
+ *
+ * @public
+ */
 export const MobileSidebar = (props: React.PropsWithChildren<{}>) => {
   const { children } = props;
   const classes = useStyles();
@@ -160,9 +178,8 @@ export const MobileSidebar = (props: React.PropsWithChildren<{}>) => {
       >
         <OverlayMenu
           label={
-            sidebarGroups[selectedMenuItemIndex]
-              ? (sidebarGroups[selectedMenuItemIndex].props.label as string)
-              : ''
+            sidebarGroups[selectedMenuItemIndex] &&
+            (sidebarGroups[selectedMenuItemIndex]!.props.label as string)
           }
           open={shouldShowGroupChildren}
           onClose={() => setSelectedMenuItemIndex(-1)}

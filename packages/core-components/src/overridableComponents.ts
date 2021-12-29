@@ -87,6 +87,8 @@ import {
   SidebarSpacerClassKey,
   SidebarDividerClassKey,
   SidebarIntroClassKey,
+  SidebarItemClassKey,
+  SidebarPageClassKey,
   CustomProviderClassKey,
   SignInPageClassKey,
   TabbedCardClassKey,
@@ -162,6 +164,8 @@ type BackstageComponentsNameToClassKey = {
   BackstageSidebarSpacer: SidebarSpacerClassKey;
   BackstageSidebarDivider: SidebarDividerClassKey;
   BackstageSidebarIntro: SidebarIntroClassKey;
+  BackstageSidebarItem: SidebarItemClassKey;
+  BackstageSidebarPage: SidebarPageClassKey;
   BackstageCustomProvider: CustomProviderClassKey;
   BackstageSignInPage: SignInPageClassKey;
   BackstageTabbedCard: TabbedCardClassKey;
