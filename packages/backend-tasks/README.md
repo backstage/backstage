@@ -21,13 +21,18 @@ import { Duration } from 'luxon';
 const scheduler = TaskScheduler.fromConfig(rootConfig).forPlugin('my-plugin');
 
 await scheduler.scheduleTask({
-  id: 'refresh-things',
+  id: 'refresh_things',
   frequency: Duration.fromObject({ minutes: 10 }),
+  timeout: Duration.fromObject({ minutes: 15 }),
   fn: async () => {
     await entityProvider.run();
   },
 });
 ```
+
+## Local Development
+
+When working with backend-tasks you may run into your task not running as expected if you are using a persistent database. A table called "backstage_backend_tasks\_\_tasks" in the applicable plugin's database will contain a record with the next run date and time. You can delete this record to get things back to what you expect
 
 ## Documentation
 
