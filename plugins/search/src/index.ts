@@ -40,6 +40,7 @@ export { SearchResultPager } from './components/SearchResultPager';
 export { SearchType } from './components/SearchType';
 export type {
   SearchTypeAccordionProps,
+  SearchTypeTabsProps,
   SearchTypeProps,
 } from './components/SearchType';
 export { SidebarSearch } from './components/SidebarSearch';
