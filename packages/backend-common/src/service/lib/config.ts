@@ -42,8 +42,6 @@ export type CertificateAttributes = {
 
 /**
  * A map from CSP directive names to their values.
- *
- * Added here since helmet doesn't export this type publicly.
  */
 export type CspOptions = Record<string, string[]>;
 
