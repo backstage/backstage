@@ -15,6 +15,10 @@
  */
 
 export { StaticAssetsStore } from './StaticAssetsStore';
-export type { StaticAsset, StaticAssetInput } from './types';
+export type {
+  StaticAsset,
+  StaticAssetInput,
+  StaticAssetProvider,
+} from './types';
 export { findStaticAssets } from './findStaticAssets';
-export { createStaticAssetsStoreMiddleware } from './createStaticAssetsStoreMiddleware';
+export { createStaticAssetMiddleware } from './createStaticAssetMiddleware';

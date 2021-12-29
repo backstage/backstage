@@ -30,7 +30,7 @@ import { injectConfig, readConfigs } from '../lib/config';
 import {
   StaticAssetsStore,
   findStaticAssets,
-  createStaticAssetsStoreMiddleware,
+  createStaticAssetMiddleware,
 } from '../lib/assets';
 import {
   CACHE_CONTROL_MAX_CACHE,
@@ -132,7 +132,7 @@ export async function createRouter(
     // Remove any assets that are older than 7 days
     await store.trimAssets({ maxAgeSeconds: 60 * 60 * 24 * 7 });
 
-    staticRouter.use(createStaticAssetsStoreMiddleware(store));
+    staticRouter.use(createStaticAssetMiddleware(store));
   }
 
   if (staticFallbackHandler) {

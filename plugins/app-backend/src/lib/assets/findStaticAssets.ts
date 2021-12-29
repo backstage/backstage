@@ -19,6 +19,11 @@ import globby from 'globby';
 import { StaticAssetInput } from './types';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 
+/**
+ * Finds all static assets within a directory
+ *
+ * @internal
+ */
 export async function findStaticAssets(
   staticDir: string,
 ): Promise<StaticAssetInput[]> {

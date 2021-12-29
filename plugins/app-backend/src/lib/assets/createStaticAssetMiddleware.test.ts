@@ -16,16 +16,16 @@
 
 import express from 'express';
 import request from 'supertest';
-import { createStaticAssetsStoreMiddleware } from './createStaticAssetsStoreMiddleware';
+import { createStaticAssetMiddleware } from './createStaticAssetMiddleware';
 import { StaticAssetsStore } from './StaticAssetsStore';
 
 const mockStore = {
   getAsset: jest.fn(),
 } as unknown as jest.Mocked<StaticAssetsStore>;
 
-describe('createStaticAssetsStoreMiddleware', () => {
+describe('createStaticAssetMiddleware', () => {
   const app = express();
-  app.use(createStaticAssetsStoreMiddleware(mockStore));
+  app.use(createStaticAssetMiddleware(mockStore));
   app.use((_req, res) => {
     res.status(404).end('Not Found');
   });

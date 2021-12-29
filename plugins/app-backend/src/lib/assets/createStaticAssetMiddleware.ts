@@ -16,11 +16,16 @@
 
 import { extname } from 'path';
 import { RequestHandler } from 'express';
-import { StaticAssetsStore } from './StaticAssetsStore';
+import { StaticAssetProvider } from './types';
 import { CACHE_CONTROL_MAX_CACHE } from '../headers';
 
-export function createStaticAssetsStoreMiddleware(
-  store: StaticAssetsStore,
+/**
+ * Creates a middleware that serves static assets from a static asset provider
+ *
+ * @internal
+ */
+export function createStaticAssetMiddleware(
+  store: StaticAssetProvider,
 ): RequestHandler {
   return (req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') {
@@ -28,6 +33,7 @@ export function createStaticAssetsStoreMiddleware(
       return;
     }
 
+    // Let's not assume we're in promise-router
     Promise.resolve(
       (async () => {
         // Drop leading slashes from the incoming path

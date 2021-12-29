@@ -19,7 +19,7 @@ import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import partition from 'lodash/partition';
-import { StaticAsset, StaticAssetInput } from './types';
+import { StaticAsset, StaticAssetInput, StaticAssetProvider } from './types';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-app-backend',
@@ -43,7 +43,7 @@ export interface StaticAssetsStoreOptions {
  *
  * @internal
  */
-export class StaticAssetsStore {
+export class StaticAssetsStore implements StaticAssetProvider {
   #db: Knex;
   #logger: Logger;
 

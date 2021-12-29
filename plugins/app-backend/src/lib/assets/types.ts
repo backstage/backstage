@@ -24,3 +24,7 @@ export interface StaticAsset {
   content: Buffer;
   lastModifiedAt: Date;
 }
+
+export interface StaticAssetProvider {
+  getAsset(path: string): Promise<StaticAsset | undefined>;
+}
