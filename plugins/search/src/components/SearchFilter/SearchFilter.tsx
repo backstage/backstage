@@ -155,7 +155,7 @@ const SelectFilter = ({
           <em>All</em>
         </MenuItem>
         {values.map((value: string) => (
-          <MenuItem key={value} value={value}>
+          <MenuItem key={value} value={value.toLocaleLowerCase('en-US')}>
             {value}
           </MenuItem>
         ))}
