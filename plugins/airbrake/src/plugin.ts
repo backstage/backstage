@@ -27,7 +27,7 @@ export const airbrakePlugin = createPlugin({
   },
 });
 
-export const AirbrakePage = airbrakePlugin.provide(
+export const AirbrakeWidget = airbrakePlugin.provide(
   createRoutableExtension({
     name: 'AirbrakePage',
     component: () =>

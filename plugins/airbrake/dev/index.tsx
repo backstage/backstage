@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { AirbrakePage, airbrakePlugin } from '../src/plugin';
+import { AirbrakeWidget, airbrakePlugin } from '../src/plugin';
 import {
   Content,
   ContentHeader,
@@ -30,7 +30,10 @@ createDevApp()
   .addPage({
     element: (
       <Page themeId="tool">
-        <Header title="Airbrake" subtitle="Errors in your application">
+        <Header
+          title="Airbrake demo application"
+          subtitle="Test the widget below"
+        >
           <HeaderLabel label="Owner" value="Owner" />
           <HeaderLabel label="Lifecycle" value="Alpha" />
         </Header>
@@ -40,7 +43,7 @@ createDevApp()
               A description of your plugin goes here.
             </SupportButton>
           </ContentHeader>
-          <AirbrakePage />
+          <AirbrakeWidget />
         </Content>
       </Page>
     ),

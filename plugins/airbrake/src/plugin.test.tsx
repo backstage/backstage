@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { AirbrakePage, airbrakePlugin } from './plugin';
+import { AirbrakeWidget, airbrakePlugin } from './plugin';
 import { renderWithEffects } from '@backstage/test-utils';
 import { createApp } from '@backstage/app-defaults';
 import { Route } from 'react-router';
@@ -48,7 +48,7 @@ describe('Airbrake', () => {
     const rendered = await renderWithEffects(
       <AppProvider>
         <AppRouter>
-          <Route path="/airbrake" element={<AirbrakePage />} />
+          <Route path="/airbrake" element={<AirbrakeWidget />} />
         </AppRouter>
       </AppProvider>,
     );
