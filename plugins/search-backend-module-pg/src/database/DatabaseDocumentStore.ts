@@ -156,9 +156,11 @@ export class DatabaseDocumentStore implements DatabaseStore {
         const valueArray = Array.isArray(value) ? value : [value];
         const valueCompare = valueArray
           .map(v => ({ [key]: v }))
-          .map(v => JSON.stringify(v));
+          .map(v => JSON.stringify(v).toLowerCase());
         query.whereRaw(
-          `(${valueCompare.map(() => 'document @> ?').join(' OR ')})`,
+          `(${valueCompare
+            .map(() => 'lower(document::text)::jsonb @> ?')
+            .join(' OR ')})`,
           valueCompare,
         );
       });
