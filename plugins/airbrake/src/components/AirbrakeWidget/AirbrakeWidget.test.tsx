@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,3 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import React from 'react';
+import { render } from '@testing-library/react';
+import { ThemeProvider } from '@material-ui/core';
+import { lightTheme } from '@backstage/theme';
+import { AirbrakeWidget } from './AirbrakeWidget';
+import exampleData from './ExampleData';
+
+describe('AirbrakeWidget', () => {
+  it('should render all messages sent from a payload', async () => {
+    const table = await render(
+      <ThemeProvider theme={lightTheme}>
+        <AirbrakeWidget />
+      </ThemeProvider>,
+    );
+    expect(exampleData.groups.length).toBeGreaterThan(0);
+    for (const group of exampleData.groups) {
+      expect(
+        await table.findByText(group.errors[0].message),
+      ).toBeInTheDocument();
+    }
+  });
+});

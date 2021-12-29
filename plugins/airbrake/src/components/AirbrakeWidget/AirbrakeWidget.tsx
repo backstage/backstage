@@ -25,6 +25,7 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import exampleData from './ExampleData';
+import hash from 'object-hash';
 
 export const AirbrakeWidget = () => {
   return (
@@ -38,10 +39,10 @@ export const AirbrakeWidget = () => {
           <SupportButton>A description of your plugin goes here.</SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="column">
-          {exampleData.groups.map(groupEntry => (
-            <Grid item key={groupEntry.id}>
-              {groupEntry.errors.map(error => (
-                <InfoCard title={error.type}>
+          {exampleData.groups.map(group => (
+            <Grid item key={group.id}>
+              {group.errors.map(error => (
+                <InfoCard title={error.type} key={hash(error)}>
                   <Typography variant="body1">{error.message}</Typography>
                 </InfoCard>
               ))}

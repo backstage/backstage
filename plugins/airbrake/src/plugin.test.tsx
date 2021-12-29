@@ -52,6 +52,8 @@ describe('Airbrake', () => {
         </AppRouter>
       </AppProvider>,
     );
-    expect(rendered.baseElement).toBeInTheDocument();
+    expect(rendered.getAllByRole('heading', { name: 'Airbrake' }).length).toBe(
+      2,
+    );
   });
 });
