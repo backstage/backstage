@@ -185,59 +185,14 @@ const useStyles = makeStyles<BackstageTheme>(
           borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
           color: theme.palette.navigation.selectedColor,
         },
-        buttonItem: {
-          background: 'none',
-          border: 'none',
-          width: 'auto',
-          margin: 0,
-          padding: 0,
-          textAlign: 'inherit',
-          font: 'inherit',
-        },
-        closed: {
+        '&$closed': {
           width: drawerWidthClosed,
-          justifyContent: 'center',
         },
-        open: {
-          width: drawerWidthOpen,
+        '& $closedItemIcon': {
+          paddingRight: selectedIndicatorWidth,
         },
-        label: {
-          // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
-          fontWeight: 'bold',
-          whiteSpace: 'nowrap',
-          lineHeight: 'auto',
-          flex: '3 1 auto',
-          width: '110px',
-          overflow: 'hidden',
-          'text-overflow': 'ellipsis',
-        },
-        iconContainer: {
-          boxSizing: 'border-box',
-          height: '100%',
-          width: iconContainerWidth,
-          marginRight: -theme.spacing(2),
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-        searchRoot: {
-          marginBottom: 12,
-        },
-        searchField: {
-          color: '#b5b5b5',
-          fontWeight: 'bold',
-          fontSize: theme.typography.fontSize,
-        },
-        searchFieldHTMLInput: {
-          padding: theme.spacing(2, 0, 2),
-        },
-        searchContainer: {
-          width: drawerWidthOpen - iconContainerWidth,
-        },
-        secondaryAction: {
-          width: theme.spacing(6),
-          textAlign: 'center',
-          marginRight: theme.spacing(1),
+        '& $iconContainer': {
+          marginLeft: -selectedIndicatorWidth,
         },
       },
     };
