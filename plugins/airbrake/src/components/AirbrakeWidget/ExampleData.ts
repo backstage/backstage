@@ -56,7 +56,7 @@ export default {
       createdAt: '2021-12-19T09:44:30.067447Z',
     },
     {
-      id: '345',
+      id: '2',
       projectId: 123,
       resolved: true,
       muted: false,
@@ -87,7 +87,7 @@ export default {
       },
       lastDeployId: '0',
       lastDeployAt: null,
-      lastNoticeId: '456',
+      lastNoticeId: '345',
       lastNoticeAt: '2021-12-15T17:16:38.419Z',
       noticeCount: 1,
       noticeTotalCount: 1,

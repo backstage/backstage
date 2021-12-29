@@ -31,7 +31,9 @@ export const AirbrakePage = airbrakePlugin.provide(
   createRoutableExtension({
     name: 'AirbrakePage',
     component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+      import('./components/AirbrakeWidget/AirbrakeWidget').then(
+        m => m.AirbrakeWidget,
+      ),
     mountPoint: rootRouteRef,
   }),
 );
