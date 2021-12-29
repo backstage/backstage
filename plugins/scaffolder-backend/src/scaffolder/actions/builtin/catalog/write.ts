@@ -21,13 +21,18 @@ import { Entity } from '@backstage/catalog-model';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 
 export function createCatalogWriteAction() {
-  return createTemplateAction<{ name?: string; entity: Entity }>({
+  return createTemplateAction<{ filePath?: string; entity: Entity }>({
     id: 'catalog:write',
     description: 'Writes the catalog-info.yaml for your template',
     schema: {
       input: {
         type: 'object',
         properties: {
+          filePath: {
+            title: 'Catalog file path',
+            description: 'Defaults to catalog-info.yaml',
+            type: 'string',
+          },
           entity: {
             title: 'Entity info to write catalog-info.yaml',
             description:
@@ -39,10 +44,11 @@ export function createCatalogWriteAction() {
     },
     async handler(ctx) {
       ctx.logStream.write(`Writing catalog-info.yaml`);
-      const { entity } = ctx.input;
+      const { filePath, entity } = ctx.input;
+      const path = filePath ?? 'catalog-info.yaml';
 
       await fs.writeFile(
-        resolveSafeChildPath(ctx.workspacePath, 'catalog-info.yaml'),
+        resolveSafeChildPath(ctx.workspacePath, path),
         yaml.stringify(entity),
       );
     },
