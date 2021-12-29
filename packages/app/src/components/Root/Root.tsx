@@ -105,6 +105,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
           to="azure-pull-requests"
           text="Azure PRs"
         />
+        <SidebarItem icon={ExtensionIcon} to="something" text="Something" />
       </SidebarScrollWrapper>
       <SidebarDivider />
       <Shortcuts />

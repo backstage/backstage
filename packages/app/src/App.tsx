@@ -88,6 +88,7 @@ import * as plugins from './plugins';
 
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
+import { SomethingPage } from 'plugin-something';
 
 const app = createApp({
   apis,
@@ -220,6 +221,7 @@ const routes = (
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
+    <Route path="/something" element={<SomethingPage />} />
   </FlatRoutes>
 );
 
