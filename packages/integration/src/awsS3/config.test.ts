@@ -36,6 +36,7 @@ describe('readAwsS3IntegrationConfig', () => {
     );
     expect(output).toEqual({
       host: 'amazonaws.com',
+      s3ForcePathStyle: false,
       accessKeyId: 'fake-key',
       secretAccessKey: 'fake-secret-key',
     });
@@ -59,6 +60,7 @@ describe('readAwsS3IntegrationConfigs', () => {
     );
     expect(output).toContainEqual({
       host: 'amazonaws.com',
+      s3ForcePathStyle: false,
       accessKeyId: 'key',
       secretAccessKey: 'secret',
     });
