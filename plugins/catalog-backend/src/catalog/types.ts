@@ -70,6 +70,7 @@ export type EntitiesRequest = {
   filter?: EntityFilter;
   fields?: (entity: Entity) => Entity;
   pagination?: EntityPagination;
+  authorizationToken?: string;
 };
 
 export type EntitiesResponse = {

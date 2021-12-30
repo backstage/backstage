@@ -16,6 +16,12 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
+import {
+  AuthorizeResult,
+  PermissionAuthorizer,
+} from '@backstage/plugin-permission-common';
+import { ConditionTransformer } from '@backstage/plugin-permission-node';
 import { Knex } from 'knex';
 import {
   EntitiesCatalog,
@@ -151,12 +157,37 @@ function parseFilter(
 }
 
 export class NextEntitiesCatalog implements EntitiesCatalog {
-  constructor(private readonly database: Knex) {}
+  constructor(
+    private readonly database: Knex,
+    private readonly permissionApi: PermissionAuthorizer,
+    private readonly transformConditions: ConditionTransformer<EntityFilter>,
+  ) {}
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
-    const db = this.database;
+    const authorizeResponse = (
+      await this.permissionApi.authorize(
+        [{ permission: catalogEntityReadPermission }],
+        { token: request?.authorizationToken },
+      )
+    )[0];
+    if (authorizeResponse.result === AuthorizeResult.DENY) {
+      return {
+        entities: [],
+        pageInfo: { hasNextPage: false },
+      };
+    }
 
+    const db = this.database;
     let entitiesQuery = db<DbFinalEntitiesRow>('final_entities');
+
+    if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
+      entitiesQuery = parseFilter(
+        this.transformConditions(authorizeResponse.conditions),
+        entitiesQuery,
+        db,
+      );
+    }
+
     if (request?.filter) {
       entitiesQuery = parseFilter(request.filter, entitiesQuery, db);
     }

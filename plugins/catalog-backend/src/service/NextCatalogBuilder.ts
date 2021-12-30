@@ -86,6 +86,7 @@ import { connectEntityProviders } from '../processing/connectEntityProviders';
 import { CatalogPermissionRule } from '../permissions/types';
 import { permissionRules as catalogPermissionRules } from '../permissions/rules';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { createConditionTransformer } from '@backstage/plugin-permission-node';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -376,7 +377,11 @@ export class NextCatalogBuilder {
       parser,
       policy,
     });
-    const entitiesCatalog = new NextEntitiesCatalog(dbClient);
+    const entitiesCatalog = new NextEntitiesCatalog(
+      dbClient,
+      permissions,
+      createConditionTransformer(this.permissionRules),
+    );
     const stitcher = new Stitcher(dbClient, logger);
 
     const locationStore = new DefaultLocationStore(dbClient);

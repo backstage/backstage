@@ -16,8 +16,15 @@
 
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  createConditionTransformer,
+  ServerPermissionClient,
+} from '@backstage/plugin-permission-node';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
+import { isEntityKind } from '../permissions/rules/isEntityKind';
+import { EntitiesSearchFilter } from '../catalog/types';
 import { applyDatabaseMigrations } from '../database/migrations';
 import {
   DbFinalEntitiesRow,
@@ -25,6 +32,7 @@ import {
   DbRefreshStateRow,
   DbSearchRow,
 } from '../database/tables';
+import { CatalogPermissionRule } from '../permissions/types';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 
 describe('NextEntitiesCatalog', () => {
@@ -120,6 +128,17 @@ describe('NextEntitiesCatalog', () => {
     );
   }
 
+  const fakePermissionClient = {
+    async authorize() {
+      return [{ result: AuthorizeResult.ALLOW }];
+    },
+  } as unknown as ServerPermissionClient;
+
+  const conditionTransformer = createConditionTransformer<
+    EntitiesSearchFilter,
+    CatalogPermissionRule[]
+  >([]);
+
   describe('entityAncestry', () => {
     it.each(databases.eachSupportedId())(
       'should return the ancestry with one parent, %p',
@@ -149,7 +168,11 @@ describe('NextEntitiesCatalog', () => {
         await addEntity(knex, parent, [{ entity: grandparent }]);
         await addEntity(knex, root, [{ entity: parent }]);
 
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new NextEntitiesCatalog(
+          knex,
+          fakePermissionClient,
+          conditionTransformer,
+        );
         const result = await catalog.entityAncestry('k:default/root');
         expect(result.rootEntityRef).toEqual('k:default/root');
 
@@ -179,7 +202,11 @@ describe('NextEntitiesCatalog', () => {
       'should throw error if the entity does not exist, %p',
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new NextEntitiesCatalog(
+          knex,
+          fakePermissionClient,
+          conditionTransformer,
+        );
         await expect(() =>
           catalog.entityAncestry('k:default/root'),
         ).rejects.toThrow('No such entity k:default/root');
@@ -222,7 +249,11 @@ describe('NextEntitiesCatalog', () => {
         await addEntity(knex, parent2, [{ entity: grandparent }]);
         await addEntity(knex, root, [{ entity: parent1 }, { entity: parent2 }]);
 
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new NextEntitiesCatalog(
+          knex,
+          fakePermissionClient,
+          conditionTransformer,
+        );
         const result = await catalog.entityAncestry('k:default/root');
         expect(result.rootEntityRef).toEqual('k:default/root');
 
@@ -278,7 +309,11 @@ describe('NextEntitiesCatalog', () => {
         };
         await addEntityToSearch(knex, entity1);
         await addEntityToSearch(knex, entity2);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new NextEntitiesCatalog(
+          knex,
+          fakePermissionClient,
+          conditionTransformer,
+        );
 
         const testFilter = {
           key: 'spec.test',
@@ -311,7 +346,11 @@ describe('NextEntitiesCatalog', () => {
         };
         await addEntityToSearch(knex, entity1);
         await addEntityToSearch(knex, entity2);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new NextEntitiesCatalog(
+          knex,
+          fakePermissionClient,
+          conditionTransformer,
+        );
 
         const testFilter = {
           not: {
@@ -358,7 +397,11 @@ describe('NextEntitiesCatalog', () => {
         await addEntityToSearch(knex, entity2);
         await addEntityToSearch(knex, entity3);
         await addEntityToSearch(knex, entity4);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new NextEntitiesCatalog(
+          knex,
+          fakePermissionClient,
+          conditionTransformer,
+        );
 
         const testFilter1 = {
           key: 'metadata.org',
@@ -413,7 +456,11 @@ describe('NextEntitiesCatalog', () => {
         };
         await addEntityToSearch(knex, entity1);
         await addEntityToSearch(knex, entity2);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new NextEntitiesCatalog(
+          knex,
+          fakePermissionClient,
+          conditionTransformer,
+        );
 
         const testFilter1 = {
           key: 'metadata.org',
@@ -455,7 +502,11 @@ describe('NextEntitiesCatalog', () => {
         };
         await addEntityToSearch(knex, entity1);
         await addEntityToSearch(knex, entity2);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new NextEntitiesCatalog(
+          knex,
+          fakePermissionClient,
+          conditionTransformer,
+        );
 
         const testFilter = {
           key: 'kind',
@@ -468,4 +519,75 @@ describe('NextEntitiesCatalog', () => {
       },
     );
   });
+
+  it.each(databases.eachSupportedId())(
+    'should return no results if authorization fails',
+    async databaseId => {
+      const { knex } = await createDatabase(databaseId);
+      const entity: Entity = {
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'one' },
+        spec: {},
+      };
+      await addEntityToSearch(knex, entity);
+      const denyPermissionClient = {
+        async authorize() {
+          return [{ result: AuthorizeResult.DENY }];
+        },
+      } as unknown as ServerPermissionClient;
+      const catalog = new NextEntitiesCatalog(
+        knex,
+        denyPermissionClient,
+        conditionTransformer,
+      );
+
+      const request = { filter: { key: 'kind' } };
+      const { entities } = await catalog.entities(request);
+
+      expect(entities.length).toBe(0);
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'should apply additional filters for conditional authorization result',
+    async databaseId => {
+      const { knex } = await createDatabase(databaseId);
+      const entity1: Entity = {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: { name: 'one' },
+        spec: {},
+      };
+      const entity2: Entity = {
+        apiVersion: 'a',
+        kind: 'c',
+        metadata: { name: 'two' },
+        spec: {},
+      };
+      await addEntityToSearch(knex, entity1);
+      await addEntityToSearch(knex, entity2);
+      const conditionalPermissionClient = {
+        async authorize() {
+          return [
+            {
+              result: AuthorizeResult.CONDITIONAL,
+              conditions: { rule: 'IS_ENTITY_KIND', params: [['b']] },
+            },
+          ];
+        },
+      } as unknown as ServerPermissionClient;
+      const catalog = new NextEntitiesCatalog(
+        knex,
+        conditionalPermissionClient,
+        createConditionTransformer([isEntityKind]),
+      );
+
+      const request = { filter: { key: 'kind' } };
+      const { entities } = await catalog.entities(request);
+
+      expect(entities.length).toBe(1);
+      expect(entities).toContainEqual(entity1);
+    },
+  );
 });
