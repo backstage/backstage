@@ -848,6 +848,7 @@ export type EntitiesRequest = {
   filter?: EntityFilter;
   fields?: (entity: Entity) => Entity;
   pagination?: EntityPagination;
+  authorizationToken?: string;
 };
 
 // Warning: (ae-missing-release-tag) "EntitiesResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

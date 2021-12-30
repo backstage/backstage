@@ -103,6 +103,7 @@ export async function createNextRouter(
           filter: parseEntityFilterParams(req.query),
           fields: parseEntityTransformParams(req.query),
           pagination: parseEntityPaginationParams(req.query),
+          authorizationToken: getBearerToken(req.header('authorization')),
         });
 
         // Add a Link header to the next page
@@ -120,6 +121,7 @@ export async function createNextRouter(
         const { uid } = req.params;
         const { entities } = await entitiesCatalog.entities({
           filter: basicEntityFilter({ 'metadata.uid': uid }),
+          authorizationToken: getBearerToken(req.header('authorization')),
         });
         if (!entities.length) {
           throw new NotFoundError(`No entity with uid ${uid}`);
@@ -139,6 +141,7 @@ export async function createNextRouter(
             'metadata.namespace': namespace,
             'metadata.name': name,
           }),
+          authorizationToken: getBearerToken(req.header('authorization')),
         });
         if (!entities.length) {
           throw new NotFoundError(
