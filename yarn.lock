@@ -2498,6 +2498,19 @@
     react-use "^17.2.4"
     zen-observable "^0.8.15"
 
+"@backstage/integration@^0.6.4", "@backstage/integration@^0.6.7":
+  version "0.6.10"
+  resolved "https://registry.npmjs.org/@backstage/integration/-/integration-0.6.10.tgz#e55a26f5124445de74e46944f63c263c9b985995"
+  integrity sha512-qGAZ7rflWdZdjUgxzLWmkrR1zPC5ep62d0fqtwg77MZsGwBNrbNOI2qJbk+IRPmOgym2Adg2C95O2UV7Hyde7g==
+  dependencies:
+    "@backstage/config" "^0.1.11"
+    "@octokit/auth-app" "^3.4.0"
+    "@octokit/rest" "^18.5.3"
+    cross-fetch "^3.0.6"
+    git-url-parse "^11.6.0"
+    lodash "^4.17.21"
+    luxon "^2.0.2"
+
 "@backstage/plugin-catalog-react@^0.4.0":
   version "0.4.6"
   resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-0.4.6.tgz#f33f3cd734f110d3c547f7eae4e25d14806ec796"

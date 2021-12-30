@@ -1,5 +1,14 @@
 # @backstage/plugin-tech-insights
 
+## 0.1.3
+
+### Patch Changes
+
+- a86f5c1701: Fixed API auth in tech-insights plugin
+- d83079fc11: Export `techInsightsApiRef` and associated types.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.9
+
 ## 0.1.2
 
 ### Patch Changes

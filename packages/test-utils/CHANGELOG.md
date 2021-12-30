@@ -1,5 +1,11 @@
 # @backstage/test-utils
 
+## 0.2.1
+
+### Patch Changes
+
+- c36b7794f7: JSON serialize and freeze values stored by the `MockStorageApi`.
+
 ## 0.2.0
 
 ### Minor Changes
