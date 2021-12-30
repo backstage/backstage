@@ -15,19 +15,13 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
 import { AirbrakeWidget } from './AirbrakeWidget';
 import exampleData from './example-data.json';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('AirbrakeWidget', () => {
   it('renders all errors sent from Airbrake', async () => {
-    const table = await render(
-      <ThemeProvider theme={lightTheme}>
-        <AirbrakeWidget />
-      </ThemeProvider>,
-    );
+    const table = await renderInTestApp(<AirbrakeWidget />);
     expect(exampleData.groups.length).toBeGreaterThan(0);
     for (const group of exampleData.groups) {
       expect(

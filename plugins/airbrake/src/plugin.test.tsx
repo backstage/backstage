@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { AirbrakeWidget, airbrakePlugin } from './plugin';
-import { renderWithEffects } from '@backstage/test-utils';
-import { createApp } from '@backstage/app-defaults';
-import { Route } from 'react-router';
+import { airbrakePlugin, AirbrakeWidget } from './plugin';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('Airbrake', () => {
   it('should export plugin', () => {
@@ -25,33 +23,7 @@ describe('Airbrake', () => {
   });
 
   it('should render page', async () => {
-    process.env = {
-      NODE_ENV: 'test',
-      APP_CONFIG: [
-        {
-          data: {
-            app: { title: 'Test' },
-            backend: { baseUrl: 'http://localhost:7000' },
-            techdocs: {
-              storageUrl: 'http://localhost:7000/api/techdocs/static/docs',
-            },
-          },
-          context: 'test',
-        },
-      ] as any,
-    };
-
-    const app = createApp();
-    const AppProvider = app.getProvider();
-    const AppRouter = app.getRouter();
-
-    const rendered = await renderWithEffects(
-      <AppProvider>
-        <AppRouter>
-          <Route path="/airbrake" element={<AirbrakeWidget />} />
-        </AppRouter>
-      </AppProvider>,
-    );
+    const rendered = await renderInTestApp(<AirbrakeWidget />);
     expect(rendered.getByText('ChunkLoadError')).toBeInTheDocument();
   });
 });
