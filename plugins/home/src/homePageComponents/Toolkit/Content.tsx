@@ -49,6 +49,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+/**
+ * Representing a tool of the Toolkit {@link Content} props.
+ *
+ * @public
+ */
 export type Tool = {
   label: string;
   url: string;
@@ -59,6 +64,11 @@ type ToolkitContentProps = {
   tools: Tool[];
 };
 
+/**
+ * A component to display a list of tools for the user.
+ *
+ * @public
+ */
 export const Content = (props: ToolkitContentProps) => {
   const classes = useStyles();
 

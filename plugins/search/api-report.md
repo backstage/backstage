@@ -75,6 +75,11 @@ export type HomePageSearchBarProps = Partial<
   Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>
 >;
 
+// Warning: (ae-missing-release-tag) "rootRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const rootRouteRef: RouteRef<undefined>;
+
 // Warning: (ae-missing-release-tag) "SearchPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

@@ -21,6 +21,12 @@ type CompanyLogoProps = {
   logo?: React.ReactNode;
   className?: string;
 };
+
+/**
+ * A component to display a company logo for the user.
+ *
+ * @public
+ */
 export const CompanyLogo = (props: CompanyLogoProps) => {
   const { logo, className } = props;
   const configApi = useApi(configApiRef);
