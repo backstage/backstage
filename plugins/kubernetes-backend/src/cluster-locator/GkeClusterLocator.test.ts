@@ -226,5 +226,51 @@ describe('GkeClusterLocator', () => {
         parent: 'projects/some-project/locations/some-region',
       });
     });
+    it('expose GKE dashboard', async () => {
+      mockedListClusters.mockReturnValueOnce([
+        {
+          clusters: [
+            {
+              name: 'some-cluster',
+              endpoint: '1.2.3.4',
+            },
+          ],
+        },
+      ]);
+
+      const config: Config = new ConfigReader({
+        type: 'gke',
+        projectId: 'some-project',
+        region: 'some-region',
+        skipMetricsLookup: true,
+        exposeDashboard: true,
+      });
+
+      const sut = GkeClusterLocator.fromConfigWithClient(config, {
+        listClusters: mockedListClusters,
+      } as any);
+
+      const result = await sut.getClusters();
+
+      expect(result).toStrictEqual([
+        {
+          authProvider: 'google',
+          name: 'some-cluster',
+          url: 'https://1.2.3.4',
+          skipTLSVerify: false,
+          skipMetricsLookup: true,
+          dashboardApp: 'gke',
+          dashboardParameters: {
+            clusterName: 'some-cluster',
+            projectId: 'some-project',
+            region: 'some-region',
+          },
+        },
+      ]);
+      expect(mockedListClusters).toBeCalledTimes(1);
+      expect(mockedListClusters).toHaveBeenCalledWith({
+        parent: 'projects/some-project/locations/some-region',
+      });
+    });
   });
 });

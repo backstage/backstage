@@ -18,6 +18,7 @@ import {
   EntityNamePicker,
   entityNamePickerValidation,
 } from '../components/fields/EntityNamePicker';
+import { EntityTagsPicker } from '../components/fields/EntityTagsPicker';
 import { OwnerPicker } from '../components/fields/OwnerPicker';
 import {
   repoPickerValidation,
@@ -35,6 +36,10 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: FieldExtensionOptions[] = [
     component: EntityNamePicker,
     name: 'EntityNamePicker',
     validation: entityNamePickerValidation,
+  },
+  {
+    component: EntityTagsPicker,
+    name: 'EntityTagsPicker',
   },
   {
     component: RepoUrlPicker,

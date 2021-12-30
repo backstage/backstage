@@ -6,6 +6,7 @@
 import { Config } from '@backstage/config';
 import express from 'express';
 import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
+import type { JsonObject } from '@backstage/types';
 import type { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger as Logger_2 } from 'winston';
@@ -31,6 +32,7 @@ export interface ClusterDetails {
   // (undocumented)
   caData?: string | undefined;
   dashboardApp?: string;
+  dashboardParameters?: JsonObject;
   dashboardUrl?: string;
   name: string;
   // (undocumented)

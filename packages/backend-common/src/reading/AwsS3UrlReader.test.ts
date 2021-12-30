@@ -178,7 +178,7 @@ describe('AwsS3UrlReader', () => {
         ),
       ).rejects.toThrow(
         Error(
-          `Could not retrieve file from S3; caused by Error: not a valid AWS S3 URL: https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
+          `Could not retrieve file from S3; caused by Error: invalid AWS S3 URL, cannot parse region from host in https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
         ),
       );
     });
@@ -234,7 +234,7 @@ describe('AwsS3UrlReader', () => {
         ),
       ).rejects.toThrow(
         Error(
-          `Could not retrieve file from S3; caused by Error: not a valid AWS S3 URL: https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
+          `Could not retrieve file from S3; caused by Error: invalid AWS S3 URL, cannot parse region from host in https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
         ),
       );
     });
@@ -330,6 +330,49 @@ describe('AwsS3UrlReader', () => {
       const body = await files[0].content();
 
       expect(body.toString().trim()).toBe('site_name: Test');
+    });
+  });
+
+  describe('readNonAwsHost', () => {
+    let awsS3UrlReader: AwsS3UrlReader;
+
+    beforeAll(() => {
+      AWSMock.setSDKInstance(aws);
+      AWSMock.mock(
+        'S3',
+        'getObject',
+        Buffer.from(
+          require('fs').readFileSync(
+            path.resolve(
+              __dirname,
+              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+            ),
+          ),
+        ),
+      );
+
+      const s3 = new aws.S3();
+      awsS3UrlReader = new AwsS3UrlReader(
+        new AwsS3Integration(
+          readAwsS3IntegrationConfig(
+            new ConfigReader({
+              host: 'localhost:4566',
+              accessKeyId: 'fake-access-key',
+              secretAccessKey: 'fake-secret-key',
+              endpoint: 'http://localhost:4566',
+              s3ForcePathStyle: true,
+            }),
+          ),
+        ),
+        { s3, treeResponseFactory },
+      );
+    });
+
+    it('returns contents of an object in a bucket', async () => {
+      const response = await awsS3UrlReader.read(
+        'http://localhost:4566/test-bucket/awsS3-mock-object.yaml',
+      );
+      expect(response.toString().trim()).toBe('site_name: Test');
     });
   });
 });

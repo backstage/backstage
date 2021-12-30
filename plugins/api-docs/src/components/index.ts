@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from './ApiExplorerPage';
 export * from './ApiDefinitionCard';
 export * from './ApisCards';
 export * from './AsyncApiDefinitionWidget';

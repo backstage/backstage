@@ -80,6 +80,16 @@ export const EntityPicker: ({
 // @public (undocumented)
 export const EntityPickerFieldExtension: () => null;
 
+// @public
+export const EntityTagsPicker: ({
+  formData,
+  onChange,
+  uiSchema,
+}: FieldProps<string[]>) => JSX.Element;
+
+// @public
+export const EntityTagsPickerFieldExtension: () => null;
+
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "FavouriteTemplate" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

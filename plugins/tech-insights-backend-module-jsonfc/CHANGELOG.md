@@ -1,5 +1,13 @@
 # @backstage/plugin-tech-insights-backend-module-jsonfc
 
+## 0.1.4
+
+### Patch Changes
+
+- 8d00dc427c: ability to add custom operators
+- Updated dependencies
+  - @backstage/backend-common@0.10.1
+
 ## 0.1.3
 
 ### Patch Changes
