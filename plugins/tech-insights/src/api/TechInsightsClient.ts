@@ -66,20 +66,20 @@ export class TechInsightsClient implements TechInsightsApi {
 
   async runChecks(
     entityParams: EntityName,
-    checks: Check[],
+    checks?: Check[],
   ): Promise<CheckResult[]> {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');
     const token = await this.identityApi.getIdToken();
     const { namespace, kind, name } = entityParams;
-    const allChecks = checks ? checks : await this.getAllChecks();
-    const checkIds = allChecks.map((check: Check) => check.id);
+    const checkIds = checks ? checks.map(check => check.id) : [];
+    const requestBody = { checks: checkIds.length > 0 ? checkIds : undefined };
     const response = await fetch(
       `${url}/checks/run/${encodeURIComponent(namespace)}/${encodeURIComponent(
         kind,
       )}/${encodeURIComponent(name)}`,
       {
         method: 'POST',
-        body: JSON.stringify({ checks: checkIds }),
+        body: JSON.stringify(requestBody),
         headers: {
           'Content-Type': 'application/json',
           ...(token && { Authorization: `Bearer ${token}` }),
