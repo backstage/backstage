@@ -54,6 +54,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'space-between',
     padding: '8px 0',
+    border: 'none',
     borderRadius: '50px',
     margin: 'auto',
   },

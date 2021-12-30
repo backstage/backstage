@@ -49,6 +49,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'space-between',
     padding: '8px 0',
+    border: 'none',
     borderRadius: '50px',
     margin: 'auto',
   },
@@ -58,8 +59,10 @@ export const Default = () => {
   const { search } = useStyles();
 
   return (
-    <Grid container item xs={12} alignItems="center" direction="row">
-      <HomePageSearchBar className={search} placeholder="Search" />
+    <Grid container justifyContent="center" spacing={6}>
+      <Grid container item xs={12} alignItems="center" direction="row">
+        <HomePageSearchBar className={search} placeholder="Search" />
+      </Grid>
     </Grid>
   );
 };
