@@ -23,7 +23,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { FieldProps, UiSchema } from '@rjsf/core';
 import React, { useCallback, useEffect } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 
 export const allowArbitraryValues = (uiSchema: UiSchema): boolean =>
   (uiSchema['ui:options']?.allowArbitraryValues as boolean) ?? true;

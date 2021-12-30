@@ -17,7 +17,7 @@
 import { Button, Grid, makeStyles, Tab, Tabs } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { useState } from 'react';
-import { useLocalStorage } from 'react-use';
+import useLocalStorage from 'react-use/lib/useLocalStorage';
 import LighthouseSupportButton from '../SupportButton';
 import {
   ContentHeader,

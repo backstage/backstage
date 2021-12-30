@@ -16,7 +16,7 @@
 
 import React, { useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { techdocsApiRef } from '../../api';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { useApi } from '@backstage/core-plugin-api';

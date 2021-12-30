@@ -24,7 +24,7 @@ import {
   Select,
 } from '@material-ui/core';
 import React, { ChangeEvent } from 'react';
-import { useEffectOnce } from 'react-use';
+import useEffectOnce from 'react-use/lib/useEffectOnce';
 import {
   SearchTypeAccordion,
   SearchTypeAccordionProps,

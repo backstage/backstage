@@ -18,7 +18,7 @@ import { isEqual } from 'lodash';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useDebounce } from 'react-use';
+import useDebounce from 'react-use/lib/useDebounce';
 
 function stringify(queryParams: any): string {
   // Even though these setting don't look nice (e.g. escaped brackets), we should keep

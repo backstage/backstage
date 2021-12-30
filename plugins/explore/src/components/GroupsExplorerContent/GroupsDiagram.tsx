@@ -39,7 +39,7 @@ import { makeStyles, Typography, useTheme } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import classNames from 'classnames';
 import React from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   graph: {

@@ -20,7 +20,7 @@ import FilterList from '@material-ui/icons/FilterList';
 import { InfoCard, Select } from '@backstage/core-components';
 import { BackstageTheme } from '@backstage/theme';
 import { useApi } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { BuildFilters, BuildStatus, xcmetricsApiRef } from '../../api';
 import { DatePicker } from '../DatePicker';
 

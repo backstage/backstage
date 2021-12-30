@@ -21,7 +21,7 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
-import { useDebounce } from 'react-use';
+import useDebounce from 'react-use/lib/useDebounce';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   InputBase,

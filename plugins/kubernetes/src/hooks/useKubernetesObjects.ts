@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../api/types';
 import { kubernetesAuthProvidersApiRef } from '../kubernetes-auth-provider/types';
 import { useEffect, useState } from 'react';
-import { useInterval } from 'react-use';
+import useInterval from 'react-use/lib/useInterval';
 import {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
