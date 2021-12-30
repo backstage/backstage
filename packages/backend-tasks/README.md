@@ -32,7 +32,7 @@ await scheduler.scheduleTask({
 
 ## Local Development
 
-When working with backend-tasks you may run into your task not running as expected if you are using a persistent database. A table called "backstage_backend_tasks\_\_tasks" in the applicable plugin's database will contain a record with the next run date and time. You can delete this record to get things back to what you expect
+When working with the `@backstage/backend-tasks` library you may run into your task not running immediately at startup as expected if you are using a persistent database. This is by design - the library respects the previous state and does not run the task sooner than the specified frequency. If you want to get around this, there is a table called `backstage_backend_tasks__tasks` in the applicable plugin's database which will contain a record with the next run date and time. You can delete this record to get things back to what you expect.
 
 ## Documentation
 
