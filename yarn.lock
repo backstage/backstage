@@ -14841,9 +14841,9 @@ express-prom-bundle@^6.3.6:
     url-value-parser "^2.0.0"
 
 express-promise-router@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.npmjs.org/express-promise-router/-/express-promise-router-4.1.0.tgz#79160e145c27610ba411bceb0552a36f11dbab4f"
-  integrity sha512-nvg0X1Rj8oajPPC+fG3t4e740aNmQZRZY6dRLbiiM56Dvd8213RJ4kaxhZVTdQLut+l4DZdfeJkyx2VENPMBdw==
+  version "4.1.1"
+  resolved "https://registry.npmjs.org/express-promise-router/-/express-promise-router-4.1.1.tgz#8fac102060b9bcc868f84d34fbb12fd8fa494291"
+  integrity sha512-Lkvcy/ZGrBhzkl3y7uYBHLMtLI4D6XQ2kiFg9dq7fbktBch5gjqJ0+KovX0cvCAvTJw92raWunRLM/OM+5l4fA==
   dependencies:
     is-promise "^4.0.0"
     lodash.flattendeep "^4.0.0"
