@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export { ContextProvider } from './Context';
 export { Content } from './Content';
 export type { Tool } from './Content';

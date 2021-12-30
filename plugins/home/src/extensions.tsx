@@ -26,7 +26,7 @@ export type ComponentRenderer = {
 };
 
 type ComponentParts = {
-  Content: () => JSX.Element;
+  Content: (props?: any) => JSX.Element;
   Actions?: () => JSX.Element;
   Settings?: () => JSX.Element;
   ContextProvider?: (props: any) => JSX.Element;
@@ -103,7 +103,7 @@ export function createCardExtension<T>({
                     <Settings />
                   </SettingsModal>
                 )}
-                <Content />
+                <Content {...childProps} />
               </InfoCard>
             );
 

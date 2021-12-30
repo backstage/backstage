@@ -17,18 +17,16 @@ import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { Content } from './Content';
 
-jest.mock('./Context', () => ({
-  useTools: jest.fn(() => ({
-    tools: [
-      { label: 'tool', url: '/url', icon: <div>icon</div> },
-      { label: 'tool 2', url: '/url-2', icon: <div>icon 2</div> },
-    ],
-  })),
-}));
-
 describe('<ToolkitContent>', () => {
   test('should render list of tools', async () => {
-    const { getByText } = await renderInTestApp(<Content />);
+    const { getByText } = await renderInTestApp(
+      <Content
+        tools={[
+          { label: 'tool', url: '/url', icon: <div>icon</div> },
+          { label: 'tool 2', url: '/url-2', icon: <div>icon 2</div> },
+        ]}
+      />,
+    );
 
     expect(getByText('tool')).toBeInTheDocument();
     expect(getByText('tool 2')).toBeInTheDocument();

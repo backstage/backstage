@@ -23,8 +23,6 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 
-import { useTools } from './Context';
-
 const useStyles = makeStyles(theme => ({
   toolkit: {
     display: 'flex',
@@ -57,13 +55,16 @@ export type Tool = {
   icon: React.ReactNode;
 };
 
-export const Content = () => {
+type ToolkitContentProps = {
+  tools: Tool[];
+};
+
+export const Content = (props: ToolkitContentProps) => {
   const classes = useStyles();
-  const { tools } = useTools();
 
   return (
     <List className={classes.toolkit}>
-      {tools.map((tool: Tool) => (
+      {props.tools.map((tool: Tool) => (
         <Link key={tool.url} to={tool.url} className={classes.tool}>
           <ListItemIcon className={classes.icon}>{tool.icon}</ListItemIcon>
           <ListItemText
