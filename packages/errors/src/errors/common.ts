@@ -89,3 +89,10 @@ export class ForwardedError extends CustomErrorBase {
     this.name = isError(cause) ? cause.name : 'Error';
   }
 }
+
+/**
+ * The request could not complete due to authorization being denied.
+ *
+ * @public
+ */
+export class AuthorizationError extends CustomErrorBase {}

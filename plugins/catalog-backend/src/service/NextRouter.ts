@@ -26,7 +26,8 @@ import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
-import express from 'express';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
+import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
@@ -40,13 +41,14 @@ import {
   parseEntityTransformParams,
 } from '../service/request';
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
-import { RefreshService, RefreshOptions, LocationService } from './types';
+import { AuthorizedRefreshService } from './AuthorizedRefreshService';
+import { RefreshOptions, LocationService } from './types';
 
 export interface NextRouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationAnalyzer?: LocationAnalyzer;
   locationService: LocationService;
-  refreshService?: RefreshService;
+  authorizedRefreshService?: AuthorizedRefreshService;
   logger: Logger;
   config: Config;
   permissionRules?: CatalogPermissionRule[];
@@ -59,7 +61,7 @@ export async function createNextRouter(
     entitiesCatalog,
     locationAnalyzer,
     locationService,
-    refreshService,
+    authorizedRefreshService,
     config,
     logger,
     permissionRules,
@@ -74,10 +76,16 @@ export async function createNextRouter(
     logger.info('Catalog is running in readonly mode');
   }
 
-  if (refreshService) {
+  if (authorizedRefreshService) {
     router.post('/refresh', async (req, res) => {
       const refreshOptions: RefreshOptions = req.body;
-      await refreshService.refresh(refreshOptions);
+      const authToken = getAuthToken(req);
+      if (!authToken) {
+        res.status(401).send();
+        return;
+      }
+
+      await authorizedRefreshService.refresh(refreshOptions, authToken);
       res.status(200).send();
     });
   }
@@ -213,4 +221,8 @@ async function getEntityResource(
   });
 
   return entities[0];
+}
+
+function getAuthToken(request: Request) {
+  return IdentityClient.getBearerToken(request.header('authorization'));
 }

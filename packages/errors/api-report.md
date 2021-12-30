@@ -12,6 +12,9 @@ export function assertError(value: unknown): asserts value is ErrorLike;
 export class AuthenticationError extends CustomErrorBase {}
 
 // @public
+export class AuthorizationError extends CustomErrorBase {}
+
+// @public
 export class ConflictError extends CustomErrorBase {}
 
 // @public

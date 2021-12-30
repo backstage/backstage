@@ -77,6 +77,7 @@ import {
 } from '../processing/refresh';
 import { createNextRouter } from './NextRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
+import { AuthorizedRefreshService } from './AuthorizedRefreshService';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
@@ -84,12 +85,14 @@ import { LocationService } from './types';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
 import { CatalogPermissionRule } from '../permissions/types';
 import { permissionRules as catalogPermissionRules } from '../permissions/rules';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 export type CatalogEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
+  permissions: ServerPermissionClient;
 };
 
 /**
@@ -344,7 +347,7 @@ export class NextCatalogBuilder {
     locationService: LocationService;
     router: Router;
   }> {
-    const { config, database, logger } = this.env;
+    const { config, database, logger, permissions } = this.env;
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
@@ -401,11 +404,15 @@ export class NextCatalogBuilder {
     const refreshService = new DefaultRefreshService({
       database: processingDatabase,
     });
+    const authorizedRefreshService = new AuthorizedRefreshService(
+      refreshService,
+      permissions,
+    );
     const router = await createNextRouter({
       entitiesCatalog,
       locationAnalyzer,
       locationService,
-      refreshService,
+      authorizedRefreshService,
       logger,
       config,
       permissionRules: this.permissionRules,
