@@ -53,7 +53,7 @@ export const ApiExplorerPage = apiDocsPlugin.provide(
   createRoutableExtension({
     name: 'ApiExplorerPage',
     component: () =>
-      import('./components/ApiExplorerPage').then(m => m.ApiExplorerPage),
+      import('./components/ApiExplorerPage').then(m => m.ApiExplorerIndexPage),
     mountPoint: rootRoute,
   }),
 );
