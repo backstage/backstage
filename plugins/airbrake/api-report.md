@@ -8,11 +8,6 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "AirbrakeWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const AirbrakeWidget: () => JSX.Element;
-
 // Warning: (ae-missing-release-tag) "airbrakePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -22,6 +17,11 @@ export const airbrakePlugin: BackstagePlugin<
   },
   {}
 >;
+
+// Warning: (ae-missing-release-tag) "AirbrakeWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const AirbrakeWidget: () => JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```
