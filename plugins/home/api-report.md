@@ -123,6 +123,8 @@ export const HomePageRandomJoke: ({
   defaultCategory?: 'any' | 'programming' | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "ToolkitContentProps" needs to be exported by the entry point index.d.ts
+//
 // @public
 export const HomePageToolkit: ({
   Renderer,
@@ -130,9 +132,7 @@ export const HomePageToolkit: ({
   ...childProps
 }: ComponentRenderer & {
   title?: string | undefined;
-} & {
-  tools: Tool[];
-}) => JSX.Element;
+} & ToolkitContentProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "homePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -165,5 +165,4 @@ export const WelcomeTitle: () => JSX.Element;
 // Warnings were encountered during analysis:
 //
 // src/extensions.d.ts:16:5 - (ae-forgotten-export) The symbol "ComponentParts" needs to be exported by the entry point index.d.ts
-// src/plugin.d.ts:57:5 - (ae-forgotten-export) The symbol "Tool" needs to be exported by the entry point index.d.ts
 ```

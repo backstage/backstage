@@ -19,7 +19,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from './extensions';
-import { Tool } from './homePageComponents';
+import { ToolkitContentProps } from './homePageComponents';
 
 import { rootRouteRef } from './routes';
 
@@ -109,7 +109,7 @@ export const HomePageRandomJoke = homePlugin.provide(
  * @public
  */
 export const HomePageToolkit = homePlugin.provide(
-  createCardExtension<{ tools: Tool[] }>({
+  createCardExtension<ToolkitContentProps>({
     name: 'HomePageToolkit',
     title: 'Toolkit',
     components: () => import('./homePageComponents/Toolkit'),

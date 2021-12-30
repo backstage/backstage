@@ -49,18 +49,18 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-/**
- * Representing a tool of the Toolkit {@link Content} props.
- *
- * @public
- */
-export type Tool = {
+type Tool = {
   label: string;
   url: string;
   icon: React.ReactNode;
 };
 
-type ToolkitContentProps = {
+/**
+ * Props for Toolkit content component {@link Content}.
+ *
+ * @public
+ */
+export type ToolkitContentProps = {
   tools: Tool[];
 };
 

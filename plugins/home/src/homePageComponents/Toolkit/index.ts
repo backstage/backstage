@@ -15,4 +15,4 @@
  */
 
 export { Content } from './Content';
-export type { Tool } from './Content';
+export type { ToolkitContentProps } from './Content';
