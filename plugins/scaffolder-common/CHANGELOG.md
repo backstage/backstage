@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-common
 
+## 0.1.2
+
+### Patch Changes
+
+- d078377f67: Support navigating back to pre-filled templates to update inputs of scaffolder tasks for resubmission
+
 ## 0.1.1
 
 ### Patch Changes

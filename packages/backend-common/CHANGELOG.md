@@ -1,5 +1,17 @@
 # @backstage/backend-common
 
+## 0.10.1
+
+### Patch Changes
+
+- 94cdf5d1bd: In-memory cache clients instantiated from the same cache manager now share the same memory space.
+- 916b2f1f3e: Use the default CSP policy provided by `helmet` directly rather than a copy.
+- 7d4b4e937c: Uptake changes to the GitHub Credentials Provider interface.
+- 995e4c7d9d: Added support for non-"amazonaws.com" hosts (for example when testing with LocalStack) in AwsS3UrlReader.
+- Updated dependencies
+  - @backstage/integration@0.7.0
+  - @backstage/config-loader@0.9.1
+
 ## 0.10.0
 
 ### Minor Changes
