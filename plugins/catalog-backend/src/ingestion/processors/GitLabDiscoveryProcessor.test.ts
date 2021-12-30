@@ -184,6 +184,13 @@ describe('GitlabDiscoveryProcessor', () => {
                   last_activity_at: '2021-08-05T11:03:05.774Z',
                   web_url: 'https://gitlab.fake/3',
                 },
+                {
+                  id: 4,
+                  archived: false,
+                  default_branch: undefined, // MISSING DEFAULT BRANCH
+                  last_activity_at: '2021-08-05T11:03:05.774Z',
+                  web_url: 'https://gitlab.fake/4',
+                },
               ],
             };
           default:
