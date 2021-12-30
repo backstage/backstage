@@ -30,6 +30,7 @@ export type { CustomFieldValidator, FieldExtensionOptions } from './extensions';
 export {
   EntityPickerFieldExtension,
   EntityNamePickerFieldExtension,
+  EntityTagsPickerFieldExtension,
   OwnerPickerFieldExtension,
   OwnedEntityPickerFieldExtension,
   RepoUrlPickerFieldExtension,
@@ -40,6 +41,7 @@ export {
 export {
   EntityNamePicker,
   EntityPicker,
+  EntityTagsPicker,
   OwnerPicker,
   RepoUrlPicker,
   TextValuePicker,

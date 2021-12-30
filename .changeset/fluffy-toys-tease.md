@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-tech-insights': minor
+'@backstage/plugin-tech-insights': patch
 ---
 
-fixes api auth in tech-insights plugin
+Fixed API auth in tech-insights plugin

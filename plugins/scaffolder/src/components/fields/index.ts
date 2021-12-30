@@ -19,3 +19,4 @@ export * from './OwnerPicker';
 export * from './RepoUrlPicker';
 export * from './TextValuePicker';
 export * from './OwnedEntityPicker';
+export * from './EntityTagsPicker';
