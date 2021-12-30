@@ -126,7 +126,7 @@ describe('bump', () => {
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
 
     const { log: logs } = await withLogCollector(['log'], async () => {
-      await bump({ pattern: null } as Command);
+      await bump({ pattern: null } as unknown as Command);
     });
     expect(logs.filter(Boolean)).toEqual([
       'Using default pattern glob @backstage/*',
@@ -349,7 +349,7 @@ describe('bump', () => {
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
 
     const { log: logs } = await withLogCollector(['log'], async () => {
-      await bump({ pattern: null } as any);
+      await bump({ pattern: null } as unknown as Command);
     });
     expect(logs.filter(Boolean)).toEqual([
       'Using default pattern glob @backstage/*',
