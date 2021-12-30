@@ -19,10 +19,10 @@ import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { AirbrakeWidget } from './AirbrakeWidget';
-import exampleData from './ExampleData';
+import exampleData from './example-data.json';
 
 describe('AirbrakeWidget', () => {
-  it('should render all messages sent from a payload', async () => {
+  it('renders all errors sent from Airbrake', async () => {
     const table = await render(
       <ThemeProvider theme={lightTheme}>
         <AirbrakeWidget />

@@ -16,7 +16,7 @@
 import React from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import { InfoCard } from '@backstage/core-components';
-import exampleData from './ExampleData';
+import exampleData from './example-data.json';
 import hash from 'object-hash';
 import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
