@@ -171,7 +171,9 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
   const updateFooterWidth = useCallback(() => {
     if (!dom) return;
     const footer = dom.querySelector('.md-footer') as HTMLElement;
-    footer.style.width = `${dom.getBoundingClientRect().width}px`;
+    if (footer) {
+      footer.style.width = `${dom.getBoundingClientRect().width}px`;
+    }
   }, [dom]);
 
   useEffect(() => {
