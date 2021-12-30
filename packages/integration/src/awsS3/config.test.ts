@@ -26,16 +26,33 @@ describe('readAwsS3IntegrationConfig', () => {
     return new ConfigReader(data);
   }
 
-  it('reads all values', () => {
+  it('reads all values (default)', () => {
     const output = readAwsS3IntegrationConfig(
       buildConfig({
-        host: 'amazonaws.com',
         accessKeyId: 'fake-key',
         secretAccessKey: 'fake-secret-key',
       }),
     );
     expect(output).toEqual({
       host: 'amazonaws.com',
+      s3ForcePathStyle: false,
+      accessKeyId: 'fake-key',
+      secretAccessKey: 'fake-secret-key',
+    });
+  });
+  it('reads all values (endpoint)', () => {
+    const output = readAwsS3IntegrationConfig(
+      buildConfig({
+        endpoint: 'http://localhost:4566',
+        s3ForcePathStyle: true,
+        accessKeyId: 'fake-key',
+        secretAccessKey: 'fake-secret-key',
+      }),
+    );
+    expect(output).toEqual({
+      host: 'localhost:4566',
+      endpoint: 'http://localhost:4566',
+      s3ForcePathStyle: true,
       accessKeyId: 'fake-key',
       secretAccessKey: 'fake-secret-key',
     });
@@ -59,6 +76,7 @@ describe('readAwsS3IntegrationConfigs', () => {
     );
     expect(output).toContainEqual({
       host: 'amazonaws.com',
+      s3ForcePathStyle: false,
       accessKeyId: 'key',
       secretAccessKey: 'secret',
     });
