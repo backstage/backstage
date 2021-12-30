@@ -26,6 +26,10 @@ import {
   FormLabel,
 } from '@material-ui/core';
 
+import {
+  AutocompleteFilter,
+  SearchAutocompleteFilterProps,
+} from './SearchFilter.Autocomplete';
 import { useSearch } from '../SearchContext';
 import { useAsyncFilterValues } from './hooks';
 
@@ -195,6 +199,16 @@ SearchFilter.Select = (
   props: Omit<SearchFilterWrapperProps, 'component'> &
     SearchFilterComponentProps,
 ) => <SearchFilter {...props} component={SelectFilter} />;
+
+/**
+ * A control surface for a given filter field name, rendered as an autocomplete
+ * textfield. A hard-coded list of values may be provided, or an async function
+ * which returns values may be provided instead.
+ * @public
+ */
+SearchFilter.Autocomplete = (props: SearchAutocompleteFilterProps) => (
+  <SearchFilter {...props} component={AutocompleteFilter} />
+);
 
 /**
  * @deprecated This component was used for rapid prototyping of the Backstage

@@ -34,6 +34,7 @@ export type {
 export { SearchContextProvider, useSearch } from './components/SearchContext';
 export { SearchFilter, SearchFilterNext } from './components/SearchFilter';
 export type {
+  SearchAutocompleteFilterProps,
   SearchFilterComponentProps,
   SearchFilterWrapperProps,
 } from './components/SearchFilter';
