@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 import { CompanyLogo } from './CompanyLogo';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { configApiRef } from '@backstage/core-plugin-api';
+import { ConfigReader } from '@backstage/core-app-api';
 import { Typography } from '@material-ui/core';
 import React from 'react';
 
 describe('<CompanyLogo>', () => {
-  test('should have a fall back if logo is not provided', async () => {
-    const { getByRole } = await renderInTestApp(<CompanyLogo />);
+  it('should have a fall back if logo is not provided', async () => {
+    const { getByRole } = await renderInTestApp(
+      <TestApiProvider
+        apis={[[configApiRef, new ConfigReader({ app: { title: 'My App' } })]]}
+      >
+        <CompanyLogo />
+      </TestApiProvider>,
+    );
 
-    expect(
-      getByRole('heading', { name: 'My Company Logo' }),
-    ).toBeInTheDocument();
+    expect(getByRole('heading', { name: 'My App' })).toBeInTheDocument();
   });
 
-  test('should show provided company logo', async () => {
+  it('should show provided company logo', async () => {
     const { getByRole } = await renderInTestApp(
       <CompanyLogo logo={<Typography variant="h1">Backstage</Typography>} />,
     );

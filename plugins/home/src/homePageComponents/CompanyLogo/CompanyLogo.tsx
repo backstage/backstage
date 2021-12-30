@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 import { Typography } from '@material-ui/core';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import React from 'react';
 
-export const CompanyLogo = ({
-  logo,
-  className,
-}: {
+type CompanyLogoProps = {
   logo?: React.ReactNode;
   className?: string;
-}) => {
+};
+export const CompanyLogo = (props: CompanyLogoProps) => {
+  const { logo, className } = props;
+  const configApi = useApi(configApiRef);
+
   return (
     <div className={className}>
       {logo ? (
         <>{logo}</>
       ) : (
-        <Typography variant="h1">My Company Logo</Typography>
+        <Typography variant="h1">{configApi.getString('app.title')}</Typography>
       )}
     </div>
   );
