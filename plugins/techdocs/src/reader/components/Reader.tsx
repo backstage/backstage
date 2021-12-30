@@ -338,17 +338,23 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
         scrollIntoAnchor(),
         addLinkClickListener({
           baseUrl: window.location.origin,
-          onClick: (_: MouseEvent, url: string) => {
+          onClick: (event: MouseEvent, url: string) => {
+            // use `window.open` to open links in a new tab when CTRL or META keys are pressed
+            const navigateFn =
+              event.ctrlKey || event.metaKey
+                ? (u: string) => window.open(u, '_blank')
+                : navigate;
+
             const parsedUrl = new URL(url);
             // hash exists when anchor is clicked on secondary sidebar
             if (parsedUrl.hash) {
-              navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+              navigateFn(`${parsedUrl.pathname}${parsedUrl.hash}`);
               // Scroll to hash if it's on the current page
               transformedElement
                 ?.querySelector(`#${parsedUrl.hash.slice(1)}`)
                 ?.scrollIntoView();
             } else {
-              navigate(parsedUrl.pathname);
+              navigateFn(parsedUrl.pathname);
               // Scroll to top of reader if primary sidebar link is clicked
               transformedElement
                 ?.querySelector('.md-content__inner')
