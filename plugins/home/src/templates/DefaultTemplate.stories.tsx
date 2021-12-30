@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import TemplateBackstageLogo from './TemplateBackstageLogo';
-import TemplateBackstageLogoIcon from './TemplateBackstageLogoIcon';
+import {TemplateBackstageLogo} from './TemplateBackstageLogo';
+import {TemplateBackstageLogoIcon} from './TemplateBackstageLogoIcon';
 import { HomePageToolkit, HomePageCompanyLogo } from '../plugin';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { Content, Page, InfoCard } from '@backstage/core-components';
@@ -30,7 +30,7 @@ import React, { ComponentType} from 'react';
 
 
 export default {
-  title: 'Plugins/Home',
+  title: 'Plugins/Home/Templates',
   decorators: [
     (Story: ComponentType<{}>) =>
       wrapInTestApp(
@@ -40,7 +40,7 @@ export default {
           </TestApiProvider>
         </>,
         {
-          mountedRoutes: {'/hello-template': rootRouteRef }
+          mountedRoutes: {'/hello-company': rootRouteRef }
         }
       ),
   ],
@@ -72,7 +72,7 @@ const useLogoStyles = makeStyles(theme => ({
   },
 }));
 
-export const Template = () => {
+export const DefaultTemplate = () => {
   const { search } = useStyles();
   const { svg, path, container } = useLogoStyles();
 
