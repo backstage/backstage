@@ -155,6 +155,7 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
   const { clusterLink, errorMessage } = tryFormatClusterLink({
     dashboardUrl: cluster.dashboardUrl,
     dashboardApp: cluster.dashboardApp,
+    dashboardParameters: cluster.dashboardParameters,
     object,
     kind,
   });

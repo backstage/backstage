@@ -17,12 +17,16 @@ import { ClusterLinksFormatterOptions } from '../../../types/types';
 
 const kindMappings: Record<string, string> = {
   deployment: 'deployment',
+  pod: 'pod',
   ingress: 'ingress',
   service: 'service',
   horizontalpodautoscaler: 'deployment',
 };
 
 export function standardFormatter(options: ClusterLinksFormatterOptions) {
+  if (!options.dashboardUrl) {
+    throw new Error('standard dashboard requires a dashboardUrl option');
+  }
   const result = new URL(options.dashboardUrl.href);
   const name = encodeURIComponent(options.object.metadata?.name ?? '');
   const namespace = encodeURIComponent(

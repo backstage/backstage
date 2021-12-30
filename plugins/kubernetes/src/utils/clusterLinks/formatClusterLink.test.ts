@@ -114,5 +114,47 @@ describe('clusterLinks', () => {
         );
       });
     });
+    describe('GKE app', () => {
+      it('should return an url on the deployment', () => {
+        const url = formatClusterLink({
+          dashboardApp: 'gke',
+          dashboardParameters: {
+            projectId: 'foobar-333614',
+            region: 'us-east1-c',
+            clusterName: 'cluster-1',
+          },
+          object: {
+            metadata: {
+              name: 'foobar',
+              namespace: 'bar',
+            },
+          },
+          kind: 'Deployment',
+        });
+        expect(url).toBe(
+          'https://console.cloud.google.com/kubernetes/deployment/us-east1-c/cluster-1/bar/foobar/overview?project=foobar-333614',
+        );
+      });
+      it('should return an url on the service', () => {
+        const url = formatClusterLink({
+          dashboardApp: 'gke',
+          dashboardParameters: {
+            projectId: 'foobar-333614',
+            region: 'us-east1-c',
+            clusterName: 'cluster-1',
+          },
+          object: {
+            metadata: {
+              name: 'foobar',
+              namespace: 'bar',
+            },
+          },
+          kind: 'Service',
+        });
+        expect(url).toBe(
+          'https://console.cloud.google.com/kubernetes/service/us-east1-c/cluster-1/bar/foobar/overview?project=foobar-333614',
+        );
+      });
+    });
   });
 });

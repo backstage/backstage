@@ -4,6 +4,7 @@
 
 ```ts
 import { Entity } from '@backstage/catalog-model';
+import type { JsonObject } from '@backstage/types';
 import { V1ConfigMap } from '@kubernetes/client-node';
 import { V1CronJob } from '@kubernetes/client-node';
 import { V1Deployment } from '@kubernetes/client-node';
@@ -62,6 +63,7 @@ export interface ClientPodStatus {
 // @public (undocumented)
 export interface ClusterAttributes {
   dashboardApp?: string;
+  dashboardParameters?: JsonObject;
   dashboardUrl?: string;
   name: string;
 }
