@@ -42,27 +42,6 @@ import {
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
 import { RefreshService, RefreshOptions, LocationService } from './types';
 
-const getEntity = async (
-  resourceRef: string,
-  entitiesCatalog: EntitiesCatalog,
-): Promise<Entity | undefined> => {
-  const parsed = parseEntityRef(resourceRef);
-
-  const { entities } = await entitiesCatalog.entities({
-    filter: basicEntityFilter({
-      kind: parsed.kind,
-      'metadata.namespace': parsed.namespace,
-      'metadata.name': parsed.name,
-    }),
-  });
-
-  if (!entities.length) {
-    return undefined;
-  }
-
-  return entities[0];
-};
-
 export interface NextRouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationAnalyzer?: LocationAnalyzer;
@@ -108,7 +87,8 @@ export async function createNextRouter(
       .use(
         createPermissionIntegrationRouter({
           resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-          getResource: resourceRef => getEntity(resourceRef, entitiesCatalog),
+          getResource: resourceRef =>
+            getEntityResource(resourceRef, entitiesCatalog),
           rules: permissionRules ?? [],
         }),
       )
@@ -216,4 +196,21 @@ export async function createNextRouter(
 
   router.use(errorHandler());
   return router;
+}
+
+async function getEntityResource(
+  resourceRef: string,
+  entitiesCatalog: EntitiesCatalog,
+): Promise<Entity | undefined> {
+  const parsed = parseEntityRef(resourceRef);
+
+  const { entities } = await entitiesCatalog.entities({
+    filter: basicEntityFilter({
+      kind: parsed.kind,
+      'metadata.namespace': parsed.namespace,
+      'metadata.name': parsed.name,
+    }),
+  });
+
+  return entities[0];
 }
