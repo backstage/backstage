@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   },
 });
 
-const TemplateBackstageLogoIcon = () => {
+export const TemplateBackstageLogoIcon = () => {
   const classes = useStyles();
 
   return (
@@ -44,4 +44,3 @@ const TemplateBackstageLogoIcon = () => {
   );
 };
 
-export default TemplateBackstageLogoIcon;

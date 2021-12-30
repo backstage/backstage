@@ -21,7 +21,7 @@ type Classes = {
   path: string;
 }
 
-const TemplateBackstageLogo = ({ classes }: { classes: Classes }) => {
+export const TemplateBackstageLogo = ({ classes }: { classes: Classes }) => {
   return (
     <svg
       className={classes.svg}
@@ -35,5 +35,3 @@ const TemplateBackstageLogo = ({ classes }: { classes: Classes }) => {
     </svg>
   );
 };
-
-export default TemplateBackstageLogo;
