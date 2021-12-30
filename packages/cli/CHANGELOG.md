@@ -1,5 +1,16 @@
 # @backstage/cli
 
+## 0.10.4
+
+### Patch Changes
+
+- 1d26017090: Fix issue with plugin:serve for Plugins not using Lerna monorepo.
+- 9c3aaf3512: Bump `@typescript-eslint/eslint-plugin` to `4.33.0`
+- 808828e4fa: remove inline CSS from serve_index.html
+- 6e4080d31b: Add option to build command for minifying the generated code
+- Updated dependencies
+  - @backstage/config-loader@0.9.1
+
 ## 0.10.3
 
 ### Patch Changes

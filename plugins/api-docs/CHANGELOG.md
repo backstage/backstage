@@ -1,5 +1,14 @@
 # @backstage/plugin-api-docs
 
+## 0.6.20
+
+### Patch Changes
+
+- de81b7455e: Display entity title on `ApiDefinitionCard` if defined
+- Updated dependencies
+  - @backstage/plugin-catalog@0.7.6
+  - @backstage/plugin-catalog-react@0.6.9
+
 ## 0.6.19
 
 ### Patch Changes
