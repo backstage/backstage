@@ -27,6 +27,7 @@ import {
 } from '@material-ui/core';
 
 import { useSearch } from '../SearchContext';
+import { useAsyncFilterValues } from './hooks';
 
 const useStyles = makeStyles({
   label: {
@@ -34,24 +35,29 @@ const useStyles = makeStyles({
   },
 });
 
-export type Component = {
+/**
+ * @public
+ */
+export type SearchFilterComponentProps = {
   className?: string;
   name: string;
+  label?: string;
   values?: string[];
+  asyncValues?: (partial: string) => Promise<string[]>;
+  asyncDebounce?: number;
   defaultValue?: string[] | string | null;
 };
 
-export type Props = Component & {
-  component: (props: Component) => ReactElement;
+/**
+ * @public
+ */
+export type SearchFilterWrapperProps = SearchFilterComponentProps & {
+  component: (props: SearchFilterComponentProps) => ReactElement;
   debug?: boolean;
 };
 
-const CheckboxFilter = ({
-  className,
-  name,
-  defaultValue,
-  values = [],
-}: Component) => {
+const CheckboxFilter = (props: SearchFilterComponentProps) => {
+  const { className, defaultValue, label, name, values = [] } = props;
   const classes = useStyles();
   const { filters, setFilters } = useSearch();
 
@@ -84,7 +90,7 @@ const CheckboxFilter = ({
       fullWidth
       data-testid="search-checkboxfilter-next"
     >
-      <FormLabel className={classes.label}>{name}</FormLabel>
+      <FormLabel className={classes.label}>{label || name}</FormLabel>
       {values.map((value: string) => (
         <FormControlLabel
           key={value}
@@ -106,13 +112,23 @@ const CheckboxFilter = ({
   );
 };
 
-const SelectFilter = ({
-  className,
-  name,
-  defaultValue,
-  values = [],
-}: Component) => {
+const SelectFilter = (props: SearchFilterComponentProps) => {
+  const {
+    asyncValues,
+    asyncDebounce,
+    className,
+    defaultValue,
+    label,
+    name,
+    values: givenValues,
+  } = props;
   const classes = useStyles();
+  const { value: values = [], loading } = useAsyncFilterValues(
+    asyncValues,
+    '',
+    givenValues,
+    asyncDebounce,
+  );
   const { filters, setFilters } = useSearch();
 
   useEffect(() => {
@@ -138,13 +154,14 @@ const SelectFilter = ({
 
   return (
     <FormControl
+      disabled={loading}
       className={className}
       variant="filled"
       fullWidth
       data-testid="search-selectfilter-next"
     >
       <InputLabel className={classes.label} margin="dense">
-        {name}
+        {label || name}
       </InputLabel>
       <Select
         variant="outlined"
@@ -164,17 +181,20 @@ const SelectFilter = ({
   );
 };
 
-const SearchFilter = ({ component: Element, ...props }: Props) => (
-  <Element {...props} />
-);
+const SearchFilter = ({
+  component: Element,
+  ...props
+}: SearchFilterWrapperProps) => <Element {...props} />;
 
-SearchFilter.Checkbox = (props: Omit<Props, 'component'> & Component) => (
-  <SearchFilter {...props} component={CheckboxFilter} />
-);
+SearchFilter.Checkbox = (
+  props: Omit<SearchFilterWrapperProps, 'component'> &
+    SearchFilterComponentProps,
+) => <SearchFilter {...props} component={CheckboxFilter} />;
 
-SearchFilter.Select = (props: Omit<Props, 'component'> & Component) => (
-  <SearchFilter {...props} component={SelectFilter} />
-);
+SearchFilter.Select = (
+  props: Omit<SearchFilterWrapperProps, 'component'> &
+    SearchFilterComponentProps,
+) => <SearchFilter {...props} component={SelectFilter} />;
 
 /**
  * @deprecated This component was used for rapid prototyping of the Backstage

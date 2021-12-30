@@ -15,3 +15,7 @@
  */
 
 export { SearchFilter, SearchFilterNext } from './SearchFilter';
+export type {
+  SearchFilterComponentProps,
+  SearchFilterWrapperProps,
+} from './SearchFilter';

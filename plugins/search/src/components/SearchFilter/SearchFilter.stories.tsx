@@ -56,3 +56,19 @@ export const SelectFilter = () => {
     </Paper>
   );
 };
+
+export const AsyncSelectFilter = () => {
+  return (
+    <Paper style={{ padding: 10 }}>
+      <SearchFilter.Select
+        name="Asynchronous Values"
+        asyncValues={async () => {
+          const response = await fetch('https://swapi.dev/api/planets');
+          const json: { results: Array<{ name: string }> } =
+            await response.json();
+          return json.results.map(r => r.name);
+        }}
+      />
+    </Paper>
+  );
+};
