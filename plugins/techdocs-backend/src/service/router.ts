@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import {
-  PluginEndpointDiscovery,
   PluginCacheManager,
+  PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
@@ -23,8 +23,10 @@ import { Config } from '@backstage/config';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GeneratorBuilder,
+  Generators,
   getLocationForEntity,
   PreparerBuilder,
+  Publisher,
   PublisherBase,
 } from '@backstage/techdocs-common';
 import fetch from 'node-fetch';
@@ -35,6 +37,7 @@ import { Logger } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createCacheMiddleware, TechDocsCache } from '../cache';
+import { AwilixContainer } from 'awilix/lib/container';
 
 /**
  * All of the required dependencies for running TechDocs in the "out-of-the-box"
@@ -56,7 +59,6 @@ type OutOfTheBoxDeploymentOptions = {
  * configuration (prepare/generate handled externally in CI/CD).
  */
 type RecommendedDeploymentOptions = {
-  publisher: PublisherBase;
   logger: Logger;
   discovery: PluginEndpointDiscovery;
   config: Config;
@@ -81,10 +83,26 @@ function isOutOfTheBoxOption(
 
 export async function createRouter(
   options: RouterOptions,
+  container: AwilixContainer,
 ): Promise<express.Router> {
   const router = Router();
-  const { publisher, config, logger, discovery } = options;
+  const { config, logger, discovery } = options;
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+  /**
+   * Resolving (instantiating) the actual implementation of 'techdocsGenerator' from the IoC container
+   *
+   * Notice stringly typed retrieval...
+   *
+   *
+   * Other dependencies would be resolved/registered here as well depending what is passed in to this entry point of the module
+   */
+  const techdocsGenerator = container.resolve('techdocsGenerator');
+
+  const generators = new Generators();
+  generators.register('techdocs', techdocsGenerator);
+
+  const publisher = await Publisher.fromConfig(config, { logger, discovery });
 
   // Set up a cache client if configured.
   let cache: TechDocsCache | undefined;
@@ -207,7 +225,7 @@ export async function createRouter(
 
     // Set the synchronization and build process if "out-of-the-box" configuration is provided.
     if (isOutOfTheBoxOption(options)) {
-      const { preparers, generators } = options;
+      const { preparers } = options;
 
       await docsSynchronizer.doSync({
         responseHandler,

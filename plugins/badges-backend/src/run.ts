@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Importing this for standalone runs so the global metadata
+ * container is available for individually shipped packages
+ */
+import 'reflect-metadata';
 import { getRootLogger } from '@backstage/backend-common';
 import yn from 'yn';
 import { startStandaloneServer } from './service/standaloneServer';

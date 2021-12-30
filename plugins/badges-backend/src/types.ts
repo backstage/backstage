@@ -61,3 +61,9 @@ export interface BadgeFactory {
 export interface BadgeFactories {
   [id: string]: BadgeFactory;
 }
+
+export const injectables = {
+  CatalogClient: Symbol.for('CatalogClient'),
+  BadgeBuilder: Symbol.for('BadgeBuilder'),
+  BadgeFactories: Symbol.for('BadgeFactories'),
+};

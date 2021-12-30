@@ -23,15 +23,14 @@ import {
 import { ConfigReader } from '@backstage/config';
 import {
   DirectoryPreparer,
-  Generators,
   Preparers,
-  Publisher,
   TechdocsGenerator,
 } from '@backstage/techdocs-common';
 import Docker from 'dockerode';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
+import awilix from 'awilix';
 
 export interface ServerOptions {
   port: number;
@@ -67,26 +66,50 @@ export async function startStandaloneServer(
   preparers.register('dir', directoryPreparer);
 
   const dockerClient = new Docker();
-  const containerRunner = new DockerContainerRunner({ dockerClient });
 
-  const generators = new Generators();
-  const techdocsGenerator = TechdocsGenerator.fromConfig(config, {
-    logger,
-    containerRunner,
+  /**
+   * Awilix example.
+   */
+  const container = awilix.createContainer();
+
+  const techDocsGeneratorFactory = ({
+    containerRunner, // Injected by awilix based on name
+  }: {
+    containerRunner: DockerContainerRunner;
+  }) => {
+    return TechdocsGenerator.fromConfig(config, {
+      logger,
+      containerRunner,
+    });
+  };
+
+  container.register({
+    /**
+     *  Registering already instantiated implementation
+     */
+    dockerClient: awilix.asValue(dockerClient),
+    /**
+     *  Registering a class directly. Constructor argument object expects 'dockerClient' property, which is injected
+     *  automatically based on name
+     */
+    containerRunner: awilix.asClass(DockerContainerRunner),
+    /**
+     *  Registering a factory method. Factory args object expects 'containerRunner' property, which is injected
+     *  automatically based on name
+     */
+    techdocsGenerator: awilix.asFunction(techDocsGeneratorFactory),
   });
-  generators.register('techdocs', techdocsGenerator);
-
-  const publisher = await Publisher.fromConfig(config, { logger, discovery });
 
   logger.debug('Starting application server...');
-  const router = await createRouter({
-    preparers,
-    generators,
-    logger,
-    publisher,
-    config,
-    discovery,
-  });
+  const router = await createRouter(
+    {
+      preparers,
+      logger,
+      config,
+      discovery,
+    },
+    container,
+  );
   let service = createServiceBuilder(module)
     .setPort(options.port)
     .addRouter('/techdocs', router);

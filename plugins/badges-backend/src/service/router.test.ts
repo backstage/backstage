@@ -20,11 +20,13 @@ import {
   PluginEndpointDiscovery,
   SingleHostDiscovery,
 } from '@backstage/backend-common';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import type { Entity } from '@backstage/catalog-model';
 import { Config, ConfigReader } from '@backstage/config';
 import { createRouter } from './router';
-import { BadgeBuilder } from '../lib';
+import { BadgeBuilder, DefaultBadgeBuilder } from '../lib';
+import { Container } from 'inversify';
+import { injectables } from '../types';
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -51,6 +53,7 @@ describe('createRouter', () => {
     markdown: '[![...](...)]',
   };
 
+  const container = new Container();
   beforeAll(async () => {
     badgeBuilder = {
       getBadges: jest.fn(),
@@ -78,9 +81,20 @@ describe('createRouter', () => {
     });
     discovery = SingleHostDiscovery.fromConfig(config);
 
+    container
+      .bind<CatalogClient>(injectables.CatalogClient)
+      .toFactory<CatalogClient>(() => {
+        return () => {
+          // Some test implementation
+          return new CatalogClient({ discoveryApi: discovery });
+        };
+      });
+    container
+      .bind<BadgeBuilder>(injectables.BadgeBuilder)
+      .to(DefaultBadgeBuilder);
+
     const router = await createRouter({
-      badgeBuilder,
-      catalog,
+      container,
       config,
       discovery,
     });
@@ -93,8 +107,7 @@ describe('createRouter', () => {
 
   it('works', async () => {
     const router = await createRouter({
-      badgeBuilder,
-      catalog,
+      container,
       config,
       discovery,
     });

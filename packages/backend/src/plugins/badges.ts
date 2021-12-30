@@ -19,12 +19,15 @@ import {
   createDefaultBadgeFactories,
 } from '@backstage/plugin-badges-backend';
 import { PluginEnvironment } from '../types';
+import { Container } from 'inversify';
 
 export default async function createPlugin({
   config,
   discovery,
-}: PluginEnvironment) {
+  container,
+}: PluginEnvironment & { container: Container }) {
   return await createRouter({
+    container,
     config,
     discovery,
     badgeFactories: createDefaultBadgeFactories(),

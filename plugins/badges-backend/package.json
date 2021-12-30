@@ -41,6 +41,8 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "inversify": "^6.0.1",
+    "reflect-metadata": "^0.1.13",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },

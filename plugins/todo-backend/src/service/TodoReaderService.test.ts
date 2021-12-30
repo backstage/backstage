@@ -75,17 +75,19 @@ function makeTodo(text: string, extra?: Partial<TodoItem>): TodoItem {
 
 describe('TodoReaderService', () => {
   it('should be created', () => {
-    const service = new TodoReaderService({
-      todoReader: mockTodoReader(),
-      catalogClient: mockCatalogClient(),
-    });
+    const service = new TodoReaderService(
+      {
+        catalogClient: mockCatalogClient(),
+      },
+      mockTodoReader(),
+    );
     expect(service.listTodos).toEqual(expect.any(Function));
   });
 
   it('should list 0 todos', async () => {
     const todoReader = mockTodoReader([]);
     const catalogClient = mockCatalogClient(mockEntity);
-    const service = new TodoReaderService({ todoReader, catalogClient });
+    const service = new TodoReaderService({ catalogClient }, todoReader);
 
     await expect(service.listTodos({ entity: entityName })).resolves.toEqual({
       items: [],
@@ -119,7 +121,7 @@ describe('TodoReaderService', () => {
         },
       },
     });
-    const service = new TodoReaderService({ todoReader, catalogClient });
+    const service = new TodoReaderService({ catalogClient }, todoReader);
 
     await expect(service.listTodos({ entity: entityName })).resolves.toEqual({
       items: [todo1, todo2, todo3, todo4, todo5],
@@ -244,12 +246,14 @@ describe('TodoReaderService', () => {
 
     const todoReader = mockTodoReader([todo1, todo2, todo3, todo4, todo5]);
     const catalogClient = mockCatalogClient(mockEntity);
-    const service = new TodoReaderService({
+    const service = new TodoReaderService(
+      {
+        catalogClient,
+        defaultPageSize: 2,
+        maxPageSize: 3,
+      },
       todoReader,
-      catalogClient,
-      defaultPageSize: 2,
-      maxPageSize: 3,
-    });
+    );
 
     await expect(service.listTodos({ entity: entityName })).resolves.toEqual({
       items: [todo1, todo2],
@@ -284,10 +288,12 @@ describe('TodoReaderService', () => {
   });
 
   it('should require an entity', async () => {
-    const service = new TodoReaderService({
-      todoReader: mockTodoReader(),
-      catalogClient: mockCatalogClient(),
-    });
+    const service = new TodoReaderService(
+      {
+        catalogClient: mockCatalogClient(),
+      },
+      mockTodoReader(),
+    );
     await expect(service.listTodos({})).rejects.toThrow(
       'Entity filter is required to list TODOs',
     );
@@ -296,7 +302,7 @@ describe('TodoReaderService', () => {
   it('should throw if entity is not found', async () => {
     const todoReader = mockTodoReader([]);
     const catalogClient = mockCatalogClient();
-    const service = new TodoReaderService({ todoReader, catalogClient });
+    const service = new TodoReaderService({ catalogClient }, todoReader);
 
     await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
       expect.objectContaining({
@@ -315,7 +321,7 @@ describe('TodoReaderService', () => {
       ...mockEntity,
       metadata: { ...mockEntity.metadata, annotations: undefined },
     });
-    const service = new TodoReaderService({ todoReader, catalogClient });
+    const service = new TodoReaderService({ catalogClient }, todoReader);
 
     await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
       expect.objectContaining({
@@ -337,7 +343,7 @@ describe('TodoReaderService', () => {
         },
       },
     });
-    const service = new TodoReaderService({ todoReader, catalogClient });
+    const service = new TodoReaderService({ catalogClient }, todoReader);
 
     await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
       expect.objectContaining({
@@ -358,7 +364,7 @@ describe('TodoReaderService', () => {
         },
       },
     });
-    const service = new TodoReaderService({ todoReader, catalogClient });
+    const service = new TodoReaderService({ catalogClient }, todoReader);
 
     await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
       expect.objectContaining({

@@ -28,6 +28,7 @@ import {
 import { Config } from '@backstage/config';
 import { createTodoParser } from './createTodoParser';
 import path from 'path';
+import { Injectable } from '@nestjs/common';
 
 const excludedExtensions = [
   '.png',
@@ -53,6 +54,7 @@ type CacheItem = {
   result: ReadTodosResult;
 };
 
+@Injectable()
 export class TodoScmReader implements TodoReader {
   private readonly logger: Logger;
   private readonly reader: UrlReader;

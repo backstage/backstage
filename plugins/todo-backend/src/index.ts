@@ -20,5 +20,33 @@
  * @packageDocumentation
  */
 
+/**
+ * Note that todo doesn't have standalone capabilities like badges module does.
+ * Hence we are not importing 'reflect-metadata' anywhere within this package.
+ */
+import { Module } from '@nestjs/common';
+import { TodoReader, TodoScmReader } from './lib';
+import { TodoReaderService } from './service';
+
 export * from './lib';
 export * from './service';
+
+export const injectables = {
+  TodoReader: Symbol.for('TodoReader'),
+};
+
+@Module({})
+export class TodoModule {
+  static register({ scmReaderImpl }: { scmReaderImpl?: TodoReader }) {
+    return {
+      module: TodoModule,
+      providers: [
+        {
+          provide: injectables.TodoReader,
+          useValue: scmReaderImpl ?? TodoScmReader,
+        },
+        TodoReaderService,
+      ],
+    };
+  }
+}

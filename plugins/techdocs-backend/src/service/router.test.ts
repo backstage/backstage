@@ -31,6 +31,7 @@ import express, { Response } from 'express';
 import request from 'supertest';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createEventStream, createHttpResponse, createRouter } from './router';
+import awilix from 'awilix';
 
 jest.mock('@backstage/catalog-client');
 jest.mock('@backstage/config');
@@ -95,20 +96,26 @@ describe('createRouter', () => {
       return `http://backstage.local/api/${type}`;
     });
 
-    const outOfTheBoxRouter = await createRouter({
-      preparers,
-      generators,
-      publisher,
-      config: new ConfigReader({}),
-      logger: getVoidLogger(),
-      discovery,
-    });
-    const recommendedRouter = await createRouter({
-      publisher,
-      config: new ConfigReader({}),
-      logger: getVoidLogger(),
-      discovery,
-    });
+    const outOfTheBoxRouter = await createRouter(
+      {
+        preparers,
+        generators,
+        publisher,
+        config: new ConfigReader({}),
+        logger: getVoidLogger(),
+        discovery,
+      },
+      awilix.createContainer(),
+    );
+    const recommendedRouter = await createRouter(
+      {
+        publisher,
+        config: new ConfigReader({}),
+        logger: getVoidLogger(),
+        discovery,
+      },
+      awilix.createContainer(),
+    );
 
     app = express();
     app.use(outOfTheBoxRouter);

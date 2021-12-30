@@ -22,6 +22,10 @@ import {
   SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { createRouter } from './router';
+import { Container, interfaces } from 'inversify';
+import { injectables } from '../types';
+import { BadgeBuilder, DefaultBadgeBuilder } from '../lib';
+import { CatalogClient } from '@backstage/catalog-client';
 
 export interface ServerOptions {
   port: number;
@@ -36,9 +40,37 @@ export async function startStandaloneServer(
   const config = await loadBackendConfig({ logger, argv: process.argv });
   const discovery = SingleHostDiscovery.fromConfig(config);
 
+  const standaloneContainer = new Container();
+
+  /**
+   * Using without the need to modify existing subpackages immediately
+   */
+  standaloneContainer
+    .bind<CatalogClient>(injectables.CatalogClient)
+    .toFactory<CatalogClient>(
+      (
+        /* Already existing application context */ _context: interfaces.Context,
+      ) => {
+        return () => {
+          return new CatalogClient({ discoveryApi: discovery });
+        };
+      },
+    );
+
+  /**
+   * Adding @injectable decoration to a concrete implementation. See {@link DefaultBadgeBuilder}
+   */
+  standaloneContainer
+    .bind<BadgeBuilder>(injectables.BadgeBuilder)
+    .to(DefaultBadgeBuilder);
+
   logger.debug('Creating application...');
 
-  const router = await createRouter({ config, discovery });
+  const router = await createRouter({
+    config,
+    discovery,
+    container: standaloneContainer,
+  });
 
   let service = createServiceBuilder(module)
     .setPort(options.port)

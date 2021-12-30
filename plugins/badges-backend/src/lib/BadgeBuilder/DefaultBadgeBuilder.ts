@@ -17,10 +17,16 @@
 import { InputError } from '@backstage/errors';
 import { makeBadge, Format } from 'badge-maker';
 import { BadgeBuilder, BadgeInfo, BadgeOptions, BadgeSpec } from './types';
-import { Badge, BadgeFactories } from '../../types';
+import { Badge, BadgeFactories, injectables } from '../../types';
+import { inject, injectable } from 'inversify';
 
+@injectable()
 export class DefaultBadgeBuilder implements BadgeBuilder {
-  constructor(private readonly factories: BadgeFactories) {}
+  private readonly factories: BadgeFactories;
+
+  constructor(@inject(injectables.BadgeFactories) factories: BadgeFactories) {
+    this.factories = factories;
+  }
 
   public async getBadges(): Promise<BadgeInfo[]> {
     return Object.keys(this.factories).map(id => ({ id }));

@@ -41,6 +41,7 @@
     "@backstage/techdocs-common": "^0.11.0",
     "@types/express": "^4.17.6",
     "cross-fetch": "^3.0.6",
+    "awilix": "^6.0.0",
     "dockerode": "^3.3.1",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",

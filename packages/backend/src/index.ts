@@ -22,6 +22,13 @@
  * Happy hacking!
  */
 
+/**
+ * Necessary global, *strictly singleton*, import of a metadata container. Should be the first item imported of the app.
+ *
+ * This is needed by both inversify and nest.js.
+ */
+import 'reflect-metadata';
+
 import Router from 'express-promise-router';
 import {
   CacheManager,
@@ -34,6 +41,7 @@ import {
   UrlReaders,
   useHotMemoize,
   ServerTokenManager,
+  DockerContainerRunner,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
@@ -56,6 +64,22 @@ import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
 import { PluginEnvironment } from './types';
+import { Container, interfaces } from 'inversify';
+import { CatalogClient } from '@backstage/catalog-client';
+import {
+  BadgeBuilder,
+  DefaultBadgeBuilder,
+  injectables as badgesInjectables,
+} from '@backstage/plugin-badges-backend';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './AppModule';
+import {
+  TodoReader,
+  injectables as todosInjectables,
+} from '@backstage/plugin-todo-backend';
+import awilix from 'awilix';
+import { TechdocsGenerator } from '@backstage/techdocs-common/dist';
+import Docker from 'dockerode';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -92,6 +116,89 @@ async function main() {
 
   const createEnv = makeCreateEnv(config);
 
+  /**
+   * IoC container context modification examples.
+   *
+   * **In most cases these bindings would be omitted and initialized within the module itself instead of in here**
+   *
+   * The backend package should include these only if an integrator wants to use non-default implementations
+   */
+
+  /**
+   * Inversify. Same code as in standaloneServer within Inversify package
+   */
+  const inversifyContainer = new Container();
+
+  /**
+   * Using without the need to modify existing subpackages immediately
+   */
+  inversifyContainer
+    .bind<CatalogClient>(badgesInjectables.CatalogClient)
+    .toFactory<CatalogClient>(
+      (
+        /* Already existing application context */ _context: interfaces.Context,
+      ) => {
+        return () => {
+          return new CatalogClient({
+            discoveryApi: SingleHostDiscovery.fromConfig(config),
+          });
+        };
+      },
+    );
+
+  /**
+   * Adding @injectable decoration to a concrete implementation. See {@link DefaultBadgeBuilder}
+   */
+  inversifyContainer
+    .bind<BadgeBuilder>(badgesInjectables.BadgeBuilder)
+    .to(DefaultBadgeBuilder);
+
+  // empty line for separation
+
+  /**
+   * nest.js IoC
+   *
+   * See {@link AppModule} for actual registration code
+   *
+   */
+  const nestContext = await NestFactory.createApplicationContext(AppModule);
+
+  // empty line for separation
+
+  /**
+   * awilix
+   */
+  const awilixContainer = awilix.createContainer();
+
+  const techDocsGeneratorFactory = ({
+    containerRunner, // Injected by awilix based on name
+  }: {
+    containerRunner: DockerContainerRunner;
+  }) => {
+    return TechdocsGenerator.fromConfig(config, {
+      logger,
+      containerRunner,
+    });
+  };
+
+  const dockerClient = new Docker();
+  awilixContainer.register({
+    /**
+     *  Registering already instantiated implementation
+     */
+    dockerClient: awilix.asValue(dockerClient),
+    /**
+     *  Registering a class directly. Constructor argument object expects 'dockerClient' property, which is injected
+     *  automatically based on name
+     */
+    containerRunner: awilix.asClass(DockerContainerRunner),
+    /**
+     *  Registering a factory method. Factory args object expects 'containerRunner' property, which is injected
+     *  automatically based on name
+     */
+    techdocsGenerator: awilix.asFunction(techDocsGeneratorFactory),
+  });
+
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const codeCoverageEnv = useHotMemoize(module, () =>
@@ -124,13 +231,44 @@ async function main() {
   apiRouter.use('/auth', await auth(authEnv));
   apiRouter.use('/azure-devops', await azureDevOps(azureDevOpsEnv));
   apiRouter.use('/search', await search(searchEnv));
-  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
-  apiRouter.use('/todo', await todo(todoEnv));
+
+  /**
+   * Injecting a child container to the module. Child module should populate missing implementations
+   * to the container or default to parent container implementations if such exists
+   */
+  apiRouter.use(
+    '/badges',
+    await badges({ ...badgesEnv, container: inversifyContainer.createChild() }),
+  );
+
+  /**
+   * Injecting individual (nestjs) module implementation to the module. The dependency is constructed at the AppModule
+   * level and available here.
+   */
+  apiRouter.use(
+    '/todo',
+    await todo({
+      ...todoEnv,
+      todoReader: nestContext.get<TodoReader>(todosInjectables.TodoReader),
+    }),
+  );
+
+  /**
+   * Injecting a scoped container to the module. A scoped module should populate missing implementations
+   * to the container or default to parent container implementations if such exists
+   */
+  apiRouter.use(
+    '/techdocs',
+    await techdocs({
+      ...techdocsEnv,
+      container: awilixContainer.createScope(),
+    }),
+  );
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
   apiRouter.use('/kafka', await kafka(kafkaEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/graphql', await graphql(graphqlEnv));
-  apiRouter.use('/badges', await badges(badgesEnv));
+
   apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
   apiRouter.use(notFoundHandler());
 

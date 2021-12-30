@@ -25,12 +25,13 @@ import {
 } from '@backstage/catalog-model';
 import { TodoReader } from '../lib';
 import { ListTodosRequest, ListTodosResponse, TodoService } from './types';
+import { Inject, Injectable } from '@nestjs/common';
+import { injectables } from '../index';
 
 const DEFAULT_DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_MAX_PAGE_SIZE = 50;
 
 type Options = {
-  todoReader: TodoReader;
   catalogClient: CatalogApi;
   maxPageSize?: number;
   defaultPageSize?: number;
@@ -43,14 +44,18 @@ function wildcardRegex(str: string): RegExp {
   return new RegExp(`^${pattern}$`, 'i');
 }
 
+@Injectable()
 export class TodoReaderService implements TodoService {
   private readonly todoReader: TodoReader;
   private readonly catalogClient: CatalogApi;
   private readonly maxPageSize: number;
   private readonly defaultPageSize: number;
 
-  constructor(options: Options) {
-    this.todoReader = options.todoReader;
+  constructor(
+    options: Options,
+    @Inject(injectables.TodoReader) todoReader: TodoReader,
+  ) {
+    this.todoReader = todoReader;
     this.catalogClient = options.catalogClient;
     this.maxPageSize = options.maxPageSize ?? DEFAULT_MAX_PAGE_SIZE;
     this.defaultPageSize = options.defaultPageSize ?? DEFAULT_DEFAULT_PAGE_SIZE;

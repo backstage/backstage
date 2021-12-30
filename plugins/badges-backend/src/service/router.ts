@@ -20,28 +20,44 @@ import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
-import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
-import { BadgeContext, BadgeFactories } from '../types';
+import { BadgeBuilder } from '../lib';
+import { BadgeContext, BadgeFactories, injectables } from '../types';
+import { Container } from 'inversify';
 
 export interface RouterOptions {
-  badgeBuilder?: BadgeBuilder;
   badgeFactories?: BadgeFactories;
-  catalog?: CatalogApi;
   config: Config;
   discovery: PluginEndpointDiscovery;
+  container: Container;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const catalog =
-    options.catalog || new CatalogClient({ discoveryApi: options.discovery });
-  const badgeBuilder =
-    options.badgeBuilder ||
-    new DefaultBadgeBuilder(options.badgeFactories || {});
+  const container = options.container;
+
+  /**
+   * Dynamic rebinding injectables for cases where we want to
+   * continue passing in implementations/values
+   */
+  container
+    .rebind(injectables.BadgeFactories)
+    .toConstantValue(options.badgeFactories);
+
+  /**
+   * Omitting default implementations for now.
+   * Likely better to use container.isBound for cases where new instantiation is sufficient.
+   *
+   * Alternatively container could be made optional and new instantiated here for injectable dependencies
+   * that are needed within this module.
+   *
+   */
+  const catalog = container.get<CatalogClient>(injectables.CatalogClient);
+  const badgeBuilder = container.get<BadgeBuilder>(injectables.CatalogClient);
+
   const router = Router();
 
   router.get('/entity/:namespace/:kind/:name/badge-specs', async (req, res) => {
