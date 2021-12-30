@@ -167,6 +167,21 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
     // an update to "state" might lead to an updated UI so we include it as a trigger
   }, [updateSidebarPosition, state]);
 
+  // dynamically set width of footer to accommodate for pinning of the sidebar
+  const updateFooterWidth = useCallback(() => {
+    if (!dom) return;
+    const footer = dom.querySelector('.md-footer') as HTMLElement;
+    footer.style.width = `${dom.getBoundingClientRect().width}px`;
+  }, [dom]);
+
+  useEffect(() => {
+    updateFooterWidth();
+    window.addEventListener('resize', updateFooterWidth);
+    return () => {
+      window.removeEventListener('resize', updateFooterWidth);
+    };
+  });
+
   // a function that performs transformations that are executed prior to adding it to the DOM
   const preRender = useCallback(
     (rawContent: string, contentPath: string) =>
@@ -199,7 +214,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
           .md-sidebar {  position: fixed; bottom: 100px; width: 20rem; }
           .md-sidebar--secondary { right: 2rem; }
           .md-content { margin-bottom: 50px }
-          .md-footer { position: fixed; bottom: 0px; width: 100vw; }
+          .md-footer { position: fixed; bottom: 0px; }
           .md-footer-nav__link { width: 20rem;}
           .md-content { margin-left: 20rem; max-width: calc(100% - 20rem * 2 - 3rem); }
           .md-typeset { font-size: 1rem; }
@@ -241,7 +256,6 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             .md-footer {
               position: static;
               margin-left: 10rem;
-              width: calc(100% - 10rem);
             }
             .md-nav--primary .md-nav__title {
               white-space: normal;
