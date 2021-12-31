@@ -49,6 +49,16 @@ spec:
   # ...
 ```
 
+#### Azure Pipelines Only
+
+If you are only using Azure Pipelines along with a different SCM tool then you can use the following annotation to see Builds:
+
+```yaml
+dev.azure.com/project-definition: <project-name>/<definition-name>
+```
+
+In this case `<project-name>` will be the name of your Team Project and `<definition-name>` will be the name of the Build Definition you would like to see Builds for. If the Build Definition name has spaces in it make sure to put quotes around it
+
 ### Azure Pipelines Component
 
 To get the Azure Pipelines component working you'll need to do the following two steps:

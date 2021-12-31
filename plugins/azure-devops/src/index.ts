@@ -19,6 +19,7 @@ export {
   EntityAzurePipelinesContent,
   EntityAzurePullRequestsContent,
   isAzureDevOpsAvailable,
+  isAzurePipelinesAvailable,
   AzurePullRequestsPage,
 } from './plugin';
 

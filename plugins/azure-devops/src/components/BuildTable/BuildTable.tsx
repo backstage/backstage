@@ -17,8 +17,8 @@
 import { Box, Typography } from '@material-ui/core';
 import {
   BuildResult,
+  BuildRun,
   BuildStatus,
-  RepoBuild,
 } from '@backstage/plugin-azure-devops-common';
 import {
   Link,
@@ -126,7 +126,7 @@ const columns: TableColumn[] = [
     title: 'Build',
     field: 'title',
     width: 'auto',
-    render: (row: Partial<RepoBuild>) => (
+    render: (row: Partial<BuildRun>) => (
       <Link to={row.link || ''}>{row.title}</Link>
     ),
   },
@@ -138,7 +138,7 @@ const columns: TableColumn[] = [
   {
     title: 'State',
     width: 'auto',
-    render: (row: Partial<RepoBuild>) => (
+    render: (row: Partial<BuildRun>) => (
       <Box display="flex" alignItems="center">
         <Typography variant="button">
           {getBuildStateComponent(row.status, row.result)}
@@ -150,7 +150,7 @@ const columns: TableColumn[] = [
     title: 'Duration',
     field: 'queueTime',
     width: 'auto',
-    render: (row: Partial<RepoBuild>) => (
+    render: (row: Partial<BuildRun>) => (
       <Box display="flex" alignItems="center">
         <Typography>
           {getDurationFromDates(row.startTime, row.finishTime)}
@@ -162,7 +162,7 @@ const columns: TableColumn[] = [
     title: 'Age',
     field: 'queueTime',
     width: 'auto',
-    render: (row: Partial<RepoBuild>) =>
+    render: (row: Partial<BuildRun>) =>
       (row.queueTime
         ? DateTime.fromISO(row.queueTime)
         : DateTime.now()
@@ -171,7 +171,7 @@ const columns: TableColumn[] = [
 ];
 
 type BuildTableProps = {
-  items?: RepoBuild[];
+  items?: BuildRun[];
   loading: boolean;
   error?: Error;
 };

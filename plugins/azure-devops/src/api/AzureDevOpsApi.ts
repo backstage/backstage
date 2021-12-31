@@ -15,6 +15,8 @@
  */
 
 import {
+  BuildRun,
+  BuildRunOptions,
   DashboardPullRequest,
   PullRequest,
   PullRequestOptions,
@@ -49,4 +51,11 @@ export interface AzureDevOpsApi {
   getAllTeams(): Promise<Team[]>;
 
   getUserTeamIds(userId: string): Promise<string[]>;
+  
+  getBuildRuns(
+    projectName: string,
+    repoName?: string,
+    definitionName?: string,
+    options?: BuildRunOptions,
+  ): Promise<{ items: BuildRun[] }>;
 }
