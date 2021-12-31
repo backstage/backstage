@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
-import { AirbrakeWidget } from './AirbrakeWidget';
+import { EntityAirbrakeContent } from './EntityAirbrakeContent';
 import exampleData from './example-data.json';
 import { renderInTestApp } from '@backstage/test-utils';
 
-describe('AirbrakeWidget', () => {
+describe('EntityAirbrakeContent', () => {
   it('renders all errors sent from Airbrake', async () => {
-    const table = await renderInTestApp(<AirbrakeWidget />);
+    const table = await renderInTestApp(<EntityAirbrakeContent />);
     expect(exampleData.groups.length).toBeGreaterThan(0);
     for (const group of exampleData.groups) {
       expect(

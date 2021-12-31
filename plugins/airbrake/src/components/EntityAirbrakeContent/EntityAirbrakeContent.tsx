@@ -27,7 +27,7 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
   },
 }));
 
-export const AirbrakeWidget = () => {
+export const EntityAirbrakeContent = () => {
   const classes = useStyles();
 
   return (

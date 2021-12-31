@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { airbrakePlugin, AirbrakeWidget } from './plugin';
+import { airbrakePlugin, EntityAirbrakeContent } from './plugin';
 import { renderInTestApp } from '@backstage/test-utils';
 
 describe('Airbrake', () => {
@@ -23,7 +23,7 @@ describe('Airbrake', () => {
   });
 
   it('should render page', async () => {
-    const rendered = await renderInTestApp(<AirbrakeWidget />);
+    const rendered = await renderInTestApp(<EntityAirbrakeContent />);
     expect(rendered.getByText('ChunkLoadError')).toBeInTheDocument();
   });
 });

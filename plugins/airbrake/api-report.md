@@ -18,10 +18,10 @@ export const airbrakePlugin: BackstagePlugin<
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "AirbrakeWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "EntityAirbrakeContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const AirbrakeWidget: () => JSX.Element;
+export const EntityAirbrakeContent: () => JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```
