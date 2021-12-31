@@ -18285,6 +18285,11 @@ jose@^2.0.5:
   dependencies:
     "@panva/asn1.js" "^1.0.0"
 
+jose@^4.1.4:
+  version "4.3.7"
+  resolved "https://registry.npmjs.org/jose/-/jose-4.3.7.tgz#5000e4a2d41ae411a5abdd11e6baf63fc2973a69"
+  integrity sha512-S7Xfsy8nN9Iw/AZxk+ZxEbd5ImIwJPM0TfAo8zI8FF+3lidQ2yiK4dqzsaPKSbZD0woNVSY0KCql6rlKc5V7ug==
+
 joycon@^3.0.1:
   version "3.1.0"
   resolved "https://registry.npmjs.org/joycon/-/joycon-3.1.0.tgz#33bb2b6b5a6849a1e251bed623bdf610f477d49f"
@@ -21732,7 +21737,7 @@ openapi-sampler@^1.1.0:
     "@types/json-schema" "^7.0.7"
     json-pointer "^0.6.1"
 
-openid-client@^4.1.1, openid-client@^4.2.1:
+openid-client@^4.1.1:
   version "4.9.0"
   resolved "https://registry.npmjs.org/openid-client/-/openid-client-4.9.0.tgz#bdfc9194435316df419f759ce177635146b43074"
   integrity sha512-ThBbvRUUZwxUKBVK2UpDNIZ3eJkvtqWI8s5Dm+naV+gJdL+yRhT+8ywqct1gy5uL+xVS5+A/nhFcpJIisH2x6Q==
@@ -21742,6 +21747,16 @@ openid-client@^4.1.1, openid-client@^4.2.1:
     jose "^2.0.5"
     lru-cache "^6.0.0"
     make-error "^1.3.6"
+    object-hash "^2.0.1"
+    oidc-token-hash "^5.0.1"
+
+openid-client@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.npmjs.org/openid-client/-/openid-client-5.1.1.tgz#4b6597c34444f77494e1a057e93ad83875529324"
+  integrity sha512-vwbS4T7hpaWol0GerNabnslUWTxq1NHjnLqdFovzqWlLHW5kp08Tme8FSSeTswABjSC9d88ofTFnfAYy/zwtlQ==
+  dependencies:
+    jose "^4.1.4"
+    lru-cache "^6.0.0"
     object-hash "^2.0.1"
     oidc-token-hash "^5.0.1"
 
