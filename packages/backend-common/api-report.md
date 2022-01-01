@@ -235,7 +235,13 @@ export class Git {
     url: string;
   }): Promise<void>;
   // (undocumented)
-  clone(options: { url: string; dir: string; ref?: string }): Promise<void>;
+  clone(options: {
+    url: string;
+    dir: string;
+    ref?: string;
+    depth?: number;
+    noCheckout?: boolean;
+  }): Promise<void>;
   // (undocumented)
   commit(options: {
     dir: string;

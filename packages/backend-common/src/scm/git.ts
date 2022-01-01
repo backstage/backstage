@@ -76,12 +76,15 @@ export class Git {
     return git.commit({ fs, dir, message, author, committer });
   }
 
+  // https://isomorphic-git.org/docs/en/clone
   async clone(options: {
     url: string;
     dir: string;
     ref?: string;
+    depth?: number;
+    noCheckout?: boolean;
   }): Promise<void> {
-    const { url, dir, ref } = options;
+    const { url, dir, ref, depth, noCheckout } = options;
     this.config.logger?.info(`Cloning repo {dir=${dir},url=${url}}`);
     return git.clone({
       fs,
@@ -90,7 +93,8 @@ export class Git {
       dir,
       ref,
       singleBranch: true,
-      depth: 1,
+      depth: depth ?? 1,
+      noCheckout: noCheckout ?? false,
       onProgress: this.onProgressHandler(),
       headers: {
         'user-agent': 'git/@isomorphic-git',
