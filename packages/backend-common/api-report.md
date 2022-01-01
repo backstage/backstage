@@ -271,6 +271,8 @@ export class Git {
   // (undocumented)
   init(options: { dir: string; defaultBranch?: string }): Promise<void>;
   // (undocumented)
+  log(options: { dir: string; ref?: string }): Promise<ReadCommitResult[]>;
+  // (undocumented)
   merge(options: {
     dir: string;
     theirs: string;

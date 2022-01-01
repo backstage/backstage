@@ -199,6 +199,19 @@ export class Git {
     return git.resolveRef({ fs, dir, ref });
   }
 
+  // https://isomorphic-git.org/docs/en/log
+  async log(options: {
+    dir: string;
+    ref?: string;
+  }): Promise<ReadCommitResult[]> {
+    const { dir, ref } = options;
+    return git.log({
+      fs,
+      dir,
+      ref: ref ?? 'HEAD',
+    });
+  }
+
   private onAuth = () => ({
     username: this.config.username,
     password: this.config.password,
