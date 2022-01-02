@@ -18,7 +18,11 @@ import { AppConfig } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { compileConfigSchemas } from './compile';
 import { collectConfigSchemas } from './collect';
-import { filterByVisibility, filterErrorsByVisibility } from './filtering';
+import {
+  filterByVisibility,
+  filterErrorsByVisibility,
+  filterByDeprecated,
+} from './filtering';
 import {
   ValidationError,
   ConfigSchema,
@@ -82,7 +86,7 @@ export async function loadConfigSchema(
   return {
     process(
       configs: AppConfig[],
-      { visibility, valueTransform, withFilteredKeys } = {},
+      { visibility, valueTransform, withFilteredKeys, withDeprecatedKeys } = {},
     ): AppConfig[] {
       const result = validate(configs);
 
@@ -108,6 +112,11 @@ export async function loadConfigSchema(
             valueTransform,
             withFilteredKeys,
           ),
+          ...filterByDeprecated(
+            data,
+            result.deprecationBySchemaPath,
+            withDeprecatedKeys,
+          ),
         }));
       } else if (valueTransform) {
         processedConfigs = processedConfigs.map(({ data, context }) => ({
@@ -118,6 +127,11 @@ export async function loadConfigSchema(
             result.visibilityByDataPath,
             valueTransform,
             withFilteredKeys,
+          ),
+          ...filterByDeprecated(
+            data,
+            result.deprecationBySchemaPath,
+            withDeprecatedKeys,
           ),
         }));
       }

@@ -15,12 +15,43 @@
  */
 
 import { JsonObject, JsonValue } from '@backstage/types';
+import { has } from 'lodash';
 import {
   ConfigVisibility,
   DEFAULT_CONFIG_VISIBILITY,
   TransformFunc,
   ValidationError,
 } from './types';
+
+/**
+ * This filters data by deprecation status to only include those which have been deprecated
+ *
+ * @param data - configuration data
+ * @param deprecationBySchemaPath - mapping of schema path to deprecation description
+ * @returns deprecated configuration keys with their deprecation description
+ */
+export function filterByDeprecated(
+  data: JsonObject,
+  deprecationBySchemaPath: Map<string, string>,
+  withDeprecatedKeys: boolean = true,
+): { deprecatedKeys: { key: string; description: string }[] } {
+  const deprecatedKeys = new Array<{ key: string; description: string }>();
+  if (!withDeprecatedKeys) {
+    return { deprecatedKeys };
+  }
+
+  deprecationBySchemaPath.forEach((desc, schemaPath) => {
+    // convert schema path to object path (/properties/techdocs/properties/storageUrl -> techdocs.storageUrl)
+    const propertyPath = schemaPath
+      .replace(/^\/properties\//, '') // remove leading `/properties/` entirely
+      .replace(/\/properties\//g, '.'); // replace all other `/properties/` with a `.`
+    if (has(data, propertyPath)) {
+      deprecatedKeys.push({ key: propertyPath, description: desc });
+    }
+  });
+
+  return { deprecatedKeys };
+}
 
 /**
  * This filters data by visibility by discovering the visibility of each

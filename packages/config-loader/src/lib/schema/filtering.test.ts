@@ -16,7 +16,11 @@
 
 import { JsonObject } from '@backstage/types';
 import { ConfigVisibility } from './types';
-import { filterByVisibility, filterErrorsByVisibility } from './filtering';
+import {
+  filterByVisibility,
+  filterErrorsByVisibility,
+  filterByDeprecated,
+} from './filtering';
 
 const data = {
   arr: ['f', 'b', 's'],
@@ -61,6 +65,13 @@ const visibility = new Map<string, ConfigVisibility>(
     '/objF': 'frontend',
     '/objB': 'backend',
     '/objS': 'secret',
+  }),
+);
+
+const deprecations = new Map<string, string>(
+  Object.entries({
+    '/properties/arr': 'deprecated array',
+    '/properties/objB/properties/never': 'deprecated nested property',
   }),
 );
 
@@ -379,5 +390,19 @@ describe('filterErrorsByVisibility', () => {
       expect.objectContaining({ message: 'a' }),
       expect.objectContaining({ message: 'c' }),
     ]);
+  });
+});
+
+describe('filterByDeprecated', () => {
+  it('should allow empty list of deprecations', () => {
+    expect(filterByDeprecated(data, new Map())).toEqual({ deprecatedKeys: [] });
+  });
+  it('should return a list of deprecated properties', () => {
+    expect(filterByDeprecated(data, deprecations)).toEqual({
+      deprecatedKeys: [
+        { key: 'arr', description: 'deprecated array' },
+        { key: 'objB.never', description: 'deprecated nested property' },
+      ],
+    });
   });
 });

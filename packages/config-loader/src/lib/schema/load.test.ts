@@ -62,7 +62,11 @@ describe('loadConfigSchema', () => {
 
     expect(schema.process(configs)).toEqual(configs);
     expect(schema.process(configs, { visibility: ['frontend'] })).toEqual([
-      { data: { key1: 'a' }, context: 'test' },
+      {
+        data: { key1: 'a' },
+        context: 'test',
+        deprecatedKeys: [],
+      },
     ]);
     expect(
       schema.process(configs, {
@@ -71,7 +75,12 @@ describe('loadConfigSchema', () => {
         withFilteredKeys: true,
       }),
     ).toEqual([
-      { data: { key1: 'X' }, context: 'test', filteredKeys: ['key2'] },
+      {
+        data: { key1: 'X' },
+        context: 'test',
+        filteredKeys: ['key2'],
+        deprecatedKeys: [],
+      },
     ]);
     expect(
       schema.process(configs, {
@@ -79,14 +88,23 @@ describe('loadConfigSchema', () => {
         withFilteredKeys: true,
       }),
     ).toEqual([
-      { data: { key1: 'X', key2: 'X' }, context: 'test', filteredKeys: [] },
+      {
+        data: { key1: 'X', key2: 'X' },
+        context: 'test',
+        filteredKeys: [],
+        deprecatedKeys: [],
+      },
     ]);
 
     const serialized = schema.serialize();
 
     const schema2 = await loadConfigSchema({ serialized });
     expect(schema2.process(configs, { visibility: ['frontend'] })).toEqual([
-      { data: { key1: 'a' }, context: 'test' },
+      {
+        data: { key1: 'a' },
+        context: 'test',
+        deprecatedKeys: [],
+      },
     ]);
     expect(() =>
       schema2.process([...configs, { data: { key1: 3 }, context: 'test2' }]),
@@ -131,7 +149,11 @@ describe('loadConfigSchema', () => {
         'Config validation failed, Config should be number { type=number } at /key2',
       );
       expect(schema.process(configs, { visibility: ['frontend'] })).toEqual([
-        { data: { key1: 'a' }, context: 'test' },
+        {
+          data: { key1: 'a' },
+          context: 'test',
+          deprecatedKeys: [],
+        },
       ]);
       expect(() => schema.process(configs, { visibility: ['secret'] })).toThrow(
         'Config validation failed, Config should be number { type=number } at /key2',
@@ -179,7 +201,13 @@ describe('loadConfigSchema', () => {
       ];
       expect(
         schema.process(mkConfig({ x: 1 }), { visibility: ['frontend'] }),
-      ).toEqual([{ data: { nested: [{}] }, context: 'test' }]);
+      ).toEqual([
+        {
+          data: { nested: [{}] },
+          context: 'test',
+          deprecatedKeys: [],
+        },
+      ]);
       expect(() => schema.process(mkConfig({ y: 1 }))).toThrow(
         'Config validation failed, Config should be string { type=string } at /nested/0/y',
       );
@@ -190,10 +218,22 @@ describe('loadConfigSchema', () => {
       );
       expect(
         schema.process(mkConfig({ x: 'a' }), { visibility: ['frontend'] }),
-      ).toEqual([{ data: { nested: [{}] }, context: 'test' }]);
+      ).toEqual([
+        {
+          data: { nested: [{}] },
+          context: 'test',
+          deprecatedKeys: [],
+        },
+      ]);
       expect(
         schema.process(mkConfig({ y: 'aaa' }), { visibility: ['frontend'] }),
-      ).toEqual([{ data: { nested: [{ y: 'aaa' }] }, context: 'test' }]);
+      ).toEqual([
+        {
+          data: { nested: [{ y: 'aaa' }] },
+          context: 'test',
+          deprecatedKeys: [],
+        },
+      ]);
       expect(() =>
         schema.process(mkConfig({ y: 'aaaa' }), { visibility: ['frontend'] }),
       ).toThrow(

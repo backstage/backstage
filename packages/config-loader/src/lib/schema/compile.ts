@@ -81,6 +81,13 @@ export function compileConfigSchemas(
   const merged = mergeConfigSchemas(schemas.map(_ => _.value));
   const validate = ajv.compile(merged);
 
+  const deprecationBySchemaPath = new Map<string, string>();
+  traverse(merged, (schema, path) => {
+    if ('deprecated' in schema) {
+      deprecationBySchemaPath.set(path, schema.deprecated);
+    }
+  });
+
   const visibilityBySchemaPath = new Map<string, ConfigVisibility>();
   traverse(merged, (schema, path) => {
     if (schema.visibility && schema.visibility !== 'backend') {
@@ -99,12 +106,14 @@ export function compileConfigSchemas(
         errors: validate.errors ?? [],
         visibilityByDataPath: new Map(visibilityByDataPath),
         visibilityBySchemaPath,
+        deprecationBySchemaPath,
       };
     }
 
     return {
       visibilityByDataPath: new Map(visibilityByDataPath),
       visibilityBySchemaPath,
+      deprecationBySchemaPath,
     };
   };
 }

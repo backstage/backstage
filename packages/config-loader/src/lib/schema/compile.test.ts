@@ -40,6 +40,7 @@ describe('compileConfigSchemas', () => {
       ],
       visibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(),
+      deprecationBySchemaPath: new Map(),
     });
     expect(validate([{ data: { b: 'b' }, context: 'test' }])).toEqual({
       errors: [
@@ -53,6 +54,7 @@ describe('compileConfigSchemas', () => {
       ],
       visibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(),
+      deprecationBySchemaPath: new Map(),
     });
   });
 
@@ -112,6 +114,7 @@ describe('compileConfigSchemas', () => {
           '/properties/d/items': 'frontend',
         }),
       ),
+      deprecationBySchemaPath: new Map(),
     });
   });
 
@@ -136,5 +139,35 @@ describe('compileConfigSchemas', () => {
     ).toThrow(
       "Config schema visibility is both 'frontend' and 'secret' for properties/a/visibility",
     );
+  });
+
+  it('should discover deprecations', () => {
+    const validate = compileConfigSchemas([
+      {
+        path: 'a1',
+        value: {
+          type: 'object',
+          properties: {
+            a: { type: 'string', deprecated: 'deprecation reason for a' },
+            b: { type: 'string', deprecated: 'deprecation reason for b' },
+            c: { type: 'string' },
+          },
+        },
+      },
+    ]);
+    expect(
+      validate([
+        { data: { a: 'a', b: 'b', c: 'c', d: ['d'] }, context: 'test' },
+      ]),
+    ).toEqual({
+      deprecationBySchemaPath: new Map(
+        Object.entries({
+          '/properties/a': 'deprecation reason for a',
+          '/properties/b': 'deprecation reason for b',
+        }),
+      ),
+      visibilityByDataPath: new Map(),
+      visibilityBySchemaPath: new Map(),
+    });
   });
 });

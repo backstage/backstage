@@ -21,6 +21,7 @@ export type ConfigSchemaProcessingOptions = {
   visibility?: ConfigVisibility[];
   valueTransform?: TransformFunc<any>;
   withFilteredKeys?: boolean;
+  withDeprecatedKeys?: boolean;
 };
 
 // Warning: (ae-missing-release-tag) "ConfigTarget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

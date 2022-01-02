@@ -182,10 +182,10 @@ function compileTsSchemas(paths: string[]) {
         program,
         // All schemas should export a `Config` symbol
         'Config',
-        // This enables usage of @visibility is doc comments
+        // This enables usage of @visibility and @deprecated is doc comments
         {
           required: true,
-          validationKeywords: ['visibility'],
+          validationKeywords: ['visibility', 'deprecated'],
         },
         [path.split(sep).join('/')], // Unix paths are expected for all OSes here
       ) as JsonObject | null;
