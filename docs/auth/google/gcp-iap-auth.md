@@ -16,30 +16,32 @@ Backstage.
 It is assumed an IAP is already serving traffic in front of a Backstage instance
 configured to serve the frontend app from the backend.
 
-## Frontend Changes
+## Configuration
 
-Any Backstage app needs a `SignInPage` to be configured. When using IAP Proxy
-authentication Backstage will only be loaded once the user has already
-successfully authenticated. As such, we won't need to display a sign-in page
-visually, however we will need to pick a `SignInPage` implementation which knows
-how to silently fetch the IAP-injected token and other information via the
-backend.
+Let's start by adding the following `auth` configuration in your
+`app-config.yaml` or `app-config.production.yaml` or similar:
 
-Update your `createApp` call in `packages/app/src/App.tsx`, to pass in the
-proper sign-in page implementation.
-
-```diff
-+import { DelegatedSignInPage } from '@backstage/core-components';
-
- const app = createApp({
-   components: {
-+    SignInPage: props => <DelegatedSignInPage {...props} provider="gcp-iap" />,
+```yaml
+auth:
+  providers:
+    gcp-iap:
+      audience:
+        '/projects/<project number>/global/backendServices/<backend service id>'
 ```
+
+You can find the project number and service ID in the Google Cloud Console.
+
+This config section must be in place for the provider to load at all. Now let's
+add the provider itself.
 
 ## Backend Changes
 
-- Add a `providerFactories` entry to the router in
-  `packages/backend/plugin/auth.ts`.
+This provider is not enabled by default in the auth backend code, because
+besides the config section above, it also needs to be given one or more
+callbacks in actual code as well as described below.
+
+Add a `providerFactories` entry to the router in
+`packages/backend/plugin/auth.ts`.
 
 ```ts
 import { createGcpIapProvider } from '@backstage/plugin-auth-backend';
@@ -59,7 +61,9 @@ export default async function createPlugin({
       'gcp-iap': createGcpIapProvider({
         // Replace the auth handler if you want to customize the returned user
         // profile info (can be left out; the default implementation is shown
-        // below which only returns the email.
+        // below which only returns the email). You may want to amend this code
+        // with something that loads additional user profile data out of e.g.
+        // GSuite or LDAP or similar.
         async authHandler({ iapToken }) {
           return { profile: { email: iapToken.email } };
         },
@@ -68,7 +72,7 @@ export default async function createPlugin({
           // and the IAP token and produces the Backstage token with the
           // relevant user info.
           async resolver({ profile, result: { iapToken } }, ctx) {
-            // Somehow compute the Backstage token claims, just some dummy code
+            // Somehow compute the Backstage token claims. Just some dummy code
             // shown here, but you may want to query your LDAP server, or
             // GSuite or similar, based on the IAP token sub/email claims
             const id = `user:default/${iapToken.email.split('@')[0]}`;
@@ -85,14 +89,37 @@ export default async function createPlugin({
 }
 ```
 
-## Configuration
+Now the backend is ready to serve auth requests on the
+`/api/auth/gcp-iap/refresh` endpoint. All that's left is to update the frontend
+sign-in mechanism to poll that endpoint through the IAP, on the user's behalf.
 
-Use the following `auth` configuration:
+## Frontend Changes
 
-```yaml
-auth:
-  providers:
-    gcp-iap:
-      audience:
-        '/projects/<project number>/global/backendServices/<backend service id>'
+Any Backstage app needs a `SignInPage` to be configured. Its purpose is to
+establish who the user is and what their identifying credentials are, blocking
+rendering the rest of the UI until that's complete, and then keeping those
+credentials fresh.
+
+When using IAP Proxy authentication, the Backstage UI will only be loaded once
+the user has already successfully completely authenticated themselves with the
+IAP and has an active session, so we don't want to make the user have to go
+through a _second_ layer of authentication flows after that.
+
+As such, we want to not display a sign-in page visually at all. Instead, we will
+pick a `SignInPage` implementation component which knows how to silently make
+requests to the backend provider we configured above, and just trusting its
+output to properly represent the current user. Luckily, Backstage comes with a
+component for this purpose out of the box.
+
+Update your `createApp` call in `packages/app/src/App.tsx`, as follows.
+
+```diff
++import { DelegatedSignInPage } from '@backstage/core-components';
+
+ const app = createApp({
+   components: {
++    SignInPage: props => <DelegatedSignInPage {...props} provider="gcp-iap" />,
 ```
+
+After this, your app should be ready to leverage the Identity-Aware Proxy for
+authentication!
