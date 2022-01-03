@@ -26,6 +26,11 @@ export const gocdApiRef = createApiRef<GoCdApi>({
   id: 'plugin.gocd.service',
 });
 
+/**
+ * Plugin definition.
+ *
+ * @public
+ */
 export const gocdPlugin = createPlugin({
   id: 'gocd',
   apis: [

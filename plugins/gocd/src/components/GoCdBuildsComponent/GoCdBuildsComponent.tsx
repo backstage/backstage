@@ -37,6 +37,11 @@ import { Item, Select } from '../Select';
  */
 export const GOCD_PIPELINES_ANNOTATION = 'gocd.org/pipelines';
 
+/**
+ * Returns true if GoCD annotation is present in the given entity.
+ *
+ * @public
+ */
 export const isGoCdAvailable = (entity: Entity): boolean =>
   Boolean(entity.metadata.annotations?.[GOCD_PIPELINES_ANNOTATION]);
 

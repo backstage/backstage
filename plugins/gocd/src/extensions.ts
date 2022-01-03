@@ -16,6 +16,11 @@
 import { gocdPlugin } from './plugin';
 import { createComponentExtension } from '@backstage/core-plugin-api';
 
+/**
+ * GoCD builds table component.
+ *
+ * @public
+ */
 export const EntityGoCdContent = gocdPlugin.provide(
   createComponentExtension({
     name: 'EntityGoCdContent',
