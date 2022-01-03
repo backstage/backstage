@@ -15,6 +15,8 @@
  */
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { ConfigReader } from '@backstage/core-app-api';
+import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderWithEffects, TestApiProvider } from '@backstage/test-utils';
 import { GoCdBuildsComponent } from './GoCdBuildsComponent';
@@ -29,11 +31,21 @@ const mockApiClient: GoCdApi = {
 };
 
 describe('GoCdArtifactsComponent', () => {
+  const configApi: ConfigApi = new ConfigReader({
+    gocd: {
+      baseUrl: 'gocd.baseurl.com',
+    },
+  });
   const entityValue = { entity: { metadata: {} } as Entity };
 
   const renderComponent = () =>
     renderWithEffects(
-      <TestApiProvider apis={[[gocdApiRef, mockApiClient]]}>
+      <TestApiProvider
+        apis={[
+          [gocdApiRef, mockApiClient],
+          [configApiRef, configApi],
+        ]}
+      >
         <EntityProvider entity={entityValue.entity}>
           <GoCdBuildsComponent />
         </EntityProvider>
