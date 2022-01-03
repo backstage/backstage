@@ -1,5 +1,25 @@
 # example-backend
 
+## 0.2.59
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-rollbar-backend@0.1.18
+  - @backstage/plugin-auth-backend@0.6.0
+  - @backstage/backend-common@0.10.1
+  - @backstage/plugin-app-backend@0.3.21
+  - @backstage/plugin-catalog-backend@0.19.4
+  - @backstage/plugin-scaffolder-backend@0.15.19
+  - @backstage/integration@0.7.0
+  - @backstage/plugin-techdocs-backend@0.12.2
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.4
+  - @backstage/plugin-permission-backend@0.2.3
+  - @backstage/plugin-permission-node@0.2.3
+  - @backstage/plugin-code-coverage-backend@0.1.18
+  - @backstage/plugin-scaffolder-backend-module-rails@0.2.2
+  - @backstage/plugin-todo-backend@0.1.17
+
 ## 0.2.58
 
 ### Patch Changes

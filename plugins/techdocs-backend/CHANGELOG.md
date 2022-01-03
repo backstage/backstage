@@ -1,5 +1,15 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.12.2
+
+### Patch Changes
+
+- da676a49ab: Add support for API auth in DefaultTechDocsCollator
+- Updated dependencies
+  - @backstage/techdocs-common@0.11.2
+  - @backstage/backend-common@0.10.1
+  - @backstage/integration@0.7.0
+
 ## 0.12.1
 
 ### Patch Changes

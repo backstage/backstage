@@ -5,7 +5,6 @@
 ```ts
 /// <reference types="react" />
 
-import { Action } from '@material-table/core';
 import { ApiEntity } from '@backstage/catalog-model';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
@@ -15,6 +14,7 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
+import { TableProps } from '@backstage/core-components';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
@@ -53,27 +53,17 @@ const apiDocsPlugin: BackstagePlugin<
 export { apiDocsPlugin };
 export { apiDocsPlugin as plugin };
 
+// @public
+export const ApiExplorerIndexPage: (
+  props: DefaultApiExplorerPageProps,
+) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "ApiExplorerPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const ApiExplorerPage: ({
-  initiallySelectedFilter,
-  columns,
-  actions,
-}: {
-  initiallySelectedFilter?: UserListFilterKind | undefined;
-  columns?: TableColumn<CatalogTableRow>[] | undefined;
-  actions?:
-    | (
-        | Action<CatalogTableRow>
-        | {
-            action: (rowData: CatalogTableRow) => Action<CatalogTableRow>;
-            position: string;
-          }
-        | ((rowData: CatalogTableRow) => Action<CatalogTableRow>)
-      )[]
-    | undefined;
-}) => JSX.Element;
+export const ApiExplorerPage: (
+  props: DefaultApiExplorerPageProps,
+) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "ApiTypeTitle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -109,6 +99,20 @@ export const ConsumedApisCard: ({ variant }: Props_2) => JSX.Element;
 //
 // @public (undocumented)
 export const ConsumingComponentsCard: ({ variant }: Props_5) => JSX.Element;
+
+// @public
+export const DefaultApiExplorerPage: ({
+  initiallySelectedFilter,
+  columns,
+  actions,
+}: DefaultApiExplorerPageProps) => JSX.Element;
+
+// @public
+export type DefaultApiExplorerPageProps = {
+  initiallySelectedFilter?: UserListFilterKind;
+  columns?: TableColumn<CatalogTableRow>[];
+  actions?: TableProps<CatalogTableRow>['actions'];
+};
 
 // Warning: (ae-missing-release-tag) "defaultDefinitionWidgets" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

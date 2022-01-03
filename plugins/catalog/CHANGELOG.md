@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog
 
+## 0.7.6
+
+### Patch Changes
+
+- 7d4b4e937c: Uptake changes to the GitHub Credentials Provider interface.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.9
+  - @backstage/integration-react@0.1.17
+
 ## 0.7.5
 
 ### Patch Changes

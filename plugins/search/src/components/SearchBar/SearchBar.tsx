@@ -20,6 +20,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useContext,
 } from 'react';
 import { useDebounce } from 'react-use';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
@@ -32,7 +33,11 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
 
-import { useSearch } from '../SearchContext';
+import {
+  SearchContext,
+  SearchContextProvider,
+  useSearch,
+} from '../SearchContext';
 import { TrackSearch } from '../SearchTracker';
 
 /**
@@ -46,6 +51,11 @@ export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
   onClear?: () => void;
   onSubmit?: () => void;
   onChange: (value: string) => void;
+};
+
+const useSearchContextCheck = () => {
+  const context = useContext(SearchContext);
+  return context !== undefined;
 };
 
 /**
@@ -69,6 +79,7 @@ export const SearchBarBase = ({
 }: SearchBarBaseProps) => {
   const configApi = useApi(configApiRef);
   const [value, setValue] = useState<string>(defaultValue as string);
+  const hasSearchContext = useSearchContextCheck();
 
   useEffect(() => {
     setValue(prevValue =>
@@ -119,7 +130,7 @@ export const SearchBarBase = ({
     </InputAdornment>
   );
 
-  return (
+  const searchBar = (
     <TrackSearch>
       <InputBase
         data-testid="search-bar-next"
@@ -134,6 +145,12 @@ export const SearchBarBase = ({
         {...props}
       />
     </TrackSearch>
+  );
+
+  return hasSearchContext ? (
+    searchBar
+  ) : (
+    <SearchContextProvider>{searchBar}</SearchContextProvider>
   );
 };
 

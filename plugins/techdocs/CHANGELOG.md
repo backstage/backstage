@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs
 
+## 0.12.12
+
+### Patch Changes
+
+- aa8f764a3e: Add the techdocs.sanitizer.allowedIframeHosts config.
+  This config allows all iframes which have the host of the attribute src in the 'allowedIframehosts' list to be displayed in the documentation.
+- Updated dependencies
+  - @backstage/plugin-search@0.5.3
+  - @backstage/plugin-catalog@0.7.6
+  - @backstage/plugin-catalog-react@0.6.9
+  - @backstage/integration@0.7.0
+  - @backstage/integration-react@0.1.17
+
 ## 0.12.11
 
 ### Patch Changes

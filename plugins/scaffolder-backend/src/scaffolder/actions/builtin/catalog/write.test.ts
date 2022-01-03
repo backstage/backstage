@@ -69,4 +69,33 @@ describe('catalog:write', () => {
       yaml.stringify(entity),
     );
   });
+
+  it('should support a custom filename', async () => {
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'n',
+        namespace: 'ns',
+        annotations: {
+          [ORIGIN_LOCATION_ANNOTATION]: 'url:https://example.com',
+        },
+      },
+      spec: {},
+    };
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        filePath: 'some-dir/entity-info.yaml',
+        entity,
+      },
+    });
+
+    expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
+    expect(fsMock.writeFile).toHaveBeenCalledWith(
+      resolvePath(mockContext.workspacePath, 'some-dir/entity-info.yaml'),
+      yaml.stringify(entity),
+    );
+  });
 });

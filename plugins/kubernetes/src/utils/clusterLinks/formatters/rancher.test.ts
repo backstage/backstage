@@ -16,6 +16,19 @@
 import { rancherFormatter } from './rancher';
 
 describe('clusterLinks - rancher formatter', () => {
+  it('should provide a dashboardUrl in the options', () => {
+    expect(() =>
+      rancherFormatter({
+        object: {
+          metadata: {
+            name: 'foobar',
+            namespace: 'bar',
+          },
+        },
+        kind: 'Deployment',
+      }),
+    ).toThrowError('Rancher dashboard requires a dashboardUrl option');
+  });
   it('should return a url on the workloads when there is a namespace only', () => {
     const url = rancherFormatter({
       dashboardUrl: new URL('https://k8s.foo.com'),

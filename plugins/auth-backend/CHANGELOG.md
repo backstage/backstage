@@ -1,5 +1,45 @@
 # @backstage/plugin-auth-backend
 
+## 0.6.0
+
+### Minor Changes
+
+- c88cdacc1a: Avoid ever returning OAuth refresh tokens back to the client, and always exchange refresh tokens for a new one when available for all providers.
+
+  This comes with a breaking change to the TypeScript API for custom auth providers. The `refresh` method of `OAuthHandlers` implementation must now return a `{ response, refreshToken }` object rather than a direct response. Existing `refresh` implementations are typically migrated by changing an existing return expression that looks like this:
+
+  ```ts
+  return await this.handleResult({
+    fullProfile,
+    params,
+    accessToken,
+    refreshToken,
+  });
+  ```
+
+  Into the following:
+
+  ```ts
+  return {
+    response: await this.handleResult({
+      fullProfile,
+      params,
+      accessToken,
+    }),
+    refreshToken,
+  };
+  ```
+
+### Patch Changes
+
+- f0f81f6cc7: Replaces the usage of `got` with `node-fetch` in the `getUserPhoto` method of the Microsoft provider
+- 2f26120a36: Update `auth0` and `onelogin` providers to allow for `authHandler` and `signIn.resolver` configuration.
+- a9abafa9df: Fixed bug on refresh token on Okta provider, now it gets the refresh token and it sends it into providerInfo
+- eb48e78886: Enforce cookie SSL protection when in production for auth-backend sessions
+- Updated dependencies
+  - @backstage/test-utils@0.2.1
+  - @backstage/backend-common@0.10.1
+
 ## 0.5.2
 
 ### Patch Changes
