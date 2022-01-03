@@ -207,6 +207,34 @@ describe('SearchFilter', () => {
       ).toBeInTheDocument();
     });
 
+    it('Renders values when provided asynchronously', async () => {
+      render(
+        <SearchContextProvider initialState={initialState}>
+          <SearchFilter.Select name={name} asyncValues={async () => values} />
+        </SearchContextProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByRole('button')).toBeInTheDocument();
+        expect(
+          screen.getByRole('button').getAttribute('aria-disabled'),
+        ).not.toBe('true');
+      });
+
+      userEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      expect(
+        screen.getByRole('option', { name: values[0] }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('option', { name: values[1] }),
+      ).toBeInTheDocument();
+    });
+
     it('Renders correctly based on filter state', async () => {
       render(
         <SearchContextProvider

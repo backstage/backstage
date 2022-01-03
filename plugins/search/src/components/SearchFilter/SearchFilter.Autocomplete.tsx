@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Chip, TextField } from '@material-ui/core';
 import {
   Autocomplete,
@@ -38,6 +38,7 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
     asyncValues,
     asyncDebounce,
     className,
+    defaultValue,
     multiple,
     name,
     values: givenValues,
@@ -51,7 +52,23 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
     givenValues,
     asyncDebounce,
   );
-  const { setFilters } = useSearch();
+  const { filters, setFilters } = useSearch();
+  const filterValue =
+    (filters[name] as string | string[] | undefined) || (multiple ? [] : null);
+
+  useEffect(() => {
+    const defaultIsEmpty = !defaultValue;
+    const defaultIsEmptyArray =
+      Array.isArray(defaultValue) && defaultValue.length === 0;
+
+    if (!defaultIsEmpty && !defaultIsEmptyArray) {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        [name]: defaultValue,
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Set new filter values on input change.
   const handleChange = (
@@ -92,10 +109,11 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
     <Autocomplete
       multiple={multiple}
       className={className}
-      id={`${multiple ?? 'multi-'}select-filter-${name}--select`}
+      id={`${multiple ? 'multi-' : ''}select-filter-${name}--select`}
       options={values || []}
       loading={loading}
       limitTags={limitTags}
+      value={filterValue}
       onChange={handleChange}
       onInputChange={(_, newValue) => setInputValue(newValue)}
       renderInput={renderInput}
