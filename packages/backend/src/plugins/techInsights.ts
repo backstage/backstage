@@ -41,11 +41,11 @@ export default async function createPlugin({
     discovery,
     factRetrievers: [
       createFactRetrieverRegistration(
-        '1 * 1 1 *', // Example cron, At minute 1 on day-of-month 1 in January.
+        '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
         entityOwnershipFactRetriever,
       ),
-      createFactRetrieverRegistration('1 * 1 1 *', entityMetadataFactRetriever),
-      createFactRetrieverRegistration('1 * 1 1 *', techdocsFactRetriever),
+      createFactRetrieverRegistration('1 1 1 * *', entityMetadataFactRetriever),
+      createFactRetrieverRegistration('1 1 1 * *', techdocsFactRetriever),
     ],
     factCheckerFactory: new JsonRulesEngineFactCheckerFactory({
       checks: [
