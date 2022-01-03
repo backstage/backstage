@@ -257,7 +257,11 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             .md-content__inner { font-size: 0.9rem }
             .md-footer {
               position: static;
-              margin-left: 10rem;
+              padding-left: 10rem;
+            }
+            .md-footer-nav__link {
+              /* footer links begin to overlap at small sizes without setting width */
+              width: 50%;
             }
             .md-nav--primary .md-nav__title {
               white-space: normal;
