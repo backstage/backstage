@@ -16,7 +16,7 @@
 import React from 'react';
 import { Box, Grid } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import {
   InfoCard,
   Progress,

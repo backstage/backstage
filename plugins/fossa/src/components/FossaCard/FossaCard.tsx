@@ -19,7 +19,7 @@ import { Grid, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { DateTime } from 'luxon';
 import React, { PropsWithChildren } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { fossaApiRef } from '../../api';
 import {
   FOSSA_PROJECT_NAME_ANNOTATION,

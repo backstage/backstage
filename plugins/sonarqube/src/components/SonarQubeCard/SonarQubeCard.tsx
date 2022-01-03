@@ -23,7 +23,7 @@ import LockOpen from '@material-ui/icons/LockOpen';
 import Security from '@material-ui/icons/Security';
 import SentimentVeryDissatisfied from '@material-ui/icons/SentimentVeryDissatisfied';
 import React, { useMemo } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { sonarQubeApiRef } from '../../api';
 import {
   SONARQUBE_PROJECT_KEY_ANNOTATION,

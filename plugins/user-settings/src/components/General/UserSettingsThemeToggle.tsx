@@ -15,7 +15,7 @@
  */
 
 import React, { cloneElement } from 'react';
-import { useObservable } from 'react-use';
+import useObservable from 'react-use/lib/useObservable';
 import AutoIcon from '@material-ui/icons/BrightnessAuto';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';

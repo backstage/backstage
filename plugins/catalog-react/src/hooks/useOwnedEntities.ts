@@ -21,7 +21,7 @@ import {
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { CatalogListResponse } from '@backstage/catalog-client';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { useMemo } from 'react';
 
 /**

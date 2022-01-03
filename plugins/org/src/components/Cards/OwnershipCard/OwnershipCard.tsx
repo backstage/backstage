@@ -41,7 +41,7 @@ import {
 import qs from 'qs';
 import React from 'react';
 import pluralize from 'pluralize';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 
 type EntityTypeProps = {
   kind: string;

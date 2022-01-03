@@ -16,7 +16,7 @@
 
 import React from 'react';
 import Alert from '@material-ui/lab/Alert';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { newRelicApiRef, NewRelicApplications } from '../../api';
 
 import { Progress, Table, TableColumn } from '@backstage/core-components';

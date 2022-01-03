@@ -18,7 +18,7 @@ import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { BuildStatus, BuildStatusResult, xcmetricsApiRef } from '../../api';
 import { cn, formatDuration, formatStatus } from '../../utils';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { Progress } from '@backstage/core-components';
 

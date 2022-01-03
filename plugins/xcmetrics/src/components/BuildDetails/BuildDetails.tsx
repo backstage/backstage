@@ -18,7 +18,7 @@ import React from 'react';
 import { BuildResponse, xcmetricsApiRef } from '../../api';
 import { Progress, StructuredMetadataTable } from '@backstage/core-components';
 import { Alert } from '@material-ui/lab';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { formatDuration, formatStatus, formatTime } from '../../utils';
 import { StatusIcon } from '../StatusIcon';
