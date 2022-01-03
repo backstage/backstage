@@ -63,8 +63,6 @@ export const DelegatedSignInPage = (props: DelegatedSignInPageProps) => {
   const { loading, error } = useAsync(async () => {
     const identity = new DelegatedSignInIdentity({
       provider: props.provider,
-      refreshFrequencyMillis: 60_000,
-      retryRefreshFrequencyMillis: 10_000,
       errorApi,
       discoveryApi,
       fetchApi,

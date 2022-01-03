@@ -25,10 +25,50 @@ import {
 import { ResponseError } from '@backstage/errors';
 import { DelegatedSession, delegatedSessionSchema } from './types';
 
+const DEFAULTS = {
+  // How often we retry a failed auth refresh call
+  retryRefreshFrequencyMillis: 5_000,
+  // The amount of time between token refreshes, if we fail to get an actual
+  // value out of the exp claim
+  defaultTokenExpiryMillis: 30_000,
+  // The amount of time before the actual expiry of the Backstage token, that we
+  // shall start trying to get a new one
+  tokenExpiryMarginMillis: 30_000,
+};
+
+// The amount of time to wait until trying to refresh the auth session
+function tokenToExpiryMillis(token: string | undefined): number {
+  if (typeof token !== 'string') {
+    return DEFAULTS.retryRefreshFrequencyMillis;
+  }
+
+  const [_header, rawPayload, _signature] = token.split('.');
+  const payload = JSON.parse(atob(rawPayload));
+  const expiresInMillis = payload.exp * 1000 - Date.now();
+
+  return Math.max(
+    expiresInMillis - DEFAULTS.tokenExpiryMarginMillis,
+    DEFAULTS.defaultTokenExpiryMillis,
+  );
+}
+
+// Sleeps for a given duration, unless interrupted by signal
+async function sleep(durationMillis: number, signal: AbortSignal) {
+  if (!signal.aborted) {
+    await new Promise<void>(resolve => {
+      const timeoutHandle = setTimeout(done, durationMillis);
+      signal.addEventListener('abort', done);
+      function done() {
+        clearTimeout(timeoutHandle);
+        signal.removeEventListener('abort', done);
+        resolve();
+      }
+    });
+  }
+}
+
 type DelegatedSignInIdentityOptions = {
   provider: string;
-  refreshFrequencyMillis: number;
-  retryRefreshFrequencyMillis: number;
   discoveryApi: typeof discoveryApiRef.T;
   fetchApi: typeof fetchApiRef.T;
   errorApi: typeof errorApiRef.T;
@@ -50,23 +90,27 @@ export class DelegatedSignInIdentity implements IdentityApi {
   }
 
   async start() {
+    // Try first refresh and bubble up any errors to the caller
     await this.refresh(false);
 
     let signalErrors = true;
+    let pause: number;
+
     const refreshLoop = async () => {
-      if (!this.abortController.signal.aborted) {
+      while (!this.abortController.signal.aborted) {
         try {
           await this.refresh(signalErrors);
           signalErrors = true;
-          setTimeout(refreshLoop, this.options.refreshFrequencyMillis);
+          pause = tokenToExpiryMillis(this.session?.backstageIdentity.token);
         } catch {
-          signalErrors = false;
-          setTimeout(refreshLoop, this.options.retryRefreshFrequencyMillis);
+          signalErrors = false; // Only signal first failure in a row
+          pause = DEFAULTS.retryRefreshFrequencyMillis;
         }
+        await sleep(pause, this.abortController.signal);
       }
     };
 
-    setTimeout(refreshLoop, this.options.refreshFrequencyMillis);
+    refreshLoop();
   }
 
   /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getUserId} */
