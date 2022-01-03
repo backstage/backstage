@@ -19,7 +19,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '../../../api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 
 export const RepoUrlPickerHost = ({
   host,
