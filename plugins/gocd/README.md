@@ -34,7 +34,7 @@ metadata:
     gocd.org/pipelines: '<NAME OF THE PIPELINE 1>[,<NAME OF PIPELINE 2>]'
 ```
 
-The plugin requires to configure a GoCD API proxy with a `GOCD_AUTH_TOKEN` for authentication in the [app-config.yaml](https://github.com/backstage/backstage/blob/master/app-config.yaml):
+The plugin requires to configure a GoCD API proxy with a `GOCD_AUTH_CREDENTIALS` for authentication in the [app-config.yaml](https://github.com/backstage/backstage/blob/master/app-config.yaml). Its value is an opaque token you can obtain directly from your GoCD instance, in the shape `base64(user + ':' + pass)`. For example, a user "root" and password "root" would become `base64('root:root') = cm9vdDpyb290`:
 
 ```yaml
 proxy:
@@ -43,7 +43,7 @@ proxy:
     allowedMethods: ['GET']
     allowedHeaders: ['Authorization']
     headers:
-      Authorization: Basic ${GOCD_AUTH_TOKEN}
+      Authorization: Basic ${GOCD_AUTH_CREDENTIALS}
 ```
 
 You should also include the `gocd` section to allow for the plugin to redirect back to GoCD pipelines in your deployed instance:

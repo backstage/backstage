@@ -112,7 +112,7 @@ proxy:
     allowedMethods: ['GET']
     allowedHeaders: ['Authorization']
     headers:
-      Authorization: Basic ${GOCD_AUTH_TOKEN}
+      Authorization: Basic ${GOCD_AUTH_CREDENTIALS}
 
 organization:
   name: My Company
