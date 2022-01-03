@@ -23,9 +23,13 @@ export function createTokenValidator(
   audience: string,
   mockClient?: OAuth2Client,
 ): (token: string) => Promise<TokenPayload> {
-  return async function tokenValidator(token) {
-    const client = mockClient ?? new OAuth2Client();
+  const client = mockClient ?? new OAuth2Client();
 
+  return async function tokenValidator(token) {
+    // TODO(freben): Rate limit the public key reads. It may be sensible to
+    // cache these for some reasonable time rather than asking for the public
+    // keys on every single sign-in. But since the rate of events here is so
+    // slow, I decided to keep it simple for now.
     const response = await client.getIapPublicKeys();
     const ticket = await client.verifySignedJwtWithCertsAsync(
       token,
@@ -36,7 +40,7 @@ export function createTokenValidator(
 
     const payload = ticket.getPayload();
     if (!payload) {
-      throw new TypeError('No payload');
+      throw new TypeError('Token had no payload');
     }
 
     return payload;
@@ -60,11 +64,9 @@ export async function parseRequestToken(
     throw new AuthenticationError(`Google IAP token verification failed, ${e}`);
   }
 
-  if (!payload) {
-    throw new AuthenticationError('Google IAP token had no payload');
-  } else if (!payload.sub || !payload.email) {
+  if (!payload.sub || !payload.email) {
     throw new AuthenticationError(
-      'Google IAP token payload had no sub or email claim',
+      'Google IAP token payload is missing sub and/or email claim',
     );
   }
 

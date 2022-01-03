@@ -56,6 +56,23 @@ describe('helpers', () => {
       );
       await expect(validator(validJwt)).rejects.toThrowError(TypeError);
     });
+
+    it('rejects empty payload', async () => {
+      const mockClient = {
+        getIapPublicKeys: async () => ({ pubkeys: '' }),
+        verifySignedJwtWithCertsAsync: async () => ({
+          getPayload: () => undefined,
+        }),
+      };
+      const validator = createTokenValidator(
+        'a',
+        mockClient as unknown as OAuth2Client,
+      );
+      await expect(validator(validJwt)).rejects.toMatchObject({
+        name: 'TypeError',
+        message: 'Token had no payload',
+      });
+    });
   });
 
   describe('parseRequestToken', () => {
@@ -107,17 +124,10 @@ describe('helpers', () => {
 
     it('rejects bad token payloads', async () => {
       await expect(
-        parseRequestToken(validJwt, async () => undefined as any),
-      ).rejects.toMatchObject({
-        name: 'AuthenticationError',
-        message: 'Google IAP token had no payload',
-      });
-
-      await expect(
         parseRequestToken(validJwt, async () => ({ sub: 'a' } as any)),
       ).rejects.toMatchObject({
         name: 'AuthenticationError',
-        message: 'Google IAP token payload had no sub or email claim',
+        message: 'Google IAP token payload is missing sub and/or email claim',
       });
     });
   });
