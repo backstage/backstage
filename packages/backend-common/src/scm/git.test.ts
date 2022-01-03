@@ -105,6 +105,7 @@ describe('Git', () => {
         dir,
         singleBranch: true,
         depth: 1,
+        noCheckout: false,
         onProgress: expect.any(Function),
         headers: {
           'user-agent': 'git/@isomorphic-git',
@@ -314,6 +315,23 @@ describe('Git', () => {
       await git.resolveRef({ dir, ref });
 
       expect(isomorphic.resolveRef).toHaveBeenCalledWith({
+        fs,
+        dir,
+        ref,
+      });
+    });
+  });
+
+  describe('log', () => {
+    it('should call isomorphic-git with the correct arguments', async () => {
+      const dir = '/some/mock/dir';
+      const ref = 'as43bd7';
+
+      const git = Git.fromAuth({});
+
+      await git.log({ dir, ref });
+
+      expect(isomorphic.log).toHaveBeenCalledWith({
         fs,
         dir,
         ref,
