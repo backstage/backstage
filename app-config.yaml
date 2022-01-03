@@ -110,10 +110,9 @@ proxy:
   '/gocd':
     target: https://your.gocd.instance.com/go/api
     allowedMethods: ['GET']
-    allowedHeaders: ['Authorization', 'Accept']
+    allowedHeaders: ['Authorization']
     headers:
       Authorization: Basic ${GOCD_AUTH_TOKEN}
-      Accept: application/vnd.go.cd+json
 
 organization:
   name: My Company

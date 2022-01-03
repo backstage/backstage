@@ -26,6 +26,11 @@ export class GoCdClientApi implements GoCdApi {
     const baseUrl = await this.discoveryApi.getBaseUrl('proxy');
     const pipelineHistoryResponse = await fetch(
       `${baseUrl}/gocd/pipelines/${pipelineName}/history`,
+      {
+        headers: {
+          Accept: 'application/vnd.go.cd+json',
+        },
+      },
     );
 
     return await pipelineHistoryResponse.json();
