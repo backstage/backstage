@@ -30,16 +30,23 @@ import { GoCdBuildsTable } from '../GoCdBuildsTable/GoCdBuildsTable';
 import { GoCdApiError, PipelineHistory } from '../../api/gocdApi.model';
 import { Item, Select } from '../Select';
 
-export const GOCD_APP_ANNOTATION = 'gocd.org/pipelines';
+/**
+ * Constant storing GoCD pipelines annotation.
+ *
+ * @public
+ */
+export const GOCD_PIPELINES_ANNOTATION = 'gocd.org/pipelines';
 
 export const isGoCdAvailable = (entity: Entity): boolean =>
-  Boolean(entity.metadata.annotations?.[GOCD_APP_ANNOTATION]);
+  Boolean(entity.metadata.annotations?.[GOCD_PIPELINES_ANNOTATION]);
 
 export const GoCdBuildsComponent = (): JSX.Element => {
   const { entity } = useEntity();
   const config = useApi(configApiRef);
   const rawPipelines: string[] | undefined = (
-    entity.metadata.annotations?.[GOCD_APP_ANNOTATION] as string | undefined
+    entity.metadata.annotations?.[GOCD_PIPELINES_ANNOTATION] as
+      | string
+      | undefined
   )
     ?.split(',')
     .map(p => p.trim());
@@ -72,7 +79,9 @@ export const GoCdBuildsComponent = (): JSX.Element => {
   }
 
   if (!rawPipelines) {
-    return <MissingAnnotationEmptyState annotation={GOCD_APP_ANNOTATION} />;
+    return (
+      <MissingAnnotationEmptyState annotation={GOCD_PIPELINES_ANNOTATION} />
+    );
   }
 
   if (isError(pipelineHistory)) {

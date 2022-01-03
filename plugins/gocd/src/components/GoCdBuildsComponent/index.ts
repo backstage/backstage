@@ -16,5 +16,5 @@
 export {
   GoCdBuildsComponent,
   isGoCdAvailable,
-  GOCD_APP_ANNOTATION,
+  GOCD_PIPELINES_ANNOTATION,
 } from './GoCdBuildsComponent';
