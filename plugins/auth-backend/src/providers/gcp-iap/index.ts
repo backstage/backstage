@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
-export { createAwsAlbProvider } from './provider';
-export type { AwsAlbProviderOptions } from './provider';
+export { createGcpIapProvider } from './provider';
+export type {
+  GcpIapProviderOptions,
+  GcpIapResult,
+  GcpIapTokenInfo,
+} from './types';
