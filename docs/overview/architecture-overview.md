@@ -164,6 +164,104 @@ https://circleci.com.
 
 ![CircleCI plugin talking to proxy talking to SaaS Circle CI](../assets/architecture-overview/circle-ci-plugin-architecture.png)
 
+## Package Architecture
+
+Backstage relies heavily on NPM packages, both for distribution of libraries,
+and structuring of code within projects. While the way you structure your
+Backstage project is up to you, there is a set of established patterns that we
+encourage you to follow. These patterns can help set up a sound project
+structure as well as provide familiarity between different Backstage projects.
+
+The following diagram shows and overview the package architecture of Backstage.
+It takes the point of view of an individual plugin and all of the packages that
+it may contain, indicated by the thicker border and italic text. Surrounding the
+plugin are different package groups which are the different possible interface
+points of the plugin. Note that not all library package lists are complete as
+packages have been omitted for brevity.
+
+![Package architecture](./package-architecture.png)
+
+<!--
+ NOTE: The above diagram is generated from package-architecture.drawio
+       It can be edited using https://www.diagrams.net/
+       Export it as a PNG with 10px margin without transparent background
+-->
+
+### Overview
+
+The arrows in the diagram above indicate a runtime dependency on the code of the
+target package. This strict dependency graph only applies to runtime
+`dependencies`, and there may be `devDependencies` that breaks the rules of this
+table for the purpose of testing. While there are some arrows that show a
+dependency on a collection of frontend, backend and isomorphic packages, those
+still have abide by important compatibility rules shown in the bottom left.
+
+The `app` and `backend` packages are the entry points of a Backstage project.
+The `app` package is the frontend application that brings together a collection
+of frontend plugins and customizes them to fit an organization, while the
+`backend` package is the backend service that powers the Backstage application.
+Worth noting is that there can be more than one instance of each of these
+packages within a project. Particularly the `backend` packages can benefit from
+being split up into smaller deployment units that each serve their own purpose
+with a smaller collection of plugins.
+
+### Plugin Packages
+
+A typical plugin consists of up to five packages, two frontend ones, two
+backend, and one isomorphic packages. All packages within the plugin must share
+a common prefix, typically of the form `@<scope>/plugin-<plugin-id>`, but
+alternatives like `backstage-plugin-<plugin-id>` or
+`@scope/backstage-plugin-<plugin-id>` are also valid. Along with this prefix,
+each of the packages have their own unique suffix that denotes their role. In
+addition to these five plugin packages it's also possible for to a plugin to
+have additional frontend and backend modules that can be installed to enable
+optional features. For a full list of suffixes and their roles, see the
+[Plugin Package Structure ADR](../architecture-decisions/adr011-plugin-package-structure.md).
+
+The `-react`, `-common`, and `-node` plugin packages together form the external
+library of a plugin. The plugin library enables other plugins to build on top of
+and extend a plugin, and likewise allows the plugin to depend on and extend
+other plugins. Because of this, it is preferable that plugin library packages
+allow duplicate installations of themselves, as you may end up with a mix of
+versions being installed as dependencies of various plugins. It is also
+forbidden for plugins to directly import non-library packages from other
+plugins, all communication between plugins must be handled through libraries and
+the application itself.
+
+### Frontend Packages
+
+The frontend packages are grouped into two main groups. The first one is
+"Frontend App Core", which is the set of packages that are only used by the
+`app` package itself. These packages help build up the core structure of the app
+as well as provide a foundation for the plugin libraries to rely upon.
+
+The second group is the rest of the shared packages, further divided into
+"Frontend Plugin Core" and "Frontend Libraries". The core packages that are
+considered particularly stable and form the core of the frontend framework.
+Their most important role is to form the boundary around each plugin and provide
+a set of tools that helps you combine a collection of plugins into a running
+application. The rest of the frontend packages are more traditional libraries
+that serve as building blocks to create plugins.
+
+### Backend Packages
+
+The backend library packages do not currently share a similar plugin
+architecture as the frontend packages. They are instead simply a collection of
+building blocks and patterns that help you build backend services. This is
+however likely to change in the future.
+
+### Common Packages
+
+The common packages are the packages are effectively depended on by all other
+pages. This is a much smaller set of packages but they are also very pervasive.
+Because the common packages are isomorphic and must execute both in the frontend
+and backend, they are never allowed to depend on any of the frontend of backend
+packages.
+
+The Backstage CLI is in a category of its own and is depended on by virtually
+all other packages. It's not a library in itself though, and must always be a
+development dependency only.
+
 ## Databases
 
 As we have seen, both the `lighthouse-audit-service` and `catalog-backend`
