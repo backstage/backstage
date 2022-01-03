@@ -234,7 +234,6 @@ export class Git {
     remote: string;
     url: string;
   }): Promise<void>;
-  // (undocumented)
   clone(options: {
     url: string;
     dir: string;
@@ -255,12 +254,10 @@ export class Git {
       email: string;
     };
   }): Promise<string>;
-  // (undocumented)
   currentBranch(options: {
     dir: string;
     fullName?: boolean;
   }): Promise<string | undefined>;
-  // (undocumented)
   fetch(options: { dir: string; remote?: string }): Promise<void>;
   // (undocumented)
   static fromAuth: (options: {
@@ -270,9 +267,7 @@ export class Git {
   }) => Git;
   // (undocumented)
   init(options: { dir: string; defaultBranch?: string }): Promise<void>;
-  // (undocumented)
   log(options: { dir: string; ref?: string }): Promise<ReadCommitResult[]>;
-  // (undocumented)
   merge(options: {
     dir: string;
     theirs: string;
@@ -288,9 +283,7 @@ export class Git {
   }): Promise<MergeResult>;
   // (undocumented)
   push(options: { dir: string; remote: string }): Promise<PushResult>;
-  // (undocumented)
   readCommit(options: { dir: string; sha: string }): Promise<ReadCommitResult>;
-  // (undocumented)
   resolveRef(options: { dir: string; ref: string }): Promise<string>;
 }
 
