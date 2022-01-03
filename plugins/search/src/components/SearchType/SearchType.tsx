@@ -29,6 +29,7 @@ import {
   SearchTypeAccordion,
   SearchTypeAccordionProps,
 } from './SearchType.Accordion';
+import { SearchTypeTabs, SearchTypeTabsProps } from './SearchType.Tabs';
 import { useSearch } from '../SearchContext';
 
 const useStyles = makeStyles(theme => ({
@@ -124,5 +125,14 @@ SearchType.Accordion = (props: SearchTypeAccordionProps) => {
   return <SearchTypeAccordion {...props} />;
 };
 
+/**
+ * A control surface for the search query's "types" property, displayed as a
+ * tabs suitable for use in faceted search UIs.
+ * @public
+ */
+SearchType.Tabs = (props: SearchTypeTabsProps) => {
+  return <SearchTypeTabs {...props} />;
+};
+
 export { SearchType };
-export type { SearchTypeAccordionProps };
+export type { SearchTypeAccordionProps, SearchTypeTabsProps };

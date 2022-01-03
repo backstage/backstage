@@ -219,6 +219,7 @@ export const SearchResultPager: () => JSX.Element;
 export const SearchType: {
   (props: SearchTypeProps): JSX.Element;
   Accordion(props: SearchTypeAccordionProps): JSX.Element;
+  Tabs(props: SearchTypeTabsProps): JSX.Element;
 };
 
 // @public (undocumented)
@@ -238,6 +239,15 @@ export type SearchTypeProps = {
   name: string;
   values?: string[];
   defaultValue?: string[] | string | null;
+};
+
+// @public (undocumented)
+export type SearchTypeTabsProps = {
+  types: Array<{
+    value: string;
+    name: string;
+  }>;
+  defaultValue?: string;
 };
 
 // Warning: (ae-missing-release-tag) "SidebarSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
