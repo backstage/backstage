@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render } from '@testing-library/react';
+import { Entity } from '@backstage/catalog-model';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { renderWithEffects, TestApiProvider } from '@backstage/test-utils';
 import { GoCdBuildsComponent } from './GoCdBuildsComponent';
+import { gocdApiRef } from '../../plugin';
 import { GoCdApi } from '../../api/gocdApi';
-
-let entityValue: {
-  entity: { metadata: { annotations?: { [key: string]: string } } };
-};
 
 const mockApiClient: GoCdApi = {
   getPipelineHistory: jest.fn(async () => ({
@@ -29,24 +28,20 @@ const mockApiClient: GoCdApi = {
   })),
 };
 
-jest.mock('@backstage/plugin-catalog-react', () => ({
-  useEntity: () => {
-    return entityValue;
-  },
-}));
-
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: () => mockApiClient,
-}));
-
 describe('GoCdArtifactsComponent', () => {
-  entityValue = { entity: { metadata: {} } };
+  const entityValue = { entity: { metadata: {} } as Entity };
 
-  const renderComponent = () => render(<GoCdBuildsComponent />);
+  const renderComponent = () =>
+    renderWithEffects(
+      <TestApiProvider apis={[[gocdApiRef, mockApiClient]]}>
+        <EntityProvider entity={entityValue.entity}>
+          <GoCdBuildsComponent />
+        </EntityProvider>
+      </TestApiProvider>,
+    );
 
   it('should display an empty state if an app annotation is missing', async () => {
-    const rendered = renderComponent();
+    const rendered = await renderComponent();
 
     expect(await rendered.findByText('Missing Annotation')).toBeInTheDocument();
   });
