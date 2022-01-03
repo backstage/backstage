@@ -16,6 +16,7 @@
 import { GoCdApi } from './gocdApi';
 import { GoCdApiError, PipelineHistory } from './gocdApi.model';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { ResponseError } from '@backstage/errors';
 
 export class GoCdClientApi implements GoCdApi {
   constructor(private readonly discoveryApi: DiscoveryApi) {}
@@ -32,6 +33,10 @@ export class GoCdClientApi implements GoCdApi {
         },
       },
     );
+
+    if (!pipelineHistoryResponse.ok) {
+      throw await ResponseError.fromResponse(pipelineHistoryResponse);
+    }
 
     return await pipelineHistoryResponse.json();
   }
