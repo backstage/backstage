@@ -45,7 +45,8 @@ proxy:
   '/sonarqube':
     target: https://sonarcloud.io/api
     allowedMethods: ['GET']
-    auth: '${SONARQUBE_TOKEN}:'
+    headers:
+      Authorization: token ${SONARQUBE_TOKEN}
     # Environmental variable: SONARQUBE_TOKEN
     # Fetch the sonar-auth-token from https://sonarcloud.io/account/security/
 ```
@@ -57,7 +58,8 @@ proxy:
   '/sonarqube':
     target: https://your.sonarqube.instance.com/api
     allowedMethods: ['GET']
-    auth: '${SONARQUBE_TOKEN}:'
+    headers:
+      Authorization: token ${SONARQUBE_TOKEN}
     # Environmental variable: SONARQUBE_TOKEN
     # Fetch the sonar-auth-token from https://sonarcloud.io/account/security/
 
