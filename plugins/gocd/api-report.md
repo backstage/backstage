@@ -8,24 +8,16 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 
-// Warning: (ae-missing-release-tag) "EntityGoCdContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const EntityGoCdContent: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "GOCD_APP_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const GOCD_APP_ANNOTATION = 'gocd.org/pipelines';
+// @public
+export const GOCD_PIPELINES_ANNOTATION = 'gocd.org/pipelines';
 
-// Warning: (ae-missing-release-tag) "gocdPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const gocdPlugin: BackstagePlugin<{}, {}>;
 
-// Warning: (ae-missing-release-tag) "isGoCdAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const isGoCdAvailable: (entity: Entity) => boolean;
 
 // (No @packageDocumentation comment for this package)
