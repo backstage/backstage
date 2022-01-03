@@ -2174,17 +2174,7 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@backstage/catalog-client@^0.3.18":
-  version "0.3.19"
-  resolved "https://registry.npmjs.org/@backstage/catalog-client/-/catalog-client-0.3.19.tgz#109b0fde1cc2d9a306635f3775fc8f6174172b14"
-  integrity sha512-0ydcC/1ISNgR8SggOUnMNNHtsRwrKN5GX+AXgTVdZk4qpz1MqG1+fzrNld9V7KVvXdsbGDZAl/b5a7/FJEpCqg==
-  dependencies:
-    "@backstage/catalog-model" "^0.9.2"
-    "@backstage/config" "^0.1.9"
-    "@backstage/errors" "^0.1.2"
-    cross-fetch "^3.0.6"
-
-"@backstage/core-app-api@^0.1.13", "@backstage/core-app-api@^0.1.16", "@backstage/core-app-api@^0.1.3", "@backstage/core-app-api@^0.1.6":
+"@backstage/core-app-api@^0.1.16", "@backstage/core-app-api@^0.1.3":
   version "0.1.24"
   resolved "https://registry.npmjs.org/@backstage/core-app-api/-/core-app-api-0.1.24.tgz#4cfc366c56de3e698218770eacb59a0aa16c8f05"
   integrity sha512-TJ2F+8UjwBQqlSd6y3RpPwdmJfLsvds2OaH3TuiFvjdpogqboIjWGq3nIgxzhe+vxYoWLhoHrMoJYP4IpF7VQQ==
@@ -2224,96 +2214,6 @@
     prop-types "^15.7.2"
     react-router-dom "6.0.0-beta.0"
     react-use "^17.2.4"
-    zen-observable "^0.8.15"
-
-"@backstage/core-components@^0.3.0":
-  version "0.3.3"
-  resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.3.3.tgz#ec63eac6d789303f90219857849fa1cefe4e0dde"
-  integrity sha512-u75+YiXu33NHSFT5MqTgY+uqtxyye4Tmy3I7D21wLUgeW6aFhmS1IUBGckCqv8UG1nqZS7gBmJLccm88tDsJaA==
-  dependencies:
-    "@backstage/config" "^0.1.8"
-    "@backstage/core-plugin-api" "^0.1.6"
-    "@backstage/errors" "^0.1.1"
-    "@backstage/theme" "^0.2.10"
-    "@material-table/core" "^3.1.0"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    "@testing-library/react-hooks" "^3.4.2"
-    "@types/dagre" "^0.7.44"
-    "@types/prop-types" "^15.7.3"
-    "@types/react" "*"
-    "@types/react-sparklines" "^1.7.0"
-    "@types/react-text-truncate" "^0.14.0"
-    classnames "^2.2.6"
-    clsx "^1.1.0"
-    d3-selection "^2.0.0"
-    d3-shape "^2.0.0"
-    d3-zoom "^2.0.0"
-    dagre "^0.8.5"
-    immer "^9.0.1"
-    lodash "^4.17.15"
-    pluralize "^8.0.0"
-    prop-types "^15.7.2"
-    qs "^6.9.4"
-    rc-progress "^3.0.0"
-    react "^16.12.0"
-    react-dom "^16.12.0"
-    react-helmet "6.1.0"
-    react-hook-form "^6.15.4"
-    react-markdown "^5.0.2"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-sparklines "^1.7.0"
-    react-syntax-highlighter "^15.4.3"
-    react-text-truncate "^0.16.0"
-    react-use "^17.2.4"
-    remark-gfm "^1.0.0"
-    zen-observable "^0.8.15"
-
-"@backstage/core-components@^0.4.2":
-  version "0.4.2"
-  resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.4.2.tgz#a80dceabdfb43b794b43d6436919688ff4da15ca"
-  integrity sha512-WACyEaD+k2v2MEeJ52Kyj/Rw3a2agIqW9FXnYP+xCAWia8kw1cBX8eMXRblsEV8xwheTQzyd1lzeIpdkyGhhQg==
-  dependencies:
-    "@backstage/config" "^0.1.9"
-    "@backstage/core-plugin-api" "^0.1.8"
-    "@backstage/errors" "^0.1.2"
-    "@backstage/theme" "^0.2.10"
-    "@material-table/core" "^3.1.0"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    "@testing-library/react-hooks" "^3.4.2"
-    "@types/dagre" "^0.7.44"
-    "@types/prop-types" "^15.7.3"
-    "@types/react" "*"
-    "@types/react-sparklines" "^1.7.0"
-    "@types/react-text-truncate" "^0.14.0"
-    classnames "^2.2.6"
-    clsx "^1.1.0"
-    d3-selection "^2.0.0"
-    d3-shape "^2.0.0"
-    d3-zoom "^2.0.0"
-    dagre "^0.8.5"
-    immer "^9.0.1"
-    lodash "^4.17.15"
-    pluralize "^8.0.0"
-    prop-types "^15.7.2"
-    qs "^6.9.4"
-    rc-progress "^3.0.0"
-    react "^16.12.0"
-    react-dom "^16.12.0"
-    react-helmet "6.1.0"
-    react-hook-form "^7.12.2"
-    react-markdown "^5.0.2"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-sparklines "^1.7.0"
-    react-syntax-highlighter "^15.4.3"
-    react-text-truncate "^0.16.0"
-    react-use "^17.2.4"
-    remark-gfm "^1.0.0"
     zen-observable "^0.8.15"
 
 "@backstage/core-components@^0.5.0":
@@ -2446,7 +2346,7 @@
     remark-gfm "^2.0.0"
     zen-observable "^0.8.15"
 
-"@backstage/core-plugin-api@^0.1.10", "@backstage/core-plugin-api@^0.1.3", "@backstage/core-plugin-api@^0.1.4", "@backstage/core-plugin-api@^0.1.6", "@backstage/core-plugin-api@^0.1.8":
+"@backstage/core-plugin-api@^0.1.10", "@backstage/core-plugin-api@^0.1.3", "@backstage/core-plugin-api@^0.1.8":
   version "0.1.13"
   resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-0.1.13.tgz#583c0fe3440450c304f13dcc85eac3bd80f357d7"
   integrity sha512-BWEqleTXR7m7nsCyt6cEnc+Gx/VT4vLdNr9fc1kXfzSAA7cUT4VKjlVmm5kdyih3BSQ4+0k7Pm/NIf0jfa7rlg==
@@ -2498,7 +2398,7 @@
     react-use "^17.2.4"
     zen-observable "^0.8.15"
 
-"@backstage/integration@^0.6.4", "@backstage/integration@^0.6.7":
+"@backstage/integration@^0.6.7":
   version "0.6.10"
   resolved "https://registry.npmjs.org/@backstage/integration/-/integration-0.6.10.tgz#e55a26f5124445de74e46944f63c263c9b985995"
   integrity sha512-qGAZ7rflWdZdjUgxzLWmkrR1zPC5ep62d0fqtwg77MZsGwBNrbNOI2qJbk+IRPmOgym2Adg2C95O2UV7Hyde7g==
@@ -2510,30 +2410,6 @@
     git-url-parse "^11.6.0"
     lodash "^4.17.21"
     luxon "^2.0.2"
-
-"@backstage/plugin-catalog-react@^0.4.0":
-  version "0.4.6"
-  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-0.4.6.tgz#f33f3cd734f110d3c547f7eae4e25d14806ec796"
-  integrity sha512-DQO9/oE4mWty6cyUCHiDbf9jFOEPtS0HB+DHiXHHzI7nCC/89p05RiKZpo3ctd5p5oENAYmWO4G7eVJkf5NjiA==
-  dependencies:
-    "@backstage/catalog-client" "^0.3.18"
-    "@backstage/catalog-model" "^0.9.1"
-    "@backstage/core-app-api" "^0.1.13"
-    "@backstage/core-components" "^0.4.2"
-    "@backstage/core-plugin-api" "^0.1.8"
-    "@backstage/integration" "^0.6.4"
-    "@backstage/version-bridge" "^0.1.0"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    "@types/react" "*"
-    jwt-decode "^3.1.0"
-    lodash "^4.17.15"
-    qs "^6.9.4"
-    react "^16.13.1"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^17.2.4"
 
 "@backstage/plugin-catalog-react@^0.5.0":
   version "0.5.2"
@@ -5616,15 +5492,15 @@
     react-use "^17.2.4"
 
 "@roadiehq/backstage-plugin-travis-ci@^1.0.11":
-  version "1.0.11"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-1.0.11.tgz#427c14a93a9f1f62ab42c5f149ab1beba1178fd2"
-  integrity sha512-EAWIyprpjm6tkHX3AFqZFFf6B74soAbwwO0RJhTfGIPTa/t8H7g5AR5tUF283rmuA2KupYutT5ywXY2Bqcjfyw==
+  version "1.2.3"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-1.2.3.tgz#d1b5be86bc1390232c8ab9b21d0600ed0c91c68c"
+  integrity sha512-pEwJWLjVGib7p5rfN+pUkL0zmYqAAHplhREx58Vw5X7sUXozLv29By7FuC93DQKQQfh2WXctP+Jx2xJWFuEx0A==
   dependencies:
-    "@backstage/catalog-model" "^0.9.0"
-    "@backstage/core-app-api" "^0.1.6"
-    "@backstage/core-components" "^0.3.0"
-    "@backstage/core-plugin-api" "^0.1.4"
-    "@backstage/plugin-catalog-react" "^0.4.0"
+    "@backstage/catalog-model" "^0.9.7"
+    "@backstage/core-app-api" "^0.2.0"
+    "@backstage/core-components" "^0.8.0"
+    "@backstage/core-plugin-api" "^0.3.0"
+    "@backstage/plugin-catalog-react" "^0.6.5"
     "@backstage/theme" "^0.2.9"
     "@material-ui/core" "^4.11.3"
     "@material-ui/icons" "^4.11.2"
@@ -16787,14 +16663,7 @@ history@5.0.0:
   dependencies:
     "@babel/runtime" "^7.7.6"
 
-history@^5.0.0:
-  version "5.1.0"
-  resolved "https://registry.npmjs.org/history/-/history-5.1.0.tgz#2e93c09c064194d38d52ed62afd0afc9d9b01ece"
-  integrity sha512-zPuQgPacm2vH2xdORvGGz1wQMuHSIB56yNAy5FnLuwOwgSYyPKptJtcMm6Ev+hRGeS+GzhbmRacHzvlESbFwDg==
-  dependencies:
-    "@babel/runtime" "^7.7.6"
-
-history@^5.2.0:
+history@^5.0.0, history@^5.2.0:
   version "5.2.0"
   resolved "https://registry.npmjs.org/history/-/history-5.2.0.tgz#7cdd31cf9bac3c5d31f09c231c9928fad0007b7c"
   integrity sha512-uPSF6lAJb3nSePJ43hN3eKj1dTWpN9gMod0ZssbFTIsen+WehTmEadgL+kg78xLJFdRfrrC//SavDzmRVdE+Ig==
@@ -24639,11 +24508,6 @@ react-helmet@6.1.0:
     react-fast-compare "^3.1.1"
     react-side-effect "^2.1.0"
 
-react-hook-form@^6.15.4:
-  version "6.15.8"
-  resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-6.15.8.tgz#725c139d308c431c4611e4b9d85a49f01cfc0e7a"
-  integrity sha512-prq82ofMbnRyj5wqDe8hsTRcdR25jQ+B8KtCS7BLCzjFHAwNuCjRwzPuP4eYLsEBjEIeYd6try+pdLdw0kPkpg==
-
 react-hook-form@^7.12.2:
   version "7.16.1"
   resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.16.1.tgz#669046df378a71949e5cf8a2398cbe20d5cb27bc"
@@ -24783,7 +24647,7 @@ react-resize-detector@^2.3.0:
     prop-types "^15.6.0"
     resize-observer-polyfill "^1.5.0"
 
-react-router-dom@6.0.0-beta.0, react-router-dom@^6.0.0-beta.0:
+react-router-dom@6.0.0-beta.0:
   version "6.0.0-beta.0"
   resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.0.0-beta.0.tgz#9dcc8555365f22f7fbd09f26b6b82543f3eb97d6"
   integrity sha512-36yNNGMT8RB9FRPL9nKJi6HKDkgOakU+o/2hHpSzR6e37gN70MpOU6QQlmif4oAWWBwjyGc3ZNOMFCsFuHUY5w==
@@ -24791,7 +24655,7 @@ react-router-dom@6.0.0-beta.0, react-router-dom@^6.0.0-beta.0:
     prop-types "^15.7.2"
     react-router "6.0.0-beta.0"
 
-react-router-dom@^6.0.0:
+react-router-dom@^6.0.0, react-router-dom@^6.0.0-beta.0:
   version "6.2.1"
   resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.2.1.tgz#32ec81829152fbb8a7b045bf593a22eadf019bec"
   integrity sha512-I6Zax+/TH/cZMDpj3/4Fl2eaNdcvoxxHoH1tYOREsQ22OKDYofGebrNm6CTPUcvLvZm63NL/vzCYdjf9CUhqmA==
@@ -24799,14 +24663,14 @@ react-router-dom@^6.0.0:
     history "^5.2.0"
     react-router "6.2.1"
 
-react-router@6.0.0-beta.0, react-router@^6.0.0-beta.0:
+react-router@6.0.0-beta.0:
   version "6.0.0-beta.0"
   resolved "https://registry.npmjs.org/react-router/-/react-router-6.0.0-beta.0.tgz#3e11f39b6ded4412c2fed9e4f989dd4c8156724d"
   integrity sha512-VgMdfpVcmFQki/LZuLh8E/MNACekDetz4xqft+a6fBZvvJnVqKbLqebF7hyoawGrV1HcO5tVaUang2Og4W2j1Q==
   dependencies:
     prop-types "^15.7.2"
 
-react-router@6.2.1, react-router@^6.0.0:
+react-router@6.2.1, react-router@^6.0.0, react-router@^6.0.0-beta.0:
   version "6.2.1"
   resolved "https://registry.npmjs.org/react-router/-/react-router-6.2.1.tgz#be2a97a6006ce1d9123c28934e604faef51448a3"
   integrity sha512-2fG0udBtxou9lXtK97eJeET2ki5//UWfQSl1rlJ7quwe6jrktK9FCCc8dQb5QY6jAv3jua8bBQRhhDOM/kVRsg==
