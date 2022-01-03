@@ -15,7 +15,8 @@
  */
 
 import { useRef } from 'react';
-import { useAsyncFn, useDebounce } from 'react-use';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useDebounce from 'react-use/lib/useDebounce';
 
 /**
  * Utility hook for either asynchronously loading filter values from a given
