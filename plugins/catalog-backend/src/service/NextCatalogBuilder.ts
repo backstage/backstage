@@ -83,7 +83,7 @@ import { Logger } from 'winston';
 import { LocationService } from './types';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
 import { CatalogPermissionRule } from '../permissions/types';
-import * as catalogPermissionRules from '../permissions/rules';
+import { PermissionRules } from '../permissions/rules';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -139,7 +139,7 @@ export class NextCatalogBuilder {
     this.processors = [];
     this.processorsReplace = false;
     this.parser = undefined;
-    this.permissionRules = Object.values(catalogPermissionRules);
+    this.permissionRules = Object.values(PermissionRules);
   }
 
   /**
@@ -326,7 +326,7 @@ export class NextCatalogBuilder {
    * catalog resources against queries. See
    * {@link @backstage/plugin-permission-node#PermissionRule}.
    *
-   * @param permissionRules additional permission rules
+   * @param permissionRules - Additional permission rules
    */
   addPermissionRules(...permissionRules: CatalogPermissionRule[]) {
     this.permissionRules.push(...permissionRules);

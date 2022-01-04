@@ -1121,14 +1121,6 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   updateLastActivity(): Promise<string | undefined>;
 }
 
-// @public
-export const hasAnnotation: {
-  name: string;
-  description: string;
-  apply: (resource: Entity, annotation: string) => boolean;
-  toQuery: (annotation: string) => EntitiesSearchFilter;
-};
-
 // Warning: (ae-missing-release-tag) "HigherOrderOperation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -1169,22 +1161,6 @@ function inputError(
   atLocation: LocationSpec,
   message: string,
 ): CatalogProcessorResult;
-
-// @public
-export const isEntityKind: {
-  name: string;
-  description: string;
-  apply(resource: Entity, kinds: string[]): boolean;
-  toQuery(kinds: string[]): EntitiesSearchFilter;
-};
-
-// @public
-export const isEntityOwner: {
-  name: string;
-  description: string;
-  apply: (resource: Entity, claims: string[]) => boolean;
-  toQuery: (claims: string[]) => EntitiesSearchFilter;
-};
 
 // Warning: (ae-missing-release-tag) "location" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1333,7 +1309,6 @@ export class NextCatalogBuilder {
   addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityProvider(...providers: EntityProvider[]): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addPermissionRules(...permissionRules: CatalogPermissionRule[]): void;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addProcessor(...processors: CatalogProcessor[]): NextCatalogBuilder;
