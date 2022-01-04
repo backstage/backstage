@@ -58,9 +58,9 @@ export type GhBlobResponse =
 export class GithubUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
+    const credentialsProvider =
+      SingleInstanceGithubCredentialsProvider.create(integrations);
     return integrations.github.list().map(integration => {
-      const credentialsProvider =
-        SingleInstanceGithubCredentialsProvider.create(integration.config);
       const reader = new GithubUrlReader(integration, {
         treeResponseFactory,
         credentialsProvider,

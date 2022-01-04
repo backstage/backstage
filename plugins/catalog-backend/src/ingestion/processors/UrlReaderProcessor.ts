@@ -140,3 +140,9 @@ export class UrlReaderProcessor implements CatalogProcessor {
     return { response: [{ url: location, data }] };
   }
 }
+
+export class RoadieDemoDataReaderProcessor extends UrlReaderProcessor {
+  getProcessorName() {
+    return 'roadie-demo-data-reader';
+  }
+}

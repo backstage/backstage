@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import { parseRepoUrl, isExecutable } from './util';
 
 import {
-  SingleInstanceGithubCredentialsProvider,
+  GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { zipObject } from 'lodash';
@@ -58,6 +58,7 @@ export type GithubPullRequestActionInput = {
 
 export type ClientFactoryInput = {
   integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider: GithubCredentialsProvider;
   host: string;
   owner: string;
   repo: string;
@@ -65,6 +66,7 @@ export type ClientFactoryInput = {
 
 export const defaultClientFactory = async ({
   integrations,
+  githubCredentialsProvider,
   owner,
   repo,
   host = 'github.com',
@@ -75,16 +77,7 @@ export const defaultClientFactory = async ({
     throw new InputError(`No integration for host ${host}`);
   }
 
-  const credentialsProvider =
-    SingleInstanceGithubCredentialsProvider.create(integrationConfig);
-
-  if (!credentialsProvider) {
-    throw new InputError(
-      `No matching credentials for host ${host}, please check your integrations config`,
-    );
-  }
-
-  const { token } = await credentialsProvider.getCredentials({
+  const { token } = await githubCredentialsProvider.getCredentials({
     url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
       repo,
     )}`,
@@ -106,11 +99,13 @@ export const defaultClientFactory = async ({
 
 interface CreateGithubPullRequestActionOptions {
   integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider: GithubCredentialsProvider;
   clientFactory?: (input: ClientFactoryInput) => Promise<PullRequestCreator>;
 }
 
 export const createPublishGithubPullRequestAction = ({
   integrations,
+  githubCredentialsProvider,
   clientFactory = defaultClientFactory,
 }: CreateGithubPullRequestActionOptions) => {
   return createTemplateAction<GithubPullRequestActionInput>({
@@ -183,7 +178,13 @@ export const createPublishGithubPullRequestAction = ({
         );
       }
 
-      const client = await clientFactory({ integrations, host, owner, repo });
+      const client = await clientFactory({
+        integrations,
+        githubCredentialsProvider,
+        host,
+        owner,
+        repo,
+      });
       const fileRoot = sourcePath
         ? resolveSafeChildPath(ctx.workspacePath, sourcePath)
         : ctx.workspacePath;

@@ -17,7 +17,10 @@
 jest.mock('@octokit/rest');
 
 import { createGithubActionsDispatchAction } from './githubActionsDispatch';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrations,
+  SingleInstanceGithubCredentialsProvider,
+} from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
@@ -33,7 +36,12 @@ describe('github:actions:dispatch', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  const action = createGithubActionsDispatchAction({ integrations });
+  const githubCredentialsProvider =
+    SingleInstanceGithubCredentialsProvider.create(integrations);
+  const action = createGithubActionsDispatchAction({
+    integrations,
+    githubCredentialsProvider,
+  });
 
   const mockContext = {
     input: {

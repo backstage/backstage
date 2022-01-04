@@ -18,7 +18,10 @@ jest.mock('../helpers');
 jest.mock('@octokit/rest');
 
 import { createPublishGithubAction } from './github';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrations,
+  SingleInstanceGithubCredentialsProvider,
+} from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
@@ -39,7 +42,13 @@ describe('publish:github', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  const action = createPublishGithubAction({ integrations, config });
+  const githubCredentialsProvider =
+    SingleInstanceGithubCredentialsProvider.create(integrations);
+  const action = createPublishGithubAction({
+    integrations,
+    config,
+    githubCredentialsProvider,
+  });
   const mockContext = {
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
@@ -201,6 +210,7 @@ describe('publish:github', () => {
     const customAuthorAction = createPublishGithubAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,
+      githubCredentialsProvider,
     });
 
     mockGithubClient.users.getByUsername.mockResolvedValue({
@@ -244,6 +254,7 @@ describe('publish:github', () => {
     const customAuthorAction = createPublishGithubAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,
+      githubCredentialsProvider,
     });
 
     mockGithubClient.users.getByUsername.mockResolvedValue({

@@ -20,7 +20,6 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
-  SingleInstanceGithubCredentialsProvider,
   GithubCredentialsProvider,
   GitHubIntegrationConfig,
   ScmIntegrations,
@@ -40,11 +39,16 @@ import { assignGroupsToUsers, buildOrgHierarchy } from '../processors/util/org';
 
 export class GitHubOrgEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
-  private readonly credentialsProvider: GithubCredentialsProvider;
+  private githubCredentialsProvider: GithubCredentialsProvider;
 
   static fromConfig(
     config: Config,
-    options: { id: string; orgUrl: string; logger: Logger },
+    options: {
+      id: string;
+      orgUrl: string;
+      logger: Logger;
+      githubCredentialsProvider: GithubCredentialsProvider;
+    },
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
     const gitHubConfig = integrations.github.byUrl(options.orgUrl)?.config;
@@ -64,6 +68,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       orgUrl: options.orgUrl,
       logger,
       gitHubConfig,
+      githubCredentialsProvider: options.githubCredentialsProvider,
     });
   }
 
@@ -73,11 +78,10 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       orgUrl: string;
       gitHubConfig: GitHubIntegrationConfig;
       logger: Logger;
+      githubCredentialsProvider: GithubCredentialsProvider;
     },
   ) {
-    this.credentialsProvider = SingleInstanceGithubCredentialsProvider.create(
-      options.gitHubConfig,
-    );
+    this.githubCredentialsProvider = options.githubCredentialsProvider;
   }
 
   getProviderName() {
@@ -96,7 +100,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     const { markReadComplete } = trackProgress(this.options.logger);
 
     const { headers, type: tokenType } =
-      await this.credentialsProvider.getCredentials({
+      await this.githubCredentialsProvider.getCredentials({
         url: this.options.orgUrl,
       });
     const client = graphql.defaults({

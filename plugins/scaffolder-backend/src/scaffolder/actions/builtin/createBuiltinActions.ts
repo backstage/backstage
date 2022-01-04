@@ -16,7 +16,11 @@
 
 import { ContainerRunner, UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrations,
+  SingleInstanceGithubCredentialsProvider,
+} from '@backstage/integration';
 import { Config } from '@backstage/config';
 import {
   createCatalogWriteAction,
@@ -52,6 +56,8 @@ export const createBuiltinActions = (options: {
 }) => {
   const { reader, integrations, containerRunner, catalogClient, config } =
     options;
+  const githubCredentialsProvider: GithubCredentialsProvider =
+    SingleInstanceGithubCredentialsProvider.create(integrations);
 
   const actions = [
     createFetchPlainAction({
@@ -65,9 +71,11 @@ export const createBuiltinActions = (options: {
     createPublishGithubAction({
       integrations,
       config,
+      githubCredentialsProvider,
     }),
     createPublishGithubPullRequestAction({
       integrations,
+      githubCredentialsProvider,
     }),
     createPublishGitlabAction({
       integrations,
@@ -91,9 +99,11 @@ export const createBuiltinActions = (options: {
     createFilesystemRenameAction(),
     createGithubActionsDispatchAction({
       integrations,
+      githubCredentialsProvider,
     }),
     createGithubWebhookAction({
       integrations,
+      githubCredentialsProvider,
     }),
   ];
 

@@ -17,9 +17,8 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
-  SingleInstanceGithubCredentialsProvider,
+  GithubCredentialsProvider,
   ScmIntegrations,
-  GithubCredentialsProviderFactory,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
@@ -44,36 +43,31 @@ import { CatalogProcessor, CatalogProcessorEmit } from './types';
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
-  private githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
+  private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
   static fromConfig(
     config: Config,
     options: {
       logger: Logger;
-      githubCredentialsProviderFactory?: GithubCredentialsProviderFactory;
+      githubCredentialsProvider: GithubCredentialsProvider;
     },
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
-    const githubCredentialsProviderFactory =
-      options.githubCredentialsProviderFactory ||
-      SingleInstanceGithubCredentialsProvider.create;
 
     return new GithubDiscoveryProcessor({
       ...options,
       integrations,
-      githubCredentialsProviderFactory,
     });
   }
 
   constructor(options: {
     integrations: ScmIntegrations;
     logger: Logger;
-    githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
+    githubCredentialsProvider: GithubCredentialsProvider;
   }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
-    this.githubCredentialsProviderFactory =
-      options.githubCredentialsProviderFactory;
+    this.githubCredentialsProvider = options.githubCredentialsProvider;
   }
 
   async readLocation(
@@ -102,9 +96,9 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     // about how to handle the wild card which is special for this processor.
     const orgUrl = `https://${host}/${org}`;
 
-    const { headers } = await this.githubCredentialsProviderFactory(
-      gitHubConfig,
-    ).getCredentials({ url: orgUrl });
+    const { headers } = await this.githubCredentialsProvider.getCredentials({
+      url: orgUrl,
+    });
 
     const client = graphql.defaults({
       baseUrl: gitHubConfig.apiBaseUrl,

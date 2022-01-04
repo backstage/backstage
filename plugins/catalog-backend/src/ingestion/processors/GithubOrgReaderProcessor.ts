@@ -17,9 +17,9 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
-  SingleInstanceGithubCredentialsProvider,
   GithubCredentialType,
   ScmIntegrations,
+  GithubCredentialsProvider,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
@@ -40,8 +40,15 @@ type GraphQL = typeof graphql;
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
+  private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
-  static fromConfig(config: Config, options: { logger: Logger }) {
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger;
+      githubCredentialsProvider: GithubCredentialsProvider;
+    },
+  ) {
     const integrations = ScmIntegrations.fromConfig(config);
 
     return new GithubOrgReaderProcessor({
@@ -50,8 +57,13 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     });
   }
 
-  constructor(options: { integrations: ScmIntegrations; logger: Logger }) {
+  constructor(options: {
+    integrations: ScmIntegrations;
+    logger: Logger;
+    githubCredentialsProvider: GithubCredentialsProvider;
+  }) {
     this.integrations = options.integrations;
+    this.githubCredentialsProvider = options.githubCredentialsProvider;
     this.logger = options.logger;
   }
 
@@ -107,10 +119,8 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       );
     }
 
-    const credentialsProvider =
-      SingleInstanceGithubCredentialsProvider.create(gitHubConfig);
     const { headers, type: tokenType } =
-      await credentialsProvider.getCredentials({
+      await this.githubCredentialsProvider.getCredentials({
         url: orgUrl,
       });
 

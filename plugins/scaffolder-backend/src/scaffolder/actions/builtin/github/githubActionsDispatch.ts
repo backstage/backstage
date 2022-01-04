@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
 import { OctokitProvider } from './OctokitProvider';
 
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider: GithubCredentialsProvider;
 }) {
-  const { integrations } = options;
-  const octokitProvider = new OctokitProvider(integrations);
+  const { integrations, githubCredentialsProvider } = options;
+  const octokitProvider = new OctokitProvider(
+    integrations,
+    githubCredentialsProvider,
+  );
 
   return createTemplateAction<{
     repoUrl: string;

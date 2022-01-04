@@ -22,9 +22,9 @@ import { DateTime } from 'luxon';
 import {
   GithubCredentials,
   GithubCredentialsProvider,
-  GithubCredentialsProviderFactory,
   GithubCredentialType,
 } from './types';
+import { ScmIntegrations } from '../ScmIntegrations';
 
 type InstallationData = {
   installationId: number;
@@ -232,17 +232,11 @@ export class GithubAppCredentialsMux {
 export class SingleInstanceGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
-  static create: GithubCredentialsProviderFactory = config => {
-    return new SingleInstanceGithubCredentialsProvider(
-      new GithubAppCredentialsMux(config),
-      config.token,
-    );
-  };
+  static create(integrations: ScmIntegrations) {
+    return new SingleInstanceGithubCredentialsProvider(integrations);
+  }
 
-  private constructor(
-    private readonly githubAppCredentialsMux: GithubAppCredentialsMux,
-    private readonly token?: string,
-  ) {}
+  private constructor(private readonly integrations: ScmIntegrations) {}
 
   /**
    * Returns {@link GithubCredentials} for a given URL.
@@ -266,15 +260,24 @@ export class SingleInstanceGithubCredentialsProvider
    */
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
     const parsed = parseGitUrl(opts.url);
+    const gitHubConfig = this.integrations.github.byUrl(opts.url)?.config;
+    if (!gitHubConfig) {
+      throw new Error(
+        `There is no GitHub integration that matches ${opts.url}. Please add a configuration for an integration.`,
+      );
+    }
+
+    const githubAppCredentialsMux = new GithubAppCredentialsMux(gitHubConfig);
+    const defaultToken = gitHubConfig.token;
 
     const owner = parsed.owner || parsed.name;
     const repo = parsed.owner ? parsed.name : undefined;
 
     let type: GithubCredentialType = 'app';
-    let token = await this.githubAppCredentialsMux.getAppToken(owner, repo);
+    let token = await githubAppCredentialsMux.getAppToken(owner, repo);
     if (!token) {
       type = 'token';
-      token = this.token;
+      token = defaultToken;
     }
 
     return {
