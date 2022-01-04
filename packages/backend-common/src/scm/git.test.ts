@@ -105,7 +105,6 @@ describe('Git', () => {
         dir,
         singleBranch: true,
         depth: 1,
-        noCheckout: false,
         onProgress: expect.any(Function),
         headers: {
           'user-agent': 'git/@isomorphic-git',

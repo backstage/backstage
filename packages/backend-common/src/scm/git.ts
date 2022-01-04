@@ -94,7 +94,7 @@ export class Git {
       ref,
       singleBranch: true,
       depth: depth ?? 1,
-      noCheckout: noCheckout ?? false,
+      noCheckout,
       onProgress: this.onProgressHandler(),
       headers: {
         'user-agent': 'git/@isomorphic-git',
