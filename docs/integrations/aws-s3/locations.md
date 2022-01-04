@@ -39,9 +39,10 @@ integrations:
       roleArn: 'arn:aws:iam::xxxxxxxxxxxx:role/example-role'
 ```
 
-Configuration allows specifying custom S3 endpoint, along with 
+Configuration allows specifying custom S3 endpoint, along with
 [path-style access](https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html)
-to support integration with providers like [LocalStack](https://github.com/localstack/localstack):
+to support integration with providers like
+[LocalStack](https://github.com/localstack/localstack):
 
 ```yaml
 integrations:
