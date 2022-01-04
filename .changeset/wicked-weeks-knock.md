@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Allow enties from file locations to be manually refreshed through the UI
+Allow entities from `file` locations to be manually refreshed through the UI
