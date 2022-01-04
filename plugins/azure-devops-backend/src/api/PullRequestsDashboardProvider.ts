@@ -23,6 +23,7 @@ import {
 
 import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { Logger } from 'winston';
+import limiterFactory from 'p-limit';
 
 export class PullRequestsDashboardProvider {
   private teams = new Map<string, Team>();
@@ -58,33 +59,40 @@ export class PullRequestsDashboardProvider {
     this.teams = new Map<string, Team>();
     this.teamMembers = new Map<string, TeamMember>();
 
+    const limiter = limiterFactory(5);
+
     await Promise.all(
-      teams.map(async team => {
-        const teamId = team.id;
+      teams.map(team =>
+        limiter(async () => {
+          const teamId = team.id;
 
-        if (teamId) {
-          const teamMembers = await this.azureDevOpsApi.getTeamMembers(team);
+          if (teamId) {
+            const teamMembers = await this.azureDevOpsApi.getTeamMembers(team);
 
-          if (teamMembers) {
-            team.members = teamMembers.reduce((arr, teamMember) => {
-              const teamMemberId = teamMember.id;
+            if (teamMembers) {
+              team.members = teamMembers.reduce((arr, teamMember) => {
+                const teamMemberId = teamMember.id;
 
-              if (teamMemberId) {
-                arr.push(teamMemberId);
-                const memberOf = [
-                  ...(this.teamMembers.get(teamMemberId)?.memberOf ?? []),
-                  teamId,
-                ];
-                this.teamMembers.set(teamMemberId, { ...teamMember, memberOf });
-              }
+                if (teamMemberId) {
+                  arr.push(teamMemberId);
+                  const memberOf = [
+                    ...(this.teamMembers.get(teamMemberId)?.memberOf ?? []),
+                    teamId,
+                  ];
+                  this.teamMembers.set(teamMemberId, {
+                    ...teamMember,
+                    memberOf,
+                  });
+                }
 
-              return arr;
-            }, [] as string[]);
+                return arr;
+              }, [] as string[]);
 
-            this.teams.set(teamId, team);
+              this.teams.set(teamId, team);
+            }
           }
-        }
-      }),
+        }),
+      ),
     );
   }
 
