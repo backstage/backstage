@@ -21,90 +21,35 @@ import { setupServer } from 'msw/node';
 import {
   DEFAULTS,
   DelegatedSignInIdentity,
-  sleep,
-  tokenToExpiryMillis,
+  tokenToExpiry,
 } from './DelegatedSignInIdentity';
-
-const flushPromises = () => new Promise(setImmediate);
 
 const validBackstageTokenExpClaim = 1641216199;
 const validBackstageToken =
   'eyJhbGciOiJFUzI1NiIsImtpZCI6ImMxNTMzNDRiLWZjYzktNGIwOS1iN2ZhLTU3ZmM5MDhjMjBiNiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwMDcvYXBpL2F1dGgiLCJzdWIiOiJmcmViZW4iLCJhdWQiOiJiYWNrc3RhZ2UiLCJpYXQiOjE2NDEyMTI1OTksImV4cCI6MTY0MTIxNjE5OSwiZW50IjpbInVzZXI6ZGVmYXVsdC9mcmViZW4iXX0.4nOTmPHPwhzaKTzikgUsHcszfcP-JamcojMnRfyfsKhyHCCEywe6uLFlvvmK5NbaX5Z7IIji-kg7bxKU58kwoQ';
 
 describe('DelegatedSignInIdentity', () => {
-  describe('tokenToExpiryMillis', () => {
+  describe('tokenToExpiry', () => {
     beforeEach(() => jest.useFakeTimers('modern'));
     afterEach(() => jest.useRealTimers());
 
     it('handles undefined', async () => {
-      expect(tokenToExpiryMillis(undefined)).toEqual(
-        DEFAULTS.defaultTokenExpiryMillis,
+      expect(tokenToExpiry(undefined)).toEqual(
+        new Date(Date.now() + DEFAULTS.defaultTokenExpiryMillis),
       );
     });
 
     it('handles a valid token', async () => {
-      jest.setSystemTime(
-        validBackstageTokenExpClaim * 1000 -
-          (3600 + DEFAULTS.tokenExpiryMarginMillis),
+      expect(tokenToExpiry(validBackstageToken)).toEqual(
+        new Date(
+          validBackstageTokenExpClaim * 1000 - DEFAULTS.tokenExpiryMarginMillis,
+        ),
       );
-      expect(tokenToExpiryMillis(validBackstageToken)).toEqual(3600);
-    });
-  });
-
-  describe('sleep', () => {
-    beforeEach(() => jest.useFakeTimers());
-    afterEach(() => jest.useRealTimers());
-
-    it('normally sleeps', async () => {
-      const fn = jest.fn();
-      sleep(100, new AbortController().signal).then(fn);
-
-      await flushPromises();
-      expect(fn).toBeCalledTimes(0);
-
-      jest.advanceTimersByTime(99);
-      await flushPromises();
-      expect(fn).toBeCalledTimes(0);
-
-      jest.advanceTimersByTime(2);
-      await flushPromises();
-      expect(fn).toBeCalledTimes(1);
-    });
-
-    it('can be aborted', async () => {
-      const controller = new AbortController();
-      const fn = jest.fn();
-      sleep(100, controller.signal).then(fn);
-
-      jest.advanceTimersByTime(50);
-      await flushPromises();
-      expect(fn).toBeCalledTimes(0);
-
-      controller.abort();
-      await flushPromises();
-      expect(fn).toBeCalledTimes(1);
-    });
-
-    it('reuses the same controller nicely', async () => {
-      const controller = new AbortController();
-
-      for (let i = 0; i < 50; ++i) {
-        const fn = jest.fn();
-        sleep(100, controller.signal).then(fn);
-
-        jest.advanceTimersByTime(99);
-        await flushPromises();
-        expect(fn).toBeCalledTimes(0);
-
-        jest.advanceTimersByTime(2);
-        await flushPromises();
-        expect(fn).toBeCalledTimes(1);
-      }
     });
   });
 
   describe('DelegatedSignInIdentity', () => {
-    beforeEach(() => jest.useFakeTimers());
+    beforeEach(() => jest.useFakeTimers('modern'));
     afterEach(() => jest.useRealTimers());
 
     const worker = setupServer();
@@ -112,7 +57,6 @@ describe('DelegatedSignInIdentity', () => {
 
     it('runs the happy path', async () => {
       const getBaseUrl = jest.fn();
-      const postError = jest.fn();
       const serverCalled = jest.fn();
 
       function makeToken() {
@@ -166,17 +110,17 @@ describe('DelegatedSignInIdentity', () => {
       const identity = new DelegatedSignInIdentity({
         provider: 'foo',
         discoveryApi: { getBaseUrl },
-        errorApi: { post: postError } as any,
         fetchApi: { fetch },
       });
 
       getBaseUrl.mockResolvedValue('http://example.com/api/auth');
 
       await identity.start(); // should not throw
-
       expect(getBaseUrl).toBeCalledTimes(1);
       expect(getBaseUrl).lastCalledWith('auth');
-      expect(postError).toBeCalledTimes(0);
+      expect(serverCalled).toBeCalledTimes(1);
+
+      await identity.getSessionAsync(); // no need to fetch again just yet
       expect(serverCalled).toBeCalledTimes(1);
 
       // Use a fairly large margin (1000) since the iat and exp are clamped to
@@ -184,11 +128,11 @@ describe('DelegatedSignInIdentity', () => {
       jest.advanceTimersByTime(
         100 * 1000 - DEFAULTS.tokenExpiryMarginMillis - 1000,
       );
-      await flushPromises();
+      await identity.getSessionAsync(); // still no need to fetch again
       expect(serverCalled).toBeCalledTimes(1);
 
       jest.advanceTimersByTime(1001);
-      await flushPromises();
+      await identity.getSessionAsync(); // now the expiry has passed
       expect(serverCalled).toBeCalledTimes(2);
     });
   });

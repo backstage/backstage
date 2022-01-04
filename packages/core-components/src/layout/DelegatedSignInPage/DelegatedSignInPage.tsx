@@ -16,7 +16,6 @@
 
 import {
   discoveryApiRef,
-  errorApiRef,
   fetchApiRef,
   SignInPageProps,
   useApi,
@@ -58,12 +57,10 @@ export type DelegatedSignInPageProps = SignInPageProps & {
 export const DelegatedSignInPage = (props: DelegatedSignInPageProps) => {
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
-  const errorApi = useApi(errorApiRef);
 
   const { loading, error } = useAsync(async () => {
     const identity = new DelegatedSignInIdentity({
       provider: props.provider,
-      errorApi,
       discoveryApi,
       fetchApi,
     });
