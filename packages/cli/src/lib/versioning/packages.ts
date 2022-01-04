@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import minimatch from 'minimatch';
 import { runPlain } from '../../lib/run';
 import { NotFoundError } from '../errors';
-
-const PREFIX = '@backstage';
 
 const DEP_TYPES = [
   'dependencies',
@@ -66,6 +64,7 @@ export async function fetchPackageInfo(
 /** Map all dependencies in the repo as dependency => dependents */
 export async function mapDependencies(
   targetDir: string,
+  pattern: string,
 ): Promise<Map<string, PkgVersionInfo[]>> {
   const { Project } = require('@lerna/project');
   const project = new Project(targetDir);
@@ -78,7 +77,7 @@ export async function mapDependencies(
     );
 
     for (const [name, range] of deps) {
-      if (name.startsWith(PREFIX)) {
+      if (minimatch(name, pattern)) {
         dependencyMap.set(
           name,
           (dependencyMap.get(name) ?? []).concat({

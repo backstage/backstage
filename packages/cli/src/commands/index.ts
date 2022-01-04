@@ -214,6 +214,10 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('versions:bump')
+    .option(
+      '--pattern <glob>',
+      'Override glob for matching packages to upgrade',
+    )
     .description('Bump Backstage packages to the latest versions')
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
 
