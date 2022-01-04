@@ -623,7 +623,7 @@ export const oktaAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
+// @public @deprecated
 export type OldIconComponent = ComponentType<SvgIconProps>;
 
 // @alpha
