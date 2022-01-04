@@ -16,7 +16,6 @@
 
 export { ApiProvider } from './ApiProvider';
 export type { ApiProviderProps } from './ApiProvider';
-export { ApiRegistry } from './ApiRegistry';
 export { ApiResolver } from './ApiResolver';
 export { ApiFactoryRegistry } from './ApiFactoryRegistry';
 export type { ApiFactoryScope } from './ApiFactoryRegistry';

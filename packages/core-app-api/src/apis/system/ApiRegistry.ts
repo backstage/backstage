@@ -18,6 +18,7 @@ import { ApiRef, ApiHolder } from '@backstage/core-plugin-api';
 
 type ApiImpl<T = unknown> = readonly [ApiRef<T>, T];
 
+/** @internal */
 class ApiRegistryBuilder {
   private apis: [string, unknown][] = [];
 
@@ -35,8 +36,7 @@ class ApiRegistryBuilder {
 /**
  * A registry for utility APIs.
  *
- * @public
- * @deprecated Will be removed, use {@link @backstage/test-utils#TestApiProvider} or {@link @backstage/test-utils#TestApiRegistry} instead.
+ * @internal
  */
 export class ApiRegistry implements ApiHolder {
   static builder() {

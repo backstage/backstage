@@ -50,7 +50,6 @@ import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
-import { PluginOutput } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
@@ -129,21 +128,6 @@ export type ApiProviderProps = {
   children: ReactNode;
 };
 
-// @public @deprecated
-export class ApiRegistry implements ApiHolder {
-  constructor(apis: Map<string, unknown>);
-  // Warning: (ae-forgotten-export) The symbol "ApiRegistryBuilder" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
-  static builder(): ApiRegistryBuilder;
-  // Warning: (ae-forgotten-export) The symbol "ApiImpl" needs to be exported by the entry point index.d.ts
-  static from(apis: ApiImpl[]): ApiRegistry;
-  // (undocumented)
-  get<T>(api: ApiRef<T>): T | undefined;
-  static with<T>(api: ApiRef<T>, impl: T): ApiRegistry;
-  with<T>(api: ApiRef<T>, impl: T): ApiRegistry;
-}
-
 // @public
 export class ApiResolver implements ApiHolder {
   constructor(factories: ApiFactoryHolder);
@@ -208,14 +192,19 @@ export type AppOptions = {
   icons: AppIcons & {
     [key in string]: IconComponent;
   };
-  plugins?: (Omit<BackstagePlugin<any, any>, 'output'> & {
-    output(): (
-      | PluginOutput
-      | {
-          type: string;
-        }
-    )[];
-  })[];
+  plugins?: Array<
+    BackstagePlugin<any, any> & {
+      output?(): Array<
+        | {
+            type: 'feature-flag';
+            name: string;
+          }
+        | {
+            type: string;
+          }
+      >;
+    }
+  >;
   components: AppComponents;
   themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
