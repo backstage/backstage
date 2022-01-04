@@ -204,11 +204,6 @@ export interface GithubCredentialsProvider {
 }
 
 // @public
-export type GithubCredentialsProviderFactory = (
-  config: GitHubIntegrationConfig,
-) => GithubCredentialsProvider;
-
-// @public
 export type GithubCredentialType = 'app' | 'token';
 
 // @public
@@ -432,7 +427,9 @@ export class SingleInstanceGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
   // (undocumented)
-  static create: GithubCredentialsProviderFactory;
+  static create(
+    integrations: ScmIntegrations,
+  ): SingleInstanceGithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 

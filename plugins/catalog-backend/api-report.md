@@ -16,7 +16,7 @@ import { EntityName } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
-import { GithubCredentialsProviderFactory } from '@backstage/integration';
+import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
@@ -1012,14 +1012,14 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrations;
     logger: Logger_2;
-    githubCredentialsProviderFactory: GithubCredentialsProviderFactory;
+    githubCredentialsProvider: GithubCredentialsProvider;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
-      githubCredentialsProviderFactory?: GithubCredentialsProviderFactory;
+      githubCredentialsProvider: GithubCredentialsProvider;
     },
   ): GithubDiscoveryProcessor;
   // (undocumented)
@@ -1036,12 +1036,14 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     integrations: ScmIntegrations;
     logger: Logger_2;
     orgs: GithubMultiOrgConfig;
+    githubCredentialsProvider: GithubCredentialsProvider;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
+      githubCredentialsProvider: GithubCredentialsProvider;
     },
   ): GithubMultiOrgReaderProcessor;
   // (undocumented)
@@ -1061,6 +1063,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     orgUrl: string;
     gitHubConfig: GitHubIntegrationConfig;
     logger: Logger_2;
+    githubCredentialsProvider: GithubCredentialsProvider;
   });
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -1071,6 +1074,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       id: string;
       orgUrl: string;
       logger: Logger_2;
+      githubCredentialsProvider: GithubCredentialsProvider;
     },
   ): GitHubOrgEntityProvider;
   // (undocumented)
@@ -1083,12 +1087,17 @@ export class GitHubOrgEntityProvider implements EntityProvider {
 //
 // @public
 export class GithubOrgReaderProcessor implements CatalogProcessor {
-  constructor(options: { integrations: ScmIntegrations; logger: Logger_2 });
+  constructor(options: {
+    integrations: ScmIntegrations;
+    logger: Logger_2;
+    githubCredentialsProvider: GithubCredentialsProvider;
+  });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
+      githubCredentialsProvider: GithubCredentialsProvider;
     },
   ): GithubOrgReaderProcessor;
   // (undocumented)
@@ -1577,7 +1586,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
 // src/catalog/types.d.ts:94:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/catalog/types.d.ts:95:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/catalog/types.d.ts:96:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:23:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
+// src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:25:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
 // src/ingestion/types.d.ts:8:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/legacy/database/types.d.ts:98:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/legacy/database/types.d.ts:104:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
