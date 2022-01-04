@@ -358,21 +358,32 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
         scrollIntoAnchor(),
         addLinkClickListener({
           baseUrl: window.location.origin,
-          onClick: (_: MouseEvent, url: string) => {
+          onClick: (event: MouseEvent, url: string) => {
+            // detect if CTRL or META keys are pressed so that links can be opened in a new tab with `window.open`
+            const modifierActive = event.ctrlKey || event.metaKey;
             const parsedUrl = new URL(url);
+
             // hash exists when anchor is clicked on secondary sidebar
             if (parsedUrl.hash) {
-              navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
-              // Scroll to hash if it's on the current page
-              transformedElement
-                ?.querySelector(`#${parsedUrl.hash.slice(1)}`)
-                ?.scrollIntoView();
+              if (modifierActive) {
+                window.open(`${parsedUrl.pathname}${parsedUrl.hash}`, '_blank');
+              } else {
+                navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+                // Scroll to hash if it's on the current page
+                transformedElement
+                  ?.querySelector(`#${parsedUrl.hash.slice(1)}`)
+                  ?.scrollIntoView();
+              }
             } else {
-              navigate(parsedUrl.pathname);
-              // Scroll to top of reader if primary sidebar link is clicked
-              transformedElement
-                ?.querySelector('.md-content__inner')
-                ?.scrollIntoView();
+              if (modifierActive) {
+                window.open(parsedUrl.pathname, '_blank');
+              } else {
+                navigate(parsedUrl.pathname);
+                // Scroll to top of reader if primary sidebar link is clicked
+                transformedElement
+                  ?.querySelector('.md-content__inner')
+                  ?.scrollIntoView();
+              }
             }
           },
         }),
