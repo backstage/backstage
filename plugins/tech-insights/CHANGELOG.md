@@ -1,5 +1,16 @@
 # @backstage/plugin-tech-insights
 
+## 0.1.4
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- 96fb10fe25: remove unnecessary http request when running all checks
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
 ## 0.1.3
 
 ### Patch Changes

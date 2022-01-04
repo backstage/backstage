@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes
 
+## 0.5.3
+
+### Patch Changes
+
+- 7ac0bd2c66: implement dashboard link formatter for GKE
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/plugin-kubernetes-common@0.2.1
+  - @backstage/core-components@0.8.3
+
 ## 0.5.2
 
 ### Patch Changes
