@@ -1,5 +1,15 @@
 # @backstage/plugin-ilert
 
+## 0.1.20
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
 ## 0.1.19
 
 ### Patch Changes
