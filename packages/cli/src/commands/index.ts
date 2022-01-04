@@ -193,6 +193,7 @@ export function registerCommands(program: CommanderStatic) {
     )
     .option('--lax', 'Do not require environment variables to be set')
     .option('--frontend', 'Only validate the frontend configuration')
+    .option('--deprecated', 'Output deprecated configuration settings')
     .option(...configOption)
     .description(
       'Validate that the given configuration loads and matches schema',
