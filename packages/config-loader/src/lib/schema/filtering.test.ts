@@ -16,11 +16,7 @@
 
 import { JsonObject } from '@backstage/types';
 import { ConfigVisibility } from './types';
-import {
-  filterByVisibility,
-  filterErrorsByVisibility,
-  filterByDeprecated,
-} from './filtering';
+import { filterByVisibility, filterErrorsByVisibility } from './filtering';
 
 const data = {
   arr: ['f', 'b', 's'],
@@ -70,8 +66,8 @@ const visibility = new Map<string, ConfigVisibility>(
 
 const deprecations = new Map<string, string>(
   Object.entries({
-    '/properties/arr': 'deprecated array',
-    '/properties/objB/properties/never': 'deprecated nested property',
+    '/arr': 'deprecated array',
+    '/objB/never': 'deprecated nested property',
   }),
 );
 
@@ -196,8 +192,33 @@ describe('filterByVisibility', () => {
     [['frontend', 'backend', 'secret'], { data, filteredKeys: [] }],
   ])('should filter correctly with %p', (filter, expected) => {
     expect(
-      filterByVisibility(data, filter, visibility, undefined, true),
+      filterByVisibility(
+        data,
+        filter,
+        visibility,
+        deprecations,
+        undefined,
+        true,
+        false,
+      ),
     ).toEqual(expected);
+  });
+
+  it('should include deprecated keys regardless of visibility', () => {
+    expect(
+      filterByVisibility(
+        data,
+        [],
+        visibility,
+        deprecations,
+        undefined,
+        true,
+        true,
+      ).deprecatedKeys,
+    ).toEqual([
+      { key: 'arr', description: 'deprecated array' },
+      { key: 'objB.never', description: 'deprecated nested property' },
+    ]);
   });
 });
 
@@ -390,19 +411,5 @@ describe('filterErrorsByVisibility', () => {
       expect.objectContaining({ message: 'a' }),
       expect.objectContaining({ message: 'c' }),
     ]);
-  });
-});
-
-describe('filterByDeprecated', () => {
-  it('should allow empty list of deprecations', () => {
-    expect(filterByDeprecated(data, new Map())).toEqual({ deprecatedKeys: [] });
-  });
-  it('should return a list of deprecated properties', () => {
-    expect(filterByDeprecated(data, deprecations)).toEqual({
-      deprecatedKeys: [
-        { key: 'arr', description: 'deprecated array' },
-        { key: 'objB.never', description: 'deprecated nested property' },
-      ],
-    });
   });
 });

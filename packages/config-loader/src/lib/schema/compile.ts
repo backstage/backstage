@@ -40,6 +40,7 @@ export function compileConfigSchemas(
   // output during validation. We work around this by having this extra piece
   // of state that we reset before each validation.
   const visibilityByDataPath = new Map<string, ConfigVisibility>();
+  const deprecationByDataPath = new Map<string, string>();
 
   const ajv = new Ajv({
     allErrors: true,
@@ -47,28 +48,48 @@ export function compileConfigSchemas(
     schemas: {
       'https://backstage.io/schema/config-v1': true,
     },
-  }).addKeyword({
-    keyword: 'visibility',
-    metaSchema: {
-      type: 'string',
-      enum: CONFIG_VISIBILITIES,
-    },
-    compile(visibility: ConfigVisibility) {
-      return (_data, context) => {
-        if (context?.dataPath === undefined) {
-          return false;
-        }
-        if (visibility && visibility !== 'backend') {
+  })
+    .addKeyword({
+      keyword: 'visibility',
+      metaSchema: {
+        type: 'string',
+        enum: CONFIG_VISIBILITIES,
+      },
+      compile(visibility: ConfigVisibility) {
+        return (_data, context) => {
+          if (context?.dataPath === undefined) {
+            return false;
+          }
+          if (visibility && visibility !== 'backend') {
+            const normalizedPath = context.dataPath.replace(
+              /\['?(.*?)'?\]/g,
+              (_, segment) => `/${segment}`,
+            );
+            visibilityByDataPath.set(normalizedPath, visibility);
+          }
+          return true;
+        };
+      },
+    })
+    .removeKeyword('deprecated') // remove `deprecated` keyword so that we can implement our own compiler
+    .addKeyword({
+      keyword: 'deprecated',
+      metaSchema: { type: 'string' },
+      compile(deprecationDescription: string) {
+        return (_data, context) => {
+          if (context?.dataPath === undefined) {
+            return false;
+          }
           const normalizedPath = context.dataPath.replace(
             /\['?(.*?)'?\]/g,
             (_, segment) => `/${segment}`,
           );
-          visibilityByDataPath.set(normalizedPath, visibility);
-        }
-        return true;
-      };
-    },
-  });
+          // create mapping of deprecation description and data path of property
+          deprecationByDataPath.set(normalizedPath, deprecationDescription);
+          return true;
+        };
+      },
+    });
 
   for (const schema of schemas) {
     try {
@@ -79,14 +100,8 @@ export function compileConfigSchemas(
   }
 
   const merged = mergeConfigSchemas(schemas.map(_ => _.value));
-  const validate = ajv.compile(merged);
 
-  const deprecationBySchemaPath = new Map<string, string>();
-  traverse(merged, (schema, path) => {
-    if ('deprecated' in schema) {
-      deprecationBySchemaPath.set(path, schema.deprecated);
-    }
-  });
+  const validate = ajv.compile(merged);
 
   const visibilityBySchemaPath = new Map<string, ConfigVisibility>();
   traverse(merged, (schema, path) => {
@@ -101,19 +116,20 @@ export function compileConfigSchemas(
     visibilityByDataPath.clear();
 
     const valid = validate(config);
+
     if (!valid) {
       return {
         errors: validate.errors ?? [],
         visibilityByDataPath: new Map(visibilityByDataPath),
         visibilityBySchemaPath,
-        deprecationBySchemaPath,
+        deprecationByDataPath,
       };
     }
 
     return {
       visibilityByDataPath: new Map(visibilityByDataPath),
       visibilityBySchemaPath,
-      deprecationBySchemaPath,
+      deprecationByDataPath,
     };
   };
 }

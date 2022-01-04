@@ -85,9 +85,9 @@ type ValidationResult = {
   /**
    * The deprecated options that were discovered during validation.
    *
-   * The path in the key uses the form `/properties/<key>/items/additionalProperties/<leaf-key>`
+   * The path in the key uses the form `/<key>/<sub-key>/<array-index>/<leaf-key>`
    */
-  deprecationBySchemaPath: Map<string, string>;
+  deprecationByDataPath: Map<string, string>;
 };
 
 /**

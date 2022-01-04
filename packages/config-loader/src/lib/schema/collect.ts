@@ -182,7 +182,7 @@ function compileTsSchemas(paths: string[]) {
         program,
         // All schemas should export a `Config` symbol
         'Config',
-        // This enables usage of @visibility and @deprecated is doc comments
+        // This enables usage of @visibility and @deprecated in doc comments
         {
           required: true,
           validationKeywords: ['visibility', 'deprecated'],

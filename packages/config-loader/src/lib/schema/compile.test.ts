@@ -40,7 +40,7 @@ describe('compileConfigSchemas', () => {
       ],
       visibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(),
-      deprecationBySchemaPath: new Map(),
+      deprecationByDataPath: new Map(),
     });
     expect(validate([{ data: { b: 'b' }, context: 'test' }])).toEqual({
       errors: [
@@ -54,7 +54,7 @@ describe('compileConfigSchemas', () => {
       ],
       visibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(),
-      deprecationBySchemaPath: new Map(),
+      deprecationByDataPath: new Map(),
     });
   });
 
@@ -114,7 +114,7 @@ describe('compileConfigSchemas', () => {
           '/properties/d/items': 'frontend',
         }),
       ),
-      deprecationBySchemaPath: new Map(),
+      deprecationByDataPath: new Map(),
     });
   });
 
@@ -160,10 +160,10 @@ describe('compileConfigSchemas', () => {
         { data: { a: 'a', b: 'b', c: 'c', d: ['d'] }, context: 'test' },
       ]),
     ).toEqual({
-      deprecationBySchemaPath: new Map(
+      deprecationByDataPath: new Map(
         Object.entries({
-          '/properties/a': 'deprecation reason for a',
-          '/properties/b': 'deprecation reason for b',
+          '/a': 'deprecation reason for a',
+          '/b': 'deprecation reason for b',
         }),
       ),
       visibilityByDataPath: new Map(),

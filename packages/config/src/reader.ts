@@ -87,20 +87,15 @@ export class ConfigReader implements Config {
         const reader = new ConfigReader(data, context, previousReader);
         reader.filteredKeys = filteredKeys;
 
-        // TODO(cmpadden) introduce `deprecatedKeys` and `notifiedDeprecatedKeys` & use logger
+        // TODO(cmpadden) `withDeprecatedKeys` is defaulting to false on app start
         if (deprecatedKeys) {
           for (const { key, description } of deprecatedKeys) {
-            if (description) {
-              // eslint-disable-next-line no-console
-              console.warn(
-                `The configuration key '${key}' is deprecated and may be removed soon. (reason: ${description})`,
-              );
-            } else {
-              // eslint-disable-next-line no-console
-              console.warn(
-                `The configuration key '${key}' is deprecated and may be removed soon.`,
-              );
-            }
+            // eslint-disable-next-line no-console
+            console.warn(
+              `The configuration key '${key}' of ${context} is deprecated and may be removed soon. ${
+                description || ''
+              }`,
+            );
           }
         }
 

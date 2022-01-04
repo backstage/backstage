@@ -24,36 +24,6 @@ import {
 } from './types';
 
 /**
- * This filters data by deprecation status to only include those which have been deprecated
- *
- * @param data - configuration data
- * @param deprecationBySchemaPath - mapping of schema path to deprecation description
- * @returns deprecated configuration keys with their deprecation description
- */
-export function filterByDeprecated(
-  data: JsonObject,
-  deprecationBySchemaPath: Map<string, string>,
-  withDeprecatedKeys: boolean = true,
-): { deprecatedKeys: { key: string; description: string }[] } {
-  const deprecatedKeys = new Array<{ key: string; description: string }>();
-  if (!withDeprecatedKeys) {
-    return { deprecatedKeys };
-  }
-
-  deprecationBySchemaPath.forEach((desc, schemaPath) => {
-    // convert schema path to object path (/properties/techdocs/properties/storageUrl -> techdocs.storageUrl)
-    const propertyPath = schemaPath
-      .replace(/^\/properties\//, '') // remove leading `/properties/` entirely
-      .replace(/\/properties\//g, '.'); // replace all other `/properties/` with a `.`
-    if (has(data, propertyPath)) {
-      deprecatedKeys.push({ key: propertyPath, description: desc });
-    }
-  });
-
-  return { deprecatedKeys };
-}
-
-/**
  * This filters data by visibility by discovering the visibility of each
  * value, and then only keeping the ones that are specified in `includeVisibilities`.
  */
@@ -61,10 +31,17 @@ export function filterByVisibility(
   data: JsonObject,
   includeVisibilities: ConfigVisibility[],
   visibilityByDataPath: Map<string, ConfigVisibility>,
+  deprecationByDataPath: Map<string, string>,
   transformFunc?: TransformFunc<number | string | boolean>,
   withFilteredKeys?: boolean,
-): { data: JsonObject; filteredKeys?: string[] } {
+  withDeprecatedKeys?: boolean,
+): {
+  data: JsonObject;
+  filteredKeys?: string[];
+  deprecatedKeys?: { key: string; description: string }[];
+} {
   const filteredKeys = new Array<string>();
+  const deprecatedKeys = new Array<{ key: string; description: string }>();
 
   function transform(
     jsonVal: JsonValue,
@@ -74,6 +51,12 @@ export function filterByVisibility(
     const visibility =
       visibilityByDataPath.get(visibilityPath) ?? DEFAULT_CONFIG_VISIBILITY;
     const isVisible = includeVisibilities.includes(visibility);
+
+    // deprecated keys are added regardless of visibility indicator
+    const deprecation = deprecationByDataPath.get(visibilityPath);
+    if (deprecation) {
+      deprecatedKeys.push({ key: filterPath, description: deprecation });
+    }
 
     if (typeof jsonVal !== 'object') {
       if (isVisible) {
@@ -140,6 +123,7 @@ export function filterByVisibility(
 
   return {
     filteredKeys: withFilteredKeys ? filteredKeys : undefined,
+    deprecatedKeys: withDeprecatedKeys ? deprecatedKeys : undefined,
     data: (transform(data, '', '') as JsonObject) ?? {},
   };
 }

@@ -65,7 +65,6 @@ describe('loadConfigSchema', () => {
       {
         data: { key1: 'a' },
         context: 'test',
-        deprecatedKeys: [],
       },
     ]);
     expect(
@@ -79,7 +78,6 @@ describe('loadConfigSchema', () => {
         data: { key1: 'X' },
         context: 'test',
         filteredKeys: ['key2'],
-        deprecatedKeys: [],
       },
     ]);
     expect(
@@ -92,7 +90,6 @@ describe('loadConfigSchema', () => {
         data: { key1: 'X', key2: 'X' },
         context: 'test',
         filteredKeys: [],
-        deprecatedKeys: [],
       },
     ]);
 
@@ -103,7 +100,6 @@ describe('loadConfigSchema', () => {
       {
         data: { key1: 'a' },
         context: 'test',
-        deprecatedKeys: [],
       },
     ]);
     expect(() =>
@@ -152,7 +148,6 @@ describe('loadConfigSchema', () => {
         {
           data: { key1: 'a' },
           context: 'test',
-          deprecatedKeys: [],
         },
       ]);
       expect(() => schema.process(configs, { visibility: ['secret'] })).toThrow(
@@ -205,7 +200,6 @@ describe('loadConfigSchema', () => {
         {
           data: { nested: [{}] },
           context: 'test',
-          deprecatedKeys: [],
         },
       ]);
       expect(() => schema.process(mkConfig({ y: 1 }))).toThrow(
@@ -222,7 +216,6 @@ describe('loadConfigSchema', () => {
         {
           data: { nested: [{}] },
           context: 'test',
-          deprecatedKeys: [],
         },
       ]);
       expect(
@@ -231,7 +224,6 @@ describe('loadConfigSchema', () => {
         {
           data: { nested: [{ y: 'aaa' }] },
           context: 'test',
-          deprecatedKeys: [],
         },
       ]);
       expect(() =>

@@ -109,12 +109,9 @@ export async function loadConfigSchema(
             data,
             visibility,
             result.visibilityByDataPath,
+            result.deprecationByDataPath,
             valueTransform,
             withFilteredKeys,
-          ),
-          ...filterByDeprecated(
-            data,
-            result.deprecationBySchemaPath,
             withDeprecatedKeys,
           ),
         }));
@@ -125,12 +122,9 @@ export async function loadConfigSchema(
             data,
             Array.from(CONFIG_VISIBILITIES),
             result.visibilityByDataPath,
+            result.deprecationByDataPath,
             valueTransform,
             withFilteredKeys,
-          ),
-          ...filterByDeprecated(
-            data,
-            result.deprecationBySchemaPath,
             withDeprecatedKeys,
           ),
         }));
