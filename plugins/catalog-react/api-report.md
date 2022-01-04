@@ -781,7 +781,7 @@ export function loadCatalogOwnerRefs(
   identityOwnerRefs: string[],
 ): Promise<string[]>;
 
-// @public
+// @public @deprecated
 export function loadIdentityOwnerRefs(
   identityApi: IdentityApi,
 ): Promise<string[]>;
