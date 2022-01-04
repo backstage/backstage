@@ -15,7 +15,7 @@
  */
 
 import {
-  BackstageIdentity,
+  BackstageIdentityResponse,
   bitbucketAuthApiRef,
   ProfileInfo,
 } from '@backstage/core-plugin-api';
@@ -30,7 +30,7 @@ export type BitbucketAuthResponse = {
     expiresInSeconds: number;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
 const DEFAULT_PROVIDER = {

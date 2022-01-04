@@ -240,14 +240,6 @@ export type BackstageIdentityResponse = {
 };
 
 /**
- * The old exported symbol for {@link BackstageIdentityResponse}.
- *
- * @public
- * @deprecated use {@link BackstageIdentityResponse} instead.
- */
-export type BackstageIdentity = BackstageIdentityResponse;
-
-/**
  * Profile information of the user.
  *
  * @public
