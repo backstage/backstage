@@ -563,14 +563,6 @@ export type SignInPageProps = {
   onSignInSuccess(identityApi: IdentityApi): void;
 };
 
-// @public @deprecated
-export type SignInResult = {
-  userId: string;
-  profile: ProfileInfo;
-  getIdToken?: () => Promise<string>;
-  signOut?: () => Promise<void>;
-};
-
 // @public
 export class UnhandledErrorForwarder {
   static forward(errorApi: ErrorApi, errorContext: ErrorApiErrorContext): void;

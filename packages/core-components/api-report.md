@@ -38,7 +38,6 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { SignInPageProps } from '@backstage/core-plugin-api';
-import { SignInResult } from '@backstage/core-plugin-api';
 import { SparklinesLineProps } from 'react-sparklines';
 import { SparklinesProps } from 'react-sparklines';
 import { StyledComponentProps } from '@material-ui/core/styles';
@@ -2395,7 +2394,12 @@ export class UserIdentity implements IdentityApi {
     profile?: ProfileInfo;
   }): IdentityApi;
   static createGuest(): IdentityApi;
-  static fromLegacy(result: SignInResult): IdentityApi;
+  static fromLegacy(result: {
+    userId: string;
+    profile: ProfileInfo;
+    getIdToken?: () => Promise<string>;
+    signOut?: () => Promise<void>;
+  }): IdentityApi;
   // (undocumented)
   getBackstageIdentity(): Promise<BackstageUserIdentity>;
   // (undocumented)

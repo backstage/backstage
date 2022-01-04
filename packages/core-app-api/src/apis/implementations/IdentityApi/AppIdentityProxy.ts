@@ -26,15 +26,30 @@ function mkError(thing: string) {
   );
 }
 
+function logDeprecation(thing: string) {
+  // eslint-disable-next-line no-console
+  console.warn(
+    `WARNING: Call to ${thing} is deprecated and will break in the future`,
+  );
+}
+
+// We use this for a period of backwards compatibility. It is a hidden
+// compatibility that will allow old plugins to continue working for a limited time.
+type CompatibilityIdentityApi = IdentityApi & {
+  getUserId?(): string;
+  getIdToken?(): Promise<string | undefined>;
+  getProfile?(): ProfileInfo;
+};
+
 /**
  * Implementation of the connection between the App-wide IdentityApi
  * and sign-in page.
  */
 export class AppIdentityProxy implements IdentityApi {
-  private target?: IdentityApi;
+  private target?: CompatibilityIdentityApi;
 
   // This is called by the app manager once the sign-in page provides us with an implementation
-  setTarget(identityApi: IdentityApi) {
+  setTarget(identityApi: CompatibilityIdentityApi) {
     this.target = identityApi;
   }
 
@@ -42,6 +57,10 @@ export class AppIdentityProxy implements IdentityApi {
     if (!this.target) {
       throw mkError('getUserId');
     }
+    if (!this.target.getUserId) {
+      throw new Error('IdentityApi does not implement getUserId');
+    }
+    logDeprecation('getUserId');
     return this.target.getUserId();
   }
 
@@ -49,6 +68,10 @@ export class AppIdentityProxy implements IdentityApi {
     if (!this.target) {
       throw mkError('getProfile');
     }
+    if (!this.target.getProfile) {
+      throw new Error('IdentityApi does not implement getProfile');
+    }
+    logDeprecation('getProfile');
     return this.target.getProfile();
   }
 
@@ -77,6 +100,10 @@ export class AppIdentityProxy implements IdentityApi {
     if (!this.target) {
       throw mkError('getIdToken');
     }
+    if (!this.target.getIdToken) {
+      throw new Error('IdentityApi does not implement getIdToken');
+    }
+    logDeprecation('getIdToken');
     return this.target.getIdToken();
   }
 

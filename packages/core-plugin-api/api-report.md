@@ -12,7 +12,6 @@ import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
-import { ProfileInfo as ProfileInfo_2 } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
@@ -512,9 +511,6 @@ export type IconComponent = ComponentType<{
 
 // @public
 export type IdentityApi = {
-  getUserId(): string;
-  getIdToken(): Promise<string | undefined>;
-  getProfile(): ProfileInfo;
   getProfileInfo(): Promise<ProfileInfo>;
   getBackstageIdentity(): Promise<BackstageUserIdentity>;
   getCredentials(): Promise<{
@@ -730,14 +726,6 @@ export enum SessionState {
 // @public
 export type SignInPageProps = {
   onSignInSuccess(identityApi: IdentityApi_2): void;
-};
-
-// @public @deprecated
-export type SignInResult = {
-  userId: string;
-  profile: ProfileInfo_2;
-  getIdToken?: () => Promise<string>;
-  signOut?: () => Promise<void>;
 };
 
 // @public

@@ -20,7 +20,6 @@
 // eslint-disable-next-line no-restricted-imports
 export type {
   BootErrorPageProps,
-  SignInResult,
   SignInPageProps,
   ErrorBoundaryFallbackProps,
   AppComponents,
