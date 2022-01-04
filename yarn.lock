@@ -7921,9 +7921,9 @@
     csstype "^3.0.2"
 
 "@types/recharts@^1.8.14", "@types/recharts@^1.8.15":
-  version "1.8.19"
-  resolved "https://registry.npmjs.org/@types/recharts/-/recharts-1.8.19.tgz#047f72cf4c25df545aa1085fe3a085e58a2483c1"
-  integrity sha512-Fd2cYnBlWz/ga8rLmjwsZNBAc4CzXZiuTYPPqMIgrtQ02yI/OTm8WPM6ZyUuYlSdyangtsvFmHWzZ7W4tuknDA==
+  version "1.8.23"
+  resolved "https://registry.npmjs.org/@types/recharts/-/recharts-1.8.23.tgz#eeb6c52c6b2b916e9383bd5cf8fb5fd941c9c6fe"
+  integrity sha512-O/mIPm9f6dwRWfenOI3GQwsGta3x1YWjwqXOCZqC0MATQ6C+A+Jc8VxFnSUr4N3uYv64zkq90RwXFaMNbhJKvg==
   dependencies:
     "@types/d3-shape" "^1"
     "@types/react" "*"
