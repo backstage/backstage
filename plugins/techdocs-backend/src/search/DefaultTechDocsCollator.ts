@@ -176,7 +176,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
     techDocsBaseUrl: string,
     entityInfo: { kind: string; namespace: string; name: string },
   ) {
-    return `${techDocsBaseUrl}/static/docs/${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}/search/search_index.json`;
+    return `${techDocsBaseUrl}/static/entity/docs/${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}/search/search_index.json`;
   }
 
   private static handleEntityInfoCasing(

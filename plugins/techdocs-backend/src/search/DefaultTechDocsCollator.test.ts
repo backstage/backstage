@@ -116,7 +116,7 @@ describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
 
     worker.use(
       rest.get(
-        'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
+        'http://test-backend/static/entity/docs/default/Component/test-entity-with-docs/search/search_index.json',
         (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
       ),
       rest.get('http://test-backend/entities', (_, res, ctx) =>
@@ -176,7 +176,7 @@ describe('DefaultTechDocsCollator', () => {
 
     worker.use(
       rest.get(
-        'http://test-backend/static/docs/default/component/test-entity-with-docs/search/search_index.json',
+        'http://test-backend/static/entity/docs/default/component/test-entity-with-docs/search/search_index.json',
         (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
       ),
       rest.get('http://test-backend/entities', (_, res, ctx) =>

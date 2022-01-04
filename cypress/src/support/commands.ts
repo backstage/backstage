@@ -93,12 +93,12 @@ Cypress.Commands.add('interceptTechDocsAPICalls', () => {
 
   cy.intercept(
     'GET',
-    '**/techdocs/static/docs/default/Component/techdocs-e2e-fixture/sub-page-two/index.html',
+    '**/techdocs/static/entity/docs/default/Component/techdocs-e2e-fixture/sub-page-two/index.html',
   ).as('sectionTwoHTML');
 
   cy.intercept(
     'GET',
-    '**/techdocs/static/docs/default/Component/techdocs-e2e-fixture/index.html',
+    '**/techdocs/static/entity/docs/default/Component/techdocs-e2e-fixture/index.html',
   ).as('homeHTML');
 });
 

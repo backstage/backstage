@@ -143,7 +143,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   async getStorageUrl(): Promise<string> {
     return (
       this.configApi.getOptionalString('techdocs.storageUrl') ??
-      `${await this.discoveryApi.getBaseUrl('techdocs')}/static/docs/entity`
+      `${await this.discoveryApi.getBaseUrl('techdocs')}/static/entity/docs`
     );
   }
 
@@ -263,7 +263,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     const { kind, namespace, name } = entityId;
 
     const apiOrigin = await this.getApiOrigin();
-    const newBaseUrl = `${apiOrigin}/static/docs/entity/${namespace}/${kind}/${name}/${path}`;
+    const newBaseUrl = `${apiOrigin}/static/entity/docs/${namespace}/${kind}/${name}/${path}`;
 
     return new URL(
       oldBaseUrl,

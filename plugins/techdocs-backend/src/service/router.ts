@@ -231,9 +231,10 @@ export async function createRouter(
     );
   });
 
-  // Ensures that the related entity exists and the current user has permission to view it.
+  // Route treated similarly to /static/docs
+  // Requires an existing entity in the catalog for authorization
   router.use(
-    '/static/docs/entity/:namespace/:kind/:name',
+    '/static/entity/docs/:namespace/:kind/:name',
     async (req, _res, next) => {
       const { kind, namespace, name } = req.params;
       const entityName = { kind, namespace, name };
@@ -257,7 +258,8 @@ export async function createRouter(
   }
 
   // Route middleware which serves files from the storage set in the publisher.
-  router.use('/static/docs/(entity)?', publisher.docsRouter());
+  // Can either be authorized /static/entity/docs or unauthorized /static/docs
+  router.use('/static(/entity)?/docs', publisher.docsRouter());
 
   return router;
 }

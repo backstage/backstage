@@ -85,19 +85,23 @@ describe('createCacheMiddleware', () => {
       expect(cache.set).not.toHaveBeenCalled();
     });
 
-    it('sets cache when content is cacheable', async () => {
-      const expectedPath = 'default/api/xyz/index.html';
-      await request(app)
-        .get(`/static/docs/${expectedPath}`)
-        .expect(200, 'default-response');
+    it.each(['/static/docs', '/static/entity/docs'])(
+      'sets cache when content is cacheable',
+      async prefix => {
+        const expectedPath = 'default/api/xyz/index.html';
+        await request(app)
+          .get(`${prefix}/${expectedPath}`)
+          .expect(200, 'default-response');
 
-      await waitForSocketClose();
-      expect(cache.set).toHaveBeenCalled();
+        await waitForSocketClose();
+        expect(cache.set).toHaveBeenCalled();
 
-      const [actualPath, actualBuffer] = (cache.set as jest.Mock).mock.calls[0];
-      expect(actualPath).toBe(expectedPath);
-      expect(actualBuffer.toString()).toContain('default-response');
-    });
+        const [actualPath, actualBuffer] = (cache.set as jest.Mock).mock
+          .calls[0];
+        expect(actualPath).toBe(expectedPath);
+        expect(actualBuffer.toString()).toContain('default-response');
+      },
+    );
 
     it('does not set cache on error', async () => {
       await request(app).get('/static/docs/error.png').expect(500);

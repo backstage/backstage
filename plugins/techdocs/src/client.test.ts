@@ -60,13 +60,13 @@ describe('TechDocsStorageClient', () => {
     await expect(
       storageApi.getBaseUrl('test.js', mockEntity, ''),
     ).resolves.toEqual(
-      `${mockBaseUrl}/static/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
+      `${mockBaseUrl}/static/entity/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
     );
 
     await expect(
       storageApi.getBaseUrl('../test.js', mockEntity, 'some-docs-path'),
     ).resolves.toEqual(
-      `${mockBaseUrl}/static/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
+      `${mockBaseUrl}/static/entity/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
     );
   });
 
@@ -77,7 +77,7 @@ describe('TechDocsStorageClient', () => {
     await expect(
       storageApi.getBaseUrl('test/', mockEntity, ''),
     ).resolves.toEqual(
-      `${mockBaseUrl}/static/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test/`,
+      `${mockBaseUrl}/static/entity/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test/`,
     );
   });
 

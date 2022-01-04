@@ -192,7 +192,7 @@ export class DocsSynchronizer {
       const [sourceMetadata, cachedMetadata] = await Promise.all([
         this.publisher.fetchTechDocsMetadata({ namespace, kind, name }),
         fetch(
-          `${baseUrl}/static/docs/${entityTripletPath}/techdocs_metadata.json`,
+          `${baseUrl}/static/entity/docs/${entityTripletPath}/techdocs_metadata.json`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
           },

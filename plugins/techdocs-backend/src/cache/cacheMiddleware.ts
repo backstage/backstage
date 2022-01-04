@@ -31,11 +31,12 @@ export const createCacheMiddleware = ({
   const cacheMiddleware = router();
 
   // Middleware that, through socket monkey patching, captures responses as
-  // they're sent over /static/docs/* and caches them. Subsequent requests are
-  // loaded from cache. Cache key is the object's path (after `/static/docs/`).
+  // they're sent over /static(/entity)?/docs/* and caches them. Subsequent requests are
+  // loaded from cache. Cache key is the object's path (after `/static(/entity)?/docs/`).
   cacheMiddleware.use(async (req, res, next) => {
     const socket = res.socket;
-    const isCacheable = req.path.startsWith('/static/docs/');
+    const pathRegex = /^\/static(\/entity)?\/docs\/(.*)$/;
+    const isCacheable = pathRegex.test(req.path);
 
     // Continue early if this is non-cacheable, or there's no socket.
     if (!isCacheable || !socket) {
@@ -44,7 +45,7 @@ export const createCacheMiddleware = ({
     }
 
     // Make concrete references to these things.
-    const reqPath = decodeURI(req.path.match(/\/static\/docs\/(.*)$/)![1]);
+    const reqPath = decodeURI(req.path.match(pathRegex)![2]);
     const realEnd = socket.end.bind(socket);
     const realWrite = socket.write.bind(socket);
     let writeToCache = true;
