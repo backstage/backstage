@@ -222,13 +222,6 @@ export type BackstageUserIdentity = {
  */
 export type BackstageIdentityResponse = {
   /**
-   * The backstage user ID.
-   *
-   * @deprecated The identity is now provided via the `identity` field instead.
-   */
-  id: string;
-
-  /**
    * The token used to authenticate the user within Backstage.
    */
   token: string;

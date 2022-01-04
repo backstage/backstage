@@ -216,7 +216,6 @@ export type BackstageIdentityApi = {
 
 // @public
 export type BackstageIdentityResponse = {
-  id: string;
   token: string;
   identity: BackstageUserIdentity;
 };
