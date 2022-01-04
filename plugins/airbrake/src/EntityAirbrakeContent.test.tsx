@@ -17,8 +17,8 @@ import React from 'react';
 import { EntityAirbrakeContent } from './plugin';
 import { renderInTestApp } from '@backstage/test-utils';
 
-describe('Airbrake', () => {
-  it('should render page', async () => {
+describe('The Airbrake entity', () => {
+  it('should render the content properly', async () => {
     const rendered = await renderInTestApp(<EntityAirbrakeContent />);
     expect(rendered.getByText('ChunkLoadError')).toBeInTheDocument();
   });
