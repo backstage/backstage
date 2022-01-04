@@ -17,6 +17,7 @@
 export * from './BottomLink';
 export * from './Content';
 export * from './ContentHeader';
+export * from './DelegatedSignInPage';
 export * from './ErrorBoundary';
 export * from './ErrorPage';
 export * from './Header';

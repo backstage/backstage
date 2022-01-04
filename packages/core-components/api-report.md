@@ -203,6 +203,16 @@ export type CustomProviderClassKey = 'form' | 'button';
 export function DashboardIcon(props: IconComponentProps): JSX.Element;
 
 // @public
+export const DelegatedSignInPage: (
+  props: DelegatedSignInPageProps,
+) => JSX.Element | null;
+
+// @public
+export type DelegatedSignInPageProps = SignInPageProps & {
+  provider: string;
+};
+
+// @public
 type DependencyEdge<T = {}> = T & {
   from: string;
   to: string;
