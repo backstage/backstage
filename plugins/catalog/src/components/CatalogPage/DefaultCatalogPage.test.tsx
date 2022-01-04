@@ -120,9 +120,13 @@ describe('DefaultCatalogPage', () => {
     displayName: 'Display Name',
   };
   const identityApi: Partial<IdentityApi> = {
-    getUserId: () => 'tools',
-    getIdToken: async () => undefined,
-    getProfile: () => testProfile,
+    getBackstageIdentity: async () => ({
+      type: 'user',
+      userEntityRef: 'user:default/guest',
+      ownershipEntityRefs: ['user:default/guest', 'group:default/tools'],
+    }),
+    getCredentials: async () => ({ token: undefined }),
+    getProfileInfo: async () => testProfile,
   };
   const storageApi = MockStorageApi.create();
 

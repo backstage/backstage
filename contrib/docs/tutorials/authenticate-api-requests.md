@@ -218,7 +218,7 @@ export class MyApi implements MyInterface {
     async getMyData() {
         const backendUrl = this.configApi.getString('backend.baseUrl');
 
-+       const token = await this.identityApi.getIdToken();
++       const { token } = await this.identityApi.getCredentials();
         const requestUrl = `${backendUrl}/api/data/`;
 -       const response = await fetch(requestUrl);
 +       const response = await fetch(

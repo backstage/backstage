@@ -124,7 +124,7 @@ export class ScaffolderClient implements ScaffolderApi {
   ): Promise<TemplateParameterSchema> {
     const { namespace, kind, name } = templateName;
 
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const templatePath = [namespace, kind, name]
       .map(s => encodeURIComponent(s))
@@ -156,7 +156,7 @@ export class ScaffolderClient implements ScaffolderApi {
     templateName: string,
     values: Record<string, any>,
   ): Promise<string> {
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v2/tasks`;
     const response = await fetch(url, {
       method: 'POST',
@@ -178,7 +178,7 @@ export class ScaffolderClient implements ScaffolderApi {
   }
 
   async getTask(taskId: string) {
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
     const response = await fetch(url, {
@@ -295,7 +295,7 @@ export class ScaffolderClient implements ScaffolderApi {
    */
   async listActions(): Promise<ListActionsResponse> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const response = await fetch(`${baseUrl}/v2/actions`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });

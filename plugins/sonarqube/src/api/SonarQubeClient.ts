@@ -42,7 +42,7 @@ export class SonarQubeClient implements SonarQubeApi {
     path: string,
     query: { [key in string]: any },
   ): Promise<T | undefined> {
-    const idToken = await this.identityApi.getIdToken();
+    const { token: idToken } = await this.identityApi.getCredentials();
 
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sonarqube`;
     const response = await fetch(

@@ -30,7 +30,11 @@ import {
 
 describe('TriggerDialog', () => {
   const mockIdentityApi: Partial<IdentityApi> = {
-    getUserId: () => 'guest@example.com',
+    getBackstageIdentity: async () => ({
+      type: 'user',
+      userEntityRef: 'user:default/guest',
+      ownershipEntityRefs: [],
+    }),
   };
 
   const mockTriggerAlarmFn = jest.fn();
@@ -89,7 +93,7 @@ describe('TriggerDialog', () => {
         entity!.metadata!.annotations!['pagerduty.com/integration-key'],
       source: window.location.toString(),
       description,
-      userName: 'guest@example.com',
+      userName: 'guest',
     });
   });
 });

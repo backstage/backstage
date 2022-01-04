@@ -59,7 +59,7 @@ export class TechInsightsClient implements TechInsightsApi {
 
   async getAllChecks(): Promise<Check[]> {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const response = await fetch(`${url}/checks`, {
       headers: token
         ? {
@@ -78,7 +78,7 @@ export class TechInsightsClient implements TechInsightsApi {
     checks?: Check[],
   ): Promise<CheckResult[]> {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const { namespace, kind, name } = entityParams;
     const checkIds = checks ? checks.map(check => check.id) : [];
     const requestBody = { checks: checkIds.length > 0 ? checkIds : undefined };

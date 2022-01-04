@@ -173,13 +173,13 @@ the component will become available.\n\nFor more information, read an \
   }: {
     repo: string;
   }): Promise<PartialEntity[]> {
-    const idToken = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
       {
         headers: {
           'Content-Type': 'application/json',
-          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
         method: 'POST',
         body: JSON.stringify({

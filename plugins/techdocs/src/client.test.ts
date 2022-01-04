@@ -40,9 +40,6 @@ describe('TechDocsStorageClient', () => {
   } as Partial<Config>;
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
   const identityApi: jest.Mocked<IdentityApi> = {
-    getIdToken: jest.fn(),
-    getProfile: jest.fn(),
-    getUserId: jest.fn(),
     signOut: jest.fn(),
     getProfileInfo: jest.fn(),
     getBackstageIdentity: jest.fn(),
@@ -51,6 +48,7 @@ describe('TechDocsStorageClient', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    identityApi.getCredentials.mockResolvedValue({ token: undefined });
   });
 
   it('should return correct base url based on defined storage', async () => {
@@ -122,7 +120,7 @@ describe('TechDocsStorageClient', () => {
         },
       );
 
-      identityApi.getIdToken.mockResolvedValue('token');
+      identityApi.getCredentials.mockResolvedValue({ token: 'token' });
 
       await storageApi.syncEntityDocs(mockEntity);
 

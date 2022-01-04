@@ -68,8 +68,12 @@ const mockConfigApi = {
   getOptionalString: () => '',
 } as Partial<ConfigApi>;
 const mockIdentityApi: Partial<IdentityApi> = {
-  getUserId: () => 'guest',
-  getIdToken: async () => undefined,
+  getBackstageIdentity: async () => ({
+    type: 'user',
+    userEntityRef: 'user:default/guest',
+    ownershipEntityRefs: [],
+  }),
+  getCredentials: async () => ({ token: undefined }),
 };
 const mockCatalogApi: Partial<CatalogApi> = {
   getEntities: jest.fn().mockImplementation(async () => ({ items: entities })),

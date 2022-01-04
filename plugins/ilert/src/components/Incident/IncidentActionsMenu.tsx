@@ -27,6 +27,10 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { Progress, Link } from '@backstage/core-components';
+import {
+  ENTITY_DEFAULT_NAMESPACE,
+  parseEntityRef,
+} from '@backstage/catalog-model';
 
 export const IncidentActionsMenu = ({
   incident,
@@ -40,7 +44,6 @@ export const IncidentActionsMenu = ({
   const ilertApi = useApi(ilertApiRef);
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
-  const userName = identityApi.getUserId();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const callback = onIncidentChanged || ((_: Incident): void => {});
   const setProcessing = setIsLoading || ((_: boolean): void => {});
@@ -64,6 +67,12 @@ export const IncidentActionsMenu = ({
     try {
       handleCloseMenu();
       setProcessing(true);
+
+      const { userEntityRef } = await identityApi.getBackstageIdentity();
+      const { name: userName } = parseEntityRef(userEntityRef, {
+        defaultKind: 'User',
+        defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+      });
       const newIncident = await ilertApi.acceptIncident(incident, userName);
       alertApi.post({ message: 'Incident accepted.' });
 
@@ -79,6 +88,11 @@ export const IncidentActionsMenu = ({
     try {
       handleCloseMenu();
       setProcessing(true);
+      const { userEntityRef } = await identityApi.getBackstageIdentity();
+      const { name: userName } = parseEntityRef(userEntityRef, {
+        defaultKind: 'User',
+        defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+      });
       const newIncident = await ilertApi.resolveIncident(incident, userName);
       alertApi.post({ message: 'Incident resolved.' });
 

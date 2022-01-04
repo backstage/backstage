@@ -25,8 +25,8 @@ import { UrlPatternDiscovery } from '@backstage/core-app-api';
 const server = setupServer();
 
 const identityApi = {
-  async getIdToken() {
-    return Promise.resolve('fake-id-token');
+  async getCredentials() {
+    return { token: 'fake-id-token' };
   },
 } as IdentityApi;
 

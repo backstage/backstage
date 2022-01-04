@@ -57,7 +57,7 @@ export class FossaClient implements FossaApi {
     query: Record<string, any>,
   ): Promise<T> {
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/fossa`;
-    const idToken = await this.identityApi.getIdToken();
+    const { token: idToken } = await this.identityApi.getCredentials();
     const response = await fetch(
       `${apiUrl}/${path}?${new URLSearchParams(query).toString()}`,
       {
