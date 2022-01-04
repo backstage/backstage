@@ -194,21 +194,12 @@ export const auth0AuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
-// @public @deprecated (undocumented)
-export type AuthProvider = Omit<AuthProviderInfo, 'id'>;
-
 // @public
 export type AuthProviderInfo = {
   id: string;
   title: string;
   icon: IconComponent;
 };
-
-// @public @deprecated (undocumented)
-export type AuthRequester<T> = OAuthRequester<T>;
-
-// @public @deprecated (undocumented)
-export type AuthRequesterOptions<T> = OAuthRequesterOptions<T>;
 
 // @public
 export type AuthRequestOptions = {
@@ -649,9 +640,6 @@ export type ParamPart<S extends string> = S extends `:${infer Param}`
 export type PathParams<S extends string> = {
   [name in ParamNames<S>]: string;
 };
-
-// @public @deprecated (undocumented)
-export type PendingAuthRequest = PendingOAuthRequest;
 
 // @public
 export type PendingOAuthRequest = {
