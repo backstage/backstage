@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { WebpackOptionsNormalized, WebpackPluginInstance } from 'webpack';
-import TerserPlugin from 'terser-webpack-plugin';
+import { WebpackOptionsNormalized } from 'webpack';
 import { BundlingOptions } from './types';
-import { isParallelDefault } from '../parallel';
+
+const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
 export const optimization = (
   options: BundlingOptions,
@@ -26,16 +26,11 @@ export const optimization = (
 
   return {
     minimize: !isDev,
-    // Only configure when parallel is explicitly overridden from the default
-    ...(!isParallelDefault(options.parallel)
-      ? {
-          minimizer: [
-            new TerserPlugin({
-              parallel: options.parallel,
-            }) as unknown as WebpackPluginInstance,
-          ],
-        }
-      : {}),
+    minimizer: [
+      new ESBuildMinifyPlugin({
+        target: 'es2019',
+      }),
+    ],
     runtimeChunk: 'single',
     splitChunks: {
       automaticNameDelimiter: '-',
