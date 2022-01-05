@@ -179,13 +179,7 @@ Surrounding the plugin are different package groups which are the different
 possible interface points of the plugin. Note that not all library package lists
 are complete as packages have been omitted for brevity.
 
-![Package architecture](../assets/architecture-overview/package-architecture.png)
-
-<!--
- NOTE: The diagram is exported from /docs/assets/architecture-overview/package-architecture.drawio
-       It can be edited using https://www.diagrams.net/
-       Export it as a PNG with 10px margin without transparent background
--->
+![Package architecture](../assets/architecture-overview/package-architecture.drawio.svg)
 
 ### Overview
 
