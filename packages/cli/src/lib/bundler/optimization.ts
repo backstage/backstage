@@ -16,7 +16,8 @@
 
 import { WebpackOptionsNormalized } from 'webpack';
 import { BundlingOptions } from './types';
-import { ESBuildMinifyPlugin } from 'esbuild-loader';
+
+const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
 export const optimization = (
   options: BundlingOptions,
