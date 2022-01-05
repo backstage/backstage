@@ -172,12 +172,12 @@ Backstage project is up to you, there is a set of established patterns that we
 encourage you to follow. These patterns can help set up a sound project
 structure as well as provide familiarity between different Backstage projects.
 
-The following diagram shows an overview of the package architecture of Backstage.
-It takes the point of view of an individual plugin and all of the packages that
-it may contain, indicated by the thicker border and italic text. Surrounding the
-plugin are different package groups which are the different possible interface
-points of the plugin. Note that not all library package lists are complete as
-packages have been omitted for brevity.
+The following diagram shows an overview of the package architecture of
+Backstage. It takes the point of view of an individual plugin and all of the
+packages that it may contain, indicated by the thicker border and italic text.
+Surrounding the plugin are different package groups which are the different
+possible interface points of the plugin. Note that not all library package lists
+are complete as packages have been omitted for brevity.
 
 ![Package architecture](../assets/architecture-overview/package-architecture.png)
 
