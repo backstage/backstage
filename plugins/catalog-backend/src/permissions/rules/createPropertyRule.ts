@@ -19,10 +19,8 @@ import { EntitiesSearchFilter } from '../../catalog/types';
 import { CatalogPermissionRule } from '../types';
 import { get } from 'lodash';
 
-export type propertyType = 'metadata' | 'spec';
-
 export function createPropertyRule(
-  propertyType: propertyType,
+  propertyType: 'metadata' | 'spec',
 ): CatalogPermissionRule {
   return {
     name: `HAS_${propertyType.toUpperCase()}`,
