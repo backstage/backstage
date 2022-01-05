@@ -26,7 +26,7 @@ import {
 } from '@backstage/catalog-model';
 import {
   ScmIntegrations,
-  SingleInstanceGithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
 } from '@backstage/integration';
 import lodash from 'lodash';
 import { EntitiesCatalog } from '../../catalog';
@@ -295,7 +295,7 @@ export class CatalogBuilder {
     const { config, logger, reader } = this.env;
     const integrations = ScmIntegrations.fromConfig(config);
     const githubCredentialsProvider =
-      SingleInstanceGithubCredentialsProvider.create(integrations);
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
     this.checkDeprecatedReaderProcessors();
 

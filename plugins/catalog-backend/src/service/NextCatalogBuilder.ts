@@ -28,7 +28,7 @@ import {
 import {
   GithubCredentialsProvider,
   ScmIntegrations,
-  SingleInstanceGithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
 } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
@@ -294,7 +294,7 @@ export class NextCatalogBuilder {
     const { config, logger, reader } = this.env;
     const integrations = ScmIntegrations.fromConfig(config);
     const githubCredentialsProvider: GithubCredentialsProvider =
-      SingleInstanceGithubCredentialsProvider.create(integrations);
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
     return [
       new FileReaderProcessor(),

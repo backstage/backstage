@@ -15,11 +15,13 @@
  */
 
 jest.mock('@octokit/rest');
-
+import { TemplateAction } from '../../types';
 import { createGithubActionsDispatchAction } from './githubActionsDispatch';
+
 import {
   ScmIntegrations,
-  SingleInstanceGithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
+  GithubCredentialsProvider,
 } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -36,12 +38,8 @@ describe('github:actions:dispatch', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  const githubCredentialsProvider =
-    SingleInstanceGithubCredentialsProvider.create(integrations);
-  const action = createGithubActionsDispatchAction({
-    integrations,
-    githubCredentialsProvider,
-  });
+  let githubCredentialsProvider: GithubCredentialsProvider;
+  let action: TemplateAction<any>;
 
   const mockContext = {
     input: {
@@ -60,6 +58,12 @@ describe('github:actions:dispatch', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    githubCredentialsProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+    action = createGithubActionsDispatchAction({
+      integrations,
+      githubCredentialsProvider,
+    });
   });
 
   it('should call the githubApis for creating WorkflowDispatch', async () => {

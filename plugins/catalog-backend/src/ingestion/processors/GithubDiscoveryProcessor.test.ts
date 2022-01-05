@@ -21,7 +21,7 @@ import { getOrganizationRepositories } from './github';
 import { ConfigReader } from '@backstage/config';
 import {
   ScmIntegrations,
-  SingleInstanceGithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
 } from '@backstage/integration';
 
 jest.mock('./github');
@@ -78,7 +78,7 @@ describe('GithubDiscoveryProcessor', () => {
       });
       const integrations = ScmIntegrations.fromConfig(config);
       const githubCredentialsProvider =
-        SingleInstanceGithubCredentialsProvider.create(integrations);
+        DefaultGithubCredentialsProvider.fromIntegrations(integrations);
       const processor = GithubDiscoveryProcessor.fromConfig(config, {
         logger: getVoidLogger(),
         githubCredentialsProvider,
@@ -103,7 +103,7 @@ describe('GithubDiscoveryProcessor', () => {
       });
       const integrations = ScmIntegrations.fromConfig(config);
       const githubCredentialsProvider =
-        SingleInstanceGithubCredentialsProvider.create(integrations);
+        DefaultGithubCredentialsProvider.fromIntegrations(integrations);
       const processor = GithubDiscoveryProcessor.fromConfig(config, {
         logger: getVoidLogger(),
         githubCredentialsProvider,
@@ -128,7 +128,7 @@ describe('GithubDiscoveryProcessor', () => {
     });
     const integrations = ScmIntegrations.fromConfig(config);
     const githubCredentialsProvider =
-      SingleInstanceGithubCredentialsProvider.create(integrations);
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     const processor = GithubDiscoveryProcessor.fromConfig(config, {
       logger: getVoidLogger(),
       githubCredentialsProvider,

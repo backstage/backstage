@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GithubCredentialsProvider } from './types';
+import { ScmIntegrations } from '../ScmIntegrations';
 
 const octokit = {
   paginate: async (fn: any) => (await fn()).data,
@@ -33,29 +33,39 @@ jest.doMock('@octokit/rest', () => {
   return { Octokit };
 });
 
-import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubCredentialsProvider';
+import { DefaultGithubCredentialsProvider } from './DefaultGithubCredentialsProvider';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
+import { ConfigReader } from '@backstage/config';
 
-describe('SingleInstanceGithubCredentialsProvider tests', () => {
-  let github: GithubCredentialsProvider;
+let integrations: ScmIntegrations;
 
+describe('DefaultGithubCredentialsProvider tests', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
-    github = SingleInstanceGithubCredentialsProvider.create({
-      host: 'github.com',
-      apps: [
-        {
-          appId: 1,
-          privateKey: 'privateKey',
-          webhookSecret: '123',
-          clientId: 'CLIENT_ID',
-          clientSecret: 'CLIENT_SECRET',
+    integrations = ScmIntegrations.fromConfig(
+      new ConfigReader({
+        integrations: {
+          github: [
+            {
+              host: 'github.com',
+              apps: [
+                {
+                  appId: 1,
+                  privateKey: 'privateKey',
+                  webhookSecret: '123',
+                  clientId: 'CLIENT_ID',
+                  clientSecret: 'CLIENT_SECRET',
+                },
+              ],
+              token: 'hardcoded_token',
+            },
+          ],
         },
-      ],
-      token: 'hardcoded_token',
-    });
+      }),
+    );
+    jest.resetAllMocks();
   });
+
   it('create repository specific tokens', async () => {
     octokit.apps.listInstallations.mockResolvedValue({
       headers: {
@@ -83,6 +93,9 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
         token: 'secret_token',
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    const github =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
     const { token, headers, type } = await github.getCredentials({
       url: 'https://github.com/backstage/foobar',
@@ -128,6 +141,9 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
 
+    const github =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+
     const { token, headers } = await github.getCredentials({
       url: 'https://github.com/backstage',
     });
@@ -159,6 +175,8 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
 
+    const github =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     const { token, headers } = await github.getCredentials({
       url: 'https://github.com/backstage',
     });
@@ -186,6 +204,9 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
       ],
     } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
 
+    const github =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+
     await expect(
       github.getCredentials({
         url: 'https://github.com/backstage',
@@ -199,6 +220,8 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
       message: 'NotFound',
     });
 
+    const github =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     await expect(
       github.getCredentials({
         url: 'https://github.com/backstage',
@@ -207,11 +230,22 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
   });
 
   it('should return the default token if no app is configured', async () => {
-    const githubProvider = SingleInstanceGithubCredentialsProvider.create({
-      host: 'github.com',
-      apps: [],
-      token: 'fallback_token',
-    });
+    integrations = ScmIntegrations.fromConfig(
+      new ConfigReader({
+        integrations: {
+          github: [
+            {
+              host: 'github.com',
+              apps: [],
+              token: 'fallback_token',
+            },
+          ],
+        },
+      }),
+    );
+
+    const githubProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
     await expect(
       githubProvider.getCredentials({
@@ -221,23 +255,34 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
   });
 
   it('should return the configured token if there are no installations', async () => {
-    const githubProvider = SingleInstanceGithubCredentialsProvider.create({
-      host: 'github.com',
-      apps: [
-        {
-          appId: 1,
-          privateKey: 'privateKey',
-          webhookSecret: '123',
-          clientId: 'CLIENT_ID',
-          clientSecret: 'CLIENT_SECRET',
+    integrations = ScmIntegrations.fromConfig(
+      new ConfigReader({
+        integrations: {
+          github: [
+            {
+              host: 'github.com',
+              apps: [
+                {
+                  appId: 1,
+                  privateKey: 'privateKey',
+                  webhookSecret: '123',
+                  clientId: 'CLIENT_ID',
+                  clientSecret: 'CLIENT_SECRET',
+                },
+              ],
+              token: 'hardcoded_token',
+            },
+          ],
         },
-      ],
-      token: 'hardcoded_token',
-    });
+      }),
+    );
+
     octokit.apps.listInstallations.mockResolvedValue({
       data: [],
     } as unknown as RestEndpointMethodTypes['apps']['listInstallations']['response']);
 
+    const githubProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     await expect(
       githubProvider.getCredentials({
         url: 'https://github.com/backstage',
@@ -246,9 +291,19 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
   });
 
   it('should return undefined if no token or apps are configured', async () => {
-    const githubProvider = SingleInstanceGithubCredentialsProvider.create({
-      host: 'github.com',
-    });
+    integrations = ScmIntegrations.fromConfig(
+      new ConfigReader({
+        integrations: {
+          github: [
+            {
+              host: 'github.com',
+            },
+          ],
+        },
+      }),
+    );
+    const githubProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
     await expect(
       githubProvider.getCredentials({
@@ -280,6 +335,8 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
 
+    const github =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     const { token, headers } = await github.getCredentials({
       url: 'https://github.com/backstage',
     });

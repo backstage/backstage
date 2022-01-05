@@ -19,7 +19,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import {
   GithubCredentialsProvider,
   ScmIntegrations,
-  SingleInstanceGithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
 } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import {
@@ -57,7 +57,7 @@ export const createBuiltinActions = (options: {
   const { reader, integrations, containerRunner, catalogClient, config } =
     options;
   const githubCredentialsProvider: GithubCredentialsProvider =
-    SingleInstanceGithubCredentialsProvider.create(integrations);
+    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
   const actions = [
     createFetchPlainAction({

@@ -17,7 +17,7 @@
 import { OctokitProvider } from './OctokitProvider';
 import {
   ScmIntegrations,
-  SingleInstanceGithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
 } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 
@@ -33,7 +33,7 @@ describe('getOctokit', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   const githubCredentialsProvider =
-    SingleInstanceGithubCredentialsProvider.create(integrations);
+    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
   const octokitProvider = new OctokitProvider(
     integrations,
     githubCredentialsProvider,

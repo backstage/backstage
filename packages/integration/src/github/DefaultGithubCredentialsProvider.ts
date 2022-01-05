@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,20 @@
  */
 
 import parseGitUrl from 'git-url-parse';
-
 import {
   GithubCredentials,
   GithubCredentialsProvider,
   GithubCredentialType,
 } from './types';
-import { GitHubIntegrationConfig } from './config';
+import { ScmIntegrations } from '../ScmIntegrations';
 import { GithubAppCredentialsMux } from './GithubAppCredentialsMux';
+
+type MuxCollection = {
+  [url: string]: {
+    githubAppCredentialsMux: GithubAppCredentialsMux;
+    token?: string;
+  };
+};
 
 /**
  * Handles the creation and caching of credentials for GitHub integrations.
@@ -32,21 +38,25 @@ import { GithubAppCredentialsMux } from './GithubAppCredentialsMux';
  *
  * TODO: Possibly move this to a backend only package so that it's not used in the frontend by mistake
  */
-export class SingleInstanceGithubCredentialsProvider
+export class DefaultGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
-  static create: (
-    config: GitHubIntegrationConfig,
-  ) => GithubCredentialsProvider = config => {
-    return new SingleInstanceGithubCredentialsProvider(
-      new GithubAppCredentialsMux(config),
-      config.token,
-    );
-  };
+  static fromIntegrations(integrations: ScmIntegrations) {
+    const muxen: MuxCollection = {};
+
+    integrations.github.list().forEach(integration => {
+      muxen[integration.config.host] = {
+        githubAppCredentialsMux: new GithubAppCredentialsMux(
+          integration.config,
+        ),
+        token: integration.config.token,
+      };
+    });
+    return new DefaultGithubCredentialsProvider(muxen);
+  }
 
   private constructor(
-    private readonly githubAppCredentialsMux: GithubAppCredentialsMux,
-    private readonly token?: string,
+    private readonly githubAppCredentialsMuxen: MuxCollection,
   ) {}
 
   /**
@@ -72,14 +82,24 @@ export class SingleInstanceGithubCredentialsProvider
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
     const parsed = parseGitUrl(opts.url);
 
+    if (!this.githubAppCredentialsMuxen[parsed.resource]) {
+      throw new Error(
+        `There is no GitHub integration that matches ${opts.url}. Please add a configuration for an integration.`,
+      );
+    }
+
+    const githubAppCredentialsMux =
+      this.githubAppCredentialsMuxen[parsed.resource].githubAppCredentialsMux;
+    const defaultToken = this.githubAppCredentialsMuxen[parsed.resource].token;
+
     const owner = parsed.owner || parsed.name;
     const repo = parsed.owner ? parsed.name : undefined;
 
     let type: GithubCredentialType = 'app';
-    let token = await this.githubAppCredentialsMux.getAppToken(owner, repo);
+    let token = await githubAppCredentialsMux.getAppToken(owner, repo);
     if (!token) {
       type = 'token';
-      token = this.token;
+      token = defaultToken;
     }
 
     return {

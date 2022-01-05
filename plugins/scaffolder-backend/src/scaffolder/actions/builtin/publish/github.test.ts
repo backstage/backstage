@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
+import { TemplateAction } from '../../types';
+
 jest.mock('../helpers');
 jest.mock('@octokit/rest');
 
 import { createPublishGithubAction } from './github';
 import {
   ScmIntegrations,
-  SingleInstanceGithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
+  GithubCredentialsProvider,
 } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -42,13 +45,9 @@ describe('publish:github', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  const githubCredentialsProvider =
-    SingleInstanceGithubCredentialsProvider.create(integrations);
-  const action = createPublishGithubAction({
-    integrations,
-    config,
-    githubCredentialsProvider,
-  });
+  let githubCredentialsProvider: GithubCredentialsProvider;
+  let action: TemplateAction<any>;
+
   const mockContext = {
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
@@ -67,6 +66,13 @@ describe('publish:github', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    githubCredentialsProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+    action = createPublishGithubAction({
+      integrations,
+      config,
+      githubCredentialsProvider,
+    });
   });
 
   it('should call the githubApis with the correct values for createInOrg', async () => {

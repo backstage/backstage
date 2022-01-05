@@ -16,7 +16,7 @@
 
 import {
   getGitHubFileFetchUrl,
-  SingleInstanceGithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   GitHubIntegration,
   ScmIntegrations,
@@ -59,7 +59,7 @@ export class GithubUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
     const credentialsProvider =
-      SingleInstanceGithubCredentialsProvider.create(integrations);
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     return integrations.github.list().map(integration => {
       const reader = new GithubUrlReader(integration, {
         treeResponseFactory,
