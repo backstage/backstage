@@ -94,7 +94,7 @@ import InternalToolIcon from './internal-tool.icon.svg';
 On mobile devices the `Sidebar` is displayed at the bottom of the screen. For
 customizing the experience you can group `SidebarItems` in a `SidebarGroup`
 (Example 1) or create a `SidebarGroup` with a link (Example 2). All
-`SidebarGroups` are displayed in the bottom navigation with an icon.
+`SidebarGroup`s are displayed in the bottom navigation with an icon.
 
 ```ts
 // Example 1

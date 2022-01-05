@@ -17,7 +17,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import classnames from 'classnames';
-import React, { useState, useContext, PropsWithChildren, useRef } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarStateContext } from './Page';
@@ -75,6 +75,7 @@ export type SidebarProps = {
   openDelayMs?: number;
   closeDelayMs?: number;
   disableExpandOnHover?: boolean;
+  children?: React.ReactNode;
 };
 
 /**
@@ -87,7 +88,7 @@ export type SidebarProps = {
  * @returns
  * @internal
  */
-const DesktopSidebar = (props: PropsWithChildren<SidebarProps>) => {
+const DesktopSidebar = (props: SidebarProps) => {
   const {
     openDelayMs = sidebarConfig.defaultOpenDelayMs,
     closeDelayMs = sidebarConfig.defaultCloseDelayMs,
@@ -182,7 +183,7 @@ const DesktopSidebar = (props: PropsWithChildren<SidebarProps>) => {
  *
  * @public
  */
-export const Sidebar = (props: React.PropsWithChildren<SidebarProps>) => {
+export const Sidebar = (props: SidebarProps) => {
   const { children, openDelayMs, closeDelayMs, disableExpandOnHover } = props;
   const { isMobile } = useContext(SidebarStateContext);
 

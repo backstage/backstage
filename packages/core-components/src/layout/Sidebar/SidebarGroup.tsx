@@ -38,10 +38,14 @@ export interface SidebarGroupProps extends BottomNavigationActionProps {
    */
   to?: string;
   /**
-   * If the `SidebarGroups` should be in a different order than in the normal `Sidebar`, you can provide
+   * If the `SidebarGroup`s should be in a different order than in the normal `Sidebar`, you can provide
    * each `SidebarGroup` it's own priority to reorder them.
    */
   priority?: number;
+  /**
+   * React children
+   */
+  children?: React.ReactNode;
 }
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -114,9 +118,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
  *
  * @public
  */
-export const SidebarGroup = (
-  props: React.PropsWithChildren<SidebarGroupProps>,
-) => {
+export const SidebarGroup = (props: SidebarGroupProps) => {
   const { children, to, label, icon, value } = props;
   const { isMobile } = useContext(SidebarStateContext);
 

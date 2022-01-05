@@ -41,6 +41,25 @@ export type MobileSidebarContextType = {
   setSelectedMenuItemIndex: React.Dispatch<React.SetStateAction<number>>;
 };
 
+/**
+ * Props of MobileSidebar
+ *
+ * @public
+ */
+export type MobileSidebarProps = {
+  children?: React.ReactNode;
+};
+
+/**
+ * @internal
+ */
+type OverlayMenuProps = {
+  label?: string;
+  onClose: () => void;
+  open: boolean;
+  children?: React.ReactNode;
+};
+
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     position: 'fixed',
@@ -88,11 +107,7 @@ const OverlayMenu = ({
   label = 'Menu',
   open,
   onClose,
-}: React.PropsWithChildren<{
-  label?: string;
-  onClose: () => void;
-  open: boolean;
-}>) => {
+}: OverlayMenuProps) => {
   const classes = useStyles();
 
   return (
@@ -129,13 +144,13 @@ export const MobileSidebarContext = createContext<MobileSidebarContextType>({
 /**
  * A navigation component for mobile screens, which sticks to the bottom.
  *
- * It alternates the normal sidebar by grouping the `SidebarItems` based on provided `SidebarGroups`
+ * It alternates the normal sidebar by grouping the `SidebarItems` based on provided `SidebarGroup`s
  * either rendering them as a link or an overlay menu.
- * If no `SidebarGroups` are provided the sidebar content is wrapped in an default overlay menu.
+ * If no `SidebarGroup`s are provided the sidebar content is wrapped in an default overlay menu.
  *
  * @public
  */
-export const MobileSidebar = (props: React.PropsWithChildren<{}>) => {
+export const MobileSidebar = (props: MobileSidebarProps) => {
   const { children } = props;
   const classes = useStyles();
   const location = useLocation();

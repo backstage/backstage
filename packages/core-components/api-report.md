@@ -701,9 +701,7 @@ export function MissingAnnotationEmptyState(props: Props_3): JSX.Element;
 export type MissingAnnotationEmptyStateClassKey = 'code';
 
 // @public
-export const MobileSidebar: (
-  props: React_2.PropsWithChildren<{}>,
-) => JSX.Element | null;
+export const MobileSidebar: (props: MobileSidebarProps) => JSX.Element | null;
 
 // @public
 export const MobileSidebarContext: React_2.Context<MobileSidebarContextType>;
@@ -712,6 +710,11 @@ export const MobileSidebarContext: React_2.Context<MobileSidebarContextType>;
 export type MobileSidebarContextType = {
   selectedMenuItemIndex: number;
   setSelectedMenuItemIndex: React_2.Dispatch<React_2.SetStateAction<number>>;
+};
+
+// @public
+export type MobileSidebarProps = {
+  children?: React_2.ReactNode;
 };
 
 // Warning: (ae-missing-release-tag) "OAuthRequestDialog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -854,9 +857,7 @@ export type SelectItem = {
 };
 
 // @public
-export const Sidebar: (
-  props: React_2.PropsWithChildren<SidebarProps>,
-) => JSX.Element;
+export const Sidebar: (props: SidebarProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SIDEBAR_INTRO_LOCAL_STORAGE" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1177,12 +1178,11 @@ export type SidebarDividerClassKey = 'root';
 export const SidebarExpandButton: () => JSX.Element | null;
 
 // @public
-export const SidebarGroup: (
-  props: React_2.PropsWithChildren<SidebarGroupProps>,
-) => JSX.Element;
+export const SidebarGroup: (props: SidebarGroupProps) => JSX.Element;
 
 // @public
 export interface SidebarGroupProps extends BottomNavigationActionProps {
+  children?: React_2.ReactNode;
   priority?: number;
   to?: string;
 }
@@ -1232,18 +1232,24 @@ export type SidebarItemClassKey =
 // Warning: (ae-missing-release-tag) "SidebarPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function SidebarPage(props: PropsWithChildren<{}>): JSX.Element;
+export function SidebarPage(props: SidebarPageProps): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SidebarPageClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SidebarPageClassKey = 'root';
 
+// @public
+export type SidebarPageProps = {
+  children?: React_2.ReactNode;
+};
+
 // @public (undocumented)
 export type SidebarProps = {
   openDelayMs?: number;
   closeDelayMs?: number;
   disableExpandOnHover?: boolean;
+  children?: React_2.ReactNode;
 };
 
 // Warning: (ae-missing-release-tag) "SidebarScrollWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -2076,7 +2082,7 @@ export const SidebarStateContext: React_2.Context<SidebarStateContextType>;
 export type SidebarStateContextType = {
   isPinned: boolean;
   toggleSidebarPinState: () => any;
-  isMobile: boolean;
+  isMobile?: boolean;
 };
 
 // @public
