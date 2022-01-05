@@ -93,6 +93,17 @@ export type BitbucketIntegrationConfig = {
 };
 
 // @public
+export class DefaultGithubCredentialsProvider
+  implements GithubCredentialsProvider
+{
+  // (undocumented)
+  static fromIntegrations(
+    integrations: ScmIntegrations,
+  ): DefaultGithubCredentialsProvider;
+  getCredentials(opts: { url: string }): Promise<GithubCredentials>;
+}
+
+// @public
 export function defaultScmResolveUrl(options: {
   url: string;
   base: string;
@@ -427,9 +438,7 @@ export class SingleInstanceGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
   // (undocumented)
-  static create(
-    integrations: ScmIntegrations,
-  ): SingleInstanceGithubCredentialsProvider;
+  static create: (config: GitHubIntegrationConfig) => GithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
