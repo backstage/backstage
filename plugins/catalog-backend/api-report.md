@@ -1348,10 +1348,6 @@ export class NextCatalogBuilder {
 //
 // @public (undocumented)
 export interface NextRouterOptions {
-  // Warning: (ae-forgotten-export) The symbol "AuthorizedRefreshService" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
-  authorizedRefreshService?: AuthorizedRefreshService;
   // (undocumented)
   config: Config;
   // (undocumented)
@@ -1364,6 +1360,7 @@ export interface NextRouterOptions {
   logger: Logger_2;
   // (undocumented)
   permissionRules?: CatalogPermissionRule[];
+  refreshService?: RefreshService;
 }
 
 // Warning: (ae-missing-release-tag) "notFoundError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1501,7 +1498,7 @@ export type RefreshOptions = {
 
 // @public
 export interface RefreshService {
-  refresh(options: RefreshOptions): Promise<void>;
+  refresh(options: RefreshOptions, authorizationToken?: string): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "relation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

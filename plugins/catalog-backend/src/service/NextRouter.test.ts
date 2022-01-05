@@ -21,17 +21,16 @@ import type { Entity, LocationSpec, Location } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
 import { EntitiesCatalog } from '../catalog';
-import { LocationService } from './types';
+import { LocationService, RefreshService } from './types';
 import { basicEntityFilter } from './request';
 import { createNextRouter } from './NextRouter';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { AuthorizedRefreshService } from './AuthorizedRefreshService';
 
 describe('createNextRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationService: jest.Mocked<LocationService>;
   let app: express.Express;
-  let authorizedRefreshService: AuthorizedRefreshService;
+  let refreshService: RefreshService;
 
   beforeAll(async () => {
     entitiesCatalog = {
@@ -46,14 +45,12 @@ describe('createNextRouter readonly disabled', () => {
       listLocations: jest.fn(),
       deleteLocation: jest.fn(),
     };
-    authorizedRefreshService = {
-      refresh: jest.fn(),
-    } as unknown as AuthorizedRefreshService;
+    refreshService = { refresh: jest.fn() };
     const router = await createNextRouter({
       entitiesCatalog,
       locationService,
       logger: getVoidLogger(),
-      authorizedRefreshService,
+      refreshService,
       config: new ConfigReader(undefined),
       permissionRules: [],
     });
@@ -72,7 +69,7 @@ describe('createNextRouter readonly disabled', () => {
         .set('authorization', 'Bearer someauthtoken')
         .send({ entityRef: 'Component/default:foo' });
       expect(response.status).toBe(200);
-      expect(authorizedRefreshService.refresh).toHaveBeenCalledWith(
+      expect(refreshService.refresh).toHaveBeenCalledWith(
         {
           entityRef: 'Component/default:foo',
         },
@@ -452,7 +449,7 @@ describe('NextRouter permissioning', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationService: jest.Mocked<LocationService>;
   let app: express.Express;
-  let authorizedRefreshService: AuthorizedRefreshService;
+  let refreshService: RefreshService;
 
   const fakeRule = {
     name: 'FAKE_RULE',
@@ -474,14 +471,12 @@ describe('NextRouter permissioning', () => {
       listLocations: jest.fn(),
       deleteLocation: jest.fn(),
     };
-    authorizedRefreshService = {
-      refresh: jest.fn(),
-    } as unknown as AuthorizedRefreshService;
+    refreshService = { refresh: jest.fn() };
     const router = await createNextRouter({
       entitiesCatalog,
       locationService,
       logger: getVoidLogger(),
-      authorizedRefreshService,
+      refreshService,
       config: new ConfigReader(undefined),
       permissionRules: [fakeRule],
     });

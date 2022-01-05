@@ -29,6 +29,7 @@ import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
 import search from './plugins/search';
 import { PluginEnvironment } from './types';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -38,6 +39,10 @@ function makeCreateEnv(config: Config) {
   const databaseManager = DatabaseManager.fromConfig(config);
   const tokenManager = ServerTokenManager.noop();
   const taskScheduler = TaskScheduler.fromConfig(config);
+  const permissions = ServerPermissionClient.fromConfig(config, {
+    discovery,
+    tokenManager,
+  });
 
   root.info(`Created UrlReader ${reader}`);
 
@@ -55,6 +60,7 @@ function makeCreateEnv(config: Config) {
       discovery,
       tokenManager,
       scheduler,
+      permissions,
     };
   };
 }

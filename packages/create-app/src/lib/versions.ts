@@ -68,6 +68,7 @@ import { version as pluginTechRadar } from '../../../../plugins/tech-radar/packa
 import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
 import { version as pluginTechdocsBackend } from '../../../../plugins/techdocs-backend/package.json';
 import { version as pluginUserSettings } from '../../../../plugins/user-settings/package.json';
+import { version as pluginPermissionNode } from '../../../../plugins/permission-node/package.json';
 
 export const packageVersions = {
   '@backstage/app-defaults': appDefaults,
@@ -94,6 +95,7 @@ export const packageVersions = {
   '@backstage/plugin-github-actions': pluginGithubActions,
   '@backstage/plugin-lighthouse': pluginLighthouse,
   '@backstage/plugin-org': pluginOrg,
+  '@backstage/plugin-permission-node': pluginPermissionNode,
   '@backstage/plugin-proxy-backend': pluginProxyBackend,
   '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,
