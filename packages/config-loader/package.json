@@ -41,7 +41,6 @@
     "json-schema": "^0.4.0",
     "json-schema-merge-allof": "^0.8.1",
     "json-schema-traverse": "^1.0.0",
-    "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
     "typescript-json-schema": "^0.52.0",
     "yaml": "^1.9.2",

@@ -18,11 +18,7 @@ import { AppConfig } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { compileConfigSchemas } from './compile';
 import { collectConfigSchemas } from './collect';
-import {
-  filterByVisibility,
-  filterErrorsByVisibility,
-  filterByDeprecated,
-} from './filtering';
+import { filterByVisibility, filterErrorsByVisibility } from './filtering';
 import {
   ValidationError,
   ConfigSchema,

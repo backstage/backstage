@@ -15,7 +15,6 @@
  */
 
 import { JsonObject, JsonValue } from '@backstage/types';
-import { has } from 'lodash';
 import {
   ConfigVisibility,
   DEFAULT_CONFIG_VISIBILITY,
