@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity } from '@backstage/catalog-model';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { EntitiesSearchFilter } from '../catalog/types';
 
 /**
- * The Backstage backend plugin that provides the Backstage catalog
+ * A conditional rule that can be used to filter catalog entities for an
+ * authorization request. See
+ * {@link @backstage/plugin-permission-node#PermissionRule} for more details.
  *
- * @packageDocumentation
+ * @public
  */
-
-export * from './catalog';
-export * from './ingestion';
-export * from './legacy';
-export * from './search';
-export * from './util';
-export * from './processing';
-export * from './providers';
-export * from './service';
-export * from './permissions';
+export type CatalogPermissionRule = PermissionRule<
+  Entity,
+  EntitiesSearchFilter
+>;

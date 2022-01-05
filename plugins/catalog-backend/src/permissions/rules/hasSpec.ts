@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin that provides the Backstage catalog
- *
- * @packageDocumentation
- */
+import { createPropertyRule } from './createPropertyRule';
 
-export * from './catalog';
-export * from './ingestion';
-export * from './legacy';
-export * from './search';
-export * from './util';
-export * from './processing';
-export * from './providers';
-export * from './service';
-export * from './permissions';
+/**
+ * A {@link CatalogPermissionRule} which filters for entities with the specified
+ * spec subfield. Also matches on values if value is provided.
+ *
+ * The key argument to the `apply` and `toQuery` methods can be nested, such as
+ * 'field.nestedfield'.
+ * @public
+ */
+export const hasSpec = createPropertyRule('spec');
