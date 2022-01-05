@@ -167,6 +167,23 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
     // an update to "state" might lead to an updated UI so we include it as a trigger
   }, [updateSidebarPosition, state]);
 
+  // dynamically set width of footer to accommodate for pinning of the sidebar
+  const updateFooterWidth = useCallback(() => {
+    if (!dom) return;
+    const footer = dom.querySelector('.md-footer') as HTMLElement;
+    if (footer) {
+      footer.style.width = `${dom.getBoundingClientRect().width}px`;
+    }
+  }, [dom]);
+
+  useEffect(() => {
+    updateFooterWidth();
+    window.addEventListener('resize', updateFooterWidth);
+    return () => {
+      window.removeEventListener('resize', updateFooterWidth);
+    };
+  });
+
   // a function that performs transformations that are executed prior to adding it to the DOM
   const preRender = useCallback(
     (rawContent: string, contentPath: string) =>
@@ -199,7 +216,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
           .md-sidebar {  position: fixed; bottom: 100px; width: 20rem; }
           .md-sidebar--secondary { right: 2rem; }
           .md-content { margin-bottom: 50px }
-          .md-footer { position: fixed; bottom: 0px; width: 100vw; }
+          .md-footer { position: fixed; bottom: 0px; }
           .md-footer-nav__link { width: 20rem;}
           .md-content { margin-left: 20rem; max-width: calc(100% - 20rem * 2 - 3rem); }
           .md-typeset { font-size: 1rem; }
@@ -240,8 +257,11 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             .md-content__inner { font-size: 0.9rem }
             .md-footer {
               position: static;
-              margin-left: 10rem;
-              width: calc(100% - 10rem);
+              padding-left: 10rem;
+            }
+            .md-footer-nav__link {
+              /* footer links begin to overlap at small sizes without setting width */
+              width: 50%;
             }
             .md-nav--primary .md-nav__title {
               white-space: normal;
@@ -338,21 +358,32 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
         scrollIntoAnchor(),
         addLinkClickListener({
           baseUrl: window.location.origin,
-          onClick: (_: MouseEvent, url: string) => {
+          onClick: (event: MouseEvent, url: string) => {
+            // detect if CTRL or META keys are pressed so that links can be opened in a new tab with `window.open`
+            const modifierActive = event.ctrlKey || event.metaKey;
             const parsedUrl = new URL(url);
+
             // hash exists when anchor is clicked on secondary sidebar
             if (parsedUrl.hash) {
-              navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
-              // Scroll to hash if it's on the current page
-              transformedElement
-                ?.querySelector(`#${parsedUrl.hash.slice(1)}`)
-                ?.scrollIntoView();
+              if (modifierActive) {
+                window.open(`${parsedUrl.pathname}${parsedUrl.hash}`, '_blank');
+              } else {
+                navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+                // Scroll to hash if it's on the current page
+                transformedElement
+                  ?.querySelector(`#${parsedUrl.hash.slice(1)}`)
+                  ?.scrollIntoView();
+              }
             } else {
-              navigate(parsedUrl.pathname);
-              // Scroll to top of reader if primary sidebar link is clicked
-              transformedElement
-                ?.querySelector('.md-content__inner')
-                ?.scrollIntoView();
+              if (modifierActive) {
+                window.open(parsedUrl.pathname, '_blank');
+              } else {
+                navigate(parsedUrl.pathname);
+                // Scroll to top of reader if primary sidebar link is clicked
+                transformedElement
+                  ?.querySelector('.md-content__inner')
+                  ?.scrollIntoView();
+              }
             }
           },
         }),

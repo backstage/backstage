@@ -1,5 +1,16 @@
 # @backstage/plugin-api-docs
 
+## 0.6.21
+
+### Patch Changes
+
+- 11b81683a9: Support customizing index page layouts via outlets
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+  - @backstage/plugin-catalog@0.7.7
+
 ## 0.6.20
 
 ### Patch Changes
