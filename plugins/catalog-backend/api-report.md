@@ -1309,6 +1309,7 @@ export class NextCatalogBuilder {
   addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityProvider(...providers: EntityProvider[]): NextCatalogBuilder;
+  addPermissionRules(...permissionRules: CatalogPermissionRule[]): void;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addProcessor(...processors: CatalogProcessor[]): NextCatalogBuilder;
   build(): Promise<{
@@ -1355,6 +1356,8 @@ export interface NextRouterOptions {
   locationService: LocationService;
   // (undocumented)
   logger: Logger_2;
+  // (undocumented)
+  permissionRules?: CatalogPermissionRule[];
   // (undocumented)
   refreshService?: RefreshService;
 }
