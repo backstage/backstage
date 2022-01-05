@@ -484,5 +484,81 @@ describe('PermissionIntegrationClient', () => {
       expect(plugin1Router).toHaveBeenCalledTimes(1);
       expect(plugin2Router).toHaveBeenCalledTimes(1);
     });
+
+    it('leaves conditional results without resourceRefs unchanged', async () => {
+      await expect(
+        client.applyConditions([
+          {
+            id: '123',
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'plugin-1',
+            resourceRef: 'testResource1',
+            resourceType: 'test-resource',
+            conditions: { rule: 'RULE_1', params: ['yes'] },
+          },
+          {
+            id: '234',
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'plugin-2',
+            resourceRef: 'testResource1',
+            resourceType: 'test-resource',
+            conditions: { rule: 'RULE_1', params: ['no'] },
+          },
+          {
+            id: '345',
+            result: AuthorizeResult.ALLOW,
+          },
+          {
+            id: '456',
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'plugin-1',
+            resourceRef: 'testResource1',
+            resourceType: 'test-resource',
+            conditions: { rule: 'RULE_1', params: ['no'] },
+          },
+          {
+            id: '567',
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'plugin-2',
+            resourceRef: 'testResource1',
+            resourceType: 'test-resource',
+            conditions: { rule: 'RULE_1', params: ['yes'] },
+          },
+          {
+            id: '789',
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'plugin-2',
+            resourceType: 'test-resource',
+            conditions: {
+              anyOf: [
+                { rule: 'RULE_1', params: ['yes'] },
+                { rule: 'RULE_2', params: ['yes'] },
+              ],
+            },
+          },
+        ]),
+      ).resolves.toEqual([
+        { id: '123', result: AuthorizeResult.ALLOW },
+        { id: '234', result: AuthorizeResult.DENY },
+        { id: '345', result: AuthorizeResult.ALLOW },
+        { id: '456', result: AuthorizeResult.DENY },
+        { id: '567', result: AuthorizeResult.ALLOW },
+        {
+          id: '789',
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'plugin-2',
+          resourceType: 'test-resource',
+          conditions: {
+            anyOf: [
+              { rule: 'RULE_1', params: ['yes'] },
+              { rule: 'RULE_2', params: ['yes'] },
+            ],
+          },
+        },
+      ]);
+
+      expect(plugin1Router).toHaveBeenCalledTimes(1);
+      expect(plugin2Router).toHaveBeenCalledTimes(1);
+    });
   });
 });

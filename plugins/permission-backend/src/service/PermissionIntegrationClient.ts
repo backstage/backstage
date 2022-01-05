@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { groupBy, keyBy } from 'lodash';
+import { memoize } from 'lodash';
 import fetch from 'node-fetch';
 import { z } from 'zod';
+import DataLoader from 'dataloader';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import {
   AuthorizeResponse,
@@ -25,6 +26,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsResponse,
+  ApplyConditionsResponseEntry,
   ConditionalPolicyDecision,
   PolicyDecision,
 } from '@backstage/plugin-permission-node';
@@ -38,12 +40,10 @@ const responseSchema = z.array(
   }),
 );
 
-export type ResourcePolicyDecision = Identified<
-  PolicyDecision & { resourceRef?: string }
->;
-
-type ConditionalResourcePolicyDecision = Identified<
-  ConditionalPolicyDecision & { resourceRef: string }
+type ResourceDecision<T extends PolicyDecision = PolicyDecision> = Identified<
+  T & {
+    resourceRef?: string;
+  }
 >;
 
 export class PermissionIntegrationClient {
@@ -54,23 +54,34 @@ export class PermissionIntegrationClient {
   }
 
   async applyConditions(
-    decisions: ResourcePolicyDecision[],
+    decisions: ResourceDecision[],
     authHeader?: string,
   ): Promise<Identified<AuthorizeResponse>[]> {
-    const responses = await Promise.all(
-      this.groupRequestsByPluginId(decisions).map(([pluginId, requests]) =>
-        this.makeRequest(pluginId, requests, authHeader),
-      ),
+    const loaderFor = memoize(
+      (pluginId: string) =>
+        new DataLoader<
+          Identified<ConditionalPolicyDecision & { resourceRef?: string }>,
+          ApplyConditionsResponseEntry
+        >(requests => this.makeRequest(pluginId, requests, authHeader)),
     );
 
-    const responseIndex = keyBy(responses.flat(), 'id');
+    return Promise.all(
+      decisions.map(decision => {
+        if (
+          decision.result !== AuthorizeResult.CONDITIONAL ||
+          !decision.resourceRef
+        ) {
+          return decision;
+        }
 
-    return decisions.map(decision => responseIndex[decision.id] ?? decision);
+        return loaderFor(decision.pluginId).load(decision);
+      }),
+    );
   }
 
   private async makeRequest(
     pluginId: string,
-    decisions: ConditionalResourcePolicyDecision[],
+    decisions: readonly ResourceDecision<ConditionalPolicyDecision>[],
     authHeader?: string,
   ): Promise<ApplyConditionsResponse> {
     const endpoint = `${await this.discovery.getBaseUrl(
@@ -100,20 +111,5 @@ export class PermissionIntegrationClient {
     }
 
     return responseSchema.parse(await response.json());
-  }
-
-  private groupRequestsByPluginId(
-    decisions: ResourcePolicyDecision[],
-  ): [string, ConditionalResourcePolicyDecision[]][] {
-    return Object.entries(
-      groupBy(
-        decisions.filter(
-          (decision): decision is ConditionalResourcePolicyDecision =>
-            decision.result === AuthorizeResult.CONDITIONAL &&
-            !!decision.resourceRef,
-        ),
-        'pluginId',
-      ),
-    );
   }
 }
