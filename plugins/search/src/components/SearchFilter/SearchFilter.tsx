@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, ChangeEvent, useEffect } from 'react';
+import React, { ReactElement, ChangeEvent } from 'react';
 import {
   makeStyles,
   FormControl,
@@ -31,7 +31,7 @@ import {
   SearchAutocompleteFilterProps,
 } from './SearchFilter.Autocomplete';
 import { useSearch } from '../SearchContext';
-import { useAsyncFilterValues } from './hooks';
+import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
 
 const useStyles = makeStyles({
   label: {
@@ -64,16 +64,7 @@ const CheckboxFilter = (props: SearchFilterComponentProps) => {
   const { className, defaultValue, label, name, values = [] } = props;
   const classes = useStyles();
   const { filters, setFilters } = useSearch();
-
-  useEffect(() => {
-    if (Array.isArray(defaultValue)) {
-      setFilters(prevFilters => ({
-        ...prevFilters,
-        [name]: defaultValue,
-      }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useDefaultFilterValue(name, defaultValue);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const {
@@ -127,6 +118,7 @@ const SelectFilter = (props: SearchFilterComponentProps) => {
     values: givenValues,
   } = props;
   const classes = useStyles();
+  useDefaultFilterValue(name, defaultValue);
   const { value: values = [], loading } = useAsyncFilterValues(
     asyncValues,
     '',
@@ -134,16 +126,6 @@ const SelectFilter = (props: SearchFilterComponentProps) => {
     asyncDebounce,
   );
   const { filters, setFilters } = useSearch();
-
-  useEffect(() => {
-    if (typeof defaultValue === 'string') {
-      setFilters(prevFilters => ({
-        ...prevFilters,
-        [name]: defaultValue,
-      }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleChange = (e: ChangeEvent<{ value: unknown }>) => {
     const {

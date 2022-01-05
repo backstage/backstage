@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
+import { useSearch } from '../SearchContext';
 
 /**
  * Utility hook for either asynchronously loading filter values from a given
@@ -67,4 +68,28 @@ export const useAsyncFilterValues = (
   }
 
   return state;
+};
+
+/**
+ * Utility hook for applying a given default value to the search context.
+ */
+export const useDefaultFilterValue = (
+  name: string,
+  defaultValue?: string | string[] | null,
+) => {
+  const { setFilters } = useSearch();
+
+  useEffect(() => {
+    const defaultIsEmpty = !defaultValue;
+    const defaultIsEmptyArray =
+      Array.isArray(defaultValue) && defaultValue.length === 0;
+
+    if (!defaultIsEmpty && !defaultIsEmptyArray) {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        [name]: defaultValue,
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 };

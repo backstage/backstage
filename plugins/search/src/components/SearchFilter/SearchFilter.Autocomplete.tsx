@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { Chip, TextField } from '@material-ui/core';
 import {
   Autocomplete,
@@ -22,7 +22,7 @@ import {
   AutocompleteRenderInputParams,
 } from '@material-ui/lab';
 import { useSearch } from '../SearchContext';
-import { useAsyncFilterValues } from './hooks';
+import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
 import { SearchFilterComponentProps } from './SearchFilter';
 
 /**
@@ -46,6 +46,7 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
     limitTags,
   } = props;
   const [inputValue, setInputValue] = useState<string>('');
+  useDefaultFilterValue(name, defaultValue);
   const { value: values, loading } = useAsyncFilterValues(
     asyncValues,
     inputValue,
@@ -55,20 +56,6 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
   const { filters, setFilters } = useSearch();
   const filterValue =
     (filters[name] as string | string[] | undefined) || (multiple ? [] : null);
-
-  useEffect(() => {
-    const defaultIsEmpty = !defaultValue;
-    const defaultIsEmptyArray =
-      Array.isArray(defaultValue) && defaultValue.length === 0;
-
-    if (!defaultIsEmpty && !defaultIsEmptyArray) {
-      setFilters(prevFilters => ({
-        ...prevFilters,
-        [name]: defaultValue,
-      }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Set new filter values on input change.
   const handleChange = (
