@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin that provides the Backstage catalog
- *
- * @packageDocumentation
- */
+import { hasAnnotation } from './hasAnnotation';
+import { isEntityKind } from './isEntityKind';
+import { isEntityOwner } from './isEntityOwner';
+import { hasLabel } from './hasLabel';
 
-export * from './catalog';
-export * from './ingestion';
-export * from './legacy';
-export * from './search';
-export * from './util';
-export * from './processing';
-export * from './providers';
-export * from './service';
-export * from './permissions';
+/**
+ * These permission rules can be used to conditionally filter catalog entities
+ * or describe a user's access to the entities.
+ * @public
+ */
+export const permissionRules = {
+  hasAnnotation,
+  hasLabel,
+  isEntityKind,
+  isEntityOwner,
+};

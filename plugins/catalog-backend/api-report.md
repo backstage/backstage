@@ -25,6 +25,7 @@ import { Location as Location_2 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Organizations } from 'aws-sdk';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
@@ -302,6 +303,12 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
 };
+
+// @public
+export type CatalogPermissionRule = PermissionRule<
+  Entity,
+  EntitiesSearchFilter
+>;
 
 // Warning: (ae-missing-release-tag) "CatalogProcessingEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1379,6 +1386,14 @@ export function parseEntityYaml(
   data: Buffer,
   location: LocationSpec,
 ): Iterable<CatalogProcessorResult>;
+
+// @public
+export const permissionRules: {
+  hasAnnotation: CatalogPermissionRule;
+  hasLabel: CatalogPermissionRule;
+  isEntityKind: CatalogPermissionRule;
+  isEntityOwner: CatalogPermissionRule;
+};
 
 // Warning: (ae-missing-release-tag) "PlaceholderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
