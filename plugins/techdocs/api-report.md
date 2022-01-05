@@ -13,6 +13,7 @@ import { CSSProperties } from '@material-ui/styles';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { LocationSpec } from '@backstage/catalog-model';
 import { default as React_2 } from 'react';
@@ -197,16 +198,11 @@ export const Reader: ({
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SyncResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type SyncResult = 'cached' | 'updated';
 
-// Warning: (ae-missing-release-tag) "TechDocsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface TechDocsApi {
-  // (undocumented)
   getApiOrigin(): Promise<string>;
   // Warning: (ae-forgotten-export) The symbol "TechDocsEntityMetadata" needs to be exported by the entry point index.d.ts
   //
@@ -218,23 +214,16 @@ export interface TechDocsApi {
   getTechDocsMetadata(entityId: EntityName): Promise<TechDocsMetadata>;
 }
 
-// Warning: (ae-missing-release-tag) "techdocsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const techdocsApiRef: ApiRef<TechDocsApi>;
 
-// Warning: (ae-missing-release-tag) "TechDocsClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class TechDocsClient implements TechDocsApi {
-  constructor({
-    configApi,
-    discoveryApi,
-    identityApi,
-  }: {
+  constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    fetchApi?: FetchApi;
   });
   // (undocumented)
   configApi: Config;
@@ -347,11 +336,8 @@ export const TechDocsReaderPage: ({
   children,
 }: TechDocsPageProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "TechDocsStorageApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface TechDocsStorageApi {
-  // (undocumented)
   getApiOrigin(): Promise<string>;
   // (undocumented)
   getBaseUrl(
@@ -372,23 +358,31 @@ export interface TechDocsStorageApi {
   ): Promise<SyncResult>;
 }
 
-// Warning: (ae-missing-release-tag) "techdocsStorageApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi>;
 
-// Warning: (ae-missing-release-tag) "TechDocsStorageClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
+// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
+// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
+// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
+// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
+// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
+// Warning: (tsdoc-malformed-html-name) Invalid HTML element: A space is not allowed here
+// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 //
 // @public
 export class TechDocsStorageClient implements TechDocsStorageApi {
-  constructor({
-    configApi,
-    discoveryApi,
-    identityApi,
-  }: {
+  constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    fetchApi?: FetchApi;
   });
   // (undocumented)
   configApi: Config;

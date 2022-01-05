@@ -16,7 +16,11 @@
 
 import { EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import {
+  DiscoveryApi,
+  FetchApi,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
 import { NotFoundError, ResponseError } from '@backstage/errors';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
@@ -24,24 +28,25 @@ import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 
 /**
  * API to talk to `techdocs-backend`.
+ *
+ * @public
  */
 export class TechDocsClient implements TechDocsApi {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
   public identityApi: IdentityApi;
+  private fetchApi: FetchApi;
 
-  constructor({
-    configApi,
-    discoveryApi,
-    identityApi,
-  }: {
+  constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    fetchApi?: FetchApi;
   }) {
-    this.configApi = configApi;
-    this.discoveryApi = discoveryApi;
-    this.identityApi = identityApi;
+    this.configApi = options.configApi;
+    this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi ?? { fetch };
   }
 
   async getApiOrigin(): Promise<string> {
@@ -67,7 +72,7 @@ export class TechDocsClient implements TechDocsApi {
     const requestUrl = `${apiOrigin}/metadata/techdocs/${namespace}/${kind}/${name}`;
     const { token } = await this.identityApi.getCredentials();
 
-    const request = await fetch(`${requestUrl}`, {
+    const request = await this.fetchApi.fetch(`${requestUrl}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
 
@@ -95,7 +100,7 @@ export class TechDocsClient implements TechDocsApi {
     const requestUrl = `${apiOrigin}/metadata/entity/${namespace}/${kind}/${name}`;
     const { token } = await this.identityApi.getCredentials();
 
-    const request = await fetch(`${requestUrl}`, {
+    const request = await this.fetchApi.fetch(`${requestUrl}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
 
@@ -109,24 +114,28 @@ export class TechDocsClient implements TechDocsApi {
 
 /**
  * API which talks to TechDocs storage to fetch files to render.
+<<<<<<< HEAD
+=======
+ *
+ * @public
+>>>>>>> 31c54b8ea2 (Make the techdocs APIs use the FetchApi)
  */
 export class TechDocsStorageClient implements TechDocsStorageApi {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
   public identityApi: IdentityApi;
+  private fetchApi: FetchApi;
 
-  constructor({
-    configApi,
-    discoveryApi,
-    identityApi,
-  }: {
+  constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    fetchApi?: FetchApi;
   }) {
-    this.configApi = configApi;
-    this.discoveryApi = discoveryApi;
-    this.identityApi = identityApi;
+    this.configApi = options.configApi;
+    this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi ?? { fetch };
   }
 
   async getApiOrigin(): Promise<string> {
@@ -162,7 +171,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     const url = `${storageUrl}/${namespace}/${kind}/${name}/${path}`;
     const { token } = await this.identityApi.getCredentials();
 
-    const request = await fetch(
+    const request = await this.fetchApi.fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
       {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
