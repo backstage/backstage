@@ -56,7 +56,7 @@
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
     "qs": "^6.9.4",
-    "react-router": "6.0.0-beta.0",
+    "react-router": "6.2.1",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
     "use-immer": "^0.6.0",

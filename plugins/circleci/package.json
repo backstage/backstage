@@ -44,7 +44,7 @@
     "humanize-duration": "^3.27.0",
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
-    "react-router": "6.0.0-beta.0",
+    "react-router": "6.2.1",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4"
   },

@@ -34,7 +34,7 @@
     "@material-ui/styles": "^4.11.0",
     "highlight.js": "^10.6.0",
     "luxon": "^2.0.2",
-    "react-router": "6.0.0-beta.0",
+    "react-router": "6.2.1",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
     "recharts": "^1.8.5"
