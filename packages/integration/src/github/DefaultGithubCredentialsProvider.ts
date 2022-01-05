@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-import parseGitUrl from 'git-url-parse';
-import {
-  GithubCredentials,
-  GithubCredentialsProvider,
-  GithubCredentialType,
-} from './types';
+import { GithubCredentials, GithubCredentialsProvider } from './types';
 import { ScmIntegrations } from '../ScmIntegrations';
-import { GithubAppCredentialsMux } from './GithubAppCredentialsMux';
+import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubCredentialsProvider';
 
-type MuxCollection = {
-  [url: string]: {
-    githubAppCredentialsMux: GithubAppCredentialsMux;
-    token?: string;
-  };
+type SingleInstanceGithubCredentialsProviderCollection = {
+  [url: string]: GithubCredentialsProvider;
 };
 
 /**
@@ -42,21 +34,19 @@ export class DefaultGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
   static fromIntegrations(integrations: ScmIntegrations) {
-    const muxen: MuxCollection = {};
+    const credentialsProviders: SingleInstanceGithubCredentialsProviderCollection =
+      {};
 
     integrations.github.list().forEach(integration => {
-      muxen[integration.config.host] = {
-        githubAppCredentialsMux: new GithubAppCredentialsMux(
-          integration.config,
-        ),
-        token: integration.config.token,
-      };
+      const credentialsProvider =
+        SingleInstanceGithubCredentialsProvider.create(integration.config);
+      credentialsProviders[integration.config.host] = credentialsProvider;
     });
-    return new DefaultGithubCredentialsProvider(muxen);
+    return new DefaultGithubCredentialsProvider(credentialsProviders);
   }
 
   private constructor(
-    private readonly githubAppCredentialsMuxen: MuxCollection,
+    private readonly providers: SingleInstanceGithubCredentialsProviderCollection,
   ) {}
 
   /**
@@ -80,32 +70,14 @@ export class DefaultGithubCredentialsProvider
    * @returns A promise of {@link GithubCredentials}.
    */
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
-    const parsed = parseGitUrl(opts.url);
+    const parsed = new URL(opts.url);
 
-    if (!this.githubAppCredentialsMuxen[parsed.resource]) {
+    if (!this.providers[parsed.host]) {
       throw new Error(
         `There is no GitHub integration that matches ${opts.url}. Please add a configuration for an integration.`,
       );
     }
 
-    const githubAppCredentialsMux =
-      this.githubAppCredentialsMuxen[parsed.resource].githubAppCredentialsMux;
-    const defaultToken = this.githubAppCredentialsMuxen[parsed.resource].token;
-
-    const owner = parsed.owner || parsed.name;
-    const repo = parsed.owner ? parsed.name : undefined;
-
-    let type: GithubCredentialType = 'app';
-    let token = await githubAppCredentialsMux.getAppToken(owner, repo);
-    if (!token) {
-      type = 'token';
-      token = defaultToken;
-    }
-
-    return {
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      token,
-      type,
-    };
+    return this.providers[parsed.host].getCredentials(opts);
   }
 }
