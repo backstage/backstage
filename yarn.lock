@@ -16205,6 +16205,11 @@ hast-util-to-parse5@^6.0.0:
     xtend "^4.0.0"
     zwitch "^1.0.0"
 
+hast-util-whitespace@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/hast-util-whitespace/-/hast-util-whitespace-2.0.0.tgz#4fc1086467cc1ef5ba20673cb6b03cec3a970f1c"
+  integrity sha512-Pkw+xBHuV6xFeJprJe2BBEoDV+AvQySaz3pPDRUs5PNZEMQjpXJJueqrpcHIXxnWTcAGi/UOCgVShlkY6kLoqg==
+
 hastscript@^6.0.0:
   version "6.0.0"
   resolved "https://registry.npmjs.org/hastscript/-/hastscript-6.0.0.tgz#e8768d7eac56c3fdeac8a92830d58e811e5bf640"
@@ -23416,14 +23421,7 @@ property-expr@^2.0.4:
   resolved "https://registry.npmjs.org/property-expr/-/property-expr-2.0.4.tgz#37b925478e58965031bb612ec5b3260f8241e910"
   integrity sha512-sFPkHQjVKheDNnPvotjQmm3KD3uk1fWKUN7CrpdbwmUx3CrG3QiM8QpTSimvig5vTXmTvjz7+TDvXOI9+4rkcg==
 
-property-information@^5.0.0:
-  version "5.4.0"
-  resolved "https://registry.npmjs.org/property-information/-/property-information-5.4.0.tgz#16e08f13f4e5c4a7be2e4ec431c01c4f8dba869a"
-  integrity sha512-nmMWAm/3vKFGmmOWOcdLjgq/Hlxa+hsuR/px1Lp/UGEyc5A22A6l78Shc2C0E71sPmAqglni+HrS7L7VJ7AUCA==
-  dependencies:
-    xtend "^4.0.0"
-
-property-information@^5.3.0:
+property-information@^5.0.0, property-information@^5.3.0:
   version "5.6.0"
   resolved "https://registry.npmjs.org/property-information/-/property-information-5.6.0.tgz#61675545fb23002f245c6540ec46077d4da3ed69"
   integrity sha512-YUHSPk+A30YPv+0Qf8i9Mbfe/C0hdPXk1s1jPVToV8pk8BQtpw10ct89Eo7OWkutrwqvT0eicAxlOg3dOAu8JA==
@@ -24012,13 +24010,14 @@ react-lifecycles-compat@^3.0.4:
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
 react-markdown@^7.0.1:
-  version "7.0.1"
-  resolved "https://registry.npmjs.org/react-markdown/-/react-markdown-7.0.1.tgz#c7365fcd7d1813b3ae68f2200e8f92d47d865627"
-  integrity sha512-pthNPaoiwg0q7hukoE04F2ENwSzijIlWHJ4UMs/96LUe/G/P3FnbP4qHzx3FoNqae+2SqDG8vzniTLnJDeWneg==
+  version "7.1.2"
+  resolved "https://registry.npmjs.org/react-markdown/-/react-markdown-7.1.2.tgz#c9fa9d1c87e24529f028e1cdf731e81ccdd8e547"
+  integrity sha512-ibMcc0EbfmbwApqJD8AUr0yls8BSrKzIbHaUsPidQljxToCqFh34nwtu3CXNEItcVJNzpjDHrhK8A+MAh2JW3A==
   dependencies:
     "@types/hast" "^2.0.0"
     "@types/unist" "^2.0.0"
     comma-separated-tokens "^2.0.0"
+    hast-util-whitespace "^2.0.0"
     prop-types "^15.0.0"
     property-information "^6.0.0"
     react-is "^17.0.0"
