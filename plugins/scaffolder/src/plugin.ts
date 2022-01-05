@@ -33,6 +33,7 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
+  fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker';
@@ -47,9 +48,15 @@ export const scaffolderPlugin = createPlugin({
         discoveryApi: discoveryApiRef,
         identityApi: identityApiRef,
         scmIntegrationsApi: scmIntegrationsApiRef,
+        fetchApi: fetchApiRef,
       },
-      factory: ({ discoveryApi, identityApi, scmIntegrationsApi }) =>
-        new ScaffolderClient({ discoveryApi, identityApi, scmIntegrationsApi }),
+      factory: ({ discoveryApi, identityApi, scmIntegrationsApi, fetchApi }) =>
+        new ScaffolderClient({
+          discoveryApi,
+          identityApi,
+          scmIntegrationsApi,
+          fetchApi,
+        }),
     }),
   ],
   routes: {
