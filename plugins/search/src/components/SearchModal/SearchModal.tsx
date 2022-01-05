@@ -25,7 +25,7 @@ import {
   List,
   Paper,
 } from '@material-ui/core';
-import { Launch } from '@material-ui/icons/';
+import LaunchIcon from '@material-ui/icons/Launch';
 import { makeStyles } from '@material-ui/core/styles';
 import { SearchBar } from '../SearchBar';
 import { DefaultResultListItem } from '../DefaultResultListItem';
@@ -96,7 +96,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
           <Grid item>
             <Link onClick={toggleModal} to={`${getSearchLink()}?query=${term}`}>
               <span className={classes.viewResultsLink}>View Full Results</span>
-              <Launch color="primary" />
+              <LaunchIcon color="primary" />
             </Link>
           </Grid>
         </Grid>
