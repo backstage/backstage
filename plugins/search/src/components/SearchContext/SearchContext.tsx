@@ -25,8 +25,8 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useAsync, usePrevious } from 'react-use';
-import { AsyncState } from 'react-use/lib/useAsync';
+import useAsync, { AsyncState } from 'react-use/lib/useAsync';
+import usePrevious from 'react-use/lib/usePrevious';
 import { searchApiRef } from '../../apis';
 
 type SearchContextValue = {

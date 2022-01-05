@@ -22,7 +22,7 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { apacheAirflowApiRef } from '../../api';
 import { InstanceVersion } from '../../api/types';
 

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { Alert } from '@material-ui/lab';
 import { Box } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';

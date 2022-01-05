@@ -45,7 +45,7 @@ import { DateTime, Interval } from 'luxon';
 import qs from 'qs';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { generatePath, useNavigate, useParams } from 'react-router';
-import { useInterval } from 'react-use';
+import useInterval from 'react-use/lib/useInterval';
 import { rootRouteRef } from '../../routes';
 import { Status, TaskOutput } from '../../types';
 import { useTaskEventStream } from '../hooks/useEventStream';

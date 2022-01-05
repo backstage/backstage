@@ -228,6 +228,10 @@ export function applyCspDirectives(
   const result: ContentSecurityPolicyOptions['directives'] =
     helmet.contentSecurityPolicy.getDefaultDirectives();
 
+  // TODO(Rugvip): We currently use non-precompiled AJV for validation in the frontend, which uses eval.
+  //               It should be replaced by any other solution that doesn't require unsafe-eval.
+  result['script-src'] = ["'self'", "'unsafe-eval'"];
+
   if (directives) {
     for (const [key, value] of Object.entries(directives)) {
       if (value === false) {

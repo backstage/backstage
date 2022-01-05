@@ -23,7 +23,7 @@ import { AZURE_DEVOPS_DEFAULT_TOP } from '../constants';
 import { Entity } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { useProjectRepoFromEntity } from './useProjectRepoFromEntity';
 
 export function useRepoBuilds(

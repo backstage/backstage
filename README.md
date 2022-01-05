@@ -2,10 +2,6 @@
 
 # [Backstage](https://backstage.io)
 
-> 🎄 The maintainers will be taking a break over the holidays from week beginning 20th Dec. The Repository and Discord may be quieter than usual. We will be back next year, rested and restored, on Jan. 3. 🎄
-
-> 🎅 Happy holidays and a Happy New Year to all, and especially those that have made this year special for Backstage! 🎅
-
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CNCF Status](https://img.shields.io/badge/cncf%20status-sandbox-blue.svg)](https://www.cncf.io/projects)
 [![Main CI Build](https://github.com/backstage/backstage/workflows/Main%20Master%20Build/badge.svg)](https://github.com/backstage/backstage/actions?query=workflow%3A%22Main+Master+Build%22)

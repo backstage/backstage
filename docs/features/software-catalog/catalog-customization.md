@@ -30,12 +30,15 @@ export const CustomCatalogPage = ({
   actions,
   initiallySelectedFilter = 'owned',
 }: CatalogPageProps) => {
+  const createComponentLink = useRouteRef(
+    catalogPlugin.externalRoutes.createComponent,
+  );
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <EntityListProvider>
         <Content>
           <ContentHeader titleComponent={<CatalogKindHeader />}>
-            <CreateButton title="Create Component" to={link} />
+            <CreateButton title="Create Component" to={createComponentLink()} />
             <SupportButton>All your software catalog entities</SupportButton>
           </ContentHeader>
           <FilteredEntityLayout>

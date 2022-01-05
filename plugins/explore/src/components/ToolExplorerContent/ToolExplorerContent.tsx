@@ -16,7 +16,7 @@
 
 import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import React from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { ToolCard } from '../ToolCard';
 
 import {

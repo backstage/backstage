@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.4.2
+
+### Patch Changes
+
+- 7ac0bd2c66: implement dashboard link formatter for GKE
+- Updated dependencies
+  - @backstage/backend-common@0.10.2
+  - @backstage/plugin-kubernetes-common@0.2.1
+
 ## 0.4.1
 
 ### Patch Changes

@@ -31,7 +31,8 @@ import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
 import * as React from 'react';
 import { useMemo, useState } from 'react';
-import { useAsync, useDeepCompareEffect } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
+import useDeepCompareEffect from 'react-use/lib/useDeepCompareEffect';
 import { FindingSummary, fossaApiRef } from '../../api';
 import { getProjectName } from '../getProjectName';
 

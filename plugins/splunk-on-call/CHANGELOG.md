@@ -1,5 +1,15 @@
 # @backstage/plugin-splunk-on-call
 
+## 0.3.18
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
 ## 0.3.17
 
 ### Patch Changes

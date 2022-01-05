@@ -25,7 +25,7 @@ import {
 import Clear from '@material-ui/icons/Clear';
 import Search from '@material-ui/icons/Search';
 import React, { useState } from 'react';
-import { useDebounce } from 'react-use';
+import useDebounce from 'react-use/lib/useDebounce';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
 

@@ -15,7 +15,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { Website, lighthouseApiRef } from '../../api';
-import { useInterval } from 'react-use';
+import useInterval from 'react-use/lib/useInterval';
 import {
   formatTime,
   CATEGORIES,

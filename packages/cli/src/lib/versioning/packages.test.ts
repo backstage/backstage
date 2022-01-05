@@ -82,7 +82,10 @@ describe('mapDependencies', () => {
       }),
     });
 
-    const dependencyMap = await mapDependencies(paths.targetDir);
+    const dependencyMap = await mapDependencies(
+      paths.targetDir,
+      '@backstage/*',
+    );
     expect(Array.from(dependencyMap)).toEqual([
       [
         '@backstage/core',

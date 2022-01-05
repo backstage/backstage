@@ -80,6 +80,10 @@ module.exports = {
             name: '@material-ui/icons',
             message: "Please import '@material-ui/icons/<Icon>' instead.",
           },
+          {
+            name: '@material-ui/icons/', // because this is possible too ._.
+            message: "Please import '@material-ui/icons/<Icon>' instead.",
+          },
           ...require('module').builtinModules,
         ],
         // Avoid cross-package imports

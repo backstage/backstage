@@ -61,3 +61,16 @@ export const Accordion = () => {
     />
   );
 };
+
+export const Tabs = () => {
+  return (
+    <SearchType.Tabs
+      defaultValue="value-1"
+      types={[
+        { value: 'value-1', name: 'Value One' },
+        { value: 'value-2', name: 'Value Two' },
+        { value: 'value-3', name: 'Value Three' },
+      ]}
+    />
+  );
+};
