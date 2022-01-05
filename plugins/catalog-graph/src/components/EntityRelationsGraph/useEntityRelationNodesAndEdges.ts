@@ -18,7 +18,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { MouseEvent, useState } from 'react';
-import { useDebounce } from 'react-use';
+import useDebounce from 'react-use/lib/useDebounce';
 import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
 import { EntityEdge, EntityNode } from './types';
 import { useEntityRelationGraph } from './useEntityRelationGraph';

@@ -16,7 +16,7 @@
 
 import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { useDebounce } from 'react-use';
+import useDebounce from 'react-use/lib/useDebounce';
 import { SearchBar } from './LegacySearchBar';
 import { SearchResult } from './LegacySearchResult';
 import {

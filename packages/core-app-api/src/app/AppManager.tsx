@@ -24,7 +24,7 @@ import React, {
   useState,
 } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import {
   ApiProvider,
   ApiRegistry,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { GithubDeployment, githubDeploymentsApiRef } from '../api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {

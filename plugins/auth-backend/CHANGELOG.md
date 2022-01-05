@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend
 
+## 0.6.1
+
+### Patch Changes
+
+- e0e57817d2: Added Google Cloud Identity-Aware Proxy as an identity provider.
+- Updated dependencies
+  - @backstage/backend-common@0.10.2
+
 ## 0.6.0
 
 ### Minor Changes

@@ -28,7 +28,7 @@ import React, {
   Context,
 } from 'react';
 import { useNavigate } from 'react-router';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { catalogApiRef } from '../api';
 import { useEntityCompoundName } from './useEntityCompoundName';
 

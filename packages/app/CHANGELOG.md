@@ -1,5 +1,49 @@
 # example-app
 
+## 0.2.59
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.10.5
+  - @backstage/plugin-search@0.5.4
+  - @backstage/plugin-techdocs@0.12.13
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/plugin-kubernetes@0.5.3
+  - @backstage/core-app-api@0.3.1
+  - @backstage/core-components@0.8.3
+  - @backstage/plugin-apache-airflow@0.1.2
+  - @backstage/plugin-azure-devops@0.1.9
+  - @backstage/plugin-badges@0.2.18
+  - @backstage/plugin-catalog@0.7.7
+  - @backstage/plugin-catalog-graph@0.2.5
+  - @backstage/plugin-catalog-import@0.7.8
+  - @backstage/plugin-circleci@0.2.33
+  - @backstage/plugin-cloudbuild@0.2.31
+  - @backstage/plugin-code-coverage@0.1.21
+  - @backstage/plugin-cost-insights@0.11.16
+  - @backstage/plugin-explore@0.3.24
+  - @backstage/plugin-gcp-projects@0.3.12
+  - @backstage/plugin-github-actions@0.4.30
+  - @backstage/plugin-graphiql@0.2.26
+  - @backstage/plugin-home@0.4.9
+  - @backstage/plugin-jenkins@0.5.16
+  - @backstage/plugin-kafka@0.2.24
+  - @backstage/plugin-lighthouse@0.2.33
+  - @backstage/plugin-newrelic@0.3.12
+  - @backstage/plugin-newrelic-dashboard@0.1.2
+  - @backstage/plugin-org@0.3.33
+  - @backstage/plugin-pagerduty@0.3.21
+  - @backstage/plugin-rollbar@0.3.22
+  - @backstage/plugin-scaffolder@0.11.17
+  - @backstage/plugin-sentry@0.3.32
+  - @backstage/plugin-shortcuts@0.1.18
+  - @backstage/plugin-tech-insights@0.1.4
+  - @backstage/plugin-tech-radar@0.5.1
+  - @backstage/plugin-user-settings@0.3.15
+  - @backstage/plugin-api-docs@0.6.21
+
 ## 0.2.58
 
 ### Patch Changes

@@ -23,7 +23,7 @@ import {
   useElementFilter,
   ApiHolder,
 } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 
 const ENTITY_SWITCH_KEY = 'core.backstage.entitySwitch';
 

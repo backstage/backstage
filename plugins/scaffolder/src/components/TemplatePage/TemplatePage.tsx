@@ -20,7 +20,7 @@ import qs from 'qs';
 import React, { useCallback, useState } from 'react';
 import { generatePath, Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';
 import { CustomFieldValidator, FieldExtensionOptions } from '../../extensions';
 import { rootRouteRef } from '../../routes';

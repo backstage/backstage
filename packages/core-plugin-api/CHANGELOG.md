@@ -1,5 +1,11 @@
 # @backstage/core-plugin-api
 
+## 0.4.1
+
+### Patch Changes
+
+- c534ef2242: Deprecated `OldIconComponent`. Existing usage should be replaced with `IconComponent`.
+
 ## 0.4.0
 
 ### Minor Changes

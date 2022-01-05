@@ -20,7 +20,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { Tooltip } from '@material-ui/core';
 import React, { useEffect, useMemo } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { getTimeBasedGreeting } from './timeUtil';
 
 export const WelcomeTitle = () => {

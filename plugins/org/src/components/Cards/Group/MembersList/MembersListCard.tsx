@@ -35,7 +35,7 @@ import {
 import Pagination from '@material-ui/lab/Pagination';
 import React from 'react';
 import { generatePath } from 'react-router-dom';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 
 import {
   Avatar,

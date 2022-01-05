@@ -22,7 +22,9 @@ function parseJwtPayload(token: string) {
 }
 
 /**
- * Parses token and decorates the BackstageIdentityResponse with identity information sourced from the token
+ * Parses a Backstage-issued token and decorates the
+ * {@link BackstageIdentityResponse} with identity information sourced from the
+ * token.
  *
  * @public
  */

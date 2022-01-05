@@ -76,12 +76,15 @@ export class Git {
     return git.commit({ fs, dir, message, author, committer });
   }
 
+  /** https://isomorphic-git.org/docs/en/clone */
   async clone(options: {
     url: string;
     dir: string;
     ref?: string;
+    depth?: number;
+    noCheckout?: boolean;
   }): Promise<void> {
-    const { url, dir, ref } = options;
+    const { url, dir, ref, depth, noCheckout } = options;
     this.config.logger?.info(`Cloning repo {dir=${dir},url=${url}}`);
     return git.clone({
       fs,
@@ -90,7 +93,8 @@ export class Git {
       dir,
       ref,
       singleBranch: true,
-      depth: 1,
+      depth: depth ?? 1,
+      noCheckout,
       onProgress: this.onProgressHandler(),
       headers: {
         'user-agent': 'git/@isomorphic-git',
@@ -99,7 +103,7 @@ export class Git {
     });
   }
 
-  // https://isomorphic-git.org/docs/en/currentBranch
+  /** https://isomorphic-git.org/docs/en/currentBranch */
   async currentBranch(options: {
     dir: string;
     fullName?: boolean;
@@ -110,7 +114,7 @@ export class Git {
     >;
   }
 
-  // https://isomorphic-git.org/docs/en/fetch
+  /** https://isomorphic-git.org/docs/en/fetch */
   async fetch(options: { dir: string; remote?: string }): Promise<void> {
     const { dir, remote = 'origin' } = options;
     this.config.logger?.info(
@@ -138,7 +142,7 @@ export class Git {
     });
   }
 
-  // https://isomorphic-git.org/docs/en/merge
+  /** https://isomorphic-git.org/docs/en/merge */
   async merge(options: {
     dir: string;
     theirs: string;
@@ -180,7 +184,7 @@ export class Git {
     });
   }
 
-  // https://isomorphic-git.org/docs/en/readCommit
+  /** https://isomorphic-git.org/docs/en/readCommit */
   async readCommit(options: {
     dir: string;
     sha: string;
@@ -189,10 +193,23 @@ export class Git {
     return git.readCommit({ fs, dir, oid: sha });
   }
 
-  // https://isomorphic-git.org/docs/en/resolveRef
+  /** https://isomorphic-git.org/docs/en/resolveRef */
   async resolveRef(options: { dir: string; ref: string }): Promise<string> {
     const { dir, ref } = options;
     return git.resolveRef({ fs, dir, ref });
+  }
+
+  /** https://isomorphic-git.org/docs/en/log */
+  async log(options: {
+    dir: string;
+    ref?: string;
+  }): Promise<ReadCommitResult[]> {
+    const { dir, ref } = options;
+    return git.log({
+      fs,
+      dir,
+      ref: ref ?? 'HEAD',
+    });
   }
 
   private onAuth = () => ({

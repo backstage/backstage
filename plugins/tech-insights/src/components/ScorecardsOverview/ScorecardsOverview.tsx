@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { ChecksOverview } from './ChecksOverview';

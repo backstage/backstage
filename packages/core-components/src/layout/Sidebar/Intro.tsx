@@ -21,7 +21,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { useContext, useState } from 'react';
-import { useLocalStorage } from 'react-use';
+import useLocalStorage from 'react-use/lib/useLocalStorage';
 import {
   sidebarConfig,
   SidebarContext,

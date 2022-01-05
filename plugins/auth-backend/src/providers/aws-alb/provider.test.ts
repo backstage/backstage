@@ -18,7 +18,7 @@ import express from 'express';
 import { JWT } from 'jose';
 
 import {
-  ALB_ACCESSTOKEN_HEADER,
+  ALB_ACCESS_TOKEN_HEADER,
   ALB_JWT_HEADER,
   AwsAlbAuthProvider,
 } from './provider';
@@ -80,7 +80,7 @@ describe('AwsAlbAuthProvider', () => {
     header: jest.fn(name => {
       if (name === ALB_JWT_HEADER) {
         return mockJwt;
-      } else if (name === ALB_ACCESSTOKEN_HEADER) {
+      } else if (name === ALB_ACCESS_TOKEN_HEADER) {
         return mockAccessToken;
       }
       return undefined;
@@ -88,7 +88,7 @@ describe('AwsAlbAuthProvider', () => {
   } as unknown as express.Request;
   const mockRequestWithoutJwt = {
     header: jest.fn(name => {
-      if (name === ALB_ACCESSTOKEN_HEADER) {
+      if (name === ALB_ACCESS_TOKEN_HEADER) {
         return mockAccessToken;
       }
       return undefined;

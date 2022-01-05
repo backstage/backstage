@@ -24,6 +24,9 @@ const kindMappings: Record<string, string> = {
 };
 
 export function openshiftFormatter(options: ClusterLinksFormatterOptions): URL {
+  if (!options.dashboardUrl) {
+    throw new Error('OpenShift dashboard requires a dashboardUrl option');
+  }
   const basePath = new URL(options.dashboardUrl.href);
   const name = encodeURIComponent(options.object.metadata?.name ?? '');
   const namespace = encodeURIComponent(

@@ -42,7 +42,7 @@ function createLimitedLoader(count: number, loadDelay?: number) {
   };
   const processTask = async (item: number) => {
     processedTasks.push(item);
-    await new Promise(resolve => setTimeout(resolve)); // emulate a bit of work
+    await new Promise(resolve => setTimeout(resolve, 10)); // emulate a bit of work
     if (processedTasks.length === count) {
       resolveDone({ processedTasks, loadCounts });
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,97 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  Content,
-  ContentHeader,
-  CreateButton,
-  PageWithHeader,
-  SupportButton,
-  TableColumn,
-  TableProps,
-} from '@backstage/core-components';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import {
-  CatalogTable,
-  CatalogTableRow,
-  FilteredEntityLayout,
-  EntityListContainer,
-  FilterContainer,
-} from '@backstage/plugin-catalog';
-import {
-  EntityKindPicker,
-  EntityLifecyclePicker,
-  EntityListProvider,
-  EntityOwnerPicker,
-  EntityTagPicker,
-  EntityTypePicker,
-  UserListFilterKind,
-  UserListPicker,
-} from '@backstage/plugin-catalog-react';
 import React from 'react';
-import { createComponentRouteRef } from '../../routes';
+import { useOutlet } from 'react-router';
+import {
+  DefaultApiExplorerPage,
+  DefaultApiExplorerPageProps,
+} from './DefaultApiExplorerPage';
 
-const defaultColumns: TableColumn<CatalogTableRow>[] = [
-  CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
-  CatalogTable.columns.createSystemColumn(),
-  CatalogTable.columns.createOwnerColumn(),
-  CatalogTable.columns.createSpecTypeColumn(),
-  CatalogTable.columns.createSpecLifecycleColumn(),
-  CatalogTable.columns.createMetadataDescriptionColumn(),
-  CatalogTable.columns.createTagsColumn(),
-];
+/**
+ * ApiExplorerPage
+ * @public
+ */
+export const ApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
+  const outlet = useOutlet();
 
-type ApiExplorerPageProps = {
-  initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<CatalogTableRow>[];
-  actions?: TableProps<CatalogTableRow>['actions'];
-};
-
-export const ApiExplorerPage = ({
-  initiallySelectedFilter = 'all',
-  columns,
-  actions,
-}: ApiExplorerPageProps) => {
-  const configApi = useApi(configApiRef);
-  const generatedSubtitle = `${
-    configApi.getOptionalString('organization.name') ?? 'Backstage'
-  } API Explorer`;
-  const createComponentLink = useRouteRef(createComponentRouteRef);
-
-  return (
-    <PageWithHeader
-      themeId="apis"
-      title="APIs"
-      subtitle={generatedSubtitle}
-      pageTitleOverride="APIs"
-    >
-      <Content>
-        <ContentHeader title="">
-          <CreateButton
-            title="Register Existing API"
-            to={createComponentLink?.()}
-          />
-          <SupportButton>All your APIs</SupportButton>
-        </ContentHeader>
-        <EntityListProvider>
-          <FilteredEntityLayout>
-            <FilterContainer>
-              <EntityKindPicker initialFilter="api" hidden />
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityOwnerPicker />
-              <EntityLifecyclePicker />
-              <EntityTagPicker />
-            </FilterContainer>
-            <EntityListContainer>
-              <CatalogTable
-                columns={columns || defaultColumns}
-                actions={actions}
-              />
-            </EntityListContainer>
-          </FilteredEntityLayout>
-        </EntityListProvider>
-      </Content>
-    </PageWithHeader>
-  );
+  return outlet || <DefaultApiExplorerPage {...props} />;
 };

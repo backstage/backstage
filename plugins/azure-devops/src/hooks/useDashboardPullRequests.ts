@@ -15,7 +15,8 @@
  */
 
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { useAsyncRetry, useInterval } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import useInterval from 'react-use/lib/useInterval';
 
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import { azureDevOpsApiRef } from '../api';

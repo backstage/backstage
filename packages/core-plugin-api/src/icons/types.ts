@@ -43,5 +43,6 @@ export type IconComponent = ComponentType<{
  * migration, but it is not exported.
  *
  * @public
+ * @deprecated This type will be removed, use {@link IconComponent} instead.
  */
 export type OldIconComponent = ComponentType<SvgIconProps>;

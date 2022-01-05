@@ -26,7 +26,7 @@ import {
   MissingAnnotationEmptyState,
   Progress,
 } from '@backstage/core-components';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { Entity } from '@backstage/catalog-model';
 
 const AllureReport = (props: { entity: Entity }) => {
