@@ -6796,17 +6796,10 @@
   dependencies:
     ansi-regex "*"
 
-"@types/archiver@^5.1.0":
+"@types/archiver@^5.1.0", "@types/archiver@^5.1.1":
   version "5.3.0"
   resolved "https://registry.npmjs.org/@types/archiver/-/archiver-5.3.0.tgz#2b34ba56d4d7102d256b922c7e91e09eab79db6f"
   integrity sha512-qJ79qsmq7O/k9FYwsF6O1xVA1PeLV+9Bh3TYkVCu3VzMR6vN9JQkgEOh/rrQ0R+F4Ta+R3thHGewxQtFglwVfg==
-  dependencies:
-    "@types/glob" "*"
-
-"@types/archiver@^5.1.1":
-  version "5.1.1"
-  resolved "https://registry.npmjs.org/@types/archiver/-/archiver-5.1.1.tgz#d6d7610de4386b293abd5c1cb1875e0a4f4e1c30"
-  integrity sha512-heuaCk0YH5m274NOLSi66H1zX6GtZoMsdE6TYFcpFFjBjg0FoU4i4/M/a/kNlgNg26Xk3g364mNOYe1JaiEPOQ==
   dependencies:
     "@types/glob" "*"
 
@@ -23411,6 +23404,13 @@ prop-types@^15.0.0, prop-types@^15.5.10, prop-types@^15.5.7, prop-types@^15.5.8,
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
+properties-reader@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/properties-reader/-/properties-reader-2.2.0.tgz#41d837fe143d8d5f2386b6a869a1975c0b2c595c"
+  integrity sha512-CgVcr8MwGoBKK24r9TwHfZkLLaNFHQ6y4wgT9w/XzdpacOOi5ciH4hcuLechSDAwXsfrGQtI2JTutY2djOx2Ow==
+  dependencies:
+    mkdirp "^1.0.4"
+
 property-expr@^2.0.4:
   version "2.0.4"
   resolved "https://registry.npmjs.org/property-expr/-/property-expr-2.0.4.tgz#37b925478e58965031bb612ec5b3260f8241e910"
@@ -27158,10 +27158,10 @@ test-exclude@^6.0.0:
     glob "^7.1.4"
     minimatch "^3.0.4"
 
-testcontainers@^7.23.0:
-  version "7.23.0"
-  resolved "https://registry.npmjs.org/testcontainers/-/testcontainers-7.23.0.tgz#7d73a5e219a970fb75ff6a23a28dace8b7f3f232"
-  integrity sha512-90H1iijeIjOLp7WVNYKTNkM1sd+dlW5019ns45hSPcOET43WebEZQVJl8/Ag9vwSZD2mjomMum9a/EXk/st4sQ==
+testcontainers@^8.1.2:
+  version "8.1.2"
+  resolved "https://registry.npmjs.org/testcontainers/-/testcontainers-8.1.2.tgz#f679d908a295715a1d5eda8975d5e91891204406"
+  integrity sha512-/b3dWUjyTI+2qnWusAMcNSrQsCC5f2zhwn1c+fS/mwopx3xbkb0Q+glXKIs28hJryXk50QDPXOoIi2PF77HGdg==
   dependencies:
     "@types/archiver" "^5.1.1"
     "@types/dockerode" "^3.2.5"
@@ -27172,6 +27172,7 @@ testcontainers@^7.23.0:
     dockerode "^3.3.1"
     get-port "^5.1.1"
     glob "^7.2.0"
+    properties-reader "^2.2.0"
     slash "^3.0.0"
     ssh-remote-port-forward "^1.0.4"
     tar-fs "^2.1.1"
