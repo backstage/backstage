@@ -172,12 +172,12 @@ Backstage project is up to you, there is a set of established patterns that we
 encourage you to follow. These patterns can help set up a sound project
 structure as well as provide familiarity between different Backstage projects.
 
-The following diagram shows and overview the package architecture of Backstage.
-It takes the point of view of an individual plugin and all of the packages that
-it may contain, indicated by the thicker border and italic text. Surrounding the
-plugin are different package groups which are the different possible interface
-points of the plugin. Note that not all library package lists are complete as
-packages have been omitted for brevity.
+The following diagram shows an overview of the package architecture of
+Backstage. It takes the point of view of an individual plugin and all of the
+packages that it may contain, indicated by the thicker border and italic text.
+Surrounding the plugin are different package groups which are the different
+possible interface points of the plugin. Note that not all library package lists
+are complete as packages have been omitted for brevity.
 
 ![Package architecture](../assets/architecture-overview/package-architecture.png)
 
@@ -191,10 +191,10 @@ packages have been omitted for brevity.
 
 The arrows in the diagram above indicate a runtime dependency on the code of the
 target package. This strict dependency graph only applies to runtime
-`dependencies`, and there may be `devDependencies` that breaks the rules of this
+`dependencies`, and there may be `devDependencies` that break the rules of this
 table for the purpose of testing. While there are some arrows that show a
 dependency on a collection of frontend, backend and isomorphic packages, those
-still have abide by important compatibility rules shown in the bottom left.
+still have to abide by important compatibility rules shown in the bottom left.
 
 The `app` and `backend` packages are the entry points of a Backstage project.
 The `app` package is the frontend application that brings together a collection
@@ -267,7 +267,7 @@ development dependency only.
 As we have seen, both the `lighthouse-audit-service` and `catalog-backend`
 require a database to work with.
 
-The Backstage backend and its builtin plugins are based on the
+The Backstage backend and its built-in plugins are based on the
 [Knex](http://knexjs.org/) library, and set up a separate logical database per
 plugin. This gives great isolation and lets them perform migrations and evolve
 separate from each other.
@@ -282,7 +282,7 @@ yet.
 
 ## Cache
 
-The Backstage backend and its builtin plugins are also able to leverage cache
+The Backstage backend and its built-in plugins are also able to leverage cache
 stores as a means of improving performance or reliability. Similar to how
 databases are supported, plugins receive logically separated cache connections,
 which are powered by [Keyv](https://github.com/lukechilds/keyv) under the hood.
