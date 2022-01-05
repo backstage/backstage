@@ -68,7 +68,7 @@
     "@types/webpack": "^5.28.0",
     "command-exists": "^1.2.9",
     "cross-env": "^7.0.0",
-    "concurrently": "^6.0.0",
+    "concurrently": "^7.0.0",
     "eslint-plugin-notice": "^0.9.10",
     "fs-extra": "9.1.0",
     "husky": "^6.0.0",
