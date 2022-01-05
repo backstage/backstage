@@ -34,6 +34,8 @@ import { Logger } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createCacheMiddleware, TechDocsCache } from '../cache';
+import { CachedEntityLoader } from './CachedEntityLoader';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 
 /**
  * All of the required dependencies for running TechDocs in the "out-of-the-box"
@@ -47,7 +49,7 @@ type OutOfTheBoxDeploymentOptions = {
   discovery: PluginEndpointDiscovery;
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
-  cache?: PluginCacheManager;
+  cache: PluginCacheManager;
 };
 
 /**
@@ -59,7 +61,7 @@ type RecommendedDeploymentOptions = {
   logger: Logger;
   discovery: PluginEndpointDiscovery;
   config: Config;
-  cache?: PluginCacheManager;
+  cache: PluginCacheManager;
 };
 
 /**
@@ -85,11 +87,23 @@ export async function createRouter(
   const router = Router();
   const { publisher, config, logger, discovery } = options;
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const identity = new IdentityClient({
+    discovery,
+    issuer: await discovery.getBaseUrl('auth'),
+  });
+
+  // Entities are cached to optimize the /static/docs request path, which can be called many times
+  // when loading a single techdocs page.
+  const entityLoader = new CachedEntityLoader({
+    catalog: catalogClient,
+    cache: options.cache.getClient(),
+    identity,
+  });
 
   // Set up a cache client if configured.
   let cache: TechDocsCache | undefined;
   const defaultTtl = config.getOptionalNumber('techdocs.cache.ttl');
-  if (options.cache && defaultTtl) {
+  if (defaultTtl) {
     const cacheClient = options.cache.getClient({ defaultTtl });
     cache = TechDocsCache.fromConfig(config, { cache: cacheClient, logger });
   }
@@ -109,7 +123,7 @@ export async function createRouter(
     const token = getBearerToken(req.headers.authorization);
 
     // Verify that the related entity exists and the current user has permission to view it.
-    const entity = await catalogClient.getEntityByName(entityName, { token });
+    const entity = await entityLoader.load(entityName, token);
 
     if (!entity) {
       throw new NotFoundError(
@@ -141,7 +155,7 @@ export async function createRouter(
     const entityName = { kind, namespace, name };
     const token = getBearerToken(req.headers.authorization);
 
-    const entity = await catalogClient.getEntityByName(entityName, { token });
+    const entity = await entityLoader.load(entityName, token);
 
     if (!entity) {
       throw new NotFoundError(
@@ -173,10 +187,7 @@ export async function createRouter(
     const { kind, namespace, name } = req.params;
     const token = getBearerToken(req.headers.authorization);
 
-    const entity = await catalogClient.getEntityByName(
-      { kind, namespace, name },
-      { token },
-    );
+    const entity = await entityLoader.load({ kind, namespace, name }, token);
 
     if (!entity?.metadata?.uid) {
       throw new NotFoundError('Entity metadata UID missing');
@@ -237,7 +248,7 @@ export async function createRouter(
     const entityName = { kind, namespace, name };
     const token = getBearerToken(req.headers.authorization);
 
-    const entity = await catalogClient.getEntityByName(entityName, { token });
+    const entity = await entityLoader.load(entityName, token);
 
     if (!entity) {
       throw new NotFoundError(

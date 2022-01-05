@@ -15,6 +15,7 @@
  */
 
 import {
+  CacheManager,
   createServiceBuilder,
   DockerContainerRunner,
   SingleHostDiscovery,
@@ -78,6 +79,8 @@ export async function startStandaloneServer(
 
   const publisher = await Publisher.fromConfig(config, { logger, discovery });
 
+  const cache = CacheManager.fromConfig(config).forPlugin('techdocs');
+
   logger.debug('Starting application server...');
   const router = await createRouter({
     preparers,
@@ -86,6 +89,7 @@ export async function startStandaloneServer(
     publisher,
     config,
     discovery,
+    cache,
   });
   let service = createServiceBuilder(module)
     .setPort(options.port)
