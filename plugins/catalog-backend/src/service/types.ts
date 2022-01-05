@@ -34,6 +34,7 @@ export interface LocationService {
 export type RefreshOptions = {
   /** The reference to a single entity that should be refreshed */
   entityRef: string;
+  authorizationToken?: string;
 };
 
 /**
@@ -45,7 +46,7 @@ export interface RefreshService {
   /**
    * Request a refresh of entities in the catalog.
    */
-  refresh(options: RefreshOptions, authorizationToken?: string): Promise<void>;
+  refresh(options: RefreshOptions): Promise<void>;
 }
 
 export interface LocationStore {

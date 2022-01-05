@@ -27,7 +27,7 @@ import { NotFoundError } from '@backstage/errors';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { IdentityClient } from '@backstage/plugin-auth-backend';
-import express, { Request } from 'express';
+import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
@@ -78,13 +78,11 @@ export async function createNextRouter(
   if (refreshService) {
     router.post('/refresh', async (req, res) => {
       const refreshOptions: RefreshOptions = req.body;
-      const authToken = getAuthToken(req);
-      if (!authToken) {
-        res.status(401).send();
-        return;
-      }
+      refreshOptions.authorizationToken = IdentityClient.getBearerToken(
+        req.header('authorization'),
+      );
 
-      await refreshService.refresh(refreshOptions, authToken);
+      await refreshService.refresh(refreshOptions);
       res.status(200).send();
     });
   }
@@ -220,8 +218,4 @@ async function getEntityResource(
   });
 
   return entities[0];
-}
-
-function getAuthToken(request: Request) {
-  return IdentityClient.getBearerToken(request.header('authorization'));
 }

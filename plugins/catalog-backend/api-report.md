@@ -25,6 +25,7 @@ import { Location as Location_2 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Organizations } from 'aws-sdk';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -32,7 +33,6 @@ import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
-import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
@@ -303,7 +303,7 @@ export type CatalogEnvironment = {
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
-  permissions: ServerPermissionClient;
+  permissions: PermissionAuthorizer;
 };
 
 // @public
@@ -1360,6 +1360,7 @@ export interface NextRouterOptions {
   logger: Logger_2;
   // (undocumented)
   permissionRules?: CatalogPermissionRule[];
+  // (undocumented)
   refreshService?: RefreshService;
 }
 
@@ -1494,11 +1495,12 @@ export type RefreshIntervalFunction = () => number;
 // @public
 export type RefreshOptions = {
   entityRef: string;
+  authorizationToken?: string;
 };
 
 // @public
 export interface RefreshService {
-  refresh(options: RefreshOptions, authorizationToken?: string): Promise<void>;
+  refresh(options: RefreshOptions): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "relation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

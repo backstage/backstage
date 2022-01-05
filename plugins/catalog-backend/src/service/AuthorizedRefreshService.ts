@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthorizationError } from '@backstage/errors';
+import { NotAllowedError } from '@backstage/errors';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+import {
+  AuthorizeResult,
+  PermissionAuthorizer,
+} from '@backstage/plugin-permission-common';
 import { RefreshOptions, RefreshService } from './types';
 
 export class AuthorizedRefreshService implements RefreshService {
   constructor(
     private readonly service: RefreshService,
-    private readonly permissionApi: ServerPermissionClient,
+    private readonly permissionApi: PermissionAuthorizer,
   ) {}
 
-  async refresh(options: RefreshOptions, authorizationToken: string) {
+  async refresh(options: RefreshOptions) {
     const authorizeResponse = (
       await this.permissionApi.authorize(
         [
@@ -34,11 +36,11 @@ export class AuthorizedRefreshService implements RefreshService {
             resourceRef: options.entityRef,
           },
         ],
-        { token: authorizationToken },
+        { token: options.authorizationToken },
       )
     )[0];
     if (authorizeResponse.result === AuthorizeResult.DENY) {
-      throw new AuthorizationError();
+      throw new NotAllowedError();
     }
     await this.service.refresh(options);
   }

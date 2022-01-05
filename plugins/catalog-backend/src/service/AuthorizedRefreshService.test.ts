@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AuthorizationError } from '@backstage/errors';
+import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { AuthorizedRefreshService } from './AuthorizedRefreshService';
@@ -43,11 +43,11 @@ describe('AuthorizedRefreshService', () => {
     );
 
     await expect(() =>
-      authorizedService.refresh(
-        { entityRef: 'some entity ref' },
-        'some auth token',
-      ),
-    ).rejects.toThrowError(AuthorizationError);
+      authorizedService.refresh({
+        entityRef: 'some entity ref',
+        authorizationToken: 'some auth token',
+      }),
+    ).rejects.toThrowError(NotAllowedError);
   });
 
   it('calls refresh on allow', async () => {
@@ -61,8 +61,11 @@ describe('AuthorizedRefreshService', () => {
       permissionApi as unknown as ServerPermissionClient,
     );
 
-    const options = { entityRef: 'some entity ref' };
-    await authorizedService.refresh(options, 'some auth token');
+    const options = {
+      entityRef: 'some entity ref',
+      authorizationToken: 'some auth token',
+    };
+    await authorizedService.refresh(options);
 
     expect(refreshService.refresh).toHaveBeenCalledWith(options);
   });

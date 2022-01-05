@@ -85,14 +85,14 @@ import { LocationService } from './types';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
 import { CatalogPermissionRule } from '../permissions/types';
 import { permissionRules as catalogPermissionRules } from '../permissions/rules';
-import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 
 export type CatalogEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
-  permissions: ServerPermissionClient;
+  permissions: PermissionAuthorizer;
 };
 
 /**
