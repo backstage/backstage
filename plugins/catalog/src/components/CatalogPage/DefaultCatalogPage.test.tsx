@@ -253,6 +253,21 @@ describe('DefaultCatalogPage', () => {
     await expect(findByText(/All \(2\)/)).resolves.toBeInTheDocument();
   }, 20_000);
 
+  it('should render the correct filter from URL search', async () => {
+    const location = {
+      ...window.location,
+      search: '?filters[type]=service',
+    };
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: location,
+    });
+
+    const { findByText } = await renderWrapped(<DefaultCatalogPage />);
+
+    await expect(findByText(/Service/)).resolves.toBeInTheDocument();
+  }, 20_000);
+
   // this test is for fixing the bug after favoriting an entity, the matching
   // entities defaulting to "owned" filter and not based on the selected filter
   it('should render the correct entities filtered on the selected filter', async () => {
