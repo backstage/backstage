@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-import { hasAnnotation } from './hasAnnotation';
-import { isEntityKind } from './isEntityKind';
-import { isEntityOwner } from './isEntityOwner';
-import { hasLabel } from './hasLabel';
-import { hasMetadata } from './hasMetadata';
-import { hasSpec } from './hasSpec';
+import { createPropertyRule } from './createPropertyRule';
 
 /**
- * These permission rules can be used to conditionally filter catalog entities
- * or describe a user's access to the entities.
+ * A {@link CatalogPermissionRule} which filters for entities with the specified
+ * spec subfield. Also matches on values if value is provided.
+ *
+ * The key argument to the `apply` and `toQuery` methods can be nested, such as
+ * 'field.nestedfield'.
  * @public
  */
-export const permissionRules = {
-  hasAnnotation,
-  hasLabel,
-  hasMetadata,
-  hasSpec,
-  isEntityKind,
-  isEntityOwner,
-};
+export const hasSpec = createPropertyRule('spec');

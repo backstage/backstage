@@ -17,18 +17,26 @@
 import { Entity } from '@backstage/catalog-model';
 import { EntitiesSearchFilter } from '../../catalog/types';
 import { CatalogPermissionRule } from '../types';
+import { get } from 'lodash';
 
-/**
- * A {@link CatalogPermissionRule} which filters for entities with a specified
- * label in its metadata.
- * @public
- */
-export const hasLabel: CatalogPermissionRule = {
-  name: 'HAS_LABEL',
-  description: 'Allow entities which have the specified label metadata.',
-  apply: (resource: Entity, label: string) =>
-    !!resource.metadata.labels?.hasOwnProperty(label),
-  toQuery: (label: string): EntitiesSearchFilter => ({
-    key: `metadata.labels.${label}`,
-  }),
-};
+export type propertyType = 'metadata' | 'spec';
+
+export function createPropertyRule(
+  propertyType: propertyType,
+): CatalogPermissionRule {
+  return {
+    name: `HAS_${propertyType.toUpperCase()}`,
+    description: `Allow entities which have the specified ${propertyType} subfield.`,
+    apply: (resource: Entity, key: string, value?: string) => {
+      const foundValue = get(resource[propertyType], key);
+      if (value !== undefined) {
+        return value === foundValue;
+      }
+      return !!foundValue;
+    },
+    toQuery: (key: string, value?: string): EntitiesSearchFilter => ({
+      key: `${propertyType}.${key}`,
+      ...(value !== undefined && { values: [value] }),
+    }),
+  };
+}

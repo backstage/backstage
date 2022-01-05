@@ -1391,6 +1391,8 @@ export function parseEntityYaml(
 export const permissionRules: {
   hasAnnotation: CatalogPermissionRule;
   hasLabel: CatalogPermissionRule;
+  hasMetadata: CatalogPermissionRule;
+  hasSpec: CatalogPermissionRule;
   isEntityKind: CatalogPermissionRule;
   isEntityOwner: CatalogPermissionRule;
 };
