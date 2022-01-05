@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-import { memoize } from 'lodash';
 import fetch from 'node-fetch';
 import { z } from 'zod';
-import DataLoader from 'dataloader';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
-  AuthorizeResponse,
-  AuthorizeResult,
-  Identified,
-} from '@backstage/plugin-permission-common';
-import {
+  ApplyConditionsRequestEntry,
   ApplyConditionsResponse,
-  ApplyConditionsResponseEntry,
   ConditionalPolicyDecision,
-  PolicyDecision,
 } from '@backstage/plugin-permission-node';
 
 const responseSchema = z.array(
@@ -40,11 +33,9 @@ const responseSchema = z.array(
   }),
 );
 
-type ResourceDecision<T extends PolicyDecision = PolicyDecision> = Identified<
-  T & {
-    resourceRef?: string;
-  }
->;
+export type ResourcePolicyDecision = ConditionalPolicyDecision & {
+  resourceRef: string;
+};
 
 export class PermissionIntegrationClient {
   private readonly discovery: PluginEndpointDiscovery;
@@ -54,34 +45,8 @@ export class PermissionIntegrationClient {
   }
 
   async applyConditions(
-    decisions: ResourceDecision[],
-    authHeader?: string,
-  ): Promise<Identified<AuthorizeResponse>[]> {
-    const loaderFor = memoize(
-      (pluginId: string) =>
-        new DataLoader<
-          Identified<ConditionalPolicyDecision & { resourceRef?: string }>,
-          ApplyConditionsResponseEntry
-        >(requests => this.makeRequest(pluginId, requests, authHeader)),
-    );
-
-    return Promise.all(
-      decisions.map(decision => {
-        if (
-          decision.result !== AuthorizeResult.CONDITIONAL ||
-          !decision.resourceRef
-        ) {
-          return decision;
-        }
-
-        return loaderFor(decision.pluginId).load(decision);
-      }),
-    );
-  }
-
-  private async makeRequest(
     pluginId: string,
-    decisions: readonly ResourceDecision<ConditionalPolicyDecision>[],
+    decisions: readonly ApplyConditionsRequestEntry[],
     authHeader?: string,
   ): Promise<ApplyConditionsResponse> {
     const endpoint = `${await this.discovery.getBaseUrl(

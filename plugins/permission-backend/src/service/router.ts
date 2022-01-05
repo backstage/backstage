@@ -34,10 +34,13 @@ import {
   Identified,
 } from '@backstage/plugin-permission-common';
 import {
+  ApplyConditionsRequestEntry,
+  ApplyConditionsResponseEntry,
   PermissionPolicy,
-  PolicyDecision,
 } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
+import { memoize } from 'lodash';
+import DataLoader from 'dataloader';
 
 const requestSchema: z.ZodSchema<Identified<AuthorizeRequest>[]> = z.array(
   z.object({
@@ -73,43 +76,6 @@ export interface RouterOptions {
   identity: IdentityClient;
 }
 
-const applyPolicy = async (
-  policy: PermissionPolicy,
-  requests: Identified<AuthorizeRequest>[],
-  user: BackstageIdentityResponse | undefined,
-): Promise<Identified<PolicyDecision & { resourceRef?: string }>[]> => {
-  return Promise.all(
-    requests.map(({ id, resourceRef, ...authorizeRequest }) =>
-      policy.handle(authorizeRequest, user).then(decision => ({
-        id,
-        ...(decision.result === AuthorizeResult.CONDITIONAL
-          ? { resourceRef }
-          : {}),
-        ...decision,
-      })),
-    ),
-  );
-};
-
-const assertMatchingResourceTypes = (
-  requests: AuthorizeRequest[],
-  decisions: PolicyDecision[],
-) => {
-  requests.forEach((request, index) => {
-    const decision = decisions[index];
-
-    // Sanity check that any resource provided matches the one expected by the permission
-    if (
-      decision.result === AuthorizeResult.CONDITIONAL &&
-      decision.resourceType !== request.permission.resourceType
-    ) {
-      throw new Error(
-        `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
-      );
-    }
-  });
-};
-
 const handleRequest = async (
   requests: Identified<AuthorizeRequest>[],
   user: BackstageIdentityResponse | undefined,
@@ -117,11 +83,46 @@ const handleRequest = async (
   permissionIntegrationClient: PermissionIntegrationClient,
   authHeader?: string,
 ): Promise<Identified<AuthorizeResponse>[]> => {
-  const decisions = await applyPolicy(policy, requests, user);
+  const applyConditionsLoaderFor = memoize((pluginId: string) => {
+    return new DataLoader<
+      ApplyConditionsRequestEntry,
+      ApplyConditionsResponseEntry
+    >(batch =>
+      permissionIntegrationClient.applyConditions(pluginId, batch, authHeader),
+    );
+  });
 
-  assertMatchingResourceTypes(requests, decisions);
+  return Promise.all(
+    requests.map(({ id, resourceRef, ...request }) =>
+      policy.handle(request, user).then(decision => {
+        if (decision.result !== AuthorizeResult.CONDITIONAL) {
+          return {
+            id,
+            ...decision,
+          };
+        }
 
-  return permissionIntegrationClient.applyConditions(decisions, authHeader);
+        if (decision.resourceType !== request.permission.resourceType) {
+          throw new Error(
+            `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
+          );
+        }
+
+        if (!resourceRef) {
+          return {
+            id,
+            ...decision,
+          };
+        }
+
+        return applyConditionsLoaderFor(decision.pluginId).load({
+          id,
+          resourceRef,
+          ...decision,
+        });
+      }),
+    ),
+  );
 };
 
 /**
