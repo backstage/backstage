@@ -3530,23 +3530,23 @@
   integrity sha512-NQ17ii0rK1b34VZonlmT2QMJFI70m0TRwbknO/ihlbatXyaktDhN/98vBiUU6kNBPljqGqyIrl2T4nY2RpFANg==
 
 "@grpc/grpc-js@~1.4.0":
-  version "1.4.5"
-  resolved "https://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.4.5.tgz#0cd840b47180624eeedf066f2cdc422d052401f8"
-  integrity sha512-A6cOzSu7dqXZ7rzvh/9JZf+Jg/MOpLEMP0IdT8pT8hrWJZ6TB4ydN/MRuqOtAugInJe/VQ9F8BPricUpYZSaZA==
+  version "1.4.6"
+  resolved "https://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.4.6.tgz#8108d7ab7c0c21b38c538c1a48583edbbf2c2412"
+  integrity sha512-Byau4xiXfIixb1PnW30V/P9mkrZ05lknyNqiK+cVY9J5hj3gecxd/anwaUbAM8j834zg1x78NvAbwGnMfWEu7A==
   dependencies:
     "@grpc/proto-loader" "^0.6.4"
     "@types/node" ">=12.12.47"
 
 "@grpc/proto-loader@^0.6.1", "@grpc/proto-loader@^0.6.4":
-  version "0.6.7"
-  resolved "https://registry.npmjs.org/@grpc/proto-loader/-/proto-loader-0.6.7.tgz#e62a202f4cf5897bdd0e244dec1dbc80d84bdfa1"
-  integrity sha512-QzTPIyJxU0u+r2qGe8VMl3j/W2ryhEvBv7hc42OjYfthSj370fUrb7na65rG6w3YLZS/fb8p89iTBobfWGDgdw==
+  version "0.6.8"
+  resolved "https://registry.npmjs.org/@grpc/proto-loader/-/proto-loader-0.6.8.tgz#de6af926d601535870d8ce83277d3d3ebac26a0f"
+  integrity sha512-Qe2Dt0jEESqlTwIvvLrZXL7lAkcbDOXIvqcF4WHqoydlPcQ4oearQ7sLHW2uVxkEmkkHHqse7dP5QeKaIz4XmQ==
   dependencies:
     "@types/long" "^4.0.1"
     lodash.camelcase "^4.3.0"
     long "^4.0.0"
     protobufjs "^6.10.0"
-    yargs "^16.1.1"
+    yargs "^17.3.1"
 
 "@hapi/hoek@^9.0.0":
   version "9.0.4"
@@ -7793,9 +7793,9 @@
   integrity sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==
 
 "@types/minipass@*":
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/@types/minipass/-/minipass-2.2.0.tgz#51ad404e8eb1fa961f75ec61205796807b6f9651"
-  integrity sha512-wuzZksN4w4kyfoOv/dlpov4NOunwutLA/q7uc00xU02ZyUY+aoM5PWIXEKBMnm0NHd4a+N71BMjq+x7+2Af1fg==
+  version "3.1.1"
+  resolved "https://registry.npmjs.org/@types/minipass/-/minipass-3.1.1.tgz#7a31aedd3e05f5c5a726d3aa362243306594a043"
+  integrity sha512-IKmcvG5RnNUtRoxSsusfYnd7fPl8NCLjLutRDvpqwWUR55XvGfy6GIGQUSsKgT2A8qzMjsWfHZNU7d6gxFgqzQ==
   dependencies:
     "@types/node" "*"
 
@@ -7854,9 +7854,9 @@
   integrity sha512-pMCcqU2zT4TjqYFrWtYHKal7Sl30Ims6ulZ4UFXxI4xbtQqK/qqKwkDoBFCfooRqqmRu9vY3xaJRwxSh673aYg==
 
 "@types/node@^14.0.10", "@types/node@^14.14.31", "@types/node@^14.14.32":
-  version "14.17.8"
-  resolved "https://registry.npmjs.org/@types/node/-/node-14.17.8.tgz#813b73ab7d82ac06ddfd2458b13c88459a3b319f"
-  integrity sha512-0CHLt50GbUmH/6MrlBIKNdWCglvlyQKkorRf08/0DIi0ryuTPP+ijWLSI19SbDTHSKaagGDELiImY4BSikt61w==
+  version "14.18.5"
+  resolved "https://registry.npmjs.org/@types/node/-/node-14.18.5.tgz#0dd636fe7b2c6055cbed0d4ca3b7fb540f130a96"
+  integrity sha512-LMy+vDDcQR48EZdEx5wRX1q/sEl6NdGuHXPnfeL8ixkwCOSZ2qnIyIZmcCbdX0MeRqHhAcHmX+haCbrS8Run+A==
 
 "@types/node@^15.6.1":
   version "15.14.9"
@@ -8241,18 +8241,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/ssh2@*":
-  version "0.5.47"
-  resolved "https://registry.npmjs.org/@types/ssh2/-/ssh2-0.5.47.tgz#67a8b35a0527b2bb668f6dea4c84be6ff1abdc19"
-  integrity sha512-ZhqJg8BRV7OsCi0KVqPr27lUMMmLEeHYw1VXUNGGDlQEDq9HTsKx+wYvi8E6oNC6gRZ7PV99ZMZmMr5vztcYYA==
-  dependencies:
-    "@types/node" "*"
-    "@types/ssh2-streams" "*"
-
-"@types/ssh2@^0.5.48":
-  version "0.5.48"
-  resolved "https://registry.npmjs.org/@types/ssh2/-/ssh2-0.5.48.tgz#0d9e8654a76eaaf4cfeaeb88d74c4489cfcf7aea"
-  integrity sha512-cmQu0gp/6RtDXe1r2xXGgi0V0TeCdueDSRMEvBX8cTRT/sSREkUpgCYZLyh+iI8Ql+VNV8Az9toQoYa/IdgHbQ==
+"@types/ssh2@*", "@types/ssh2@^0.5.48":
+  version "0.5.50"
+  resolved "https://registry.npmjs.org/@types/ssh2/-/ssh2-0.5.50.tgz#2ae2a250efd07b9432ee6a70de870cd1fb67ab40"
+  integrity sha512-Eu/rzX4L+GhWIKEFQbaeWKECdy8VRdIYOqjMlFp+v4v7tBhvcl30m34BZzVALn/dNXvcB6dmcMtspIW7iPOlPg==
   dependencies:
     "@types/node" "*"
     "@types/ssh2-streams" "*"
@@ -29273,7 +29265,7 @@ yargs@^15.1.0, yargs@^15.3.1, yargs@^15.4.1:
     y18n "^4.0.0"
     yargs-parser "^18.1.2"
 
-yargs@^16.1.1, yargs@^16.2.0:
+yargs@^16.2.0:
   version "16.2.0"
   resolved "https://registry.npmjs.org/yargs/-/yargs-16.2.0.tgz#1c82bf0f6b6a66eafce7ef30e376f49a12477f66"
   integrity sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw==
@@ -29286,10 +29278,10 @@ yargs@^16.1.1, yargs@^16.2.0:
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
 
-yargs@^17.0.0, yargs@^17.0.1, yargs@^17.1.1, yargs@^17.3.0:
-  version "17.3.0"
-  resolved "https://registry.npmjs.org/yargs/-/yargs-17.3.0.tgz#295c4ffd0eef148ef3e48f7a2e0f58d0e4f26b1c"
-  integrity sha512-GQl1pWyDoGptFPJx9b9L6kmR33TGusZvXIZUT+BOz9f7X2L94oeAskFYLEg/FkhV06zZPBYLvLZRWeYId29lew==
+yargs@^17.0.0, yargs@^17.0.1, yargs@^17.1.1, yargs@^17.3.0, yargs@^17.3.1:
+  version "17.3.1"
+  resolved "https://registry.npmjs.org/yargs/-/yargs-17.3.1.tgz#da56b28f32e2fd45aefb402ed9c26f42be4c07b9"
+  integrity sha512-WUANQeVgjLbNsEmGk20f+nlHgOqzRFpiGWVaBrYGYIGANIIu3lWjoyi0fNlFmJkvfhCZ6BXINe7/W2O2bV4iaA==
   dependencies:
     cliui "^7.0.2"
     escalade "^3.1.1"

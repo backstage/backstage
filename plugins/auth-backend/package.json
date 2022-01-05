@@ -93,5 +93,8 @@
     "migrations",
     "config.d.ts"
   ],
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "jest": {
+    "testEnvironment": "node"
+  }
 }
