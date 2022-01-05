@@ -87,7 +87,6 @@ export class ConfigReader implements Config {
         const reader = new ConfigReader(data, context, previousReader);
         reader.filteredKeys = filteredKeys;
 
-        // TODO(cmpadden) `withDeprecatedKeys` is defaulting to false on app start
         if (deprecatedKeys) {
           for (const { key, description } of deprecatedKeys) {
             // eslint-disable-next-line no-console
