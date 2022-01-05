@@ -21,7 +21,6 @@ import { useEntityTypeFilter } from '../../hooks';
 
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { Select } from '@backstage/core-components';
-import { useLocation } from 'react-router';
 
 export type EntityTypeFilterProps = {
   initialFilter?: string;
@@ -33,7 +32,6 @@ export const EntityTypePicker = (props: EntityTypeFilterProps) => {
   const alertApi = useApi(alertApiRef);
   const { error, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
-  const search = useLocation().search;
 
   useEffect(() => {
     if (error) {
@@ -46,11 +44,6 @@ export const EntityTypePicker = (props: EntityTypeFilterProps) => {
       setSelectedTypes([initialFilter]);
     }
   }, [error, alertApi, initialFilter, setSelectedTypes]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(search);
-    setSelectedTypes(params.getAll('filters[type]'));
-  }, [setSelectedTypes, search]);
 
   if (availableTypes.length === 0 || error) return null;
 

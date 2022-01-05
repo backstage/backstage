@@ -35,14 +35,14 @@ import {
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { createComponentRouteRef } from '../../routes';
-import { CatalogTable } from '../CatalogTable';
-import { EntityRow } from '../CatalogTable/types';
+import { CatalogTable, EntityRow } from '../CatalogTable';
 import {
   FilteredEntityLayout,
   EntityListContainer,
   FilterContainer,
 } from '../FilteredEntityLayout';
 import { CatalogKindHeader } from '../CatalogKindHeader';
+import { useLocation } from 'react-router';
 
 /**
  * DefaultCatalogPageProps
@@ -63,6 +63,9 @@ export const DefaultCatalogPage = ({
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
 
+  const search = useLocation().search;
+  const params = new URLSearchParams(search);
+
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <EntityListProvider>
@@ -76,7 +79,9 @@ export const DefaultCatalogPage = ({
           </ContentHeader>
           <FilteredEntityLayout>
             <FilterContainer>
-              <EntityTypePicker />
+              <EntityTypePicker
+                initialFilter={params.get('filters[type]') || ''}
+              />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityOwnerPicker />
               <EntityLifecyclePicker />
