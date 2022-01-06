@@ -50,3 +50,41 @@ The Bitbucket provider is a structure with two configuration keys:
 To add the provider to the frontend, add the `bitbucketAuthApi` reference and
 `SignInPage` component as shown in
 [Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).
+
+## Using Bitbucket for sign-in
+
+In order to use the Bitbucket provider for sign-in, you must configure it with a
+`signIn.resolver`. See the
+[Sign-In Resolver documentation](../identity-resolver.md) for more details on
+how this is done. Note that for the Bitbucket provider, you'll want to use
+`bitbucket` as the provider ID, and `createBitbucketProvider` for the provider
+factory.
+
+The `@backstage/plugin-auth-backend` plugin also comes with two built-in
+resolves that can be used if desired. The first one is the
+`bitbucketUsernameSignInResolver`, which identifies users by matching their
+Bitbucket username to `bitbucket.org/username` annotations of `User` entities in
+the catalog. Note that you must populate your catalog with matching entities or
+users will not be able to sign in.
+
+The second resolver is the `bitbucketUsernameSignInResolver`, which works the
+same way, but uses the Bitbucket user ID instead, and matches on the
+`bitbucket.org/user-id` annotation.
+
+The following is an example of how to use one of the built-in resolvers:
+
+```ts
+import {
+  createBitbucketProvider,
+  bitbucketUsernameSignInResolver,
+} from '@backstage/plugin-auth-backend';
+
+// ...
+  providerFactories: {
+    bitbucket: createBitbucketProvider({
+      signIn: {
+        resolver: bitbucketUsernameSignInResolver,
+      },
+    }),
+  },
+```
