@@ -39,7 +39,7 @@ export class AuthorizedRefreshService implements RefreshService {
         { token: options.authorizationToken },
       )
     )[0];
-    if (authorizeResponse.result === AuthorizeResult.DENY) {
+    if (authorizeResponse.result !== AuthorizeResult.ALLOW) {
       throw new NotAllowedError();
     }
     await this.service.refresh(options);
