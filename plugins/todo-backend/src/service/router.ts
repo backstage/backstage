@@ -28,10 +28,12 @@ const TODO_FIELDS = [
   'repoFilePath',
 ] as const;
 
+/** @public */
 export interface RouterOptions {
   todoService: TodoService;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
