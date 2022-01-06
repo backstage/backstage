@@ -87,6 +87,7 @@ import { CatalogPermissionRule } from '../permissions/types';
 import { permissionRules as catalogPermissionRules } from '../permissions/rules';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { createConditionTransformer } from '@backstage/plugin-permission-node';
+import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -377,8 +378,8 @@ export class NextCatalogBuilder {
       parser,
       policy,
     });
-    const entitiesCatalog = new NextEntitiesCatalog(
-      dbClient,
+    const entitiesCatalog = new AuthorizedEntitiesCatalog(
+      new NextEntitiesCatalog(dbClient),
       permissions,
       createConditionTransformer(this.permissionRules),
     );
