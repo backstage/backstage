@@ -23,6 +23,8 @@ If you don't have a `plugins.ts` file see: [troubleshooting](#troubleshooting)
 
 ### Add the `<Shortcuts />` component within your `<Sidebar>`:
 
+Edit file `packages/app/src/components/Root/Root.tsx`
+
 ```tsx
 import {
   Sidebar,
