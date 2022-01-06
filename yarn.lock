@@ -7569,9 +7569,9 @@
     "@types/istanbul-lib-report" "*"
 
 "@types/jenkins@^0.23.1":
-  version "0.23.2"
-  resolved "https://registry.npmjs.org/@types/jenkins/-/jenkins-0.23.2.tgz#96736a2be4904efdfe7fe2650569479fd77dc48e"
-  integrity sha512-BELmIZ6brxwGFqBHfLjLTjYRWAUqcT1d2BydH1CcRTZEjCYw3DRVfZkXU7BVlyIsKXm2ZMIKVkEjKKtVDvPiXA==
+  version "0.23.3"
+  resolved "https://registry.npmjs.org/@types/jenkins/-/jenkins-0.23.3.tgz#bca00a395147c8d448cfba6bb36241a56862f820"
+  integrity sha512-/uNktGT4d/NNIBZTur4cO4YU00fQ+iEe0Arm0l5v9Ixv6zwZR9u0V7XSuhWbWJkzKsh8aIeK66QxYqJvYF4yzA==
   dependencies:
     "@types/node" "*"
 
