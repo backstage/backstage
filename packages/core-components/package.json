@@ -63,7 +63,9 @@
     "react-use": "^17.2.4",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
+    "rehype-raw": "^6.1.1",
     "remark-gfm": "^2.0.0",
+    "sanitize-html": "^2.6.1",
     "zen-observable": "^0.8.15"
   },
   "peerDependencies": {
@@ -92,6 +94,7 @@
     "@types/react-syntax-highlighter": "^13.5.2",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
+    "@types/sanitize-html": "^2.6.1",
     "@types/zen-observable": "^0.8.0"
   },
   "files": [
