@@ -222,8 +222,7 @@ export class TechDocsClient implements TechDocsApi {
   constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
-    fetchApi?: FetchApi;
+    fetchApi: FetchApi;
   });
   // (undocumented)
   configApi: Config;
@@ -233,8 +232,6 @@ export class TechDocsClient implements TechDocsApi {
   getApiOrigin(): Promise<string>;
   getEntityMetadata(entityId: EntityName): Promise<TechDocsEntityMetadata>;
   getTechDocsMetadata(entityId: EntityName): Promise<TechDocsMetadata>;
-  // (undocumented)
-  identityApi: IdentityApi;
 }
 
 // Warning: (ae-missing-release-tag) "TechDocsCustomHome" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -382,7 +379,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     configApi: Config;
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
-    fetchApi?: FetchApi;
+    fetchApi: FetchApi;
   });
   // (undocumented)
   configApi: Config;

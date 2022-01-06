@@ -13,10 +13,13 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
+import crossFetch from 'cross-fetch';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
@@ -116,6 +119,17 @@ export class MockErrorApi implements ErrorApi {
 export type MockErrorApiOptions = {
   collect?: boolean;
 };
+
+// @public
+export class MockFetchApi implements FetchApi {
+  constructor(implementation?: typeof crossFetch);
+  // (undocumented)
+  get fetch(): typeof crossFetch;
+  setAuthorization(options?: {
+    identityApi?: Pick<IdentityApi, 'getCredentials'>;
+    token?: string;
+  }): this;
+}
 
 // @public
 export class MockPermissionApi implements PermissionApi {

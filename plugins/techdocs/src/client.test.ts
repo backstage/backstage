@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { MockConfigApi } from '@backstage/test-utils';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { NotFoundError } from '@backstage/errors';
 import { EventSourcePolyfill } from 'event-source-polyfill';
+import { MockConfigApi, MockFetchApi } from '@backstage/test-utils';
 import { TechDocsStorageClient } from './client';
 
 const MockedEventSource = EventSourcePolyfill as jest.MockedClass<
@@ -36,17 +36,13 @@ const mockEntity = {
 describe('TechDocsStorageClient', () => {
   const mockBaseUrl = 'http://backstage:9191/api/techdocs';
   const configApi = new MockConfigApi({
-    techdocs: {
-      requestUrl: 'http://backstage:9191/api/techdocs',
-    },
+    techdocs: { requestUrl: 'http://backstage:9191/api/techdocs' },
   });
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
   const identityApi: jest.Mocked<IdentityApi> = {
-    signOut: jest.fn(),
-    getProfileInfo: jest.fn(),
-    getBackstageIdentity: jest.fn(),
     getCredentials: jest.fn(),
-  };
+  } as unknown as jest.Mocked<IdentityApi>;
+  const fetchApi = new MockFetchApi().setAuthorization({ identityApi });
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -58,6 +54,7 @@ describe('TechDocsStorageClient', () => {
       configApi,
       discoveryApi,
       identityApi,
+      fetchApi,
     });
 
     await expect(
@@ -78,6 +75,7 @@ describe('TechDocsStorageClient', () => {
       configApi,
       discoveryApi,
       identityApi,
+      fetchApi,
     });
 
     await expect(
@@ -93,6 +91,7 @@ describe('TechDocsStorageClient', () => {
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
@@ -103,6 +102,7 @@ describe('TechDocsStorageClient', () => {
         },
       );
 
+      identityApi.getCredentials.mockResolvedValue({});
       await storageApi.syncEntityDocs(mockEntity);
 
       expect(MockedEventSource).toBeCalledWith(
@@ -116,6 +116,7 @@ describe('TechDocsStorageClient', () => {
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
@@ -127,7 +128,6 @@ describe('TechDocsStorageClient', () => {
       );
 
       identityApi.getCredentials.mockResolvedValue({ token: 'token' });
-
       await storageApi.syncEntityDocs(mockEntity);
 
       expect(MockedEventSource).toBeCalledWith(
@@ -141,6 +141,7 @@ describe('TechDocsStorageClient', () => {
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
@@ -151,6 +152,7 @@ describe('TechDocsStorageClient', () => {
         },
       );
 
+      identityApi.getCredentials.mockResolvedValue({});
       await expect(storageApi.syncEntityDocs(mockEntity)).resolves.toEqual(
         'cached',
       );
@@ -161,6 +163,7 @@ describe('TechDocsStorageClient', () => {
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
@@ -171,6 +174,7 @@ describe('TechDocsStorageClient', () => {
         },
       );
 
+      identityApi.getCredentials.mockResolvedValue({});
       await expect(storageApi.syncEntityDocs(mockEntity)).resolves.toEqual(
         'updated',
       );
@@ -181,6 +185,7 @@ describe('TechDocsStorageClient', () => {
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
@@ -195,6 +200,7 @@ describe('TechDocsStorageClient', () => {
         },
       );
 
+      identityApi.getCredentials.mockResolvedValue({});
       const logHandler = jest.fn();
       await expect(
         storageApi.syncEntityDocs(mockEntity, logHandler),
@@ -209,9 +215,11 @@ describe('TechDocsStorageClient', () => {
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       // we await later after we emitted the error
+      identityApi.getCredentials.mockResolvedValue({});
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
       // flush the event loop
@@ -234,9 +242,11 @@ describe('TechDocsStorageClient', () => {
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       // we await later after we emitted the error
+      identityApi.getCredentials.mockResolvedValue({});
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
       // flush the event loop

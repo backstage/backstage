@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-techdocs': patch
+'@backstage/plugin-techdocs': minor
 ---
 
 Make `TechDocsClient` and `TechDocsStorageClient` use the `FetchApi`.
