@@ -21,7 +21,7 @@ import { get } from 'lodash';
 
 export function createPropertyRule(
   propertyType: 'metadata' | 'spec',
-): CatalogPermissionRule {
+): CatalogPermissionRule<[key: string, value?: string]> {
   return {
     name: `HAS_${propertyType.toUpperCase()}`,
     description: `Allow entities which have the specified ${propertyType} subfield.`,

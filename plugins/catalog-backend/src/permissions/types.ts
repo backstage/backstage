@@ -24,7 +24,8 @@ import { EntitiesSearchFilter } from '../catalog/types';
  *
  * @public
  */
-export type CatalogPermissionRule = PermissionRule<
+export type CatalogPermissionRule<TParams extends unknown[]> = PermissionRule<
   Entity,
-  EntitiesSearchFilter
+  EntitiesSearchFilter,
+  TParams
 >;

@@ -23,7 +23,7 @@ import { CatalogPermissionRule } from '../types';
  * annotation on a given entity.
  * @public
  */
-export const hasAnnotation: CatalogPermissionRule = {
+export const hasAnnotation: CatalogPermissionRule<[annotation: string]> = {
   name: 'HAS_ANNOTATION',
   description:
     'Allow entities which are annotated with the specified annotation',

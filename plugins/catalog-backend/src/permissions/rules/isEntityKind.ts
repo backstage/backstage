@@ -22,7 +22,7 @@ import { CatalogPermissionRule } from '../types';
  * kind.
  * @public
  */
-export const isEntityKind: CatalogPermissionRule = {
+export const isEntityKind: CatalogPermissionRule<[kinds: string[]]> = {
   name: 'IS_ENTITY_KIND',
   description: 'Allow entities with the specified kind',
   apply(resource: Entity, kinds: string[]) {

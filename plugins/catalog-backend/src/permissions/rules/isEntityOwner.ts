@@ -27,7 +27,7 @@ import { CatalogPermissionRule } from '../types';
  * owner.
  * @public
  */
-export const isEntityOwner: CatalogPermissionRule = {
+export const isEntityOwner: CatalogPermissionRule<[claims: string[]]> = {
   name: 'IS_ENTITY_OWNER',
   description: 'Allow entities owned by the current user',
   apply: (resource: Entity, claims: string[]) => {

@@ -23,7 +23,7 @@ import { CatalogPermissionRule } from '../types';
  * label in its metadata.
  * @public
  */
-export const hasLabel: CatalogPermissionRule = {
+export const hasLabel: CatalogPermissionRule<[label: string]> = {
   name: 'HAS_LABEL',
   description: 'Allow entities which have the specified label metadata.',
   apply: (resource: Entity, label: string) =>

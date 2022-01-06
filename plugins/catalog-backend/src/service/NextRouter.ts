@@ -49,7 +49,7 @@ export interface NextRouterOptions {
   refreshService?: RefreshService;
   logger: Logger;
   config: Config;
-  permissionRules?: CatalogPermissionRule[];
+  permissionRules?: CatalogPermissionRule<unknown[]>[];
 }
 
 export async function createNextRouter(
