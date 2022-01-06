@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState } from 'react';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { cloudbuildApiRef } from '../api/CloudbuildApi';
 import {
   ActionsListWorkflowRunsForRepoResponseData,

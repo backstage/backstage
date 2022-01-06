@@ -147,6 +147,22 @@ describe('CacheManager', () => {
       });
     });
 
+    it('shares memory across multiple instances of the memory client', () => {
+      const manager = CacheManager.fromConfig(defaultConfig());
+      const plugin = 'test-plugin';
+
+      // Instantiate two in-memory clients.
+      manager.forPlugin(plugin).getClient({ defaultTtl: 10 });
+      manager.forPlugin(plugin).getClient({ defaultTtl: 10 });
+
+      const cache = Keyv as unknown as jest.Mock;
+      const mockCall2 = cache.mock.calls.splice(-1)[0][0];
+      const mockCall1 = cache.mock.calls.splice(-1)[0][0];
+
+      // Note: .toBe() checks referential identity of object instances.
+      expect(mockCall1.store).toBe(mockCall2.store);
+    });
+
     it('returns a memcache client when configured', () => {
       const expectedHost = '127.0.0.1:11211';
       const manager = CacheManager.fromConfig(

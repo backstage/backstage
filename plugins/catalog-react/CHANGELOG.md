@@ -1,5 +1,35 @@
 # @backstage/plugin-catalog-react
 
+## 0.6.10
+
+### Patch Changes
+
+- fe2a6532ff: Add Override Components for Components in @backstage/plugin-catalog-react
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/core-components@0.8.3
+
+## 0.6.9
+
+### Patch Changes
+
+- c6fdddec77: When a user has zero owned entities when viewing an entity kind in the catalog
+  page, it will be automatically redirected to see all the entities. Furthermore,
+  for the kind User and Group there are no longer the owned selector.
+- Updated dependencies
+  - @backstage/integration@0.7.0
+
+## 0.6.8
+
+### Patch Changes
+
+- 3491a36ab9: added useOwnedEntities hook to get the list of entities of the logged-in user
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/core-components@0.8.2
+  - @backstage/catalog-client@0.5.3
+
 ## 0.6.7
 
 ### Patch Changes

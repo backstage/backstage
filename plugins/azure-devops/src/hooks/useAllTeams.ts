@@ -17,7 +17,7 @@
 import { Team } from '@backstage/plugin-azure-devops-common';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 
 export function useAllTeams(): {
   teams?: Team[];

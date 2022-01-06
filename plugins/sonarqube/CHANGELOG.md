@@ -1,5 +1,26 @@
 # @backstage/plugin-sonarqube
 
+## 0.2.11
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
+## 0.2.10
+
+### Patch Changes
+
+- 27af6d996b: Locking `rc-progress` to the working version of 3.1.4
+- 7a4bd2ceac: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
 ## 0.2.9
 
 ### Patch Changes

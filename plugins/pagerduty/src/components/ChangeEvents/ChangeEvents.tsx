@@ -18,7 +18,7 @@ import React, { useEffect } from 'react';
 import { List, ListSubheader } from '@material-ui/core';
 import { ChangeEventListItem } from './ChangeEventListItem';
 import { ChangeEventEmptyState } from './ChangeEventEmptyState';
-import { useAsyncFn } from 'react-use';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { pagerDutyApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { Progress } from '@backstage/core-components';

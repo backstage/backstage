@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
-import classNames from 'classnames';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import classNames from 'classnames';
+import React, { PropsWithChildren } from 'react';
 
 const generateGradientStops = (themeType: 'dark' | 'light') => {
   // 97% corresponds to the theme.palette.background.default for the light theme
@@ -198,7 +198,12 @@ function useSmoothScroll(
   return setScrollTarget;
 }
 
-/** @public */
+/**
+ * Horizontal scrollable component with arrows to navigate
+ *
+ * @public
+ *
+ */
 export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
   const {
     scrollStep = 100,

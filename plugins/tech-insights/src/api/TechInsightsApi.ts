@@ -20,11 +20,20 @@ import { Check } from './types';
 import { CheckResultRenderer } from '../components/CheckResultRenderer';
 import { EntityName } from '@backstage/catalog-model';
 
+/**
+ * {@link @backstage/core-plugin-api#ApiRef} for the {@link TechInsightsApi}
+ *
+ * @public
+ */
 export const techInsightsApiRef = createApiRef<TechInsightsApi>({
   id: 'plugin.techinsights.service',
-  description: 'Used by the tech insights plugin to make requests',
 });
 
+/**
+ * API client interface for the Tech Insights plugin
+ *
+ * @public
+ */
 export interface TechInsightsApi {
   getScorecardsDefinition: (
     type: string,

@@ -60,6 +60,7 @@ type RecommendedDeploymentOptions = {
   logger: Logger;
   discovery: PluginEndpointDiscovery;
   config: Config;
+  cache?: PluginCacheManager;
 };
 
 /**
@@ -89,7 +90,7 @@ export async function createRouter(
   // Set up a cache client if configured.
   let cache: TechDocsCache | undefined;
   const defaultTtl = config.getOptionalNumber('techdocs.cache.ttl');
-  if (isOutOfTheBoxOption(options) && options.cache && defaultTtl) {
+  if (options.cache && defaultTtl) {
     const cacheClient = options.cache.getClient({ defaultTtl });
     cache = TechDocsCache.fromConfig(config, { cache: cacheClient, logger });
   }

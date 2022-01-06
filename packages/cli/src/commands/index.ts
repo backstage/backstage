@@ -138,6 +138,7 @@ export function registerCommands(program: CommanderStatic) {
     .command('build')
     .description('Build a package for publishing')
     .option('--outputs <formats>', 'List of formats to output [types,cjs,esm]')
+    .option('--minify', 'Minify the generated code')
     .action(lazy(() => import('./build').then(m => m.default)));
 
   program
@@ -213,6 +214,10 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('versions:bump')
+    .option(
+      '--pattern <glob>',
+      'Override glob for matching packages to upgrade',
+    )
     .description('Bump Backstage packages to the latest versions')
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
 

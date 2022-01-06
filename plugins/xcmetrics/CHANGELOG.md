@@ -1,5 +1,22 @@
 # @backstage/plugin-xcmetrics
 
+## 0.2.14
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/core-components@0.8.3
+
+## 0.2.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/core-components@0.8.2
+
 ## 0.2.12
 
 ### Patch Changes

@@ -1,5 +1,33 @@
 # @backstage/plugin-github-actions
 
+## 0.4.30
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
+## 0.4.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.9
+  - @backstage/integration@0.7.0
+
+## 0.4.28
+
+### Patch Changes
+
+- 7a4bd2ceac: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
 ## 0.4.27
 
 ### Patch Changes

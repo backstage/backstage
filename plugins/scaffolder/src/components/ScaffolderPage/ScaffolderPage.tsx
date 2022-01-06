@@ -109,13 +109,15 @@ export const ScaffolderPageContents = ({
           </div>
           <div>
             {groups &&
-              groups.map(group => (
+              groups.map((group, index) => (
                 <TemplateList
+                  key={index}
                   TemplateCardComponent={TemplateCardComponent}
                   group={group}
                 />
               ))}
             <TemplateList
+              key="other"
               TemplateCardComponent={TemplateCardComponent}
               group={otherTemplatesGroup}
             />

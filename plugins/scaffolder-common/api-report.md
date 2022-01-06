@@ -6,6 +6,60 @@
 import { Entity } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema } from '@backstage/catalog-model';
+import { JsonValue } from '@backstage/types';
+
+// @public
+export type TaskSpec = TaskSpecV1beta2 | TaskSpecV1beta3;
+
+// @public
+export interface TaskSpecV1beta2 {
+  // (undocumented)
+  apiVersion: 'backstage.io/v1beta2';
+  // (undocumented)
+  baseUrl?: string;
+  // (undocumented)
+  metadata?: TemplateMetadata;
+  // (undocumented)
+  output: {
+    [name: string]: string;
+  };
+  // (undocumented)
+  steps: TaskStep[];
+  // (undocumented)
+  values: JsonObject;
+}
+
+// @public
+export interface TaskSpecV1beta3 {
+  // (undocumented)
+  apiVersion: 'scaffolder.backstage.io/v1beta3';
+  // (undocumented)
+  baseUrl?: string;
+  // (undocumented)
+  metadata?: TemplateMetadata;
+  // (undocumented)
+  output: {
+    [name: string]: JsonValue;
+  };
+  // (undocumented)
+  parameters: JsonObject;
+  // (undocumented)
+  steps: TaskStep[];
+}
+
+// @public
+export interface TaskStep {
+  // (undocumented)
+  action: string;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  if?: string | boolean;
+  // (undocumented)
+  input?: JsonObject;
+  // (undocumented)
+  name: string;
+}
 
 // @public (undocumented)
 export interface TemplateEntityV1beta3 extends Entity {
@@ -33,4 +87,9 @@ export interface TemplateEntityV1beta3 extends Entity {
 
 // @public (undocumented)
 export const templateEntityV1beta3Schema: JSONSchema;
+
+// @public
+export type TemplateMetadata = {
+  name: string;
+};
 ```

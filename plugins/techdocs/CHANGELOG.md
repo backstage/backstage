@@ -1,5 +1,44 @@
 # @backstage/plugin-techdocs
 
+## 0.12.13
+
+### Patch Changes
+
+- fe9de6c25b: Adds support for opening internal Techdocs links in a new tab with CTRL+Click or CMD+Click
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- e0271456d8: Updated Techdocs footer navigation to dynamically resize to the width of the dom, resolving an issue where a pinned sidebar causes navigation to go off of the screen
+- Updated dependencies
+  - @backstage/plugin-search@0.5.4
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+  - @backstage/plugin-catalog@0.7.7
+
+## 0.12.12
+
+### Patch Changes
+
+- aa8f764a3e: Add the techdocs.sanitizer.allowedIframeHosts config.
+  This config allows all iframes which have the host of the attribute src in the 'allowedIframehosts' list to be displayed in the documentation.
+- Updated dependencies
+  - @backstage/plugin-search@0.5.3
+  - @backstage/plugin-catalog@0.7.6
+  - @backstage/plugin-catalog-react@0.6.9
+  - @backstage/integration@0.7.0
+  - @backstage/integration-react@0.1.17
+
+## 0.12.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search@0.5.2
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+  - @backstage/plugin-catalog@0.7.5
+  - @backstage/integration-react@0.1.16
+
 ## 0.12.10
 
 ### Patch Changes

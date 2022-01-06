@@ -1,5 +1,22 @@
 # @backstage/backend-test-utils
 
+## 0.1.12
+
+### Patch Changes
+
+- 130b7aadf2: Lazy-load `testcontainers` module in order to avoid side-effects.
+- Updated dependencies
+  - @backstage/backend-common@0.10.1
+  - @backstage/cli@0.10.4
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/cli@0.10.3
+
 ## 0.1.10
 
 ### Patch Changes

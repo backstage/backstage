@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { JsonObject } from '@backstage/types';
 import {
   V1Deployment,
   V1Pod,
@@ -43,7 +44,8 @@ export interface GroupedResponses extends DeploymentResources {
 }
 
 export interface ClusterLinksFormatterOptions {
-  dashboardUrl: URL;
+  dashboardUrl?: URL;
+  dashboardParameters?: JsonObject;
   object: any;
   kind: string;
 }

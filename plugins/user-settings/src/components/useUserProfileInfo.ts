@@ -21,7 +21,7 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { useEffect } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 
 export const useUserProfile = () => {
   const identityApi = useApi(identityApiRef);

@@ -1,5 +1,34 @@
 # @backstage/plugin-github-deployments
 
+## 0.1.25
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
+## 0.1.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.9
+  - @backstage/integration@0.7.0
+  - @backstage/integration-react@0.1.17
+
+## 0.1.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+  - @backstage/integration-react@0.1.16
+
 ## 0.1.22
 
 ### Patch Changes

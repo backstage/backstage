@@ -20,10 +20,10 @@ import userEvent from '@testing-library/user-event';
 import { SearchContextProvider } from '../SearchContext';
 
 import { SearchBar } from './SearchBar';
-import { configApiRef } from '@backstage/core-plugin-api';
+import { configApiRef, analyticsApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { searchApiRef } from '../../apis';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { MockAnalyticsApi, TestApiRegistry } from '@backstage/test-utils';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -38,9 +38,16 @@ describe('SearchBar', () => {
   };
 
   const query = jest.fn().mockResolvedValue({});
+  const analyticsApiSpy = new MockAnalyticsApi();
+  let apiRegistry: TestApiRegistry;
 
-  const apiRegistry = TestApiRegistry.from(
-    [configApiRef, new ConfigReader({ app: { title: 'Mock title' } })],
+  apiRegistry = TestApiRegistry.from(
+    [
+      configApiRef,
+      new ConfigReader({
+        app: { title: 'Mock title' },
+      }),
+    ],
     [searchApiRef, { query }],
   );
 
@@ -101,6 +108,9 @@ describe('SearchBar', () => {
   });
 
   it('Updates term state when text is entered', async () => {
+    jest.useFakeTimers();
+    const defaultDebounceTime = 200;
+
     render(
       <ApiProvider apis={apiRegistry}>
         <SearchContextProvider initialState={initialState}>
@@ -115,6 +125,10 @@ describe('SearchBar', () => {
     const value = 'value';
 
     userEvent.type(textbox, value);
+
+    act(() => {
+      jest.advanceTimersByTime(defaultDebounceTime);
+    });
 
     await waitFor(() => {
       expect(textbox).toHaveValue(value);
@@ -202,5 +216,129 @@ describe('SearchBar', () => {
     expect(query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
     );
+  });
+
+  it('does not capture analytics event if not enabled in app', async () => {
+    jest.useFakeTimers();
+
+    const debounceTime = 600;
+
+    render(
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={initialState}>
+          <SearchBar debounceTime={debounceTime} />
+        </SearchContextProvider>
+        ,
+      </ApiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name })).toBeInTheDocument();
+    });
+
+    const textbox = screen.getByRole('textbox', { name });
+
+    const value = 'value';
+
+    userEvent.type(textbox, value);
+
+    act(() => {
+      jest.advanceTimersByTime(debounceTime);
+    });
+
+    await waitFor(() => expect(textbox).toHaveValue(value));
+
+    expect(analyticsApiSpy.getEvents()).toHaveLength(0);
+  });
+
+  it('captures analytics events if enabled in app', async () => {
+    jest.useFakeTimers();
+
+    const debounceTime = 600;
+
+    apiRegistry = TestApiRegistry.from(
+      [analyticsApiRef, analyticsApiSpy],
+      [
+        configApiRef,
+        new ConfigReader({
+          app: {
+            title: 'Mock title',
+            analytics: {
+              ga: {
+                trackingId: 'xyz123',
+              },
+            },
+          },
+        }),
+      ],
+      [searchApiRef, { query }],
+    );
+
+    render(
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider
+          initialState={{
+            term: '',
+            types: ['techdocs', 'software-catalog'],
+            filters: {},
+          }}
+        >
+          <SearchBar debounceTime={debounceTime} />
+        </SearchContextProvider>
+      </ApiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name })).toBeInTheDocument();
+    });
+
+    const textbox = screen.getByRole('textbox', { name });
+
+    const value = 'value';
+
+    userEvent.type(textbox, value);
+
+    expect(analyticsApiSpy.getEvents()).toHaveLength(0);
+
+    act(() => {
+      jest.advanceTimersByTime(debounceTime);
+    });
+
+    await waitFor(() => expect(textbox).toHaveValue(value));
+
+    expect(analyticsApiSpy.getEvents()).toHaveLength(1);
+    expect(analyticsApiSpy.getEvents()[0]).toEqual({
+      action: 'search',
+      context: {
+        extension: 'App',
+        pluginId: 'root',
+        routeRef: 'unknown',
+        searchTypes: 'software-catalog,techdocs',
+      },
+      subject: 'value',
+    });
+
+    userEvent.clear(textbox);
+
+    // make sure new term is captured
+    userEvent.type(textbox, 'new value');
+
+    act(() => {
+      jest.advanceTimersByTime(debounceTime);
+    });
+
+    await waitFor(() => expect(textbox).toHaveValue('new value'));
+
+    expect(analyticsApiSpy.getEvents()).toHaveLength(2);
+    expect(analyticsApiSpy.getEvents()[1]).toEqual({
+      action: 'search',
+      context: {
+        extension: 'App',
+        pluginId: 'root',
+        routeRef: 'unknown',
+        searchTypes: 'software-catalog,techdocs',
+      },
+      subject: 'new value',
+    });
   });
 });

@@ -17,7 +17,7 @@
 import React, { useCallback, useState } from 'react';
 import { useOutlet } from 'react-router';
 import { useParams } from 'react-router-dom';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { techdocsApiRef } from '../../api';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { LegacyTechDocsPage } from './LegacyTechDocsPage';

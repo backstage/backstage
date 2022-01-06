@@ -14,128 +14,168 @@
  * limitations under the License.
  */
 
-import React, { useEffect, KeyboardEvent, useState } from 'react';
+import React, {
+  ChangeEvent,
+  KeyboardEvent,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from 'react';
+import useDebounce from 'react-use/lib/useDebounce';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { useDebounce } from 'react-use';
-import { InputBase, InputAdornment, IconButton } from '@material-ui/core';
+import {
+  InputBase,
+  InputBaseProps,
+  InputAdornment,
+  IconButton,
+} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
 
-import { useSearch } from '../SearchContext';
+import {
+  SearchContext,
+  SearchContextProvider,
+  useSearch,
+} from '../SearchContext';
+import { TrackSearch } from '../SearchTracker';
 
-type PresenterProps = {
-  value: string;
-  onChange: (value: string) => void;
+/**
+ * Props for {@link SearchBarBase}.
+ *
+ * @public
+ */
+export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
+  debounceTime?: number;
+  clearButton?: boolean;
   onClear?: () => void;
   onSubmit?: () => void;
-  className?: string;
-  placeholder?: string;
-  autoFocus?: boolean;
-  clearButton?: boolean;
+  onChange: (value: string) => void;
 };
 
-export const SearchBarBase = ({
-  autoFocus,
-  value,
-  onChange,
-  onSubmit,
-  className,
-  placeholder: overridePlaceholder,
-  clearButton = true,
-}: PresenterProps) => {
-  const configApi = useApi(configApiRef);
+const useSearchContextCheck = () => {
+  const context = useContext(SearchContext);
+  return context !== undefined;
+};
 
-  const onKeyDown = React.useCallback(
+/**
+ * All search boxes exported by the search plugin are based on the <SearchBarBase />,
+ * and this one is based on the <InputBase /> component from Material UI.
+ * Recommended if you don't use Search Provider or Search Context.
+ *
+ * @public
+ */
+export const SearchBarBase = ({
+  onChange,
+  onKeyDown,
+  onSubmit,
+  debounceTime = 200,
+  clearButton = true,
+  fullWidth = true,
+  value: defaultValue,
+  inputProps: defaultInputProps = {},
+  endAdornment: defaultEndAdornment,
+  ...props
+}: SearchBarBaseProps) => {
+  const configApi = useApi(configApiRef);
+  const [value, setValue] = useState<string>(defaultValue as string);
+  const hasSearchContext = useSearchContextCheck();
+
+  useEffect(() => {
+    setValue(prevValue =>
+      prevValue !== defaultValue ? (defaultValue as string) : prevValue,
+    );
+  }, [defaultValue]);
+
+  useDebounce(() => onChange(value), debounceTime, [value]);
+
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+    },
+    [setValue],
+  );
+
+  const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
+      if (onKeyDown) onKeyDown(e);
       if (onSubmit && e.key === 'Enter') {
         onSubmit();
       }
     },
-    [onSubmit],
+    [onKeyDown, onSubmit],
   );
 
-  const handleClear = React.useCallback(() => {
+  const handleClear = useCallback(() => {
     onChange('');
   }, [onChange]);
 
-  const placeholder =
-    overridePlaceholder ??
-    `Search in ${configApi.getOptionalString('app.title') || 'Backstage'}`;
+  const placeholder = `Search in ${
+    configApi.getOptionalString('app.title') || 'Backstage'
+  }`;
 
-  return (
-    <InputBase
-      // decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus
-      // eslint-disable-next-line jsx-a11y/no-autofocus
-      autoFocus={autoFocus}
-      data-testid="search-bar-next"
-      fullWidth
-      placeholder={placeholder}
-      value={value}
-      onChange={e => onChange(e.target.value)}
-      inputProps={{ 'aria-label': 'Search' }}
-      startAdornment={
-        <InputAdornment position="start">
-          <IconButton aria-label="Query" disabled>
-            <SearchIcon />
-          </IconButton>
-        </InputAdornment>
-      }
-      endAdornment={
-        clearButton && (
-          <InputAdornment position="end">
-            <IconButton aria-label="Clear" onClick={handleClear}>
-              <ClearButton />
-            </IconButton>
-          </InputAdornment>
-        )
-      }
-      {...(className && { className })}
-      {...(onSubmit && { onKeyDown })}
-    />
+  const startAdornment = (
+    <InputAdornment position="start">
+      <IconButton aria-label="Query" disabled>
+        <SearchIcon />
+      </IconButton>
+    </InputAdornment>
+  );
+
+  const endAdornment = (
+    <InputAdornment position="end">
+      <IconButton aria-label="Clear" onClick={handleClear}>
+        <ClearButton />
+      </IconButton>
+    </InputAdornment>
+  );
+
+  const searchBar = (
+    <TrackSearch>
+      <InputBase
+        data-testid="search-bar-next"
+        value={value}
+        placeholder={placeholder}
+        startAdornment={startAdornment}
+        endAdornment={clearButton ? endAdornment : defaultEndAdornment}
+        inputProps={{ 'aria-label': 'Search', ...defaultInputProps }}
+        fullWidth={fullWidth}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        {...props}
+      />
+    </TrackSearch>
+  );
+
+  return hasSearchContext ? (
+    searchBar
+  ) : (
+    <SearchContextProvider>{searchBar}</SearchContextProvider>
   );
 };
 
-type Props = {
-  autoFocus?: boolean;
-  className?: string;
-  debounceTime?: number;
-  placeholder?: string;
-  clearButton?: boolean;
-};
+/**
+ * Props for {@link SearchBar}.
+ *
+ * @public
+ */
+export type SearchBarProps = Partial<SearchBarBaseProps>;
 
-export const SearchBar = ({
-  autoFocus,
-  className,
-  debounceTime = 0,
-  placeholder,
-  clearButton = true,
-}: Props) => {
+/**
+ * Recommended search bar when you use the Search Provider or Search Context.
+ *
+ * @public
+ */
+export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
   const { term, setTerm } = useSearch();
-  const [value, setValue] = useState<string>(term);
 
-  useEffect(() => {
-    setValue(prevValue => (prevValue !== term ? term : prevValue));
-  }, [term]);
-
-  useDebounce(() => setTerm(value), debounceTime, [value]);
-
-  const handleQuery = (newValue: string) => {
-    setValue(newValue);
+  const handleChange = (newValue: string) => {
+    if (onChange) {
+      onChange(newValue);
+    } else {
+      setTerm(newValue);
+    }
   };
 
-  const handleClear = () => setValue('');
-
-  return (
-    <SearchBarBase
-      // decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus
-      // eslint-disable-next-line jsx-a11y/no-autofocus
-      autoFocus={autoFocus}
-      className={className}
-      value={value}
-      onChange={handleQuery}
-      onClear={handleClear}
-      placeholder={placeholder}
-      clearButton={clearButton}
-    />
-  );
+  return <SearchBarBase value={term} onChange={handleChange} {...props} />;
 };

@@ -16,7 +16,7 @@
 import { Entity, EntityRelation } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { chunk, groupBy } from 'lodash';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../api';
 
 const BATCH_SIZE = 20;

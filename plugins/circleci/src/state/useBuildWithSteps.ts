@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useCallback, useMemo } from 'react';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { circleCIApiRef } from '../api';
 import { useAsyncPolling } from './useAsyncPolling';
 import { useProjectSlugFromEntity, mapVcsType } from './useBuilds';

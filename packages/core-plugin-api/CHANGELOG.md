@@ -1,5 +1,36 @@
 # @backstage/core-plugin-api
 
+## 0.4.1
+
+### Patch Changes
+
+- c534ef2242: Deprecated `OldIconComponent`. Existing usage should be replaced with `IconComponent`.
+
+## 0.4.0
+
+### Minor Changes
+
+- a195284c7b: **BREAKING CHANGE** The `StorageApi` has received several updates that fills in gaps for some use-cases and makes it easier to avoid mistakes:
+
+  - The `StorageValueChange` type has been renamed to `StorageValueSnapshot`, the `newValue` property has been renamed to `value`, the stored value type has been narrowed to `JsonValue`, and it has received a new `presence` property that is `'unknown'`, `'absent'`, or `'present'`.
+  - The `get` method has been deprecated in favor of a new `snapshot` method, which returns a `StorageValueSnapshot`.
+  - The `observe# @backstage/core-plugin-api method has had its contract changed. It should now emit values when the`presence`of a key changes, this may for example happen when remotely stored values are requested on page load and the presence switches from`'unknown'`to either`'absent'`or`'present'`.
+
+  The above changes have been made with deprecations in place to maintain much of the backwards compatibility for consumers of the `StorageApi`. The only breaking change is the narrowing of the stored value type, which may in some cases require the addition of an explicit type parameter to the `get` and `observe# @backstage/core-plugin-api methods.
+
+- f6722d2458: - Removed deprecated option `description` from `ApiRefConfig`
+  - Removed descriptions from all plugin API refs
+  - Removed deprecated parameters `path`, `icon`, and `title` in `createRouteRef`
+  - Removed deprecated types `Error` and `ErrorContext` from `ErrorApi`
+- 68f8b10ccd: - Removed deprecation configuration option `theme` from `AppTheme` of the `AppThemeApi`
+  - Removed reference to `theme` in the `app-defaults` default `AppTheme`
+  - Removed logic in `AppThemeProvider` that creates `ThemeProvider` from `appTheme.theme`
+- 6b69b44862: Removed deprecated types `ApiRefType` and `ApiRefsToTypes`
+
+### Patch Changes
+
+- 7927005152: Add `FetchApi` and related `fetchApiRef` which implement fetch, with an added Backstage token header when available.
+
 ## 0.3.1
 
 ### Patch Changes

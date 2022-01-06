@@ -21,7 +21,7 @@ import {
 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { useCallback } from 'react';
-import { useObservable } from 'react-use';
+import useObservable from 'react-use/lib/useObservable';
 import { starredEntitiesApiRef } from '../apis';
 
 function getEntityRef(entityOrRef: Entity | EntityName | string): string {

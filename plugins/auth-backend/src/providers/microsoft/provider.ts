@@ -45,7 +45,7 @@ import {
   SignInResolver,
 } from '../types';
 import { Logger } from 'winston';
-import got from 'got';
+import fetch from 'node-fetch';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -104,9 +104,7 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
     });
   }
 
-  async handler(
-    req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+  async handler(req: express.Request) {
     const { result, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResult,
       PrivateInfo
@@ -118,24 +116,27 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
     };
   }
 
-  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
-    const { accessToken, params } = await executeRefreshTokenStrategy(
-      this._strategy,
-      req.refreshToken,
-      req.scope,
-    );
+  async refresh(req: OAuthRefreshRequest) {
+    const { accessToken, refreshToken, params } =
+      await executeRefreshTokenStrategy(
+        this._strategy,
+        req.refreshToken,
+        req.scope,
+      );
 
     const fullProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
     );
 
-    return this.handleResult({
-      fullProfile,
-      params,
-      accessToken,
-      refreshToken: req.refreshToken,
-    });
+    return {
+      response: await this.handleResult({
+        fullProfile,
+        params,
+        accessToken,
+      }),
+      refreshToken,
+    };
   }
 
   private async handleResult(result: OAuthResult) {
@@ -173,19 +174,17 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
 
   private getUserPhoto(accessToken: string): Promise<string | undefined> {
     return new Promise(resolve => {
-      got
-        .get('https://graph.microsoft.com/v1.0/me/photos/48x48/$value', {
-          encoding: 'binary',
-          responseType: 'buffer',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then(photoData => {
-          const photoURL = `data:image/jpeg;base64,${Buffer.from(
-            photoData.body,
+      fetch('https://graph.microsoft.com/v1.0/me/photos/48x48/$value', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => {
+          const imageUrl = `data:image/jpeg;base64,${Buffer.from(
+            arrayBuffer,
           ).toString('base64')}`;
-          resolve(photoURL);
+          resolve(imageUrl);
         })
         .catch(error => {
           this.logger.warn(
@@ -220,22 +219,23 @@ export const microsoftEmailSignInResolver: SignInResolver<OAuthResult> = async (
   return { id: entity.metadata.name, entity, token };
 };
 
-export const microsoftDefaultSignInResolver: SignInResolver<OAuthResult> =
-  async (info, ctx) => {
-    const { profile } = info;
+export const microsoftDefaultSignInResolver: SignInResolver<
+  OAuthResult
+> = async (info, ctx) => {
+  const { profile } = info;
 
-    if (!profile.email) {
-      throw new Error('Profile contained no email');
-    }
+  if (!profile.email) {
+    throw new Error('Profile contained no email');
+  }
 
-    const userId = profile.email.split('@')[0];
+  const userId = profile.email.split('@')[0];
 
-    const token = await ctx.tokenIssuer.issueToken({
-      claims: { sub: userId, ent: [`user:default/${userId}`] },
-    });
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: { sub: userId, ent: [`user:default/${userId}`] },
+  });
 
-    return { id: userId, token };
-  };
+  return { id: userId, token };
+};
 
 export type MicrosoftProviderOptions = {
   /**

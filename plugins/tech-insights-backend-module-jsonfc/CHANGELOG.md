@@ -1,5 +1,24 @@
 # @backstage/plugin-tech-insights-backend-module-jsonfc
 
+## 0.1.4
+
+### Patch Changes
+
+- 8d00dc427c: ability to add custom operators
+- Updated dependencies
+  - @backstage/backend-common@0.10.1
+
+## 0.1.3
+
+### Patch Changes
+
+- 6ff4408fa6: RunChecks endpoint now handles missing retriever data in checks. Instead of
+  showing server errors, the checks will be shown for checks whose retrievers have
+  data, and a warning will be shown if no checks are returned.
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/plugin-tech-insights-node@0.1.2
+
 ## 0.1.2
 
 ### Patch Changes

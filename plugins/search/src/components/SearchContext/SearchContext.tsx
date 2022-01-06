@@ -15,7 +15,7 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, AnalyticsContext } from '@backstage/core-plugin-api';
 import { SearchResultSet } from '@backstage/search-common';
 import React, {
   createContext,
@@ -25,8 +25,8 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useAsync, usePrevious } from 'react-use';
-import { AsyncState } from 'react-use/lib/useAsync';
+import useAsync, { AsyncState } from 'react-use/lib/useAsync';
+import usePrevious from 'react-use/lib/usePrevious';
 import { searchApiRef } from '../../apis';
 
 type SearchContextValue = {
@@ -130,7 +130,11 @@ export const SearchContextProvider = ({
     fetchPreviousPage: hasPreviousPage ? fetchPreviousPage : undefined,
   };
 
-  return <SearchContext.Provider value={value} children={children} />;
+  return (
+    <AnalyticsContext attributes={{ searchTypes: types.sort().join(',') }}>
+      <SearchContext.Provider value={value} children={children} />
+    </AnalyticsContext>
+  );
 };
 
 export const useSearch = () => {

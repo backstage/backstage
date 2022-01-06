@@ -42,17 +42,11 @@
       href="<%= publicPath %>/safari-pinned-tab.svg"
       color="#5bbad5"
     />
-    <style>
-      #root {
-        min-height: 100%;
-      }
-    </style>
-    <title><%= app.title %></title>
-    <% if (app.googleAnalyticsTrackingId && typeof app.googleAnalyticsTrackingId
-    === 'string') { %>
+    <title><%= config.getString('app.title') %></title>
+    <% if (config.has('app.googleAnalyticsTrackingId')) { %>
     <script
       async
-      src="https://www.googletagmanager.com/gtag/js?id=<%= app.googleAnalyticsTrackingId %>"
+      src="https://www.googletagmanager.com/gtag/js?id=<%= config.getString('app.googleAnalyticsTrackingId') %>"
     ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -61,11 +55,14 @@
       }
       gtag('js', new Date());
 
-      gtag('config', '<%= app.googleAnalyticsTrackingId %>');
+      gtag(
+        'config',
+        '<%= config.getString("app.googleAnalyticsTrackingId") %>',
+      );
     </script>
     <% } %>
   </head>
-  <body style="margin: 0">
+  <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--

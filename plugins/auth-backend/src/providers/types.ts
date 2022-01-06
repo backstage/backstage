@@ -200,13 +200,16 @@ export interface BackstageSignInResult {
 
 /**
  * The old exported symbol for {@link BackstageSignInResult}.
+ *
  * @public
- * @deprecated Use the `BackstageSignInResult` type instead.
+ * @deprecated Use the {@link BackstageSignInResult} instead.
  */
 export type BackstageIdentity = BackstageSignInResult;
 
 /**
- * Response object containing the {@link BackstageUserIdentity} and the token from the authentication provider.
+ * Response object containing the {@link BackstageUserIdentity} and the token
+ * from the authentication provider.
+ *
  * @public
  */
 export interface BackstageIdentityResponse extends BackstageSignInResult {
@@ -220,7 +223,8 @@ export interface BackstageIdentityResponse extends BackstageSignInResult {
  * Used to display login information to user, i.e. sidebar popup.
  *
  * It is also temporarily used as the profile of the signed-in user's Backstage
- * identity, but we want to replace that with data from identity and/org catalog service
+ * identity, but we want to replace that with data from identity and/org catalog
+ * service
  *
  * @public
  */
@@ -241,28 +245,32 @@ export type ProfileInfo = {
 };
 
 /**
- * type of sign in information context, includes the profile information and authentication result which contains auth. related information
+ * Type of sign in information context. Includes the profile information and
+ * authentication result which contains auth related information.
+ *
  * @public
  */
-export type SignInInfo<AuthResult> = {
+export type SignInInfo<TAuthResult> = {
   /**
    * The simple profile passed down for use in the frontend.
    */
   profile: ProfileInfo;
 
   /**
-   * The authentication result that was received from the authentication provider.
+   * The authentication result that was received from the authentication
+   * provider.
    */
-  result: AuthResult;
+  result: TAuthResult;
 };
 
 /**
- * Sign in resolver type describes the function which handles the result of a successful authentication
- * and it must return a valid {@link BackstageSignInResult}
+ * Describes the function which handles the result of a successful
+ * authentication. Must return a valid {@link BackstageSignInResult}.
+ *
  * @public
  */
-export type SignInResolver<AuthResult> = (
-  info: SignInInfo<AuthResult>,
+export type SignInResolver<TAuthResult> = (
+  info: SignInInfo<TAuthResult>,
   context: {
     tokenIssuer: TokenIssuer;
     catalogIdentityClient: CatalogIdentityClient;
@@ -271,23 +279,28 @@ export type SignInResolver<AuthResult> = (
 ) => Promise<BackstageSignInResult>;
 
 /**
- * The return type of authentication handler which must contain a valid profile information
+ * The return type of an authentication handler. Must contain valid profile
+ * information.
+ *
  * @public
  */
 export type AuthHandlerResult = { profile: ProfileInfo };
 
 /**
- * The AuthHandler function is called every time the user authenticates using the provider.
+ * The AuthHandler function is called every time the user authenticates using
+ * the provider.
  *
- * The handler should return a profile that represents the session for the user in the frontend.
+ * The handler should return a profile that represents the session for the user
+ * in the frontend.
  *
- * Throwing an error in the function will cause the authentication to fail, making it
- * possible to use this function as a way to limit access to a certain group of users.
+ * Throwing an error in the function will cause the authentication to fail,
+ * making it possible to use this function as a way to limit access to a certain
+ * group of users.
  *
  * @public
  */
-export type AuthHandler<AuthResult> = (
-  input: AuthResult,
+export type AuthHandler<TAuthResult> = (
+  input: TAuthResult,
 ) => Promise<AuthHandlerResult>;
 
 export type StateEncoder = (

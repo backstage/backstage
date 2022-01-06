@@ -212,19 +212,15 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       const forwardReq = Object.assign(req, { scope, refreshToken });
 
       // get new access_token
-      const response = await this.handlers.refresh(
-        forwardReq as OAuthRefreshRequest,
-      );
+      const { response, refreshToken: newRefreshToken } =
+        await this.handlers.refresh(forwardReq as OAuthRefreshRequest);
 
       const backstageIdentity = await this.populateIdentity(
         response.backstageIdentity,
       );
 
-      if (
-        response.providerInfo.refreshToken &&
-        response.providerInfo.refreshToken !== refreshToken
-      ) {
-        this.setRefreshTokenCookie(res, response.providerInfo.refreshToken);
+      if (newRefreshToken && newRefreshToken !== refreshToken) {
+        this.setRefreshTokenCookie(res, newRefreshToken);
       }
 
       res.status(200).json({ ...response, backstageIdentity });

@@ -45,9 +45,9 @@ return something()
   it('should refactor imports', () => {
     const input = `
 /* COPYRIGHT: ME */
-import { Button as MyButton, createApiRef, createApp } from '@backstage/core';
+import { Button as MyButton, createApiRef, createSpecializedApp } from '@backstage/core';
 
-const app = createApp();
+const app = createSpecializedApp();
 const apiRef = createApiRef();
 const button = <MyButton />
 `;
@@ -57,9 +57,9 @@ const button = <MyButton />
 import { Button as MyButton } from '@backstage/core-components';
 
 import { createApiRef } from '@backstage/core-plugin-api';
-import { createApp } from '@backstage/core-app-api';
+import { createSpecializedApp } from '@backstage/core-app-api';
 
-const app = createApp();
+const app = createSpecializedApp();
 const apiRef = createApiRef();
 const button = <MyButton />
 `;

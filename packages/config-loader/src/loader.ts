@@ -62,9 +62,6 @@ export type LoadConfigOptions = {
   // Paths to load config files from. Configs from earlier paths have lower priority.
   configTargets: ConfigTarget[];
 
-  /** @deprecated This option has been removed */
-  env?: string;
-
   /**
    * Custom environment variable loading function
    *

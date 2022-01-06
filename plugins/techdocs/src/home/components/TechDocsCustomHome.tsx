@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/styles';
 import {

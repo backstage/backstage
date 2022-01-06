@@ -15,7 +15,6 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { costInsightsApiRef, CostInsightsApi } from '../api';
 import { LoadingContext, LoadingContextProps } from '../hooks/useLoading';
 import { GroupsContext, GroupsContextProps } from '../hooks/useGroups';
 import { FilterContext, FilterContextProps } from '../hooks/useFilters';
@@ -27,12 +26,6 @@ import {
 } from '../hooks/useLastCompleteBillingDate';
 import { ScrollContext, ScrollContextProps } from '../hooks/useScroll';
 import { Group, Duration } from '../types';
-
-// TODO(Rugvip): Could be good to have a clear place to put test utils that is linted accordingly
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { TestApiProvider } from '@backstage/test-utils';
 
 type PartialPropsWithChildren<T> = PropsWithChildren<Partial<T>>;
 
@@ -170,50 +163,5 @@ export const MockGroupsProvider = ({
     <GroupsContext.Provider value={{ ...defaultContext, ...context }}>
       {children}
     </GroupsContext.Provider>
-  );
-};
-
-export type MockCostInsightsApiProviderProps = PartialPropsWithChildren<{
-  identityApi: Partial<IdentityApi>;
-  costInsightsApi: Partial<CostInsightsApi>;
-}>;
-
-export const MockCostInsightsApiProvider = ({
-  children,
-  ...context
-}: MockCostInsightsApiProviderProps) => {
-  const defaultIdentityApi: IdentityApi = {
-    getProfile: jest.fn(),
-    getIdToken: jest.fn(),
-    getUserId: jest.fn(),
-    signOut: jest.fn(),
-    getProfileInfo: jest.fn(),
-    getBackstageIdentity: jest.fn(),
-    getCredentials: jest.fn(),
-  };
-
-  const defaultCostInsightsApi: CostInsightsApi = {
-    getAlerts: jest.fn(),
-    getDailyMetricData: jest.fn(),
-    getGroupDailyCost: jest.fn(),
-    getGroupProjects: jest.fn(),
-    getLastCompleteBillingDate: jest.fn(),
-    getProductInsights: jest.fn(),
-    getProjectDailyCost: jest.fn(),
-    getUserGroups: jest.fn(),
-  };
-
-  return (
-    <TestApiProvider
-      apis={[
-        [identityApiRef, { ...defaultIdentityApi, ...context.identityApi }],
-        [
-          costInsightsApiRef,
-          { ...defaultCostInsightsApi, ...context.costInsightsApi },
-        ],
-      ]}
-    >
-      {children}
-    </TestApiProvider>
   );
 };

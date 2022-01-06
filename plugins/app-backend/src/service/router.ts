@@ -16,6 +16,7 @@
 
 import { notFoundHandler, resolvePackagePath } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
+import helmet from 'helmet';
 import express from 'express';
 import Router from 'express-promise-router';
 import fs from 'fs-extra';
@@ -88,6 +89,8 @@ export async function createRouter(
   }
 
   const router = Router();
+
+  router.use(helmet.frameguard({ action: 'deny' }));
 
   // Use a separate router for static content so that a fallback can be provided by backend
   const staticRouter = Router();

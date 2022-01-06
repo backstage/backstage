@@ -1,5 +1,35 @@
 # @backstage/core-app-api
 
+## 0.3.1
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/core-components@0.8.3
+
+## 0.3.0
+
+### Minor Changes
+
+- a195284c7b: Updated `WebStorageApi` to reflect the `StorageApi` changes in `@backstage/core-plugin-api`.
+- b3605da81c: - Removed deprecated definition `createApp` from `@backstage/core-app-api` which has been replaced by `@backstage/app-defaults#createApp`
+  - Removed deprecated type `BackstagePluginWithAnyOutput`
+  - Removed deprecated constructors for `GithubAuth`, `OAuth2`, and `SamlAuth` as the `create` method should be used instead
+- 68f8b10ccd: - Removed deprecation configuration option `theme` from `AppTheme` of the `AppThemeApi`
+  - Removed reference to `theme` in the `app-defaults` default `AppTheme`
+  - Removed logic in `AppThemeProvider` that creates `ThemeProvider` from `appTheme.theme`
+
+### Patch Changes
+
+- 7927005152: Add `FetchApi` and related `fetchApiRef` which implement fetch, with an added Backstage token header when available.
+- 518ddc00bc: Schema-validate local storage cached session info on load
+- Updated dependencies
+  - @backstage/app-defaults@0.1.3
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/core-components@0.8.2
+
 ## 0.2.1
 
 ### Patch Changes

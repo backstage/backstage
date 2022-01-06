@@ -112,34 +112,31 @@ export class OidcAuthProvider implements OAuthHandlers {
     return await executeRedirectStrategy(req, strategy, options);
   }
 
-  async handler(
-    req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
+  async handler(req: express.Request) {
     const { strategy } = await this.implementation;
-    const strategyResponse = await executeFrameHandlerStrategy<
+    const { result, privateInfo } = await executeFrameHandlerStrategy<
       OidcAuthResult,
       PrivateInfo
     >(req, strategy);
-    const {
-      result: { userinfo, tokenset },
-      privateInfo,
-    } = strategyResponse;
 
-    const identityResponse = await this.handleResult({ tokenset, userinfo });
     return {
-      response: identityResponse,
+      response: await this.handleResult(result),
       refreshToken: privateInfo.refreshToken,
     };
   }
 
-  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
+  async refresh(req: OAuthRefreshRequest) {
     const { client } = await this.implementation;
     const tokenset = await client.refresh(req.refreshToken);
     if (!tokenset.access_token) {
       throw new Error('Refresh failed');
     }
-    const profile = await client.userinfo(tokenset.access_token);
-    return this.handleResult({ tokenset, userinfo: profile });
+    const userinfo = await client.userinfo(tokenset.access_token);
+
+    return {
+      response: await this.handleResult({ tokenset, userinfo }),
+      refreshToken: tokenset.refresh_token,
+    };
   }
 
   private async setupStrategy(options: Options): Promise<OidcImpl> {
@@ -190,7 +187,6 @@ export class OidcAuthProvider implements OAuthHandlers {
       providerInfo: {
         idToken: result.tokenset.id_token,
         accessToken: result.tokenset.access_token!,
-        refreshToken: result.tokenset.refresh_token,
         scope: result.tokenset.scope!,
         expiresInSeconds: result.tokenset.expires_in,
       },
@@ -214,19 +210,20 @@ export class OidcAuthProvider implements OAuthHandlers {
   }
 }
 
-export const oAuth2DefaultSignInResolver: SignInResolver<OidcAuthResult> =
-  async (info, ctx) => {
-    const { profile } = info;
+export const oAuth2DefaultSignInResolver: SignInResolver<
+  OidcAuthResult
+> = async (info, ctx) => {
+  const { profile } = info;
 
-    if (!profile.email) {
-      throw new Error('Profile contained no email');
-    }
-    const userId = profile.email.split('@')[0];
-    const token = await ctx.tokenIssuer.issueToken({
-      claims: { sub: userId, ent: [`user:default/${userId}`] },
-    });
-    return { id: userId, token };
-  };
+  if (!profile.email) {
+    throw new Error('Profile contained no email');
+  }
+  const userId = profile.email.split('@')[0];
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: { sub: userId, ent: [`user:default/${userId}`] },
+  });
+  return { id: userId, token };
+};
 
 /**
  * OIDC provider callback options. An auth handler and a sign in resolver

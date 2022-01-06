@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Represents a single check defined on the TechInsights backend.
+ *
+ * @public
+ */
 export type Check = {
   id: string;
   type: string;

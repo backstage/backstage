@@ -30,6 +30,8 @@ export class AwsS3Integration implements ScmIntegration {
 // @public
 export type AwsS3IntegrationConfig = {
   host: string;
+  endpoint?: string;
+  s3ForcePathStyle?: boolean;
   accessKeyId?: string;
   secretAccessKey?: string;
   roleArn?: string;
@@ -198,9 +200,8 @@ export type GithubCredentials = {
 };
 
 // @public
-export class GithubCredentialsProvider {
+export interface GithubCredentialsProvider {
   // (undocumented)
-  static create(config: GitHubIntegrationConfig): GithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
@@ -421,6 +422,15 @@ export interface ScmIntegrationsGroup<T extends ScmIntegration> {
   byHost(host: string): T | undefined;
   byUrl(url: string | URL): T | undefined;
   list(): T[];
+}
+
+// @public
+export class SingleInstanceGithubCredentialsProvider
+  implements GithubCredentialsProvider
+{
+  // (undocumented)
+  static create: (config: GitHubIntegrationConfig) => GithubCredentialsProvider;
+  getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
 // Warnings were encountered during analysis:

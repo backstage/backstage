@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useContext, useState } from 'react';
-import { useLocalStorage } from 'react-use';
-import { makeStyles } from '@material-ui/core/styles';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
-import Collapse from '@material-ui/core/Collapse';
-import CloseIcon from '@material-ui/icons/Close';
 import { BackstageTheme } from '@backstage/theme';
+import Collapse from '@material-ui/core/Collapse';
+import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import CloseIcon from '@material-ui/icons/Close';
+import React, { useContext, useState } from 'react';
+import useLocalStorage from 'react-use/lib/useLocalStorage';
 import {
-  SIDEBAR_INTRO_LOCAL_STORAGE,
-  SidebarContext,
   sidebarConfig,
+  SidebarContext,
+  SIDEBAR_INTRO_LOCAL_STORAGE,
 } from './config';
 import { SidebarDivider } from './Items';
 
@@ -88,7 +88,13 @@ type IntroCardProps = {
   onClose: () => void;
 };
 
-/** @public */
+/**
+ * Closable card with information from Navigation Sidebar
+ *
+ * @public
+ *
+ */
+
 export function IntroCard(props: IntroCardProps) {
   const classes = useStyles();
   const { text, onClose } = props;

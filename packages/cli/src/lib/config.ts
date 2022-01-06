@@ -44,9 +44,17 @@ export async function loadCliConfig(options: Options) {
   const project = new Project(paths.targetDir);
   const packages = await project.getPackages();
 
-  const localPackageNames = options.fromPackage
-    ? findPackages(packages, options.fromPackage)
-    : packages.map((p: any) => p.name);
+  let localPackageNames;
+  if (options.fromPackage) {
+    if (packages.length) {
+      localPackageNames = findPackages(packages, options.fromPackage);
+    } else {
+      // No packages: it means that it's not a monorepo (e.g. standalone plugin)
+      localPackageNames = [options.fromPackage];
+    }
+  } else {
+    localPackageNames = packages.map((p: any) => p.name);
+  }
 
   const schema = await loadConfigSchema({
     dependencies: localPackageNames,

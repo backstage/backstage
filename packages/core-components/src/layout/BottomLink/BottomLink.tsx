@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
-import ArrowIcon from '@material-ui/icons/ArrowForward';
 import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import ArrowIcon from '@material-ui/icons/ArrowForward';
+import React from 'react';
 import { Link } from '../../components/Link';
 
 /** @public */
@@ -50,7 +50,12 @@ export type BottomLinkProps = {
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
-/** @public */
+/**
+ * Footer with link used in  {@link InfoCard } and {@link TabbedCard}
+ *
+ * @public
+ *
+ */
 export function BottomLink(props: BottomLinkProps) {
   const { link, title, onClick } = props;
   const classes = useStyles();

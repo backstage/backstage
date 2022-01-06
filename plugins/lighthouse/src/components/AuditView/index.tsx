@@ -32,7 +32,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { Audit, lighthouseApiRef, Website } from '../../api';
 import { formatTime } from '../../utils';
 import AuditStatusIcon from '../AuditStatusIcon';

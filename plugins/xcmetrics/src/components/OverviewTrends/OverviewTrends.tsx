@@ -19,7 +19,7 @@ import { Progress, Select } from '@backstage/core-components';
 import { Trend } from '../Trend';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { xcmetricsApiRef } from '../../api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { DataValueGridItem } from '../DataValue';
 import {

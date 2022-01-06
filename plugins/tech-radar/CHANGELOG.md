@@ -1,5 +1,26 @@
 # @backstage/plugin-tech-radar
 
+## 0.5.1
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/core-components@0.8.3
+
+## 0.5.0
+
+### Minor Changes
+
+- 11b7761914: Add new property to enable open links in a new window/tab
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/core-components@0.8.2
+
 ## 0.4.13
 
 ### Patch Changes

@@ -39,10 +39,11 @@ export const ApiDefinitionCard = (_: Props) => {
   }
 
   const definitionWidget = getApiDefinitionWidget(entity);
+  const entityTitle = entity.metadata.title ?? entity.metadata.name;
 
   if (definitionWidget) {
     return (
-      <TabbedCard title={entity.metadata.name}>
+      <TabbedCard title={entityTitle}>
         <CardTab label={definitionWidget.title} key="widget">
           {definitionWidget.component(entity.spec.definition)}
         </CardTab>
@@ -58,7 +59,7 @@ export const ApiDefinitionCard = (_: Props) => {
 
   return (
     <TabbedCard
-      title={entity.metadata.name}
+      title={entityTitle}
       children={[
         // Has to be an array, otherwise typescript doesn't like that this has only a single child
         <CardTab label={entity.spec.type} key="raw">

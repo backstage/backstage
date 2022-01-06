@@ -27,7 +27,7 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { FieldProps } from '@rjsf/core';
 import React, { useCallback, useEffect } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../../api';
 
 function splitFormData(url: string | undefined, allowedOwners?: string[]) {

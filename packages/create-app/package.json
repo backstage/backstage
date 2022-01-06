@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.4.8",
+  "version": "0.4.11",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -49,6 +49,7 @@
   },
   "peerDependencies": {
     "@backstage/backend-common": "*",
+    "@backstage/backend-tasks": "*",
     "@backstage/catalog-client": "*",
     "@backstage/catalog-model": "*",
     "@backstage/cli": "*",

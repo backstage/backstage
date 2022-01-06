@@ -113,7 +113,6 @@ export type GitOpsApi = {
 
 export const gitOpsApiRef = createApiRef<GitOpsApi>({
   id: 'plugin.gitops.service',
-  description: 'Used by the GitOps profiles plugin to make requests',
 });
 
 export class GitOpsRestApi implements GitOpsApi {

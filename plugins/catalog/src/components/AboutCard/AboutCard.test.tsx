@@ -43,6 +43,10 @@ describe('<AboutCard />', () => {
     refreshEntity: jest.fn(),
   } as any;
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders info', async () => {
     const entity = {
       apiVersion: 'v1',
@@ -248,14 +252,16 @@ describe('<AboutCard />', () => {
     expect(getByText('View Source').closest('a')).not.toHaveAttribute('href');
   });
 
-  it('triggers a refresh', async () => {
+  it.each([
+    'url:https://backstage.io/catalog-info.yaml',
+    'file:../../catalog-info.yaml',
+  ])('triggers a refresh for %s', async location => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
       metadata: {
         annotations: {
-          'backstage.io/managed-by-location':
-            'url:https://backstage.io/catalog-info.yaml',
+          'backstage.io/managed-by-location': location,
         },
         name: 'software',
       },
@@ -298,7 +304,7 @@ describe('<AboutCard />', () => {
     );
   });
 
-  it('should not render refresh button if the location is not an url', async () => {
+  it('should not render refresh button if the location is not an url or file', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',

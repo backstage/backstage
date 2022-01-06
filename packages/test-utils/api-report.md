@@ -8,17 +8,21 @@ import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
+import { Config } from '@backstage/config';
+import { ConfigApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
-import { StorageValueChange } from '@backstage/core-plugin-api';
+import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 
 // @public
 export type AsyncLogCollector = () => Promise<void>;
@@ -52,6 +56,43 @@ export class MockAnalyticsApi implements AnalyticsApi {
 export function mockBreakpoint(options: { matches: boolean }): void;
 
 // @public
+export class MockConfigApi implements ConfigApi {
+  constructor(data: JsonObject);
+  // (undocumented)
+  get<T = JsonValue>(key?: string): T;
+  // (undocumented)
+  getBoolean(key: string): boolean;
+  // (undocumented)
+  getConfig(key: string): Config;
+  // (undocumented)
+  getConfigArray(key: string): Config[];
+  // (undocumented)
+  getNumber(key: string): number;
+  // (undocumented)
+  getOptional<T = JsonValue>(key?: string): T | undefined;
+  // (undocumented)
+  getOptionalBoolean(key: string): boolean | undefined;
+  // (undocumented)
+  getOptionalConfig(key: string): Config | undefined;
+  // (undocumented)
+  getOptionalConfigArray(key: string): Config[] | undefined;
+  // (undocumented)
+  getOptionalNumber(key: string): number | undefined;
+  // (undocumented)
+  getOptionalString(key: string): string | undefined;
+  // (undocumented)
+  getOptionalStringArray(key: string): string[] | undefined;
+  // (undocumented)
+  getString(key: string): string;
+  // (undocumented)
+  getStringArray(key: string): string[];
+  // (undocumented)
+  has(key: string): boolean;
+  // (undocumented)
+  keys(): string[];
+}
+
+// @public
 export class MockErrorApi implements ErrorApi {
   constructor(options?: MockErrorApiOptions);
   // (undocumented)
@@ -81,25 +122,18 @@ export class MockStorageApi implements StorageApi {
   // (undocumented)
   get<T>(key: string): T | undefined;
   // (undocumented)
-  observe$<T>(key: string): Observable<StorageValueChange<T>>;
+  observe$<T>(key: string): Observable<StorageValueSnapshot<T>>;
   // (undocumented)
   remove(key: string): Promise<void>;
   // (undocumented)
   set<T>(key: string, data: T): Promise<void>;
+  // (undocumented)
+  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
 
 // @public
 export type MockStorageBucket = {
   [key: string]: any;
-};
-
-// @public @deprecated (undocumented)
-export const msw: {
-  setupDefaultHandlers: (worker: {
-    listen: (t: any) => void;
-    close: () => void;
-    resetHandlers: () => void;
-  }) => void;
 };
 
 // @public
