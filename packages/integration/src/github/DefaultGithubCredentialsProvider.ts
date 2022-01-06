@@ -15,7 +15,7 @@
  */
 
 import { GithubCredentials, GithubCredentialsProvider } from './types';
-import { ScmIntegrations } from '../ScmIntegrations';
+import { ScmIntegrationRegistry } from '../registry';
 import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubCredentialsProvider';
 
 /**
@@ -29,7 +29,7 @@ import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubC
 export class DefaultGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
-  static fromIntegrations(integrations: ScmIntegrations) {
+  static fromIntegrations(integrations: ScmIntegrationRegistry) {
     const credentialsProviders: Map<string, GithubCredentialsProvider> =
       new Map<string, GithubCredentialsProvider>();
 

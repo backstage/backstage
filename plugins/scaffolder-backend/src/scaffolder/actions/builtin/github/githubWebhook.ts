@@ -16,7 +16,7 @@
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
-  ScmIntegrations,
+  ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
 import { OctokitProvider } from './OctokitProvider';
@@ -26,7 +26,7 @@ import { assertError } from '@backstage/errors';
 type ContentType = 'form' | 'json';
 
 export function createGithubWebhookAction(options: {
-  integrations: ScmIntegrations;
+  integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }) {

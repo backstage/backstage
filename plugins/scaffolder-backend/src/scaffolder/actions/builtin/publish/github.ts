@@ -16,7 +16,7 @@
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
-  ScmIntegrations,
+  ScmIntegrationRegistry,
 } from '@backstage/integration';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
@@ -32,7 +32,7 @@ type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
 type Collaborator = { access: Permission; username: string };
 
 export function createPublishGithubAction(options: {
-  integrations: ScmIntegrations;
+  integrations: ScmIntegrationRegistry;
   config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
