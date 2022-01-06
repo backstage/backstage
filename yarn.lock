@@ -7569,9 +7569,9 @@
     "@types/istanbul-lib-report" "*"
 
 "@types/jenkins@^0.23.1":
-  version "0.23.2"
-  resolved "https://registry.npmjs.org/@types/jenkins/-/jenkins-0.23.2.tgz#96736a2be4904efdfe7fe2650569479fd77dc48e"
-  integrity sha512-BELmIZ6brxwGFqBHfLjLTjYRWAUqcT1d2BydH1CcRTZEjCYw3DRVfZkXU7BVlyIsKXm2ZMIKVkEjKKtVDvPiXA==
+  version "0.23.3"
+  resolved "https://registry.npmjs.org/@types/jenkins/-/jenkins-0.23.3.tgz#bca00a395147c8d448cfba6bb36241a56862f820"
+  integrity sha512-/uNktGT4d/NNIBZTur4cO4YU00fQ+iEe0Arm0l5v9Ixv6zwZR9u0V7XSuhWbWJkzKsh8aIeK66QxYqJvYF4yzA==
   dependencies:
     "@types/node" "*"
 
@@ -29429,20 +29429,15 @@ ws@7.4.6:
   resolved "https://registry.npmjs.org/ws/-/ws-7.4.6.tgz#5654ca8ecdeee47c33a9a4bf6d28e2be2980377c"
   integrity sha512-YmhHDO4MzaDLB+M9ym/mDA5z0naX8j7SIlT8f8z+I0VtzsRbekxEutHSme7NPS2qE8StCYQNUnfWdXta/Yu85A==
 
-ws@8.3.0:
-  version "8.3.0"
-  resolved "https://registry.npmjs.org/ws/-/ws-8.3.0.tgz#7185e252c8973a60d57170175ff55fdbd116070d"
-  integrity sha512-Gs5EZtpqZzLvmIM59w4igITU57lrtYVFneaa434VROv4thzJyV6UjIL3D42lslWlI+D4KzLYnxSwtfuiO79sNw==
+ws@8.3.0, ws@^7.4.6, ws@^8.3.0:
+  version "7.5.6"
+  resolved "https://registry.npmjs.org/ws/-/ws-7.5.6.tgz#e59fc509fb15ddfb65487ee9765c5a51dec5fe7b"
+  integrity sha512-6GLgCqo2cy2A2rjCNFlxQS6ZljG/coZfZXclldI8FB/1G3CCI36Zd8xy2HrFVACi8tfk5XrgLQEk+P0Tnz9UcA==
 
 "ws@^5.2.0 || ^6.0.0 || ^7.0.0", ws@^7.2.3, ws@^7.3.1:
   version "7.5.0"
   resolved "https://registry.npmjs.org/ws/-/ws-7.5.0.tgz#0033bafea031fb9df041b2026fc72a571ca44691"
   integrity sha512-6ezXvzOZupqKj4jUqbQ9tXuJNo+BR2gU8fFRk3XCP3e0G6WT414u5ELe6Y0vtp7kmSJ3F7YWObSNr1ESsgi4vw==
-
-ws@^7.4.6, ws@^8.3.0:
-  version "7.5.6"
-  resolved "https://registry.npmjs.org/ws/-/ws-7.5.6.tgz#e59fc509fb15ddfb65487ee9765c5a51dec5fe7b"
-  integrity sha512-6GLgCqo2cy2A2rjCNFlxQS6ZljG/coZfZXclldI8FB/1G3CCI36Zd8xy2HrFVACi8tfk5XrgLQEk+P0Tnz9UcA==
 
 ws@^8.1.0:
   version "8.2.3"
