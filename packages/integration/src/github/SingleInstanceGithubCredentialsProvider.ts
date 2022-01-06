@@ -15,26 +15,15 @@
  */
 
 import parseGitUrl from 'git-url-parse';
-
+import { GithubAppConfig, GitHubIntegrationConfig } from './config';
+import { createAppAuth } from '@octokit/auth-app';
+import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
+import { DateTime } from 'luxon';
 import {
   GithubCredentials,
   GithubCredentialsProvider,
   GithubCredentialType,
 } from './types';
-
-import { GithubAppConfig, GitHubIntegrationConfig } from './config';
-import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
-import { createAppAuth } from '@octokit/auth-app';
-import { DateTime } from 'luxon';
-
-/**
- * This accept header is required when calling App APIs in GitHub Enterprise.
- * It has no effect on calls to github.com and can probably be removed entirely
- * once GitHub Apps is out of preview.
- */
-const HEADERS = {
-  Accept: 'application/vnd.github.machine-man-preview+json',
-};
 
 type InstallationData = {
   installationId: number;
@@ -65,6 +54,15 @@ class Cache {
   private isNotExpired = (date: DateTime) =>
     date.diff(DateTime.local(), 'minutes').minutes > 50;
 }
+
+/**
+ * This accept header is required when calling App APIs in GitHub Enterprise.
+ * It has no effect on calls to github.com and can probably be removed entirely
+ * once GitHub Apps is out of preview.
+ */
+const HEADERS = {
+  Accept: 'application/vnd.github.machine-man-preview+json',
+};
 
 /**
  * GithubAppManager issues and caches tokens for a specific GitHub App.
