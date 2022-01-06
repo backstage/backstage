@@ -20,18 +20,20 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
-  ApplyConditionsResponse,
+  ApplyConditionsResponseEntry,
   ConditionalPolicyDecision,
 } from '@backstage/plugin-permission-node';
 
-const responseSchema = z.array(
-  z.object({
-    id: z.string(),
-    result: z
-      .literal(AuthorizeResult.ALLOW)
-      .or(z.literal(AuthorizeResult.DENY)),
-  }),
-);
+const responseSchema = z.object({
+  items: z.array(
+    z.object({
+      id: z.string(),
+      result: z
+        .literal(AuthorizeResult.ALLOW)
+        .or(z.literal(AuthorizeResult.DENY)),
+    }),
+  ),
+});
 
 export type ResourcePolicyDecision = ConditionalPolicyDecision & {
   resourceRef: string;
@@ -48,21 +50,23 @@ export class PermissionIntegrationClient {
     pluginId: string,
     decisions: readonly ApplyConditionsRequestEntry[],
     authHeader?: string,
-  ): Promise<ApplyConditionsResponse> {
+  ): Promise<ApplyConditionsResponseEntry[]> {
     const endpoint = `${await this.discovery.getBaseUrl(
       pluginId,
     )}/.well-known/backstage/permissions/apply-conditions`;
 
     const response = await fetch(endpoint, {
       method: 'POST',
-      body: JSON.stringify(
-        decisions.map(({ id, resourceRef, resourceType, conditions }) => ({
-          id,
-          resourceRef,
-          resourceType,
-          conditions,
-        })),
-      ),
+      body: JSON.stringify({
+        items: decisions.map(
+          ({ id, resourceRef, resourceType, conditions }) => ({
+            id,
+            resourceRef,
+            resourceType,
+            conditions,
+          }),
+        ),
+      }),
       headers: {
         ...(authHeader ? { authorization: authHeader } : {}),
         'content-type': 'application/json',
@@ -75,6 +79,8 @@ export class PermissionIntegrationClient {
       );
     }
 
-    return responseSchema.parse(await response.json());
+    const result = responseSchema.parse(await response.json());
+
+    return result.items;
   }
 }

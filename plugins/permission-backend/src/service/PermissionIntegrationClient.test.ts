@@ -39,7 +39,9 @@ describe('PermissionIntegrationClient', () => {
 
     const mockApplyConditionsHandler = jest.fn(
       (_req, res, { json }: RestContext) => {
-        return res(json([{ id: '123', result: AuthorizeResult.ALLOW }]));
+        return res(
+          json({ items: [{ id: '123', result: AuthorizeResult.ALLOW }] }),
+        );
       },
     );
 
@@ -101,14 +103,16 @@ describe('PermissionIntegrationClient', () => {
 
       expect(mockApplyConditionsHandler).toHaveBeenCalledWith(
         expect.objectContaining({
-          body: [
-            {
-              id: '123',
-              resourceRef: 'testResource1',
-              resourceType: 'test-resource',
-              conditions: mockConditions,
-            },
-          ],
+          body: {
+            items: [
+              {
+                id: '123',
+                resourceRef: 'testResource1',
+                resourceType: 'test-resource',
+                conditions: mockConditions,
+              },
+            ],
+          },
         }),
         expect.anything(),
         expect.anything(),
@@ -184,7 +188,9 @@ describe('PermissionIntegrationClient', () => {
     it('should reject invalid responses', async () => {
       mockApplyConditionsHandler.mockImplementationOnce(
         (_req, res, { json }: RestContext) => {
-          return res(json([{ id: '123', outcome: AuthorizeResult.ALLOW }]));
+          return res(
+            json({ items: [{ id: '123', outcome: AuthorizeResult.ALLOW }] }),
+          );
         },
       );
 
@@ -204,11 +210,13 @@ describe('PermissionIntegrationClient', () => {
       mockApplyConditionsHandler.mockImplementationOnce(
         (_req, res, { json }: RestContext) => {
           return res(
-            json([
-              { id: '123', result: AuthorizeResult.ALLOW },
-              { id: '456', result: AuthorizeResult.DENY },
-              { id: '789', result: AuthorizeResult.ALLOW },
-            ]),
+            json({
+              items: [
+                { id: '123', result: AuthorizeResult.ALLOW },
+                { id: '456', result: AuthorizeResult.DENY },
+                { id: '789', result: AuthorizeResult.ALLOW },
+              ],
+            }),
           );
         },
       );

@@ -18,7 +18,9 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public
-export type ApplyConditionsRequest = ApplyConditionsRequestEntry[];
+export type ApplyConditionsRequest = {
+  items: ApplyConditionsRequestEntry[];
+};
 
 // @public
 export type ApplyConditionsRequestEntry = Identified<{
@@ -28,7 +30,9 @@ export type ApplyConditionsRequestEntry = Identified<{
 }>;
 
 // @public
-export type ApplyConditionsResponse = ApplyConditionsResponseEntry[];
+export type ApplyConditionsResponse = {
+  items: ApplyConditionsResponseEntry[];
+};
 
 // @public
 export type ApplyConditionsResponseEntry = Identified<DefinitivePolicyDecision>;

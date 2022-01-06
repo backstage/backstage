@@ -48,14 +48,16 @@ const permissionCriteriaSchema: z.ZodSchema<
   ]),
 );
 
-const applyConditionsRequestSchema = z.array(
-  z.object({
-    id: z.string(),
-    resourceRef: z.string(),
-    resourceType: z.string(),
-    conditions: permissionCriteriaSchema,
-  }),
-);
+const applyConditionsRequestSchema = z.object({
+  items: z.array(
+    z.object({
+      id: z.string(),
+      resourceRef: z.string(),
+      resourceType: z.string(),
+      conditions: permissionCriteriaSchema,
+    }),
+  ),
+});
 
 /**
  * A request to load the referenced resource and apply conditions in order to
@@ -74,7 +76,9 @@ export type ApplyConditionsRequestEntry = Identified<{
  *
  * @public
  */
-export type ApplyConditionsRequest = ApplyConditionsRequestEntry[];
+export type ApplyConditionsRequest = {
+  items: ApplyConditionsRequestEntry[];
+};
 
 /**
  * The result of applying the conditions, expressed as a definitive authorize
@@ -89,7 +93,9 @@ export type ApplyConditionsResponseEntry = Identified<DefinitivePolicyDecision>;
  *
  * @public
  */
-export type ApplyConditionsResponse = ApplyConditionsResponseEntry[];
+export type ApplyConditionsResponse = {
+  items: ApplyConditionsResponseEntry[];
+};
 
 const applyConditions = <TResource>(
   criteria: PermissionCriteria<PermissionCondition>,
@@ -165,7 +171,9 @@ export const createPermissionIntegrationRouter = <TResource>(options: {
 
   const getRule = createGetRule(rules);
 
-  const assertValidResourceTypes = (requests: ApplyConditionsRequest) => {
+  const assertValidResourceTypes = (
+    requests: ApplyConditionsRequestEntry[],
+  ) => {
     const invalidResourceType = requests.find(
       request => request.resourceType !== resourceType,
     )?.resourceType;
@@ -188,10 +196,10 @@ export const createPermissionIntegrationRouter = <TResource>(options: {
 
       const body = parseResult.data;
 
-      assertValidResourceTypes(body);
+      assertValidResourceTypes(body.items);
 
       const resourceRefs = Array.from(
-        new Set(body.map(({ resourceRef }) => resourceRef)),
+        new Set(body.items.map(({ resourceRef }) => resourceRef)),
       );
       const resourceArray = await getResources(resourceRefs);
       const resources = resourceRefs.reduce((acc, resourceRef, index) => {
@@ -200,8 +208,8 @@ export const createPermissionIntegrationRouter = <TResource>(options: {
         return acc;
       }, {} as Record<string, TResource | undefined>);
 
-      return res.status(200).json(
-        body.map(request => ({
+      return res.status(200).json({
+        items: body.items.map(request => ({
           id: request.id,
           result: applyConditions(
             request.conditions,
@@ -211,7 +219,7 @@ export const createPermissionIntegrationRouter = <TResource>(options: {
             ? AuthorizeResult.ALLOW
             : AuthorizeResult.DENY,
         })),
-      );
+      });
     },
   );
 
