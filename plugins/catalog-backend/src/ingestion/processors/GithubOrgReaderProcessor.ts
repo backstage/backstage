@@ -20,6 +20,7 @@ import {
   GithubCredentialType,
   ScmIntegrations,
   GithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
@@ -46,7 +47,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     config: Config,
     options: {
       logger: Logger;
-      githubCredentialsProvider: GithubCredentialsProvider;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -60,10 +61,12 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrations;
     logger: Logger;
-    githubCredentialsProvider: GithubCredentialsProvider;
+    githubCredentialsProvider?: GithubCredentialsProvider;
   }) {
     this.integrations = options.integrations;
-    this.githubCredentialsProvider = options.githubCredentialsProvider;
+    this.githubCredentialsProvider =
+      options.githubCredentialsProvider ||
+      DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
     this.logger = options.logger;
   }
 

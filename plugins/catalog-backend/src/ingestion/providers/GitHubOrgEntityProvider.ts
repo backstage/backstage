@@ -20,6 +20,7 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
+  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   GitHubIntegrationConfig,
   ScmIntegrations,
@@ -47,7 +48,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       id: string;
       orgUrl: string;
       logger: Logger;
-      githubCredentialsProvider: GithubCredentialsProvider;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -68,7 +69,9 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       orgUrl: options.orgUrl,
       logger,
       gitHubConfig,
-      githubCredentialsProvider: options.githubCredentialsProvider,
+      githubCredentialsProvider:
+        options.githubCredentialsProvider ||
+        DefaultGithubCredentialsProvider.fromIntegrations(integrations),
     });
   }
 

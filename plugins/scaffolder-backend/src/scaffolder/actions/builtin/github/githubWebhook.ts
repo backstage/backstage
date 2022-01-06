@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import {
+  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
-  ScmIntegrationRegistry,
+  ScmIntegrations,
 } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
 import { OctokitProvider } from './OctokitProvider';
@@ -25,15 +26,16 @@ import { assertError } from '@backstage/errors';
 type ContentType = 'form' | 'json';
 
 export function createGithubWebhookAction(options: {
-  integrations: ScmIntegrationRegistry;
+  integrations: ScmIntegrations;
   defaultWebhookSecret?: string;
-  githubCredentialsProvider: GithubCredentialsProvider;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
   const { integrations, defaultWebhookSecret, githubCredentialsProvider } =
     options;
   const octokitProvider = new OctokitProvider(
     integrations,
-    githubCredentialsProvider,
+    githubCredentialsProvider ??
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations),
   );
   const eventNames = emitterEventNames.filter(event => !event.includes('.'));
 

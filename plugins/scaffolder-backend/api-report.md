@@ -123,17 +123,17 @@ export const createFilesystemRenameAction: () => TemplateAction<any>;
 //
 // @public (undocumented)
 export function createGithubActionsDispatchAction(options: {
-  integrations: ScmIntegrationRegistry;
-  githubCredentialsProvider: GithubCredentialsProvider;
+  integrations: ScmIntegrations;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createGithubWebhookAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function createGithubWebhookAction(options: {
-  integrations: ScmIntegrationRegistry;
+  integrations: ScmIntegrations;
   defaultWebhookSecret?: string;
-  githubCredentialsProvider: GithubCredentialsProvider;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createPublishAzureAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -161,9 +161,9 @@ export function createPublishFileAction(): TemplateAction<any>;
 //
 // @public (undocumented)
 export function createPublishGithubAction(options: {
-  integrations: ScmIntegrationRegistry;
+  integrations: ScmIntegrations;
   config: Config;
-  githubCredentialsProvider: GithubCredentialsProvider;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<any>;
 
 // Warning: (ae-forgotten-export) The symbol "CreateGithubPullRequestActionOptions" needs to be exported by the entry point index.d.ts

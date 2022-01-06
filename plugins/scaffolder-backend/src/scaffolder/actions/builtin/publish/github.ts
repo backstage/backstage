@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import {
+  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
-  ScmIntegrationRegistry,
+  ScmIntegrations,
 } from '@backstage/integration';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
@@ -31,14 +32,15 @@ type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
 type Collaborator = { access: Permission; username: string };
 
 export function createPublishGithubAction(options: {
-  integrations: ScmIntegrationRegistry;
+  integrations: ScmIntegrations;
   config: Config;
-  githubCredentialsProvider: GithubCredentialsProvider;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
   const { integrations, config, githubCredentialsProvider } = options;
   const octokitProvider = new OctokitProvider(
     integrations,
-    githubCredentialsProvider,
+    githubCredentialsProvider ||
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations),
   );
 
   return createTemplateAction<{

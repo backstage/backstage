@@ -17,6 +17,7 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
+  DefaultGithubCredentialsProvider,
   GithubAppCredentialsMux,
   GithubCredentialsProvider,
   GitHubIntegrationConfig,
@@ -50,7 +51,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     config: Config,
     options: {
       logger: Logger;
-      githubCredentialsProvider: GithubCredentialsProvider;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ) {
     const c = config.getOptionalConfig('catalog.processors.githubMultiOrg');
@@ -67,12 +68,14 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     integrations: ScmIntegrations;
     logger: Logger;
     orgs: GithubMultiOrgConfig;
-    githubCredentialsProvider: GithubCredentialsProvider;
+    githubCredentialsProvider?: GithubCredentialsProvider;
   }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
     this.orgs = options.orgs;
-    this.githubCredentialsProvider = options.githubCredentialsProvider;
+    this.githubCredentialsProvider =
+      options.githubCredentialsProvider ||
+      DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
   }
 
   async readLocation(

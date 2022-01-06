@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 import {
+  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
-  ScmIntegrationRegistry,
+  ScmIntegrations,
 } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
 import { OctokitProvider } from './OctokitProvider';
 
 export function createGithubActionsDispatchAction(options: {
-  integrations: ScmIntegrationRegistry;
-  githubCredentialsProvider: GithubCredentialsProvider;
+  integrations: ScmIntegrations;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
   const { integrations, githubCredentialsProvider } = options;
   const octokitProvider = new OctokitProvider(
     integrations,
-    githubCredentialsProvider,
+    githubCredentialsProvider ||
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations),
   );
 
   return createTemplateAction<{

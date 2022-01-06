@@ -18,10 +18,6 @@ import { GithubCredentials, GithubCredentialsProvider } from './types';
 import { ScmIntegrations } from '../ScmIntegrations';
 import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubCredentialsProvider';
 
-type SingleInstanceGithubCredentialsProviderCollection = {
-  [url: string]: GithubCredentialsProvider;
-};
-
 /**
  * Handles the creation and caching of credentials for GitHub integrations.
  *
@@ -34,19 +30,19 @@ export class DefaultGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
   static fromIntegrations(integrations: ScmIntegrations) {
-    const credentialsProviders: SingleInstanceGithubCredentialsProviderCollection =
-      {};
+    const credentialsProviders: Map<string, GithubCredentialsProvider> =
+      new Map<string, GithubCredentialsProvider>();
 
     integrations.github.list().forEach(integration => {
       const credentialsProvider =
         SingleInstanceGithubCredentialsProvider.create(integration.config);
-      credentialsProviders[integration.config.host] = credentialsProvider;
+      credentialsProviders.set(integration.config.host, credentialsProvider);
     });
     return new DefaultGithubCredentialsProvider(credentialsProviders);
   }
 
   private constructor(
-    private readonly providers: SingleInstanceGithubCredentialsProviderCollection,
+    private readonly providers: Map<string, GithubCredentialsProvider>,
   ) {}
 
   /**
@@ -71,13 +67,14 @@ export class DefaultGithubCredentialsProvider
    */
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
     const parsed = new URL(opts.url);
+    const provider = this.providers.get(parsed.host);
 
-    if (!this.providers[parsed.host]) {
+    if (!provider) {
       throw new Error(
         `There is no GitHub integration that matches ${opts.url}. Please add a configuration for an integration.`,
       );
     }
 
-    return this.providers[parsed.host].getCredentials(opts);
+    return provider.getCredentials(opts);
   }
 }

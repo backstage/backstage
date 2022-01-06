@@ -1012,14 +1012,14 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrations;
     logger: Logger_2;
-    githubCredentialsProvider: GithubCredentialsProvider;
+    githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
-      githubCredentialsProvider: GithubCredentialsProvider;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubDiscoveryProcessor;
   // (undocumented)
@@ -1036,14 +1036,14 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     integrations: ScmIntegrations;
     logger: Logger_2;
     orgs: GithubMultiOrgConfig;
-    githubCredentialsProvider: GithubCredentialsProvider;
+    githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
-      githubCredentialsProvider: GithubCredentialsProvider;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubMultiOrgReaderProcessor;
   // (undocumented)
@@ -1074,7 +1074,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       id: string;
       orgUrl: string;
       logger: Logger_2;
-      githubCredentialsProvider: GithubCredentialsProvider;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GitHubOrgEntityProvider;
   // (undocumented)
@@ -1090,14 +1090,14 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrations;
     logger: Logger_2;
-    githubCredentialsProvider: GithubCredentialsProvider;
+    githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
-      githubCredentialsProvider: GithubCredentialsProvider;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubOrgReaderProcessor;
   // (undocumented)

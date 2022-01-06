@@ -17,6 +17,7 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
+  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -49,7 +50,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     config: Config,
     options: {
       logger: Logger;
-      githubCredentialsProvider: GithubCredentialsProvider;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -63,11 +64,13 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrations;
     logger: Logger;
-    githubCredentialsProvider: GithubCredentialsProvider;
+    githubCredentialsProvider?: GithubCredentialsProvider;
   }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
-    this.githubCredentialsProvider = options.githubCredentialsProvider;
+    this.githubCredentialsProvider =
+      options.githubCredentialsProvider ||
+      DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
   }
 
   async readLocation(
