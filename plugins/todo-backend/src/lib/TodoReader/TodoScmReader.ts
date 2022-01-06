@@ -41,7 +41,8 @@ const excludedExtensions = [
 ];
 const MAX_FILE_SIZE = 200000;
 
-type Options = {
+/** @public */
+export type TodoScmReaderOptions = {
   logger: Logger;
   reader: UrlReader;
   integrations: ScmIntegrations;
@@ -53,6 +54,7 @@ type CacheItem = {
   result: ReadTodosResult;
 };
 
+/** @public */
 export class TodoScmReader implements TodoReader {
   private readonly logger: Logger;
   private readonly reader: UrlReader;
@@ -62,14 +64,17 @@ export class TodoScmReader implements TodoReader {
   private readonly cache = new Map<string, CacheItem>();
   private readonly inFlightReads = new Map<string, Promise<CacheItem>>();
 
-  static fromConfig(config: Config, options: Omit<Options, 'integrations'>) {
+  static fromConfig(
+    config: Config,
+    options: Omit<TodoScmReaderOptions, 'integrations'>,
+  ) {
     return new TodoScmReader({
       ...options,
       integrations: ScmIntegrations.fromConfig(config),
     });
   }
 
-  constructor(options: Options) {
+  constructor(options: TodoScmReaderOptions) {
     this.logger = options.logger;
     this.reader = options.reader;
     this.parser = options.parser ?? createTodoParser();

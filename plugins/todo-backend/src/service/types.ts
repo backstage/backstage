@@ -17,23 +17,23 @@
 import { EntityName } from '@backstage/catalog-model';
 import { TodoItem } from '../lib';
 
-type Fields = 'text' | 'tag' | 'author' | 'viewUrl' | 'repoFilePath';
-
+/** @public */
 export type ListTodosRequest = {
   entity?: EntityName;
   offset?: number;
   limit?: number;
   orderBy?: {
-    field: Fields;
+    field: 'text' | 'tag' | 'author' | 'viewUrl' | 'repoFilePath';
     direction: 'asc' | 'desc';
   };
   filters?: {
-    field: Fields;
+    field: 'text' | 'tag' | 'author' | 'viewUrl' | 'repoFilePath';
     /** Value to filter by, with '*' used as wildcard */
     value: string;
   }[];
 };
 
+/** @public */
 export type ListTodosResponse = {
   items: TodoItem[];
   totalCount: number;
@@ -41,6 +41,7 @@ export type ListTodosResponse = {
   limit: number;
 };
 
+/** @public */
 export interface TodoService {
   listTodos(
     req: ListTodosRequest,

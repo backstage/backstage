@@ -29,7 +29,8 @@ import { ListTodosRequest, ListTodosResponse, TodoService } from './types';
 const DEFAULT_DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_MAX_PAGE_SIZE = 50;
 
-type Options = {
+/** @public */
+export type TodoReaderServiceOptions = {
   todoReader: TodoReader;
   catalogClient: CatalogApi;
   maxPageSize?: number;
@@ -43,13 +44,14 @@ function wildcardRegex(str: string): RegExp {
   return new RegExp(`^${pattern}$`, 'i');
 }
 
+/** @public */
 export class TodoReaderService implements TodoService {
   private readonly todoReader: TodoReader;
   private readonly catalogClient: CatalogApi;
   private readonly maxPageSize: number;
   private readonly defaultPageSize: number;
 
-  constructor(options: Options) {
+  constructor(options: TodoReaderServiceOptions) {
     this.todoReader = options.todoReader;
     this.catalogClient = options.catalogClient;
     this.maxPageSize = options.maxPageSize ?? DEFAULT_MAX_PAGE_SIZE;
