@@ -2307,6 +2307,24 @@
     react-use "^17.2.4"
     zen-observable "^0.8.15"
 
+"@backstage/plugin-pagerduty@0.3.23-next.0":
+  version "0.3.23-next.0"
+  resolved "https://registry.npmjs.org/@backstage/plugin-pagerduty/-/plugin-pagerduty-0.3.23-next.0.tgz#dcc88003809b90414c8ef520171ba6a1893cb3c7"
+  integrity sha512-AhgnOvpJCUGHFxXXEttcP+LpGtyskhUutD0gRamRtDX65lNWD+8/vHno9Pi1oNG6LgcsFfFzDcapvPrwW3xShw==
+  dependencies:
+    "@backstage/catalog-model" "^0.9.10-next.0"
+    "@backstage/core-components" "^0.8.5-next.0"
+    "@backstage/core-plugin-api" "^0.6.0-next.0"
+    "@backstage/plugin-catalog-react" "^0.6.12-next.0"
+    "@backstage/theme" "^0.2.14"
+    "@material-ui/core" "^4.12.2"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.57"
+    classnames "^2.2.6"
+    luxon "2.0.2"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"

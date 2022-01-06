@@ -30,6 +30,8 @@ import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
 import { NavLink } from 'react-router-dom';
 import { GraphiQLIcon } from '@backstage/plugin-graphiql';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { scaffolderRoutePermission } from '@backstage/plugin-scaffolder';
 import {
   Settings as SidebarSettings,
   UserSettingsSignInAvatar,
@@ -84,48 +86,57 @@ const SidebarLogo = () => {
   );
 };
 
-export const Root = ({ children }: PropsWithChildren<{}>) => (
-  <SidebarPage>
-    <Sidebar>
-      <SidebarLogo />
-      <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-        <SearchContextProvider>
-          <SidebarSearchModal />
-        </SearchContextProvider>
-      </SidebarGroup>
-      <SidebarDivider />
-      <SidebarGroup label="Menu" icon={<MenuIcon />}>
-        {/* Global nav, not org-specific */}
-        <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
-        <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
-        <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
-        <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
-        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
-        {/* End global nav */}
+export const Root = ({ children }: PropsWithChildren<{}>) => {
+  const { allowed } = usePermission(scaffolderRoutePermission);
+  return (
+    <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+        <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+          <SearchContextProvider>
+            <SidebarSearchModal />
+          </SearchContextProvider>
+        </SidebarGroup>
         <SidebarDivider />
-        <SidebarScrollWrapper>
-          <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-          <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
-          <SidebarItem
-            icon={MoneyIcon}
-            to="cost-insights"
-            text="Cost Insights"
-          />
-          <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
-        </SidebarScrollWrapper>
+        <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          {/* Global nav, not org-specific */}
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+          <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+          <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
+          <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
+          {!!allowed && (
+            <SidebarItem
+              icon={CreateComponentIcon}
+              to="create"
+              text="Create..."
+            />
+          )}
+          {/* End global nav */}
+          <SidebarDivider />
+          <SidebarScrollWrapper>
+            <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+            <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
+            <SidebarItem
+              icon={MoneyIcon}
+              to="cost-insights"
+              text="Cost Insights"
+            />
+            <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
+          </SidebarScrollWrapper>
+          <SidebarDivider />
+          <Shortcuts />
+        </SidebarGroup>
+        <SidebarSpace />
         <SidebarDivider />
-        <Shortcuts />
-      </SidebarGroup>
-      <SidebarSpace />
-      <SidebarDivider />
-      <SidebarGroup
-        label="Settings"
-        icon={<UserSettingsSignInAvatar />}
-        to="/settings"
-      >
-        <SidebarSettings />
-      </SidebarGroup>
-    </Sidebar>
-    {children}
-  </SidebarPage>
-);
+        <SidebarGroup
+          label="Settings"
+          icon={<UserSettingsSignInAvatar />}
+          to="/settings"
+        >
+          <SidebarSettings />
+        </SidebarGroup>
+      </Sidebar>
+      {children}
+    </SidebarPage>
+  );
+};

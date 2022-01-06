@@ -22,6 +22,7 @@ import { IconButton } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema } from '@backstage/catalog-model';
 import { Observable } from '@backstage/types';
+import { Permission } from '@backstage/plugin-permission-common';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -274,6 +275,11 @@ const scaffolderPlugin: BackstagePlugin<
 >;
 export { scaffolderPlugin as plugin };
 export { scaffolderPlugin };
+
+// Warning: (ae-missing-release-tag) "scaffolderRoutePermission" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const scaffolderRoutePermission: Permission;
 
 // Warning: (ae-missing-release-tag) "TemplateList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
