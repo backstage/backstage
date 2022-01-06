@@ -98,7 +98,7 @@ export class DefaultGithubCredentialsProvider
 {
   // (undocumented)
   static fromIntegrations(
-    integrations: ScmIntegrations,
+    integrations: ScmIntegrationRegistry,
   ): DefaultGithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }

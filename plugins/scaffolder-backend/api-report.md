@@ -131,7 +131,7 @@ export function createGithubActionsDispatchAction(options: {
 //
 // @public (undocumented)
 export function createGithubWebhookAction(options: {
-  integrations: ScmIntegrations;
+  integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<any>;
@@ -161,7 +161,7 @@ export function createPublishFileAction(): TemplateAction<any>;
 //
 // @public (undocumented)
 export function createPublishGithubAction(options: {
-  integrations: ScmIntegrations;
+  integrations: ScmIntegrationRegistry;
   config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<any>;
