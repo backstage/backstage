@@ -21,6 +21,7 @@ export default async function createPlugin({
   reader,
   config,
   discovery,
+  permissions,
 }: PluginEnvironment): Promise<Router> {
   const todoReader = TodoScmReader.fromConfig(config, {
     logger,
@@ -32,7 +33,7 @@ export default async function createPlugin({
     catalogClient,
   });
 
-  return await createRouter({ todoService });
+  return await createRouter({ todoService, permissions });
 }
 ```
 

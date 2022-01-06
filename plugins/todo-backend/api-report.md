@@ -8,6 +8,7 @@ import { Config } from '@backstage/config';
 import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
 import { Logger as Logger_2 } from 'winston';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
 
@@ -52,6 +53,8 @@ export type ReadTodosResult = {
 
 // @public (undocumented)
 export interface RouterOptions {
+  // (undocumented)
+  permissions: PermissionAuthorizer;
   // (undocumented)
   todoService: TodoService;
 }

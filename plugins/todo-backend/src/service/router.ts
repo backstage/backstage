@@ -16,8 +16,10 @@
 
 import { EntityName, parseEntityName } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import express from 'express';
 import Router from 'express-promise-router';
+import { AuthorizedTodoService } from './AuthorizedTodoService';
 import { TodoService } from './types';
 
 const TODO_FIELDS = [
@@ -31,13 +33,17 @@ const TODO_FIELDS = [
 /** @public */
 export interface RouterOptions {
   todoService: TodoService;
+  permissions: PermissionAuthorizer;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { todoService } = options;
+  const todoService = new AuthorizedTodoService(
+    options.todoService,
+    options.permissions,
+  );
 
   const router = Router();
   router.use(express.json());

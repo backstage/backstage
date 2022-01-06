@@ -17,6 +17,10 @@
 import express from 'express';
 import request from 'supertest';
 import { errorHandler } from '@backstage/backend-common';
+import {
+  AuthorizeResult,
+  PermissionAuthorizer,
+} from '@backstage/plugin-permission-common';
 
 import {
   createRouter,
@@ -50,16 +54,23 @@ describe('createRouter', () => {
   const mockService: jest.Mocked<TodoService> = {
     listTodos: jest.fn(),
   };
+  const mockAuthorizer: jest.Mocked<PermissionAuthorizer> = {
+    authorize: jest.fn(),
+  };
 
   beforeAll(async () => {
     const router = await createRouter({
       todoService: mockService,
+      permissions: mockAuthorizer,
     });
     app = express().use(router).use(errorHandler());
   });
 
   beforeEach(() => {
     jest.resetAllMocks();
+    mockAuthorizer.authorize.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
   });
 
   describe('GET /todos', () => {
@@ -163,6 +174,26 @@ describe('createRouter', () => {
       );
 
       expect(mockService.listTodos).not.toHaveBeenCalled();
+    });
+
+    it('rejects forbidden queries', async () => {
+      mockAuthorizer.authorize.mockResolvedValueOnce([
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      await expect(
+        request(app).get('/v1/todos?entity=k:n'),
+      ).resolves.toMatchObject(matchErrorResponse(403, 'NotAllowedError', ''));
+
+      expect(mockService.listTodos).not.toHaveBeenCalled();
+      expect(mockAuthorizer.authorize).toHaveBeenCalledWith(
+        [
+          expect.objectContaining({
+            resourceRef: 'k:default/n',
+          }),
+        ],
+        { token: undefined },
+      );
     });
   });
 });
