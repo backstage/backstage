@@ -92,6 +92,7 @@ export type AnalyticsEventAttributes = {
  * @alpha
  */
 export type AnalyticsTracker = {
+  setUser: (userIdentifier: string) => void;
   captureEvent: (
     action: string,
     subject: string,
@@ -121,6 +122,12 @@ export type AnalyticsApi = {
    * an analytics system.
    */
   captureEvent(event: AnalyticsEvent): void;
+
+  /**
+   * Mechanism for capturing a primary identifier for a user which can be used
+   * in underlying systems for accurately deriving metrics like MAU.
+   */
+  setUser(userIdentifier: string): void;
 };
 
 /**

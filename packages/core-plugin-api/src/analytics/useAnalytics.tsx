@@ -28,7 +28,7 @@ function useAnalyticsApi(): AnalyticsApi {
   try {
     return useApi(analyticsApiRef);
   } catch {
-    return { captureEvent: () => {} };
+    return { captureEvent: () => {}, setUser: () => {} };
   }
 }
 

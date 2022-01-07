@@ -36,6 +36,7 @@ export type AlertMessage = {
 // @alpha
 export type AnalyticsApi = {
   captureEvent(event: AnalyticsEvent): void;
+  setUser(userIdentifier: string): void;
 };
 
 // @alpha
@@ -68,6 +69,7 @@ export type AnalyticsEventAttributes = {
 
 // @alpha
 export type AnalyticsTracker = {
+  setUser: (userIdentifier: string) => void;
   captureEvent: (
     action: string,
     subject: string,

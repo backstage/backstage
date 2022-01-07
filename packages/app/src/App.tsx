@@ -88,6 +88,7 @@ import * as plugins from './plugins';
 
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
+import { useAnalytics } from '@backstage/core-plugin-api';
 
 const app = createApp({
   apis,
@@ -98,12 +99,19 @@ const app = createApp({
   },
   components: {
     SignInPage: props => {
+      const analytics = useAnalytics();
+      const { onSignInSuccess, ...otherProps } = props;
       return (
         <SignInPage
-          {...props}
+          {...otherProps}
           providers={['guest', 'custom', ...providers]}
           title="Select a sign-in method"
           align="center"
+          onSignInSuccess={async identityApi => {
+            const identity = await identityApi.getBackstageIdentity();
+            analytics.setUser(identity.userEntityRef);
+            onSignInSuccess(identityApi);
+          }}
         />
       );
     },

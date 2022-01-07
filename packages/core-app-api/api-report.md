@@ -455,6 +455,8 @@ export class MicrosoftAuth {
 export class NoOpAnalyticsApi implements AnalyticsApi {
   // (undocumented)
   captureEvent(_event: AnalyticsEvent): void;
+  // (undocumented)
+  setUser(_userId: string): void;
 }
 
 // @public

@@ -94,6 +94,16 @@ export class GoogleAnalytics implements AnalyticsApi {
   }
 
   /**
+   * Sets the GA userId. Note: use of this feature requires that you've set up
+   * a Google Analytics User ID view in your property.
+   */
+  setUser(userId: string) {
+    // todo(iamEAP): Implement a queueing mechanism to (if configured) not send
+    // hits to GA _until_ a userId is set (to prevent dropped hits).
+    ReactGA.set({ userId });
+  }
+
+  /**
    * Primary event capture implementation. Handles core navigate event as a
    * pageview and the rest as custom events. All custom dimensions/metrics are
    * applied as they should be (set on pageview, merged object on events).

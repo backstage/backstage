@@ -50,6 +50,8 @@ export class MockAnalyticsApi implements AnalyticsApi {
   captureEvent(event: AnalyticsEvent): void;
   // (undocumented)
   getEvents(): AnalyticsEvent[];
+  // (undocumented)
+  setUser(_userId: string): void;
 }
 
 // @public

@@ -35,6 +35,15 @@ export class Tracker implements AnalyticsTracker {
     this.context = context;
   }
 
+  setUser(userIdentifier: string) {
+    try {
+      this.analyticsApi.setUser(userIdentifier);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn('Error during analytics user set. %o', e);
+    }
+  }
+
   captureEvent(
     action: string,
     subject: string,

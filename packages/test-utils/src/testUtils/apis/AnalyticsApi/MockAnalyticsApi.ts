@@ -37,6 +37,8 @@ export class MockAnalyticsApi implements AnalyticsApi {
     });
   }
 
+  setUser(_userId: string) {}
+
   getEvents(): AnalyticsEvent[] {
     return this.events;
   }

@@ -22,4 +22,5 @@ import { AnalyticsApi, AnalyticsEvent } from '@backstage/core-plugin-api';
  */
 export class NoOpAnalyticsApi implements AnalyticsApi {
   captureEvent(_event: AnalyticsEvent): void {}
+  setUser(_userId: string): void {}
 }

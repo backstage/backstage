@@ -19,6 +19,7 @@ export const analyticsModuleGA: BackstagePlugin<{}, {}>;
 export class GoogleAnalytics implements AnalyticsApi {
   captureEvent(event: AnalyticsEvent): void;
   static fromConfig(config: Config): GoogleAnalytics;
+  setUser(userId: string): void;
 }
 
 // (No @packageDocumentation comment for this package)
