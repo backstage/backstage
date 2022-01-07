@@ -16,6 +16,11 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { FieldValidation, FieldProps } from '@rjsf/core';
 
+/**
+ * Field validation type for Custom Field Extensions.
+ *
+ * @public
+ */
 export type CustomFieldValidator<T> =
   | ((data: T, field: FieldValidation) => void)
   | ((
@@ -24,12 +29,24 @@ export type CustomFieldValidator<T> =
       context: { apiHolder: ApiHolder },
     ) => void);
 
+/**
+ * Type for the Custom Field Extension with the
+ * name and components and validation function.
+ *
+ * @public
+ */
 export type FieldExtensionOptions<T = any> = {
   name: string;
   component: (props: FieldProps<T>) => JSX.Element | null;
   validation?: CustomFieldValidator<T>;
 };
 
+/**
+ * Type for field extensions and being able to type
+ * incoming props easier.
+ *
+ * @public
+ */
 export interface FieldExtensionComponentProps<
   ReturnValue,
   UiOptions extends {} = {},

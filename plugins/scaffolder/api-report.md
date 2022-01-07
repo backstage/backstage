@@ -36,20 +36,7 @@ export function createScaffolderFieldExtension<T = any>(
   options: FieldExtensionOptions<T>,
 ): Extension<() => null>;
 
-// Warning: (ae-missing-release-tag) "CustomFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface CustomFieldExtension<ReturnValue, UiOptions extends {} = {}>
-  extends FieldProps<ReturnValue> {
-  // (undocumented)
-  uiSchema: {
-    'ui:options'?: UiOptions;
-  };
-}
-
-// Warning: (ae-missing-release-tag) "CustomFieldValidator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type CustomFieldValidator<T> =
   | ((data: T, field: FieldValidation) => void)
   | ((
@@ -107,9 +94,18 @@ export const EntityTagsPickerFieldExtension: () => null;
 // @public
 export const FavouriteTemplate: (props: Props) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "FieldExtensionOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export interface FieldExtensionComponentProps<
+  ReturnValue,
+  UiOptions extends {} = {},
+> extends FieldProps<ReturnValue> {
+  // (undocumented)
+  uiSchema: {
+    'ui:options'?: UiOptions;
+  };
+}
+
+// @public
 export type FieldExtensionOptions<T = any> = {
   name: string;
   component: (props: FieldProps<T>) => JSX.Element | null;
@@ -157,7 +153,7 @@ export const RepoUrlPicker: ({
   onChange,
   rawErrors,
   formData,
-}: CustomFieldExtension<string, RepoUrlPickerUiOptions>) => JSX.Element;
+}: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "RepoUrlPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

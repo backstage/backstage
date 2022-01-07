@@ -29,7 +29,7 @@ export {
 export type {
   CustomFieldValidator,
   FieldExtensionOptions,
-  CustomFieldExtension,
+  FieldExtensionComponentProps,
 } from './extensions';
 export {
   EntityPickerFieldExtension,
