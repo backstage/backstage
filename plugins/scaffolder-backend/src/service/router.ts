@@ -153,7 +153,7 @@ export async function createRouter(
             .filter(parameter => {
               if (!parameter.if) return true;
 
-              const shouldShow = config.get(parameter.if);
+              const shouldShow = config.getOptional(parameter.if);
 
               return shouldShow;
             });
