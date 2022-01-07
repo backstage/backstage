@@ -20,6 +20,7 @@ import { parseRepoUrl, isExecutable } from './util';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
+  SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
 import { zipObject } from 'lodash';
 import { createTemplateAction } from '../../createTemplateAction';
@@ -58,7 +59,7 @@ export type GithubPullRequestActionInput = {
 
 export type ClientFactoryInput = {
   integrations: ScmIntegrationRegistry;
-  githubCredentialsProvider: GithubCredentialsProvider;
+  githubCredentialsProvider?: GithubCredentialsProvider;
   host: string;
   owner: string;
   repo: string;
@@ -77,7 +78,11 @@ export const defaultClientFactory = async ({
     throw new InputError(`No integration for host ${host}`);
   }
 
-  const { token } = await githubCredentialsProvider.getCredentials({
+  const credentialsProvider =
+    githubCredentialsProvider ||
+    SingleInstanceGithubCredentialsProvider.create(integrationConfig);
+
+  const { token } = await credentialsProvider.getCredentials({
     url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
       repo,
     )}`,
@@ -99,7 +104,7 @@ export const defaultClientFactory = async ({
 
 interface CreateGithubPullRequestActionOptions {
   integrations: ScmIntegrationRegistry;
-  githubCredentialsProvider: GithubCredentialsProvider;
+  githubCredentialsProvider?: GithubCredentialsProvider;
   clientFactory?: (input: ClientFactoryInput) => Promise<PullRequestCreator>;
 }
 

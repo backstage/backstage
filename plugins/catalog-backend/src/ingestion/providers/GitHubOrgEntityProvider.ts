@@ -24,6 +24,7 @@ import {
   GithubCredentialsProvider,
   GitHubIntegrationConfig,
   ScmIntegrations,
+  SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { merge } from 'lodash';
@@ -81,10 +82,12 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       orgUrl: string;
       gitHubConfig: GitHubIntegrationConfig;
       logger: Logger;
-      githubCredentialsProvider: GithubCredentialsProvider;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ) {
-    this.githubCredentialsProvider = options.githubCredentialsProvider;
+    this.githubCredentialsProvider =
+      options.githubCredentialsProvider ||
+      SingleInstanceGithubCredentialsProvider.create(options.gitHubConfig);
   }
 
   getProviderName() {

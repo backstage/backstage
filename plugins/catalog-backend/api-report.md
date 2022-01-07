@@ -1063,7 +1063,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     orgUrl: string;
     gitHubConfig: GitHubIntegrationConfig;
     logger: Logger_2;
-    githubCredentialsProvider: GithubCredentialsProvider;
+    githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;

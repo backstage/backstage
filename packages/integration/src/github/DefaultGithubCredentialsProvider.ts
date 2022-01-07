@@ -58,7 +58,11 @@ export class DefaultGithubCredentialsProvider
    * @example
    * ```ts
    * const { token, headers } = await getCredentials({
-   *   url: 'github.com/backstage/foobar'
+   *   url: 'https://github.com/backstage/foobar'
+   * })
+   *
+   * const { token, headers } = await getCredentials({
+   *   url: 'https://github.com/backstage'
    * })
    * ```
    *

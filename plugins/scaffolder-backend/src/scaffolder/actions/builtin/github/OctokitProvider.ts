@@ -16,6 +16,7 @@
 
 import { InputError } from '@backstage/errors';
 import {
+  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
@@ -38,10 +39,12 @@ export class OctokitProvider {
 
   constructor(
     integrations: ScmIntegrationRegistry,
-    githubCredentialsProvider: GithubCredentialsProvider,
+    githubCredentialsProvider?: GithubCredentialsProvider,
   ) {
     this.integrations = integrations;
-    this.githubCredentialsProvider = githubCredentialsProvider;
+    this.githubCredentialsProvider =
+      githubCredentialsProvider ||
+      DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
   }
 
   /**
