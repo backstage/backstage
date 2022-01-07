@@ -62,4 +62,41 @@ describe('<MarkdownContent />', () => {
     expect(fp2).toBeInTheDocument();
     expect(rendered.getByText(');', { selector: 'span' })).toBeInTheDocument();
   });
+
+  it('Sanitizes the content if allowHTML is allowed', async () => {
+    const input = `<div class="note">
+      Some *emphasis* and <strong>strong</strong>!
+      <section>Should not render in a section</section>
+    </div>`;
+    const rendered = await renderWithEffects(
+      wrapInTestApp(<MarkdownContent content={input} allowHTML />),
+    );
+    expect(
+      rendered.getByText('strong', { selector: 'strong' }),
+    ).toBeInTheDocument();
+    expect(
+      rendered.queryByText('Should not render in a section', {
+        selector: 'section',
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('Should not render HTML if it is not allowed', async () => {
+    const rendered = await renderWithEffects(
+      wrapInTestApp(
+        <MarkdownContent
+          content="<a href='https://example.com'>example</a>"
+          dialect="common-mark"
+        />,
+      ),
+    );
+    expect(
+      rendered.queryByText('example', { selector: 'a' }),
+    ).not.toBeInTheDocument();
+    expect(
+      rendered.getByText("<a href='https://example.com'>example</a>", {
+        selector: 'p',
+      }),
+    ).toBeInTheDocument();
+  });
 });

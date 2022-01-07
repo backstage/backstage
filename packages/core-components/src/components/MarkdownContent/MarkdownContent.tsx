@@ -20,6 +20,8 @@ import gfm from 'remark-gfm';
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { CodeSnippet } from '../CodeSnippet';
+import { sanitzeContent } from './sanitize';
+import rehypeRaw from 'rehype-raw';
 
 export type MarkdownContentClassKey = 'markdown';
 
@@ -67,6 +69,7 @@ const useStyles = makeStyles<BackstageTheme>(
 type Props = {
   content: string;
   dialect?: 'gfm' | 'common-mark';
+  allowHTML?: boolean;
 };
 
 const components: Options['components'] = {
@@ -90,13 +93,14 @@ const components: Options['components'] = {
  * If you just want to render to plain [CommonMark](https://commonmark.org/), set the dialect to `'common-mark'`
  */
 export function MarkdownContent(props: Props) {
-  const { content, dialect = 'gfm' } = props;
+  const { content, dialect = 'gfm', allowHTML = false } = props;
   const classes = useStyles();
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}
+      rehypePlugins={allowHTML === true ? [rehypeRaw] : []}
       className={classes.markdown}
-      children={content}
+      children={allowHTML === true ? sanitzeContent(content) : content}
       components={components}
     />
   );
