@@ -24,6 +24,8 @@ import classNames from 'classnames';
 import React, { ReactNode } from 'react';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
+import Info from '@material-ui/icons/Info';
+import Tooltip from '@material-ui/core/Tooltip';
 
 /** @public */
 export type InfoCardClassKey =
@@ -55,6 +57,15 @@ const useStyles = makeStyles(
     headerAvatar: {},
     headerAction: {},
     headerContent: {},
+    leftIcon: {
+      float: 'right',
+    },
+    tooltip: {
+      fontSize: 14,
+    },
+    subheader: {
+      float: 'left',
+    },
   }),
   { name: 'BackstageInfoCard' },
 );
@@ -134,6 +145,7 @@ type Props = {
   children?: ReactNode;
   headerStyle?: object;
   headerProps?: CardHeaderProps;
+  iconInfoMessage?: ReactNode;
   action?: ReactNode;
   actionsClassName?: string;
   actions?: ReactNode;
@@ -162,6 +174,7 @@ export function InfoCard(props: Props): JSX.Element {
     children,
     headerStyle,
     headerProps,
+    iconInfoMessage,
     action,
     actionsClassName,
     actions,
@@ -194,6 +207,23 @@ export function InfoCard(props: Props): JSX.Element {
     });
   }
 
+  const cardSubTitle = () => {
+    return (
+      <div className={classes.headerSubheader}>
+        {subheader && <div className={classes.subheader}>{subheader}</div>}
+        {iconInfoMessage && (
+          <Tooltip
+            title={iconInfoMessage}
+            arrow
+            classes={{ tooltip: classes.tooltip }}
+          >
+            <Info className={classes.leftIcon} />
+          </Tooltip>
+        )}
+      </div>
+    );
+  };
+
   const errProps: ErrorBoundaryProps =
     errorBoundaryProps || (slackChannel ? { slackChannel } : {});
 
@@ -211,7 +241,7 @@ export function InfoCard(props: Props): JSX.Element {
               content: classes.headerContent,
             }}
             title={title}
-            subheader={subheader}
+            subheader={cardSubTitle()}
             action={action}
             style={{ ...headerStyle }}
             titleTypographyProps={titleTypographyProps}

@@ -15,7 +15,7 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { BottomLinkProps } from '../../layout/BottomLink';
 import { InfoCard, InfoCardVariants } from '../../layout/InfoCard';
 import { Gauge, GaugePropsGetColor } from './Gauge';
@@ -26,6 +26,8 @@ type Props = {
   variant?: InfoCardVariants;
   /** Progress in % specified as decimal, e.g. "0.23" */
   progress: number;
+  hoverMessage?: ReactNode;
+  iconInfoMessage?: string;
   inverse?: boolean;
   deepLink?: BottomLinkProps;
   getColor?: GaugePropsGetColor;
@@ -52,11 +54,21 @@ const useStyles = makeStyles(
  */
 export function GaugeCard(props: Props) {
   const classes = useStyles(props);
-  const { title, subheader, progress, inverse, deepLink, variant, getColor } =
-    props;
+  const {
+    title,
+    subheader,
+    progress,
+    inverse,
+    deepLink,
+    hoverMessage,
+    iconInfoMessage,
+    variant,
+    getColor,
+  } = props;
 
   const gaugeProps = {
     inverse,
+    hoverMessage,
     getColor,
     value: progress,
   };
@@ -68,6 +80,7 @@ export function GaugeCard(props: Props) {
         subheader={subheader}
         deepLink={deepLink}
         variant={variant}
+        iconInfoMessage={iconInfoMessage}
       >
         <Gauge {...gaugeProps} />
       </InfoCard>

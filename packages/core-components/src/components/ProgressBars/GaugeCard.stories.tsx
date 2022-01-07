@@ -118,3 +118,71 @@ export const StaticColor = () => (
     </Grid>
   </Wrapper>
 );
+
+export const InfoMessage = () => (
+  <Wrapper>
+    <Grid item>
+      <GaugeCard
+        title="Progress"
+        subheader="With a subheader"
+        progress={0.3}
+        iconInfoMessage="Info Message"
+      />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        title="Progress"
+        subheader="With a subheader"
+        progress={0.57}
+        iconInfoMessage="Info Message"
+      />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        title="Progress"
+        subheader="With a subheader"
+        progress={0.89}
+        iconInfoMessage="Info Message"
+      />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        title="Progress"
+        subheader="With a subheader"
+        inverse
+        progress={0.2}
+        iconInfoMessage="Info Message"
+      />
+    </Grid>
+  </Wrapper>
+);
+
+export const HoverMessage = () => (
+  <Wrapper>
+    <Grid item>
+      <GaugeCard title="Progress" progress={0.3} hoverMessage="Hover Message" />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        title="Progress"
+        progress={0.57}
+        hoverMessage="Hover Message"
+      />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        title="Progress"
+        progress={0.89}
+        hoverMessage="Hover Message"
+      />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        title="Progress"
+        inverse
+        progress={0.2}
+        hoverMessage="Hover Message"
+      />
+    </Grid>
+  </Wrapper>
+);

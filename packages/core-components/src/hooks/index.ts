@@ -16,6 +16,7 @@
 
 export { useQueryParamState } from './useQueryParamState';
 export { useSupportConfig } from './useSupportConfig';
+export { useHover } from './useHover';
 export type {
   SupportConfig,
   SupportItem,

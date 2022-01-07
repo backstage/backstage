@@ -17,7 +17,8 @@
 import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Circle } from 'rc-progress';
-import React from 'react';
+import { useHover } from '../../hooks';
+import React, { ReactNode } from 'react';
 
 /** @public */
 export type GaugeClassKey = 'root' | 'overlay' | 'circle' | 'colorUnknown';
@@ -37,6 +38,15 @@ const useStyles = makeStyles<BackstageTheme>(
       fontWeight: 'bold',
       color: theme.palette.textContrast,
     },
+    hoveringMessageCompliant: {
+      fontSize: 13,
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      position: 'absolute',
+      wordBreak: 'break-all',
+      display: 'inline-block',
+    },
     circle: {
       width: '80%',
       transform: 'translate(10%, 0)',
@@ -53,6 +63,7 @@ export type GaugeProps = {
   inverse?: boolean;
   unit?: string;
   max?: number;
+  hoverMessage?: ReactNode;
   getColor?: GaugePropsGetColor;
 };
 
@@ -104,10 +115,11 @@ export const getProgressColor: GaugePropsGetColor = ({
  */
 
 export function Gauge(props: GaugeProps) {
+  const [hoverRef, isHovering] = useHover() as any;
   const { getColor = getProgressColor } = props;
   const classes = useStyles(props);
   const { palette } = useTheme<BackstageTheme>();
-  const { value, fractional, inverse, unit, max } = {
+  const { value, fractional, inverse, unit, max, hoverMessage } = {
     ...defaultGaugeProps,
     ...props,
   };
@@ -116,7 +128,7 @@ export function Gauge(props: GaugeProps) {
   const asActual = max !== 100 ? Math.round(value) : asPercentage;
 
   return (
-    <div className={classes.root}>
+    <div ref={hoverRef} className={classes.root}>
       <Circle
         strokeLinecap="butt"
         percent={asPercentage}
@@ -125,9 +137,13 @@ export function Gauge(props: GaugeProps) {
         strokeColor={getColor({ palette, value: asActual, inverse, max })}
         className={classes.circle}
       />
-      <div className={classes.overlay}>
-        {isNaN(value) ? 'N/A' : `${asActual}${unit}`}
-      </div>
+      {hoverMessage && isHovering ? (
+        <div className={classes.hoveringMessageCompliant}>{hoverMessage}</div>
+      ) : (
+        <div className={classes.overlay}>
+          {isNaN(value) ? 'N/A' : `${asActual}${unit}`}
+        </div>
+      )}
     </div>
   );
 }
