@@ -25,14 +25,16 @@ import {
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import {
+  createPermissionIntegrationRouter,
+  PermissionRule,
+} from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
-import { EntitiesCatalog } from '../catalog';
+import { EntitiesCatalog, EntitiesSearchFilter } from '../catalog';
 import { LocationAnalyzer } from '../ingestion/types';
-import { CatalogPermissionRule } from '../permissions/types';
 import {
   basicEntityFilter,
   parseEntityFilterParams,
@@ -49,7 +51,7 @@ export interface NextRouterOptions {
   refreshService?: RefreshService;
   logger: Logger;
   config: Config;
-  permissionRules?: CatalogPermissionRule<unknown[]>[];
+  permissionRules?: PermissionRule<Entity, EntitiesSearchFilter, unknown[]>[];
 }
 
 export async function createNextRouter(

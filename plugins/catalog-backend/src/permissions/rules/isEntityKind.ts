@@ -18,8 +18,8 @@ import { EntitiesSearchFilter } from '../../catalog/types';
 import { createCatalogPermissionRule } from './util';
 
 /**
- * A {@link CatalogPermissionRule} which filters for entities with a specified
- * kind.
+ * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
+ * filters for entities with a specified kind.
  * @public
  */
 export const isEntityKind = createCatalogPermissionRule({
