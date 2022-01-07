@@ -26,6 +26,8 @@ import {
   Identified,
   PermissionCriteria,
   PermissionCondition,
+  AuthorizeResponseEnvelope,
+  AuthorizeRequestEnvelope,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import {
@@ -46,22 +48,24 @@ const permissionCriteriaSchema: z.ZodSchema<
     .or(z.object({ not: permissionCriteriaSchema })),
 );
 
-const responseSchema = z.array(
-  z
-    .object({
-      id: z.string(),
-      result: z
-        .literal(AuthorizeResult.ALLOW)
-        .or(z.literal(AuthorizeResult.DENY)),
-    })
-    .or(
-      z.object({
+const responseSchema = z.object({
+  items: z.array(
+    z
+      .object({
         id: z.string(),
-        result: z.literal(AuthorizeResult.CONDITIONAL),
-        conditions: permissionCriteriaSchema,
-      }),
-    ),
-);
+        result: z
+          .literal(AuthorizeResult.ALLOW)
+          .or(z.literal(AuthorizeResult.DENY)),
+      })
+      .or(
+        z.object({
+          id: z.string(),
+          result: z.literal(AuthorizeResult.CONDITIONAL),
+          conditions: permissionCriteriaSchema,
+        }),
+      ),
+  ),
+});
 
 /**
  * An isomorphic client for requesting authorization for Backstage permissions.
@@ -106,17 +110,17 @@ export class PermissionClient implements PermissionAuthorizer {
       return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
-    const identifiedRequests: Identified<AuthorizeRequest>[] = requests.map(
-      request => ({
+    const requestEnvelope: AuthorizeRequestEnvelope = {
+      items: requests.map(request => ({
         id: uuid.v4(),
         ...request,
-      }),
-    );
+      })),
+    };
 
     const permissionApi = await this.discovery.getBaseUrl('permission');
     const response = await fetch(`${permissionApi}/authorize`, {
       method: 'POST',
-      body: JSON.stringify(identifiedRequests),
+      body: JSON.stringify(requestEnvelope),
       headers: {
         ...this.getAuthorizationHeader(options?.token),
         'content-type': 'application/json',
@@ -126,15 +130,15 @@ export class PermissionClient implements PermissionAuthorizer {
       throw await ResponseError.fromResponse(response);
     }
 
-    const identifiedResponses = await response.json();
-    this.assertValidResponses(identifiedRequests, identifiedResponses);
+    const responseEnvelope = await response.json();
+    this.assertValidResponses(requestEnvelope, responseEnvelope);
 
-    const responsesById = identifiedResponses.reduce((acc, r) => {
+    const responsesById = responseEnvelope.items.reduce((acc, r) => {
       acc[r.id] = r;
       return acc;
     }, {} as Record<string, Identified<AuthorizeResponse>>);
 
-    return identifiedRequests.map(request => responsesById[request.id]);
+    return requestEnvelope.items.map(request => responsesById[request.id]);
   }
 
   private getAuthorizationHeader(token?: string): Record<string, string> {
@@ -142,12 +146,14 @@ export class PermissionClient implements PermissionAuthorizer {
   }
 
   private assertValidResponses(
-    requests: Identified<AuthorizeRequest>[],
+    requestEnvelope: AuthorizeRequestEnvelope,
     json: any,
-  ): asserts json is Identified<AuthorizeResponse>[] {
+  ): asserts json is AuthorizeResponseEnvelope {
     const authorizedResponses = responseSchema.parse(json);
-    const responseIds = authorizedResponses.map(r => r.id);
-    const hasAllRequestIds = requests.every(r => responseIds.includes(r.id));
+    const responseIds = authorizedResponses.items.map(r => r.id);
+    const hasAllRequestIds = requestEnvelope.items.every(r =>
+      responseIds.includes(r.id),
+    );
     if (!hasAllRequestIds) {
       throw new Error(
         'Unexpected authorization response from permission-backend',

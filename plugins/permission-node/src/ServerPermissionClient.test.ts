@@ -32,12 +32,12 @@ import { RestContext, rest } from 'msw';
 
 const server = setupServer();
 const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
-  const responses = req.body.map((r: Identified<AuthorizeRequest>) => ({
+  const responses = req.body.items.map((r: Identified<AuthorizeRequest>) => ({
     id: r.id,
     result: AuthorizeResult.ALLOW,
   }));
 
-  return res(json(responses));
+  return res(json({ items: responses }));
 });
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
 const discovery: PluginEndpointDiscovery = {

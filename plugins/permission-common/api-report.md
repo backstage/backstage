@@ -12,6 +12,11 @@ export type AuthorizeRequest = {
 };
 
 // @public
+export type AuthorizeRequestEnvelope = {
+  items: Identified<AuthorizeRequest>[];
+};
+
+// @public
 export type AuthorizeRequestOptions = {
   token?: string;
 };
@@ -25,6 +30,11 @@ export type AuthorizeResponse =
       result: AuthorizeResult.CONDITIONAL;
       conditions: PermissionCriteria<PermissionCondition>;
     };
+
+// @public
+export type AuthorizeResponseEnvelope = {
+  items: Identified<AuthorizeResponse>[];
+};
 
 // @public
 export enum AuthorizeResult {

@@ -32,6 +32,8 @@ import {
   AuthorizeResponse,
   AuthorizeRequest,
   Identified,
+  AuthorizeRequestEnvelope,
+  AuthorizeResponseEnvelope,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -42,26 +44,28 @@ import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 import { memoize } from 'lodash';
 import DataLoader from 'dataloader';
 
-const requestSchema: z.ZodSchema<Identified<AuthorizeRequest>[]> = z.array(
-  z.object({
-    id: z.string(),
-    resourceRef: z.string().optional(),
-    permission: z.object({
-      name: z.string(),
-      resourceType: z.string().optional(),
-      attributes: z.object({
-        action: z
-          .union([
-            z.literal('create'),
-            z.literal('read'),
-            z.literal('update'),
-            z.literal('delete'),
-          ])
-          .optional(),
+const requestSchema: z.ZodSchema<AuthorizeRequestEnvelope> = z.object({
+  items: z.array(
+    z.object({
+      id: z.string(),
+      resourceRef: z.string().optional(),
+      permission: z.object({
+        name: z.string(),
+        resourceType: z.string().optional(),
+        attributes: z.object({
+          action: z
+            .union([
+              z.literal('create'),
+              z.literal('read'),
+              z.literal('update'),
+              z.literal('delete'),
+            ])
+            .optional(),
+        }),
       }),
     }),
-  }),
-);
+  ),
+});
 
 /**
  * Options required when constructing a new {@link express#Router} using
@@ -150,8 +154,8 @@ export async function createRouter(
   router.post(
     '/authorize',
     async (
-      req: Request<Identified<AuthorizeRequest>[]>,
-      res: Response<Identified<AuthorizeResponse>[]>,
+      req: Request<AuthorizeRequestEnvelope>,
+      res: Response<AuthorizeResponseEnvelope>,
     ) => {
       const token = IdentityClient.getBearerToken(req.header('authorization'));
       const user = token ? await identity.authenticate(token) : undefined;
@@ -164,15 +168,15 @@ export async function createRouter(
 
       const body = parseResult.data;
 
-      res.json(
-        await handleRequest(
-          body,
+      res.json({
+        items: await handleRequest(
+          body.items,
           user,
           policy,
           permissionIntegrationClient,
           req.header('authorization'),
         ),
-      );
+      });
     },
   );
 

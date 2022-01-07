@@ -54,12 +54,14 @@ describe('PermissionClient', () => {
 
   describe('authorize', () => {
     const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
-      const responses = req.body.map((a: Identified<AuthorizeRequest>) => ({
-        id: a.id,
-        result: AuthorizeResult.ALLOW,
-      }));
+      const responses = req.body.items.map(
+        (a: Identified<AuthorizeRequest>) => ({
+          id: a.id,
+          result: AuthorizeResult.ALLOW,
+        }),
+      );
 
-      return res(json(responses));
+      return res(json({ items: responses }));
     });
 
     beforeEach(() => {
@@ -79,12 +81,15 @@ describe('PermissionClient', () => {
       await client.authorize([mockAuthorizeRequest]);
 
       const request = mockAuthorizeHandler.mock.calls[0][0];
-      expect(request.body[0]).toEqual(
-        expect.objectContaining({
-          permission: mockPermission,
-          resourceRef: 'foo',
-        }),
-      );
+
+      expect(request.body).toEqual({
+        items: [
+          expect.objectContaining({
+            permission: mockPermission,
+            resourceRef: 'foo',
+          }),
+        ],
+      });
     });
 
     it('should return the response from the fetch request', async () => {
@@ -122,7 +127,11 @@ describe('PermissionClient', () => {
     it('should reject responses with missing ids', async () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (_req, res, { json }: RestContext) => {
-          return res(json([{ id: 'wrong-id', result: AuthorizeResult.ALLOW }]));
+          return res(
+            json({
+              items: [{ id: 'wrong-id', result: AuthorizeResult.ALLOW }],
+            }),
+          );
         },
       );
       await expect(
@@ -133,12 +142,14 @@ describe('PermissionClient', () => {
     it('should reject invalid responses', async () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
-          const responses = req.body.map((a: Identified<AuthorizeRequest>) => ({
-            id: a.id,
-            outcome: AuthorizeResult.ALLOW,
-          }));
+          const responses = req.body.items.map(
+            (a: Identified<AuthorizeRequest>) => ({
+              id: a.id,
+              outcome: AuthorizeResult.ALLOW,
+            }),
+          );
 
-          return res(json(responses));
+          return res(json({ items: responses }));
         },
       );
       await expect(
@@ -151,10 +162,10 @@ describe('PermissionClient', () => {
         (req, res, { json }: RestContext) => {
           const responses = req.body.map((a: Identified<AuthorizeRequest>) => ({
             id: a.id,
-            outcome: AuthorizeResult.DENY,
+            result: AuthorizeResult.DENY,
           }));
 
-          return res(json(responses));
+          return res(json({ items: responses }));
         },
       );
       const disabled = new PermissionClient({
