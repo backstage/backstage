@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
-import { EntitiesSearchFilter } from '../../catalog/types';
+import { CatalogPermissionRule } from '../types';
 
 /**
  * Helper function for creating correctly-typed
@@ -25,7 +23,6 @@ import { EntitiesSearchFilter } from '../../catalog/types';
  *
  * @public
  */
-export const createCatalogPermissionRule = makeCreatePermissionRule<
-  Entity,
-  EntitiesSearchFilter
->();
+export const createCatalogPermissionRule = <TParams extends unknown[]>(
+  rule: CatalogPermissionRule<TParams>,
+) => rule;
