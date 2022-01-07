@@ -34,3 +34,5 @@ export const permissionRules = {
   isEntityKind,
   isEntityOwner,
 };
+
+export { createCatalogPermissionRule } from './util';

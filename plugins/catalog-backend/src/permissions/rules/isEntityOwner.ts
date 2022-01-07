@@ -19,15 +19,14 @@ import {
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { EntitiesSearchFilter } from '../../catalog/types';
-import { CatalogPermissionRule } from '../types';
+import { createCatalogPermissionRule } from './util';
 
 /**
- * A {@link CatalogPermissionRule} which filters for entities with a specified
- * owner.
+ * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
+ * filters for entities with a specified owner.
  * @public
  */
-export const isEntityOwner: CatalogPermissionRule = {
+export const isEntityOwner = createCatalogPermissionRule({
   name: 'IS_ENTITY_OWNER',
   description: 'Allow entities owned by the current user',
   apply: (resource: Entity, claims: string[]) => {
@@ -39,8 +38,8 @@ export const isEntityOwner: CatalogPermissionRule = {
       .filter(relation => relation.type === RELATION_OWNED_BY)
       .some(relation => claims.includes(stringifyEntityRef(relation.target)));
   },
-  toQuery: (claims: string[]): EntitiesSearchFilter => ({
+  toQuery: (claims: string[]) => ({
     key: 'relations.ownedBy',
     values: claims,
   }),
-};
+});
