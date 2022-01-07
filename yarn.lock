@@ -4300,7 +4300,7 @@
     npmlog "^4.1.2"
     upath "^2.0.1"
 
-"@lerna/project@4.0.0", "@lerna/project@^4.0.0":
+"@lerna/project@4.0.0":
   version "4.0.0"
   resolved "https://registry.npmjs.org/@lerna/project/-/project-4.0.0.tgz#ff84893935833533a74deff30c0e64ddb7f0ba6b"
   integrity sha512-o0MlVbDkD5qRPkFKlBZsXZjoNTWPyuL58564nSfZJ6JYNmgAptnWPB2dQlAc7HWRZkmnC2fCkEdoU+jioPavbg==
