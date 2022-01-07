@@ -30,9 +30,10 @@ export type CachedEntityLoaderOptions = {
 };
 
 export class CachedEntityLoader {
-  private catalog: CatalogClient;
-  private cache: CacheClient;
-  private identity: IdentityClient;
+  private readonly catalog: CatalogClient;
+  private readonly cache: CacheClient;
+  private readonly identity: IdentityClient;
+  private readonly readTimeout = 1000;
 
   constructor({ catalog, cache, identity }: CachedEntityLoaderOptions) {
     this.catalog = catalog;
@@ -45,7 +46,7 @@ export class CachedEntityLoader {
     token: string | undefined,
   ): Promise<Entity | undefined> {
     const cacheKey = await this.getCacheKey(entityName, token);
-    let result = (await this.cache.get(cacheKey)) as Entity | undefined;
+    let result = await this.getFromCache(cacheKey);
 
     if (result) {
       return result;
@@ -66,6 +67,15 @@ export class CachedEntityLoader {
     }
 
     return result;
+  }
+
+  private async getFromCache(key: string): Promise<Entity | undefined> {
+    // Promise.race ensures we don't hang the client for long if the cache is
+    // temporarily unreachable.
+    return (await Promise.race([
+      this.cache.get(key),
+      new Promise(cancelAfter => setTimeout(cancelAfter, this.readTimeout)),
+    ])) as Entity | undefined;
   }
 
   private async getCacheKey(
