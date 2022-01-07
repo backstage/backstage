@@ -40,18 +40,7 @@ export const sidebarConfig = {
 export const submenuConfig = {
   drawerWidthClosed: 0,
   drawerWidthOpen: 202,
-  // As per NN/g's guidance on timing for exposing hidden content
-  // See https://www.nngroup.com/articles/timing-exposing-content/
-  defaultOpenDelayMs: 100,
-  defaultCloseDelayMs: 0,
-  defaultFadeDuration: 200,
-  logoHeight: 32,
-  iconContainerWidth: drawerWidthClosed,
-  iconSize: drawerWidthClosed - iconPadding * 2,
-  iconPadding,
-  selectedIndicatorWidth: 3,
-  userBadgePadding,
-  userBadgeDiameter: drawerWidthClosed - userBadgePadding * 2,
+  defaultOpenDelayMs: sidebarConfig.defaultOpenDelayMs + 200,
 };
 
 export const SIDEBAR_INTRO_LOCAL_STORAGE =
