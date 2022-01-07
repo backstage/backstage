@@ -55,6 +55,7 @@
   },
   "version": "1.0.0",
   "dependencies": {
+    "@manypkg/get-packages": "^1.1.3",
     "@microsoft/api-documenter": "^7.13.77",
     "@microsoft/api-extractor": "^7.19.2",
     "@microsoft/api-extractor-model": "^7.15.1",
