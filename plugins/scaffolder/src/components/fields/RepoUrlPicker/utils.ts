@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export function serializeFormData(data: {
+
+type RepoUrlPickerOptions = {
   host?: string;
   owner?: string;
   repo?: string;
   organization?: string;
   workspace?: string;
   project?: string;
-}) {
+};
+
+export function serializeRepoPickerUrl(data: RepoUrlPickerOptions) {
   if (!data.host) {
     return undefined;
   }
@@ -45,7 +48,9 @@ export function serializeFormData(data: {
   return `${data.host}?${params.toString()}`;
 }
 
-export function splitFormData(url: string | undefined) {
+export function parseRepoPickerUrl(
+  url: string | undefined,
+): RepoUrlPickerOptions {
   let host = undefined;
   let owner = undefined;
   let repo = undefined;

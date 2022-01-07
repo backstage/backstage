@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { splitFormData, serializeFormData } from './utils';
+import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
 
 describe('utils', () => {
-  describe('serializeFormData', () => {
+  describe('serializeRepoPickerUrl', () => {
     it('should return undefined when host is not set', () => {
-      expect(serializeFormData({})).toBeUndefined();
+      expect(serializeRepoPickerUrl({})).toBeUndefined();
     });
 
     it('should set the correct owner and repo', () => {
       expect(
-        serializeFormData({
+        serializeRepoPickerUrl({
           host: 'github.com',
           owner: 'owner',
           repo: 'backstage',
@@ -33,7 +33,7 @@ describe('utils', () => {
 
     it('should set correct other options', () => {
       expect(
-        serializeFormData({
+        serializeRepoPickerUrl({
           host: 'github.com',
           organization: 'organization',
           workspace: 'workspace',
@@ -46,7 +46,7 @@ describe('utils', () => {
 
     it('should set all correct options', () => {
       expect(
-        serializeFormData({
+        serializeRepoPickerUrl({
           host: 'github.com',
           owner: 'owner',
           repo: 'backstage',
@@ -60,10 +60,10 @@ describe('utils', () => {
     });
   });
 
-  describe('splitFormData', () => {
+  describe('parseRepoPickerUrl', () => {
     it('should parse a complete string', () => {
       expect(
-        splitFormData(
+        parseRepoPickerUrl(
           'github.com?owner=owner&repo=backstage&organization=organization&workspace=workspace&project=backstage',
         ),
       ).toEqual({

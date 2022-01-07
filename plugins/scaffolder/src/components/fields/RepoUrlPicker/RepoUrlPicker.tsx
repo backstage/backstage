@@ -22,7 +22,7 @@ import { AzureRepoPicker } from './AzureRepoPicker';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
 import { FieldExtensionComponentProps } from '../../../extensions';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
-import { splitFormData, serializeFormData } from './utils';
+import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
 
 export interface RepoUrlPickerUiOptions {
   allowedHosts?: string[];
@@ -42,14 +42,14 @@ export const RepoUrlPicker = ({
     organization?: string;
     workspace?: string;
     project?: string;
-  }>(splitFormData(formData));
+  }>(parseRepoPickerUrl(formData));
   const integrationApi = useApi(scmIntegrationsApiRef);
 
   const allowedHosts = uiSchema?.['ui:options']?.allowedHosts ?? [];
   const allowedOwners = uiSchema?.['ui:options']?.allowedOwners ?? [];
 
   useEffect(() => {
-    onChange(serializeFormData(state));
+    onChange(serializeRepoPickerUrl(state));
   }, [state, onChange]);
 
   return (

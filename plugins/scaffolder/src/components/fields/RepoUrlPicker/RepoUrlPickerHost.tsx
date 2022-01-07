@@ -42,6 +42,8 @@ export const RepoUrlPickerHost = ({
 
   useEffect(() => {
     if (hosts && !host) {
+      // This is only hear to set the default as the first one in the hosts array
+      // if the host is not set yet and there is a list of hosts.
       onChange(hosts[0]);
     }
   }, [hosts, host, onChange]);
