@@ -28,6 +28,7 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from './util';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -122,7 +123,10 @@ const applyConditions = <TResource>(
 export const createPermissionIntegrationRouter = <TResource>(options: {
   resourceType: string;
   rules: PermissionRule<TResource, any>[];
-  getResource: (resourceRef: string) => Promise<TResource | undefined>;
+  getResource: (
+    resourceRef: string,
+    authorizationToken?: string,
+  ) => Promise<TResource | undefined>;
 }): Router => {
   const { resourceType, rules, getResource } = options;
   const router = Router();
@@ -155,7 +159,10 @@ export const createPermissionIntegrationRouter = <TResource>(options: {
           .send(`Unexpected resource type: ${body.resourceType}.`);
       }
 
-      const resource = await getResource(body.resourceRef);
+      const resource = await getResource(
+        body.resourceRef,
+        IdentityClient.getBearerToken(req.header('authorization')),
+      );
 
       if (!resource) {
         return res

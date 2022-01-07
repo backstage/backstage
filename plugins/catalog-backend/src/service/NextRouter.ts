@@ -91,8 +91,8 @@ export async function createNextRouter(
       .use(
         createPermissionIntegrationRouter({
           resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-          getResource: resourceRef =>
-            getEntityResource(resourceRef, entitiesCatalog),
+          getResource: (resourceRef, authorizationToken) =>
+            getEntityResource(resourceRef, entitiesCatalog, authorizationToken),
           rules: permissionRules ?? [],
         }),
       )
@@ -208,6 +208,7 @@ export async function createNextRouter(
 async function getEntityResource(
   resourceRef: string,
   entitiesCatalog: EntitiesCatalog,
+  authorizationToken?: string,
 ): Promise<Entity | undefined> {
   const parsed = parseEntityRef(resourceRef);
 
@@ -217,6 +218,7 @@ async function getEntityResource(
       'metadata.namespace': parsed.namespace,
       'metadata.name': parsed.name,
     }),
+    authorizationToken,
   });
 
   return entities[0];
