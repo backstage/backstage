@@ -122,13 +122,22 @@ export type MockErrorApiOptions = {
 
 // @public
 export class MockFetchApi implements FetchApi {
-  constructor(implementation?: typeof crossFetch);
+  constructor(options?: MockFetchApiOptions);
   // (undocumented)
   get fetch(): typeof crossFetch;
-  setAuthorization(options?: {
-    identityApi?: Pick<IdentityApi, 'getCredentials'>;
-    token?: string;
-  }): this;
+}
+
+// @public
+export interface MockFetchApiOptions {
+  authorization?:
+    | {
+        token: string;
+      }
+    | {
+        identityApi: Pick<IdentityApi, 'getCredentials'>;
+      }
+    | undefined;
+  baseImplementation?: 'fetch' | 'none' | typeof crossFetch | undefined;
 }
 
 // @public

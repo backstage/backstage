@@ -42,7 +42,7 @@ describe('TechDocsStorageClient', () => {
   const identityApi: jest.Mocked<IdentityApi> = {
     getCredentials: jest.fn(),
   } as unknown as jest.Mocked<IdentityApi>;
-  const fetchApi = new MockFetchApi().setAuthorization({ identityApi });
+  const fetchApi = new MockFetchApi({ authorization: { identityApi } });
 
   beforeEach(() => {
     jest.resetAllMocks();

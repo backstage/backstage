@@ -15,7 +15,46 @@
  */
 
 import { FetchApi, IdentityApi } from '@backstage/core-plugin-api';
-import crossFetch, { Request } from 'cross-fetch';
+import crossFetch, { Request, Response } from 'cross-fetch';
+
+/**
+ * The options given when constructing a {@link MockFetchApi}.
+ *
+ * @public
+ */
+export interface MockFetchApiOptions {
+  /**
+   * Define the underlying base `fetch` implementation.
+   *
+   * @defaultValue 'fetch'
+   * @remarks
+   *
+   * `'fetch'` uses the global `fetch` implementation to make real network
+   * requests. This is the default.
+   *
+   * `'none'` swallows all calls and makes no requests at all.
+   *
+   * You can also pass in any `fetch` compatible callback, such as a
+   * `jest.fn()`, if you want to use a custom implementation or to just track
+   * and assert on calls.
+   */
+  baseImplementation?: 'fetch' | 'none' | typeof crossFetch | undefined;
+
+  /**
+   * If defined, adds token based Authorization headers to requests, basically
+   * simulating what
+   * {@link @backstage/core-app-api#FetchMiddlewares.injectIdentityAuth} does.
+   *
+   * @defaultValue undefined
+   * @remarks
+   *
+   * You can supply either a static token or an identity API.
+   */
+  authorization?:
+    | { token: string }
+    | { identityApi: Pick<IdentityApi, 'getCredentials'> }
+    | undefined;
+}
 
 /**
  * A test helper implementation of {@link @backstage/core-plugin-api#FetchApi}.
@@ -23,62 +62,70 @@ import crossFetch, { Request } from 'cross-fetch';
  * @public
  */
 export class MockFetchApi implements FetchApi {
-  #implementation: typeof crossFetch;
+  private readonly implementation: typeof crossFetch;
 
   /**
-   * Creates a {@link MockFetchApi}.
-   *
-   * @param mockImplementation - Here you can pass in a `jest.fn()` for example,
-   *        if you want to track the calls being made through the
-   *        {@link @backstage/core-plugin-api#MockFetchApi}. If you pass in no
-   *        mock implementation, the created
-   *        {@link @backstage/core-plugin-api#MockFetchApi} will make actual
-   *        requests using the global `fetch`.
+   * Creates a mock {@link @backstage/core-plugin-api#FetchApi}.
    */
-  constructor(implementation?: typeof crossFetch) {
-    this.#implementation = implementation ?? crossFetch;
+  constructor(options?: MockFetchApiOptions) {
+    this.implementation = build(options);
   }
 
   /** {@inheritdoc @backstage/core-plugin-api#FetchApi.fetch} */
   get fetch(): typeof crossFetch {
-    return this.#implementation;
+    return this.implementation;
+  }
+}
+
+//
+// Helpers
+//
+
+const dummyFetch: typeof crossFetch = () => Promise.resolve(new Response(null));
+
+function build(options?: MockFetchApiOptions): typeof crossFetch {
+  let implementation = baseImplementation(options);
+  implementation = authorization(options, implementation);
+  return implementation;
+}
+
+function baseImplementation(
+  options: MockFetchApiOptions | undefined,
+): typeof crossFetch {
+  const implementation = options?.baseImplementation ?? 'fetch';
+  if (implementation === 'fetch') {
+    return crossFetch;
+  } else if (implementation === 'none') {
+    return dummyFetch;
+  }
+  return implementation;
+}
+
+function authorization(
+  options: MockFetchApiOptions | undefined,
+  next: typeof crossFetch,
+): typeof crossFetch {
+  const auth = options?.authorization;
+  if (!auth) {
+    return next;
   }
 
-  /**
-   * Adds token based Authorization headers to requests, basically simulating
-   * what {@link @backstage/core-app-api#FetchMiddlewares.injectIdentityAuth}
-   * does.
-   *
-   * @remarks
-   *
-   * You can supply either a static mock token or a mock identity API. If
-   * neither is given, the static token string "mocked" is used.
-   */
-  setAuthorization(options?: {
-    identityApi?: Pick<IdentityApi, 'getCredentials'>;
-    token?: string;
-  }): this {
-    const next = this.#implementation;
+  const getToken = async () => {
+    if ('token' in auth) {
+      return auth.token;
+    }
+    const { token } = await auth.identityApi.getCredentials();
+    return token;
+  };
 
-    const getToken = async () => {
-      if (options?.token) {
-        return options.token;
-      } else if (options?.identityApi) {
-        const { token } = await options.identityApi.getCredentials();
-        return token;
-      }
-      return 'mocked';
-    };
-
-    this.#implementation = async (input, init) => {
-      const request = new Request(input, init);
+  return async (input, init) => {
+    const request = new Request(input, init);
+    if (!request.headers.get('authorization')) {
       const token = await getToken();
-      if (token && !request.headers.get('authorization')) {
+      if (token) {
         request.headers.set('authorization', `Bearer ${token}`);
       }
-      return next(request);
-    };
-
-    return this;
-  }
+    }
+    return next(request);
+  };
 }
