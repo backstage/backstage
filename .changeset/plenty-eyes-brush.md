@@ -49,3 +49,12 @@ And add a permissions field to the `PluginEnvironment` type in `packages/backend
 +   permissions: PermissionAuthorizer;
   };
 ```
+
+[`@backstage/plugin-permission-common`](https://www.npmjs.com/package/@backstage/plugin-permission-common) and [`@backstage/plugin-permission-node`](https://www.npmjs.com/package/@backstage/plugin-permission-node) will need to be installed as dependencies:
+
+```diff
+  // packages/backend/package.json
+
++   "@backstage/plugin-permission-common": "...",
++   "@backstage/plugin-permission-node": "...",
+```
