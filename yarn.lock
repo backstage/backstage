@@ -4264,7 +4264,7 @@
     tar "^6.1.0"
     temp-write "^4.0.0"
 
-"@lerna/package-graph@4.0.0", "@lerna/package-graph@^4.0.0":
+"@lerna/package-graph@4.0.0":
   version "4.0.0"
   resolved "https://registry.npmjs.org/@lerna/package-graph/-/package-graph-4.0.0.tgz#16a00253a8ac810f72041481cb46bcee8d8123dd"
   integrity sha512-QED2ZCTkfXMKFoTGoccwUzjHtZMSf3UKX14A4/kYyBms9xfFsesCZ6SLI5YeySEgcul8iuIWfQFZqRw+Qrjraw==
