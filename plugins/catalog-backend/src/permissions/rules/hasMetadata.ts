@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-export { createRouter } from './router';
-export type { RouterOptions } from './router';
-export type { TodoService, ListTodosRequest, ListTodosResponse } from './types';
-export { TodoReaderService } from './TodoReaderService';
-export type { TodoReaderServiceOptions } from './TodoReaderService';
+import { createPropertyRule } from './createPropertyRule';
+
+/**
+ * A {@link CatalogPermissionRule} which filters for entities with the specified
+ * metadata subfield. Also matches on values if value is provided.
+ *
+ * The key argument to the `apply` and `toQuery` methods can be nested, such as
+ * 'field.nestedfield'.
+ * @public
+ */
+export const hasMetadata = createPropertyRule('metadata');

@@ -37,75 +37,75 @@ import { ConfigApi } from '@backstage/core-plugin-api';
  * ```
  */
 export class MockConfigApi implements ConfigApi {
-  readonly #config: ConfigReader;
+  private readonly config: ConfigReader;
 
   // NOTE: not extending in order to avoid inheriting the static `.fromConfigs`
   constructor(data: JsonObject) {
-    this.#config = new ConfigReader(data);
+    this.config = new ConfigReader(data);
   }
 
   /** {@inheritdoc @backstage/config#Config.has} */
   has(key: string): boolean {
-    return this.#config.has(key);
+    return this.config.has(key);
   }
   /** {@inheritdoc @backstage/config#Config.keys} */
   keys(): string[] {
-    return this.#config.keys();
+    return this.config.keys();
   }
   /** {@inheritdoc @backstage/config#Config.get} */
   get<T = JsonValue>(key?: string): T {
-    return this.#config.get(key);
+    return this.config.get(key);
   }
   /** {@inheritdoc @backstage/config#Config.getOptional} */
   getOptional<T = JsonValue>(key?: string): T | undefined {
-    return this.#config.getOptional(key);
+    return this.config.getOptional(key);
   }
   /** {@inheritdoc @backstage/config#Config.getConfig} */
   getConfig(key: string): Config {
-    return this.#config.getConfig(key);
+    return this.config.getConfig(key);
   }
   /** {@inheritdoc @backstage/config#Config.getOptionalConfig} */
   getOptionalConfig(key: string): Config | undefined {
-    return this.#config.getOptionalConfig(key);
+    return this.config.getOptionalConfig(key);
   }
   /** {@inheritdoc @backstage/config#Config.getConfigArray} */
   getConfigArray(key: string): Config[] {
-    return this.#config.getConfigArray(key);
+    return this.config.getConfigArray(key);
   }
   /** {@inheritdoc @backstage/config#Config.getOptionalConfigArray} */
   getOptionalConfigArray(key: string): Config[] | undefined {
-    return this.#config.getOptionalConfigArray(key);
+    return this.config.getOptionalConfigArray(key);
   }
   /** {@inheritdoc @backstage/config#Config.getNumber} */
   getNumber(key: string): number {
-    return this.#config.getNumber(key);
+    return this.config.getNumber(key);
   }
   /** {@inheritdoc @backstage/config#Config.getOptionalNumber} */
   getOptionalNumber(key: string): number | undefined {
-    return this.#config.getOptionalNumber(key);
+    return this.config.getOptionalNumber(key);
   }
   /** {@inheritdoc @backstage/config#Config.getBoolean} */
   getBoolean(key: string): boolean {
-    return this.#config.getBoolean(key);
+    return this.config.getBoolean(key);
   }
   /** {@inheritdoc @backstage/config#Config.getOptionalBoolean} */
   getOptionalBoolean(key: string): boolean | undefined {
-    return this.#config.getOptionalBoolean(key);
+    return this.config.getOptionalBoolean(key);
   }
   /** {@inheritdoc @backstage/config#Config.getString} */
   getString(key: string): string {
-    return this.#config.getString(key);
+    return this.config.getString(key);
   }
   /** {@inheritdoc @backstage/config#Config.getOptionalString} */
   getOptionalString(key: string): string | undefined {
-    return this.#config.getOptionalString(key);
+    return this.config.getOptionalString(key);
   }
   /** {@inheritdoc @backstage/config#Config.getStringArray} */
   getStringArray(key: string): string[] {
-    return this.#config.getStringArray(key);
+    return this.config.getStringArray(key);
   }
   /** {@inheritdoc @backstage/config#Config.getOptionalStringArray} */
   getOptionalStringArray(key: string): string[] | undefined {
-    return this.#config.getOptionalStringArray(key);
+    return this.config.getOptionalStringArray(key);
   }
 }

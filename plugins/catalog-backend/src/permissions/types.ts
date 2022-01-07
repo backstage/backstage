@@ -13,9 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity } from '@backstage/catalog-model';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { EntitiesSearchFilter } from '../catalog/types';
 
-export { createRouter } from './router';
-export type { RouterOptions } from './router';
-export type { TodoService, ListTodosRequest, ListTodosResponse } from './types';
-export { TodoReaderService } from './TodoReaderService';
-export type { TodoReaderServiceOptions } from './TodoReaderService';
+/**
+ * A conditional rule that can be used to filter catalog entities for an
+ * authorization request. See
+ * {@link @backstage/plugin-permission-node#PermissionRule} for more details.
+ *
+ * @public
+ */
+export type CatalogPermissionRule = PermissionRule<
+  Entity,
+  EntitiesSearchFilter
+>;

@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-export { createRouter } from './router';
-export type { RouterOptions } from './router';
-export type { TodoService, ListTodosRequest, ListTodosResponse } from './types';
-export { TodoReaderService } from './TodoReaderService';
-export type { TodoReaderServiceOptions } from './TodoReaderService';
+import { hasAnnotation } from './hasAnnotation';
+import { isEntityKind } from './isEntityKind';
+import { isEntityOwner } from './isEntityOwner';
+import { hasLabel } from './hasLabel';
+import { hasMetadata } from './hasMetadata';
+import { hasSpec } from './hasSpec';
+
+/**
+ * These permission rules can be used to conditionally filter catalog entities
+ * or describe a user's access to the entities.
+ * @public
+ */
+export const permissionRules = {
+  hasAnnotation,
+  hasLabel,
+  hasMetadata,
+  hasSpec,
+  isEntityKind,
+  isEntityOwner,
+};
