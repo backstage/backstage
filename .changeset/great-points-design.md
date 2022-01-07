@@ -2,4 +2,4 @@
 '@backstage/plugin-tech-insights-backend': patch
 ---
 
-log errors on tech insights fact retriever
+Catch errors from a fact retriever and log them.
