@@ -830,7 +830,7 @@ export function durationText(startTimestamp: [number, number]): string;
 // @public (undocumented)
 export type EntitiesCatalog = {
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
-  removeEntityByUid(uid: string): Promise<void>;
+  removeEntityByUid(uid: string, authorizationToken?: string): Promise<void>;
   batchAddOrUpdateEntities?(
     requests: EntityUpsertRequest[],
     options?: {

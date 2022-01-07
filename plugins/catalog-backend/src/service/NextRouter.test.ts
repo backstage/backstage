@@ -213,10 +213,15 @@ describe('createNextRouter readonly disabled', () => {
     it('can remove', async () => {
       entitiesCatalog.removeEntityByUid.mockResolvedValue(undefined);
 
-      const response = await request(app).delete('/entities/by-uid/apa');
+      const response = await request(app)
+        .delete('/entities/by-uid/apa')
+        .set('authorization', 'Bearer someauthtoken');
 
       expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa');
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith(
+        'apa',
+        'someauthtoken',
+      );
       expect(response.status).toEqual(204);
     });
 
@@ -225,10 +230,15 @@ describe('createNextRouter readonly disabled', () => {
         new NotFoundError('nope'),
       );
 
-      const response = await request(app).delete('/entities/by-uid/apa');
+      const response = await request(app)
+        .delete('/entities/by-uid/apa')
+        .set('authorization', 'Bearer someauthtoken');
 
       expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa');
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith(
+        'apa',
+        'someauthtoken',
+      );
       expect(response.status).toEqual(404);
     });
   });
@@ -369,10 +379,15 @@ describe('createNextRouter readonly enabled', () => {
   describe('DELETE /entities/by-uid/:uid', () => {
     // this delete is allowed as there is no other way to remove entities
     it('is allowed', async () => {
-      const response = await request(app).delete('/entities/by-uid/apa');
+      const response = await request(app)
+        .delete('/entities/by-uid/apa')
+        .set('authorization', 'Bearer someauthtoken');
 
       expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa');
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith(
+        'apa',
+        'someauthtoken',
+      );
       expect(response.status).toEqual(204);
     });
   });

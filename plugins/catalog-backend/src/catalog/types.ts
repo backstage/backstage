@@ -113,7 +113,7 @@ export type EntitiesCatalog = {
    *
    * @param uid - The metadata.uid of the entity
    */
-  removeEntityByUid(uid: string): Promise<void>;
+  removeEntityByUid(uid: string, authorizationToken?: string): Promise<void>;
 
   /**
    * Writes a number of entities efficiently to storage.

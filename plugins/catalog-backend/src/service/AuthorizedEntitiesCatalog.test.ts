@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createConditionTransformer } from '@backstage/plugin-permission-node';
 import { isEntityKind } from '../permissions/rules/isEntityKind';
@@ -91,6 +92,48 @@ describe('AuthorizedEntitiesCatalog', () => {
       expect(fakeCatalog.entities).toHaveBeenCalledWith({
         authorizationToken: 'abcd',
       });
+    });
+  });
+
+  describe('removeEntityByUid', () => {
+    it('throws error on DENY', async () => {
+      fakeCatalog.entities.mockResolvedValue({
+        entities: [
+          { kind: 'component', namespace: 'default', name: 'my-component' },
+        ],
+      });
+      fakePermissionApi.authorize.mockResolvedValue([
+        { result: AuthorizeResult.DENY },
+      ]);
+      const catalog = new AuthorizedEntitiesCatalog(
+        fakeCatalog,
+        fakePermissionApi,
+        createConditionTransformer([]),
+      );
+
+      await expect(() =>
+        catalog.removeEntityByUid('uid', 'Bearer abcd'),
+      ).rejects.toThrowError(NotAllowedError);
+    });
+
+    it('calls underlying catalog method on ALLOW', async () => {
+      fakeCatalog.entities.mockResolvedValue({
+        entities: [
+          { kind: 'component', namespace: 'default', name: 'my-component' },
+        ],
+      });
+      fakePermissionApi.authorize.mockResolvedValue([
+        { result: AuthorizeResult.ALLOW },
+      ]);
+      const catalog = new AuthorizedEntitiesCatalog(
+        fakeCatalog,
+        fakePermissionApi,
+        createConditionTransformer([]),
+      );
+
+      await catalog.removeEntityByUid('uid', 'Bearer abcd');
+
+      expect(fakeCatalog.removeEntityByUid).toHaveBeenCalledWith('uid');
     });
   });
 });
