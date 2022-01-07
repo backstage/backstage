@@ -16,7 +16,7 @@
 
 import { BuildTable } from '../BuildTable/BuildTable';
 import React from 'react';
-import { useAnnotationFromEntity } from '../../hooks/useAnnotationFromEntity';
+import { getAnnotationFromEntity } from '../../utils/getAnnotationFromEntity';
 import { useBuildRuns } from '../../hooks/useBuildRuns';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
@@ -27,7 +27,7 @@ export const EntityPageAzurePipelines = ({
 }) => {
   const { entity } = useEntity();
 
-  const { project, repo, definition } = useAnnotationFromEntity(entity);
+  const { project, repo, definition } = getAnnotationFromEntity(entity);
 
   const { items, loading, error } = useBuildRuns(
     project,

@@ -14,30 +14,34 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import {
   AZURE_DEVOPS_DEFINITION_ANNOTATION,
   AZURE_DEVOPS_REPO_ANNOTATION,
 } from '../constants';
 
-export function useAnnotationFromEntity(entity: Entity): {
+import { Entity } from '@backstage/catalog-model';
+
+export function getAnnotationFromEntity(entity: Entity): {
   project: string;
   repo?: string;
   definition?: string;
 } {
-  if (entity.metadata.annotations?.[AZURE_DEVOPS_DEFINITION_ANNOTATION]) {
-    const { project, definition } = getProjectDefinition(
-      entity.metadata.annotations?.[AZURE_DEVOPS_DEFINITION_ANNOTATION],
-    );
+  let annotation =
+    entity.metadata.annotations?.[AZURE_DEVOPS_DEFINITION_ANNOTATION];
+  if (annotation) {
+    const { project, definition } = getProjectDefinition(annotation);
     const repo = undefined;
     return { project, repo, definition };
   }
 
-  const { project, repo } = getProjectRepo(
-    entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION] ?? '',
-  );
-  const definition = undefined;
-  return { project, repo, definition };
+  annotation = entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION];
+  if (annotation) {
+    const { project, repo } = getProjectRepo(annotation);
+    const definition = undefined;
+    return { project, repo, definition };
+  }
+
+  throw new Error('No supported Azure DevOps annotation was found');
 }
 
 function getProjectDefinition(annotation: string): {
@@ -49,18 +53,6 @@ function getProjectDefinition(annotation: string): {
   if (!project && !definition) {
     throw new Error(
       'Value for annotation dev.azure.com/project-definition was not in the correct format: <project-name>/<definition-name>',
-    );
-  }
-
-  if (!project) {
-    throw new Error(
-      'Project Name for annotation dev.azure.com/project-definition was not found; expected format is: <project-name>/<definition-name>',
-    );
-  }
-
-  if (!definition) {
-    throw new Error(
-      'Definition Name for annotation dev.azure.com/project-definition was not found; expected format is: <project-name>/<definition-name>',
     );
   }
 
@@ -76,18 +68,6 @@ function getProjectRepo(annotation: string): {
   if (!project && !repo) {
     throw new Error(
       'Value for annotation dev.azure.com/project-repo was not in the correct format: <project-name>/<repo-name>',
-    );
-  }
-
-  if (!project) {
-    throw new Error(
-      'Project Name for annotation dev.azure.com/project-repo was not found; expected format is: <project-name>/<repo-name>',
-    );
-  }
-
-  if (!repo) {
-    throw new Error(
-      'Repo Name for annotation dev.azure.com/project-repo was not found; expected format is: <project-name>/<repo-name>',
     );
   }
 

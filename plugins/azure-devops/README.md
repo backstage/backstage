@@ -71,25 +71,47 @@ To get the Azure Pipelines component working you'll need to do the following two
    yarn add @backstage/plugin-azure-devops
    ```
 
-2. Second we need to add the `EntityAzurePipelinesContent` extension to the entity page in your app:
+2. Second we need to add the `EntityAzurePipelinesContent` extension to the entity page in your app. How to do this will depend on which annotation you are using in your entities:
 
-   ```tsx
-   // In packages/app/src/components/catalog/EntityPage.tsx
-   import {
-     EntityAzurePipelinesContent,
-     isAzureDevOpsAvailable,
-   } from '@backstage/plugin-azure-devops';
+   1. If you are using the `dev.azure.com/project-repo` annotation then you'll want to do the following:
 
-   // For example in the CI/CD section
-   const cicdContent = (
-     <EntitySwitch>
-       // ...
-       <EntitySwitch.Case if={isAzureDevOpsAvailable}>
-          <EntityAzurePipelinesContent defaultLimit={25} />
-       </EntitySwitch.Case>
-       // ...
-     </EntitySwitch>
-   ```
+      ```tsx
+      // In packages/app/src/components/catalog/EntityPage.tsx
+      import {
+        EntityAzurePipelinesContent,
+        isAzureDevOpsAvailable,
+      } from '@backstage/plugin-azure-devops';
+
+      // For example in the CI/CD section
+      const cicdContent = (
+        <EntitySwitch>
+          // ...
+          <EntitySwitch.Case if={isAzureDevOpsAvailable}>
+              <EntityAzurePipelinesContent defaultLimit={25} />
+          </EntitySwitch.Case>
+          // ...
+        </EntitySwitch>
+      ```
+
+   2. If you are using the `dev.azure.com/project-definition` annotation then you'll want to do this:
+
+      ```tsx
+      // In packages/app/src/components/catalog/EntityPage.tsx
+      import {
+        EntityAzurePipelinesContent,
+        isAzurePipelinesAvailable,
+      } from '@backstage/plugin-azure-devops';
+
+      // For example in the CI/CD section
+      const cicdContent = (
+        <EntitySwitch>
+          // ...
+          <EntitySwitch.Case if={isAzurePipelinesAvailable}>
+            <EntityAzurePipelinesContent defaultLimit={25} />
+          </EntitySwitch.Case>
+          // ...
+        </EntitySwitch>
+      ```
 
 **Notes:**
 
