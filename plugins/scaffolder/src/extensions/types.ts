@@ -30,8 +30,10 @@ export type FieldExtensionOptions<T = any> = {
   validation?: CustomFieldValidator<T>;
 };
 
-export interface CustomFieldExtension<ReturnValue, UiOptions extends {} = {}>
-  extends FieldProps<ReturnValue> {
+export interface FieldExtensionComponentProps<
+  ReturnValue,
+  UiOptions extends {} = {},
+> extends FieldProps<ReturnValue> {
   uiSchema: {
     'ui:options'?: UiOptions;
   };

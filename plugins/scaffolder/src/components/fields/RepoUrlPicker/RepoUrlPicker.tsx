@@ -20,7 +20,7 @@ import { GithubRepoPicker } from './GithubRepoPicker';
 import { GitlabRepoPicker } from './GitlabRepoPicker';
 import { AzureRepoPicker } from './AzureRepoPicker';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
-import { CustomFieldExtension } from '../../../extensions';
+import { FieldExtensionComponentProps } from '../../../extensions';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { splitFormData, serializeFormData } from './utils';
 
@@ -34,7 +34,7 @@ export const RepoUrlPicker = ({
   onChange,
   rawErrors,
   formData,
-}: CustomFieldExtension<string, RepoUrlPickerUiOptions>) => {
+}: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>) => {
   const [state, setState] = useState<{
     host?: string;
     owner?: string;

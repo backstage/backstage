@@ -18,7 +18,7 @@ import React from 'react';
 import {
   CustomFieldValidator,
   FieldExtensionOptions,
-  CustomFieldExtension,
+  FieldExtensionComponentProps,
 } from './types';
 import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 
@@ -53,7 +53,7 @@ attachComponentData(
 export type {
   CustomFieldValidator,
   FieldExtensionOptions,
-  CustomFieldExtension,
+  FieldExtensionComponentProps,
 };
 
 export { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from './default';
