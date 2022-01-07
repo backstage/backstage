@@ -734,7 +734,7 @@ async function main() {
   if (!selectedPackageDirs && !isCiBuild && !isDocsBuild) {
     console.log('');
     console.log(
-      'TIP: You can generate changesets for select packages by passing package paths:',
+      'TIP: You can generate api-reports for select packages by passing package paths:',
     );
     console.log('');
     console.log(
