@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Add a delay on opening submenus in the sidebar
+Create a delay when a Sidebar submenu opens
