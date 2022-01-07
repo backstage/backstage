@@ -1344,7 +1344,7 @@ export interface NextRouterOptions {
   // (undocumented)
   logger: Logger_2;
   // (undocumented)
-  permissionRules?: PermissionRule<Entity, EntitiesSearchFilter, unknown[]>[];
+  permissionIntegrationRouter?: express.Router;
   // (undocumented)
   refreshService?: RefreshService;
 }

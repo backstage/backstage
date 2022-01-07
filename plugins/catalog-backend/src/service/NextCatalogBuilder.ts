@@ -23,6 +23,7 @@ import {
   FieldFormatEntityPolicy,
   makeValidator,
   NoForeignRootFieldsEntityPolicy,
+  parseEntityRef,
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
@@ -89,8 +90,11 @@ import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import {
   PermissionRule,
   createConditionTransformer,
+  createPermissionIntegrationRouter,
 } from '@backstage/plugin-permission-node';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
+import { basicEntityFilter } from './request/basicEntityFilter';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -391,11 +395,29 @@ export class NextCatalogBuilder {
       parser,
       policy,
     });
+    const unauthorizedEntitiesCatalog = new NextEntitiesCatalog(dbClient);
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
-      new NextEntitiesCatalog(dbClient),
+      unauthorizedEntitiesCatalog,
       permissions,
       createConditionTransformer(this.permissionRules),
     );
+    const permissionIntegrationRouter = createPermissionIntegrationRouter({
+      resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+      getResource: async (resourceRef: string) => {
+        const parsed = parseEntityRef(resourceRef);
+
+        const { entities } = await unauthorizedEntitiesCatalog.entities({
+          filter: basicEntityFilter({
+            kind: parsed.kind,
+            'metadata.namespace': parsed.namespace,
+            'metadata.name': parsed.name,
+          }),
+        });
+
+        return entities[0];
+      },
+      rules: this.permissionRules,
+    });
     const stitcher = new Stitcher(dbClient, logger);
 
     const locationStore = new DefaultLocationStore(dbClient);
@@ -431,7 +453,7 @@ export class NextCatalogBuilder {
       refreshService,
       logger,
       config,
-      permissionRules: this.permissionRules,
+      permissionIntegrationRouter,
     });
 
     await connectEntityProviders(processingDatabase, entityProviders);

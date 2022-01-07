@@ -24,7 +24,6 @@ import { EntitiesCatalog } from '../catalog';
 import { LocationService, RefreshService } from './types';
 import { basicEntityFilter } from './request';
 import { createNextRouter } from './NextRouter';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('createNextRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
@@ -52,7 +51,7 @@ describe('createNextRouter readonly disabled', () => {
       logger: getVoidLogger(),
       refreshService,
       config: new ConfigReader(undefined),
-      permissionRules: [],
+      permissionIntegrationRouter: express.Router(),
     });
     app = express().use(router);
   });
@@ -340,7 +339,7 @@ describe('createNextRouter readonly enabled', () => {
           readonly: true,
         },
       }),
-      permissionRules: [],
+      permissionIntegrationRouter: express.Router(),
     });
     app = express().use(router);
   });
@@ -432,74 +431,5 @@ describe('createNextRouter readonly enabled', () => {
         }),
       );
     });
-  });
-});
-
-describe('NextRouter permissioning', () => {
-  let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
-  let locationService: jest.Mocked<LocationService>;
-  let app: express.Express;
-  let refreshService: RefreshService;
-
-  const fakeRule = {
-    name: 'FAKE_RULE',
-    description: 'fake rule',
-    apply: () => true,
-    toQuery: () => ({ key: '', values: [] }),
-  };
-
-  beforeAll(async () => {
-    entitiesCatalog = {
-      entities: jest.fn(),
-      removeEntityByUid: jest.fn(),
-      batchAddOrUpdateEntities: jest.fn(),
-      entityAncestry: jest.fn(),
-    };
-    locationService = {
-      getLocation: jest.fn(),
-      createLocation: jest.fn(),
-      listLocations: jest.fn(),
-      deleteLocation: jest.fn(),
-    };
-    refreshService = { refresh: jest.fn() };
-    const router = await createNextRouter({
-      entitiesCatalog,
-      locationService,
-      logger: getVoidLogger(),
-      refreshService,
-      config: new ConfigReader(undefined),
-      permissionRules: [fakeRule],
-    });
-    app = express().use(router);
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
-  it('accepts and evaluates conditions at the apply-conditions endpoint', async () => {
-    const spideySense: Entity = {
-      apiVersion: 'a',
-      kind: 'b',
-      metadata: {
-        name: 'spidey-sense',
-      },
-    };
-    entitiesCatalog.entities.mockResolvedValueOnce({
-      entities: [spideySense],
-      pageInfo: { hasNextPage: false },
-    });
-
-    const requestBody = {
-      resourceType: 'catalog-entity',
-      resourceRef: 'component:default/spidey-sense',
-      conditions: { rule: 'FAKE_RULE', params: ['user:default/spiderman'] },
-    };
-    const response = await request(app)
-      .post('/.well-known/backstage/permissions/apply-conditions')
-      .send(requestBody);
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ result: AuthorizeResult.ALLOW });
   });
 });
