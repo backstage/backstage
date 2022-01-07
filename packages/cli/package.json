@@ -36,6 +36,7 @@
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^4.0.0",
     "@lerna/project": "^4.0.0",
+    "@manypkg/get-packages": "^1.1.3",
     "@octokit/request": "^5.4.12",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-json": "^4.1.0",
