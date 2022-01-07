@@ -1,0 +1,20 @@
+name: "Dependabot changeset maker"
+on:
+- pull_request_target
+
+jobs:
+  generate-changeset:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
+        ref: ${{ github.head_ref }} 
+    - name: Configure Git
+      run: |
+        git config --global user.email noreply@backstage.io
+        git config --global user.name 'Github changeset workflow'
+    - name: Generate changesets
+      run: node scripts/dependabot-changeset-maker.js
