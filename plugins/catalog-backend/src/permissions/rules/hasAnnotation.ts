@@ -15,21 +15,20 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { EntitiesSearchFilter } from '../../catalog/types';
-import { CatalogPermissionRule } from '../types';
+import { createCatalogPermissionRule } from './util';
 
 /**
  * A {@link CatalogPermissionRule} which filters for the presence of an
  * annotation on a given entity.
  * @public
  */
-export const hasAnnotation: CatalogPermissionRule<[annotation: string]> = {
+export const hasAnnotation = createCatalogPermissionRule({
   name: 'HAS_ANNOTATION',
   description:
     'Allow entities which are annotated with the specified annotation',
   apply: (resource: Entity, annotation: string) =>
     !!resource.metadata.annotations?.hasOwnProperty(annotation),
-  toQuery: (annotation: string): EntitiesSearchFilter => ({
+  toQuery: (annotation: string) => ({
     key: `metadata.annotations.${annotation}`,
   }),
-};
+});

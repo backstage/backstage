@@ -529,6 +529,11 @@ export class CommonDatabase implements Database {
   ): Promise<DbEntityResponse>;
 }
 
+// @public
+export const createCatalogPermissionRule: <TParams extends unknown[]>(
+  rule: PermissionRule<Entity, EntitiesSearchFilter, TParams>,
+) => PermissionRule<Entity, EntitiesSearchFilter, TParams>;
+
 // Warning: (ae-missing-release-tag) "CreateDatabaseOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -1397,12 +1402,28 @@ export function parseEntityYaml(
 
 // @public
 export const permissionRules: {
-  hasAnnotation: CatalogPermissionRule<[annotation: string]>;
-  hasLabel: CatalogPermissionRule<[label: string]>;
-  hasMetadata: CatalogPermissionRule<[key: string, value?: string | undefined]>;
-  hasSpec: CatalogPermissionRule<[key: string, value?: string | undefined]>;
-  isEntityKind: CatalogPermissionRule<[kinds: string[]]>;
-  isEntityOwner: CatalogPermissionRule<[claims: string[]]>;
+  hasAnnotation: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [annotation: string]
+  >;
+  hasLabel: PermissionRule<Entity, EntitiesSearchFilter, [label: string]>;
+  hasMetadata: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [key: string, value?: string | undefined]
+  >;
+  hasSpec: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [key: string, value?: string | undefined]
+  >;
+  isEntityKind: PermissionRule<Entity, EntitiesSearchFilter, [kinds: string[]]>;
+  isEntityOwner: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [claims: string[]]
+  >;
 };
 
 // Warning: (ae-missing-release-tag) "PlaceholderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
