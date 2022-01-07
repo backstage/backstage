@@ -16,13 +16,24 @@
 
 import { Package } from '@manypkg/get-packages';
 
+type PackageJSON = Package['packageJson'];
+
+export interface ExtendedPackageJSON extends PackageJSON {
+  scripts?: {
+    [key: string]: string;
+  };
+  // The `bundled` field is a field known within Backstage, it means
+  // that the package bundles all of its dependencies in its build output.
+  bundled?: boolean;
+}
+
 export type PackageGraphNode = {
   /** The name of the package */
   name: string;
   /** The directory of the package */
   dir: string;
   /** The package data of the package itself */
-  packageJson: Package['packageJson'];
+  packageJson: ExtendedPackageJSON;
   /** All direct local dependencies of the package */
   allLocalDependencies: Map<string, PackageGraphNode>;
   /** All direct local dependencies that will be present in the published package */
@@ -50,8 +61,9 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
       }
 
       graph.set(name, {
-        ...pkg,
         name,
+        dir: pkg.dir,
+        packageJson: pkg.packageJson as ExtendedPackageJSON,
         allLocalDependencies: new Map(),
         publishedLocalDependencies: new Map(),
         localDependencies: new Map(),
