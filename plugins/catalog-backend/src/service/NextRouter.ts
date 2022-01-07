@@ -40,7 +40,7 @@ import {
   parseEntityTransformParams,
 } from '../service/request';
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
-import { RefreshService, RefreshOptions, LocationService } from './types';
+import { RefreshOptions, LocationService, RefreshService } from './types';
 
 export interface NextRouterOptions {
   entitiesCatalog?: EntitiesCatalog;
@@ -77,6 +77,10 @@ export async function createNextRouter(
   if (refreshService) {
     router.post('/refresh', async (req, res) => {
       const refreshOptions: RefreshOptions = req.body;
+      refreshOptions.authorizationToken = getBearerToken(
+        req.header('authorization'),
+      );
+
       await refreshService.refresh(refreshOptions);
       res.status(200).send();
     });
@@ -213,4 +217,14 @@ async function getEntityResource(
   });
 
   return entities[0];
+}
+
+function getBearerToken(
+  authorizationHeader: string | undefined,
+): string | undefined {
+  if (typeof authorizationHeader !== 'string') {
+    return undefined;
+  }
+  const matches = authorizationHeader.match(/Bearer\s+(\S+)/i);
+  return matches?.[1];
 }

@@ -66,10 +66,12 @@ describe('createNextRouter readonly disabled', () => {
       const response = await request(app)
         .post('/refresh')
         .set('Content-Type', 'application/json')
+        .set('authorization', 'Bearer someauthtoken')
         .send({ entityRef: 'Component/default:foo' });
       expect(response.status).toBe(200);
       expect(refreshService.refresh).toHaveBeenCalledWith({
         entityRef: 'Component/default:foo',
+        authorizationToken: 'someauthtoken',
       });
     });
   });

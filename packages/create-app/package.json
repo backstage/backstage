@@ -67,6 +67,8 @@
     "@backstage/plugin-explore": "*",
     "@backstage/plugin-github-actions": "*",
     "@backstage/plugin-lighthouse": "*",
+    "@backstage/plugin-permission-common": "*",
+    "@backstage/plugin-permission-node": "*",
     "@backstage/plugin-proxy-backend": "*",
     "@backstage/plugin-rollbar-backend": "*",
     "@backstage/plugin-scaffolder": "*",

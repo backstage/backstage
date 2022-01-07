@@ -25,6 +25,7 @@ import { Location as Location_2 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Organizations } from 'aws-sdk';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -302,6 +303,7 @@ export type CatalogEnvironment = {
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
+  permissions: PermissionAuthorizer;
 };
 
 // @public
@@ -1493,6 +1495,7 @@ export type RefreshIntervalFunction = () => number;
 // @public
 export type RefreshOptions = {
   entityRef: string;
+  authorizationToken?: string;
 };
 
 // @public
