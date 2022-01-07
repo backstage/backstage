@@ -130,4 +130,19 @@ describe('CachedEntityLoader', () => {
       ttl: 5000,
     });
   });
+
+  it('calls the catalog if the cache read takes too long', async () => {
+    identity.authenticate.mockResolvedValue(identityResponse);
+    cache.get.mockImplementation(
+      () =>
+        new Promise(resolve => {
+          setTimeout(() => resolve(undefined), 10000);
+        }),
+    );
+    catalog.getEntityByName.mockResolvedValue(entity);
+
+    const result = await loader.load(entityName, token);
+
+    expect(result).toEqual(entity);
+  });
 });
