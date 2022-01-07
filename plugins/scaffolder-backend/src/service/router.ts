@@ -148,7 +148,16 @@ export async function createRouter(
           token: getBearerToken(req.headers.authorization),
         });
         if (isSupportedTemplate(template)) {
-          const parameters = [template.spec.parameters ?? []].flat();
+          const parameters = [template.spec.parameters ?? []]
+            .flat()
+            .filter(parameter => {
+              if (!parameter.if) return true;
+
+              const shouldShow = config.get(parameter.if);
+
+              return shouldShow;
+            });
+
           res.json({
             title: template.metadata.title ?? template.metadata.name,
             steps: parameters.map(schema => ({
