@@ -34,31 +34,51 @@ describe('MockFetchApi', () => {
     await expect(response.json()).resolves.toEqual({ a: 'foo' });
   });
 
-  it('works with a mock implementation', async () => {
-    const inner = jest.fn();
-    const m = new MockFetchApi({ baseImplementation: inner });
-    await m.fetch('http://example.com/data.json');
-    expect(inner).lastCalledWith('http://example.com/data.json');
+  describe('baseImplementation', () => {
+    it('works with a mock implementation', async () => {
+      const inner = jest.fn();
+      const m = new MockFetchApi({ baseImplementation: inner });
+      await m.fetch('http://example.com/data.json');
+      expect(inner).lastCalledWith('http://example.com/data.json');
+    });
   });
 
-  describe('setAuthorization', () => {
-    it('works with a static token', async () => {
+  describe('resolvePluginProtocol', () => {
+    it('works', async () => {
       const inner = jest.fn();
       const m = new MockFetchApi({
         baseImplementation: inner,
-        authorization: { token: 'hello' },
+        resolvePluginProtocol: {
+          discoveryApi: {
+            getBaseUrl: async id => `https://blah.com/api/${id}`,
+          },
+        },
+      });
+      await m.fetch('plugin://the-plugin/a/data.json');
+      expect(inner.mock.calls[0][0]).toBe(
+        'https://blah.com/api/the-plugin/a/data.json',
+      );
+    });
+  });
+
+  describe('injectIdentityAuth', () => {
+    it('works with token', async () => {
+      const inner = jest.fn();
+      const m = new MockFetchApi({
+        baseImplementation: inner,
+        injectIdentityAuth: { token: 'hello' },
       });
       await m.fetch('http://example.com/data.json');
-      expect(inner.mock.calls[0][0].headers.get('authorization')).toBe(
+      expect(inner.mock.calls[0][0].headers?.get('authorization')).toBe(
         'Bearer hello',
       );
     });
 
-    it('works with an identity api', async () => {
+    it('works with identityApi', async () => {
       const inner = jest.fn();
       const m = new MockFetchApi({
         baseImplementation: inner,
-        authorization: {
+        injectIdentityAuth: {
           identityApi: {
             async getCredentials() {
               return { token: 'hello2' };
@@ -67,7 +87,7 @@ describe('MockFetchApi', () => {
         },
       });
       await m.fetch('http://example.com/data.json');
-      expect(inner.mock.calls[0][0].headers.get('authorization')).toBe(
+      expect(inner.mock.calls[0][0].headers?.get('authorization')).toBe(
         'Bearer hello2',
       );
     });

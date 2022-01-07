@@ -359,6 +359,7 @@ export class FetchMiddlewares {
     identityApi: IdentityApi;
     config?: Config;
     urlPrefixAllowlist?: string[];
+    allowUrl?: (url: string) => boolean;
     header?: {
       name: string;
       value: (backstageToken: string) => string;

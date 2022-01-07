@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-import { FetchApi, IdentityApi } from '@backstage/core-plugin-api';
-import crossFetch, { Request, Response } from 'cross-fetch';
+import {
+  createFetchApi,
+  FetchMiddleware,
+  FetchMiddlewares,
+} from '@backstage/core-app-api';
+import {
+  DiscoveryApi,
+  FetchApi,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
+import crossFetch, { Response } from 'cross-fetch';
 
 /**
  * The options given when constructing a {@link MockFetchApi}.
@@ -26,11 +35,11 @@ export interface MockFetchApiOptions {
   /**
    * Define the underlying base `fetch` implementation.
    *
-   * @defaultValue 'fetch'
+   * @defaultValue undefined
    * @remarks
    *
-   * `'fetch'` uses the global `fetch` implementation to make real network
-   * requests. This is the default.
+   * Leaving out this parameter or passing `undefined`, makes the API use the
+   * global `fetch` implementation to make real network requests.
    *
    * `'none'` swallows all calls and makes no requests at all.
    *
@@ -38,22 +47,44 @@ export interface MockFetchApiOptions {
    * `jest.fn()`, if you want to use a custom implementation or to just track
    * and assert on calls.
    */
-  baseImplementation?: 'fetch' | 'none' | typeof crossFetch | undefined;
+  baseImplementation?: undefined | 'none' | typeof crossFetch;
 
   /**
-   * If defined, adds token based Authorization headers to requests, basically
+   * Add translation from `plugin://` URLs to concrete http(s) URLs, basically
    * simulating what
-   * {@link @backstage/core-app-api#FetchMiddlewares.injectIdentityAuth} does.
+   * {@link @backstage/core-app-api#FetchMiddlewares.resolvePluginProtocol}
+   * does.
    *
    * @defaultValue undefined
    * @remarks
    *
-   * You can supply either a static token or an identity API.
+   * Leaving out this parameter or passing `undefined`, disables plugin protocol
+   * translation.
+   *
+   * To enable the feature, pass in a discovery API which is then used to
+   * resolve the URLs.
    */
-  authorization?:
+  resolvePluginProtocol?:
+    | undefined
+    | { discoveryApi: Pick<DiscoveryApi, 'getBaseUrl'> };
+
+  /**
+   * Add token based Authorization headers to requests, basically simulating
+   * what {@link @backstage/core-app-api#FetchMiddlewares.injectIdentityAuth}
+   * does.
+   *
+   * @defaultValue undefined
+   * @remarks
+   *
+   * Leaving out this parameter or passing `undefined`, disables auth injection.
+   *
+   * To enable the feature, pass in either a static token or an identity API
+   * which is queried on each request for a token.
+   */
+  injectIdentityAuth?:
+    | undefined
     | { token: string }
-    | { identityApi: Pick<IdentityApi, 'getCredentials'> }
-    | undefined;
+    | { identityApi: Pick<IdentityApi, 'getCredentials'> };
 }
 
 /**
@@ -62,7 +93,7 @@ export interface MockFetchApiOptions {
  * @public
  */
 export class MockFetchApi implements FetchApi {
-  private readonly implementation: typeof crossFetch;
+  private readonly implementation: FetchApi;
 
   /**
    * Creates a mock {@link @backstage/core-plugin-api#FetchApi}.
@@ -73,7 +104,7 @@ export class MockFetchApi implements FetchApi {
 
   /** {@inheritdoc @backstage/core-plugin-api#FetchApi.fetch} */
   get fetch(): typeof crossFetch {
-    return this.implementation;
+    return this.implementation.fetch;
   }
 }
 
@@ -81,51 +112,56 @@ export class MockFetchApi implements FetchApi {
 // Helpers
 //
 
-const dummyFetch: typeof crossFetch = () => Promise.resolve(new Response(null));
-
-function build(options?: MockFetchApiOptions): typeof crossFetch {
-  let implementation = baseImplementation(options);
-  implementation = authorization(options, implementation);
-  return implementation;
+function build(options?: MockFetchApiOptions): FetchApi {
+  return createFetchApi({
+    baseImplementation: baseImplementation(options),
+    middleware: [
+      resolvePluginProtocol(options),
+      injectIdentityAuth(options),
+    ].filter((x): x is FetchMiddleware => Boolean(x)),
+  });
 }
 
 function baseImplementation(
   options: MockFetchApiOptions | undefined,
 ): typeof crossFetch {
-  const implementation = options?.baseImplementation ?? 'fetch';
-  if (implementation === 'fetch') {
+  const implementation = options?.baseImplementation;
+  if (!implementation) {
     return crossFetch;
   } else if (implementation === 'none') {
-    return dummyFetch;
+    return () => Promise.resolve(new Response());
   }
   return implementation;
 }
 
-function authorization(
-  options: MockFetchApiOptions | undefined,
-  next: typeof crossFetch,
-): typeof crossFetch {
-  const auth = options?.authorization;
-  if (!auth) {
-    return next;
+function resolvePluginProtocol(
+  allOptions: MockFetchApiOptions | undefined,
+): FetchMiddleware | undefined {
+  const options = allOptions?.resolvePluginProtocol;
+  if (!options) {
+    return undefined;
   }
 
-  const getToken = async () => {
-    if ('token' in auth) {
-      return auth.token;
-    }
-    const { token } = await auth.identityApi.getCredentials();
-    return token;
-  };
+  return FetchMiddlewares.resolvePluginProtocol({
+    discoveryApi: options.discoveryApi,
+  });
+}
 
-  return async (input, init) => {
-    const request = new Request(input, init);
-    if (!request.headers.get('authorization')) {
-      const token = await getToken();
-      if (token) {
-        request.headers.set('authorization', `Bearer ${token}`);
-      }
-    }
-    return next(request);
-  };
+function injectIdentityAuth(
+  allOptions: MockFetchApiOptions | undefined,
+): FetchMiddleware | undefined {
+  const options = allOptions?.injectIdentityAuth;
+  if (!options) {
+    return undefined;
+  }
+
+  const identityApi: Pick<IdentityApi, 'getCredentials'> =
+    'token' in options
+      ? { getCredentials: async () => ({ token: options.token }) }
+      : options.identityApi;
+
+  return FetchMiddlewares.injectIdentityAuth({
+    identityApi: identityApi as IdentityApi,
+    allowUrl: () => true,
+  });
 }

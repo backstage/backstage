@@ -358,21 +358,6 @@ export interface TechDocsStorageApi {
 // @public
 export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi>;
 
-// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
-// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
-// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
-// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
-// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
-// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
-// Warning: (tsdoc-malformed-html-name) Invalid HTML element: A space is not allowed here
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-//
 // @public
 export class TechDocsStorageClient implements TechDocsStorageApi {
   constructor(options: {

@@ -14,6 +14,7 @@ import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import crossFetch from 'cross-fetch';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
@@ -129,15 +130,20 @@ export class MockFetchApi implements FetchApi {
 
 // @public
 export interface MockFetchApiOptions {
-  authorization?:
+  baseImplementation?: undefined | 'none' | typeof crossFetch;
+  injectIdentityAuth?:
+    | undefined
     | {
         token: string;
       }
     | {
         identityApi: Pick<IdentityApi, 'getCredentials'>;
-      }
-    | undefined;
-  baseImplementation?: 'fetch' | 'none' | typeof crossFetch | undefined;
+      };
+  resolvePluginProtocol?:
+    | undefined
+    | {
+        discoveryApi: Pick<DiscoveryApi, 'getBaseUrl'>;
+      };
 }
 
 // @public
