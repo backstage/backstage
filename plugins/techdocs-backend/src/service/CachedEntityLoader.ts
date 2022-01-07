@@ -62,7 +62,7 @@ export class CachedEntityLoader {
     }
 
     if (result) {
-      await this.cache.set(cacheKey, result, { ttl: 5000 });
+      this.cache.set(cacheKey, result, { ttl: 5000 });
     }
 
     return result;
