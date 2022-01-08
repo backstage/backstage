@@ -17,6 +17,7 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { SearchEntry } from 'ldapjs';
 import lodashSet from 'lodash/set';
+import cloneDeep from 'lodash/cloneDeep';
 import { buildOrgHierarchy } from './org';
 import { LdapClient } from './client';
 import { GroupConfig, UserConfig } from './config';
@@ -52,7 +53,7 @@ export async function defaultUserTransformer(
 
   if (set) {
     for (const [path, value] of Object.entries(set)) {
-      lodashSet(entity, path, value);
+      lodashSet(entity, path, cloneDeep(value));
     }
   }
 
@@ -146,7 +147,7 @@ export async function defaultGroupTransformer(
 
   if (set) {
     for (const [path, value] of Object.entries(set)) {
-      lodashSet(entity, path, value);
+      lodashSet(entity, path, cloneDeep(value));
     }
   }
 
