@@ -673,4 +673,51 @@ describe('ConfigReader.get()', () => {
       },
     });
   });
+
+  it('should return deep clones of the backing data', () => {
+    const data1 = {
+      foo: {
+        bar: [],
+        baz: {},
+      },
+    };
+    const data2 = {
+      x: {
+        y: {
+          z: {},
+        },
+      },
+    };
+
+    const reader = ConfigReader.fromConfigs([
+      { data: data1, context: '1' },
+      { data: data2, context: '2' },
+    ]);
+
+    reader.get<any>().foo.bar.push(1);
+    reader.get<any>('foo').bar.push(1);
+    reader.get<any>('foo.bar').push(1);
+    reader.get<any>().foo.baz.x = 1;
+    reader.get<any>('foo').baz.x = 1;
+    reader.get<any>('foo.baz').x = 1;
+    reader.get<any>().x.y.z.w = 1;
+    reader.get<any>('x').y.z.w = 1;
+    reader.get<any>('x.y').z.w = 1;
+    reader.get<any>('x.y.z').w = 1;
+
+    const readerSingle = ConfigReader.fromConfigs([
+      { data: data1, context: '1' },
+    ]);
+
+    readerSingle.get<any>().foo.bar.push(1);
+    readerSingle.get<any>('foo').bar.push(1);
+    readerSingle.get<any>('foo.bar').push(1);
+    readerSingle.get<any>().foo.baz.x = 1;
+    readerSingle.get<any>('foo').baz.x = 1;
+    readerSingle.get<any>('foo.baz').x = 1;
+
+    expect(data1.foo.bar).toEqual([]);
+    expect(data1.foo.baz).toEqual({});
+    expect(data2.x.y.z).toEqual({});
+  });
 });
