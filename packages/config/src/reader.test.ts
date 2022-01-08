@@ -265,6 +265,19 @@ describe('ConfigReader', () => {
       withLogCollector(() => config.getOptionalConfigArray('b')),
     ).toMatchObject({ warn: [] });
   });
+
+  it('should coerce number strings to numbers', () => {
+    const config = ConfigReader.fromConfigs([
+      {
+        data: {
+          port: '123',
+        },
+        context: '1',
+      },
+    ]);
+
+    expect(config.getNumber('port')).toEqual(123);
+  });
 });
 
 describe('ConfigReader with fallback', () => {
@@ -659,18 +672,5 @@ describe('ConfigReader.get()', () => {
         c: 'c1',
       },
     });
-  });
-
-  it('coerces number strings to numbers', () => {
-    const config = ConfigReader.fromConfigs([
-      {
-        data: {
-          port: '123',
-        },
-        context: '1',
-      },
-    ]);
-
-    expect(config.getNumber('port')).toEqual(123);
   });
 });
