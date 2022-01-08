@@ -111,8 +111,10 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
 export const MembersListCard = (_props: {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: GroupEntity;
+  memberType?: string;
 }) => {
   const { entity: groupEntity } = useEntity<GroupEntity>();
+  let { memberType } = _props;
   const {
     metadata: { name: groupName, namespace: grpNamespace },
     spec: { profile },
@@ -128,6 +130,7 @@ export const MembersListCard = (_props: {
     setPage(pageIndex);
   };
   const pageSize = 50;
+  memberType = memberType ? memberType : 'Members';
 
   const {
     loading,
@@ -173,7 +176,7 @@ export const MembersListCard = (_props: {
   return (
     <Grid item>
       <InfoCard
-        title={`Members (${members?.length || 0}${paginationLabel})`}
+        title={`${memberType} (${members?.length || 0}${paginationLabel})`}
         subheader={`of ${displayName}`}
         {...(nbPages <= 1 ? {} : { actions: pagination })}
       >
@@ -186,7 +189,9 @@ export const MembersListCard = (_props: {
               ))
           ) : (
             <Box p={2}>
-              <Typography>This group has no members.</Typography>
+              <Typography>
+                This group has no ${memberType.toLocaleLowerCase()}.
+              </Typography>
             </Box>
           )}
         </Grid>
