@@ -126,7 +126,7 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getOptional} */
   getOptional<T = JsonValue>(key?: string): T | undefined {
-    const value = this.readValue(key);
+    const value = cloneDeep(this.readValue(key));
     const fallbackValue = this.fallback?.getOptional<T>(key);
 
     if (value === undefined) {
@@ -153,11 +153,8 @@ export class ConfigReader implements Config {
 
     // Avoid merging arrays and primitive values, since that's how merging works for other
     // methods for reading config.
-    return mergeWith(
-      {},
-      { value: cloneDeep(fallbackValue) },
-      { value },
-      (into, from) => (!isObject(from) || !isObject(into) ? from : undefined),
+    return mergeWith({}, { value: fallbackValue }, { value }, (into, from) =>
+      !isObject(from) || !isObject(into) ? from : undefined,
     ).value as T;
   }
 
