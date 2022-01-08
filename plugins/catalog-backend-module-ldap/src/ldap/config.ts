@@ -166,6 +166,15 @@ const defaultConfig = {
  * @param config The root of the LDAP config hierarchy
  */
 export function readLdapConfig(config: Config): LdapProviderConfig[] {
+  function freeze<T>(data: T): T {
+    return JSON.parse(JSON.stringify(data), (_key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        Object.freeze(value);
+      }
+      return value;
+    });
+  }
+
   function readBindConfig(
     c: Config | undefined,
   ): LdapProviderConfig['bind'] | undefined {
@@ -217,7 +226,7 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
     if (!c) {
       return undefined;
     }
-    return Object.fromEntries(c.keys().map(path => [path, c.get(path)]));
+    return c.get();
   }
 
   function readUserMapConfig(
@@ -297,6 +306,6 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
       // Replace arrays instead of merging, otherwise default behavior
       return Array.isArray(from) ? from : undefined;
     });
-    return merged as LdapProviderConfig;
+    return freeze(merged) as LdapProviderConfig;
   });
 }
