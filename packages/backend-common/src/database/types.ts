@@ -38,7 +38,7 @@ export interface PluginDatabaseManager {
     /**
      * skip database migrations. Useful if connecting to a read-only database.
      *
-     * @default false
+     * @defaultValue false
      */
     skip?: boolean;
   };

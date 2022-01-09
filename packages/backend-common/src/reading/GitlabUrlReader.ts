@@ -39,7 +39,11 @@ import {
 } from './types';
 import { trimEnd } from 'lodash';
 
-/** @public */
+/**
+ * Implements a {@link UrlReader} for files on GitLab.
+ *
+ * @public
+ */
 export class GitlabUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);

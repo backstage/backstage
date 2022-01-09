@@ -33,7 +33,11 @@ From : https://isomorphic-git.org/docs/en/onAuth with fix for GitHub
 Azure       'notempty'      token
 */
 
-/** @public */
+/**
+ * A convenience wrapper around the `isomorphic-git` library.
+ *
+ * @public
+ */
 export class Git {
   private constructor(
     private readonly config: {
