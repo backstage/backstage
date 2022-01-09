@@ -22,6 +22,8 @@
  * example, for an item with the fully qualified DN
  * uid=john,ou=people,ou=spotify,dc=spotify,dc=net the generated entity would
  * have this annotation, with the value "john".
+ *
+ * @public
  */
 export const LDAP_RDN_ANNOTATION = 'backstage.io/ldap-rdn';
 
@@ -33,6 +35,8 @@ export const LDAP_RDN_ANNOTATION = 'backstage.io/ldap-rdn';
  * for an item with the DN uid=john,ou=people,ou=spotify,dc=spotify,dc=net the
  * generated entity would have this annotation, with that full string as its
  * value.
+ *
+ * @public
  */
 export const LDAP_DN_ANNOTATION = 'backstage.io/ldap-dn';
 
@@ -44,5 +48,7 @@ export const LDAP_DN_ANNOTATION = 'backstage.io/ldap-dn';
  * for an item with the UUID 76ef928a-b251-1037-9840-d78227f36a7e, the
  * generated entity would have this annotation, with that full string as its
  * value.
+ *
+ * @public
  */
 export const LDAP_UUID_ANNOTATION = 'backstage.io/ldap-uuid';

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 export { MicrosoftGraphClient } from './client';
+export type { ODataQuery } from './client';
 export { readMicrosoftGraphConfig } from './config';
 export type { MicrosoftGraphProviderConfig } from './config';
 export {

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   GroupEntity,
   stringifyEntityRef,
@@ -35,6 +36,12 @@ import {
   UserTransformer,
 } from './types';
 
+/**
+ * The default implementation of the transformation from a graph user entry to
+ * a User entity.
+ *
+ * @public
+ */
 export async function defaultUserTransformer(
   user: MicrosoftGraph.User,
   userPhoto?: string,
@@ -208,6 +215,12 @@ export async function readMicrosoftGraphUsersInGroups(
   return { users };
 }
 
+/**
+ * The default implementation of the transformation from a graph organization
+ * entry to a Group entity.
+ *
+ * @public
+ */
 export async function defaultOrganizationTransformer(
   organization: MicrosoftGraph.Organization,
 ): Promise<GroupEntity | undefined> {
@@ -258,6 +271,12 @@ function extractGroupName(group: MicrosoftGraph.Group): string {
   return (group.mailNickname || group.displayName) as string;
 }
 
+/**
+ * The default implementation of the transformation from a graph group entry to
+ * a Group entity.
+ *
+ * @public
+ */
 export async function defaultGroupTransformer(
   group: MicrosoftGraph.Group,
   groupPhoto?: string,
@@ -472,6 +491,11 @@ export function resolveRelations(
   buildMemberOf(groups, users);
 }
 
+/**
+ * Reads an entire org as Group and User entities.
+ *
+ * @public
+ */
 export async function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
   tenantId: string,
