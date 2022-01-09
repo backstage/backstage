@@ -223,9 +223,6 @@ export interface TechDocsApi {
 // @public (undocumented)
 export const techdocsApiRef: ApiRef<TechDocsApi>;
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-undefined-tag) The TSDoc tag "@property" is not defined in this configuration
 // Warning: (ae-missing-release-tag) "TechDocsClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -245,11 +242,7 @@ export class TechDocsClient implements TechDocsApi {
   discoveryApi: DiscoveryApi;
   // (undocumented)
   getApiOrigin(): Promise<string>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   getEntityMetadata(entityId: EntityName): Promise<TechDocsEntityMetadata>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   getTechDocsMetadata(entityId: EntityName): Promise<TechDocsMetadata>;
   // (undocumented)
   identityApi: IdentityApi;
@@ -384,9 +377,6 @@ export interface TechDocsStorageApi {
 // @public (undocumented)
 export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi>;
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-undefined-tag) The TSDoc tag "@property" is not defined in this configuration
 // Warning: (ae-missing-release-tag) "TechDocsStorageClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -414,27 +404,11 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   ): Promise<string>;
   // (undocumented)
   getBuilder(): Promise<string>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
   getEntityDocs(entityId: EntityName, path: string): Promise<string>;
   // (undocumented)
   getStorageUrl(): Promise<string>;
   // (undocumented)
   identityApi: IdentityApi;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
   syncEntityDocs(
     entityId: EntityName,
     logHandler?: (line: string) => void,

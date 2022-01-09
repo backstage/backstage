@@ -103,18 +103,17 @@ export type OAuthRefreshRequest = express.Request<{}> & {
  * Any OAuth provider needs to implement this interface which has provider specific
  * handlers for different methods to perform authentication, get access tokens,
  * refresh tokens and perform sign out.
+ *
+ * @public
  */
 export interface OAuthHandlers {
   /**
-   * This method initiates a sign in request with an auth provider.
-   * @param {express.Request} req
-   * @param options
+   * Initiate a sign in request with an auth provider.
    */
   start(req: OAuthStartRequest): Promise<RedirectInfo>;
 
   /**
-   * Handles the redirect from the auth provider when the user has signed in.
-   * @param {express.Request} req
+   * Handle the redirect from the auth provider when the user has signed in.
    */
   handler(req: express.Request): Promise<{
     response: OAuthResponse;
@@ -123,8 +122,6 @@ export interface OAuthHandlers {
 
   /**
    * (Optional) Given a refresh token and scope fetches a new access token from the auth provider.
-   * @param {string} refreshToken
-   * @param {string} scope
    */
   refresh?(req: OAuthRefreshRequest): Promise<{
     response: OAuthResponse;

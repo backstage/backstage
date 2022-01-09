@@ -132,15 +132,15 @@ export type Database = {
    * The callback is expected to make calls back into this class. When it
    * completes, the transaction is closed.
    *
-   * @param fn The callback that implements the transaction
+   * @param fn - The callback that implements the transaction
    */
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
 
   /**
    * Adds a set of new entities to the catalog.
    *
-   * @param tx An ongoing transaction
-   * @param request The entities being added
+   * @param tx - An ongoing transaction
+   * @param request - The entities being added
    */
   addEntities(
     tx: Transaction,
@@ -158,11 +158,11 @@ export type Database = {
    * account. Attempts to update a matching entity, but where the etag and/or
    * generation are not equal to the passed values, will fail.
    *
-   * @param tx An ongoing transaction
-   * @param request The entity being updated
-   * @param matchingEtag If specified, reject with ConflictError if not
+   * @param tx - An ongoing transaction
+   * @param request - The entity being updated
+   * @param matchingEtag - If specified, reject with ConflictError if not
    *                     matching the entry in the database
-   * @param matchingGeneration If specified, reject with ConflictError if not
+   * @param matchingGeneration - If specified, reject with ConflictError if not
    *                           matching the entry in the database
    * @returns The updated entity
    */
@@ -194,9 +194,9 @@ export type Database = {
    * Remove current relations for the entity and replace them with the new
    * relations array.
    *
-   * @param tx An ongoing transaction
-   * @param entityUid The entity uid
-   * @param relations The relationships to be set
+   * @param tx - An ongoing transaction
+   * @param entityUid - The entity uid
+   * @param relations - The relationships to be set
    */
   setRelations(
     tx: Transaction,

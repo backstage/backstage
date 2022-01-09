@@ -286,7 +286,6 @@ export function fetchContents({
 // @public
 export class OctokitProvider {
   constructor(integrations: ScmIntegrationRegistry);
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   // Warning: (ae-forgotten-export) The symbol "OctokitIntegration" needs to be exported by the entry point index.d.ts
   getOctokit(repoUrl: string): Promise<OctokitIntegration>;
 }

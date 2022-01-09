@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import type { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 
@@ -22,7 +23,7 @@ export type PreparerResponse = {
    */
   preparedDir: string;
   /**
-   * A unique identifer of the tree blob, usually the commit SHA or etag from the target.
+   * A unique identifier of the tree blob, usually the commit SHA or etag from the target.
    */
   etag: string;
 };
@@ -32,10 +33,10 @@ export type PreparerBase = {
    * Given an Entity definition from the Software Catalog, go and prepare a directory
    * with contents from the location in temporary storage and return the path.
    *
-   * @param entity The entity from the Software Catalog
-   * @param options.etag (Optional) If etag is provider, it will be used to check if the target has
-   * updated since the last build.
-   * @throws {NotModifiedError} when the prepared directory has not been changed since the last build.
+   * @param entity - The entity from the Software Catalog
+   * @param options - If etag is provided, it will be used to check if the target has
+   *        updated since the last build.
+   * @throws `NotModifiedError` when the prepared directory has not been changed since the last build.
    */
   prepare(
     entity: Entity,

@@ -90,7 +90,6 @@ export const EntityTagsPicker: ({
 // @public
 export const EntityTagsPickerFieldExtension: () => null;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "FavouriteTemplate" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -179,8 +178,6 @@ export interface ScaffolderApi {
   //
   // (undocumented)
   listActions(): Promise<ListActionsResponse>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   scaffold(templateName: string, values: Record<string, any>): Promise<string>;
   // Warning: (ae-forgotten-export) The symbol "LogEvent" needs to be exported by the entry point index.d.ts
   //
@@ -225,8 +222,6 @@ export class ScaffolderClient implements ScaffolderApi {
   ): Promise<TemplateParameterSchema>;
   // (undocumented)
   listActions(): Promise<ListActionsResponse>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   scaffold(templateName: string, values: Record<string, any>): Promise<string>;
   // (undocumented)
   streamLogs(opts: { taskId: string; after?: number }): Observable<LogEvent>;

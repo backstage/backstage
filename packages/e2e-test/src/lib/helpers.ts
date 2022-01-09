@@ -90,7 +90,7 @@ export function exitWithError(err: Error & { code?: unknown }) {
  * Waits for fn() to be true
  * Checks every 100ms
  * .cancel() is available
- * @returns {Promise} Promise of resolution
+ * @returns Promise of resolution
  */
 export function waitFor(fn: () => boolean, maxSeconds: number = 120) {
   let count = 0;

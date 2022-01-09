@@ -251,9 +251,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 export class CatalogBuilder {
   // @deprecated
   constructor(env: CatalogEnvironment);
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityPolicy(...policies: EntityPolicy[]): CatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addProcessor(...processors: CatalogProcessor[]): CatalogBuilder;
   build(): Promise<{
     entitiesCatalog: EntitiesCatalog;
@@ -263,16 +261,10 @@ export class CatalogBuilder {
   }>;
   // (undocumented)
   static create(env: CatalogEnvironment): Promise<NextCatalogBuilder>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceProcessors(processors: CatalogProcessor[]): CatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setEntityDataParser(parser: CatalogProcessorParser): CatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setPlaceholderResolver(
     key: string,
     resolver: PlaceholderResolver,
@@ -541,8 +533,6 @@ export function createNextRouter(
   options: NextRouterOptions,
 ): Promise<express.Router>;
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // Warning: (ae-missing-release-tag) "createRandomRefreshInterval" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -831,7 +821,6 @@ export type DeferredEntity = {
   locationKey?: string;
 };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-missing-release-tag) "durationText" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -1145,7 +1134,6 @@ export class HigherOrderOperations implements HigherOrderOperation {
     locationReader: LocationReader,
     logger: Logger_2,
   );
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addLocation(
     spec: LocationSpec,
     options?: {
@@ -1306,9 +1294,7 @@ export type LocationUpdateStatus = {
 // @public
 export class NextCatalogBuilder {
   constructor(env: CatalogEnvironment);
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityProvider(...providers: EntityProvider[]): NextCatalogBuilder;
   addPermissionRules(
     ...permissionRules: PermissionRule<
@@ -1317,7 +1303,6 @@ export class NextCatalogBuilder {
       unknown[]
     >[]
   ): void;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addProcessor(...processors: CatalogProcessor[]): NextCatalogBuilder;
   build(): Promise<{
     entitiesCatalog: EntitiesCatalog;
@@ -1328,17 +1313,11 @@ export class NextCatalogBuilder {
     router: Router;
   }>;
   getDefaultProcessors(): CatalogProcessor[];
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceEntityPolicies(policies: EntityPolicy[]): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceProcessors(processors: CatalogProcessor[]): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setEntityDataParser(parser: CatalogProcessorParser): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setFieldFormatValidators(validators: Partial<Validators>): NextCatalogBuilder;
   setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setPlaceholderResolver(
     key: string,
     resolver: PlaceholderResolver,
@@ -1563,8 +1542,6 @@ export interface RouterOptions {
   refreshService?: RefreshService;
 }
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-missing-release-tag) "runPeriodically" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -1612,20 +1589,5 @@ export class UrlReaderProcessor implements CatalogProcessor {
 
 // Warnings were encountered during analysis:
 //
-// src/catalog/types.d.ts:94:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/catalog/types.d.ts:95:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/catalog/types.d.ts:96:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:23:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
-// src/ingestion/types.d.ts:8:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:98:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:104:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:105:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:119:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:120:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:121:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:123:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:136:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:137:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:138:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/ingestion/types.d.ts:19:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 ```

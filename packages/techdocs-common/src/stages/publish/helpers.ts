@@ -42,7 +42,7 @@ export type responseHeadersType = {
 /**
  * Some files need special headers to be used correctly by the frontend. This function
  * generates headers in the response to those file requests.
- * @param {string} fileExtension .html, .css, .js, .png etc.
+ * @param fileExtension - .html, .css, .js, .png etc.
  */
 export const getHeadersForFileExtension = (
   fileExtension: string,
@@ -74,7 +74,7 @@ export const getHeadersForFileExtension = (
  *   '/User/username/my_dir/dirB/file2',
  *   '/User/username/my_dir/file3'
  * ]
- * @param rootDirPath Absolute path to the root directory.
+ * @param rootDirPath - Absolute path to the root directory.
  */
 export const getFileTreeRecursively = async (
   rootDirPath: string,

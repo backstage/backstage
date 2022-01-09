@@ -143,8 +143,6 @@ const catalogImportPlugin: BackstagePlugin<
 export { catalogImportPlugin };
 export { catalogImportPlugin as plugin };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-forgotten-export) The symbol "ImportFlows" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "StepperProvider" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "defaultGenerateStepper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -188,9 +186,6 @@ export const ImportStepper: ({
   variant,
 }: Props_2) => JSX.Element;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "PreparePullRequestForm" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -223,9 +218,6 @@ export const PreviewPullRequestComponent: ({
   classes,
 }: Props_7) => JSX.Element;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "StepInitAnalyzeUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

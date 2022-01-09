@@ -432,9 +432,4 @@ export class SingleInstanceGithubCredentialsProvider
   static create: (config: GitHubIntegrationConfig) => GithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/gitlab/config.d.ts:29:68 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/gitlab/config.d.ts:29:63 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 ```
