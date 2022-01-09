@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   Entity,
   LOCATION_ANNOTATION,
@@ -41,6 +42,8 @@ import {
 /**
  * Reads user and group entries out of Microsoft Graph, and provides them as
  * User and Group entities for the catalog.
+ *
+ * @public
  */
 export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
@@ -91,14 +94,20 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     },
   ) {}
 
+  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
   getProviderName() {
     return `MicrosoftGraphOrgEntityProvider:${this.options.id}`;
   }
 
+  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
   }
 
+  /**
+   * Runs one complete ingestion loop. Call this method regularly at some
+   * appropriate cadence.
+   */
   async read() {
     if (!this.connection) {
       throw new Error('Not initialized');

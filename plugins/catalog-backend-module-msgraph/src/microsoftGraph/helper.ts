@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Takes an input string and cleans it up to become suitable as an entity name.
+ *
+ * @public
+ */
 export function normalizeEntityName(name: string): string {
   let cleaned = name
     .trim()

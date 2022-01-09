@@ -33,6 +33,8 @@ import {
 
 /**
  * Extracts teams and users out of an LDAP server.
+ *
+ * @public
  */
 export class LdapOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: LdapProviderConfig[];
