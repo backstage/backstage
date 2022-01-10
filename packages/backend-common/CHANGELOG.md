@@ -1,5 +1,28 @@
 # @backstage/backend-common
 
+## 0.10.2
+
+### Patch Changes
+
+- 21ae56168e: Updated the Git class with the following:
+
+  - Added `depth` and `noCheckout` options to Git clone, using these you can create a bare clone that includes just the git history
+  - New `log` function which you can use to view the commit history of a git repo
+
+- eacc582473: Reverted the default CSP configuration to include `'unsafe-eval'` again, which was mistakenly removed in the previous version.
+
+## 0.10.1
+
+### Patch Changes
+
+- 94cdf5d1bd: In-memory cache clients instantiated from the same cache manager now share the same memory space.
+- 916b2f1f3e: Use the default CSP policy provided by `helmet` directly rather than a copy.
+- 7d4b4e937c: Uptake changes to the GitHub Credentials Provider interface.
+- 995e4c7d9d: Added support for non-"amazonaws.com" hosts (for example when testing with LocalStack) in AwsS3UrlReader.
+- Updated dependencies
+  - @backstage/integration@0.7.0
+  - @backstage/config-loader@0.9.1
+
 ## 0.10.0
 
 ### Minor Changes

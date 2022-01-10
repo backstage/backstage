@@ -1,5 +1,30 @@
 # @backstage/plugin-search
 
+## 0.5.4
+
+### Patch Changes
+
+- e05b9115aa: Fix missing search context issue with `HomePageSearchBar`
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- 54ef743aa4: Introduce a `<SearchType.Tabs />` variant to display tabs for selecting search result types.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
+## 0.5.3
+
+### Patch Changes
+
+- 6d8e3a9651: Internal cleanup of the exports structure
+- 8b532a6c02: Introduces a `<SearchType.Accordion />` variant, which operates on the same part of a search query as the existing `<SearchType />`, but in a more opinionated way (as a single-select control surface suitable for faceted search UIs).
+
+  Check the [search plugin storybook](https://backstage.io/storybook/?path=/story/plugins-search-searchtype--accordion) to see how it can be used.
+
+- af4980fb5d: Captures the search term entered in the SearchBarBase as a `search` event.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.9
+
 ## 0.5.2
 
 ### Patch Changes

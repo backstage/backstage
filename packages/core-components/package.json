@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.11",
-    "@backstage/core-plugin-api": "^0.4.0",
+    "@backstage/core-plugin-api": "^0.4.1",
     "@backstage/errors": "^0.1.5",
     "@backstage/theme": "^0.2.14",
     "@material-table/core": "^3.1.0",
@@ -72,8 +72,8 @@
     "react-dom": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/core-app-api": "^0.3.0",
-    "@backstage/cli": "^0.10.3",
+    "@backstage/core-app-api": "^0.3.1",
+    "@backstage/cli": "^0.10.5",
     "@backstage/test-utils": "^0.2.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",

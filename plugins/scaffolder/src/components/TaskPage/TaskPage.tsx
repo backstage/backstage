@@ -22,8 +22,10 @@ import {
   Page,
   LogViewer,
 } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import {
+  Button,
   CircularProgress,
   Paper,
   StepButton,
@@ -40,9 +42,11 @@ import Check from '@material-ui/icons/Check';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import classNames from 'classnames';
 import { DateTime, Interval } from 'luxon';
+import qs from 'qs';
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router';
-import { useInterval } from 'react-use';
+import { generatePath, useNavigate, useParams } from 'react-router';
+import useInterval from 'react-use/lib/useInterval';
+import { rootRouteRef } from '../../routes';
 import { Status, TaskOutput } from '../../types';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import { TaskPageLinks } from './TaskPageLinks';
@@ -56,8 +60,8 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '100%',
     },
     button: {
-      marginTop: theme.spacing(1),
-      marginRight: theme.spacing(1),
+      marginBottom: theme.spacing(2),
+      marginLeft: theme.spacing(2),
     },
     actionsContainer: {
       marginBottom: theme.spacing(2),
@@ -215,6 +219,9 @@ const hasLinks = ({ entityRef, remoteUrl, links = [] }: TaskOutput): boolean =>
   !!(entityRef || remoteUrl || links.length > 0);
 
 export const TaskPage = () => {
+  const classes = useStyles();
+  const navigate = useNavigate();
+  const rootLink = useRouteRef(rootRouteRef);
   const [userSelectedStepId, setUserSelectedStepId] = useState<
     string | undefined
   >(undefined);
@@ -266,6 +273,26 @@ export const TaskPage = () => {
 
   const { output } = taskStream;
 
+  const handleStartOver = () => {
+    if (!taskStream.task || !taskStream.task?.spec.metadata?.name) {
+      navigate(generatePath(rootLink()));
+    }
+
+    const formData =
+      taskStream.task!.spec.apiVersion === 'backstage.io/v1beta2'
+        ? taskStream.task!.spec.values
+        : taskStream.task!.spec.parameters;
+
+    navigate(
+      generatePath(
+        `${rootLink()}/templates/:templateName?${qs.stringify({ formData })}`,
+        {
+          templateName: taskStream.task!.spec.metadata!.name,
+        },
+      ),
+    );
+  };
+
   return (
     <Page themeId="home">
       <Header
@@ -297,6 +324,15 @@ export const TaskPage = () => {
                   {output && hasLinks(output) && (
                     <TaskPageLinks output={output} />
                   )}
+                  <Button
+                    className={classes.button}
+                    onClick={handleStartOver}
+                    disabled={!completed}
+                    variant="contained"
+                    color="primary"
+                  >
+                    Start Over
+                  </Button>
                 </Paper>
               </Grid>
               <Grid item xs={9}>

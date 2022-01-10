@@ -15,8 +15,7 @@
  */
 
 import { UserEntity } from '@backstage/catalog-model';
-import { useAsync } from 'react-use';
-import { AsyncState } from 'react-use/lib/useAsync';
+import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../api';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 

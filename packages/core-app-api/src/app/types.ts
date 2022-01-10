@@ -24,7 +24,6 @@ import {
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
-  PluginOutput,
   IdentityApi,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
@@ -232,9 +231,13 @@ export type AppOptions = {
   /**
    * A list of all plugins to include in the app.
    */
-  plugins?: (Omit<BackstagePlugin<any, any>, 'output'> & {
-    output(): (PluginOutput | { type: string })[];
-  })[];
+  plugins?: Array<
+    BackstagePlugin<any, any> & {
+      output?(): Array<
+        { type: 'feature-flag'; name: string } | { type: string }
+      >; // support for old plugins
+    }
+  >;
 
   /**
    * Supply components to the app to override the default ones.

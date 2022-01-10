@@ -137,12 +137,27 @@ describe('<EntityListProvider />', () => {
     const { result, waitFor } = renderHook(() => useEntityListProvider(), {
       wrapper,
       initialProps: {
-        userFilter: 'owned',
+        userFilter: 'all',
       },
     });
     await waitFor(() => !!result.current.entities.length);
     expect(result.current.backendEntities.length).toBe(2);
-    expect(result.current.entities.length).toBe(1);
+
+    act(() =>
+      result.current.updateFilters({
+        user: new UserListFilter(
+          'owned',
+          entity => entity.metadata.name === 'component-1',
+          () => true,
+        ),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.entities.length).toBe(1);
+      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('resolves query param filter values', async () => {

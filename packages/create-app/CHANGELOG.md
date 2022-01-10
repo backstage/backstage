@@ -1,5 +1,127 @@
 # @backstage/create-app
 
+## 0.4.11
+
+## 0.4.10
+
+### Patch Changes
+
+- 79b342bd36: removed inline and internal CSS from index.html
+
+  To make this change to an existing app, apply the following changes to the `packages/app/public/index.html` file:
+
+  Remove internal style
+
+  ```diff
+  - <style>
+  -  #root {
+  -    min-height: 100%;
+  -  }
+  - </style>
+  ```
+
+  Remove inline style from the body tag
+
+  ```diff
+  - <body style="margin: 0">
+  + <body>
+  ```
+
+- d33b65dc52: Removed unused templating asset.
+- 613ad12960: Add a comment to the default backend about the fallback 404 handler.
+- 20af5a701f: The `<SearchType />` filter in the composed `SearchPage.tsx` was replaced with the `<SearchType.Accordion />` variant.
+
+  This is an entirely optional change; if you wish to display a control surface for search `types` as a single-select accordion (as opposed to the current multi-select of checkboxes), you can make the following (or similar) changes to your search page layout:
+
+  ```diff
+  --- a/packages/app/src/components/search/SearchPage.tsx
+  +++ b/packages/app/src/components/search/SearchPage.tsx
+  @@ -11,7 +11,7 @@ import {
+     SearchType,
+     DefaultResultListItem,
+   } from '@backstage/plugin-search';
+  -import { Content, Header, Page } from '@backstage/core-components';
+  +import { CatalogIcon, Content, DocsIcon, Header, Page } from '@backstage/core-components';
+
+   const useStyles = makeStyles((theme: Theme) => ({
+     bar: {
+  @@ -19,6 +19,7 @@ const useStyles = makeStyles((theme: Theme) => ({
+     },
+     filters: {
+       padding: theme.spacing(2),
+  +    marginTop: theme.spacing(2),
+     },
+     filter: {
+       '& + &': {
+  @@ -41,12 +42,23 @@ const SearchPage = () => {
+               </Paper>
+             </Grid>
+             <Grid item xs={3}>
+  +            <SearchType.Accordion
+  +              name="Result Type"
+  +              defaultValue="software-catalog"
+  +              types={[
+  +                {
+  +                  value: 'software-catalog',
+  +                  name: 'Software Catalog',
+  +                  icon: <CatalogIcon />,
+  +                },
+  +                {
+  +                  value: 'techdocs',
+  +                  name: 'Documentation',
+  +                  icon: <DocsIcon />,
+  +                },
+  +              ]}
+  +            />
+               <Paper className={classes.filters}>
+  -              <SearchType
+  -                values={['techdocs', 'software-catalog']}
+  -                name="type"
+  -                defaultValue="software-catalog"
+  -              />
+                 <SearchFilter.Select
+                   className={classes.filter}
+                   name="kind"
+  ```
+
+- 0dcd1dd64f: Add a `scheduler` to the plugin environment, which can schedule collaborative tasks across backends. To apply the same change in your backend, follow the steps below.
+
+  First install the package:
+
+  ```shell
+  # From the Backstage repository root
+  cd packages/backend
+  yarn add @backstage/backend-tasks
+  ```
+
+  Add the scheduler to your plugin environment type:
+
+  ```diff
+   // In packages/backend/src/types.ts
+  +import { PluginTaskScheduler } from '@backstage/backend-tasks';
+
+   export type PluginEnvironment = {
+  +  scheduler: PluginTaskScheduler;
+  ```
+
+  And finally make sure to add such an instance to each plugin's environment:
+
+  ```diff
+   // In packages/backend/src/index.ts
+  +import { TaskScheduler } from '@backstage/backend-tasks';
+
+   function makeCreateEnv(config: Config) {
+     // ...
+  +  const taskScheduler = TaskScheduler.fromConfig(config);
+
+     return (plugin: string): PluginEnvironment => {
+       // ...
+  +    const scheduler = taskScheduler.forPlugin(plugin);
+       return {
+  +      scheduler,
+         // ...
+  ```
+
 ## 0.4.9
 
 ### Patch Changes

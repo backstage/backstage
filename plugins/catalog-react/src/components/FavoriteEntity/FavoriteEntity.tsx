@@ -37,7 +37,7 @@ export const favoriteEntityIcon = (isStarred: boolean) =>
 
 /**
  * IconButton for showing if a current entity is starred and adding/removing it from the favorite entities
- * @param props MaterialUI IconButton props extended by required `entity` prop
+ * @param props - MaterialUI IconButton props extended by required `entity` prop
  */
 export const FavoriteEntity = (props: Props) => {
   const { toggleStarredEntity, isStarredEntity } = useStarredEntity(

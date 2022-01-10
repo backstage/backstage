@@ -11,38 +11,27 @@ import { Logger as Logger_2 } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
 
-// Warning: (ae-forgotten-export) The symbol "RouterOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// Warning: (ae-forgotten-export) The symbol "TodoParserOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "TodoParser" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "createTodoParser" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createTodoParser(options?: TodoParserOptions): TodoParser;
 
-// Warning: (ae-missing-release-tag) "ListTodosRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ListTodosRequest = {
   entity?: EntityName;
   offset?: number;
   limit?: number;
   orderBy?: {
-    field: Fields;
+    field: 'text' | 'tag' | 'author' | 'viewUrl' | 'repoFilePath';
     direction: 'asc' | 'desc';
   };
   filters?: {
-    field: Fields;
+    field: 'text' | 'tag' | 'author' | 'viewUrl' | 'repoFilePath';
     value: string;
   }[];
 };
 
-// Warning: (ae-missing-release-tag) "ListTodosResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ListTodosResponse = {
   items: TodoItem[];
@@ -51,22 +40,22 @@ export type ListTodosResponse = {
   limit: number;
 };
 
-// Warning: (ae-missing-release-tag) "ReadTodosOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ReadTodosOptions = {
   url: string;
 };
 
-// Warning: (ae-missing-release-tag) "ReadTodosResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ReadTodosResult = {
   items: TodoItem[];
 };
 
-// Warning: (ae-missing-release-tag) "TodoItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export interface RouterOptions {
+  // (undocumented)
+  todoService: TodoService;
+}
+
 // @public (undocumented)
 export type TodoItem = {
   text: string;
@@ -77,19 +66,36 @@ export type TodoItem = {
   repoFilePath?: string;
 };
 
-// Warning: (ae-missing-release-tag) "TodoReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type TodoParser = (ctx: TodoParserContext) => TodoParserResult[];
+
+// @public (undocumented)
+export type TodoParserContext = {
+  content: string;
+  path: string;
+};
+
+// @public (undocumented)
+export type TodoParserOptions = {
+  additionalTags?: string[];
+};
+
+// @public (undocumented)
+export type TodoParserResult = {
+  text: string;
+  tag: string;
+  author?: string;
+  lineNumber: number;
+};
+
 // @public (undocumented)
 export interface TodoReader {
   readTodos(options: ReadTodosOptions): Promise<ReadTodosResult>;
 }
 
-// Warning: (ae-missing-release-tag) "TodoReaderService" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class TodoReaderService implements TodoService {
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  constructor(options: Options_2);
+  constructor(options: TodoReaderServiceOptions);
   // (undocumented)
   listTodos(
     req: ListTodosRequest,
@@ -99,24 +105,34 @@ export class TodoReaderService implements TodoService {
   ): Promise<ListTodosResponse>;
 }
 
-// Warning: (ae-missing-release-tag) "TodoScmReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type TodoReaderServiceOptions = {
+  todoReader: TodoReader;
+  catalogClient: CatalogApi;
+  maxPageSize?: number;
+  defaultPageSize?: number;
+};
+
 // @public (undocumented)
 export class TodoScmReader implements TodoReader {
-  constructor(options: Options);
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  //
+  constructor(options: TodoScmReaderOptions);
   // (undocumented)
   static fromConfig(
     config: Config,
-    options: Omit<Options, 'integrations'>,
+    options: Omit<TodoScmReaderOptions, 'integrations'>,
   ): TodoScmReader;
   // (undocumented)
   readTodos(options: ReadTodosOptions): Promise<ReadTodosResult>;
 }
 
-// Warning: (ae-missing-release-tag) "TodoService" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type TodoScmReaderOptions = {
+  logger: Logger_2;
+  reader: UrlReader;
+  integrations: ScmIntegrations;
+  parser?: TodoParser;
+};
+
 // @public (undocumented)
 export interface TodoService {
   // (undocumented)
@@ -127,8 +143,4 @@ export interface TodoService {
     },
   ): Promise<ListTodosResponse>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/service/types.d.ts:9:9 - (ae-forgotten-export) The symbol "Fields" needs to be exported by the entry point index.d.ts
 ```

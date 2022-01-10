@@ -15,7 +15,7 @@
  */
 
 import { useMemo, useState } from 'react';
-import { useToggle } from 'react-use';
+import useToggle from 'react-use/lib/useToggle';
 import { AnsiLine } from './AnsiProcessor';
 
 export function applySearchFilter(lines: AnsiLine[], searchText: string) {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { ActionsListWorkflowRunsForRepoResponseData } from '../../api/types';
 
 export const useWorkflowRunJobs = (jobsUrl?: string) => {

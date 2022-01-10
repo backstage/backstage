@@ -30,6 +30,8 @@ export class AwsS3Integration implements ScmIntegration {
 // @public
 export type AwsS3IntegrationConfig = {
   host: string;
+  endpoint?: string;
+  s3ForcePathStyle?: boolean;
   accessKeyId?: string;
   secretAccessKey?: string;
   roleArn?: string;
@@ -441,9 +443,4 @@ export class SingleInstanceGithubCredentialsProvider
   static create: (config: GitHubIntegrationConfig) => GithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/gitlab/config.d.ts:29:68 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/gitlab/config.d.ts:29:63 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 ```

@@ -50,7 +50,7 @@ export class OctokitProvider {
   /**
    * gets standard Octokit client based on repository URL.
    *
-   * @param repoUrl Repository URL
+   * @param repoUrl - Repository URL
    */
   async getOctokit(repoUrl: string): Promise<OctokitIntegration> {
     const { owner, repo, host } = parseRepoUrl(repoUrl, this.integrations);

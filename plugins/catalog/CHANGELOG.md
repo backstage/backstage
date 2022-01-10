@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog
 
+## 0.7.7
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- 11b81683a9: Support customizing index page layouts via outlets
+- e195390974: Allow entities from `file` locations to be manually refreshed through the UI
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
+## 0.7.6
+
+### Patch Changes
+
+- 7d4b4e937c: Uptake changes to the GitHub Credentials Provider interface.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.9
+  - @backstage/integration-react@0.1.17
+
 ## 0.7.5
 
 ### Patch Changes

@@ -20,8 +20,9 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useContext,
 } from 'react';
-import { useDebounce } from 'react-use';
+import useDebounce from 'react-use/lib/useDebounce';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   InputBase,
@@ -32,7 +33,12 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
 
-import { useSearch } from '../SearchContext';
+import {
+  SearchContext,
+  SearchContextProvider,
+  useSearch,
+} from '../SearchContext';
+import { TrackSearch } from '../SearchTracker';
 
 /**
  * Props for {@link SearchBarBase}.
@@ -45,6 +51,11 @@ export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
   onClear?: () => void;
   onSubmit?: () => void;
   onChange: (value: string) => void;
+};
+
+const useSearchContextCheck = () => {
+  const context = useContext(SearchContext);
+  return context !== undefined;
 };
 
 /**
@@ -68,6 +79,7 @@ export const SearchBarBase = ({
 }: SearchBarBaseProps) => {
   const configApi = useApi(configApiRef);
   const [value, setValue] = useState<string>(defaultValue as string);
+  const hasSearchContext = useSearchContextCheck();
 
   useEffect(() => {
     setValue(prevValue =>
@@ -118,19 +130,27 @@ export const SearchBarBase = ({
     </InputAdornment>
   );
 
-  return (
-    <InputBase
-      data-testid="search-bar-next"
-      value={value}
-      placeholder={placeholder}
-      startAdornment={startAdornment}
-      endAdornment={clearButton ? endAdornment : defaultEndAdornment}
-      inputProps={{ 'aria-label': 'Search', ...defaultInputProps }}
-      fullWidth={fullWidth}
-      onChange={handleChange}
-      onKeyDown={handleKeyDown}
-      {...props}
-    />
+  const searchBar = (
+    <TrackSearch>
+      <InputBase
+        data-testid="search-bar-next"
+        value={value}
+        placeholder={placeholder}
+        startAdornment={startAdornment}
+        endAdornment={clearButton ? endAdornment : defaultEndAdornment}
+        inputProps={{ 'aria-label': 'Search', ...defaultInputProps }}
+        fullWidth={fullWidth}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        {...props}
+      />
+    </TrackSearch>
+  );
+
+  return hasSearchContext ? (
+    searchBar
+  ) : (
+    <SearchContextProvider>{searchBar}</SearchContextProvider>
   );
 };
 
@@ -150,8 +170,11 @@ export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
   const { term, setTerm } = useSearch();
 
   const handleChange = (newValue: string) => {
-    setTerm(newValue);
-    if (onChange) onChange(newValue);
+    if (onChange) {
+      onChange(newValue);
+    } else {
+      setTerm(newValue);
+    }
   };
 
   return <SearchBarBase value={term} onChange={handleChange} {...props} />;

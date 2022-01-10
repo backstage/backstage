@@ -23,9 +23,7 @@ import { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 
 /**
- * API to talk to techdocs-backend.
- *
- * @property {string} apiOrigin Set to techdocs.requestUrl as the URL for techdocs-backend API
+ * API to talk to `techdocs-backend`.
  */
 export class TechDocsClient implements TechDocsApi {
   public configApi: Config;
@@ -60,7 +58,7 @@ export class TechDocsClient implements TechDocsApi {
    * static files. It includes necessary data about the docs site. This method requests techdocs-backend
    * which retrieves the TechDocs metadata.
    *
-   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
+   * @param entityId - Object containing entity data like name, namespace, etc.
    */
   async getTechDocsMetadata(entityId: EntityName): Promise<TechDocsMetadata> {
     const { kind, namespace, name } = entityId;
@@ -86,7 +84,7 @@ export class TechDocsClient implements TechDocsApi {
    * This method requests techdocs-backend which uses the catalog APIs to respond with filtered
    * information required here.
    *
-   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
+   * @param entityId - Object containing entity data like name, namespace, etc.
    */
   async getEntityMetadata(
     entityId: EntityName,
@@ -111,8 +109,6 @@ export class TechDocsClient implements TechDocsApi {
 
 /**
  * API which talks to TechDocs storage to fetch files to render.
- *
- * @property {string} apiOrigin Set to techdocs.requestUrl as the URL for techdocs-backend API
  */
 export class TechDocsStorageClient implements TechDocsStorageApi {
   public configApi: Config;
@@ -154,10 +150,10 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   /**
    * Fetch HTML content as text for an individual docs page in an entity's docs site.
    *
-   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
-   * @param {string} path The unique path to an individual docs page e.g. overview/what-is-new
-   * @returns {string} HTML content of the docs page as string
-   * @throws {Error} Throws error when the page is not found.
+   * @param entityId - Object containing entity data like name, namespace, etc.
+   * @param path - The unique path to an individual docs page e.g. overview/what-is-new
+   * @returns HTML content of the docs page as string
+   * @throws Throws error when the page is not found.
    */
   async getEntityDocs(entityId: EntityName, path: string): Promise<string> {
     const { kind, namespace, name } = entityId;
@@ -198,10 +194,10 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   /**
    * Check if docs are on the latest version and trigger rebuild if not
    *
-   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
-   * @param {Function} logHandler Callback to receive log messages from the build process
-   * @returns {SyncResult} Whether documents are currently synchronized to newest version
-   * @throws {Error} Throws error on error from sync endpoint in Techdocs Backend
+   * @param entityId - Object containing entity data like name, namespace, etc.
+   * @param logHandler - Callback to receive log messages from the build process
+   * @returns Whether documents are currently synchronized to newest version
+   * @throws Throws error on error from sync endpoint in Techdocs Backend
    */
   async syncEntityDocs(
     entityId: EntityName,

@@ -16,7 +16,7 @@
 import React from 'react';
 import { ilertApiRef, TableState } from '../api';
 import { AuthenticationError } from '@backstage/errors';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { UptimeMonitor } from '../types';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 

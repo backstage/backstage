@@ -35,9 +35,11 @@ We follow this structure for plugin packages (where `x` is the plugin name, for
 example `catalog` or `techdocs`):
 
 - `x`: Contains the main frontend code of the plugin.
+- `x-module-<name>`: Contains optional modules related to the frontend plugin
+  package.
 - `x-backend`: Contains the main backend code of the plugin.
 - `x-backend-module-<name>`: Contains optional modules related to the backend
-  plugin.
+  plugin package.
 - `x-react`: Contains shared widgets, hooks and similar that both the plugin
   itself (`x`) and third-party frontend plugins can depend on.
 - `x-node`: Contains utilities for backends that both the plugin backend itself

@@ -20,10 +20,7 @@ export type {
   AnyRoutes,
   BackstagePlugin,
   Extension,
-  FeatureFlagOutput,
   FeatureFlagsHooks,
   PluginConfig,
-  PluginHooks,
-  PluginOutput,
   PluginFeatureFlagConfig,
 } from './types';

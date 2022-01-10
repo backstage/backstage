@@ -172,12 +172,6 @@ export interface PublisherBase {
   fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata>;
   getReadiness(): Promise<ReadinessResponse>;
   hasDocsBeenGenerated(entityName: Entity): Promise<boolean>;
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
   // Warning: (ae-forgotten-export) The symbol "MigrateRequest" needs to be exported by the entry point index.d.ts
   migrateDocsCase?(migrateRequest: MigrateRequest): Promise<void>;
   // Warning: (ae-forgotten-export) The symbol "PublishRequest" needs to be exported by the entry point index.d.ts
@@ -286,8 +280,4 @@ export class UrlPreparer implements PreparerBase {
 // Warnings were encountered during analysis:
 //
 // src/stages/generate/types.d.ts:45:5 - (ae-forgotten-export) The symbol "SupportedGeneratorKey" needs to be exported by the entry point index.d.ts
-// src/stages/prepare/types.d.ts:18:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/stages/prepare/types.d.ts:19:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/stages/prepare/types.d.ts:21:33 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/stages/prepare/types.d.ts:21:16 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 ```

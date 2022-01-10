@@ -28,9 +28,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Grid, makeStyles, useTheme } from '@material-ui/core';
 
 import { EntityName } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
+import { SidebarPinStateContext } from '@backstage/core-components';
 
 import { techdocsStorageApiRef } from '../../api';
 
@@ -137,11 +138,15 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
   const theme = useTheme<BackstageTheme>();
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  const techdocsSanitizer = useApi(configApiRef);
   const { namespace = '', kind = '', name = '' } = entityRef;
   const { state, path, content: rawPage } = useTechDocsReader();
 
   const [sidebars, setSidebars] = useState<HTMLElement[]>();
   const [dom, setDom] = useState<HTMLElement | null>(null);
+
+  // sidebar pinned status to be used in computing CSS style injections
+  const { isPinned } = useContext(SidebarPinStateContext);
 
   const updateSidebarPosition = useCallback(() => {
     if (!dom || !sidebars) return;
@@ -166,11 +171,28 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
     // an update to "state" might lead to an updated UI so we include it as a trigger
   }, [updateSidebarPosition, state]);
 
+  // dynamically set width of footer to accommodate for pinning of the sidebar
+  const updateFooterWidth = useCallback(() => {
+    if (!dom) return;
+    const footer = dom.querySelector('.md-footer') as HTMLElement;
+    if (footer) {
+      footer.style.width = `${dom.getBoundingClientRect().width}px`;
+    }
+  }, [dom]);
+
+  useEffect(() => {
+    updateFooterWidth();
+    window.addEventListener('resize', updateFooterWidth);
+    return () => {
+      window.removeEventListener('resize', updateFooterWidth);
+    };
+  });
+
   // a function that performs transformations that are executed prior to adding it to the DOM
   const preRender = useCallback(
     (rawContent: string, contentPath: string) =>
       transformer(rawContent, [
-        sanitizeDOM(),
+        sanitizeDOM(techdocsSanitizer.getOptionalConfig('techdocs.sanitizer')),
         addBaseUrl({
           techdocsStorageApi,
           entityId: {
@@ -198,7 +220,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
           .md-sidebar {  position: fixed; bottom: 100px; width: 20rem; }
           .md-sidebar--secondary { right: 2rem; }
           .md-content { margin-bottom: 50px }
-          .md-footer { position: fixed; bottom: 0px; width: 100vw; }
+          .md-footer { position: fixed; bottom: 0px; }
           .md-footer-nav__link { width: 20rem;}
           .md-content { margin-left: 20rem; max-width: calc(100% - 20rem * 2 - 3rem); }
           .md-typeset { font-size: 1rem; }
@@ -234,13 +256,18 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
               transition: none !important
             }
             .md-sidebar--secondary { display: none; }
-            .md-sidebar--primary { left: 72px; width: 10rem }
+            .md-sidebar--primary { left: ${
+              isPinned ? '242px' : '72px'
+            }; width: 10rem }
             .md-content { margin-left: 10rem; max-width: calc(100% - 10rem); }
             .md-content__inner { font-size: 0.9rem }
             .md-footer {
               position: static;
-              margin-left: 10rem;
-              width: calc(100% - 10rem);
+              padding-left: 10rem;
+            }
+            .md-footer-nav__link {
+              /* footer links begin to overlap at small sizes without setting width */
+              width: 50%;
             }
             .md-nav--primary .md-nav__title {
               white-space: normal;
@@ -319,6 +346,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
       namespace,
       scmIntegrationsApi,
       techdocsStorageApi,
+      techdocsSanitizer,
       theme.palette.action.disabledBackground,
       theme.palette.background.default,
       theme.palette.background.paper,
@@ -326,6 +354,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
       theme.palette.success.main,
       theme.palette.text.primary,
       theme.typography.fontFamily,
+      isPinned,
     ],
   );
 
@@ -336,21 +365,32 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
         scrollIntoAnchor(),
         addLinkClickListener({
           baseUrl: window.location.origin,
-          onClick: (_: MouseEvent, url: string) => {
+          onClick: (event: MouseEvent, url: string) => {
+            // detect if CTRL or META keys are pressed so that links can be opened in a new tab with `window.open`
+            const modifierActive = event.ctrlKey || event.metaKey;
             const parsedUrl = new URL(url);
+
             // hash exists when anchor is clicked on secondary sidebar
             if (parsedUrl.hash) {
-              navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
-              // Scroll to hash if it's on the current page
-              transformedElement
-                ?.querySelector(`#${parsedUrl.hash.slice(1)}`)
-                ?.scrollIntoView();
+              if (modifierActive) {
+                window.open(`${parsedUrl.pathname}${parsedUrl.hash}`, '_blank');
+              } else {
+                navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+                // Scroll to hash if it's on the current page
+                transformedElement
+                  ?.querySelector(`#${parsedUrl.hash.slice(1)}`)
+                  ?.scrollIntoView();
+              }
             } else {
-              navigate(parsedUrl.pathname);
-              // Scroll to top of reader if primary sidebar link is clicked
-              transformedElement
-                ?.querySelector('.md-content__inner')
-                ?.scrollIntoView();
+              if (modifierActive) {
+                window.open(parsedUrl.pathname, '_blank');
+              } else {
+                navigate(parsedUrl.pathname);
+                // Scroll to top of reader if primary sidebar link is clicked
+                transformedElement
+                  ?.querySelector('.md-content__inner')
+                  ?.scrollIntoView();
+              }
             }
           },
         }),

@@ -216,4 +216,73 @@ describe('WebStorage Storage API', () => {
       newValue: undefined,
     });
   });
+
+  it('should freeze the snapshot value', async () => {
+    const storage = createMockStorage();
+
+    const data = { foo: 'bar', baz: [{ foo: 'bar' }] };
+    storage.set('foo', data);
+
+    const snapshot = storage.snapshot<typeof data>('foo');
+    expect(snapshot.value).not.toBe(data);
+
+    if (snapshot.presence !== 'present') {
+      throw new Error('Invalid presence');
+    }
+
+    expect(() => {
+      snapshot.value.foo = 'buzz';
+    }).toThrow(/Cannot assign to read only property/);
+    expect(() => {
+      snapshot.value.baz[0].foo = 'buzz';
+    }).toThrow(/Cannot assign to read only property/);
+    expect(() => {
+      snapshot.value.baz.push({ foo: 'buzz' });
+    }).toThrow(/Cannot add property 1, object is not extensible/);
+  });
+
+  it('should freeze observed values', async () => {
+    const storage = createMockStorage();
+
+    const snapshotPromise = new Promise<any>(resolve => {
+      storage.observe$('test').subscribe({
+        next: resolve,
+      });
+    });
+
+    storage.set('test', {
+      foo: {
+        bar: 'baz',
+      },
+    });
+
+    const snapshot = await snapshotPromise;
+    expect(snapshot.presence).toBe('present');
+    expect(() => {
+      snapshot.value!.foo.bar = 'qux';
+    }).toThrow(/Cannot assign to read only property 'bar' of object/);
+  });
+
+  it('should JSON serialize stored values', async () => {
+    const storage = createMockStorage();
+
+    storage.set<any>('test', {
+      foo: {
+        toJSON() {
+          return {
+            bar: 'baz',
+          };
+        },
+      },
+    });
+
+    expect(storage.snapshot('test')).toMatchObject({
+      presence: 'present',
+      value: {
+        foo: {
+          bar: 'baz',
+        },
+      },
+    });
+  });
 });

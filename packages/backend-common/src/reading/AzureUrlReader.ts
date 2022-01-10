@@ -38,7 +38,11 @@ import {
   ReadUrlResponse,
 } from './types';
 
-/** @public */
+/**
+ * Implements a {@link UrlReader} for Azure repos.
+ *
+ * @public
+ */
 export class AzureUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);

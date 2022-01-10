@@ -67,8 +67,8 @@ export type StepperProvider = {
  * Override this function to customize the import flow. Each flow should at
  * least override the prepare operation.
  *
- * @param flow the name of the active flow
- * @param defaults the default steps
+ * @param flow - the name of the active flow
+ * @param defaults - the default steps
  */
 export function defaultGenerateStepper(
   flow: ImportFlows,

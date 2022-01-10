@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import isEqual from 'lodash/isEqual';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../api';

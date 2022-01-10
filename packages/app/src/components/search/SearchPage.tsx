@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { Content, Header, Lifecycle, Page } from '@backstage/core-components';
+import {
+  CatalogIcon,
+  Content,
+  DocsIcon,
+  Header,
+  Lifecycle,
+  Page,
+} from '@backstage/core-components';
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
 import {
   DefaultResultListItem,
@@ -39,6 +46,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   filters: {
     padding: theme.spacing(2),
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -55,12 +63,23 @@ const SearchPage = () => {
             </Paper>
           </Grid>
           <Grid item xs={3}>
+            <SearchType.Accordion
+              name="Result Type"
+              defaultValue="software-catalog"
+              types={[
+                {
+                  value: 'software-catalog',
+                  name: 'Software Catalog',
+                  icon: <CatalogIcon />,
+                },
+                {
+                  value: 'techdocs',
+                  name: 'Documentation',
+                  icon: <DocsIcon />,
+                },
+              ]}
+            />
             <Paper className={classes.filters}>
-              <SearchType
-                values={['techdocs', 'software-catalog']}
-                name="type"
-                defaultValue="software-catalog"
-              />
               <SearchFilter.Select
                 className={classes.filter}
                 name="kind"

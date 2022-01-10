@@ -27,7 +27,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { gcpApiRef } from '../../api';
 
 import {

@@ -434,7 +434,8 @@ Usage: backstage-cli build [options]
 
 Options:
   --outputs &lt;formats&gt;  List of formats to output [types,cjs,esm]
-  -h, --help           display help for command
+  --minify                   Minify the generated code
+  -h, --help                 display help for command
 ```
 
 ## lint
@@ -593,6 +594,7 @@ Usage: backstage-cli versions:bump [options]
 
 Options:
   -h, --help  display help for command
+  -p, --pattern Override glob for matching packages to upgrade
 ```
 
 ## versions:check

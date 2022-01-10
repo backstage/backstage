@@ -127,9 +127,7 @@ export class OAuth2AuthProvider implements OAuthHandlers {
     });
   }
 
-  async handler(
-    req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+  async handler(req: express.Request) {
     const { result, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResult,
       PrivateInfo
@@ -141,29 +139,27 @@ export class OAuth2AuthProvider implements OAuthHandlers {
     };
   }
 
-  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
+  async refresh(req: OAuthRefreshRequest) {
     const refreshTokenResponse = await executeRefreshTokenStrategy(
       this._strategy,
       req.refreshToken,
       req.scope,
     );
-    const {
-      accessToken,
-      params,
-      refreshToken: updatedRefreshToken,
-    } = refreshTokenResponse;
+    const { accessToken, params, refreshToken } = refreshTokenResponse;
 
     const fullProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
     );
 
-    return this.handleResult({
-      fullProfile,
-      params,
-      accessToken,
-      refreshToken: updatedRefreshToken,
-    });
+    return {
+      response: await this.handleResult({
+        fullProfile,
+        params,
+        accessToken,
+      }),
+      refreshToken,
+    };
   }
 
   private async handleResult(result: OAuthResult) {
@@ -175,7 +171,6 @@ export class OAuth2AuthProvider implements OAuthHandlers {
         accessToken: result.accessToken,
         scope: result.params.scope,
         expiresInSeconds: result.params.expires_in,
-        refreshToken: result.refreshToken,
       },
       profile,
     };

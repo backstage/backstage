@@ -17,6 +17,7 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { SearchEntry } from 'ldapjs';
 import lodashSet from 'lodash/set';
+import cloneDeep from 'lodash/cloneDeep';
 import { buildOrgHierarchy } from './org';
 import { LdapClient } from './client';
 import { GroupConfig, UserConfig } from './config';
@@ -30,6 +31,12 @@ import { Logger } from 'winston';
 import { GroupTransformer, UserTransformer } from './types';
 import { mapStringAttr } from './util';
 
+/**
+ * The default implementation of the transformation from an LDAP entry to a
+ * User entity.
+ *
+ * @public
+ */
 export async function defaultUserTransformer(
   vendor: LdapVendor,
   config: UserConfig,
@@ -52,7 +59,7 @@ export async function defaultUserTransformer(
 
   if (set) {
     for (const [path, value] of Object.entries(set)) {
-      lodashSet(entity, path, value);
+      lodashSet(entity, path, cloneDeep(value));
     }
   }
 
@@ -87,9 +94,9 @@ export async function defaultUserTransformer(
 /**
  * Reads users out of an LDAP provider.
  *
- * @param client The LDAP client
- * @param config The user data configuration
- * @param opts
+ * @param client - The LDAP client
+ * @param config - The user data configuration
+ * @param opts - Additional options
  */
 export async function readLdapUsers(
   client: LdapClient,
@@ -124,6 +131,12 @@ export async function readLdapUsers(
   return { users: entities, userMemberOf };
 }
 
+/**
+ * The default implementation of the transformation from an LDAP entry to a
+ * Group entity.
+ *
+ * @public
+ */
 export async function defaultGroupTransformer(
   vendor: LdapVendor,
   config: GroupConfig,
@@ -146,7 +159,7 @@ export async function defaultGroupTransformer(
 
   if (set) {
     for (const [path, value] of Object.entries(set)) {
-      lodashSet(entity, path, value);
+      lodashSet(entity, path, cloneDeep(value));
     }
   }
 
@@ -184,9 +197,9 @@ export async function defaultGroupTransformer(
 /**
  * Reads groups out of an LDAP provider.
  *
- * @param client The LDAP client
- * @param config The group data configuration
- * @param opts
+ * @param client - The LDAP client
+ * @param config - The group data configuration
+ * @param opts - Additional options
  */
 export async function readLdapGroups(
   client: LdapClient,
@@ -239,13 +252,12 @@ export async function readLdapGroups(
 /**
  * Reads users and groups out of an LDAP provider.
  *
- * Invokes the above "raw" read functions and stitches together the results
- * with all relations etc filled in.
+ * @param client - The LDAP client
+ * @param userConfig - The user data configuration
+ * @param groupConfig - The group data configuration
+ * @param options - Additional options
  *
- * @param client The LDAP client
- * @param userConfig The user data configuration
- * @param groupConfig The group data configuration
- * @param options
+ * @public
  */
 export async function readLdapOrg(
   client: LdapClient,
@@ -260,6 +272,9 @@ export async function readLdapOrg(
   users: UserEntity[];
   groups: GroupEntity[];
 }> {
+  // Invokes the above "raw" read functions and stitches together the results
+  // with all relations etc filled in.
+
   const { users, userMemberOf } = await readLdapUsers(client, userConfig, {
     transformer: options?.userTransformer,
   });
@@ -320,14 +335,14 @@ function ensureItems(
  * Takes groups and entities with empty relations, and fills in the various
  * relations that were returned by the readers, and forms the org hierarchy.
  *
- * @param groups Group entities with empty relations; modified in place
- * @param users User entities with empty relations; modified in place
- * @param userMemberOf For a user DN, the set of group DNs or UUIDs that the
- *                     user is a member of
- * @param groupMemberOf For a group DN, the set of group DNs or UUIDs that the
- *                      group is a member of (parents in the hierarchy)
- * @param groupMember For a group DN, the set of group DNs or UUIDs that are
- *                    members of the group (children in the hierarchy)
+ * @param groups - Group entities with empty relations; modified in place
+ * @param users - User entities with empty relations; modified in place
+ * @param userMemberOf - For a user DN, the set of group DNs or UUIDs that the
+ *        user is a member of
+ * @param groupMemberOf - For a group DN, the set of group DNs or UUIDs that
+ *        the group is a member of (parents in the hierarchy)
+ * @param groupMember - For a group DN, the set of group DNs or UUIDs that are
+ *        members of the group (children in the hierarchy)
  */
 export function resolveRelations(
   groups: GroupEntity[],

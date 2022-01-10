@@ -16,7 +16,6 @@ import { ProfileInfo as ProfileInfo_2 } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
-import { SvgIconProps } from '@material-ui/core';
 
 // @public
 export type AlertApi = {
@@ -241,7 +240,6 @@ export type BackstagePlugin<
   ExternalRoutes extends AnyExternalRoutes = {},
 > = {
   getId(): string;
-  output(): PluginOutput[];
   getApis(): Iterable<AnyApiFactory>;
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
   provide<T>(extension: Extension<T>): T;
@@ -446,12 +444,6 @@ export type FeatureFlag = {
   pluginId: string;
 };
 
-// @public @deprecated
-export type FeatureFlagOutput = {
-  type: 'feature-flag';
-  name: string;
-};
-
 // @public
 export interface FeatureFlagsApi {
   getRegisteredFlags(): FeatureFlag[];
@@ -623,9 +615,6 @@ export const oktaAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
-export type OldIconComponent = ComponentType<SvgIconProps>;
-
 // @alpha
 export const oneloginAuthApiRef: ApiRef<
   OAuthApi &
@@ -687,7 +676,6 @@ export type PluginConfig<
 > = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
-  register?(hooks: PluginHooks): void;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
@@ -697,14 +685,6 @@ export type PluginConfig<
 export type PluginFeatureFlagConfig = {
   name: string;
 };
-
-// @public @deprecated
-export type PluginHooks = {
-  featureFlags: FeatureFlagsHooks;
-};
-
-// @public @deprecated
-export type PluginOutput = FeatureFlagOutput;
 
 // @public
 export type ProfileInfo = {

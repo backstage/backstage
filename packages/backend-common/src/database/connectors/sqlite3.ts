@@ -25,8 +25,8 @@ import { DatabaseConnector } from '../types';
 /**
  * Creates a knex SQLite3 database connection
  *
- * @param dbConfig The database config
- * @param overrides Additional options to merge with the config
+ * @param dbConfig - The database config
+ * @param overrides - Additional options to merge with the config
  */
 export function createSqliteDatabaseClient(
   dbConfig: Config,
@@ -58,8 +58,8 @@ export function createSqliteDatabaseClient(
 /**
  * Builds a knex SQLite3 connection config
  *
- * @param dbConfig The database config
- * @param overrides Additional options to merge with the config
+ * @param dbConfig - The database config
+ * @param overrides - Additional options to merge with the config
  */
 export function buildSqliteDatabaseConfig(
   dbConfig: Config,

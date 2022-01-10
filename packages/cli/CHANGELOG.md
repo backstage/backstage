@@ -1,5 +1,24 @@
 # @backstage/cli
 
+## 0.10.5
+
+### Patch Changes
+
+- 37123b4851: Bump `css-loader` from `5.2.6` to `6.5.1`
+- 9534391ae4: Add --pattern option to override matching glob patterns for backstage versioning
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+
+## 0.10.4
+
+### Patch Changes
+
+- 1d26017090: Fix issue with plugin:serve for Plugins not using Lerna monorepo.
+- 9c3aaf3512: Bump `@typescript-eslint/eslint-plugin` to `4.33.0`
+- 808828e4fa: remove inline CSS from serve_index.html
+- 6e4080d31b: Add option to build command for minifying the generated code
+- Updated dependencies
+  - @backstage/config-loader@0.9.1
+
 ## 0.10.3
 
 ### Patch Changes

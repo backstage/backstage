@@ -16,6 +16,19 @@
 import { openshiftFormatter } from './openshift';
 
 describe('clusterLinks - OpenShift formatter', () => {
+  it('should provide a dashboardUrl in the options', () => {
+    expect(() =>
+      openshiftFormatter({
+        object: {
+          metadata: {
+            name: 'foobar',
+            namespace: 'bar',
+          },
+        },
+        kind: 'Deployment',
+      }),
+    ).toThrowError('OpenShift dashboard requires a dashboardUrl option');
+  });
   it('should return an url on the workloads when there is a namespace only', () => {
     const url = openshiftFormatter({
       dashboardUrl: new URL('https://k8s.foo.com'),

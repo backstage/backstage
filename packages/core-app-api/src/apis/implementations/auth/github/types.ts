@@ -17,10 +17,13 @@
 import { ProfileInfo, BackstageIdentity } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 
+// TODO(Rugvip): Make GithubSession internal
+
 /**
  * Session information for GitHub auth.
  *
  * @public
+ * @deprecated This type is internal and will be removed
  */
 export type GithubSession = {
   providerInfo: {
@@ -29,6 +32,7 @@ export type GithubSession = {
     expiresAt?: Date;
   };
   profile: ProfileInfo;
+  // TODO(Rugvip): This should be made optional once the type is no longer public
   backstageIdentity: BackstageIdentity;
 };
 

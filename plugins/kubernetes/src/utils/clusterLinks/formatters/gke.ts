@@ -15,6 +15,53 @@
  */
 import { ClusterLinksFormatterOptions } from '../../../types/types';
 
-export function gkeFormatter(_options: ClusterLinksFormatterOptions): URL {
-  throw new Error('GKE formatter is not yet implemented. Please, contribute!');
+const kindMappings: Record<string, string> = {
+  deployment: 'deployment',
+  pod: 'pod',
+  ingress: 'ingress',
+  service: 'service',
+  horizontalpodautoscaler: 'deployment',
+};
+
+export function gkeFormatter(options: ClusterLinksFormatterOptions): URL {
+  if (!options.dashboardParameters) {
+    throw new Error('GKE dashboard requires a dashboardParameters option');
+  }
+  const args = options.dashboardParameters;
+  if (typeof args.projectId !== 'string') {
+    throw new Error(
+      'GKE dashboard requires a "projectId" of type string in the dashboardParameters option',
+    );
+  }
+  if (typeof args.region !== 'string') {
+    throw new Error(
+      'GKE dashboard requires a "region" of type string in the dashboardParameters option',
+    );
+  }
+  if (typeof args.clusterName !== 'string') {
+    throw new Error(
+      'GKE dashboard requires a "clusterName" of type string in the dashboardParameters option',
+    );
+  }
+  const basePath = new URL('https://console.cloud.google.com/');
+  const region = encodeURIComponent(args.region);
+  const clusterName = encodeURIComponent(args.clusterName);
+  const name = encodeURIComponent(options.object.metadata?.name ?? '');
+  const namespace = encodeURIComponent(
+    options.object.metadata?.namespace ?? '',
+  );
+  const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
+  let path = '';
+  if (namespace && name && validKind) {
+    const kindsWithDetails = ['ingress', 'pod'];
+    const landingPage = kindsWithDetails.includes(validKind)
+      ? 'details'
+      : 'overview';
+    path = `kubernetes/${validKind}/${region}/${clusterName}/${namespace}/${name}/${landingPage}`;
+  } else {
+    path = `kubernetes/clusters/details/${region}/${clusterName}/details`;
+  }
+  const result = new URL(path, basePath);
+  result.searchParams.set('project', args.projectId);
+  return result;
 }

@@ -25,7 +25,9 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useAsyncFn, useDebounce, useMountedState } from 'react-use';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useDebounce from 'react-use/lib/useDebounce';
+import useMountedState from 'react-use/lib/useMountedState';
 import { catalogApiRef } from '../api';
 import {
   EntityKindFilter,

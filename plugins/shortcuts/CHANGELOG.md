@@ -1,5 +1,20 @@
 # @backstage/plugin-shortcuts
 
+## 0.1.18
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/core-components@0.8.3
+
+## 0.1.17
+
+### Patch Changes
+
+- b50cbd047b: Properly read saved shortcuts from StorageApi
+
 ## 0.1.16
 
 ### Patch Changes

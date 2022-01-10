@@ -75,10 +75,7 @@ export class ResponseError extends Error {
     });
   }
 
-  /**
-   * @deprecated will be removed.
-   **/
-  constructor(props: {
+  private constructor(props: {
     message: string;
     response: Response;
     data: ErrorResponseBody;
@@ -89,14 +86,5 @@ export class ResponseError extends Error {
     this.response = props.response;
     this.body = props.data;
     this.cause = props.cause;
-  }
-  /**
-   * The parsed JSON error body, as sent by the server.
-   * @deprecated use body instead.
-   */
-  get data(): ErrorResponseBody {
-    // eslint-disable-next-line no-console
-    console.warn('ErrorResponse.data is deprecated, use .body instead.');
-    return this.body;
   }
 }

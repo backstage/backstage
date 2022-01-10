@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ErrorResponse } from '../serialization';
+import { ErrorResponseBody } from '../serialization';
 import { ResponseError } from './ResponseError';
 
 describe('ResponseError', () => {
   it('constructs itself from a response', async () => {
-    const body: ErrorResponse = {
+    const body: ErrorResponseBody = {
       error: { name: 'Fours', message: 'Expected fives', stack: 'lines' },
       request: { method: 'GET', url: '/' },
       response: { statusCode: 444 },

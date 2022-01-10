@@ -39,6 +39,13 @@ import {
 /**
  * Reads user and group entries out of an LDAP service, and provides them as
  * User and Group entities for the catalog.
+ *
+ * @remarks
+ *
+ * Add an instance of this class to your catalog builder, and then periodically
+ * call the {@link LdapOrgEntityProvider.read} method.
+ *
+ * @public
  */
 export class LdapOrgEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
@@ -113,14 +120,20 @@ export class LdapOrgEntityProvider implements EntityProvider {
     },
   ) {}
 
+  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
   getProviderName() {
     return `LdapOrgEntityProvider:${this.options.id}`;
   }
 
+  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
   }
 
+  /**
+   * Runs one complete ingestion loop. Call this method regularly at some
+   * appropriate cadence.
+   */
   async read() {
     if (!this.connection) {
       throw new Error('Not initialized');

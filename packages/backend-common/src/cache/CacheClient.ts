@@ -22,7 +22,11 @@ type CacheClientArgs = {
   client: Keyv;
 };
 
-/** @public */
+/**
+ * Options passed to {@link CacheClient.set}.
+ *
+ * @public
+ */
 export type CacheClientSetOptions = {
   /**
    * Optional TTL in milliseconds. Defaults to the TTL provided when the client

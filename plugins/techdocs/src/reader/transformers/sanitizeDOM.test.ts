@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ConfigReader } from '@backstage/config';
 import { createTestShadowDom, FIXTURES } from '../../test-utils';
 import { Transformer } from './index';
 import { sanitizeDOM } from './sanitizeDOM';
@@ -109,6 +110,111 @@ describe('sanitizeDOM', () => {
     });
 
     expect(shadowDom.querySelectorAll('link').length).toEqual(1);
+  });
+
+  it('render iframe where src host is in allowedIframeHosts', async () => {
+    const html = `
+      <html>
+        <head>
+          <link rel="stylesheet" href="style.css">
+        </head>
+        <body>
+          <iframe src="https://example.com?test=1"></iframe>
+          <iframe src="https://forbidden.com?test=1"></iframe>
+        </body>
+      </html>
+    `;
+    const config = new ConfigReader({
+      allowedIframeHosts: ['example.com'],
+    });
+    const shadowDom = await createTestShadowDom(html, {
+      preTransformers: [sanitizeDOM(config)],
+      postTransformers: [],
+    });
+    expect(shadowDom.querySelectorAll('link').length).toEqual(1);
+    expect(shadowDom.querySelectorAll('iframe').length).toEqual(1);
+    expect(shadowDom.querySelectorAll('iframe')[0].getAttribute('src')).toBe(
+      'https://example.com?test=1',
+    );
+  });
+
+  it('should remove all iframes without allowedIframeHosts', async () => {
+    const html = `
+      <html>
+        <head>
+          <link rel="stylesheet" href="style.css">
+        </head>
+        <body>
+          <iframe src="https://example.com?test=1"></iframe>
+          <iframe src="https://forbidden.com?test=1"></iframe>
+        </body>
+      </html>
+    `;
+    const config = new ConfigReader({});
+    const shadowDom = await createTestShadowDom(html, {
+      preTransformers: [sanitizeDOM(config)],
+      postTransformers: [],
+    });
+    expect(shadowDom.querySelectorAll('link').length).toEqual(1);
+    expect(shadowDom.querySelectorAll('iframe').length).toEqual(0);
+  });
+
+  it('should remove iframe with invalid url in src', async () => {
+    const html = `
+      <html>
+        <head>
+          <link rel="stylesheet" href="style.css">
+        </head>
+        <body>
+          <iframe src="invalid.md"></iframe>
+        </body>
+      </html>
+    `;
+    const config = new ConfigReader({
+      allowedIframeHosts: ['example.com'],
+    });
+    const shadowDom = await createTestShadowDom(html, {
+      preTransformers: [sanitizeDOM(config)],
+      postTransformers: [],
+    });
+    expect(shadowDom.querySelectorAll('link').length).toEqual(1);
+    expect(shadowDom.querySelectorAll('iframe').length).toEqual(0);
+  });
+
+  test.each([
+    { key: 'allow', value: '"camera \'none\'"', allowed: false },
+    { key: 'allowfullscreen', value: true, allowed: false },
+    { key: 'allowpaymentrequest', value: true, allowed: false },
+    { key: 'height', value: true, allowed: true },
+    { key: 'loading', value: "'lazy'", allowed: true },
+    { key: 'name', value: "'example'", allowed: true },
+    { key: 'referrerpolicy', value: "'no-referrer'", allowed: false },
+    { key: 'sandbox', value: "'allow-forms'", allowed: false },
+    { key: 'srcdoc', value: "'<p>Hello world!</p>'", allowed: false },
+    { key: 'onload', value: "'alert(1)'", allowed: false },
+  ])('check if the iframe has the attribute %p', async attr => {
+    const html = `
+      <html>
+        <head>
+          <link rel="stylesheet" href="style.css">
+        </head>
+        <body>
+          <iframe src="https://example.com?test=1" ${attr.key}=${attr.value}></iframe>
+        </body>
+      </html>
+    `;
+    const config = new ConfigReader({
+      allowedIframeHosts: ['example.com'],
+    });
+    const shadowDom = await createTestShadowDom(html, {
+      preTransformers: [sanitizeDOM(config)],
+      postTransformers: [],
+    });
+    expect(shadowDom.querySelectorAll('link').length).toEqual(1);
+    expect(shadowDom.querySelectorAll('iframe').length).toEqual(1);
+    expect(shadowDom.querySelectorAll('iframe')[0].hasAttribute(attr.key)).toBe(
+      attr.allowed,
+    );
   });
 
   describe('safe head links', () => {
