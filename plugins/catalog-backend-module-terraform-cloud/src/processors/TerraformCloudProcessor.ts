@@ -24,24 +24,6 @@ import fetch from 'node-fetch';
 import { Config } from '@backstage/config';
 import  { Logger } from 'winston';
 
-export interface ModuleResponse {
-  data: ModuleResponseItem[]
-
-}
-
-export interface ModuleResponseItem{
-  attributes: {
-    name: string
-    provider: string
-    "version-statuses": [
-      {
-       version: string
-      }
-    ]
-  }
-
-}
-
 export class TfCloudReaderProcessor implements CatalogProcessor {
   static fromConfig(config: Config, logger: Logger ) {
     return new TfCloudReaderProcessor(
