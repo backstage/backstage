@@ -17,7 +17,7 @@
 import {
   AuthenticationError,
   ConflictError,
-  ErrorResponse,
+  ErrorResponseBody,
   InputError,
   NotAllowedError,
   NotFoundError,
@@ -93,7 +93,7 @@ export function errorHandler(
       return;
     }
 
-    const body: ErrorResponse = {
+    const body: ErrorResponseBody = {
       error: serializeError(error, { includeStack: showStackTraces }),
       request: { method: req.method, url: req.url },
       response: { statusCode },
