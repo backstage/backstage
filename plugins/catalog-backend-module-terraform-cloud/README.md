@@ -29,11 +29,11 @@ You will also need to add a location. This has the below format:
 
   The processor also needs to be added to `packages/backend/src/plugins/catalog.ts`:
 
-  ```javascript
+  ```ts
 import { TfCloudReaderProcessor } from '@backstage/plugin-catalog-backend-module-terraform-cloud'
 
 
 const builder = await CatalogBuilder.create(env);
-builder.addProcessor(new TfCloudReaderProcessor(env.config, env.logger));
+builder.addProcessor(TfCloudReaderProcessor.fromConfig(env.config, env.logger));
 ```
 

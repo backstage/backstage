@@ -20,14 +20,38 @@ import {
   CatalogProcessorEmit,
   results
 } from '@backstage/plugin-catalog-backend';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import { Config } from '@backstage/config';
 import  { Logger } from 'winston';
 
+export interface ModuleResponse {
+  data: ModuleResponseItem[]
+
+}
+
+export interface ModuleResponseItem{
+  attributes: {
+    name: string
+    provider: string
+    "version-statuses": [
+      {
+       version: string
+      }
+    ]
+  }
+
+}
+
 export class TfCloudReaderProcessor implements CatalogProcessor {
-    constructor(private readonly config: Config, private readonly logger: Logger) {}
+  static fromConfig(config: Config, logger: Logger ) {
+    return new TfCloudReaderProcessor(
+      config,
+      logger
+    );
+  };
+
+  constructor(private readonly config: Config, private readonly logger: Logger) {}
     
- 
   async readLocation(
     location: LocationSpec,
     _optional: boolean,
@@ -38,7 +62,8 @@ export class TfCloudReaderProcessor implements CatalogProcessor {
     }
         
     try {
-             const token = this.config.getOptionalString('integrations.terraform.token');
+             const token = this.config.getOptionalString('terraform.token')
+
               const modules = await this.fetchModuleData(`https://app.terraform.io/api/v2/organizations/${location.target}/registry-modules`,token);
               for (let i = 0; i < modules.data.length; i++) {
                 const resourceArray = [];
@@ -95,7 +120,7 @@ export class TfCloudReaderProcessor implements CatalogProcessor {
     if (res.status >= 400) {
       throw new Error(`Bad response from server ${res.status}`);
     }
-    return await res.json();
+    return await res.json()
   }
 
 }
