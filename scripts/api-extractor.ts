@@ -198,6 +198,44 @@ const SKIPPED_PACKAGES = [
   join('packages', 'techdocs-cli'),
 ];
 
+const NO_WARNING_PACKAGES = [
+  'packages/app-defaults',
+  'packages/backend-common',
+  'packages/backend-tasks',
+  'packages/backend-test-utils',
+  'packages/catalog-client',
+  'packages/cli-common',
+  'packages/config',
+  'packages/config-loader',
+  'packages/core-app-api',
+  'packages/core-plugin-api',
+  'packages/dev-utils',
+  'packages/errors',
+  'packages/integration',
+  'packages/integration-react',
+  'packages/test-utils',
+  'packages/theme',
+  'packages/types',
+  'packages/version-bridge',
+  'plugins/catalog-backend-module-ldap',
+  'plugins/catalog-common',
+  'plugins/permission-backend',
+  'plugins/permission-common',
+  'plugins/permission-node',
+  'plugins/permission-react',
+  'plugins/scaffolder-backend-module-cookiecutter',
+  'plugins/scaffolder-backend-module-rails',
+  'plugins/scaffolder-backend-module-yeoman',
+  'plugins/scaffolder-common',
+  'plugins/tech-insights',
+  'plugins/tech-insights-backend',
+  'plugins/tech-insights-backend-module-jsonfc',
+  'plugins/tech-insights-common',
+  'plugins/tech-insights-node',
+  'plugins/todo',
+  'plugins/todo-backend',
+];
+
 async function resolvePackagePath(
   packagePath: string,
 ): Promise<string | undefined> {
@@ -505,6 +543,11 @@ async function runApiExtraction({
     }
 
     const warningCountAfter = await countApiReportWarnings(projectFolder);
+    if (NO_WARNING_PACKAGES.includes(packageDir) && warningCountAfter > 0) {
+      throw new Error(
+        `The API Report for ${packageDir} is not allowed to have warnings`,
+      );
+    }
     if (warningCountAfter > warningCountBefore) {
       warnings.push(
         `The API Report for ${packageDir} introduces new warnings. ` +
