@@ -55,8 +55,3 @@ export type BackendServeOptions = BundlingPathsOptions & {
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
 };
-
-export type LernaPackage = {
-  name: string;
-  location: string;
-};

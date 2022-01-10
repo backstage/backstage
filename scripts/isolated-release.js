@@ -17,8 +17,7 @@
 
 const path = require('path');
 const childProcess = require('child_process');
-// eslint-disable-next-line import/no-extraneous-dependencies
-const { Project } = require('@lerna/project');
+const { getPackages } = require('@manypkg/get-packages');
 
 // Prepare a release of the provided packages, e.g. @backstage/core
 async function main(args) {
@@ -28,11 +27,10 @@ async function main(args) {
     process.exit(1);
   }
 
-  const project = new Project(__dirname);
-  const packages = await project.getPackages();
+  const { packages } = await getPackages(__dirname);
   const ignoreArgs = packages
-    .filter(p => !args.includes(p.name))
-    .flatMap(p => ['--ignore', p.name]);
+    .filter(p => !args.includes(p.packageJson.name))
+    .flatMap(p => ['--ignore', p.packageJson.name]);
 
   const { status } = childProcess.spawnSync(
     'yarn',

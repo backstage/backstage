@@ -29,20 +29,14 @@ import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
 } from '../../../package.json';
+import { getPackages } from '@manypkg/get-packages';
+import { PackageGraph, PackageGraphNode } from '../monorepo';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
   ...Object.keys(cliDependencies),
   ...Object.keys(cliDevDependencies),
 ];
-
-type LernaPackage = {
-  name: string;
-  private: boolean;
-  location: string;
-  scripts: Record<string, string>;
-  get(key: string): any;
-};
 
 type FileEntry =
   | string
@@ -102,7 +96,17 @@ export async function createDistWorkspace(
     options.targetDir ??
     (await fs.mkdtemp(resolvePath(tmpdir(), 'dist-workspace')));
 
-  const targets = await findTargetPackages(packageNames);
+  const { packages } = await getPackages(paths.targetDir);
+  const packageGraph = PackageGraph.fromPackages(packages);
+  const targetNames = packageGraph.collectPackageNames(packageNames, node => {
+    // Don't include dependencies of packages that are marked as bundled
+    if (node.packageJson.bundled) {
+      return undefined;
+    }
+
+    return node.publishedLocalDependencies.keys();
+  });
+  const targets = Array.from(targetNames).map(name => packageGraph.get(name)!);
 
   if (options.buildDependencies) {
     const exclude = options.buildExcludes ?? [];
@@ -133,7 +137,7 @@ export async function createDistWorkspace(
 
   if (options.skeleton) {
     const skeletonFiles = targets.map(target => {
-      const dir = relativePath(paths.targetRoot, target.location);
+      const dir = relativePath(paths.targetRoot, target.dir);
       return joinPath(dir, 'package.json');
     });
 
@@ -154,21 +158,21 @@ export async function createDistWorkspace(
 
 async function moveToDistWorkspace(
   workspaceDir: string,
-  localPackages: LernaPackage[],
+  localPackages: PackageGraphNode[],
 ): Promise<void> {
-  async function pack(target: LernaPackage, archive: string) {
+  async function pack(target: PackageGraphNode, archive: string) {
     console.log(`Repacking ${target.name} into dist workspace`);
     const archivePath = resolvePath(workspaceDir, archive);
 
     await run('yarn', ['pack', '--filename', archivePath], {
-      cwd: target.location,
+      cwd: target.dir,
     });
     // TODO(Rugvip): yarn pack doesn't call postpack, once the bug is fixed this can be removed
-    if (target.scripts.postpack) {
-      await run('yarn', ['postpack'], { cwd: target.location });
+    if (target.packageJson?.scripts?.postpack) {
+      await run('yarn', ['postpack'], { cwd: target.dir });
     }
 
-    const outputDir = relativePath(paths.targetRoot, target.location);
+    const outputDir = relativePath(paths.targetRoot, target.dir);
     const absoluteOutputPath = resolvePath(workspaceDir, outputDir);
     await fs.ensureDir(absoluteOutputPath);
 
@@ -181,7 +185,7 @@ async function moveToDistWorkspace(
 
     // We remove the dependencies from package.json of packages that are marked
     // as bundled, so that yarn doesn't try to install them.
-    if (target.get('bundled')) {
+    if (target.packageJson.bundled) {
       const pkgJson = await fs.readJson(
         resolvePath(absoluteOutputPath, 'package.json'),
       );
@@ -219,42 +223,4 @@ async function moveToDistWorkspace(
       pack(target, `temp-package-${index}.tgz`),
     ),
   );
-}
-
-async function findTargetPackages(pkgNames: string[]): Promise<LernaPackage[]> {
-  const { Project } = require('@lerna/project');
-  const { PackageGraph } = require('@lerna/package-graph');
-
-  const project = new Project(paths.targetDir);
-  const packages = await project.getPackages();
-  const graph = new PackageGraph(packages);
-
-  const targets = new Map<string, any>();
-  const searchNames = pkgNames.slice();
-
-  while (searchNames.length) {
-    const name = searchNames.pop()!;
-
-    if (targets.has(name)) {
-      continue;
-    }
-
-    const node = graph.get(name);
-    if (!node) {
-      throw new Error(`Package '${name}' not found`);
-    }
-
-    // Don't include dependencies of packages that are marked as bundled
-    if (!node.pkg.get('bundled')) {
-      const pkgDeps = Object.keys(node.pkg.dependencies ?? {});
-      const localDeps: string[] = Array.from(node.localDependencies.keys());
-      const filteredDeps = localDeps.filter(dep => pkgDeps.includes(dep));
-
-      searchNames.push(...filteredDeps);
-    }
-
-    targets.set(name, node.pkg);
-  }
-
-  return Array.from(targets.values());
 }
