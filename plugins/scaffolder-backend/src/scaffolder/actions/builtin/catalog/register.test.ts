@@ -117,7 +117,7 @@ describe('catalog:register', () => {
     );
   });
 
-  it('should register location in catalog and return the entity and not the generated location', async () => {
+  it('should return entityRef with the Component entity and not the generated location', async () => {
     addLocation
       .mockResolvedValueOnce({
         entities: [],
@@ -136,7 +136,21 @@ describe('catalog:register', () => {
               namespace: 'default',
               name: 'test',
             },
+            kind: 'Api',
+          } as Entity,
+          {
+            metadata: {
+              namespace: 'default',
+              name: 'test',
+            },
             kind: 'Component',
+          } as Entity,
+          {
+            metadata: {
+              namespace: 'default',
+              name: 'test',
+            },
+            kind: 'Template',
           } as Entity,
         ],
       });
@@ -146,32 +160,103 @@ describe('catalog:register', () => {
         catalogInfoUrl: 'http://foo/var',
       },
     });
-
-    expect(addLocation).toHaveBeenNthCalledWith(
-      1,
-      {
-        type: 'url',
-        target: 'http://foo/var',
-      },
-      {},
-    );
-    expect(addLocation).toHaveBeenNthCalledWith(
-      2,
-      {
-        dryRun: true,
-        type: 'url',
-        target: 'http://foo/var',
-      },
-      {},
-    );
-
     expect(mockContext.output).toBeCalledWith(
       'entityRef',
       'component:default/test',
     );
+  });
+
+  it('should return entityRef with the next non-generated entity if no Component kind can be found', async () => {
+    addLocation
+      .mockResolvedValueOnce({
+        entities: [],
+      })
+      .mockResolvedValueOnce({
+        entities: [
+          {
+            metadata: {
+              namespace: 'default',
+              name: 'generated-1238',
+            },
+            kind: 'Location',
+          } as Entity,
+          {
+            metadata: {
+              namespace: 'default',
+              name: 'test',
+            },
+            kind: 'Api', // should return this one
+          } as Entity,
+          {
+            metadata: {
+              namespace: 'default',
+              name: 'test',
+            },
+            kind: 'Template',
+          } as Entity,
+        ],
+      });
+    await action.handler({
+      ...mockContext,
+      input: {
+        catalogInfoUrl: 'http://foo/var',
+      },
+    });
+    expect(mockContext.output).toBeCalledWith('entityRef', 'api:default/test');
+  });
+
+  it('should return entityRef with the first entity if no non-generated entities can be found', async () => {
+    addLocation
+      .mockResolvedValueOnce({
+        entities: [],
+      })
+      .mockResolvedValueOnce({
+        entities: [
+          {
+            metadata: {
+              namespace: 'default',
+              name: 'generated-1238',
+            },
+            kind: 'Location',
+          } as Entity,
+          {
+            metadata: {
+              namespace: 'default',
+              name: 'generated-1238',
+            },
+            kind: 'Template',
+          } as Entity,
+        ],
+      });
+    await action.handler({
+      ...mockContext,
+      input: {
+        catalogInfoUrl: 'http://foo/var',
+      },
+    });
     expect(mockContext.output).toBeCalledWith(
-      'catalogInfoUrl',
-      'http://foo/var',
+      'entityRef',
+      'location:default/generated-1238',
+    );
+  });
+
+  it('should not return entityRef if there are no entites', async () => {
+    addLocation
+      .mockResolvedValueOnce({
+        entities: [],
+      })
+      .mockResolvedValueOnce({
+        entities: [],
+      });
+    await action.handler({
+      ...mockContext,
+      input: {
+        catalogInfoUrl: 'http://foo/var',
+      },
+    });
+    expect(mockContext.output).not.toBeCalledWith(
+      'entityRef',
+      expect.any(String),
     );
   });
 
