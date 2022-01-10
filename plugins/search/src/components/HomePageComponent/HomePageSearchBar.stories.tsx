@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'space-between',
     padding: '8px 0',
-    border: 'none',
+    borderColor: 'transparent',
     borderRadius: '50px',
     margin: 'auto',
   },
