@@ -27,7 +27,11 @@ import { FetchUrlReader } from './FetchUrlReader';
 import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
 import { AwsS3UrlReader } from './AwsS3UrlReader';
 
-/** @public */
+/**
+ * Creation options for {@link UrlReaders}.
+ *
+ * @public
+ */
 export type UrlReadersOptions = {
   /** Root config object */
   config: Config;
@@ -38,13 +42,13 @@ export type UrlReadersOptions = {
 };
 
 /**
- * UrlReaders provide various utilities related to the UrlReader interface.
+ * Helps construct {@link UrlReader}s.
  *
  * @public
  */
 export class UrlReaders {
   /**
-   * Creates a UrlReader without any known types.
+   * Creates a custom {@link UrlReader} wrapper for your own set of factories.
    */
   static create(options: UrlReadersOptions): UrlReader {
     const { logger, config, factories } = options;
@@ -65,7 +69,8 @@ export class UrlReaders {
   }
 
   /**
-   * Creates a UrlReader that includes all the default factories from this package.
+   * Creates a {@link UrlReader} wrapper that includes all the default factories
+   * from this package.
    *
    * Any additional factories passed will be loaded before the default ones.
    */

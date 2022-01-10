@@ -281,7 +281,12 @@ export type FromReadableArrayOptions = Array<{
   path: string;
 }>;
 
-/** @public */
+/**
+ * A factory for response factories that handle the unpacking and inspection of
+ * complex responses such as archive data.
+ *
+ * @public
+ */
 export interface ReadTreeResponseFactory {
   fromTarArchive(
     options: ReadTreeResponseFactoryOptions,

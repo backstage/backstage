@@ -94,6 +94,11 @@ const parseURL = (
   };
 };
 
+/**
+ * Implements a {@link UrlReader} for AWS S3 buckets.
+ *
+ * @public
+ */
 export class AwsS3UrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);

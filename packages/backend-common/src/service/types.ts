@@ -20,7 +20,11 @@ import { Router, RequestHandler, ErrorRequestHandler } from 'express';
 import { Server } from 'http';
 import { Logger } from 'winston';
 
-/** @public */
+/**
+ * A helper for building backend service instances.
+ *
+ * @public
+ */
 export type ServiceBuilder = {
   /**
    * Sets the service parameters based on configuration.
@@ -119,5 +123,9 @@ export type ServiceBuilder = {
   start(): Promise<Server>;
 };
 
-/** @public */
+/**
+ * A factory for request loggers.
+ *
+ * @public
+ */
 export type RequestLoggingHandlerFactory = (logger?: Logger) => RequestHandler;
