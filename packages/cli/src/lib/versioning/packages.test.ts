@@ -86,12 +86,12 @@ describe('mapDependencies', () => {
           {
             name: 'a',
             range: '1 || 2',
-            location: path.normalize('/root/pkgs/a'),
+            location: path.resolve('/root/pkgs/a'),
           },
           {
             name: 'b',
             range: '3',
-            location: path.normalize('/root/pkgs/b'),
+            location: path.resolve('/root/pkgs/b'),
           },
         ],
       ],
@@ -101,7 +101,7 @@ describe('mapDependencies', () => {
           {
             name: 'b',
             range: '^0',
-            location: path.normalize('/root/pkgs/b'),
+            location: path.resolve('/root/pkgs/b'),
           },
         ],
       ],
