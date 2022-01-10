@@ -61,26 +61,12 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
   const getSearchLink = useRouteRef(rootRouteRef);
   const classes = useStyles();
 
+  const { term } = useSearch();
   const { focusContent } = useLayoutContent();
   const { transitions } = useTheme();
-  const { term, setTerm } = useSearch();
-  const [value, setValue] = useState<string>(term);
-
-  useEffect(() => {
-    setValue(prevValue => (prevValue !== term ? term : prevValue));
-  }, [term]);
-
-  useDebounce(() => setTerm(value), 500, [value]);
-
-  const handleQuery = (newValue: string) => {
-    setValue(newValue);
-  };
-
-  const handleClear = () => setValue('');
 
   const handleResultClick = () => {
     toggleModal();
-    handleClear();
     setTimeout(focusContent, transitions.duration.leavingScreen);
   };
 
@@ -117,7 +103,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
                 toggleModal();
                 setTimeout(focusContent, transitions.duration.leavingScreen);
               }}
-              to={`${getSearchLink()}?query=${value}`}
+              to={`${getSearchLink()}?query=${term}`}
             >
               <span className={classes.viewResultsLink}>View Full Results</span>
               <LaunchIcon color="primary" />
