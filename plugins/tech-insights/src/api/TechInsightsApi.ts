@@ -38,6 +38,8 @@ export interface TechInsightsApi {
   getScorecardsDefinition: (
     type: string,
     value: CheckResult[],
+    title?: string,
+    description?: string,
   ) => CheckResultRenderer | undefined;
   getAllChecks(): Promise<Check[]>;
   runChecks(entityParams: EntityName, checks?: Check[]): Promise<CheckResult[]>;
