@@ -23,7 +23,7 @@ import {
   HomePageSearchBar,
   SearchContextProvider,
   searchApiRef,
-  rootRouteRef
+  searchPlugin
 } from '@backstage/plugin-search';
 import { Grid, makeStyles } from '@material-ui/core';
 import React, { ComponentType} from 'react';
@@ -40,7 +40,7 @@ export default {
           </TestApiProvider>
         </>,
         {
-          mountedRoutes: {'/hello-company': rootRouteRef }
+          mountedRoutes: {'/hello-company': searchPlugin.routes.root }
         }
       ),
   ],

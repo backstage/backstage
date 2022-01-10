@@ -56,5 +56,4 @@ export {
   searchPlugin,
   SearchResult,
   SidebarSearchModal,
-  rootRouteRef,
 } from './plugin';
