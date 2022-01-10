@@ -52,7 +52,7 @@
     "git-url-parse": "^11.6.0",
     "lodash": "^4.17.21",
     "react-router": "6.0.0-beta.0",
-    "react-router-dom": "6.0.0-beta.0",
+    "react-router-dom": "6.2.1",
     "react-text-truncate": "^0.16.0",
     "react-use": "^17.2.4"
   },

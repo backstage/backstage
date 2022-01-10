@@ -42,7 +42,7 @@
     "@material-ui/lab": "4.0.0-alpha.57",
     "lodash": "^4.17.21",
     "react-router": "6.0.0-beta.0",
-    "react-router-dom": "6.0.0-beta.0",
+    "react-router-dom": "6.2.1",
     "react-sparklines": "^1.7.0",
     "react-use": "^17.2.4"
   },

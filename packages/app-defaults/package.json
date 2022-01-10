@@ -36,7 +36,7 @@
     "@backstage/theme": "^0.2.14",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "react-router-dom": "6.0.0-beta.0"
+    "react-router-dom": "6.2.1"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"

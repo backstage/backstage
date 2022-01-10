@@ -45,7 +45,7 @@
     "luxon": "^2.0.2",
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",
-    "react-router-dom": "6.0.0-beta.0",
+    "react-router-dom": "6.2.1",
     "react-use": "^17.2.4",
     "recharts": "^1.8.5",
     "regression": "^2.0.1",

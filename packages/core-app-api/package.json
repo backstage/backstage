@@ -35,7 +35,7 @@
     "@backstage/version-bridge": "^0.1.1",
     "@types/prop-types": "^15.7.3",
     "prop-types": "^15.7.2",
-    "react-router-dom": "6.0.0-beta.0",
+    "react-router-dom": "6.2.1",
     "react-use": "^17.2.4",
     "zen-observable": "^0.8.15",
     "zod": "^3.11.6"
