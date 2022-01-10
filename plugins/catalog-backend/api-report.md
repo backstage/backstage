@@ -554,7 +554,12 @@ export type EntitiesCatalog = {
       authorizationToken?: string;
     },
   ): Promise<void>;
-  entityAncestry(entityRef: string): Promise<EntityAncestryResponse>;
+  entityAncestry(
+    entityRef: string,
+    options?: {
+      authorizationToken?: string;
+    },
+  ): Promise<EntityAncestryResponse>;
 };
 
 // Warning: (ae-missing-release-tag) "EntitiesRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { createConditionTransformer } from '@backstage/plugin-permission-node';
+import {
+  createConditionTransformer,
+  PermissionRule,
+} from '@backstage/plugin-permission-node';
+import { EntitiesSearchFilter } from '../catalog/types';
 import { isEntityKind } from '../permissions/rules/isEntityKind';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 
@@ -30,6 +35,15 @@ describe('AuthorizedEntitiesCatalog', () => {
     authorize: jest.fn(),
   };
 
+  const createCatalog = (
+    ...rules: PermissionRule<Entity, EntitiesSearchFilter, unknown[]>[]
+  ) =>
+    new AuthorizedEntitiesCatalog(
+      fakeCatalog,
+      fakePermissionApi,
+      createConditionTransformer(rules),
+    );
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -39,12 +53,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       fakePermissionApi.authorize.mockResolvedValue([
         { result: AuthorizeResult.DENY },
       ]);
-
-      const catalog = new AuthorizedEntitiesCatalog(
-        fakeCatalog,
-        fakePermissionApi,
-        createConditionTransformer([]),
-      );
+      const catalog = createCatalog();
 
       expect(
         await catalog.entities({
@@ -63,11 +72,7 @@ describe('AuthorizedEntitiesCatalog', () => {
           conditions: { rule: 'IS_ENTITY_KIND', params: [['b']] },
         },
       ]);
-      const catalog = new AuthorizedEntitiesCatalog(
-        fakeCatalog,
-        fakePermissionApi,
-        createConditionTransformer([isEntityKind]),
-      );
+      const catalog = createCatalog(isEntityKind);
 
       await catalog.entities({ authorizationToken: 'abcd' });
 
@@ -81,11 +86,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       fakePermissionApi.authorize.mockResolvedValue([
         { result: AuthorizeResult.ALLOW },
       ]);
-      const catalog = new AuthorizedEntitiesCatalog(
-        fakeCatalog,
-        fakePermissionApi,
-        createConditionTransformer([]),
-      );
+      const catalog = createCatalog();
 
       await catalog.entities({ authorizationToken: 'abcd' });
 
@@ -174,6 +175,83 @@ describe('AuthorizedEntitiesCatalog', () => {
       await catalog.removeEntityByUid('uid', { authorizationToken: 'abcd' });
 
       expect(fakeCatalog.removeEntityByUid).toHaveBeenCalledWith('uid');
+    });
+  });
+
+  describe('entityAncestry', () => {
+    it('throws error if denied access to root entity', async () => {
+      fakePermissionApi.authorize.mockResolvedValueOnce([
+        { result: AuthorizeResult.DENY },
+      ]);
+      const catalog = createCatalog();
+
+      await expect(() =>
+        catalog.entityAncestry('backstage:default/component', {
+          authorizationToken: 'Bearer abcd',
+        }),
+      ).rejects.toThrowError(NotAllowedError);
+    });
+
+    it('filters out unauthorized entities and their parents', async () => {
+      fakePermissionApi.authorize.mockResolvedValueOnce([
+        { result: AuthorizeResult.ALLOW },
+      ]);
+      fakePermissionApi.authorize.mockResolvedValueOnce([
+        { result: AuthorizeResult.ALLOW },
+        { result: AuthorizeResult.DENY },
+        { result: AuthorizeResult.ALLOW },
+        { result: AuthorizeResult.ALLOW },
+        { result: AuthorizeResult.ALLOW },
+      ]);
+      fakeCatalog.entityAncestry.mockResolvedValueOnce({
+        rootEntityRef: 'component:default/a',
+        items: [
+          {
+            entity: { kind: 'component', namespace: 'default', name: 'a' },
+            parentEntityRefs: ['component:default/b1', 'component:default/b2'],
+          },
+          {
+            entity: { kind: 'component', namespace: 'default', name: 'b1' },
+            parentEntityRefs: ['component:default/c'],
+          },
+          {
+            entity: { kind: 'component', namespace: 'default', name: 'b2' },
+            parentEntityRefs: [],
+          },
+          {
+            entity: { kind: 'component', namespace: 'default', name: 'c' },
+            parentEntityRefs: [],
+          },
+          {
+            entity: { kind: 'component', namespace: 'default', name: 'd' },
+            parentEntityRefs: [],
+          },
+        ],
+      });
+      const catalog = createCatalog();
+
+      const ancestryResult = await catalog.entityAncestry(
+        'backstage:default/a',
+        { authorizationToken: 'Bearer abcd' },
+      );
+
+      expect(ancestryResult).toEqual({
+        rootEntityRef: 'component:default/a',
+        items: [
+          {
+            entity: { kind: 'component', namespace: 'default', name: 'a' },
+            parentEntityRefs: ['component:default/b1', 'component:default/b2'],
+          },
+          {
+            entity: { kind: 'component', namespace: 'default', name: 'b2' },
+            parentEntityRefs: [],
+          },
+          {
+            entity: { kind: 'component', namespace: 'default', name: 'd' },
+            parentEntityRefs: [],
+          },
+        ],
+      });
     });
   });
 });
