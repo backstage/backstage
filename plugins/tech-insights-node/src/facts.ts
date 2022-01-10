@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DateTime } from 'luxon';
+import { DateTime, DurationLike } from 'luxon';
 import { Config } from '@backstage/config';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Logger } from 'winston';
@@ -193,6 +193,36 @@ export interface FactRetriever {
 /**
  * @public
  *
+ * A Luxon duration like object for time to live value
+ *
+ * @example
+ * \{ ttl: 1209600000 \}
+ * \{ ttl: \{ weeks: 4 \} \}
+ *
+ **/
+export type TTL = { ttl: DurationLike };
+
+/**
+ * @public
+ *
+ * A number for items to live value
+ *
+ * @example
+ * \{ itl: 10 \}
+ *
+ **/
+export type ITL = { itl: number };
+
+/**
+ * @public
+ *
+ * A fact lifecycle definition. Determines which strategy to use to purge expired facts from the database.
+ */
+export type FactLifecycle = TTL | ITL;
+
+/**
+ * @public
+ *
  * A flat serializable structure for Facts.
  * Containing information about fact schema, version, id, and entity filters
  */
@@ -216,4 +246,11 @@ export type FactRetrieverRegistration = {
    *
    */
   cadence?: string;
+
+  /**
+   * Fact lifecycle definition
+   *
+   * If defined this value will be used to determine expired items which will deleted when this fact retriever is run
+   */
+  lifecycle?: FactLifecycle;
 };

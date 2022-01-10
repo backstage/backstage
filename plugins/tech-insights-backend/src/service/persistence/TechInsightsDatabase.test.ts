@@ -126,9 +126,14 @@ describe('Tech Insights database', () => {
         logger: getVoidLogger(),
       })
     ).techInsightsStore;
-
+  });
+  beforeEach(async () => {
     await testDbClient.batchInsert('fact_schemas', factSchemas);
     await testDbClient.batchInsert('facts', facts);
+  });
+  afterEach(async () => {
+    await testDbClient('facts').delete();
+    await testDbClient('fact_schemas').delete();
   });
 
   const baseAssertionFact = {
@@ -183,15 +188,11 @@ describe('Tech Insights database', () => {
     expect(schemas).toHaveLength(2);
     expect(schemas[0]).toMatchObject({
       id: 'test-fact',
-      version: '1.2.1-test',
+      version: '0.0.1-test',
       entityFilter: [{ kind: 'component' }],
       testNumberFact: {
         type: 'integer',
         description: 'Test fact with a number type',
-      },
-      testStringFact: {
-        type: 'string',
-        description: 'Test fact with a string type',
       },
     });
     expect(schemas[1]).toMatchObject({
@@ -262,5 +263,97 @@ describe('Tech Insights database', () => {
       timestamp: DateTime.fromISO(farInTheFuture),
       facts: { testNumberFact: 3 },
     });
+  });
+
+  it('should delete extraneous rows when ITL is defined. Should leave only n latest', async () => {
+    const deviledFact = (it: {}) => ({
+      ...it,
+      facts: JSON.stringify({
+        testNumberFact: 666,
+      }),
+    });
+    await testDbClient.batchInsert('facts', additionalFacts.map(deviledFact));
+
+    const preInsertionFacts = await testDbClient('facts').select();
+    expect(preInsertionFacts).toHaveLength(3);
+
+    const timestamp = DateTime.now().plus(Duration.fromMillis(1111));
+    const factToBeInserted = {
+      timestamp: timestamp,
+      entity: {
+        namespace: 'a',
+        kind: 'a',
+        name: 'a',
+      },
+      facts: {
+        testNumberFact: 555,
+      },
+    };
+    const itl = 2;
+    await store.insertFacts('test-fact', [factToBeInserted], { itl });
+
+    const afterInsertionFacts = await testDbClient('facts').select();
+    expect(afterInsertionFacts).toHaveLength(itl);
+    expect(afterInsertionFacts[0]).toMatchObject(
+      deviledFact(additionalFacts[0]),
+    );
+    expect(afterInsertionFacts[1]).toMatchObject({
+      id: 'test-fact',
+      version: '0.0.1-test',
+      timestamp: timestamp.toISO(),
+      entity: 'a:a/a',
+      facts: JSON.stringify({ testNumberFact: 555 }),
+    });
+  });
+
+  it('should delete extraneous rows when TTL is defined. Should leave only items with timestamp greater than TTL', async () => {
+    const oldStaledOutFact = (it: {}) => ({
+      ...it,
+      facts: JSON.stringify({
+        testNumberFact: 666,
+      }),
+      timestamp: DateTime.now().minus({ weeks: 3 }).toISO(),
+    });
+    await testDbClient.batchInsert(
+      'facts',
+      additionalFacts.map(oldStaledOutFact),
+    );
+
+    const preInsertionFacts = await testDbClient('facts').select();
+    expect(preInsertionFacts).toHaveLength(3);
+
+    const timestamp = DateTime.now().plus(Duration.fromMillis(1111));
+    const factToBeInserted = {
+      timestamp: timestamp,
+      entity: {
+        namespace: 'a',
+        kind: 'a',
+        name: 'a',
+      },
+      facts: {
+        testNumberFact: 555,
+      },
+    };
+    await store.insertFacts('test-fact', [factToBeInserted], {
+      ttl: { weeks: 2 },
+    });
+
+    const afterInsertionFacts = await testDbClient('facts')
+      .select()
+      .orderBy('timestamp', 'desc');
+    expect(afterInsertionFacts).toHaveLength(3);
+    expect(afterInsertionFacts[0]).toMatchObject({
+      id: 'test-fact',
+      version: '0.0.1-test',
+      timestamp: timestamp.toISO(),
+      entity: 'a:a/a',
+      facts: JSON.stringify({ testNumberFact: 555 }),
+    });
+    expect(afterInsertionFacts[1]).toMatchObject(facts[1]);
+    expect(afterInsertionFacts[2]).toMatchObject(facts[0]);
+
+    expect(afterInsertionFacts).not.toContainEqual(
+      oldStaledOutFact(additionalFacts[0]),
+    );
   });
 });

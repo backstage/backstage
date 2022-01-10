@@ -8,6 +8,7 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import { FactChecker } from '@backstage/plugin-tech-insights-node';
 import { FactCheckerFactory } from '@backstage/plugin-tech-insights-node';
+import { FactLifecycle } from '@backstage/plugin-tech-insights-node';
 import { FactRetriever } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node';
 import { Logger as Logger_2 } from 'winston';
@@ -28,6 +29,7 @@ export const buildTechInsightsContext: <
 export function createFactRetrieverRegistration(
   cadence: string,
   factRetriever: FactRetriever,
+  lifecycle?: FactLifecycle,
 ): FactRetrieverRegistration;
 
 // @public
