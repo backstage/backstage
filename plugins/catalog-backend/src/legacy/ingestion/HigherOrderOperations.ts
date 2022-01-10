@@ -54,7 +54,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
    * If the location already existed, the old location is returned instead and
    * the catalog is left unchanged.
    *
-   * @param spec The location to add
+   * @param spec - The location to add
    */
   async addLocation(
     spec: LocationSpec,

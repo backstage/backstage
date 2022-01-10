@@ -59,10 +59,10 @@ export type RedirectInfo = {
  *
  * The routes in the auth backend API are tied to these methods like below
  *
- * /auth/[provider]/start -> start
- * /auth/[provider]/handler/frame -> frameHandler
- * /auth/[provider]/refresh -> refresh
- * /auth/[provider]/logout -> logout
+ * `/auth/[provider]/start -> start`
+ * `/auth/[provider]/handler/frame -> frameHandler`
+ * `/auth/[provider]/refresh -> refresh`
+ * `/auth/[provider]/logout -> logout`
  */
 export interface AuthProviderRouteHandlers {
   /**
@@ -73,9 +73,6 @@ export interface AuthProviderRouteHandlers {
    * Response
    * - redirect to the auth provider for the user to sign in or consent.
    * - sets a nonce cookie and also pass the nonce as 'state' query parameter in the redirect request
-   *
-   * @param {express.Request} req
-   * @param {express.Response} res
    */
   start(req: express.Request, res: express.Response): Promise<void>;
 
@@ -88,9 +85,6 @@ export interface AuthProviderRouteHandlers {
    * Response
    * - postMessage to the window with a payload that contains accessToken, expiryInSeconds?, idToken? and scope.
    * - sets a refresh token cookie if the auth provider supports refresh tokens
-   *
-   * @param {express.Request} req
-   * @param {express.Response} res
    */
   frameHandler(req: express.Request, res: express.Response): Promise<void>;
 
@@ -102,9 +96,6 @@ export interface AuthProviderRouteHandlers {
    * - to contain a refresh token cookie and scope (Optional) query parameter.
    * Response
    * - payload with accessToken, expiryInSeconds?, idToken?, scope and user profile information.
-   *
-   * @param {express.Request} req
-   * @param {express.Response} res
    */
   refresh?(req: express.Request, res: express.Response): Promise<void>;
 
@@ -113,9 +104,6 @@ export interface AuthProviderRouteHandlers {
    *
    * Response
    * - removes the refresh token cookie
-   *
-   * @param {express.Request} req
-   * @param {express.Response} res
    */
   logout?(req: express.Request, res: express.Response): Promise<void>;
 }

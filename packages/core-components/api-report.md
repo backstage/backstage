@@ -151,7 +151,6 @@ export function CodeSnippet(props: CodeSnippetProps): JSX.Element;
 export interface CodeSnippetProps {
   customStyle?: any;
   highlightedNumbers?: number[];
-  // Warning: (tsdoc-reference-missing-identifier) Syntax error in declaration reference: expecting a member identifier
   language: string;
   showCopyCodeButton?: boolean;
   showLineNumbers?: boolean;
@@ -527,8 +526,6 @@ export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
 // @public
 export function IntroCard(props: IntroCardProps): JSX.Element;
 
-// Warning: (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 // Warning: (ae-forgotten-export) The symbol "ItemCardProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ItemCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -2415,18 +2412,6 @@ export function useSupportConfig(): SupportConfig;
 // @public (undocumented)
 export function WarningIcon(props: IconComponentProps): JSX.Element;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-optional-name) The @param should not include a JSDoc-style optional name; it must not be enclosed in '[ ]' brackets.
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-optional-name) The @param should not include a JSDoc-style optional name; it must not be enclosed in '[ ]' brackets.
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-optional-name) The @param should not include a JSDoc-style optional name; it must not be enclosed in '[ ]' brackets.
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-optional-name) The @param should not include a JSDoc-style optional name; it must not be enclosed in '[ ]' brackets.
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "WarningProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "WarningPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

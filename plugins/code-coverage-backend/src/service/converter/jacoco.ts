@@ -34,8 +34,8 @@ export class Jacoco implements Converter {
   /**
    * Converts jacoco into shared json coverage format
    *
-   * @param xml jacoco xml object
-   * @param scmFiles list of files that are committed to SCM
+   * @param xml - jacoco xml object
+   * @param scmFiles - list of files that are committed to SCM
    */
   convert(xml: JacocoXML, scmFiles: Array<string>): Array<FileEntry> {
     const jscov: Array<FileEntry> = [];

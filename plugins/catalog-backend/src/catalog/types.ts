@@ -117,12 +117,7 @@ export type EntitiesCatalog = {
   /**
    * Writes a number of entities efficiently to storage.
    *
-   * @deprecated This method was part of the legacy catalog engine an will be removed.
-   *
-   * @param requests - The entities and their relations
-   * @param options.locationId - The location that they all belong to (default none)
-   * @param options.dryRun - Whether to throw away the results (default false)
-   * @param options.outputEntities - Whether to return the resulting entities (default false)
+   * @deprecated This method was part of the legacy catalog engine and will be removed.
    */
   batchAddOrUpdateEntities?(
     requests: EntityUpsertRequest[],

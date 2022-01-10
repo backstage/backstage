@@ -67,8 +67,8 @@ export interface ScaffolderApi {
    * Executes the scaffolding of a component, given a template and its
    * parameter values.
    *
-   * @param templateName Name of the Template entity for the scaffolder to use. New project is going to be created out of this template.
-   * @param values Parameters for the template, e.g. name, description
+   * @param templateName - Name of the Template entity for the scaffolder to use. New project is going to be created out of this template.
+   * @param values - Parameters for the template, e.g. name, description
    */
   scaffold(templateName: string, values: Record<string, any>): Promise<string>;
 
@@ -149,8 +149,8 @@ export class ScaffolderClient implements ScaffolderApi {
    * Executes the scaffolding of a component, given a template and its
    * parameter values.
    *
-   * @param templateName Template name for the scaffolder to use. New project is going to be created out of this template.
-   * @param values Parameters for the template, e.g. name, description
+   * @param templateName - Template name for the scaffolder to use. New project is going to be created out of this template.
+   * @param values - Parameters for the template, e.g. name, description
    */
   async scaffold(
     templateName: string,

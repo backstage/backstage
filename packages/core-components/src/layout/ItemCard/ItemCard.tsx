@@ -40,8 +40,7 @@ type ItemCardProps = {
  * This card type has been deprecated. Instead use plain MUI Card and helpers
  * where appropriate.
  *
- * <code>
- * <!--
+ * ```
  *   <Card>
  *     <CardMedia>
  *       <ItemCardHeader title="My Card" subtitle="neat!" />
@@ -55,10 +54,9 @@ type ItemCardProps = {
  *       </Button>
  *     </CardActions>
  *   </Card>
- * -->
- * </code>
+ * ```
  *
- * @deprecated Use plain MUI <Card> and composable helpers instead.
+ * @deprecated Use plain MUI `<Card>` and composable helpers instead.
  * @see https://material-ui.com/components/cards/
  */
 export function ItemCard(props: ItemCardProps) {

@@ -159,7 +159,7 @@ export class NextCatalogBuilder {
    * in various core entity fields (such as metadata.name), you may want to use
    * {@link NextCatalogBuilder#setFieldFormatValidators} instead.
    *
-   * @param policies One or more policies
+   * @param policies - One or more policies
    */
   addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder {
     this.entityPolicies.push(...policies);
@@ -210,7 +210,7 @@ export class NextCatalogBuilder {
    *
    * This function replaces the default set of policies; use with care.
    *
-   * @param policies One or more policies
+   * @param policies - One or more policies
    */
   replaceEntityPolicies(policies: EntityPolicy[]): NextCatalogBuilder {
     this.entityPolicies = [...policies];
@@ -222,8 +222,8 @@ export class NextCatalogBuilder {
    * Adds, or overwrites, a handler for placeholders (e.g. $file) in entity
    * definition files.
    *
-   * @param key The key that identifies the placeholder, e.g. "file"
-   * @param resolver The resolver that gets values for this placeholder
+   * @param key - The key that identifies the placeholder, e.g. "file"
+   * @param resolver - The resolver that gets values for this placeholder
    */
   setPlaceholderResolver(
     key: string,
@@ -241,7 +241,7 @@ export class NextCatalogBuilder {
    * This function has no effect if used together with
    * {@link NextCatalogBuilder#replaceEntityPolicies}.
    *
-   * @param validators The (subset of) validators to set
+   * @param validators - The (subset of) validators to set
    */
   setFieldFormatValidators(
     validators: Partial<Validators>,
@@ -257,7 +257,7 @@ export class NextCatalogBuilder {
    * stored locations. If you ingest entities out of a third party system, you
    * may want to implement that in terms of an entity provider as well.
    *
-   * @param providers One or more entity providers
+   * @param providers - One or more entity providers
    */
   addEntityProvider(...providers: EntityProvider[]): NextCatalogBuilder {
     this.entityProviders.push(...providers);
@@ -268,7 +268,7 @@ export class NextCatalogBuilder {
    * Adds entity processors. These are responsible for reading, parsing, and
    * processing entities before they are persisted in the catalog.
    *
-   * @param processors One or more processors
+   * @param processors - One or more processors
    */
   addProcessor(...processors: CatalogProcessor[]): NextCatalogBuilder {
     this.processors.push(...processors);
@@ -282,7 +282,7 @@ export class NextCatalogBuilder {
    * This function replaces the default set of processors, consider using with
    * {@link NextCatalogBuilder#getDefaultProcessors}; use with care.
    *
-   * @param processors One or more processors
+   * @param processors - One or more processors
    */
   replaceProcessors(processors: CatalogProcessor[]): NextCatalogBuilder {
     this.processors = [...processors];
@@ -322,7 +322,7 @@ export class NextCatalogBuilder {
    * specification data has been read from a remote source, and needs to be
    * parsed and emitted as structured data.
    *
-   * @param parser The custom parser
+   * @param parser - The custom parser
    */
   setEntityDataParser(parser: CatalogProcessorParser): NextCatalogBuilder {
     this.parser = parser;

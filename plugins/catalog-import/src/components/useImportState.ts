@@ -247,7 +247,7 @@ function reducer(state: ReducerState, action: ReducerActions): ReducerState {
  * 3. review
  * 4. finish
  *
- * @param options options
+ * @param options - options
  */
 export const useImportState = (options?: {
   initialUrl?: string;

@@ -134,14 +134,18 @@ const capitalize = (s: string) => {
 };
 
 /**
- * WarningPanel. Show a user friendly error message to a user similar to ErrorPanel except that the warning panel
- * only shows the warning message to the user.
+ * WarningPanel. Show a user friendly error message to a user similar to
+ * ErrorPanel except that the warning panel only shows the warning message to
+ * the user.
  *
- * @param {string} [severity=warning] Ability to change the severity of the alert.
- * @param {string} [title] A title for the warning. If not supplied, "Warning" will be used.
- * @param {Object} [message] Optional more detailed user-friendly message elaborating on the cause of the error.
- * @param {Object} [children] Objects to provide context, such as a stack trace or detailed error reporting.
- * Will be available inside an unfolded accordion.
+ * @param severity - Ability to change the severity of the alert. Default value
+ *        "warning"
+ * @param title - A title for the warning. If not supplied, "Warning" will be
+ *        used.
+ * @param message - Optional more detailed user-friendly message elaborating on
+ *        the cause of the error.
+ * @param children - Objects to provide context, such as a stack trace or detailed
+ *        error reporting. Will be available inside an unfolded accordion.
  */
 export function WarningPanel(props: WarningProps) {
   const {

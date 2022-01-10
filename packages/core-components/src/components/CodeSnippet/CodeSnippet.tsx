@@ -33,7 +33,7 @@ export interface CodeSnippetProps {
    */
   text: string;
   /**
-   * Language used by {@link .text}
+   * Language used by {@link CodeSnippetProps.text}
    */
   language: string;
   /**
