@@ -36,9 +36,11 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
 
 type Checks = {
   checks: CheckResult[];
+  title?: string;
+  description?: string;
 };
 
-export const ChecksOverview = ({ checks }: Checks) => {
+export const ChecksOverview = ({ checks, title, description }: Checks) => {
   const classes = useStyles();
   const api = useApi(techInsightsApiRef);
   if (!checks.length) {
@@ -47,6 +49,8 @@ export const ChecksOverview = ({ checks }: Checks) => {
   const checkRenderType = api.getScorecardsDefinition(
     checks[0].check.type,
     checks,
+    title,
+    description,
   );
 
   if (checkRenderType) {

@@ -32,12 +32,15 @@ export type CheckResultRenderer = {
 
 export function defaultCheckResultRenderers(
   value: CheckResult[],
+  title: string,
+  description: string,
 ): CheckResultRenderer[] {
   return [
     {
       type: 'json-rules-engine',
-      title: 'Boolean scorecard',
+      title: title || 'Boolean scorecard',
       description:
+        description ||
         'This card represents an overview of default boolean Backstage checks:',
       component: <BooleanCheck checkResult={value} />,
     },

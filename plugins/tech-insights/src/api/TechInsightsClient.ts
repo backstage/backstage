@@ -43,8 +43,14 @@ export class TechInsightsClient implements TechInsightsApi {
   getScorecardsDefinition(
     type: string,
     value: CheckResult[],
+    title?: string,
+    description?: string,
   ): CheckResultRenderer | undefined {
-    const resultRenderers = defaultCheckResultRenderers(value);
+    const resultRenderers = defaultCheckResultRenderers(
+      value,
+      title,
+      description,
+    );
     return resultRenderers.find(d => d.type === type);
   }
 
