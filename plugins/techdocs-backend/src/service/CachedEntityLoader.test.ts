@@ -80,7 +80,7 @@ describe('CachedEntityLoader', () => {
 
     expect(result).toEqual(entity);
     expect(cache.set).toBeCalledWith(
-      'component:default/test:user:default/test-user',
+      'catalog:component:default/test:user:default/test-user',
       entity,
       { ttl: 5000 },
     );
@@ -126,7 +126,7 @@ describe('CachedEntityLoader', () => {
     const result = await loader.load(entityName, undefined);
 
     expect(result).toEqual(entity);
-    expect(cache.set).toBeCalledWith('component:default/test', entity, {
+    expect(cache.set).toBeCalledWith('catalog:component:default/test', entity, {
       ttl: 5000,
     });
   });

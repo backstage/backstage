@@ -82,14 +82,14 @@ export class CachedEntityLoader {
     entityName: EntityName,
     token: string | undefined,
   ): Promise<string> {
-    const entityRef = stringifyEntityRef(entityName);
+    const key = ['catalog'];
+    key.push(stringifyEntityRef(entityName));
 
-    if (!token) {
-      return entityRef;
+    if (token) {
+      const response = await this.identity.authenticate(token);
+      key.push(response.identity.userEntityRef);
     }
 
-    const response = await this.identity.authenticate(token);
-
-    return `${entityRef}:${response.identity.userEntityRef}`;
+    return key.join(':');
   }
 }
