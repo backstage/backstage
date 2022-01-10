@@ -752,7 +752,7 @@ async function main() {
 
   if (runTsc) {
     await fs.remove(resolvePath(projectRoot, 'dist-types'));
-    spawnSync(
+    const { status } = spawnSync(
       'yarn',
       [
         'tsc',
@@ -766,6 +766,9 @@ async function main() {
         cwd: projectRoot,
       },
     );
+    if (status !== 0) {
+      process.exit(status);
+    }
   }
 
   const packageDirs = selectedPackageDirs ?? (await findPackageDirs());
