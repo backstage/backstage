@@ -32,8 +32,8 @@ export type CheckResultRenderer = {
 
 export function defaultCheckResultRenderers(
   value: CheckResult[],
-  title: string,
-  description: string,
+  title?: string,
+  description?: string,
 ): CheckResultRenderer[] {
   return [
     {
