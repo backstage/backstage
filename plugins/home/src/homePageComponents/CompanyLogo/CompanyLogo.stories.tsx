@@ -28,15 +28,13 @@ export default {
   decorators: [
     (Story: ComponentType<{}>) =>
       wrapInTestApp(
-        <>
-          <TestApiProvider
-            apis={[
-              [configApiRef, new ConfigReader({ app: { title: 'My App' } })],
-            ]}
-          >
-            <Story />
-          </TestApiProvider>
-        </>,
+        <TestApiProvider
+          apis={[
+            [configApiRef, new ConfigReader({ app: { title: 'My App' } })],
+          ]}
+        >
+          <Story />
+        </TestApiProvider>,
         {
           mountedRoutes: { '/hello-company-logo': rootRouteRef },
         },
