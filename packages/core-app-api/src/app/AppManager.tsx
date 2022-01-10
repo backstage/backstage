@@ -49,7 +49,6 @@ import {
   SubRouteRef,
   ExternalRouteRef,
 } from '@backstage/core-plugin-api';
-import { UserIdentity } from '@backstage/core-components';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
   childDiscoverer,
@@ -360,7 +359,25 @@ export class AppManager implements BackstageApp {
 
       // If the app hasn't configured a sign-in page, we just continue as guest.
       if (!SignInPageComponent) {
-        this.appIdentityProxy.setTarget(UserIdentity.createGuest());
+        this.appIdentityProxy.setTarget({
+          getUserId: () => 'guest',
+          getIdToken: async () => undefined,
+          getProfile: () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getProfileInfo: async () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getBackstageIdentity: async () => ({
+            type: 'user',
+            userEntityRef: 'user:default/guest',
+            ownershipEntityRefs: ['user:default/guest'],
+          }),
+          getCredentials: async () => ({}),
+          signOut: async () => {},
+        });
 
         return (
           <RouterComponent>

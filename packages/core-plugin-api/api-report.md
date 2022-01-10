@@ -16,7 +16,6 @@ import { ProfileInfo as ProfileInfo_2 } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
-import { SvgIconProps } from '@material-ui/core';
 
 // @public
 export type AlertApi = {
@@ -615,9 +614,6 @@ export const oktaAuthApiRef: ApiRef<
     BackstageIdentityApi &
     SessionApi
 >;
-
-// @public @deprecated
-export type OldIconComponent = ComponentType<SvgIconProps>;
 
 // @alpha
 export const oneloginAuthApiRef: ApiRef<

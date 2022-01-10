@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type { IconComponent, OldIconComponent } from './types';
+export type { IconComponent } from './types';
