@@ -28,7 +28,11 @@ import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 import { Logger } from 'winston';
 import { getRootLogger } from '../logging';
 
-/** @public */
+/**
+ * Options passed to the {@link errorHandler} middleware.
+ *
+ * @public
+ */
 export type ErrorHandlerOptions = {
   /**
    * Whether error response bodies should show error stack traces or not.

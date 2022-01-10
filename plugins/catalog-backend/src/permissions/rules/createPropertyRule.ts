@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { EntitiesSearchFilter } from '../../catalog/types';
-import { CatalogPermissionRule } from '../types';
 import { get } from 'lodash';
+import { Entity } from '@backstage/catalog-model';
+import { createCatalogPermissionRule } from './util';
 
-export function createPropertyRule(
-  propertyType: 'metadata' | 'spec',
-): CatalogPermissionRule {
-  return {
+export const createPropertyRule = (propertyType: 'metadata' | 'spec') =>
+  createCatalogPermissionRule({
     name: `HAS_${propertyType.toUpperCase()}`,
     description: `Allow entities which have the specified ${propertyType} subfield.`,
     apply: (resource: Entity, key: string, value?: string) => {
@@ -32,9 +29,8 @@ export function createPropertyRule(
       }
       return !!foundValue;
     },
-    toQuery: (key: string, value?: string): EntitiesSearchFilter => ({
+    toQuery: (key: string, value?: string) => ({
       key: `${propertyType}.${key}`,
       ...(value !== undefined && { values: [value] }),
     }),
-  };
-}
+  });

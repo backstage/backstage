@@ -19,6 +19,8 @@ import { trimEnd } from 'lodash';
 
 /**
  * The configuration parameters for a single Microsoft Graph provider.
+ *
+ * @public
  */
 export type MicrosoftGraphProviderConfig = {
   /**
@@ -42,8 +44,6 @@ export type MicrosoftGraphProviderConfig = {
   clientId: string;
   /**
    * The OAuth client secret to use for authenticating requests.
-   *
-   * @visibility secret
    */
   clientSecret: string;
   /**
@@ -66,6 +66,13 @@ export type MicrosoftGraphProviderConfig = {
   groupFilter?: string;
 };
 
+/**
+ * Parses configuration.
+ *
+ * @param config - The root of the msgraph config hierarchy
+ *
+ * @public
+ */
 export function readMicrosoftGraphConfig(
   config: Config,
 ): MicrosoftGraphProviderConfig[] {

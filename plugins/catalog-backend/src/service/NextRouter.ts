@@ -25,14 +25,16 @@ import {
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import {
+  createPermissionIntegrationRouter,
+  PermissionRule,
+} from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
-import { EntitiesCatalog } from '../catalog';
+import { EntitiesCatalog, EntitiesSearchFilter } from '../catalog';
 import { LocationAnalyzer } from '../ingestion/types';
-import { CatalogPermissionRule } from '../permissions/types';
 import {
   basicEntityFilter,
   parseEntityFilterParams,
@@ -40,7 +42,7 @@ import {
   parseEntityTransformParams,
 } from '../service/request';
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
-import { RefreshService, RefreshOptions, LocationService } from './types';
+import { RefreshOptions, LocationService, RefreshService } from './types';
 
 export interface NextRouterOptions {
   entitiesCatalog?: EntitiesCatalog;
@@ -49,7 +51,7 @@ export interface NextRouterOptions {
   refreshService?: RefreshService;
   logger: Logger;
   config: Config;
-  permissionRules?: CatalogPermissionRule[];
+  permissionRules?: PermissionRule<Entity, EntitiesSearchFilter, unknown[]>[];
 }
 
 export async function createNextRouter(
@@ -77,6 +79,10 @@ export async function createNextRouter(
   if (refreshService) {
     router.post('/refresh', async (req, res) => {
       const refreshOptions: RefreshOptions = req.body;
+      refreshOptions.authorizationToken = getBearerToken(
+        req.header('authorization'),
+      );
+
       await refreshService.refresh(refreshOptions);
       res.status(200).send();
     });
@@ -213,4 +219,14 @@ async function getEntityResource(
   });
 
   return entities[0];
+}
+
+function getBearerToken(
+  authorizationHeader: string | undefined,
+): string | undefined {
+  if (typeof authorizationHeader !== 'string') {
+    return undefined;
+  }
+  const matches = authorizationHeader.match(/Bearer\s+(\S+)/i);
+  return matches?.[1];
 }

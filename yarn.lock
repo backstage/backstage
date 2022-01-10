@@ -4745,9 +4745,9 @@
   integrity sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==
 
 "@microsoft/microsoft-graph-types@^2.6.0":
-  version "2.8.0"
-  resolved "https://registry.npmjs.org/@microsoft/microsoft-graph-types/-/microsoft-graph-types-2.8.0.tgz#c3b538f99028e8609c5ebf95a494318a8f3d9201"
-  integrity sha512-NDgLn9IhYD/+nCeeGAi1JM7xTFqaM6rkXfLfiC1xvXy48BGBUrAf8fNFq5fkzBvGY8HfjzdPIkrJkfvLL+rzDQ==
+  version "2.11.0"
+  resolved "https://registry.npmjs.org/@microsoft/microsoft-graph-types/-/microsoft-graph-types-2.11.0.tgz#0e1d3a0795855fc726e08836b1d3c4a72a8bcd00"
+  integrity sha512-v4Wuxp+kbcxeJGmb2UHbcukNr05XItFYXL+U3ReignI3Vl8tp1vfq0hkqP35Fun2QpqHJiu8Rkxj1MUF8d82ag==
 
 "@microsoft/tsdoc-config@~0.15.2":
   version "0.15.2"
@@ -5209,19 +5209,19 @@
   resolved "https://registry.npmjs.org/@octokit/webhooks-methods/-/webhooks-methods-2.0.0.tgz#1108b9ea661ca6c81e4a8bfa63a09eb27d5bc2db"
   integrity sha512-35cfQ4YWlnZnmZKmIxlGPUPLtbkF8lr/A/1Sk1eC0ddLMwQN06dOuLc+dI3YLQS+T+MoNt3DIQ0NynwgKPilig==
 
-"@octokit/webhooks-types@4.15.0":
-  version "4.15.0"
-  resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-4.15.0.tgz#1158cba6578237d60957a37963a4a05654f5668b"
-  integrity sha512-s9LgKsUzq/JH3PWDjaD/m1DIlC/QWgBWbmXVqjdxJXJQBA67KZrLWjStVlYPf0mWlVZ1MOKphDyHiOGCbs0+Kg==
+"@octokit/webhooks-types@5.2.0":
+  version "5.2.0"
+  resolved "https://registry.npmjs.org/@octokit/webhooks-types/-/webhooks-types-5.2.0.tgz#9d1d451f37460107409c81cab04dd473108abb02"
+  integrity sha512-OZhKy1w8/GF4GWtdiJc+o8sloWAHRueGB78FWFLZnueK7EHV9MzDVr4weJZMflJwMK4uuYLzcnJVnAoy3yB35g==
 
 "@octokit/webhooks@^9.14.1":
-  version "9.18.0"
-  resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-9.18.0.tgz#19cc70e1ef281e33d830ea23e8011d25d8051f7f"
-  integrity sha512-N2hP7vCouKk9UWZxvqgWTPbp34i6g9Om/jk+TZeZ5Z+VsKjXvGtONlEd9H8DM1yOeEC+ARDpfhraX6UsK5tesQ==
+  version "9.22.0"
+  resolved "https://registry.npmjs.org/@octokit/webhooks/-/webhooks-9.22.0.tgz#07a36a10358d39c1870758fae2b1ad3c24ca578d"
+  integrity sha512-wUd7nGfDRHG6xkz311djmq6lIB2tQ+r94SNkyv9o0bQhOsrkwH8fQCM7uVsbpkGUU2lqCYsVoa8z/UC9HJgRaw==
   dependencies:
     "@octokit/request-error" "^2.0.2"
     "@octokit/webhooks-methods" "^2.0.0"
-    "@octokit/webhooks-types" "4.15.0"
+    "@octokit/webhooks-types" "5.2.0"
     aggregate-error "^3.1.0"
 
 "@open-draft/until@^1.0.3":

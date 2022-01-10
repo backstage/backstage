@@ -15,4 +15,3 @@
  */
 
 export * from './rules';
-export type { CatalogPermissionRule } from './types';

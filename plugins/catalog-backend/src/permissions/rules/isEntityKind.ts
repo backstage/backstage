@@ -15,14 +15,14 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { EntitiesSearchFilter } from '../../catalog/types';
-import { CatalogPermissionRule } from '../types';
+import { createCatalogPermissionRule } from './util';
 
 /**
- * A {@link CatalogPermissionRule} which filters for entities with a specified
- * kind.
+ * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
+ * filters for entities with a specified kind.
  * @public
  */
-export const isEntityKind: CatalogPermissionRule = {
+export const isEntityKind = createCatalogPermissionRule({
   name: 'IS_ENTITY_KIND',
   description: 'Allow entities with the specified kind',
   apply(resource: Entity, kinds: string[]) {
@@ -35,4 +35,4 @@ export const isEntityKind: CatalogPermissionRule = {
       values: kinds.map(kind => kind.toLocaleLowerCase('en-US')),
     };
   },
-};
+});

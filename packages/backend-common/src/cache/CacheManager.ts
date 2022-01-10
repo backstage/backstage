@@ -55,8 +55,8 @@ export class CacheManager {
   private readonly errorHandler: CacheManagerOptions['onError'];
 
   /**
-   * Creates a new CacheManager instance by reading from the `backend` config
-   * section, specifically the `.cache` key.
+   * Creates a new {@link CacheManager} instance by reading from the `backend`
+   * config section, specifically the `.cache` key.
    *
    * @param config - The loaded application configuration.
    */
@@ -93,7 +93,8 @@ export class CacheManager {
   /**
    * Generates a PluginCacheManager for consumption by plugins.
    *
-   * @param pluginId - The plugin that the cache manager should be created for. Plugin names should be unique.
+   * @param pluginId - The plugin that the cache manager should be created for.
+   *        Plugin names should be unique.
    */
   forPlugin(pluginId: string): PluginCacheManager {
     return {

@@ -34,6 +34,7 @@ export interface LocationService {
 export type RefreshOptions = {
   /** The reference to a single entity that should be refreshed */
   entityRef: string;
+  authorizationToken?: string;
 };
 
 /**

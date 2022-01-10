@@ -17,8 +17,9 @@
 import { createPropertyRule } from './createPropertyRule';
 
 /**
- * A {@link CatalogPermissionRule} which filters for entities with the specified
- * spec subfield. Also matches on values if value is provided.
+ * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
+ * filters for entities with the specified spec subfield. Also matches on values
+ * if value is provided.
  *
  * The key argument to the `apply` and `toQuery` methods can be nested, such as
  * 'field.nestedfield'.
