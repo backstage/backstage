@@ -13,13 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { Entity } from '@backstage/catalog-model';
+import React, { useEffect } from 'react';
 import { Grid, Typography } from '@material-ui/core';
-import { InfoCard } from '@backstage/core-components';
-import exampleData from './example-data.json';
+import {
+  EmptyState,
+  InfoCard,
+  MissingAnnotationEmptyState,
+  Progress,
+} from '@backstage/core-components';
 import hash from 'object-hash';
 import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
+import { ErrorApi, errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { airbrakeApiRef } from '../../api';
+import useAsync from 'react-use/lib/useAsync';
+import {
+  AIRBRAKE_PROJECT_SLUG_ANNOTATION,
+  useProjectSlug,
+} from '../useProjectSlug';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   multilineText: {
@@ -27,17 +39,54 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
   },
 }));
 
-export const EntityAirbrakeContent = () => {
+export const EntityAirbrakeContent = ({ entity }: { entity: Entity }) => {
   const classes = useStyles();
+
+  const projectId = useProjectSlug(entity);
+  const errorApi = useApi<ErrorApi>(errorApiRef);
+  const airbrakeApi = useApi(airbrakeApiRef);
+
+  const { loading, value, error } = useAsync(
+    () => airbrakeApi.fetchGroups(projectId),
+    [projectId],
+  );
+
+  useEffect(() => {
+    if (error) {
+      errorApi.post(error);
+    }
+  }, [error, errorApi]);
+
+  if (loading || !projectId || error) {
+    return (
+      <InfoCard title="Airbrake groups" variant="gridItem">
+        {loading && <Progress />}
+
+        {!loading && !projectId && (
+          <MissingAnnotationEmptyState
+            annotation={AIRBRAKE_PROJECT_SLUG_ANNOTATION}
+          />
+        )}
+
+        {!loading && error && (
+          <EmptyState
+            missing="info"
+            title="No information to display"
+            description={`There is no Sentry project with id '${projectId}'.`}
+          />
+        )}
+      </InfoCard>
+    );
+  }
 
   return (
     <Grid container spacing={3} direction="column">
-      {exampleData.groups.map(group => (
+      {value?.groups?.map(group => (
         <Grid item key={group.id}>
-          {group.errors.map(error => (
-            <InfoCard title={error.type} key={hash(error)}>
+          {group.errors?.map(groupError => (
+            <InfoCard title={groupError.type} key={hash(groupError)}>
               <Typography variant="body1" className={classes.multilineText}>
-                {error.message}
+                {groupError.message}
               </Typography>
             </InfoCard>
           ))}

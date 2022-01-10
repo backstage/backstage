@@ -29,12 +29,12 @@ export interface Group {
   resolved: boolean;
   muted: boolean;
   mutedBy: number;
-  mutedAt?: null;
-  errors?: Error[] | null;
-  attributes?: null;
+  mutedAt?: string | null;
+  errors?: Error[];
+  attributes?: string | null;
   context: Context;
   lastDeployId: string;
-  lastDeployAt?: null;
+  lastDeployAt?: string | null;
   lastNoticeId: string;
   lastNoticeAt: string;
   noticeCount: number;
@@ -46,7 +46,7 @@ export interface Group {
 export interface Error {
   type: string;
   message: string;
-  backtrace?: Backtrace[] | null;
+  backtrace?: Backtrace[];
 }
 
 export interface Backtrace {
@@ -54,7 +54,7 @@ export interface Backtrace {
   function: string;
   line: number;
   column: number;
-  code?: null;
+  code?: string | null;
 }
 
 export interface Context {
