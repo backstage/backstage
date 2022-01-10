@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * Copyright 2021 The Backstage Authors
  *
@@ -55,6 +54,7 @@ const useStyles = (props: { left: number }) =>
       scrollbarWidth: 'none',
       cursor: 'default',
       width: submenuConfig.drawerWidthClosed,
+      transitionDelay: `${submenuConfig.defaultOpenDelayMs}ms`,
       '& > *': {
         flexShrink: 0,
       },
@@ -98,20 +98,11 @@ export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
 
   const { isHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
-  const hoverTimerRef = useRef<number>();
 
   useEffect(() => {
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = undefined;
-    }
-    if (isHoveredOn) {
-      hoverTimerRef.current = window.setTimeout(() => {
-        hoverTimerRef.current = undefined;
-        setIsSubmenuOpen(true);
-      }, submenuConfig.defaultOpenDelayMs);
-    }
+    setIsSubmenuOpen(isHoveredOn);
   }, [isHoveredOn]);
+
   return (
     <div
       className={classnames(classes.drawer, {
