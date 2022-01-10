@@ -31,6 +31,7 @@ import { EntityName } from '@backstage/catalog-model';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
+import { SidebarPinStateContext } from '@backstage/core-components';
 
 import { techdocsStorageApiRef } from '../../api';
 
@@ -144,6 +145,9 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
   const [sidebars, setSidebars] = useState<HTMLElement[]>();
   const [dom, setDom] = useState<HTMLElement | null>(null);
 
+  // sidebar pinned status to be used in computing CSS style injections
+  const { isPinned } = useContext(SidebarPinStateContext);
+
   const updateSidebarPosition = useCallback(() => {
     if (!dom || !sidebars) return;
     // set sidebar height so they don't initially render in wrong position
@@ -252,7 +256,9 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
               transition: none !important
             }
             .md-sidebar--secondary { display: none; }
-            .md-sidebar--primary { left: 72px; width: 10rem }
+            .md-sidebar--primary { left: ${
+              isPinned ? '242px' : '72px'
+            }; width: 10rem }
             .md-content { margin-left: 10rem; max-width: calc(100% - 10rem); }
             .md-content__inner { font-size: 0.9rem }
             .md-footer {
@@ -348,6 +354,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
       theme.palette.success.main,
       theme.palette.text.primary,
       theme.typography.fontFamily,
+      isPinned,
     ],
   );
 

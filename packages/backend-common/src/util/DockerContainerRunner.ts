@@ -24,7 +24,11 @@ export type UserOptions = {
   User?: string;
 };
 
-/** @public */
+/**
+ * A {@link ContainerRunner} for Docker containers.
+ *
+ * @public
+ */
 export class DockerContainerRunner implements ContainerRunner {
   private readonly dockerClient: Docker;
 

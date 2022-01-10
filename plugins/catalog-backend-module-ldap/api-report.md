@@ -17,26 +17,26 @@ import { SearchEntry } from 'ldapjs';
 import { SearchOptions } from 'ldapjs';
 import { UserEntity } from '@backstage/catalog-model';
 
-// Warning: (ae-missing-release-tag) "defaultGroupTransformer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type BindConfig = {
+  dn: string;
+  secret: string;
+};
+
+// @public
 export function defaultGroupTransformer(
   vendor: LdapVendor,
   config: GroupConfig,
   entry: SearchEntry,
 ): Promise<GroupEntity | undefined>;
 
-// Warning: (ae-missing-release-tag) "defaultUserTransformer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function defaultUserTransformer(
   vendor: LdapVendor,
   config: UserConfig,
   entry: SearchEntry,
 ): Promise<UserEntity | undefined>;
 
-// Warning: (ae-missing-release-tag) "GroupConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type GroupConfig = {
   dn: string;
@@ -57,12 +57,6 @@ export type GroupConfig = {
   };
 };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-undefined-tag) The TSDoc tag "@return" is not defined in this configuration
-// Warning: (ae-missing-release-tag) "GroupTransformer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type GroupTransformer = (
   vendor: LdapVendor,
@@ -70,28 +64,18 @@ export type GroupTransformer = (
   group: SearchEntry,
 ) => Promise<GroupEntity | undefined>;
 
-// Warning: (ae-missing-release-tag) "LDAP_DN_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const LDAP_DN_ANNOTATION = 'backstage.io/ldap-dn';
 
-// Warning: (ae-missing-release-tag) "LDAP_RDN_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const LDAP_RDN_ANNOTATION = 'backstage.io/ldap-rdn';
 
-// Warning: (ae-missing-release-tag) "LDAP_UUID_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const LDAP_UUID_ANNOTATION = 'backstage.io/ldap-uuid';
 
-// Warning: (ae-missing-release-tag) "LdapClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class LdapClient {
   constructor(client: Client, logger: Logger_2);
-  // Warning: (ae-forgotten-export) The symbol "BindConfig" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static create(
     logger: Logger_2,
@@ -100,22 +84,14 @@ export class LdapClient {
   ): Promise<LdapClient>;
   getRootDSE(): Promise<SearchEntry | undefined>;
   getVendor(): Promise<LdapVendor>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   search(dn: string, options: SearchOptions): Promise<SearchEntry[]>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (ae-forgotten-export) The symbol "SearchCallback" needs to be exported by the entry point index.d.ts
   searchStreaming(
     dn: string,
     options: SearchOptions,
-    f: SearchCallback,
+    f: (entry: SearchEntry) => void,
   ): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "LdapOrgEntityProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class LdapOrgEntityProvider implements EntityProvider {
   constructor(options: {
@@ -140,12 +116,9 @@ export class LdapOrgEntityProvider implements EntityProvider {
   ): LdapOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
-  // (undocumented)
   read(): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "LdapOrgReaderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class LdapOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
@@ -171,8 +144,6 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// Warning: (ae-missing-release-tag) "LdapProviderConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type LdapProviderConfig = {
   target: string;
@@ -181,8 +152,6 @@ export type LdapProviderConfig = {
   groups: GroupConfig;
 };
 
-// Warning: (ae-missing-release-tag) "LdapVendor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type LdapVendor = {
   dnAttributeName: string;
@@ -190,12 +159,6 @@ export type LdapVendor = {
   decodeStringAttribute: (entry: SearchEntry, name: string) => string[];
 };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "mapStringAttr" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function mapStringAttr(
   entry: SearchEntry,
@@ -204,18 +167,9 @@ export function mapStringAttr(
   setter: (value: string) => void,
 ): void;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "readLdapConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function readLdapConfig(config: Config): LdapProviderConfig[];
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "readLdapOrg" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function readLdapOrg(
   client: LdapClient,
@@ -231,8 +185,6 @@ export function readLdapOrg(
   groups: GroupEntity[];
 }>;
 
-// Warning: (ae-missing-release-tag) "UserConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type UserConfig = {
   dn: string;
@@ -251,21 +203,10 @@ export type UserConfig = {
   };
 };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-undefined-tag) The TSDoc tag "@return" is not defined in this configuration
-// Warning: (ae-missing-release-tag) "UserTransformer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type UserTransformer = (
   vendor: LdapVendor,
   config: UserConfig,
   user: SearchEntry,
 ) => Promise<UserEntity | undefined>;
-
-// Warnings were encountered during analysis:
-//
-// src/ldap/vendors.d.ts:17:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/ldap/vendors.d.ts:18:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 ```

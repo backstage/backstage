@@ -96,6 +96,22 @@ export const createPermissionIntegrationRouter: <TResource>(options: {
 }) => Router;
 
 // @public
+export const createPermissionRule: <
+  TResource,
+  TQuery,
+  TParams extends unknown[],
+>(
+  rule: PermissionRule<TResource, TQuery, TParams>,
+) => PermissionRule<TResource, TQuery, TParams>;
+
+// @public
+export const makeCreatePermissionRule: <TResource, TQuery>() => <
+  TParams extends unknown[],
+>(
+  rule: PermissionRule<TResource, TQuery, TParams>,
+) => PermissionRule<TResource, TQuery, TParams>;
+
+// @public
 export interface PermissionPolicy {
   // (undocumented)
   handle(

@@ -316,7 +316,7 @@ describe('Integration Test', () => {
       plugins: [
         createPlugin({
           id: 'test',
-          register: p => p.featureFlags.register('name'),
+          featureFlags: [{ name: 'name' }],
         }),
       ],
       components,
@@ -384,8 +384,24 @@ describe('Integration Test', () => {
               name: 'foo',
             },
           ],
-          register: p => p.featureFlags.register('name'),
         }),
+        // We still support consuming the old feature flag API for a little while longer
+        {
+          getId() {
+            return 'old-test';
+          },
+          getApis() {
+            return [];
+          },
+          output() {
+            return [
+              {
+                type: 'feature-flag',
+                name: 'old-feature-flag',
+              },
+            ];
+          },
+        } as any,
       ],
       components,
       configLoader: async () => [],
@@ -412,12 +428,12 @@ describe('Integration Test', () => {
     );
 
     expect(storageFlags.registerFlag).toHaveBeenCalledWith({
-      name: 'name',
+      name: 'foo',
       pluginId: 'test',
     });
     expect(storageFlags.registerFlag).toHaveBeenCalledWith({
-      name: 'foo',
-      pluginId: 'test',
+      name: 'old-feature-flag',
+      pluginId: 'old-test',
     });
   });
 

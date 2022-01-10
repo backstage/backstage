@@ -41,6 +41,11 @@ export type ODataQuery = {
   select?: string[];
 };
 
+/**
+ * Extends the base msgraph types to include the odata type.
+ *
+ * @public
+ */
 export type GroupMember =
   | (MicrosoftGraph.Group & { '@odata.type': '#microsoft.graph.user' })
   | (MicrosoftGraph.User & { '@odata.type': '#microsoft.graph.group' });

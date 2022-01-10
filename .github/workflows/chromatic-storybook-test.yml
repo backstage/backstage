@@ -4,6 +4,14 @@ on:
     paths:
       - '.github/workflows/chromatic-storybook-test.yml'
       - 'packages/storybook/**'
+      - 'packages/config/src/**'
+      - 'packages/theme/src/**'
+      - 'packages/types/src/**'
+      - 'packages/errors/src/**'
+      - 'packages/version-bridge/src/**'
+      - 'packages/test-utils/src/**'
+      - 'packages/core-app-api/src/**'
+      - 'packages/core-plugin-api/src/**'
       - 'packages/core-components/src/**'
       - '**/*.stories.tsx'
 

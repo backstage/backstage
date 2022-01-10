@@ -17,6 +17,7 @@
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
+  Entity,
   EntityPolicies,
   EntityPolicy,
   FieldFormatEntityPolicy,
@@ -29,7 +30,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
 import lodash from 'lodash';
-import { EntitiesCatalog } from '../catalog';
+import { EntitiesCatalog, EntitiesSearchFilter } from '../catalog';
 import {
   DatabaseLocationsCatalog,
   LocationsCatalog,
@@ -77,17 +78,22 @@ import {
 } from '../processing/refresh';
 import { createNextRouter } from './NextRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
+import { AuthorizedRefreshService } from './AuthorizedRefreshService';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { LocationService } from './types';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
+import { permissionRules as catalogPermissionRules } from '../permissions/rules';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 
 export type CatalogEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
+  permissions: PermissionAuthorizer;
 };
 
 /**
@@ -125,6 +131,11 @@ export class NextCatalogBuilder {
       maxSeconds: 150,
     });
   private locationAnalyzer: LocationAnalyzer | undefined = undefined;
+  private permissionRules: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    unknown[]
+  >[];
 
   constructor(env: CatalogEnvironment) {
     this.env = env;
@@ -136,6 +147,7 @@ export class NextCatalogBuilder {
     this.processors = [];
     this.processorsReplace = false;
     this.parser = undefined;
+    this.permissionRules = Object.values(catalogPermissionRules);
   }
 
   /**
@@ -318,6 +330,23 @@ export class NextCatalogBuilder {
   }
 
   /**
+   * Adds additional permission rules. Permission rules are used to evaluate
+   * catalog resources against queries. See
+   * {@link @backstage/plugin-permission-node#PermissionRule}.
+   *
+   * @param permissionRules - Additional permission rules
+   */
+  addPermissionRules(
+    ...permissionRules: PermissionRule<
+      Entity,
+      EntitiesSearchFilter,
+      unknown[]
+    >[]
+  ) {
+    this.permissionRules.push(...permissionRules);
+  }
+
+  /**
    * Wires up and returns all of the component parts of the catalog
    */
   async build(): Promise<{
@@ -329,7 +358,7 @@ export class NextCatalogBuilder {
     locationService: LocationService;
     router: Router;
   }> {
-    const { config, database, logger } = this.env;
+    const { config, database, logger, permissions } = this.env;
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
@@ -383,9 +412,10 @@ export class NextCatalogBuilder {
       locationStore,
       orchestrator,
     );
-    const refreshService = new DefaultRefreshService({
-      database: processingDatabase,
-    });
+    const refreshService = new AuthorizedRefreshService(
+      new DefaultRefreshService({ database: processingDatabase }),
+      permissions,
+    );
     const router = await createNextRouter({
       entitiesCatalog,
       locationAnalyzer,
@@ -393,6 +423,7 @@ export class NextCatalogBuilder {
       refreshService,
       logger,
       config,
+      permissionRules: this.permissionRules,
     });
 
     await connectEntityProviders(processingDatabase, entityProviders);

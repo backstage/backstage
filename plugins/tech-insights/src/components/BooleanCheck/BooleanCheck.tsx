@@ -41,7 +41,7 @@ export const BooleanCheck = ({ checkResult }: Prop) => {
   return (
     <List>
       {checkResult.map((check, index) => (
-        <ListItem>
+        <ListItem key={check.check.id}>
           <ListItemText
             key={index}
             primary={check.check.name}

@@ -25,6 +25,8 @@ import { Location as Location_2 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Organizations } from 'aws-sdk';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
@@ -301,6 +303,7 @@ export type CatalogEnvironment = {
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
+  permissions: PermissionAuthorizer;
 };
 
 // Warning: (ae-missing-release-tag) "CatalogProcessingEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -518,6 +521,11 @@ export class CommonDatabase implements Database {
     matchingGeneration?: number,
   ): Promise<DbEntityResponse>;
 }
+
+// @public
+export const createCatalogPermissionRule: <TParams extends unknown[]>(
+  rule: PermissionRule<Entity, EntitiesSearchFilter, TParams>,
+) => PermissionRule<Entity, EntitiesSearchFilter, TParams>;
 
 // Warning: (ae-missing-release-tag) "CreateDatabaseOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1302,6 +1310,13 @@ export class NextCatalogBuilder {
   addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityProvider(...providers: EntityProvider[]): NextCatalogBuilder;
+  addPermissionRules(
+    ...permissionRules: PermissionRule<
+      Entity,
+      EntitiesSearchFilter,
+      unknown[]
+    >[]
+  ): void;
   // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addProcessor(...processors: CatalogProcessor[]): NextCatalogBuilder;
   build(): Promise<{
@@ -1349,6 +1364,8 @@ export interface NextRouterOptions {
   // (undocumented)
   logger: Logger_2;
   // (undocumented)
+  permissionRules?: PermissionRule<Entity, EntitiesSearchFilter, unknown[]>[];
+  // (undocumented)
   refreshService?: RefreshService;
 }
 
@@ -1379,6 +1396,32 @@ export function parseEntityYaml(
   data: Buffer,
   location: LocationSpec,
 ): Iterable<CatalogProcessorResult>;
+
+// @public
+export const permissionRules: {
+  hasAnnotation: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [annotation: string]
+  >;
+  hasLabel: PermissionRule<Entity, EntitiesSearchFilter, [label: string]>;
+  hasMetadata: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [key: string, value?: string | undefined]
+  >;
+  hasSpec: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [key: string, value?: string | undefined]
+  >;
+  isEntityKind: PermissionRule<Entity, EntitiesSearchFilter, [kinds: string[]]>;
+  isEntityOwner: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [claims: string[]]
+  >;
+};
 
 // Warning: (ae-missing-release-tag) "PlaceholderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1473,6 +1516,7 @@ export type RefreshIntervalFunction = () => number;
 // @public
 export type RefreshOptions = {
   entityRef: string;
+  authorizationToken?: string;
 };
 
 // @public

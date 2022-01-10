@@ -1,0 +1,746 @@
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1261px" height="642px" viewBox="-0.5 -0.5 1261 642" content="&lt;mxfile&gt;&lt;diagram id=&quot;M4OCM2KiCGRnt6vHj1W_&quot; name=&quot;Page-1&quot;&gt;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&lt;/diagram&gt;&lt;/mxfile&gt;" style="background-color: rgb(255, 255, 255);">
+    <defs/>
+    <g>
+        <rect x="0" y="0" width="10" height="10" fill="#ffffff" stroke="none" pointer-events="all"/>
+        <rect x="180" y="500" width="100" height="130" fill="none" stroke="#000000" pointer-events="all"/>
+        <path d="M 160 245 L 253.88 245" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 258.88 245 L 253.88 246.67 L 253.88 243.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 120 230 Q 120 230 120 136.12" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 120 131.12 L 121.67 136.12 L 118.33 136.12 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 120 260 Q 120 305 143.88 305" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 148.88 305 L 143.88 306.67 L 143.88 303.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 140 230 Q 140 137.5 243.88 137.5" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 248.88 137.5 L 243.88 139.17 L 243.88 135.83 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <rect x="80" y="230" width="80" height="30" fill="#dae8fc" stroke="#6c8ebf" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 70px; height: 1px; padding-top: 245px; margin-left: 90px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; ">
+                                app
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="90" y="249" fill="#000000" font-family="Helvetica" font-size="12px">
+                    app
+                </text>
+            </switch>
+        </g>
+        <path d="M 120 390 Q 120 345 143.88 345" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 148.88 345 L 143.88 346.67 L 143.88 343.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 160 405 L 253.88 405" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 258.88 405 L 253.88 406.67 L 253.88 403.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 140 420 Q 140 450 347.5 450 Q 555 450 555 473.88" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 555 478.88 L 553.33 473.88 L 556.67 473.88 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <rect x="80" y="390" width="80" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 70px; height: 1px; padding-top: 405px; margin-left: 90px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; ">
+                                backend
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="90" y="409" fill="#000000" font-family="Helvetica" font-size="12px">
+                    backend
+                </text>
+            </switch>
+        </g>
+        <path d="M 387.5 230 Q 387.5 205 378.75 205 Q 370 205 370 186.12" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 370 181.12 L 371.67 186.12 L 368.33 186.12 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 430 245 Q 475 245 475 266.25 Q 475 287.5 513.88 287.5" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 518.88 287.5 L 513.88 289.17 L 513.88 285.83 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 430 237.5 Q 585 237.5 585 233.75 Q 585 230 690 230 Q 795 230 795 243.88" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 795 248.88 L 793.33 243.88 L 796.67 243.88 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <rect x="260" y="230" width="170" height="30" fill="#dae8fc" stroke="#6c8ebf" stroke-width="3" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 160px; height: 1px; padding-top: 245px; margin-left: 270px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; font-style: italic; white-space: normal; word-wrap: normal; ">
+                                plugin-&lt;plugin-id&gt;
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="270" y="249" fill="#000000" font-family="Helvetica" font-size="12px" font-style="italic">
+                    plugin-&lt;plugin-id&gt;
+                </text>
+            </switch>
+        </g>
+        <path d="M 387.5 420 Q 387.5 555 493.88 555" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 498.88 555 L 493.88 556.67 L 493.88 553.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 430 412.5 Q 585 412.5 585 416.25 Q 585 420 690 420 Q 795 420 795 406.12" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 795 401.12 L 796.67 406.12 L 793.33 406.12 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 430 405 Q 475 405 475 383.75 Q 475 362.5 513.88 362.5" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 518.88 362.5 L 513.88 364.17 L 513.88 360.83 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <rect x="260" y="390" width="170" height="30" fill="#fff2cc" stroke="#d6b656" stroke-width="3" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 160px; height: 1px; padding-top: 405px; margin-left: 270px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; font-style: italic; white-space: normal; word-wrap: normal; ">
+                                plugin-&lt;plugin-id&gt;-backend
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="270" y="409" fill="#000000" font-family="Helvetica" font-size="12px" font-style="italic">
+                    plugin-&lt;plugin-id&gt;-backend
+                </text>
+            </switch>
+        </g>
+        <path d="M 500 480 L 500 480 L 720 480 L 720 480" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 500 480 L 500 630 L 720 630 L 720 480" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 480 L 720 480" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="609.5" y="497.5">
+                Backend Libraries
+            </text>
+        </g>
+        <rect x="520" y="510" width="180" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 525px; margin-left: 530px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/backend-common
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="530" y="529" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/backend-common
+                </text>
+            </switch>
+        </g>
+        <rect x="520" y="550" width="180" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 565px; margin-left: 530px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/backend-test-utils
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="530" y="569" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/backend-test-utils
+                </text>
+            </switch>
+        </g>
+        <rect x="520" y="590" width="180" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 605px; margin-left: 530px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/backend-tasks
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="530" y="609" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/backend-tasks
+                </text>
+            </switch>
+        </g>
+        <path d="M 1030 250 L 1030 250 L 1250 250 L 1250 250" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 1030 250 L 1030 520 L 1250 520 L 1250 250" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 1030 250 L 1250 250" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="1139.5" y="267.5">
+                Common Libraries
+            </text>
+        </g>
+        <rect x="1050" y="440" width="180" height="30" fill="#d5e8d4" stroke="#82b366" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 455px; margin-left: 1060px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/catalog-client
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="1060" y="459" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/catalog-client
+                </text>
+            </switch>
+        </g>
+        <rect x="1050" y="280" width="180" height="30" fill="#d5e8d4" stroke="#82b366" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 295px; margin-left: 1060px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/types
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="1060" y="299" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/types
+                </text>
+            </switch>
+        </g>
+        <rect x="1050" y="320" width="180" height="30" fill="#d5e8d4" stroke="#82b366" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 335px; margin-left: 1060px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/config
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="1060" y="339" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/config
+                </text>
+            </switch>
+        </g>
+        <rect x="1050" y="360" width="180" height="30" fill="#d5e8d4" stroke="#82b366" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 375px; margin-left: 1060px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/errors
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="1060" y="379" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/errors
+                </text>
+            </switch>
+        </g>
+        <rect x="1050" y="400" width="180" height="30" fill="#d5e8d4" stroke="#82b366" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 415px; margin-left: 1060px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/catalog-model
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="1060" y="419" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/catalog-model
+                </text>
+            </switch>
+        </g>
+        <rect x="1050" y="480" width="180" height="30" fill="#d5e8d4" stroke="#82b366" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 495px; margin-left: 1060px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/integration
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="1060" y="499" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/integration
+                </text>
+            </switch>
+        </g>
+        <path d="M 10 20 L 10 20 L 230 20 L 230 20" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 10 20 L 10 130 L 230 130 L 230 20" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 10 20 L 230 20" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="119.5" y="37.5">
+                Frontend App Core
+            </text>
+        </g>
+        <rect x="30" y="50" width="180" height="30" fill="#dae8fc" stroke="#6c8ebf" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 65px; margin-left: 40px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/core-app-api
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="40" y="69" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/core-app-api
+                </text>
+            </switch>
+        </g>
+        <rect x="30" y="90" width="180" height="30" fill="#dae8fc" stroke="#6c8ebf" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 105px; margin-left: 40px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/app-defaults
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="40" y="109" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/app-defaults
+                </text>
+            </switch>
+        </g>
+        <path d="M 988 305 Q 1010 305 1010 345 Q 1010 385 1023.88 385" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 1028.88 385 L 1023.88 386.67 L 1023.88 383.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 988 305 Q 1010 305 1010 250 Q 1010 195 1023.88 195" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 1028.88 195 L 1023.88 196.67 L 1023.88 193.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 990 10 L 985 10 Q 980 10 980 20 L 980 295 Q 980 305 975 305 L 972.5 305 Q 970 305 975 305 L 977.5 305 Q 980 305 980 315 L 980 590 Q 980 600 985 600 L 990 600" fill="none" stroke="#000000" stroke-miterlimit="10" transform="translate(980,0)scale(-1,1)translate(-980,0)" pointer-events="none"/>
+        <path d="M 430 345 Q 475 345 475 353.75 Q 475 362.5 513.88 362.5" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 518.88 362.5 L 513.88 364.17 L 513.88 360.83 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 430 352.5 Q 465 352.5 465 435 Q 465 517.5 493.88 517.5" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 498.88 517.5 L 493.88 519.17 L 493.88 515.83 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <rect x="150" y="330" width="280" height="30" fill="#fff2cc" stroke="#d6b656" stroke-width="3" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 270px; height: 1px; padding-top: 345px; margin-left: 160px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; font-style: italic; white-space: normal; word-wrap: normal; ">
+                                plugin-&lt;plugin-id&gt;-backend-module-&lt;module-id&gt;
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="160" y="349" fill="#000000" font-family="Helvetica" font-size="12px" font-style="italic">
+                    plugin-&lt;plugin-id&gt;-backend-module-&lt;module-id&gt;
+                </text>
+            </switch>
+        </g>
+        <path d="M 430 305 Q 475 305 475 296.25 Q 475 287.5 513.88 287.5" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 518.88 287.5 L 513.88 289.17 L 513.88 285.83 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 430 297.5 Q 464.08 297.5 464.08 186.12" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 464.08 181.12 L 465.75 186.12 L 462.41 186.12 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <rect x="150" y="290" width="280" height="30" fill="#dae8fc" stroke="#6c8ebf" stroke-width="3" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 270px; height: 1px; padding-top: 305px; margin-left: 160px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; font-style: italic; white-space: normal; word-wrap: normal; ">
+                                plugin-&lt;plugin-id&gt;-module-&lt;module-id&gt;
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="160" y="309" fill="#000000" font-family="Helvetica" font-size="12px" font-style="italic">
+                    plugin-&lt;plugin-id&gt;-module-&lt;module-id&gt;
+                </text>
+            </switch>
+        </g>
+        <path d="M 1030 160 L 1030 160 L 1250 160 L 1250 160" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 1030 160 L 1030 230 L 1250 230 L 1250 160" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 1030 160 L 1250 160" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="1139.5" y="177.5">
+                Common Tooling
+            </text>
+        </g>
+        <rect x="1050" y="190" width="180" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 205px; margin-left: 1060px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/cli
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="1060" y="209" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/cli
+                </text>
+            </switch>
+        </g>
+        <path d="M 850 400 Q 850 555 726.12 555" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 721.12 555 L 726.12 553.33 L 726.12 556.67 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 850 250 Q 850 95 736.12 95" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 731.12 95 L 736.12 93.33 L 736.12 96.67 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 740 250 L 740 250 L 960 250 L 960 250" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 740 250 L 740 400 L 960 400 L 960 250" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 740 250 L 960 250" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="849.5" y="267.5">
+                External Plugin Libraries
+            </text>
+        </g>
+        <rect x="750" y="280" width="200" height="30" fill="#dae8fc" stroke="#6c8ebf" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 190px; height: 1px; padding-top: 295px; margin-left: 760px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                plugin-&lt;other-plugin-id&gt;-react
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="760" y="299" fill="#000000" font-family="Helvetica" font-size="12px">
+                    plugin-&lt;other-plugin-id&gt;-react
+                </text>
+            </switch>
+        </g>
+        <rect x="750" y="320" width="200" height="30" fill="#d5e8d4" stroke="#82b366" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 190px; height: 1px; padding-top: 335px; margin-left: 760px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                plugin-&lt;other-plugin-id&gt;-common
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="760" y="339" fill="#000000" font-family="Helvetica" font-size="12px">
+                    plugin-&lt;other-plugin-id&gt;-common
+                </text>
+            </switch>
+        </g>
+        <rect x="750" y="360" width="200" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 190px; height: 1px; padding-top: 375px; margin-left: 760px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                plugin-&lt;other-plugin-id&gt;-node
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="760" y="379" fill="#000000" font-family="Helvetica" font-size="12px">
+                    plugin-&lt;other-plugin-id&gt;-node
+                </text>
+            </switch>
+        </g>
+        <path d="M 700 325 Q 700 325 733.88 325" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 738.88 325 L 733.88 326.67 L 733.88 323.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 610 400 Q 610 400 610 473.88" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 610 478.88 L 608.33 473.88 L 611.67 473.88 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 610 250 Q 610 250 610 186.12" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 610 181.12 L 611.67 186.12 L 608.33 186.12 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 520 250 L 520 250 L 700 250 L 700 250" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 520 250 L 520 400 L 700 400 L 700 250" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 520 250 L 700 250" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="609.5" y="267.5">
+                Plugin Libraries
+            </text>
+        </g>
+        <rect x="530" y="280" width="160" height="30" fill="#dae8fc" stroke="#6c8ebf" stroke-width="3" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 150px; height: 1px; padding-top: 295px; margin-left: 540px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; font-style: italic; white-space: normal; word-wrap: normal; ">
+                                plugin-&lt;plugin-id&gt;-react
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="540" y="299" fill="#000000" font-family="Helvetica" font-size="12px" font-style="italic">
+                    plugin-&lt;plugin-id&gt;-react
+                </text>
+            </switch>
+        </g>
+        <rect x="530" y="320" width="160" height="30" fill="#d5e8d4" stroke="#82b366" stroke-width="3" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 150px; height: 1px; padding-top: 335px; margin-left: 540px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; font-style: italic; white-space: normal; word-wrap: normal; ">
+                                plugin-&lt;plugin-id&gt;-common
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="540" y="339" fill="#000000" font-family="Helvetica" font-size="12px" font-style="italic">
+                    plugin-&lt;plugin-id&gt;-common
+                </text>
+            </switch>
+        </g>
+        <rect x="530" y="360" width="160" height="30" fill="#fff2cc" stroke="#d6b656" stroke-width="3" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 150px; height: 1px; padding-top: 375px; margin-left: 540px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; font-style: italic; white-space: normal; word-wrap: normal; ">
+                                plugin-&lt;plugin-id&gt;-node
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="540" y="379" fill="#000000" font-family="Helvetica" font-size="12px" font-style="italic">
+                    plugin-&lt;plugin-id&gt;-node
+                </text>
+            </switch>
+        </g>
+        <path d="M 250 10 L 250 10 L 730 10 L 730 10" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" stroke-dasharray="3 3" pointer-events="none"/>
+        <path d="M 250 10 L 250 180 L 730 180 L 730 10" fill="none" stroke="#000000" stroke-miterlimit="10" stroke-dasharray="3 3" pointer-events="none"/>
+        <path d="M 250 10 L 730 10" fill="none" stroke="#000000" stroke-miterlimit="10" stroke-dasharray="3 3" pointer-events="none"/>
+        <path d="M 260 20 L 260 20 L 480 20 L 480 20" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 260 20 L 260 170 L 480 170 L 480 20" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 260 20 L 480 20" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="369.5" y="37.5">
+                Frontend Plugin Core
+            </text>
+        </g>
+        <rect x="280" y="50" width="180" height="30" fill="#dae8fc" stroke="#6c8ebf" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 65px; margin-left: 290px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/core-plugin-api
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="290" y="69" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/core-plugin-api
+                </text>
+            </switch>
+        </g>
+        <rect x="280" y="90" width="180" height="30" fill="#dae8fc" stroke="#6c8ebf" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 105px; margin-left: 290px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/test-utils
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="290" y="109" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/test-utils
+                </text>
+            </switch>
+        </g>
+        <rect x="280" y="130" width="180" height="30" fill="#dae8fc" stroke="#6c8ebf" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 145px; margin-left: 290px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/dev-utils
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="290" y="149" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/dev-utils
+                </text>
+            </switch>
+        </g>
+        <path d="M 500 20 L 500 20 L 720 20 L 720 20" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 20 L 500 170 L 720 170 L 720 20" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 500 20 L 720 20" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="609.5" y="37.5">
+                Frontend Libraries
+            </text>
+        </g>
+        <rect x="520" y="130" width="180" height="30" fill="#dae8fc" stroke="#6c8ebf" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 145px; margin-left: 530px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/integration-react
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="530" y="149" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/integration-react
+                </text>
+            </switch>
+        </g>
+        <rect x="520" y="50" width="180" height="30" fill="#dae8fc" stroke="#6c8ebf" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 65px; margin-left: 530px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/core-components
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="530" y="69" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/core-components
+                </text>
+            </switch>
+        </g>
+        <rect x="520" y="90" width="180" height="30" fill="#dae8fc" stroke="#6c8ebf" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 170px; height: 1px; padding-top: 105px; margin-left: 530px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                @backstage/theme
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="530" y="109" fill="#000000" font-family="Helvetica" font-size="12px">
+                    @backstage/theme
+                </text>
+            </switch>
+        </g>
+        <rect x="10" y="500" width="160" height="130" fill="none" stroke="#000000" pointer-events="none"/>
+        <rect x="20" y="510" width="20" height="20" fill="#dae8fc" stroke="#6c8ebf" pointer-events="none"/>
+        <rect x="20" y="570" width="20" height="20" fill="#fff2cc" stroke="#d6b656" pointer-events="none"/>
+        <rect x="20" y="540" width="20" height="20" fill="#d5e8d4" stroke="#82b366" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 110px; height: 1px; padding-top: 520px; margin-left: 50px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                Frontend Package
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="50" y="524" fill="#000000" font-family="Helvetica" font-size="12px">
+                    Frontend Package
+                </text>
+            </switch>
+        </g>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 110px; height: 1px; padding-top: 550px; margin-left: 50px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                Isomorphic Package
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="50" y="554" fill="#000000" font-family="Helvetica" font-size="12px">
+                    Isomorphic Package
+                </text>
+            </switch>
+        </g>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 110px; height: 1px; padding-top: 580px; margin-left: 50px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                Backend Package
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="50" y="584" fill="#000000" font-family="Helvetica" font-size="12px">
+                    Backend Package
+                </text>
+            </switch>
+        </g>
+        <rect x="20" y="600" width="20" height="20" fill="#e1d5e7" stroke="#9673a6" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 110px; height: 1px; padding-top: 610px; margin-left: 50px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                CLI Package
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="50" y="614" fill="#000000" font-family="Helvetica" font-size="12px">
+                    CLI Package
+                </text>
+            </switch>
+        </g>
+        <rect x="190" y="540" width="20" height="20" fill="#dae8fc" stroke="#6c8ebf" pointer-events="none"/>
+        <rect x="190" y="600" width="20" height="20" fill="#fff2cc" stroke="#d6b656" pointer-events="none"/>
+        <rect x="190" y="570" width="20" height="20" fill="#d5e8d4" stroke="#82b366" pointer-events="none"/>
+        <rect x="250" y="540" width="20" height="20" fill="#dae8fc" stroke="#6c8ebf" pointer-events="none"/>
+        <path d="M 210 550 Q 210 550 243.88 550" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 248.88 550 L 243.88 551.67 L 243.88 548.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <rect x="250" y="600" width="20" height="20" fill="#fff2cc" stroke="#d6b656" pointer-events="none"/>
+        <path d="M 210 610 Q 210 610 243.88 610" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 248.88 610 L 243.88 611.67 L 243.88 608.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <rect x="250" y="570" width="20" height="20" fill="#d5e8d4" stroke="#82b366" pointer-events="none"/>
+        <path d="M 210 550 Q 230 550 230 562.5 Q 230 575 243.88 575" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 248.88 575 L 243.88 576.67 L 243.88 573.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 210 605 Q 230 605 230 595 Q 230 585 243.88 585" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 248.88 585 L 243.88 586.67 L 243.88 583.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 210 580 Q 210 580 243.88 580" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 248.88 580 L 243.88 581.67 L 243.88 578.33 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 90px; height: 1px; padding-top: 520px; margin-left: 190px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                Compatibility
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="190" y="524" fill="#000000" font-family="Helvetica" font-size="12px">
+                    Compatibility
+                </text>
+            </switch>
+        </g>
+        <path d="M 251 589 L 251 570 L 270 589 Z" fill="#e1d5e7" stroke="#9673a6" stroke-miterlimit="10" transform="rotate(-180,260.5,579.5)" pointer-events="none"/>
+        <rect x="0" y="630" width="10" height="10" fill="#ffffff" stroke="none" pointer-events="none"/>
+        <rect x="1250" y="630" width="10" height="10" fill="#ffffff" stroke="none" pointer-events="none"/>
+        <rect x="1250" y="0" width="10" height="10" fill="#ffffff" stroke="none" pointer-events="none"/>
+    </g>
+    <switch>
+        <g requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"/>
+        <a transform="translate(0,-5)" xlink:href="https://www.diagrams.net/doc/faq/svg-export-text-problems" target="_blank">
+            <text text-anchor="middle" font-size="10px" x="50%" y="100%">
+                Viewer does not support full SVG 1.1
+            </text>
+        </a>
+    </switch>
+</svg>

@@ -16,7 +16,6 @@
 
 import {
   PluginConfig,
-  PluginOutput,
   BackstagePlugin,
   Extension,
   AnyRoutes,
@@ -33,8 +32,6 @@ export class PluginImpl<
   ExternalRoutes extends AnyExternalRoutes,
 > implements BackstagePlugin<Routes, ExternalRoutes>
 {
-  private storedOutput?: PluginOutput[];
-
   constructor(private readonly config: PluginConfig<Routes, ExternalRoutes>) {}
 
   getId(): string {
@@ -46,11 +43,7 @@ export class PluginImpl<
   }
 
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig> {
-    const registeredFlags = this.output()
-      .filter(({ type }) => type === 'feature-flag')
-      .map(({ name }) => ({ name }));
-
-    return registeredFlags;
+    return this.config.featureFlags?.slice() ?? [];
   }
 
   get routes(): Routes {
@@ -59,34 +52,6 @@ export class PluginImpl<
 
   get externalRoutes(): ExternalRoutes {
     return this.config.externalRoutes ?? ({} as ExternalRoutes);
-  }
-
-  output(): PluginOutput[] {
-    if (this.storedOutput) {
-      return this.storedOutput;
-    }
-    const outputs = new Array<PluginOutput>();
-    this.storedOutput = outputs;
-
-    if (this.config.featureFlags) {
-      for (const flag of this.config.featureFlags) {
-        outputs.push({ type: 'feature-flag', name: flag.name });
-      }
-    }
-
-    if (!this.config.register) {
-      return outputs;
-    }
-
-    this.config.register({
-      featureFlags: {
-        register(name) {
-          outputs.push({ type: 'feature-flag', name });
-        },
-      },
-    });
-
-    return this.storedOutput;
   }
 
   provide<T>(extension: Extension<T>): T {

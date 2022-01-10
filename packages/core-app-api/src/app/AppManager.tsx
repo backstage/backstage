@@ -27,7 +27,6 @@ import { Route, Routes } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import {
   ApiProvider,
-  ApiRegistry,
   AppThemeSelector,
   ConfigReader,
   LocalStorageFeatureFlags,
@@ -80,6 +79,13 @@ import {
 } from './types';
 import { AppThemeProvider } from './AppThemeProvider';
 import { defaultConfigLoader } from './defaultConfigLoader';
+import { ApiRegistry } from '../apis/system/ApiRegistry';
+
+type CompatiblePlugin =
+  | BackstagePlugin<any, any>
+  | (Omit<BackstagePlugin<any, any>, 'getFeatureFlags'> & {
+      output(): Array<{ type: 'feature-flag'; name: string }>;
+    });
 
 export function generateBoundRoutes(bindRoutes: AppOptions['bindRoutes']) {
   const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
@@ -149,7 +155,7 @@ function useConfigLoader(
   if (noConfigNode) {
     return {
       node: (
-        <ApiProvider apis={ApiRegistry.from([[appThemeApiRef, appThemeApi]])}>
+        <ApiProvider apis={ApiRegistry.with(appThemeApiRef, appThemeApi)}>
           <ThemeProvider>{noConfigNode}</ThemeProvider>
         </ApiProvider>
       ),
@@ -183,7 +189,7 @@ export class AppManager implements BackstageApp {
 
   private readonly apis: Iterable<AnyApiFactory>;
   private readonly icons: NonNullable<AppOptions['icons']>;
-  private readonly plugins: Set<BackstagePlugin<any, any>>;
+  private readonly plugins: Set<CompatiblePlugin>;
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
@@ -196,9 +202,7 @@ export class AppManager implements BackstageApp {
   constructor(options: AppOptions) {
     this.apis = options.apis ?? [];
     this.icons = options.icons;
-    this.plugins = new Set(
-      (options.plugins as BackstagePlugin<any, any>[]) ?? [],
-    );
+    this.plugins = new Set((options.plugins as CompatiblePlugin[]) ?? []);
     this.components = options.components;
     this.themes = options.themes as AppTheme[];
     this.configLoader = options.configLoader ?? defaultConfigLoader;
@@ -208,7 +212,7 @@ export class AppManager implements BackstageApp {
   }
 
   getPlugins(): BackstagePlugin<any, any>[] {
-    return Array.from(this.plugins);
+    return Array.from(this.plugins) as BackstagePlugin<any, any>[];
   }
 
   getSystemIcon(key: string): IconComponent | undefined {
@@ -282,16 +286,11 @@ export class AppManager implements BackstageApp {
               }
             } else {
               for (const output of plugin.output()) {
-                switch (output.type) {
-                  case 'feature-flag': {
-                    featureFlagsApi.registerFlag({
-                      name: output.name,
-                      pluginId: plugin.getId(),
-                    });
-                    break;
-                  }
-                  default:
-                    break;
+                if (output.type === 'feature-flag') {
+                  featureFlagsApi.registerFlag({
+                    name: output.name,
+                    pluginId: plugin.getId(),
+                  });
                 }
               }
             }
@@ -468,7 +467,7 @@ export class AppManager implements BackstageApp {
     return this.apiHolder;
   }
 
-  private verifyPlugins(plugins: Iterable<BackstagePlugin>) {
+  private verifyPlugins(plugins: Iterable<CompatiblePlugin>) {
     const pluginIds = new Set<string>();
 
     for (const plugin of plugins) {

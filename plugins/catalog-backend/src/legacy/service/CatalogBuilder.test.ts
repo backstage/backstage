@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, UrlReader } from '@backstage/backend-common';
+import {
+  getVoidLogger,
+  PluginEndpointDiscovery,
+  ServerTokenManager,
+  UrlReader,
+} from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { Knex } from 'knex';
@@ -24,6 +29,7 @@ import { CatalogProcessorParser } from '../../ingestion';
 import * as result from '../../ingestion/processors/results';
 import { CatalogBuilder } from './CatalogBuilder';
 import { CatalogEnvironment } from '../../service';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 const dummyEntity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -47,11 +53,25 @@ describe('CatalogBuilder', () => {
     readTree: jest.fn(),
     search: jest.fn(),
   };
+  const config = new ConfigReader({});
+  const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
+  const discovery: PluginEndpointDiscovery = {
+    async getBaseUrl() {
+      return mockBaseUrl;
+    },
+    async getExternalBaseUrl() {
+      return mockBaseUrl;
+    },
+  };
   const env: CatalogEnvironment = {
     logger: getVoidLogger(),
     database: { getClient: async () => db },
-    config: new ConfigReader({}),
+    config,
     reader,
+    permissions: ServerPermissionClient.fromConfig(config, {
+      discovery,
+      tokenManager: ServerTokenManager.noop(),
+    }),
   };
 
   beforeEach(async () => {

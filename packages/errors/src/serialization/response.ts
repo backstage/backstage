@@ -20,14 +20,6 @@ import { SerializedError } from './error';
  * A standard shape of JSON data returned as the body of backend errors.
  *
  * @public
- * @deprecated - Use {@link ErrorResponseBody} instead.
- */
-export type ErrorResponse = ErrorResponseBody;
-
-/**
- * A standard shape of JSON data returned as the body of backend errors.
- *
- * @public
  */
 export type ErrorResponseBody = {
   /** Details of the error that was caught */
@@ -47,25 +39,6 @@ export type ErrorResponseBody = {
     statusCode: number;
   };
 };
-
-/**
- * Attempts to construct an ErrorResponse out of a failed server request.
- * Assumes that the response has already been checked to be not ok. This
- * function consumes the body of the response, and assumes that it hasn't
- * been consumed before.
- *
- * The code is forgiving, and constructs a useful synthetic body as best it can
- * if the response body wasn't on the expected form.
- *
- * @public
- * @param response - The response of a failed request
- * @deprecated - Use {@link parseErrorResponseBody} instead.
- */
-export async function parseErrorResponse(
-  response: Response,
-): Promise<ErrorResponse> {
-  return parseErrorResponseBody(response);
-}
 
 /**
  * Attempts to construct an ErrorResponseBody out of a failed server request.

@@ -15,14 +15,15 @@
  */
 
 /* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-restricted-imports */
 
-// eslint-disable-next-line no-restricted-imports
 import {
   resolve as resolvePath,
   relative as relativePath,
   dirname,
   join,
 } from 'path';
+import { spawnSync } from 'child_process';
 import prettier from 'prettier';
 import fs from 'fs-extra';
 import {
@@ -197,6 +198,48 @@ const SKIPPED_PACKAGES = [
   join('packages', 'techdocs-cli'),
 ];
 
+async function resolvePackagePath(
+  packagePath: string,
+): Promise<string | undefined> {
+  const projectRoot = resolvePath(__dirname, '..');
+  const fullPackageDir = resolvePath(projectRoot, packagePath);
+
+  const stat = await fs.stat(fullPackageDir);
+  if (!stat.isDirectory()) {
+    return undefined;
+  }
+
+  try {
+    const packageJsonPath = join(fullPackageDir, 'package.json');
+    await fs.access(packageJsonPath);
+  } catch (_) {
+    return undefined;
+  }
+
+  return relativePath(projectRoot, fullPackageDir);
+}
+
+async function findSpecificPackageDirs(unresolvedPackageDirs: string[]) {
+  const packageDirs = new Array<string>();
+
+  for (const unresolvedPackageDir of unresolvedPackageDirs) {
+    const packageDir = await resolvePackagePath(unresolvedPackageDir);
+    if (!packageDir) {
+      throw new Error(`'${unresolvedPackageDir}' is not a valid package path`);
+    }
+    if (SKIPPED_PACKAGES.includes(packageDir)) {
+      throw new Error(`'${packageDir}' does not have an API report`);
+    }
+    packageDirs.push(packageDir);
+  }
+
+  if (packageDirs.length === 0) {
+    return undefined;
+  }
+
+  return packageDirs;
+}
+
 async function findPackageDirs() {
   const packageDirs = new Array<string>();
   const projectRoot = resolvePath(__dirname, '..');
@@ -204,21 +247,11 @@ async function findPackageDirs() {
   for (const packageRoot of PACKAGE_ROOTS) {
     const dirs = await fs.readdir(resolvePath(projectRoot, packageRoot));
     for (const dir of dirs) {
-      const fullPackageDir = resolvePath(projectRoot, packageRoot, dir);
-
-      const stat = await fs.stat(fullPackageDir);
-      if (!stat.isDirectory()) {
+      const packageDir = await resolvePackagePath(join(packageRoot, dir));
+      if (!packageDir) {
         continue;
       }
 
-      try {
-        const packageJsonPath = join(fullPackageDir, 'package.json');
-        await fs.access(packageJsonPath);
-      } catch (_) {
-        continue;
-      }
-
-      const packageDir = relativePath(projectRoot, fullPackageDir);
       if (!SKIPPED_PACKAGES.includes(packageDir)) {
         packageDirs.push(packageDir);
       }
@@ -226,6 +259,26 @@ async function findPackageDirs() {
   }
 
   return packageDirs;
+}
+
+async function createTemporaryTsConfig(includedPackageDirs: string[]) {
+  const path = resolvePath(__dirname, '..', 'tsconfig.tmp.json');
+
+  process.once('exit', () => {
+    fs.removeSync(path);
+  });
+
+  await fs.writeJson(path, {
+    extends: './tsconfig.json',
+    include: [
+      // These two contain global definitions that are needed for stable API report generation
+      'packages/cli/asset-types/asset-types.d.ts',
+      'node_modules/handlebars/types/index.d.ts',
+      ...includedPackageDirs.map(dir => join(dir, 'src')),
+    ],
+  });
+
+  return path;
 }
 
 async function getTsDocConfig() {
@@ -261,12 +314,14 @@ interface ApiExtractionOptions {
   packageDirs: string[];
   outputDir: string;
   isLocalBuild: boolean;
+  tsconfigFilePath: string;
 }
 
 async function runApiExtraction({
   packageDirs,
   outputDir,
   isLocalBuild,
+  tsconfigFilePath,
 }: ApiExtractionOptions) {
   await fs.remove(outputDir);
 
@@ -287,7 +342,7 @@ async function runApiExtraction({
         bundledPackages: [],
 
         compiler: {
-          tsconfigFilePath: resolvePath(__dirname, '../tsconfig.json'),
+          tsconfigFilePath,
         },
 
         apiReport: {
@@ -663,23 +718,71 @@ async function buildDocs({
 }
 
 async function main() {
+  const projectRoot = resolvePath(__dirname, '..');
   const isCiBuild = process.argv.includes('--ci');
   const isDocsBuild = process.argv.includes('--docs');
+  const runTsc = process.argv.includes('--tsc');
 
-  const packageDirs = await findPackageDirs();
+  const selectedPackageDirs = await findSpecificPackageDirs(
+    process.argv.slice(2).filter(arg => !arg.startsWith('--')),
+  );
+  if (selectedPackageDirs && (isCiBuild || isDocsBuild)) {
+    throw new Error(
+      'Package path arguments are not supported for the --ci and --docs flags',
+    );
+  }
+  if (!selectedPackageDirs && !isCiBuild && !isDocsBuild) {
+    console.log('');
+    console.log(
+      'TIP: You can generate api-reports for select packages by passing package paths:',
+    );
+    console.log('');
+    console.log(
+      '       yarn build:api-reports packages/config packages/core-plugin-api',
+    );
+    console.log('');
+  }
+
+  let temporaryTsConfigPath: string | undefined;
+  if (selectedPackageDirs) {
+    temporaryTsConfigPath = await createTemporaryTsConfig(selectedPackageDirs);
+  }
+  const tsconfigFilePath =
+    temporaryTsConfigPath ?? resolvePath(projectRoot, 'tsconfig.json');
+
+  if (runTsc) {
+    await fs.remove(resolvePath(projectRoot, 'dist-types'));
+    spawnSync(
+      'yarn',
+      [
+        'tsc',
+        ['--project', tsconfigFilePath],
+        ['--skipLibCheck', 'false'],
+        ['--incremental', 'false'],
+      ].flat(),
+      {
+        stdio: 'inherit',
+        shell: true,
+        cwd: projectRoot,
+      },
+    );
+  }
+
+  const packageDirs = selectedPackageDirs ?? (await findPackageDirs());
 
   console.log('# Generating package API reports');
   await runApiExtraction({
     packageDirs,
     outputDir: tmpDir,
     isLocalBuild: !isCiBuild,
+    tsconfigFilePath,
   });
 
   if (isDocsBuild) {
     console.log('# Generating package documentation');
     await buildDocs({
       inputDir: tmpDir,
-      outputDir: resolvePath(__dirname, '..', 'docs/reference'),
+      outputDir: resolvePath(projectRoot, 'docs/reference'),
     });
   }
 }
