@@ -399,7 +399,7 @@ export class GithubAuth implements OAuthApi, SessionApi {
   signOut(): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export type GithubSession = {
   providerInfo: {
     accessToken: string;
@@ -551,7 +551,7 @@ export class SamlAuth
   signOut(): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export type SamlSession = {
   userId: string;
   profile: ProfileInfo;
