@@ -16,13 +16,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
-import React, {
-  ReactNode,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import {
   SidebarItemWithSubmenuContext,
   sidebarConfig,
