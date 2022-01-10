@@ -280,14 +280,14 @@ for components to use when composing your homepage, you can take a look at the
 [collection of Homepage components](https://backstage.io/?path=/story/plugins-home-components)
 in storybook. If you don't find a component that suits your needs but want to
 contribute, check the
-[Contributing documentation](https://github.com/backstage/backstage/blob/1fa18f2ab60abf534301bcf2b47c63b49615cf93/plugins/home/README.md#contributing).
+[Contributing documentation](https://github.com/backstage/backstage/blob/master/plugins/home/README.md#contributing).
 
 !!! tip If you want to use one of the available homepage templates you can find
 the
 [templates](https://backstage.io/storybook/?path=/story/plugins-home-templates)
 in the storybook under the "Home" plugin. And if you would like to contribute a
 template, please see the
-[Contributing documentation](https://github.com/backstage/backstage/blob/1fa18f2ab60abf534301bcf2b47c63b49615cf93/plugins/home/README.md#contributing)
+[Contributing documentation](https://github.com/backstage/backstage/blob/master/plugins/home/README.md#contributing)
 
 ```tsx
 import React from 'react';
