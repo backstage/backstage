@@ -34,7 +34,7 @@ import { SearchResult } from '../SearchResult';
 import { SearchContextProvider, useSearch } from '../SearchContext';
 import { SearchResultPager } from '../SearchResultPager';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { Link, useLayoutContent } from '@backstage/core-components';
+import { Link, useContent } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
 
 export interface SearchModalProps {
@@ -62,7 +62,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
   const classes = useStyles();
 
   const { term } = useSearch();
-  const { focusContent } = useLayoutContent();
+  const { focusContent } = useContent();
   const { transitions } = useTheme();
 
   const handleResultClick = () => {

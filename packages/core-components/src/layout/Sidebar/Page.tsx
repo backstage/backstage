@@ -19,7 +19,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import React, {
   createContext,
   PropsWithChildren,
+  useCallback,
+  useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import { sidebarConfig } from './config';
@@ -89,10 +92,27 @@ export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
   },
 );
 
+type PageContextType = {
+  content: {
+    contentRef?: React.MutableRefObject<HTMLDivElement | null>;
+  };
+};
+
+const PageContext = createContext<PageContextType>({
+  content: {
+    contentRef: undefined,
+  },
+});
 export function SidebarPage(props: SidebarPageProps) {
   const [isPinned, setIsPinned] = useState(() =>
     LocalStorage.getSidebarPinState(),
   );
+
+  const contentRef = useRef(null);
+
+  const content = {
+    contentRef,
+  };
 
   useEffect(() => {
     LocalStorage.setSidebarPinState(isPinned);
@@ -114,7 +134,19 @@ export function SidebarPage(props: SidebarPageProps) {
         isMobile,
       }}
     >
-      <div className={classes.root}>{props.children}</div>
+      <PageContext.Provider value={{ content }}>
+        <div className={classes.root}>{props.children}</div>
+      </PageContext.Provider>
     </SidebarPinStateContext.Provider>
   );
+}
+
+export function useContent() {
+  const { content } = useContext(PageContext);
+
+  const focusContent = useCallback(() => {
+    content?.contentRef?.current?.focus();
+  }, [content]);
+
+  return { focusContent, contentRef: content?.contentRef };
 }

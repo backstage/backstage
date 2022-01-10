@@ -30,13 +30,13 @@ export type { SidebarClassKey, SidebarProps } from './Bar';
 export {
   SidebarPage,
   SidebarPinStateContext as SidebarPinStateContext,
+  useContent,
 } from './Page';
 export type {
   SidebarPinStateContextType as SidebarPinStateContextType,
   SidebarPageClassKey,
   SidebarPageProps,
 } from './Page';
-
 export {
   SidebarDivider,
   SidebarItem,
