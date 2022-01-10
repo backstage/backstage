@@ -39,7 +39,7 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
   },
 }));
 
-export const EntityAirbrakeContent = ({ entity }: { entity: Entity }) => {
+export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
   const classes = useStyles();
 
   const projectId = useProjectSlug(entity);

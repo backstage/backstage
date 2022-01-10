@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { EntityAirbrakeContent, airbrakePlugin } from '../src/plugin';
+import { EntityAirbrakeContent, airbrakePlugin } from '../src';
 import {
   Content,
   ContentHeader,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { EntityAirbrakeContent } from './plugin';
+import { EntityAirbrakeContent } from './extensions';
 import { renderInTestApp } from '@backstage/test-utils';
 
 describe('The Airbrake entity', () => {

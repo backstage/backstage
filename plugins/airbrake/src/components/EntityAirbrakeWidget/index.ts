@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { EntityAirbrakeContent } from './EntityAirbrakeContent';
-import exampleData from './example-data.json';
-import { renderInTestApp } from '@backstage/test-utils';
-
-describe('EntityAirbrakeContent', () => {
-  it('renders all errors sent from Airbrake', async () => {
-    const table = await renderInTestApp(<EntityAirbrakeContent />);
-    expect(exampleData.groups.length).toBeGreaterThan(0);
-    for (const group of exampleData.groups) {
-      expect(
-        await table.getByText(group.errors[0].message),
-      ).toBeInTheDocument();
-    }
-  });
-});
+export { EntityAirbrakeWidget } from './EntityAirbrakeWidget';

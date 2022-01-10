@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 import {
+  configApiRef,
+  createApiFactory,
   createPlugin,
-  createRoutableExtension,
+  discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
+import { airbrakeApiRef, ProductionAirbrakeApi } from './api';
 
 export const airbrakePlugin = createPlugin({
   id: 'airbrake',
+  apis: [
+    createApiFactory({
+      api: airbrakeApiRef,
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ discoveryApi }) => new ProductionAirbrakeApi(discoveryApi),
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },
 });
-
-export const EntityAirbrakeContent = airbrakePlugin.provide(
-  createRoutableExtension({
-    name: 'EntityAirbrakeContent',
-    component: () =>
-      import('./components/EntityAirbrakeContent/EntityAirbrakeContent').then(
-        m => m.EntityAirbrakeContent,
-      ),
-    mountPoint: rootRouteRef,
-  }),
-);
