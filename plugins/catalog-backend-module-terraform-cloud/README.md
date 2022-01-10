@@ -10,30 +10,27 @@ This plugin will query Terraform Cloud for any modules in the private registry, 
 
 You will need a [Terraform Cloud API token](https://www.terraform.io/cloud-docs/users-teams-organizations/api-tokens) for auth.
 
-
 In `app-config.yaml` you will need to add the below key under `integrations`:
 
-```yaml 
+```yaml
 terraform:
-    token: ${TF_TOKEN}
+  token: ${TF_TOKEN}
 ```
 
-You will also need to add a location. This has the below format: 
+You will also need to add a location. This has the below format:
 
 ```yaml
 - type: tf-cloud
   target: 'YOUR TERRAFORM CLOUD ORG NAME'
-  ```
+```
 
-  The target above will be used as the owner for all discovered components/resources.
+The target above will be used as the owner for all discovered components/resources.
 
-  The processor also needs to be added to `packages/backend/src/plugins/catalog.ts`:
+The processor also needs to be added to `packages/backend/src/plugins/catalog.ts`:
 
-  ```ts
-import { TfCloudReaderProcessor } from '@backstage/plugin-catalog-backend-module-terraform-cloud'
-
+```ts
+import { TfCloudReaderProcessor } from '@backstage/plugin-catalog-backend-module-terraform-cloud';
 
 const builder = await CatalogBuilder.create(env);
 builder.addProcessor(TfCloudReaderProcessor.fromConfig(env.config, env.logger));
 ```
-

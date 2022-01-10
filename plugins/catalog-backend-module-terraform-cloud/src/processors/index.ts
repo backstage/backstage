@@ -1,1 +1,1 @@
-export { TfCloudReaderProcessor } from './TerraformCloudProcessor'
+export { TfCloudReaderProcessor } from './TerraformCloudProcessor';
