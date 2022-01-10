@@ -30,7 +30,13 @@ export type CheckResultRenderer = {
 };
 
 // @public (undocumented)
-export const EntityTechInsightsScorecardContent: () => JSX.Element;
+export const EntityTechInsightsScorecardContent: ({
+  title,
+  description,
+}: {
+  title?: string | undefined;
+  description?: string | undefined;
+}) => JSX.Element;
 
 // @public
 export interface TechInsightsApi {
@@ -40,6 +46,8 @@ export interface TechInsightsApi {
   getScorecardsDefinition: (
     type: string,
     value: CheckResult[],
+    title?: string,
+    description?: string,
   ) => CheckResultRenderer | undefined;
   // (undocumented)
   runChecks(entityParams: EntityName, checks?: Check[]): Promise<CheckResult[]>;
