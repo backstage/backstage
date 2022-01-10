@@ -32,11 +32,13 @@ import request from 'supertest';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { createEventStream, createHttpResponse, createRouter } from './router';
+import { TechDocsCache } from '../cache';
 
 jest.mock('@backstage/catalog-client');
 jest.mock('@backstage/config');
 jest.mock('./CachedEntityLoader');
 jest.mock('./DocsSynchronizer');
+jest.mock('../cache/TechDocsCache');
 
 const MockedConfigReader = ConfigReader as jest.MockedClass<
   typeof ConfigReader
@@ -47,6 +49,25 @@ const MockDocsSynchronizer = DocsSynchronizer as jest.MockedClass<
 const MockCachedEntityLoader = CachedEntityLoader as jest.MockedClass<
   typeof CachedEntityLoader
 >;
+const MockTechDocsCache = {
+  get: jest.fn(),
+  set: jest.fn(),
+} as unknown as jest.Mocked<TechDocsCache>;
+TechDocsCache.fromConfig = () => MockTechDocsCache;
+
+const getMockHttpResponseFor = (content: string): Buffer => {
+  return Buffer.concat([
+    Buffer.from(`HTTP/1.1 200 OK
+Content-Type: text/plain; charset=utf-8
+Accept-Ranges: bytes
+Cache-Control: public, max-age=0
+Last-Modified: Sat, 1 Jul 2021 12:00:00 GMT
+Date: Sat, 1 Jul 2021 12:00:00 GMT
+Connection: close
+Content-Length: ${content.length}\n\n`),
+    Buffer.from(content),
+  ]);
+};
 
 describe('createRouter', () => {
   const entity = {
@@ -99,6 +120,11 @@ describe('createRouter', () => {
     discovery.getBaseUrl.mockImplementation(async type => {
       return `http://backstage.local/api/${type}`;
     });
+    MockedConfigReader.prototype.getOptionalNumber.mockImplementation(key =>
+      key === 'techdocs.cache.ttl' ? 1 : undefined,
+    );
+    MockTechDocsCache.get.mockResolvedValue(undefined);
+    MockTechDocsCache.set.mockResolvedValue();
 
     const outOfTheBoxRouter = await createRouter({
       preparers,
@@ -150,6 +176,10 @@ describe('createRouter', () => {
       it('should not check for an update without local builder', async () => {
         MockedConfigReader.prototype.getString.mockReturnValue('external');
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+        MockDocsSynchronizer.prototype.doCacheSync.mockImplementation(
+          async ({ responseHandler }) =>
+            responseHandler.finish({ updated: false }),
+        );
 
         const response = await request(app)
           .get('/sync/default/Component/test')
@@ -250,6 +280,10 @@ describe('createRouter', () => {
       it('should not check for an update without local builder', async () => {
         MockedConfigReader.prototype.getString.mockReturnValue('external');
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+        MockDocsSynchronizer.prototype.doCacheSync.mockImplementation(
+          async ({ responseHandler }) =>
+            responseHandler.finish({ updated: false }),
+        );
 
         const response = await request(app)
           .get('/sync/default/Component/test')
@@ -347,6 +381,32 @@ data: {"updated":true}
 `,
         );
       });
+    });
+  });
+
+  describe('GET /static/docs', () => {
+    it('should return assets from cache', async () => {
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+      MockTechDocsCache.get.mockResolvedValue(
+        getMockHttpResponseFor('content'),
+      );
+
+      const response = await request(app)
+        .get('/static/docs/default/component/test')
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(MockTechDocsCache.get).toBeCalled();
+    });
+
+    it('should not return assets without corresponding entity access', async () => {
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(undefined);
+
+      const response = await request(app)
+        .get('/static/docs/default/component/test')
+        .send();
+
+      expect(response.status).toBe(404);
     });
   });
 });
