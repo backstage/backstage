@@ -34,6 +34,13 @@ type ComponentParts = {
 
 type RendererProps = { title: string } & ComponentParts;
 
+type CardExtensionProps<T> = ComponentRenderer & { title?: string } & T;
+
+/**
+ * An extension creator to create card based components for the homepage
+ *
+ * @public
+ */
 export function createCardExtension<T>({
   title,
   components,
@@ -48,11 +55,8 @@ export function createCardExtension<T>({
     component: {
       lazy: () =>
         components().then(({ Content, Actions, Settings, ContextProvider }) => {
-          const CardExtension = ({
-            Renderer,
-            title: overrideTitle,
-            ...childProps
-          }: ComponentRenderer & { title?: string } & T) => {
+          const CardExtension = (props: CardExtensionProps<T>) => {
+            const { Renderer, title: overrideTitle, ...childProps } = props;
             const app = useApp();
             const { Progress } = app.getComponents();
             const [settingsOpen, setSettingsOpen] = React.useState(false);

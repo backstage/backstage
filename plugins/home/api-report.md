@@ -65,10 +65,9 @@ export const ComponentTabs: ({
   }[];
 }) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "ComponentRenderer" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "createCardExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-forgotten-export) The symbol "CardExtensionProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function createCardExtension<T>({
   title,
   components,
@@ -77,15 +76,7 @@ export function createCardExtension<T>({
   title: string;
   components: () => Promise<ComponentParts>;
   name?: string;
-}): Extension<
-  ({
-    Renderer,
-    title: overrideTitle,
-    ...childProps
-  }: ComponentRenderer & {
-    title?: string;
-  } & T) => JSX.Element
->;
+}): Extension<(props: CardExtensionProps<T>) => JSX.Element>;
 
 // Warning: (ae-missing-release-tag) "HeaderWorldClock" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -110,29 +101,26 @@ export const HomepageCompositionRoot: (props: {
   children?: ReactNode;
 }) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "ComponentRenderer" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "HomePageRandomJoke" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const HomePageRandomJoke: ({
-  Renderer,
-  title: overrideTitle,
-  ...childProps
-}: ComponentRenderer & {
-  title?: string | undefined;
-} & {
-  defaultCategory?: 'any' | 'programming' | undefined;
-}) => JSX.Element;
+export const HomePageRandomJoke: (
+  props: ComponentRenderer & {
+    title?: string | undefined;
+  } & {
+    defaultCategory?: 'any' | 'programming' | undefined;
+  },
+) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "ToolkitContentProps" needs to be exported by the entry point index.d.ts
 //
 // @public
-export const HomePageToolkit: ({
-  Renderer,
-  title: overrideTitle,
-  ...childProps
-}: ComponentRenderer & {
-  title?: string | undefined;
-} & ToolkitContentProps) => JSX.Element;
+export const HomePageToolkit: (
+  props: ComponentRenderer & {
+    title?: string | undefined;
+  } & ToolkitContentProps,
+) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "homePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -164,5 +152,5 @@ export const WelcomeTitle: () => JSX.Element;
 
 // Warnings were encountered during analysis:
 //
-// src/extensions.d.ts:16:5 - (ae-forgotten-export) The symbol "ComponentParts" needs to be exported by the entry point index.d.ts
+// src/extensions.d.ts:24:5 - (ae-forgotten-export) The symbol "ComponentParts" needs to be exported by the entry point index.d.ts
 ```
