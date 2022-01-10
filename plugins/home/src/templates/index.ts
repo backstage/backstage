@@ -14,23 +14,5 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage plugin that helps you build a home page
- *
- * @packageDocumentation
- */
-
-export {
-  homePlugin,
-  HomepageCompositionRoot,
-  HomePageRandomJoke,
-  HomePageToolkit,
-  HomePageCompanyLogo,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
-  WelcomeTitle,
-} from './plugin';
-export { SettingsModal, HeaderWorldClock } from './components';
-export type { ClockConfig } from './components';
-export { createCardExtension } from './extensions';
+export { TemplateBackstageLogoIcon } from './TemplateBackstageLogoIcon';
+export { TemplateBackstageLogo } from './TemplateBackstageLogo'
