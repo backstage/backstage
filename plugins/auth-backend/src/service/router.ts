@@ -74,7 +74,7 @@ export async function createRouter(
         secret,
         saveUninitialized: false,
         resave: false,
-        cookie: { secure: enforceCookieSSL },
+        cookie: { secure: enforceCookieSSL ? 'auto' : false },
       }),
     );
     router.use(passport.initialize());
