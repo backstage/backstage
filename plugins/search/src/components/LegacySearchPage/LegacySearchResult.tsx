@@ -16,7 +16,7 @@
 import { Divider, Grid, makeStyles, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
 import { Filters, FiltersButton, FiltersState } from './Filters';

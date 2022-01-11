@@ -1,5 +1,37 @@
 # @backstage/plugin-permission-react
 
+## 0.2.1
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+
+## 0.2.0
+
+### Minor Changes
+
+- 70281a475b: Breaking Changes:
+
+  - Remove "api" suffixes from constructor parameters in IdentityPermissionApi.create
+
+  ```diff
+    const { config, discovery, identity } = options;
+  -  const permissionApi = IdentityPermissionApi.create({
+  -    configApi: config,
+  -    discoveryApi: discovery,
+  -    identityApi: identity
+  -  });
+  +  const permissionApi = IdentityPermissionApi.create({ config, discovery, identity });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-permission-common@0.3.0
+
 ## 0.1.1
 
 ### Patch Changes

@@ -18,8 +18,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const kafkaApiRef = createApiRef<KafkaApi>({
   id: 'plugin.kafka.service',
-  description:
-    'Used by the Kafka plugin to make requests to accompanying backend',
 });
 
 export type ConsumerGroupOffsetsResponse = {

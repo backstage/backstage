@@ -17,7 +17,7 @@
 import {
   AuthenticationError,
   ConflictError,
-  ErrorResponse,
+  ErrorResponseBody,
   InputError,
   NotAllowedError,
   NotFoundError,
@@ -28,7 +28,11 @@ import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 import { Logger } from 'winston';
 import { getRootLogger } from '../logging';
 
-/** @public */
+/**
+ * Options passed to the {@link errorHandler} middleware.
+ *
+ * @public
+ */
 export type ErrorHandlerOptions = {
   /**
    * Whether error response bodies should show error stack traces or not.
@@ -89,7 +93,7 @@ export function errorHandler(
       return;
     }
 
-    const body: ErrorResponse = {
+    const body: ErrorResponseBody = {
       error: serializeError(error, { includeStack: showStackTraces }),
       request: { method: req.method, url: req.url },
       response: { statusCode },

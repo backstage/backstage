@@ -25,7 +25,7 @@ import { Box, FormHelperText, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useEffect, useState } from 'react';
 import { UnpackNestedValue, UseFormReturn } from 'react-hook-form';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import YAML from 'yaml';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { PartialEntity } from '../../types';

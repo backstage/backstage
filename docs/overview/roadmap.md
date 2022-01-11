@@ -65,11 +65,6 @@ cycle will vary based on maintainer schedules.
 
 The following features are planned for release:
 
-- **Composable homepage:** We’re seeing lots of interest from the community in
-  reusable components to build a homepage experience where users can easily
-  surface what they might find useful to start their tasks. Check out the
-  [milestone](https://github.com/backstage/backstage/milestone/34) for further
-  details.
 - **Improved responsiveness:** Check out the
   [RFC here](https://github.com/backstage/backstage/issues/6318) for further
   details on how to improve the responsiveness for Backstage's UI.
@@ -120,23 +115,6 @@ The following features are planned for release:
   strong caching mechanism. The current version often requires fetching a
   relevant amount of data, especially at scale.
 
-### Search
-
-The following features are planned for release:
-
-- ElasticSearch integration: Add ElasticSearch to the Search Platform as the
-  underlying search engine. Check out the
-  [milestone here](https://github.com/backstage/backstage/milestone/27) for
-  further details.
-
-### TechDocs
-
-The following features are planned for release:
-
-- **TechDocs beta release:** Fix remaining bugs to get TechDocs to Beta. Check
-  out the [milestone here](https://github.com/backstage/backstage/milestone/29)
-  for further details.
-
 ## Future work
 
 The following feature list doesn’t represent a commitment to develop and the
@@ -165,11 +143,6 @@ the maintainers’ radar, with clear interest expressed by the community.
   bottleneck many concurrent projects created simultaneously.
 - **API discovery and documentation:** Add better support for the
   [gRPC](https://grpc.io/).
-- **Adding TechDocs search to the Search Platform:** Having this capability in
-  place will provide a better and new major version of the Search Platform
-  (v3.0). You can refer to the
-  [milestone here](https://github.com/backstage/backstage/milestone/28) for
-  further details.
 - **TechDocs GA release:** Work toward enhancements necessary to get TechDocs to
   general availability. Check out the
   [milestone here](https://github.com/backstage/backstage/milestone/30) for
@@ -179,6 +152,10 @@ the maintainers’ radar, with clear interest expressed by the community.
 
 Read more about the completed (and released) features for reference.
 
+- [[Search] ElasticSearch integration](https://backstage.io/docs/features/search/search-engines#elasticsearch)
+- [[Search] TechDocs search capabilities](https://backstage.io/docs/features/search/how-to-guides#how-to-index-techdocs-documents)
+- [TechDocs Beta](https://backstage.spotify.com/blog/product-updates/techdocs-beta-has-landed)
+- [[Home] Composable homepage](https://github.com/backstage/backstage/milestone/34)
 - [[Search] Out-of-the-Box Implementation (Alpha)](https://github.com/backstage/backstage/milestone/26)
 - [Deploy a product demo at `demo.backstage.io`](https://demo.backstage.io)
 - [Kubernetes plugin - v1](https://github.com/backstage/backstage/tree/master/plugins/kubernetes)

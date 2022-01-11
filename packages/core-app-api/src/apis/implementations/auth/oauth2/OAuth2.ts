@@ -120,10 +120,7 @@ export default class OAuth2
   private readonly sessionManager: SessionManager<OAuth2Session>;
   private readonly scopeTransform: (scopes: string[]) => string[];
 
-  /**
-   * @deprecated will be made private in the future. Use create method instead.
-   */
-  constructor(options: {
+  private constructor(options: {
     sessionManager: SessionManager<OAuth2Session>;
     scopeTransform: (scopes: string[]) => string[];
   }) {

@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Box, IconButton, Link, Typography, Tooltip } from '@material-ui/core';
+import { Link, Progress, Table, TableColumn } from '@backstage/core-components';
+import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
-import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
-import { Link as RouterLink } from 'react-router-dom';
-import { JenkinsRunStatus } from '../Status';
-import { useBuilds } from '../../../useBuilds';
-import { buildRouteRef } from '../../../../plugin';
-import { Table, TableColumn } from '@backstage/core-components';
+import { default as React, useState } from 'react';
 import { Project } from '../../../../api/JenkinsApi';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
+import { buildRouteRef } from '../../../../plugin';
+import { useBuilds } from '../../../useBuilds';
+import { JenkinsRunStatus } from '../Status';
 
 const FailCount = ({ count }: { count: number }): JSX.Element | null => {
   if (count !== 0) {
@@ -107,7 +106,6 @@ const generatedColumns: TableColumn[] = [
 
         return (
           <Link
-            component={RouterLink}
             to={routeLink({
               jobFullName: encodeURIComponent(row.fullName),
               buildNumber: String(row.lastBuild?.number),
@@ -127,7 +125,7 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<Project>) => (
       <>
         <p>
-          <Link href={row.lastBuild?.source?.url || ''} target="_blank">
+          <Link to={row.lastBuild?.source?.url ?? ''}>
             {row.lastBuild?.source?.branchName}
           </Link>
         </p>
@@ -154,7 +152,7 @@ const generatedColumns: TableColumn[] = [
         <>
           <p>
             {row.lastBuild?.tests && (
-              <Link href={row.lastBuild?.tests.testUrl || ''} target="_blank">
+              <Link to={row.lastBuild?.tests.testUrl ?? ''}>
                 {row.lastBuild?.tests.passed} / {row.lastBuild?.tests.total}{' '}
                 passed
                 <FailSkippedWidget
@@ -173,13 +171,46 @@ const generatedColumns: TableColumn[] = [
   {
     title: 'Actions',
     sorting: false,
-    render: (row: Partial<Project>) => (
-      <Tooltip title="Rerun build">
-        <IconButton onClick={row.onRestartClick}>
-          <RetryIcon />
-        </IconButton>
-      </Tooltip>
-    ),
+    render: (row: Partial<Project>) => {
+      const ActionWrapper = () => {
+        const [isLoadingRebuild, setIsLoadingRebuild] = useState(false);
+        const alertApi = useApi(alertApiRef);
+
+        const onRebuild = async () => {
+          if (row.onRestartClick) {
+            setIsLoadingRebuild(true);
+            try {
+              await row.onRestartClick();
+              alertApi.post({
+                message: 'Jenkins re-build has successfully executed',
+                severity: 'success',
+              });
+            } catch (e) {
+              alertApi.post({
+                message: `Jenkins re-build has failed. Error: ${e.message}`,
+                severity: 'error',
+              });
+            } finally {
+              setIsLoadingRebuild(false);
+            }
+          }
+        };
+
+        return (
+          <Tooltip title="Rerun build">
+            <>
+              {isLoadingRebuild && <Progress />}
+              {!isLoadingRebuild && (
+                <IconButton onClick={onRebuild}>
+                  <RetryIcon />
+                </IconButton>
+              )}
+            </>
+          </Tooltip>
+        );
+      };
+      return <ActionWrapper />;
+    },
     width: '10%',
   },
 ];

@@ -33,9 +33,6 @@ export type ErrorLike = {
   [unknownKeys: string]: unknown;
 };
 
-// @public @deprecated
-export type ErrorResponse = ErrorResponseBody;
-
 // @public
 export type ErrorResponseBody = {
   error: SerializedError;
@@ -68,9 +65,6 @@ export class NotFoundError extends CustomErrorBase {}
 // @public
 export class NotModifiedError extends CustomErrorBase {}
 
-// @public @deprecated
-export function parseErrorResponse(response: Response): Promise<ErrorResponse>;
-
 // @public
 export function parseErrorResponseBody(
   response: Response,
@@ -78,17 +72,8 @@ export function parseErrorResponseBody(
 
 // @public
 export class ResponseError extends Error {
-  // @deprecated
-  constructor(props: {
-    message: string;
-    response: Response;
-    data: ErrorResponseBody;
-    cause: Error;
-  });
   readonly body: ErrorResponseBody;
   readonly cause: Error;
-  // @deprecated
-  get data(): ErrorResponseBody;
   static fromResponse(response: Response): Promise<ResponseError>;
   readonly response: Response;
 }

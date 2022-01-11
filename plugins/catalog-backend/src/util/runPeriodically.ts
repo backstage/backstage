@@ -19,8 +19,8 @@
  *
  * Supports async functions, and silently ignores exceptions and rejections.
  *
- * @param fn The function to run. May return a Promise.
- * @param delayMs The delay between a completed function invocation and the
+ * @param fn - The function to run. May return a Promise.
+ * @param delayMs - The delay between a completed function invocation and the
  *                next.
  * @returns A function that, when called, stops the invocation loop.
  */

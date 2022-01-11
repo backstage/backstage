@@ -42,14 +42,9 @@
       href="<%= publicPath %>/safari-pinned-tab.svg"
       color="#5bbad5"
     />
-    <style>
-      #root {
-        min-height: 100%;
-      }
-    </style>
-    <title><%= app.title %></title>
+    <title><%= config.getString('app.title') %></title>
   </head>
-  <body style="margin: 0">
+  <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--

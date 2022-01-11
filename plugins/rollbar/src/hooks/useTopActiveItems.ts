@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { Entity } from '@backstage/catalog-model';
 import { rollbarApiRef } from '../api';
 import { RollbarTopActiveItem } from '../api/types';

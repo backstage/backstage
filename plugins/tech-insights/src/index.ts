@@ -17,3 +17,8 @@ export {
   techInsightsPlugin,
   EntityTechInsightsScorecardContent,
 } from './plugin';
+
+export { techInsightsApiRef } from './api/TechInsightsApi';
+export type { TechInsightsApi } from './api/TechInsightsApi';
+export type { Check } from './api/types';
+export type { CheckResultRenderer } from './components/CheckResultRenderer';

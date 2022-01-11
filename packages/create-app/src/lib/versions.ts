@@ -32,6 +32,7 @@ leaving any imports in place.
 
 import { version as appDefaults } from '../../../app-defaults/package.json';
 import { version as backendCommon } from '../../../backend-common/package.json';
+import { version as backendTasks } from '../../../backend-tasks/package.json';
 import { version as catalogClient } from '../../../catalog-client/package.json';
 import { version as catalogModel } from '../../../catalog-model/package.json';
 import { version as cli } from '../../../cli/package.json';
@@ -56,6 +57,8 @@ import { version as pluginExplore } from '../../../../plugins/explore/package.js
 import { version as pluginGithubActions } from '../../../../plugins/github-actions/package.json';
 import { version as pluginLighthouse } from '../../../../plugins/lighthouse/package.json';
 import { version as pluginOrg } from '../../../../plugins/org/package.json';
+import { version as pluginPermissionCommon } from '../../../../plugins/permission-common/package.json';
+import { version as pluginPermissionNode } from '../../../../plugins/permission-node/package.json';
 import { version as pluginProxyBackend } from '../../../../plugins/proxy-backend/package.json';
 import { version as pluginRollbarBackend } from '../../../../plugins/rollbar-backend/package.json';
 import { version as pluginScaffolder } from '../../../../plugins/scaffolder/package.json';
@@ -71,6 +74,7 @@ import { version as pluginUserSettings } from '../../../../plugins/user-settings
 export const packageVersions = {
   '@backstage/app-defaults': appDefaults,
   '@backstage/backend-common': backendCommon,
+  '@backstage/backend-tasks': backendTasks,
   '@backstage/catalog-client': catalogClient,
   '@backstage/catalog-model': catalogModel,
   '@backstage/cli': cli,
@@ -92,6 +96,8 @@ export const packageVersions = {
   '@backstage/plugin-github-actions': pluginGithubActions,
   '@backstage/plugin-lighthouse': pluginLighthouse,
   '@backstage/plugin-org': pluginOrg,
+  '@backstage/plugin-permission-common': pluginPermissionCommon,
+  '@backstage/plugin-permission-node': pluginPermissionNode,
   '@backstage/plugin-proxy-backend': pluginProxyBackend,
   '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,

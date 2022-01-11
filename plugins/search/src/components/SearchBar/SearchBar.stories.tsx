@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,88 +14,58 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Paper, Grid, makeStyles } from '@material-ui/core';
-import { SearchBar, SearchContext } from '../index';
-import { MemoryRouter } from 'react-router';
+import { Grid, makeStyles, Paper } from '@material-ui/core';
+import React, { ComponentType } from 'react';
+import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchBar } from './SearchBar';
 
 export default {
   title: 'Plugins/Search/SearchBar',
   component: SearchBar,
-};
-
-const defaultValue = {
-  term: '',
-  setTerm: () => {},
+  decorators: [
+    (Story: ComponentType<{}>) => (
+      <SearchContextProvider>
+        <Grid container direction="row">
+          <Grid item xs={12}>
+            <Story />
+          </Grid>
+        </Grid>
+      </SearchContextProvider>
+    ),
+  ],
 };
 
 export const Default = () => {
   return (
-    <MemoryRouter>
-      {/* @ts-ignore (defaultValue requires more than what is used here) */}
-      <SearchContext.Provider value={defaultValue}>
-        <Grid container direction="row">
-          <Grid item xs={12}>
-            <Paper style={{ padding: '8px 0' }}>
-              <SearchBar />
-            </Paper>
-          </Grid>
-        </Grid>
-      </SearchContext.Provider>
-    </MemoryRouter>
+    <Paper style={{ padding: '8px 0' }}>
+      <SearchBar />
+    </Paper>
   );
 };
 
 export const CustomPlaceholder = () => {
   return (
-    <MemoryRouter>
-      {/* @ts-ignore (defaultValue requires more than what is used here) */}
-      <SearchContext.Provider value={defaultValue}>
-        <Grid container direction="row">
-          <Grid item xs={12}>
-            <Paper style={{ padding: '8px 0' }}>
-              <SearchBar placeholder="This is a custom placeholder" />
-            </Paper>
-          </Grid>
-        </Grid>
-      </SearchContext.Provider>
-    </MemoryRouter>
+    <Paper style={{ padding: '8px 0' }}>
+      <SearchBar placeholder="This is a custom placeholder" />
+    </Paper>
   );
 };
 
 export const Focused = () => {
   return (
-    <MemoryRouter>
-      {/* @ts-ignore (defaultValue requires more than what is used here) */}
-      <SearchContext.Provider value={defaultValue}>
-        <Grid container direction="row">
-          <Grid item xs={12}>
-            <Paper style={{ padding: '8px 0' }}>
-              {/* decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus */}
-              {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-              <SearchBar autoFocus />
-            </Paper>
-          </Grid>
-        </Grid>
-      </SearchContext.Provider>
-    </MemoryRouter>
+    <Paper style={{ padding: '8px 0' }}>
+      {/* decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus */}
+      {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+      <SearchBar autoFocus />
+    </Paper>
   );
 };
 
 export const WithoutClearButton = () => {
   return (
-    <MemoryRouter>
-      {/* @ts-ignore (defaultValue requires more than what is used here) */}
-      <SearchContext.Provider value={defaultValue}>
-        <Grid container direction="row">
-          <Grid item xs={12}>
-            <Paper style={{ padding: '8px 0' }}>
-              <SearchBar clearButton={false} />
-            </Paper>
-          </Grid>
-        </Grid>
-      </SearchContext.Provider>
-    </MemoryRouter>
+    <Paper style={{ padding: '8px 0' }}>
+      <SearchBar clearButton={false} />
+    </Paper>
   );
 };
 
@@ -112,17 +82,8 @@ const useStyles = makeStyles({
 export const CustomStyles = () => {
   const classes = useStyles();
   return (
-    <MemoryRouter>
-      {/* @ts-ignore (defaultValue requires more than what is used here) */}
-      <SearchContext.Provider value={defaultValue}>
-        <Grid container direction="row">
-          <Grid item xs={12}>
-            <Paper className={classes.search}>
-              <SearchBar />
-            </Paper>
-          </Grid>
-        </Grid>
-      </SearchContext.Provider>
-    </MemoryRouter>
+    <Paper className={classes.search}>
+      <SearchBar />
+    </Paper>
   );
 };

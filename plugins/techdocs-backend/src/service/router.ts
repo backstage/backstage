@@ -60,6 +60,7 @@ type RecommendedDeploymentOptions = {
   logger: Logger;
   discovery: PluginEndpointDiscovery;
   config: Config;
+  cache?: PluginCacheManager;
 };
 
 /**
@@ -89,7 +90,7 @@ export async function createRouter(
   // Set up a cache client if configured.
   let cache: TechDocsCache | undefined;
   const defaultTtl = config.getOptionalNumber('techdocs.cache.ttl');
-  if (isOutOfTheBoxOption(options) && options.cache && defaultTtl) {
+  if (options.cache && defaultTtl) {
     const cacheClient = options.cache.getClient({ defaultTtl });
     cache = TechDocsCache.fromConfig(config, { cache: cacheClient, logger });
   }
@@ -243,7 +244,7 @@ function getBearerToken(header?: string): string | undefined {
 /**
  * Create an event-stream response that emits the events 'log', 'error', and 'finish'.
  *
- * @param res the response to write the event-stream to
+ * @param res - the response to write the event-stream to
  * @returns A tuple of <log, error, finish> callbacks to emit messages. A call to 'error' or 'finish'
  *          will close the event-stream.
  */
@@ -292,7 +293,7 @@ export function createEventStream(
 /**
  * Create a HTTP response. This is used for the legacy non-event-stream implementation of the sync endpoint.
  *
- * @param res the response to write the event-stream to
+ * @param res - the response to write the event-stream to
  * @returns A tuple of <log, error, finish> callbacks to emit messages. A call to 'error' or 'finish'
  *          will close the event-stream.
  */

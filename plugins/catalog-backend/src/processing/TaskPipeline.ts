@@ -56,7 +56,7 @@ type Options<T> = {
  * Creates a task processing pipeline which continuously loads in tasks to
  * keep the number of parallel in-flight tasks between a low and high watermark.
  *
- * @param options The options for the pipeline.
+ * @param options - The options for the pipeline.
  * @returns A stop function which when called halts all processing.
  */
 export function startTaskPipeline<T>(options: Options<T>) {

@@ -24,7 +24,7 @@ import {
 } from '@material-ui/core';
 import { IncidentListItem } from './IncidentListItem';
 import { IncidentsEmptyState } from './IncidentEmptyState';
-import { useAsyncFn } from 'react-use';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { splunkOnCallApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 

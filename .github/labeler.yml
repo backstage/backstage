@@ -9,3 +9,16 @@ search:
   - plugins/search/**/*
   - plugins/search-*/**/*
   - packages/search-*/**/*
+docs-like-code:
+  - plugins/techdocs/**/*
+  - plugins/techdocs-*/**/*
+  - packages/techdocs-*/**/*
+documentation:
+  - docs/**/*
+microsite:
+  - microsite/**/*
+auth:
+  - plugins/auth-backend/**/*
+  - packages/core-app-api/src/apis/implementations/auth/**/*
+  - packages/core-app-api/src/lib/Auth*/**/*
+  - packages/core-plugin-api/src/apis/definitions/auth.ts

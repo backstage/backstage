@@ -93,12 +93,13 @@ describe('GitHubOrgEntityProvider', () => {
         type: 'app',
       });
 
-      jest.spyOn(GithubCredentialsProvider, 'create').mockReturnValue({
+      const githubCredentialsProvider: GithubCredentialsProvider = {
         getCredentials: mockGetCredentials,
-      } as any);
+      };
 
       const entityProvider = new GitHubOrgEntityProvider({
         id: 'my-id',
+        githubCredentialsProvider,
         orgUrl: 'https://github.com/backstage',
         gitHubConfig,
         logger,

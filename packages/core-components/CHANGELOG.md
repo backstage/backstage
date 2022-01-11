@@ -1,5 +1,29 @@
 # @backstage/core-components
 
+## 0.8.3
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+
+## 0.8.2
+
+### Patch Changes
+
+- 73a91e25f9: Added description to components: BottomLink, Breadcrumbs, BrokenImageIcon, CardTab, Content, ContentHeader, EmptyState, ErrorPage, FeatureCalloutCircular, Gauge, GaugeCard, Header, HeaderIconLinkRow, HeaderLabel, HeaderTabs, HorizontalScrollGrid, InfoCard, IntroCard
+- 27af6d996b: Locking `rc-progress` to the working version of 3.1.4
+- 10e5f9d10c: Do not `setState` when unmounted in `OverflowTooltip`
+- b646a73fe0: In @backstage/plugin-scaffolder - When user will have one option available in hostUrl or owner - autoselect and select component should be readonly.
+
+  in @backstage/core-components - Select component has extended API with few more props: native : boolean, disabled: boolean. native - if set to true - Select component will use native browser select picker (not rendered by Material UI lib ).
+  disabled - if set to true - action on component will not be possible.
+
+- 7a4bd2ceac: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+
 ## 0.8.1
 
 ### Patch Changes

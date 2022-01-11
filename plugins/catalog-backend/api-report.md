@@ -16,6 +16,7 @@ import { EntityName } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
+import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
@@ -25,6 +26,8 @@ import { Location as Location_2 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Organizations } from 'aws-sdk';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
@@ -249,9 +252,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 export class CatalogBuilder {
   // @deprecated
   constructor(env: CatalogEnvironment);
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityPolicy(...policies: EntityPolicy[]): CatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addProcessor(...processors: CatalogProcessor[]): CatalogBuilder;
   build(): Promise<{
     entitiesCatalog: EntitiesCatalog;
@@ -261,16 +262,10 @@ export class CatalogBuilder {
   }>;
   // (undocumented)
   static create(env: CatalogEnvironment): Promise<NextCatalogBuilder>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceProcessors(processors: CatalogProcessor[]): CatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setEntityDataParser(parser: CatalogProcessorParser): CatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setPlaceholderResolver(
     key: string,
     resolver: PlaceholderResolver,
@@ -301,6 +296,7 @@ export type CatalogEnvironment = {
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
+  permissions: PermissionAuthorizer;
 };
 
 // Warning: (ae-missing-release-tag) "CatalogProcessingEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -519,6 +515,11 @@ export class CommonDatabase implements Database {
   ): Promise<DbEntityResponse>;
 }
 
+// @public
+export const createCatalogPermissionRule: <TParams extends unknown[]>(
+  rule: PermissionRule<Entity, EntitiesSearchFilter, TParams>,
+) => PermissionRule<Entity, EntitiesSearchFilter, TParams>;
+
 // Warning: (ae-missing-release-tag) "CreateDatabaseOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -533,8 +534,6 @@ export function createNextRouter(
   options: NextRouterOptions,
 ): Promise<express.Router>;
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // Warning: (ae-missing-release-tag) "createRandomRefreshInterval" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -823,7 +822,6 @@ export type DeferredEntity = {
   locationKey?: string;
 };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-missing-release-tag) "durationText" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -1008,12 +1006,17 @@ function generalError(
 //
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
-  constructor(options: { integrations: ScmIntegrations; logger: Logger_2 });
+  constructor(options: {
+    integrations: ScmIntegrations;
+    logger: Logger_2;
+    githubCredentialsProvider?: GithubCredentialsProvider;
+  });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubDiscoveryProcessor;
   // (undocumented)
@@ -1030,12 +1033,14 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     integrations: ScmIntegrations;
     logger: Logger_2;
     orgs: GithubMultiOrgConfig;
+    githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubMultiOrgReaderProcessor;
   // (undocumented)
@@ -1055,6 +1060,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     orgUrl: string;
     gitHubConfig: GitHubIntegrationConfig;
     logger: Logger_2;
+    githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -1065,6 +1071,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       id: string;
       orgUrl: string;
       logger: Logger_2;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GitHubOrgEntityProvider;
   // (undocumented)
@@ -1077,12 +1084,17 @@ export class GitHubOrgEntityProvider implements EntityProvider {
 //
 // @public
 export class GithubOrgReaderProcessor implements CatalogProcessor {
-  constructor(options: { integrations: ScmIntegrations; logger: Logger_2 });
+  constructor(options: {
+    integrations: ScmIntegrations;
+    logger: Logger_2;
+    githubCredentialsProvider?: GithubCredentialsProvider;
+  });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubOrgReaderProcessor;
   // (undocumented)
@@ -1137,7 +1149,6 @@ export class HigherOrderOperations implements HigherOrderOperation {
     locationReader: LocationReader,
     logger: Logger_2,
   );
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addLocation(
     spec: LocationSpec,
     options?: {
@@ -1298,11 +1309,15 @@ export type LocationUpdateStatus = {
 // @public
 export class NextCatalogBuilder {
   constructor(env: CatalogEnvironment);
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   addEntityProvider(...providers: EntityProvider[]): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  addPermissionRules(
+    ...permissionRules: PermissionRule<
+      Entity,
+      EntitiesSearchFilter,
+      unknown[]
+    >[]
+  ): void;
   addProcessor(...processors: CatalogProcessor[]): NextCatalogBuilder;
   build(): Promise<{
     entitiesCatalog: EntitiesCatalog;
@@ -1313,17 +1328,11 @@ export class NextCatalogBuilder {
     router: Router;
   }>;
   getDefaultProcessors(): CatalogProcessor[];
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceEntityPolicies(policies: EntityPolicy[]): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   replaceProcessors(processors: CatalogProcessor[]): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setEntityDataParser(parser: CatalogProcessorParser): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setFieldFormatValidators(validators: Partial<Validators>): NextCatalogBuilder;
   setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): NextCatalogBuilder;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   setPlaceholderResolver(
     key: string,
     resolver: PlaceholderResolver,
@@ -1348,6 +1357,8 @@ export interface NextRouterOptions {
   locationService: LocationService;
   // (undocumented)
   logger: Logger_2;
+  // (undocumented)
+  permissionRules?: PermissionRule<Entity, EntitiesSearchFilter, unknown[]>[];
   // (undocumented)
   refreshService?: RefreshService;
 }
@@ -1379,6 +1390,32 @@ export function parseEntityYaml(
   data: Buffer,
   location: LocationSpec,
 ): Iterable<CatalogProcessorResult>;
+
+// @public
+export const permissionRules: {
+  hasAnnotation: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [annotation: string]
+  >;
+  hasLabel: PermissionRule<Entity, EntitiesSearchFilter, [label: string]>;
+  hasMetadata: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [key: string, value?: string | undefined]
+  >;
+  hasSpec: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [key: string, value?: string | undefined]
+  >;
+  isEntityKind: PermissionRule<Entity, EntitiesSearchFilter, [kinds: string[]]>;
+  isEntityOwner: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [claims: string[]]
+  >;
+};
 
 // Warning: (ae-missing-release-tag) "PlaceholderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1473,6 +1510,7 @@ export type RefreshIntervalFunction = () => number;
 // @public
 export type RefreshOptions = {
   entityRef: string;
+  authorizationToken?: string;
 };
 
 // @public
@@ -1519,8 +1557,6 @@ export interface RouterOptions {
   refreshService?: RefreshService;
 }
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-missing-release-tag) "runPeriodically" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -1568,20 +1604,5 @@ export class UrlReaderProcessor implements CatalogProcessor {
 
 // Warnings were encountered during analysis:
 //
-// src/catalog/types.d.ts:94:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/catalog/types.d.ts:95:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/catalog/types.d.ts:96:8 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:23:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
-// src/ingestion/types.d.ts:8:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:98:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:104:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:105:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:119:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:120:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:121:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:123:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:136:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:137:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/database/types.d.ts:138:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/legacy/ingestion/types.d.ts:19:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:25:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
 ```

@@ -21,6 +21,7 @@ import { GitLabIntegration } from '@backstage/integration';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { Logger as Logger_2 } from 'winston';
 import { MergeResult } from 'isomorphic-git';
 import { PushResult } from 'isomorphic-git';
@@ -33,9 +34,7 @@ import { Server } from 'http';
 import * as winston from 'winston';
 import { Writable } from 'stream';
 
-// Warning: (ae-missing-release-tag) "AwsS3UrlReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class AwsS3UrlReader implements UrlReader {
   constructor(
     integration: AwsS3Integration,
@@ -58,7 +57,7 @@ export class AwsS3UrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public (undocumented)
+// @public
 export class AzureUrlReader implements UrlReader {
   constructor(
     integration: AzureIntegration,
@@ -113,12 +112,12 @@ export interface CacheClient {
   ): Promise<void>;
 }
 
-// @public (undocumented)
+// @public
 export type CacheClientOptions = {
   defaultTtl?: number;
 };
 
-// @public (undocumented)
+// @public
 export type CacheClientSetOptions = {
   ttl?: number;
 };
@@ -132,18 +131,17 @@ export class CacheManager {
   ): CacheManager;
 }
 
-// @public (undocumented)
+// @public
 export type CacheManagerOptions = {
   logger?: Logger_2;
   onError?: (err: Error) => void;
 };
 
-// @public (undocumented)
+// @public
 export const coloredFormat: winston.Logform.Format;
 
-// @public (undocumented)
+// @public
 export interface ContainerRunner {
-  // (undocumented)
   runContainer(opts: RunContainerOptions): Promise<void>;
 }
 
@@ -156,7 +154,7 @@ export function createDatabaseClient(
   overrides?: Partial<Knex.Config>,
 ): Knex<any, unknown[]>;
 
-// @public (undocumented)
+// @public
 export function createRootLogger(
   options?: winston.LoggerOptions,
   env?: NodeJS.ProcessEnv,
@@ -165,14 +163,14 @@ export function createRootLogger(
 // @public
 export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
-// @public (undocumented)
+// @public
 export function createStatusCheckRouter(options: {
   logger: Logger_2;
   path?: string;
   statusCheck?: StatusCheck;
 }): Promise<express.Router>;
 
-// @public (undocumented)
+// @public
 export class DatabaseManager {
   forPlugin(pluginId: string): PluginDatabaseManager;
   static fromConfig(
@@ -186,7 +184,7 @@ export type DatabaseManagerOptions = {
   migrations?: PluginDatabaseManager['migrations'];
 };
 
-// @public (undocumented)
+// @public
 export class DockerContainerRunner implements ContainerRunner {
   constructor(options: { dockerClient: Docker });
   // (undocumented)
@@ -204,7 +202,7 @@ export function errorHandler(
   options?: ErrorHandlerOptions,
 ): ErrorRequestHandler;
 
-// @public (undocumented)
+// @public
 export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
   logger?: Logger_2;
@@ -217,13 +215,13 @@ export type FromReadableArrayOptions = Array<{
   path: string;
 }>;
 
-// @public (undocumented)
+// @public
 export function getRootLogger(): winston.Logger;
 
 // @public
 export function getVoidLogger(): winston.Logger;
 
-// @public (undocumented)
+// @public
 export class Git {
   // (undocumented)
   add(options: { dir: string; filepath: string }): Promise<void>;
@@ -233,8 +231,13 @@ export class Git {
     remote: string;
     url: string;
   }): Promise<void>;
-  // (undocumented)
-  clone(options: { url: string; dir: string; ref?: string }): Promise<void>;
+  clone(options: {
+    url: string;
+    dir: string;
+    ref?: string;
+    depth?: number;
+    noCheckout?: boolean;
+  }): Promise<void>;
   // (undocumented)
   commit(options: {
     dir: string;
@@ -248,12 +251,10 @@ export class Git {
       email: string;
     };
   }): Promise<string>;
-  // (undocumented)
   currentBranch(options: {
     dir: string;
     fullName?: boolean;
   }): Promise<string | undefined>;
-  // (undocumented)
   fetch(options: { dir: string; remote?: string }): Promise<void>;
   // (undocumented)
   static fromAuth: (options: {
@@ -263,7 +264,7 @@ export class Git {
   }) => Git;
   // (undocumented)
   init(options: { dir: string; defaultBranch?: string }): Promise<void>;
-  // (undocumented)
+  log(options: { dir: string; ref?: string }): Promise<ReadCommitResult[]>;
   merge(options: {
     dir: string;
     theirs: string;
@@ -279,9 +280,7 @@ export class Git {
   }): Promise<MergeResult>;
   // (undocumented)
   push(options: { dir: string; remote: string }): Promise<PushResult>;
-  // (undocumented)
   readCommit(options: { dir: string; sha: string }): Promise<ReadCommitResult>;
-  // (undocumented)
   resolveRef(options: { dir: string; ref: string }): Promise<string>;
 }
 
@@ -308,7 +307,7 @@ export class GithubUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public (undocumented)
+// @public
 export class GitlabUrlReader implements UrlReader {
   constructor(
     integration: GitLabIntegration,
@@ -338,6 +337,7 @@ export function isDatabaseConflictError(e: unknown): boolean;
 // @public
 export function loadBackendConfig(options: {
   logger: Logger_2;
+  remote?: LoadConfigOptionsRemote;
   argv: string[];
 }): Promise<Config>;
 
@@ -395,7 +395,7 @@ export type ReadTreeResponseDirOptions = {
   targetDir?: string;
 };
 
-// @public (undocumented)
+// @public
 export interface ReadTreeResponseFactory {
   // (undocumented)
   fromReadableArray(
@@ -445,7 +445,7 @@ export type ReadUrlResponse = {
 // @public
 export function requestLoggingHandler(logger?: Logger_2): RequestHandler;
 
-// @public (undocumented)
+// @public
 export type RequestLoggingHandlerFactory = (
   logger?: Logger_2,
 ) => RequestHandler;
@@ -456,7 +456,7 @@ export function resolvePackagePath(name: string, ...paths: string[]): string;
 // @public
 export function resolveSafeChildPath(base: string, path: string): string;
 
-// @public (undocumented)
+// @public
 export type RunContainerOptions = {
   imageName: string;
   command?: string | string[];
@@ -491,7 +491,12 @@ export class ServerTokenManager implements TokenManager {
   // (undocumented)
   authenticate(token: string): Promise<void>;
   // (undocumented)
-  static fromConfig(config: Config): ServerTokenManager;
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger_2;
+    },
+  ): ServerTokenManager;
   // (undocumented)
   getToken(): Promise<{
     token: string;
@@ -500,7 +505,7 @@ export class ServerTokenManager implements TokenManager {
   static noop(): TokenManager;
 }
 
-// @public (undocumented)
+// @public
 export type ServiceBuilder = {
   loadConfig(config: Config): ServiceBuilder;
   setPort(port: number): ServiceBuilder;
@@ -526,7 +531,7 @@ export type ServiceBuilder = {
   start(): Promise<Server>;
 };
 
-// @public (undocumented)
+// @public
 export function setRootLogger(newLogger: winston.Logger): void;
 
 // @public @deprecated
@@ -546,7 +551,7 @@ export class SingleHostDiscovery implements PluginEndpointDiscovery {
   getExternalBaseUrl(pluginId: string): Promise<string>;
 }
 
-// @public (undocumented)
+// @public
 export type StatusCheck = () => Promise<any>;
 
 // @public
@@ -554,7 +559,7 @@ export function statusCheckHandler(
   options?: StatusCheckHandlerOptions,
 ): Promise<RequestHandler>;
 
-// @public (undocumented)
+// @public
 export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
 }
@@ -589,7 +594,7 @@ export class UrlReaders {
   static default(options: UrlReadersOptions): UrlReader;
 }
 
-// @public (undocumented)
+// @public
 export type UrlReadersOptions = {
   config: Config;
   logger: Logger_2;
@@ -604,8 +609,4 @@ export function useHotCleanup(
 
 // @public
 export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
-
-// Warnings were encountered during analysis:
-//
-// src/database/types.d.ts:23:12 - (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
 ```

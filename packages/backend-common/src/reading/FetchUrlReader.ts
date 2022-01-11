@@ -27,7 +27,7 @@ import {
 import path from 'path';
 
 /**
- * A UrlReader that does a plain fetch of the URL.
+ * A {@link UrlReader} that does a plain fetch of the URL.
  *
  * @public
  */

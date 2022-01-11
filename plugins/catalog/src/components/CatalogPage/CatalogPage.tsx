@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,76 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  Content,
-  ContentHeader,
-  CreateButton,
-  PageWithHeader,
-  SupportButton,
-  TableColumn,
-  TableProps,
-} from '@backstage/core-components';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import {
-  EntityLifecyclePicker,
-  EntityListProvider,
-  EntityOwnerPicker,
-  EntityTagPicker,
-  EntityTypePicker,
-  UserListFilterKind,
-  UserListPicker,
-} from '@backstage/plugin-catalog-react';
 import React from 'react';
-import { createComponentRouteRef } from '../../routes';
-import { CatalogTable } from '../CatalogTable';
-import { EntityRow } from '../CatalogTable/types';
+import { useOutlet } from 'react-router';
 import {
-  FilteredEntityLayout,
-  EntityListContainer,
-  FilterContainer,
-} from '../FilteredEntityLayout';
-import { CatalogKindHeader } from '../CatalogKindHeader';
+  DefaultCatalogPage,
+  DefaultCatalogPageProps,
+} from './DefaultCatalogPage';
 
-export type CatalogPageProps = {
-  initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<EntityRow>[];
-  actions?: TableProps<EntityRow>['actions'];
-};
+export const CatalogPage = (props: DefaultCatalogPageProps) => {
+  const outlet = useOutlet();
 
-export const CatalogPage = ({
-  columns,
-  actions,
-  initiallySelectedFilter = 'owned',
-}: CatalogPageProps) => {
-  const orgName =
-    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
-  const createComponentLink = useRouteRef(createComponentRouteRef);
-
-  return (
-    <PageWithHeader title={`${orgName} Catalog`} themeId="home">
-      <EntityListProvider>
-        <Content>
-          <ContentHeader titleComponent={<CatalogKindHeader />}>
-            <CreateButton
-              title="Create Component"
-              to={createComponentLink && createComponentLink()}
-            />
-            <SupportButton>All your software catalog entities</SupportButton>
-          </ContentHeader>
-          <FilteredEntityLayout>
-            <FilterContainer>
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityOwnerPicker />
-              <EntityLifecyclePicker />
-              <EntityTagPicker />
-            </FilterContainer>
-            <EntityListContainer>
-              <CatalogTable columns={columns} actions={actions} />
-            </EntityListContainer>
-          </FilteredEntityLayout>
-        </Content>
-      </EntityListProvider>
-    </PageWithHeader>
-  );
+  return outlet || <DefaultCatalogPage {...props} />;
 };

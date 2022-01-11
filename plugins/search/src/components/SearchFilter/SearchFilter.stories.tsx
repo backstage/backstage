@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,56 +14,45 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Grid, Paper } from '@material-ui/core';
-import { SearchFilter, SearchContext } from '../index';
-import { MemoryRouter } from 'react-router';
+import React, { ComponentType } from 'react';
+import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchFilter } from './SearchFilter';
 
 export default {
   title: 'Plugins/Search/SearchFilter',
   component: SearchFilter,
-};
-
-const defaultValue = {
-  filters: {},
+  decorators: [
+    (Story: ComponentType<{}>) => (
+      <SearchContextProvider>
+        <Grid container direction="row">
+          <Grid item xs={4}>
+            <Story />
+          </Grid>
+        </Grid>
+      </SearchContextProvider>
+    ),
+  ],
 };
 
 export const CheckBoxFilter = () => {
   return (
-    <MemoryRouter>
-      {/* @ts-ignore (defaultValue requires more than what is used here) */}
-      <SearchContext.Provider value={defaultValue}>
-        <Grid container direction="row">
-          <Grid item xs={4}>
-            <Paper style={{ padding: 10 }}>
-              <SearchFilter.Checkbox
-                name="Search Checkbox Filter"
-                values={['value1', 'value2']}
-              />
-            </Paper>
-          </Grid>
-        </Grid>
-      </SearchContext.Provider>
-    </MemoryRouter>
+    <Paper style={{ padding: 10 }}>
+      <SearchFilter.Checkbox
+        name="Search Checkbox Filter"
+        values={['value1', 'value2']}
+      />
+    </Paper>
   );
 };
 
 export const SelectFilter = () => {
   return (
-    <MemoryRouter>
-      {/* @ts-ignore (defaultValue requires more than what is used here) */}
-      <SearchContext.Provider value={defaultValue}>
-        <Grid container direction="row">
-          <Grid item xs={4}>
-            <Paper style={{ padding: 10 }}>
-              <SearchFilter.Select
-                name="Search Select Filter"
-                values={['value1', 'value2']}
-              />
-            </Paper>
-          </Grid>
-        </Grid>
-      </SearchContext.Provider>
-    </MemoryRouter>
+    <Paper style={{ padding: 10 }}>
+      <SearchFilter.Select
+        name="Search Select Filter"
+        values={['value1', 'value2']}
+      />
+    </Paper>
   );
 };

@@ -53,8 +53,10 @@ To add a custom theme to your Backstage app, you pass it as configuration to
 For example, adding the theme that we created in the previous section can be
 done like this:
 
-```ts
-import { createApp } from '@backstage/core-app-api';
+```tsx
+import { createApp } from '@backstage/app-defaults';
+import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 const app = createApp({
   apis: ...,
@@ -63,7 +65,11 @@ const app = createApp({
     id: 'my-theme',
     title: 'My Custom Theme',
     variant: 'light',
-    theme: myTheme,
+    Provider: ({ children }) => (
+      <ThemeProvider theme={myTheme}>
+        <CssBaseline>{children}</CssBaseline>
+      </ThemeProvider>
+    ),
   }]
 })
 ```
@@ -76,60 +82,67 @@ want to use the default themes, they are exported as `lightTheme` and
 ## Example of a custom theme
 
 ```ts
-const themeOptions = createThemeOptions({
+import {
+  createTheme,
+  genPageTheme,
+  lightTheme,
+  shapes,
+} from '@backstage/theme';
+
+const myTheme = createTheme({
   palette: {
     ...lightTheme.palette,
     primary: {
-      main: '#123456',
+      main: '#343b58',
     },
     secondary: {
-      main: '#123456',
+      main: '#565a6e',
     },
     error: {
-      main: '#123456',
+      main: '#8c4351',
     },
     warning: {
-      main: '#123456',
+      main: '#8f5e15',
     },
     info: {
-      main: '#123456',
+      main: '#34548a',
     },
     success: {
-      main: '#123456',
+      main: '#485e30',
     },
     background: {
-      default: '#123456',
-      paper: '#123456',
+      default: '#d5d6db',
+      paper: '#d5d6db',
     },
     banner: {
-      info: '#123456',
-      error: '#123456',
-      text: '#123456',
-      link: '#123456',
+      info: '#34548a',
+      error: '#8c4351',
+      text: '#343b58',
+      link: '#565a6e',
     },
-    errorBackground: '#123456',
-    warningBackground: '#123456',
-    infoBackground: '#123456',
+    errorBackground: '#8c4351',
+    warningBackground: '#8f5e15',
+    infoBackground: '#343b58',
     navigation: {
-      background: '#123456',
-      indicator: '#123456',
-      color: '#123456',
-      selectedColor: '#123456',
+      background: '#343b58',
+      indicator: '#8f5e15',
+      color: '#d5d6db',
+      selectedColor: '#ffffff',
     },
   },
   defaultPageTheme: 'home',
-  fontFamily: 'Comic Sans',
+  fontFamily: 'Comic Sans MS',
   /* below drives the header colors */
   pageTheme: {
-    home: genPageTheme(['#123456', '#123456'], shapes.wave),
-    documentation: genPageTheme(['#123456', '#123456'], shapes.wave2),
-    tool: genPageTheme(['#123456', '#123456'], shapes.round),
-    service: genPageTheme(['#123456', '#123456'], shapes.wave),
-    website: genPageTheme(['#123456', '#123456'], shapes.wave),
-    library: genPageTheme(['#123456', '#123456'], shapes.wave),
-    other: genPageTheme(['#123456', '#123456'], shapes.wave),
-    app: genPageTheme(['#123456', '#123456'], shapes.wave),
-    apis: genPageTheme(['#123456', '#123456'], shapes.wave),
+    home: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    documentation: genPageTheme(['#8c4351', '#343b58'], shapes.wave2),
+    tool: genPageTheme(['#8c4351', '#343b58'], shapes.round),
+    service: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    website: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    library: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    other: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    app: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
+    apis: genPageTheme(['#8c4351', '#343b58'], shapes.wave),
   },
 });
 ```
@@ -162,7 +175,7 @@ wouldn't be enough to alter the `box-shadow` property or to add css rules that
 aren't already defined like a margin. For these cases you should also create an
 override.
 
-```ts
+```tsx
 import { createApp } from '@backstage/core-app-api';
 import { BackstageTheme, lightTheme } from '@backstage/theme';
 /**
@@ -187,6 +200,16 @@ export const createCustomThemeOverrides = (
   };
 };
 
+const customTheme: BackstageTheme = {
+  ...lightTheme,
+  overrides: {
+    // These are the overrides that Backstage applies to `material-ui` components
+    ...lightTheme.overrides,
+    // These are your custom overrides, either to `material-ui` or Backstage components.
+    ...createCustomThemeOverrides(lightTheme),
+  },
+};
+
 const app = createApp({
   apis: ...,
   plugins: ...,
@@ -194,15 +217,11 @@ const app = createApp({
     id: 'my-theme',
     title: 'My Custom Theme',
     variant: 'light',
-    theme: {
-      ...lightTheme,
-      overrides: {
-        // These are the overrides that Backstage applies to `material-ui` components
-        ...lightTheme.overrides,
-        // These are your custom overrides, either to `material-ui` or Backstage components.
-        ...createCustomThemeOverrides(lightTheme),
-      },
-    },
+    Provider: ({ children }) => (
+      <ThemeProvider theme={customTheme}>
+        <CssBaseline>{children}</CssBaseline>
+      </ThemeProvider>
+    ),
   }]
 });
 ```
@@ -232,5 +251,75 @@ import MyCustomLogoFull from './logo/my-company-logo.png';
 
 const LogoFull = () => {
   return <img src={MyCustomLogoFull} />;
+};
+```
+
+## Custom Homepage
+
+In addition to a custom theme, a custom logo, you can also customize the
+homepage of your app. To do that we need to go through a few steps.
+
+### Setting up the Home Page
+
+1. Create a Home Page Component that will be used for composition.
+
+`packages/app/src/components/home/HomePage.tsx`
+
+```tsx
+import React from 'react';
+
+export const HomePage = () => {
+  return {
+    /* TODO: Compose a Home Page here */
+  };
+};
+```
+
+2. Add a route where the homepage will live, presumably `/`.
+
+`packages/app/src/App.tsx`
+
+```tsx
+import { HomepageCompositionRoot } from '@backstage/plugin-home';
+import { HomePage } from './components/home/HomePage';
+
+// ...
+<Route path="/" element={<HomepageCompositionRoot />}>
+  <HomePage />
+</Route>;
+// ...
+```
+
+### Composing your Home Page
+
+Composing a Home Page is no different from creating a regular React Component,
+i.e. the App Integrator is free to include whatever content they like. However,
+there are components developed with the Home Page in mind. If you are looking
+for components to use when composing your homepage, you can take a look at the
+[collection of Homepage components](https://backstage.io/?path=/story/plugins-home-components)
+in storybook. If you don't find a component that suits your needs but want to
+contribute, check the
+[Contributing documentation](https://github.com/backstage/backstage/blob/master/plugins/home/README.md#contributing).
+
+!!! tip If you want to use one of the available homepage templates you can find
+the
+[templates](https://backstage.io/storybook/?path=/story/plugins-home-templates)
+in the storybook under the "Home" plugin. And if you would like to contribute a
+template, please see the
+[Contributing documentation](https://github.com/backstage/backstage/blob/master/plugins/home/README.md#contributing)
+
+```tsx
+import React from 'react';
+import Grid from '@material-ui/core/Grid';
+import { HomePageCompanyLogo } from '@backstage/plugin-home';
+
+export const HomePage = () => {
+  return (
+    <Grid container spacing={3}>
+      <Grid item xs={12} md={4}>
+        <HomePageCompanyLogo className={container} />
+      </Grid>
+    </Grid>
+  );
 };
 ```

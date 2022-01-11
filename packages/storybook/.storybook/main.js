@@ -8,6 +8,7 @@ const BACKSTAGE_CORE_STORIES = [
   'packages/core-components',
   'plugins/org',
   'plugins/search',
+  'plugins/home',
 ];
 
 module.exports = ({ args }) => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { EntityName } from '@backstage/catalog-model';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { techdocsStorageApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';

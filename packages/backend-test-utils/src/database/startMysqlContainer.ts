@@ -15,7 +15,6 @@
  */
 
 import createConnection, { Knex } from 'knex';
-import { GenericContainer } from 'testcontainers';
 import { v4 as uuid } from 'uuid';
 
 async function waitForMysqlReady(
@@ -49,6 +48,9 @@ async function waitForMysqlReady(
 export async function startMysqlContainer(image: string) {
   const user = 'root';
   const password = uuid();
+
+  // Lazy-load to avoid side-effect of importing testcontainers
+  const { GenericContainer } = await import('testcontainers');
 
   const container = await new GenericContainer(image)
     .withExposedPorts(3306)

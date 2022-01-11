@@ -18,7 +18,7 @@ import React from 'react';
 import { List, ListSubheader } from '@material-ui/core';
 import { EscalationUsersEmptyState } from './EscalationUsersEmptyState';
 import { EscalationUser } from './EscalationUser';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { pagerDutyApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 

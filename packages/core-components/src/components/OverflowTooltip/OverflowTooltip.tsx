@@ -18,6 +18,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
 import React, { useState } from 'react';
 import TextTruncate, { TextTruncateProps } from 'react-text-truncate';
+import useMountedState from 'react-use/lib/useMountedState';
 
 type Props = {
   text: TextTruncateProps['text'];
@@ -40,10 +41,13 @@ const useStyles = makeStyles(
 
 export function OverflowTooltip(props: Props) {
   const [hover, setHover] = useState(false);
+  const isMounted = useMountedState();
   const classes = useStyles();
 
   const handleToggled = (truncated: boolean) => {
-    setHover(truncated);
+    if (isMounted()) {
+      setHover(truncated);
+    }
   };
 
   return (

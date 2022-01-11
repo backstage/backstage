@@ -1,5 +1,22 @@
 # @backstage/plugin-app-backend
 
+## 0.3.21
+
+### Patch Changes
+
+- 9d9cfc1b8a: Set `X-Frame-Options: deny` rather than the default `sameorigin` for all content served by the `app-backend`.`
+- Updated dependencies
+  - @backstage/backend-common@0.10.1
+  - @backstage/config-loader@0.9.1
+
+## 0.3.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/config-loader@0.9.0
+
 ## 0.3.19
 
 ### Patch Changes

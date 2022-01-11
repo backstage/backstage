@@ -18,6 +18,8 @@ import { SearchEntry } from 'ldapjs';
 
 /**
  * An LDAP Vendor handles unique nuances between different vendors.
+ *
+ * @public
  */
 export type LdapVendor = {
   /**
@@ -31,8 +33,8 @@ export type LdapVendor = {
   /**
    * Decode ldap entry values for a given attribute name to their string representation.
    *
-   * @param entry The ldap entry
-   * @param name The attribute to decode
+   * @param entry - The ldap entry
+   * @param name - The attribute to decode
    */
   decodeStringAttribute: (entry: SearchEntry, name: string) => string[];
 };

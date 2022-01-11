@@ -19,7 +19,7 @@ import { act, fireEvent } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { CopyTextButton } from './CopyTextButton';
 import { errorApiRef } from '@backstage/core-plugin-api';
-import { useCopyToClipboard } from 'react-use';
+import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 
 jest.mock('popper.js', () => {
   const PopperJS = jest.requireActual('popper.js');
@@ -32,14 +32,12 @@ jest.mock('popper.js', () => {
   };
 });
 
-jest.mock('react-use', () => {
-  const original = jest.requireActual('react-use');
+jest.mock('react-use/lib/useCopyToClipboard', () => {
+  const original = jest.requireActual('react-use/lib/useCopyToClipboard');
 
   return {
-    ...original,
-    useCopyToClipboard: jest
-      .fn()
-      .mockImplementation(original.useCopyToClipboard),
+    __esModule: true,
+    default: jest.fn().mockImplementation(original.default),
   };
 });
 

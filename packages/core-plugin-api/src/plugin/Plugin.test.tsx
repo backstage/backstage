@@ -28,62 +28,7 @@ describe('Plugin Feature Flag', () => {
     expect(
       createPlugin({
         id: 'test',
-        register({ featureFlags }) {
-          featureFlags.register('blob');
-        },
       }).getFeatureFlags(),
-    ).toEqual([{ name: 'blob' }]);
-
-    expect(
-      createPlugin({
-        id: 'test',
-        register({ featureFlags }) {
-          featureFlags.register('blob');
-        },
-        featureFlags: [{ name: 'test' }],
-      }).getFeatureFlags(),
-    ).toEqual([{ name: 'test' }, { name: 'blob' }]);
-
-    expect(
-      createPlugin({
-        id: 'test',
-      }).getFeatureFlags(),
-    ).toEqual([]);
-
-    /* deprecated tests */
-
-    expect(
-      createPlugin({
-        id: 'test',
-        featureFlags: [{ name: 'test' }],
-      }).output(),
-    ).toEqual([{ name: 'test', type: 'feature-flag' }]);
-
-    expect(
-      createPlugin({
-        id: 'test',
-        register({ featureFlags }) {
-          featureFlags.register('blob');
-        },
-      }).output(),
-    ).toEqual([{ name: 'blob', type: 'feature-flag' }]);
-    expect(
-      createPlugin({
-        id: 'test',
-        register({ featureFlags }) {
-          featureFlags.register('blob');
-        },
-        featureFlags: [{ name: 'test' }],
-      }).output(),
-    ).toEqual([
-      { name: 'test', type: 'feature-flag' },
-      { name: 'blob', type: 'feature-flag' },
-    ]);
-
-    expect(
-      createPlugin({
-        id: 'test',
-      }).output(),
     ).toEqual([]);
   });
 });

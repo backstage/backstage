@@ -175,6 +175,24 @@ describe('CatalogClient', () => {
         { apiVersion: '2' },
       ]);
     });
+
+    it('builds paging parameters properly', async () => {
+      expect.assertions(2);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          expect(req.url.search).toBe('?offset=1&limit=2&after=%3D');
+          return res(ctx.json([]));
+        }),
+      );
+
+      const response = await client.getEntities(
+        { offset: 1, limit: 2, after: '=' },
+        { token },
+      );
+
+      expect(response.items).toEqual([]);
+    });
   });
 
   describe('getLocationById', () => {

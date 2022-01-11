@@ -62,7 +62,7 @@ export type CostInsightsApi = {
    *
    * This method should be removed once the Backstage identity plugin provides the same concept.
    *
-   * @param userId The login id for the current user
+   * @param userId - The login id for the current user
    */
   getUserGroups(userId: string): Promise<Group[]>;
 
@@ -71,7 +71,7 @@ export type CostInsightsApi = {
    * similar concept in billing accounts). These act as filters for the displayed costs, users can
    * choose whether they see all costs for a group, or those from a particular owned project.
    *
-   * @param group The group id from getUserGroups or query parameters
+   * @param group - The group id from getUserGroups or query parameters
    */
   getGroupProjects(group: string): Promise<Project[]>;
 
@@ -86,8 +86,8 @@ export type CostInsightsApi = {
    * The rate of change in this comparison allows teams to reason about their cost growth (or
    * reduction) and compare it to metrics important to the business.
    *
-   * @param group The group id from getUserGroups or query parameters
-   * @param intervals An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
+   * @param group - The group id from getUserGroups or query parameters
+   * @param intervals - An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
   getGroupDailyCost(group: string, intervals: string): Promise<Cost>;
@@ -104,8 +104,8 @@ export type CostInsightsApi = {
    * The rate of change in this comparison allows teams to reason about the project's cost growth
    * (or reduction) and compare it to metrics important to the business.
    *
-   * @param project The project id from getGroupProjects or query parameters
-   * @param intervals An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
+   * @param project - The project id from getGroupProjects or query parameters
+   * @param intervals - An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
   getProjectDailyCost(project: string, intervals: string): Promise<Cost>;
@@ -115,8 +115,8 @@ export type CostInsightsApi = {
    * can see metrics important to their business in comparison to the growth
    * (or reduction) of a project or group's daily costs.
    *
-   * @param metric A metric from the cost-insights configuration in app-config.yaml.
-   * @param intervals An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
+   * @param metric - A metric from the cost-insights configuration in app-config.yaml.
+   * @param intervals - An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
   getDailyMetricData(metric: string, intervals: string): Promise<MetricData>;
@@ -133,7 +133,7 @@ export type CostInsightsApi = {
    * The time period is supplied as a Duration rather than intervals, since this is always expected
    * to return data for two bucketed time period (e.g. month vs month, or quarter vs quarter).
    *
-   * @param options Options to use when fetching insights for a particular cloud product and
+   * @param options - Options to use when fetching insights for a particular cloud product and
    *                interval time frame.
    */
   getProductInsights(options: ProductInsightsOptions): Promise<Entity>;
@@ -148,5 +148,4 @@ export type CostInsightsApi = {
 
 export const costInsightsApiRef = createApiRef<CostInsightsApi>({
   id: 'plugin.costinsights.service',
-  description: 'Provides cost data and alerts for the cost-insights plugin',
 });

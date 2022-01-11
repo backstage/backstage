@@ -40,10 +40,10 @@ type Props = {
 /**
  * A form that lets a user select one of a list of locations to import
  *
- * @param analyzeResult the result of the analysis
- * @param prepareResult the selectected locations from a previous step
- * @param onPrepare called after the selection
- * @param onGoBack called to go back to the previous step
+ * @param analyzeResult - the result of the analysis
+ * @param prepareResult - the selectected locations from a previous step
+ * @param onPrepare - called after the selection
+ * @param onGoBack - called to go back to the previous step
  */
 export const StepPrepareSelectLocations = ({
   analyzeResult,

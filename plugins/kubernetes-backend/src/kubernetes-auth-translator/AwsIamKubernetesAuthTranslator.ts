@@ -41,9 +41,7 @@ export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
   validCredentials(creds: SigningCreds): boolean {
-    return (creds?.accessKeyId &&
-      creds?.secretAccessKey &&
-      creds?.sessionToken) as unknown as boolean;
+    return (creds?.accessKeyId && creds?.secretAccessKey) as unknown as boolean;
   }
 
   awsGetCredentials = async (): Promise<Credentials> => {

@@ -30,7 +30,7 @@ import {
 } from '@backstage/core-plugin-api';
 import jwtDecoder from 'jwt-decode';
 import { useMemo } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../api';
 import { getEntityRelations } from '../utils/getEntityRelations';
 

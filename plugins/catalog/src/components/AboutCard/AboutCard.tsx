@@ -127,8 +127,10 @@ export function AboutCard({ variant }: AboutCardProps) {
     cardContentClass = classes.fullHeightCardContent;
   }
 
-  const isUrl =
-    entity.metadata.annotations?.[LOCATION_ANNOTATION]?.startsWith('url:');
+  const entityLocation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+  // Limiting the ability to manually refresh to the less expensive locations
+  const allowRefresh =
+    entityLocation?.startsWith('url:') || entityLocation?.startsWith('file:');
   const refreshEntity = useCallback(async () => {
     await catalogApi.refreshEntity(stringifyEntityRef(entity));
     alertApi.post({ message: 'Refresh scheduled', severity: 'info' });
@@ -140,7 +142,7 @@ export function AboutCard({ variant }: AboutCardProps) {
         title="About"
         action={
           <>
-            {isUrl && (
+            {allowRefresh && (
               <IconButton
                 aria-label="Refresh"
                 title="Schedule entity refresh"

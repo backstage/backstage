@@ -14,13 +14,46 @@
  * limitations under the License.
  */
 
-import { useApi, identityApiRef } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  identityApiRef,
+  ProfileInfo,
+  useApi,
+} from '@backstage/core-plugin-api';
+import { useEffect } from 'react';
+import useAsync from 'react-use/lib/useAsync';
 
 export const useUserProfile = () => {
   const identityApi = useApi(identityApiRef);
-  const userId = identityApi.getUserId();
-  const profile = identityApi.getProfile();
-  const displayName = profile.displayName ?? userId;
+  const alertApi = useApi(alertApiRef);
 
-  return { profile, displayName };
+  const { value, loading, error } = useAsync(async () => {
+    return {
+      profile: await identityApi.getProfileInfo(),
+      identity: await identityApi.getBackstageIdentity(),
+    };
+  }, []);
+
+  useEffect(() => {
+    if (error) {
+      alertApi.post({
+        message: `Failed to load user identity: ${error}`,
+        severity: 'error',
+      });
+    }
+  }, [error, alertApi]);
+
+  if (loading || error) {
+    return {
+      profile: {} as ProfileInfo,
+      displayName: '',
+      loading,
+    };
+  }
+
+  return {
+    profile: value!.profile,
+    displayName: value!.profile.displayName ?? value!.identity.userEntityRef,
+    loading,
+  };
 };

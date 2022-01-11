@@ -75,8 +75,8 @@ export type Connection<T> = {
  *
  * Note that the users will not have their memberships filled in.
  *
- * @param client An octokit graphql client
- * @param org The slug of the org to read
+ * @param client - An octokit graphql client
+ * @param org - The slug of the org to read
  */
 export async function getOrganizationUsers(
   client: typeof graphql,
@@ -143,8 +143,8 @@ export async function getOrganizationUsers(
  *
  * Note that the teams will not have any relations apart from parent filled in.
  *
- * @param client An octokit graphql client
- * @param org The slug of the org to read
+ * @param client - An octokit graphql client
+ * @param org - The slug of the org to read
  */
 export async function getOrganizationTeams(
   client: typeof graphql,
@@ -285,9 +285,9 @@ export async function getOrganizationRepositories(
  *
  * Note that the users will not have their memberships filled in.
  *
- * @param client An octokit graphql client
- * @param org The slug of the org to read
- * @param teamSlug The slug of the team to read
+ * @param client - An octokit graphql client
+ * @param org - The slug of the org to read
+ * @param teamSlug - The slug of the team to read
  */
 export async function getTeamMembers(
   client: typeof graphql,
@@ -326,13 +326,13 @@ export async function getTeamMembers(
  *
  * Requires that the query accepts a $cursor variable.
  *
- * @param client The octokit client
- * @param query The query to execute
- * @param connection A function that, given the response, picks out the actual
+ * @param client - The octokit client
+ * @param query - The query to execute
+ * @param connection - A function that, given the response, picks out the actual
  *                   Connection object that's being iterated
- * @param mapper A function that, given one of the nodes in the Connection,
+ * @param mapper - A function that, given one of the nodes in the Connection,
  *               returns the model mapped form of it
- * @param variables The variable values that the query needs, minus the cursor
+ * @param variables - The variable values that the query needs, minus the cursor
  */
 export async function queryWithPaging<
   GraphqlType,

@@ -27,8 +27,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const azureDevOpsApiRef = createApiRef<AzureDevOpsApi>({
   id: 'plugin.azure-devops.service',
-  description:
-    'Used by the Azure DevOps plugin to make requests to accompanying backend',
 });
 
 export interface AzureDevOpsApi {

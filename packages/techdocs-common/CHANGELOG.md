@@ -1,5 +1,21 @@
 # @backstage/techdocs-common
 
+## 0.11.2
+
+### Patch Changes
+
+- c2c8768771: Bump `@azure/identity` from `^1.5.0` to `^2.0.1`.
+- Updated dependencies
+  - @backstage/backend-common@0.10.1
+  - @backstage/integration@0.7.0
+
+## 0.11.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+
 ## 0.11.0
 
 ### Minor Changes

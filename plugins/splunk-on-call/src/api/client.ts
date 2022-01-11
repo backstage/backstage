@@ -41,7 +41,6 @@ export class UnauthorizedError extends Error {}
 
 export const splunkOnCallApiRef = createApiRef<SplunkOnCallApi>({
   id: 'plugin.splunk-on-call.api',
-  description: 'Used to fetch data from Splunk On-Call API',
 });
 
 export class SplunkOnCallClient implements SplunkOnCallApi {

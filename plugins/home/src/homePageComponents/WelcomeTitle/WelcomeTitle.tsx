@@ -13,20 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  identityApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 import { Tooltip } from '@material-ui/core';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import useAsync from 'react-use/lib/useAsync';
 import { getTimeBasedGreeting } from './timeUtil';
 
 export const WelcomeTitle = () => {
   const identityApi = useApi(identityApiRef);
-  const profile = identityApi.getProfile();
-  const userId = identityApi.getUserId();
+  const alertApi = useApi(alertApiRef);
   const greeting = useMemo(() => getTimeBasedGreeting(), []);
+
+  const { value: profile, error } = useAsync(() =>
+    identityApi.getProfileInfo(),
+  );
+
+  useEffect(() => {
+    if (error) {
+      alertApi.post({
+        message: `Failed to load user identity: ${error}`,
+        severity: 'error',
+      });
+    }
+  }, [error, alertApi]);
 
   return (
     <Tooltip title={greeting.language}>
-      <span>{`${greeting.greeting}, ${profile.displayName || userId}!`}</span>
+      <span>{`${greeting.greeting}${
+        profile?.displayName ? `, ${profile?.displayName}` : ''
+      }!`}</span>
     </Tooltip>
   );
 };

@@ -1,5 +1,22 @@
 # @backstage/config-loader
 
+## 0.9.1
+
+### Patch Changes
+
+- 84663d59a3: Bump `typescript-json-schema` from `^0.51.0` to `^0.52.0`.
+
+## 0.9.0
+
+### Minor Changes
+
+- f6722d2458: Removed deprecated option `env` from `LoadConfigOptions` and associated tests
+- 67d6cb3c7e: Removed deprecated option `configPaths` as it has been superseded by `configTargets`
+
+### Patch Changes
+
+- 1e7070443d: In case remote.reloadIntervalSeconds is passed, it must be a valid positive value
+
 ## 0.8.1
 
 ### Patch Changes

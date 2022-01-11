@@ -18,7 +18,7 @@ import React, { useEffect } from 'react';
 import { List, ListSubheader } from '@material-ui/core';
 import { IncidentListItem } from './IncidentListItem';
 import { IncidentsEmptyState } from './IncidentEmptyState';
-import { useAsyncFn } from 'react-use';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { pagerDutyApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 

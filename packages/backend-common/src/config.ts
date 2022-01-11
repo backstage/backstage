@@ -23,9 +23,11 @@ import {
   loadConfig,
   ConfigSchema,
   ConfigTarget,
+  LoadConfigOptionsRemote,
 } from '@backstage/config-loader';
 import { AppConfig, Config, ConfigReader } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
+import { getPackages } from '@manypkg/get-packages';
 
 import { isValidUrl } from './urls';
 
@@ -178,6 +180,7 @@ let currentCancelFunc: () => void;
 export async function loadBackendConfig(options: {
   logger: Logger;
   // process.argv or any other overrides
+  remote?: LoadConfigOptionsRemote;
   argv: string[];
 }): Promise<Config> {
   const args = parseArgs(options.argv);
@@ -192,18 +195,16 @@ export async function loadBackendConfig(options: {
   // TODO(hhogg): This is fetching _all_ of the packages of the monorepo
   // in order to find the secrets for redactions, however we only care about
   // the backend ones, we need to find a way to exclude the frontend packages.
-  const { Project } = require('@lerna/project');
-  const project = new Project(paths.targetDir);
-  const packages = await project.getPackages();
+  const { packages } = await getPackages(paths.targetDir);
   const schema = await loadConfigSchema({
-    dependencies: packages.map((p: any) => p.name),
+    dependencies: packages.map(p => p.packageJson.name),
   });
 
   const config = new ObservableConfigProxy(options.logger);
   const { appConfigs } = await loadConfig({
     configRoot: paths.targetRoot,
-    configPaths: [],
     configTargets: configTargets,
+    remote: options.remote,
     watch: {
       onChange(newConfigs) {
         options.logger.info(

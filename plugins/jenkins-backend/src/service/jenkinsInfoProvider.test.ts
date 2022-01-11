@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -210,6 +210,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     expect(mockCatalog.getEntityByName).toBeCalledWith(entityRef);
     expect(info).toStrictEqual({
       baseUrl: 'https://jenkins.example.com',
+      crumbIssuer: undefined,
       headers: {
         Authorization:
           'Basic YmFja3N0YWdlIC0gYm90OjEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNlZGYwMTI=',

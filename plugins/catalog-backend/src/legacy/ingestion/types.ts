@@ -49,7 +49,7 @@ export type LocationReader = {
   /**
    * Reads the contents of a location.
    *
-   * @param location The location to read
+   * @param location - The location to read
    * @throws An error if the location was handled by this reader, but could not
    *         be read
    */

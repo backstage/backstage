@@ -43,6 +43,14 @@ import {
 import { UserListFilterKind } from '../../types';
 import { reduceEntityFilters } from '../../utils';
 
+/** @public */
+export type CatalogReactUserListPickerClassKey =
+  | 'root'
+  | 'title'
+  | 'listIcon'
+  | 'menuItem'
+  | 'groupWrapper';
+
 const useStyles = makeStyles<Theme>(
   theme => ({
     root: {
@@ -122,26 +130,26 @@ export const UserListPicker = ({
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
+  const { filters, updateFilters, backendEntities, queryParameters } =
+    useEntityListProvider();
 
   // Remove group items that aren't in availableFilters and exclude
   // any now-empty groups.
+  const userAndGroupFilterIds = ['starred', 'all'];
   const filterGroups = getFilterGroups(orgName)
     .map(filterGroup => ({
       ...filterGroup,
-      items: filterGroup.items.filter(
-        ({ id }) => !availableFilters || availableFilters.includes(id),
+      items: filterGroup.items.filter(({ id }) =>
+        // TODO: avoid hardcoding kinds here
+        ['group', 'user'].some(kind => kind === queryParameters.kind)
+          ? userAndGroupFilterIds.includes(id)
+          : !availableFilters || availableFilters.includes(id),
       ),
     }))
     .filter(({ items }) => !!items.length);
 
-  const { filters, updateFilters, backendEntities, queryParameters } =
-    useEntityListProvider();
-
   const { isStarredEntity } = useStarredEntities();
   const { isOwnedEntity } = useEntityOwnership();
-  const [selectedUserFilter, setSelectedUserFilter] = useState(
-    [queryParameters.user].flat()[0] ?? initialFilter,
-  );
 
   // Static filters; used for generating counts of potentially unselected kinds
   const ownedFilter = useMemo(
@@ -151,6 +159,19 @@ export const UserListPicker = ({
   const starredFilter = useMemo(
     () => new UserListFilter('starred', isOwnedEntity, isStarredEntity),
     [isOwnedEntity, isStarredEntity],
+  );
+
+  // To show proper counts for each section, apply all other frontend filters _except_ the user
+  // filter that's controlled by this picker.
+  const [entitiesWithoutUserFilter, setEntitiesWithoutUserFilter] =
+    useState(backendEntities);
+  const totalOwnedUserEntities = entitiesWithoutUserFilter.filter(entity =>
+    ownedFilter.filterEntity(entity),
+  ).length;
+  const [selectedUserFilter, setSelectedUserFilter] = useState(
+    totalOwnedUserEntities > 0
+      ? [queryParameters.user].flat()[0] ?? initialFilter
+      : 'all',
   );
 
   useEffect(() => {
@@ -165,10 +186,6 @@ export const UserListPicker = ({
     });
   }, [selectedUserFilter, isOwnedEntity, isStarredEntity, updateFilters]);
 
-  // To show proper counts for each section, apply all other frontend filters _except_ the user
-  // filter that's controlled by this picker.
-  const [entitiesWithoutUserFilter, setEntitiesWithoutUserFilter] =
-    useState(backendEntities);
   useEffect(() => {
     const filterFn = reduceEntityFilters(
       compact(Object.values({ ...filters, user: undefined })),
@@ -179,9 +196,7 @@ export const UserListPicker = ({
   function getFilterCount(id: UserListFilterKind) {
     switch (id) {
       case 'owned':
-        return entitiesWithoutUserFilter.filter(entity =>
-          ownedFilter.filterEntity(entity),
-        ).length;
+        return totalOwnedUserEntities;
       case 'starred':
         return entitiesWithoutUserFilter.filter(entity =>
           starredFilter.filterEntity(entity),

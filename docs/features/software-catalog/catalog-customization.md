@@ -10,8 +10,7 @@ and find catalog entities. This is already set up by default by
 `@backstage/create-app`.
 
 If you want to change the default index page - such as to add a custom filter to
-the catalog - you can replace the routing in `App.tsx` to point to your own
-`CatalogIndexPage`.
+the catalog - you can create your own `CatalogIndexPage`.
 
 > Note: The catalog index page is designed to have a minimal code footprint to
 > support easy customization, but creating a copy does introduce a possibility
@@ -21,23 +20,25 @@ the catalog - you can replace the routing in `App.tsx` to point to your own
 
 For example, suppose that I want to allow filtering by a custom annotation added
 to entities, `company.com/security-tier`. To start, I'll copy the code for the
-default catalog page and create a component in a
-[new plugin](../../plugins/create-a-plugin.md):
+default catalog page and create a component.
 
 ```tsx
 // imports, etc omitted for brevity. for full source see:
-// https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogPage/CatalogPage.tsx
+// https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogPage/DefaultCatalogPage.tsx
 export const CustomCatalogPage = ({
   columns,
   actions,
   initiallySelectedFilter = 'owned',
 }: CatalogPageProps) => {
+  const createComponentLink = useRouteRef(
+    catalogPlugin.externalRoutes.createComponent,
+  );
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <EntityListProvider>
         <Content>
           <ContentHeader titleComponent={<CatalogKindHeader />}>
-            <CreateButton title="Create Component" to={link} />
+            <CreateButton title="Create Component" to={createComponentLink()} />
             <SupportButton>All your software catalog entities</SupportButton>
           </ContentHeader>
           <FilteredEntityLayout>
@@ -167,21 +168,7 @@ export const CustomCatalogPage = ({
 };
 ```
 
-This page itself can be exported as a routable extension in the plugin:
-
-```ts
-export const CustomCatalogIndexPage = myPlugin.provide(
-  createRoutableExtension({
-    name: 'CustomCatalogIndexPage',
-    component: () =>
-      import('./components/CustomCatalogPage').then(m => m.CustomCatalogPage),
-    mountPoint: catalogRouteRef,
-  }),
-);
-```
-
-Finally, we can replace the catalog route in the Backstage application with our
-new `CustomCatalogIndexPage`.
+Finally, we can apply our new `CustomCatalogPage`.
 
 ```diff
 # packages/app/src/App.tsx
@@ -189,7 +176,9 @@ const routes = (
   <FlatRoutes>
     <Navigate key="/" to="catalog" />
 -    <Route path="/catalog" element={<CatalogIndexPage />} />
-+    <Route path="/catalog" element={<CustomCatalogIndexPage />} />
++    <Route path="/catalog" element={<CatalogIndexPage />}>
++      <CustomCatalogPage />
++    </Route>
 ```
 
 The same method can be used to customize the _default_ filters with a different

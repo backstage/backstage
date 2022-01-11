@@ -30,8 +30,8 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.9.14",
-    "@backstage/cli": "^0.10.2",
+    "@backstage/backend-common": "^0.10.0",
+    "@backstage/cli": "^0.10.3",
     "@elastic/elasticsearch-mock": "^0.3.0"
   },
   "files": [

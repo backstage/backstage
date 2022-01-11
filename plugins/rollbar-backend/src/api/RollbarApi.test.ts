@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { getRequestHeaders } from './RollbarApi';
+import { getRequestHeaders, RollbarApi } from './RollbarApi';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { getVoidLogger } from '@backstage/backend-common';
+import { RollbarProject } from './types';
 
 describe('RollbarApi', () => {
   describe('getRequestHeaders', () => {
@@ -24,6 +29,33 @@ describe('RollbarApi', () => {
           'X-Rollbar-Access-Token': `testtoken`,
         },
       });
+    });
+  });
+
+  describe('getAllProjects', () => {
+    const server = setupServer();
+    setupRequestMockHandlers(server);
+
+    const mockBaseUrl = 'https://api.rollbar.com/api/1';
+
+    const mockProjects: RollbarProject[] = [
+      { id: 123, name: 'abc', accountId: 1, status: 'enabled' },
+      { id: 456, name: 'xyz', accountId: 1, status: 'enabled' },
+    ];
+
+    const setupHandlers = () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/projects`, (_, res, ctx) => {
+          return res(ctx.json({ result: mockProjects }));
+        }),
+      );
+    };
+
+    it('should return all projects with a name attribute', async () => {
+      setupHandlers();
+      const api = new RollbarApi('my-access-token', getVoidLogger());
+      const projects = await api.getAllProjects();
+      expect(projects).toEqual(mockProjects);
     });
   });
 });

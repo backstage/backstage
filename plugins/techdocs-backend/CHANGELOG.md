@@ -1,5 +1,25 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.12.2
+
+### Patch Changes
+
+- da676a49ab: Add support for API auth in DefaultTechDocsCollator
+- Updated dependencies
+  - @backstage/techdocs-common@0.11.2
+  - @backstage/backend-common@0.10.1
+  - @backstage/integration@0.7.0
+
+## 0.12.1
+
+### Patch Changes
+
+- 8c25c3ea5b: Fixed a bug preventing cache from being enabled in TechDocs "recommended" deployment mode.
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/catalog-client@0.5.3
+  - @backstage/techdocs-common@0.11.1
+
 ## 0.12.0
 
 ### Minor Changes

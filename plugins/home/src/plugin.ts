@@ -19,6 +19,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from './extensions';
+import { ToolkitContentProps } from './homePageComponents';
 
 import { rootRouteRef } from './routes';
 
@@ -79,10 +80,38 @@ export const WelcomeTitle = homePlugin.provide(
   }),
 );
 
+/**
+ * A component to display a company logo for the user.
+ *
+ * @public
+ */
+export const HomePageCompanyLogo = homePlugin.provide(
+  createComponentExtension({
+    name: 'CompanyLogo',
+    component: {
+      lazy: () =>
+        import('./homePageComponents/CompanyLogo').then(m => m.CompanyLogo),
+    },
+  }),
+);
+
 export const HomePageRandomJoke = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
     name: 'HomePageRandomJoke',
     title: 'Random Joke',
     components: () => import('./homePageComponents/RandomJoke'),
+  }),
+);
+
+/**
+ * A component to display a list of tools for the user.
+ *
+ * @public
+ */
+export const HomePageToolkit = homePlugin.provide(
+  createCardExtension<ToolkitContentProps>({
+    name: 'HomePageToolkit',
+    title: 'Toolkit',
+    components: () => import('./homePageComponents/Toolkit'),
   }),
 );
