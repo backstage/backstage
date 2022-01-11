@@ -413,6 +413,20 @@ data: {"updated":true}
   });
 
   describe('GET /static/docs', () => {
+    it('should delegate to the publisher handler', async () => {
+      const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
+      publisher.docsRouter.mockReturnValue(docsRouter);
+
+      const app = await createApp(outOfTheBoxOptions);
+
+      const response = await request(app)
+        .get('/static/docs/default/component/test')
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(docsRouter).toBeCalled();
+    });
+
     it('should return assets from cache', async () => {
       const app = await createApp(outOfTheBoxOptions);
 
@@ -426,6 +440,25 @@ data: {"updated":true}
 
       expect(response.status).toBe(200);
       expect(MockTechDocsCache.get).toBeCalled();
+    });
+
+    it('should check entity access when permissions are enabled', async () => {
+      MockedConfigReader.prototype.getOptionalBoolean.mockImplementation(key =>
+        key === 'permission.enabled' ? true : undefined,
+      );
+      const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
+      publisher.docsRouter.mockReturnValue(docsRouter);
+
+      const app = await createApp(outOfTheBoxOptions);
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
+      const response = await request(app)
+        .get('/static/docs/default/component/test')
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(MockCachedEntityLoader.prototype.load).toBeCalled();
     });
 
     it('should not return assets without corresponding entity access', async () => {
