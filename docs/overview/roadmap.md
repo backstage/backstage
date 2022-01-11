@@ -148,7 +148,7 @@ Read more about the completed (and released) features for reference.
 - [Plugin marketplace](https://backstage.io/plugins)
 - [Improved and move documentation to backstage.io](https://backstage.io/docs/overview/what-is-backstage)
 - [Backstage Software Catalog (alpha)](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)
-- [Backstage Software Templates (alpha)](https://backstage.io/blog/2020/08/05/announcing-backstage-software-templates)
+- [Backstage Software Templates (beta)](https://backstage.io/blog/2021/07/26/software-templates-are-now-in-beta)
 - [Make it possible to add custom auth providers](https://backstage.io/blog/2020/07/01/how-to-enable-authentication-in-backstage-using-passport)
 - [TechDocs v0](https://github.com/backstage/backstage/milestone/15)
 - CI plugins: CircleCI, Jenkins, GitHub Actions and TravisCI
