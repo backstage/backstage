@@ -301,11 +301,10 @@ in storybook. If you don't find a component that suits your needs but want to
 contribute, check the
 [Contributing documentation](https://github.com/backstage/backstage/blob/master/plugins/home/README.md#contributing).
 
-> tip If you want to use one of the available homepage templates you can find
-> the
+> If you want to use one of the available homepage templates you can find the
 > [templates](https://backstage.io/storybook/?path=/story/plugins-home-templates)
-> in the storybook under the "Home" plugin. And if you would like to contribute a
-> template, please see the
+> in the storybook under the "Home" plugin. And if you would like to contribute
+> a template, please see the
 > [Contributing documentation](https://github.com/backstage/backstage/blob/master/plugins/home/README.md#contributing)
 
 ```tsx
