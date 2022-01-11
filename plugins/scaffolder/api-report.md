@@ -21,12 +21,12 @@ import { IconButton } from '@material-ui/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
 
 // Warning: (ae-missing-release-tag) "createScaffolderFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -80,7 +80,16 @@ export const EntityPicker: ({
 // @public (undocumented)
 export const EntityPickerFieldExtension: () => null;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// @public
+export const EntityTagsPicker: ({
+  formData,
+  onChange,
+  uiSchema,
+}: FieldProps<string[]>) => JSX.Element;
+
+// @public
+export const EntityTagsPickerFieldExtension: () => null;
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "FavouriteTemplate" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -95,6 +104,24 @@ export type FieldExtensionOptions<T = any> = {
   component: (props: FieldProps<T>) => JSX.Element | null;
   validation?: CustomFieldValidator<T>;
 };
+
+// Warning: (ae-missing-release-tag) "OwnedEntityPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const OwnedEntityPicker: ({
+  onChange,
+  schema: { title, description },
+  required,
+  uiSchema,
+  rawErrors,
+  formData,
+  idSchema,
+}: FieldProps<string>) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "OwnedEntityPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const OwnedEntityPickerFieldExtension: () => null;
 
 // Warning: (ae-missing-release-tag) "OwnerPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -151,8 +178,6 @@ export interface ScaffolderApi {
   //
   // (undocumented)
   listActions(): Promise<ListActionsResponse>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   scaffold(templateName: string, values: Record<string, any>): Promise<string>;
   // Warning: (ae-forgotten-export) The symbol "LogEvent" needs to be exported by the entry point index.d.ts
   //
@@ -197,8 +222,6 @@ export class ScaffolderClient implements ScaffolderApi {
   ): Promise<TemplateParameterSchema>;
   // (undocumented)
   listActions(): Promise<ListActionsResponse>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   scaffold(templateName: string, values: Record<string, any>): Promise<string>;
   // (undocumented)
   streamLogs(opts: { taskId: string; after?: number }): Observable<LogEvent>;

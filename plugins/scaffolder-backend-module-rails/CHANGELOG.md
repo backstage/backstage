@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.1
+  - @backstage/plugin-scaffolder-backend@0.15.19
+  - @backstage/integration@0.7.0
+
+## 0.2.1
+
+### Patch Changes
+
+- fc8fc02510: Add new options to rails new (force and skipTests)
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/plugin-scaffolder-backend@0.15.18
+
 ## 0.2.0
 
 ### Minor Changes

@@ -41,9 +41,9 @@ type Props = {
 /**
  * A form that lets the user input a url and analyze it for existing locations or potential entities.
  *
- * @param onAnalysis is called when the analysis was successful
- * @param analysisUrl a url that can be used as a default value
- * @param disablePullRequest if true, repositories without entities will abort the wizard
+ * @param onAnalysis - is called when the analysis was successful
+ * @param analysisUrl - a url that can be used as a default value
+ * @param disablePullRequest - if true, repositories without entities will abort the wizard
  */
 export const StepInitAnalyzeUrl = ({
   onAnalysis,

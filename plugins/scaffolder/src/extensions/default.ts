@@ -18,12 +18,14 @@ import {
   EntityNamePicker,
   entityNamePickerValidation,
 } from '../components/fields/EntityNamePicker';
+import { EntityTagsPicker } from '../components/fields/EntityTagsPicker';
 import { OwnerPicker } from '../components/fields/OwnerPicker';
 import {
   repoPickerValidation,
   RepoUrlPicker,
 } from '../components/fields/RepoUrlPicker';
 import { FieldExtensionOptions } from './types';
+import { OwnedEntityPicker } from '../components/fields/OwnedEntityPicker';
 
 export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: FieldExtensionOptions[] = [
   {
@@ -36,6 +38,10 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: FieldExtensionOptions[] = [
     validation: entityNamePickerValidation,
   },
   {
+    component: EntityTagsPicker,
+    name: 'EntityTagsPicker',
+  },
+  {
     component: RepoUrlPicker,
     name: 'RepoUrlPicker',
     validation: repoPickerValidation,
@@ -43,5 +49,9 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: FieldExtensionOptions[] = [
   {
     component: OwnerPicker,
     name: 'OwnerPicker',
+  },
+  {
+    component: OwnedEntityPicker,
+    name: 'OwnedEntityPicker',
   },
 ];

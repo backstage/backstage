@@ -1,5 +1,51 @@
 # @backstage/cli
 
+## 0.10.5
+
+### Patch Changes
+
+- 37123b4851: Bump `css-loader` from `5.2.6` to `6.5.1`
+- 9534391ae4: Add --pattern option to override matching glob patterns for backstage versioning
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+
+## 0.10.4
+
+### Patch Changes
+
+- 1d26017090: Fix issue with plugin:serve for Plugins not using Lerna monorepo.
+- 9c3aaf3512: Bump `@typescript-eslint/eslint-plugin` to `4.33.0`
+- 808828e4fa: remove inline CSS from serve_index.html
+- 6e4080d31b: Add option to build command for minifying the generated code
+- Updated dependencies
+  - @backstage/config-loader@0.9.1
+
+## 0.10.3
+
+### Patch Changes
+
+- dfc1110dc4: Added peerPluginDependencies option to experimentalInstallationRecipe for install command to install plugins it depends on.
+- 58b0262dd9: Pruned unused dependencies.
+- 5fdc8df0e8: The frontend configuration is now available as a `config` global during templating of the `index.html` file. This allows for much more flexibility as the values available during templating is not longer hardcoded to a fixed set of values.
+
+  For example, to access the app title, you would now do the following:
+
+  ```html
+  <title><%= config.getString('app.title') %></title>
+  ```
+
+  Along with this change, usage of the existing `app.<key>` values has been deprecated and will be removed in a future release. The general pattern for migrating existing usage is to replace `<%= app.<key> %>` with `<%= config.getString('app.<key>') %>`, although in some cases you may need to use for example `config.has('app.<key>')` or `config.getOptionalString('app.<key>')` instead.
+
+  The [`@backstage/create-app` changelog](https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md#049) also contains more details how to migrate existing usage.
+
+- Updated dependencies
+  - @backstage/config-loader@0.9.0
+
+## 0.10.2
+
+### Patch Changes
+
+- 25dfc2d483: Add support for `.cjs` and `.mjs` extensions in local and dependency modules.
+
 ## 0.10.1
 
 ### Patch Changes

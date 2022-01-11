@@ -40,7 +40,8 @@ import {
 } from '@material-ui/core';
 import qs from 'qs';
 import React from 'react';
-import { useAsync } from 'react-use';
+import pluralize from 'pluralize';
+import useAsync from 'react-use/lib/useAsync';
 
 type EntityTypeProps = {
   kind: string;
@@ -96,7 +97,7 @@ const EntityCountTile = ({
           {counter}
         </Typography>
         <Typography className={classes.bold} variant="h6">
-          {name}
+          {pluralize(name, counter)}
         </Typography>
       </Box>
     </Link>

@@ -9,8 +9,8 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
-import { EntityRef } from '@backstage/catalog-model';
+import type { EntityName } from '@backstage/catalog-model';
+import type { EntityRef } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -49,17 +49,12 @@ export const JENKINS_ANNOTATION = 'jenkins.io/job-full-name';
 //
 // @public (undocumented)
 export interface JenkinsApi {
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
   // Warning: (ae-forgotten-export) The symbol "Build" needs to be exported by the entry point index.d.ts
   getBuild(options: {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
   // Warning: (ae-forgotten-export) The symbol "Project" needs to be exported by the entry point index.d.ts
   getProjects(options: {
     entity: EntityRef;

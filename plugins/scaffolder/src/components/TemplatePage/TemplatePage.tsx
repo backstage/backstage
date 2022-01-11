@@ -16,10 +16,11 @@
 import { JsonObject, JsonValue } from '@backstage/types';
 import { LinearProgress } from '@material-ui/core';
 import { FormValidation, IChangeEvent } from '@rjsf/core';
+import qs from 'qs';
 import React, { useCallback, useState } from 'react';
 import { generatePath, Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';
 import { CustomFieldValidator, FieldExtensionOptions } from '../../extensions';
 import { rootRouteRef } from '../../routes';
@@ -120,7 +121,13 @@ export const TemplatePage = ({
   const navigate = useNavigate();
   const rootLink = useRouteRef(rootRouteRef);
   const { schema, loading, error } = useTemplateParameterSchema(templateName);
-  const [formState, setFormState] = useState({});
+  const [formState, setFormState] = useState<Record<string, any>>(() => {
+    const query = qs.parse(window.location.search, {
+      ignoreQueryPrefix: true,
+    });
+
+    return query.formData ?? {};
+  });
   const handleFormReset = () => setFormState({});
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState(e.formData),
@@ -129,6 +136,18 @@ export const TemplatePage = ({
 
   const handleCreate = async () => {
     const id = await scaffolderApi.scaffold(templateName, formState);
+
+    const formParams = qs.stringify(
+      { formData: formState },
+      { addQueryPrefix: true },
+    );
+    const newUrl = `${window.location.pathname}${formParams}`;
+    // We use direct history manipulation since useSearchParams and
+    // useNavigate in react-router-dom cause unnecessary extra rerenders.
+    // Also make sure to replace the state rather than pushing to avoid
+    // extra back/forward slots.
+    window.history?.replaceState(null, document.title, newUrl);
+
     navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
   };
 

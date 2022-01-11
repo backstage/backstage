@@ -1,5 +1,26 @@
 # @backstage/plugin-jenkins
 
+## 0.5.16
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
+## 0.5.15
+
+### Patch Changes
+
+- 7a4bd2ceac: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- eb3fd85d3e: feature: add crumbIssuer option to Jenkins (optional) configuration, improve the UI to show a notification after executing the action re-build
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
 ## 0.5.14
 
 ### Patch Changes

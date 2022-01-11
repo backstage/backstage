@@ -1,5 +1,37 @@
 # @backstage/plugin-tech-insights
 
+## 0.1.4
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- 96fb10fe25: remove unnecessary http request when running all checks
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
+## 0.1.3
+
+### Patch Changes
+
+- a86f5c1701: Fixed API auth in tech-insights plugin
+- d83079fc11: Export `techInsightsApiRef` and associated types.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.9
+
+## 0.1.2
+
+### Patch Changes
+
+- 6ff4408fa6: RunChecks endpoint now handles missing retriever data in checks. Instead of
+  showing server errors, the checks will be shown for checks whose retrievers have
+  data, and a warning will be shown if no checks are returned.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
 ## 0.1.1
 
 ### Patch Changes

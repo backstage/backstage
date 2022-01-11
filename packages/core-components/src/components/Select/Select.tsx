@@ -21,17 +21,18 @@ import FormControl from '@material-ui/core/FormControl';
 import InputBase from '@material-ui/core/InputBase';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
 import {
   createStyles,
   makeStyles,
   Theme,
   withStyles,
 } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
 
+/** @public */
 export type SelectInputBaseClassKey = 'root' | 'input';
 
 const BootstrapInput = withStyles(
@@ -60,6 +61,7 @@ const BootstrapInput = withStyles(
   { name: 'BackstageSelectInputBase' },
 )(InputBase);
 
+/** @public */
 export type SelectClassKey =
   | 'formControl'
   | 'label'
@@ -93,6 +95,7 @@ const useStyles = makeStyles(
         margin: 2,
       },
       checkbox: {},
+
       root: {
         display: 'flex',
         flexDirection: 'column',
@@ -101,23 +104,28 @@ const useStyles = makeStyles(
   { name: 'BackstageSelect' },
 );
 
-type Item = {
+/** @public */
+export type SelectItem = {
   label: string;
   value: string | number;
 };
 
-type Selection = string | string[] | number | number[];
+/** @public */
+export type SelectedItems = string | string[] | number | number[];
 
 export type SelectProps = {
   multiple?: boolean;
-  items: Item[];
+  items: SelectItem[];
   label: string;
   placeholder?: string;
-  selected?: Selection;
-  onChange: (arg: Selection) => void;
+  selected?: SelectedItems;
+  onChange: (arg: SelectedItems) => void;
   triggerReset?: boolean;
+  native?: boolean;
+  disabled?: boolean;
 };
 
+/** @public */
 export function SelectComponent(props: SelectProps) {
   const {
     multiple,
@@ -127,9 +135,11 @@ export function SelectComponent(props: SelectProps) {
     selected,
     onChange,
     triggerReset,
+    native = false,
+    disabled = false,
   } = props;
   const classes = useStyles();
-  const [value, setValue] = useState<Selection>(
+  const [value, setValue] = useState<SelectedItems>(
     selected || (multiple ? [] : ''),
   );
   const [isOpen, setOpen] = useState(false);
@@ -145,11 +155,15 @@ export function SelectComponent(props: SelectProps) {
   }, [selected]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setValue(event.target.value as Selection);
-    onChange(event.target.value as Selection);
+    setValue(event.target.value as SelectedItems);
+    onChange(event.target.value as SelectedItems);
   };
 
   const handleClick = (event: React.ChangeEvent<any>) => {
+    if (disabled) {
+      event.preventDefault();
+      return;
+    }
     setOpen(previous => {
       if (multiple && !(event.target instanceof HTMLElement)) {
         return true;
@@ -175,6 +189,8 @@ export function SelectComponent(props: SelectProps) {
         <FormControl className={classes.formControl}>
           <Select
             value={value}
+            native={native}
+            disabled={disabled}
             data-testid="select"
             displayEmpty
             multiple={multiple}
@@ -223,19 +239,26 @@ export function SelectComponent(props: SelectProps) {
             {placeholder && !multiple && (
               <MenuItem value={[]}>{placeholder}</MenuItem>
             )}
-            {items &&
-              items.map(item => (
-                <MenuItem key={item.value} value={item.value}>
-                  {multiple && (
-                    <Checkbox
-                      color="primary"
-                      checked={(value as any[]).includes(item.value) || false}
-                      className={classes.checkbox}
-                    />
-                  )}
-                  {item.label}
-                </MenuItem>
-              ))}
+            {native
+              ? items &&
+                items.map(item => (
+                  <option value={item.value} key={item.value}>
+                    {item.label}
+                  </option>
+                ))
+              : items &&
+                items.map(item => (
+                  <MenuItem key={item.value} value={item.value}>
+                    {multiple && (
+                      <Checkbox
+                        color="primary"
+                        checked={(value as any[]).includes(item.value) || false}
+                        className={classes.checkbox}
+                      />
+                    )}
+                    {item.label}
+                  </MenuItem>
+                ))}
           </Select>
         </FormControl>
       </ClickAwayListener>

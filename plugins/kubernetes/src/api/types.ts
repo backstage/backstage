@@ -22,8 +22,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',
-  description:
-    'Used by the Kubernetes plugin to make requests to accompanying backend',
 });
 
 export interface KubernetesApi {

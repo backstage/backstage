@@ -23,12 +23,29 @@ import { escapeRegExp } from '../util/escapeRegExp';
 let rootLogger: winston.Logger;
 let redactionRegExp: RegExp | undefined;
 
-/** @public */
+/**
+ * Gets the current root logger.
+ *
+ * @public
+ */
 export function getRootLogger(): winston.Logger {
   return rootLogger;
 }
 
-/** @public */
+/**
+ * Sets a completely custom default "root" logger.
+ *
+ * @remarks
+ *
+ * This is the logger instance that will be the foundation for all other logger
+ * instances passed to plugins etc, in a given backend.
+ *
+ * Only use this if you absolutely need to make a completely custom logger.
+ * Normally if you want to make light adaptations to the default logger
+ * behavior, you would instead call {@link createRootLogger}.
+ *
+ * @public
+ */
 export function setRootLogger(newLogger: winston.Logger) {
   rootLogger = newLogger;
 }
@@ -67,7 +84,17 @@ function redactLogLine(info: winston.Logform.TransformableInfo) {
   return info;
 }
 
-/** @public */
+/**
+ * Creates a default "root" logger. This also calls {@link setRootLogger} under
+ * the hood.
+ *
+ * @remarks
+ *
+ * This is the logger instance that will be the foundation for all other logger
+ * instances passed to plugins etc, in a given backend.
+ *
+ * @public
+ */
 export function createRootLogger(
   options: winston.LoggerOptions = {},
   env = process.env,

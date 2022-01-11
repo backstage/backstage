@@ -16,6 +16,7 @@
 
 import {
   getGitHubFileFetchUrl,
+  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   GitHubIntegration,
   ScmIntegrations,
@@ -49,7 +50,7 @@ export type GhBlobResponse =
   RestEndpointMethodTypes['git']['getBlob']['response']['data'];
 
 /**
- * A processor that adds the ability to read files from GitHub v3 APIs, such as
+ * Implements a {@link UrlReader} for files through the GitHub v3 APIs, such as
  * the one exposed by GitHub itself.
  *
  * @public
@@ -57,10 +58,9 @@ export type GhBlobResponse =
 export class GithubUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
+    const credentialsProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     return integrations.github.list().map(integration => {
-      const credentialsProvider = GithubCredentialsProvider.create(
-        integration.config,
-      );
       const reader = new GithubUrlReader(integration, {
         treeResponseFactory,
         credentialsProvider,

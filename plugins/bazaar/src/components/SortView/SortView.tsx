@@ -19,7 +19,7 @@ import { Content, SupportButton } from '@backstage/core-components';
 import { AddProjectDialog } from '../AddProjectDialog';
 import { ProjectPreview } from '../ProjectPreview/ProjectPreview';
 import { Button, makeStyles } from '@material-ui/core';
-import { useAsyncFn } from 'react-use';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';

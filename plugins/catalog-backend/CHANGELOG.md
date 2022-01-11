@@ -1,5 +1,32 @@
 # @backstage/plugin-catalog-backend
 
+## 0.19.4
+
+### Patch Changes
+
+- 7d4b4e937c: Uptake changes to the GitHub Credentials Provider interface.
+- 3a63491c5f: Filter out projects with missing `default_branch` from GitLab Discovery.
+- Updated dependencies
+  - @backstage/backend-common@0.10.1
+  - @backstage/integration@0.7.0
+
+## 0.19.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/catalog-client@0.5.3
+
+## 0.19.2
+
+### Patch Changes
+
+- 3368f27aef: Fixed the handling of optional locations so that the catalog no longer logs `NotFoundError`s for missing optional locations.
+- Updated dependencies
+  - @backstage/backend-common@0.9.14
+  - @backstage/catalog-model@0.9.8
+
 ## 0.19.1
 
 ### Patch Changes

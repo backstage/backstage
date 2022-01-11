@@ -22,7 +22,6 @@ import {
 
 export const bazaarApiRef = createApiRef<BazaarApi>({
   id: 'bazaar',
-  description: 'Used to make requests towards the bazaar backend',
 });
 
 export interface BazaarApi {

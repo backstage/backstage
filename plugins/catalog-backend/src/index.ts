@@ -28,3 +28,4 @@ export * from './util';
 export * from './processing';
 export * from './providers';
 export * from './service';
+export * from './permissions';

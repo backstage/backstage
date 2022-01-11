@@ -1,5 +1,23 @@
 # @techdocs/cli
 
+## 0.8.10
+
+### Patch Changes
+
+- 8fbc988bfc: remove internal and inline CSS from index.html
+- Updated dependencies
+  - @backstage/techdocs-common@0.11.2
+  - @backstage/backend-common@0.10.1
+
+## 0.8.9
+
+### Patch Changes
+
+- 5fdc8df0e8: The `index.html` template was updated to use the new `config` global.
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/techdocs-common@0.11.1
+
 ## 0.8.8
 
 ### Patch Changes

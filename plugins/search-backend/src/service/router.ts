@@ -25,10 +25,28 @@ export type RouterOptions = {
   logger: Logger;
 };
 
+const allowedLocationProtocols = ['http:', 'https:'];
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { engine, logger } = options;
+
+  const filterResultSet = ({ results, ...resultSet }: SearchResultSet) => ({
+    ...resultSet,
+    results: results.filter(result => {
+      const protocol = new URL(result.document.location, 'https://example.com')
+        .protocol;
+      const isAllowed = allowedLocationProtocols.includes(protocol);
+      if (!isAllowed) {
+        logger.info(
+          `Rejected search result for "${result.document.title}" as location protocol "${protocol}" is unsafe`,
+        );
+      }
+      return isAllowed;
+    }),
+  });
+
   const router = Router();
   router.get(
     '/query',
@@ -46,8 +64,8 @@ export async function createRouter(
       );
 
       try {
-        const results = await engine?.query(req.query);
-        res.send(results);
+        const resultSet = await engine?.query(req.query);
+        res.send(filterResultSet(resultSet));
       } catch (err) {
         throw new Error(
           `There was a problem performing the search query. ${err}`,

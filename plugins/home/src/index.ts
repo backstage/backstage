@@ -24,6 +24,8 @@ export {
   homePlugin,
   HomepageCompositionRoot,
   HomePageRandomJoke,
+  HomePageToolkit,
+  HomePageCompanyLogo,
   ComponentAccordion,
   ComponentTabs,
   ComponentTab,

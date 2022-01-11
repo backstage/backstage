@@ -52,7 +52,7 @@ export const favouriteTemplateIcon = (isStarred: boolean) =>
 
 /**
  * IconButton for showing if a current entity is starred and adding/removing it from the favourite entities
- * @param props MaterialUI IconButton props extended by required `entity` prop
+ * @param props - MaterialUI IconButton props extended by required `entity` prop
  */
 export const FavouriteTemplate = (props: Props) => {
   const classes = useStyles();

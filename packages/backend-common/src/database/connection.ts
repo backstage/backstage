@@ -58,7 +58,7 @@ export function createDatabaseClient(
 }
 
 /**
- * Alias for createDatabaseClient
+ * Alias for {@link createDatabaseClient}
  *
  * @public
  * @deprecated Use createDatabaseClient instead
@@ -100,7 +100,8 @@ export async function ensureSchemaExists(
 }
 
 /**
- * Provides a Knex.Config object with the provided database name for a given client.
+ * Provides a `Knex.Config` object with the provided database name for a given
+ * client.
  */
 export function createNameOverride(
   client: string,
@@ -117,7 +118,8 @@ export function createNameOverride(
 }
 
 /**
- * Provides a Knex.Config object with the provided database schema for a given client. Currently only supported by `pg`.
+ * Provides a `Knex.Config` object with the provided database schema for a given
+ * client. Currently only supported by `pg`.
  */
 export function createSchemaOverride(
   client: string,
@@ -156,7 +158,8 @@ export function parseConnectionString(
 }
 
 /**
- * Normalizes a connection config or string into an object which can be passed to Knex.
+ * Normalizes a connection config or string into an object which can be passed
+ * to Knex.
  */
 export function normalizeConnection(
   connection: Knex.StaticConnectionConfig | JsonObject | string | undefined,

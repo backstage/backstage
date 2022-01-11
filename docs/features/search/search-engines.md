@@ -90,6 +90,18 @@ within your instance. The configuration options are documented in the
 The underlying functionality is using official ElasticSearch client version 7.x,
 meaning that ElasticSearch version 7 is the only one confirmed to be supported.
 
+Should you need to create your own bespoke search experiences that require more
+than just a query translator (such as faceted search or Relay pagination), you
+can access the configuration of the search engine in order to create new elastic
+search clients. The version of the client need not be the same as one used
+internally by the elastic search engine plugin. For example:
+
+```typescript
+import { Client } from '@elastic/elastic-search';
+
+const client = searchEngine.newClient(options => new Client(options));
+```
+
 ## Example configurations
 
 ### AWS

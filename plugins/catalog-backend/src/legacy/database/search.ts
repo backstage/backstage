@@ -149,8 +149,8 @@ export function mapToRows(
 /**
  * Generates all of the search rows that are relevant for this entity.
  *
- * @param entityId The uid of the entity
- * @param entity The entity
+ * @param entityId - The uid of the entity
+ * @param entity - The entity
  * @returns A list of entity search rows
  */
 export function buildEntitySearch(

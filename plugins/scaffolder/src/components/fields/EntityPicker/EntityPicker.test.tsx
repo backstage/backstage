@@ -20,7 +20,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FieldProps } from '@rjsf/core';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { EntityPicker } from './EntityPicker';
+import { EntityPicker, allowArbitraryValues } from './EntityPicker';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -133,6 +133,40 @@ describe('<EntityPicker />', () => {
           kind: ['User'],
         },
       });
+    });
+  });
+});
+
+describe('allowArbitraryValues', () => {
+  describe('without ui:options', () => {
+    it('defaults to true', () => {
+      const uiSchema = {};
+      const result = allowArbitraryValues(uiSchema);
+      expect(result).toBe(true);
+    });
+  });
+
+  describe('without ui:options.allowArbitraryValues', () => {
+    it('defaults to true', () => {
+      const uiSchema = { 'ui:options': {} };
+      const result = allowArbitraryValues(uiSchema);
+      expect(result).toBe(true);
+    });
+  });
+
+  describe('with ui:options.allowArbitraryValues set to true', () => {
+    it('is true', () => {
+      const uiSchema = { 'ui:options': { allowArbitraryValues: true } };
+      const result = allowArbitraryValues(uiSchema);
+      expect(result).toBe(true);
+    });
+  });
+
+  describe('with ui:options.allowArbitraryValues set to false', () => {
+    it('is false', () => {
+      const uiSchema = { 'ui:options': { allowArbitraryValues: false } };
+      const result = allowArbitraryValues(uiSchema);
+      expect(result).toBe(false);
     });
   });
 });

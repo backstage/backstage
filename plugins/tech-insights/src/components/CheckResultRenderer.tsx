@@ -18,6 +18,11 @@ import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import React from 'react';
 import { BooleanCheck } from './BooleanCheck';
 
+/**
+ * Defines a react component that is responsible for rendering a results of a given type.
+ *
+ * @public
+ */
 export type CheckResultRenderer = {
   type: string;
   title: string;
@@ -27,12 +32,15 @@ export type CheckResultRenderer = {
 
 export function defaultCheckResultRenderers(
   value: CheckResult[],
+  title?: string,
+  description?: string,
 ): CheckResultRenderer[] {
   return [
     {
       type: 'json-rules-engine',
-      title: 'Boolean scorecard',
+      title: title || 'Boolean scorecard',
       description:
+        description ||
         'This card represents an overview of default boolean Backstage checks:',
       component: <BooleanCheck checkResult={value} />,
     },

@@ -21,6 +21,7 @@ import { Content, Page, InfoCard } from '@backstage/core-components';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { techInsightsApiRef } from '../../api/TechInsightsApi';
 import { BackstageTheme } from '@backstage/theme';
+import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   contentScorecards: {
@@ -35,14 +36,21 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
 
 type Checks = {
   checks: CheckResult[];
+  title?: string;
+  description?: string;
 };
 
-export const ChecksOverview = ({ checks }: Checks) => {
+export const ChecksOverview = ({ checks, title, description }: Checks) => {
   const classes = useStyles();
   const api = useApi(techInsightsApiRef);
+  if (!checks.length) {
+    return <Alert severity="warning">No checks have any data yet.</Alert>;
+  }
   const checkRenderType = api.getScorecardsDefinition(
     checks[0].check.type,
     checks,
+    title,
+    description,
   );
 
   if (checkRenderType) {

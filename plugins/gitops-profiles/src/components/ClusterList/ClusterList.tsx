@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 
 import ClusterTable from '../ClusterTable/ClusterTable';
 import { Button } from '@material-ui/core';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { gitOpsApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 

@@ -42,14 +42,21 @@ export class CacheManager {
     none: this.getNoneClient,
   };
 
+  /**
+   * Shared memory store for the in-memory cache client. Sharing the same Map
+   * instance ensures get/set/delete operations hit the same store, regardless
+   * of where/when a client is instantiated.
+   */
+  private readonly memoryStore = new Map();
+
   private readonly logger: Logger;
   private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
   private readonly errorHandler: CacheManagerOptions['onError'];
 
   /**
-   * Creates a new CacheManager instance by reading from the `backend` config
-   * section, specifically the `.cache` key.
+   * Creates a new {@link CacheManager} instance by reading from the `backend`
+   * config section, specifically the `.cache` key.
    *
    * @param config - The loaded application configuration.
    */
@@ -86,7 +93,8 @@ export class CacheManager {
   /**
    * Generates a PluginCacheManager for consumption by plugins.
    *
-   * @param pluginId - The plugin that the cache manager should be created for. Plugin names should be unique.
+   * @param pluginId - The plugin that the cache manager should be created for.
+   *        Plugin names should be unique.
    */
   forPlugin(pluginId: string): PluginCacheManager {
     return {
@@ -133,6 +141,7 @@ export class CacheManager {
     return new Keyv({
       namespace: pluginId,
       ttl: defaultTtl,
+      store: this.memoryStore,
     });
   }
 

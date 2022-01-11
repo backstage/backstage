@@ -1,5 +1,53 @@
 # @backstage/plugin-search
 
+## 0.5.4
+
+### Patch Changes
+
+- e05b9115aa: Fix missing search context issue with `HomePageSearchBar`
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- 54ef743aa4: Introduce a `<SearchType.Tabs />` variant to display tabs for selecting search result types.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
+## 0.5.3
+
+### Patch Changes
+
+- 6d8e3a9651: Internal cleanup of the exports structure
+- 8b532a6c02: Introduces a `<SearchType.Accordion />` variant, which operates on the same part of a search query as the existing `<SearchType />`, but in a more opinionated way (as a single-select control surface suitable for faceted search UIs).
+
+  Check the [search plugin storybook](https://backstage.io/storybook/?path=/story/plugins-search-searchtype--accordion) to see how it can be used.
+
+- af4980fb5d: Captures the search term entered in the SearchBarBase as a `search` event.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.9
+
+## 0.5.2
+
+### Patch Changes
+
+- 3d98955c8a: Add Optional Props to Override Icon for SidebarSearch and SidebarSearchModal Component
+- 49a696d720: Standardizes the component used as a search box in the search modal and in the composable home page.
+
+  After these changes, all search boxes exported by the search plugin are based on the `<SearchBarBase />` component, and this one is based on the `<InputBase />` component of the Material UI. This means that when you use SearchBarBase or one of its derived components (like `SearchBar` and `HomePageSearchBar`) you can pass all properties accepted by InputBase that have not been replaced by the props type of those components.
+
+  For example:
+
+  ```jsx
+  <SearchInputBase color="secondary" debouceTime={500} />
+  ```
+
+  The `color` property is inherited from `InputBaseProps` type and `debouceTime` defined by `SearchBarBaseProps`.
+
+- 7a4bd2ceac: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
 ## 0.5.1
 
 ### Patch Changes

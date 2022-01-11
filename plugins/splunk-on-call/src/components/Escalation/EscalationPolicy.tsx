@@ -24,7 +24,7 @@ import {
 } from '@material-ui/core';
 import { EscalationUsersEmptyState } from './EscalationUsersEmptyState';
 import { EscalationUser } from './EscalationUser';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { splunkOnCallApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 import { User } from '../types';

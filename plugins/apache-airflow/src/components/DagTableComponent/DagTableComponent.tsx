@@ -31,7 +31,7 @@ import Typography from '@material-ui/core/Typography';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { apacheAirflowApiRef } from '../../api';
 import { Dag } from '../../api/types';
 import { ScheduleIntervalLabel } from '../ScheduleIntervalLabel';

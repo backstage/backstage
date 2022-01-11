@@ -26,8 +26,8 @@ export class Cobertura implements Converter {
   /**
    * convert cobertura into shared json coverage format
    *
-   * @param xml cobertura xml object
-   * @param scmFiles list of files that are commited to SCM
+   * @param xml - cobertura xml object
+   * @param scmFiles - list of files that are commited to SCM
    */
   convert(xml: CoberturaXML, scmFiles: string[]): FileEntry[] {
     const ppc = xml.coverage.packages
@@ -84,7 +84,7 @@ export class Cobertura implements Converter {
   /**
    * Parses branch coverage information from condition-coverage
    *
-   * @param condition condition-coverage value from line coverage
+   * @param condition - condition-coverage value from line coverage
    */
   private parseBranch(condition: string): BranchHit | null {
     const pattern = /[0-9\.]+\%\s\(([0-9]+)\/([0-9]+)\)/;
@@ -104,7 +104,7 @@ export class Cobertura implements Converter {
   /**
    * Extract line hits from a class coverage entry
    *
-   * @param clz class coverage information
+   * @param clz - class coverage information
    */
   private extractLines(clz: InnerClass): Array<LineHit> {
     const classLines = clz.lines.flatMap(l => l.line);

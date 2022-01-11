@@ -16,10 +16,19 @@
 
 import { NextFunction, Request, Response, RequestHandler } from 'express';
 
-/** @public */
+/**
+ * A custom status checking function, passed to {@link statusCheckHandler} and
+ * {@link createStatusCheckRouter}.
+ *
+ * @public
+ */
 export type StatusCheck = () => Promise<any>;
 
-/** @public */
+/**
+ * Options passed to {@link statusCheckHandler}.
+ *
+ * @public
+ */
 export interface StatusCheckHandlerOptions {
   /**
    * Optional status function which returns a message.

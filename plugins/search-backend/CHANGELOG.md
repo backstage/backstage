@@ -1,5 +1,19 @@
 # @backstage/plugin-search-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- a41fbfe739: Search result location filtering
+
+  This change introduces a filter for search results based on their location protocol. The intention is to filter out unsafe or
+  malicious values before they can be consumed by the frontend. By default locations must be http/https URLs (or paths).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+
 ## 0.2.8
 
 ### Patch Changes

@@ -42,3 +42,4 @@ export {
   useEntityOwnership,
   loadIdentityOwnerRefs,
 } from './useEntityOwnership';
+export { useOwnedEntities } from './useOwnedEntities';

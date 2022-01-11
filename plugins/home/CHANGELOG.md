@@ -1,5 +1,23 @@
 # @backstage/plugin-home
 
+## 0.4.9
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/core-components@0.8.3
+
+## 0.4.8
+
+### Patch Changes
+
+- 6d36220ef2: Fix undefined identity bug in `WelcomeTitle` caused by using deprecated methods of the IdentityApi
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/core-components@0.8.2
+
 ## 0.4.7
 
 ### Patch Changes

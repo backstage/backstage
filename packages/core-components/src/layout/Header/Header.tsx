@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
@@ -189,8 +189,12 @@ const SubtitleFragment = ({ classes, subtitle }: SubtitleFragmentProps) => {
     </Typography>
   );
 };
-
-/** @public */
+/**
+ * Backstage main header with abstract color background in multiple variants
+ *
+ * @public
+ *
+ */
 export function Header(props: PropsWithChildren<Props>) {
   const {
     children,

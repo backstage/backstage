@@ -44,10 +44,10 @@ type Props<TFieldValues extends Record<string, any>> = Pick<
  * A form wrapper that creates a form that is used to prepare a pull request. It
  * hosts the form logic.
  *
- * @param defaultValues the default values of the form
- * @param onSubmit a callback that is executed when the form is submitted
+ * @param defaultValues - the default values of the form
+ * @param onSubmit - a callback that is executed when the form is submitted
  *   (initiated by a button of type="submit")
- * @param render render the form elements
+ * @param render - render the form elements
  */
 export const PreparePullRequestForm = <
   TFieldValues extends Record<string, any>,

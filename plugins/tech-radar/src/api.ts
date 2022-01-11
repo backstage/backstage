@@ -21,7 +21,6 @@ import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 export const techRadarApiRef: ApiRef<TechRadarApi> = createApiRef<TechRadarApi>(
   {
     id: 'plugin.techradar.service',
-    description: 'Used to populate data in the TechRadar plugin',
   },
 );
 

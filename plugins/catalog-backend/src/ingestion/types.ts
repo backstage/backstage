@@ -26,7 +26,7 @@ export type LocationAnalyzer = {
    * Generates an entity configuration for given git repository. It's used for
    * importing new component to the backstage app.
    *
-   * @param location Git repository to analyze and generate config for.
+   * @param location - Git repository to analyze and generate config for.
    */
   analyzeLocation(
     location: AnalyzeLocationRequest,

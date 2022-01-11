@@ -25,7 +25,7 @@ import {
   Typography,
   CircularProgress,
 } from '@material-ui/core';
-import { useAsyncFn } from 'react-use';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { pagerDutyApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 import { usePagerdutyEntity } from '../../hooks';

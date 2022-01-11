@@ -17,6 +17,7 @@
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
+  Entity,
   EntityPolicies,
   EntityPolicy,
   FieldFormatEntityPolicy,
@@ -25,11 +26,15 @@ import {
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrations,
+  DefaultGithubCredentialsProvider,
+} from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
 import lodash from 'lodash';
-import { EntitiesCatalog } from '../catalog';
+import { EntitiesCatalog, EntitiesSearchFilter } from '../catalog';
 import {
   DatabaseLocationsCatalog,
   LocationsCatalog,
@@ -77,17 +82,22 @@ import {
 } from '../processing/refresh';
 import { createNextRouter } from './NextRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
+import { AuthorizedRefreshService } from './AuthorizedRefreshService';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { LocationService } from './types';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
+import { permissionRules as catalogPermissionRules } from '../permissions/rules';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 
 export type CatalogEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
+  permissions: PermissionAuthorizer;
 };
 
 /**
@@ -125,6 +135,11 @@ export class NextCatalogBuilder {
       maxSeconds: 150,
     });
   private locationAnalyzer: LocationAnalyzer | undefined = undefined;
+  private permissionRules: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    unknown[]
+  >[];
 
   constructor(env: CatalogEnvironment) {
     this.env = env;
@@ -136,6 +151,7 @@ export class NextCatalogBuilder {
     this.processors = [];
     this.processorsReplace = false;
     this.parser = undefined;
+    this.permissionRules = Object.values(catalogPermissionRules);
   }
 
   /**
@@ -147,7 +163,7 @@ export class NextCatalogBuilder {
    * in various core entity fields (such as metadata.name), you may want to use
    * {@link NextCatalogBuilder#setFieldFormatValidators} instead.
    *
-   * @param policies One or more policies
+   * @param policies - One or more policies
    */
   addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder {
     this.entityPolicies.push(...policies);
@@ -198,7 +214,7 @@ export class NextCatalogBuilder {
    *
    * This function replaces the default set of policies; use with care.
    *
-   * @param policies One or more policies
+   * @param policies - One or more policies
    */
   replaceEntityPolicies(policies: EntityPolicy[]): NextCatalogBuilder {
     this.entityPolicies = [...policies];
@@ -210,8 +226,8 @@ export class NextCatalogBuilder {
    * Adds, or overwrites, a handler for placeholders (e.g. $file) in entity
    * definition files.
    *
-   * @param key The key that identifies the placeholder, e.g. "file"
-   * @param resolver The resolver that gets values for this placeholder
+   * @param key - The key that identifies the placeholder, e.g. "file"
+   * @param resolver - The resolver that gets values for this placeholder
    */
   setPlaceholderResolver(
     key: string,
@@ -229,7 +245,7 @@ export class NextCatalogBuilder {
    * This function has no effect if used together with
    * {@link NextCatalogBuilder#replaceEntityPolicies}.
    *
-   * @param validators The (subset of) validators to set
+   * @param validators - The (subset of) validators to set
    */
   setFieldFormatValidators(
     validators: Partial<Validators>,
@@ -245,7 +261,7 @@ export class NextCatalogBuilder {
    * stored locations. If you ingest entities out of a third party system, you
    * may want to implement that in terms of an entity provider as well.
    *
-   * @param providers One or more entity providers
+   * @param providers - One or more entity providers
    */
   addEntityProvider(...providers: EntityProvider[]): NextCatalogBuilder {
     this.entityProviders.push(...providers);
@@ -256,7 +272,7 @@ export class NextCatalogBuilder {
    * Adds entity processors. These are responsible for reading, parsing, and
    * processing entities before they are persisted in the catalog.
    *
-   * @param processors One or more processors
+   * @param processors - One or more processors
    */
   addProcessor(...processors: CatalogProcessor[]): NextCatalogBuilder {
     this.processors.push(...processors);
@@ -270,7 +286,7 @@ export class NextCatalogBuilder {
    * This function replaces the default set of processors, consider using with
    * {@link NextCatalogBuilder#getDefaultProcessors}; use with care.
    *
-   * @param processors One or more processors
+   * @param processors - One or more processors
    */
   replaceProcessors(processors: CatalogProcessor[]): NextCatalogBuilder {
     this.processors = [...processors];
@@ -289,13 +305,21 @@ export class NextCatalogBuilder {
   getDefaultProcessors(): CatalogProcessor[] {
     const { config, logger, reader } = this.env;
     const integrations = ScmIntegrations.fromConfig(config);
+    const githubCredentialsProvider: GithubCredentialsProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
     return [
       new FileReaderProcessor(),
       BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
       AzureDevOpsDiscoveryProcessor.fromConfig(config, { logger }),
-      GithubDiscoveryProcessor.fromConfig(config, { logger }),
-      GithubOrgReaderProcessor.fromConfig(config, { logger }),
+      GithubDiscoveryProcessor.fromConfig(config, {
+        logger,
+        githubCredentialsProvider,
+      }),
+      GithubOrgReaderProcessor.fromConfig(config, {
+        logger,
+        githubCredentialsProvider,
+      }),
       GitLabDiscoveryProcessor.fromConfig(config, { logger }),
       new UrlReaderProcessor({ reader, logger }),
       CodeOwnersProcessor.fromConfig(config, { logger, reader }),
@@ -310,11 +334,28 @@ export class NextCatalogBuilder {
    * specification data has been read from a remote source, and needs to be
    * parsed and emitted as structured data.
    *
-   * @param parser The custom parser
+   * @param parser - The custom parser
    */
   setEntityDataParser(parser: CatalogProcessorParser): NextCatalogBuilder {
     this.parser = parser;
     return this;
+  }
+
+  /**
+   * Adds additional permission rules. Permission rules are used to evaluate
+   * catalog resources against queries. See
+   * {@link @backstage/plugin-permission-node#PermissionRule}.
+   *
+   * @param permissionRules - Additional permission rules
+   */
+  addPermissionRules(
+    ...permissionRules: PermissionRule<
+      Entity,
+      EntitiesSearchFilter,
+      unknown[]
+    >[]
+  ) {
+    this.permissionRules.push(...permissionRules);
   }
 
   /**
@@ -329,7 +370,7 @@ export class NextCatalogBuilder {
     locationService: LocationService;
     router: Router;
   }> {
-    const { config, database, logger } = this.env;
+    const { config, database, logger, permissions } = this.env;
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
@@ -383,9 +424,10 @@ export class NextCatalogBuilder {
       locationStore,
       orchestrator,
     );
-    const refreshService = new DefaultRefreshService({
-      database: processingDatabase,
-    });
+    const refreshService = new AuthorizedRefreshService(
+      new DefaultRefreshService({ database: processingDatabase }),
+      permissions,
+    );
     const router = await createNextRouter({
       entitiesCatalog,
       locationAnalyzer,
@@ -393,6 +435,7 @@ export class NextCatalogBuilder {
       refreshService,
       logger,
       config,
+      permissionRules: this.permissionRules,
     });
 
     await connectEntityProviders(processingDatabase, entityProviders);

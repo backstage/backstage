@@ -30,6 +30,8 @@ export class AwsS3Integration implements ScmIntegration {
 // @public
 export type AwsS3IntegrationConfig = {
   host: string;
+  endpoint?: string;
+  s3ForcePathStyle?: boolean;
   accessKeyId?: string;
   secretAccessKey?: string;
   roleArn?: string;
@@ -91,6 +93,17 @@ export type BitbucketIntegrationConfig = {
   username?: string;
   appPassword?: string;
 };
+
+// @public
+export class DefaultGithubCredentialsProvider
+  implements GithubCredentialsProvider
+{
+  // (undocumented)
+  static fromIntegrations(
+    integrations: ScmIntegrationRegistry,
+  ): DefaultGithubCredentialsProvider;
+  getCredentials(opts: { url: string }): Promise<GithubCredentials>;
+}
 
 // @public
 export function defaultScmResolveUrl(options: {
@@ -198,9 +211,8 @@ export type GithubCredentials = {
 };
 
 // @public
-export class GithubCredentialsProvider {
+export interface GithubCredentialsProvider {
   // (undocumented)
-  static create(config: GitHubIntegrationConfig): GithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
@@ -423,8 +435,12 @@ export interface ScmIntegrationsGroup<T extends ScmIntegration> {
   list(): T[];
 }
 
-// Warnings were encountered during analysis:
-//
-// src/gitlab/config.d.ts:29:68 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/gitlab/config.d.ts:29:63 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// @public
+export class SingleInstanceGithubCredentialsProvider
+  implements GithubCredentialsProvider
+{
+  // (undocumented)
+  static create: (config: GitHubIntegrationConfig) => GithubCredentialsProvider;
+  getCredentials(opts: { url: string }): Promise<GithubCredentials>;
+}
 ```

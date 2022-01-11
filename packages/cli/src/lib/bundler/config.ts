@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import chalk from 'chalk';
 import { resolve as resolvePath } from 'path';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -23,12 +24,13 @@ import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import webpack, { ProvidePlugin } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import { isChildPath } from '@backstage/cli-common';
+import { getPackages } from '@manypkg/get-packages';
 import { optimization } from './optimization';
 import { Config } from '@backstage/config';
 import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
-import { BundlingOptions, BackendBundlingOptions, LernaPackage } from './types';
+import { BundlingOptions, BackendBundlingOptions } from './types';
 import { version } from '../../lib/version';
 import { paths as cliPaths } from '../../lib/paths';
 import { runPlain } from '../run';
@@ -73,25 +75,17 @@ async function readBuildInfo() {
   };
 }
 
-async function loadLernaPackages(): Promise<LernaPackage[]> {
-  const { Project } = require('@lerna/project');
-  const project = new Project(cliPaths.targetDir);
-  return project.getPackages();
-}
-
 export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
 ): Promise<webpack.Configuration> {
   const { checksEnabled, isDev, frontendConfig } = options;
 
-  const packages = await loadLernaPackages();
   const { plugins, loaders } = transforms(options);
   // Any package that is part of the monorepo but outside the monorepo root dir need
   // separate resolution logic.
-  const externalPkgs = packages.filter(
-    p => !isChildPath(paths.root, p.location),
-  );
+  const { packages } = await getPackages(cliPaths.targetDir);
+  const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
   const validBaseUrl = new URL(baseUrl);
@@ -130,28 +124,44 @@ export async function createConfig(
     }),
   );
 
+  const appParamDeprecationMsg = chalk.red(
+    'DEPRECATION WARNING: using `app.<key>` in the index.html template is deprecated, use `config.getString("app.<key>")` instead.',
+  );
   plugins.push(
     new HtmlWebpackPlugin({
       template: paths.targetHtml,
       templateParameters: {
         publicPath: validBaseUrl.pathname.replace(/\/$/, ''),
         app: {
-          title: frontendConfig.getString('app.title'),
-          baseUrl: validBaseUrl.href,
-          googleAnalyticsTrackingId: frontendConfig.getOptionalString(
-            'app.googleAnalyticsTrackingId',
-          ),
-          datadogRum: {
-            env: frontendConfig.getOptionalString('app.datadogRum.env'),
-            clientToken: frontendConfig.getOptionalString(
-              'app.datadogRum.clientToken',
-            ),
-            applicationId: frontendConfig.getOptionalString(
-              'app.datadogRum.applicationId',
-            ),
-            site: frontendConfig.getOptionalString('app.datadogRum.site'),
+          get title() {
+            console.warn(appParamDeprecationMsg);
+            return frontendConfig.getString('app.title');
+          },
+          get baseUrl() {
+            console.warn(appParamDeprecationMsg);
+            return validBaseUrl.href;
+          },
+          get googleAnalyticsTrackingId() {
+            console.warn(appParamDeprecationMsg);
+            return frontendConfig.getOptionalString(
+              'app.googleAnalyticsTrackingId',
+            );
+          },
+          get datadogRum() {
+            console.warn(appParamDeprecationMsg);
+            return {
+              env: frontendConfig.getOptionalString('app.datadogRum.env'),
+              clientToken: frontendConfig.getOptionalString(
+                'app.datadogRum.clientToken',
+              ),
+              applicationId: frontendConfig.getOptionalString(
+                'app.datadogRum.applicationId',
+              ),
+              site: frontendConfig.getOptionalString('app.datadogRum.site'),
+            };
           },
         },
+        config: frontendConfig,
       },
     }),
   );
@@ -236,14 +246,11 @@ export async function createBackendConfig(
   const { checksEnabled, isDev } = options;
 
   // Find all local monorepo packages and their node_modules, and mark them as external.
-  const packages = await await loadLernaPackages();
-  const localPackageNames = packages.map((p: any) => p.name);
-  const moduleDirs = packages.map((p: any) =>
-    resolvePath(p.location, 'node_modules'),
-  );
-  const externalPkgs = packages.filter(
-    p => !isChildPath(paths.root, p.location),
-  ); // See frontend config
+  const { packages } = await getPackages(cliPaths.targetDir);
+  const localPackageNames = packages.map(p => p.packageJson.name);
+  const moduleDirs = packages.map(p => resolvePath(p.dir, 'node_modules'));
+  // See frontend config
+  const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
 
   const { loaders } = transforms(options);
 

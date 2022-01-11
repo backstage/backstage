@@ -16,7 +16,10 @@
 
 import { getRootLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
 import mockFs from 'mock-fs';
 import os from 'os';
 import { resolve as resolvePath } from 'path';
@@ -53,9 +56,13 @@ describe('createPublishGithubPullRequestAction', () => {
       }),
     };
     clientFactory = jest.fn(async () => fakeClient);
+    const githubCredentialsProvider: GithubCredentialsProvider = {
+      getCredentials: jest.fn(),
+    };
 
     instance = createPublishGithubPullRequestAction({
       integrations,
+      githubCredentialsProvider,
       clientFactory,
     });
   });

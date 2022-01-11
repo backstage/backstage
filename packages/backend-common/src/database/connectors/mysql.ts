@@ -26,8 +26,8 @@ import defaultNameOverride from './defaultNameOverride';
 /**
  * Creates a knex mysql database connection
  *
- * @param dbConfig The database config
- * @param overrides Additional options to merge with the config
+ * @param dbConfig - The database config
+ * @param overrides - Additional options to merge with the config
  */
 export function createMysqlDatabaseClient(
   dbConfig: Config,
@@ -41,8 +41,8 @@ export function createMysqlDatabaseClient(
 /**
  * Builds a knex mysql database connection
  *
- * @param dbConfig The database config
- * @param overrides Additional options to merge with the config
+ * @param dbConfig - The database config
+ * @param overrides - Additional options to merge with the config
  */
 export function buildMysqlDatabaseConfig(
   dbConfig: Config,
@@ -61,8 +61,8 @@ export function buildMysqlDatabaseConfig(
 /**
  * Gets the mysql connection config
  *
- * @param dbConfig The database config
- * @param parseConnectionString Flag to explicitly control connection string parsing
+ * @param dbConfig - The database config
+ * @param parseConnectionString - Flag to explicitly control connection string parsing
  */
 export function getMysqlConnectionConfig(
   dbConfig: Config,
@@ -86,7 +86,7 @@ export function getMysqlConnectionConfig(
  * Parses a mysql connection string.
  *
  * e.g. mysql://examplename:somepassword@examplehost:3306/dbname
- * @param connectionString The mysql connection string
+ * @param connectionString - The mysql connection string
  */
 export function parseMysqlConnectionString(
   connectionString: string,
@@ -140,8 +140,8 @@ export function parseMysqlConnectionString(
 /**
  * Creates the missing mysql database if it does not exist
  *
- * @param dbConfig The database config
- * @param databases The names of the databases to create
+ * @param dbConfig - The database config
+ * @param databases - The names of the databases to create
  */
 export async function ensureMysqlDatabaseExists(
   dbConfig: Config,

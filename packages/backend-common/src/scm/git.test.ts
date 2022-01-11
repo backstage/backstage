@@ -320,4 +320,21 @@ describe('Git', () => {
       });
     });
   });
+
+  describe('log', () => {
+    it('should call isomorphic-git with the correct arguments', async () => {
+      const dir = '/some/mock/dir';
+      const ref = 'as43bd7';
+
+      const git = Git.fromAuth({});
+
+      await git.log({ dir, ref });
+
+      expect(isomorphic.log).toHaveBeenCalledWith({
+        fs,
+        dir,
+        ref,
+      });
+    });
+  });
 });

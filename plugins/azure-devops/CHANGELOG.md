@@ -1,5 +1,88 @@
 # @backstage/plugin-azure-devops
 
+## 0.1.9
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
+## 0.1.7
+
+### Patch Changes
+
+- daf32e2c9b: Created some initial filters that can be used to create pull request columns:
+
+  - All
+  - AssignedToUser
+  - AssignedToCurrentUser
+  - AssignedToTeam
+  - AssignedToTeams
+  - AssignedToCurrentUsersTeams
+  - CreatedByUser
+  - CreatedByCurrentUser
+  - CreatedByTeam
+  - CreatedByTeams
+  - CreatedByCurrentUsersTeams
+
+  Example custom column creation:
+
+  ```tsx
+  const COLUMN_CONFIGS: PullRequestColumnConfig[] = [
+    {
+      title: 'Created by me',
+      filters: [{ type: FilterType.CreatedByCurrentUser }],
+    },
+    {
+      title: 'Created by Backstage Core',
+      filters: [
+        {
+          type: FilterType.CreatedByTeam,
+          teamName: 'Backstage Core',
+        },
+      ],
+    },
+    {
+      title: 'Assigned to my teams',
+      filters: [{ type: FilterType.AssignedToCurrentUsersTeams }],
+    },
+    {
+      title: 'Other PRs',
+      filters: [{ type: FilterType.All }],
+      simplified: true,
+    },
+  ];
+
+  <Route
+    path="/azure-pull-requests"
+    element={
+      <AzurePullRequestsPage
+        projectName="{PROJECT_NAME}"
+        defaultColumnConfigs={COLUMN_CONFIGS}
+      />
+    }
+  />;
+  ```
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.1
+  - @backstage/core-components@0.8.1
+  - @backstage/plugin-azure-devops-common@0.1.3
+  - @backstage/catalog-model@0.9.8
+  - @backstage/plugin-catalog-react@0.6.7
+
 ## 0.1.6
 
 ### Patch Changes

@@ -66,7 +66,7 @@ export type BackstageOverrides = Overrides & {
 
 // Warning: (ae-missing-release-tag) "CatalogClientWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export class CatalogClientWrapper implements CatalogApi {
   constructor(options: { client: CatalogClient; identityApi: IdentityApi });
   // (undocumented)
@@ -126,15 +126,10 @@ export class CatalogClientWrapper implements CatalogApi {
 // @public (undocumented)
 export const CatalogEntityPage: () => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "CatalogPageProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CatalogIndexPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const CatalogIndexPage: ({
-  columns,
-  actions,
-  initiallySelectedFilter,
-}: CatalogPageProps) => JSX.Element;
+export const CatalogIndexPage: (props: DefaultCatalogPageProps) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "CatalogKindHeaderProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CatalogKindHeader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -235,6 +230,13 @@ export function createSystemColumn(): TableColumn<CatalogTableRow>;
 //
 // @public (undocumented)
 export function createTagsColumn(): TableColumn<CatalogTableRow>;
+
+// @public
+export type DefaultCatalogPageProps = {
+  initiallySelectedFilter?: UserListFilterKind;
+  columns?: TableColumn<CatalogTableRow>[];
+  actions?: TableProps<CatalogTableRow>['actions'];
+};
 
 // Warning: (ae-missing-release-tag) "EntityAboutCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

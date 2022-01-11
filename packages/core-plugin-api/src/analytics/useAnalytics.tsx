@@ -35,7 +35,7 @@ function useAnalyticsApi(): AnalyticsApi {
 /**
  * Gets a pre-configured analytics tracker.
  *
- * @public
+ * @alpha
  */
 export function useAnalytics(): AnalyticsTracker {
   const trackerRef = useRef<Tracker | null>(null);

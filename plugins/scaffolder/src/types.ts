@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JSONSchema } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/types';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
 export type Status = 'open' | 'processing' | 'failed' | 'completed' | 'skipped';
 export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
@@ -39,18 +39,9 @@ export type Stage = {
   endedAt?: string;
 };
 
-export type ScaffolderStep = {
-  id: string;
-  name: string;
-  action: string;
-  parameters?: { [name: string]: JsonValue };
-};
-
 export type ScaffolderTask = {
   id: string;
-  spec: {
-    steps: ScaffolderStep[];
-  };
+  spec: TaskSpec;
   status: 'failed' | 'completed' | 'processing' | 'open' | 'cancelled';
   lastHeartbeatAt: string;
   createdAt: string;

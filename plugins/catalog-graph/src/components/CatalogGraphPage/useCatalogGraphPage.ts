@@ -28,7 +28,7 @@ import {
   useState,
 } from 'react';
 import { useLocation } from 'react-router';
-import { usePrevious } from 'react-use';
+import usePrevious from 'react-use/lib/usePrevious';
 import { Direction } from '../EntityRelationsGraph';
 
 export type CatalogGraphPageValue = {

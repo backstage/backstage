@@ -24,7 +24,10 @@ import {
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrations,
+  DefaultGithubCredentialsProvider,
+} from '@backstage/integration';
 import lodash from 'lodash';
 import { EntitiesCatalog } from '../../catalog';
 import {
@@ -129,7 +132,7 @@ export class CatalogBuilder {
    * in various core entity fields (such as metadata.name), you may want to use
    * {@link CatalogBuilder#setFieldFormatValidators} instead.
    *
-   * @param policies One or more policies
+   * @param policies - One or more policies
    */
   addEntityPolicy(...policies: EntityPolicy[]): CatalogBuilder {
     this.entityPolicies.push(...policies);
@@ -147,7 +150,7 @@ export class CatalogBuilder {
    *
    * This function replaces the default set of policies; use with care.
    *
-   * @param policies One or more policies
+   * @param policies - One or more policies
    */
   replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder {
     this.entityPolicies = [...policies];
@@ -159,8 +162,8 @@ export class CatalogBuilder {
    * Adds, or overwrites, a handler for placeholders (e.g. $file) in entity
    * definition files.
    *
-   * @param key The key that identifies the placeholder, e.g. "file"
-   * @param resolver The resolver that gets values for this placeholder
+   * @param key - The key that identifies the placeholder, e.g. "file"
+   * @param resolver - The resolver that gets values for this placeholder
    */
   setPlaceholderResolver(
     key: string,
@@ -178,7 +181,7 @@ export class CatalogBuilder {
    * This function has no effect if used together with
    * {@link CatalogBuilder#replaceEntityPolicies}.
    *
-   * @param validators The (subset of) validators to set
+   * @param validators - The (subset of) validators to set
    */
   setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder {
     lodash.merge(this.fieldFormatValidators, validators);
@@ -189,7 +192,7 @@ export class CatalogBuilder {
    * Adds entity processors. These are responsible for reading, parsing, and
    * processing entities before they are persisted in the catalog.
    *
-   * @param processors One or more processors
+   * @param processors - One or more processors
    */
   addProcessor(...processors: CatalogProcessor[]): CatalogBuilder {
     this.processors.push(...processors);
@@ -202,7 +205,7 @@ export class CatalogBuilder {
    *
    * This function replaces the default set of processors; use with care.
    *
-   * @param processors One or more processors
+   * @param processors - One or more processors
    */
   replaceProcessors(processors: CatalogProcessor[]): CatalogBuilder {
     this.processors = [...processors];
@@ -217,7 +220,7 @@ export class CatalogBuilder {
    * specification data has been read from a remote source, and needs to be
    * parsed and emitted as structured data.
    *
-   * @param parser The custom parser
+   * @param parser - The custom parser
    */
   setEntityDataParser(parser: CatalogProcessorParser): CatalogBuilder {
     this.parser = parser;
@@ -291,6 +294,8 @@ export class CatalogBuilder {
   private buildProcessors(): CatalogProcessor[] {
     const { config, logger, reader } = this.env;
     const integrations = ScmIntegrations.fromConfig(config);
+    const githubCredentialsProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
     this.checkDeprecatedReaderProcessors();
 
@@ -317,9 +322,15 @@ export class CatalogBuilder {
       processors.push(
         new FileReaderProcessor(),
         BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
-        GithubDiscoveryProcessor.fromConfig(config, { logger }),
+        GithubDiscoveryProcessor.fromConfig(config, {
+          logger,
+          githubCredentialsProvider,
+        }),
         AzureDevOpsDiscoveryProcessor.fromConfig(config, { logger }),
-        GithubOrgReaderProcessor.fromConfig(config, { logger }),
+        GithubOrgReaderProcessor.fromConfig(config, {
+          logger,
+          githubCredentialsProvider,
+        }),
         GitLabDiscoveryProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
         CodeOwnersProcessor.fromConfig(config, { logger, reader }),

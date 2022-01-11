@@ -45,12 +45,12 @@ export class ApacheAirflowClient implements ApacheAirflowApi {
    * List all DAGs in the Airflow instance
    *
    * @remarks
+   *
    * All DAGs with a limit of 100 results per request are returned; this may be
    * bogged-down for instances with many DAGs, in which case table pagination
    * should be implemented
    *
-   * @param {number} objectsPerRequest records returned per request in pagination
-   * @returns {Promise<Dag[]>}
+   * @param objectsPerRequest - records returned per request in pagination
    */
   async listDags(options = { objectsPerRequest: 100 }): Promise<Dag[]> {
     const dags: Dag[] = [];

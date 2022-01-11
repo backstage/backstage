@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useMemo } from 'react';
-import { useObservable } from 'react-use';
+import useObservable from 'react-use/lib/useObservable';
 import { configSchemaApiRef } from '../../api';
 import { SchemaViewer } from '../SchemaViewer';
 import { Typography } from '@material-ui/core';

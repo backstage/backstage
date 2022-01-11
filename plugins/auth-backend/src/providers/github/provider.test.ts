@@ -316,24 +316,26 @@ describe('GithubAuthProvider', () => {
         ],
       });
 
-      const response = await provider.refresh({} as any);
+      const result = await provider.refresh({} as any);
 
-      expect(response).toEqual({
-        backstageIdentity: {
-          id: 'mockuser',
-          token: 'token-for-mockuser',
+      expect(result).toEqual({
+        response: {
+          backstageIdentity: {
+            id: 'mockuser',
+            token: 'token-for-mockuser',
+          },
+          profile: {
+            displayName: 'Mocked User',
+            email: 'mockuser@gmail.com',
+            picture: undefined,
+          },
+          providerInfo: {
+            accessToken: 'a.b.c',
+            expiresInSeconds: 123,
+            scope: 'read_user',
+          },
         },
-        profile: {
-          displayName: 'Mocked User',
-          email: 'mockuser@gmail.com',
-          picture: undefined,
-        },
-        providerInfo: {
-          accessToken: 'a.b.c',
-          refreshToken: 'dont-forget-to-send-refresh',
-          expiresInSeconds: 123,
-          scope: 'read_user',
-        },
+        refreshToken: 'dont-forget-to-send-refresh',
       });
     });
   });

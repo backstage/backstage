@@ -1,5 +1,38 @@
 # @backstage/plugin-kubernetes
 
+## 0.5.3
+
+### Patch Changes
+
+- 7ac0bd2c66: implement dashboard link formatter for GKE
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/plugin-kubernetes-common@0.2.1
+  - @backstage/core-components@0.8.3
+
+## 0.5.2
+
+### Patch Changes
+
+- 610614a06d: Includes `KubernetesBackendClient` in the export to allow developers to use it externally.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
+## 0.5.1
+
+### Patch Changes
+
+- 6f0c850a86: Fixed styling bug for the CronJobsAccordions and updated Completed pods to display a green dot.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.1
+  - @backstage/core-components@0.8.1
+  - @backstage/catalog-model@0.9.8
+  - @backstage/plugin-catalog-react@0.6.7
+
 ## 0.5.0
 
 ### Minor Changes

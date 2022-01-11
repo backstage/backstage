@@ -27,12 +27,17 @@ import {
   UrlReader,
 } from './types';
 import getRawBody from 'raw-body';
-import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
+import {
+  AwsS3Integration,
+  ScmIntegrations,
+  AwsS3IntegrationConfig,
+} from '@backstage/integration';
 import { ForwardedError, NotModifiedError } from '@backstage/errors';
 import { ListObjectsV2Output, ObjectList } from 'aws-sdk/clients/s3';
 
 const parseURL = (
   url: string,
+  config: AwsS3IntegrationConfig,
 ): { path: string; bucket: string; region: string } => {
   let { host, pathname } = new URL(url);
 
@@ -42,20 +47,45 @@ const parseURL = (
    */
   pathname = pathname.substr(1);
 
+  let bucket;
+  let region;
+
   /**
-   * Checks that the given URL is a valid S3 object url.
-   * Format of a Valid S3 URL: https://bucket-name.s3.Region.amazonaws.com/keyname
+   * Path style URLs: https://s3.Region.amazonaws.com/bucket-name/key-name
+   * Virtual hosted style URLs: https://bucket-name.s3.Region.amazonaws.com/key-name
+   * See https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html#path-style-access
    */
-  const validHost = new RegExp(
-    /^[a-z\d][a-z\d\.-]{1,61}[a-z\d]\.s3\.[a-z\d-]+\.amazonaws.com$/,
-  );
-  if (!validHost.test(host)) {
-    throw new Error(`not a valid AWS S3 URL: ${url}`);
+  if (config.s3ForcePathStyle) {
+    if (pathname.indexOf('/') < 0) {
+      throw new Error(
+        `invalid path-style AWS S3 URL, ${url} does not contain bucket in the path`,
+      );
+    }
+    [bucket] = pathname.split('/');
+    pathname = pathname.substr(bucket.length + 1);
+  } else {
+    if (host.indexOf('.') < 0) {
+      throw new Error(
+        `invalid virtual hosted-style AWS S3 URL, ${url} does not contain bucket prefix in the host`,
+      );
+    }
+    [bucket] = host.split('.');
+    host = host.substr(bucket.length + 1);
   }
 
-  const [bucket] = host.split(/\.s3\.[a-z\d-]+\.amazonaws.com/);
-  host = host.substring(bucket.length);
-  const [, , region, ,] = host.split('.');
+  // Only extract region from *.amazonaws.com hosts
+  if (config.host === 'amazonaws.com') {
+    // At this point bucket prefix is removed from host for virtual hosted URLs
+    const match = host.match(/^s3\.([a-z\d-]+)\.amazonaws\.com$/);
+    if (!match) {
+      throw new Error(
+        `invalid AWS S3 URL, cannot parse region from host in ${url}`,
+      );
+    }
+    region = match[1];
+  } else {
+    region = '';
+  }
 
   return {
     path: pathname,
@@ -64,15 +94,23 @@ const parseURL = (
   };
 };
 
+/**
+ * Implements a {@link UrlReader} for AWS S3 buckets.
+ *
+ * @public
+ */
 export class AwsS3UrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
 
     return integrations.awsS3.list().map(integration => {
       const creds = AwsS3UrlReader.buildCredentials(integration);
+
       const s3 = new S3({
         apiVersion: '2006-03-01',
         credentials: creds,
+        endpoint: integration.config.endpoint,
+        s3ForcePathStyle: integration.config.s3ForcePathStyle,
       });
       const reader = new AwsS3UrlReader(integration, {
         s3,
@@ -138,7 +176,7 @@ export class AwsS3UrlReader implements UrlReader {
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
     try {
-      const { path, bucket, region } = parseURL(url);
+      const { path, bucket, region } = parseURL(url, this.integration.config);
       aws.config.update({ region: region });
 
       let params;
@@ -178,7 +216,7 @@ export class AwsS3UrlReader implements UrlReader {
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
     try {
-      const { path, bucket, region } = parseURL(url);
+      const { path, bucket, region } = parseURL(url, this.integration.config);
       const allObjects: ObjectList = [];
       const responses = [];
       let continuationToken: string | undefined;

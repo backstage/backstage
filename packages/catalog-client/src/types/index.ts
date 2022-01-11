@@ -25,5 +25,6 @@ export type {
   CatalogEntityAncestorsResponse,
 } from './api';
 export type { DiscoveryApi } from './discovery';
+export type { FetchApi } from './fetch';
 export { CATALOG_FILTER_EXISTS } from './api';
 export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';

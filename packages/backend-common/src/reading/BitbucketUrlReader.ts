@@ -41,8 +41,8 @@ import {
 } from './types';
 
 /**
- * A processor that adds the ability to read files from Bitbucket v1 and v2 APIs, such as
- * the one exposed by Bitbucket Cloud itself.
+ * Implements a {@link UrlReader} for files from Bitbucket v1 and v2 APIs, such
+ * as the one exposed by Bitbucket Cloud itself.
  *
  * @public
  */

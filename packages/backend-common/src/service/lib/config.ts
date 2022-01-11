@@ -42,8 +42,6 @@ export type CertificateAttributes = {
 
 /**
  * A map from CSP directive names to their values.
- *
- * Added here since helmet doesn't export this type publicly.
  */
 export type CspOptions = Record<string, string[]>;
 
@@ -57,7 +55,7 @@ type CustomOrigin = (
 /**
  * Reads some base options out of a config object.
  *
- * @param config The root of a backend config object
+ * @param config - The root of a backend config object
  * @returns A base options object
  *
  * @example
@@ -100,7 +98,7 @@ export function readBaseOptions(config: Config): BaseOptions {
 /**
  * Attempts to read a CORS options object from the root of a config object.
  *
- * @param config The root of a backend config object
+ * @param config - The root of a backend config object
  * @returns A CORS options object, or undefined if not specified
  *
  * @example
@@ -134,7 +132,7 @@ export function readCorsOptions(config: Config): CorsOptions | undefined {
 /**
  * Attempts to read a CSP options object from the root of a config object.
  *
- * @param config The root of a backend config object
+ * @param config - The root of a backend config object
  * @returns A CSP options object, or undefined if not specified. Values can be
  *          false as well, which means to remove the default behavior for that
  *          key.
@@ -170,7 +168,7 @@ export function readCspOptions(
 /**
  * Attempts to read a https settings object from the root of a config object.
  *
- * @param config The root of a backend config object
+ * @param config - The root of a backend config object
  * @returns A https settings object, or undefined if not specified
  *
  * @example

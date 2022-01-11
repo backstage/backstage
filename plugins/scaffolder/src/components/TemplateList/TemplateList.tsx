@@ -24,11 +24,12 @@ import {
   Content,
   ContentHeader,
   ItemCardGrid,
+  Link,
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
 import { useEntityListProvider } from '@backstage/plugin-catalog-react';
-import { Link, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
 
 export type TemplateListProps = {
@@ -73,7 +74,7 @@ export const TemplateList = ({
       {!error && !loading && !entities.length && (
         <Typography variant="body2">
           No templates found that match your filter. Learn more about{' '}
-          <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
+          <Link to="https://backstage.io/docs/features/software-templates/adding-templates">
             adding templates
           </Link>
           .

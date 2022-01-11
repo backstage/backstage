@@ -21,9 +21,12 @@ import {
 import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { FieldProps } from '@rjsf/core';
-import React from 'react';
-import { useAsync } from 'react-use';
+import { FieldProps, UiSchema } from '@rjsf/core';
+import React, { useCallback, useEffect } from 'react';
+import useAsync from 'react-use/lib/useAsync';
+
+export const allowArbitraryValues = (uiSchema: UiSchema): boolean =>
+  (uiSchema['ui:options']?.allowArbitraryValues as boolean) ?? true;
 
 export const EntityPicker = ({
   onChange,
@@ -48,9 +51,18 @@ export const EntityPicker = ({
     formatEntityRefTitle(e, { defaultKind }),
   );
 
-  const onSelect = (_: any, value: string | null) => {
-    onChange(value || '');
-  };
+  const onSelect = useCallback(
+    (_: any, value: string | null) => {
+      onChange(value || '');
+    },
+    [onChange],
+  );
+
+  useEffect(() => {
+    if (entityRefs?.length === 1) {
+      onChange(entityRefs[0]);
+    }
+  }, [entityRefs, onChange]);
 
   return (
     <FormControl
@@ -59,13 +71,14 @@ export const EntityPicker = ({
       error={rawErrors?.length > 0 && !formData}
     >
       <Autocomplete
+        disabled={entityRefs?.length === 1}
         id={idSchema?.$id}
         value={(formData as string) || ''}
         loading={loading}
         onChange={onSelect}
         options={entityRefs || []}
         autoSelect
-        freeSolo
+        freeSolo={allowArbitraryValues(uiSchema)}
         renderInput={params => (
           <TextField
             {...params}

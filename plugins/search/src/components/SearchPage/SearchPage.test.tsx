@@ -18,7 +18,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { useLocation, useOutlet } from 'react-router';
 import { useSearch } from '../SearchContext';
-import { SearchPage } from './';
+import { SearchPage } from './SearchPage';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),

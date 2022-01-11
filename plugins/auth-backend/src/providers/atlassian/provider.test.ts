@@ -78,20 +78,22 @@ describe('createAtlassianProvider', () => {
         refreshToken: 'wacka',
       },
     });
-    const { response } = await provider.handler({} as any);
-    expect(response).toEqual({
-      providerInfo: {
-        accessToken: 'accessToken',
-        expiresInSeconds: 123,
-        idToken: 'idToken',
-        scope: 'scope',
-        refreshToken: 'wacka',
+    const result = await provider.handler({} as any);
+    expect(result).toEqual({
+      response: {
+        providerInfo: {
+          accessToken: 'accessToken',
+          expiresInSeconds: 123,
+          idToken: 'idToken',
+          scope: 'scope',
+        },
+        profile: {
+          email: 'conrad@example.com',
+          displayName: 'Conrad',
+          picture: 'http://google.com/lols',
+        },
       },
-      profile: {
-        email: 'conrad@example.com',
-        displayName: 'Conrad',
-        picture: 'http://google.com/lols',
-      },
+      refreshToken: 'wacka',
     });
   });
 
@@ -127,20 +129,22 @@ describe('createAtlassianProvider', () => {
       ],
     });
 
-    const response = await provider.refresh({} as any);
+    const result = await provider.refresh({} as any);
 
-    expect(response).toEqual({
-      profile: {
-        displayName: 'Mocked User',
-        email: 'mockuser@gmail.com',
-        picture: 'http://google.com/lols',
+    expect(result).toEqual({
+      response: {
+        profile: {
+          displayName: 'Mocked User',
+          email: 'mockuser@gmail.com',
+          picture: 'http://google.com/lols',
+        },
+        providerInfo: {
+          accessToken: 'a.b.c',
+          idToken: 'my-id',
+          scope: 'read_user',
+        },
       },
-      providerInfo: {
-        accessToken: 'a.b.c',
-        idToken: 'my-id',
-        refreshToken: 'dont-forget-to-send-refresh',
-        scope: 'read_user',
-      },
+      refreshToken: 'dont-forget-to-send-refresh',
     });
   });
 });

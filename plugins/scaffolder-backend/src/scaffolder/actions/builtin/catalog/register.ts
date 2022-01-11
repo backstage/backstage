@@ -125,9 +125,22 @@ export function createCatalogRegisterAction(options: {
 
         if (result.entities.length > 0) {
           const { entities } = result;
-          const entity =
-            entities.find(e => !e.metadata.name.startsWith('generated-')) ??
-            entities[0];
+          let entity: any;
+          // prioritise 'Component' type as it is the most central kind of entity
+          entity = entities.find(
+            (e: any) =>
+              !e.metadata.name.startsWith('generated-') &&
+              e.kind === 'Component',
+          );
+          if (!entity) {
+            entity = entities.find(
+              (e: any) => !e.metadata.name.startsWith('generated-'),
+            );
+          }
+          if (!entity) {
+            entity = entities[0];
+          }
+
           ctx.output('entityRef', stringifyEntityRef(entity));
         }
       } catch (e) {

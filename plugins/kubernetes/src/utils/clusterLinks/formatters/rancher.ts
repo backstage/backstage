@@ -23,6 +23,9 @@ const kindMappings: Record<string, string> = {
 };
 
 export function rancherFormatter(options: ClusterLinksFormatterOptions): URL {
+  if (!options.dashboardUrl) {
+    throw new Error('Rancher dashboard requires a dashboardUrl option');
+  }
   const basePath = new URL(options.dashboardUrl.href);
   const name = encodeURIComponent(options.object.metadata?.name ?? '');
   const namespace = encodeURIComponent(

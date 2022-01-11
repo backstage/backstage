@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,82 +14,83 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { List, Link, ListItem } from '@material-ui/core';
-import { SearchResult, SearchContext, DefaultResultListItem } from '../index';
+import { Link } from '@backstage/core-components';
+import { List, ListItem } from '@material-ui/core';
+import React, { ComponentType } from 'react';
 import { MemoryRouter } from 'react-router';
+import { DefaultResultListItem } from '../DefaultResultListItem';
+import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchResult } from './SearchResult';
+
+const mockResults = {
+  results: [
+    {
+      type: 'custom-result-item',
+      document: {
+        location: 'search/search-result-1',
+        title: 'Search Result 1',
+        text: 'some text from the search result',
+      },
+    },
+    {
+      type: 'no-custom-result-item',
+      document: {
+        location: 'search/search-result-2',
+        title: 'Search Result 2',
+        text: 'some text from the search result',
+      },
+    },
+    {
+      type: 'no-custom-result-item',
+      document: {
+        location: 'search/search-result-3',
+        title: 'Search Result 3',
+        text: 'some text from the search result',
+      },
+    },
+  ],
+};
 
 export default {
   title: 'Plugins/Search/SearchResult',
   component: SearchResult,
-};
-
-const defaultValue = {
-  result: {
-    loading: false,
-    error: '',
-    value: {
-      results: [
-        {
-          type: 'custom-result-item',
-          document: {
-            location: 'search/search-result-1',
-            title: 'Search Result 1',
-            text: 'some text from the search result',
-          },
-        },
-        {
-          type: 'no-custom-result-item',
-          document: {
-            location: 'search/search-result-2',
-            title: 'Search Result 2',
-            text: 'some text from the search result',
-          },
-        },
-        {
-          type: 'no-custom-result-item',
-          document: {
-            location: 'search/search-result-3',
-            title: 'Search Result 3',
-            text: 'some text from the search result',
-          },
-        },
-      ],
-    },
-  },
+  decorators: [
+    (Story: ComponentType<{}>) => (
+      <MemoryRouter>
+        <SearchContextProvider mockedResults={mockResults}>
+          <Story />
+        </SearchContextProvider>
+      </MemoryRouter>
+    ),
+  ],
 };
 
 export const Default = () => {
   return (
-    <MemoryRouter>
-      {/* @ts-ignore (defaultValue requires more than what is used here) */}
-      <SearchContext.Provider value={defaultValue}>
-        <SearchResult>
-          {({ results }) => (
-            <List>
-              {results.map(({ type, document }) => {
-                switch (type) {
-                  case 'custom-result-item':
-                    return (
-                      <DefaultResultListItem
-                        key={document.location}
-                        result={document}
-                      />
-                    );
-                  default:
-                    return (
-                      <ListItem>
-                        <Link href={document.location}>
-                          {document.title} - {document.text}
-                        </Link>
-                      </ListItem>
-                    );
-                }
-              })}
-            </List>
-          )}
-        </SearchResult>
-      </SearchContext.Provider>
-    </MemoryRouter>
+    <SearchResult>
+      {({ results }) => (
+        <List>
+          {results.map(({ type, document }) => {
+            switch (type) {
+              case 'custom-result-item':
+                return (
+                  <DefaultResultListItem
+                    key={document.location}
+                    result={document}
+                  />
+                );
+              default:
+                return (
+                  <ListItem>
+                    <Link to={document.location}>
+                      {document.title} - {document.text}
+                    </Link>
+                  </ListItem>
+                );
+            }
+          })}
+        </List>
+      )}
+    </SearchResult>
   );
 };

@@ -15,6 +15,21 @@
  */
 
 import { JsonValue, JsonObject } from '@backstage/types';
+import {
+  TaskSpec,
+  TaskStep,
+  TemplateMetadata,
+  TaskSpecV1beta2,
+  TaskSpecV1beta3,
+} from '@backstage/plugin-scaffolder-common';
+
+export type {
+  TaskSpec,
+  TaskStep,
+  TemplateMetadata,
+  TaskSpecV1beta2,
+  TaskSpecV1beta3,
+};
 
 /**
  * Status
@@ -68,64 +83,6 @@ export type SerializedTaskEvent = {
   type: TaskEventType;
   createdAt: string;
 };
-
-/**
- * TemplateMetadata
- *
- * @public
- */
-export type TemplateMetadata = {
-  name: string;
-};
-
-/**
- * TaskSpecV1beta2
- *
- * @public
- */
-export interface TaskSpecV1beta2 {
-  apiVersion: 'backstage.io/v1beta2';
-  baseUrl?: string;
-  values: JsonObject;
-  steps: Array<{
-    id: string;
-    name: string;
-    action: string;
-    input?: JsonObject;
-    if?: string | boolean;
-  }>;
-  output: { [name: string]: string };
-  metadata?: TemplateMetadata;
-}
-
-export interface TaskStep {
-  id: string;
-  name: string;
-  action: string;
-  input?: JsonObject;
-  if?: string | boolean;
-}
-
-/**
- * TaskSpecV1beta3
- *
- * @public
- */
-export interface TaskSpecV1beta3 {
-  apiVersion: 'scaffolder.backstage.io/v1beta3';
-  baseUrl?: string;
-  parameters: JsonObject;
-  steps: TaskStep[];
-  output: { [name: string]: JsonValue };
-  metadata?: TemplateMetadata;
-}
-
-/**
- * TaskSpec
- *
- * @public
- */
-export type TaskSpec = TaskSpecV1beta2 | TaskSpecV1beta3;
 
 /**
  * TaskSecrets

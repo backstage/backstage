@@ -15,14 +15,15 @@
  */
 
 /* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-restricted-imports */
 
-// eslint-disable-next-line no-restricted-imports
 import {
   resolve as resolvePath,
   relative as relativePath,
   dirname,
   join,
 } from 'path';
+import { spawnSync } from 'child_process';
 import prettier from 'prettier';
 import fs from 'fs-extra';
 import {
@@ -197,6 +198,86 @@ const SKIPPED_PACKAGES = [
   join('packages', 'techdocs-cli'),
 ];
 
+const NO_WARNING_PACKAGES = [
+  'packages/app-defaults',
+  'packages/backend-common',
+  'packages/backend-tasks',
+  'packages/backend-test-utils',
+  'packages/catalog-client',
+  'packages/cli-common',
+  'packages/config',
+  'packages/config-loader',
+  'packages/core-app-api',
+  'packages/core-plugin-api',
+  'packages/dev-utils',
+  'packages/errors',
+  'packages/integration',
+  'packages/integration-react',
+  'packages/test-utils',
+  'packages/theme',
+  'packages/types',
+  'packages/version-bridge',
+  'plugins/catalog-backend-module-ldap',
+  'plugins/catalog-common',
+  'plugins/permission-backend',
+  'plugins/permission-common',
+  'plugins/permission-node',
+  'plugins/permission-react',
+  'plugins/scaffolder-backend-module-cookiecutter',
+  'plugins/scaffolder-backend-module-rails',
+  'plugins/scaffolder-backend-module-yeoman',
+  'plugins/scaffolder-common',
+  'plugins/tech-insights',
+  'plugins/tech-insights-backend',
+  'plugins/tech-insights-backend-module-jsonfc',
+  'plugins/tech-insights-common',
+  'plugins/tech-insights-node',
+  'plugins/todo',
+  'plugins/todo-backend',
+];
+
+async function resolvePackagePath(
+  packagePath: string,
+): Promise<string | undefined> {
+  const projectRoot = resolvePath(__dirname, '..');
+  const fullPackageDir = resolvePath(projectRoot, packagePath);
+
+  const stat = await fs.stat(fullPackageDir);
+  if (!stat.isDirectory()) {
+    return undefined;
+  }
+
+  try {
+    const packageJsonPath = join(fullPackageDir, 'package.json');
+    await fs.access(packageJsonPath);
+  } catch (_) {
+    return undefined;
+  }
+
+  return relativePath(projectRoot, fullPackageDir);
+}
+
+async function findSpecificPackageDirs(unresolvedPackageDirs: string[]) {
+  const packageDirs = new Array<string>();
+
+  for (const unresolvedPackageDir of unresolvedPackageDirs) {
+    const packageDir = await resolvePackagePath(unresolvedPackageDir);
+    if (!packageDir) {
+      throw new Error(`'${unresolvedPackageDir}' is not a valid package path`);
+    }
+    if (SKIPPED_PACKAGES.includes(packageDir)) {
+      throw new Error(`'${packageDir}' does not have an API report`);
+    }
+    packageDirs.push(packageDir);
+  }
+
+  if (packageDirs.length === 0) {
+    return undefined;
+  }
+
+  return packageDirs;
+}
+
 async function findPackageDirs() {
   const packageDirs = new Array<string>();
   const projectRoot = resolvePath(__dirname, '..');
@@ -204,21 +285,11 @@ async function findPackageDirs() {
   for (const packageRoot of PACKAGE_ROOTS) {
     const dirs = await fs.readdir(resolvePath(projectRoot, packageRoot));
     for (const dir of dirs) {
-      const fullPackageDir = resolvePath(projectRoot, packageRoot, dir);
-
-      const stat = await fs.stat(fullPackageDir);
-      if (!stat.isDirectory()) {
+      const packageDir = await resolvePackagePath(join(packageRoot, dir));
+      if (!packageDir) {
         continue;
       }
 
-      try {
-        const packageJsonPath = join(fullPackageDir, 'package.json');
-        await fs.access(packageJsonPath);
-      } catch (_) {
-        continue;
-      }
-
-      const packageDir = relativePath(projectRoot, fullPackageDir);
       if (!SKIPPED_PACKAGES.includes(packageDir)) {
         packageDirs.push(packageDir);
       }
@@ -226,6 +297,55 @@ async function findPackageDirs() {
   }
 
   return packageDirs;
+}
+
+async function createTemporaryTsConfig(includedPackageDirs: string[]) {
+  const path = resolvePath(__dirname, '..', 'tsconfig.tmp.json');
+
+  process.once('exit', () => {
+    fs.removeSync(path);
+  });
+
+  await fs.writeJson(path, {
+    extends: './tsconfig.json',
+    include: [
+      // These two contain global definitions that are needed for stable API report generation
+      'packages/cli/asset-types/asset-types.d.ts',
+      'node_modules/handlebars/types/index.d.ts',
+      ...includedPackageDirs.map(dir => join(dir, 'src')),
+    ],
+  });
+
+  return path;
+}
+
+async function countApiReportWarnings(projectFolder: string) {
+  const path = resolvePath(projectFolder, 'api-report.md');
+  try {
+    const content = await fs.readFile(path, 'utf8');
+    const lines = content.split('\n');
+
+    const lineWarnings = lines.filter(line =>
+      line.includes('// Warning:'),
+    ).length;
+
+    const trailerStart = lines.findIndex(
+      line => line === '// Warnings were encountered during analysis:',
+    );
+    const trailerWarnings =
+      trailerStart === -1
+        ? 0
+        : lines.length -
+          trailerStart -
+          4; /* 4 lines at the trailer and after are not warnings */
+
+    return lineWarnings + trailerWarnings;
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return 0;
+    }
+    throw error;
+  }
 }
 
 async function getTsDocConfig() {
@@ -261,12 +381,14 @@ interface ApiExtractionOptions {
   packageDirs: string[];
   outputDir: string;
   isLocalBuild: boolean;
+  tsconfigFilePath: string;
 }
 
 async function runApiExtraction({
   packageDirs,
   outputDir,
   isLocalBuild,
+  tsconfigFilePath,
 }: ApiExtractionOptions) {
   await fs.remove(outputDir);
 
@@ -276,10 +398,14 @@ async function runApiExtraction({
 
   let compilerState: CompilerState | undefined = undefined;
 
+  const warnings = new Array<string>();
+
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
     const projectFolder = resolvePath(__dirname, '..', packageDir);
     const packageFolder = resolvePath(__dirname, '../dist-types', packageDir);
+
+    const warningCountBefore = await countApiReportWarnings(projectFolder);
 
     const extractorConfig = ExtractorConfig.prepare({
       configObject: {
@@ -287,7 +413,7 @@ async function runApiExtraction({
         bundledPackages: [],
 
         compiler: {
-          tsconfigFilePath: resolvePath(__dirname, '../tsconfig.json'),
+          tsconfigFilePath,
         },
 
         apiReport: {
@@ -415,6 +541,27 @@ async function runApiExtraction({
           ` and ${extractorResult.warningCount} warnings`,
       );
     }
+
+    const warningCountAfter = await countApiReportWarnings(projectFolder);
+    if (NO_WARNING_PACKAGES.includes(packageDir) && warningCountAfter > 0) {
+      throw new Error(
+        `The API Report for ${packageDir} is not allowed to have warnings`,
+      );
+    }
+    if (warningCountAfter > warningCountBefore) {
+      warnings.push(
+        `The API Report for ${packageDir} introduces new warnings. ` +
+          'Please fix these warnings in order to keep the API Reports tidy.',
+      );
+    }
+  }
+
+  if (warnings.length > 0) {
+    console.warn();
+    for (const warning of warnings) {
+      console.warn(warning);
+    }
+    console.warn();
   }
 }
 
@@ -663,23 +810,74 @@ async function buildDocs({
 }
 
 async function main() {
+  const projectRoot = resolvePath(__dirname, '..');
   const isCiBuild = process.argv.includes('--ci');
   const isDocsBuild = process.argv.includes('--docs');
+  const runTsc = process.argv.includes('--tsc');
 
-  const packageDirs = await findPackageDirs();
+  const selectedPackageDirs = await findSpecificPackageDirs(
+    process.argv.slice(2).filter(arg => !arg.startsWith('--')),
+  );
+  if (selectedPackageDirs && (isCiBuild || isDocsBuild)) {
+    throw new Error(
+      'Package path arguments are not supported for the --ci and --docs flags',
+    );
+  }
+  if (!selectedPackageDirs && !isCiBuild && !isDocsBuild) {
+    console.log('');
+    console.log(
+      'TIP: You can generate api-reports for select packages by passing package paths:',
+    );
+    console.log('');
+    console.log(
+      '       yarn build:api-reports packages/config packages/core-plugin-api',
+    );
+    console.log('');
+  }
+
+  let temporaryTsConfigPath: string | undefined;
+  if (selectedPackageDirs) {
+    temporaryTsConfigPath = await createTemporaryTsConfig(selectedPackageDirs);
+  }
+  const tsconfigFilePath =
+    temporaryTsConfigPath ?? resolvePath(projectRoot, 'tsconfig.json');
+
+  if (runTsc) {
+    await fs.remove(resolvePath(projectRoot, 'dist-types'));
+    const { status } = spawnSync(
+      'yarn',
+      [
+        'tsc',
+        ['--project', tsconfigFilePath],
+        ['--skipLibCheck', 'false'],
+        ['--incremental', 'false'],
+      ].flat(),
+      {
+        stdio: 'inherit',
+        shell: true,
+        cwd: projectRoot,
+      },
+    );
+    if (status !== 0) {
+      process.exit(status);
+    }
+  }
+
+  const packageDirs = selectedPackageDirs ?? (await findPackageDirs());
 
   console.log('# Generating package API reports');
   await runApiExtraction({
     packageDirs,
     outputDir: tmpDir,
     isLocalBuild: !isCiBuild,
+    tsconfigFilePath,
   });
 
   if (isDocsBuild) {
     console.log('# Generating package documentation');
     await buildDocs({
       inputDir: tmpDir,
-      outputDir: resolvePath(__dirname, '..', 'docs/reference'),
+      outputDir: resolvePath(projectRoot, 'docs/reference'),
     });
   }
 }

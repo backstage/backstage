@@ -20,17 +20,16 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
+  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   GitHubIntegrationConfig,
   ScmIntegrations,
+  SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { merge } from 'lodash';
 import { Logger } from 'winston';
-import {
-  EntityProvider,
-  EntityProviderConnection,
-} from '../../providers/types';
+import { EntityProvider, EntityProviderConnection } from '../../providers';
 import {
   getOrganizationTeams,
   getOrganizationUsers,
@@ -42,11 +41,16 @@ import { assignGroupsToUsers, buildOrgHierarchy } from '../processors/util/org';
 
 export class GitHubOrgEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
-  private readonly credentialsProvider: GithubCredentialsProvider;
+  private githubCredentialsProvider: GithubCredentialsProvider;
 
   static fromConfig(
     config: Config,
-    options: { id: string; orgUrl: string; logger: Logger },
+    options: {
+      id: string;
+      orgUrl: string;
+      logger: Logger;
+      githubCredentialsProvider?: GithubCredentialsProvider;
+    },
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
     const gitHubConfig = integrations.github.byUrl(options.orgUrl)?.config;
@@ -66,6 +70,9 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       orgUrl: options.orgUrl,
       logger,
       gitHubConfig,
+      githubCredentialsProvider:
+        options.githubCredentialsProvider ||
+        DefaultGithubCredentialsProvider.fromIntegrations(integrations),
     });
   }
 
@@ -75,11 +82,12 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       orgUrl: string;
       gitHubConfig: GitHubIntegrationConfig;
       logger: Logger;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ) {
-    this.credentialsProvider = GithubCredentialsProvider.create(
-      options.gitHubConfig,
-    );
+    this.githubCredentialsProvider =
+      options.githubCredentialsProvider ||
+      SingleInstanceGithubCredentialsProvider.create(options.gitHubConfig);
   }
 
   getProviderName() {
@@ -98,7 +106,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     const { markReadComplete } = trackProgress(this.options.logger);
 
     const { headers, type: tokenType } =
-      await this.credentialsProvider.getCredentials({
+      await this.githubCredentialsProvider.getCredentials({
         url: this.options.orgUrl,
       });
     const client = graphql.defaults({

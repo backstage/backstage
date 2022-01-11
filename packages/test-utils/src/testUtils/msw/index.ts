@@ -15,20 +15,6 @@
  */
 
 /**
- * @deprecated use {@link setupRequestMockHandlers} instead which can be called directly with the worker.
- * @public
- */
-export const msw = {
-  setupDefaultHandlers: (worker: {
-    listen: (t: any) => void;
-    close: () => void;
-    resetHandlers: () => void;
-  }) => {
-    setupRequestMockHandlers(worker);
-  },
-};
-
-/**
  * Sets up handlers for request mocking
  * @public
  * @param worker - service worker

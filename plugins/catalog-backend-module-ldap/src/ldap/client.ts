@@ -25,14 +25,12 @@ import {
   LdapVendor,
 } from './vendors';
 
-export interface SearchCallback {
-  (entry: SearchEntry): void;
-}
-
 /**
- * Basic wrapper for the ldapjs library.
+ * Basic wrapper for the `ldapjs` library.
  *
  * Helps out with promisifying calls, paging, binding etc.
+ *
+ * @public
  */
 export class LdapClient {
   private vendor: Promise<LdapVendor> | undefined;
@@ -75,8 +73,8 @@ export class LdapClient {
   /**
    * Performs an LDAP search operation.
    *
-   * @param dn The fully qualified base DN to search within
-   * @param options The search options
+   * @param dn - The fully qualified base DN to search within
+   * @param options - The search options
    */
   async search(dn: string, options: SearchOptions): Promise<SearchEntry[]> {
     try {
@@ -128,14 +126,14 @@ export class LdapClient {
   /**
    * Performs an LDAP search operation, calls a function on each entry to limit memory usage
    *
-   * @param dn The fully qualified base DN to search within
-   * @param options The search options
-   * @param f The callback to call on each search entry
+   * @param dn - The fully qualified base DN to search within
+   * @param options - The search options
+   * @param f - The callback to call on each search entry
    */
   async searchStreaming(
     dn: string,
     options: SearchOptions,
-    f: SearchCallback,
+    f: (entry: SearchEntry) => void,
   ): Promise<void> {
     try {
       return await new Promise<void>((resolve, reject) => {

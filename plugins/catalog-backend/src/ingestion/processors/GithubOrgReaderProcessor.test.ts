@@ -17,8 +17,8 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
-  GithubCredentialsProvider,
   ScmIntegrations,
+  GithubCredentialsProvider,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
@@ -39,6 +39,14 @@ describe('GithubOrgReaderProcessor', () => {
         },
       }),
     );
+    let githubCredentialsProvider: GithubCredentialsProvider = {
+      getCredentials() {
+        return Promise.resolve({
+          type: 'app',
+          headers: { token: 'blah' },
+        });
+      },
+    };
 
     beforeEach(() => {
       jest.resetAllMocks();
@@ -48,6 +56,7 @@ describe('GithubOrgReaderProcessor', () => {
       const processor = new GithubOrgReaderProcessor({
         integrations,
         logger,
+        githubCredentialsProvider,
       });
       const location: LocationSpec = {
         type: 'github-org',
@@ -61,10 +70,14 @@ describe('GithubOrgReaderProcessor', () => {
     });
 
     it('should not query for email addresses when GitHub Apps is used for authentication', async () => {
-      const mockGetCredentials = jest.fn().mockReturnValue({
-        headers: { token: 'blah' },
-        type: 'app',
-      });
+      githubCredentialsProvider = {
+        getCredentials() {
+          return Promise.resolve({
+            headers: { token: 'blah' },
+            type: 'app',
+          });
+        },
+      };
 
       const mockClient = jest.fn();
 
@@ -87,13 +100,10 @@ describe('GithubOrgReaderProcessor', () => {
 
       (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-      jest.spyOn(GithubCredentialsProvider, 'create').mockReturnValue({
-        getCredentials: mockGetCredentials,
-      } as any);
-
       const processor = new GithubOrgReaderProcessor({
         integrations,
         logger,
+        githubCredentialsProvider,
       });
       const location: LocationSpec = {
         type: 'github-org',
@@ -109,10 +119,14 @@ describe('GithubOrgReaderProcessor', () => {
     });
 
     it('should query for email addresses when token is used for authentication', async () => {
-      const mockGetCredentials = jest.fn().mockReturnValue({
-        headers: { token: 'blah' },
-        type: 'token',
-      });
+      githubCredentialsProvider = {
+        getCredentials() {
+          return Promise.resolve({
+            type: 'token',
+            headers: { token: 'blah' },
+          });
+        },
+      };
 
       const mockClient = jest.fn();
 
@@ -135,13 +149,10 @@ describe('GithubOrgReaderProcessor', () => {
 
       (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-      jest.spyOn(GithubCredentialsProvider, 'create').mockReturnValue({
-        getCredentials: mockGetCredentials,
-      } as any);
-
       const processor = new GithubOrgReaderProcessor({
         integrations,
         logger,
+        githubCredentialsProvider,
       });
       const location: LocationSpec = {
         type: 'github-org',
