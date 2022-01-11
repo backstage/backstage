@@ -66,7 +66,7 @@ import {
 import { parseBazaarResponse } from '../../util/parseMethods';
 
 const useStyles = makeStyles({
-  title: {
+  wordBreak: {
     wordBreak: 'break-all',
     whiteSpace: 'normal',
     margin: '-0.25rem 0',
@@ -237,9 +237,11 @@ export const HomePageBazaarInfoCard = ({
           handleClose={() => setOpenUnlink(false)}
           message={[
             'Are you sure you want to unlink ',
-            <b>{parseEntityRef(bazaarProject.value?.entityRef!).name}</b>,
+            <b className={classes.wordBreak}>
+              {parseEntityRef(bazaarProject.value?.entityRef!).name}
+            </b>,
             ' from ',
-            <b>{bazaarProject.value?.name}</b>,
+            <b className={classes.wordBreak}>{bazaarProject.value?.name}</b>,
             ' ?',
           ]}
           type="unlink"
@@ -258,7 +260,7 @@ export const HomePageBazaarInfoCard = ({
 
         <CardHeader
           title={
-            <p className={classes.title}>
+            <p className={classes.wordBreak}>
               {bazaarProject.value?.name || initProject.name}
             </p>
           }

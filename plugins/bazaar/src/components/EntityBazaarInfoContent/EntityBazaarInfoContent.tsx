@@ -38,7 +38,7 @@ import { CardContentFields } from '../CardContentFields';
 import { fetchProjectMembers } from '../../util/fetchMethods';
 
 const useStyles = makeStyles({
-  title: {
+  wordBreak: {
     wordBreak: 'break-all',
     whiteSpace: 'normal',
     margin: '-0.25rem 0',
@@ -169,9 +169,11 @@ export const EntityBazaarInfoContent = ({
             handleClose={handleUnlinkClose}
             message={[
               'Are you sure you want to unlink ',
-              <b>{parseEntityRef(bazaarProject.entityRef!).name}</b>,
+              <b className={classes.wordBreak}>
+                {parseEntityRef(bazaarProject.entityRef!).name}
+              </b>,
               ' from ',
-              <b>{bazaarProject.name}</b>,
+              <b className={classes.wordBreak}>{bazaarProject.name}</b>,
               ' ?',
             ]}
             type="unlink"
@@ -180,7 +182,7 @@ export const EntityBazaarInfoContent = ({
         )}
 
         <CardHeader
-          title={<p className={classes.title}>{bazaarProject?.name!}</p>}
+          title={<p className={classes.wordBreak}>{bazaarProject?.name!}</p>}
           action={
             <div>
               <IconButton
