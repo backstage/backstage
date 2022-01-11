@@ -7,7 +7,10 @@ description: Roadmap of Backstage
 ## The Backstage Roadmap
 
 Backstage is currently under rapid development. This page details the project’s
-public roadmap, the result of ongoing collaboration between the core maintainers and the broader Backstage community. Treat the roadmap as an ever-evolving guide to keep us aligned as a community on:
+public roadmap, the result of ongoing collaboration between the core maintainers
+and the broader Backstage community. Treat the roadmap as an ever-evolving guide
+to keep us aligned as a community on:
+
 - Upcoming enhancements and benefits,
 - Planning contributions and support,
 - Planning the project’s adoption,
@@ -25,9 +28,14 @@ already working) on a new or existing feature, please let us know, so that we
 can update the roadmap accordingly. We are also happy to share knowledge and
 context that will help your feature land successfully.
 
-You can also head over to the [CONTRIBUTING](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) guidelines to get started.
+You can also head over to the
+[CONTRIBUTING](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)
+guidelines to get started.
 
-If you have specific questions about the roadmap, please create an [issue](https://github.com/backstage/backstage/issues/new/choose), ping us on [Discord](https://discord.gg/awD6SxgQ), or [book time](http://calendly.com/spotify-backstage) with the Spotify team.
+If you have specific questions about the roadmap, please create an
+[issue](https://github.com/backstage/backstage/issues/new/choose), ping us on
+[Discord](https://discord.gg/awD6SxgQ), or
+[book time](http://calendly.com/spotify-backstage) with the Spotify team.
 
 ### How to read the roadmap
 
@@ -55,17 +63,32 @@ cycle will vary based on maintainer schedules.
 
 ### Backstage 1.0 (and following versions)
 
-During the first quarter of 2022 it is planned to be finalised and released the version 1.0 of the Backstage platform (defined by the Core, [Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview), [Scaffolder](https://backstage.io/docs/features/software-templates/software-templates-index) and [TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview)). Included as part of this milestone:
-- The cadence of minor/weekly/daily releases to provide clarity on the frequency and expectations for future versions of the platform and its defining modules.
-- The support model to set the expectations from the adopters in their respective use cases.
+During the first quarter of 2022 it is planned to be finalised and released the
+version 1.0 of the Backstage platform (defined by the Core,
+[Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview),
+[Scaffolder](https://backstage.io/docs/features/software-templates/software-templates-index)
+and [TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview)).
+Included as part of this milestone:
+
+- The cadence of minor/weekly/daily releases to provide clarity on the frequency
+  and expectations for future versions of the platform and its defining modules.
+- The support model to set the expectations from the adopters in their
+  respective use cases.
 
 ### Backstage Security Audit
 
-This initiative is the first of a broader Security Strategy for Backstage. The purpose of the Security Audit is to involve third party companies in auditing the platform and highlighting potential vulnerabilities (if there are any). The benefit for the adopters is clear: we want Backstage to be as much secure as possible and we want to make it reliable through a specific initiative. This initiative in particular is done together (and with the support of) the [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io/). 
+This initiative is the first of a broader Security Strategy for Backstage. The
+purpose of the Security Audit is to involve third party companies in auditing
+the platform and highlighting potential vulnerabilities (if there are any). The
+benefit for the adopters is clear: we want Backstage to be as much secure as
+possible and we want to make it reliable through a specific initiative. This
+initiative in particular is done together (and with the support of) the
+[Cloud Native Computing Foundation (CNCF)](https://www.cncf.io/).
 
 ### Moving to Incubation in CNCF
 
-The progress of the request can be seen [here](https://github.com/cncf/toc/pull/717). 
+The progress of the request can be seen
+[here](https://github.com/cncf/toc/pull/717).
 
 ## Future work
 
@@ -73,12 +96,22 @@ The following feature list doesn’t represent a commitment to develop and the
 list order doesn’t reflect any priority or importance. But these features are on
 the maintainers’ radar, with clear interest expressed by the community.
 
-- **Backend Services:** To better scale and maintain the Backstage instances, a backend layer of services is planned to be introduced as part of the software architecture. This layer of backend services will help in decoupling the various modules (Catalog and Scaffolder just to quote some) from the front-end experience.  
-- **Security Plan (and Strategy):** The purpose of the Security Strategy is to move another step ahead along the path of the maturity of the platform, setting the expectations of any adopters from a security point.
+- **Backend Services:** To better scale and maintain the Backstage instances, a
+  backend layer of services is planned to be introduced as part of the software
+  architecture. This layer of backend services will help in decoupling the
+  various modules (Catalog and Scaffolder just to quote some) from the front-end
+  experience.
+- **Security Plan (and Strategy):** The purpose of the Security Strategy is to
+  move another step ahead along the path of the maturity of the platform,
+  setting the expectations of any adopters from a security point.
 - **Search GA:**.
-- **[GraphQL](https://graphql.org/) support:** Introduce the ability to query Backstage backend services with a standard query language for APIs.
-- **Telemetry:** To efficiently collect, store and analyse system and application log data so that Backstage can be monitored and improved. 
-- **Improved UX design:** Provide a better Backstage user experience through visual guidelines and templates, especially navigation across plug-ins and portal functionalities.
+- **[GraphQL](https://graphql.org/) support:** Introduce the ability to query
+  Backstage backend services with a standard query language for APIs.
+- **Telemetry:** To efficiently collect, store and analyse system and
+  application log data so that Backstage can be monitored and improved.
+- **Improved UX design:** Provide a better Backstage user experience through
+  visual guidelines and templates, especially navigation across plug-ins and
+  portal functionalities.
 
 ## Completed milestones
 
