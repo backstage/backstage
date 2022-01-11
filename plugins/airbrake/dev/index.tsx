@@ -26,7 +26,7 @@ import {
 } from '@backstage/core-components';
 import { airbrakeApiRef, MockAirbrakeApi } from '../src/api';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { entity } from '../src/api/mock/mock-entity';
+import { createEntity } from '../src/api/mock/mock-entity';
 
 createDevApp()
   .registerPlugin(airbrakePlugin)
@@ -51,7 +51,7 @@ createDevApp()
               A description of your plugin goes here.
             </SupportButton>
           </ContentHeader>
-          <EntityProvider entity={entity('demo')}>
+          <EntityProvider entity={createEntity('demo')}>
             <EntityAirbrakeContent />
           </EntityProvider>
         </Content>

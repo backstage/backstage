@@ -18,12 +18,12 @@ import React from 'react';
 import { EntityAirbrakeWidget } from './EntityAirbrakeWidget';
 import exampleData from '../../api/mock/airbrake-groups-api-mock.json';
 import { renderInTestApp } from '@backstage/test-utils';
-import { entity } from '../../api/mock/mock-entity';
+import { createEntity } from '../../api/mock/mock-entity';
 
 describe('EntityAirbrakeContent', () => {
   it('renders all errors sent from Airbrake', async () => {
     const table = await renderInTestApp(
-      <EntityAirbrakeWidget entity={entity('test')} />,
+      <EntityAirbrakeWidget entity={createEntity('test')} />,
     );
     expect(exampleData.groups.length).toBeGreaterThan(0);
     for (const group of exampleData.groups) {

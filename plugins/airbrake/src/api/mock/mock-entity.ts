@@ -16,7 +16,7 @@
 import { AIRBRAKE_PROJECT_SLUG_ANNOTATION } from '../../components/useProjectSlug';
 import { Entity } from '@backstage/catalog-model';
 
-export const entity = (name?: string) =>
+export const createEntity = (name?: string) =>
   ({
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
