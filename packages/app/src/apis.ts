@@ -57,9 +57,6 @@ type TemplateParameterSchema = {
 };
 class OverrideScaffolderClient extends ScaffolderClient {
   private readonly configApi: ConfigApi;
-  private readonly internalDiscoveryApi: DiscoveryApi;
-  private readonly internalIdentityApi: IdentityApi;
-
   constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
@@ -69,36 +66,15 @@ class OverrideScaffolderClient extends ScaffolderClient {
   }) {
     super(options);
     this.configApi = options.configApi;
-    this.internalDiscoveryApi = options.discoveryApi;
-    this.internalIdentityApi = options.identityApi;
   }
 
   async getTemplateParameterSchema(
     templateName: EntityName,
   ): Promise<TemplateParameterSchema> {
-    const { namespace, kind, name } = templateName;
+    const response = await super.getTemplateParameterSchema(templateName);
 
-    const token = await this.internalIdentityApi.getIdToken();
-    const baseUrl = await this.internalDiscoveryApi.getBaseUrl('scaffolder');
-    const templatePath = [namespace, kind, name]
-      .map(s => encodeURIComponent(s))
-      .join('/');
-    const url = `${baseUrl}/v2/templates/${templatePath}/parameter-schema`;
-
-    const response = await fetch(url, {
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    const schema: TemplateParameterSchema = await response.json();
-
-    console.log('do the check here', schema);
-    return schema;
+    console.log('do the check here', response, this.configApi);
+    return response;
   }
 }
 
