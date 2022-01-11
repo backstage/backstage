@@ -478,7 +478,7 @@ techdocs:
   builder: 'local' # Alternatives - 'external'
   generator:
     runIn: 'docker' # Alternatives - 'local'
-    dockerImage: 'lakshika1064/backstage:techdocs'
+    dockerImage: dockerHub_Username/repositoryName:tagName
     pullImage: true
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
@@ -493,9 +493,9 @@ plugins:
   - kroki
 ```
 
-4. **Add mermaid code into techdoc:**
+4. **Add mermaid code into techdocs:**
 
-```md
+````md
 ```kroki-mermaid
 sequenceDiagram
 GitLab->>Kroki: Request rendering
@@ -503,6 +503,7 @@ Kroki->>Mermaid: Request rendering
 Mermaid-->>Kroki: Image
 Kroki-->>GitLab: Image
 ```
+````
 
 Done! Now you have a support of the following diagrams along with mermaid:
 
