@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Add `LayoutProvider` component and `useLayoutContent` hook to have a reference to current main content element
+Add `useContent` hook to have a reference to the current main content element

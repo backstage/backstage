@@ -571,11 +571,6 @@ enum LabelPosition {
   RIGHT = 'r',
 }
 
-// Warning: (ae-missing-release-tag) "LayoutProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function LayoutProvider(props: PropsWithChildren<{}>): JSX.Element;
-
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Lifecycle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -2406,10 +2401,10 @@ export function TrendLine(
     },
 ): JSX.Element | null;
 
-// Warning: (ae-missing-release-tag) "useLayoutContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "useContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function useLayoutContent(): {
+export function useContent(): {
   focusContent: () => void;
   contentRef: React_2.MutableRefObject<HTMLDivElement | null> | undefined;
 };

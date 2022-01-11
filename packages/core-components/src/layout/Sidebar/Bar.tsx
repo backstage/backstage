@@ -23,11 +23,10 @@ import Button from '@material-ui/core/Button';
 
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
-import { SidebarPinStateContext } from './Page';
+import { SidebarPinStateContext, useContent } from './Page';
 import { MobileSidebar } from './MobileSidebar';
 import DoubleArrowRight from './icons/DoubleArrowRight';
 import DoubleArrowLeft from './icons/DoubleArrowLeft';
-import { useLayoutContent } from '../LayoutProvider/LayoutProvider';
 
 /** @public */
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
@@ -230,7 +229,7 @@ export const Sidebar = (props: SidebarProps) => {
 };
 
 function A11ySkipSidebar() {
-  const { focusContent, contentRef } = useLayoutContent();
+  const { focusContent, contentRef } = useContent();
   const classes = useStyles();
 
   if (!contentRef?.current) {
