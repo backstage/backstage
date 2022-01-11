@@ -112,6 +112,8 @@ export class TechInsightsDatabase implements TechInsightsStore {
         this.db('facts')
           .max('timestamp')
           .column('id as subId')
+          .where({ entity: entityTriplet })
+          .and.whereIn('id', ids)
           .groupBy('id')
           .as('subQ'),
         'facts.id',
