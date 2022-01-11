@@ -35,7 +35,6 @@ import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
-import { IdentityClient } from '@backstage/plugin-auth-backend';
 
 /**
  * All of the required dependencies for running TechDocs in the "out-of-the-box"
@@ -87,17 +86,12 @@ export async function createRouter(
   const router = Router();
   const { publisher, config, logger, discovery } = options;
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
-  const identity = new IdentityClient({
-    discovery,
-    issuer: await discovery.getBaseUrl('auth'),
-  });
 
   // Entities are cached to optimize the /static/docs request path, which can be called many times
   // when loading a single techdocs page.
   const entityLoader = new CachedEntityLoader({
     catalog: catalogClient,
     cache: options.cache.getClient(),
-    identity,
   });
 
   // Set up a cache client if configured.

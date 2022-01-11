@@ -20,24 +20,20 @@ import {
   EntityName,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { IdentityClient } from '@backstage/plugin-auth-backend';
 
 export type CachedEntityLoaderOptions = {
   catalog: CatalogClient;
   cache: CacheClient;
-  identity: IdentityClient;
 };
 
 export class CachedEntityLoader {
   private readonly catalog: CatalogClient;
   private readonly cache: CacheClient;
-  private readonly identity: IdentityClient;
   private readonly readTimeout = 1000;
 
-  constructor({ catalog, cache, identity }: CachedEntityLoaderOptions) {
+  constructor({ catalog, cache }: CachedEntityLoaderOptions) {
     this.catalog = catalog;
     this.cache = cache;
-    this.identity = identity;
   }
 
   async load(
@@ -73,12 +69,10 @@ export class CachedEntityLoader {
     entityName: EntityName,
     token: string | undefined,
   ): Promise<string> {
-    const key = ['catalog'];
-    key.push(stringifyEntityRef(entityName));
+    const key = ['catalog', stringifyEntityRef(entityName)];
 
     if (token) {
-      const response = await this.identity.authenticate(token);
-      key.push(response.identity.userEntityRef);
+      key.push(token);
     }
 
     return key.join(':');
