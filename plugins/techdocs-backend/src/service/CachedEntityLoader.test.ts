@@ -16,13 +16,7 @@
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { CatalogClient } from '@backstage/catalog-client';
 import { CacheClient } from '@backstage/backend-common';
-import { ResponseError } from '@backstage/errors';
-import {
-  BackstageIdentityResponse,
-  IdentityClient,
-} from '@backstage/plugin-auth-backend';
 import { EntityName } from '@backstage/catalog-model';
-import { Response } from 'cross-fetch';
 
 describe('CachedEntityLoader', () => {
   const catalog: jest.Mocked<CatalogClient> = {
@@ -32,10 +26,6 @@ describe('CachedEntityLoader', () => {
   const cache: jest.Mocked<CacheClient> = {
     get: jest.fn(),
     set: jest.fn(),
-  } as any;
-
-  const identity: jest.Mocked<IdentityClient> = {
-    authenticate: jest.fn(),
   } as any;
 
   const entityName: EntityName = {
@@ -55,24 +45,13 @@ describe('CachedEntityLoader', () => {
 
   const token = 'test-token';
 
-  const identityResponse: BackstageIdentityResponse = {
-    id: '',
-    token,
-    identity: {
-      type: 'user',
-      userEntityRef: 'user:default/test-user',
-      ownershipEntityRefs: [],
-    },
-  };
-
-  const loader = new CachedEntityLoader({ catalog, cache, identity });
+  const loader = new CachedEntityLoader({ catalog, cache });
 
   afterEach(() => {
     jest.resetAllMocks();
   });
 
   it('writes entities to cache', async () => {
-    identity.authenticate.mockResolvedValue(identityResponse);
     cache.get.mockResolvedValue(undefined);
     catalog.getEntityByName.mockResolvedValue(entity);
 
@@ -80,14 +59,13 @@ describe('CachedEntityLoader', () => {
 
     expect(result).toEqual(entity);
     expect(cache.set).toBeCalledWith(
-      'catalog:component:default/test:user:default/test-user',
+      'catalog:component:default/test:test-token',
       entity,
       { ttl: 5000 },
     );
   });
 
   it('returns entities from cache', async () => {
-    identity.authenticate.mockResolvedValue(identityResponse);
     cache.get.mockResolvedValue(entity);
 
     const result = await loader.load(entityName, token);
@@ -97,7 +75,6 @@ describe('CachedEntityLoader', () => {
   });
 
   it('does not cache missing entites', async () => {
-    identity.authenticate.mockResolvedValue(identityResponse);
     cache.get.mockResolvedValue(undefined);
     catalog.getEntityByName.mockResolvedValue(undefined);
 
@@ -120,7 +97,6 @@ describe('CachedEntityLoader', () => {
   });
 
   it('calls the catalog if the cache read takes too long', async () => {
-    identity.authenticate.mockResolvedValue(identityResponse);
     cache.get.mockImplementation(
       () =>
         new Promise(resolve => {
