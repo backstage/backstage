@@ -33,7 +33,7 @@ import { fetchCatalogItems } from '../../util/fetchMethods';
 import { parseBazaarProject } from '../../util/parseMethods';
 
 const useStyles = makeStyles({
-  button: { width: '12rem' },
+  button: { minWidth: '11rem' },
   container: {
     marginTop: '2rem',
   },

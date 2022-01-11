@@ -86,9 +86,12 @@ export class BazaarClient implements BazaarApi {
   async getProjectById(id: number): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
-    const response = await fetch(`${baseUrl}/projects/id/${id}`, {
-      method: 'GET',
-    });
+    const response = await fetch(
+      `${baseUrl}/projects/${encodeURIComponent(id)}`,
+      {
+        method: 'GET',
+      },
+    );
 
     return response.ok ? response : null;
   }
@@ -97,7 +100,7 @@ export class BazaarClient implements BazaarApi {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
     const response = await fetch(
-      `${baseUrl}/projects/ref/${encodeURIComponent(entityRef)}`,
+      `${baseUrl}/projects/${encodeURIComponent(entityRef)}`,
       {
         method: 'GET',
       },
@@ -109,32 +112,45 @@ export class BazaarClient implements BazaarApi {
   async getMembers(id: number): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
-    return await fetch(`${baseUrl}/projects/${id}/members`, {
-      method: 'GET',
-    }).then(resp => resp.json());
+    return await fetch(
+      `${baseUrl}/projects/${encodeURIComponent(id)}/members`,
+      {
+        method: 'GET',
+      },
+    ).then(resp => resp.json());
   }
 
   async addMember(id: number, userId: string): Promise<void> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
-    await fetch(`${baseUrl}/projects/${id}/member/${userId}`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+    await fetch(
+      `${baseUrl}/projects/${encodeURIComponent(
+        id,
+      )}/member/${encodeURIComponent(userId)}`,
+      {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          picture: (await this.identityApi.getProfileInfo()).picture,
+        }),
       },
-      body: JSON.stringify({
-        picture: this.identityApi.getProfile()?.picture,
-      }),
-    });
+    );
   }
 
   async deleteMember(id: number, userId: string): Promise<void> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
-    await fetch(`${baseUrl}/projects/${id}/member/${userId}`, {
-      method: 'DELETE',
-    });
+    await fetch(
+      `${baseUrl}/projects/${encodeURIComponent(
+        id,
+      )}/member/${encodeURIComponent(userId)}`,
+      {
+        method: 'DELETE',
+      },
+    );
   }
 
   async getProjects(): Promise<any> {
@@ -148,7 +164,7 @@ export class BazaarClient implements BazaarApi {
   async deleteProject(id: number): Promise<void> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
 
-    await fetch(`${baseUrl}/projects/${id}`, {
+    await fetch(`${baseUrl}/projects/${encodeURIComponent(id)}`, {
       method: 'DELETE',
     });
   }

@@ -15,7 +15,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, Divider, IconButton } from '@material-ui/core';
+import {
+  Card,
+  CardHeader,
+  Divider,
+  IconButton,
+  makeStyles,
+} from '@material-ui/core';
 import {
   HeaderIconLinkRow,
   IconLinkVerticalProps,
@@ -59,6 +65,14 @@ import {
 } from '../../util/fetchMethods';
 import { parseBazaarResponse } from '../../util/parseMethods';
 
+const useStyles = makeStyles({
+  title: {
+    wordBreak: 'break-all',
+    whiteSpace: 'normal',
+    margin: '-0.25rem 0',
+  },
+});
+
 type Props = {
   initProject: BazaarProject;
   handleClose: () => void;
@@ -70,6 +84,7 @@ export const HomePageBazaarInfoCard = ({
   handleClose,
   initEntity,
 }: Props) => {
+  const classes = useStyles();
   const catalogLink = useRouteRef(catalogRouteRef);
   const bazaarApi = useApi(bazaarApiRef);
   const identity = useApi(identityApiRef);
@@ -242,7 +257,11 @@ export const HomePageBazaarInfoCard = ({
         />
 
         <CardHeader
-          title={bazaarProject.value?.name || initProject.name}
+          title={
+            <p className={classes.title}>
+              {bazaarProject.value?.name || initProject.name}
+            </p>
+          }
           action={
             <div>
               <IconButton onClick={() => setOpenEdit(true)}>

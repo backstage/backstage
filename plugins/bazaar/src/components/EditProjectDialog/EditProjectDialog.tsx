@@ -101,7 +101,7 @@ export const EditProjectDialog = ({
         handleClose={handleDeleteClose}
         message={[
           'Are you sure you want to delete ',
-          <b>{bazaarProject.name}</b>,
+          <b key={bazaarProject.name}>{bazaarProject.name}</b>,
           ' from the Bazaar?',
         ]}
         type="delete"
