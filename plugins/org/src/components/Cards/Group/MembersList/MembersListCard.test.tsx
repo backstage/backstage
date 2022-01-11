@@ -138,7 +138,7 @@ describe('MemberTab Test', () => {
       wrapInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
           <EntityProvider entity={groupEntity}>
-            <MembersListCard memberType="Testers" />
+            <MembersListCard memberDisplayTitle="Testers" />
           </EntityProvider>
           ,
         </TestApiProvider>,
