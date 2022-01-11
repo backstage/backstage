@@ -36,3 +36,20 @@ There are many situations where a vulnerability does not affect a particular dep
 To work around this and other similar issues, Snyk provides a method to ignore vulnerabilities. In order to provide the best visibility and most utility to adopters of Backstage, we store these ignore rules in `.snyk` policy files. This allows adopters to rely on our ignore policies if they wish to do so.
 
 Adding a new ignore policy is done by creating or modifying an existing `.snyk` file within a package root. See the [Snyk Documentation](https://support.snyk.io/hc/en-us/articles/360007487097-The-snyk-file) for details on the syntax. Always include a description, full path, and time limit of the ignore policy.
+
+TODO: MOVE TO SEPARATE FILE
+
+## Emergency Release Process
+
+This emergency release process is intended only for the Backstage maintainers.
+
+For this example we will be using the `@backstage/core` package which is currently version `1.5.0` in the master branch.
+
+In the event of a severe bug or security vulnerability detected in `1.1.1` which was released in `2048-01-01` please proceed using this process.
+
+- [ ] Create new base branch using `git checkout 2048-01-01 && git checkout -b release-2048-01-01-patch && git push --set-upstream origin release-2048-01-01-patch`
+- [ ] Create new branch of the base branch(`release-2048-01-01-patch`) that will contain the emergency fix. `git checkout -b release-2048-01-01-emergency-fix`
+- [ ] Apply fixes and generate new patch changeset for the effected package.
+- [ ] Create PR towards the base branch(`release-2048-01-01-patch`) with the emergency fix.
+- [ ] Review/Merge PR towards `release-2048-01-01-patch`. This will automatically trigger a release.
+- [ ] Apply security fix towards master.
