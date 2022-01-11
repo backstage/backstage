@@ -24,9 +24,15 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
+import { airbrakeApiRef, MockAirbrakeApi } from '../src/api';
 
 createDevApp()
   .registerPlugin(airbrakePlugin)
+  .registerApi({
+    api: airbrakeApiRef,
+    deps: {},
+    factory: () => new MockAirbrakeApi(),
+  })
   .addPage({
     element: (
       <Page themeId="tool">

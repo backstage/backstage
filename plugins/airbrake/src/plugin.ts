@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 import {
-  configApiRef,
   createApiFactory,
   createPlugin,
   discoveryApiRef,
-  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
@@ -30,9 +28,7 @@ export const airbrakePlugin = createPlugin({
     createApiFactory({
       api: airbrakeApiRef,
       deps: {
-        configApi: configApiRef,
         discoveryApi: discoveryApiRef,
-        identityApi: identityApiRef,
       },
       factory: ({ discoveryApi }) => new ProductionAirbrakeApi(discoveryApi),
     }),
