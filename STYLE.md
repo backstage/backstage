@@ -24,7 +24,7 @@ Our TypeScript style is inspired by the [style guidelines](https://github.com/Mi
 
 ## File and Export Structure
 
-1. Shared types should be defined in types.ts.
+1. Shared types should be defined in `types.ts`.
 1. Keep `index.ts` free from implementation, it should only contain re-exports.
 1. If a file has a single or a main export, name the file after the export.
 
@@ -32,7 +32,7 @@ Our TypeScript style is inspired by the [style guidelines](https://github.com/Mi
 
 1. Rely on `@backstage/errors` for custom error types.
    ```ts
-   throw NotFoundError(`Could not find resource with id '${id}'`);
+   throw new NotFoundError(`Could not find resource with id '${id}'`);
    ```
 1. Check error types by comparing the name
    ```ts
@@ -142,7 +142,7 @@ This also extends to React components, since API documenter doesn't have any spe
 
 ```ts
 /**
- * Properties for ErrorPanel.
+ * Properties for {@link ErrorPanel}.
  */
 export interface ErrorPanelProps {
   ...
@@ -170,7 +170,7 @@ Also be sure to check that the type used by the parameter is exported, as it oth
 
 ## Use `@remarks` to split long descriptions
 
-The API reference has an index of exported symbols for each package, which uses a short description, while clicking through to the page for a symbol shows the full description. By default all descriptions are considered "short", and you have manually add a divider where the description should be cut off using the `@remarks` tag.
+The API reference has an index of exported symbols for each package, which uses a short description, while clicking through to the page for a symbol shows the full description. By default all descriptions are considered "short", and you have to manually add a divider where the description should be cut off using the `@remarks` tag.
 
 ```ts
 /**
@@ -205,7 +205,7 @@ forPlugin(pluginId: string): PluginCacheManager {
 
 ## Fill in missing references using `{@link ...}`
 
-Not all types are detected and referenced on the documentation page. Most notably variables, and therefore ApiRefs, will not have clickable links to other symbols that they reference. We instead fill in this missing information using inline `{@link ...}` tags in the description:
+Not all types are detected and referenced on the documentation page. Most notably variables, and therefore `ApiRef`s, will not have clickable links to other symbols that they reference. We instead fill in this missing information using inline `{@link ...}` tags in the description:
 
 ```ts
 /**
