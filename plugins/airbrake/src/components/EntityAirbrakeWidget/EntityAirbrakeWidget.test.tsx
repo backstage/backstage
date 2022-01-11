@@ -18,22 +18,9 @@ import React from 'react';
 import { EntityAirbrakeWidget } from './EntityAirbrakeWidget';
 import exampleData from '../../api/mock/airbrake-groups-api-mock.json';
 import { renderInTestApp } from '@backstage/test-utils';
-import { AIRBRAKE_PROJECT_SLUG_ANNOTATION } from '../useProjectSlug';
-import { Entity } from '@backstage/catalog-model';
+import { entity } from '../../api/mock/mock-entity';
 
 describe('EntityAirbrakeContent', () => {
-  const entity = (name?: string) =>
-    ({
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Component',
-      metadata: {
-        annotations: {
-          [AIRBRAKE_PROJECT_SLUG_ANNOTATION]: name,
-        },
-        name: name,
-      },
-    } as Entity);
-
   it('renders all errors sent from Airbrake', async () => {
     const table = await renderInTestApp(
       <EntityAirbrakeWidget entity={entity('test')} />,

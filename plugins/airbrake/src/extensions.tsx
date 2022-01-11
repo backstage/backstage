@@ -27,11 +27,10 @@ export const EntityAirbrakeContent = airbrakePlugin.provide(
     component: () =>
       import('./components/EntityAirbrakeWidget').then(
         ({ EntityAirbrakeWidget }) => {
-          const AirbrakePage = () => {
+          return () => {
             const { entity } = useEntity();
             return <EntityAirbrakeWidget entity={entity} />;
           };
-          return AirbrakePage;
         },
       ),
   }),
