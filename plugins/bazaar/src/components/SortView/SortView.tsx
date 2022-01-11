@@ -141,7 +141,9 @@ export const SortView = () => {
     }
   }, [bazaarProjects, catalogEntities]);
 
-  const handleSortMethodChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleSortMethodChange = (
+    event: ChangeEvent<{ name?: string | undefined; value: unknown }>,
+  ) => {
     setSortMethodNbr(
       typeof event.target.value === 'number' ? event.target.value : 0,
     );

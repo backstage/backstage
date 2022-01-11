@@ -57,7 +57,10 @@ export const AddProjectDialog = ({
     setSelectedEntity(entity);
   };
 
-  const handleSubmit: any = async (
+  const handleSubmit: (
+    getValues: UseFormGetValues<FormValues>,
+    reset: UseFormReset<FormValues>,
+  ) => Promise<void> = async (
     getValues: UseFormGetValues<FormValues>,
     reset: UseFormReset<FormValues>,
   ) => {

@@ -76,9 +76,9 @@ export const EditProjectDialog = ({
     });
   }, [bazaarProject]);
 
-  const handleEditSubmit: any = async (
+  const handleEditSubmit: (
     getValues: UseFormGetValues<FormValues>,
-  ) => {
+  ) => Promise<void> = async (getValues: UseFormGetValues<FormValues>) => {
     const formValues = getValues();
 
     const updateResponse = await bazaarApi.updateProject({
@@ -88,7 +88,7 @@ export const EditProjectDialog = ({
       membersCount: bazaarProject.membersCount,
       startDate: formValues?.startDate ?? null,
       endDate: formValues?.endDate ?? null,
-    });
+    } as BazaarProject);
 
     if (updateResponse.status === 'ok') fetchBazaarProject();
     handleEditClose();

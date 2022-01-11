@@ -21,6 +21,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/catalog-client": "^0.5.3",
     "@backstage/catalog-model": "^0.9.7",
     "@backstage/cli": "^0.10.5",
     "@backstage/core-components": "^0.8.3",

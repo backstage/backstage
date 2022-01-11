@@ -16,12 +16,7 @@
 
 import React from 'react';
 import { Button, Dialog } from '@material-ui/core';
-import {
-  useForm,
-  SubmitHandler,
-  UseFormReset,
-  UseFormGetValues,
-} from 'react-hook-form';
+import { useForm, UseFormReset, UseFormGetValues } from 'react-hook-form';
 import { InputField } from '../InputField/InputField';
 import { InputSelector } from '../InputSelector/InputSelector';
 import { FormValues } from '../../types';
@@ -36,7 +31,7 @@ type Props = {
   handleSave: (
     getValues: UseFormGetValues<FormValues>,
     reset: UseFormReset<FormValues>,
-  ) => SubmitHandler<FormValues>;
+  ) => Promise<void>;
   isAddForm: boolean;
   title: string;
   defaultValues: FormValues;
