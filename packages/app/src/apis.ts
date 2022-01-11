@@ -29,11 +29,78 @@ import {
 } from '@backstage/plugin-graphiql';
 import {
   AnyApiFactory,
+  ConfigApi,
   configApiRef,
   createApiFactory,
   errorApiRef,
   githubAuthApiRef,
+  DiscoveryApi,
+  IdentityApi,
+  discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
+import { ScmIntegrationRegistry } from '@backstage/integration';
+import { EntityName } from '@backstage/catalog-model';
+import {
+  ScaffolderClient,
+  scaffolderApiRef,
+} from '@backstage/plugin-scaffolder';
+import { JsonObject } from '@backstage/types';
+import { ResponseError } from '@backstage/errors';
+
+type TemplateParameterSchema = {
+  title: string;
+  steps: Array<{
+    title: string;
+    schema: JsonObject;
+  }>;
+};
+class OverrideScaffolderClient extends ScaffolderClient {
+  private readonly configApi: ConfigApi;
+  private readonly internalDiscoveryApi: DiscoveryApi;
+  private readonly internalIdentityApi: IdentityApi;
+
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+    scmIntegrationsApi: ScmIntegrationRegistry;
+    configApi: ConfigApi;
+    useLongPollingLogs?: boolean;
+  }) {
+    super(options);
+    this.configApi = options.configApi;
+    this.internalDiscoveryApi = options.discoveryApi;
+    this.internalIdentityApi = options.identityApi;
+  }
+
+  async getTemplateParameterSchema(
+    templateName: EntityName,
+  ): Promise<TemplateParameterSchema> {
+    const { namespace, kind, name } = templateName;
+
+    const token = await this.internalIdentityApi.getIdToken();
+    const baseUrl = await this.internalDiscoveryApi.getBaseUrl('scaffolder');
+    const templatePath = [namespace, kind, name]
+      .map(s => encodeURIComponent(s))
+      .join('/');
+    const url = `${baseUrl}/v2/templates/${templatePath}/parameter-schema`;
+
+    const response = await fetch(url, {
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    const schema: TemplateParameterSchema = await response.json();
+
+    console.log('do the check here', schema);
+    return schema;
+  }
+}
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -62,6 +129,21 @@ export const apis: AnyApiFactory[] = [
         }),
       ]),
   }),
-
+  createApiFactory({
+    api: scaffolderApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      scmIntegrationsApi: scmIntegrationsApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, identityApi, scmIntegrationsApi, configApi }) =>
+      new OverrideScaffolderClient({
+        discoveryApi,
+        identityApi,
+        scmIntegrationsApi,
+        configApi,
+      }),
+  }),
   createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
 ];
