@@ -1,7 +1,7 @@
 ---
-'@backstage/plugin-tech-insights': minor
-'@backstage/plugin-tech-insights-backend': minor
-'@backstage/plugin-tech-insights-common': minor
+'@backstage/plugin-tech-insights': patch
+'@backstage/plugin-tech-insights-backend': patch
+'@backstage/plugin-tech-insights-common': patch
 '@backstage/plugin-tech-insights-backend-module-jsonfc': patch
 ---
 

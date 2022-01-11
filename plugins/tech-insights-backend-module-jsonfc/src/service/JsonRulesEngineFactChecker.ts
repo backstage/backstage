@@ -35,6 +35,7 @@ import { pick } from 'lodash';
 import Ajv, { SchemaObject } from 'ajv';
 import * as validationSchema from './validation-schema.json';
 import { JSON_RULE_ENGINE_CHECK_TYPE } from '../constants';
+import { isError } from '@backstage/errors';
 
 const noopEvent = {
   type: 'noop',
@@ -138,8 +139,11 @@ export class JsonRulesEngineFactChecker
         techInsightChecks,
         Object.values(facts),
       );
-    } catch (e: any) {
-      throw new Error(`Failed to run rules engine, ${e.message}`);
+    } catch (e) {
+      if (isError(e)) {
+        throw new Error(`Failed to run rules engine, ${e.message}`);
+      }
+      throw e;
     }
   }
 
