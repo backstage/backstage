@@ -26,7 +26,11 @@ import {
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrations,
+  DefaultGithubCredentialsProvider,
+} from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
 import lodash from 'lodash';
@@ -301,13 +305,21 @@ export class NextCatalogBuilder {
   getDefaultProcessors(): CatalogProcessor[] {
     const { config, logger, reader } = this.env;
     const integrations = ScmIntegrations.fromConfig(config);
+    const githubCredentialsProvider: GithubCredentialsProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
     return [
       new FileReaderProcessor(),
       BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
       AzureDevOpsDiscoveryProcessor.fromConfig(config, { logger }),
-      GithubDiscoveryProcessor.fromConfig(config, { logger }),
-      GithubOrgReaderProcessor.fromConfig(config, { logger }),
+      GithubDiscoveryProcessor.fromConfig(config, {
+        logger,
+        githubCredentialsProvider,
+      }),
+      GithubOrgReaderProcessor.fromConfig(config, {
+        logger,
+        githubCredentialsProvider,
+      }),
       GitLabDiscoveryProcessor.fromConfig(config, { logger }),
       new UrlReaderProcessor({ reader, logger }),
       CodeOwnersProcessor.fromConfig(config, { logger, reader }),

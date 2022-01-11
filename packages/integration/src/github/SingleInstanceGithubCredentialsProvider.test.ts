@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { GithubCredentialsProvider } from './types';
+
 const octokit = {
   paginate: async (fn: any) => (await fn()).data,
   apps: {
@@ -35,23 +37,24 @@ import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubC
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
 
-const github = SingleInstanceGithubCredentialsProvider.create({
-  host: 'github.com',
-  apps: [
-    {
-      appId: 1,
-      privateKey: 'privateKey',
-      webhookSecret: '123',
-      clientId: 'CLIENT_ID',
-      clientSecret: 'CLIENT_SECRET',
-    },
-  ],
-  token: 'hardcoded_token',
-});
+describe('SingleInstanceGithubCredentialsProvider tests', () => {
+  let github: GithubCredentialsProvider;
 
-describe('DefaultGithubCredentialsProvider tests', () => {
   beforeEach(() => {
     jest.resetAllMocks();
+    github = SingleInstanceGithubCredentialsProvider.create({
+      host: 'github.com',
+      apps: [
+        {
+          appId: 1,
+          privateKey: 'privateKey',
+          webhookSecret: '123',
+          clientId: 'CLIENT_ID',
+          clientSecret: 'CLIENT_SECRET',
+        },
+      ],
+      token: 'hardcoded_token',
+    });
   });
   it('create repository specific tokens', async () => {
     octokit.apps.listInstallations.mockResolvedValue({

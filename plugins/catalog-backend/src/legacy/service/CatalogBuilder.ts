@@ -24,7 +24,10 @@ import {
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrations,
+  DefaultGithubCredentialsProvider,
+} from '@backstage/integration';
 import lodash from 'lodash';
 import { EntitiesCatalog } from '../../catalog';
 import {
@@ -291,6 +294,8 @@ export class CatalogBuilder {
   private buildProcessors(): CatalogProcessor[] {
     const { config, logger, reader } = this.env;
     const integrations = ScmIntegrations.fromConfig(config);
+    const githubCredentialsProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
     this.checkDeprecatedReaderProcessors();
 
@@ -317,9 +322,15 @@ export class CatalogBuilder {
       processors.push(
         new FileReaderProcessor(),
         BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
-        GithubDiscoveryProcessor.fromConfig(config, { logger }),
+        GithubDiscoveryProcessor.fromConfig(config, {
+          logger,
+          githubCredentialsProvider,
+        }),
         AzureDevOpsDiscoveryProcessor.fromConfig(config, { logger }),
-        GithubOrgReaderProcessor.fromConfig(config, { logger }),
+        GithubOrgReaderProcessor.fromConfig(config, {
+          logger,
+          githubCredentialsProvider,
+        }),
         GitLabDiscoveryProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
         CodeOwnersProcessor.fromConfig(config, { logger, reader }),

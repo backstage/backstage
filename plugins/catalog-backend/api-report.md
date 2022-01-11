@@ -16,6 +16,7 @@ import { EntityName } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
+import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
@@ -1005,12 +1006,17 @@ function generalError(
 //
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
-  constructor(options: { integrations: ScmIntegrations; logger: Logger_2 });
+  constructor(options: {
+    integrations: ScmIntegrations;
+    logger: Logger_2;
+    githubCredentialsProvider?: GithubCredentialsProvider;
+  });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubDiscoveryProcessor;
   // (undocumented)
@@ -1027,12 +1033,14 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     integrations: ScmIntegrations;
     logger: Logger_2;
     orgs: GithubMultiOrgConfig;
+    githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubMultiOrgReaderProcessor;
   // (undocumented)
@@ -1052,6 +1060,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     orgUrl: string;
     gitHubConfig: GitHubIntegrationConfig;
     logger: Logger_2;
+    githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -1062,6 +1071,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       id: string;
       orgUrl: string;
       logger: Logger_2;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GitHubOrgEntityProvider;
   // (undocumented)
@@ -1074,12 +1084,17 @@ export class GitHubOrgEntityProvider implements EntityProvider {
 //
 // @public
 export class GithubOrgReaderProcessor implements CatalogProcessor {
-  constructor(options: { integrations: ScmIntegrations; logger: Logger_2 });
+  constructor(options: {
+    integrations: ScmIntegrations;
+    logger: Logger_2;
+    githubCredentialsProvider?: GithubCredentialsProvider;
+  });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger_2;
+      githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubOrgReaderProcessor;
   // (undocumented)
@@ -1589,5 +1604,5 @@ export class UrlReaderProcessor implements CatalogProcessor {
 
 // Warnings were encountered during analysis:
 //
-// src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:23:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
+// src/ingestion/processors/GithubMultiOrgReaderProcessor.d.ts:25:9 - (ae-forgotten-export) The symbol "GithubMultiOrgConfig" needs to be exported by the entry point index.d.ts
 ```

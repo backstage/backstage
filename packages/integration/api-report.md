@@ -95,6 +95,17 @@ export type BitbucketIntegrationConfig = {
 };
 
 // @public
+export class DefaultGithubCredentialsProvider
+  implements GithubCredentialsProvider
+{
+  // (undocumented)
+  static fromIntegrations(
+    integrations: ScmIntegrationRegistry,
+  ): DefaultGithubCredentialsProvider;
+  getCredentials(opts: { url: string }): Promise<GithubCredentials>;
+}
+
+// @public
 export function defaultScmResolveUrl(options: {
   url: string;
   base: string;

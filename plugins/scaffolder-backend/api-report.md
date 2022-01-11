@@ -14,6 +14,7 @@ import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-back
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
+import { GithubCredentialsProvider } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
@@ -126,7 +127,8 @@ export const createFilesystemRenameAction: () => TemplateAction<any>;
 //
 // @public (undocumented)
 export function createGithubActionsDispatchAction(options: {
-  integrations: ScmIntegrationRegistry;
+  integrations: ScmIntegrations;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createGithubWebhookAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -135,6 +137,7 @@ export function createGithubActionsDispatchAction(options: {
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createPublishAzureAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -164,6 +167,7 @@ export function createPublishFileAction(): TemplateAction<any>;
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<any>;
 
 // Warning: (ae-forgotten-export) The symbol "CreateGithubPullRequestActionOptions" needs to be exported by the entry point index.d.ts
@@ -172,6 +176,7 @@ export function createPublishGithubAction(options: {
 // @public (undocumented)
 export const createPublishGithubPullRequestAction: ({
   integrations,
+  githubCredentialsProvider,
   clientFactory,
 }: CreateGithubPullRequestActionOptions) => TemplateAction<any>;
 
@@ -285,7 +290,10 @@ export function fetchContents({
 //
 // @public
 export class OctokitProvider {
-  constructor(integrations: ScmIntegrationRegistry);
+  constructor(
+    integrations: ScmIntegrationRegistry,
+    githubCredentialsProvider?: GithubCredentialsProvider,
+  );
   // Warning: (ae-forgotten-export) The symbol "OctokitIntegration" needs to be exported by the entry point index.d.ts
   getOctokit(repoUrl: string): Promise<OctokitIntegration>;
 }

@@ -17,8 +17,9 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
+  DefaultGithubCredentialsProvider,
   GithubAppCredentialsMux,
-  SingleInstanceGithubCredentialsProvider,
+  GithubCredentialsProvider,
   GitHubIntegrationConfig,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -44,8 +45,15 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly orgs: GithubMultiOrgConfig;
   private readonly logger: Logger;
+  private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
-  static fromConfig(config: Config, options: { logger: Logger }) {
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger;
+      githubCredentialsProvider?: GithubCredentialsProvider;
+    },
+  ) {
     const c = config.getOptionalConfig('catalog.processors.githubMultiOrg');
     const integrations = ScmIntegrations.fromConfig(config);
 
@@ -60,10 +68,14 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     integrations: ScmIntegrations;
     logger: Logger;
     orgs: GithubMultiOrgConfig;
+    githubCredentialsProvider?: GithubCredentialsProvider;
   }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
     this.orgs = options.orgs;
+    this.githubCredentialsProvider =
+      options.githubCredentialsProvider ||
+      DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
   }
 
   async readLocation(
@@ -86,8 +98,6 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
 
     const allUsersMap = new Map();
     const baseUrl = new URL(location.target).origin;
-    const credentialsProvider =
-      SingleInstanceGithubCredentialsProvider.create(gitHubConfig);
 
     const orgsToProcess = this.orgs.length
       ? this.orgs
@@ -96,7 +106,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     for (const orgConfig of orgsToProcess) {
       try {
         const { headers, type: tokenType } =
-          await credentialsProvider.getCredentials({
+          await this.githubCredentialsProvider.getCredentials({
             url: `${baseUrl}/${orgConfig.name}`,
           });
         const client = graphql.defaults({
