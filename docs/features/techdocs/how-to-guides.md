@@ -132,7 +132,7 @@ maintain such a component in a new directory at
 `packages/app/src/components/techdocs`, and import and use it in `App.tsx`:
 
 ```tsx
-import { CustomTechDocsHome } from './components/techdocs/CustomTechDocsHome';
+import { CustomTechDocsHome } from "./components/techdocs/CustomTechDocsHome";
 // ...
 const AppRoutes = () => {
   <FlatRoutes>
@@ -407,9 +407,9 @@ plugins:
 The `docs/index.md` can for example have the following content:
 
 ```md
-# ${{ values.component_id }}
+# \${{ values.component_id }}
 
-${{ values.description }}
+\${{ values.description }}
 
 ## Getting started
 
