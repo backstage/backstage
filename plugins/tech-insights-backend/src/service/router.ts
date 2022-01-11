@@ -27,6 +27,7 @@ import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import { PersistenceContext } from './persistence/persistenceContext';
 import {
+  EntityName,
   EntityRef,
   parseEntityName,
   stringifyEntityRef,
@@ -96,7 +97,29 @@ export async function createRouter<
         const entityTriplet = stringifyEntityRef({ namespace, kind, name });
         const checkResult = await factChecker.runChecks(entityTriplet, checks);
         return res.send(checkResult);
-      } catch (e) {
+      } catch (e: any) {
+        return res.status(500).json({ message: e.message }).send();
+      }
+    });
+
+    router.post('/checks/run', async (req, res) => {
+      try {
+        const {
+          checks,
+          entities,
+        }: { checks: string[]; entities: EntityName[] } = req.body;
+        const tasks = entities.map(async entity => {
+          const entityTriplet =
+            typeof entity === 'string' ? entity : stringifyEntityRef(entity);
+          const results = await factChecker.runChecks(entityTriplet, checks);
+          return {
+            entity: entityTriplet,
+            results,
+          };
+        });
+        const results = await Promise.all(tasks);
+        return res.send(results);
+      } catch (e: any) {
         return res.status(500).json({ message: e.message }).send();
       }
     });

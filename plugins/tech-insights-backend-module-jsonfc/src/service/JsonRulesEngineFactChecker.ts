@@ -117,7 +117,7 @@ export class JsonRulesEngineFactChecker
       if (hasAllFacts) {
         engine.addRule({ ...techInsightCheck.rule, event: noopEvent });
       } else {
-        this.logger.warn(
+        this.logger.debug(
           `Skipping ${
             rule.name
           } due to missing facts: ${techInsightCheck.factIds
@@ -138,7 +138,7 @@ export class JsonRulesEngineFactChecker
         techInsightChecks,
         Object.values(facts),
       );
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Failed to run rules engine, ${e.message}`);
     }
   }

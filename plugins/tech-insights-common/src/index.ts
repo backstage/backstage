@@ -124,3 +124,13 @@ export type CheckResult = {
 export interface BooleanCheckResult extends CheckResult {
   result: boolean;
 }
+
+/**
+ * Response type for bulk check opretation. Contains a list of entities and their respective check results.
+ *
+ * @public
+ */
+export type BulkCheckResponse = Array<{
+  entity: string;
+  results: CheckResult[];
+}>;

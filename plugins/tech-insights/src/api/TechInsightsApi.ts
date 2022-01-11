@@ -15,7 +15,10 @@
  */
 
 import { createApiRef } from '@backstage/core-plugin-api';
-import { CheckResult } from '@backstage/plugin-tech-insights-common';
+import {
+  CheckResult,
+  BulkCheckResponse,
+} from '@backstage/plugin-tech-insights-common';
 import { Check } from './types';
 import { CheckResultRenderer } from '../components/CheckResultRenderer';
 import { EntityName } from '@backstage/catalog-model';
@@ -43,4 +46,8 @@ export interface TechInsightsApi {
   ) => CheckResultRenderer | undefined;
   getAllChecks(): Promise<Check[]>;
   runChecks(entityParams: EntityName, checks?: Check[]): Promise<CheckResult[]>;
+  runBulkChecks(
+    entities: EntityName[],
+    checks?: Check[],
+  ): Promise<BulkCheckResponse>;
 }
