@@ -93,7 +93,7 @@ export const EditProjectDialog = ({
       membersCount: bazaarProject.membersCount,
       startDate: formValues?.startDate ?? null,
       endDate: formValues?.endDate ?? null,
-    } as BazaarProject);
+    });
 
     if (updateResponse.status === 'ok') fetchBazaarProject();
     handleEditClose();
