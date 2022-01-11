@@ -6,7 +6,7 @@ For the component `EntityMembersListCard` you can now specify the type of member
 
 ```tsx
 <Grid item xs={12}>
-  <EntityMembersListCard memberType="Ninja's" />
+  <EntityMembersListCard memberDisplayTitle="Ninja's" />
 </Grid>
 ```
 
