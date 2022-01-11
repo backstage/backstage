@@ -86,7 +86,16 @@ export class AppIdentityProxy implements IdentityApi {
     if (!this.target) {
       throw mkError('getBackstageIdentity');
     }
-    return this.target.getBackstageIdentity();
+    const identity = await this.target.getBackstageIdentity();
+    if (!identity.userEntityRef.match(/^.*:.*\/.*$/)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `WARNING: The App IdentityApi provided an invalid userEntityRef, '${identity.userEntityRef}'. ` +
+          `It must be a full Entity Reference of the form '<kind>:<namespace>/<name>'.`,
+      );
+    }
+
+    return identity;
   }
 
   async getCredentials(): Promise<{ token?: string | undefined }> {
