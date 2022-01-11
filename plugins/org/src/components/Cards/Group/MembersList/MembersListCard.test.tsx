@@ -133,14 +133,13 @@ describe('MemberTab Test', () => {
     expect(rendered.getByText('Members (1)')).toBeInTheDocument();
   });
 
-  it('Can render different member type', async () => {
+  it('Can render different member display title', async () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
           <EntityProvider entity={groupEntity}>
             <MembersListCard memberDisplayTitle="Testers" />
           </EntityProvider>
-          ,
         </TestApiProvider>,
       ),
     );
