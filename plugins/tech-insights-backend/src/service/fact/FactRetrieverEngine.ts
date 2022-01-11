@@ -116,13 +116,11 @@ export class FactRetrieverEngine {
           ...this.factRetrieverContext,
           entityFilter: factRetriever.entityFilter,
         });
-        if (this.logger.isDebugEnabled()) {
-          this.logger.debug(
-            `Retrieved ${facts.length} facts for fact retriever ${
-              factRetriever.id
-            } in ${duration(startTimestamp)}`,
-          );
-        }
+        this.logger.debug(
+          `Retrieved ${facts.length} facts for fact retriever ${
+            factRetriever.id
+          } in ${duration(startTimestamp)}`,
+        );
       } catch (e) {
         this.logger.error(
           `Failed to retrieve facts for retriever ${factRetriever.id}`,
