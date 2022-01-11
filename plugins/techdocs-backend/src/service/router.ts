@@ -237,21 +237,26 @@ export async function createRouter(
   });
 
   // Ensures that the related entity exists and the current user has permission to view it.
-  router.use('/static/docs/:namespace/:kind/:name', async (req, _res, next) => {
-    const { kind, namespace, name } = req.params;
-    const entityName = { kind, namespace, name };
-    const token = getBearerToken(req.headers.authorization);
+  if (config.getOptionalBoolean('permission.enabled')) {
+    router.use(
+      '/static/docs/:namespace/:kind/:name',
+      async (req, _res, next) => {
+        const { kind, namespace, name } = req.params;
+        const entityName = { kind, namespace, name };
+        const token = getBearerToken(req.headers.authorization);
 
-    const entity = await entityLoader.load(entityName, token);
+        const entity = await entityLoader.load(entityName, token);
 
-    if (!entity) {
-      throw new NotFoundError(
-        `Entity not found for ${stringifyEntityRef(entityName)}`,
-      );
-    }
+        if (!entity) {
+          throw new NotFoundError(
+            `Entity not found for ${stringifyEntityRef(entityName)}`,
+          );
+        }
 
-    next();
-  });
+        next();
+      },
+    );
+  }
 
   // If a cache manager was provided, attach the cache middleware.
   if (cache) {
