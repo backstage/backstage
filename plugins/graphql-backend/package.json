@@ -40,7 +40,7 @@
     "apollo-server-express": "^2.16.1",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
-    "graphql": "^15.3.0",
+    "graphql": "^16.2.0",
     "helmet": "^4.0.0",
     "reflect-metadata": "^0.1.13",
     "winston": "^3.2.1",
