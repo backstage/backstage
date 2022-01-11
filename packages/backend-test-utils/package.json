@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.10.4",
-    "jest": "^26.0.1"
+    "jest": "^27.4.7"
   },
   "files": [
     "dist"
