@@ -30,8 +30,8 @@ yarn add @backstage/plugin-catalog-backend-module-ldap
 ```typescript
 // packages/backend/src/plugins/catalog.ts
 builder.addProcessor(
-  LdapOrgReaderProcessor.fromConfig(config, {
-    logger,
+  LdapOrgReaderProcessor.fromConfig(env.config, {
+    logger: env.logger,
   }),
 );
 ```
