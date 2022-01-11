@@ -31,7 +31,12 @@ import express, { Response } from 'express';
 import request from 'supertest';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { CachedEntityLoader } from './CachedEntityLoader';
-import { createEventStream, createHttpResponse, createRouter } from './router';
+import {
+  createEventStream,
+  createHttpResponse,
+  createRouter,
+  RouterOptions,
+} from './router';
 import { TechDocsCache } from '../cache';
 
 jest.mock('@backstage/catalog-client');
@@ -67,6 +72,13 @@ Connection: close
 Content-Length: ${content.length}\n\n`),
     Buffer.from(content),
   ]);
+};
+
+const createApp = async (options: RouterOptions) => {
+  const app = express();
+  app.use(await createRouter(options));
+  app.use(errorHandler());
+  return app;
 };
 
 describe('createRouter', () => {
@@ -108,8 +120,22 @@ describe('createRouter', () => {
   const cache: jest.Mocked<PluginCacheManager> = {
     getClient: jest.fn(),
   };
-
-  let app: express.Express;
+  const outOfTheBoxOptions = {
+    preparers,
+    generators,
+    publisher,
+    config: new ConfigReader({}),
+    logger: getVoidLogger(),
+    discovery,
+    cache,
+  };
+  const recommendedOptions = {
+    publisher,
+    config: new ConfigReader({}),
+    logger: getVoidLogger(),
+    discovery,
+    cache,
+  };
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -125,33 +151,13 @@ describe('createRouter', () => {
     );
     MockTechDocsCache.get.mockResolvedValue(undefined);
     MockTechDocsCache.set.mockResolvedValue();
-
-    const outOfTheBoxRouter = await createRouter({
-      preparers,
-      generators,
-      publisher,
-      config: new ConfigReader({}),
-      logger: getVoidLogger(),
-      discovery,
-      cache,
-    });
-    const recommendedRouter = await createRouter({
-      publisher,
-      config: new ConfigReader({}),
-      logger: getVoidLogger(),
-      discovery,
-      cache,
-    });
-
-    app = express();
-    app.use(outOfTheBoxRouter);
-    app.use('/recommended', recommendedRouter);
-    app.use(errorHandler());
   });
 
   describe('GET /sync/:namespace/:kind/:name', () => {
     describe('accept application/json', () => {
       it('should return not found if entity is not found', async () => {
+        const app = await createApp(outOfTheBoxOptions);
+
         MockCachedEntityLoader.prototype.load.mockResolvedValue(undefined);
 
         const response = await request(app)
@@ -162,6 +168,8 @@ describe('createRouter', () => {
       });
 
       it('should return not found if entity has no uid', async () => {
+        const app = await createApp(outOfTheBoxOptions);
+
         MockCachedEntityLoader.prototype.load.mockResolvedValue(
           entityWithoutMetadata,
         );
@@ -174,6 +182,8 @@ describe('createRouter', () => {
       });
 
       it('should not check for an update without local builder', async () => {
+        const app = await createApp(outOfTheBoxOptions);
+
         MockedConfigReader.prototype.getString.mockReturnValue('external');
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doCacheSync.mockImplementation(
@@ -189,11 +199,13 @@ describe('createRouter', () => {
       });
 
       it('should error if missing builder', async () => {
+        const app = await createApp(recommendedOptions);
+
         MockedConfigReader.prototype.getString.mockReturnValue('local');
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
 
         const response = await request(app)
-          .get('/recommended/sync/default/Component/test')
+          .get('/sync/default/Component/test')
           .send();
 
         expect(response.status).toBe(500);
@@ -205,6 +217,8 @@ describe('createRouter', () => {
       });
 
       it('should execute synchronization', async () => {
+        const app = await createApp(outOfTheBoxOptions);
+
         MockedConfigReader.prototype.getString.mockReturnValue('local');
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doSync.mockImplementation(
@@ -228,6 +242,8 @@ describe('createRouter', () => {
       });
 
       it('should return on updated', async () => {
+        const app = await createApp(outOfTheBoxOptions);
+
         MockedConfigReader.prototype.getString.mockReturnValue('local');
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doSync.mockImplementation(
@@ -254,6 +270,8 @@ describe('createRouter', () => {
 
     describe('accept text/event-stream', () => {
       it('should return not found if entity is not found', async () => {
+        const app = await createApp(outOfTheBoxOptions);
+
         MockCachedEntityLoader.prototype.load.mockResolvedValue(undefined);
 
         const response = await request(app)
@@ -265,6 +283,8 @@ describe('createRouter', () => {
       });
 
       it('should return not found if entity has no uid', async () => {
+        const app = await createApp(outOfTheBoxOptions);
+
         MockCachedEntityLoader.prototype.load.mockResolvedValue(
           entityWithoutMetadata,
         );
@@ -278,6 +298,8 @@ describe('createRouter', () => {
       });
 
       it('should not check for an update without local builder', async () => {
+        const app = await createApp(outOfTheBoxOptions);
+
         MockedConfigReader.prototype.getString.mockReturnValue('external');
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doCacheSync.mockImplementation(
@@ -301,11 +323,13 @@ data: {"updated":false}
       });
 
       it('should error if missing builder', async () => {
+        const app = await createApp(recommendedOptions);
+
         MockedConfigReader.prototype.getString.mockReturnValue('local');
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
 
         const response = await request(app)
-          .get('/recommended/sync/default/Component/test')
+          .get('/sync/default/Component/test')
           .set('accept', 'text/event-stream')
           .send();
 
@@ -322,6 +346,8 @@ data: "Invalid configuration. 'techdocs.builder' was set to 'local' but no 'prep
       });
 
       it('should execute synchronization', async () => {
+        const app = await createApp(outOfTheBoxOptions);
+
         MockedConfigReader.prototype.getString.mockReturnValue('local');
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doSync.mockImplementation(
@@ -348,6 +374,8 @@ data: "Invalid configuration. 'techdocs.builder' was set to 'local' but no 'prep
       });
 
       it('should return an event-stream', async () => {
+        const app = await createApp(outOfTheBoxOptions);
+
         MockedConfigReader.prototype.getString.mockReturnValue('local');
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doSync.mockImplementation(
@@ -386,7 +414,8 @@ data: {"updated":true}
 
   describe('GET /static/docs', () => {
     it('should return assets from cache', async () => {
-      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+      const app = await createApp(outOfTheBoxOptions);
+
       MockTechDocsCache.get.mockResolvedValue(
         getMockHttpResponseFor('content'),
       );
@@ -400,6 +429,12 @@ data: {"updated":true}
     });
 
     it('should not return assets without corresponding entity access', async () => {
+      MockedConfigReader.prototype.getOptionalBoolean.mockImplementation(key =>
+        key === 'permission.enabled' ? true : undefined,
+      );
+
+      const app = await createApp(outOfTheBoxOptions);
+
       MockCachedEntityLoader.prototype.load.mockResolvedValue(undefined);
 
       const response = await request(app)

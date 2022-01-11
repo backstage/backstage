@@ -66,7 +66,7 @@ type RecommendedDeploymentOptions = {
 /**
  * One of the two deployment configurations must be provided.
  */
-type RouterOptions =
+export type RouterOptions =
   | RecommendedDeploymentOptions
   | OutOfTheBoxDeploymentOptions;
 
