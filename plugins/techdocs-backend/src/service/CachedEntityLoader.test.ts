@@ -107,18 +107,6 @@ describe('CachedEntityLoader', () => {
     expect(cache.set).not.toBeCalled();
   });
 
-  it('transforms 403 responses from catalog to undefined', async () => {
-    identity.authenticate.mockResolvedValue(identityResponse);
-    cache.get.mockResolvedValue(undefined);
-    catalog.getEntityByName.mockRejectedValue(
-      await ResponseError.fromResponse(new Response(null, { status: 403 })),
-    );
-
-    const result = await loader.load(entityName, token);
-
-    expect(result).toBeUndefined();
-  });
-
   it('uses entity ref as cache key for anonymous users', async () => {
     cache.get.mockResolvedValue(undefined);
     catalog.getEntityByName.mockResolvedValue(entity);

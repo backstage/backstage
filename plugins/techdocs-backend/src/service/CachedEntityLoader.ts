@@ -21,7 +21,6 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { IdentityClient } from '@backstage/plugin-auth-backend';
-import { ResponseError } from '@backstage/errors';
 
 export type CachedEntityLoaderOptions = {
   catalog: CatalogClient;
@@ -52,15 +51,7 @@ export class CachedEntityLoader {
       return result;
     }
 
-    try {
-      result = await this.catalog.getEntityByName(entityName, { token });
-    } catch (err) {
-      if (err instanceof ResponseError && err.response.status === 403) {
-        result = undefined;
-      } else {
-        throw err;
-      }
-    }
+    result = await this.catalog.getEntityByName(entityName, { token });
 
     if (result) {
       this.cache.set(cacheKey, result, { ttl: 5000 });
