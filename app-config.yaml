@@ -107,6 +107,13 @@ proxy:
     headers:
       Authorization: ${AIRFLOW_BASIC_AUTH_HEADER}
 
+  '/gocd':
+    target: https://your.gocd.instance.com/go/api
+    allowedMethods: ['GET']
+    allowedHeaders: ['Authorization']
+    headers:
+      Authorization: Basic ${GOCD_AUTH_CREDENTIALS}
+
 organization:
   name: My Company
 
@@ -450,3 +457,6 @@ azureDevOps:
 
 apacheAirflow:
   baseUrl: https://your.airflow.instance.com
+
+gocd:
+  baseUrl: https://your.gocd.instance.com
