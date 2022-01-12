@@ -2,4 +2,4 @@
 '@backstage/plugin-kubernetes': patch
 ---
 
-Export a CustomisationProps object from the kubernetes plugin, which includes a customPodTableColumns argument, to allow users to add additional custom columns to the Pod Table in the Deployments Accordion
+Export a CustomisationProps object from the kubernetes plugin, which includes a customPodTableColumns argument, to allow users to specify the columns they'd like on the Pod Table in the Deployments Accordion

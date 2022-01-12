@@ -19,7 +19,13 @@ import { render } from '@testing-library/react';
 import * as pod from './__fixtures__/pod.json';
 import * as crashingPod from './__fixtures__/crashing-pod.json';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { PodsTable, READY_COLUMNS, RESOURCE_COLUMNS } from './PodsTable';
+import {
+  PodsTable,
+  DEFAULT_COLUMNS,
+  READY_COLUMNS,
+  RESOURCE_COLUMNS,
+  READY,
+} from './PodsTable';
 import { kubernetesProviders } from '../../hooks/test-utils';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 import { V1Pod } from '@kubernetes/client-node';
@@ -187,12 +193,16 @@ describe('PodsTable', () => {
     expect(getAllByText('CrashLoopBackOff')).toHaveLength(2);
   });
   it('should render additional custom columns', async () => {
+    const columns: TableColumn<V1Pod>[] = [];
+    columns.push(...DEFAULT_COLUMNS);
+    columns.push(...READY);
+    columns.push(...customColumns);
     const { getByText, getAllByText } = render(
       wrapInTestApp(
         <PodsTable
           pods={[pod as any]}
-          extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]}
-          customColumns={customColumns}
+          extraColumns={[]}
+          customColumns={columns}
         />,
       ),
     );
@@ -203,8 +213,6 @@ describe('PodsTable', () => {
     expect(getByText('containers ready')).toBeInTheDocument();
     expect(getByText('total restarts')).toBeInTheDocument();
     expect(getByText('status')).toBeInTheDocument();
-    expect(getByText('CPU usage %')).toBeInTheDocument();
-    expect(getByText('Memory usage %')).toBeInTheDocument();
     expect(getByText('Custom Column')).toBeInTheDocument();
 
     // values
@@ -213,6 +221,5 @@ describe('PodsTable', () => {
     expect(getByText('1/1')).toBeInTheDocument();
     expect(getByText('0')).toBeInTheDocument();
     expect(getByText('OK')).toBeInTheDocument();
-    expect(getAllByText('unknown')).toHaveLength(2);
   });
 });

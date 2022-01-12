@@ -17,15 +17,9 @@
 import React, { useContext } from 'react';
 import { V1Pod } from '@kubernetes/client-node';
 import { PodDrawer } from './PodDrawer';
-import {
-  containersReady,
-  containerStatuses,
-  podStatusToCpuUtil,
-  podStatusToMemoryUtil,
-  totalRestarts,
-} from '../../utils/pod';
 import { Table, TableColumn } from '@backstage/core-components';
 import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
+import * as columnFactories from './columns';
 
 export const READY_COLUMNS: PodColumns = 'READY';
 export const RESOURCE_COLUMNS: PodColumns = 'RESOURCE';
@@ -38,34 +32,15 @@ type PodsTablesProps = {
   children?: React.ReactNode;
 };
 
-const DEFAULT_COLUMNS: TableColumn<V1Pod>[] = [
-  {
-    title: 'name',
-    highlight: true,
-    render: (pod: V1Pod) => <PodDrawer pod={pod} />,
-  },
-  {
-    title: 'phase',
-    render: (pod: V1Pod) => pod.status?.phase ?? 'unknown',
-  },
-  {
-    title: 'status',
-    render: containerStatuses,
-  },
+export const DEFAULT_COLUMNS: TableColumn<V1Pod>[] = [
+  columnFactories.createNameColumn(),
+  columnFactories.createPhaseColumn(),
+  columnFactories.createStatusColumn(),
 ];
 
-const READY: TableColumn<V1Pod>[] = [
-  {
-    title: 'containers ready',
-    align: 'center',
-    render: containersReady,
-  },
-  {
-    title: 'total restarts',
-    align: 'center',
-    render: totalRestarts,
-    type: 'numeric',
-  },
+export const READY: TableColumn<V1Pod>[] = [
+  columnFactories.createContainersReadyColumn(),
+  columnFactories.createTotalRestartsColumn(),
 ];
 
 export const PodsTable = ({
@@ -74,42 +49,21 @@ export const PodsTable = ({
   customColumns = [],
 }: PodsTablesProps) => {
   const podNamesWithMetrics = useContext(PodNamesWithMetricsContext);
-  const columns: TableColumn<V1Pod>[] = [...DEFAULT_COLUMNS];
-
-  if (extraColumns.includes(READY_COLUMNS)) {
-    columns.push(...READY);
-  }
-  if (extraColumns.includes(RESOURCE_COLUMNS)) {
-    const resourceColumns: TableColumn<V1Pod>[] = [
-      {
-        title: 'CPU usage %',
-        render: (pod: V1Pod) => {
-          const metrics = podNamesWithMetrics.get(pod.metadata?.name ?? '');
-
-          if (!metrics) {
-            return 'unknown';
-          }
-
-          return podStatusToCpuUtil(metrics);
-        },
-      },
-      {
-        title: 'Memory usage %',
-        render: (pod: V1Pod) => {
-          const metrics = podNamesWithMetrics.get(pod.metadata?.name ?? '');
-
-          if (!metrics) {
-            return 'unknown';
-          }
-
-          return podStatusToMemoryUtil(metrics);
-        },
-      },
-    ];
-    columns.push(...resourceColumns);
-  }
+  const columns: TableColumn<V1Pod>[] = [];
   if (customColumns.length) {
     columns.push(...customColumns);
+  } else {
+    columns.push(...DEFAULT_COLUMNS);
+    if (extraColumns.includes(READY_COLUMNS)) {
+      columns.push(...READY);
+    }
+    if (extraColumns.includes(RESOURCE_COLUMNS)) {
+      const resourceColumns: TableColumn<V1Pod>[] = [
+        columnFactories.createCPUUsageColumn(podNamesWithMetrics),
+        columnFactories.createMemoryUsageColumn(podNamesWithMetrics),
+      ];
+      columns.push(...resourceColumns);
+    }
   }
 
   const tableStyle = {
