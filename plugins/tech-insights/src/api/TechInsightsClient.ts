@@ -15,7 +15,10 @@
  */
 
 import { TechInsightsApi } from './TechInsightsApi';
-import { CheckResult } from '@backstage/plugin-tech-insights-common';
+import {
+  BulkCheckResponse,
+  CheckResult,
+} from '@backstage/plugin-tech-insights-common';
 import { Check } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
@@ -92,6 +95,31 @@ export class TechInsightsClient implements TechInsightsApi {
         },
       },
     );
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+    return await response.json();
+  }
+
+  async runBulkChecks(
+    entities: EntityName[],
+    checks?: Check[],
+  ): Promise<BulkCheckResponse> {
+    const url = await this.discoveryApi.getBaseUrl('tech-insights');
+    const token = await this.identityApi.getIdToken();
+    const checkIds = checks ? checks.map(check => check.id) : [];
+    const requestBody = {
+      entities,
+      checks: checkIds.length > 0 ? checkIds : undefined,
+    };
+    const response = await fetch(`${url}/checks/run`, {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
