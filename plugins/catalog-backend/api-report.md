@@ -879,17 +879,32 @@ export interface LocationService {
   createLocation(
     spec: LocationSpec,
     dryRun: boolean,
+    options?: {
+      authorizationToken?: string;
+    },
   ): Promise<{
     location: Location_2;
     entities: Entity[];
     exists?: boolean;
   }>;
   // (undocumented)
-  deleteLocation(id: string): Promise<void>;
+  deleteLocation(
+    id: string,
+    options?: {
+      authorizationToken?: string;
+    },
+  ): Promise<void>;
   // (undocumented)
-  getLocation(id: string): Promise<Location_2>;
+  getLocation(
+    id: string,
+    options?: {
+      authorizationToken?: string;
+    },
+  ): Promise<Location_2>;
   // (undocumented)
-  listLocations(): Promise<Location_2[]>;
+  listLocations(options?: {
+    authorizationToken?: string;
+  }): Promise<Location_2[]>;
 }
 
 // Warning: (ae-missing-release-tag) "LocationStore" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

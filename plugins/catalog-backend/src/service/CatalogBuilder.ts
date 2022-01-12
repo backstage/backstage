@@ -95,6 +95,7 @@ import {
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 import { basicEntityFilter } from './request/basicEntityFilter';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import { AuthorizedLocationService } from './AuthorizedLocationService';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -455,9 +456,9 @@ export class CatalogBuilder {
 
     const locationAnalyzer =
       this.locationAnalyzer ?? new RepoLocationAnalyzer(logger, integrations);
-    const locationService = new DefaultLocationService(
-      locationStore,
-      orchestrator,
+    const locationService = new AuthorizedLocationService(
+      new DefaultLocationService(locationStore, orchestrator),
+      permissions,
     );
     const refreshService = new AuthorizedRefreshService(
       new DefaultRefreshService({ database: processingDatabase }),
