@@ -35,7 +35,7 @@ jobs:
             async function createChangeset(fileName, commitMessage, packages) {
               const pkgs = packages.map(pkg => `'${pkg}': patch`).join('\n');
               const message = commitMessage.replace(/([bB])ump ([\S]+)/, '$1ump `$2`').trim();
-              const body = `---\n${pkgs}\n---\n\n${message}`;
+              const body = `---\n${pkgs}\n---\n\n${message}\n`;
               await fs.writeFile(fileName, body);
             }
 
