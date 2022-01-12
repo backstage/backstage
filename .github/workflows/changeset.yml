@@ -13,8 +13,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Dependencies
         run: yarn --frozen-lockfile
-      - name: Run pre-release preparations
-        run: node scripts/pre-release.js
+      - name: Run release preparations
+        run: node scripts/prepare-release.js
       - name: Create Release Pull Request
         uses: changesets/action@master
         with:
