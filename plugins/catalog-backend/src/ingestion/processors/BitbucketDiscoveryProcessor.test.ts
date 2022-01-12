@@ -334,6 +334,7 @@ describe('BitbucketDiscoveryProcessor', () => {
             {
               host: 'bitbucket.mycompany.com',
               token: 'blob',
+              baseUrl: 'https://bitbucket.mycompany.com/custom-path',
               apiBaseUrl:
                 'https://bitbucket.mycompany.com/custom-path/api/rest/1.0',
             },

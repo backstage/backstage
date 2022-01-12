@@ -33,11 +33,13 @@ describe('bitbucket core', () => {
     it('inserts a token when needed', () => {
       const withToken: BitbucketIntegrationConfig = {
         host: '',
+        baseUrl: '',
         apiBaseUrl: '',
         token: 'A',
       };
       const withoutToken: BitbucketIntegrationConfig = {
         host: '',
+        baseUrl: '',
         apiBaseUrl: '',
       };
       expect(
@@ -51,12 +53,14 @@ describe('bitbucket core', () => {
     it('insert basic auth when needed', () => {
       const withUsernameAndPassword: BitbucketIntegrationConfig = {
         host: '',
+        baseUrl: '',
         apiBaseUrl: '',
         username: 'some-user',
         appPassword: 'my-secret',
       };
       const withoutUsernameAndPassword: BitbucketIntegrationConfig = {
         host: '',
+        baseUrl: '',
         apiBaseUrl: '',
       };
       expect(
@@ -72,7 +76,11 @@ describe('bitbucket core', () => {
 
   describe('getBitbucketFileFetchUrl', () => {
     it('rejects targets that do not look like URLs', () => {
-      const config: BitbucketIntegrationConfig = { host: '', apiBaseUrl: '' };
+      const config: BitbucketIntegrationConfig = {
+        host: '',
+        baseUrl: '',
+        apiBaseUrl: '',
+      };
       expect(() => getBitbucketFileFetchUrl('a/b', config)).toThrow(
         /Incorrect URL: a\/b/,
       );
@@ -81,6 +89,7 @@ describe('bitbucket core', () => {
     it('happy path for Bitbucket Cloud', () => {
       const config: BitbucketIntegrationConfig = {
         host: 'bitbucket.org',
+        baseUrl: 'https://bitbucket.org',
         apiBaseUrl: 'https://api.bitbucket.org/2.0',
       };
       expect(
@@ -96,6 +105,7 @@ describe('bitbucket core', () => {
     it('happy path for Bitbucket Server', () => {
       const config: BitbucketIntegrationConfig = {
         host: 'bitbucket.mycompany.net',
+        baseUrl: 'https://bitbucket.mycompany.net',
         apiBaseUrl: 'https://bitbucket.mycompany.net/rest/api/1.0',
       };
       expect(
@@ -128,6 +138,7 @@ describe('bitbucket core', () => {
 
       const config: BitbucketIntegrationConfig = {
         host: 'bitbucket.mycompany.net',
+        baseUrl: 'https://bitbucket.mycompany.net',
         apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
       };
       const result = await getBitbucketDownloadUrl(
@@ -156,6 +167,7 @@ describe('bitbucket core', () => {
       );
       const config: BitbucketIntegrationConfig = {
         host: 'bitbucket.mycompany.net',
+        baseUrl: 'https://bitbucket.mycompany.net',
         apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
       };
       const result = await getBitbucketDownloadUrl(
@@ -171,6 +183,7 @@ describe('bitbucket core', () => {
     it('get by branch for Bitbucket Server', async () => {
       const config: BitbucketIntegrationConfig = {
         host: 'bitbucket.mycompany.net',
+        baseUrl: 'https://bitbucket.mycompany.net',
         apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
       };
       const result = await getBitbucketDownloadUrl(
@@ -185,6 +198,7 @@ describe('bitbucket core', () => {
     it('do not add path param for Bitbucket Cloud', async () => {
       const config: BitbucketIntegrationConfig = {
         host: 'bitbucket.org',
+        baseUrl: 'https://bitbucket.org',
         apiBaseUrl: 'https://api.bitbucket.org/2.0',
       };
       const result = await getBitbucketDownloadUrl(
@@ -217,6 +231,7 @@ describe('bitbucket core', () => {
       );
       const config: BitbucketIntegrationConfig = {
         host: 'bitbucket.org',
+        baseUrl: 'https://bitbucket.org',
         apiBaseUrl: 'https://api.bitbucket.org/2.0',
       };
       const defaultBranch = await getBitbucketDefaultBranch(
@@ -243,6 +258,7 @@ describe('bitbucket core', () => {
       );
       const config: BitbucketIntegrationConfig = {
         host: 'bitbucket.mycompany.net',
+        baseUrl: 'https://bitbucket.mycompany.net',
         apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
       };
       const defaultBranch = await getBitbucketDefaultBranch(
@@ -278,6 +294,7 @@ describe('bitbucket core', () => {
       );
       const config: BitbucketIntegrationConfig = {
         host: 'bitbucket.mycompany.net',
+        baseUrl: 'https://bitbucket.mycompany.net',
         apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
       };
       const defaultBranch = await getBitbucketDefaultBranch(

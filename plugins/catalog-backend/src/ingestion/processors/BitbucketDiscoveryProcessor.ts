@@ -140,12 +140,15 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     options: ProcessOptions,
   ): Promise<ResultSummary> {
     const { client, location, integration, emit } = options;
-    const { catalogPath: requestedCatalogPath } = parseUrl(location.target);
+    const { catalogPath: requestedCatalogPath } = parseUrl(
+      location.target,
+      integration.config.baseUrl,
+    );
     const catalogPath =
       requestedCatalogPath === EMPTY_CATALOG_LOCATION
         ? DEFAULT_CATALOG_LOCATION
         : requestedCatalogPath;
-    const result = await readBitbucketOrg(client, location.target);
+    const result = await readBitbucketOrg(client, location.target, integration);
     for (const repository of result.matches) {
       for await (const entity of this.parser({
         integration,
@@ -165,8 +168,12 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
 export async function readBitbucketOrg(
   client: BitbucketClient,
   target: string,
+  integration: BitbucketIntegration,
 ): Promise<Result<BitbucketRepository>> {
-  const { projectSearchPath, repoSearchPath } = parseUrl(target);
+  const { projectSearchPath, repoSearchPath } = parseUrl(
+    target,
+    integration.config.baseUrl,
+  );
   const projects = paginated(options => client.listProjects(options));
   const result: Result<BitbucketRepository> = {
     scanned: 0,
@@ -224,15 +231,23 @@ export async function readBitbucketCloud(
   return result;
 }
 
-function parseUrl(urlString: string): {
+function parseUrl(
+  urlString: string,
+  baseUrlString: string,
+): {
   projectSearchPath: RegExp;
   repoSearchPath: RegExp;
   catalogPath: string;
 } {
   const url = new URL(urlString);
-  const indexOfProjectSegment =
-    url.pathname.toLowerCase().indexOf('/projects/') + 1;
-  const path = url.pathname.substr(indexOfProjectSegment).split('/');
+  let baseUrlIndex: number;
+  if (baseUrlString) {
+    const baseUrl = new URL(baseUrlString);
+    baseUrlIndex = baseUrl.pathname === '/' ? 1 : baseUrl.pathname.length + 1;
+  } else {
+    baseUrlIndex = url.pathname.toLowerCase().indexOf('/projects/') + 1;
+  }
+  const path = url.pathname.substr(baseUrlIndex).split('/');
 
   // /projects/backstage/repos/techdocs-*/catalog-info.yaml
   if (path.length > 3 && path[1].length && path[3].length) {

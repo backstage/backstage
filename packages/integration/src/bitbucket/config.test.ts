@@ -57,7 +57,8 @@ describe('readBitbucketIntegrationConfig', () => {
     const output = readBitbucketIntegrationConfig(
       buildConfig({
         host: 'a.com',
-        apiBaseUrl: 'https://a.com/api',
+        baseUrl: 'https://a.com',
+        apiBaseUrl: 'https://a.com/rest/api/1.0',
         token: 't',
         username: 'u',
         appPassword: 'p',
@@ -65,7 +66,8 @@ describe('readBitbucketIntegrationConfig', () => {
     );
     expect(output).toEqual({
       host: 'a.com',
-      apiBaseUrl: 'https://a.com/api',
+      baseUrl: 'https://a.com',
+      apiBaseUrl: 'https://a.com/rest/api/1.0',
       token: 't',
       username: 'u',
       appPassword: 'p',
@@ -77,15 +79,27 @@ describe('readBitbucketIntegrationConfig', () => {
     expect(output).toEqual(
       expect.objectContaining({
         host: 'bitbucket.org',
+        baseUrl: 'https://bitbucket.org',
         apiBaseUrl: 'https://api.bitbucket.org/2.0',
       }),
     );
   });
 
+  it('injects the correct Bitbucket API base URL when missing', () => {
+    const output = readBitbucketIntegrationConfig(buildConfig({}));
+
+    expect(output).toEqual({
+      host: 'bitbucket.org',
+      baseUrl: 'https://bitbucket.org',
+      apiBaseUrl: 'https://api.bitbucket.org/2.0',
+    });
+  });
+
   it('rejects funky configs', () => {
     const valid: any = {
       host: 'a.com',
-      apiBaseUrl: 'https://a.com/api',
+      baseUrl: 'https://a.com',
+      apiBaseUrl: 'https://a.com/rest/api/1.0',
       token: 't',
       username: 'u',
       appPassword: 'p',
@@ -93,6 +107,9 @@ describe('readBitbucketIntegrationConfig', () => {
     expect(() =>
       readBitbucketIntegrationConfig(buildConfig({ ...valid, host: 7 })),
     ).toThrow(/host/);
+    expect(() =>
+      readBitbucketIntegrationConfig(buildConfig({ ...valid, baseUrl: 7 })),
+    ).toThrow(/baseUrl/);
     expect(() =>
       readBitbucketIntegrationConfig(buildConfig({ ...valid, apiBaseUrl: 7 })),
     ).toThrow(/apiBaseUrl/);
@@ -112,7 +129,8 @@ describe('readBitbucketIntegrationConfig', () => {
       readBitbucketIntegrationConfig(
         await buildFrontendConfig({
           host: 'a.com',
-          apiBaseUrl: 'https://a.com/api',
+          baseUrl: 'https://a.com',
+          apiBaseUrl: 'https://a.com/rest/api/1.0',
           token: 't',
           username: 'u',
           appPassword: 'p',
@@ -120,7 +138,8 @@ describe('readBitbucketIntegrationConfig', () => {
       ),
     ).toEqual({
       host: 'a.com',
-      apiBaseUrl: 'https://a.com/api',
+      baseUrl: 'https://a.com',
+      apiBaseUrl: 'https://a.com/rest/api/1.0',
     });
   });
 });
@@ -135,7 +154,8 @@ describe('readBitbucketIntegrationConfigs', () => {
       buildConfig([
         {
           host: 'a.com',
-          apiBaseUrl: 'https://a.com/api',
+          baseUrl: 'https://a.com',
+          apiBaseUrl: 'https://a.com/rest/api/1.0',
           token: 't',
           username: 'u',
           appPassword: 'p',
@@ -144,7 +164,8 @@ describe('readBitbucketIntegrationConfigs', () => {
     );
     expect(output).toContainEqual({
       host: 'a.com',
-      apiBaseUrl: 'https://a.com/api',
+      baseUrl: 'https://a.com',
+      apiBaseUrl: 'https://a.com/rest/api/1.0',
       token: 't',
       username: 'u',
       appPassword: 'p',
@@ -156,6 +177,7 @@ describe('readBitbucketIntegrationConfigs', () => {
     expect(output).toEqual([
       {
         host: 'bitbucket.org',
+        baseUrl: 'https://bitbucket.org',
         apiBaseUrl: 'https://api.bitbucket.org/2.0',
       },
     ]);
@@ -168,7 +190,21 @@ describe('readBitbucketIntegrationConfigs', () => {
     expect(output).toEqual([
       {
         host: 'bitbucket.org',
+        baseUrl: 'https://bitbucket.org',
         apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      },
+    ]);
+  });
+
+  it('injects the correct Bitbucket Cloud base URL when missing', () => {
+    const output = readBitbucketIntegrationConfigs(
+      buildConfig([{ host: 'bitbucket.org' }]),
+    );
+    expect(output).toEqual([
+      {
+        host: 'bitbucket.org',
+        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+        baseUrl: 'https://bitbucket.org',
       },
     ]);
   });

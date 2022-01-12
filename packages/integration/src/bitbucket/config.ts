@@ -16,9 +16,10 @@
 
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
-import { isValidHost } from '../helpers';
+import { isValidHost, isValidUrl } from '../helpers';
 
 const BITBUCKET_HOST = 'bitbucket.org';
+const BITBUCKET_BASE_URL = `https://${BITBUCKET_HOST}`;
 const BITBUCKET_API_BASE_URL = 'https://api.bitbucket.org/2.0';
 
 /**
@@ -31,6 +32,14 @@ export type BitbucketIntegrationConfig = {
    * The host of the target that this matches on, e.g. "bitbucket.org"
    */
   host: string;
+
+  /**
+   * The baseUrl of this provider, e.g. "https://bitbucket.org", which is passed
+   * into the Bitbucket client.
+   *
+   * If no baseUrl is provided, it will default to https://${host}
+   */
+  baseUrl?: string;
 
   /**
    * The base URL of the API of this provider, e.g. "https://api.bitbucket.org/2.0",
@@ -75,6 +84,7 @@ export function readBitbucketIntegrationConfig(
   config: Config,
 ): BitbucketIntegrationConfig {
   const host = config.getOptionalString('host') ?? BITBUCKET_HOST;
+  let baseUrl = config.getOptionalString('baseUrl');
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
   const token = config.getOptionalString('token');
   const username = config.getOptionalString('username');
@@ -86,14 +96,35 @@ export function readBitbucketIntegrationConfig(
     );
   }
 
+  if (baseUrl) {
+    baseUrl = trimEnd(baseUrl, '/');
+  } else {
+    baseUrl = `https://${host}`;
+  }
+
+  if (!isValidUrl(baseUrl)) {
+    throw new Error(
+      `Invalid Bitbucket integration config, '${baseUrl}' is not a valid baseUrl`,
+    );
+  }
+
   if (apiBaseUrl) {
     apiBaseUrl = trimEnd(apiBaseUrl, '/');
   } else if (host === BITBUCKET_HOST) {
     apiBaseUrl = BITBUCKET_API_BASE_URL;
+  } else {
+    apiBaseUrl = `${baseUrl}/rest/api/1.0`;
+  }
+
+  if (!isValidUrl(apiBaseUrl)) {
+    throw new Error(
+      `Invalid Bitbucket integration config, '${apiBaseUrl}' is not a valid apiBaseUrl`,
+    );
   }
 
   return {
     host,
+    baseUrl,
     apiBaseUrl,
     token,
     username,
@@ -119,6 +150,7 @@ export function readBitbucketIntegrationConfigs(
   if (!result.some(c => c.host === BITBUCKET_HOST)) {
     result.push({
       host: BITBUCKET_HOST,
+      baseUrl: BITBUCKET_BASE_URL,
       apiBaseUrl: BITBUCKET_API_BASE_URL,
     });
   }

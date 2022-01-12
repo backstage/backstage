@@ -179,7 +179,8 @@ integrations:
       appPassword: ${BITBUCKET_APP_PASSWORD}
     ### Example for how to add your bitbucket server instance using the API:
     # - host: server.bitbucket.com
-    #   apiBaseUrl: server.bitbucket.com
+    # - baseUrl: https://server.bitbucket.com
+    #   apiBaseUrl: https://server.bitbucket.com/rest/api/1.0
     #   username: ${BITBUCKET_SERVER_USERNAME}
     #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
   azure:

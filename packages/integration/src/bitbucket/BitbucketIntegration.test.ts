@@ -25,7 +25,8 @@ describe('BitbucketIntegration', () => {
           bitbucket: [
             {
               host: 'h.com',
-              apiBaseUrl: 'a',
+              baseUrl: 'https://h.com/a',
+              apiBaseUrl: 'https://h.com/rest/api/1.0',
               token: 't',
               username: 'u',
               appPassword: 'p',

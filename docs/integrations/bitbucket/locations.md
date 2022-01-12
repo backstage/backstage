@@ -35,6 +35,10 @@ a structure with up to four elements:
   neither a username nor token are supplied, anonymous access will be used.
 - `appPassword` (optional): The password for the Bitbucket user. Only needed
   when using `username` instead of `token`.
+- `baseUrl` (optional): The base URL of the Bitbucket server. For self-hosted
+  installations, this can be configured in the server settings, and is commonly
+  set as `https://<host>`. For bitbucket.org, this configuration is not needed
+  as it can be inferred.
 - `apiBaseUrl` (optional): The URL of the Bitbucket API. For self-hosted
   installations, it is commonly at `https://<host>/rest/api/1.0`. For
   bitbucket.org, this configuration is not needed as it can be inferred.
