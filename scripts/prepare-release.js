@@ -28,19 +28,6 @@ const DEPENDENCY_TYPES = [
   'peerDependencies',
 ];
 
-/*
-
-Shipping to main TODO:
-
-- [] Document emergency release flow
-- [x] Workflow that triggers releases of `release-*-patch` branches
-- [x] Branch protection of `release-*-patch` branches
-- [x] Bring release.js + patched.json into the main repo
-- [] profit
-
-
-*/
-
 async function main() {
   const patchedJsonPath = path.resolve('.changeset', 'patched.json');
   const { currentReleaseVersion } = await fs.readJSON(patchedJsonPath);
@@ -50,7 +37,6 @@ async function main() {
   }
 
   const { packages } = await getPackages(path.resolve('.'));
-  console.log('packages', packages);
 
   const pendingVersionBumps = new Map();
 
@@ -75,8 +61,6 @@ async function main() {
     });
   }
 
-  console.log('DEBUG: pendingVersionBumps =', pendingVersionBumps);
-
   for (const { dir, packageJson } of packages) {
     let hasChanges = false;
 
@@ -91,11 +75,14 @@ async function main() {
       const deps = packageJson[depType];
       for (const depName of Object.keys(deps ?? {})) {
         const currentRange = deps[depName];
+        if (currentRange === '*') {
+          continue;
+        }
 
         if (pendingVersionBumps.has(depName)) {
           const pendingBump = pendingVersionBumps.get(depName);
           console.log(
-            `DEBUG: replacing ${depName} ${currentRange} with ${pendingBump.targetRange} in ${depType} of ${packageJson.name}`,
+            `Replacing ${depName} ${currentRange} with ${pendingBump.targetRange} in ${depType} of ${packageJson.name}`,
           );
           deps[depName] = pendingBump.targetRange;
           hasChanges = true;
@@ -104,7 +91,6 @@ async function main() {
     }
 
     if (hasChanges) {
-      console.log('writing package', packageJson.name);
       await fs.writeJSON(path.resolve(dir, 'package.json'), packageJson, {
         spaces: 2,
       });
