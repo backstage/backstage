@@ -34,6 +34,7 @@ describe('SearchFilter', () => {
     types: [],
   };
 
+  const label = 'Field';
   const name = 'field';
   const values = ['value1', 'value2'];
   const filters = { unrelated: 'unrelated' };
@@ -57,12 +58,12 @@ describe('SearchFilter', () => {
     it('Renders field name and values when provided as props', async () => {
       render(
         <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Checkbox name={name} values={values} />
+          <SearchFilter.Checkbox label={label} name={name} values={values} />
         </SearchContextProvider>,
       );
 
       await waitFor(() => {
-        expect(screen.getByText(name)).toBeInTheDocument();
+        expect(screen.getByText(label)).toBeInTheDocument();
       });
 
       expect(
@@ -83,12 +84,12 @@ describe('SearchFilter', () => {
             },
           }}
         >
-          <SearchFilter.Checkbox name={name} values={values} />
+          <SearchFilter.Checkbox label={label} name={name} values={values} />
         </SearchContextProvider>,
       );
 
       await waitFor(() => {
-        expect(screen.getByText(name)).toBeInTheDocument();
+        expect(screen.getByText(label)).toBeInTheDocument();
       });
 
       expect(
@@ -101,6 +102,7 @@ describe('SearchFilter', () => {
       render(
         <SearchContextProvider initialState={initialState}>
           <SearchFilter.Checkbox
+            label={label}
             name={name}
             values={values}
             defaultValue={[values[0]]}
@@ -109,7 +111,7 @@ describe('SearchFilter', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText(name)).toBeInTheDocument();
+        expect(screen.getByText(label)).toBeInTheDocument();
       });
 
       expect(screen.getByRole('checkbox', { name: values[0] })).toBeChecked();
@@ -121,12 +123,12 @@ describe('SearchFilter', () => {
     it('Checking / unchecking a value sets filter state', async () => {
       render(
         <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Checkbox name={name} values={values} />
+          <SearchFilter.Checkbox label={label} name={name} values={values} />
         </SearchContextProvider>,
       );
 
       await waitFor(() => {
-        expect(screen.getByText(name)).toBeInTheDocument();
+        expect(screen.getByText(label)).toBeInTheDocument();
       });
 
       const checkBox = screen.getByRole('checkbox', { name: values[0] });
@@ -151,12 +153,12 @@ describe('SearchFilter', () => {
     it('Checking / unchecking a value maintains unrelated filter state', async () => {
       render(
         <SearchContextProvider initialState={{ ...initialState, filters }}>
-          <SearchFilter.Checkbox name={name} values={values} />
+          <SearchFilter.Checkbox label={label} name={name} values={values} />
         </SearchContextProvider>,
       );
 
       await waitFor(() => {
-        expect(screen.getByText(name)).toBeInTheDocument();
+        expect(screen.getByText(label)).toBeInTheDocument();
       });
 
       const checkBox = screen.getByRole('checkbox', { name: values[0] });
@@ -185,12 +187,12 @@ describe('SearchFilter', () => {
     it('Renders field name and values when provided as props', async () => {
       render(
         <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Select name={name} values={values} />
+          <SearchFilter.Select label={label} name={name} values={values} />
         </SearchContextProvider>,
       );
 
       await waitFor(() => {
-        expect(screen.getByText(name)).toBeInTheDocument();
+        expect(screen.getByText(label)).toBeInTheDocument();
       });
 
       userEvent.click(screen.getByRole('button'));
@@ -210,7 +212,11 @@ describe('SearchFilter', () => {
     it('Renders values when provided asynchronously', async () => {
       render(
         <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Select name={name} asyncValues={async () => values} />
+          <SearchFilter.Select
+            label={label}
+            name={name}
+            asyncValues={async () => values}
+          />
         </SearchContextProvider>,
       );
 
@@ -245,12 +251,12 @@ describe('SearchFilter', () => {
             },
           }}
         >
-          <SearchFilter.Select name={name} values={values} />
+          <SearchFilter.Select label={label} name={name} values={values} />
         </SearchContextProvider>,
       );
 
       await waitFor(() => {
-        expect(screen.getByText(name)).toBeInTheDocument();
+        expect(screen.getByText(label)).toBeInTheDocument();
       });
 
       userEvent.click(screen.getByRole('button'));
@@ -276,6 +282,7 @@ describe('SearchFilter', () => {
         <SearchContextProvider initialState={initialState}>
           <SearchFilter.Select
             name={name}
+            label={label}
             values={values}
             defaultValue={values[0]}
           />
@@ -283,7 +290,7 @@ describe('SearchFilter', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText(name)).toBeInTheDocument();
+        expect(screen.getByText(label)).toBeInTheDocument();
       });
 
       userEvent.click(screen.getByRole('button'));
@@ -307,12 +314,12 @@ describe('SearchFilter', () => {
     it('Selecting a value sets filter state', async () => {
       render(
         <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Select name={name} values={values} />
+          <SearchFilter.Select label={label} name={name} values={values} />
         </SearchContextProvider>,
       );
 
       await waitFor(() => {
-        expect(screen.getByText(name)).toBeInTheDocument();
+        expect(screen.getByText(label)).toBeInTheDocument();
       });
 
       const button = screen.getByRole('button');
@@ -358,12 +365,12 @@ describe('SearchFilter', () => {
             filters,
           }}
         >
-          <SearchFilter.Select name={name} values={values} />
+          <SearchFilter.Select label={label} name={name} values={values} />
         </SearchContextProvider>,
       );
 
       await waitFor(() => {
-        expect(screen.getByText(name)).toBeInTheDocument();
+        expect(screen.getByText(label)).toBeInTheDocument();
       });
 
       const button = screen.getByRole('button');

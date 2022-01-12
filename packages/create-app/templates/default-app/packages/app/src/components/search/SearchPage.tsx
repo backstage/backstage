@@ -96,11 +96,13 @@ const SearchPage = () => {
               )}
               <SearchFilter.Select
                 className={classes.filter}
+                label="Kind"
                 name="kind"
                 values={['Component', 'Template']}
               />
               <SearchFilter.Checkbox
                 className={classes.filter}
+                label="Lifecycle"
                 name="lifecycle"
                 values={['experimental', 'production']}
               />

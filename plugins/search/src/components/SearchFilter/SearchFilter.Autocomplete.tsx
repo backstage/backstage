@@ -78,7 +78,7 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       {...params}
       name="search"
       variant="outlined"
-      label={label || name}
+      label={label}
       fullWidth
     />
   );

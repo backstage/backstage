@@ -93,7 +93,7 @@ const CheckboxFilter = (props: SearchFilterComponentProps) => {
       fullWidth
       data-testid="search-checkboxfilter-next"
     >
-      <FormLabel className={classes.label}>{label || name}</FormLabel>
+      {label ? <FormLabel className={classes.label}>{label}</FormLabel> : null}
       {values.map((value: string) => (
         <FormControlLabel
           key={value}
@@ -154,9 +154,11 @@ const SelectFilter = (props: SearchFilterComponentProps) => {
       fullWidth
       data-testid="search-selectfilter-next"
     >
-      <InputLabel className={classes.label} margin="dense">
-        {label || name}
-      </InputLabel>
+      {label ? (
+        <InputLabel className={classes.label} margin="dense">
+          {label}
+        </InputLabel>
+      ) : null}
       <Select
         variant="outlined"
         value={filters[name] || ''}
