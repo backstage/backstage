@@ -63,7 +63,7 @@ cycle will vary based on maintainer schedules.
 
 ### Backstage 1.0 (and following versions)
 
-During the first quarter of 2022 we plan to be finalize and release
+During the first quarter of 2022 we plan to finalize and release
 version 1.0 of the Backstage platform (defined by the Core,
 [Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview),
 [Scaffolder](https://backstage.io/docs/features/software-templates/software-templates-index)
