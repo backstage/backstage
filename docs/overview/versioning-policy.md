@@ -4,7 +4,7 @@ title: Versioning Policy
 description:
 ---
 
-## The Purpose
+## The Purpose <!-- of this doc - for us - the authors - when writing it - delete after -->
 
 - Release cadence and naming 1.0, 1.1, 1.2, etc.
   - does not map to semver
@@ -12,7 +12,16 @@ description:
 - X need to be greater then Y or there will be dragons
 - X is supported for N versions
 
+<!--
+
+- https://kubernetes.io/releases/version-skew-policy/
+- https://kubernetes.io/docs/reference/using-api/deprecation-policy/
+
+ -->
+
 ## Backstage releases
+
+<!-- Less technical introduction -->
 
 A Backstage release is a manifest of several packages and plugins that work well
 together. The overarching version of this manifest is decoupled from the
@@ -28,7 +37,7 @@ release.
 
 ### Main Release Line
 
-Release cadence: Once every 2 months
+Current release cadence: Once every 1 months
 
 The main release line in versioned with a major and minor version and does not
 adhere to [semver](https://semver.org).
@@ -77,7 +86,7 @@ line, i.e. on version 1.0 or above.
   may be completely removed.
 - Security fixes **may** be backported to older releases based on the simplicity
   of the upgrade path and severity of the vulnerability.
-- We promise to do our best to adhere to this policy.
+- We will do our best to adhere to this policy.
 
 The purpose of the Backstage Stability Index is to communicate the stability of
 various parts of the project. It is tracked using a scoring system where a
@@ -101,58 +110,21 @@ point building on top of the previous one:
   minor version bump.
 - **3** - The time limit for the deprecation is 3 months instead of two weeks.
 
-## Release Timeline Example
-
-- 2022-02-01: 1.0
-
-  - core-app-api@1.0.2
-  - core-plugin-api@1.0.1
-
-  .. core-app-api@1.0.2-next.0 .. core-app-api@1.0.2-next.1 ..
-  core-app-api@1.0.2-next.2 .. core-app-api@1.0.2-next.3
-
-- 2022-04-01: 1.1
-
-  - core-app-api@1.1.0
-  - core-plugin-api@1.0.1
-
-  .. core-app-api@1.1.0-next.0 .. core-app-api@1.1.0-next.1
-
-  .. core-app-api@1.1.1 <- security fix release NOTE: not based on the existing
-  master, but on 1.1.0 TEST THIS, how does it interact with the `next` release
-  line?
-
-  .. core-app-api@1.1.1-next.2 <- does this move up to 1.1.1 after the security
-  release? .. core-app-api@1.1.1-next.3
-
-- 2022-06-01: 1.2
-  - core-app-api@1.1.2
-  - core-plugin-api@1.0.1
-
-## Individual Package Policy
+## Version Skew Policy
 
 In order for Backstage to function properly the following versioning rules must
-be followed.
+be followed. The rules are referring to the
+[Package Architecture](https://backstage.io/docs/overview/architecture-overview#package-architecture).
 
-- If the `@backstage/app-defaults` package is used, it must be from the same
-  release as the `@backstage/core-app-api` package.
-- There must be no package that is ahead of the `@backstage/core-app-api`
-  package.
-
-* core-app-api
-* core-plugin-api
-* core-components
-* cli
-* app-defaults
-* backend-common
-
-### Upgrade order
-
-Backend upgrades must always be applied before or at the same time as any
-frontend upgrades. If frontend and backend upgrades are rolled out
-simultaneously there may be brief periods of interruption.
-
-## Inspiration
-
-- https://kubernetes.io/releases/version-skew-policy/
-- https://kubernetes.io/docs/reference/using-api/deprecation-policy/
+- The versions of all the packages in the `Frontend App Core` must be from the
+  same release, and it is recommended to keep `Common Tooling` on that release
+  too.
+- The Backstage dependencies of any given plugin should be from the same
+  release. This includes the packages from `Common Libraries`,
+  `Frontend Plugin Core`, and `Frontend Libraries`, or alternatively the
+  `Backend Libraries`.
+- There must be no package that is from a newer release than the
+  `Frontend App Core` packages in the app.
+- Frontend plugins with a corresponding backend plugin should be from the same
+  release. The update to the backend plugin **MUST** be deployed before or
+  together with the update to the frontend plugin.
