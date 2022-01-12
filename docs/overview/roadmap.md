@@ -107,8 +107,7 @@ the maintainers’ radar, with clear interest expressed by the community.
 - **Search GA:**.
 - **[GraphQL](https://graphql.org/) support:** Introduce the ability to query
   Backstage backend services with a standard query language for APIs.
-- **Telemetry:** To efficiently collect, store and analyse system and
-  application log data so that Backstage can be monitored and improved.
+- **Telemetry:** To efficiently generate logging and metrics in such a way that adopters can get insights so that Backstage can be monitored and improved.
 - **Improved UX design:** Provide a better Backstage user experience through
   visual guidelines and templates, especially navigation across plug-ins and
   portal functionalities.
