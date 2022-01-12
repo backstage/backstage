@@ -103,7 +103,7 @@ the maintainers’ radar, with clear interest expressed by the community.
   experience.
 - **Security Plan (and Strategy):** The purpose of the Security Strategy is to
   move another step ahead along the path of the maturity of the platform,
-  setting the expectations of any adopters from a security point.
+  setting the expectations of any adopters from a security standpoint.
 - **Search GA:**.
 - **[GraphQL](https://graphql.org/) support:** Introduce the ability to query
   Backstage backend services with a standard query language for APIs.
