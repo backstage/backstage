@@ -257,6 +257,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           await action.handler({
             baseUrl: task.spec.baseUrl,
             input,
+            token: task.secrets?.token,
             logger: taskLogger,
             logStream: streamLogger,
             workspacePath,
