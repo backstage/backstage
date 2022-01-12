@@ -15,7 +15,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, Divider, IconButton } from '@material-ui/core';
+import {
+  Card,
+  CardHeader,
+  Divider,
+  IconButton,
+  makeStyles,
+} from '@material-ui/core';
 import {
   HeaderIconLinkRow,
   IconLinkVerticalProps,
@@ -37,7 +43,7 @@ import {
 import { Member, BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import { useAsyncFn } from 'react-use';
 import {
   catalogApiRef,
   catalogRouteRef,
@@ -59,6 +65,14 @@ import {
 } from '../../util/fetchMethods';
 import { parseBazaarResponse } from '../../util/parseMethods';
 
+const useStyles = makeStyles({
+  wordBreak: {
+    wordBreak: 'break-all',
+    whiteSpace: 'normal',
+    margin: '-0.25rem 0',
+  },
+});
+
 type Props = {
   initProject: BazaarProject;
   handleClose: () => void;
@@ -70,6 +84,7 @@ export const HomePageBazaarInfoCard = ({
   handleClose,
   initEntity,
 }: Props) => {
+  const classes = useStyles();
   const catalogLink = useRouteRef(catalogRouteRef);
   const bazaarApi = useApi(bazaarApiRef);
   const identity = useApi(identityApiRef);
@@ -222,9 +237,11 @@ export const HomePageBazaarInfoCard = ({
           handleClose={() => setOpenUnlink(false)}
           message={[
             'Are you sure you want to unlink ',
-            <b>{parseEntityRef(bazaarProject.value?.entityRef!).name}</b>,
+            <b className={classes.wordBreak}>
+              {parseEntityRef(bazaarProject.value?.entityRef!).name}
+            </b>,
             ' from ',
-            <b>{bazaarProject.value?.name}</b>,
+            <b className={classes.wordBreak}>{bazaarProject.value?.name}</b>,
             ' ?',
           ]}
           type="unlink"
@@ -242,7 +259,11 @@ export const HomePageBazaarInfoCard = ({
         />
 
         <CardHeader
-          title={bazaarProject.value?.name || initProject.name}
+          title={
+            <p className={classes.wordBreak}>
+              {bazaarProject.value?.name || initProject.name}
+            </p>
+          }
           action={
             <div>
               <IconButton onClick={() => setOpenEdit(true)}>

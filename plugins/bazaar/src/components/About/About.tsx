@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { Grid, Typography, Link, makeStyles } from '@material-ui/core';
-import { InfoCard } from '@backstage/core-components';
+import { Grid, Typography, makeStyles } from '@material-ui/core';
+import { InfoCard, Link } from '@backstage/core-components';
 
 const useStyles = makeStyles({
   subheader: {
@@ -39,7 +39,7 @@ export const About = () => {
             internal projects suitable for{' '}
             <Link
               target="_blank"
-              href="https://en.wikipedia.org/wiki/Inner_source"
+              to="https://en.wikipedia.org/wiki/Inner_source"
             >
               Inner Sourcing
             </Link>

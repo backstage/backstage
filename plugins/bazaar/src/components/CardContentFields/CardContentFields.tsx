@@ -21,10 +21,9 @@ import {
   Card,
   CardContent,
   Typography,
-  Link,
   GridSize,
 } from '@material-ui/core';
-import { Avatar } from '@backstage/core-components';
+import { Avatar, Link } from '@backstage/core-components';
 import { AboutField } from '@backstage/plugin-catalog';
 import { StatusTag } from '../StatusTag';
 import { Member, BazaarProject } from '../../types';
@@ -32,6 +31,7 @@ import { Member, BazaarProject } from '../../types';
 const useStyles = makeStyles({
   break: {
     wordBreak: 'break-word',
+    textAlign: 'justify',
   },
 });
 
@@ -111,7 +111,7 @@ export const CardContentFields = ({
                         />
                         <Link
                           className={classes.break}
-                          href={`http://github.com/${member.userId}`}
+                          to={`http://github.com/${member.userId}`}
                           target="_blank"
                         >
                           {member?.userId}

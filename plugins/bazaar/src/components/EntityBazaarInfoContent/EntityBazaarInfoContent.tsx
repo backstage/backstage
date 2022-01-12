@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { CardHeader, Divider, IconButton } from '@material-ui/core';
+import { CardHeader, Divider, IconButton, makeStyles } from '@material-ui/core';
 import {
   HeaderIconLinkRow,
   IconLinkVerticalProps,
@@ -37,6 +37,14 @@ import { ConfirmationDialog } from '../ConfirmationDialog';
 import { CardContentFields } from '../CardContentFields';
 import { fetchProjectMembers } from '../../util/fetchMethods';
 
+const useStyles = makeStyles({
+  wordBreak: {
+    wordBreak: 'break-all',
+    whiteSpace: 'normal',
+    margin: '-0.25rem 0',
+  },
+});
+
 type Props = {
   bazaarProject: BazaarProject | null | undefined;
   fetchBazaarProject: () => Promise<BazaarProject | null>;
@@ -46,6 +54,7 @@ export const EntityBazaarInfoContent = ({
   bazaarProject,
   fetchBazaarProject,
 }: Props) => {
+  const classes = useStyles();
   const bazaarApi = useApi(bazaarApiRef);
   const identity = useApi(identityApiRef);
   const [openEdit, setOpenEdit] = useState(false);
@@ -160,9 +169,11 @@ export const EntityBazaarInfoContent = ({
             handleClose={handleUnlinkClose}
             message={[
               'Are you sure you want to unlink ',
-              <b>{parseEntityRef(bazaarProject.entityRef!).name}</b>,
+              <b className={classes.wordBreak}>
+                {parseEntityRef(bazaarProject.entityRef!).name}
+              </b>,
               ' from ',
-              <b>{bazaarProject.name}</b>,
+              <b className={classes.wordBreak}>{bazaarProject.name}</b>,
               ' ?',
             ]}
             type="unlink"
@@ -171,7 +182,7 @@ export const EntityBazaarInfoContent = ({
         )}
 
         <CardHeader
-          title={bazaarProject?.name!}
+          title={<p className={classes.wordBreak}>{bazaarProject?.name!}</p>}
           action={
             <div>
               <IconButton
