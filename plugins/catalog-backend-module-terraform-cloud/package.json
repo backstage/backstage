@@ -20,7 +20,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.9.11",
+    "@backstage/backend-common": "^0.10.2",
     "@backstage/catalog-model": "^0.9.8",
     "@backstage/config": "^0.1.8",
     "@backstage/plugin-catalog-backend": "^0.19.2",
@@ -29,9 +29,9 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.9.1",
+    "@backstage/cli": "^0.10.0",
     "@types/supertest": "^2.0.8",
-    "supertest": "^4.0.2",
+    "supertest": "^6.1.6",
     "msw": "^0.35.0"
   },
   "files": [
