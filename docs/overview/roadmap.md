@@ -70,7 +70,7 @@ version 1.0 of the Backstage platform (defined by the Core,
 and [TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview)).
 Included as part of this milestone:
 
-- The cadence of minor/weekly/daily releases to provide clarity on the frequency
+- Deciding on the cadence of minor/weekly/daily releases to provide clarity on the frequency
   and expectations for future versions of the platform and its defining modules.
 - The support model to set the expectations from the adopters in their
   respective use cases.
