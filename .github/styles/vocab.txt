@@ -68,6 +68,7 @@ deduplicated
 deps
 dependabot
 destructured
+destructuring
 dev
 devops
 devs
