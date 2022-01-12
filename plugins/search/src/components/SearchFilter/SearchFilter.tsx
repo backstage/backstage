@@ -47,7 +47,15 @@ export type SearchFilterComponentProps = {
   name: string;
   label?: string;
   values?: string[];
+  /**
+   * An async function to return a list of values to be used in the filter. In
+   * the autocomplete filter, the last input value is provided as an input to
+   * allow values to be filtered. This function is debounced and values cached.
+   */
   asyncValues?: (partial: string) => Promise<string[]>;
+  /**
+   * Debounce time (ms) used by the asyncValues callback. Defaults to 250ms.
+   */
   asyncDebounce?: number;
   defaultValue?: string[] | string | null;
 };
