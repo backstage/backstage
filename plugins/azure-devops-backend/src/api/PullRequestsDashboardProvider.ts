@@ -65,9 +65,17 @@ export class PullRequestsDashboardProvider {
       teams.map(team =>
         limiter(async () => {
           const teamId = team.id;
+          const projectId = team.projectId;
 
           if (teamId) {
-            const teamMembers = await this.azureDevOpsApi.getTeamMembers(team);
+            let teamMembers: TeamMember[] | undefined;
+
+            if (projectId) {
+              teamMembers = await this.azureDevOpsApi.getTeamMembers({
+                projectId,
+                teamId,
+              });
+            }
 
             if (teamMembers) {
               team.members = teamMembers.reduce((arr, teamMember) => {

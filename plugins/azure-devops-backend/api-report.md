@@ -73,7 +73,13 @@ export class AzureDevOpsApi {
     top: number,
   ): Promise<RepoBuild[]>;
   // (undocumented)
-  getTeamMembers(team: Team): Promise<TeamMember[] | undefined>;
+  getTeamMembers({
+    projectId,
+    teamId,
+  }: {
+    projectId: string;
+    teamId: string;
+  }): Promise<TeamMember[] | undefined>;
 }
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

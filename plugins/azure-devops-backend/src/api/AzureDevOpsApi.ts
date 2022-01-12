@@ -241,20 +241,19 @@ export class AzureDevOpsApi {
     );
   }
 
-  public async getTeamMembers(team: Team): Promise<TeamMember[] | undefined> {
-    this.logger?.debug(`Getting team member ids for team '${team.name}'.`);
-
-    if (!team.projectId || !team.id) {
-      return undefined;
-    }
+  public async getTeamMembers({
+    projectId,
+    teamId,
+  }: {
+    projectId: string;
+    teamId: string;
+  }): Promise<TeamMember[] | undefined> {
+    this.logger?.debug(`Getting team member ids for team '${teamId}'.`);
 
     const client = await this.webApi.getCoreApi();
 
     const teamMembers: AdoTeamMember[] =
-      await client.getTeamMembersWithExtendedProperties(
-        team.projectId,
-        team.id,
-      );
+      await client.getTeamMembersWithExtendedProperties(projectId, teamId);
 
     return teamMembers.map(teamMember => ({
       id: teamMember.identity?.id,
