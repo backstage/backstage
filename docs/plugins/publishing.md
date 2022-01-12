@@ -14,45 +14,62 @@ npm.
 
 ### Creating a new release
 
-Version bumps are made through release PRs. To create a new release, checkout
-out a new branch that you will use for the release, e.g.
+Releases are handled by changesets and trigger whenever the "Version Packages"
+PR is merged. This is typically done every Thursday around noon CET.
 
-```sh
-$ git checkout -b new-release
-```
+## Emergency Release Process
 
-First bump the `CHANGELOG.md` in the root of the repo and commit. You bump it by
-adding a header for the new version just below the `## Next Release` one.
+**This emergency release process is intended only for the Backstage
+maintainers.**
 
-Then, from the root of the repo, run
+For this example we will be using the `@backstage/plugin-foo` package as an
+example and assume that it is currently version `1.5.0` in the master branch.
 
-```sh
-$ yarn release
-```
+In the event of a severe bug being introduced in version `1.5.0` of the
+`@backstage/plugin-foo` released in the `2048-01-01` release, the following
+processed is used to release an emergency fix as `1.5.1`:
 
-This will bring up the lerna release CLI where you choose what type of version
-bump you want to make, (major/minor/patch/prerelease). The CLI will take you
-through choosing a version, previewing all changes, and then approving the
-release. Once the release is approved, a new commit is created that you can
-submit as a PR. Push the branch to GitHub:
+- [ ] Identify the release that needs to be patched, in this case we're fixing a
+      broken release, so it would be the most recent one, `2048-01-01`. In the
+      event of a backported security fix, the release that has the last
+      published version of each major version of the package should be the one
+      patched.
+- [ ] Make sure a patch branch exists for the release that is being patched. If
+      a patch already exists, reuse the existing branch.
 
-```sh
-$ git push origin -u new-release
-```
+  ```bash
+  git checkout release-2048-01-01
+  git checkout -b release-2048-01-01-patch
+  git push --set-upstream origin release-2048-01-01-patch
+  ```
 
-And then create a PR. Once the PR is approved and merged into master, the master
-build will publish new versions of all bumped packages.
+- [ ] With the `release-2048-01-01-patch` branch as a base, create a new branch
+      for your fix:
 
-### Include new changes in existing release PR
+  ```bash
+  git checkout -b ${USER}/release-2048-01-01-emergency-fix
+  ```
 
-If you want to include some last minute changes to an existing release PR,
-follow these instructions:
+- [ ] Apply fixes and create a new patch changeset for the effected package,
+      then commit these changes.
+- [ ] Run `yarn release` in the root of the repo in order to convert your
+      changeset into package version bumps and changelog entries. Commit these
+      changes as a second `"Generated release"` commit.
+- [ ] Create PR towards the base branch(`release-2048-01-01-patch`) containing
+      the two commits.
+- [ ] Review/Merge PR into `release-2048-01-01-patch`. This will automatically
+      trigger a release.
+- [ ] In the master branch, add a `.changeset/patched.json` to make sure that
+      future releases of the packages are bumped accordingly:
 
-```sh
-$ git checkout master
-$ git pull
-$ git checkout new-release
-$ git reset --hard master
-$ yarn release
-$ git push --force
-```
+  ```json
+  {
+    "currentReleaseVersion": {
+      "@backstage/plugin-foo": "1.5.1"
+    }
+  }
+  ```
+
+- [ ] Apply the same fix towards master if needed and create appropriate
+      changeset. In the changeset towards master you should refer back to all
+      patch releases that also received the same fix.
