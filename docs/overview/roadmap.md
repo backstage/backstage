@@ -41,7 +41,7 @@ If you have specific questions about the roadmap, please create an
 
 The Backstage roadmap lays out both [“what’s next”](#whats-next) and
 [“future work”](#future-work). With "next" we mean features planned for release
-within the ongoing quarter starting in January until March 2022 included. With
+within the ongoing quarter from January through March 2022. With
 "future" we mean features in the radar, but not yet scheduled.
 
 The long-term roadmap (12 - 36 months) is not detailed in the public roadmap.
