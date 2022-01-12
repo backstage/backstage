@@ -14,10 +14,28 @@
  * limitations under the License.
  */
 
-export * from './useAllTeams';
-export * from './useDashboardPullRequests';
-export * from './useProjectRepoFromEntity';
-export * from './usePullRequests';
-export * from './useRepoBuilds';
-export * from './useUserEmail';
-export * from './useUserTeamIds';
+import { azureDevOpsApiRef } from '../api';
+import { useApi } from '@backstage/core-plugin-api';
+import { useAsync } from 'react-use';
+
+export function useUserTeamIds(userId: string | undefined): {
+  teamIds?: string[];
+  loading: boolean;
+  error?: Error;
+} {
+  const api = useApi(azureDevOpsApiRef);
+
+  const {
+    value: teamIds,
+    loading,
+    error,
+  } = useAsync(() => {
+    return userId ? api.getUserTeamIds(userId) : Promise.resolve(undefined);
+  }, [api]);
+
+  return {
+    teamIds,
+    loading,
+    error,
+  };
+}

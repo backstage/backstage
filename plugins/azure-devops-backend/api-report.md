@@ -15,6 +15,7 @@ import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
 import { RepoBuild } from '@backstage/plugin-azure-devops-common';
 import { Team } from '@backstage/plugin-azure-devops-common';
+import { TeamMember } from '@backstage/plugin-azure-devops-common';
 import { WebApi } from 'azure-devops-node-api';
 
 // Warning: (ae-missing-release-tag) "AzureDevOpsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -71,6 +72,14 @@ export class AzureDevOpsApi {
     repoName: string,
     top: number,
   ): Promise<RepoBuild[]>;
+  // (undocumented)
+  getTeamMembers({
+    projectId,
+    teamId,
+  }: {
+    projectId: string;
+    teamId: string;
+  }): Promise<TeamMember[] | undefined>;
 }
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

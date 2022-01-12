@@ -15,11 +15,11 @@
  */
 
 import { Filter, FilterType } from '../filters';
-
-import { useUserEmail } from '../../../../hooks';
+import { useUserEmail, useUserTeamIds } from '../../../../hooks';
 
 export function useFilterProcessor(): (filters: Filter[]) => Filter[] {
   const userEmail = useUserEmail();
+  const { teamIds } = useUserTeamIds(userEmail);
 
   return (filters: Filter[]): Filter[] => {
     for (const filter of filters) {
@@ -27,6 +27,11 @@ export function useFilterProcessor(): (filters: Filter[]) => Filter[] {
         case FilterType.AssignedToCurrentUser:
         case FilterType.CreatedByCurrentUser:
           filter.email = userEmail;
+          break;
+
+        case FilterType.AssignedToCurrentUsersTeams:
+        case FilterType.CreatedByCurrentUsersTeams:
+          filter.teamIds = teamIds;
           break;
 
         default:
