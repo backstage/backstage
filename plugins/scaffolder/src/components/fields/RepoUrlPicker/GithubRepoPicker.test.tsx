@@ -19,7 +19,7 @@ import { GithubRepoPicker } from './GithubRepoPicker';
 import { render } from '@testing-library/react';
 
 describe('GitubRepoPicker', () => {
-  it('renders a select if there is a list of allowed owners', () => {
+  it('renders a select if there is a list of allowed owners', async () => {
     const allowedOwners = ['owner1', 'owner2'];
     const { findByText } = render(
       <GithubRepoPicker
@@ -31,6 +31,7 @@ describe('GitubRepoPicker', () => {
       />,
     );
 
-    expect(findByText('owner1')).toBeInTheDocument();
+    expect(await findByText('owner1')).toBeInTheDocument();
+    expect(await findByText('owner2')).toBeInTheDocument();
   });
 });
