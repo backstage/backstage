@@ -45,7 +45,7 @@ import { READY_COLUMNS, RESOURCE_COLUMNS } from '../Pods/PodsTable';
 import { CustomisationProps } from '../../api/types';
 
 type DeploymentsAccordionsProps = {
-  customisationProps?: typeof CustomisationProps;
+  customisationProps?: CustomisationProps;
   children?: React.ReactNode;
 };
 
@@ -53,7 +53,7 @@ type DeploymentAccordionProps = {
   deployment: V1Deployment;
   ownedPods: V1Pod[];
   matchingHpa?: V1HorizontalPodAutoscaler;
-  customisationProps?: typeof CustomisationProps;
+  customisationProps?: CustomisationProps;
   children?: React.ReactNode;
 };
 

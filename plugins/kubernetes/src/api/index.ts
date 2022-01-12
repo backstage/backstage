@@ -17,4 +17,4 @@
 export { kubernetesApiRef } from './types';
 export type { KubernetesApi } from './types';
 export { KubernetesBackendClient } from './KubernetesBackendClient';
-export { CustomisationProps } from './types';
+export type { CustomisationProps } from './types';

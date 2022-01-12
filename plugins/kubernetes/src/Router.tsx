@@ -36,7 +36,7 @@ export const isKubernetesAvailable = (entity: Entity) =>
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
-  customisationProps?: typeof CustomisationProps;
+  customisationProps?: CustomisationProps;
 };
 
 export const Router = ({ customisationProps }: Props) => {

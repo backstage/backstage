@@ -108,7 +108,7 @@ const ClusterSummary = ({
 type ClusterProps = {
   clusterObjects: ClusterObjects;
   podsWithErrors: Set<string>;
-  customisationProps?: typeof CustomisationProps;
+  customisationProps?: CustomisationProps;
   children?: React.ReactNode;
 };
 

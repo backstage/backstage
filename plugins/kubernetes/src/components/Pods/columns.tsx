@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import React from 'react';
 import { V1Pod } from '@kubernetes/client-node';
 import { TableColumn } from '@backstage/core-components';
 import { PodDrawer } from './PodDrawer';
@@ -64,7 +64,9 @@ export function createStatusColumn(): TableColumn<V1Pod> {
   };
 }
 
-export function createCPUUsageColumn(podNamesWithMetrics): TableColumn<V1Pod> {
+export function createCPUUsageColumn(
+  podNamesWithMetrics: object,
+): TableColumn<V1Pod> {
   return {
     title: 'CPU usage %',
     render: (pod: V1Pod) => {
@@ -80,7 +82,7 @@ export function createCPUUsageColumn(podNamesWithMetrics): TableColumn<V1Pod> {
 }
 
 export function createMemoryUsageColumn(
-  podNamesWithMetrics,
+  podNamesWithMetrics: object,
 ): TableColumn<V1Pod> {
   return {
     title: 'Memory usage %',

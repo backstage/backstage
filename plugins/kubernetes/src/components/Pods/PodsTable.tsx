@@ -16,7 +16,6 @@
 
 import React, { useContext } from 'react';
 import { V1Pod } from '@kubernetes/client-node';
-import { PodDrawer } from './PodDrawer';
 import { Table, TableColumn } from '@backstage/core-components';
 import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
 import * as columnFactories from './columns';

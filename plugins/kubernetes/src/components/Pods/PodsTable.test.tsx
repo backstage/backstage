@@ -197,7 +197,7 @@ describe('PodsTable', () => {
     columns.push(...DEFAULT_COLUMNS);
     columns.push(...READY);
     columns.push(...customColumns);
-    const { getByText, getAllByText } = render(
+    const { getByText } = render(
       wrapInTestApp(
         <PodsTable
           pods={[pod as any]}
