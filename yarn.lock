@@ -5377,12 +5377,11 @@
   integrity sha512-8UiDeDbjCImFSfOegGu13otQ7OdP9FOYpcLjeouppnhs+MPeIEAtYS+jCcBKmi3reyTagC15/KVSRhde1wS1vg==
 
 "@roadiehq/backstage-plugin-github-insights@^1.4.2":
-  version "1.4.2"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.4.2.tgz#462e2868a1b4cee338032e4715ad797db71ebd22"
-  integrity sha512-hIGOhzyK1rC3JI+y/yI303whdRJTN4KXCYHekcdchjlTKB31SMU4lER0sBacCyiov1vAl+LkDmdubESSLou/Hw==
+  version "1.4.3"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.4.3.tgz#c83fd94dc7266330b464686c5f283fa07f5f2be9"
+  integrity sha512-khvXVgp+GTwXULTG4jfzB6uQtzPbjgZhfudE04hc/O3FWU4Wyrcmc/UTTu1nFah7m6yL6pwfEdC3auKXPr07lQ==
   dependencies:
     "@backstage/catalog-model" "^0.9.7"
-    "@backstage/core-app-api" "^0.3.0"
     "@backstage/core-components" "^0.8.0"
     "@backstage/core-plugin-api" "^0.4.0"
     "@backstage/integration-react" "^0.1.10"
