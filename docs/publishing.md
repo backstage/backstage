@@ -1,8 +1,4 @@
----
-id: publishing
-title: Publishing
-description: Documentation on Publishing npm packages
----
+<!-- This is intentionally left out of the microsite, since it only applies to the main repo -->
 
 ## npm
 
