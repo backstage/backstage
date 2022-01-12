@@ -72,7 +72,7 @@ Included as part of this milestone:
 
 - Deciding on the cadence of minor/weekly/daily releases to provide clarity on the frequency
   and expectations for future versions of the platform and its defining modules.
-- The support model to set the expectations from the adopters in their
+- Establish the support model to set the expectations from the adopters in their
   respective use cases.
 
 ### Backstage Security Audit
