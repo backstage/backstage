@@ -106,7 +106,7 @@ export class TechInsightsClient implements TechInsightsApi {
     checks?: Check[],
   ): Promise<BulkCheckResponse> {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const checkIds = checks ? checks.map(check => check.id) : [];
     const requestBody = {
       entities,
