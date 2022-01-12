@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { assertError } from '@backstage/errors';
 import {
   catalogApiRef,
@@ -102,9 +102,14 @@ export const StepPrepareCreatePullRequest = ({
   const catalogApi = useApi(catalogApiRef);
   const catalogImportApi = useApi(catalogImportApiRef);
   const errorApi = useApi(errorApiRef);
+  const configApi = useApi(configApiRef);
 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string>();
+
+  const catalogFilename =
+    configApi.getOptionalString('catalog.import.entityFilename') ??
+    'catalog-info.yaml';
 
   const {
     loading: prDefaultsLoading,
@@ -193,7 +198,7 @@ export const StepPrepareCreatePullRequest = ({
     <>
       <Typography>
         You entered a link to a {analyzeResult.integrationType} repository but a{' '}
-        <code>catalog-info.yaml</code> could not be found. Use this form to open
+        <code>{catalogFilename}</code> could not be found. Use this form to open
         a Pull Request that creates one.
       </Typography>
 

@@ -28,6 +28,10 @@ export const ImportInfoCard = () => {
   const integrations = configApi.getConfig('integrations');
   const hasGithubIntegration = integrations.has('github');
 
+  const catalogFilename =
+    configApi.getOptionalString('catalog.import.entityFilename') ??
+    'catalog-info.yaml';
+
   return (
     <InfoCard
       title="Register an existing component"
@@ -60,14 +64,14 @@ export const ImportInfoCard = () => {
             Example: <code>https://github.com/backstage/backstage</code>
           </Typography>
           <Typography variant="body2" paragraph>
-            The wizard discovers all <code>catalog-info.yaml</code> files in the
+            The wizard discovers all <code>{catalogFilename}</code> files in the
             repository, previews the entities, and adds them to the {appTitle}{' '}
             catalog.
           </Typography>
           {catalogImportApi.preparePullRequest && (
             <Typography variant="body2" paragraph>
               If no entities are found, the wizard will prepare a Pull Request
-              that adds an example <code>catalog-info.yaml</code> and prepares
+              that adds an example <code>{catalogFilename}</code> and prepares
               the {appTitle} catalog to load all entities as soon as the Pull
               Request is merged.
             </Typography>
