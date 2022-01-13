@@ -13,6 +13,10 @@ export type AppConfig = {
   context: string;
   data: JsonObject_2;
   filteredKeys?: string[];
+  deprecatedKeys?: {
+    key: string;
+    description: string;
+  }[];
 };
 
 // @public
