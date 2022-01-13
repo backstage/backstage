@@ -304,6 +304,59 @@ describe('createPermissionIntegrationRouter', () => {
       });
     });
 
+    it('interleaves responses for present and missing resources', async () => {
+      mockGetResources.mockImplementationOnce(async resourceRefs =>
+        resourceRefs.map(resourceRef =>
+          resourceRef === 'default:test/missing-resource'
+            ? undefined
+            : { id: resourceRef },
+        ),
+      );
+
+      const response = await request(app)
+        .post('/.well-known/backstage/permissions/apply-conditions')
+        .send({
+          items: [
+            {
+              id: '123',
+              resourceRef: 'default:test/resource-1',
+              resourceType: 'test-resource',
+              conditions: { rule: 'test-rule-1', params: [] },
+            },
+            {
+              id: '234',
+              resourceRef: 'default:test/missing-resource',
+              resourceType: 'test-resource',
+              conditions: { rule: 'test-rule-1', params: [] },
+            },
+            {
+              id: '345',
+              resourceRef: 'default:test/resource-2',
+              resourceType: 'test-resource',
+              conditions: { rule: 'test-rule-1', params: [] },
+            },
+          ],
+        });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: [
+          {
+            id: '123',
+            result: AuthorizeResult.ALLOW,
+          },
+          {
+            id: '234',
+            result: AuthorizeResult.DENY,
+          },
+          {
+            id: '345',
+            result: AuthorizeResult.ALLOW,
+          },
+        ],
+      });
+    });
+
     it.each([
       undefined,
       '',
