@@ -176,7 +176,7 @@ export async function createRouter(
 
   router.get('/users/:userId/team-ids', async (req, res) => {
     const { userId } = req.params;
-    const teamIds = pullRequestsDashboardProvider.getUserTeamIds(userId);
+    const teamIds = await pullRequestsDashboardProvider.getUserTeamIds(userId);
     res.status(200).json(teamIds);
   });
 
