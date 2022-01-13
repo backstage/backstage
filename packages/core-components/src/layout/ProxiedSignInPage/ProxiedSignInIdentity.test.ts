@@ -79,7 +79,6 @@ describe('ProxiedSignInIdentity', () => {
             picture: 'p',
           },
           backstageIdentity: {
-            id: 'i',
             token: [
               'eyJhbGciOiJFUzI1NiIsImtpZCI6ImMxNTMzNDRiLWZjYzktNGIwOS1iN2ZhLTU3ZmM5MDhjMjBiNiJ9',
               btoa(
@@ -96,8 +95,8 @@ describe('ProxiedSignInIdentity', () => {
             ].join('.'),
             identity: {
               type: 'user',
-              userEntityRef: 'ue',
-              ownershipEntityRefs: ['oe'],
+              userEntityRef: 'k:ns/ue',
+              ownershipEntityRefs: ['k:ns/oe'],
             },
           },
         };
@@ -125,6 +124,28 @@ describe('ProxiedSignInIdentity', () => {
       expect(getBaseUrl).toBeCalledTimes(1);
       expect(getBaseUrl).lastCalledWith('auth');
       expect(serverCalled).toBeCalledTimes(1);
+
+      // All information should now be available
+      await expect(identity.getBackstageIdentity()).resolves.toEqual({
+        type: 'user',
+        userEntityRef: 'k:ns/ue',
+        ownershipEntityRefs: ['k:ns/oe'],
+      });
+      await expect(identity.getIdToken()).resolves.toEqual(expect.any(String));
+      await expect(identity.getCredentials()).resolves.toEqual({
+        token: expect.any(String),
+      });
+      await expect(identity.getProfileInfo()).resolves.toEqual({
+        email: 'e',
+        displayName: 'd',
+        picture: 'p',
+      });
+      expect(identity.getUserId()).toBe('ue');
+      expect(identity.getProfile()).toEqual({
+        email: 'e',
+        displayName: 'd',
+        picture: 'p',
+      });
 
       await identity.getSessionAsync(); // no need to fetch again just yet
       expect(serverCalled).toBeCalledTimes(1);

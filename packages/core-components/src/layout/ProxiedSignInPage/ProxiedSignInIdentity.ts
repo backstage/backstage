@@ -94,8 +94,14 @@ export class ProxiedSignInIdentity implements IdentityApi {
 
   /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getUserId} */
   getUserId(): string {
-    const session = this.getSessionSync();
-    return session.backstageIdentity.id;
+    const { backstageIdentity } = this.getSessionSync();
+    const ref = backstageIdentity.identity.userEntityRef;
+    const match = /^([^:/]+:)?([^:/]+\/)?([^:/]+)$/.exec(ref);
+    if (!match) {
+      throw new TypeError(`Invalid user entity reference "${ref}"`);
+    }
+
+    return match[3];
   }
 
   /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getIdToken} */
