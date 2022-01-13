@@ -28,12 +28,11 @@ describe('types', () => {
       picture: 'p',
     },
     backstageIdentity: {
-      id: 'i',
       token: 't',
       identity: {
         type: 'user',
-        userEntityRef: 'ue',
-        ownershipEntityRefs: ['oe'],
+        userEntityRef: 'k:ns/ue',
+        ownershipEntityRefs: ['k:ns/oe'],
       },
     },
   };

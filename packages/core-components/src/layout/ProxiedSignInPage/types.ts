@@ -28,7 +28,6 @@ export const proxiedSessionSchema = z.object({
     picture: z.string().optional(),
   }),
   backstageIdentity: z.object({
-    id: z.string(),
     token: z.string(),
     identity: z.object({
       type: z.literal('user'),
@@ -47,5 +46,5 @@ export const proxiedSessionSchema = z.object({
 export type ProxiedSession = {
   providerInfo?: { [key: string]: unknown };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentityResponse;
+  backstageIdentity: Omit<BackstageIdentityResponse, 'id'>;
 };
