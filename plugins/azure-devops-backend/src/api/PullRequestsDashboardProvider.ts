@@ -40,7 +40,12 @@ export class PullRequestsDashboardProvider {
     azureDevOpsApi: AzureDevOpsApi,
   ): Promise<PullRequestsDashboardProvider> {
     const provider = new PullRequestsDashboardProvider(logger, azureDevOpsApi);
-    await provider.readTeams();
+    try {
+      await provider.readTeams();
+    } catch (error) {
+      logger.warn('Problem with starting Azure DevOps backend (reading teams)');
+      logger.error(error);
+    }
     return provider;
   }
 
