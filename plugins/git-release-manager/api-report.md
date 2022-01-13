@@ -296,6 +296,11 @@ const mockBumpedTag = 'rc-2020.01.01_1337';
 // @public (undocumented)
 const mockCalverProject: Project;
 
+// Warning: (ae-missing-release-tag) "mockCtaMessage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+const mockCtaMessage = 'Patch Release Candidate';
+
 // Warning: (ae-missing-release-tag) "mockDefaultBranch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -601,6 +606,7 @@ declare namespace testHelpers_2 {
     mockNextGitInfoSemver,
     mockNextGitInfoCalver,
     mockTagParts,
+    mockCtaMessage,
     mockBumpedTag,
     createMockRelease,
     mockReleaseCandidateCalver,
