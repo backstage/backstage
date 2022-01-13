@@ -69,6 +69,8 @@
     "msw": "^0.35.0"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }
