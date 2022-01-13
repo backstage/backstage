@@ -196,29 +196,29 @@ export interface FactRetriever {
  * A Luxon duration like object for time to live value
  *
  * @example
- * \{ ttl: 1209600000 \}
- * \{ ttl: \{ weeks: 4 \} \}
+ * \{ timeToLive: 1209600000 \}
+ * \{ timeToLive: \{ weeks: 4 \} \}
  *
  **/
-export type TTL = { ttl: DurationLike };
+export type TTL = { timeToLive: DurationLike };
 
 /**
  * @public
  *
- * A number for items to live value
+ * A maximum number for items to be kept in the database for each fact retriever/entity pair
  *
  * @example
- * \{ itl: 10 \}
+ * \{ maxItems: 10 \}
  *
  **/
-export type ITL = { itl: number };
+export type MaxItems = { maxItems: number };
 
 /**
  * @public
  *
  * A fact lifecycle definition. Determines which strategy to use to purge expired facts from the database.
  */
-export type FactLifecycle = TTL | ITL;
+export type FactLifecycle = TTL | MaxItems;
 
 /**
  * @public

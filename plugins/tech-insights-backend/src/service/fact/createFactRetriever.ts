@@ -19,6 +19,12 @@ import {
   FactRetrieverRegistration,
 } from '@backstage/plugin-tech-insights-node';
 
+export type FactRetrieverRegistrationOptions = {
+  cadence: string;
+  factRetriever: FactRetriever;
+  lifecycle?: FactLifecycle;
+};
+
 /**
  * @public
  *
@@ -47,11 +53,11 @@ import {
  * \{ itl: 7 \} -- This fact retriever will leave 7 newest items in the database when it is run
  *
  */
-export function createFactRetrieverRegistration(
-  cadence: string,
-  factRetriever: FactRetriever,
-  lifecycle?: FactLifecycle,
-): FactRetrieverRegistration {
+export function createFactRetrieverRegistration({
+  cadence,
+  factRetriever,
+  lifecycle,
+}: FactRetrieverRegistrationOptions): FactRetrieverRegistration {
   return {
     cadence,
     factRetriever,

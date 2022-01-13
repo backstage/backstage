@@ -265,7 +265,7 @@ describe('Tech Insights database', () => {
     });
   });
 
-  it('should delete extraneous rows when ITL is defined. Should leave only n latest', async () => {
+  it('should delete extraneous rows when MaxItems is defined. Should leave only n latest', async () => {
     const deviledFact = (it: {}) => ({
       ...it,
       facts: JSON.stringify({
@@ -289,11 +289,11 @@ describe('Tech Insights database', () => {
         testNumberFact: 555,
       },
     };
-    const itl = 2;
-    await store.insertFacts('test-fact', [factToBeInserted], { itl });
+    const maxItems = 2;
+    await store.insertFacts('test-fact', [factToBeInserted], { maxItems });
 
     const afterInsertionFacts = await testDbClient('facts').select();
-    expect(afterInsertionFacts).toHaveLength(itl);
+    expect(afterInsertionFacts).toHaveLength(maxItems);
     expect(afterInsertionFacts[0]).toMatchObject(
       deviledFact(additionalFacts[0]),
     );
@@ -335,7 +335,7 @@ describe('Tech Insights database', () => {
       },
     };
     await store.insertFacts('test-fact', [factToBeInserted], {
-      ttl: { weeks: 2 },
+      timeToLive: { weeks: 2 },
     });
 
     const afterInsertionFacts = await testDbClient('facts')

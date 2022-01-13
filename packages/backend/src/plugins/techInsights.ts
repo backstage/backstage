@@ -40,12 +40,18 @@ export default async function createPlugin({
     database,
     discovery,
     factRetrievers: [
-      createFactRetrieverRegistration(
-        '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
-        entityOwnershipFactRetriever,
-      ),
-      createFactRetrieverRegistration('1 1 1 * *', entityMetadataFactRetriever),
-      createFactRetrieverRegistration('1 1 1 * *', techdocsFactRetriever),
+      createFactRetrieverRegistration({
+        cadence: '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
+        factRetriever: entityOwnershipFactRetriever,
+      }),
+      createFactRetrieverRegistration({
+        cadence: '1 1 1 * *',
+        factRetriever: entityMetadataFactRetriever,
+      }),
+      createFactRetrieverRegistration({
+        cadence: '1 1 1 * *',
+        factRetriever: techdocsFactRetriever,
+      }),
     ],
     factCheckerFactory: new JsonRulesEngineFactCheckerFactory({
       checks: [

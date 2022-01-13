@@ -16,7 +16,11 @@
 import camelCase from 'lodash/camelCase';
 import { Entity } from '@backstage/catalog-model';
 import { get } from 'lodash';
-import { FactLifecycle, ITL, TTL } from '@backstage/plugin-tech-insights-node';
+import {
+  FactLifecycle,
+  MaxItems,
+  TTL,
+} from '@backstage/plugin-tech-insights-node';
 
 export const generateAnnotationFactName = (annotation: string) =>
   camelCase(`hasAnnotation-${annotation}`);
@@ -25,9 +29,9 @@ export const entityHasAnnotation = (entity: Entity, annotation: string) =>
   Boolean(get(entity, ['metadata', 'annotations', annotation]));
 
 export const isTtl = (lifecycle: FactLifecycle): lifecycle is TTL => {
-  return !!(lifecycle as TTL).ttl;
+  return !!(lifecycle as TTL).timeToLive;
 };
 
-export const isItl = (lifecycle: FactLifecycle): lifecycle is ITL => {
-  return !!(lifecycle as ITL).itl;
+export const isMaxItems = (lifecycle: FactLifecycle): lifecycle is MaxItems => {
+  return !!(lifecycle as MaxItems).maxItems;
 };

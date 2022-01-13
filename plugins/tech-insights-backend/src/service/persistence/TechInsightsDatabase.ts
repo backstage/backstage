@@ -27,7 +27,7 @@ import { groupBy, omit } from 'lodash';
 import { DateTime } from 'luxon';
 import { Logger } from 'winston';
 import { parseEntityName, stringifyEntityRef } from '@backstage/catalog-model';
-import { isItl, isTtl } from '../fact/factRetrievers/utils';
+import { isMaxItems, isTtl } from '../fact/factRetrievers/utils';
 import Transaction = Knex.Transaction;
 
 export type RawDbFactRow = {
@@ -108,12 +108,11 @@ export class TechInsightsDatabase implements TechInsightsStore {
       await tx.batchInsert<RawDbFactRow>('facts', factRows, this.CHUNK_SIZE);
 
       if (lifecycle && isTtl(lifecycle)) {
-        const expiration = DateTime.now().minus(lifecycle.ttl);
+        const expiration = DateTime.now().minus(lifecycle.timeToLive);
         await this.deleteExpiredFactsByDate(tx, factRows, expiration);
       }
-      if (lifecycle && isItl(lifecycle)) {
-        const items = lifecycle.itl;
-        await this.deleteExpiredFactsByNumber(tx, factRows, items);
+      if (lifecycle && isMaxItems(lifecycle)) {
+        await this.deleteExpiredFactsByNumber(tx, factRows, lifecycle.maxItems);
       }
     });
   }
@@ -204,7 +203,7 @@ export class TechInsightsDatabase implements TechInsightsStore {
   private async deleteExpiredFactsByNumber(
     tx: Transaction,
     factRows: { id: string; entity: string }[],
-    items: number,
+    maxItems: number,
   ) {
     const deletables = await tx<RawDbFactRow>('facts')
       .whereIn(
@@ -220,7 +219,7 @@ export class TechInsightsDatabase implements TechInsightsStore {
                            row_number() over (partition by id, entity order by timestamp desc) as fact_rank
                        from facts) ranks
                  where fact_rank <= ?? ) as filterjoin`,
-          items,
+          maxItems,
         ),
         joinClause => {
           joinClause

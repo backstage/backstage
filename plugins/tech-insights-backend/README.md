@@ -91,10 +91,10 @@ const myFactRetrieverRegistration = createFactRetrieverRegistration(
 );
 ```
 
-FactRetrieverRegistration also accepts an optional `lifecycle` configuration value. This can be either ITL (items to live) or TTL (time to live). Valid options for this value are either a number for ITL or a Luxon duration like object for TTL. For example:
+FactRetrieverRegistration also accepts an optional `lifecycle` configuration value. This can be either MaxItems or TTL (time to live). Valid options for this value are either a number for MaxItems or a Luxon duration like object for TTL. For example:
 
 ```ts
-const itl = { itl: 7 }; // Deletes all but 7 latest facts for each id/entity pair
+const maxItems = { maxItems: 7 }; // Deletes all but 7 latest facts for each id/entity pair
 const ttl = { ttl: 1209600000 }; // (2 weeks) Deletes items older than 2 weeks
 const ttlWithAHumanReadableValue = { ttl: { weeks: 2 } }; // Deletes items older than 2 weeks
 ```
