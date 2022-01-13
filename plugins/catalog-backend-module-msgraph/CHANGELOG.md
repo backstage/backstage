@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.12
+
+### Patch Changes
+
+- 722681b1b1: Clean up API report
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/plugin-catalog-backend@0.20.0
+  - @backstage/catalog-model@0.9.9
+
 ## 0.2.11
 
 ### Patch Changes

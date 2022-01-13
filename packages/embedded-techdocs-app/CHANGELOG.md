@@ -1,5 +1,22 @@
 # embedded-techdocs-app
 
+## 0.2.59
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/test-utils@0.2.2
+  - @backstage/config@0.1.12
+  - @backstage/core-components@0.8.4
+  - @backstage/cli@0.11.0
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-techdocs@0.12.14
+  - @backstage/core-app-api@0.4.0
+  - @backstage/app-defaults@0.1.4
+  - @backstage/catalog-model@0.9.9
+  - @backstage/integration-react@0.1.18
+  - @backstage/plugin-catalog@0.7.8
+
 ## 0.2.58
 
 ### Patch Changes

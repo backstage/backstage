@@ -1,5 +1,20 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.1.5
+
+### Patch Changes
+
+- 19f0f93504: Catch errors from a fact retriever and log them.
+- 10f26e8883: Modify queries to perform better by filtering on sub-queries as well
+- a60eb0f0dd: adding new operation to run checks for multiple entities in one request
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/backend-common@0.10.3
+  - @backstage/plugin-tech-insights-common@0.2.1
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+
 ## 0.1.4
 
 ### Patch Changes

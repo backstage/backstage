@@ -1,5 +1,13 @@
 # @backstage/plugin-azure-devops-common
 
+## 0.2.0
+
+### Minor Changes
+
+- a2ed2c2d69: - feat: Created PullRequestsDashboardProvider for resolving team and team member relations
+  - feat: Created useUserTeamIds hook.
+  - feat: Updated useFilterProcessor to provide teamIds for `AssignedToCurrentUsersTeams` and `CreatedByCurrentUsersTeams` filters.
+
 ## 0.1.3
 
 ### Patch Changes

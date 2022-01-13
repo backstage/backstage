@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-react
 
+## 0.6.11
+
+### Patch Changes
+
+- 5333451def: Cleaned up API exports
+- Updated dependencies
+  - @backstage/integration@0.7.1
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+
 ## 0.6.10
 
 ### Patch Changes

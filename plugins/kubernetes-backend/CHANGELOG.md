@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.4.3
+
+### Patch Changes
+
+- a67ec8527f: Exclude the AWS session token from credential validation, because it's not necessary in this context.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/backend-common@0.10.3
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-model@0.9.9
+
 ## 0.4.2
 
 ### Patch Changes

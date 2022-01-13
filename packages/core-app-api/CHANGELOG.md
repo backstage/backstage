@@ -1,5 +1,22 @@
 # @backstage/core-app-api
 
+## 0.4.0
+
+### Minor Changes
+
+- e2eb92c109: Removed previously deprecated `ApiRegistry` export.
+
+### Patch Changes
+
+- 34442cd5cf: Fixed an issue where valid SAML and GitHub sessions would be considered invalid and not be stored.
+
+  Deprecated the `SamlSession` and `GithubSession` types.
+
+- 784d8078ab: Removed direct and transitive MUI dependencies.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/core-plugin-api@0.5.0
+
 ## 0.3.1
 
 ### Patch Changes

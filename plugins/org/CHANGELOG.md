@@ -1,5 +1,25 @@
 # @backstage/plugin-org
 
+## 0.3.34
+
+### Patch Changes
+
+- 3f08dcd696: For the component `EntityMembersListCard` you can now specify the type of members you have in a group. For example:
+
+  ```tsx
+  <Grid item xs={12}>
+    <EntityMembersListCard memberDisplayTitle="Ninja's" />
+  </Grid>
+  ```
+
+  If left empty it will by default use 'Members'.
+
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/catalog-model@0.9.9
+
 ## 0.3.33
 
 ### Patch Changes

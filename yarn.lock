@@ -2294,6 +2294,43 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
+"@backstage/core-app-api@^0.3.0":
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@backstage/core-app-api/-/core-app-api-0.3.1.tgz#eceee31852908fcc35edf198f4b06424b8cad2c9"
+  integrity sha512-q0Nm9lNghMMaHWG32MjTkfeHUWMMzDZ5EJIfxwXmizMoO6bmiyMja8sRuQznZHPEP0kzwe3cZwPvwafgY4UU/g==
+  dependencies:
+    "@backstage/app-defaults" "^0.1.3"
+    "@backstage/config" "^0.1.11"
+    "@backstage/core-components" "^0.8.3"
+    "@backstage/core-plugin-api" "^0.4.1"
+    "@backstage/theme" "^0.2.14"
+    "@backstage/types" "^0.1.1"
+    "@backstage/version-bridge" "^0.1.1"
+    "@material-ui/core" "^4.12.2"
+    "@material-ui/icons" "^4.9.1"
+    "@types/prop-types" "^15.7.3"
+    prop-types "^15.7.2"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+    zen-observable "^0.8.15"
+    zod "^3.11.6"
+
+"@backstage/core-plugin-api@^0.4.0", "@backstage/core-plugin-api@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-0.4.1.tgz#c0a13504bdfa61ae3d0db96934cd6c32a7574446"
+  integrity sha512-IIb7XTcquTPaSIlamMKUgeTs5uLqkKN0Nw32QdTZhKgFkFFVzWC0AwN+henkaMNBZFdGb0ttPzrvNXGj5E6dGg==
+  dependencies:
+    "@backstage/config" "^0.1.11"
+    "@backstage/theme" "^0.2.14"
+    "@backstage/types" "^0.1.1"
+    "@backstage/version-bridge" "^0.1.1"
+    "@material-ui/core" "^4.12.2"
+    history "^5.0.0"
+    prop-types "^15.7.2"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+    zen-observable "^0.8.15"
+
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"

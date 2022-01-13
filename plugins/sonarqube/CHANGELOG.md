@@ -1,5 +1,16 @@
 # @backstage/plugin-sonarqube
 
+## 0.2.12
+
+### Patch Changes
+
+- 3423b3b24d: Enhance token description by highlighting that the trailing colon is required.
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/catalog-model@0.9.9
+
 ## 0.2.11
 
 ### Patch Changes

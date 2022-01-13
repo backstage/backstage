@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.12.3
+
+### Patch Changes
+
+- 5333451def: Cleaned up API exports
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/backend-common@0.10.3
+  - @backstage/techdocs-common@0.11.3
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+
 ## 0.12.2
 
 ### Patch Changes

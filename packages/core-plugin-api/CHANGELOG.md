@@ -1,5 +1,20 @@
 # @backstage/core-plugin-api
 
+## 0.5.0
+
+### Minor Changes
+
+- 784d8078ab: Removed the deprecated `OldIconComponent` type.
+- e2eb92c109: Removed previously deprecated exports: `PluginHooks`, `PluginOutput`, and `FeatureFlagOutput`.
+
+  The deprecated `register` method of `PluginConfig` has been removed, as well as the deprecated `output` method of `BackstagePlugin`.
+
+### Patch Changes
+
+- 784d8078ab: Removed direct and transitive MUI dependencies.
+- Updated dependencies
+  - @backstage/config@0.1.12
+
 ## 0.4.1
 
 ### Patch Changes
