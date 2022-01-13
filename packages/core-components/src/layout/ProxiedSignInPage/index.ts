@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,5 @@
  * limitations under the License.
  */
 
-export * from './BottomLink';
-export * from './Content';
-export * from './ContentHeader';
-export * from './ErrorBoundary';
-export * from './ErrorPage';
-export * from './Header';
-export * from './HeaderLabel';
-export * from './HeaderTabs';
-export * from './HomepageTimer';
-export * from './InfoCard';
-export * from './ItemCard';
-export * from './Page';
-export * from './ProxiedSignInPage';
-export * from './Sidebar';
-export * from './SignInPage';
-export * from './TabbedCard';
-export * from './Breadcrumbs';
+export { ProxiedSignInPage } from './ProxiedSignInPage';
+export type { ProxiedSignInPageProps } from './ProxiedSignInPage';
