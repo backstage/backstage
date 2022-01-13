@@ -16,6 +16,7 @@
 import {
   FactRetriever,
   FactRetrieverContext,
+  TechInsightFact,
   TechInsightsStore,
 } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistry } from './FactRetrieverRegistry';
@@ -108,15 +109,22 @@ export class FactRetrieverEngine {
       this.logger.info(
         `Retrieving facts for fact retriever ${factRetriever.id}`,
       );
-      const facts = await factRetriever.handler({
-        ...this.factRetrieverContext,
-        entityFilter: factRetriever.entityFilter,
-      });
-      if (this.logger.isDebugEnabled()) {
+
+      let facts: TechInsightFact[] = [];
+      try {
+        facts = await factRetriever.handler({
+          ...this.factRetrieverContext,
+          entityFilter: factRetriever.entityFilter,
+        });
         this.logger.debug(
           `Retrieved ${facts.length} facts for fact retriever ${
             factRetriever.id
           } in ${duration(startTimestamp)}`,
+        );
+      } catch (e) {
+        this.logger.error(
+          `Failed to retrieve facts for retriever ${factRetriever.id}`,
+          e,
         );
       }
 
