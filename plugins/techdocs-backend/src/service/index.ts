@@ -15,4 +15,8 @@
  */
 
 export { createRouter } from './router';
-export type { RouterOptions } from './router';
+export type {
+  RouterOptions,
+  RecommendedDeploymentOptions,
+  OutOfTheBoxDeploymentOptions,
+} from './router';
