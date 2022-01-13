@@ -40,7 +40,7 @@ import { CachedEntityLoader } from './CachedEntityLoader';
  * All of the required dependencies for running TechDocs in the "out-of-the-box"
  * deployment configuration (prepare/generate/publish all in the Backend).
  */
-type OutOfTheBoxDeploymentOptions = {
+export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
   publisher: PublisherBase;
@@ -55,7 +55,7 @@ type OutOfTheBoxDeploymentOptions = {
  * Required dependencies for running TechDocs in the "recommended" deployment
  * configuration (prepare/generate handled externally in CI/CD).
  */
-type RecommendedDeploymentOptions = {
+export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
   logger: Logger;
   discovery: PluginEndpointDiscovery;

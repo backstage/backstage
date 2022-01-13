@@ -21,7 +21,11 @@
  */
 
 export { createRouter } from './service';
-export type { RouterOptions } from './service';
+export type {
+  RouterOptions,
+  RecommendedDeploymentOptions,
+  OutOfTheBoxDeploymentOptions,
+} from './service';
 
 export { DefaultTechDocsCollator } from './search';
 export type { TechDocsCollatorOptions } from './search';

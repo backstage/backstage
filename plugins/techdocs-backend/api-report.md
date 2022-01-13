@@ -17,7 +17,6 @@ import { PublisherBase } from '@backstage/techdocs-common';
 import { TechDocsDocument } from '@backstage/techdocs-common';
 import { TokenManager } from '@backstage/backend-common';
 
-// Warning: (ae-forgotten-export) The symbol "RouterOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -48,6 +47,38 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   // (undocumented)
   readonly type: string;
 }
+
+// Warning: (ae-missing-release-tag) "OutOfTheBoxDeploymentOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type OutOfTheBoxDeploymentOptions = {
+  preparers: PreparerBuilder;
+  generators: GeneratorBuilder;
+  publisher: PublisherBase;
+  logger: Logger_2;
+  discovery: PluginEndpointDiscovery;
+  database?: Knex;
+  config: Config;
+  cache: PluginCacheManager;
+};
+
+// Warning: (ae-missing-release-tag) "RecommendedDeploymentOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type RecommendedDeploymentOptions = {
+  publisher: PublisherBase;
+  logger: Logger_2;
+  discovery: PluginEndpointDiscovery;
+  config: Config;
+  cache: PluginCacheManager;
+};
+
+// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type RouterOptions =
+  | RecommendedDeploymentOptions
+  | OutOfTheBoxDeploymentOptions;
 
 // Warning: (ae-missing-release-tag) "TechDocsCollatorOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
