@@ -25,6 +25,7 @@ import {
   podStatusToMemoryUtil,
   totalRestarts,
 } from '../../utils/pod';
+import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 
 export function createNameColumn(): TableColumn<V1Pod> {
   return {
@@ -65,7 +66,7 @@ export function createStatusColumn(): TableColumn<V1Pod> {
 }
 
 export function createCPUUsageColumn(
-  podNamesWithMetrics: object,
+  podNamesWithMetrics: Map<string, ClientPodStatus>,
 ): TableColumn<V1Pod> {
   return {
     title: 'CPU usage %',
@@ -82,7 +83,7 @@ export function createCPUUsageColumn(
 }
 
 export function createMemoryUsageColumn(
-  podNamesWithMetrics: object,
+  podNamesWithMetrics: Map<string, ClientPodStatus>,
 ): TableColumn<V1Pod> {
   return {
     title: 'Memory usage %',
