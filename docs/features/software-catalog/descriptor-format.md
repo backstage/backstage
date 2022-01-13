@@ -1267,7 +1267,7 @@ shape, this kind has the following structure.
 Exactly equal to `backstage.io/v1alpha1` and `Location`, respectively.
 
 ### `spec` [required]
-The `spec` field is required. The miniaml spec should be an empty object.
+The `spec` field is required. The minimal spec should be an empty object.
 
 ### `spec.type` [optional]
 
