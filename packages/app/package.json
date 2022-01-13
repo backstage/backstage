@@ -57,6 +57,7 @@
     "@roadiehq/backstage-plugin-github-insights": "^1.4.2",
     "@roadiehq/backstage-plugin-github-pull-requests": "^1.3.2",
     "@roadiehq/backstage-plugin-travis-ci": "^1.3.2",
+    "@roadiehq/backstage-plugin-buildkite": "^1.3.4",
     "history": "^5.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
