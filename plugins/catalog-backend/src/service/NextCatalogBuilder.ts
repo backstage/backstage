@@ -417,7 +417,7 @@ export class NextCatalogBuilder {
     const permissionIntegrationRouter = createPermissionIntegrationRouter({
       resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
       getResources: async (resourceRefs: string[]) => {
-        const { entities } = await entitiesCatalog.entities({
+        const { entities } = await unauthorizedEntitiesCatalog.entities({
           filter: {
             anyOf: resourceRefs.map(resourceRef => {
               const { kind, namespace, name } = parseEntityRef(resourceRef);
