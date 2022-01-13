@@ -105,11 +105,6 @@ export const createPermissionIntegrationRouter: <TResource>(options: {
 }) => express.Router;
 
 // @public
-export type DefinitivePolicyDecision = {
-  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
-};
-
-// @public
 export const createPermissionRule: <
   TResource,
   TQuery,
@@ -117,6 +112,11 @@ export const createPermissionRule: <
 >(
   rule: PermissionRule<TResource, TQuery, TParams>,
 ) => PermissionRule<TResource, TQuery, TParams>;
+
+// @public
+export type DefinitivePolicyDecision = {
+  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+};
 
 // @public
 export const makeCreatePermissionRule: <TResource, TQuery>() => <
