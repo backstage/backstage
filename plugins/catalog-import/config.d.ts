@@ -28,6 +28,13 @@ export interface Config {
        * @visibility frontend
        */
       entityFilename?: string;
+      /**
+       * A branch name used in pull request when registering existing component via UI
+       * Valid git refname required, see: https://git-scm.com/docs/git-check-ref-format
+       * Defaults to "backstage-integration"
+       * @visibility frontend
+       */
+      pullRequestBranchName?: string;
     };
   };
 }

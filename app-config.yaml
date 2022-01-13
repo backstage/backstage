@@ -196,6 +196,7 @@ integrations:
 catalog:
   import:
     entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
   rules:
     - allow:
         - Component
