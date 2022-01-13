@@ -21,7 +21,7 @@ import {
   Header,
   Lifecycle,
   Page,
-  SidebarStateContext,
+  SidebarPinStateContext,
 } from '@backstage/core-components';
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
 import {
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const SearchPage = () => {
   const classes = useStyles();
-  const { isMobile } = useContext(SidebarStateContext);
+  const { isMobile } = useContext(SidebarPinStateContext);
 
   return (
     <Page themeId="home">

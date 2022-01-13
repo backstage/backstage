@@ -643,7 +643,7 @@ export const SidebarExpandButton = () => {
     { noSsr: true },
   );
 
-  if (isSmallScreen || !setOpen) {
+  if (isSmallScreen) {
     return null;
   }
 

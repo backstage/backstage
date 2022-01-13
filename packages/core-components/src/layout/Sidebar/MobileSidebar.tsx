@@ -187,7 +187,7 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
     !sidebarGroups[selectedMenuItemIndex].props.to;
 
   return (
-    <SidebarContext.Provider value={{ isOpen: true }}>
+    <SidebarContext.Provider value={{ isOpen: true, setOpen: () => {} }}>
       <MobileSidebarContext.Provider
         value={{ selectedMenuItemIndex, setSelectedMenuItemIndex }}
       >

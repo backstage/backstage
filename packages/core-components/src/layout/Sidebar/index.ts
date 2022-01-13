@@ -32,10 +32,10 @@ export type {
 export type { SidebarClassKey, SidebarProps } from './Bar';
 export {
   SidebarPage,
-  SidebarStateContext as SidebarStateContext,
+  SidebarPinStateContext as SidebarPinStateContext,
 } from './Page';
 export type {
-  SidebarStateContextType as SidebarStateContextType,
+  SidebarPinStateContextType as SidebarPinStateContextType,
   SidebarPageClassKey,
   SidebarPageProps,
 } from './Page';

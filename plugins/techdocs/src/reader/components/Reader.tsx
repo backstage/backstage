@@ -31,7 +31,7 @@ import { EntityName } from '@backstage/catalog-model';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
-import { SidebarStateContext } from '@backstage/core-components';
+import { SidebarPinStateContext } from '@backstage/core-components';
 
 import { techdocsStorageApiRef } from '../../api';
 
@@ -146,7 +146,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
   const [dom, setDom] = useState<HTMLElement | null>(null);
 
   // sidebar pinned status to be used in computing CSS style injections
-  const { isPinned } = useContext(SidebarStateContext);
+  const { isPinned } = useContext(SidebarPinStateContext);
 
   const updateSidebarPosition = useCallback(() => {
     if (!dom || !sidebars) return;

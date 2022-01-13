@@ -22,10 +22,12 @@ import {
   Switch,
   Tooltip,
 } from '@material-ui/core';
-import { SidebarStateContext } from '@backstage/core-components';
+import { SidebarPinStateContext } from '@backstage/core-components';
 
 export const UserSettingsPinToggle = () => {
-  const { isPinned, toggleSidebarPinState } = useContext(SidebarStateContext);
+  const { isPinned, toggleSidebarPinState } = useContext(
+    SidebarPinStateContext,
+  );
 
   return (
     <ListItem>

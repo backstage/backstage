@@ -43,11 +43,11 @@ const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
 );
 
 /**
- * Type of `SidebarStateContext`
+ * Type of `SidebarPinStateContext`
  *
  * @public
  */
-export type SidebarStateContextType = {
+export type SidebarPinStateContextType = {
   isPinned: boolean;
   toggleSidebarPinState: () => any;
   isMobile?: boolean;
@@ -67,11 +67,13 @@ export type SidebarPageProps = {
  *
  * @public
  */
-export const SidebarStateContext = createContext<SidebarStateContextType>({
-  isPinned: true,
-  toggleSidebarPinState: () => {},
-  isMobile: false,
-});
+export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
+  {
+    isPinned: true,
+    toggleSidebarPinState: () => {},
+    isMobile: false,
+  },
+);
 
 export function SidebarPage(props: SidebarPageProps) {
   const [isPinned, setIsPinned] = useState(() =>
@@ -91,7 +93,7 @@ export function SidebarPage(props: SidebarPageProps) {
 
   const classes = useStyles({ isPinned });
   return (
-    <SidebarStateContext.Provider
+    <SidebarPinStateContext.Provider
       value={{
         isPinned,
         toggleSidebarPinState,
@@ -99,6 +101,6 @@ export function SidebarPage(props: SidebarPageProps) {
       }}
     >
       <div className={classes.root}>{props.children}</div>
-    </SidebarStateContext.Provider>
+    </SidebarPinStateContext.Provider>
   );
 }

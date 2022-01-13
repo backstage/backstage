@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InfoCard, SidebarStateContext } from '@backstage/core-components';
+import { InfoCard, SidebarPinStateContext } from '@backstage/core-components';
 import { List } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 
 export const UserSettingsAppearanceCard = () => {
-  const { isMobile } = useContext(SidebarStateContext);
+  const { isMobile } = useContext(SidebarPinStateContext);
 
   return (
     <InfoCard title="Appearance" variant="gridItem">

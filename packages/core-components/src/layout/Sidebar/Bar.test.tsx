@@ -27,14 +27,14 @@ import {
   SidebarExpandButton,
   SidebarItem,
   SidebarSearchField,
-  SidebarStateContext,
+  SidebarPinStateContext,
   SidebarSubmenu,
   SidebarSubmenuItem,
 } from '.';
 
 async function renderScalableSidebar() {
   await renderInTestApp(
-    <SidebarStateContext.Provider
+    <SidebarPinStateContext.Provider
       value={{
         isPinned: false,
         isMobile: false,
@@ -66,7 +66,7 @@ async function renderScalableSidebar() {
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
         <SidebarExpandButton />
       </Sidebar>
-    </SidebarStateContext.Provider>,
+    </SidebarPinStateContext.Provider>,
   );
 }
 

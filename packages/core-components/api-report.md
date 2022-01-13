@@ -897,7 +897,7 @@ export const SidebarContext: Context<SidebarContextType>;
 // @public
 export type SidebarContextType = {
   isOpen: boolean;
-  setOpen?: (open: boolean) => void;
+  setOpen: (open: boolean) => void;
 };
 
 // Warning: (ae-missing-release-tag) "SidebarDivider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1242,6 +1242,16 @@ export type SidebarPageClassKey = 'root';
 // @public
 export type SidebarPageProps = {
   children?: React_2.ReactNode;
+};
+
+// @public
+export const SidebarPinStateContext: React_2.Context<SidebarPinStateContextType>;
+
+// @public
+export type SidebarPinStateContextType = {
+  isPinned: boolean;
+  toggleSidebarPinState: () => any;
+  isMobile?: boolean;
 };
 
 // @public (undocumented)
@@ -2074,16 +2084,6 @@ export const SidebarSpacer: React_2.ComponentType<
 //
 // @public (undocumented)
 export type SidebarSpacerClassKey = 'root';
-
-// @public
-export const SidebarStateContext: React_2.Context<SidebarStateContextType>;
-
-// @public
-export type SidebarStateContextType = {
-  isPinned: boolean;
-  toggleSidebarPinState: () => any;
-  isMobile?: boolean;
-};
 
 // @public
 export const SidebarSubmenu: (props: SidebarSubmenuProps) => JSX.Element;

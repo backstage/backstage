@@ -22,7 +22,7 @@ import BottomNavigationAction, {
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
-import { SidebarStateContext } from '.';
+import { SidebarPinStateContext } from '.';
 import { Link } from '../../components';
 import { sidebarConfig } from './config';
 import { MobileSidebarContext } from './MobileSidebar';
@@ -120,7 +120,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
  */
 export const SidebarGroup = (props: SidebarGroupProps) => {
   const { children, to, label, icon, value } = props;
-  const { isMobile } = useContext(SidebarStateContext);
+  const { isMobile } = useContext(SidebarPinStateContext);
 
   return isMobile ? (
     <MobileSidebarGroup to={to} label={label} icon={icon} value={value} />

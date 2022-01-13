@@ -20,7 +20,7 @@ import classnames from 'classnames';
 import React, { useState, useContext, useRef } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
-import { SidebarStateContext } from './Page';
+import { SidebarPinStateContext } from './Page';
 import { MobileSidebar } from './MobileSidebar';
 
 /** @public */
@@ -102,7 +102,9 @@ const DesktopSidebar = (props: SidebarProps) => {
   );
   const [state, setState] = useState(State.Closed);
   const hoverTimerRef = useRef<number>();
-  const { isPinned, toggleSidebarPinState } = useContext(SidebarStateContext);
+  const { isPinned, toggleSidebarPinState } = useContext(
+    SidebarPinStateContext,
+  );
 
   const handleOpen = () => {
     if (isPinned || disableExpandOnHover) {
@@ -185,7 +187,7 @@ const DesktopSidebar = (props: SidebarProps) => {
  */
 export const Sidebar = (props: SidebarProps) => {
   const { children, openDelayMs, closeDelayMs, disableExpandOnHover } = props;
-  const { isMobile } = useContext(SidebarStateContext);
+  const { isMobile } = useContext(SidebarPinStateContext);
 
   return isMobile ? (
     <MobileSidebar>{children}</MobileSidebar>

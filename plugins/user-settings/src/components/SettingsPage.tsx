@@ -17,7 +17,7 @@
 import {
   Header,
   Page,
-  SidebarStateContext,
+  SidebarPinStateContext,
   TabbedLayout,
 } from '@backstage/core-components';
 import React, { useContext } from 'react';
@@ -30,7 +30,7 @@ type Props = {
 };
 
 export const SettingsPage = ({ providerSettings }: Props) => {
-  const { isMobile } = useContext(SidebarStateContext);
+  const { isMobile } = useContext(SidebarPinStateContext);
 
   return (
     <Page themeId="home">
