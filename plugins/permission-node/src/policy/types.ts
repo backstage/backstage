@@ -15,7 +15,7 @@
  */
 
 import {
-  AuthorizeRequest,
+  AuthorizeQuery,
   AuthorizeResult,
   PermissionCondition,
   PermissionCriteria,
@@ -27,13 +27,13 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
  *
  * @remarks
  *
- * This differs from {@link @backstage/permission-common#AuthorizeRequest} in that `resourceRef`
+ * This differs from {@link @backstage/permission-common#AuthorizeQuery} in that `resourceRef`
  * should never be provided. This forces policies to be written in a way that's compatible with
  * filtering collections of resources at data load time.
  *
  * @public
  */
-export type PolicyAuthorizeRequest = Omit<AuthorizeRequest, 'resourceRef'>;
+export type PolicyAuthorizeQuery = Omit<AuthorizeQuery, 'resourceRef'>;
 
 /**
  * A definitive result to an authorization request, returned by the {@link PermissionPolicy}.
@@ -57,7 +57,7 @@ export type DefinitivePolicyDecision = {
  * conditions hold when evaluated. The conditions will be evaluated by the corresponding plugin
  * which knows about the referenced permission rules.
  *
- * Similar to {@link @backstage/permission-common#AuthorizeResult}, but with the plugin and resource
+ * Similar to {@link @backstage/permission-common#AuthorizeDecision}, but with the plugin and resource
  * identifiers needed to evaluate the returned conditions.
  * @public
  */
@@ -95,7 +95,7 @@ export type PolicyDecision =
  */
 export interface PermissionPolicy {
   handle(
-    request: PolicyAuthorizeRequest,
+    request: PolicyAuthorizeQuery,
     user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision>;
 }

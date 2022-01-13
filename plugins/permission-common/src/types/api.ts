@@ -46,7 +46,7 @@ export enum AuthorizeResult {
  * An individual authorization request for {@link PermissionClient#authorize}.
  * @public
  */
-export type AuthorizeRequest = {
+export type AuthorizeQuery = {
   permission: Permission;
   resourceRef?: string;
 };
@@ -55,8 +55,8 @@ export type AuthorizeRequest = {
  * A batch of authorization requests from {@link PermissionClient#authorize}.
  * @public
  */
-export type AuthorizeRequestEnvelope = {
-  items: Identified<AuthorizeRequest>[];
+export type AuthorizeRequest = {
+  items: Identified<AuthorizeQuery>[];
 };
 
 /**
@@ -86,7 +86,7 @@ export type PermissionCriteria<TQuery> =
  * An individual authorization response from {@link PermissionClient#authorize}.
  * @public
  */
-export type AuthorizeResponse =
+export type AuthorizeDecision =
   | { result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }
   | {
       result: AuthorizeResult.CONDITIONAL;
@@ -97,6 +97,6 @@ export type AuthorizeResponse =
  * A batch of authorization responses from {@link PermissionClient#authorize}.
  * @public
  */
-export type AuthorizeResponseEnvelope = {
-  items: Identified<AuthorizeResponse>[];
+export type AuthorizeResponse = {
+  items: Identified<AuthorizeDecision>[];
 };

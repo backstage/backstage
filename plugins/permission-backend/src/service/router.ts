@@ -29,11 +29,11 @@ import {
 } from '@backstage/plugin-auth-backend';
 import {
   AuthorizeResult,
-  AuthorizeResponse,
-  AuthorizeRequest,
+  AuthorizeDecision,
+  AuthorizeQuery,
   Identified,
-  AuthorizeRequestEnvelope,
-  AuthorizeResponseEnvelope,
+  AuthorizeRequest,
+  AuthorizeResponse,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -44,27 +44,27 @@ import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 import { memoize } from 'lodash';
 import DataLoader from 'dataloader';
 
-const requestSchema: z.ZodSchema<AuthorizeRequestEnvelope> = z.object({
-  items: z.array(
-    z.object({
-      id: z.string(),
-      resourceRef: z.string().optional(),
-      permission: z.object({
-        name: z.string(),
-        resourceType: z.string().optional(),
-        attributes: z.object({
-          action: z
-            .union([
-              z.literal('create'),
-              z.literal('read'),
-              z.literal('update'),
-              z.literal('delete'),
-            ])
-            .optional(),
-        }),
-      }),
+const querySchema: z.ZodSchema<Identified<AuthorizeQuery>> = z.object({
+  id: z.string(),
+  resourceRef: z.string().optional(),
+  permission: z.object({
+    name: z.string(),
+    resourceType: z.string().optional(),
+    attributes: z.object({
+      action: z
+        .union([
+          z.literal('create'),
+          z.literal('read'),
+          z.literal('update'),
+          z.literal('delete'),
+        ])
+        .optional(),
     }),
-  ),
+  }),
+});
+
+const requestSchema: z.ZodSchema<AuthorizeRequest> = z.object({
+  items: z.array(querySchema),
 });
 
 /**
@@ -81,12 +81,12 @@ export interface RouterOptions {
 }
 
 const handleRequest = async (
-  requests: Identified<AuthorizeRequest>[],
+  requests: Identified<AuthorizeQuery>[],
   user: BackstageIdentityResponse | undefined,
   policy: PermissionPolicy,
   permissionIntegrationClient: PermissionIntegrationClient,
   authHeader?: string,
-): Promise<Identified<AuthorizeResponse>[]> => {
+): Promise<Identified<AuthorizeDecision>[]> => {
   const applyConditionsLoaderFor = memoize((pluginId: string) => {
     return new DataLoader<
       ApplyConditionsRequestEntry,
@@ -154,8 +154,8 @@ export async function createRouter(
   router.post(
     '/authorize',
     async (
-      req: Request<AuthorizeRequestEnvelope>,
-      res: Response<AuthorizeResponseEnvelope>,
+      req: Request<AuthorizeRequest>,
+      res: Response<AuthorizeResponse>,
     ) => {
       const token = IdentityClient.getBearerToken(req.header('authorization'));
       const user = token ? await identity.authenticate(token) : undefined;

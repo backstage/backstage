@@ -6,23 +6,7 @@
 import { Config } from '@backstage/config';
 
 // @public
-export type AuthorizeRequest = {
-  permission: Permission;
-  resourceRef?: string;
-};
-
-// @public
-export type AuthorizeRequestEnvelope = {
-  items: Identified<AuthorizeRequest>[];
-};
-
-// @public
-export type AuthorizeRequestOptions = {
-  token?: string;
-};
-
-// @public
-export type AuthorizeResponse =
+export type AuthorizeDecision =
   | {
       result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
     }
@@ -32,8 +16,24 @@ export type AuthorizeResponse =
     };
 
 // @public
-export type AuthorizeResponseEnvelope = {
-  items: Identified<AuthorizeResponse>[];
+export type AuthorizeQuery = {
+  permission: Permission;
+  resourceRef?: string;
+};
+
+// @public
+export type AuthorizeRequest = {
+  items: Identified<AuthorizeQuery>[];
+};
+
+// @public
+export type AuthorizeRequestOptions = {
+  token?: string;
+};
+
+// @public
+export type AuthorizeResponse = {
+  items: Identified<AuthorizeDecision>[];
 };
 
 // @public
@@ -81,18 +81,18 @@ export type PermissionAttributes = {
 export interface PermissionAuthorizer {
   // (undocumented)
   authorize(
-    requests: AuthorizeRequest[],
+    queries: AuthorizeQuery[],
     options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeResponse[]>;
+  ): Promise<AuthorizeDecision[]>;
 }
 
 // @public
 export class PermissionClient implements PermissionAuthorizer {
   constructor(options: { discovery: DiscoveryApi; config: Config });
   authorize(
-    requests: AuthorizeRequest[],
+    queries: AuthorizeQuery[],
     options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeResponse[]>;
+  ): Promise<AuthorizeDecision[]>;
 }
 
 // @public
