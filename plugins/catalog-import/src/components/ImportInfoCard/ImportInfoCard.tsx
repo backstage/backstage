@@ -20,7 +20,15 @@ import { Chip, Typography } from '@material-ui/core';
 import React from 'react';
 import { catalogImportApiRef } from '../../api';
 
-export const ImportInfoCard = () => {
+type Props = {
+  exampleLocationUrl?: string;
+  exampleRepositoryUrl?: string;
+};
+
+export const ImportInfoCard = ({
+  exampleLocationUrl = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+  exampleRepositoryUrl = 'https://github.com/backstage/backstage',
+}: Props) => {
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
   const catalogImportApi = useApi(catalogImportApiRef);
@@ -45,10 +53,7 @@ export const ImportInfoCard = () => {
       </Typography>
       <Typography variant="h6">Link to an existing entity file</Typography>
       <Typography variant="subtitle2" color="textSecondary" paragraph>
-        Example:{' '}
-        <code>
-          https://github.com/backstage/backstage/blob/master/catalog-info.yaml
-        </code>
+        Example: <code>{exampleLocationUrl}</code>
       </Typography>
       <Typography variant="body2" paragraph>
         The wizard analyzes the file, previews the entities, and adds them to
@@ -61,7 +66,7 @@ export const ImportInfoCard = () => {
             <Chip label="GitHub only" variant="outlined" size="small" />
           </Typography>
           <Typography variant="subtitle2" color="textSecondary" paragraph>
-            Example: <code>https://github.com/backstage/backstage</code>
+            Example: <code>{exampleRepositoryUrl}</code>
           </Typography>
           <Typography variant="body2" paragraph>
             The wizard discovers all <code>{catalogFilename}</code> files in the
