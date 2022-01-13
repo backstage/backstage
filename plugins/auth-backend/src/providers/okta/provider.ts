@@ -219,7 +219,7 @@ export const oktaEmailSignInResolver: SignInResolver<OAuthResult> = async (
   const claims = getEntityClaims(entity);
   const token = await ctx.tokenIssuer.issueToken({ claims });
 
-  return { id: entity.metadata.name, entity, token };
+  return { id: `user:default/${entity.metadata.name}`, entity, token };
 };
 
 export const oktaDefaultSignInResolver: SignInResolver<OAuthResult> = async (
@@ -236,7 +236,7 @@ export const oktaDefaultSignInResolver: SignInResolver<OAuthResult> = async (
   const userId = profile.email.split('@')[0];
 
   const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: userId, ent: [`user:default/${userId}`] },
+    claims: { sub: `user:default/${userId}`, ent: [`user:default/${userId}`] },
   });
 
   return { id: userId, token };
