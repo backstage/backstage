@@ -191,7 +191,10 @@ export const githubDefaultSignInResolver: SignInResolver<GithubOAuthResult> =
     const userId = fullProfile.username || fullProfile.id;
 
     const token = await ctx.tokenIssuer.issueToken({
-      claims: { sub: userId, ent: [`user:default/${userId}`] },
+      claims: {
+        sub: `user:default/${userId}`,
+        ent: [`user:default/${userId}`],
+      },
     });
 
     return { id: userId, token };

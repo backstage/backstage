@@ -72,7 +72,7 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
   }
 
   const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: id, ent: [`user:default/${id}`] },
+    claims: { sub: `user:default/${id}`, ent: [`user:default/${id}`] },
   });
 
   return { id, token };
