@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,5 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin that renders technical documentation for your components
- *
- * @packageDocumentation
- */
-
-export { createRouter } from './service';
-export type { RouterOptions } from './service';
-
-export { DefaultTechDocsCollator } from './search';
-export type { TechDocsCollatorOptions } from './search';
-
-/**
- * @deprecated Use directly from @backstage/techdocs-common
- */
-export type { TechDocsDocument } from '@backstage/techdocs-common';
-
-export * from '@backstage/techdocs-common';
+export { createRouter } from './router';
+export type { RouterOptions } from './router';
