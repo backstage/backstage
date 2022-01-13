@@ -17,38 +17,40 @@
 import {
   BackstageUserIdentity,
   discoveryApiRef,
-  fetchApiRef,
   IdentityApi,
   ProfileInfo,
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
-import { DelegatedSession, delegatedSessionSchema } from './types';
+import { ProxiedSession, proxiedSessionSchema } from './types';
 
 export const DEFAULTS = {
   // The amount of time between token refreshes, if we fail to get an actual
   // value out of the exp claim
-  defaultTokenExpiryMillis: 60_000,
+  defaultTokenExpiryMillis: 5 * 60 * 1000,
   // The amount of time before the actual expiry of the Backstage token, that we
   // shall start trying to get a new one
-  tokenExpiryMarginMillis: 30_000,
+  tokenExpiryMarginMillis: 5 * 60 * 1000,
 } as const;
 
 // When the token expires, with some margin
 export function tokenToExpiry(jwtToken: string | undefined): Date {
+  const fallback = new Date(Date.now() + DEFAULTS.defaultTokenExpiryMillis);
   if (!jwtToken) {
-    return new Date(Date.now() + DEFAULTS.defaultTokenExpiryMillis);
+    return fallback;
   }
 
   const [_header, rawPayload, _signature] = jwtToken.split('.');
   const payload = JSON.parse(atob(rawPayload));
+  if (typeof payload.exp !== 'number') {
+    return fallback;
+  }
 
   return new Date(payload.exp * 1000 - DEFAULTS.tokenExpiryMarginMillis);
 }
 
-type DelegatedSignInIdentityOptions = {
+type ProxiedSignInIdentityOptions = {
   provider: string;
   discoveryApi: typeof discoveryApiRef.T;
-  fetchApi: typeof fetchApiRef.T;
 };
 
 type State =
@@ -57,12 +59,12 @@ type State =
     }
   | {
       type: 'fetching';
-      promise: Promise<DelegatedSession>;
-      previous: DelegatedSession | undefined;
+      promise: Promise<ProxiedSession>;
+      previous: ProxiedSession | undefined;
     }
   | {
       type: 'active';
-      session: DelegatedSession;
+      session: ProxiedSession;
       expiresAt: Date;
     }
   | {
@@ -74,12 +76,12 @@ type State =
  * An identity API that gets the user auth information solely based on a
  * provider's `/refresh` endpoint.
  */
-export class DelegatedSignInIdentity implements IdentityApi {
-  private readonly options: DelegatedSignInIdentityOptions;
+export class ProxiedSignInIdentity implements IdentityApi {
+  private readonly options: ProxiedSignInIdentityOptions;
   private readonly abortController: AbortController;
   private state: State;
 
-  constructor(options: DelegatedSignInIdentityOptions) {
+  constructor(options: ProxiedSignInIdentityOptions) {
     this.options = options;
     this.abortController = new AbortController();
     this.state = { type: 'empty' };
@@ -133,7 +135,7 @@ export class DelegatedSignInIdentity implements IdentityApi {
     this.abortController.abort();
   }
 
-  getSessionSync(): DelegatedSession {
+  getSessionSync(): ProxiedSession {
     if (this.state.type === 'active') {
       return this.state.session;
     } else if (this.state.type === 'fetching' && this.state.previous) {
@@ -142,7 +144,7 @@ export class DelegatedSignInIdentity implements IdentityApi {
     throw new Error('No session available. Try reloading your browser page.');
   }
 
-  async getSessionAsync(): Promise<DelegatedSession> {
+  async getSessionAsync(): Promise<ProxiedSession> {
     if (this.state.type === 'fetching') {
       return this.state.promise;
     } else if (
@@ -182,10 +184,13 @@ export class DelegatedSignInIdentity implements IdentityApi {
     return promise;
   }
 
-  async fetchSession(): Promise<DelegatedSession> {
+  async fetchSession(): Promise<ProxiedSession> {
     const baseUrl = await this.options.discoveryApi.getBaseUrl('auth');
 
-    const response = await this.options.fetchApi.fetch(
+    // Note that we do not use the fetchApi here, since this all happens before
+    // sign-in completes so there can be no automatic token injection and
+    // similar.
+    const response = await fetch(
       `${baseUrl}/${this.options.provider}/refresh`,
       {
         signal: this.abortController.signal,
@@ -198,6 +203,6 @@ export class DelegatedSignInIdentity implements IdentityApi {
       throw await ResponseError.fromResponse(response);
     }
 
-    return delegatedSessionSchema.parse(await response.json());
+    return proxiedSessionSchema.parse(await response.json());
   }
 }

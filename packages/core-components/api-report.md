@@ -203,16 +203,6 @@ export type CustomProviderClassKey = 'form' | 'button';
 export function DashboardIcon(props: IconComponentProps): JSX.Element;
 
 // @public
-export const DelegatedSignInPage: (
-  props: DelegatedSignInPageProps,
-) => JSX.Element | null;
-
-// @public
-export type DelegatedSignInPageProps = SignInPageProps & {
-  provider: string;
-};
-
-// @public
 type DependencyEdge<T = {}> = T & {
   from: string;
   to: string;
@@ -764,6 +754,16 @@ export function PageWithHeader(
 export function Progress(
   props: PropsWithChildren<LinearProgressProps>,
 ): JSX.Element;
+
+// @public
+export const ProxiedSignInPage: (
+  props: ProxiedSignInPageProps,
+) => JSX.Element | null;
+
+// @public
+export type ProxiedSignInPageProps = SignInPageProps & {
+  provider: string;
+};
 
 // Warning: (ae-missing-release-tag) "Ranker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

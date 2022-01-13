@@ -95,7 +95,7 @@ sign-in mechanism to poll that endpoint through the IAP, on the user's behalf.
 
 ## Frontend Changes
 
-Any Backstage app needs a `SignInPage` to be configured. Its purpose is to
+All Backstage apps need a `SignInPage` to be configured. Its purpose is to
 establish who the user is and what their identifying credentials are, blocking
 rendering the rest of the UI until that's complete, and then keeping those
 credentials fresh.
@@ -114,11 +114,11 @@ component for this purpose out of the box.
 Update your `createApp` call in `packages/app/src/App.tsx`, as follows.
 
 ```diff
-+import { DelegatedSignInPage } from '@backstage/core-components';
++import { ProxiedSignInPage } from '@backstage/core-components';
 
  const app = createApp({
    components: {
-+    SignInPage: props => <DelegatedSignInPage {...props} provider="gcp-iap" />,
++    SignInPage: props => <ProxiedSignInPage {...props} provider="gcp-iap" />,
 ```
 
 After this, your app should be ready to leverage the Identity-Aware Proxy for

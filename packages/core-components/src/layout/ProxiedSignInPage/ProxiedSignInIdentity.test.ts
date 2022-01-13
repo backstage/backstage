@@ -15,20 +15,19 @@
  */
 
 import { setupRequestMockHandlers } from '@backstage/test-utils';
-import fetch from 'cross-fetch';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   DEFAULTS,
-  DelegatedSignInIdentity,
+  ProxiedSignInIdentity,
   tokenToExpiry,
-} from './DelegatedSignInIdentity';
+} from './ProxiedSignInIdentity';
 
 const validBackstageTokenExpClaim = 1641216199;
 const validBackstageToken =
   'eyJhbGciOiJFUzI1NiIsImtpZCI6ImMxNTMzNDRiLWZjYzktNGIwOS1iN2ZhLTU3ZmM5MDhjMjBiNiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwMDcvYXBpL2F1dGgiLCJzdWIiOiJmcmViZW4iLCJhdWQiOiJiYWNrc3RhZ2UiLCJpYXQiOjE2NDEyMTI1OTksImV4cCI6MTY0MTIxNjE5OSwiZW50IjpbInVzZXI6ZGVmYXVsdC9mcmViZW4iXX0.4nOTmPHPwhzaKTzikgUsHcszfcP-JamcojMnRfyfsKhyHCCEywe6uLFlvvmK5NbaX5Z7IIji-kg7bxKU58kwoQ';
 
-describe('DelegatedSignInIdentity', () => {
+describe('ProxiedSignInIdentity', () => {
   describe('tokenToExpiry', () => {
     beforeEach(() => jest.useFakeTimers('modern'));
     afterEach(() => jest.useRealTimers());
@@ -46,9 +45,17 @@ describe('DelegatedSignInIdentity', () => {
         ),
       );
     });
+
+    it('handles a token that has no exp', async () => {
+      const [a, _b, c] = validBackstageToken.split('.');
+      const botched = `${a}.${btoa(JSON.stringify({}))}.${c}`;
+      expect(tokenToExpiry(botched)).toEqual(
+        new Date(new Date(Date.now() + DEFAULTS.defaultTokenExpiryMillis)),
+      );
+    });
   });
 
-  describe('DelegatedSignInIdentity', () => {
+  describe('ProxiedSignInIdentity', () => {
     beforeEach(() => jest.useFakeTimers('modern'));
     afterEach(() => jest.useRealTimers());
 
@@ -61,7 +68,7 @@ describe('DelegatedSignInIdentity', () => {
 
       function makeToken() {
         const iat = Math.floor(Date.now() / 1000);
-        const exp = iat + 100;
+        const exp = iat + 3600;
         return {
           providerInfo: {
             stuff: 1,
@@ -107,10 +114,9 @@ describe('DelegatedSignInIdentity', () => {
         ),
       );
 
-      const identity = new DelegatedSignInIdentity({
+      const identity = new ProxiedSignInIdentity({
         provider: 'foo',
         discoveryApi: { getBaseUrl },
-        fetchApi: { fetch },
       });
 
       getBaseUrl.mockResolvedValue('http://example.com/api/auth');
@@ -126,7 +132,7 @@ describe('DelegatedSignInIdentity', () => {
       // Use a fairly large margin (1000) since the iat and exp are clamped to
       // full seconds, but the "local current time" isn't
       jest.advanceTimersByTime(
-        100 * 1000 - DEFAULTS.tokenExpiryMarginMillis - 1000,
+        3600 * 1000 - DEFAULTS.tokenExpiryMarginMillis - 1000,
       );
       await identity.getSessionAsync(); // still no need to fetch again
       expect(serverCalled).toBeCalledTimes(1);

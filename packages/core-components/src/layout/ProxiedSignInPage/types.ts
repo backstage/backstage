@@ -20,7 +20,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 
-export const delegatedSessionSchema = z.object({
+export const proxiedSessionSchema = z.object({
   providerInfo: z.object({}).catchall(z.unknown()).optional(),
   profile: z.object({
     email: z.string().optional(),
@@ -39,12 +39,12 @@ export const delegatedSessionSchema = z.object({
 });
 
 /**
- * Generic session information for delegated sign-in providers, e.g. common
+ * Generic session information for proxied sign-in providers, e.g. common
  * reverse authenticating proxy implementations.
  *
  * @public
  */
-export type DelegatedSession = {
+export type ProxiedSession = {
   providerInfo?: { [key: string]: unknown };
   profile: ProfileInfo;
   backstageIdentity: BackstageIdentityResponse;

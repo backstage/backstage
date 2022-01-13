@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { DelegatedSignInPage } from './DelegatedSignInPage';
-export type { DelegatedSignInPageProps } from './DelegatedSignInPage';
+export { ProxiedSignInPage } from './ProxiedSignInPage';
+export type { ProxiedSignInPageProps } from './ProxiedSignInPage';

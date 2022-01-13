@@ -16,7 +16,6 @@
 
 import {
   discoveryApiRef,
-  fetchApiRef,
   SignInPageProps,
   useApi,
 } from '@backstage/core-plugin-api';
@@ -24,14 +23,14 @@ import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { ErrorPanel } from '../../components/ErrorPanel';
 import { Progress } from '../../components/Progress';
-import { DelegatedSignInIdentity } from './DelegatedSignInIdentity';
+import { ProxiedSignInIdentity } from './ProxiedSignInIdentity';
 
 /**
- * Props for {@link DelegatedSignInPage}.
+ * Props for {@link ProxiedSignInPage}.
  *
  * @public
  */
-export type DelegatedSignInPageProps = SignInPageProps & {
+export type ProxiedSignInPageProps = SignInPageProps & {
   /**
    * The provider to use, e.g. "gcp-iap" or "aws-alb". This must correspond to
    * a properly configured auth provider ID in the auth backend.
@@ -40,9 +39,9 @@ export type DelegatedSignInPageProps = SignInPageProps & {
 };
 
 /**
- * A sign-in page that has no user interface of its own. Instead, it delegates
- * sign-in to some reverse authenticating proxy that Backstage is deployed
- * behind, and leverages its session handling.
+ * A sign-in page that has no user interface of its own. Instead, it relies on
+ * sign-in being performed by a reverse authenticating proxy that Backstage is
+ * deployed behind, and leverages its session handling.
  *
  * @remarks
  *
@@ -54,15 +53,13 @@ export type DelegatedSignInPageProps = SignInPageProps & {
  *
  * @public
  */
-export const DelegatedSignInPage = (props: DelegatedSignInPageProps) => {
+export const ProxiedSignInPage = (props: ProxiedSignInPageProps) => {
   const discoveryApi = useApi(discoveryApiRef);
-  const fetchApi = useApi(fetchApiRef);
 
   const { loading, error } = useAsync(async () => {
-    const identity = new DelegatedSignInIdentity({
+    const identity = new ProxiedSignInIdentity({
       provider: props.provider,
       discoveryApi,
-      fetchApi,
     });
 
     await identity.start();

@@ -17,7 +17,6 @@
 export * from './BottomLink';
 export * from './Content';
 export * from './ContentHeader';
-export * from './DelegatedSignInPage';
 export * from './ErrorBoundary';
 export * from './ErrorPage';
 export * from './Header';
@@ -27,6 +26,7 @@ export * from './HomepageTimer';
 export * from './InfoCard';
 export * from './ItemCard';
 export * from './Page';
+export * from './ProxiedSignInPage';
 export * from './Sidebar';
 export * from './SignInPage';
 export * from './TabbedCard';

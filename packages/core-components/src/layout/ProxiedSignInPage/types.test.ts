@@ -15,10 +15,10 @@
  */
 
 import { TypeOf } from 'zod';
-import { DelegatedSession, delegatedSessionSchema } from './types';
+import { ProxiedSession, proxiedSessionSchema } from './types';
 
 describe('types', () => {
-  const responseData: DelegatedSession = {
+  const responseData: ProxiedSession = {
     providerInfo: {
       stuff: 1,
     },
@@ -39,8 +39,8 @@ describe('types', () => {
   };
 
   it('has a compatible schema type', () => {
-    function f(_b: TypeOf<typeof delegatedSessionSchema>) {}
+    function f(_b: TypeOf<typeof proxiedSessionSchema>) {}
     f(responseData); // no tsc errors
-    expect(delegatedSessionSchema.parse(responseData)).toEqual(responseData);
+    expect(proxiedSessionSchema.parse(responseData)).toEqual(responseData);
   });
 });
