@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, RefObject, useState } from 'react';
 
-export const useHover = () => {
+export const useHover = (ref: RefObject<HTMLInputElement> ) => {
   const [value, setValue] = useState(false);
 
-  const ref = useRef(null);
   const handleMouseOver = () => setValue(true);
   const handleMouseOut = () => setValue(false);
 
@@ -38,5 +37,5 @@ export const useHover = () => {
     };
   }, [ref]);
 
-  return [ref, value];
+  return value;
 };

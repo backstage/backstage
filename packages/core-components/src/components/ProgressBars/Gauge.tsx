@@ -18,7 +18,7 @@ import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Circle } from 'rc-progress';
 import { useHover } from '../../hooks';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, RefObject, useRef } from 'react';
 
 /** @public */
 export type GaugeClassKey = 'root' | 'overlay' | 'circle' | 'colorUnknown';
@@ -38,11 +38,11 @@ const useStyles = makeStyles<BackstageTheme>(
       fontWeight: 'bold',
       color: theme.palette.textContrast,
     },
-    hoveringMessageCompliant: {
+    hoveringMessage: {
       fontSize: 13,
       top: '50%',
       left: '50%',
-      transform: 'translate(-50%, -50%)',
+      transform: 'translate(-55%, -50%)',
       position: 'absolute',
       wordBreak: 'break-all',
       display: 'inline-block',
@@ -115,7 +115,8 @@ export const getProgressColor: GaugePropsGetColor = ({
  */
 
 export function Gauge(props: GaugeProps) {
-  const [hoverRef, isHovering] = useHover() as any;
+  const hoverRef = useRef() as RefObject<HTMLInputElement>;
+  const isHovering = useHover(hoverRef);
   const { getColor = getProgressColor } = props;
   const classes = useStyles(props);
   const { palette } = useTheme<BackstageTheme>();
@@ -138,7 +139,7 @@ export function Gauge(props: GaugeProps) {
         className={classes.circle}
       />
       {hoverMessage && isHovering ? (
-        <div className={classes.hoveringMessageCompliant}>{hoverMessage}</div>
+        <div className={classes.hoveringMessage}>{hoverMessage}</div>
       ) : (
         <div className={classes.overlay}>
           {isNaN(value) ? 'N/A' : `${asActual}${unit}`}
