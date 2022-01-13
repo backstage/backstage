@@ -16,8 +16,3 @@
 export { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
 
 export type { TechDocsCollatorOptions } from './DefaultTechDocsCollator';
-
-/**
- * @deprecated Use directly from @backstage/techdocs-common
- */
-export type { TechDocsDocument } from '@backstage/techdocs-common';
