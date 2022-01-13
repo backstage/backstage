@@ -26,11 +26,11 @@ export const buildTechInsightsContext: <
 ) => Promise<TechInsightsContext<CheckType, CheckResultType>>;
 
 // @public
-export function createFactRetrieverRegistration(
-  cadence: string,
-  factRetriever: FactRetriever,
-  lifecycle?: FactLifecycle,
-): FactRetrieverRegistration;
+export function createFactRetrieverRegistration({
+  cadence,
+  factRetriever,
+  lifecycle,
+}: FactRetrieverRegistrationOptions): FactRetrieverRegistration;
 
 // @public
 export function createRouter<
@@ -43,6 +43,13 @@ export const entityMetadataFactRetriever: FactRetriever;
 
 // @public
 export const entityOwnershipFactRetriever: FactRetriever;
+
+// @public (undocumented)
+export type FactRetrieverRegistrationOptions = {
+  cadence: string;
+  factRetriever: FactRetriever;
+  lifecycle?: FactLifecycle;
+};
 
 // @public
 export type PersistenceContext = {

@@ -290,7 +290,11 @@ describe('Tech Insights database', () => {
       },
     };
     const maxItems = 2;
-    await store.insertFacts('test-fact', [factToBeInserted], { maxItems });
+    await store.insertFacts({
+      id: 'test-fact',
+      facts: [factToBeInserted],
+      lifecycle: { maxItems },
+    });
 
     const afterInsertionFacts = await testDbClient('facts').select();
     expect(afterInsertionFacts).toHaveLength(maxItems);
@@ -334,8 +338,10 @@ describe('Tech Insights database', () => {
         testNumberFact: 555,
       },
     };
-    await store.insertFacts('test-fact', [factToBeInserted], {
-      timeToLive: { weeks: 2 },
+    await store.insertFacts({
+      id: 'test-fact',
+      facts: [factToBeInserted],
+      lifecycle: { timeToLive: { weeks: 2 } },
     });
 
     const afterInsertionFacts = await testDbClient('facts')

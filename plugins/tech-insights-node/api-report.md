@@ -39,7 +39,7 @@ export interface FactCheckerFactory<
 }
 
 // @public
-export type FactLifecycle = TTL | ITL;
+export type FactLifecycle = TTL | MaxItems;
 
 // @public
 export interface FactRetriever {
@@ -88,8 +88,8 @@ export type FlatTechInsightFact = TechInsightFact & {
 };
 
 // @public
-export type ITL = {
-  itl: number;
+export type MaxItems = {
+  maxItems: number;
 };
 
 // @public
@@ -154,17 +154,21 @@ export interface TechInsightsStore {
     [factRef: string]: FlatTechInsightFact;
   }>;
   getLatestSchemas(ids?: string[]): Promise<FactSchema[]>;
-  insertFacts(
-    id: string,
-    facts: TechInsightFact[],
-    lifecycle?: FactLifecycle,
-  ): Promise<void>;
+  insertFacts({
+    id,
+    facts,
+    lifecycle,
+  }: {
+    id: string;
+    facts: TechInsightFact[];
+    lifecycle?: FactLifecycle;
+  }): Promise<void>;
   insertFactSchema(schemaDefinition: FactSchemaDefinition): Promise<void>;
 }
 
 // @public
 export type TTL = {
-  ttl: DurationLike;
+  timeToLive: DurationLike;
 };
 
 // (No @packageDocumentation comment for this package)

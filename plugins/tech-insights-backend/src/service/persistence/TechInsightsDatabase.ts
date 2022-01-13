@@ -87,11 +87,15 @@ export class TechInsightsDatabase implements TechInsightsStore {
     }
   }
 
-  async insertFacts(
-    id: string,
-    facts: TechInsightFact[],
-    lifecycle?: FactLifecycle,
-  ): Promise<void> {
+  async insertFacts({
+    id,
+    facts,
+    lifecycle,
+  }: {
+    id: string;
+    facts: TechInsightFact[];
+    lifecycle?: FactLifecycle;
+  }): Promise<void> {
     if (facts.length === 0) return;
     const currentSchema = await this.getLatestSchema(id);
     const factRows = facts.map(it => {

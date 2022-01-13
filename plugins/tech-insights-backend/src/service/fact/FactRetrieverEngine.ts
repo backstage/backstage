@@ -125,7 +125,11 @@ export class FactRetrieverEngine {
       }
 
       try {
-        await this.repository.insertFacts(factRetriever.id, facts, lifecycle);
+        await this.repository.insertFacts({
+          id: factRetriever.id,
+          facts,
+          lifecycle,
+        });
         this.logger.info(
           `Stored ${facts.length} facts for fact retriever ${
             factRetriever.id
