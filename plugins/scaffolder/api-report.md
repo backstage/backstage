@@ -144,7 +144,6 @@ export const OwnerPicker: ({
 // @public (undocumented)
 export const OwnerPickerFieldExtension: () => null;
 
-// Warning: (ae-forgotten-export) The symbol "RepoUrlPickerUiOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "RepoUrlPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -159,6 +158,16 @@ export const RepoUrlPicker: ({
 //
 // @public (undocumented)
 export const RepoUrlPickerFieldExtension: () => null;
+
+// Warning: (ae-missing-release-tag) "RepoUrlPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface RepoUrlPickerUiOptions {
+  // (undocumented)
+  allowedHosts?: string[];
+  // (undocumented)
+  allowedOwners?: string[];
+}
 
 // Warning: (ae-missing-release-tag) "ScaffolderApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
