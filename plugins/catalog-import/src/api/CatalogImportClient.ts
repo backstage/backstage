@@ -303,7 +303,9 @@ the component will become available.\n\nFor more information, read an \
       baseUrl: githubIntegrationConfig.apiBaseUrl,
     });
 
-    const branchName = 'backstage-integration';
+    const branchName =
+      this.configApi.getOptionalString('catalog.pullRequestBranchName') ??
+      'backstage-integration';
     const fileName =
       this.configApi.getOptionalString('catalog.import.entityFilename') ??
       'catalog-info.yaml';
