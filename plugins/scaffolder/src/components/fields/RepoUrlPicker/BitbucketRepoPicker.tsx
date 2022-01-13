@@ -18,26 +18,18 @@ import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
+import { RepoUrlPickerState } from './types';
 
 export const BitbucketRepoPicker = ({
-  onProjectChange,
-  onWorkspaceChange,
-  onRepoNameChange,
+  onChange,
   rawErrors,
-  workspace,
-  project,
-  host,
-  repoName,
+  state,
 }: {
-  onProjectChange: (owner: string) => void;
-  onWorkspaceChange: (name: string) => void;
-  onRepoNameChange: (name: string) => void;
-  workspace?: string;
-  project?: string;
-  repoName?: string;
-  host: string;
+  onChange: (state: RepoUrlPickerState) => void;
+  state: RepoUrlPickerState;
   rawErrors: string[];
 }) => {
+  const { host, workspace, project, repoName } = state;
   return (
     <>
       {host === 'bitbucket.org' && (
@@ -49,7 +41,7 @@ export const BitbucketRepoPicker = ({
           <InputLabel htmlFor="workspaceInput">Workspace</InputLabel>
           <Input
             id="workspaceInput"
-            onChange={e => onWorkspaceChange(e.target.value)}
+            onChange={e => onChange({ workspace: e.target.value })}
             value={workspace}
           />
           <FormHelperText>
@@ -65,7 +57,7 @@ export const BitbucketRepoPicker = ({
         <InputLabel htmlFor="projectInput">Project</InputLabel>
         <Input
           id="projectInput"
-          onChange={e => onProjectChange(e.target.value)}
+          onChange={e => onChange({ project: e.target.value })}
           value={project}
         />
         <FormHelperText>
@@ -80,7 +72,7 @@ export const BitbucketRepoPicker = ({
         <InputLabel htmlFor="repoInput">Repository</InputLabel>
         <Input
           id="repoInput"
-          onChange={e => onRepoNameChange(e.target.value)}
+          onChange={e => onChange({ repoName: e.target.value })}
           value={repoName}
         />
         <FormHelperText>The name of the repository</FormHelperText>

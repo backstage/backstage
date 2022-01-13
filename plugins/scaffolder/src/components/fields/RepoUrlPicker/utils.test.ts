@@ -26,7 +26,7 @@ describe('utils', () => {
         serializeRepoPickerUrl({
           host: 'github.com',
           owner: 'owner',
-          repo: 'backstage',
+          repoName: 'backstage',
         }),
       ).toBe('github.com?owner=owner&repo=backstage');
     });
@@ -49,7 +49,7 @@ describe('utils', () => {
         serializeRepoPickerUrl({
           host: 'github.com',
           owner: 'owner',
-          repo: 'backstage',
+          repoName: 'backstage',
           organization: 'organization',
           workspace: 'workspace',
           project: 'backstage',
@@ -69,7 +69,7 @@ describe('utils', () => {
       ).toEqual({
         host: 'github.com',
         owner: 'owner',
-        repo: 'backstage',
+        repoName: 'backstage',
         organization: 'organization',
         workspace: 'workspace',
         project: 'backstage',

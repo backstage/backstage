@@ -15,7 +15,7 @@
  */
 import { useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { GithubRepoPicker } from './GithubRepoPicker';
 import { GitlabRepoPicker } from './GitlabRepoPicker';
 import { AzureRepoPicker } from './AzureRepoPicker';
@@ -23,6 +23,7 @@ import { BitbucketRepoPicker } from './BitbucketRepoPicker';
 import { FieldExtensionComponentProps } from '../../../extensions';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
+import { RepoUrlPickerState } from './types';
 
 export interface RepoUrlPickerUiOptions {
   allowedHosts?: string[];
@@ -35,14 +36,9 @@ export const RepoUrlPicker = ({
   rawErrors,
   formData,
 }: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>) => {
-  const [state, setState] = useState<{
-    host?: string;
-    owner?: string;
-    repo?: string;
-    organization?: string;
-    workspace?: string;
-    project?: string;
-  }>(parseRepoPickerUrl(formData));
+  const [state, setState] = useState<RepoUrlPickerState>(
+    parseRepoPickerUrl(formData),
+  );
   const integrationApi = useApi(scmIntegrationsApiRef);
 
   const allowedHosts = uiSchema?.['ui:options']?.allowedHosts ?? [];
@@ -62,76 +58,50 @@ export const RepoUrlPicker = ({
     }
   }, [setState, allowedOwners]);
 
+  const updateLocalState = useCallback(
+    (newState: RepoUrlPickerState) => {
+      setState(prevState => ({ ...prevState, ...newState }));
+    },
+    [setState],
+  );
+
   return (
     <>
       <RepoUrlPickerHost
         host={state.host}
         hosts={allowedHosts}
-        onChange={host => setState({ host })}
+        onChange={host => setState(prevState => ({ ...prevState, host }))}
         rawErrors={rawErrors}
       />
       {state.host && integrationApi.byHost(state.host)?.type === 'github' && (
         <GithubRepoPicker
           allowedOwners={allowedOwners}
           rawErrors={rawErrors}
-          owner={state.owner}
-          repoName={state.repo}
-          onRepoNameChange={repo =>
-            setState(prevState => ({ ...prevState, repo }))
-          }
-          onOwnerChange={owner =>
-            setState(prevState => ({ ...prevState, owner }))
-          }
+          state={state}
+          onChange={updateLocalState}
         />
       )}
       {state.host && integrationApi.byHost(state.host)?.type === 'gitlab' && (
         <GitlabRepoPicker
           allowedOwners={allowedOwners}
           rawErrors={rawErrors}
-          owner={state.owner}
-          repoName={state.repo}
-          onRepoNameChange={repo =>
-            setState(prevState => ({ ...prevState, repo }))
-          }
-          onOwnerChange={owner =>
-            setState(prevState => ({ ...prevState, owner }))
-          }
+          state={state}
+          onChange={updateLocalState}
         />
       )}
       {state.host &&
         integrationApi.byHost(state.host)?.type === 'bitbucket' && (
           <BitbucketRepoPicker
             rawErrors={rawErrors}
-            host={state.host}
-            project={state.project}
-            workspace={state.workspace}
-            repoName={state.repo}
-            onRepoNameChange={repo =>
-              setState(prevState => ({ ...prevState, repo }))
-            }
-            onProjectChange={project =>
-              setState(prevState => ({ ...prevState, project }))
-            }
-            onWorkspaceChange={workspace =>
-              setState(prevState => ({ ...prevState, workspace }))
-            }
+            state={state}
+            onChange={updateLocalState}
           />
         )}
       {state.host && integrationApi.byHost(state.host)?.type === 'azure' && (
         <AzureRepoPicker
           rawErrors={rawErrors}
-          org={state.organization}
-          repoName={state.repo}
-          owner={state.owner}
-          onOwnerChange={owner =>
-            setState(prevState => ({ ...prevState, owner }))
-          }
-          onRepoNameChange={repo =>
-            setState(prevState => ({ ...prevState, repo }))
-          }
-          onOrgChange={org =>
-            setState(prevState => ({ ...prevState, organization: org }))
-          }
+          state={state}
+          onChange={updateLocalState}
         />
       )}
     </>

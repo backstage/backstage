@@ -19,25 +19,24 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { Select, SelectItem } from '@backstage/core-components';
+import { RepoUrlPickerState } from './types';
 
 export const GitlabRepoPicker = ({
-  onOwnerChange,
-  onRepoNameChange,
   allowedOwners = [],
   rawErrors,
-  owner,
-  repoName,
+  state,
+  onChange,
 }: {
-  onOwnerChange: (owner: string) => void;
-  onRepoNameChange: (name: string) => void;
   allowedOwners?: string[];
-  owner?: string;
-  repoName?: string;
+  state: RepoUrlPickerState;
+  onChange: (state: RepoUrlPickerState) => void;
   rawErrors: string[];
 }) => {
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
+
+  const { owner, repoName } = state;
 
   return (
     <>
@@ -50,7 +49,11 @@ export const GitlabRepoPicker = ({
           <Select
             native
             label="Owner Available"
-            onChange={s => onOwnerChange(String(Array.isArray(s) ? s[0] : s))}
+            onChange={selected =>
+              onChange({
+                owner: String(Array.isArray(selected) ? selected[0] : selected),
+              })
+            }
             disabled={allowedOwners.length === 1}
             selected={owner}
             items={ownerItems}
@@ -60,7 +63,7 @@ export const GitlabRepoPicker = ({
             <InputLabel htmlFor="ownerInput">Owner</InputLabel>
             <Input
               id="ownerInput"
-              onChange={e => onOwnerChange(e.target.value)}
+              onChange={e => onChange({ owner: e.target.value })}
               value={owner}
             />
           </>
@@ -77,7 +80,7 @@ export const GitlabRepoPicker = ({
         <InputLabel htmlFor="repoInput">Repository</InputLabel>
         <Input
           id="repoInput"
-          onChange={e => onRepoNameChange(e.target.value)}
+          onChange={e => onChange({ repoName: e.target.value })}
           value={repoName}
         />
         <FormHelperText>The name of the repository</FormHelperText>

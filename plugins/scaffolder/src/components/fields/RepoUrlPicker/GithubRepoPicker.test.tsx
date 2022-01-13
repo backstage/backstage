@@ -24,10 +24,9 @@ describe('GitubRepoPicker', () => {
       const allowedOwners = ['owner1', 'owner2'];
       const { findByText } = render(
         <GithubRepoPicker
-          onOwnerChange={jest.fn()}
-          onRepoNameChange={jest.fn()}
+          onChange={jest.fn()}
           rawErrors={[]}
-          repoName="repo"
+          state={{ repoName: 'repo' }}
           allowedOwners={allowedOwners}
         />,
       );
@@ -36,15 +35,14 @@ describe('GitubRepoPicker', () => {
       expect(await findByText('owner2')).toBeInTheDocument();
     });
 
-    it('calls onOwnerChange when the owner is changed to a different owner', async () => {
-      const onOwnerChange = jest.fn();
+    it('calls onChange when the owner is changed to a different owner', async () => {
+      const onChange = jest.fn();
       const allowedOwners = ['owner1', 'owner2'];
       const { getByRole } = render(
         <GithubRepoPicker
-          onOwnerChange={onOwnerChange}
-          onRepoNameChange={jest.fn()}
+          onChange={onChange}
           rawErrors={[]}
-          repoName="repo"
+          state={{ repoName: 'repo' }}
           allowedOwners={allowedOwners}
         />,
       );
@@ -53,18 +51,17 @@ describe('GitubRepoPicker', () => {
         target: { value: 'owner2' },
       });
 
-      expect(onOwnerChange).toHaveBeenCalledWith('owner2');
+      expect(onChange).toHaveBeenCalledWith({ owner: 'owner2' });
     });
 
     it('is disabled picked when only one allowed owner', () => {
-      const onOwnerChange = jest.fn();
+      const onChange = jest.fn();
       const allowedOwners = ['owner1'];
       const { getByRole } = render(
         <GithubRepoPicker
-          onOwnerChange={onOwnerChange}
-          onRepoNameChange={jest.fn()}
+          onChange={onChange}
           rawErrors={[]}
-          repoName="repo"
+          state={{ repoName: 'repo' }}
           allowedOwners={allowedOwners}
         />,
       );
@@ -73,32 +70,29 @@ describe('GitubRepoPicker', () => {
     });
 
     it('should display free text if no allowed owners are passed', async () => {
-      const onOwnerChange = jest.fn();
+      const onChange = jest.fn();
       const { getAllByRole } = render(
         <GithubRepoPicker
-          onOwnerChange={onOwnerChange}
-          onRepoNameChange={jest.fn()}
+          onChange={onChange}
           rawErrors={[]}
-          repoName="repo"
+          state={{ repoName: 'repo' }}
         />,
       );
-
       const ownerField = getAllByRole('textbox')[0];
       fireEvent.change(ownerField, { target: { value: 'my-mock-owner' } });
 
-      expect(onOwnerChange).toHaveBeenCalledWith('my-mock-owner');
+      expect(onChange).toHaveBeenCalledWith({ owner: 'my-mock-owner' });
     });
   });
 
   describe('repo name', () => {
     it('should render free text field for input of repo name', () => {
-      const onRepoNameChange = jest.fn();
+      const onChange = jest.fn();
       const { getAllByRole } = render(
         <GithubRepoPicker
-          onOwnerChange={jest.fn()}
-          onRepoNameChange={onRepoNameChange}
+          onChange={onChange}
           rawErrors={[]}
-          repoName="repo"
+          state={{ repoName: 'repo' }}
         />,
       );
 
@@ -107,7 +101,7 @@ describe('GitubRepoPicker', () => {
         target: { value: 'my-mock-repo-name' },
       });
 
-      expect(onRepoNameChange).toHaveBeenCalledWith('my-mock-repo-name');
+      expect(onChange).toHaveBeenCalledWith({ repoName: 'my-mock-repo-name' });
     });
   });
 });

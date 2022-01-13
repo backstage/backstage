@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,41 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
+import { RepoUrlPickerState } from './types';
 
 export const AzureRepoPicker = ({
-  onOrgChange,
-  onOwnerChange,
-  onRepoNameChange,
   rawErrors,
-  org,
-  owner,
-  repoName,
+  state,
+  onChange,
 }: {
-  onOrgChange: (org: string) => void;
-  onOwnerChange: (owner: string) => void;
-  onRepoNameChange: (name: string) => void;
-  owner?: string;
-  org?: string;
-  repoName?: string;
+  state: RepoUrlPickerState;
+  onChange: (state: RepoUrlPickerState) => void;
   rawErrors: string[];
 }) => {
+  const { organization, repoName, owner } = state;
   return (
     <>
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !org}
+        error={rawErrors?.length > 0 && !organization}
       >
         <InputLabel htmlFor="orgInput">Organization</InputLabel>
         <Input
           id="orgInput"
-          onChange={e => onOrgChange(e.target.value)}
-          value={org}
+          onChange={e => onChange({ organization: e.target.value })}
+          value={organization}
         />
         <FormHelperText>
           The organization that this repo will belong to
@@ -61,7 +56,7 @@ export const AzureRepoPicker = ({
         <InputLabel htmlFor="ownerInput">Owner</InputLabel>
         <Input
           id="ownerInput"
-          onChange={e => onOwnerChange(e.target.value)}
+          onChange={e => onChange({ owner: e.target.value })}
           value={owner}
         />
         <FormHelperText>The Owner that this repo will belong to</FormHelperText>
@@ -74,7 +69,7 @@ export const AzureRepoPicker = ({
         <InputLabel htmlFor="repoInput">Repository</InputLabel>
         <Input
           id="repoInput"
-          onChange={e => onRepoNameChange(e.target.value)}
+          onChange={e => onChange({ repoName: e.target.value })}
           value={repoName}
         />
         <FormHelperText>The name of the repository</FormHelperText>

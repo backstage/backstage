@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-type RepoUrlPickerOptions = {
-  host?: string;
-  owner?: string;
-  repo?: string;
-  organization?: string;
-  workspace?: string;
-  project?: string;
-};
+import { RepoUrlPickerState } from './types';
 
-export function serializeRepoPickerUrl(data: RepoUrlPickerOptions) {
+export function serializeRepoPickerUrl(data: RepoUrlPickerState) {
   if (!data.host) {
     return undefined;
   }
@@ -32,8 +25,8 @@ export function serializeRepoPickerUrl(data: RepoUrlPickerOptions) {
   if (data.owner) {
     params.set('owner', data.owner);
   }
-  if (data.repo) {
-    params.set('repo', data.repo);
+  if (data.repoName) {
+    params.set('repo', data.repoName);
   }
   if (data.organization) {
     params.set('organization', data.organization);
@@ -50,10 +43,10 @@ export function serializeRepoPickerUrl(data: RepoUrlPickerOptions) {
 
 export function parseRepoPickerUrl(
   url: string | undefined,
-): RepoUrlPickerOptions {
+): RepoUrlPickerState {
   let host = undefined;
   let owner = undefined;
-  let repo = undefined;
+  let repoName = undefined;
   let organization = undefined;
   let workspace = undefined;
   let project = undefined;
@@ -63,7 +56,7 @@ export function parseRepoPickerUrl(
       const parsed = new URL(`https://${url}`);
       host = parsed.host;
       owner = parsed.searchParams.get('owner') || undefined;
-      repo = parsed.searchParams.get('repo') || undefined;
+      repoName = parsed.searchParams.get('repo') || undefined;
       organization = parsed.searchParams.get('organization') || undefined;
       workspace = parsed.searchParams.get('workspace') || undefined;
       project = parsed.searchParams.get('project') || undefined;
@@ -72,5 +65,5 @@ export function parseRepoPickerUrl(
     /* ok */
   }
 
-  return { host, owner, repo, organization, workspace, project };
+  return { host, owner, repoName, organization, workspace, project };
 }
