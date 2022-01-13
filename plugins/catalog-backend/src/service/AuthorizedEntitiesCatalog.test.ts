@@ -47,7 +47,7 @@ describe('AuthorizedEntitiesCatalog', () => {
 
       expect(
         await catalog.entities({
-          authorizationToken: 'Bearer abcd',
+          authorizationToken: 'abcd',
         }),
       ).toEqual({
         entities: [],
@@ -68,10 +68,10 @@ describe('AuthorizedEntitiesCatalog', () => {
         createConditionTransformer([isEntityKind]),
       );
 
-      await catalog.entities({ authorizationToken: 'Bearer abcd' });
+      await catalog.entities({ authorizationToken: 'abcd' });
 
       expect(fakeCatalog.entities).toHaveBeenCalledWith({
-        authorizationToken: 'Bearer abcd',
+        authorizationToken: 'abcd',
         filter: { key: 'kind', values: ['b'] },
       });
     });
@@ -86,10 +86,10 @@ describe('AuthorizedEntitiesCatalog', () => {
         createConditionTransformer([]),
       );
 
-      await catalog.entities({ authorizationToken: 'Bearer abcd' });
+      await catalog.entities({ authorizationToken: 'abcd' });
 
       expect(fakeCatalog.entities).toHaveBeenCalledWith({
-        authorizationToken: 'Bearer abcd',
+        authorizationToken: 'abcd',
       });
     });
   });
