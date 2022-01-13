@@ -25,6 +25,7 @@ import {
   NoForeignRootFieldsEntityPolicy,
   parseEntityRef,
   SchemaValidEntityPolicy,
+  stringifyEntityRef,
   Validators,
 } from '@backstage/catalog-model';
 import {
@@ -34,7 +35,7 @@ import {
 } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
-import lodash from 'lodash';
+import lodash, { keyBy } from 'lodash';
 import { EntitiesCatalog, EntitiesSearchFilter } from '../catalog';
 import {
   DatabaseLocationsCatalog,
@@ -415,18 +416,27 @@ export class NextCatalogBuilder {
     );
     const permissionIntegrationRouter = createPermissionIntegrationRouter({
       resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-      getResource: async (resourceRef: string) => {
-        const parsed = parseEntityRef(resourceRef);
+      getResources: async (resourceRefs: string[]) => {
+        const { entities } = await entitiesCatalog.entities({
+          filter: {
+            anyOf: resourceRefs.map(resourceRef => {
+              const { kind, namespace, name } = parseEntityRef(resourceRef);
 
-        const { entities } = await unauthorizedEntitiesCatalog.entities({
-          filter: basicEntityFilter({
-            kind: parsed.kind,
-            'metadata.namespace': parsed.namespace,
-            'metadata.name': parsed.name,
-          }),
+              return basicEntityFilter({
+                kind,
+                'metadata.namespace': namespace,
+                'metadata.name': name,
+              });
+            }),
+          },
         });
 
-        return entities[0];
+        const entitiesByRef = keyBy(entities, stringifyEntityRef);
+
+        return resourceRefs.map(
+          resourceRef =>
+            entitiesByRef[stringifyEntityRef(parseEntityRef(resourceRef))],
+        );
       },
       rules: this.permissionRules,
     });
