@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.3.9
+
+### Patch Changes
+
+- 2b19fd2e94: Make sure to avoid accidental data sharing / mutation of `set` values
+- 722681b1b1: Clean up API report
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/plugin-catalog-backend@0.20.0
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-model@0.9.9
+
 ## 0.3.8
 
 ### Patch Changes

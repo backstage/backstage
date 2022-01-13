@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.20
+
+### Patch Changes
+
+- 9fbd3b90ae: fix: Register plugin to prioritise Component kind for entityRef
+- 451ef0aa07: Fix token pass-through for software templates using beta 3 version
+- 5333451def: Cleaned up API exports
+- 3b4d8caff6: Allow a GitHubCredentialsProvider to be passed to the GitHub scaffolder tasks actions.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/backend-common@0.10.3
+  - @backstage/plugin-catalog-backend@0.20.0
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.8
+
 ## 0.15.19
 
 ### Patch Changes

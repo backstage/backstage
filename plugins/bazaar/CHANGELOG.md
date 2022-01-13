@@ -1,5 +1,20 @@
 # @backstage/plugin-bazaar
 
+## 0.1.9
+
+### Patch Changes
+
+- 6eb6e2dc31: Add Bazaar plugin to marketplace and some minor refactoring
+- b47965beec: build(deps): bump `@date-io/luxon` from 1.3.13 to 2.11.1
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/cli@0.11.0
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+  - @backstage/plugin-catalog@0.7.8
+
 ## 0.1.8
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes
 
+## 0.5.4
+
+### Patch Changes
+
+- 7612e2856b: Clean up emptystate.svg image, removing wrong white artifact from the background
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/catalog-model@0.9.9
+
 ## 0.5.3
 
 ### Patch Changes

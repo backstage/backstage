@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-app-api",
   "description": "Core app API used by Backstage apps",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -29,8 +29,8 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.11",
-    "@backstage/core-plugin-api": "^0.4.1",
+    "@backstage/config": "^0.1.12",
+    "@backstage/core-plugin-api": "^0.5.0",
     "@backstage/types": "^0.1.1",
     "@backstage/version-bridge": "^0.1.1",
     "@types/prop-types": "^15.7.3",
@@ -45,8 +45,8 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.10.5",
-    "@backstage/test-utils": "^0.2.0",
+    "@backstage/cli": "^0.11.0",
+    "@backstage/test-utils": "^0.2.2",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^7.0.2",

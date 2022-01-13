@@ -1,5 +1,21 @@
 # @backstage/backend-common
 
+## 0.10.3
+
+### Patch Changes
+
+- 5b406daabe: build(deps-dev): bump `http-errors` from 1.8.0 to 2.0.0
+- 5333451def: Cleaned up API exports
+- db5310e25e: bump `logform` to use fixed version of `color` dependency
+- 7946418729: Switched to using `@manypkg/get-packages` to list monorepo packages, which provides better support for different kind of monorepo setups.
+- 3b4d8caff6: The GithubUrlReader is switched to use the DefaultGithubCredentialsProvider
+- f77bd5c8ff: Clean up API reports
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/errors@0.2.0
+  - @backstage/config-loader@0.9.2
+
 ## 0.10.2
 
 ### Patch Changes

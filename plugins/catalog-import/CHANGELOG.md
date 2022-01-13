@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-import
 
+## 0.7.9
+
+### Patch Changes
+
+- 5333451def: Cleaned up API exports
+- Updated dependencies
+  - @backstage/integration@0.7.1
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+  - @backstage/integration-react@0.1.18
+
 ## 0.7.8
 
 ### Patch Changes

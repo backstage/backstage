@@ -1,5 +1,15 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.17
+
+### Patch Changes
+
+- 5333451def: Cleaned up API exports
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+
 ## 0.11.16
 
 ### Patch Changes

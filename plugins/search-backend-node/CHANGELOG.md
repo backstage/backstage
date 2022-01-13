@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend-node
 
+## 0.4.4
+
+### Patch Changes
+
+- 5333451def: Cleaned up API exports
+
 ## 0.4.3
 
 ### Patch Changes

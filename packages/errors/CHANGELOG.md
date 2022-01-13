@@ -1,5 +1,13 @@
 # @backstage/errors
 
+## 0.2.0
+
+### Minor Changes
+
+- e2eb92c109: Removed the deprecated exports `ErrorResponse` and `parseErrorResponse`.
+
+  Removed the deprecated `constructor` and the deprecated `data` property of `ResponseError`.
+
 ## 0.1.5
 
 ### Patch Changes
