@@ -244,8 +244,24 @@ describe('createPermissionIntegrationRouter', () => {
           items: [
             {
               id: '123',
-              resourceRef: 'default:test/resource',
-              resourceType: 'test-incorrect-resource',
+              resourceRef: 'default:test/resource-1',
+              resourceType: 'test-incorrect-resource-1',
+              conditions: {
+                anyOf: [],
+              },
+            },
+            {
+              id: '234',
+              resourceRef: 'default:test/resource-2',
+              resourceType: 'test-resource',
+              conditions: {
+                anyOf: [],
+              },
+            },
+            {
+              id: '345',
+              resourceRef: 'default:test/resource-3',
+              resourceType: 'test-incorrect-resource-2',
               conditions: {
                 anyOf: [],
               },
@@ -255,7 +271,7 @@ describe('createPermissionIntegrationRouter', () => {
 
       expect(response.status).toEqual(400);
       expect(response.error && response.error.text).toMatch(
-        /unexpected resource type: test-incorrect-resource/i,
+        /unexpected resource types: test-incorrect-resource-1, test-incorrect-resource-2/i,
       );
     });
 

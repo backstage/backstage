@@ -174,12 +174,14 @@ export const createPermissionIntegrationRouter = <TResource>(options: {
   const assertValidResourceTypes = (
     requests: ApplyConditionsRequestEntry[],
   ) => {
-    const invalidResourceType = requests.find(
-      request => request.resourceType !== resourceType,
-    )?.resourceType;
+    const invalidResourceTypes = requests
+      .filter(request => request.resourceType !== resourceType)
+      .map(request => request.resourceType);
 
-    if (invalidResourceType) {
-      throw new InputError(`Unexpected resource type: ${invalidResourceType}.`);
+    if (invalidResourceTypes.length) {
+      throw new InputError(
+        `Unexpected resource types: ${invalidResourceTypes.join(', ')}.`,
+      );
     }
   };
 
