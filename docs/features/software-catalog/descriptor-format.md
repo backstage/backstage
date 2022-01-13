@@ -1266,6 +1266,9 @@ shape, this kind has the following structure.
 
 Exactly equal to `backstage.io/v1alpha1` and `Location`, respectively.
 
+### `spec` [required]
+The `spec` field is required. The miniaml spec should be an empty object.
+
 ### `spec.type` [optional]
 
 The single location type, that's common to the targets specified in the spec. If
