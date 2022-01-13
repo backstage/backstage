@@ -14,6 +14,8 @@ import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { TableColumn } from '@backstage/core-components';
+import { V1Pod } from '@kubernetes/client-node';
 
 // Warning: (ae-forgotten-export) The symbol "ClusterLinksFormatter" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "clusterLinksFormatters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -21,11 +23,22 @@ import { RouteRef } from '@backstage/core-plugin-api';
 // @public (undocumented)
 export const clusterLinksFormatters: Record<string, ClusterLinksFormatter>;
 
+// Warning: (ae-missing-release-tag) "CustomisationProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CustomisationProps {
+  // (undocumented)
+  customPodTableColumns: TableColumn<V1Pod>[];
+}
+
 // Warning: (ae-missing-release-tag) "EntityKubernetesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityKubernetesContent: (_props: {
+export const EntityKubernetesContent: ({
+  customisationProps,
+}: {
   entity?: Entity | undefined;
+  customisationProps?: CustomisationProps | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "FormatClusterLinkOptions" needs to be exported by the entry point index.d.ts
@@ -128,5 +141,5 @@ export { kubernetesPlugin as plugin };
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: (_props: Props) => JSX.Element;
+export const Router: ({ customisationProps }: Props) => JSX.Element;
 ```
