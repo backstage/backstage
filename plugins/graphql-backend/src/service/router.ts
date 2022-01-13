@@ -23,6 +23,7 @@ import { ApolloServer } from 'apollo-server-express';
 import { createModule as createCatalogModule } from '@backstage/plugin-catalog-graphql';
 import { Config } from '@backstage/config';
 import helmet from 'helmet';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 
 export interface RouterOptions {
   logger: Logger;
@@ -36,6 +37,12 @@ export async function createRouter(
 
   const { createSchemaForApollo } = createApplication({
     modules: [catalogModule],
+    schemaBuilder(input) {
+      return makeExecutableSchema({
+        ...input,
+        inheritResolversFromInterfaces: true,
+      });
+    },
   });
 
   const server = new ApolloServer({
@@ -45,6 +52,7 @@ export async function createRouter(
   });
 
   await server.start();
+
   const router = Router();
 
   router.get('/health', (_, response) => {
@@ -63,7 +71,6 @@ export async function createRouter(
     );
 
   router.use(apolloMiddleware);
-
   router.use(errorHandler());
 
   return router;
