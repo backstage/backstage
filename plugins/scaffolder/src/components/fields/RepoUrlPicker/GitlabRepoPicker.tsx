@@ -30,7 +30,7 @@ export const GitlabRepoPicker = ({
 }: {
   onOwnerChange: (owner: string) => void;
   onRepoNameChange: (name: string) => void;
-  allowedOwners: string[];
+  allowedOwners?: string[];
   owner?: string;
   repoName?: string;
   rawErrors: string[];

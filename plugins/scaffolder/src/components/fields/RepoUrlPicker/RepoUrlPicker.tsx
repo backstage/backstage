@@ -15,7 +15,7 @@
  */
 import { useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { GithubRepoPicker } from './GithubRepoPicker';
 import { GitlabRepoPicker } from './GitlabRepoPicker';
 import { AzureRepoPicker } from './AzureRepoPicker';
@@ -46,11 +46,21 @@ export const RepoUrlPicker = ({
   const integrationApi = useApi(scmIntegrationsApiRef);
 
   const allowedHosts = uiSchema?.['ui:options']?.allowedHosts ?? [];
-  const allowedOwners = uiSchema?.['ui:options']?.allowedOwners ?? [];
+  const allowedOwners = useMemo(
+    () => uiSchema?.['ui:options']?.allowedOwners ?? [],
+    [uiSchema],
+  );
 
   useEffect(() => {
     onChange(serializeRepoPickerUrl(state));
   }, [state, onChange]);
+
+  /* we deal with calling the repo setting here instead of in each components for ease */
+  useEffect(() => {
+    if (allowedOwners.length === 1) {
+      setState(prevState => ({ ...prevState, owner: allowedOwners[0] }));
+    }
+  }, [setState, allowedOwners]);
 
   return (
     <>
