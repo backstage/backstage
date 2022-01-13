@@ -24,6 +24,7 @@ import {
   mockReleaseCandidateCalver,
   mockReleaseVersionCalver,
   mockTagParts,
+  mockCtaMessage,
 } from '../../test-helpers/test-helpers';
 import { mockApiClient } from '../../test-helpers/mock-api-client';
 import { PatchBody } from './PatchBody';
@@ -60,6 +61,7 @@ describe('PatchBody', () => {
         latestRelease={mockReleaseCandidateCalver}
         releaseBranch={mockReleaseBranch}
         tagParts={mockTagParts}
+        ctaMessage={mockCtaMessage}
       />,
     );
 
@@ -77,6 +79,7 @@ describe('PatchBody', () => {
         releaseBranch={mockReleaseBranch}
         bumpedTag={mockBumpedTag}
         tagParts={mockTagParts}
+        ctaMessage={mockCtaMessage}
       />,
     );
 
