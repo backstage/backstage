@@ -15,7 +15,7 @@
  */
 
 import { createModule } from './module';
-import { execute } from 'graphql';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
@@ -23,7 +23,7 @@ import { ReaderEntity } from '../service/client';
 import { createLogger } from 'winston';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { gql } from 'apollo-server';
-import { Module, createApplication } from 'graphql-modules';
+import { Module, createApplication, testkit } from 'graphql-modules';
 
 describe('Catalog Module', () => {
   const worker = setupServer();
@@ -34,9 +34,15 @@ describe('Catalog Module', () => {
     },
   });
 
-  const createSchema = (module: Module) => {
+  const createMockApplication = (module: Module) => {
     const application = createApplication({
       modules: [module],
+      schemaBuilder(input) {
+        return makeExecutableSchema({
+          ...input,
+          inheritResolversFromInterfaces: true,
+        });
+      },
     });
 
     return application;
@@ -68,22 +74,21 @@ describe('Catalog Module', () => {
       ];
 
       worker.use(
-        rest.get(`${mockCatalogBaseUrl}/catalog/entities`, (_, res, ctx) =>
+        rest.get(`${mockCatalogBaseUrl}/api/catalog/entities`, (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockResponse)),
         ),
       );
     });
 
     it('should call the catalog client when requesting entities', async () => {
-      const { schema } = createSchema(
+      const app = createMockApplication(
         await createModule({
           config: mockConfig,
           logger: createLogger(),
         }),
       );
 
-      const result = await execute({
-        schema,
+      const result = await testkit.execute(app, {
         document: gql`
           query {
             catalog {
@@ -98,7 +103,8 @@ describe('Catalog Module', () => {
           }
         `,
       });
-      const [catalogItem] = (result as any).data?.catalog?.list;
+
+      const [catalogItem] = result.data?.catalog.list;
       expect(catalogItem.kind).toBe('Component');
       expect(catalogItem.apiVersion).toBe('something');
       expect(catalogItem.metadata.name).toBe('Ben');
@@ -126,20 +132,19 @@ describe('Catalog Module', () => {
         },
       ];
       worker.use(
-        rest.get(`${mockCatalogBaseUrl}/catalog/entities`, (_, res, ctx) =>
+        rest.get(`${mockCatalogBaseUrl}/api/catalog/entities`, (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockResponse)),
         ),
       );
 
-      const { schema } = createSchema(
+      const app = createMockApplication(
         await createModule({
           config: mockConfig,
           logger: createLogger(),
         }),
       );
 
-      const result = await execute({
-        schema,
+      const result = await testkit.execute(app, {
         document: gql`
           query {
             catalog {
@@ -153,7 +158,7 @@ describe('Catalog Module', () => {
         `,
       });
 
-      const [catalogItem] = (result as any).data?.catalog.list;
+      const [catalogItem] = result.data?.catalog.list;
       expect(catalogItem.metadata.annotations).toEqual({});
     });
 
@@ -179,20 +184,19 @@ describe('Catalog Module', () => {
         },
       ];
       worker.use(
-        rest.get(`${mockCatalogBaseUrl}/catalog/entities`, (_, res, ctx) =>
+        rest.get(`${mockCatalogBaseUrl}/api/catalog/entities`, (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockResponse)),
         ),
       );
 
-      const { schema } = createSchema(
+      const app = createMockApplication(
         await createModule({
           config: mockConfig,
           logger: createLogger(),
         }),
       );
 
-      const result = await execute({
-        schema,
+      const result = await testkit.execute(app, {
         document: gql`
           query {
             catalog {
@@ -206,7 +210,7 @@ describe('Catalog Module', () => {
         `,
       });
 
-      const [catalogItem] = (result as any).data?.catalog.list;
+      const [catalogItem] = result.data?.catalog.list;
       expect(catalogItem.metadata.labels).toEqual({});
     });
     it('Returns the correct record from the annotation dictionary', async () => {
@@ -231,20 +235,19 @@ describe('Catalog Module', () => {
         },
       ];
       worker.use(
-        rest.get(`${mockCatalogBaseUrl}/catalog/entities`, (_, res, ctx) =>
+        rest.get(`${mockCatalogBaseUrl}/api/catalog/entities`, (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockResponse)),
         ),
       );
 
-      const { schema } = createSchema(
+      const app = createMockApplication(
         await createModule({
           config: mockConfig,
           logger: createLogger(),
         }),
       );
 
-      const result = await execute({
-        schema,
+      const result = await testkit.execute(app, {
         document: gql`
           query {
             catalog {
@@ -258,7 +261,7 @@ describe('Catalog Module', () => {
         `,
       });
 
-      const [catalogItem] = (result as any).data?.catalog.list;
+      const [catalogItem] = result.data?.catalog.list;
       expect(catalogItem.metadata.test).toEqual('bloben');
     });
     it('Returns the correct record from the labels dictionary', async () => {
@@ -283,20 +286,19 @@ describe('Catalog Module', () => {
         },
       ];
       worker.use(
-        rest.get(`${mockCatalogBaseUrl}/catalog/entities`, (_, res, ctx) =>
+        rest.get(`${mockCatalogBaseUrl}/api/catalog/entities`, (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockResponse)),
         ),
       );
 
-      const { schema } = createSchema(
+      const app = createMockApplication(
         await createModule({
           config: mockConfig,
           logger: createLogger(),
         }),
       );
 
-      const result = await execute({
-        schema,
+      const result = await testkit.execute(app, {
         document: gql`
           query {
             catalog {
@@ -310,7 +312,7 @@ describe('Catalog Module', () => {
         `,
       });
 
-      const [catalogItem] = (result as any).data?.catalog.list;
+      const [catalogItem] = result.data?.catalog.list;
       expect(catalogItem.metadata.test).toEqual('bloben');
     });
   });
