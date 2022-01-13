@@ -16,7 +16,6 @@
 
 import { Entity, EntityMeta } from '@backstage/catalog-model';
 import fetch from 'node-fetch';
-import { JsonObject } from '@backstage/types';
 
 export interface ReaderEntityMeta extends EntityMeta {
   uid: string;
@@ -28,14 +27,15 @@ export interface ReaderEntityMeta extends EntityMeta {
 }
 
 export interface ReaderEntity extends Entity {
-  metadata: JsonObject & ReaderEntityMeta;
+  metadata: ReaderEntityMeta;
 }
 
 export class CatalogClient {
   constructor(private baseUrl: string) {}
 
   async list(): Promise<ReaderEntity[]> {
-    const res = await fetch(`${this.baseUrl}/catalog/entities`);
+    const res = await fetch(`${this.baseUrl}/api/catalog/entities`);
+
     if (!res.ok) {
       // todo(blam): need some better way to handle errors here
       // experiment with throwing the input errors etc and having graphql versions of that

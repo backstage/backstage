@@ -23,6 +23,7 @@ import { ReaderEntity } from '../service/client';
 import { createLogger } from 'winston';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { gql } from 'apollo-server';
+import { Module, createApplication } from 'graphql-modules';
 
 describe('Catalog Module', () => {
   const worker = setupServer();
@@ -32,6 +33,14 @@ describe('Catalog Module', () => {
       baseUrl: mockCatalogBaseUrl,
     },
   });
+
+  const createSchema = (module: Module) => {
+    const application = createApplication({
+      modules: [module],
+    });
+
+    return application;
+  };
 
   setupRequestMockHandlers(worker);
 
@@ -66,10 +75,12 @@ describe('Catalog Module', () => {
     });
 
     it('should call the catalog client when requesting entities', async () => {
-      const { schema } = await createModule({
-        config: mockConfig,
-        logger: createLogger(),
-      });
+      const { schema } = createSchema(
+        await createModule({
+          config: mockConfig,
+          logger: createLogger(),
+        }),
+      );
 
       const result = await execute({
         schema,
@@ -87,8 +98,7 @@ describe('Catalog Module', () => {
           }
         `,
       });
-
-      const [catalogItem] = result.data?.catalog.list;
+      const [catalogItem] = (result as any).data?.catalog?.list;
       expect(catalogItem.kind).toBe('Component');
       expect(catalogItem.apiVersion).toBe('something');
       expect(catalogItem.metadata.name).toBe('Ben');
@@ -121,10 +131,12 @@ describe('Catalog Module', () => {
         ),
       );
 
-      const { schema } = await createModule({
-        config: mockConfig,
-        logger: createLogger(),
-      });
+      const { schema } = createSchema(
+        await createModule({
+          config: mockConfig,
+          logger: createLogger(),
+        }),
+      );
 
       const result = await execute({
         schema,
@@ -141,7 +153,7 @@ describe('Catalog Module', () => {
         `,
       });
 
-      const [catalogItem] = result.data?.catalog.list;
+      const [catalogItem] = (result as any).data?.catalog.list;
       expect(catalogItem.metadata.annotations).toEqual({});
     });
 
@@ -172,10 +184,12 @@ describe('Catalog Module', () => {
         ),
       );
 
-      const { schema } = await createModule({
-        config: mockConfig,
-        logger: createLogger(),
-      });
+      const { schema } = createSchema(
+        await createModule({
+          config: mockConfig,
+          logger: createLogger(),
+        }),
+      );
 
       const result = await execute({
         schema,
@@ -192,7 +206,7 @@ describe('Catalog Module', () => {
         `,
       });
 
-      const [catalogItem] = result.data?.catalog.list;
+      const [catalogItem] = (result as any).data?.catalog.list;
       expect(catalogItem.metadata.labels).toEqual({});
     });
     it('Returns the correct record from the annotation dictionary', async () => {
@@ -222,10 +236,12 @@ describe('Catalog Module', () => {
         ),
       );
 
-      const { schema } = await createModule({
-        config: mockConfig,
-        logger: createLogger(),
-      });
+      const { schema } = createSchema(
+        await createModule({
+          config: mockConfig,
+          logger: createLogger(),
+        }),
+      );
 
       const result = await execute({
         schema,
@@ -242,7 +258,7 @@ describe('Catalog Module', () => {
         `,
       });
 
-      const [catalogItem] = result.data?.catalog.list;
+      const [catalogItem] = (result as any).data?.catalog.list;
       expect(catalogItem.metadata.test).toEqual('bloben');
     });
     it('Returns the correct record from the labels dictionary', async () => {
@@ -272,10 +288,12 @@ describe('Catalog Module', () => {
         ),
       );
 
-      const { schema } = await createModule({
-        config: mockConfig,
-        logger: createLogger(),
-      });
+      const { schema } = createSchema(
+        await createModule({
+          config: mockConfig,
+          logger: createLogger(),
+        }),
+      );
 
       const result = await execute({
         schema,
@@ -292,7 +310,7 @@ describe('Catalog Module', () => {
         `,
       });
 
-      const [catalogItem] = result.data?.catalog.list;
+      const [catalogItem] = (result as any).data?.catalog.list;
       expect(catalogItem.metadata.test).toEqual('bloben');
     });
   });
