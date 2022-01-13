@@ -40,7 +40,7 @@ export class CachedEntityLoader {
     entityName: EntityName,
     token: string | undefined,
   ): Promise<Entity | undefined> {
-    const cacheKey = await this.getCacheKey(entityName, token);
+    const cacheKey = this.getCacheKey(entityName, token);
     let result = await this.getFromCache(cacheKey);
 
     if (result) {
@@ -65,10 +65,10 @@ export class CachedEntityLoader {
     ])) as Entity | undefined;
   }
 
-  private async getCacheKey(
+  private getCacheKey(
     entityName: EntityName,
     token: string | undefined,
-  ): Promise<string> {
+  ): string {
     const key = ['catalog', stringifyEntityRef(entityName)];
 
     if (token) {
