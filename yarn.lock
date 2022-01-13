@@ -96,10 +96,10 @@
     node-fetch "^2.6.0"
     tiny-merge-patch "^0.1.2"
 
-"@asyncapi/react-component@1.0.0-next.26":
-  version "1.0.0-next.26"
-  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-1.0.0-next.26.tgz#d5658f89c8aa7a88e86f8d1918ef63cbf7f7634e"
-  integrity sha512-30UnzdbS7EVcdxIHru8O04mxqGPmTA0o2HtzykV9+Y0Ye+k9gqto8SK1my+qqQUs+7EwwyzA1dFaTmf2CHrJIg==
+"@asyncapi/react-component@1.0.0-next.29":
+  version "1.0.0-next.29"
+  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-1.0.0-next.29.tgz#b134f7ca7d46ff1b417062a589bbab579b46d72b"
+  integrity sha512-8TUO7qyMP8OeDrO82wRflApzcSZFD+a+aPC7kB4dkU3l0bW5FfOYY6eckqqkfVeFlsD6zgUecrXiNezhYHQfDg==
   dependencies:
     "@asyncapi/avro-schema-parser" "^0.3.0"
     "@asyncapi/openapi-schema-parser" "^2.0.0"
@@ -16399,12 +16399,7 @@ helmet@^4.0.0:
   resolved "https://registry.npmjs.org/helmet/-/helmet-4.4.1.tgz#a17e1444d81d7a83ddc6e6f9bc6e2055b994efe7"
   integrity sha512-G8tp0wUMI7i8wkMk2xLcEvESg5PiCitFMYgGRc/PwULB0RVhTP5GFdxOwvJwp9XVha8CuS8mnhmE8I/8dx/pbw==
 
-highlight.js@^10.1.0, highlight.js@^10.1.1, highlight.js@^10.4.1, highlight.js@^10.6.0:
-  version "10.7.2"
-  resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-10.7.2.tgz#89319b861edc66c48854ed1e6da21ea89f847360"
-  integrity sha512-oFLl873u4usRM9K63j4ME9u3etNF0PLiJhSQ8rdfuL51Wn3zkD6drf9ZW0dOzjnZI22YYG24z30JcmfCZjMgYg==
-
-highlight.js@^10.7.2, highlight.js@~10.7.0:
+highlight.js@^10.1.0, highlight.js@^10.1.1, highlight.js@^10.4.1, highlight.js@^10.6.0, highlight.js@^10.7.2, highlight.js@~10.7.0:
   version "10.7.3"
   resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-10.7.3.tgz#697272e3991356e40c3cac566a74eef681756531"
   integrity sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==
