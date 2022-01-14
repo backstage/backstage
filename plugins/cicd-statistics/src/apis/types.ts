@@ -163,7 +163,7 @@ export interface CicdConfiguration {
 
 /**
  * If the Api implements support for aborting the fetching of builds, throw an
- * AbortError of this type
+ * AbortError of this type (or any other error with name === 'AbortError').
  */
 export class AbortError extends Error {}
 

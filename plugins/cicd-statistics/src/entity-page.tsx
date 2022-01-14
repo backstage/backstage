@@ -35,7 +35,7 @@ import {
   getDefaultViewOptions,
   ViewOptions,
 } from './components/chart-filters';
-import { AbortError, CicdConfiguration } from './apis';
+import { CicdConfiguration } from './apis';
 import { cleanupBuildTree } from './utils/stage-names';
 import { renderFallbacks, useAsyncChain } from './components/progress';
 
@@ -131,7 +131,7 @@ function CicdCharts(props: CicdChartsProps) {
   useEffect(() => {
     if (
       !chartableStagesState.error ||
-      chartableStagesState.error instanceof AbortError
+      chartableStagesState.error?.name === 'AbortError'
     ) {
       return;
     }
