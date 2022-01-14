@@ -20,7 +20,7 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 
-export const rootCatalogCicdStatsRouteRef = createRouteRef({
+const rootCatalogCicdStatsRouteRef = createRouteRef({
   id: 'cicd-statistics',
 });
 

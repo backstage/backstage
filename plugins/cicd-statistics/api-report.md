@@ -147,11 +147,8 @@ export type FilterStatusType =
   | 'stalled'
   | 'expired';
 
-// Warning: (ae-missing-release-tag) "rootCatalogCicdStatsRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 // Warning: (ae-missing-release-tag) "GetConfigurationOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export const rootCatalogCicdStatsRouteRef: RouteRef<undefined>;
 // @public
 export interface GetConfigurationOptions {
   // (undocumented)
