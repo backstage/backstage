@@ -32,6 +32,7 @@
     "@backstage/integration": "^0.7.1",
     "@backstage/plugin-app-backend": "^0.3.21",
     "@backstage/plugin-auth-backend": "^0.6.2",
+    "@backstage/plugin-azure-devops-backend": "^0.2.6",
     "@backstage/plugin-badges-backend": "^0.1.15",
     "@backstage/plugin-catalog-backend": "^0.20.0",
     "@backstage/plugin-code-coverage-backend": "^0.1.19",
