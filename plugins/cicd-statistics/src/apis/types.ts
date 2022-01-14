@@ -86,7 +86,7 @@ export interface Build {
   status: FilterStatusType;
 
   /** Branch type */
-  buildType: FilterBranchType;
+  branchType: FilterBranchType;
 
   /** Time when the build started */
   requestedAt: Date;

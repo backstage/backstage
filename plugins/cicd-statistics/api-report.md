@@ -24,7 +24,7 @@ export const branchTypes: Array<FilterBranchType>;
 //
 // @public
 export interface Build {
-  buildType: FilterBranchType;
+  branchType: FilterBranchType;
   duration: number;
   id: string;
   // (undocumented)
