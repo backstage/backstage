@@ -727,7 +727,7 @@ filtering templates, and should ideally match the Component
 You can find out more about the `parameters` key
 [here](../software-templates/writing-templates.md)
 
-### `spec.steps` [optional]
+### `spec.steps` [required]
 
 You can find out more about the `steps` key
 [here](../software-templates/writing-templates.md)
