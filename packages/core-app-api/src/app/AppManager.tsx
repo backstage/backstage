@@ -79,6 +79,7 @@ import {
 import { AppThemeProvider } from './AppThemeProvider';
 import { defaultConfigLoader } from './defaultConfigLoader';
 import { ApiRegistry } from '../apis/system/ApiRegistry';
+import { IsolatedApiProvider } from '../apis/system/ApiProvider';
 
 type CompatiblePlugin =
   | BackstagePlugin<any, any>
@@ -346,7 +347,14 @@ export class AppManager implements BackstageApp {
       const [identityApi, setIdentityApi] = useState<IdentityApi>();
 
       if (!identityApi) {
-        return <Component onSignInSuccess={setIdentityApi} />;
+        // Encapsulate the sign in page component in an API provider which
+        // contains all APIs except the identity API. Provides fast feedback in
+        // case the identity API is accidentally required on the sign-in page.
+        return (
+          <IsolatedApiProvider apis={this.getIdentitylessApiHolder()}>
+            <Component onSignInSuccess={setIdentityApi} />
+          </IsolatedApiProvider>
+        );
       }
 
       this.appIdentityProxy.setTarget(identityApi);
@@ -482,6 +490,21 @@ export class AppManager implements BackstageApp {
 
     this.apiHolder = new ApiResolver(this.apiFactoryRegistry);
     return this.apiHolder;
+  }
+
+  private getIdentitylessApiHolder() {
+    const registrySansIdentity = new ApiFactoryRegistry();
+
+    // Assume all APIs in the current registry are valid.
+    this.apiFactoryRegistry.getAllApis().forEach(apiRef => {
+      const factory = this.apiFactoryRegistry.get(apiRef);
+      // Add all API factories except identity!
+      if (factory && apiRef !== identityApiRef) {
+        registrySansIdentity.register('default', factory);
+      }
+    });
+
+    return new ApiResolver(registrySansIdentity);
   }
 
   private verifyPlugins(plugins: Iterable<CompatiblePlugin>) {

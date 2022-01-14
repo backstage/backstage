@@ -32,10 +32,19 @@ function mkError(thing: string) {
  */
 export class AppIdentityProxy implements IdentityApi {
   private target?: IdentityApi;
+  private waitForTarget: Promise<IdentityApi>;
+  private resolveTarget: (api: IdentityApi) => void = () => {};
+
+  constructor() {
+    this.waitForTarget = new Promise<IdentityApi>(resolve => {
+      this.resolveTarget = resolve;
+    });
+  }
 
   // This is called by the app manager once the sign-in page provides us with an implementation
   setTarget(identityApi: IdentityApi) {
     this.target = identityApi;
+    this.resolveTarget(identityApi);
   }
 
   getUserId(): string {
@@ -53,38 +62,23 @@ export class AppIdentityProxy implements IdentityApi {
   }
 
   async getProfileInfo(): Promise<ProfileInfo> {
-    if (!this.target) {
-      throw mkError('getProfileInfo');
-    }
-    return this.target.getProfileInfo();
+    return this.waitForTarget.then(target => target.getProfileInfo());
   }
 
   async getBackstageIdentity(): Promise<BackstageUserIdentity> {
-    if (!this.target) {
-      throw mkError('getBackstageIdentity');
-    }
-    return this.target.getBackstageIdentity();
+    return this.waitForTarget.then(target => target.getBackstageIdentity());
   }
 
   async getCredentials(): Promise<{ token?: string | undefined }> {
-    if (!this.target) {
-      throw mkError('getCredentials');
-    }
-    return this.target.getCredentials();
+    return this.waitForTarget.then(target => target.getCredentials());
   }
 
   async getIdToken(): Promise<string | undefined> {
-    if (!this.target) {
-      throw mkError('getIdToken');
-    }
-    return this.target.getIdToken();
+    return this.waitForTarget.then(target => target.getIdToken());
   }
 
   async signOut(): Promise<void> {
-    if (!this.target) {
-      throw mkError('signOut');
-    }
-    await this.target.signOut();
+    await this.waitForTarget.then(target => target.signOut());
     location.reload();
   }
 }
