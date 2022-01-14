@@ -177,19 +177,29 @@ export const UserListPicker = ({
     [filters, backendEntities],
   );
 
-  const totalOwnedUserEntities = useMemo(
-    () =>
-      entitiesWithoutUserFilter.filter(entity =>
+  const filterCounts = useMemo<Record<string, number>>(
+    () => ({
+      all: entitiesWithoutUserFilter.length,
+      starred: entitiesWithoutUserFilter.filter(entity =>
+        starredFilter.filterEntity(entity),
+      ).length,
+      owned: entitiesWithoutUserFilter.filter(entity =>
         ownedFilter.filterEntity(entity),
       ).length,
-    [entitiesWithoutUserFilter, ownedFilter],
+    }),
+    [entitiesWithoutUserFilter, starredFilter, ownedFilter],
   );
 
   useEffect(() => {
-    if (!loading && totalOwnedUserEntities === 0) {
+    if (
+      !loading &&
+      !!selectedUserFilter &&
+      selectedUserFilter !== 'all' &&
+      filterCounts[selectedUserFilter] === 0
+    ) {
       setSelectedUserFilter('all');
     }
-  }, [loading, totalOwnedUserEntities, setSelectedUserFilter]);
+  }, [loading, filterCounts, selectedUserFilter, setSelectedUserFilter]);
 
   useEffect(() => {
     updateFilters({
@@ -202,19 +212,6 @@ export const UserListPicker = ({
         : undefined,
     });
   }, [selectedUserFilter, isOwnedEntity, isStarredEntity, updateFilters]);
-
-  function getFilterCount(id: UserListFilterKind) {
-    switch (id) {
-      case 'owned':
-        return totalOwnedUserEntities;
-      case 'starred':
-        return entitiesWithoutUserFilter.filter(entity =>
-          starredFilter.filterEntity(entity),
-        ).length;
-      default:
-        return entitiesWithoutUserFilter.length;
-    }
-  }
 
   return (
     <Card className={classes.root}>
@@ -233,7 +230,7 @@ export const UserListPicker = ({
                   onClick={() => setSelectedUserFilter(item.id)}
                   selected={item.id === filters.user?.value}
                   className={classes.menuItem}
-                  disabled={getFilterCount(item.id) === 0}
+                  disabled={filterCounts[item.id] === 0}
                 >
                   {item.icon && (
                     <ListItemIcon className={classes.listIcon}>
@@ -249,7 +246,7 @@ export const UserListPicker = ({
                     </Typography>
                   </ListItemText>
                   <ListItemSecondaryAction>
-                    {getFilterCount(item.id) ?? '-'}
+                    {filterCounts[item.id] ?? '-'}
                   </ListItemSecondaryAction>
                 </MenuItem>
               ))}
