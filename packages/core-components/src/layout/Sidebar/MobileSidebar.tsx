@@ -34,7 +34,7 @@ import { SidebarGroup } from './SidebarGroup';
 /**
  * Type of `MobileSidebarContext`
  *
- * @public
+ * @internal
  */
 export type MobileSidebarContextType = {
   selectedMenuItemIndex: number;
@@ -134,7 +134,7 @@ const OverlayMenu = ({
 /**
  * Context on which `SidebarGroup` is currently selected
  *
- * @public
+ * @internal
  */
 export const MobileSidebarContext = createContext<MobileSidebarContextType>({
   selectedMenuItemIndex: -1,

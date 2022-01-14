@@ -15,11 +15,8 @@
  */
 
 export { Sidebar } from './Bar';
-export { MobileSidebar, MobileSidebarContext } from './MobileSidebar';
-export type {
-  MobileSidebarContextType,
-  MobileSidebarProps,
-} from './MobileSidebar';
+export { MobileSidebar } from './MobileSidebar';
+export type { MobileSidebarProps } from './MobileSidebar';
 export { SidebarGroup } from './SidebarGroup';
 export type { SidebarGroupProps } from './SidebarGroup';
 export { SidebarSubmenuItem } from './SidebarSubmenuItem';

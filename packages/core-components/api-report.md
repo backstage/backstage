@@ -704,15 +704,6 @@ export type MissingAnnotationEmptyStateClassKey = 'code';
 export const MobileSidebar: (props: MobileSidebarProps) => JSX.Element | null;
 
 // @public
-export const MobileSidebarContext: React_2.Context<MobileSidebarContextType>;
-
-// @public
-export type MobileSidebarContextType = {
-  selectedMenuItemIndex: number;
-  setSelectedMenuItemIndex: React_2.Dispatch<React_2.SetStateAction<number>>;
-};
-
-// @public
 export type MobileSidebarProps = {
   children?: React_2.ReactNode;
 };
