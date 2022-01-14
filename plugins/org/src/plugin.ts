@@ -17,9 +17,13 @@ import {
   createComponentExtension,
   createPlugin,
 } from '@backstage/core-plugin-api';
+import { catalogIndexRouteRef } from './routes';
 
 export const orgPlugin = createPlugin({
   id: 'org',
+  externalRoutes: {
+    catalogIndex: catalogIndexRouteRef,
+  },
 });
 
 export const EntityGroupProfileCard = orgPlugin.provide(
