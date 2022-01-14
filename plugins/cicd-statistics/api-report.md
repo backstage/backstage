@@ -102,11 +102,15 @@ export const cicdStatisticsPlugin: BackstagePlugin<
   {}
 >;
 
-// Warning: (ae-forgotten-export) The symbol "EntityPageCicdCharts" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "EntityCicdStatisticsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const EntityCicdStatisticsContent: EntityPageCicdCharts;
+
+// Warning: (ae-missing-release-tag) "EntityPageCicdCharts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function EntityPageCicdCharts(): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "FetchBuildsOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

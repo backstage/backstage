@@ -20,6 +20,8 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 
+export type { EntityPageCicdCharts } from './entity-page';
+
 const rootCatalogCicdStatsRouteRef = createRouteRef({
   id: 'cicd-statistics',
 });
