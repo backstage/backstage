@@ -63,54 +63,22 @@ The next release is a weekly snapshot of the project. This is the quickest way
 to get access to new functionality in Backstage but there is no guarantees
 around breaking changes in these releases.
 
-## Package versioning
-
-Every individual package is versioned according to [semver](https://semver.org).
-This versioning is completely decoupled from the Backstage release versioning,
-meaning you might for example have `@backstage/core-plugin-api` version `3.1.4`
-be part of the `1.12` Backstage release.
-
-## Versioning policy
+## Versioning Policy
 
 The following versioning policy applies to the main release line. The next
 release line provides no guarantees.
 
-The versioning policy applies to all packages that are part of the main release
-line, i.e. on version 1.0 or above.
+<!-- We will do our best to adhere to this policy. -->
 
-- Each release may contain breaking changes, but they will only be done when
-  necessary and with as low impact as possible. When possible, there will always
-  be a deprecation path for a breaking change.
-- Breaking changes are introduced with a clear upgrade path.
-- Deprecations are valid for the duration of a single release, after which they
-  may be completely removed.
+- Each release may contain breaking changes, see the package versioning policy
+  below for more details.
+- Breaking changes in Packages that have reached version `>=1.0.0` will only be
+  done when necessary and with as low impact as possible. When possible, there
+  will always be a deprecation path for a breaking change.
 - Security fixes **may** be backported to older releases based on the simplicity
   of the upgrade path and severity of the vulnerability.
-- We will do our best to adhere to this policy.
 
-The purpose of the Backstage Stability Index is to communicate the stability of
-various parts of the project. It is tracked using a scoring system where a
-higher score indicates a higher level of stability and is a commitment to
-smoother transitions between breaking changes. Importantly, the Stability Index
-does not supersede [semver](https://semver.org/), meaning we will still adhere
-to semver and only do breaking changes in minor releases as long as we are on
-`0.x`.
-
-Each package or section is assigned a stability score between 0 and 3, with each
-point building on top of the previous one:
-
-- **0** - Breaking changes are noted in the changelog, and documentation is
-  updated.
-- **1** - The changelog entry includes a clearly documented upgrade path,
-  providing guidance for how to migrate previous usage patterns to the new
-  version.
-- **2** - Breaking changes always include a deprecation phase where both the old
-  and the new APIs can be used in parallel. This deprecation must have been
-  released for at least two weeks before the deprecated API is removed in a
-  minor version bump.
-- **3** - The time limit for the deprecation is 3 months instead of two weeks.
-
-## Version Skew Policy
+### Version Skew Policy
 
 In order for Backstage to function properly the following versioning rules must
 be followed. The rules are referring to the
@@ -128,3 +96,57 @@ be followed. The rules are referring to the
 - Frontend plugins with a corresponding backend plugin should be from the same
   release. The update to the backend plugin **MUST** be deployed before or
   together with the update to the frontend plugin.
+
+## Package Versioning Policy
+
+### Release Stages
+
+The release stages(`@alpha`, `@beta` `@public`) refers to the
+[TSDoc](https://tsdoc.org/) documentation tag of the export, and are also
+visible in the API report of each package.
+
+Backstage uses three stages to indicate the stability for each individual
+package export.
+
+- `@public` is considered stable.
+- `@beta` exports will not be publicly visible in the package release.
+- `@alpha` here be dragons. Exports will not be publicly visible in the package
+  release.
+
+### Package Versioning
+
+Every individual package is versioned according to [semver](https://semver.org).
+This versioning is completely decoupled from the Backstage release versioning,
+meaning you might for example have `@backstage/core-plugin-api` version `3.1.4`
+be part of the `1.12` Backstage release.
+
+Following versioning policy applies to all packages:
+
+- Breaking changes are noted in the changelog, and documentation is updated.
+- Breaking changes are prefixed with `**BREAKING**: ` in the changelog.
+- All public exports are considered stable and will have an entry in the
+  changelog
+- Breaking changes are recommended to document a clear upgrade path in the
+  changelog. This may be omitted for newly introduced or unstable packages.
+
+In addition, this applies to packages that have reached 1.0.0 or above:
+
+- All exports are marked with a release stage.
+- Breaking changes to stable exports include a deprecation phase if possible.
+  The deprecation must have been released for at least one mainline release
+  before it can be removed.
+- The release of breaking changes document a clear upgrade path in the
+  changelog, both when deprecations are introduced and when they are removed.
+- Exports that have been marked as `@alpha` or `@beta` may receive breaking
+  changes without a deprecation period, but the changes must still adhere to
+  semver.
+
+For mainline releases: Whether alpha and beta tagged exports need changesets
+depends on how we end up releasing them, for example is it a separate version or
+separate import? `@backstage/core-plugin-api/alpha`?
+
+|--------|--------------------------------------------| | | 0.x | >=1.0 |
+|--------|--------------------------------------------| | Alpha | changeset -
+release | changeset - release | | Beta | changeset - release | changeset -
+release | | Public | changeset + guide | deprecation |
+|--------|--------------------------------------------|
