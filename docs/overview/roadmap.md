@@ -102,7 +102,7 @@ the maintainers’ radar, with clear interest expressed by the community.
   various modules (e.g. Catalog and Scaffolder) from the frontend
   experience.
 - **Security Plan (and Strategy):** The purpose of the Security Strategy is to
-  move another step ahead along the path of the maturity of the platform,
+  move another step along the path to maturing the platform,
   setting the expectations of any adopters from a security standpoint.
 - **Search GA:**.
 - **[GraphQL](https://graphql.org/) support:** Introduce the ability to query
