@@ -15,6 +15,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { CicdConfiguration, statusTypes } from '../apis';
 import { Progress } from '../components/progress';
@@ -23,6 +24,7 @@ import { useCicdStatisticsApi } from './use-cicd-statistics-api';
 
 export function useCicdConfiguration(): Progress<CicdConfiguration> {
   const cicdStatisticsApi = useCicdStatisticsApi();
+  const { entity } = useEntity();
 
   const [state, setState] = useState<Progress<CicdConfiguration>>({
     loading: true,
@@ -35,7 +37,7 @@ export function useCicdConfiguration(): Progress<CicdConfiguration> {
     }
 
     cicdStatisticsApi
-      .getConfiguration()
+      .getConfiguration({ entity })
       .then(configuration => {
         const {
           availableStatuses = statusTypes,
@@ -53,7 +55,7 @@ export function useCicdConfiguration(): Progress<CicdConfiguration> {
       .catch(error => {
         setState({ error });
       });
-  }, [cicdStatisticsApi]);
+  }, [cicdStatisticsApi, entity]);
 
   return state;
 }

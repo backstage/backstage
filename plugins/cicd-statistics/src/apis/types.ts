@@ -196,6 +196,14 @@ export type UpdateProgress = (
 ) => void;
 
 /**
+ * When reading configuration, the Api can return a custom settings depending on
+ * the entity being viewed.
+ */
+export interface GetConfigurationOptions {
+  entity: Entity;
+}
+
+/**
  * When fetching, the Api should fetch build information about the `entity` and
  * respect the `timeFrom`, `timeTo`, `filterStatus` and `filterType`.
  *
@@ -220,6 +228,8 @@ export interface FetchBuildsOptions {
  * the UI.
  */
 export interface CicdStatisticsApi {
-  getConfiguration(): Promise<Partial<CicdConfiguration>>;
+  getConfiguration(
+    options: GetConfigurationOptions,
+  ): Promise<Partial<CicdConfiguration>>;
   fetchBuilds(options: FetchBuildsOptions): Promise<CicdState>;
 }

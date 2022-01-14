@@ -82,7 +82,9 @@ export interface CicdStatisticsApi {
   // (undocumented)
   fetchBuilds(options: FetchBuildsOptions): Promise<CicdState>;
   // (undocumented)
-  getConfiguration(): Promise<Partial<CicdConfiguration>>;
+  getConfiguration(
+    options: GetConfigurationOptions,
+  ): Promise<Partial<CicdConfiguration>>;
 }
 
 // Warning: (ae-missing-release-tag) "cicdStatisticsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -150,9 +152,15 @@ export type FilterStatusType<Extra extends string = never> =
   | 'expired';
 
 // Warning: (ae-missing-release-tag) "rootCatalogCicdStatsRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "GetConfigurationOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const rootCatalogCicdStatsRouteRef: RouteRef<undefined>;
+// @public
+export interface GetConfigurationOptions {
+  // (undocumented)
+  entity: Entity;
+}
 
 // Warning: (ae-missing-release-tag) "Stage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
