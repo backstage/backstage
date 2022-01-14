@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GroupEntity } from '@backstage/catalog-model';
+import { GroupEntity, stringifyEntityRef } from '@backstage/catalog-model';
 import { GitLabClient, paginated } from './client';
 import { getGroupMembers } from './users';
 
@@ -103,7 +103,12 @@ export async function populateChildrenMembers(
     // populate direct members
     const users = await getGroupMembers(client, String(id), false);
     for (const user of users) {
-      entity.spec!.members!.push(`user:${user.metadata.name}`);
+      entity.spec!.members!.push(
+        stringifyEntityRef({
+          kind: 'user',
+          name: user.metadata.name,
+        }),
+      );
     }
     // populate direct members of shared_with_groups
     const sharedWithGroups = await getSharedWithGroupsIDs(client, String(id));
@@ -111,7 +116,12 @@ export async function populateChildrenMembers(
       // populate direct members
       const sharedGroupUsers = await getGroupMembers(client, sharedID, false);
       for (const user of sharedGroupUsers) {
-        entity.spec!.members!.push(`user:${user.metadata.name}`);
+        entity.spec!.members!.push(
+          stringifyEntityRef({
+            kind: 'user',
+            name: user.metadata.name,
+          }),
+        );
       }
     }
   }
@@ -138,7 +148,10 @@ function mapChildrenToEntityRefs(groupAdjacency: GroupAdjacency) {
       const childEntity = groupAdjacency.get(child)?.entity;
       if (childEntity) {
         entity.spec!.children!.push(
-          `group:default/${childEntity.metadata!.name}`,
+          stringifyEntityRef({
+            kind: 'group',
+            name: childEntity.metadata!.name,
+          }),
         );
       }
     }
