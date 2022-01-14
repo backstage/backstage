@@ -227,6 +227,13 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
           .md-typeset h1, .md-typeset h2, .md-typeset h3 { font-weight: bold; }
           .md-nav { font-size: 1rem; }
           .md-grid { max-width: 90vw; margin: 0 }
+          .md-typeset blockquote {
+            color: ${theme.palette.textSubtle};
+            border-left: 0.2rem solid ${theme.palette.textVerySubtle};
+          }
+          .md-typeset hr {
+            border-bottom: 0.05rem dotted ${theme.palette.textVerySubtle};
+          }
           .md-typeset table:not([class]) {
             font-size: 1rem;
             border: 1px solid ${theme.palette.text.primary};
@@ -353,6 +360,8 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
       theme.palette.primary.main,
       theme.palette.success.main,
       theme.palette.text.primary,
+      theme.palette.textSubtle,
+      theme.palette.textVerySubtle,
       theme.typography.fontFamily,
       isPinned,
     ],
