@@ -33,5 +33,9 @@ export default async (cmd: Command) => {
     outputs = new Set([Output.types, Output.esm, Output.cjs]);
   }
 
-  await buildPackage({ outputs, minify: cmd.minify });
+  await buildPackage({
+    outputs,
+    minify: cmd.minify,
+    useApiExtractor: cmd.experimentalTypeBuild,
+  });
 };
