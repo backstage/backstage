@@ -125,6 +125,10 @@ import {
   isTravisciAvailable,
 } from '@roadiehq/backstage-plugin-travis-ci';
 import {
+  EntityBuildkiteContent,
+  isBuildkiteAvailable,
+} from '@roadiehq/backstage-plugin-buildkite';
+import {
   isNewRelicDashboardAvailable,
   EntityNewRelicDashboardContent,
   EntityNewRelicDashboardCard,
@@ -172,6 +176,10 @@ export const cicdContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isJenkinsAvailable}>
       <EntityJenkinsContent />
+    </EntitySwitch.Case>
+
+    <EntitySwitch.Case if={isBuildkiteAvailable}>
+      <EntityBuildkiteContent />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case if={isCircleCIAvailable}>
