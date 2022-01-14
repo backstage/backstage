@@ -15,15 +15,15 @@
  */
 
 import React from 'react';
-import { GithubRepoPicker } from './GithubRepoPicker';
+import { GitlabRepoPicker } from './GitlabRepoPicker';
 import { render, fireEvent } from '@testing-library/react';
 
-describe('GithubRepoPicker', () => {
+describe('GitlabRepoPicker', () => {
   describe('owner field', () => {
     it('renders a select if there is a list of allowed owners', async () => {
       const allowedOwners = ['owner1', 'owner2'];
       const { findByText } = render(
-        <GithubRepoPicker
+        <GitlabRepoPicker
           onChange={jest.fn()}
           rawErrors={[]}
           state={{ repoName: 'repo' }}
@@ -39,7 +39,7 @@ describe('GithubRepoPicker', () => {
       const onChange = jest.fn();
       const allowedOwners = ['owner1', 'owner2'];
       const { getByRole } = render(
-        <GithubRepoPicker
+        <GitlabRepoPicker
           onChange={onChange}
           rawErrors={[]}
           state={{ repoName: 'repo' }}
@@ -58,7 +58,7 @@ describe('GithubRepoPicker', () => {
       const onChange = jest.fn();
       const allowedOwners = ['owner1'];
       const { getByRole } = render(
-        <GithubRepoPicker
+        <GitlabRepoPicker
           onChange={onChange}
           rawErrors={[]}
           state={{ repoName: 'repo' }}
@@ -72,7 +72,7 @@ describe('GithubRepoPicker', () => {
     it('should display free text if no allowed owners are passed', async () => {
       const onChange = jest.fn();
       const { getAllByRole } = render(
-        <GithubRepoPicker
+        <GitlabRepoPicker
           onChange={onChange}
           rawErrors={[]}
           state={{ repoName: 'repo' }}
@@ -89,7 +89,7 @@ describe('GithubRepoPicker', () => {
     it('should render free text field for input of repo name', () => {
       const onChange = jest.fn();
       const { getAllByRole } = render(
-        <GithubRepoPicker
+        <GitlabRepoPicker
           onChange={onChange}
           rawErrors={[]}
           state={{ repoName: 'repo' }}

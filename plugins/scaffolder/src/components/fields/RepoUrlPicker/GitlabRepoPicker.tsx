@@ -77,9 +77,9 @@ export const GitlabRepoPicker = ({
         required
         error={rawErrors?.length > 0 && !repoName}
       >
-        <InputLabel htmlFor="repoInput">Repository</InputLabel>
+        <InputLabel htmlFor="repoNameInput">Repository</InputLabel>
         <Input
-          id="repoInput"
+          id="repoNameInput"
           onChange={e => onChange({ repoName: e.target.value })}
           value={repoName}
         />
