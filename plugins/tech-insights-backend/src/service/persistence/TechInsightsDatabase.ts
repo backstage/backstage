@@ -215,16 +215,25 @@ export class TechInsightsDatabase implements TechInsightsStore {
         factRows.map(it => [it.id, it.entity]),
       )
       .and.leftJoin(
-        this.db.raw(
-          `(select *
-                 from (select id fid,
-                              entity fentity,
-                           timestamp ftimestamp,
-                           row_number() over (partition by id, entity order by timestamp desc) as fact_rank
-                       from facts) ranks
-                 where fact_rank <= ?? ) as filterjoin`,
-          maxItems,
-        ),
+        joinTable =>
+          joinTable
+            .select('*')
+            .from(
+              this.db('facts')
+                .column(
+                  { fid: 'id' },
+                  { fentity: 'entity' },
+                  { ftimestamp: 'timestamp' },
+                )
+                .column(
+                  this.db.raw(
+                    'row_number() over (partition by id, entity order by timestamp desc) as fact_rank',
+                  ),
+                )
+                .as('ranks'),
+            )
+            .where('fact_rank', '<=', maxItems)
+            .as('filterjoin'),
         joinClause => {
           joinClause
             .on('filterjoin.fid', 'facts.id')
@@ -233,7 +242,6 @@ export class TechInsightsDatabase implements TechInsightsStore {
         },
       )
       .whereNull('filterjoin.fid');
-
     await tx('facts')
       .whereIn(
         ['id', 'entity', 'timestamp'],
