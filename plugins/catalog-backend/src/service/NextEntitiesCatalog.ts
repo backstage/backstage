@@ -210,8 +210,8 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
     // deletes entities that ARE still emitted by the parent, the parent
     // processing will still generate the same output hash as always, which
     // means it'll never try to write down the children again (it assumes that
-    // they already exist). This makes the database never "heal" from accidental
-    // deletes.
+    // they already exist). This means that without the code below, the database
+    // never "heals" from accidental deletes.
     await this.database<DbRefreshStateRow>('refresh_state')
       .update({
         result_hash: 'child-was-deleted',
