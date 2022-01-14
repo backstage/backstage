@@ -99,7 +99,7 @@ the maintainers’ radar, with clear interest expressed by the community.
 - **Backend Services:** To better scale and maintain the Backstage instances, a
   backend layer of services is planned to be introduced as part of the software
   architecture. This layer of backend services will help in decoupling the
-  various modules (Catalog and Scaffolder just to quote some) from the front-end
+  various modules (e.g. Catalog and Scaffolder) from the frontend
   experience.
 - **Security Plan (and Strategy):** The purpose of the Security Strategy is to
   move another step ahead along the path of the maturity of the platform,
