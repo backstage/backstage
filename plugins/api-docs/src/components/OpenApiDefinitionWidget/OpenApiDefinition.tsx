@@ -148,7 +148,7 @@ export const OpenApiDefinition = ({ definition }: OpenApiDefinitionProps) => {
 
   return (
     <div className={classes.root}>
-      <SwaggerUI spec={def} deepLinking />
+      <SwaggerUI spec={def} url="" deepLinking />
     </div>
   );
 };
