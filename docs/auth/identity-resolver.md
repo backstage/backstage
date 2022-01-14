@@ -96,7 +96,7 @@ It can be enabled like this
 
 ```tsx
 // File: packages/backend/src/plugins/auth.ts
-import { googleEmailSignInResolver } from '@backstage/plugin-auth-backend';
+import { googleEmailSignInResolver, createGoogleProvider } from '@backstage/plugin-auth-backend';
 
 export default async function createPlugin({
   ...

@@ -1,5 +1,13 @@
 # @backstage/config-loader
 
+## 0.9.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/errors@0.2.0
+
 ## 0.9.1
 
 ### Patch Changes

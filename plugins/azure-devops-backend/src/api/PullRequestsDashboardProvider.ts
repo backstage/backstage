@@ -40,7 +40,11 @@ export class PullRequestsDashboardProvider {
     azureDevOpsApi: AzureDevOpsApi,
   ): Promise<PullRequestsDashboardProvider> {
     const provider = new PullRequestsDashboardProvider(logger, azureDevOpsApi);
-    await provider.readTeams();
+    try {
+      await provider.readTeams();
+    } catch (error) {
+      logger.warn(`Failed to load azure team information, ${error}`);
+    }
     return provider;
   }
 
@@ -124,10 +128,12 @@ export class PullRequestsDashboardProvider {
     });
   }
 
-  public getUserTeamIds(email: string): string[] {
+  public async getUserTeamIds(email: string): Promise<string[]> {
+    await this.getAllTeams(); // Make sure team members are loaded
     return (
-      this.getTeamMembers().find(teamMember => teamMember.uniqueName === email)
-        ?.memberOf ?? []
+      Array.from(this.teamMembers.values()).find(
+        teamMember => teamMember.uniqueName === email,
+      )?.memberOf ?? []
     );
   }
 
@@ -137,9 +143,5 @@ export class PullRequestsDashboardProvider {
     }
 
     return Array.from(this.teams.values());
-  }
-
-  public getTeamMembers(): TeamMember[] {
-    return Array.from(this.teamMembers.values());
   }
 }

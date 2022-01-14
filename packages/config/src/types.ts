@@ -36,6 +36,12 @@ export type AppConfig = {
    * This can be used to warn the user if they try to read any of these keys.
    */
   filteredKeys?: string[];
+  /**
+   * A list of deprecated keys that were found in the  configuration when it was loaded.
+   *
+   * This can be used to warn the user if they are using deprecated properties.
+   */
+  deprecatedKeys?: { key: string; description: string }[];
 };
 
 /**

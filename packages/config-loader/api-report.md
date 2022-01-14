@@ -21,6 +21,7 @@ export type ConfigSchemaProcessingOptions = {
   visibility?: ConfigVisibility[];
   valueTransform?: TransformFunc<any>;
   withFilteredKeys?: boolean;
+  withDeprecatedKeys?: boolean;
 };
 
 // @public (undocumented)

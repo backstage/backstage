@@ -16,15 +16,13 @@
 
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import express, { Express, Router } from 'express';
-import request from 'supertest';
+import request, { Response } from 'supertest';
 import { createPermissionIntegrationRouter } from './createPermissionIntegrationRouter';
 
-const mockGetResource: jest.MockedFunction<
-  (resourceRef: string) => Promise<any>
-> = jest.fn((resourceRef: string) =>
-  Promise.resolve({
-    resourceRef,
-  }),
+const mockGetResources: jest.MockedFunction<
+  Parameters<typeof createPermissionIntegrationRouter>[0]['getResources']
+> = jest.fn(async resourceRefs =>
+  resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
 const testRule1 = {
@@ -47,14 +45,18 @@ describe('createPermissionIntegrationRouter', () => {
   let app: Express;
   let router: Router;
 
-  beforeEach(() => {
+  beforeAll(() => {
     router = createPermissionIntegrationRouter({
       resourceType: 'test-resource',
-      getResource: mockGetResource,
+      getResources: mockGetResources,
       rules: [testRule1, testRule2],
     });
 
     app = express().use(router);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('works', async () => {
@@ -70,7 +72,6 @@ describe('createPermissionIntegrationRouter', () => {
           { rule: 'test-rule-2', params: [{}] },
         ],
       },
-
       {
         not: { rule: 'test-rule-2', params: [{}] },
       },
@@ -96,13 +97,25 @@ describe('createPermissionIntegrationRouter', () => {
       const response = await request(app)
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
-          resourceRef: 'default:test/resource',
-          resourceType: 'test-resource',
-          conditions,
+          items: [
+            {
+              id: '123',
+              resourceRef: 'default:test/resource',
+              resourceType: 'test-resource',
+              conditions,
+            },
+          ],
         });
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual({ result: AuthorizeResult.ALLOW });
+      expect(response.body).toEqual({
+        items: [
+          {
+            id: '123',
+            result: AuthorizeResult.ALLOW,
+          },
+        ],
+      });
     });
 
     it.each([
@@ -137,74 +150,237 @@ describe('createPermissionIntegrationRouter', () => {
         const response = await request(app)
           .post('/.well-known/backstage/permissions/apply-conditions')
           .send({
-            resourceRef: 'default:test/resource',
-            resourceType: 'test-resource',
-            conditions,
+            items: [
+              {
+                id: '123',
+                resourceRef: 'default:test/resource',
+                resourceType: 'test-resource',
+                conditions,
+              },
+            ],
           });
 
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({ result: AuthorizeResult.DENY });
+        expect(response.body).toEqual({
+          items: [{ id: '123', result: AuthorizeResult.DENY }],
+        });
       },
     );
+
+    describe('batched requests', () => {
+      let response: Response;
+
+      beforeEach(async () => {
+        response = await request(app)
+          .post('/.well-known/backstage/permissions/apply-conditions')
+          .send({
+            items: [
+              {
+                id: '123',
+                resourceRef: 'default:test/resource-1',
+                resourceType: 'test-resource',
+                conditions: { rule: 'test-rule-1', params: [] },
+              },
+              {
+                id: '234',
+                resourceRef: 'default:test/resource-1',
+                resourceType: 'test-resource',
+                conditions: { rule: 'test-rule-2', params: [] },
+              },
+              {
+                id: '345',
+                resourceRef: 'default:test/resource-2',
+                resourceType: 'test-resource',
+                conditions: { not: { rule: 'test-rule-1', params: [] } },
+              },
+              {
+                id: '456',
+                resourceRef: 'default:test/resource-3',
+                resourceType: 'test-resource',
+                conditions: { not: { rule: 'test-rule-2', params: [] } },
+              },
+              {
+                id: '567',
+                resourceRef: 'default:test/resource-4',
+                resourceType: 'test-resource',
+                conditions: {
+                  anyOf: [
+                    { rule: 'test-rule-1', params: [] },
+                    { rule: 'test-rule-2', params: [] },
+                  ],
+                },
+              },
+            ],
+          });
+      });
+
+      it('processes batched requests', () => {
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({
+          items: [
+            { id: '123', result: AuthorizeResult.ALLOW },
+            { id: '234', result: AuthorizeResult.DENY },
+            { id: '345', result: AuthorizeResult.DENY },
+            { id: '456', result: AuthorizeResult.ALLOW },
+            { id: '567', result: AuthorizeResult.ALLOW },
+          ],
+        });
+      });
+
+      it('calls getResources for all required resources at once', () => {
+        expect(mockGetResources).toHaveBeenCalledWith([
+          'default:test/resource-1',
+          'default:test/resource-2',
+          'default:test/resource-3',
+          'default:test/resource-4',
+        ]);
+      });
+    });
 
     it('returns 400 when called with incorrect resource type', async () => {
       const response = await request(app)
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
-          resourceRef: 'default:test/resource',
-          resourceType: 'test-incorrect-resource',
-          conditions: {
-            anyOf: [],
-          },
+          items: [
+            {
+              id: '123',
+              resourceRef: 'default:test/resource-1',
+              resourceType: 'test-incorrect-resource-1',
+              conditions: {
+                anyOf: [],
+              },
+            },
+            {
+              id: '234',
+              resourceRef: 'default:test/resource-2',
+              resourceType: 'test-resource',
+              conditions: {
+                anyOf: [],
+              },
+            },
+            {
+              id: '345',
+              resourceRef: 'default:test/resource-3',
+              resourceType: 'test-incorrect-resource-2',
+              conditions: {
+                anyOf: [],
+              },
+            },
+          ],
         });
 
       expect(response.status).toEqual(400);
       expect(response.error && response.error.text).toMatch(
-        /unexpected resource type: test-incorrect-resource/i,
+        /unexpected resource types: test-incorrect-resource-1, test-incorrect-resource-2/i,
       );
     });
 
-    it('returns 400 when resource is not found', async () => {
-      mockGetResource.mockReturnValueOnce(Promise.resolve(undefined));
+    it('returns 200/DENY when resource is not found', async () => {
+      mockGetResources.mockImplementationOnce(async resourceRefs =>
+        resourceRefs.map(() => undefined),
+      );
 
       const response = await request(app)
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
-          resourceRef: 'default:test/resource',
-          resourceType: 'test-resource',
-          conditions: {
-            not: {
-              rule: 'testRule1',
-              params: ['a', 1],
+          items: [
+            {
+              id: '123',
+              resourceRef: 'default:test/resource',
+              resourceType: 'test-resource',
+              conditions: { rule: 'test-rule-1', params: [] },
             },
-          },
+          ],
         });
 
-      expect(response.status).toEqual(400);
-      expect(response.error && response.error.text).toMatch(
-        /resource for ref default:test\/resource not found/i,
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: [
+          {
+            id: '123',
+            result: AuthorizeResult.DENY,
+          },
+        ],
+      });
+    });
+
+    it('interleaves responses for present and missing resources', async () => {
+      mockGetResources.mockImplementationOnce(async resourceRefs =>
+        resourceRefs.map(resourceRef =>
+          resourceRef === 'default:test/missing-resource'
+            ? undefined
+            : { id: resourceRef },
+        ),
       );
+
+      const response = await request(app)
+        .post('/.well-known/backstage/permissions/apply-conditions')
+        .send({
+          items: [
+            {
+              id: '123',
+              resourceRef: 'default:test/resource-1',
+              resourceType: 'test-resource',
+              conditions: { rule: 'test-rule-1', params: [] },
+            },
+            {
+              id: '234',
+              resourceRef: 'default:test/missing-resource',
+              resourceType: 'test-resource',
+              conditions: { rule: 'test-rule-1', params: [] },
+            },
+            {
+              id: '345',
+              resourceRef: 'default:test/resource-2',
+              resourceType: 'test-resource',
+              conditions: { rule: 'test-rule-1', params: [] },
+            },
+          ],
+        });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: [
+          {
+            id: '123',
+            result: AuthorizeResult.ALLOW,
+          },
+          {
+            id: '234',
+            result: AuthorizeResult.DENY,
+          },
+          {
+            id: '345',
+            result: AuthorizeResult.ALLOW,
+          },
+        ],
+      });
     });
 
     it.each([
       undefined,
+      '',
       {},
       { resourceType: 'test-resource-type' },
-      { resourceRef: 'test/resource-ref' },
+      [{ resourceType: 'test-resource-type' }],
+      { items: [{ resourceType: 'test-resource-type' }] },
+      { items: [{ resourceRef: 'test/resource-ref' }] },
       {
-        resourceType: 'test-resource-type',
-        resourceRef: 'test/resource-ref',
+        items: [
+          {
+            resourceType: 'test-resource-type',
+            resourceRef: 'test/resource-ref',
+          },
+        ],
       },
-      { conditions: { anyOf: [] } },
+      { items: [{ conditions: { anyOf: [] } }] },
     ])(`returns 400 for invalid input %#`, async input => {
       const response = await request(app)
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send(input);
 
       expect(response.status).toEqual(400);
-      expect(response.error && response.error.text).toMatch(
-        /invalid request body/i,
-      );
+      expect(response.error && response.error.text).toMatch(/invalid/i);
     });
   });
 });

@@ -82,7 +82,7 @@ export async function loadConfigSchema(
   return {
     process(
       configs: AppConfig[],
-      { visibility, valueTransform, withFilteredKeys } = {},
+      { visibility, valueTransform, withFilteredKeys, withDeprecatedKeys } = {},
     ): AppConfig[] {
       const result = validate(configs);
 
@@ -105,8 +105,10 @@ export async function loadConfigSchema(
             data,
             visibility,
             result.visibilityByDataPath,
+            result.deprecationByDataPath,
             valueTransform,
             withFilteredKeys,
+            withDeprecatedKeys,
           ),
         }));
       } else if (valueTransform) {
@@ -116,8 +118,10 @@ export async function loadConfigSchema(
             data,
             Array.from(CONFIG_VISIBILITIES),
             result.visibilityByDataPath,
+            result.deprecationByDataPath,
             valueTransform,
             withFilteredKeys,
+            withDeprecatedKeys,
           ),
         }));
       }

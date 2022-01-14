@@ -752,6 +752,16 @@ export function Progress(
   props: PropsWithChildren<LinearProgressProps>,
 ): JSX.Element;
 
+// @public
+export const ProxiedSignInPage: (
+  props: ProxiedSignInPageProps,
+) => JSX.Element | null;
+
+// @public
+export type ProxiedSignInPageProps = SignInPageProps & {
+  provider: string;
+};
+
 // Warning: (ae-missing-release-tag) "Ranker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public

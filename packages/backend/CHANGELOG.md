@@ -1,5 +1,35 @@
 # example-backend
 
+## 0.2.60
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/plugin-scaffolder-backend@0.15.20
+  - @backstage/integration@0.7.1
+  - @backstage/backend-common@0.10.3
+  - @backstage/plugin-todo-backend@0.1.18
+  - @backstage/plugin-catalog-backend@0.20.0
+  - @backstage/plugin-tech-insights-backend@0.1.5
+  - @backstage/plugin-permission-node@0.3.0
+  - @backstage/plugin-auth-backend@0.6.2
+  - @backstage/plugin-code-coverage-backend@0.1.19
+  - @backstage/plugin-search-backend-node@0.4.4
+  - @backstage/plugin-techdocs-backend@0.12.3
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.5
+  - @backstage/plugin-permission-backend@0.3.0
+  - @backstage/plugin-graphql-backend@0.1.11
+  - @backstage/plugin-kubernetes-backend@0.4.3
+  - example-app@0.2.60
+  - @backstage/backend-tasks@0.1.3
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+  - @backstage/plugin-badges-backend@0.1.15
+  - @backstage/plugin-kafka-backend@0.2.14
+  - @backstage/plugin-permission-common@0.3.1
+  - @backstage/plugin-scaffolder-backend-module-rails@0.2.3
+
 ## 0.2.59
 
 ### Patch Changes

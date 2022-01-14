@@ -1,5 +1,21 @@
 # @backstage/plugin-azure-devops
 
+## 0.1.10
+
+### Patch Changes
+
+- a2ed2c2d69: - feat: Created PullRequestsDashboardProvider for resolving team and team member relations
+  - feat: Created useUserTeamIds hook.
+  - feat: Updated useFilterProcessor to provide teamIds for `AssignedToCurrentUsersTeams` and `CreatedByCurrentUsersTeams` filters.
+- 5333451def: Cleaned up API exports
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-azure-devops-common@0.2.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-model@0.9.9
+
 ## 0.1.9
 
 ### Patch Changes

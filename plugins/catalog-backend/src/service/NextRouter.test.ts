@@ -25,6 +25,8 @@ import { LocationService, RefreshService } from './types';
 import { basicEntityFilter } from './request';
 import { createNextRouter } from './NextRouter';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 
 describe('createNextRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
@@ -52,7 +54,7 @@ describe('createNextRouter readonly disabled', () => {
       logger: getVoidLogger(),
       refreshService,
       config: new ConfigReader(undefined),
-      permissionRules: [],
+      permissionIntegrationRouter: express.Router(),
     });
     app = express().use(router);
   });
@@ -340,7 +342,7 @@ describe('createNextRouter readonly enabled', () => {
           readonly: true,
         },
       }),
-      permissionRules: [],
+      permissionIntegrationRouter: express.Router(),
     });
     app = express().use(router);
   });
@@ -468,7 +470,15 @@ describe('NextRouter permissioning', () => {
       logger: getVoidLogger(),
       refreshService,
       config: new ConfigReader(undefined),
-      permissionRules: [fakeRule],
+      permissionIntegrationRouter: createPermissionIntegrationRouter({
+        resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+        rules: [fakeRule],
+        getResources: jest.fn((resourceRefs: string[]) =>
+          Promise.resolve(
+            resourceRefs.map(resourceRef => ({ id: resourceRef })),
+          ),
+        ),
+      }),
     });
     app = express().use(router);
   });
@@ -480,7 +490,7 @@ describe('NextRouter permissioning', () => {
   it('accepts and evaluates conditions at the apply-conditions endpoint', async () => {
     const spideySense: Entity = {
       apiVersion: 'a',
-      kind: 'b',
+      kind: 'component',
       metadata: {
         name: 'spidey-sense',
       },
@@ -491,15 +501,22 @@ describe('NextRouter permissioning', () => {
     });
 
     const requestBody = {
-      resourceType: 'catalog-entity',
-      resourceRef: 'component:default/spidey-sense',
-      conditions: { rule: 'FAKE_RULE', params: ['user:default/spiderman'] },
+      items: [
+        {
+          id: '123',
+          resourceType: 'catalog-entity',
+          resourceRef: 'component:default/spidey-sense',
+          conditions: { rule: 'FAKE_RULE', params: ['user:default/spiderman'] },
+        },
+      ],
     };
     const response = await request(app)
       .post('/.well-known/backstage/permissions/apply-conditions')
       .send(requestBody);
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ result: AuthorizeResult.ALLOW });
+    expect(response.body).toEqual({
+      items: [{ id: '123', result: AuthorizeResult.ALLOW }],
+    });
   });
 });

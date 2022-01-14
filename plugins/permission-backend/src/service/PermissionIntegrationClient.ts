@@ -17,19 +17,27 @@
 import fetch from 'node-fetch';
 import { z } from 'zod';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
-  AuthorizeResult,
-  PermissionCondition,
-  PermissionCriteria,
-} from '@backstage/plugin-permission-common';
-import {
-  ApplyConditionsRequest,
-  ApplyConditionsResponse,
+  ApplyConditionsRequestEntry,
+  ApplyConditionsResponseEntry,
+  ConditionalPolicyDecision,
 } from '@backstage/plugin-permission-node';
 
 const responseSchema = z.object({
-  result: z.literal(AuthorizeResult.ALLOW).or(z.literal(AuthorizeResult.DENY)),
+  items: z.array(
+    z.object({
+      id: z.string(),
+      result: z
+        .literal(AuthorizeResult.ALLOW)
+        .or(z.literal(AuthorizeResult.DENY)),
+    }),
+  ),
 });
+
+export type ResourcePolicyDecision = ConditionalPolicyDecision & {
+  resourceRef: string;
+};
 
 export class PermissionIntegrationClient {
   private readonly discovery: PluginEndpointDiscovery;
@@ -39,32 +47,26 @@ export class PermissionIntegrationClient {
   }
 
   async applyConditions(
-    {
-      pluginId,
-      resourceRef,
-      resourceType,
-      conditions,
-    }: {
-      resourceRef: string;
-      pluginId: string;
-      resourceType: string;
-      conditions: PermissionCriteria<PermissionCondition>;
-    },
+    pluginId: string,
+    decisions: readonly ApplyConditionsRequestEntry[],
     authHeader?: string,
-  ): Promise<ApplyConditionsResponse> {
+  ): Promise<ApplyConditionsResponseEntry[]> {
     const endpoint = `${await this.discovery.getBaseUrl(
       pluginId,
     )}/.well-known/backstage/permissions/apply-conditions`;
 
-    const request: ApplyConditionsRequest = {
-      resourceRef,
-      resourceType,
-      conditions,
-    };
-
     const response = await fetch(endpoint, {
       method: 'POST',
-      body: JSON.stringify(request),
+      body: JSON.stringify({
+        items: decisions.map(
+          ({ id, resourceRef, resourceType, conditions }) => ({
+            id,
+            resourceRef,
+            resourceType,
+            conditions,
+          }),
+        ),
+      }),
       headers: {
         ...(authHeader ? { authorization: authHeader } : {}),
         'content-type': 'application/json',
@@ -77,6 +79,8 @@ export class PermissionIntegrationClient {
       );
     }
 
-    return responseSchema.parse(await response.json());
+    const result = responseSchema.parse(await response.json());
+
+    return result.items;
   }
 }
