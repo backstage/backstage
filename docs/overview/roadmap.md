@@ -78,7 +78,7 @@ Included as part of this milestone:
 ### Backstage Security Audit
 
 This initiative is the first of a broader Security Strategy for Backstage. The
-purpose of the Security Audit is to involve third party companies in auditing
+purpose of the Security Audit is to involve third-party companies in auditing
 the platform and highlighting potential vulnerabilities (if there are any). The
 benefit for the adopters is clear: we want Backstage to be as secure as
 possible and we want to make it reliable through a specific initiative. This
