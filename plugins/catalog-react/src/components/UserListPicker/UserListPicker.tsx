@@ -233,6 +233,7 @@ export const UserListPicker = ({
                   onClick={() => setSelectedUserFilter(item.id)}
                   selected={item.id === filters.user?.value}
                   className={classes.menuItem}
+                  disabled={getFilterCount(item.id) === 0}
                 >
                   {item.icon && (
                     <ListItemIcon className={classes.listIcon}>
