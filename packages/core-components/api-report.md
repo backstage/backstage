@@ -1237,9 +1237,12 @@ export function SidebarPage(props: SidebarPageProps): JSX.Element;
 // @public (undocumented)
 export type SidebarPageClassKey = 'root';
 
-// Warning: (ae-missing-release-tag) "SidebarPinStateContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type SidebarPageProps = {
+  children?: React_2.ReactNode;
+};
+
+// @public
 export const SidebarPinStateContext: React_2.Context<SidebarPinStateContextType>;
 
 // @public
@@ -2406,7 +2409,7 @@ export function TrendLine(
 // @public (undocumented)
 export function useContent(): {
   focusContent: () => void;
-  contentRef: React_2.MutableRefObject<HTMLDivElement | null> | undefined;
+  contentRef: React_2.MutableRefObject<HTMLElement | null> | undefined;
 };
 
 // Warning: (ae-forgotten-export) The symbol "SetQueryParams" needs to be exported by the entry point index.d.ts

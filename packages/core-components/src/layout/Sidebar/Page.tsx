@@ -18,10 +18,10 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import React, {
   createContext,
-  PropsWithChildren,
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -94,7 +94,7 @@ export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
 
 type PageContextType = {
   content: {
-    contentRef?: React.MutableRefObject<HTMLDivElement | null>;
+    contentRef?: React.MutableRefObject<HTMLElement | null>;
   };
 };
 
@@ -110,9 +110,14 @@ export function SidebarPage(props: SidebarPageProps) {
 
   const contentRef = useRef(null);
 
-  const content = {
-    contentRef,
-  };
+  const pageContext = useMemo(
+    () => ({
+      content: {
+        contentRef,
+      },
+    }),
+    [contentRef],
+  );
 
   useEffect(() => {
     LocalStorage.setSidebarPinState(isPinned);
@@ -126,6 +131,7 @@ export function SidebarPage(props: SidebarPageProps) {
   const toggleSidebarPinState = () => setIsPinned(!isPinned);
 
   const classes = useStyles({ isPinned });
+
   return (
     <SidebarPinStateContext.Provider
       value={{
@@ -134,7 +140,7 @@ export function SidebarPage(props: SidebarPageProps) {
         isMobile,
       }}
     >
-      <PageContext.Provider value={{ content }}>
+      <PageContext.Provider value={pageContext}>
         <div className={classes.root}>{props.children}</div>
       </PageContext.Provider>
     </SidebarPinStateContext.Provider>

@@ -18,15 +18,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import classnames from 'classnames';
 
-import React, { useState, useContext, PropsWithChildren, useRef } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import Button from '@material-ui/core/Button';
 
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext, useContent } from './Page';
 import { MobileSidebar } from './MobileSidebar';
-import DoubleArrowRight from './icons/DoubleArrowRight';
-import DoubleArrowLeft from './icons/DoubleArrowLeft';
 
 /** @public */
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
@@ -119,7 +117,6 @@ const DesktopSidebar = (props: SidebarProps) => {
   const { isPinned, toggleSidebarPinState } = useContext(
     SidebarPinStateContext,
   );
-  const { focusContent } = useLayoutContent();
 
   const handleOpen = () => {
     if (isPinned || disableExpandOnHover) {
