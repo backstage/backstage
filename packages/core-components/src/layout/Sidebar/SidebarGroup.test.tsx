@@ -20,12 +20,8 @@ import LayersIcon from '@material-ui/icons/Layers';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
-import {
-  MobileSidebarContext,
-  SidebarGroup,
-  SidebarItem,
-  SidebarPage,
-} from '.';
+import { MobileSidebarContext } from './MobileSidebar';
+import { SidebarGroup, SidebarItem, SidebarPage } from '.';
 
 const SidebarGroupWithItems = () => (
   <SidebarPage>
