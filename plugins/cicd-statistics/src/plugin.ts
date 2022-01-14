@@ -35,6 +35,6 @@ export const EntityCicdStatisticsContent = cicdStatisticsPlugin.provide(
   createRoutableExtension({
     component: () => import('./entity-page').then(m => m.EntityPageCicdCharts),
     mountPoint: rootCatalogCicdStatsRouteRef,
-    name: 'cicd-statistics-page',
+    name: 'EntityCicdStatisticsContent',
   }),
 );
