@@ -16,7 +16,7 @@
 
     function makeCreateEnv(config: Config) {
       ...
-  +   const permissions = ServerPerimssionClient.fromConfig(config, {
+  +   const permissions = ServerPermissionClient.fromConfig(config, {
   +     discovery,
   +     tokenManager,
   +   });
