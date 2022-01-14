@@ -52,7 +52,6 @@ export const statusTypes: Array<FilterStatusType> = [
  * which is then up to the Api to map accordingly.
  */
 export type FilterBranchType = 'master' | 'branch';
-export const branchTypes: Array<FilterBranchType> = ['master', 'branch'];
 
 /**
  * A Stage is a part of either a Build or a parent Stage.

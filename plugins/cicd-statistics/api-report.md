@@ -15,11 +15,6 @@ import { RouteRef } from '@backstage/core-plugin-api';
 // @public
 export class AbortError extends Error {}
 
-// Warning: (ae-missing-release-tag) "branchTypes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const branchTypes: Array<FilterBranchType>;
-
 // Warning: (ae-missing-release-tag) "Build" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
