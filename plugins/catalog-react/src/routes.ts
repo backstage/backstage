@@ -16,20 +16,43 @@
 
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { createRouteRef } from '@backstage/core-plugin-api';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 // TODO(Rugvip): Move these route refs back to the catalog plugin once we're all ported to using external routes
+/**
+ * @deprecated Use an `ExternalRouteRef` instead, which can point to `catalogPlugin.routes.catalogIndex`.
+ */
 export const rootRoute = createRouteRef({
   id: 'catalog',
 });
 
+/**
+ * @deprecated Use an `ExternalRouteRef` instead, which can point to `catalogPlugin.routes.catalogIndex`.
+ */
 export const catalogRouteRef = rootRoute;
 
-export const entityRoute = createRouteRef({
-  id: 'catalog:entity',
-  params: ['namespace', 'kind', 'name'],
-});
+/**
+ * A stable route ref that points to the catalog page for an individual entity.
+ *
+ * This `RouteRef` can be imported and used directly, and does not need to be referenced
+ * via an `ExternalRouteRef`.
+ *
+ * If you want to replace the `EntityPage` from `@backstage/catalog-plugin` in your app,
+ * you need to use the `entityRouteRef` as the mount point instead of your own.
+ */
+export const entityRouteRef = getOrCreateGlobalSingleton(
+  'catalog:entity-route-ref',
+  () =>
+    createRouteRef({
+      id: 'catalog:entity',
+      params: ['namespace', 'kind', 'name'],
+    }),
+);
 
-export const entityRouteRef = entityRoute;
+/**
+ * @deprecated use `entityRouteRef` instead.
+ */
+export const entityRoute = entityRouteRef;
 
 // Utility function to get suitable route params for entityRoute, given an
 // entity instance
