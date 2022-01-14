@@ -33,8 +33,8 @@ export interface UseCicdStatisticsOptions {
   abortController: AbortController;
   timeFrom: Date;
   timeTo: Date;
-  filterStatus: Array<FilterStatusType<'all'>>;
-  filterType: FilterBranchType<'all'>;
+  filterStatus: Array<FilterStatusType | 'all'>;
+  filterType: FilterBranchType | 'all';
 }
 
 export function useCicdStatistics(

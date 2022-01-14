@@ -74,7 +74,7 @@ const useStyles = makeStyles<Theme>(
   },
 );
 
-export type BranchSelection = FilterBranchType<'all'>;
+export type BranchSelection = FilterBranchType | 'all';
 export type StatusSelection = FilterStatusType;
 
 export interface ChartFilter {

@@ -58,7 +58,7 @@ export interface CicdDefaults {
   // (undocumented)
   filterStatus: Array<FilterStatusType>;
   // (undocumented)
-  filterType: FilterBranchType<'all'>;
+  filterType: FilterBranchType | 'all';
   lowercaseNames: boolean;
   normalizeTimeRange: boolean;
   // (undocumented)
@@ -117,9 +117,9 @@ export interface FetchBuildsOptions {
   // (undocumented)
   entity: Entity;
   // (undocumented)
-  filterStatus: Array<FilterStatusType<'all'>>;
+  filterStatus: Array<FilterStatusType | 'all'>;
   // (undocumented)
-  filterType: FilterBranchType<'all'>;
+  filterType: FilterBranchType | 'all';
   // (undocumented)
   timeFrom: Date;
   // (undocumented)
@@ -131,16 +131,12 @@ export interface FetchBuildsOptions {
 // Warning: (ae-missing-release-tag) "FilterBranchType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export type FilterBranchType<Extra extends string = never> =
-  | Extra
-  | 'master'
-  | 'branch';
+export type FilterBranchType = 'master' | 'branch';
 
 // Warning: (ae-missing-release-tag) "FilterStatusType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export type FilterStatusType<Extra extends string = never> =
-  | Extra
+export type FilterStatusType =
   | 'unknown'
   | 'enqueued'
   | 'scheduled'

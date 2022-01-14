@@ -22,8 +22,7 @@ import { Entity } from '@backstage/catalog-model';
  * If all of these aren't applicable to the underlying CI/CD, these can be
  * configured to be hidden, using the `availableStatuses` in `CicdConfiguration`.
  */
-export type FilterStatusType<Extra extends string = never> =
-  | Extra
+export type FilterStatusType =
   | 'unknown'
   | 'enqueued'
   | 'scheduled'
@@ -52,10 +51,7 @@ export const statusTypes: Array<FilterStatusType> = [
  * something like 'release' or 'main' or 'trunk' in the underlying CI/CD system,
  * which is then up to the Api to map accordingly.
  */
-export type FilterBranchType<Extra extends string = never> =
-  | Extra
-  | 'master'
-  | 'branch';
+export type FilterBranchType = 'master' | 'branch';
 export const branchTypes: Array<FilterBranchType> = ['master', 'branch'];
 
 /**
@@ -122,7 +118,7 @@ export interface CicdDefaults {
   timeFrom: Date;
   timeTo: Date;
   filterStatus: Array<FilterStatusType>;
-  filterType: FilterBranchType<'all'>;
+  filterType: FilterBranchType | 'all';
 
   /** Lower-case all stage names (to potentially merge stages with different cases) */
   lowercaseNames: boolean;
@@ -219,8 +215,8 @@ export interface FetchBuildsOptions {
   abortSignal: AbortSignal;
   timeFrom: Date;
   timeTo: Date;
-  filterStatus: Array<FilterStatusType<'all'>>;
-  filterType: FilterBranchType<'all'>;
+  filterStatus: Array<FilterStatusType | 'all'>;
+  filterType: FilterBranchType | 'all';
 }
 
 /**
