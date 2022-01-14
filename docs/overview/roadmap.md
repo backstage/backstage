@@ -93,7 +93,7 @@ The progress of the request can be seen
 ## Future work
 
 The following feature list doesn’t represent a commitment to develop, and the
-list order doesn’t reflect any priority or importance. But these features are on
+list order doesn’t reflect any priority or importance, but these features are on
 the maintainers’ radar, with clear interest expressed by the community.
 
 - **Backend Services:** To better scale and maintain the Backstage instances, a
