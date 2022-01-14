@@ -15,6 +15,9 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { ApiProvider } from '@backstage/core-app-api';
+import { configApiRef } from '@backstage/core-plugin-api';
+import { TestApiRegistry, MockConfigApi } from '@backstage/test-utils';
 import { makeStyles } from '@material-ui/core';
 import { render, screen } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
@@ -44,13 +47,19 @@ const entities: Entity[] = [
   },
 ];
 
+const mockConfigApi = new MockConfigApi({});
+
+const apis = TestApiRegistry.from([configApiRef, mockConfigApi]);
+
 describe('<PreviewCatalogInfoComponent />', () => {
   it('renders without exploding', () => {
     render(
-      <PreviewCatalogInfoComponent
-        repositoryUrl="http://my-repository/a/"
-        entities={entities}
-      />,
+      <ApiProvider apis={apis}>
+        <PreviewCatalogInfoComponent
+          repositoryUrl="http://my-repository/a/"
+          entities={entities}
+        />
+      </ApiProvider>,
     );
 
     const repositoryUrl = screen.getByText(
@@ -67,11 +76,13 @@ describe('<PreviewCatalogInfoComponent />', () => {
     const { result } = renderHook(() => useStyles());
 
     render(
-      <PreviewCatalogInfoComponent
-        repositoryUrl="http://my-repository/a/"
-        entities={entities}
-        classes={{ card: result.current.displayNone }}
-      />,
+      <ApiProvider apis={apis}>
+        <PreviewCatalogInfoComponent
+          repositoryUrl="http://my-repository/a/"
+          entities={entities}
+          classes={{ card: result.current.displayNone }}
+        />
+      </ApiProvider>,
     );
 
     const repositoryUrl = screen.getByText(
@@ -88,11 +99,13 @@ describe('<PreviewCatalogInfoComponent />', () => {
     const { result } = renderHook(() => useStyles());
 
     render(
-      <PreviewCatalogInfoComponent
-        repositoryUrl="http://my-repository/a/"
-        entities={entities}
-        classes={{ cardContent: result.current.displayNone }}
-      />,
+      <ApiProvider apis={apis}>
+        <PreviewCatalogInfoComponent
+          repositoryUrl="http://my-repository/a/"
+          entities={entities}
+          classes={{ cardContent: result.current.displayNone }}
+        />
+      </ApiProvider>,
     );
 
     const repositoryUrl = screen.getByText(
@@ -103,5 +116,33 @@ describe('<PreviewCatalogInfoComponent />', () => {
     expect(repositoryUrl).toBeVisible();
     expect(kindText).toBeInTheDocument();
     expect(kindText).not.toBeVisible();
+  });
+
+  it('renders with custom catalog filename', () => {
+    render(
+      <ApiProvider
+        apis={TestApiRegistry.from([
+          configApiRef,
+          new MockConfigApi({
+            catalog: {
+              import: {
+                entityFilename: 'anvil.yaml',
+              },
+            },
+          }),
+        ])}
+      >
+        <PreviewCatalogInfoComponent
+          repositoryUrl="http://acme-corp/awesome-api/"
+          entities={entities}
+        />
+      </ApiProvider>,
+    );
+
+    const repositoryUrl = screen.getByText(
+      'http://acme-corp/awesome-api/anvil.yaml',
+    );
+    expect(repositoryUrl).toBeInTheDocument();
+    expect(repositoryUrl).toBeVisible();
   });
 });
