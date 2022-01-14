@@ -20,7 +20,7 @@ to keep us aligned as a community on:
 ### How to influence the roadmap
 
 As we evolve Backstage, we want you to contribute actively in the journey to
-define the most effective developer experience in the world.
+define the most effective developer experience in the world. 
 
 A roadmap is only useful if it captures real needs. If you have success stories,
 feedback, or ideas, we want to hear from you! If you plan to work (or are
