@@ -72,6 +72,8 @@ describe('NextEntitiesCatalog', () => {
         target_entity_ref: stringifyEntityRef(entity),
       });
     }
+
+    return id;
   }
 
   async function addEntityToSearch(knex: Knex, entity: Entity) {
@@ -465,6 +467,71 @@ describe('NextEntitiesCatalog', () => {
         const { entities } = await catalog.entities(request);
 
         expect(entities.length).toBe(0);
+      },
+    );
+  });
+
+  describe('removeEntityByUid', () => {
+    it.each(databases.eachSupportedId())(
+      'also clears parent hashes',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+
+        const grandparent: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'grandparent' },
+          spec: {},
+        };
+        const parent1: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'parent1' },
+          spec: {},
+        };
+        const parent2: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'parent2' },
+          spec: {},
+        };
+        const root: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'root' },
+          spec: {},
+        };
+        const unrelated: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'unrelated' },
+          spec: {},
+        };
+
+        await addEntity(knex, grandparent, [{ source: 's' }]);
+        await addEntity(knex, parent1, [{ entity: grandparent }]);
+        await addEntity(knex, parent2, [{ entity: grandparent }]);
+        const uid = await addEntity(knex, root, [
+          { entity: parent1 },
+          { entity: parent2 },
+        ]);
+        await addEntity(knex, unrelated, []);
+        await knex('refresh_state').update({ result_hash: 'not-changed' });
+
+        const catalog = new NextEntitiesCatalog(knex);
+        await catalog.removeEntityByUid(uid);
+
+        await expect(
+          knex
+            .from('refresh_state')
+            .select('entity_ref', 'result_hash')
+            .orderBy('entity_ref'),
+        ).resolves.toEqual([
+          { entity_ref: 'k:default/grandparent', result_hash: 'not-changed' },
+          { entity_ref: 'k:default/parent1', result_hash: 'child-was-deleted' },
+          { entity_ref: 'k:default/parent2', result_hash: 'child-was-deleted' },
+          { entity_ref: 'k:default/unrelated', result_hash: 'not-changed' },
+        ]);
       },
     );
   });
