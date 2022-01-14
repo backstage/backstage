@@ -17,6 +17,7 @@ import { ConfigReader } from '@backstage/config';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { readGitLabIntegrationConfig } from '@backstage/integration';
 import { getVoidLogger } from '@backstage/backend-common';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { rest } from 'msw';
 import { setupServer, SetupServerApi } from 'msw/node';
 import { GitLabClient } from './client';
@@ -179,7 +180,10 @@ describe('getGroups', () => {
     expect(groupAdjacency.size).toEqual(3);
     expect(groupAdjacency.get(1)?.entity?.spec?.children).toHaveLength(1);
     expect(groupAdjacency.get(1)?.entity?.spec?.children).toContain(
-      'group:default/alpha.one',
+      stringifyEntityRef({
+        kind: 'group',
+        name: 'alpha.one',
+      }),
     );
   });
 
@@ -250,7 +254,10 @@ describe('populateChildren', () => {
     await populateChildrenMembers(client, adj);
     expect(adj.get(3)?.entity?.spec?.members).toHaveLength(1);
     expect(adj.get(3)?.entity?.spec?.members).toContain(
-      'user:inherited.user.two',
+      stringifyEntityRef({
+        kind: 'user',
+        name: 'inherited.user.two',
+      }),
     );
   });
 
@@ -282,9 +289,17 @@ describe('populateChildren', () => {
 
     await populateChildrenMembers(client, adj);
     expect(adj.get(1)?.entity?.spec?.members).toHaveLength(2);
-    expect(adj.get(1)?.entity?.spec?.members).toContain('user:user.one');
     expect(adj.get(1)?.entity?.spec?.members).toContain(
-      'user:inherited.user.two',
+      stringifyEntityRef({
+        kind: 'user',
+        name: 'user.one',
+      }),
+    );
+    expect(adj.get(1)?.entity?.spec?.members).toContain(
+      stringifyEntityRef({
+        kind: 'user',
+        name: 'inherited.user.two',
+      }),
     );
   });
 });
