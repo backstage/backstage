@@ -192,7 +192,7 @@ export const MembersListCard = (_props: {
           ) : (
             <Box p={2}>
               <Typography>
-                This group has no ${memberDisplayTitle.toLocaleLowerCase()}.
+                This group has no {memberDisplayTitle.toLocaleLowerCase()}.
               </Typography>
             </Box>
           )}
