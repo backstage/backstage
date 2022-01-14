@@ -82,7 +82,7 @@ purpose of the Security Audit is to involve third-party companies in auditing
 the platform and highlighting potential vulnerabilities. The
 benefit for the adopters is clear: We want Backstage to be as secure as
 possible, and we want to make it reliable through a specific initiative. This
-initiative in particular is done together (and with the support of) the
+initiative in particular is done together, and with the support of, the
 [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io/).
 
 ### Moving to Incubation in CNCF
