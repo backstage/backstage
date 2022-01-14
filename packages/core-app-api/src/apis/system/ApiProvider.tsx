@@ -53,6 +53,24 @@ export const ApiProvider = (props: PropsWithChildren<ApiProviderProps>) => {
   );
 };
 
+/**
+ * Same as above, but does not inherit APIs from API providers further up in
+ * the react tree.
+ *
+ * Private to (and only used in) this package.
+ */
+export const IsolatedApiProvider = (
+  props: PropsWithChildren<ApiProviderProps>,
+) => {
+  const { apis, children } = props;
+  return (
+    <ApiContext.Provider
+      value={createVersionedValueMap({ 1: apis })}
+      children={children}
+    />
+  );
+};
+
 ApiProvider.propTypes = {
   apis: PropTypes.shape({ get: PropTypes.func.isRequired }).isRequired,
   children: PropTypes.node,

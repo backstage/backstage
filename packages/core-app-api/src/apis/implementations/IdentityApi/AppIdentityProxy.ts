@@ -46,11 +46,20 @@ type CompatibilityIdentityApi = IdentityApi & {
  * and sign-in page.
  */
 export class AppIdentityProxy implements IdentityApi {
-  private target?: CompatibilityIdentityApi;
+private target?: CompatibilityIdentityApi;
+private waitForTarget: Promise<IdentityApi>;
+  private resolveTarget: (api: IdentityApi) => void = () => {};
+
+  constructor() {
+    this.waitForTarget = new Promise<IdentityApi>(resolve => {
+      this.resolveTarget = resolve;
+    });
+  }
 
   // This is called by the app manager once the sign-in page provides us with an implementation
   setTarget(identityApi: CompatibilityIdentityApi) {
     this.target = identityApi;
+    this.resolveTarget(identityApi);
   }
 
   getUserId(): string {
@@ -76,17 +85,11 @@ export class AppIdentityProxy implements IdentityApi {
   }
 
   async getProfileInfo(): Promise<ProfileInfo> {
-    if (!this.target) {
-      throw mkError('getProfileInfo');
-    }
-    return this.target.getProfileInfo();
+    return this.waitForTarget.then(target => target.getProfileInfo());
   }
 
   async getBackstageIdentity(): Promise<BackstageUserIdentity> {
-    if (!this.target) {
-      throw mkError('getBackstageIdentity');
-    }
-    const identity = await this.target.getBackstageIdentity();
+    const identity = await this.waitForTarget.then(target => target.getBackstageIdentity());
     if (!identity.userEntityRef.match(/^.*:.*\/.*$/)) {
       // eslint-disable-next-line no-console
       console.warn(
@@ -99,28 +102,21 @@ export class AppIdentityProxy implements IdentityApi {
   }
 
   async getCredentials(): Promise<{ token?: string | undefined }> {
-    if (!this.target) {
-      throw mkError('getCredentials');
-    }
-    return this.target.getCredentials();
+    return this.waitForTarget.then(target => target.getCredentials());
   }
 
   async getIdToken(): Promise<string | undefined> {
-    if (!this.target) {
-      throw mkError('getIdToken');
-    }
-    if (!this.target.getIdToken) {
-      throw new Error('IdentityApi does not implement getIdToken');
-    }
-    logDeprecation('getIdToken');
-    return this.target.getIdToken();
+    return this.waitForTarget.then((target: CompatibilityIdentityApi) => {
+      if (!target.getIdToken) {
+        throw new Error('IdentityApi does not implement getIdToken');
+      }
+      logDeprecation('getIdToken');
+      return target.getIdToken()
+    });
   }
 
   async signOut(): Promise<void> {
-    if (!this.target) {
-      throw mkError('signOut');
-    }
-    await this.target.signOut();
+    await this.waitForTarget.then(target => target.signOut());
     location.reload();
   }
 }
