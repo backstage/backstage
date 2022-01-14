@@ -130,7 +130,7 @@ export const UserListPicker = ({
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-  const { filters, updateFilters, backendEntities, queryParameters } =
+  const { filters, updateFilters, backendEntities, queryParameters, loading } =
     useEntityListProvider();
 
   // Remove group items that aren't in availableFilters and exclude
@@ -161,18 +161,35 @@ export const UserListPicker = ({
     [isOwnedEntity, isStarredEntity],
   );
 
+  const [selectedUserFilter, setSelectedUserFilter] = useState(
+    [queryParameters.user].flat()[0] ?? initialFilter,
+  );
+
   // To show proper counts for each section, apply all other frontend filters _except_ the user
   // filter that's controlled by this picker.
-  const [entitiesWithoutUserFilter, setEntitiesWithoutUserFilter] =
-    useState(backendEntities);
-  const totalOwnedUserEntities = entitiesWithoutUserFilter.filter(entity =>
-    ownedFilter.filterEntity(entity),
-  ).length;
-  const [selectedUserFilter, setSelectedUserFilter] = useState(
-    totalOwnedUserEntities > 0
-      ? [queryParameters.user].flat()[0] ?? initialFilter
-      : 'all',
+  const entitiesWithoutUserFilter = useMemo(
+    () =>
+      backendEntities.filter(
+        reduceEntityFilters(
+          compact(Object.values({ ...filters, user: undefined })),
+        ),
+      ),
+    [filters, backendEntities],
   );
+
+  const totalOwnedUserEntities = useMemo(
+    () =>
+      entitiesWithoutUserFilter.filter(entity =>
+        ownedFilter.filterEntity(entity),
+      ).length,
+    [entitiesWithoutUserFilter, ownedFilter],
+  );
+
+  useEffect(() => {
+    if (!loading && totalOwnedUserEntities === 0) {
+      setSelectedUserFilter('all');
+    }
+  }, [loading, totalOwnedUserEntities, setSelectedUserFilter]);
 
   useEffect(() => {
     updateFilters({
@@ -185,13 +202,6 @@ export const UserListPicker = ({
         : undefined,
     });
   }, [selectedUserFilter, isOwnedEntity, isStarredEntity, updateFilters]);
-
-  useEffect(() => {
-    const filterFn = reduceEntityFilters(
-      compact(Object.values({ ...filters, user: undefined })),
-    );
-    setEntitiesWithoutUserFilter(backendEntities.filter(filterFn));
-  }, [filters, backendEntities]);
 
   function getFilterCount(id: UserListFilterKind) {
     switch (id) {
