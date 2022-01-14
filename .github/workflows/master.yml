@@ -192,7 +192,12 @@ jobs:
 
       # Publishes current version of packages that are not already present in the registry
       - name: publish
-        run: yarn lerna -- publish from-package --yes
+        run: |
+          if [ -f ".changeset/pre.json" ]; then
+              yarn lerna -- publish from-package --yes --dist-tag next
+          else
+              yarn lerna -- publish from-package --yes
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
