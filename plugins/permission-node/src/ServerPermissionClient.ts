@@ -20,9 +20,9 @@ import {
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import {
-  AuthorizeRequest,
+  AuthorizeQuery,
   AuthorizeRequestOptions,
-  AuthorizeResponse,
+  AuthorizeDecision,
   AuthorizeResult,
   PermissionClient,
   PermissionAuthorizer,
@@ -78,9 +78,9 @@ export class ServerPermissionClient implements PermissionAuthorizer {
   }
 
   async authorize(
-    requests: AuthorizeRequest[],
+    queries: AuthorizeQuery[],
     options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeResponse[]> {
+  ): Promise<AuthorizeDecision[]> {
     // Check if permissions are enabled before validating the server token. That
     // way when permissions are disabled, the noop token manager can be used
     // without fouling up the logic inside the ServerPermissionClient, because
@@ -89,9 +89,9 @@ export class ServerPermissionClient implements PermissionAuthorizer {
       !this.permissionEnabled ||
       (await this.isValidServerToken(options?.token))
     ) {
-      return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
+      return queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
-    return this.permissionClient.authorize(requests, options);
+    return this.permissionClient.authorize(queries, options);
   }
 
   private async isValidServerToken(

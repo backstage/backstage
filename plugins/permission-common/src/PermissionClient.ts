@@ -21,11 +21,13 @@ import * as uuid from 'uuid';
 import { z } from 'zod';
 import {
   AuthorizeResult,
-  AuthorizeRequest,
-  AuthorizeResponse,
+  AuthorizeQuery,
+  AuthorizeDecision,
   Identified,
   PermissionCriteria,
   PermissionCondition,
+  AuthorizeResponse,
+  AuthorizeRequest,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import {
@@ -46,22 +48,24 @@ const permissionCriteriaSchema: z.ZodSchema<
     .or(z.object({ not: permissionCriteriaSchema })),
 );
 
-const responseSchema = z.array(
-  z
-    .object({
-      id: z.string(),
-      result: z
-        .literal(AuthorizeResult.ALLOW)
-        .or(z.literal(AuthorizeResult.DENY)),
-    })
-    .or(
-      z.object({
+const responseSchema = z.object({
+  items: z.array(
+    z
+      .object({
         id: z.string(),
-        result: z.literal(AuthorizeResult.CONDITIONAL),
-        conditions: permissionCriteriaSchema,
-      }),
-    ),
-);
+        result: z
+          .literal(AuthorizeResult.ALLOW)
+          .or(z.literal(AuthorizeResult.DENY)),
+      })
+      .or(
+        z.object({
+          id: z.string(),
+          result: z.literal(AuthorizeResult.CONDITIONAL),
+          conditions: permissionCriteriaSchema,
+        }),
+      ),
+  ),
+});
 
 /**
  * An isomorphic client for requesting authorization for Backstage permissions.
@@ -94,29 +98,29 @@ export class PermissionClient implements PermissionAuthorizer {
    * @public
    */
   async authorize(
-    requests: AuthorizeRequest[],
+    queries: AuthorizeQuery[],
     options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeResponse[]> {
+  ): Promise<AuthorizeDecision[]> {
     // TODO(permissions): it would be great to provide some kind of typing guarantee that
     // conditional responses will only ever be returned for requests containing a resourceType
     // but no resourceRef. That way clients who aren't prepared to handle filtering according
     // to conditions can be guaranteed that they won't unexpectedly get a CONDITIONAL response.
 
     if (!this.enabled) {
-      return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
+      return queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
-    const identifiedRequests: Identified<AuthorizeRequest>[] = requests.map(
-      request => ({
+    const request: AuthorizeRequest = {
+      items: queries.map(query => ({
         id: uuid.v4(),
-        ...request,
-      }),
-    );
+        ...query,
+      })),
+    };
 
     const permissionApi = await this.discovery.getBaseUrl('permission');
     const response = await fetch(`${permissionApi}/authorize`, {
       method: 'POST',
-      body: JSON.stringify(identifiedRequests),
+      body: JSON.stringify(request),
       headers: {
         ...this.getAuthorizationHeader(options?.token),
         'content-type': 'application/json',
@@ -126,28 +130,30 @@ export class PermissionClient implements PermissionAuthorizer {
       throw await ResponseError.fromResponse(response);
     }
 
-    const identifiedResponses = await response.json();
-    this.assertValidResponses(identifiedRequests, identifiedResponses);
+    const responseBody = await response.json();
+    this.assertValidResponse(request, responseBody);
 
-    const responsesById = identifiedResponses.reduce((acc, r) => {
+    const responsesById = responseBody.items.reduce((acc, r) => {
       acc[r.id] = r;
       return acc;
-    }, {} as Record<string, Identified<AuthorizeResponse>>);
+    }, {} as Record<string, Identified<AuthorizeDecision>>);
 
-    return identifiedRequests.map(request => responsesById[request.id]);
+    return request.items.map(query => responsesById[query.id]);
   }
 
   private getAuthorizationHeader(token?: string): Record<string, string> {
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
-  private assertValidResponses(
-    requests: Identified<AuthorizeRequest>[],
+  private assertValidResponse(
+    request: AuthorizeRequest,
     json: any,
-  ): asserts json is Identified<AuthorizeResponse>[] {
+  ): asserts json is AuthorizeResponse {
     const authorizedResponses = responseSchema.parse(json);
-    const responseIds = authorizedResponses.map(r => r.id);
-    const hasAllRequestIds = requests.every(r => responseIds.includes(r.id));
+    const responseIds = authorizedResponses.items.map(r => r.id);
+    const hasAllRequestIds = request.items.every(r =>
+      responseIds.includes(r.id),
+    );
     if (!hasAllRequestIds) {
       throw new Error(
         'Unexpected authorization response from permission-backend',

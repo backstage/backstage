@@ -36,23 +36,23 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   ) {}
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
-    const authorizeResponse = (
+    const authorizeDecision = (
       await this.permissionApi.authorize(
         [{ permission: catalogEntityReadPermission }],
         { token: request?.authorizationToken },
       )
     )[0];
 
-    if (authorizeResponse.result === AuthorizeResult.DENY) {
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
       return {
         entities: [],
         pageInfo: { hasNextPage: false },
       };
     }
 
-    if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
+    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
       const permissionFilter: EntityFilter = this.transformConditions(
-        authorizeResponse.conditions,
+        authorizeDecision.conditions,
       );
       return this.entitiesCatalog.entities({
         ...request,

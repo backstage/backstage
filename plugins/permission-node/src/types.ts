@@ -18,7 +18,7 @@ import type { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 /**
  * A conditional rule that can be provided in an
- * {@link @backstage/permission-common#AuthorizeResult} response to an authorization request.
+ * {@link @backstage/permission-common#AuthorizeDecision} response to an authorization request.
  *
  * @remarks
  *
