@@ -35,41 +35,42 @@ import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 
 ## Customizations
 
-### Disable the creation of Pull Requests
+A custom layout can be passed to the import page, as it's already
+supported by the search page. If no custom layout is passed, the default layout
+is used.
 
-The pull request feature can be disabled by options that are passed to the `CatalogImportPage`:
+```typescript
+<Route path="/catalog-import" element={<CatalogImportPage />}>
+  <Page themeId="home">
+    <Header title="Register an existing component" />
+    <Content>
+      <ContentHeader title="Start tracking your components">
+        <SupportButton>
+          Start tracking your component in Backstage by adding it to the
+          software catalog.
+        </SupportButton>
+      </ContentHeader>
 
-```tsx
-// packages/app/src/App.tsx
+      <Grid container spacing={2} direction="row-reverse">
+        <Grid item xs={12} md={4} lg={6} xl={8}>
+          Hello World
+        </Grid>
 
-<Route
-  path="/catalog-import"
-  element={<CatalogImportPage pullRequest={{ disable: true }} />}
-/>
+        <Grid item xs={12} md={8} lg={6} xl={4}>
+          <ImportStepper />
+        </Grid>
+      </Grid>
+    </Content>
+  </Page>
+</Route>
 ```
 
-### Customize the title and body of the Pull Request
-
-The pull request form is filled with a default title and body.
-This can be configured by options that are passed to the `CatalogImportPage`:
-
-```tsx
-// packages/app/src/App.tsx
-
-<Route
-  path="/catalog-import"
-  element={
-    <CatalogImportPage
-      pullRequest={{
-        preparePullRequest: () => ({
-          title: 'My title',
-          body: 'My **markdown** body',
-        }),
-      }}
-    />
-  }
-/>
-```
+Previously it was possible to disable and customize the automatic pull request
+feature by passing options to `<CatalogImportPage>` (`pullRequest.disable` and
+`pullRequest.preparePullRequest`). This functionality is moved to the
+`CatalogImportApi` which now provides an optional `preparePullRequest()`
+function. The function can either be overridden to generate a different content
+for the pull request, or removed to disable this feature.
 
 ## Development
 
