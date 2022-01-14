@@ -35,6 +35,7 @@ export const sidebarConfig = {
   selectedIndicatorWidth: 3,
   userBadgePadding,
   userBadgeDiameter: drawerWidthClosed - userBadgePadding * 2,
+  mobileSidebarHeight: 56,
 };
 
 export const submenuConfig = {
@@ -46,14 +47,20 @@ export const submenuConfig = {
 export const SIDEBAR_INTRO_LOCAL_STORAGE =
   '@backstage/core/sidebar-intro-dismissed';
 
+/**
+ * Types for the `SidebarContext`
+ */
 export type SidebarContextType = {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
 };
 
+/**
+ * Context wether the `Sidebar` is open
+ */
 export const SidebarContext = createContext<SidebarContextType>({
   isOpen: false,
-  setOpen: _open => {},
+  setOpen: () => {},
 });
 
 export type SidebarItemWithSubmenuContextType = {

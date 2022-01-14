@@ -79,21 +79,27 @@ To expose the plugin to your users, you can integrate the `cost-insights` route 
  export const AppSidebar = () => (
    <Sidebar>
      <SidebarLogo />
-     <SidebarSearch />
+     <SidebarGroup icon={<SearchIcon />} to="/search">
+       <SidebarSearch />
+     </SidebarGroup>
      <SidebarDivider />
      {/* Global nav, not org-specific */}
-     <SidebarItem icon={HomeIcon} to="./" text="Home" />
-     <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
-     <SidebarItem icon={LibraryBooks} to="/docs" text="Docs" />
-     <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
-     <SidebarDivider />
-     <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-+    <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
+     <SidebarGroup label="Menu" icon={<MenuIcon />}>
+       <SidebarItem icon={HomeIcon} to="./" text="Home" />
+       <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+       <SidebarItem icon={LibraryBooks} to="/docs" text="Docs" />
+       <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+       <SidebarDivider />
+       <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+  +    <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
+     </SidebarGroup>
      {/* End global nav */}
      <SidebarDivider />
      <SidebarSpace />
      <SidebarDivider />
-     <SidebarSettings />
+     <SidebarGroup icon={<UserSettingsSignInAvatar />} to="/settings">
+       <SidebarSettings />
+     </SidebarGroup>
    </Sidebar>
  );
 ```

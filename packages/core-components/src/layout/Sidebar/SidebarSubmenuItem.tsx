@@ -77,6 +77,10 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     color: theme.palette.navigation.color,
     display: 'flex',
     justifyContent: 'center',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+      paddingLeft: theme.spacing(4),
+    },
     fontSize: '14px',
   },
 }));
@@ -139,6 +143,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
       <div className={classes.itemContainer}>
         <button
           onClick={handleClickDropdown}
+          onTouchStart={e => e.stopPropagation()}
           className={classnames(
             classes.item,
             isActive ? classes.selected : undefined,
@@ -163,6 +168,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                 underline="none"
                 className={classes.dropdownItem}
                 onClick={closeSubmenu}
+                onTouchStart={e => e.stopPropagation()}
                 key={key}
               >
                 <Typography className={classes.textContent}>
@@ -187,6 +193,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
           isActive ? classes.selected : undefined,
         )}
         onClick={closeSubmenu}
+        onTouchStart={e => e.stopPropagation()}
       >
         <Icon fontSize="small" />
         <Typography variant="subtitle1" className={classes.label}>
