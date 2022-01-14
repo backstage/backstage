@@ -49,6 +49,8 @@ describe('createRouter', () => {
       getPullRequests: jest.fn(),
       getBuilds: jest.fn(),
       getBuildRuns: jest.fn(),
+      getAllTeams: jest.fn(),
+      getTeamMembers: jest.fn(),
     } as any;
     const router = await createRouter({
       azureDevOpsApi,
@@ -404,6 +406,14 @@ describe('createRouter', () => {
         expect(response.status).toEqual(200);
         expect(response.body).toEqual(buildRuns);
       });
+    });
+  });
+
+  describe('GET /users/:userId/team-ids', () => {
+    it('fetches a a list of teams', async () => {
+      azureDevOpsApi.getAllTeams.mockResolvedValue([]);
+      const response = await request(app).get('/users/user1/team-ids');
+      expect(response.status).toEqual(200);
     });
   });
 });

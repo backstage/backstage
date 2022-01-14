@@ -1,5 +1,20 @@
 # @backstage/plugin-tech-insights
 
+## 0.1.5
+
+### Patch Changes
+
+- 34883f5c9e: Added possibility to pass customized title and description for the scorecards instead of using hardcoded ones.
+- a60eb0f0dd: adding new operation to run checks for multiple entities in one request
+- 48580d0fbb: fix React warning because of missing `key` prop
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/plugin-tech-insights-common@0.2.1
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-model@0.9.9
+
 ## 0.1.4
 
 ### Patch Changes

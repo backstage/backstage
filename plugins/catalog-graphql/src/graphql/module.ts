@@ -15,8 +15,11 @@
  */
 
 import { Logger } from 'winston';
-import { makeExecutableSchema } from 'apollo-server';
-import { GraphQLModule } from '@graphql-modules/core';
+import {
+  createModule as createGraphQLModule,
+  Module,
+  gql,
+} from 'graphql-modules';
 import { Resolvers, CatalogQuery } from './types';
 import { Config } from '@backstage/config';
 import { CatalogClient } from '../service/client';
@@ -29,9 +32,7 @@ export interface ModuleOptions {
   config: Config;
 }
 
-export async function createModule(
-  options: ModuleOptions,
-): Promise<GraphQLModule> {
+export async function createModule(options: ModuleOptions): Promise<Module> {
   const catalogClient = new CatalogClient(
     options.config.getString('backend.baseUrl'),
   );
@@ -62,6 +63,7 @@ export async function createModule(
         const {
           entity: { kind },
         } = rootValue as { entity: Entity };
+
         switch (kind) {
           case 'Component':
             return 'ComponentMetadata';
@@ -94,16 +96,9 @@ export async function createModule(
     },
   };
 
-  const schema = makeExecutableSchema({
-    typeDefs,
+  return createGraphQLModule({
+    id: 'plugin-catalog-graphql',
+    typeDefs: gql(typeDefs),
     resolvers,
-    inheritResolversFromInterfaces: true,
   });
-
-  const module = new GraphQLModule({
-    extraSchemas: [schema],
-    logger: options.logger as any,
-  });
-
-  return module;
 }

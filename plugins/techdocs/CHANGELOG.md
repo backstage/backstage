@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs
 
+## 0.12.14
+
+### Patch Changes
+
+- 5333451def: Cleaned up API exports
+- 1628ca3f49: Fix an issue where the TechDocs sidebar is hidden when the Backstage sidebar is pinned at smaller screen sizes
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-model@0.9.9
+  - @backstage/integration-react@0.1.18
+  - @backstage/plugin-catalog@0.7.8
+  - @backstage/plugin-search@0.5.5
+
 ## 0.12.13
 
 ### Patch Changes

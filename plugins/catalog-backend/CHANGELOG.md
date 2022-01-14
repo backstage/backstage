@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-backend
 
+## 0.20.0
+
+### Minor Changes
+
+- cd529c4094: In order to integrate the permissions system with the refresh endpoint in catalog-backend, a new AuthorizedRefreshService was created as a thin wrapper around the existing refresh service which performs authorization and handles the case when authorization is denied. In order to instantiate AuthorizedRefreshService, a permission client is required, which was added as a new field to `CatalogEnvironment`.
+
+  The new `permissions` field in `CatalogEnvironment` should already receive the permission client from the `PluginEnvrionment`, so there should be no changes required to the catalog backend setup. See [the create-app changelog](https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md) for more details.
+
+### Patch Changes
+
+- 0ae759dad4: Add catalog permission rules.
+- 3b4d8caff6: Allow a custom GithubCredentialsProvider to be passed to the GitHub processors.
+- 6fd70f8bc8: Provide support for Bitbucket servers with custom BaseURLs.
+- 5333451def: Cleaned up API exports
+- 730d01ab1a: Add apply-conditions endpoint for evaluating conditional permissions in catalog backend.
+- 0a6c68582a: Add authorization to catalog-backend entities GET endpoints
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/backend-common@0.10.3
+  - @backstage/plugin-permission-node@0.3.0
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+  - @backstage/plugin-permission-common@0.3.1
+
 ## 0.19.4
 
 ### Patch Changes

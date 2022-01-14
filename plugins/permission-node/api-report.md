@@ -9,24 +9,33 @@ import { AuthorizeResponse } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
 import { Config } from '@backstage/config';
+import express from 'express';
+import { Identified } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Router } from 'express';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export type ApplyConditionsRequest = {
-  resourceRef: string;
-  resourceType: string;
-  conditions: PermissionCriteria<PermissionCondition>;
+  items: ApplyConditionsRequestEntry[];
 };
 
 // @public
+export type ApplyConditionsRequestEntry = Identified<{
+  resourceRef: string;
+  resourceType: string;
+  conditions: PermissionCriteria<PermissionCondition>;
+}>;
+
+// @public
 export type ApplyConditionsResponse = {
-  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+  items: ApplyConditionsResponseEntry[];
 };
+
+// @public
+export type ApplyConditionsResponseEntry = Identified<DefinitivePolicyDecision>;
 
 // @public
 export type Condition<TRule> = TRule extends PermissionRule<
@@ -92,8 +101,8 @@ export const createConditionTransformer: <
 export const createPermissionIntegrationRouter: <TResource>(options: {
   resourceType: string;
   rules: PermissionRule<TResource, any, unknown[]>[];
-  getResource: (resourceRef: string) => Promise<TResource | undefined>;
-}) => Router;
+  getResources: (resourceRefs: string[]) => Promise<(TResource | undefined)[]>;
+}) => express.Router;
 
 // @public
 export const createPermissionRule: <
@@ -103,6 +112,11 @@ export const createPermissionRule: <
 >(
   rule: PermissionRule<TResource, TQuery, TParams>,
 ) => PermissionRule<TResource, TQuery, TParams>;
+
+// @public
+export type DefinitivePolicyDecision = {
+  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+};
 
 // @public
 export const makeCreatePermissionRule: <TResource, TQuery>() => <
@@ -137,9 +151,7 @@ export type PolicyAuthorizeRequest = Omit<AuthorizeRequest, 'resourceRef'>;
 
 // @public
 export type PolicyDecision =
-  | {
-      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
-    }
+  | DefinitivePolicyDecision
   | ConditionalPolicyDecision;
 
 // @public

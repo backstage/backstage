@@ -24,16 +24,10 @@ import { rootRouteRef } from '../../plugin';
 import { searchApiRef } from '../../apis';
 
 import { SearchModal } from './SearchModal';
-
-jest.mock('../SearchContext', () => ({
-  ...jest.requireActual('../SearchContext'),
-  useSearch: jest.fn().mockReturnValue({
-    result: {},
-  }),
-}));
+import { SearchContextProvider } from '../SearchContext';
 
 describe('SearchModal', () => {
-  const query = jest.fn().mockResolvedValue({});
+  const query = jest.fn().mockResolvedValue({ results: [] });
 
   const apiRegistry = TestApiRegistry.from(
     [configApiRef, new ConfigReader({ app: { title: 'Mock app' } })],
@@ -45,7 +39,9 @@ describe('SearchModal', () => {
   it('Should render the Modal correctly', async () => {
     await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
-        <SearchModal open toggleModal={toggleModal} />
+        <SearchContextProvider>
+          <SearchModal open toggleModal={toggleModal} />
+        </SearchContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -60,7 +56,9 @@ describe('SearchModal', () => {
   it('Calls toggleModal handler', async () => {
     await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
-        <SearchModal open toggleModal={toggleModal} />
+        <SearchContextProvider>
+          <SearchModal open toggleModal={toggleModal} />
+        </SearchContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {

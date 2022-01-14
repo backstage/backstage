@@ -30,6 +30,7 @@ type Options = {
   fromPackage?: string;
   mockEnv?: boolean;
   withFilteredKeys?: boolean;
+  withDeprecatedKeys?: boolean;
   fullVisibility?: boolean;
 };
 
@@ -91,6 +92,7 @@ export async function loadCliConfig(options: Options) {
         ? ['frontend', 'backend', 'secret']
         : ['frontend'],
       withFilteredKeys: options.withFilteredKeys,
+      withDeprecatedKeys: options.withDeprecatedKeys,
     });
     const frontendConfig = ConfigReader.fromConfigs(frontendAppConfigs);
 

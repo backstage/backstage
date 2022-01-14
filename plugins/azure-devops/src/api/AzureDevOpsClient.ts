@@ -88,6 +88,10 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     return this.get<Team[]>('all-teams');
   }
 
+  public getUserTeamIds(userId: string): Promise<string[]> {
+    return this.get<string[]>(`users/${userId}/team-ids`);
+  }
+
   private async get<T>(path: string): Promise<T> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('azure-devops')}/`;
     const url = new URL(path, baseUrl);

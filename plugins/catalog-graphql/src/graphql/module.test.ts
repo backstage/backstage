@@ -15,7 +15,7 @@
  */
 
 import { createModule } from './module';
-import { execute } from 'graphql';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
@@ -23,6 +23,7 @@ import { ReaderEntity } from '../service/client';
 import { createLogger } from 'winston';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { gql } from 'apollo-server';
+import { Module, createApplication, testkit } from 'graphql-modules';
 
 describe('Catalog Module', () => {
   const worker = setupServer();
@@ -32,6 +33,20 @@ describe('Catalog Module', () => {
       baseUrl: mockCatalogBaseUrl,
     },
   });
+
+  const createMockApplication = (module: Module) => {
+    const application = createApplication({
+      modules: [module],
+      schemaBuilder(input) {
+        return makeExecutableSchema({
+          ...input,
+          inheritResolversFromInterfaces: true,
+        });
+      },
+    });
+
+    return application;
+  };
 
   setupRequestMockHandlers(worker);
 
@@ -59,20 +74,21 @@ describe('Catalog Module', () => {
       ];
 
       worker.use(
-        rest.get(`${mockCatalogBaseUrl}/catalog/entities`, (_, res, ctx) =>
+        rest.get(`${mockCatalogBaseUrl}/api/catalog/entities`, (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockResponse)),
         ),
       );
     });
 
     it('should call the catalog client when requesting entities', async () => {
-      const { schema } = await createModule({
-        config: mockConfig,
-        logger: createLogger(),
-      });
+      const app = createMockApplication(
+        await createModule({
+          config: mockConfig,
+          logger: createLogger(),
+        }),
+      );
 
-      const result = await execute({
-        schema,
+      const result = await testkit.execute(app, {
         document: gql`
           query {
             catalog {
@@ -116,18 +132,19 @@ describe('Catalog Module', () => {
         },
       ];
       worker.use(
-        rest.get(`${mockCatalogBaseUrl}/catalog/entities`, (_, res, ctx) =>
+        rest.get(`${mockCatalogBaseUrl}/api/catalog/entities`, (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockResponse)),
         ),
       );
 
-      const { schema } = await createModule({
-        config: mockConfig,
-        logger: createLogger(),
-      });
+      const app = createMockApplication(
+        await createModule({
+          config: mockConfig,
+          logger: createLogger(),
+        }),
+      );
 
-      const result = await execute({
-        schema,
+      const result = await testkit.execute(app, {
         document: gql`
           query {
             catalog {
@@ -167,18 +184,19 @@ describe('Catalog Module', () => {
         },
       ];
       worker.use(
-        rest.get(`${mockCatalogBaseUrl}/catalog/entities`, (_, res, ctx) =>
+        rest.get(`${mockCatalogBaseUrl}/api/catalog/entities`, (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockResponse)),
         ),
       );
 
-      const { schema } = await createModule({
-        config: mockConfig,
-        logger: createLogger(),
-      });
+      const app = createMockApplication(
+        await createModule({
+          config: mockConfig,
+          logger: createLogger(),
+        }),
+      );
 
-      const result = await execute({
-        schema,
+      const result = await testkit.execute(app, {
         document: gql`
           query {
             catalog {
@@ -217,18 +235,19 @@ describe('Catalog Module', () => {
         },
       ];
       worker.use(
-        rest.get(`${mockCatalogBaseUrl}/catalog/entities`, (_, res, ctx) =>
+        rest.get(`${mockCatalogBaseUrl}/api/catalog/entities`, (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockResponse)),
         ),
       );
 
-      const { schema } = await createModule({
-        config: mockConfig,
-        logger: createLogger(),
-      });
+      const app = createMockApplication(
+        await createModule({
+          config: mockConfig,
+          logger: createLogger(),
+        }),
+      );
 
-      const result = await execute({
-        schema,
+      const result = await testkit.execute(app, {
         document: gql`
           query {
             catalog {
@@ -267,18 +286,19 @@ describe('Catalog Module', () => {
         },
       ];
       worker.use(
-        rest.get(`${mockCatalogBaseUrl}/catalog/entities`, (_, res, ctx) =>
+        rest.get(`${mockCatalogBaseUrl}/api/catalog/entities`, (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockResponse)),
         ),
       );
 
-      const { schema } = await createModule({
-        config: mockConfig,
-        logger: createLogger(),
-      });
+      const app = createMockApplication(
+        await createModule({
+          config: mockConfig,
+          logger: createLogger(),
+        }),
+      );
 
-      const result = await execute({
-        schema,
+      const result = await testkit.execute(app, {
         document: gql`
           query {
             catalog {

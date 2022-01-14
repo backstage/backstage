@@ -1,5 +1,14 @@
 # @backstage/plugin-apache-airflow
 
+## 0.1.3
+
+### Patch Changes
+
+- 5333451def: Cleaned up API exports
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+
 ## 0.1.2
 
 ### Patch Changes

@@ -69,18 +69,16 @@ export async function createRouter(
     }
   });
 
-  router.get('/projects/id/:id', async (request, response) => {
-    const id = decodeURIComponent(request.params.id);
+  router.get('/projects/:idOrRef', async (request, response) => {
+    const idOrRef = decodeURIComponent(request.params.idOrRef);
+    let data;
 
-    const data = await dbHandler.getMetadataById(parseInt(id, 10));
+    if (/^-?\d+$/.test(idOrRef)) {
+      data = await dbHandler.getMetadataById(parseInt(idOrRef, 10));
+    } else {
+      data = await dbHandler.getMetadataByRef(idOrRef);
+    }
 
-    response.json({ status: 'ok', data: data });
-  });
-
-  router.get('/projects/ref/:ref', async (request, response) => {
-    const ref = decodeURIComponent(request.params.ref);
-
-    const data = await dbHandler.getMetadataByRef(ref);
     response.json({ status: 'ok', data: data });
   });
 

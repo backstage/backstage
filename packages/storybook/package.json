@@ -1,6 +1,6 @@
 {
   "name": "storybook",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Storybook build for components package",
   "private": true,
   "scripts": {
@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "@backstage/theme": "^0.2.0",
-    "@backstage/test-utils": "^0.2.1",
-    "@backstage/core-app-api": "^0.3.1",
-    "@backstage/core-plugin-api": "^0.4.1",
+    "@backstage/test-utils": "^0.2.2",
+    "@backstage/core-app-api": "^0.4.0",
+    "@backstage/core-plugin-api": "^0.5.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },

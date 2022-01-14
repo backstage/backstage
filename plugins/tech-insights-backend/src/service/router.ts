@@ -27,10 +27,12 @@ import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import { PersistenceContext } from './persistence/persistenceContext';
 import {
+  EntityName,
   EntityRef,
   parseEntityName,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { errorHandler } from '@backstage/backend-common';
 
 /**
  * @public
@@ -91,14 +93,26 @@ export async function createRouter<
 
     router.post('/checks/run/:namespace/:kind/:name', async (req, res) => {
       const { namespace, kind, name } = req.params;
-      try {
-        const { checks }: { checks: string[] } = req.body;
-        const entityTriplet = stringifyEntityRef({ namespace, kind, name });
-        const checkResult = await factChecker.runChecks(entityTriplet, checks);
-        return res.send(checkResult);
-      } catch (e) {
-        return res.status(500).json({ message: e.message }).send();
-      }
+      const { checks }: { checks: string[] } = req.body;
+      const entityTriplet = stringifyEntityRef({ namespace, kind, name });
+      const checkResult = await factChecker.runChecks(entityTriplet, checks);
+      return res.send(checkResult);
+    });
+
+    router.post('/checks/run', async (req, res) => {
+      const { checks, entities }: { checks: string[]; entities: EntityName[] } =
+        req.body;
+      const tasks = entities.map(async entity => {
+        const entityTriplet =
+          typeof entity === 'string' ? entity : stringifyEntityRef(entity);
+        const results = await factChecker.runChecks(entityTriplet, checks);
+        return {
+          entity: entityTriplet,
+          results,
+        };
+      });
+      const results = await Promise.all(tasks);
+      return res.send(results);
     });
   } else {
     logger.info(
@@ -153,5 +167,7 @@ export async function createRouter<
       ),
     );
   });
+
+  router.use(errorHandler());
   return router;
 }

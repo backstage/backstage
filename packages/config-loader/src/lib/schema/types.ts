@@ -81,6 +81,13 @@ type ValidationResult = {
    * The path in the key uses the form `/properties/<key>/items/additionalProperties/<leaf-key>`
    */
   visibilityBySchemaPath: Map<string, ConfigVisibility>;
+
+  /**
+   * The deprecated options that were discovered during validation.
+   *
+   * The path in the key uses the form `/<key>/<sub-key>/<array-index>/<leaf-key>`
+   */
+  deprecationByDataPath: Map<string, string>;
 };
 
 /**
@@ -124,6 +131,13 @@ export type ConfigSchemaProcessingOptions = {
    * Default: `false`.
    */
   withFilteredKeys?: boolean;
+
+  /**
+   * Whether or not to include the `deprecatedKeys` property in the output `AppConfig`s.
+   *
+   * Default: `true`.
+   */
+  withDeprecatedKeys?: boolean;
 };
 
 /**

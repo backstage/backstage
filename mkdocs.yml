@@ -126,7 +126,6 @@ nav:
       - Testing:
           - Testing with Jest: 'plugins/testing.md'
       - Publishing:
-          - Publishing: 'plugins/publishing.md'
           - Publish private: 'plugins/publish-private.md'
           - Add to Marketplace: 'plugins/add-to-marketplace.md'
           - Observability: 'plugins/observability.md'

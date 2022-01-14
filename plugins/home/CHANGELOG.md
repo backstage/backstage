@@ -1,5 +1,15 @@
 # @backstage/plugin-home
 
+## 0.4.10
+
+### Patch Changes
+
+- bdf1419d20: Adds two new home components - CompanyLogo and Toolkit.
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-search@0.5.5
+
 ## 0.4.9
 
 ### Patch Changes

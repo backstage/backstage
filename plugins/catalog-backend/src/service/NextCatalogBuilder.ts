@@ -23,7 +23,9 @@ import {
   FieldFormatEntityPolicy,
   makeValidator,
   NoForeignRootFieldsEntityPolicy,
+  parseEntityRef,
   SchemaValidEntityPolicy,
+  stringifyEntityRef,
   Validators,
 } from '@backstage/catalog-model';
 import {
@@ -33,7 +35,7 @@ import {
 } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
-import lodash from 'lodash';
+import lodash, { keyBy } from 'lodash';
 import { EntitiesCatalog, EntitiesSearchFilter } from '../catalog';
 import {
   DatabaseLocationsCatalog,
@@ -90,7 +92,14 @@ import { LocationService } from './types';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
 import { permissionRules as catalogPermissionRules } from '../permissions/rules';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '@backstage/plugin-permission-node';
+import {
+  PermissionRule,
+  createConditionTransformer,
+  createPermissionIntegrationRouter,
+} from '@backstage/plugin-permission-node';
+import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
+import { basicEntityFilter } from './request/basicEntityFilter';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -399,7 +408,38 @@ export class NextCatalogBuilder {
       parser,
       policy,
     });
-    const entitiesCatalog = new NextEntitiesCatalog(dbClient);
+    const unauthorizedEntitiesCatalog = new NextEntitiesCatalog(dbClient);
+    const entitiesCatalog = new AuthorizedEntitiesCatalog(
+      unauthorizedEntitiesCatalog,
+      permissions,
+      createConditionTransformer(this.permissionRules),
+    );
+    const permissionIntegrationRouter = createPermissionIntegrationRouter({
+      resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+      getResources: async (resourceRefs: string[]) => {
+        const { entities } = await unauthorizedEntitiesCatalog.entities({
+          filter: {
+            anyOf: resourceRefs.map(resourceRef => {
+              const { kind, namespace, name } = parseEntityRef(resourceRef);
+
+              return basicEntityFilter({
+                kind,
+                'metadata.namespace': namespace,
+                'metadata.name': name,
+              });
+            }),
+          },
+        });
+
+        const entitiesByRef = keyBy(entities, stringifyEntityRef);
+
+        return resourceRefs.map(
+          resourceRef =>
+            entitiesByRef[stringifyEntityRef(parseEntityRef(resourceRef))],
+        );
+      },
+      rules: this.permissionRules,
+    });
     const stitcher = new Stitcher(dbClient, logger);
 
     const locationStore = new DefaultLocationStore(dbClient);
@@ -435,7 +475,7 @@ export class NextCatalogBuilder {
       refreshService,
       logger,
       config,
-      permissionRules: this.permissionRules,
+      permissionIntegrationRouter,
     });
 
     await connectEntityProviders(processingDatabase, entityProviders);

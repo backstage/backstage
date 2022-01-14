@@ -1,5 +1,14 @@
 # @backstage/plugin-firehydrant
 
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+
 ## 0.1.11
 
 ### Patch Changes

@@ -35,6 +35,7 @@ import { pick } from 'lodash';
 import Ajv, { SchemaObject } from 'ajv';
 import * as validationSchema from './validation-schema.json';
 import { JSON_RULE_ENGINE_CHECK_TYPE } from '../constants';
+import { isError } from '@backstage/errors';
 
 const noopEvent = {
   type: 'noop',
@@ -117,7 +118,7 @@ export class JsonRulesEngineFactChecker
       if (hasAllFacts) {
         engine.addRule({ ...techInsightCheck.rule, event: noopEvent });
       } else {
-        this.logger.warn(
+        this.logger.debug(
           `Skipping ${
             rule.name
           } due to missing facts: ${techInsightCheck.factIds
@@ -139,7 +140,10 @@ export class JsonRulesEngineFactChecker
         Object.values(facts),
       );
     } catch (e) {
-      throw new Error(`Failed to run rules engine, ${e.message}`);
+      if (isError(e)) {
+        throw new Error(`Failed to run rules engine, ${e.message}`);
+      }
+      throw e;
     }
   }
 

@@ -1,5 +1,18 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.18
+
+### Patch Changes
+
+- 2260702efd: Properly exported all referenced types
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/backend-common@0.10.3
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+
 ## 0.1.17
 
 ### Patch Changes

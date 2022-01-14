@@ -83,9 +83,21 @@ export class ConfigReader implements Config {
     // Merge together all configs into a single config with recursive fallback
     // readers, giving the first config object in the array the lowest priority.
     return configs.reduce<ConfigReader>(
-      (previousReader, { data, context, filteredKeys }) => {
+      (previousReader, { data, context, filteredKeys, deprecatedKeys }) => {
         const reader = new ConfigReader(data, context, previousReader);
         reader.filteredKeys = filteredKeys;
+
+        if (deprecatedKeys) {
+          for (const { key, description } of deprecatedKeys) {
+            // eslint-disable-next-line no-console
+            console.warn(
+              `The configuration key '${key}' of ${context} is deprecated and may be removed soon. ${
+                description || ''
+              }`,
+            );
+          }
+        }
+
         return reader;
       },
       undefined!,

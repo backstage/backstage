@@ -13,6 +13,12 @@ export interface BooleanCheckResult extends CheckResult {
 }
 
 // @public
+export type BulkCheckResponse = Array<{
+  entity: string;
+  results: CheckResult[];
+}>;
+
+// @public
 export interface CheckResponse {
   description: string;
   factIds: string[];

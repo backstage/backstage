@@ -1,5 +1,44 @@
 # @backstage/cli
 
+## 0.11.0
+
+### Minor Changes
+
+- 14e980acee: ESLint upgraded to version 8 and all it's plugins updated to newest version.
+
+  If you use any custom plugins for ESLint please check compatibility.
+
+  ```diff
+  -    "@typescript-eslint/eslint-plugin": "^v4.33.0",
+  -    "@typescript-eslint/parser": "^v4.28.3",
+  +    "@typescript-eslint/eslint-plugin": "^5.9.0",
+  +    "@typescript-eslint/parser": "^5.9.0",
+  -    "eslint": "^7.30.0",
+  +    "eslint": "^8.6.0",
+  -    "eslint-plugin-import": "^2.20.2",
+  -    "eslint-plugin-jest": "^24.1.0",
+  -    "eslint-plugin-jsx-a11y": "^6.2.1",
+  +    "eslint-plugin-import": "^2.25.4",
+  +    "eslint-plugin-jest": "^25.3.4",
+  +    "eslint-plugin-jsx-a11y": "^6.5.1",
+  -    "eslint-plugin-react": "^7.12.4",
+  -    "eslint-plugin-react-hooks": "^4.0.0",
+  +    "eslint-plugin-react": "^7.28.0",
+  +    "eslint-plugin-react-hooks": "^4.3.0",
+  ```
+
+  Please consult changelogs from packages if you find any problems.
+
+### Patch Changes
+
+- f302d24d34: Switch Webpack minification to use `esbuild` instead of `terser`.
+- bee7082094: Update `config/eslint.js` to forbid imports of `@material-ui/icons/` as well.
+- 7946418729: Switched to using `@manypkg/get-packages` to list monorepo packages, which provides better support for different kind of monorepo setups.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/errors@0.2.0
+  - @backstage/config-loader@0.9.2
+
 ## 0.10.5
 
 ### Patch Changes

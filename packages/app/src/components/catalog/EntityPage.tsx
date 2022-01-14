@@ -129,6 +129,7 @@ import {
   EntityNewRelicDashboardContent,
   EntityNewRelicDashboardCard,
 } from '@backstage/plugin-newrelic-dashboard';
+import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
 
 import React, { ReactNode, useMemo, useState } from 'react';
 
@@ -183,6 +184,10 @@ export const cicdContent = (
 
     <EntitySwitch.Case if={isTravisciAvailable}>
       <EntityTravisCIContent />
+    </EntitySwitch.Case>
+
+    <EntitySwitch.Case if={isGoCdAvailable}>
+      <EntityGoCdContent />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case if={isGithubActionsAvailable}>

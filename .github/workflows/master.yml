@@ -3,7 +3,7 @@ name: Main Master Build
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [master, release-*-patch]
 
 jobs:
   build:

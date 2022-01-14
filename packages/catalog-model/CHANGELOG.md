@@ -1,5 +1,13 @@
 # @backstage/catalog-model
 
+## 0.9.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/errors@0.2.0
+
 ## 0.9.8
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 0.7.1
+
+### Patch Changes
+
+- 3b4d8caff6: Adds a new GitHub credentials provider (DefaultGithubCredentialsProvider). It handles multiple app configurations. It looks up the app configuration based on the url.
+- 5333451def: Cleaned up API exports
+- Updated dependencies
+  - @backstage/config@0.1.12
+
 ## 0.7.0
 
 ### Minor Changes

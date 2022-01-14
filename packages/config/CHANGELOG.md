@@ -1,5 +1,11 @@
 # @backstage/config
 
+## 0.1.12
+
+### Patch Changes
+
+- f5343e7c1a: The `ConfigReader#get` method now always returns a deep clone of the configuration data.
+
 ## 0.1.11
 
 ### Patch Changes
