@@ -64,7 +64,10 @@ import {
 } from '../routing/collectors';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { RouteTracker } from '../routing/RouteTracker';
-import { validateRoutes } from '../routing/validation';
+import {
+  validateRouteParameters,
+  validateRouteBindings,
+} from '../routing/validation';
 import { AppContextProvider } from './AppContext';
 import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
 import {
@@ -193,7 +196,7 @@ export class AppManager implements BackstageApp {
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
   private readonly defaultApis: Iterable<AnyApiFactory>;
-  private readonly bindRoutes: AppOptions['bindRoutes'];
+  private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
 
   private readonly appIdentityProxy = new AppIdentityProxy();
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
@@ -206,7 +209,7 @@ export class AppManager implements BackstageApp {
     this.themes = options.themes as AppTheme[];
     this.configLoader = options.configLoader ?? defaultConfigLoader;
     this.defaultApis = options.defaultApis ?? [];
-    this.bindRoutes = options.bindRoutes;
+    this.routeBindings = generateBoundRoutes(options.bindRoutes);
     this.apiFactoryRegistry = new ApiFactoryRegistry();
   }
 
@@ -224,6 +227,9 @@ export class AppManager implements BackstageApp {
 
   getProvider(): ComponentType<{}> {
     const appContext = new AppContextImpl(this);
+
+    // We only validate routes once
+    let routesHaveBeenValidated = false;
 
     const Provider = ({ children }: PropsWithChildren<{}>) => {
       const appThemeApi = useMemo(
@@ -245,8 +251,6 @@ export class AppManager implements BackstageApp {
             },
           });
 
-          validateRoutes(result.routePaths, result.routeParents);
-
           // TODO(Rugvip): Restructure the public API so that we can get an immediate view of
           //               the app, rather than having to wait for the provider to render.
           //               For now we need to push the additional plugins we find during
@@ -258,6 +262,15 @@ export class AppManager implements BackstageApp {
           this.getApiHolder();
           return result;
         }, [children]);
+
+      if (!routesHaveBeenValidated) {
+        routesHaveBeenValidated = true;
+        validateRouteParameters(routePaths, routeParents);
+        validateRouteBindings(
+          this.routeBindings,
+          this.plugins as Iterable<BackstagePlugin<any, any>>,
+        );
+      }
 
       const loadedConfig = useConfigLoader(
         this.configLoader,
@@ -318,7 +331,7 @@ export class AppManager implements BackstageApp {
                 routePaths={routePaths}
                 routeParents={routeParents}
                 routeObjects={routeObjects}
-                routeBindings={generateBoundRoutes(this.bindRoutes)}
+                routeBindings={this.routeBindings}
                 basePath={getBasePath(loadedConfig.api)}
               >
                 {children}
