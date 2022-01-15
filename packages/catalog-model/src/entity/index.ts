@@ -21,6 +21,7 @@ export {
   VIEW_URL_ANNOTATION,
 } from './constants';
 export type {
+  AlphaEntity,
   Entity,
   EntityLink,
   EntityMeta,
@@ -29,9 +30,9 @@ export type {
 } from './Entity';
 export type { EntityEnvelope } from './EntityEnvelope';
 export type {
-  UNSTABLE_EntityStatus,
-  UNSTABLE_EntityStatusItem,
-  UNSTABLE_EntityStatusLevel,
+  EntityStatus,
+  EntityStatusItem,
+  EntityStatusLevel,
 } from './EntityStatus';
 export * from './policies';
 export {

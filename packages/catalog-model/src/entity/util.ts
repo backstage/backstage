@@ -16,7 +16,7 @@
 
 import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import { Entity } from './Entity';
+import { Entity, AlphaEntity } from './Entity';
 
 /**
  * Generates a new random UID for an entity.
@@ -89,9 +89,9 @@ export function entityHasChanges(previous: Entity, next: Entity): boolean {
 
   // Remove things that we explicitly do not compare
   delete e1.relations;
-  delete e1.status;
+  delete (e1 as AlphaEntity).status;
   delete e2.relations;
-  delete e2.status;
+  delete (e2 as AlphaEntity).status;
 
   return !lodash.isEqual(e1, e2);
 }

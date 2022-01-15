@@ -9,6 +9,11 @@ import { JsonValue } from '@backstage/types';
 import { SerializedError } from '@backstage/errors';
 import * as yup from 'yup';
 
+// @alpha
+export interface AlphaEntity extends Entity {
+  status?: EntityStatus;
+}
+
 // @public @deprecated
 export const analyzeLocationSchema: yup.SchemaOf<{
   location: LocationSpec;
@@ -116,7 +121,6 @@ export type Entity = {
   metadata: EntityMeta;
   spec?: JsonObject;
   relations?: EntityRelation[];
-  status?: UNSTABLE_EntityStatus;
 };
 
 // @public
@@ -224,6 +228,22 @@ export type EntityRelationSpec = {
 export function entitySchemaValidator<T extends Entity = Entity>(
   schema?: unknown,
 ): (data: unknown) => T;
+
+// @alpha
+export type EntityStatus = {
+  items?: EntityStatusItem[];
+};
+
+// @alpha
+export type EntityStatusItem = {
+  type: string;
+  level: EntityStatusLevel;
+  message: string;
+  error?: SerializedError;
+};
+
+// @alpha
+export type EntityStatusLevel = 'info' | 'warning' | 'error';
 
 // @public
 export class FieldFormatEntityPolicy implements EntityPolicy {
@@ -550,22 +570,6 @@ export interface TemplateEntityV1beta2 extends Entity {
 // @public
 export const templateEntityV1beta2Validator: KindValidator;
 
-// @alpha
-export type UNSTABLE_EntityStatus = {
-  items?: UNSTABLE_EntityStatusItem[];
-};
-
-// @alpha
-export type UNSTABLE_EntityStatusItem = {
-  type: string;
-  level: UNSTABLE_EntityStatusLevel;
-  message: string;
-  error?: SerializedError;
-};
-
-// @alpha
-export type UNSTABLE_EntityStatusLevel = 'info' | 'warning' | 'error';
-
 // @public
 interface UserEntityV1alpha1 extends Entity {
   // (undocumented)
@@ -603,8 +607,4 @@ export type Validators = {
 
 // @public
 export const VIEW_URL_ANNOTATION = 'backstage.io/view-url';
-
-// Warnings were encountered during analysis:
-//
-// src/entity/Entity.d.ts:41:5 - (ae-incompatible-release-tags) The symbol "status" is marked as @public, but its signature references "UNSTABLE_EntityStatus" which is marked as @alpha
 ```
