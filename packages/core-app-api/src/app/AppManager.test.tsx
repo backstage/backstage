@@ -34,6 +34,9 @@ import {
   createSubRouteRef,
   createRoutableExtension,
   analyticsApiRef,
+  useApi,
+  identityApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { generateBoundRoutes, AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
@@ -551,5 +554,107 @@ describe('Integration Test', () => {
         'The above error occurred in the <Provider> component',
       ),
     ]);
+  });
+
+  it('explodes if identityApi is directly used in a given SignInPage', async () => {
+    // Sign-in page that uses APIs it oughtn't to directly!
+    const OffendingSignInPage = () => {
+      try {
+        useApi(identityApiRef);
+        return <>No problem.</>;
+      } catch (e) {
+        return <>{(e as any).message}</>;
+      }
+    };
+
+    const app = new AppManager({
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          Provider: ({ children }) => <>{children}</>,
+        },
+      ],
+      icons,
+      components: {
+        ...components,
+        SignInPage: OffendingSignInPage,
+      },
+      configLoader: async () => [],
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+    const { getByText } = await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<ExposedComponent />} />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    expect(
+      getByText('No implementation available for apiRef{core.identity}'),
+    ).toBeInTheDocument();
+  });
+
+  it('explodes if identityApi is indirectly used in a given SignInPage', async () => {
+    // Set up fetchApi with a dependency on identityApi.
+    const apis = [
+      createApiFactory({
+        api: fetchApiRef,
+        deps: { identityApiRef },
+        factory: () => ({} as any),
+      }),
+    ];
+
+    // Sign-in page that uses APIs it oughtn't to, but indirectly!
+    const OffendingSignInPage = () => {
+      try {
+        useApi(fetchApiRef);
+        return <>No problem.</>;
+      } catch (e) {
+        return <>{(e as any).message}</>;
+      }
+    };
+
+    const app = new AppManager({
+      apis,
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          Provider: ({ children }) => <>{children}</>,
+        },
+      ],
+      icons,
+      components: {
+        ...components,
+        SignInPage: OffendingSignInPage,
+      },
+      configLoader: async () => [],
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+    const { getByText } = await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<ExposedComponent />} />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    expect(
+      getByText(
+        'No API factory available for dependency apiRef{core.identity} of dependent apiRef{core.fetch}',
+      ),
+    ).toBeInTheDocument();
   });
 });
