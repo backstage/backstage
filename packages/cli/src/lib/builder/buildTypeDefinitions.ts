@@ -101,7 +101,9 @@ export async function buildTypeDefinitions() {
 
       dtsRollup: {
         enabled: true,
-        untrimmedFilePath: paths.resolveTarget('dist/index.d.ts'),
+        untrimmedFilePath: paths.resolveTarget('dist/index.alpha.d.ts'),
+        betaTrimmedFilePath: paths.resolveTarget('dist/index.beta.d.ts'),
+        publicTrimmedFilePath: paths.resolveTarget('dist/index.d.ts'),
       },
 
       newlineKind: 'lf',
