@@ -202,12 +202,12 @@ with a smaller collection of plugins.
 ### Plugin Packages
 
 A typical plugin consists of up to five packages, two frontend ones, two
-backend, and one isomorphic packages. All packages within the plugin must share
+backend, and one isomorphic package. All packages within the plugin must share
 a common prefix, typically of the form `@<scope>/plugin-<plugin-id>`, but
 alternatives like `backstage-plugin-<plugin-id>` or
 `@scope/backstage-plugin-<plugin-id>` are also valid. Along with this prefix,
 each of the packages have their own unique suffix that denotes their role. In
-addition to these five plugin packages it's also possible for to a plugin to
+addition to these five plugin packages it's also possible for a plugin to
 have additional frontend and backend modules that can be installed to enable
 optional features. For a full list of suffixes and their roles, see the
 [Plugin Package Structure ADR](../architecture-decisions/adr011-plugin-package-structure.md).
@@ -230,7 +230,7 @@ The frontend packages are grouped into two main groups. The first one is
 as well as provide a foundation for the plugin libraries to rely upon.
 
 The second group is the rest of the shared packages, further divided into
-"Frontend Plugin Core" and "Frontend Libraries". The core packages that are
+"Frontend Plugin Core" and "Frontend Libraries". The core packages are
 considered particularly stable and form the core of the frontend framework.
 Their most important role is to form the boundary around each plugin and provide
 a set of tools that helps you combine a collection of plugins into a running
@@ -246,7 +246,7 @@ however likely to change in the future.
 
 ### Common Packages
 
-The common packages are the packages are effectively depended on by all other
+The common packages are the packages effectively depended on by all other
 pages. This is a much smaller set of packages but they are also very pervasive.
 Because the common packages are isomorphic and must execute both in the frontend
 and backend, they are never allowed to depend on any of the frontend of backend
