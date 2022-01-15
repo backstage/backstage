@@ -29,7 +29,7 @@ import { CatalogIdentityClient } from '../lib/catalog';
  *
  * @public
  */
-export type AuthContext = {
+export type AuthResolverContext = {
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
   logger: Logger;
@@ -270,7 +270,7 @@ export type SignInInfo<TAuthResult> = {
  */
 export type SignInResolver<TAuthResult> = (
   info: SignInInfo<TAuthResult>,
-  context: AuthContext,
+  context: AuthResolverContext,
 ) => Promise<BackstageSignInResult>;
 
 /**
@@ -296,7 +296,7 @@ export type AuthHandlerResult = { profile: ProfileInfo };
  */
 export type AuthHandler<TAuthResult> = (
   input: TAuthResult,
-  context?: AuthContext,
+  context: AuthResolverContext,
 ) => Promise<AuthHandlerResult>;
 
 export type StateEncoder = (

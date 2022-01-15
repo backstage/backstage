@@ -1,5 +1,8 @@
 ---
-'@backstage/plugin-auth-backend': patch
+'@backstage/plugin-auth-backend': minor
 ---
 
-Add new authentication provider: OAuth2Proxy
+Add new authentication provider to support the oauth2-proxy.
+
+**BREAKING** The `AuthHandler` requires now an `AuthResolverContext` parameter. This aligns with the
+behavior of the `SignInResolver`.

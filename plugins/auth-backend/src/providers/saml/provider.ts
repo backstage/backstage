@@ -93,12 +93,18 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
     res: express.Response,
   ): Promise<void> {
     try {
+      const context = {
+        logger: this.logger,
+        catalogIdentityClient: this.catalogIdentityClient,
+        tokenIssuer: this.tokenIssuer,
+      };
+
       const { result } = await executeFrameHandlerStrategy<SamlAuthResult>(
         req,
         this.strategy,
       );
 
-      const { profile } = await this.authHandler(result);
+      const { profile } = await this.authHandler(result, context);
 
       const response: AuthResponse<{}> = {
         profile,
@@ -111,11 +117,7 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
             result,
             profile,
           },
-          {
-            tokenIssuer: this.tokenIssuer,
-            catalogIdentityClient: this.catalogIdentityClient,
-            logger: this.logger,
-          },
+          context,
         );
 
         response.backstageIdentity =

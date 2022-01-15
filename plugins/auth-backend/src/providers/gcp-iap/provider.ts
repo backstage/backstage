@@ -71,16 +71,17 @@ export class GcpIapProvider implements AuthProviderRouteHandlers {
       req.header(IAP_JWT_HEADER),
       this.tokenValidator,
     );
+    const context = {
+      logger: this.logger,
+      catalogIdentityClient: this.catalogIdentityClient,
+      tokenIssuer: this.tokenIssuer,
+    };
 
-    const { profile } = await this.authHandler(result);
+    const { profile } = await this.authHandler(result, context);
 
     const backstageIdentity = await this.signInResolver(
       { profile, result },
-      {
-        tokenIssuer: this.tokenIssuer,
-        catalogIdentityClient: this.catalogIdentityClient,
-        logger: this.logger,
-      },
+      context,
     );
 
     const response: GcpIapResponse = {

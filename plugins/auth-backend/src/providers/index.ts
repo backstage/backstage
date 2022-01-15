@@ -39,7 +39,7 @@ export type {
   AuthProviderFactoryOptions,
   AuthProviderFactory,
   AuthHandler,
-  AuthContext,
+  AuthResolverContext,
   AuthHandlerResult,
   SignInResolver,
   SignInInfo,

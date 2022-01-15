@@ -143,7 +143,12 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
     const photo = await this.getUserPhoto(result.accessToken);
     result.fullProfile.photos = photo ? [{ value: photo }] : undefined;
 
-    const { profile } = await this.authHandler(result);
+    const context = {
+      logger: this.logger,
+      catalogIdentityClient: this.catalogIdentityClient,
+      tokenIssuer: this.tokenIssuer,
+    };
+    const { profile } = await this.authHandler(result, context);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -161,11 +166,7 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        {
-          tokenIssuer: this.tokenIssuer,
-          catalogIdentityClient: this.catalogIdentityClient,
-          logger: this.logger,
-        },
+        context,
       );
     }
 

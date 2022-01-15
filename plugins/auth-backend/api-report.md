@@ -60,16 +60,9 @@ export type Auth0ProviderOptions = {
 };
 
 // @public
-export type AuthContext = {
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger_2;
-};
-
-// @public
 export type AuthHandler<TAuthResult> = (
   input: TAuthResult,
-  context?: AuthContext,
+  context: AuthResolverContext,
 ) => Promise<AuthHandlerResult>;
 
 // @public
@@ -106,6 +99,13 @@ export interface AuthProviderRouteHandlers {
   refresh?(req: express.Request, res: express.Response): Promise<void>;
   start(req: express.Request, res: express.Response): Promise<void>;
 }
+
+// @public
+export type AuthResolverContext = {
+  tokenIssuer: TokenIssuer;
+  catalogIdentityClient: CatalogIdentityClient;
+  logger: Logger_2;
+};
 
 // Warning: (ae-missing-release-tag) "AuthResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -691,7 +691,7 @@ export type SignInInfo<TAuthResult> = {
 // @public
 export type SignInResolver<TAuthResult> = (
   info: SignInInfo<TAuthResult>,
-  context: AuthContext,
+  context: AuthResolverContext,
 ) => Promise<BackstageSignInResult>;
 
 // Warning: (ae-missing-release-tag) "TokenIssuer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

@@ -182,17 +182,18 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
   }
 
   private async handleResult(result: AwsAlbResult): Promise<AwsAlbResponse> {
-    const { profile } = await this.authHandler(result);
+    const context = {
+      tokenIssuer: this.tokenIssuer,
+      catalogIdentityClient: this.catalogIdentityClient,
+      logger: this.logger,
+    };
+    const { profile } = await this.authHandler(result, context);
     const backstageIdentity = await this.signInResolver(
       {
         result,
         profile,
       },
-      {
-        tokenIssuer: this.tokenIssuer,
-        catalogIdentityClient: this.catalogIdentityClient,
-        logger: this.logger,
-      },
+      context,
     );
 
     return {
