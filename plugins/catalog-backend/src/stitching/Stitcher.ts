@@ -16,9 +16,9 @@
 
 import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
 import {
-  Entity,
+  AlphaEntity,
   parseEntityRef,
-  UNSTABLE_EntityStatusItem,
+  EntityStatusItem,
 } from '@backstage/catalog-model';
 import { SerializedError, stringifyError } from '@backstage/errors';
 import { Knex } from 'knex';
@@ -152,9 +152,9 @@ export class Stitcher {
 
     // Grab the processed entity and stitch all of the relevant data into
     // it
-    const entity = JSON.parse(processedEntity) as Entity;
+    const entity = JSON.parse(processedEntity) as AlphaEntity;
     const isOrphan = Number(incomingReferenceCount) === 0;
-    let statusItems: UNSTABLE_EntityStatusItem[] = [];
+    let statusItems: EntityStatusItem[] = [];
 
     if (isOrphan) {
       this.logger.debug(`${entityRef} is an orphan`);

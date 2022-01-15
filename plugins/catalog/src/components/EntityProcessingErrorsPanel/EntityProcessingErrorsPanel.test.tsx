@@ -24,7 +24,7 @@ import {
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import React from 'react';
 import { EntityProcessingErrorsPanel } from './EntityProcessingErrorsPanel';
-import { Entity, getEntityName } from '@backstage/catalog-model';
+import { AlphaEntity, getEntityName } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 
 describe('<EntityProcessErrors />', () => {
@@ -34,7 +34,7 @@ describe('<EntityProcessErrors />', () => {
   const apis = TestApiRegistry.from([catalogApiRef, { getEntityAncestors }]);
 
   it('renders EntityProcessErrors if the entity has errors', async () => {
-    const entity: Entity = {
+    const entity: AlphaEntity = {
       apiVersion: 'v1',
       kind: 'Component',
       metadata: {
@@ -122,7 +122,7 @@ describe('<EntityProcessErrors />', () => {
   });
 
   it('renders EntityProcessErrors if the parent entity has errors', async () => {
-    const entity: Entity = {
+    const entity: AlphaEntity = {
       apiVersion: 'v1',
       kind: 'Component',
       metadata: {
@@ -136,7 +136,7 @@ describe('<EntityProcessErrors />', () => {
       },
     };
 
-    const parent: Entity = {
+    const parent: AlphaEntity = {
       apiVersion: 'v1',
       kind: 'Component',
       metadata: {
