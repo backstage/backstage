@@ -35,6 +35,15 @@ export interface Config {
         scriptSrc?: string;
 
         /**
+         * When set to `true`, all pageviews and hits are deferred until an
+         * identity is known. Guarantees that all data sent to GA correlates
+         * to a user identity; prevents GA from ever receiving events for
+         * sessions in which a user does not sign in.
+         * @visibility frontend
+         */
+        requireIdentity?: boolean;
+
+        /**
          * Whether or not to log analytics debug statements to the console.
          * Defaults to false.
          *

@@ -15,13 +15,16 @@
  */
 
 import ReactGA from 'react-ga';
+import { EntityName, parseEntityRef } from '@backstage/catalog-model';
 import {
   AnalyticsApi,
   AnalyticsContextValue,
   AnalyticsEventAttributes,
   AnalyticsEvent,
+  IdentityApi,
 } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
+import { DeferredCapture } from '../../../util';
 
 type CustomDimensionOrMetricConfig = {
   type: 'dimension' | 'metric';
@@ -31,24 +34,44 @@ type CustomDimensionOrMetricConfig = {
 };
 
 /**
+ * @public
+ */
+export type GoogleAnalyticsDependencies = {
+  identity?: IdentityApi;
+};
+
+/**
  * Google Analytics API provider for the Backstage Analytics API.
+ * @public
  */
 export class GoogleAnalytics implements AnalyticsApi {
   private readonly cdmConfig: CustomDimensionOrMetricConfig[];
+  private readonly capture: DeferredCapture;
 
   /**
    * Instantiate the implementation and initialize ReactGA.
    */
   private constructor(options: {
+    identity?: IdentityApi;
     cdmConfig: CustomDimensionOrMetricConfig[];
+    defer?: boolean;
     trackingId: string;
     scriptSrc?: string;
     testMode: boolean;
     debug: boolean;
   }) {
-    const { cdmConfig, trackingId, scriptSrc, testMode, debug } = options;
+    const {
+      cdmConfig,
+      defer = false,
+      trackingId,
+      identity,
+      scriptSrc,
+      testMode,
+      debug,
+    } = options;
 
     this.cdmConfig = cdmConfig;
+    this.capture = new DeferredCapture({ defer });
 
     // Initialize Google Analytics.
     ReactGA.initialize(trackingId, {
@@ -57,15 +80,21 @@ export class GoogleAnalytics implements AnalyticsApi {
       gaAddress: scriptSrc,
       titleCase: false,
     });
+
+    // If IdentityApi was provided, set the user ID.
+    if (identity) {
+      this.setUserFrom(identity);
+    }
   }
 
   /**
    * Instantiate a fully configured GA Analytics API implementation.
    */
-  static fromConfig(config: Config) {
+  static fromConfig(config: Config, deps: GoogleAnalyticsDependencies = {}) {
     // Get all necessary configuration.
     const trackingId = config.getString('app.analytics.ga.trackingId');
     const scriptSrc = config.getOptionalString('app.analytics.ga.scriptSrc');
+    const defer = config.getOptionalBoolean('app.analytics.ga.requireIdentity');
     const debug = config.getOptionalBoolean('app.analytics.ga.debug') ?? false;
     const testMode =
       config.getOptionalBoolean('app.analytics.ga.testMode') ?? false;
@@ -83,8 +112,16 @@ export class GoogleAnalytics implements AnalyticsApi {
           };
         }) ?? [];
 
+    if (defer && !deps.identity) {
+      throw new Error(
+        'Invalid config: identity API must be provided to deps when requireIdentity is set',
+      );
+    }
+
     // Return an implementation instance.
     return new GoogleAnalytics({
+      ...deps,
+      defer,
       trackingId,
       scriptSrc,
       cdmConfig,
@@ -103,16 +140,11 @@ export class GoogleAnalytics implements AnalyticsApi {
     const customMetadata = this.getCustomDimensionMetrics(context, attributes);
 
     if (action === 'navigate' && context.extension === 'App') {
-      // Set any/all custom dimensions.
-      if (Object.keys(customMetadata).length) {
-        ReactGA.set(customMetadata);
-      }
-
-      ReactGA.pageview(subject);
+      this.capture.pageview(subject, customMetadata);
       return;
     }
 
-    ReactGA.event({
+    this.capture.event({
       category: context.extension || 'App',
       action,
       label: subject,
@@ -150,5 +182,68 @@ export class GoogleAnalytics implements AnalyticsApi {
     });
 
     return customDimensionsMetrics;
+  }
+
+  /**
+   * Sets the GA userId, based on the `userEntityRef` set on the backstage
+   * identity loaded from a given Backstage Identity API instance. Because
+   * Google forbids sending any PII (including on the userId field), we hash
+   * the namespace and name of the `userEntityRef` on behalf of integrators:
+   *
+   * - With value `User:default/name`, userId becomes `sha256(default/name)`
+   * - With `User:name`, userId is `sha256(name)`
+   * - With `name`, userId is `sha256(name)`
+   *
+   * If an integrator wishes to use an alternative hashing mechanism or an
+   * entirely different value, they may do so by passing a dummy Identity API
+   * implementation which returns a `userEntityRef` whose kind is the literal
+   * string `PrivateUser`:
+   *
+   * - With value `PrivateUser:a0n3b4n3`, userId becomes `a0n3b4n3`
+   * - With `PrivateUser:default/a0n3b4n3`, userId is `default/a0n3b4n3`
+   *
+   * Note: this feature requires that an integrator has set up a Google
+   * Analytics User ID view in the property used to track Backstage.
+   */
+  private async setUserFrom(identityApi: IdentityApi) {
+    const { userEntityRef } = await identityApi.getBackstageIdentity();
+    const entity = parseEntityRef(userEntityRef);
+
+    // Prevent PII from being passed to Google Analytics.
+    const userId = await this.getPrivateUserId(entity);
+
+    // Set the user ID.
+    ReactGA.set({ userId });
+
+    // Notify the deferred capture mechanism that it may proceed.
+    this.capture.setReady();
+  }
+
+  /**
+   * Returns a PII-free user ID for use in Google Analytics.
+   */
+  private getPrivateUserId(entity: EntityName): Promise<string> {
+    const userId = entity.namespace
+      ? `${entity.namespace}/${entity.name}`
+      : entity.name;
+
+    // Mechanism allowing integrators to provide their own hashed values.
+    if (entity.kind === 'PrivateUser') {
+      return Promise.resolve(userId);
+    }
+
+    return this.hash(userId);
+  }
+
+  /**
+   * Simple hash function; relies on web cryptography + the sha-256 algorithm.
+   */
+  private async hash(value: string): Promise<string> {
+    const digest = await crypto.subtle.digest(
+      'sha-256',
+      new TextEncoder().encode(value),
+    );
+    const hashArray = Array.from(new Uint8Array(digest));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
 }

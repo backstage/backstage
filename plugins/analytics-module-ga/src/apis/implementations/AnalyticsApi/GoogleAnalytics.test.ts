@@ -141,20 +141,13 @@ describe('GoogleAnalytics', () => {
         context,
       });
 
-      // Expect a set command first.
-      const [setCommand, setData] = ReactGA.testModeAPI.calls[1];
-      expect(setCommand).toBe('set');
-      expect(setData).toMatchObject({
-        dimension1: context.pluginId,
-        metric1: context.releaseNum,
-      });
-
-      // Followed by a send command.
-      const [sendCommand, sendData] = ReactGA.testModeAPI.calls[2];
-      expect(sendCommand).toBe('send');
-      expect(sendData).toMatchObject({
+      const [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
         hitType: 'pageview',
         page: '/a-page',
+        dimension1: context.pluginId,
+        metric1: context.releaseNum,
       });
     });
 
