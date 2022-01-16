@@ -554,14 +554,6 @@ export type EntitiesCatalog = {
       authorizationToken?: string;
     },
   ): Promise<void>;
-  batchAddOrUpdateEntities?(
-    requests: EntityUpsertRequest[],
-    options?: {
-      locationId?: string;
-      dryRun?: boolean;
-      outputEntities?: boolean;
-    },
-  ): Promise<EntityUpsertResponse[]>;
   entityAncestry(entityRef: string): Promise<EntityAncestryResponse>;
 };
 
@@ -688,22 +680,6 @@ export type EntityProviderMutation =
       added: DeferredEntity[];
       removed: DeferredEntity[];
     };
-
-// Warning: (ae-missing-release-tag) "EntityUpsertRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export type EntityUpsertRequest = {
-  entity: Entity;
-  relations: EntityRelationSpec[];
-};
-
-// Warning: (ae-missing-release-tag) "EntityUpsertResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export type EntityUpsertResponse = {
-  entityId: string;
-  entity?: Entity;
-};
 
 // Warning: (ae-missing-release-tag) "FileReaderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

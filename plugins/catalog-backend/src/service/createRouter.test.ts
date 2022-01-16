@@ -38,7 +38,6 @@ describe('createRouter readonly disabled', () => {
     entitiesCatalog = {
       entities: jest.fn(),
       removeEntityByUid: jest.fn(),
-      batchAddOrUpdateEntities: jest.fn(),
       entityAncestry: jest.fn(),
     };
     locationService = {
@@ -332,7 +331,6 @@ describe('createRouter readonly enabled', () => {
     entitiesCatalog = {
       entities: jest.fn(),
       removeEntityByUid: jest.fn(),
-      batchAddOrUpdateEntities: jest.fn(),
       entityAncestry: jest.fn(),
     };
     locationService = {
@@ -466,7 +464,6 @@ describe('NextRouter permissioning', () => {
     entitiesCatalog = {
       entities: jest.fn(),
       removeEntityByUid: jest.fn(),
-      batchAddOrUpdateEntities: jest.fn(),
       entityAncestry: jest.fn(),
     };
     locationService = {

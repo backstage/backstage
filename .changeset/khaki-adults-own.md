@@ -36,6 +36,10 @@ The following classes and interfaces have been removed:
 - `DbLocationsRow`
 - `DbLocationsRowWithStatus`
 - `DbPageInfo`
+- `EntitiesCatalog.batchAddOrUpdateEntities` (was only used by the legacy
+  engine)
+- `EntityUpsertRequest`
+- `EntityUpsertResponse`
 - `HigherOrderOperation`
 - `HigherOrderOperations`
 - `LocationReader`

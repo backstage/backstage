@@ -295,8 +295,4 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
       items,
     };
   }
-
-  async batchAddOrUpdateEntities(): Promise<never> {
-    throw new Error('Not implemented');
-  }
 }
