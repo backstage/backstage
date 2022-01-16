@@ -219,10 +219,17 @@ The frontend development bundling is currently based on
 [Webpack](https://webpack.js.org/) and
 [Webpack Dev Server](https://webpack.js.org/configuration/dev-server/). The
 Webpack configuration itself varies very little between the frontend development
-and production bundling, and we'll dive more into the configuration in the
+and production bundling, so we'll dive more into the configuration in the
 production section below. The main differences are that `process.env.NODE_ENV`
 is set to `'development'`, minification is disabled, and there is support for
 [React Hot Loader](https://github.com/gaearon/react-hot-loader).
+
+If you prefer to run type checking and linting as part of the Webpack process,
+you can enable usage of the
+[`ForkTsCheckerWebpackPlugin`](https://www.npmjs.com/package/fork-ts-checker-webpack-plugin)
+by passing the `--check` flag. However, the recommended way to handle these
+checks is to use an editor that has built-in support for them, as well as
+running them in CI and the occasional manual run when needed.
 
 #### Frontend Production Bundling
 
@@ -233,15 +240,42 @@ build a production bundle of an individual plugin. The output of the bundling
 process is written to the `dist` folder in the package.
 
 Just like the development bundling, the production bundling is based on
-[Webpack](https://webpack.js.org/). It also uses the
+[Webpack](https://webpack.js.org/). It uses the
+[`HtmlWebpackPlugin`](https://webpack.js.org/plugins/html-webpack-plugin/) to
+generate the `index.html` entry point, and includes a default template that's
+included with the CLI. You can replace the bundled template by adding
+`public/index.html` to your package. The template has access to two global
+constants, `publicPath` which is the public base path that the bundle is
+intended to be served at, as well as `config` which is your regular frontend
+scoped configuration from `@backstage/config`.
 
-While the output of the production bundling is written to the `dist` folder The
-output of the bundling process is split into two types of files. The first is a
-set of generic assets with plain names in the root of the `dist/` folder. You
-will want to serve these with short-lived caching or no caching at all. The
-second is a set of files with hashes in their names in the `dist/static/` folder
-that are intended to be cached for a much longer time
+The Webpack configuration also includes a custom plugin for resolving packages
+correctly from linked in packages, the `ModuleScopePlugin` from
+[`react-dev-utils`](https://www.npmjs.com/package/react-dev-utils) which makes
+sure that imports don't react outside the package, a few fallbacks for some
+Node.js modules like `'buffer'` and `'events'`, a plugin that writes the
+frontend configuration to the bundle as `process.env.APP_CONFIG` and build
+information as `process.env.BUILD_INFO`, and lastly minification handled by
+[esbuild](https://esbuild.github.io/) using the
+[`esbuild-loader`](https://npm.im/esbuild-loader). There are of course also a
+set of loaders configured, which is covered in the
+[transpilation section](#loaders-and-transpilation).
+
+The output of the bundling process is split into two types of files. The first
+is a set of generic assets with plain names in the root of the `dist/` folder.
+You will want to serve these with short-lived caching or no caching at all. The
+second is a set of hashed static assets in the `dist/static/`, which you can
+configure to be cached for a much longer time.
+
+The configuration of static assets is optimized for frequent changes and serving
+over HTTP 2.0. The assets are aggressively split into small chunks, which means
+the browser has to make a lot of small requests to load them. The upside is that
+changes to individual plugins and packages will invalidate a smaller number of
+files, thereby allowing for rapid development without too much impact on the
+page load performance.
 
 #### Backend Development Bundling
 
 #### Backend Production Bundling
+
+## Loaders and Transpilation
