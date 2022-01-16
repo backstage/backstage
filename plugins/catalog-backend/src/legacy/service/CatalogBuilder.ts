@@ -68,7 +68,7 @@ import {
 } from '../../ingestion/processors/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../../ingestion/processors/util/parse';
 import { LocationAnalyzer } from '../../ingestion/types';
-import { CatalogEnvironment, NextCatalogBuilder } from '../../service';
+import { CatalogEnvironment } from '../../service';
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.
@@ -103,8 +103,8 @@ export class CatalogBuilder {
   private processorsReplace: boolean;
   private parser: CatalogProcessorParser | undefined;
 
-  static async create(env: CatalogEnvironment): Promise<NextCatalogBuilder> {
-    return new NextCatalogBuilder(env);
+  static async create(env: CatalogEnvironment): Promise<CatalogBuilder> {
+    return new CatalogBuilder(env);
   }
 
   /** @deprecated Please use CatalogBuilder.create() instead */

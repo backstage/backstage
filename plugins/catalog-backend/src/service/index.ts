@@ -20,7 +20,7 @@ export type {
   RefreshOptions,
   LocationStore,
 } from './types';
-export { createNextRouter } from './NextRouter';
-export type { NextRouterOptions } from './NextRouter';
-export type { CatalogEnvironment } from './NextCatalogBuilder';
-export { NextCatalogBuilder } from './NextCatalogBuilder';
+export { createRouter } from './createRouter';
+export type { RouterOptions } from './createRouter';
+export type { CatalogEnvironment } from './CatalogBuilder';
+export { CatalogBuilder } from './CatalogBuilder';

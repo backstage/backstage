@@ -23,12 +23,12 @@ import request from 'supertest';
 import { EntitiesCatalog } from '../catalog';
 import { LocationService, RefreshService } from './types';
 import { basicEntityFilter } from './request';
-import { createNextRouter } from './NextRouter';
+import { createRouter } from './createRouter';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 
-describe('createNextRouter readonly disabled', () => {
+describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationService: jest.Mocked<LocationService>;
   let app: express.Express;
@@ -48,7 +48,7 @@ describe('createNextRouter readonly disabled', () => {
       deleteLocation: jest.fn(),
     };
     refreshService = { refresh: jest.fn() };
-    const router = await createNextRouter({
+    const router = await createRouter({
       entitiesCatalog,
       locationService,
       logger: getVoidLogger(),
@@ -323,7 +323,7 @@ describe('createNextRouter readonly disabled', () => {
   });
 });
 
-describe('createNextRouter readonly enabled', () => {
+describe('createRouter readonly enabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let app: express.Express;
   let locationService: jest.Mocked<LocationService>;
@@ -341,7 +341,7 @@ describe('createNextRouter readonly enabled', () => {
       listLocations: jest.fn(),
       deleteLocation: jest.fn(),
     };
-    const router = await createNextRouter({
+    const router = await createRouter({
       entitiesCatalog,
       locationService,
       logger: getVoidLogger(),
@@ -476,7 +476,7 @@ describe('NextRouter permissioning', () => {
       deleteLocation: jest.fn(),
     };
     refreshService = { refresh: jest.fn() };
-    const router = await createNextRouter({
+    const router = await createRouter({
       entitiesCatalog,
       locationService,
       logger: getVoidLogger(),

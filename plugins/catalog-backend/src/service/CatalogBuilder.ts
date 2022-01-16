@@ -37,11 +37,6 @@ import { createHash } from 'crypto';
 import { Router } from 'express';
 import lodash, { keyBy } from 'lodash';
 import { EntitiesCatalog, EntitiesSearchFilter } from '../catalog';
-import {
-  DatabaseLocationsCatalog,
-  LocationsCatalog,
-  CommonDatabase,
-} from '../legacy';
 
 import {
   AnnotateLocationEntityProcessor,
@@ -82,7 +77,7 @@ import {
   createRandomRefreshInterval,
   RefreshIntervalFunction,
 } from '../processing/refresh';
-import { createNextRouter } from './NextRouter';
+import { createRouter } from './createRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { AuthorizedRefreshService } from './AuthorizedRefreshService';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
@@ -127,8 +122,10 @@ export type CatalogEnvironment = {
  * - Processors can be added or replaced. These implement the functionality of
  *   reading, parsing, validating, and processing the entity data before it is
  *   persisted in the catalog.
+ *
+ * @public
  */
-export class NextCatalogBuilder {
+export class CatalogBuilder {
   private readonly env: CatalogEnvironment;
   private entityPolicies: EntityPolicy[];
   private entityPoliciesReplace: boolean;
@@ -150,6 +147,13 @@ export class NextCatalogBuilder {
     unknown[]
   >[];
 
+  /**
+   * Creates a catalog builder.
+   */
+  static create(env: CatalogEnvironment): CatalogBuilder {
+    return new CatalogBuilder(env);
+  }
+
   constructor(env: CatalogEnvironment) {
     this.env = env;
     this.entityPolicies = [];
@@ -170,11 +174,11 @@ export class NextCatalogBuilder {
    *
    * If what you want to do is to replace the rules for what format is allowed
    * in various core entity fields (such as metadata.name), you may want to use
-   * {@link NextCatalogBuilder#setFieldFormatValidators} instead.
+   * {@link CatalogBuilder#setFieldFormatValidators} instead.
    *
    * @param policies - One or more policies
    */
-  addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder {
+  addEntityPolicy(...policies: EntityPolicy[]): CatalogBuilder {
     this.entityPolicies.push(...policies);
     return this;
   }
@@ -185,7 +189,7 @@ export class NextCatalogBuilder {
    * The default refresh duration is 100-150 seconds.
    * setting this too low will potentially deplete request quotas to upstream services.
    */
-  setRefreshIntervalSeconds(seconds: number): NextCatalogBuilder {
+  setRefreshIntervalSeconds(seconds: number): CatalogBuilder {
     this.refreshInterval = createRandomRefreshInterval({
       minSeconds: seconds,
       maxSeconds: seconds * 1.5,
@@ -197,9 +201,7 @@ export class NextCatalogBuilder {
    * Overwrites the default refresh interval function used to spread
    * entity updates in the catalog.
    */
-  setRefreshInterval(
-    refreshInterval: RefreshIntervalFunction,
-  ): NextCatalogBuilder {
+  setRefreshInterval(refreshInterval: RefreshIntervalFunction): CatalogBuilder {
     this.refreshInterval = refreshInterval;
     return this;
   }
@@ -207,7 +209,7 @@ export class NextCatalogBuilder {
   /**
    * Overwrites the default location analyzer.
    */
-  setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): NextCatalogBuilder {
+  setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): CatalogBuilder {
     this.locationAnalyzer = locationAnalyzer;
     return this;
   }
@@ -219,13 +221,13 @@ export class NextCatalogBuilder {
    *
    * If what you want to do is to replace the rules for what format is allowed
    * in various core entity fields (such as metadata.name), you may want to use
-   * {@link NextCatalogBuilder#setFieldFormatValidators} instead.
+   * {@link CatalogBuilder#setFieldFormatValidators} instead.
    *
    * This function replaces the default set of policies; use with care.
    *
    * @param policies - One or more policies
    */
-  replaceEntityPolicies(policies: EntityPolicy[]): NextCatalogBuilder {
+  replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder {
     this.entityPolicies = [...policies];
     this.entityPoliciesReplace = true;
     return this;
@@ -241,7 +243,7 @@ export class NextCatalogBuilder {
   setPlaceholderResolver(
     key: string,
     resolver: PlaceholderResolver,
-  ): NextCatalogBuilder {
+  ): CatalogBuilder {
     this.placeholderResolvers[key] = resolver;
     return this;
   }
@@ -252,13 +254,11 @@ export class NextCatalogBuilder {
    * not sufficient.
    *
    * This function has no effect if used together with
-   * {@link NextCatalogBuilder#replaceEntityPolicies}.
+   * {@link CatalogBuilder#replaceEntityPolicies}.
    *
    * @param validators - The (subset of) validators to set
    */
-  setFieldFormatValidators(
-    validators: Partial<Validators>,
-  ): NextCatalogBuilder {
+  setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder {
     lodash.merge(this.fieldFormatValidators, validators);
     return this;
   }
@@ -272,7 +272,7 @@ export class NextCatalogBuilder {
    *
    * @param providers - One or more entity providers
    */
-  addEntityProvider(...providers: EntityProvider[]): NextCatalogBuilder {
+  addEntityProvider(...providers: EntityProvider[]): CatalogBuilder {
     this.entityProviders.push(...providers);
     return this;
   }
@@ -283,7 +283,7 @@ export class NextCatalogBuilder {
    *
    * @param processors - One or more processors
    */
-  addProcessor(...processors: CatalogProcessor[]): NextCatalogBuilder {
+  addProcessor(...processors: CatalogProcessor[]): CatalogBuilder {
     this.processors.push(...processors);
     return this;
   }
@@ -293,11 +293,11 @@ export class NextCatalogBuilder {
    * parsing, and processing entities before they are persisted in the catalog.
    *
    * This function replaces the default set of processors, consider using with
-   * {@link NextCatalogBuilder#getDefaultProcessors}; use with care.
+   * {@link CatalogBuilder#getDefaultProcessors}; use with care.
    *
    * @param processors - One or more processors
    */
-  replaceProcessors(processors: CatalogProcessor[]): NextCatalogBuilder {
+  replaceProcessors(processors: CatalogProcessor[]): CatalogBuilder {
     this.processors = [...processors];
     this.processorsReplace = true;
     return this;
@@ -308,7 +308,7 @@ export class NextCatalogBuilder {
    * parsing, and processing entities before they are persisted in the catalog. Changing
    * the order of processing can give more control to custom processors.
    *
-   * Consider using with {@link NextCatalogBuilder#replaceProcessors}
+   * Consider using with {@link CatalogBuilder#replaceProcessors}
    *
    */
   getDefaultProcessors(): CatalogProcessor[] {
@@ -345,7 +345,7 @@ export class NextCatalogBuilder {
    *
    * @param parser - The custom parser
    */
-  setEntityDataParser(parser: CatalogProcessorParser): NextCatalogBuilder {
+  setEntityDataParser(parser: CatalogProcessorParser): CatalogBuilder {
     this.parser = parser;
     return this;
   }
@@ -372,8 +372,6 @@ export class NextCatalogBuilder {
    */
   async build(): Promise<{
     entitiesCatalog: EntitiesCatalog;
-    /** @deprecated This will be removed */
-    locationsCatalog: LocationsCatalog;
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
     locationService: LocationService;
@@ -390,8 +388,6 @@ export class NextCatalogBuilder {
       logger.info('Performing database migration');
       await applyDatabaseMigrations(dbClient);
     }
-
-    const db = new CommonDatabase(dbClient, logger);
 
     const processingDatabase = new DefaultProcessingDatabase({
       database: dbClient,
@@ -457,7 +453,6 @@ export class NextCatalogBuilder {
       () => createHash('sha1'),
     );
 
-    const locationsCatalog = new DatabaseLocationsCatalog(db);
     const locationAnalyzer =
       this.locationAnalyzer ?? new RepoLocationAnalyzer(logger, integrations);
     const locationService = new DefaultLocationService(
@@ -468,7 +463,7 @@ export class NextCatalogBuilder {
       new DefaultRefreshService({ database: processingDatabase }),
       permissions,
     );
-    const router = await createNextRouter({
+    const router = await createRouter({
       entitiesCatalog,
       locationAnalyzer,
       locationService,
@@ -482,7 +477,6 @@ export class NextCatalogBuilder {
 
     return {
       entitiesCatalog,
-      locationsCatalog,
       locationAnalyzer,
       processingEngine,
       locationService,

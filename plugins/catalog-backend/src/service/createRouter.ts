@@ -33,11 +33,11 @@ import {
   parseEntityFilterParams,
   parseEntityPaginationParams,
   parseEntityTransformParams,
-} from '../service/request';
-import { disallowReadonlyMode, validateRequestBody } from '../service/util';
+} from './request';
+import { disallowReadonlyMode, validateRequestBody } from './util';
 import { RefreshOptions, LocationService, RefreshService } from './types';
 
-export interface NextRouterOptions {
+export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationAnalyzer?: LocationAnalyzer;
   locationService: LocationService;
@@ -47,8 +47,8 @@ export interface NextRouterOptions {
   permissionIntegrationRouter?: express.Router;
 }
 
-export async function createNextRouter(
-  options: NextRouterOptions,
+export async function createRouter(
+  options: RouterOptions,
 ): Promise<express.Router> {
   const {
     entitiesCatalog,
