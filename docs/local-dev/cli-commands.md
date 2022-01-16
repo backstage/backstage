@@ -173,40 +173,9 @@ Options:
 
 Scope: `backend`
 
-Bundle the backend and all of its local dependencies into a deployment archive.
-The archive is written to `dist/bundle.tar.gz`, and contains the packaged
-version of all dependencies of the target package, along with the target package
-itself. The layout of the packages in the archive is the same as the directory
-layout in the target monorepo, and the bundle also contains the root
-`package.json` and `yarn.lock`.
-
-To use the bundle, extract it into a target directory, run
-`yarn install --production`, and then start the target backend package using for
-example `node package/backend`.
-
-The `dist/bundle.tar.gz` is accompanied by a `dist/skeleton.tar.gz`, which has
-the same layout, but only contains `package.json` files and `yarn.lock`. This
-can be used to run a `yarn install` in environments that will benefit from the
-caching that this enables, such as Docker image builds. To use the skeleton
-archive, simply extract it first, run install, and then extract the main bundle.
-
-The following is an example of a `Dockerfile` that can be used to package the
-output of `backstage-cli backend:bundle` into an image:
-
-```Dockerfile
-FROM node:14-buster-slim
-WORKDIR /app
-
-COPY yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
-RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
-
-RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
-
-COPY packages/backend/dist/bundle.tar.gz app-config.yaml ./
-RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
-
-CMD ["node", "packages/backend"]
-```
+Bundles the backend into a `dist/bundle.tar.gz` archive. See the
+[backend bundling](./cli-build-system.md#backend-production-bundling) build
+systems documentation for more details.
 
 ```text
 Usage: backstage-cli backend:bundle [options]

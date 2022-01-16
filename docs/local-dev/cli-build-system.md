@@ -276,6 +276,72 @@ page load performance.
 
 #### Backend Development Bundling
 
+The backend development bundling is also based on Webpack, but rather than
+starting up a web server, the backend is started up using the
+[`RunScriptWebpackPlugin`](https://www.npmjs.com/package/run-script-webpack-plugin).
+The reason for using Webpack for development of the backend is both that it is
+convenient way to handle transpilation of a large set of packages, as well us
+allowing us to use hot module replacement and maintain state while reloading
+individual backend modules. This is particularly useful when running the backend
+with in-memory SQLite as the database choice.
+
+Except for executing in Node.js rather than a web server, the backend
+development bundling configuration is quite similar to the frontend one. It
+shares most of the Webpack configuration, including the transpilation setup.
+Some differences are that it does not inject any environment variables or node
+module fallbacks, and it uses
+[`webpack-node-externals`](https://www.npmjs.com/package/webpack-node-externals)
+to avoid bundling in dependency modules.
+
+If you want to inspect the running Node.js process, the `--inspect` and
+`--inspect-brk` flags can be used, as they will be passed through to the backend
+process.
+
 #### Backend Production Bundling
+
+The backend production bundling uses a completely different setup than the other
+bundling options. Rather than using Webpack, the backend production bundling
+instead collects the backend packages and all of its local dependencies into a
+deployment archive. The archive is written to `dist/bundle.tar.gz`, and contains
+the packaged version of each of these packages. The layout of the packages in
+the archive is the same as the directory layout in the target monorepo, and the
+bundle also contains the root `package.json` and `yarn.lock` files.
+
+Note that before building the production bundle, all of the backend packages
+have to have been built first, although when executing the `backend:bundle`
+command you can pass the `--build-dependencies` to have this done automatically.
+The reason for not using the flag is to avoid duplicate work in case you already
+build all of your packages earlier in your build process.
+
+To use the bundle, extract it into a directory, run `yarn install --production`,
+and then start the backend using your backend package as the Node.js entry
+point, for example `node packages/backend`.
+
+The `dist/bundle.tar.gz` is accompanied by a `dist/skeleton.tar.gz`, which has
+the same layout, but only contains `package.json` files. This can be used to run
+a `yarn install` in environments that will benefit from the caching that this
+enables, such as Docker image builds. To use the skeleton archive you copy it
+over to the target directory along with the root `package.json` and `yarn.lock`,
+extract the archive, and then run `yarn install`. Your target directory now has
+all dependencies installed, and as soon as you copy over and extract the
+contents of the `bundle.tar.gz` archive, the backend will be ready to run.
+
+The following is an example of a `Dockerfile` that can be used to package the
+output of `backstage-cli backend:bundle` into an image:
+
+```Dockerfile
+FROM node:14-buster-slim
+WORKDIR /app
+
+COPY yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
+RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
+
+RUN yarn install --production --frozen-lockfile --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+
+COPY packages/backend/dist/bundle.tar.gz app-config.yaml ./
+RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+
+CMD ["node", "packages/backend"]
+```
 
 ## Loaders and Transpilation
