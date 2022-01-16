@@ -15,10 +15,17 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import ReactGA from 'react-ga';
 import { GoogleAnalytics } from './GoogleAnalytics';
 
 describe('GoogleAnalytics', () => {
+  const context = {
+    extension: 'App',
+    pluginId: 'some-plugin',
+    routeRef: 'unknown',
+    releaseNum: 1337,
+  };
   const trackingId = 'UA-000000-0';
   const basicValidConfig = new ConfigReader({
     app: { analytics: { ga: { trackingId, testMode: true } } },
@@ -50,12 +57,6 @@ describe('GoogleAnalytics', () => {
   });
 
   describe('integration', () => {
-    const context = {
-      extension: 'App',
-      pluginId: 'some-plugin',
-      routeRef: 'unknown',
-      releaseNum: 1337,
-    };
     const advancedConfig = new ConfigReader({
       app: {
         analytics: {
@@ -141,20 +142,13 @@ describe('GoogleAnalytics', () => {
         context,
       });
 
-      // Expect a set command first.
-      const [setCommand, setData] = ReactGA.testModeAPI.calls[1];
-      expect(setCommand).toBe('set');
-      expect(setData).toMatchObject({
-        dimension1: context.pluginId,
-        metric1: context.releaseNum,
-      });
-
-      // Followed by a send command.
-      const [sendCommand, sendData] = ReactGA.testModeAPI.calls[2];
-      expect(sendCommand).toBe('send');
-      expect(sendData).toMatchObject({
+      const [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
         hitType: 'pageview',
         page: '/a-page',
+        dimension1: context.pluginId,
+        metric1: context.releaseNum,
       });
     });
 
@@ -206,6 +200,214 @@ describe('GoogleAnalytics', () => {
       expect(data).not.toMatchObject({
         metric2: 'not a number',
       });
+    });
+  });
+
+  describe('identityApi', () => {
+    const identityApi = {
+      getBackstageIdentity: jest.fn().mockResolvedValue({
+        userEntityRef: 'User:default/someone',
+      }),
+    } as unknown as IdentityApi;
+
+    it('does not set userId unless explicitly configured', async () => {
+      // Instantiate with identityApi and default configs.
+      const api = GoogleAnalytics.fromConfig(basicValidConfig, { identityApi });
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context,
+      });
+
+      // Wait for any/all promises involved to settle.
+      await new Promise(resolve => setImmediate(resolve));
+
+      // A pageview should have been fired immediately.
+      const [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'pageview',
+        page: '/',
+      });
+
+      // There should not have been a UserID set.
+      expect(ReactGA.testModeAPI.calls).toHaveLength(2);
+    });
+
+    it('sets hashed userId when identityApi is provided', async () => {
+      // Instantiate with identityApi and identity set to optional
+      const optionalConfig = new ConfigReader({
+        app: {
+          analytics: {
+            ga: { trackingId, testMode: true, identity: 'optional' },
+          },
+        },
+      });
+      const api = GoogleAnalytics.fromConfig(optionalConfig, { identityApi });
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context,
+      });
+
+      // Wait for any/all promises involved to settle.
+      await new Promise(resolve => setImmediate(resolve));
+
+      // A pageview should have been fired immediately.
+      const [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'pageview',
+        page: '/',
+      });
+
+      // User ID should have been set after the pageview.
+      const [setCommand, setData] = ReactGA.testModeAPI.calls[2];
+      expect(setCommand).toBe('set');
+      expect(setData).toMatchObject({
+        // String indicating userEntityRef went through expected hashing.
+        userId: '557365723a64656661756c742f736f6d656f6e65',
+      });
+    });
+
+    it('sets pre-hashed userId when PrivateUser entity ref is provided', async () => {
+      (identityApi.getBackstageIdentity as jest.Mock).mockResolvedValueOnce({
+        userEntityRef: 'PrivateUser:hashed/s0m3hash3dvalu3',
+      });
+      const optionalConfig = new ConfigReader({
+        app: {
+          analytics: {
+            ga: { trackingId, testMode: true, identity: 'optional' },
+          },
+        },
+      });
+      const api = GoogleAnalytics.fromConfig(optionalConfig, { identityApi });
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context,
+      });
+
+      // Wait for any/all promises involved to settle.
+      await new Promise(resolve => setImmediate(resolve));
+
+      // User ID should have been set after the pageview.
+      const [setCommand, setData] = ReactGA.testModeAPI.calls[2];
+      expect(setCommand).toBe('set');
+      expect(setData).toMatchObject({
+        userId: 's0m3hash3dvalu3',
+      });
+    });
+
+    it('does not set userId when identityApi is provided and ga.identity is explicitly disabled', async () => {
+      // Instantiate with identityApi and identity explicitly disabled.
+      const disabledConfig = new ConfigReader({
+        app: {
+          analytics: {
+            ga: { trackingId, testMode: true, identity: 'disabled' },
+          },
+        },
+      });
+      const api = GoogleAnalytics.fromConfig(disabledConfig, { identityApi });
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context,
+      });
+
+      // Wait for any/all promises involved to settle.
+      await new Promise(resolve => setImmediate(resolve));
+
+      // A pageview should have been fired immediately.
+      const [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'pageview',
+        page: '/',
+      });
+
+      // There should not have been a UserID set.
+      expect(ReactGA.testModeAPI.calls).toHaveLength(2);
+    });
+
+    it('throws error when ga.identity is required but no identityApi is provided', async () => {
+      // Instantiate without identityApi and identity explicitly disabled.
+      const requiredConfig = new ConfigReader({
+        app: {
+          analytics: {
+            ga: { trackingId, testMode: true, identity: 'required' },
+          },
+        },
+      });
+
+      expect(() => GoogleAnalytics.fromConfig(requiredConfig)).toThrow();
+    });
+
+    it('defers event capture when ga.identity is required', async () => {
+      // Instantiate with identityApi and identity explicitly required.
+      const requiredConfig = new ConfigReader({
+        app: {
+          analytics: {
+            ga: { trackingId, testMode: true, identity: 'required' },
+          },
+        },
+      });
+      const api = GoogleAnalytics.fromConfig(requiredConfig, { identityApi });
+
+      // Fire a pageview and an event.
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context,
+      });
+      api.captureEvent({
+        action: 'test',
+        subject: 'some label',
+        context,
+      });
+
+      // Wait for any/all promises involved to settle.
+      await new Promise(resolve => setImmediate(resolve));
+
+      // User ID should have been set first.
+      const [setCommand, setData] = ReactGA.testModeAPI.calls[1];
+      expect(setCommand).toBe('set');
+      expect(setData).toMatchObject({
+        // String indicating userEntityRef went through expected hashing.
+        userId: '557365723a64656661756c742f736f6d656f6e65',
+      });
+
+      // Then a pageview should have been fired with a queue time.
+      const [pageCommand, pageData] = ReactGA.testModeAPI.calls[2];
+      expect(pageCommand).toBe('send');
+      expect(pageData).toMatchObject({
+        hitType: 'pageview',
+        page: '/',
+        queueTime: expect.any(Number),
+      });
+
+      // Then an event should have been fired with a queue time.
+      const [eventCommand, eventData] = ReactGA.testModeAPI.calls[3];
+      expect(eventCommand).toBe('send');
+      expect(eventData).toMatchObject({
+        hitType: 'event',
+        queueTime: expect.any(Number),
+      });
+
+      // And subsequent hits should not have a queue time.
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/page-2',
+        context,
+      });
+
+      const [lastCommand, lastData] = ReactGA.testModeAPI.calls[4];
+      expect(lastCommand).toBe('send');
+      expect(lastData).toMatchObject({
+        hitType: 'pageview',
+        page: '/page-2',
+      });
+      expect(lastData.queueTime).toBeUndefined();
     });
   });
 });
