@@ -9,7 +9,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/core-plugin-api';
 
-// @public @deprecated (undocumented)
+// @public (undocumented)
 export const analyticsModuleGA: BackstagePlugin<{}, {}>;
 
 // @public
@@ -19,9 +19,6 @@ export class GoogleAnalytics implements AnalyticsApi {
     config: Config,
     options?: {
       identityApi?: IdentityApi;
-      userIdTransform?:
-        | 'sha-256'
-        | ((userEntityRef: string) => Promise<string>);
     },
   ): GoogleAnalytics;
 }

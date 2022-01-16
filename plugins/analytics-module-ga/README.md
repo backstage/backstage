@@ -128,32 +128,35 @@ enable this...
 Note that, to comply with GA policies, the value of the User ID is
 pseudonymized before being sent to GA. By default, it is a `sha256` hash of the
 current user's `userEntityRef` as returned by the `identityApi`. To set a
-different value, provide a `userIdTransform` function alongside `identityApi`
-when you instantiate `GoogleAnalytics`. This function will be passed the
-`userEntityRef` as an argument and should resolve to the value you wish to set
-as the user ID. For example:
+different value, provide a custom implementation of the `identityApi` that
+resolves a `userEntityRef` of the form `PrivateUser:namespace/YOUR-VALUE`. For
+example:
 
 ```typescript
-import {
-  analyticsApiRef,
-  configApiRef,
-  identityApiRef,
-} from '@backstage/core-plugin-api';
-import { GoogleAnalytics } from '@backstage/plugin-analytics-module-ga';
-
 export const apis: AnyApiFactory[] = [
   createApiFactory({
     api: analyticsApiRef,
-    deps: { configApi: configApiRef, identityApi: identityApiRef },
-    factory: ({ configApi, identityApi }) =>
-      GoogleAnalytics.fromConfig(configApi, {
-        identityApi,
-        userIdTransform: async (userEntityRef: string): Promise<string> => {
-          return customHashingFunction(userEntityRef);
-        },
-      }),
+    deps: { config: configApiRef, identityApi: identityApiRef },
+    factory: ({ identityApi, config }) => {
+      return new PseudononymizedIdentity(identityApi);
+    },
   }),
 ];
+
+class PseudononymizedIdentity implements IdentityApi {
+  constructor(private actualApi: IdentityApi) {}
+  async getBackstageIdentity(): Promise<BackstageUserIdentity> {
+    const { email = 'someone' } = await this.actualApi.getProfileInfo();
+    const hashedEmail = customHashingFunction(email);
+
+    return {
+      type: 'user',
+      userEntityRef: `PrivateUser:default/${hashedEmail}`,
+      ownershipEntityRefs: [],
+    };
+  }
+  // ...
+}
 ```
 
 ### Debugging and Testing
