@@ -70,7 +70,7 @@ import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
 import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultLocationStore } from '../providers/DefaultLocationStore';
-import { NextEntitiesCatalog } from './NextEntitiesCatalog';
+import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
 import { Stitcher } from '../stitching/Stitcher';
 import {
@@ -404,7 +404,7 @@ export class CatalogBuilder {
       parser,
       policy,
     });
-    const unauthorizedEntitiesCatalog = new NextEntitiesCatalog(dbClient);
+    const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog(dbClient);
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
       unauthorizedEntitiesCatalog,
       permissions,

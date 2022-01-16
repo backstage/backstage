@@ -150,7 +150,7 @@ function parseFilter(
   });
 }
 
-export class NextEntitiesCatalog implements EntitiesCatalog {
+export class DefaultEntitiesCatalog implements EntitiesCatalog {
   constructor(private readonly database: Knex) {}
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
