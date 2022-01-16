@@ -15,6 +15,9 @@
  */
 import { createPlugin } from '@backstage/core-plugin-api';
 
+/**
+ * @public
+ */
 export const analyticsModuleGA = createPlugin({
   id: 'analytics-provider-ga',
 });
