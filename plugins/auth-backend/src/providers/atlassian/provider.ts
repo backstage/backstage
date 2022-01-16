@@ -42,7 +42,7 @@ import {
   SignInResolver,
 } from '../types';
 import express from 'express';
-import { TokenIssuer } from '../../identity';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { Logger } from 'winston';
 

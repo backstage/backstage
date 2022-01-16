@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { JWT, JSONWebKey } from 'jose';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
 import {
   getVoidLogger,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { TokenFactory } from './TokenFactory';
+import { JSONWebKey, JWT } from 'jose';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import { IdentityClient } from './IdentityClient';
 import { MemoryKeyStore } from './MemoryKeyStore';
-import { TokenFactory } from './TokenFactory';
-import { KeyStore } from './types';
+import { KeyStore, TokenIssuer } from './types';
 
 const logger = getVoidLogger();
 
@@ -48,7 +48,7 @@ const discovery: PluginEndpointDiscovery = {
 
 describe('IdentityClient', () => {
   let client: IdentityClient;
-  let factory: TokenFactory;
+  let factory: TokenIssuer;
   let keyStore: KeyStore;
   const keyDurationSeconds = 5;
 
@@ -225,7 +225,7 @@ describe('IdentityClient', () => {
       expect(token).toEqual('token');
     });
 
-    it('should return Bearer token despite unconventionial case', async () => {
+    it('should return Bearer token despite unconventional case', async () => {
       const token = IdentityClient.getBearerToken('bEARER token');
       expect(token).toEqual('token');
     });

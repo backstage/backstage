@@ -43,7 +43,7 @@ import {
 } from '../types';
 import { StateStore } from 'passport-oauth2';
 import { CatalogIdentityClient, getEntityClaims } from '../../lib/catalog';
-import { TokenIssuer } from '../../identity';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 
 type PrivateInfo = {

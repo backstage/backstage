@@ -24,6 +24,7 @@ jest.mock('@backstage/catalog-client');
 import express from 'express';
 import { JWT } from 'jose';
 import { Logger } from 'winston';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 import {
   AuthHandler,
   SignInResolver,
@@ -31,7 +32,6 @@ import {
 } from '../types';
 
 import { CatalogIdentityClient } from '../../lib/catalog';
-import { TokenIssuer } from '../../identity/types';
 
 import {
   createOauth2ProxyProvider,

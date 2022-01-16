@@ -20,7 +20,7 @@ import {
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 
 /**
  * An authorization request to be evaluated by the {@link PermissionPolicy}.

@@ -17,7 +17,7 @@
 import express from 'express';
 import passport, { Profile as PassportProfile } from 'passport';
 import { Strategy as BitbucketStrategy } from 'passport-bitbucket-oauth2';
-import { TokenIssuer } from '../../identity/types';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 import { CatalogIdentityClient, getEntityClaims } from '../../lib/catalog';
 import {
   encodeState,

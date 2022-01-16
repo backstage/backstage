@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AuthResponse } from '../../providers/types';
+import { AuthResponse } from '@backstage/plugin-auth-node';
 
 /**
  * Payload sent as a post message after the auth request is complete.

@@ -17,7 +17,7 @@
 import { resolvePackagePath } from '@backstage/backend-common';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
-import { AnyJWK, KeyStore, StoredKey } from './types';
+import { AnyJWK, KeyStore, StoredKey } from '@backstage/plugin-auth-node';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-auth-backend',

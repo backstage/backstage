@@ -17,6 +17,7 @@
 import express from 'express';
 import { Strategy as GitlabStrategy } from 'passport-gitlab2';
 import { Logger } from 'winston';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 
 import {
   executeRedirectStrategy,
@@ -43,7 +44,6 @@ import {
   encodeState,
   OAuthResult,
 } from '../../lib/oauth';
-import { TokenIssuer } from '../../identity';
 import { CatalogIdentityClient } from '../../lib/catalog';
 
 type PrivateInfo = {

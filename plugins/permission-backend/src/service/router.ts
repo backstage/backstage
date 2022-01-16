@@ -26,7 +26,7 @@ import { InputError } from '@backstage/errors';
 import {
   BackstageIdentityResponse,
   IdentityClient,
-} from '@backstage/plugin-auth-backend';
+} from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   AuthorizeDecision,

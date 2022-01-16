@@ -22,7 +22,7 @@ import {
   FirestoreKeyStore,
   FirestoreKeyStoreSettings,
 } from './FirestoreKeyStore';
-import { AnyJWK } from './types';
+import { AnyJWK } from '@backstage/plugin-auth-node';
 
 const data = jest.fn().mockReturnValue('data');
 const toDate = jest.fn().mockReturnValue('date');

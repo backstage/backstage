@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { AuthResponse } from '@backstage/plugin-auth-node';
 import { JsonValue } from '@backstage/types';
-import { AuthHandler, AuthResponse, SignInResolver } from '../types';
+import { AuthHandler, SignInResolver } from '../types';
 
 /**
  * The header name used by the IAP.

@@ -19,11 +19,14 @@ import {
   TokenManager,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import {
+  BackstageSignInResult,
+  ProfileInfo,
+  TokenIssuer,
+} from '@backstage/plugin-auth-node';
 import express from 'express';
 import { Logger } from 'winston';
-import { TokenIssuer } from '../identity/types';
 import { OAuthStartRequest } from '../lib/oauth/types';
 import { CatalogIdentityClient } from '../lib/catalog';
 
@@ -137,116 +140,6 @@ export type AuthProviderFactory = (
   options: AuthProviderFactoryOptions,
 ) => AuthProviderRouteHandlers;
 
-export type AuthResponse<ProviderInfo> = {
-  providerInfo: ProviderInfo;
-  profile: ProfileInfo;
-  backstageIdentity?: BackstageIdentityResponse;
-};
-
-/**
- * User identity information within Backstage.
- *
- * @public
- */
-export type BackstageUserIdentity = {
-  /**
-   * The type of identity that this structure represents. In the frontend app
-   * this will currently always be 'user'.
-   */
-  type: 'user';
-
-  /**
-   * The entityRef of the user in the catalog.
-   * For example User:default/sandra
-   */
-  userEntityRef: string;
-
-  /**
-   * The user and group entities that the user claims ownership through
-   */
-  ownershipEntityRefs: string[];
-};
-
-/**
- * A representation of a successful Backstage sign-in.
- *
- * Compared to the {@link BackstageIdentityResponse} this type omits
- * the decoded identity information embedded in the token.
- *
- * @public
- */
-export interface BackstageSignInResult {
-  /**
-   * An opaque ID that uniquely identifies the user within Backstage.
-   *
-   * This is typically the same as the user entity `metadata.name`.
-   *
-   * @deprecated Use the `identity` field instead
-   */
-  id: string;
-
-  /**
-   * The entity that the user is represented by within Backstage.
-   *
-   * This entity may or may not exist within the Catalog, and it can be used
-   * to read and store additional metadata about the user.
-   *
-   * @deprecated Use the `identity` field instead.
-   */
-  entity?: Entity;
-
-  /**
-   * The token used to authenticate the user within Backstage.
-   */
-  token: string;
-}
-
-/**
- * The old exported symbol for {@link BackstageSignInResult}.
- *
- * @public
- * @deprecated Use the {@link BackstageSignInResult} instead.
- */
-export type BackstageIdentity = BackstageSignInResult;
-
-/**
- * Response object containing the {@link BackstageUserIdentity} and the token
- * from the authentication provider.
- *
- * @public
- */
-export interface BackstageIdentityResponse extends BackstageSignInResult {
-  /**
-   * A plaintext description of the identity that is encapsulated within the token.
-   */
-  identity: BackstageUserIdentity;
-}
-
-/**
- * Used to display login information to user, i.e. sidebar popup.
- *
- * It is also temporarily used as the profile of the signed-in user's Backstage
- * identity, but we want to replace that with data from identity and/org catalog
- * service
- *
- * @public
- */
-export type ProfileInfo = {
-  /**
-   * Email ID of the signed in user.
-   */
-  email?: string;
-  /**
-   * Display name that can be presented to the signed in user.
-   */
-  displayName?: string;
-  /**
-   * URL to an image that can be used as the display image or avatar of the
-   * signed in user.
-   */
-  picture?: string;
-};
-
 /**
  * Type of sign in information context. Includes the profile information and
  * authentication result which contains auth related information.
@@ -268,7 +161,8 @@ export type SignInInfo<TAuthResult> = {
 
 /**
  * Describes the function which handles the result of a successful
- * authentication. Must return a valid {@link BackstageSignInResult}.
+ * authentication. Must return a valid
+ * {@link @backstage/plugin-auth-node#BackstageSignInResult}.
  *
  * @public
  */

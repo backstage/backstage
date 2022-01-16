@@ -17,7 +17,7 @@
 import { AtlassianAuthProvider } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { getVoidLogger } from '@backstage/backend-common';
-import { TokenIssuer } from '../../identity';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { OAuthResult } from '../../lib/oauth';
 import { PassportProfile } from '../../lib/passport/types';

@@ -18,7 +18,7 @@ import fetch from 'node-fetch';
 import { JWK, JWT, JWKS, JSONWebKey } from 'jose';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthenticationError } from '@backstage/errors';
-import { BackstageIdentityResponse } from '../providers/types';
+import { BackstageIdentityResponse } from '../types';
 
 const CLOCK_MARGIN_S = 10;
 
@@ -26,6 +26,7 @@ const CLOCK_MARGIN_S = 10;
  * A identity client to interact with auth-backend
  * and authenticate backstage identity tokens
  *
+ * @public
  * @experimental This is not a stable API yet
  */
 export class IdentityClient {

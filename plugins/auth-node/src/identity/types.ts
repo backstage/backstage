@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-/** Represents any form of serializable JWK */
+/**
+ * Represents any form of serializable JWK.
+ *
+ * @public
+ */
 export interface AnyJWK extends Record<string, string> {
   use: 'sig';
   alg: string;
@@ -22,7 +26,11 @@ export interface AnyJWK extends Record<string, string> {
   kty: string;
 }
 
-/** Parameters used to issue new ID Tokens */
+/**
+ * Parameters used to issue new ID Tokens.
+ *
+ * @public
+ */
 export type TokenParams = {
   /** The claims that will be embedded within the token */
   claims: {
@@ -35,6 +43,8 @@ export type TokenParams = {
 
 /**
  * A TokenIssuer is able to issue verifiable ID Tokens on demand.
+ *
+ * @public
  */
 export type TokenIssuer = {
   /**
@@ -50,7 +60,9 @@ export type TokenIssuer = {
 };
 
 /**
- * A JWK stored by a KeyStore
+ * A JWK stored by a KeyStore.
+ *
+ * @public
  */
 export type StoredKey = {
   key: AnyJWK;
@@ -59,6 +71,8 @@ export type StoredKey = {
 
 /**
  * A KeyStore stores JWKs for later and shared use.
+ *
+ * @public
  */
 export type KeyStore = {
   /**

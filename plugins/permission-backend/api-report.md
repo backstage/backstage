@@ -4,7 +4,7 @@
 
 ```ts
 import express from 'express';
-import { IdentityClient } from '@backstage/plugin-auth-backend';
+import { IdentityClient } from '@backstage/plugin-auth-node';
 import { Logger as Logger_2 } from 'winston';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';

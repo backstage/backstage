@@ -4,7 +4,7 @@ info:
   description: |
     # Backstage's auth-provider API.
 
-    **Provided by `@backstage/auth-backend`.**
+    **Provided by `@backstage/plugin-auth-backend`.**
 
     The purpose of the Auth APIs in Backstage are to identify the user, and to provide a way for plugins
     to request access to 3rd party services on behalf of that user.

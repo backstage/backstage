@@ -44,7 +44,7 @@ import {
   SignInResolver,
 } from '../types';
 import { CatalogIdentityClient } from '../../lib/catalog';
-import { TokenIssuer } from '../../identity';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 
 type PrivateInfo = {
@@ -234,7 +234,7 @@ export const oAuth2DefaultSignInResolver: SignInResolver<
  * can be passed while creating a OIDC provider.
  *
  * authHandler : called after sign in was successful, a new object must be returned which includes a profile
- * signInResolver: called after sign in was successful, expects to return a new {@link BackstageSignInResult}
+ * signInResolver: called after sign in was successful, expects to return a new {@link @backstage/plugin-auth-node#BackstageSignInResult}
  *
  * Both options are optional. There is fallback for authHandler where the default handler expect an e-mail explicitly
  * otherwise it throws an error

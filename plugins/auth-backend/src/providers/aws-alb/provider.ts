@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { AuthResponse, TokenIssuer } from '@backstage/plugin-auth-node';
 import {
   AuthHandler,
   AuthProviderFactory,
   AuthProviderRouteHandlers,
-  AuthResponse,
   SignInResolver,
 } from '../types';
 import express from 'express';
@@ -28,7 +28,6 @@ import { KeyObject } from 'crypto';
 import { Logger } from 'winston';
 import NodeCache from 'node-cache';
 import { JWT } from 'jose';
-import { TokenIssuer } from '../../identity/types';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { Profile as PassportProfile } from 'passport';
 import { makeProfileInfo } from '../../lib/passport';

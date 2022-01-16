@@ -25,16 +25,18 @@ import {
 import {
   AuthProviderRouteHandlers,
   AuthProviderConfig,
+} from '../../providers/types';
+import {
   BackstageIdentityResponse,
   BackstageSignInResult,
-} from '../../providers/types';
+  TokenIssuer,
+} from '@backstage/plugin-auth-node';
 import {
   AuthenticationError,
   InputError,
   isError,
   NotAllowedError,
 } from '@backstage/errors';
-import { TokenIssuer } from '../../identity/types';
 import { getCookieConfig, readState, verifyNonce } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
 import {

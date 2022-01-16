@@ -17,7 +17,7 @@
 import express from 'express';
 import { TokenPayload } from 'google-auth-library';
 import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity/types';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 import {

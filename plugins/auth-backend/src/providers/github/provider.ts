@@ -43,7 +43,7 @@ import {
   OAuthRefreshRequest,
 } from '../../lib/oauth';
 import { CatalogIdentityClient } from '../../lib/catalog';
-import { TokenIssuer } from '../../identity';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 
 const ACCESS_TOKEN_PREFIX = 'access-token.';
 

@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-import { TokenIssuer, TokenParams, KeyStore, AnyJWK } from './types';
 import { JSONWebKey, JWK, JWS } from 'jose';
-import { Logger } from 'winston';
-import { v4 as uuid } from 'uuid';
 import { DateTime } from 'luxon';
+import { v4 as uuid } from 'uuid';
+import { Logger } from 'winston';
+import { AnyJWK, KeyStore, TokenIssuer, TokenParams } from './types';
 
 const MS_IN_S = 1000;
 
-type Options = {
+/**
+ * Constructor options for {@link TokenFactory}.
+ *
+ * @public
+ */
+export interface TokenFactoryOptions {
   logger: Logger;
   /** Value of the issuer claim in issued tokens */
   issuer: string;
@@ -30,7 +35,7 @@ type Options = {
   keyStore: KeyStore;
   /** Expiration time of signing keys in seconds */
   keyDurationSeconds: number;
-};
+}
 
 /**
  * A token issuer that is able to issue tokens in a distributed system
@@ -45,6 +50,8 @@ type Options = {
  * Signing keys are automatically rotated at the same interval as the token
  * duration. Expired keys are kept in storage until there are no valid tokens
  * in circulation that could have been signed by that key.
+ *
+ * @public
  */
 export class TokenFactory implements TokenIssuer {
   private readonly issuer: string;
@@ -55,7 +62,7 @@ export class TokenFactory implements TokenIssuer {
   private keyExpiry?: Date;
   private privateKeyPromise?: Promise<JSONWebKey>;
 
-  constructor(options: Options) {
+  constructor(options: TokenFactoryOptions) {
     this.issuer = options.issuer;
     this.logger = options.logger;
     this.keyStore = options.keyStore;

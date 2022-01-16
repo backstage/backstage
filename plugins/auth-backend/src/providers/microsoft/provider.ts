@@ -17,7 +17,7 @@
 import express from 'express';
 import passport from 'passport';
 import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
-import { TokenIssuer } from '../../identity/types';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 import { CatalogIdentityClient, getEntityClaims } from '../../lib/catalog';
 import {
   encodeState,

@@ -18,16 +18,18 @@ import express from 'express';
 import { Logger } from 'winston';
 import { AuthenticationError } from '@backstage/errors';
 import {
+  AuthResponse,
+  IdentityClient,
+  TokenIssuer,
+} from '@backstage/plugin-auth-node';
+import {
   AuthHandler,
   SignInResolver,
   AuthProviderFactory,
   AuthProviderRouteHandlers,
-  AuthResponse,
 } from '../types';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { JWT } from 'jose';
-import { IdentityClient } from '../../identity';
-import { TokenIssuer } from '../../identity/types';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 
 export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';

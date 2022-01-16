@@ -22,7 +22,7 @@ import { errorHandler } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { IdentityClient } from '@backstage/plugin-auth-backend';
+import { IdentityClient } from '@backstage/plugin-auth-node';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { DocumentTypeInfo, SearchResultSet } from '@backstage/search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';

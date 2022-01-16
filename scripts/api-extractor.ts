@@ -217,6 +217,7 @@ const NO_WARNING_PACKAGES = [
   'packages/theme',
   'packages/types',
   'packages/version-bridge',
+  'plugins/auth-node',
   'plugins/catalog-backend-module-ldap',
   'plugins/catalog-common',
   'plugins/permission-backend',

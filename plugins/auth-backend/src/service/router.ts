@@ -22,6 +22,7 @@ import {
   defaultAuthProviderFactories,
   AuthProviderFactory,
 } from '../providers';
+import { TokenFactory } from '@backstage/plugin-auth-node';
 import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
@@ -30,7 +31,7 @@ import {
 import { assertError, NotFoundError } from '@backstage/errors';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { createOidcRouter, TokenFactory, KeyStores } from '../identity';
+import { createOidcRouter, KeyStores } from '../identity';
 import session from 'express-session';
 import passport from 'passport';
 import { Minimatch } from 'minimatch';

@@ -22,7 +22,7 @@ import {
   ALB_JWT_HEADER,
   AwsAlbAuthProvider,
 } from './provider';
-import { TokenIssuer } from '../../identity/types';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { makeProfileInfo } from '../../lib/passport';
 

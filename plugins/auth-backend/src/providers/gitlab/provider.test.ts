@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 import { GitlabAuthProvider, gitlabDefaultSignInResolver } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { PassportProfile } from '../../lib/passport/types';
 import { OAuthResult } from '../../lib/oauth';
-import { getVoidLogger } from '@backstage/backend-common';
-import { TokenIssuer } from '../../identity';
 import { CatalogIdentityClient } from '../../lib/catalog';
 
 const mockFrameHandler = jest.spyOn(

@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { KeyStore, AnyJWK, StoredKey } from './types';
 import { DateTime } from 'luxon';
+import { KeyStore, AnyJWK, StoredKey } from './types';
 
+/**
+ * An in-memory {@link KeyStore} that can be used for testing.
+ *
+ * @public
+ */
 export class MemoryKeyStore implements KeyStore {
   private readonly keys = new Map<string, { createdAt: Date; key: string }>();
 

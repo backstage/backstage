@@ -23,7 +23,7 @@ import {
   WriteResult,
 } from '@google-cloud/firestore';
 
-import { AnyJWK, KeyStore, StoredKey } from './types';
+import { AnyJWK, KeyStore, StoredKey } from '@backstage/plugin-auth-node';
 
 export type FirestoreKeyStoreSettings = Settings & Options;
 

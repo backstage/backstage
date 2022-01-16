@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
+import { JSONWebKey, JWKS, JWT } from 'jose';
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
-import { getVoidLogger } from '@backstage/backend-common';
-import { JWKS, JSONWebKey, JWT } from 'jose';
 
 const logger = getVoidLogger();
 

@@ -19,7 +19,7 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { TokenParams } from '../../identity';
+import { TokenParams } from '@backstage/plugin-auth-node';
 
 export function getEntityClaims(entity: UserEntity): TokenParams['claims'] {
   const userRef = stringifyEntityRef(entity);

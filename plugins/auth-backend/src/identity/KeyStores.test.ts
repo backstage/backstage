@@ -16,8 +16,7 @@
 
 import { DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-
-import { MemoryKeyStore } from './MemoryKeyStore';
+import { MemoryKeyStore } from '@backstage/plugin-auth-node';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { FirestoreKeyStore } from './FirestoreKeyStore';
 import { KeyStores } from './KeyStores';

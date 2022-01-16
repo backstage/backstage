@@ -43,7 +43,7 @@ import {
   SignInResolver,
 } from '../types';
 import { CatalogIdentityClient } from '../../lib/catalog';
-import { TokenIssuer } from '../../identity';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 
 type PrivateInfo = {

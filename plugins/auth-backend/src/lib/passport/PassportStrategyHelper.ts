@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { ProfileInfo } from '@backstage/plugin-auth-node';
 import express from 'express';
 import passport from 'passport';
 import jwtDecoder from 'jwt-decode';
 import { InternalOAuthError } from 'passport-oauth2';
-
 import { PassportProfile } from './types';
-import { ProfileInfo, RedirectInfo } from '../../providers/types';
+import { RedirectInfo } from '../../providers/types';
 
 export type PassportDoneCallback<Res, Private = never> = (
   err?: Error,

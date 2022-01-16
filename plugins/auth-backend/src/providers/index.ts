@@ -45,15 +45,4 @@ export type {
   SignInInfo,
 } from './types';
 
-// These types are needed for a postMessage from the login pop-up
-// to the frontend
-export type {
-  AuthResponse,
-  BackstageIdentity,
-  BackstageUserIdentity,
-  BackstageIdentityResponse,
-  BackstageSignInResult,
-  ProfileInfo,
-} from './types';
-
 export { prepareBackstageIdentityResponse } from './prepareBackstageIdentityResponse';

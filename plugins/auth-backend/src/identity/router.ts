@@ -15,7 +15,7 @@
  */
 
 import Router from 'express-promise-router';
-import { TokenIssuer } from './types';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 
 export type Options = {
   baseUrl: string;

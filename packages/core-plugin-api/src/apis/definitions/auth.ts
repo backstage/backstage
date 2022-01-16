@@ -41,7 +41,7 @@ import { Observable } from '@backstage/types';
  */
 export type AuthProviderInfo = {
   /**
-   * The ID of the auth provider. This should match with ID of the provider in the `@backstage/auth-backend`.
+   * The ID of the auth provider. This should match with ID of the provider in the `@backstage/plugin-auth-backend`.
    */
   id: string;
 

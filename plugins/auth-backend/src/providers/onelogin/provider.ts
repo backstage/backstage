@@ -44,7 +44,7 @@ import {
 } from '../types';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity';
+import { TokenIssuer } from '@backstage/plugin-auth-node';
 
 type PrivateInfo = {
   refreshToken: string;

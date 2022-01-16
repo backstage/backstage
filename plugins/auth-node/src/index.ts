@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-export { createOidcRouter } from './router';
-export { DatabaseKeyStore } from './DatabaseKeyStore';
-export { FirestoreKeyStore } from './FirestoreKeyStore';
-export { KeyStores } from './KeyStores';
+/**
+ * Shared facilities of `@backstage/plugin-auth-backend`.
+ *
+ * @packageDocumentation
+ */
+
+export * from './identity';
+export type {
+  AuthResponse,
+  BackstageIdentity,
+  BackstageIdentityResponse,
+  BackstageSignInResult,
+  BackstageUserIdentity,
+  ProfileInfo,
+} from './types';
