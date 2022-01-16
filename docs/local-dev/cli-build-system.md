@@ -8,10 +8,13 @@ description: A deep dive into the Backstage build system
 
 The Backstage build system is a collection of build and development tools that
 help you lint, test, develop and finally release your Backstage projects. The
-purpose of it is to provide an out-of-the-box solution lets you focus on
-development rather than setting up your own build system. The tooling is shipped
-with the [@backstage/cli](https://www.npmjs.com/package/@backstage/cli), and
-already included in any project that you create using
+purpose of the build system is to provide an out-of-the-box solution that works
+well with Backstage and lets you focus on building an app rather than having to
+spend time setting up your own tooling.
+
+The build system setup is part of the
+[@backstage/cli](https://www.npmjs.com/package/@backstage/cli), and already
+included in any project that you create using
 [@backstage/create-app](https://www.npmjs.com/package/@backstage/create-app). It
 is similar to for example
 [react-scripts](https://www.npmjs.com/package/react-scripts), which is the
@@ -30,24 +33,22 @@ development experience first. If we need to cut corners or add complexity we do
 so in other areas, but the experience of firing up an editor and iterating on
 some code should always be as smooth as possible.
 
-In addition, there are a number of hard and soft requirements that we want to
-support:
+In addition, there are a number of hard and soft requirements:
 
-- Monorepos - The build system should support multi-package setups
+- Monorepos - The build system should support multi-package workspaces
 - Publishing - It should be possible to build and publish individual packages
 - Scale - It should scale to hundreds of large packages without excessive wait
   times
 - Reloads - The development flow should support quick on-save hot reloads
-- Simple - Usage should simple, just a single command if possible
+- Simple - Usage should simple and configuration should be kept minimal
 - Universal - Development towards both web applications, isomorphic packages,
   and Node.js
-- Editors - Things like linting and type checking should work when browsing the
-  source code
+- Editors - Type checking and linting should be available within most editors
 
 During the design of the build system this collection of requirements was not
 something that was supported by existing tools like for example `react-scripts`.
-Especially the combination of monorepo, publishing and editor support has led to
-some specialized setups, as well as the scaling requirements.
+The requirements of scaling in combination of monorepo, publishing, and editor
+support led us to adopting our own specialized setup.
 
 ## Architecture
 
@@ -55,10 +56,9 @@ We can divide the development flow within Backstage into a couple of different
 steps:
 
 - **Formatting** - Applies a consistent formatting to your source code
-- **Linting** - Makes sure your code is free from problems that can be detected
-  automatically
+- **Linting** - Analyzes your source code for potential problems
 - **Type Checking** - Verifies that TypeScript types are valid
-- **Testing** - Runs test suites towards your code to catch issues early
+- **Testing** - Runs different levels of test suites towards your project
 - **Building** - Compiles the source code in an individual package
 - **Bundling** - Combines a package and all of its dependencies into a
   production-ready bundle
@@ -75,10 +75,11 @@ implemented in a typical Backstage app.
 
 ### Formatting
 
-The formatting setup lives completely within each Backstage application. In an
-app created with `@backstage/create-app` the formatting is handled by
-[prettier](https://prettier.io/), but each application can those their own
-formatting rules and switch to a different formatter if desired.
+The formatting setup lives completely within each Backstage application and is
+not part of the CLI. In an app created with `@backstage/create-app` the
+formatting is handled by [prettier](https://prettier.io/), but each application
+can those their own formatting rules and switch to a different formatter if
+desired.
 
 ### Linting
 
@@ -97,8 +98,8 @@ configurations in turn build on top of the lint rules from
 In a standard Backstage setup, each individual package has its own lint
 configuration, along with that there's also a root configuration that applies to
 the entire project. Each configuration is initially one that simply extends a
-configuration provided by the Backstage CLI, but can be customized to fit the
-needs of each package.
+base configuration provided by the Backstage CLI, but they can be customized to
+fit the needs of each package.
 
 ### Type Checking
 
@@ -112,8 +113,8 @@ performance optimization as well as easy of use, since breaking projects down
 into smaller pieces has proven to both lead to a more complicated setup, as well
 as type checking of the entire project being an order of magnitude slower. In
 order to make this setup work, the entrypoint of each package needs to point to
-the TypeScript source files, which in turn cases some complications during
-publishing that we'll talk about below.
+the TypeScript source files, which in turn causes some complications during
+publishing that we'll talk about in [that section](#publishing).
 
 The type checking is generally configured to be incremental for local
 development, with the output stored in the `dist-types` folder in the repo root.
@@ -126,7 +127,7 @@ Another optimization that is used by default is to skip the checking of library
 types, this means that TypeScript will not verify that types within
 `node_modules` are sound. Disabling this check significantly speeds up type
 checking, but in the end it is still an important check that should not be
-completely omitted, it's just very unlikely to catch issues that are introduced
+completely omitted, it's simply unlikely to catch issues that are introduced
 during local development. What we opt for instead is to include the check in CI
 through the `tsc:full` script, which will run a full type check, including
 `node_modules`.
@@ -155,43 +156,44 @@ The by far biggest amount of work is done by the Jest configuration included
 with the Backstage CLI. It both takes care of providing a default Jest
 configuration, as well as allowing for configuration overrides to be defined in
 each `package.json`. How this can be done in practice is discussed in the
-configuration section below.
+[Jest configuration](#jest-configuration) section.
 
 ### Building
 
 The primary purpose of the build process is to prepare packages for publishing,
-although it is also used as part of the backend bundling process which we will
-discuss below. Since it's only used in these two cases, any Backstage app that
-does not use the Backend parts of the project may not need to interact with the
-build process at all. It can nevertheless be useful to know how it works, since
-all of the published Backstage packages are built using this process.
+but it's also used as part of the backend bundling process. Since it's only used
+in these two cases, any Backstage app that does not use the Backend parts of the
+project may not need to interact with the build process at all. It can
+nevertheless be useful to know how it works, since all of the published
+Backstage packages are built using this process.
 
 The build is currently using [Rollup](https://rollupjs.org/) and executes in
-complete isolation for each individual package. There are currently three
-different commands in the Backstage CLI that invokes the build process,
-`plugin:build`, `backend:build`, and simply `build`. The two former are
-pre-configured commands for frontend and backend plugins, while the `build`
-command provides more control over the output. It is likely that the two
-specialized commands disappear in the future, leaving just the `build` command.
+isolation for each individual package. There are currently three different
+commands in the Backstage CLI that invokes the build process, `plugin:build`,
+`backend:build`, and simply `build`. The two former are pre-configured commands
+for frontend and backend plugins, while the `build` command provides more
+control over the output.
 
 There are three different possible outputs of the build process: JavaScript in
-CommonJS module format, JavaScript in ESM format, and type declarations. Each
-invocation of a build command will write one or more of these outputs to the
-`dist` folder in the package, and in addition copy any asset files like
-stylesheets or images. For more details on what syntax and file formats are
-supported by the build process, see the transpilation section below.
+CommonJS module format, JavaScript in ECMAScript module format, and type
+declarations. Each invocation of a build command will write one or more of these
+outputs to the `dist` folder in the package, and in addition copy any asset
+files like stylesheets or images. For more details on what syntax and file
+formats are supported by the build process, see the [loaders section](#loaders).
 
 When building CommonJS or ESM output, the build commands will always use
 `src/index.ts` as the entrypoint. All dependencies of the package will be marked
 as external, meaning that in general it is only the contents of the `src` folder
-that ends up being compiled and output to `dist`, any imported external
-dependencies, even within the monorepo, will stay intact.
+that ends up being compiled and output to `dist`. All import statements of
+external dependencies, even within the same monorepo, will stay intact. The
+externalized dependencies are based on dependency information in `package.json`,
+which means it's important to keep it up to date.
 
 The build of the type definitions works quite differently. The entrypoint of the
 type definition build is the relative location of the package within the
 `dist-types` folder in the project root. This means that it is important to run
 type checking before building any packages with type definitions, and that
-emitting type declarations must be enable in the TypeScript configuration. The
+emitting type declarations must be enabled in the TypeScript configuration. The
 reason for the type definition build step is to strip out all types but the ones
 that are exported from the package, leaving a much cleaner type definition file
 and making sure that the type definitions are in sync with the generated
@@ -201,14 +203,14 @@ JavaScript.
 
 The goal of the bundling process is to combine multiple packages together into a
 single runtime unit. The way this is done varies between frontend and backend,
-and local development versus production deployment. Because of that we will be
-covering each of these cases individually.
+as well as local development versus production deployment. Because of that we
+cover each combination of these cases separately.
 
 #### Frontend Development Bundling
 
 There are two different commands that starts the frontend development bundling,
-`app:serve`, which serves an app and uses `src/index.*` as the entrypoint, and
-`plugin:serve`, which serves a plugin and uses `dev/index.*` as the entrypoint.
+`app:serve`, which serves an app and uses `src/index` as the entrypoint, and
+`plugin:serve`, which serves a plugin and uses `dev/index` as the entrypoint.
 These are typically invoked via the `yarn start` script, and are intended for
 local development only. When running the bundle command, a development server
 will be set up that listens to the protocol, host and port set by `app.baseUrl`
@@ -221,15 +223,15 @@ The frontend development bundling is currently based on
 Webpack configuration itself varies very little between the frontend development
 and production bundling, so we'll dive more into the configuration in the
 production section below. The main differences are that `process.env.NODE_ENV`
-is set to `'development'`, minification is disabled, and there is support for
-[React Hot Loader](https://github.com/gaearon/react-hot-loader).
+is set to `'development'`, minification is disabled, cheap source maps are used,
+and [React Hot Loader](https://github.com/gaearon/react-hot-loader) is enabled.
 
 If you prefer to run type checking and linting as part of the Webpack process,
 you can enable usage of the
 [`ForkTsCheckerWebpackPlugin`](https://www.npmjs.com/package/fork-ts-checker-webpack-plugin)
-by passing the `--check` flag. However, the recommended way to handle these
-checks is to use an editor that has built-in support for them, as well as
-running them in CI and the occasional manual run when needed.
+by passing the `--check` flag. Although as mentioned above, the recommended way
+to handle these checks during development is to use an editor that has built-in
+support for them instead.
 
 #### Frontend Production Bundling
 
@@ -244,7 +246,7 @@ Just like the development bundling, the production bundling is based on
 [`HtmlWebpackPlugin`](https://webpack.js.org/plugins/html-webpack-plugin/) to
 generate the `index.html` entry point, and includes a default template that's
 included with the CLI. You can replace the bundled template by adding
-`public/index.html` to your package. The template has access to two global
+`public/index.html` to your app package. The template has access to two global
 constants, `publicPath` which is the public base path that the bundle is
 intended to be served at, as well as `config` which is your regular frontend
 scoped configuration from `@backstage/config`.
@@ -252,27 +254,28 @@ scoped configuration from `@backstage/config`.
 The Webpack configuration also includes a custom plugin for resolving packages
 correctly from linked in packages, the `ModuleScopePlugin` from
 [`react-dev-utils`](https://www.npmjs.com/package/react-dev-utils) which makes
-sure that imports don't react outside the package, a few fallbacks for some
+sure that imports don't reach outside the package, a few fallbacks for some
 Node.js modules like `'buffer'` and `'events'`, a plugin that writes the
 frontend configuration to the bundle as `process.env.APP_CONFIG` and build
 information as `process.env.BUILD_INFO`, and lastly minification handled by
 [esbuild](https://esbuild.github.io/) using the
 [`esbuild-loader`](https://npm.im/esbuild-loader). There are of course also a
 set of loaders configured, which you can read more about in the
-[transpilation](#transpilation) and [loaders](#loaders) sections.
+[loaders](#loaders) and [transpilation](#transpilation) sections.
 
-The output of the bundling process is split into two types of files. The first
-is a set of generic assets with plain names in the root of the `dist/` folder.
-You will want to serve these with short-lived caching or no caching at all. The
-second is a set of hashed static assets in the `dist/static/`, which you can
-configure to be cached for a much longer time.
+The output of the bundling process is split into two categories of files with
+separate caching strategies. The first is a set of generic assets with plain
+names in the root of the `dist/` folder. You will want to serve these with
+short-lived caching or no caching at all. The second is a set of hashed static
+assets in the `dist/static/` folder, which you can configure to be cached for a
+much longer time.
 
 The configuration of static assets is optimized for frequent changes and serving
 over HTTP 2.0. The assets are aggressively split into small chunks, which means
 the browser has to make a lot of small requests to load them. The upside is that
 changes to individual plugins and packages will invalidate a smaller number of
-files, thereby allowing for rapid development without too much impact on the
-page load performance.
+files, thereby allowing for rapid development without much impact on the page
+load performance.
 
 #### Backend Development Bundling
 
@@ -294,8 +297,8 @@ module fallbacks, and it uses
 to avoid bundling in dependency modules.
 
 If you want to inspect the running Node.js process, the `--inspect` and
-`--inspect-brk` flags can be used, as they will be passed through to the backend
-process.
+`--inspect-brk` flags can be used, as they will be passed through as options to
+`node` execution.
 
 #### Backend Production Bundling
 
@@ -304,27 +307,29 @@ bundling options. Rather than using Webpack, the backend production bundling
 instead collects the backend packages and all of its local dependencies into a
 deployment archive. The archive is written to `dist/bundle.tar.gz`, and contains
 the packaged version of each of these packages. The layout of the packages in
-the archive is the same as the directory layout in the target monorepo, and the
-bundle also contains the root `package.json` and `yarn.lock` files.
+the archive is the same as the directory layout in the monorepo, and the bundle
+also contains the root `package.json` and `yarn.lock` files.
 
-Note that before building the production bundle, all of the backend packages
-have to have been built first, although when executing the `backend:bundle`
-command you can pass the `--build-dependencies` to have this done automatically.
-The reason for not using the flag is to avoid duplicate work in case you already
-build all of your packages earlier in your build process.
+Note that before creating a production bundle you must first build all of the
+backend packages. This can be done automatically when executing the
+`backend:bundle` command by passing the `--build-dependencies` flag. It is an
+optional flag since it is quite common that the packages are already build
+earlier on in your build process, and building them again would result in
+duplicate work.
 
-To use the bundle, extract it into a directory, run `yarn install --production`,
-and then start the backend using your backend package as the Node.js entry
-point, for example `node packages/backend`.
+In order to use the bundle, you extract it into a directory, run
+`yarn install --production`, and then start the backend using your backend
+package as the Node.js entry point, for example `node packages/backend`.
 
 The `dist/bundle.tar.gz` is accompanied by a `dist/skeleton.tar.gz`, which has
-the same layout, but only contains `package.json` files. This can be used to run
-a `yarn install` in environments that will benefit from the caching that this
-enables, such as Docker image builds. To use the skeleton archive you copy it
-over to the target directory along with the root `package.json` and `yarn.lock`,
-extract the archive, and then run `yarn install`. Your target directory now has
-all dependencies installed, and as soon as you copy over and extract the
-contents of the `bundle.tar.gz` archive, the backend will be ready to run.
+the same layout, but only contains `package.json` files. This skeleton archive
+can be used to run a `yarn install` in environments that will benefit from the
+caching that this enables, such as Docker image builds. To use the skeleton
+archive you copy it over to the target directory along with the root
+`package.json` and `yarn.lock`, extract the archive, and then run
+`yarn install --production`. Your target directory will then have all
+dependencies installed, and as soon as you copy over and extract the contents of
+the `bundle.tar.gz` archive on top of it, the backend will be ready to run.
 
 The following is an example of a `Dockerfile` that can be used to package the
 output of `backstage-cli backend:bundle` into an image:
@@ -346,39 +351,40 @@ CMD ["node", "packages/backend"]
 
 ## Transpilation
 
-The transpilers used by the Backstage CLI have been chosen according to the
-design considerations that we mentioned above. A few specific requirements are
+The transpilers used by the Backstage CLI have been chosen according to the same
+design considerations that were mentioned above. A few specific requirements are
 of course support for TypeScript and JSX, but also React hot reloads or refresh,
 and hoisting of Jest mocks. The Backstage CLI also only targets up to date and
 modern browsers, so we actually want to keep the transpilation process as
 lightweight as possible, and leave most syntax intact.
 
-Apart from these requirements, we choose transpilers based on their speed. The
-build process keeps the integration with the transpilers lightweight, without
-additional plugins or such. This enables us to switch out transpilers as new
-options and optimizations become available, and use the fastest options that are
-available.
+Apart from these requirements, the deciding factor for which transpiler to use
+is their speed. The build process keeps the integration with the transpilers
+lightweight, without additional plugins or such. This enables us to switch out
+transpilers as new options and optimizations become available, and keep use the
+best options that are available.
 
-Our current selection of transpilers are [esbuild][https://esbuild.github.io/]
+Our current selection of transpilers are [esbuild](https://esbuild.github.io/)
 and [Sucrase](https://github.com/alangpierce/sucrase). The reason we choose to
 use two transpilers is that esbuild is faster than Sucrase and produces slightly
-nicer output, but it does not have the same feature set, and for example does
-not support React hot reloading or hoisting of Jest mocks.
+nicer output, but it does not have the same set of features, for example it does
+not support React hot reloading.
 
-The benchmarking of the various options has been done in the
-[ts-build-bench](https://github.com/Rugvip/ts-build-bench) project. It allows
-for setups of different shapes and sizes of monorepos, but the setup we consider
-the most important during benchmarking is a large monorepo with lots of medium
-to large packages that's being bundled with Webpack. Some rough findings have
-been that esbuild is the fastest option right now, with Sucrase following
-closely after and then [SWC](https://swc.rs/) closely after that. After those
-there's a pretty big gap up to the TypeScript compiler run in transpilation only
-mode, and lastly another jump up to Babel, being by far the slowest.
+The benchmarking of the various options was done in
+[ts-build-bench](https://github.com/Rugvip/ts-build-bench). This benchmarking
+project allows for setups of different shapes and sizes of monorepos, but the
+setup we consider the most important in our case is a large monorepo with lots
+of medium to large packages that are being bundled with Webpack. Some rough
+findings have been that esbuild is the fastest option right now, with Sucrase
+following closely after and then [SWC](https://swc.rs/) closely after that.
+After those there's a pretty big gap up to the TypeScript compiler run in
+transpilation only mode, and lastly another jump up to Babel, being by far the
+slowest out of the transpilers we tested.
 
 Something to note about these benchmarks is that they take the full Webpack
 bundling time into account. This means that even though some transpilation
 options may be orders of magnitude faster than others, the total time is not
-impacted in the same way as there's a lot of other things that go into the
+impacted in the same way as there are lots of other things that go into the
 bundling process. Still, switching from for example Babel to Sucrase is able to
 make the bundling anywhere from two to five times faster.
 
@@ -412,3 +418,7 @@ of all supported file extensions:
 | `.png`      | URL Path        | Image                                                                         |
 | `.svg`      | URL Path        | Image                                                                         |
 | `.icon.svg` | React Component | SVG converted into a [MUI SvgIcon](https://mui.com/components/icons/#svgicon) |
+
+## Publishing
+
+## Jest Configuration

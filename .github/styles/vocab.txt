@@ -299,6 +299,7 @@ tooltips
 touchpoints
 transpilation
 transpiled
+transpiler
 transpilers
 truthy
 typeahead
