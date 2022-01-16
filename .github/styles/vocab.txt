@@ -299,6 +299,7 @@ tooltips
 touchpoints
 transpilation
 transpiled
+transpilers
 truthy
 typeahead
 ui

@@ -258,8 +258,8 @@ frontend configuration to the bundle as `process.env.APP_CONFIG` and build
 information as `process.env.BUILD_INFO`, and lastly minification handled by
 [esbuild](https://esbuild.github.io/) using the
 [`esbuild-loader`](https://npm.im/esbuild-loader). There are of course also a
-set of loaders configured, which is covered in the
-[transpilation section](#loaders-and-transpilation).
+set of loaders configured, which you can read more about in the
+[transpilation](#transpilation) and [loaders](#loaders) sections.
 
 The output of the bundling process is split into two types of files. The first
 is a set of generic assets with plain names in the root of the `dist/` folder.
@@ -344,4 +344,71 @@ RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 CMD ["node", "packages/backend"]
 ```
 
-## Loaders and Transpilation
+## Transpilation
+
+The transpilers used by the Backstage CLI have been chosen according to the
+design considerations that we mentioned above. A few specific requirements are
+of course support for TypeScript and JSX, but also React hot reloads or refresh,
+and hoisting of Jest mocks. The Backstage CLI also only targets up to date and
+modern browsers, so we actually want to keep the transpilation process as
+lightweight as possible, and leave most syntax intact.
+
+Apart from these requirements, we choose transpilers based on their speed. The
+build process keeps the integration with the transpilers lightweight, without
+additional plugins or such. This enables us to switch out transpilers as new
+options and optimizations become available, and use the fastest options that are
+available.
+
+Our current selection of transpilers are [esbuild][https://esbuild.github.io/]
+and [Sucrase](https://github.com/alangpierce/sucrase). The reason we choose to
+use two transpilers is that esbuild is faster than Sucrase and produces slightly
+nicer output, but it does not have the same feature set, and for example does
+not support React hot reloading or hoisting of Jest mocks.
+
+The benchmarking of the various options has been done in the
+[ts-build-bench](https://github.com/Rugvip/ts-build-bench) project. It allows
+for setups of different shapes and sizes of monorepos, but the setup we consider
+the most important during benchmarking is a large monorepo with lots of medium
+to large packages that's being bundled with Webpack. Some rough findings have
+been that esbuild is the fastest option right now, with Sucrase following
+closely after and then [SWC](https://swc.rs/) closely after that. After those
+there's a pretty big gap up to the TypeScript compiler run in transpilation only
+mode, and lastly another jump up to Babel, being by far the slowest.
+
+Something to note about these benchmarks is that they take the full Webpack
+bundling time into account. This means that even though some transpilation
+options may be orders of magnitude faster than others, the total time is not
+impacted in the same way as there's a lot of other things that go into the
+bundling process. Still, switching from for example Babel to Sucrase is able to
+make the bundling anywhere from two to five times faster.
+
+## Loaders
+
+The Backstage CLI is configured to support a set of loaders throughout all parts
+of the build system, including the bundling, tests, builds, and type checking.
+Loaders are always selected based on the file extension. The following is a list
+of all supported file extensions:
+
+| Extension   | Exports         | Purpose                                                                       |
+| ----------- | --------------- | ----------------------------------------------------------------------------- |
+| `.ts`       | Script Module   | TypeScript                                                                    |
+| `.tsx`      | Script Module   | TypeScript and XML                                                            |
+| `.js`       | Script Module   | JavaScript                                                                    |
+| `.jsx`      | Script Module   | JavaScript and XML                                                            |
+| `.mjs`      | Script Module   | ECMAScript Module                                                             |
+| `.cjs`      | Script Module   | CommonJS Module                                                               |
+| `.json`     | JSON Data       | JSON Data                                                                     |
+| `.yml`      | JSON Data       | YAML Data                                                                     |
+| `.yaml`     | JSON Data       | YAML Data                                                                     |
+| `.css`      | classes         | Style sheet                                                                   |
+| `.eot`      | URL Path        | Font                                                                          |
+| `.ttf`      | URL Path        | Font                                                                          |
+| `.woff2`    | URL Path        | Font                                                                          |
+| `.woff`     | URL Path        | Font                                                                          |
+| `.bmp`      | URL Path        | Image                                                                         |
+| `.gif`      | URL Path        | Image                                                                         |
+| `.jpeg`     | URL Path        | Image                                                                         |
+| `.jpg`      | URL Path        | Image                                                                         |
+| `.png`      | URL Path        | Image                                                                         |
+| `.svg`      | URL Path        | Image                                                                         |
+| `.icon.svg` | React Component | SVG converted into a [MUI SvgIcon](https://mui.com/components/icons/#svgicon) |
