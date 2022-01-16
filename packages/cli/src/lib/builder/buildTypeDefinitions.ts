@@ -96,6 +96,7 @@ export async function buildTypeDefinitions() {
       bundledPackages: [],
 
       compiler: {
+        skipLibCheck: true,
         tsconfigFilePath: paths.resolveTargetRoot('tsconfig.json'),
       },
 
