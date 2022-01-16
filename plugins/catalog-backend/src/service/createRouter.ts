@@ -37,6 +37,11 @@ import {
 import { disallowReadonlyMode, validateRequestBody } from './util';
 import { RefreshOptions, LocationService, RefreshService } from './types';
 
+/**
+ * Options used by {@link createRouter}.
+ *
+ * @public
+ */
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationAnalyzer?: LocationAnalyzer;
@@ -47,6 +52,11 @@ export interface RouterOptions {
   permissionIntegrationRouter?: express.Router;
 }
 
+/**
+ * Creates a catalog router.
+ *
+ * @public
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

@@ -154,7 +154,7 @@ export class CatalogBuilder {
     return new CatalogBuilder(env);
   }
 
-  constructor(env: CatalogEnvironment) {
+  private constructor(env: CatalogEnvironment) {
     this.env = env;
     this.entityPolicies = [];
     this.entityPoliciesReplace = false;

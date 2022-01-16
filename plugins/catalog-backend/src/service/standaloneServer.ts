@@ -62,7 +62,7 @@ export async function startStandaloneServer(
 
   logger.debug('Creating application...');
   await applyDatabaseMigrations(await database.getClient());
-  const builder = new CatalogBuilder({
+  const builder = CatalogBuilder.create({
     logger,
     database,
     config,

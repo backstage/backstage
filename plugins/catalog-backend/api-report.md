@@ -238,7 +238,6 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 
 // @public
 export class CatalogBuilder {
-  constructor(env: CatalogEnvironment);
   addEntityPolicy(...policies: EntityPolicy[]): CatalogBuilder;
   addEntityProvider(...providers: EntityProvider[]): CatalogBuilder;
   addPermissionRules(
@@ -463,9 +462,7 @@ export function createRandomRefreshInterval(options: {
   maxSeconds: number;
 }): RefreshIntervalFunction;
 
-// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // Warning: (ae-missing-release-tag) "DefaultCatalogCollator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1080,9 +1077,7 @@ declare namespace results {
 }
 export { results };
 
-// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface RouterOptions {
   // (undocumented)
   config: Config;
