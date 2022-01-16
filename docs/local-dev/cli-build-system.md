@@ -421,4 +421,89 @@ of all supported file extensions:
 
 ## Publishing
 
+Package publishing is an optional part of the Backstage build system and not
+something you well need to worry unless you are publishing packages to a
+registry. In order to publish a package, you first need to build it, which will
+populate the `dist` folder. Because the Backstage build system is optimized for
+local development along with our particular TypeScript and bundling setup, it is
+not possible to publish package immediately at this point. This is because the
+entry points of the package will still be pointing to `src/index.ts`, but we
+want them to point to `dist/` in the published package.
+
+In order to work around this, the Backstage CLI provides `prepack` and
+`postpack` commands that help prepare the package for publishing. These scripts
+are automatically run by Yarn before publishing a package.
+
+The `prepack` command will take entry point fields in `"publishConfig"`, such
+as, `"main"` and `"module"`, and move the top level of the `package.json`. This
+lets you point at the desired files in the `dist` folder during publishing. The
+`postpack` command will simply revert this change in order to leave your project
+clean.
+
+The following is an excerpt of a typical setup of an isomorphic library package:
+
+```json
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "scripts": {
+    "build": "backstage-cli build",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
+    "clean": "backstage-cli clean"
+  },
+  "files": ["dist"],
+```
+
 ## Jest Configuration
+
+The Backstage CLI bundles its own Jest configuration file, which is used
+automatically when running `backstage-cli test`. It's available at
+`@backstage/cli/config/jest.js` and can be inspected
+[here](https://github.com/backstage/backstage/blob/master/packages/cli/config/jest.js).
+Usage of this configuration can be overridden either by passing a
+`--config <path>` flag to `backstage-cli test`, or placing a `jest.config.js` or
+`jest.config.ts` file in your package.
+
+The build-in configuration brings a couple of benefits and features. The most
+important one being a baseline transformer and module configuration that enables
+support for the listed [loaders](#loaders) within tests. It will also
+automatically detect and uses `src/setupTests.ts` if it exists, and provide a
+coverage configuration that works well with our selected transpilers.
+
+The configuration also takes a project-wide approach, with the expectation most
+if not all packages within a monorepo will use the same base configuration. This
+allows for optimizations such as sharing the Jest transform cache across all
+packages in a monorepo, avoiding unnecessary transpilation. It also makes it
+possible to load in all Jest configurations at once, and with that run
+`yarn test <pattern>` from the root of a monorepo without having to set the
+working directory to the package that the test is in.
+
+Where small customizations are needed, such as setting coverage thresholds or
+support for specific transforms, it is possible to override the Jest
+configuration through the `"jest"` in `package.json`. These overrides will be
+loaded in from all `package.json` files in the directory ancestry, meaning that
+you can place common configuration in the `package.json` at the root of a
+monorepo. If multiple overrides are found, they will be merged together with
+configuration further down in the directory tree taking precedence.
+
+The overrides in a single `package.json` may for example look like this:
+
+```json
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
+  },
+```
