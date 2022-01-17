@@ -63,6 +63,7 @@ jobs:
         id: fix-labels
         with:
           script: |
+            // if it's the author, always add awaiting-review label
             const isAuthor = context.payload.pull_request.user.login === context.actor
              if (isAuthor) {
               github.rest.issues.addLabels({
@@ -71,8 +72,21 @@ jobs:
                 repo: context.repo.repo,
                 labels: ['awaiting-review']
               });
+
+              return
             }
 
-            console.log('requested reviewers', ${{steps.get-requested-reviewers.outputs.result}});
-            console.log('reviewer group members', ${{steps.get-reviewer-group-members.outputs.result}});
-            console.log('all reviews group members', ${{steps.get-all-current-reviews.outputs.result}});
+            // if it's not the author. go through all the required reivews, and see if there's a review from at least one person in
+            // in those groups. Then remove the label
+
+            const requestedReviewers = ${{steps.get-requested-reviewers.outputs.result}}
+            const reviewerGroupMembers = ${{steps.get-reviewer-group-members.outputs.result}}
+            const allCurrentReviews = ${{steps.get-all-current-reviews.outputs.result}}         
+            
+            const reviewersHasReview = requestedReviewers.teams.map((team) => {
+              const groupMembers = reviewerGroupMembers.find(({ team: teamSlug }) => teamSlug === team.slug)
+              const hasReview = allCurrentReviews.some(({ user: { login: reviewer } }) => groupMembers.some(({ login: groupMember}) => reviewer === groupMember))
+              return { name: team.slug, hasReview }
+            })
+
+            console.log(reviewersHasReview);
