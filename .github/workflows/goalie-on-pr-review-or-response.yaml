@@ -5,21 +5,13 @@ on:
     types: [submitted]
   pull_request_review_comment:
     types: [created]
+  pull_request:
+    types: [opened, reopened, synchronize]
 
 jobs:
   label:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v5
-        id: get-reviewers
-        with:
-          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
-          script: |
-            const {data: reviewerMembers} = await github.rest.teams.listMembersInOrg({
-              org: context.payload.organization.login,
-              team_slug: 'reviewers'
-            });
-            return reviewerMembers;
       - uses: actions/github-script@v5
         id: are-all-reviews-from-reviewers
         with:
@@ -30,8 +22,7 @@ jobs:
               pull_number: context.issue.number,
             });
 
-
-            console.log(requestedReviewers);;     
+            console.log(requestedReviewers);     
       - uses: actions/github-script@v5
         id: fix-labels
         with:
