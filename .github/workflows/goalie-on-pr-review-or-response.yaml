@@ -23,7 +23,7 @@ jobs:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
             // Get all teams and their respective members
-            const {data: teams} = await github.rest.request('GET /orgs/{org}/teams', {
+            const {data: teams} = await github.request('GET /orgs/{org}/teams', {
               org: context.payload.organization.login,
             })
 
