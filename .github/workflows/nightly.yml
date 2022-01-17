@@ -60,8 +60,11 @@ jobs:
         run: yarn build
 
       # Prepares a nightly release version of any package with pending changesets
+      # Pre-mode is exited if case we're in it, otherwise it has no effect
       - name: prepare nightly release
-        run: yarn changeset version --snapshot nightly
+        run: |
+          yarn changeset pre exit
+          yarn changeset version --snapshot nightly
 
       # Publishes the nightly release to npm, by using tag we make sure the release is
       # not flagged as the latest release, which means that people will not get this
