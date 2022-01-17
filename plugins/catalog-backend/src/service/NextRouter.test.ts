@@ -218,10 +218,9 @@ describe('createNextRouter readonly disabled', () => {
         .set('authorization', 'Bearer someauthtoken');
 
       expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith(
-        'apa',
-        'someauthtoken',
-      );
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa', {
+        authorizationToken: 'someauthtoken',
+      });
       expect(response.status).toEqual(204);
     });
 
@@ -235,10 +234,9 @@ describe('createNextRouter readonly disabled', () => {
         .set('authorization', 'Bearer someauthtoken');
 
       expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith(
-        'apa',
-        'someauthtoken',
-      );
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa', {
+        authorizationToken: 'someauthtoken',
+      });
       expect(response.status).toEqual(404);
     });
   });
@@ -384,10 +382,9 @@ describe('createNextRouter readonly enabled', () => {
         .set('authorization', 'Bearer someauthtoken');
 
       expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith(
-        'apa',
-        'someauthtoken',
-      );
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa', {
+        authorizationToken: 'someauthtoken',
+      });
       expect(response.status).toEqual(204);
     });
   });

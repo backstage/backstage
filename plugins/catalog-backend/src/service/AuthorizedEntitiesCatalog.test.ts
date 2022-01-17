@@ -112,8 +112,48 @@ describe('AuthorizedEntitiesCatalog', () => {
       );
 
       await expect(() =>
-        catalog.removeEntityByUid('uid', 'Bearer abcd'),
+        catalog.removeEntityByUid('uid', { authorizationToken: 'abcd' }),
       ).rejects.toThrowError(NotAllowedError);
+    });
+
+    it('throws error on CONDITIONAL authorization that evaluates to 0 entities', async () => {
+      fakePermissionApi.authorize.mockResolvedValue([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: { rule: 'IS_ENTITY_KIND', params: [['b']] },
+        },
+      ]);
+      fakeCatalog.entities.mockResolvedValue({ entities: [] });
+      const catalog = new AuthorizedEntitiesCatalog(
+        fakeCatalog,
+        fakePermissionApi,
+        createConditionTransformer([isEntityKind]),
+      );
+
+      await expect(() =>
+        catalog.removeEntityByUid('uid', { authorizationToken: 'abcd' }),
+      ).rejects.toThrowError(NotAllowedError);
+    });
+
+    it('calls underlying catalog method on CONDITIONAL authorization that evaluates to nonzero entities', async () => {
+      fakePermissionApi.authorize.mockResolvedValue([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: { rule: 'IS_ENTITY_KIND', params: [['b']] },
+        },
+      ]);
+      fakeCatalog.entities.mockResolvedValue({
+        entities: [{ kind: 'b', namespace: 'default', name: 'my-component' }],
+      });
+      const catalog = new AuthorizedEntitiesCatalog(
+        fakeCatalog,
+        fakePermissionApi,
+        createConditionTransformer([isEntityKind]),
+      );
+
+      await catalog.removeEntityByUid('uid', { authorizationToken: 'abcd' });
+
+      expect(fakeCatalog.removeEntityByUid).toHaveBeenCalledWith('uid');
     });
 
     it('calls underlying catalog method on ALLOW', async () => {
@@ -131,7 +171,7 @@ describe('AuthorizedEntitiesCatalog', () => {
         createConditionTransformer([]),
       );
 
-      await catalog.removeEntityByUid('uid', 'Bearer abcd');
+      await catalog.removeEntityByUid('uid', { authorizationToken: 'abcd' });
 
       expect(fakeCatalog.removeEntityByUid).toHaveBeenCalledWith('uid');
     });

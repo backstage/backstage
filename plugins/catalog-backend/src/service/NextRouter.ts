@@ -119,10 +119,9 @@ export async function createNextRouter(
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
-        await entitiesCatalog.removeEntityByUid(
-          uid,
-          getBearerToken(req.header('authorization')),
-        );
+        await entitiesCatalog.removeEntityByUid(uid, {
+          authorizationToken: getBearerToken(req.header('authorization')),
+        });
         res.status(204).end();
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
