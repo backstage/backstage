@@ -4,81 +4,74 @@ title: Versioning Policy
 description:
 ---
 
-## The Purpose <!-- of this doc - for us - the authors - when writing it - delete after -->
+The Backstage project is comprised of a set of software components that together
+form the Backstage platform. These components are both plugins as well as core
+platform libraries and tools. Each component is distributed as a collection of
+[packages](<https://en.wikipedia.org/wiki/Npm_(software)>), which in the end is
+what you end up consuming as an adopter of Backstage.
 
-- Release cadence and naming 1.0, 1.1, 1.2, etc.
-  - does not map to semver
-  - Backstage 1.2 is a manifest of multiple versions of packages.
-- X need to be greater then Y or there will be dragons
-- X is supported for N versions
+The number of Backstage packages that build up an application can be quite
+large, in the order of hundreds, with just the core platform packages being
+counted in the dozen. This creates a challenge for the integrators of a
+Backstage project, as there are a lot of moving parts and pieces to keep up to
+date.
 
-<!--
-
-- https://kubernetes.io/releases/version-skew-policy/
-- https://kubernetes.io/docs/reference/using-api/deprecation-policy/
-
- -->
-
-## Backstage releases
-
-<!-- Less technical introduction -->
-
-A Backstage release is a manifest of several packages and plugins that work well
-together. The overarching version of this manifest is decoupled from the
-individual package versions.
-
-There are two different release lines, each with their own versioning policy and
-release cadence. The first one is the main release line, which provides
-regularly scheduled and releases with high stability. On top of that there is a
-Next release line which provides early access to changes in the upcoming main
-release.
+Our solution to this is collecting our most used components and their packages
+into an umbrella version that we call a Backstage release. Each release is a
+collection of packages at specific versions that have been verified to work
+together. Think of it as a toolbox that comes with batteries included, but you
+can always add more plugins and libraries from the open source ecosystem as well
+as build your own.
 
 ## Release Lines
 
-### Main Release Line
+The Backstage project is structured around two different release lines, a
+primary "main" release line, and a "next" release line that serves as a preview
+and pre-release of the next main-line release. Each of these release lines have
+their own release cadence and versioning policy.
 
-Current release cadence: Once every 1 months
+## Main Release Line
 
-The main release line in versioned with a major and minor version and does not
-adhere to [semver](https://semver.org).
+Release cadence: Monthly
 
-The major release if there ever is one, will denote a significant improvement or
-change to the Backstage platform. It may come with a large new set of features,
-or a switch in the product direction, but other than that it is not different
-than a minor release.
+The main release line in versioned with a major, minor and patch version but
+does **not** adhere to [semver](https://semver.org). The version format is
+`<major>.<minor>.<patch>`, for example `1.3.0`.
 
-Minor releases are the most common type of release and the one that is used by
-default. Each new minor version can contain new functionality, breaking changes,
-and bug fixes.
+An increment of the major version denotes a significant improvement or change to
+the Backstage platform. It may come with a large new set of features, or a
+switch in the product direction. These will be few and far between, and do not
+have any set cadence. Policy-wise they are no different than a minor release.
 
-Both major and minor releases are governed by the
-[versioning policy](#versioning-policy) in the same way, both of them being
-treated as one incremental release.
+Each regularly scheduled release will bring an increment to the minor version,
+as long as it is not a major release. Each new minor version can contain new
+functionality, breaking changes, and bug fixes, according the
+[versioning policy](#release-versioning-policy).
 
-### Next Release Line
+Patch versions will only be released to address critical bug fixes. They are not
+bound to the regular cadence and are instead releases whenever needed.
+
+## Next Release Line
 
 Release cadence: Weekly
 
-The next release is a weekly snapshot of the project. This is the quickest way
-to get access to new functionality in Backstage but there is no guarantees
-around breaking changes in these releases.
+The next release line is a weekly release of the project. Consuming these
+releases gives you early access to upcoming functionality in Backstage. There
+are however fewer guarantees around breaking changes in these releases, where
+moving from one release to the next may introduce significant breaking changes.
 
-## Versioning Policy
+## Release Versioning Policy
 
-The following versioning policy applies to the main release line. The next
-release line provides no guarantees.
+The following versioning policy applies to the main-line releases only.
 
-<!-- We will do our best to adhere to this policy. -->
-
-- Each release may contain breaking changes, see the package versioning policy
-  below for more details.
 - Breaking changes in Packages that have reached version `>=1.0.0` will only be
-  done when necessary and with as low impact as possible. When possible, there
-  will always be a deprecation path for a breaking change.
+  done when necessary and with the goal of having minimal impact. When possible,
+  there will always be a deprecation path for a breaking change.
 - Security fixes **may** be backported to older releases based on the simplicity
-  of the upgrade path and severity of the vulnerability.
+  of the upgrade path, and the severity of the vulnerability.
+- We will do our best to adhere to this policy.
 
-### Version Skew Policy
+### Skew Policy
 
 In order for Backstage to function properly the following versioning rules must
 be followed. The rules are referring to the
@@ -99,22 +92,6 @@ be followed. The rules are referring to the
 
 ## Package Versioning Policy
 
-### Release Stages
-
-The release stages(`@alpha`, `@beta` `@public`) refers to the
-[TSDoc](https://tsdoc.org/) documentation tag of the export, and are also
-visible in the API report of each package.
-
-Backstage uses three stages to indicate the stability for each individual
-package export.
-
-- `@public` is considered stable.
-- `@beta` exports will not be publicly visible in the package release.
-- `@alpha` here be dragons. Exports will not be publicly visible in the package
-  release.
-
-### Package Versioning
-
 Every individual package is versioned according to [semver](https://semver.org).
 This versioning is completely decoupled from the Backstage release versioning,
 meaning you might for example have `@backstage/core-plugin-api` version `3.1.4`
@@ -129,9 +106,9 @@ Following versioning policy applies to all packages:
 - Breaking changes are recommended to document a clear upgrade path in the
   changelog. This may be omitted for newly introduced or unstable packages.
 
-In addition, this applies to packages that have reached 1.0.0 or above:
+For packages at version `1.0.0` or above, the following policy also applies:
 
-- All exports are marked with a release stage.
+- All exports are marked with a [release stage](#release-stages).
 - Breaking changes to stable exports include a deprecation phase if possible.
   The deprecation must have been released for at least one mainline release
   before it can be removed.
@@ -141,12 +118,18 @@ In addition, this applies to packages that have reached 1.0.0 or above:
   changes without a deprecation period, but the changes must still adhere to
   semver.
 
-For mainline releases: Whether alpha and beta tagged exports need changesets
-depends on how we end up releasing them, for example is it a separate version or
-separate import? `@backstage/core-plugin-api/alpha`?
+### Release Stages
 
-|--------|--------------------------------------------| | | 0.x | >=1.0 |
-|--------|--------------------------------------------| | Alpha | changeset -
-release | changeset - release | | Beta | changeset - release | changeset -
-release | | Public | changeset + guide | deprecation |
-|--------|--------------------------------------------|
+The release stages(`@alpha`, `@beta` `@public`) refers to the
+[TSDoc](https://tsdoc.org/) documentation tag of the export, and are also
+visible in the API report of each package.
+
+Backstage uses three stages to indicate the stability for each individual
+package export.
+
+- `@public` - considered stable and are available in the main package entry
+  point.
+- `@beta` - Not visible in the main package entry point, beta exports must be
+  accessed via `<package-name>/beta` or `<package-name>/alpha` imports.
+- `@alpha` - here be dragons. Not visible in the main package entry point, alpha
+  exports must be accessed via `<package-name>/alpha` imports.
