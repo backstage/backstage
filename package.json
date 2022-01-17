@@ -79,7 +79,7 @@
     "prettier": "^2.2.1",
     "shx": "^0.3.2",
     "ts-node": "^10.4.0",
-    "typescript": "~4.3.5",
+    "typescript": "~4.5.4",
     "yarn-lock-check": "^1.0.5"
   },
   "prettier": "@spotify/prettier-config",
