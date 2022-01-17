@@ -73,6 +73,6 @@ jobs:
               return
             }
 
-            console.log('all files', ${{ steps.get-all-changed-files.output.result}})
-            console.log('codeowners', ${{ steps.codeowners.output.codeowners}})
-            console.log('all teams', ${{ steps.get-all-group-members.output.result}})
+            console.log('all files', ${{ steps.get-all-changed-files.outputs.result}})
+            console.log('codeowners', ${{ steps.codeowners.outputs.codeowners}})
+            console.log('all teams', ${{ steps.get-all-group-members.outputs.result}})
