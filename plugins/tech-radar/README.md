@@ -85,7 +85,7 @@ import {
   TechRadarLoaderResponse,
 } from '@backstage/plugin-tech-radar';
 
-class MyOwnClient implements TechRadarApi {
+export class MyOwnClient implements TechRadarApi {
   async load(id: string | undefined): Promise<TechRadarLoaderResponse> {
     // if needed id prop can be used to fetch the correct data
 
