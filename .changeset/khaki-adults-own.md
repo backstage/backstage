@@ -2,8 +2,7 @@
 '@backstage/plugin-catalog-backend': minor
 ---
 
-**BREAKING CHANGE**: Removed all remnants of the old catalog engine
-implementation.
+**BREAKING**: Removed all remnants of the old catalog engine implementation.
 
 The old implementation has been deprecated for over half a year. To ensure that
 you are not using the old implementation, check that your
@@ -13,6 +12,20 @@ the old implementation and will experience breakage if you upgrade to this
 version. If you are still on the old version, see [the relevant change log
 entry](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/CHANGELOG.md#patch-changes-27)
 for migration instructions.
+
+The minimal `packages/backend/src/plugins/catalog.ts` file is now:
+
+```ts
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  builder.addProcessor(new ScaffolderEntitiesProcessor());
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+  return router;
+}
+```
 
 The following classes and interfaces have been removed:
 
