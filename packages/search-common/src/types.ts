@@ -53,6 +53,17 @@ export interface IndexableDocument {
    * is clicked).
    */
   location: string;
+
+  /**
+   * Optional authorization information to be used when determining whether this
+   * search result should be visible to a given user.
+   */
+  authorization?: {
+    /**
+     * Identifier for the resource.
+     */
+    resourceRef: string;
+  };
 }
 
 /**
