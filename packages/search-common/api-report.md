@@ -27,6 +27,9 @@ export interface DocumentDecorator {
 //
 // @public
 export interface IndexableDocument {
+  authorization?: {
+    resourceRef: string;
+  };
   location: string;
   text: string;
   title: string;
