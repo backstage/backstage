@@ -90,3 +90,29 @@ extension to `.icon.svg`. For example:
 ```ts
 import InternalToolIcon from './internal-tool.icon.svg';
 ```
+
+On mobile devices the `Sidebar` is displayed at the bottom of the screen. For
+customizing the experience you can group `SidebarItems` in a `SidebarGroup`
+(Example 1) or create a `SidebarGroup` with a link (Example 2). All
+`SidebarGroup`s are displayed in the bottom navigation with an icon.
+
+```ts
+// Example 1
+<SidebarGroup icon={<MenuIcon />} label="Menu">
+  ...
+  <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+  ...
+<SidebarGroup />
+```
+
+```ts
+// Example 2
+<SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+  ...
+  <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+  ...
+<SidebarGroup />
+```
+
+If no `SidebarGroup` is provided a default menu will display the `Sidebar`
+content.

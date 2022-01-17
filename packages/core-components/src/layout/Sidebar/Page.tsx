@@ -15,46 +15,67 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import React, {
-  createContext,
-  PropsWithChildren,
-  useEffect,
-  useState,
-} from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { sidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 export type SidebarPageClassKey = 'root';
 
 const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
-  {
+  theme => ({
     root: {
       width: '100%',
-      minHeight: '100%',
       transition: 'padding-left 0.1s ease-out',
-      paddingLeft: ({ isPinned }) =>
-        isPinned
-          ? sidebarConfig.drawerWidthOpen
-          : sidebarConfig.drawerWidthClosed,
+      [theme.breakpoints.up('sm')]: {
+        paddingLeft: ({ isPinned }) =>
+          isPinned
+            ? sidebarConfig.drawerWidthOpen
+            : sidebarConfig.drawerWidthClosed,
+      },
+      [theme.breakpoints.down('xs')]: {
+        paddingBottom: sidebarConfig.mobileSidebarHeight,
+      },
     },
-  },
+  }),
   { name: 'BackstageSidebarPage' },
 );
 
+/**
+ * Type of `SidebarPinStateContext`
+ *
+ * @public
+ */
 export type SidebarPinStateContextType = {
   isPinned: boolean;
   toggleSidebarPinState: () => any;
+  isMobile?: boolean;
 };
 
+/**
+ * Props for SidebarPage
+ *
+ * @public
+ */
+export type SidebarPageProps = {
+  children?: React.ReactNode;
+};
+
+/**
+ * Contains the state on how the `Sidebar` is rendered
+ *
+ * @public
+ */
 export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
   {
     isPinned: true,
     toggleSidebarPinState: () => {},
+    isMobile: false,
   },
 );
 
-export function SidebarPage(props: PropsWithChildren<{}>) {
+export function SidebarPage(props: SidebarPageProps) {
   const [isPinned, setIsPinned] = useState(() =>
     LocalStorage.getSidebarPinState(),
   );
@@ -62,6 +83,11 @@ export function SidebarPage(props: PropsWithChildren<{}>) {
   useEffect(() => {
     LocalStorage.setSidebarPinState(isPinned);
   }, [isPinned]);
+
+  const isMobile = useMediaQuery<BackstageTheme>(
+    theme => theme.breakpoints.down('xs'),
+    { noSsr: true },
+  );
 
   const toggleSidebarPinState = () => setIsPinned(!isPinned);
 
@@ -71,6 +97,7 @@ export function SidebarPage(props: PropsWithChildren<{}>) {
       value={{
         isPinned,
         toggleSidebarPinState,
+        isMobile,
       }}
     >
       <div className={classes.root}>{props.children}</div>

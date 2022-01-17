@@ -18,6 +18,6 @@ export type {
   ConditionalPolicyDecision,
   DefinitivePolicyDecision,
   PermissionPolicy,
-  PolicyAuthorizeRequest,
+  PolicyAuthorizeQuery,
   PolicyDecision,
 } from './types';

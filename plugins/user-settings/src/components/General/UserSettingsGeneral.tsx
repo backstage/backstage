@@ -21,10 +21,10 @@ import { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';
 export const UserSettingsGeneral = () => {
   return (
     <Grid container direction="row" spacing={3}>
-      <Grid item sm={12} md={6}>
+      <Grid item xs={12} md={6}>
         <UserSettingsProfileCard />
       </Grid>
-      <Grid item sm={12} md={6}>
+      <Grid item xs={12} md={6}>
         <UserSettingsAppearanceCard />
       </Grid>
     </Grid>

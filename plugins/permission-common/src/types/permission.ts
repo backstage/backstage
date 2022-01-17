@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AuthorizeRequest, AuthorizeResponse } from './api';
+import { AuthorizeQuery, AuthorizeDecision } from './api';
 
 /**
  * The attributes related to a given permission; these should be generic and widely applicable to
@@ -48,9 +48,9 @@ export type Permission = {
  */
 export interface PermissionAuthorizer {
   authorize(
-    requests: AuthorizeRequest[],
+    queries: AuthorizeQuery[],
     options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeResponse[]>;
+  ): Promise<AuthorizeDecision[]>;
 }
 
 /**

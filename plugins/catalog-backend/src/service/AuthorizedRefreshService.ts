@@ -28,7 +28,7 @@ export class AuthorizedRefreshService implements RefreshService {
   ) {}
 
   async refresh(options: RefreshOptions) {
-    const authorizeResponse = (
+    const authorizeDecision = (
       await this.permissionApi.authorize(
         [
           {
@@ -39,7 +39,7 @@ export class AuthorizedRefreshService implements RefreshService {
         { token: options.authorizationToken },
       )
     )[0];
-    if (authorizeResponse.result !== AuthorizeResult.ALLOW) {
+    if (authorizeDecision.result !== AuthorizeResult.ALLOW) {
       throw new NotAllowedError();
     }
     await this.service.refresh(options);

@@ -26,7 +26,11 @@ describe('<UserSettingsPinToggle />', () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <SidebarPinStateContext.Provider
-          value={{ isPinned: false, toggleSidebarPinState: mockToggleFn }}
+          value={{
+            isPinned: false,
+            isMobile: false,
+            toggleSidebarPinState: mockToggleFn,
+          }}
         >
           <UserSettingsPinToggle />
         </SidebarPinStateContext.Provider>,

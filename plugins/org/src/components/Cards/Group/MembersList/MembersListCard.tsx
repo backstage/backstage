@@ -112,9 +112,10 @@ export const MembersListCard = (_props: {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: GroupEntity;
   memberDisplayTitle?: string;
+  pageSize?: number;
 }) => {
   const { entity: groupEntity } = useEntity<GroupEntity>();
-  let { memberDisplayTitle } = _props;
+  let { memberDisplayTitle, pageSize } = _props;
   const {
     metadata: { name: groupName, namespace: grpNamespace },
     spec: { profile },
@@ -129,7 +130,7 @@ export const MembersListCard = (_props: {
   const pageChange = (_: React.ChangeEvent<unknown>, pageIndex: number) => {
     setPage(pageIndex);
   };
-  const pageSize = 50;
+  pageSize = pageSize ? pageSize : 50;
   memberDisplayTitle = memberDisplayTitle ? memberDisplayTitle : 'Members';
 
   const {
@@ -192,7 +193,7 @@ export const MembersListCard = (_props: {
           ) : (
             <Box p={2}>
               <Typography>
-                This group has no ${memberDisplayTitle.toLocaleLowerCase()}.
+                This group has no {memberDisplayTitle.toLocaleLowerCase()}.
               </Typography>
             </Box>
           )}

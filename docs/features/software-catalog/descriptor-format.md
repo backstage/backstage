@@ -727,7 +727,7 @@ filtering templates, and should ideally match the Component
 You can find out more about the `parameters` key
 [here](../software-templates/writing-templates.md)
 
-### `spec.steps` [optional]
+### `spec.steps` [required]
 
 You can find out more about the `steps` key
 [here](../software-templates/writing-templates.md)
@@ -1265,6 +1265,10 @@ shape, this kind has the following structure.
 ### `apiVersion` and `kind` [required]
 
 Exactly equal to `backstage.io/v1alpha1` and `Location`, respectively.
+
+### `spec` [required]
+
+The `spec` field is required. The minimal spec should be an empty object.
 
 ### `spec.type` [optional]
 

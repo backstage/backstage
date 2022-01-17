@@ -64,6 +64,13 @@ const visibility = new Map<string, ConfigVisibility>(
   }),
 );
 
+const deprecations = new Map<string, string>(
+  Object.entries({
+    '/arr': 'deprecated array',
+    '/objB/never': 'deprecated nested property',
+  }),
+);
+
 describe('filterByVisibility', () => {
   test.each<[ConfigVisibility[], JsonObject]>([
     [
@@ -185,8 +192,33 @@ describe('filterByVisibility', () => {
     [['frontend', 'backend', 'secret'], { data, filteredKeys: [] }],
   ])('should filter correctly with %p', (filter, expected) => {
     expect(
-      filterByVisibility(data, filter, visibility, undefined, true),
+      filterByVisibility(
+        data,
+        filter,
+        visibility,
+        deprecations,
+        undefined,
+        true,
+        false,
+      ),
     ).toEqual(expected);
+  });
+
+  it('should include deprecated keys regardless of visibility', () => {
+    expect(
+      filterByVisibility(
+        data,
+        [],
+        visibility,
+        deprecations,
+        undefined,
+        true,
+        true,
+      ).deprecatedKeys,
+    ).toEqual([
+      { key: 'arr', description: 'deprecated array' },
+      { key: 'objB.never', description: 'deprecated nested property' },
+    ]);
   });
 });
 

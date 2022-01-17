@@ -18,7 +18,7 @@ import { RestContext, rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { PermissionClient } from './PermissionClient';
-import { AuthorizeRequest, AuthorizeResult, Identified } from './types/api';
+import { AuthorizeQuery, AuthorizeResult, Identified } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { Permission } from './types/permission';
 
@@ -42,7 +42,7 @@ const mockPermission: Permission = {
   resourceType: 'test-resource',
 };
 
-const mockAuthorizeRequest = {
+const mockAuthorizeQuery = {
   permission: mockPermission,
   resourceRef: 'foo',
 };
@@ -54,12 +54,12 @@ describe('PermissionClient', () => {
 
   describe('authorize', () => {
     const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
-      const responses = req.body.map((a: Identified<AuthorizeRequest>) => ({
+      const responses = req.body.items.map((a: Identified<AuthorizeQuery>) => ({
         id: a.id,
         result: AuthorizeResult.ALLOW,
       }));
 
-      return res(json(responses));
+      return res(json({ items: responses }));
     });
 
     beforeEach(() => {
@@ -71,38 +71,41 @@ describe('PermissionClient', () => {
     });
 
     it('should fetch entities from correct endpoint', async () => {
-      await client.authorize([mockAuthorizeRequest]);
+      await client.authorize([mockAuthorizeQuery]);
       expect(mockAuthorizeHandler).toHaveBeenCalled();
     });
 
     it('should include a request body', async () => {
-      await client.authorize([mockAuthorizeRequest]);
+      await client.authorize([mockAuthorizeQuery]);
 
       const request = mockAuthorizeHandler.mock.calls[0][0];
-      expect(request.body[0]).toEqual(
-        expect.objectContaining({
-          permission: mockPermission,
-          resourceRef: 'foo',
-        }),
-      );
+
+      expect(request.body).toEqual({
+        items: [
+          expect.objectContaining({
+            permission: mockPermission,
+            resourceRef: 'foo',
+          }),
+        ],
+      });
     });
 
     it('should return the response from the fetch request', async () => {
-      const response = await client.authorize([mockAuthorizeRequest]);
+      const response = await client.authorize([mockAuthorizeQuery]);
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),
       );
     });
 
     it('should not include authorization headers if no token is supplied', async () => {
-      await client.authorize([mockAuthorizeRequest]);
+      await client.authorize([mockAuthorizeQuery]);
 
       const request = mockAuthorizeHandler.mock.calls[0][0];
       expect(request.headers.has('authorization')).toEqual(false);
     });
 
     it('should include correctly-constructed authorization header if token is supplied', async () => {
-      await client.authorize([mockAuthorizeRequest], { token });
+      await client.authorize([mockAuthorizeQuery], { token });
 
       const request = mockAuthorizeHandler.mock.calls[0][0];
       expect(request.headers.get('authorization')).toEqual('Bearer fake-token');
@@ -115,53 +118,59 @@ describe('PermissionClient', () => {
         },
       );
       await expect(
-        client.authorize([mockAuthorizeRequest], { token }),
+        client.authorize([mockAuthorizeQuery], { token }),
       ).rejects.toThrowError(/request failed with 401/i);
     });
 
     it('should reject responses with missing ids', async () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (_req, res, { json }: RestContext) => {
-          return res(json([{ id: 'wrong-id', result: AuthorizeResult.ALLOW }]));
+          return res(
+            json({
+              items: [{ id: 'wrong-id', result: AuthorizeResult.ALLOW }],
+            }),
+          );
         },
       );
       await expect(
-        client.authorize([mockAuthorizeRequest], { token }),
+        client.authorize([mockAuthorizeQuery], { token }),
       ).rejects.toThrowError(/Unexpected authorization response/i);
     });
 
     it('should reject invalid responses', async () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
-          const responses = req.body.map((a: Identified<AuthorizeRequest>) => ({
-            id: a.id,
-            outcome: AuthorizeResult.ALLOW,
-          }));
+          const responses = req.body.items.map(
+            (a: Identified<AuthorizeQuery>) => ({
+              id: a.id,
+              outcome: AuthorizeResult.ALLOW,
+            }),
+          );
 
-          return res(json(responses));
+          return res(json({ items: responses }));
         },
       );
       await expect(
-        client.authorize([mockAuthorizeRequest], { token }),
+        client.authorize([mockAuthorizeQuery], { token }),
       ).rejects.toThrowError(/invalid input/i);
     });
 
     it('should allow all when permission.enabled is false', async () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
-          const responses = req.body.map((a: Identified<AuthorizeRequest>) => ({
+          const responses = req.body.map((a: Identified<AuthorizeQuery>) => ({
             id: a.id,
-            outcome: AuthorizeResult.DENY,
+            result: AuthorizeResult.DENY,
           }));
 
-          return res(json(responses));
+          return res(json({ items: responses }));
         },
       );
       const disabled = new PermissionClient({
         discovery,
         config: new ConfigReader({ permission: { enabled: false } }),
       });
-      const response = await disabled.authorize([mockAuthorizeRequest]);
+      const response = await disabled.authorize([mockAuthorizeQuery]);
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),
       );
@@ -171,7 +180,7 @@ describe('PermissionClient', () => {
     it('should allow all when permission.enabled is not configured', async () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
-          const responses = req.body.map((a: Identified<AuthorizeRequest>) => ({
+          const responses = req.body.map((a: Identified<AuthorizeQuery>) => ({
             id: a.id,
             outcome: AuthorizeResult.DENY,
           }));
@@ -183,7 +192,7 @@ describe('PermissionClient', () => {
         discovery,
         config: new ConfigReader({}),
       });
-      const response = await disabled.authorize([mockAuthorizeRequest]);
+      const response = await disabled.authorize([mockAuthorizeQuery]);
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),
       );

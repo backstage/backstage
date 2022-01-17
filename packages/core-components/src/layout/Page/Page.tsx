@@ -20,7 +20,7 @@ import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 
 export type PageClassKey = 'root';
 
-const useStyles = makeStyles(
+const useStyles = makeStyles<BackstageTheme>(
   () => ({
     root: {
       display: 'grid',
@@ -28,7 +28,7 @@ const useStyles = makeStyles(
         "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
       gridTemplateRows: 'max-content auto 1fr',
       gridTemplateColumns: 'auto 1fr auto',
-      height: '100vh',
+      height: '100%',
       overflowY: 'auto',
     },
   }),

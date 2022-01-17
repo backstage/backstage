@@ -204,6 +204,29 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
+    // Clear the hashed state of the immediate parents of the deleted entity.
+    // This makes sure that when they get reprocessed, their output is written
+    // down again. The reason for wanting to do this, is that if the user
+    // deletes entities that ARE still emitted by the parent, the parent
+    // processing will still generate the same output hash as always, which
+    // means it'll never try to write down the children again (it assumes that
+    // they already exist). This means that without the code below, the database
+    // never "heals" from accidental deletes.
+    await this.database<DbRefreshStateRow>('refresh_state')
+      .update({
+        result_hash: 'child-was-deleted',
+      })
+      .whereIn('entity_ref', function parents(builder) {
+        return builder
+          .from<DbRefreshStateRow>('refresh_state')
+          .innerJoin<DbRefreshStateReferencesRow>('refresh_state_references', {
+            'refresh_state_references.target_entity_ref':
+              'refresh_state.entity_ref',
+          })
+          .where('refresh_state.entity_id', '=', uid)
+          .select('refresh_state_references.source_entity_ref');
+      });
+
     await this.database<DbRefreshStateRow>('refresh_state')
       .where('entity_id', uid)
       .delete();
