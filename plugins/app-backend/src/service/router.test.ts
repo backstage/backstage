@@ -81,7 +81,7 @@ describe('createRouter', () => {
     'returns %s with default Cache-Control header',
     async file => {
       const response = await request(app).get(file);
-      expect(response.header['cache-control']).toBe('public, max-age=0');
+      expect(response.header['cache-control']).toBe('public, max-age=1209600');
     },
   );
 });
