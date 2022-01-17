@@ -18,13 +18,18 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_OWNED_BY,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { DocumentCollator } from '@backstage/search-common';
 import fetch from 'node-fetch';
 import unescape from 'lodash/unescape';
 import { Logger } from 'winston';
 import pLimit from 'p-limit';
 import { Config } from '@backstage/config';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { TechDocsDocument } from '@backstage/techdocs-common';
 
@@ -59,6 +64,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   private readonly parallelismLimit: number;
   private readonly legacyPathCasing: boolean;
   public readonly type: string = 'techdocs';
+  public readonly visibilityPermission = catalogEntityReadPermission;
 
   /**
    * @deprecated use static fromConfig method instead.
@@ -148,6 +154,9 @@ export class DefaultTechDocsCollator implements DocumentCollator {
               owner:
                 entity.relations?.find(r => r.type === RELATION_OWNED_BY)
                   ?.target?.name || '',
+              authorization: {
+                resourceRef: stringifyEntityRef(entity),
+              },
             }));
           } catch (e) {
             this.logger.debug(

@@ -200,6 +200,9 @@ describe('DefaultTechDocsCollator', () => {
         owner: '',
         kind: entity.kind,
         name: entity.metadata.name,
+        authorization: {
+          resourceRef: `component:default/${entity.metadata.name}`,
+        },
       });
     });
   });
