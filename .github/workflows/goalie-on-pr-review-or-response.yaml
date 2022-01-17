@@ -24,15 +24,15 @@ jobs:
             });
 
             return requestedReviewers;
+
       - uses: actions/github-script@v5
         id: get-reviewer-group-members
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
             // Get all members of all required groups
-
             const requestedReviewers = ${{steps.get-requested-reviewers.outputs.result}};
-            const { data: groupMembers } = await Promise.all(
+            const groupMembers = await Promise.all(
               requestedReviewers.teams.map(
                 async (team) => {
                   const { data } = await github.rest.teams.listMembersInOrg({
@@ -40,12 +40,12 @@ jobs:
                     team_slug: team.slug,
                   });
 
-                  return data;
+                  return { team: team.slug, data };
                 }
               )
             )
-            return groupMembers.flat();
-
+            return groupMembers;
+            
       - uses: actions/github-script@v5
         id: get-all-current-reviews
         with:
