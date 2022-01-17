@@ -113,6 +113,9 @@ describe('DefaultCatalogCollator', () => {
       componentType: expectedEntities[0]!.spec!.type,
       lifecycle: expectedEntities[0]!.spec!.lifecycle,
       owner: expectedEntities[0]!.spec!.owner,
+      authorization: {
+        resourceRef: 'component:default/test-entity',
+      },
     });
     expect(documents[1]).toMatchObject({
       title: expectedEntities[1].metadata.title,
@@ -122,6 +125,9 @@ describe('DefaultCatalogCollator', () => {
       componentType: expectedEntities[1]!.spec!.type,
       lifecycle: expectedEntities[1]!.spec!.lifecycle,
       owner: expectedEntities[1]!.spec!.owner,
+      authorization: {
+        resourceRef: 'component:default/test-entity-2',
+      },
     });
   });
 
