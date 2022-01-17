@@ -71,7 +71,7 @@ export async function codeSearch(
       );
     }
 
-    const body: CodeSearchResponse = await response.json();
+    const body = (await response.json()) as CodeSearchResponse;
     items = [...items, ...body.results];
     hasMorePages = body.count > items.length;
   } while (hasMorePages);

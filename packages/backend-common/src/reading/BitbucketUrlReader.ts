@@ -217,7 +217,7 @@ export class BitbucketUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    const commits = await commitsResponse.json();
+    const commits = (await commitsResponse.json()) as any;
     if (isHosted) {
       if (
         commits &&

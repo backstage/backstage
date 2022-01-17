@@ -114,7 +114,7 @@ export class RollbarApi {
       fullUrl,
       getRequestHeaders(accessToken || this.accessToken || ''),
     )
-      .then(response => response.json())
+      .then(response => response.json() as any)
       .then(json => camelcaseKeys<T>(json?.result, { deep: true }));
   }
 

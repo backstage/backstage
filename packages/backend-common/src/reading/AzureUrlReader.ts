@@ -124,7 +124,8 @@ export class AzureUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    const commitSha = (await commitsAzureResponse.json()).value[0].commitId;
+    const commitSha = ((await commitsAzureResponse.json()) as any).value[0]
+      .commitId;
     if (etag && etag === commitSha) {
       throw new NotModifiedError();
     }

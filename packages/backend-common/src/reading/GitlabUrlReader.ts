@@ -135,7 +135,8 @@ export class GitlabUrlReader implements UrlReader {
       }
       throw new Error(msg);
     }
-    const projectGitlabResponseJson = await projectGitlabResponse.json();
+    const projectGitlabResponseJson =
+      (await projectGitlabResponse.json()) as any;
 
     // ref is an empty string if no branch is set in provided url to readTree.
     const branch = ref || projectGitlabResponseJson.default_branch;
@@ -172,7 +173,7 @@ export class GitlabUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    const commitSha = (await commitsGitlabResponse.json())[0].id;
+    const commitSha = ((await commitsGitlabResponse.json()) as any)[0].id;
 
     if (etag && etag === commitSha) {
       throw new NotModifiedError();

@@ -139,7 +139,7 @@ export class IdentityClient {
       throw new Error(message);
     }
 
-    const publicKeys: { keys: JSONWebKey[] } = await response.json();
+    const publicKeys = (await response.json()) as { keys: JSONWebKey[] };
 
     return publicKeys;
   }
