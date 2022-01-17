@@ -22,7 +22,7 @@ Under the hood the CLI uses [Webpack](https://webpack.js.org/) for bundling,
 [Jest](https://jestjs.io/) for testing, and [eslint](https://eslint.org/) for
 linting. It also includes tooling for working within Backstage apps, for example
 for keeping the app up to date and verifying static configuration. For a more
-in-depth look info the tooling, see the [build system](./cli-build-system.md)
+in-depth look into the tooling, see the [build system](./cli-build-system.md)
 page, and for a list of commands, see the [commands](./cli-commands.md) page.
 
 While the Backstage tooling is opinionated in how it works, it is also possible

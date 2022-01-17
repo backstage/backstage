@@ -77,7 +77,7 @@ implemented in a typical Backstage app.
 The formatting setup lives completely within each Backstage application and is
 not part of the CLI. In an app created with `@backstage/create-app` the
 formatting is handled by [prettier](https://prettier.io/), but each application
-can those their own formatting rules and switch to a different formatter if
+can choose their own formatting rules and switch to a different formatter if
 desired.
 
 ## Linting
@@ -95,10 +95,10 @@ configurations in turn build on top of the lint rules from
 [@spotify/web-scripts](https://github.com/spotify/web-scripts).
 
 In a standard Backstage setup, each individual package has its own lint
-configuration, along with that there's also a root configuration that applies to
-the entire project. Each configuration is initially one that simply extends a
-base configuration provided by the Backstage CLI, but they can be customized to
-fit the needs of each package.
+configuration, along with a root configuration that applies to the entire
+project. Each configuration is initially one that simply extends a base
+configuration provided by the Backstage CLI, but they can be customized to fit
+the needs of each package.
 
 ## Type Checking
 
@@ -108,7 +108,7 @@ defaults as well as some required settings for the build system to work.
 
 Perhaps the most notable part about the TypeScript setup in Backstage projects
 is that the entire project is one big compilation unit. This is due to
-performance optimization as well as easy of use, since breaking projects down
+performance optimization as well as ease of use, since breaking projects down
 into smaller pieces has proven to both lead to a more complicated setup, as well
 as type checking of the entire project being an order of magnitude slower. In
 order to make this setup work, the entrypoint of each package needs to point to
@@ -144,7 +144,7 @@ environments, such as one based on [`jsdom`](https://github.com/jsdom/jsdom)
 that helps mimic browser APIs and behavior.
 
 The Backstage CLI has its own command that helps execute tests,
-`backstage-cli test`, as well as it's own configuration at
+`backstage-cli test`, as well as its own configuration at
 `@backstage/cli/config/jest.js`. The command is a relatively thin wrapper around
 running `jest` directly. Its main responsibility is to make sure the included
 configuration is used, as well setting the `NODE_ENV` and `TZ` environment
@@ -207,7 +207,7 @@ cover each combination of these cases separately.
 
 ### Frontend Development
 
-There are two different commands that starts the frontend development bundling,
+There are two different commands that start the frontend development bundling:
 `app:serve`, which serves an app and uses `src/index` as the entrypoint, and
 `plugin:serve`, which serves a plugin and uses `dev/index` as the entrypoint.
 These are typically invoked via the `yarn start` script, and are intended for
@@ -281,9 +281,9 @@ load performance.
 The backend development bundling is also based on Webpack, but rather than
 starting up a web server, the backend is started up using the
 [`RunScriptWebpackPlugin`](https://www.npmjs.com/package/run-script-webpack-plugin).
-The reason for using Webpack for development of the backend is both that it is
+The reason for using Webpack for development of the backend is both that it is a
 convenient way to handle transpilation of a large set of packages, as well us
-allowing us to use hot module replacement and maintain state while reloading
+allowing us to use hot module replacement and maintaining state while reloading
 individual backend modules. This is particularly useful when running the backend
 with in-memory SQLite as the database choice.
 
@@ -303,7 +303,7 @@ If you want to inspect the running Node.js process, the `--inspect` and
 
 The backend production bundling uses a completely different setup than the other
 bundling options. Rather than using Webpack, the backend production bundling
-instead collects the backend packages and all of its local dependencies into a
+instead collects the backend packages and all of their local dependencies into a
 deployment archive. The archive is written to `dist/bundle.tar.gz`, and contains
 the packaged version of each of these packages. The layout of the packages in
 the archive is the same as the directory layout in the monorepo, and the bundle
@@ -312,7 +312,7 @@ also contains the root `package.json` and `yarn.lock` files.
 Note that before creating a production bundle you must first build all of the
 backend packages. This can be done automatically when executing the
 `backend:bundle` command by passing the `--build-dependencies` flag. It is an
-optional flag since it is quite common that the packages are already build
+optional flag since it is quite common that the packages are already built
 earlier on in your build process, and building them again would result in
 duplicate work.
 
@@ -360,8 +360,8 @@ lightweight as possible, and leave most syntax intact.
 Apart from these requirements, the deciding factor for which transpiler to use
 is their speed. The build process keeps the integration with the transpilers
 lightweight, without additional plugins or such. This enables us to switch out
-transpilers as new options and optimizations become available, and keep use the
-best options that are available.
+transpilers as new options and optimizations become available, and keep on using
+the best options that are available.
 
 Our current selection of transpilers are [esbuild](https://esbuild.github.io/)
 and [Sucrase](https://github.com/alangpierce/sucrase). The reason we choose to
@@ -428,10 +428,10 @@ Usage of this configuration can be overridden either by passing a
 `--config <path>` flag to `backstage-cli test`, or placing a `jest.config.js` or
 `jest.config.ts` file in your package.
 
-The build-in configuration brings a couple of benefits and features. The most
+The built-in configuration brings a couple of benefits and features. The most
 important one being a baseline transformer and module configuration that enables
 support for the listed [loaders](#loaders) within tests. It will also
-automatically detect and uses `src/setupTests.ts` if it exists, and provide a
+automatically detect and use `src/setupTests.ts` if it exists, and provides a
 coverage configuration that works well with our selected transpilers.
 
 The configuration also takes a project-wide approach, with the expectation most
@@ -444,9 +444,9 @@ working directory to the package that the test is in.
 
 Where small customizations are needed, such as setting coverage thresholds or
 support for specific transforms, it is possible to override the Jest
-configuration through the `"jest"` in `package.json`. These overrides will be
-loaded in from all `package.json` files in the directory ancestry, meaning that
-you can place common configuration in the `package.json` at the root of a
+configuration through the `"jest"` field in `package.json`. These overrides will
+be loaded in from all `package.json` files in the directory ancestry, meaning
+that you can place common configuration in the `package.json` at the root of a
 monorepo. If multiple overrides are found, they will be merged together with
 configuration further down in the directory tree taking precedence.
 
@@ -467,23 +467,23 @@ The overrides in a single `package.json` may for example look like this:
 ## Publishing
 
 Package publishing is an optional part of the Backstage build system and not
-something you well need to worry unless you are publishing packages to a
+something you will need to worry about unless you are publishing packages to a
 registry. In order to publish a package, you first need to build it, which will
 populate the `dist` folder. Because the Backstage build system is optimized for
 local development along with our particular TypeScript and bundling setup, it is
-not possible to publish package immediately at this point. This is because the
-entry points of the package will still be pointing to `src/index.ts`, but we
+not possible to publish the package immediately at this point. This is because
+the entry points of the package will still be pointing to `src/index.ts`, but we
 want them to point to `dist/` in the published package.
 
 In order to work around this, the Backstage CLI provides `prepack` and
 `postpack` commands that help prepare the package for publishing. These scripts
 are automatically run by Yarn before publishing a package.
 
-The `prepack` command will take entry point fields in `"publishConfig"`, such
-as, `"main"` and `"module"`, and move the top level of the `package.json`. This
-lets you point at the desired files in the `dist` folder during publishing. The
-`postpack` command will simply revert this change in order to leave your project
-clean.
+The `prepack` command will take entry point fields in `"publishConfig"`, such as
+`"main"` and `"module"`, and move them to the top level of the `package.json`.
+This lets you point at the desired files in the `dist` folder during publishing.
+The `postpack` command will simply revert this change in order to leave your
+project clean.
 
 The following is an excerpt of a typical setup of an isomorphic library package:
 
