@@ -18,7 +18,7 @@ module.exports = ({ args }) => {
   // If it's called with args, each arg should be the path to a package that we will
   // show the stories from, for example `yarn storybook plugins/catalog`.
 
-  const rootPath = '../../..';
+  const rootPath = '../../';
   const storiesSrcGlob = 'src/**/*.stories.tsx';
 
   const getStoriesPath = package =>
