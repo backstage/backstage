@@ -1,6 +1,6 @@
 ---
 id: versioning-policy
-title: Versioning Policy
+title: Release & Versioning Policy
 description:
 ---
 

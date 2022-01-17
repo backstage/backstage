@@ -4,7 +4,9 @@ author: Patrik Oldsberg, Spotify
 authorURL: https://github.com/Rugvip
 ---
 
-**TL;DR** Backstage is heading out of alpha and moving onto the path to stable releases and an eventual version 1.0. As the community and ecosystem continue to grow at an increasing rate, we want to provide a solid foundation for everyone building things in, with, and around Backstage. So, today we’re introducing the [Stability Index](https://backstage.io/docs/overview/stability-index) — a simple way to find out how likely (or unlikely) a specific package or plugin inside Backstage might be updated with major changes. By indicating the reliability of key features and APIs, this quick reference will help contributors and adopters better plan and coordinate their development efforts going forward.
+2022-01 update: The stability is now replaced by the [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+**TL;DR** Backstage is heading out of alpha and moving onto the path to stable releases and an eventual version 1.0. As the community and ecosystem continue to grow at an increasing rate, we want to provide a solid foundation for everyone building things in, with, and around Backstage. So, today we’re introducing the [Stability Index](https://backstage.io/docs/overview/versioning-policy) — a simple way to find out how likely (or unlikely) a specific package or plugin inside Backstage might be updated with major changes. By indicating the reliability of key features and APIs, this quick reference will help contributors and adopters better plan and coordinate their development efforts going forward.
 
 ![Animation cycling between stability index scores](assets/2020-12-22/stability-index-hero.gif)
 
@@ -18,7 +20,7 @@ This rapid evolution can create uncertainty around which parts of the project ar
 
 In order to tackle the problem of uncertainty, and help align contributors, we have recently introduced a Stability Index. Inspired by a [similar concept with the same name in Node.js](https://nodejs.org/docs/latest-v4.x/api/documentation.html#documentation_stability_index), it’s a score assigned to subsets of the project, indicating the level of maturity of the API and the commitment to backwards compatibility. However, because of the current phase of the project, we have used a slightly different implementation. Rather than the score indicating a perceived stability, a higher score is instead a commitment to providing a smoother upgrade path for users, both through better documentation and backwards compatibility. Importantly, the Stability Index does not supersede [semantic versioning](https://semver.org/) (or semver), meaning we will still adhere to semver and only do breaking changes in minor releases as long as we are on 0.x.
 
-You can find more details about the scores on the [Stability Index](https://backstage.io/docs/overview/stability-index) page, but the following is a TL;DR of the 0–3 scores:
+You can find more details about the scores on the [Stability Index](https://backstage.io/docs/overview/versioning-policy) page, but the following is a TL;DR of the 0–3 scores:
 
 - **0** — There's a changelog entry.
 - **1** — There's a migration guide.

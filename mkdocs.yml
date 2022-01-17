@@ -12,7 +12,7 @@ nav:
       - Vision: 'overview/vision.md'
       - The Spotify Story: 'overview/background.md'
       - Strategies for adopting: 'overview/adopting.md'
-      - Stability Index: 'overview/stability-index.md'
+      - Release & Versioning Policy: 'overview/versioning-policy.md'
       - Support and community: 'overview/support.md'
       - Glossary: 'overview/glossary.md'
       - Logo assets: 'overview/logos.md'
