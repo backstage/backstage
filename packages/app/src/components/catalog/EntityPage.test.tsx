@@ -21,7 +21,9 @@ import {
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import { githubActionsApiRef } from '@backstage/plugin-github-actions';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
+  MockPermissionApi,
   MockStorageApi,
   renderInTestApp,
   TestApiProvider,
@@ -49,6 +51,7 @@ describe('EntityPage Test', () => {
   const mockedApi = {
     listWorkflowRuns: jest.fn().mockResolvedValue([]),
   };
+  const mockPermissionApi = new MockPermissionApi();
 
   describe('cicdContent', () => {
     it('Should render GitHub Actions View', async () => {
@@ -62,6 +65,7 @@ describe('EntityPage Test', () => {
                 storageApi: MockStorageApi.create(),
               }),
             ],
+            [permissionApiRef, mockPermissionApi],
           ]}
         >
           <EntityProvider entity={entity}>

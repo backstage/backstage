@@ -37,6 +37,7 @@
     "@backstage/core-plugin-api": "^0.6.0-next.0",
     "@backstage/errors": "^0.2.0",
     "@backstage/integration-react": "^0.1.19-next.0",
+    "@backstage/plugin-catalog-common": "^0.1.0",
     "@backstage/plugin-catalog-react": "^0.6.12-next.0",
     "@backstage/theme": "^0.2.14",
     "@material-ui/core": "^4.12.2",
