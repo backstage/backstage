@@ -62,7 +62,9 @@ export class ProcessorOutputCollector {
   private receive(i: CatalogProcessorResult) {
     if (this.done) {
       this.logger.warn(
-        `Item if type ${i.type} was emitted after processing had completed at ${
+        `Item of type "${
+          i.type
+        }" was emitted after processing had completed. Stack trace: ${
           new Error().stack
         }`,
       );
