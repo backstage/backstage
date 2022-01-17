@@ -19,8 +19,6 @@ export type {
   EntitiesRequest,
   EntitiesResponse,
   EntityAncestryResponse,
-  EntityUpsertRequest,
-  EntityUpsertResponse,
   PageInfo,
   EntitiesSearchFilter,
   EntityFilter,

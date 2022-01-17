@@ -17,20 +17,20 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
-import type { Entity, LocationSpec } from '@backstage/catalog-model';
+import type { Entity, LocationSpec, Location } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
-import { EntitiesCatalog } from '../../catalog';
-import { LocationResponse, LocationsCatalog } from '../catalog/types';
-import { HigherOrderOperation } from '../ingestion/types';
-import { createRouter } from './router';
-import { basicEntityFilter } from '../../service/request';
-import { RefreshService } from '../../service';
+import { EntitiesCatalog } from '../catalog';
+import { LocationService, RefreshService } from './types';
+import { basicEntityFilter } from './request';
+import { createRouter } from './createRouter';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 
 describe('createRouter readonly disabled', () => {
-  let entitiesCatalog: jest.Mocked<Required<EntitiesCatalog>>;
-  let locationsCatalog: jest.Mocked<LocationsCatalog>;
-  let higherOrderOperation: jest.Mocked<HigherOrderOperation>;
+  let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
+  let locationService: jest.Mocked<LocationService>;
   let app: express.Express;
   let refreshService: RefreshService;
 
@@ -38,30 +38,22 @@ describe('createRouter readonly disabled', () => {
     entitiesCatalog = {
       entities: jest.fn(),
       removeEntityByUid: jest.fn(),
-      batchAddOrUpdateEntities: jest.fn(),
       entityAncestry: jest.fn(),
     };
-    locationsCatalog = {
-      addLocation: jest.fn(),
-      removeLocation: jest.fn(),
-      locations: jest.fn(),
-      location: jest.fn(),
-      locationHistory: jest.fn(),
-      logUpdateSuccess: jest.fn(),
-      logUpdateFailure: jest.fn(),
-    };
-    higherOrderOperation = {
-      addLocation: jest.fn(),
-      refreshAllLocations: jest.fn(),
+    locationService = {
+      getLocation: jest.fn(),
+      createLocation: jest.fn(),
+      listLocations: jest.fn(),
+      deleteLocation: jest.fn(),
     };
     refreshService = { refresh: jest.fn() };
     const router = await createRouter({
       entitiesCatalog,
-      locationsCatalog,
-      higherOrderOperation,
+      locationService,
       logger: getVoidLogger(),
       refreshService,
       config: new ConfigReader(undefined),
+      permissionIntegrationRouter: express.Router(),
     });
     app = express().use(router);
   });
@@ -75,10 +67,12 @@ describe('createRouter readonly disabled', () => {
       const response = await request(app)
         .post('/refresh')
         .set('Content-Type', 'application/json')
+        .set('authorization', 'Bearer someauthtoken')
         .send({ entityRef: 'Component/default:foo' });
       expect(response.status).toBe(200);
       expect(refreshService.refresh).toHaveBeenCalledWith({
         entityRef: 'Component/default:foo',
+        authorizationToken: 'someauthtoken',
       });
     });
   });
@@ -217,62 +211,18 @@ describe('createRouter readonly disabled', () => {
     });
   });
 
-  describe('POST /entities', () => {
-    it('requires a body', async () => {
-      const response = await request(app)
-        .post('/entities')
-        .set('Content-Type', 'application/json')
-        .send();
-
-      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toHaveBeenCalled();
-      expect(response.status).toEqual(400);
-      expect(response.text).toMatch(/body/);
-    });
-
-    it('passes the body down', async () => {
-      const entity: Entity = {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c',
-          namespace: 'd',
-        },
-      };
-
-      entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([
-        { entityId: 'u' },
-      ]);
-      entitiesCatalog.entities.mockResolvedValue({
-        entities: [entity],
-        pageInfo: { hasNextPage: false },
-      });
-
-      const response = await request(app)
-        .post('/entities')
-        .send(entity)
-        .set('Content-Type', 'application/json');
-
-      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledWith([
-        { entity, relations: [] },
-      ]);
-      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        filter: basicEntityFilter({ 'metadata.uid': 'u' }),
-      });
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual(entity);
-    });
-  });
-
   describe('DELETE /entities/by-uid/:uid', () => {
     it('can remove', async () => {
       entitiesCatalog.removeEntityByUid.mockResolvedValue(undefined);
 
-      const response = await request(app).delete('/entities/by-uid/apa');
+      const response = await request(app)
+        .delete('/entities/by-uid/apa')
+        .set('authorization', 'Bearer someauthtoken');
 
       expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa');
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa', {
+        authorizationToken: 'someauthtoken',
+      });
       expect(response.status).toEqual(204);
     });
 
@@ -281,28 +231,31 @@ describe('createRouter readonly disabled', () => {
         new NotFoundError('nope'),
       );
 
-      const response = await request(app).delete('/entities/by-uid/apa');
+      const response = await request(app)
+        .delete('/entities/by-uid/apa')
+        .set('authorization', 'Bearer someauthtoken');
 
       expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa');
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa', {
+        authorizationToken: 'someauthtoken',
+      });
       expect(response.status).toEqual(404);
     });
   });
 
   describe('GET /locations', () => {
     it('happy path: lists locations', async () => {
-      const locations: LocationResponse[] = [
-        {
-          currentStatus: { timestamp: '', status: '', message: '' },
-          data: { id: 'a', type: 'b', target: 'c' },
-        },
+      const locations: Location[] = [
+        { id: 'foo', type: 'url', target: 'example.com' },
       ];
-      locationsCatalog.locations.mockResolvedValueOnce(locations);
+      locationService.listLocations.mockResolvedValueOnce(locations);
 
       const response = await request(app).get('/locations');
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual(locations);
+      expect(response.body).toEqual([
+        { data: { id: 'foo', target: 'example.com', type: 'url' } },
+      ]);
     });
   });
 
@@ -315,7 +268,7 @@ describe('createRouter readonly disabled', () => {
 
       const response = await request(app).post('/locations').send(spec);
 
-      expect(higherOrderOperation.addLocation).not.toHaveBeenCalled();
+      expect(locationService.createLocation).not.toHaveBeenCalled();
       expect(response.status).toEqual(400);
     });
 
@@ -325,17 +278,15 @@ describe('createRouter readonly disabled', () => {
         target: 'c',
       };
 
-      higherOrderOperation.addLocation.mockResolvedValue({
+      locationService.createLocation.mockResolvedValue({
         location: { id: 'a', ...spec },
         entities: [],
       });
 
       const response = await request(app).post('/locations').send(spec);
 
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledTimes(1);
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledWith(spec, {
-        dryRun: false,
-      });
+      expect(locationService.createLocation).toHaveBeenCalledTimes(1);
+      expect(locationService.createLocation).toHaveBeenCalledWith(spec, false);
       expect(response.status).toEqual(201);
       expect(response.body).toEqual(
         expect.objectContaining({
@@ -350,7 +301,7 @@ describe('createRouter readonly disabled', () => {
         target: 'c',
       };
 
-      higherOrderOperation.addLocation.mockResolvedValue({
+      locationService.createLocation.mockResolvedValue({
         location: { id: 'a', ...spec },
         entities: [],
       });
@@ -359,10 +310,8 @@ describe('createRouter readonly disabled', () => {
         .post('/locations?dryRun=true')
         .send(spec);
 
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledTimes(1);
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledWith(spec, {
-        dryRun: true,
-      });
+      expect(locationService.createLocation).toHaveBeenCalledTimes(1);
+      expect(locationService.createLocation).toHaveBeenCalledWith(spec, true);
       expect(response.status).toEqual(201);
       expect(response.body).toEqual(
         expect.objectContaining({
@@ -375,40 +324,31 @@ describe('createRouter readonly disabled', () => {
 
 describe('createRouter readonly enabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
-  let locationsCatalog: jest.Mocked<LocationsCatalog>;
-  let higherOrderOperation: jest.Mocked<HigherOrderOperation>;
   let app: express.Express;
+  let locationService: jest.Mocked<LocationService>;
 
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
       removeEntityByUid: jest.fn(),
-      batchAddOrUpdateEntities: jest.fn(),
       entityAncestry: jest.fn(),
     };
-    locationsCatalog = {
-      addLocation: jest.fn(),
-      removeLocation: jest.fn(),
-      locations: jest.fn(),
-      location: jest.fn(),
-      locationHistory: jest.fn(),
-      logUpdateSuccess: jest.fn(),
-      logUpdateFailure: jest.fn(),
-    };
-    higherOrderOperation = {
-      addLocation: jest.fn(),
-      refreshAllLocations: jest.fn(),
+    locationService = {
+      getLocation: jest.fn(),
+      createLocation: jest.fn(),
+      listLocations: jest.fn(),
+      deleteLocation: jest.fn(),
     };
     const router = await createRouter({
       entitiesCatalog,
-      locationsCatalog,
-      higherOrderOperation,
+      locationService,
       logger: getVoidLogger(),
       config: new ConfigReader({
         catalog: {
           readonly: true,
         },
       }),
+      permissionIntegrationRouter: express.Router(),
     });
     app = express().use(router);
   });
@@ -435,53 +375,34 @@ describe('createRouter readonly enabled', () => {
     });
   });
 
-  describe('POST /entities', () => {
-    it('is not allowed', async () => {
-      const entity: Entity = {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c',
-          namespace: 'd',
-        },
-      };
-
-      const response = await request(app)
-        .post('/entities')
-        .set('Content-Type', 'application/json')
-        .send(entity);
-
-      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toHaveBeenCalled();
-      expect(response.status).toEqual(403);
-      expect(response.text).toMatch(/not allowed in readonly/);
-    });
-  });
-
   describe('DELETE /entities/by-uid/:uid', () => {
     // this delete is allowed as there is no other way to remove entities
     it('is allowed', async () => {
-      const response = await request(app).delete('/entities/by-uid/apa');
+      const response = await request(app)
+        .delete('/entities/by-uid/apa')
+        .set('authorization', 'Bearer someauthtoken');
 
       expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa');
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa', {
+        authorizationToken: 'someauthtoken',
+      });
       expect(response.status).toEqual(204);
     });
   });
 
   describe('GET /locations', () => {
     it('happy path: lists locations', async () => {
-      const locations: LocationResponse[] = [
-        {
-          currentStatus: { timestamp: '', status: '', message: '' },
-          data: { id: 'a', type: 'b', target: 'c' },
-        },
+      const locations: Location[] = [
+        { id: 'foo', type: 'url', target: 'example.com' },
       ];
-      locationsCatalog.locations.mockResolvedValueOnce(locations);
+      locationService.listLocations.mockResolvedValueOnce(locations);
 
       const response = await request(app).get('/locations');
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual(locations);
+      expect(response.body).toEqual([
+        { data: { id: 'foo', target: 'example.com', type: 'url' } },
+      ]);
     });
   });
 
@@ -494,7 +415,7 @@ describe('createRouter readonly enabled', () => {
 
       const response = await request(app).post('/locations').send(spec);
 
-      expect(higherOrderOperation.addLocation).not.toHaveBeenCalled();
+      expect(locationService.createLocation).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
       expect(response.text).toMatch(/not allowed in readonly/);
     });
@@ -505,7 +426,7 @@ describe('createRouter readonly enabled', () => {
         target: 'c',
       };
 
-      higherOrderOperation.addLocation.mockResolvedValue({
+      locationService.createLocation.mockResolvedValue({
         location: { id: 'a', ...spec },
         entities: [],
       });
@@ -514,16 +435,97 @@ describe('createRouter readonly enabled', () => {
         .post('/locations?dryRun=true')
         .send(spec);
 
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledTimes(1);
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledWith(spec, {
-        dryRun: true,
-      });
+      expect(locationService.createLocation).toHaveBeenCalledTimes(1);
+      expect(locationService.createLocation).toHaveBeenCalledWith(spec, true);
       expect(response.status).toEqual(201);
       expect(response.body).toEqual(
         expect.objectContaining({
           location: { id: 'a', ...spec },
         }),
       );
+    });
+  });
+});
+
+describe('NextRouter permissioning', () => {
+  let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
+  let locationService: jest.Mocked<LocationService>;
+  let app: express.Express;
+  let refreshService: RefreshService;
+
+  const fakeRule = {
+    name: 'FAKE_RULE',
+    description: 'fake rule',
+    apply: () => true,
+    toQuery: () => ({ key: '', values: [] }),
+  };
+
+  beforeAll(async () => {
+    entitiesCatalog = {
+      entities: jest.fn(),
+      removeEntityByUid: jest.fn(),
+      entityAncestry: jest.fn(),
+    };
+    locationService = {
+      getLocation: jest.fn(),
+      createLocation: jest.fn(),
+      listLocations: jest.fn(),
+      deleteLocation: jest.fn(),
+    };
+    refreshService = { refresh: jest.fn() };
+    const router = await createRouter({
+      entitiesCatalog,
+      locationService,
+      logger: getVoidLogger(),
+      refreshService,
+      config: new ConfigReader(undefined),
+      permissionIntegrationRouter: createPermissionIntegrationRouter({
+        resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+        rules: [fakeRule],
+        getResources: jest.fn((resourceRefs: string[]) =>
+          Promise.resolve(
+            resourceRefs.map(resourceRef => ({ id: resourceRef })),
+          ),
+        ),
+      }),
+    });
+    app = express().use(router);
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('accepts and evaluates conditions at the apply-conditions endpoint', async () => {
+    const spideySense: Entity = {
+      apiVersion: 'a',
+      kind: 'component',
+      metadata: {
+        name: 'spidey-sense',
+      },
+    };
+    entitiesCatalog.entities.mockResolvedValueOnce({
+      entities: [spideySense],
+      pageInfo: { hasNextPage: false },
+    });
+
+    const requestBody = {
+      items: [
+        {
+          id: '123',
+          resourceType: 'catalog-entity',
+          resourceRef: 'component:default/spidey-sense',
+          conditions: { rule: 'FAKE_RULE', params: ['user:default/spiderman'] },
+        },
+      ],
+    };
+    const response = await request(app)
+      .post('/.well-known/backstage/permissions/apply-conditions')
+      .send(requestBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      items: [{ id: '123', result: AuthorizeResult.ALLOW }],
     });
   });
 });

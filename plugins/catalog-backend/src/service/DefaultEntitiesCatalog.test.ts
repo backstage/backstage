@@ -25,9 +25,9 @@ import {
   DbRefreshStateRow,
   DbSearchRow,
 } from '../database/tables';
-import { NextEntitiesCatalog } from './NextEntitiesCatalog';
+import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 
-describe('NextEntitiesCatalog', () => {
+describe('DefaultEntitiesCatalog', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
@@ -151,7 +151,7 @@ describe('NextEntitiesCatalog', () => {
         await addEntity(knex, parent, [{ entity: grandparent }]);
         await addEntity(knex, root, [{ entity: parent }]);
 
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex);
         const result = await catalog.entityAncestry('k:default/root');
         expect(result.rootEntityRef).toEqual('k:default/root');
 
@@ -181,7 +181,7 @@ describe('NextEntitiesCatalog', () => {
       'should throw error if the entity does not exist, %p',
       async databaseId => {
         const { knex } = await createDatabase(databaseId);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex);
         await expect(() =>
           catalog.entityAncestry('k:default/root'),
         ).rejects.toThrow('No such entity k:default/root');
@@ -224,7 +224,7 @@ describe('NextEntitiesCatalog', () => {
         await addEntity(knex, parent2, [{ entity: grandparent }]);
         await addEntity(knex, root, [{ entity: parent1 }, { entity: parent2 }]);
 
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex);
         const result = await catalog.entityAncestry('k:default/root');
         expect(result.rootEntityRef).toEqual('k:default/root');
 
@@ -280,7 +280,7 @@ describe('NextEntitiesCatalog', () => {
         };
         await addEntityToSearch(knex, entity1);
         await addEntityToSearch(knex, entity2);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex);
 
         const testFilter = {
           key: 'spec.test',
@@ -313,7 +313,7 @@ describe('NextEntitiesCatalog', () => {
         };
         await addEntityToSearch(knex, entity1);
         await addEntityToSearch(knex, entity2);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex);
 
         const testFilter = {
           not: {
@@ -360,7 +360,7 @@ describe('NextEntitiesCatalog', () => {
         await addEntityToSearch(knex, entity2);
         await addEntityToSearch(knex, entity3);
         await addEntityToSearch(knex, entity4);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex);
 
         const testFilter1 = {
           key: 'metadata.org',
@@ -415,7 +415,7 @@ describe('NextEntitiesCatalog', () => {
         };
         await addEntityToSearch(knex, entity1);
         await addEntityToSearch(knex, entity2);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex);
 
         const testFilter1 = {
           key: 'metadata.org',
@@ -457,7 +457,7 @@ describe('NextEntitiesCatalog', () => {
         };
         await addEntityToSearch(knex, entity1);
         await addEntityToSearch(knex, entity2);
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex);
 
         const testFilter = {
           key: 'kind',
@@ -518,7 +518,7 @@ describe('NextEntitiesCatalog', () => {
         await addEntity(knex, unrelated, []);
         await knex('refresh_state').update({ result_hash: 'not-changed' });
 
-        const catalog = new NextEntitiesCatalog(knex);
+        const catalog = new DefaultEntitiesCatalog(knex);
         await catalog.removeEntityByUid(uid);
 
         await expect(

@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
-export { CatalogBuilder } from './CatalogBuilder';
-export { createRouter } from './router';
-export type { RouterOptions } from './router';
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.up = async function up(knex) {
+  await knex.schema.dropTable('entities_relations');
+  await knex.schema.dropTable('entities_search');
+  await knex.schema.dropTable('entities');
+};
+
+exports.down = async function down() {};

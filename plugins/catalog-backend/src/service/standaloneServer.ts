@@ -16,18 +16,19 @@
 
 import {
   createServiceBuilder,
+  DatabaseManager,
   loadBackendConfig,
   ServerTokenManager,
   SingleHostDiscovery,
   UrlReaders,
   useHotMemoize,
 } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { Server } from 'http';
 import { Logger } from 'winston';
-import { DatabaseManager } from '../legacy/database';
-import { CatalogBuilder } from '../legacy/service/CatalogBuilder';
-import { createRouter } from '../legacy/service';
-import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+import { applyDatabaseMigrations } from '../database/migrations';
+import { CatalogBuilder } from './CatalogBuilder';
 
 export interface ServerOptions {
   port: number;
@@ -42,38 +43,38 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'catalog-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
   const reader = UrlReaders.default({ logger, config });
-  const db = useHotMemoize(module, () =>
-    DatabaseManager.createInMemoryDatabaseConnection(),
-  );
+  const database = useHotMemoize(module, () => {
+    const manager = DatabaseManager.fromConfig(
+      new ConfigReader({
+        backend: { database: { client: 'sqlite3', connection: ':memory:' } },
+      }),
+    );
+    return manager.forPlugin('catalog');
+  });
   const discovery = SingleHostDiscovery.fromConfig(config);
-  const tokenManager = ServerTokenManager.fromConfig(config, { logger });
+  const tokenManager = ServerTokenManager.fromConfig(config, {
+    logger,
+  });
   const permissions = ServerPermissionClient.fromConfig(config, {
     discovery,
     tokenManager,
   });
 
   logger.debug('Creating application...');
-  const builder = new CatalogBuilder({
+  await applyDatabaseMigrations(await database.getClient());
+  const builder = CatalogBuilder.create({
     logger,
-    database: { getClient: () => db },
+    database,
     config,
     reader,
     permissions,
   });
-  const { entitiesCatalog, locationsCatalog, higherOrderOperation } =
-    await builder.build();
+  const catalog = await builder.build();
 
   logger.debug('Starting application server...');
-  const router = await createRouter({
-    entitiesCatalog,
-    locationsCatalog,
-    higherOrderOperation,
-    logger,
-    config,
-  });
   let service = createServiceBuilder(module)
     .setPort(options.port)
-    .addRouter('/catalog', router);
+    .addRouter('/catalog', catalog.router);
   if (options.enableCors) {
     service = service.enableCors({ origin: 'http://localhost:3000' });
   }

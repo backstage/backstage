@@ -150,7 +150,7 @@ function parseFilter(
   });
 }
 
-export class NextEntitiesCatalog implements EntitiesCatalog {
+export class DefaultEntitiesCatalog implements EntitiesCatalog {
   constructor(private readonly database: Knex) {}
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
@@ -294,9 +294,5 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
       rootEntityRef: stringifyEntityRef(rootEntity),
       items,
     };
-  }
-
-  async batchAddOrUpdateEntities(): Promise<never> {
-    throw new Error('Not implemented');
   }
 }

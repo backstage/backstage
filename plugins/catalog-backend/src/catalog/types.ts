@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 
 /**
  * A filter expression for entities.
@@ -78,18 +78,6 @@ export type EntitiesResponse = {
   pageInfo: PageInfo;
 };
 
-/** @deprecated This was part of the legacy catalog engine */
-export type EntityUpsertRequest = {
-  entity: Entity;
-  relations: EntityRelationSpec[];
-};
-
-/** @deprecated This was part of the legacy catalog engine */
-export type EntityUpsertResponse = {
-  entityId: string;
-  entity?: Entity;
-};
-
 /** @public */
 export type EntityAncestryResponse = {
   rootEntityRef: string;
@@ -117,20 +105,6 @@ export type EntitiesCatalog = {
     uid: string,
     options?: { authorizationToken?: string },
   ): Promise<void>;
-
-  /**
-   * Writes a number of entities efficiently to storage.
-   *
-   * @deprecated This method was part of the legacy catalog engine and will be removed.
-   */
-  batchAddOrUpdateEntities?(
-    requests: EntityUpsertRequest[],
-    options?: {
-      locationId?: string;
-      dryRun?: boolean;
-      outputEntities?: boolean;
-    },
-  ): Promise<EntityUpsertResponse[]>;
 
   /**
    * Returns the full ancestry tree upward along reference edges.
