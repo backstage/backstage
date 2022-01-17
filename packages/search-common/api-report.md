@@ -4,6 +4,7 @@
 
 ```ts
 import { JsonObject } from '@backstage/types';
+import { Permission } from '@backstage/plugin-permission-common';
 
 // Warning: (ae-missing-release-tag) "DocumentCollator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -12,6 +13,7 @@ export interface DocumentCollator {
   // (undocumented)
   execute(): Promise<IndexableDocument[]>;
   readonly type: string;
+  readonly visibilityPermission?: Permission;
 }
 
 // Warning: (ae-missing-release-tag) "DocumentDecorator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

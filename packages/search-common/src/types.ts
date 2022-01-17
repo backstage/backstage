@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { Permission } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 
 export interface SearchQuery {
@@ -76,6 +78,13 @@ export interface DocumentCollator {
    * index name by Search Engines.
    */
   readonly type: string;
+
+  /**
+   * The {@link @backstage/plugin-permission-common#Permission} that controls
+   * visibility of resources associated with this collator's documents.
+   */
+  readonly visibilityPermission?: Permission;
+
   execute(): Promise<IndexableDocument[]>;
 }
 
