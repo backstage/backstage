@@ -56,6 +56,7 @@ async function createSearchEngine({
 
 export default async function createPlugin({
   logger,
+  permissions,
   discovery,
   config,
   database,
@@ -95,6 +96,9 @@ export default async function createPlugin({
 
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),
+    types: indexBuilder.getDocumentTypes(),
+    permissions,
+    config,
     logger,
   });
 }
