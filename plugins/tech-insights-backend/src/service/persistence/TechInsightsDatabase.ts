@@ -15,17 +15,20 @@
  */
 import { Knex } from 'knex';
 import {
+  FactLifecycle,
   FactSchema,
-  TechInsightFact,
-  FlatTechInsightFact,
-  TechInsightsStore,
   FactSchemaDefinition,
+  FlatTechInsightFact,
+  TechInsightFact,
+  TechInsightsStore,
 } from '@backstage/plugin-tech-insights-node';
 import { rsort } from 'semver';
 import { groupBy, omit } from 'lodash';
 import { DateTime } from 'luxon';
 import { Logger } from 'winston';
 import { parseEntityName, stringifyEntityRef } from '@backstage/catalog-model';
+import { isMaxItems, isTtl } from '../fact/factRetrievers/utils';
+import Transaction = Knex.Transaction;
 
 export type RawDbFactRow = {
   id: string;
@@ -84,7 +87,15 @@ export class TechInsightsDatabase implements TechInsightsStore {
     }
   }
 
-  async insertFacts(id: string, facts: TechInsightFact[]): Promise<void> {
+  async insertFacts({
+    id,
+    facts,
+    lifecycle,
+  }: {
+    id: string;
+    facts: TechInsightFact[];
+    lifecycle?: FactLifecycle;
+  }): Promise<void> {
     if (facts.length === 0) return;
     const currentSchema = await this.getLatestSchema(id);
     const factRows = facts.map(it => {
@@ -93,11 +104,20 @@ export class TechInsightsDatabase implements TechInsightsStore {
         version: currentSchema.version,
         entity: stringifyEntityRef(it.entity),
         facts: JSON.stringify(it.facts),
-        ...(it.timestamp && { timestamp: it.timestamp.toJSDate() }),
+        ...(it.timestamp && { timestamp: it.timestamp.toISO() }),
       };
     });
+
     await this.db.transaction(async tx => {
       await tx.batchInsert<RawDbFactRow>('facts', factRows, this.CHUNK_SIZE);
+
+      if (lifecycle && isTtl(lifecycle)) {
+        const expiration = DateTime.now().minus(lifecycle.timeToLive);
+        await this.deleteExpiredFactsByDate(tx, factRows, expiration);
+      }
+      if (lifecycle && isMaxItems(lifecycle)) {
+        await this.deleteExpiredFactsByNumber(tx, factRows, lifecycle.maxItems);
+      }
     });
   }
 
@@ -168,6 +188,66 @@ export class TechInsightsDatabase implements TechInsightsStore {
     }
     const sorted = rsort(existingSchemas.map(it => it.version));
     return existingSchemas.find(it => it.version === sorted[0])!!;
+  }
+
+  private async deleteExpiredFactsByDate(
+    tx: Transaction,
+    factRows: { id: string; entity: string }[],
+    timestamp: DateTime,
+  ) {
+    await tx<RawDbFactRow>('facts')
+      .whereIn(
+        ['id', 'entity'],
+        factRows.map(it => [it.id, it.entity]),
+      )
+      .and.where('timestamp', '<', timestamp.toISO())
+      .delete();
+  }
+
+  private async deleteExpiredFactsByNumber(
+    tx: Transaction,
+    factRows: { id: string; entity: string }[],
+    maxItems: number,
+  ) {
+    const deletables = await tx<RawDbFactRow>('facts')
+      .whereIn(
+        ['id', 'entity'],
+        factRows.map(it => [it.id, it.entity]),
+      )
+      .and.leftJoin(
+        joinTable =>
+          joinTable
+            .select('*')
+            .from(
+              this.db('facts')
+                .column(
+                  { fid: 'id' },
+                  { fentity: 'entity' },
+                  { ftimestamp: 'timestamp' },
+                )
+                .column(
+                  this.db.raw(
+                    'row_number() over (partition by id, entity order by timestamp desc) as fact_rank',
+                  ),
+                )
+                .as('ranks'),
+            )
+            .where('fact_rank', '<=', maxItems)
+            .as('filterjoin'),
+        joinClause => {
+          joinClause
+            .on('filterjoin.fid', 'facts.id')
+            .on('filterjoin.fentity', 'facts.entity')
+            .on('filterjoin.ftimestamp', 'facts.timestamp');
+        },
+      )
+      .whereNull('filterjoin.fid');
+    await tx('facts')
+      .whereIn(
+        ['id', 'entity', 'timestamp'],
+        deletables.map(it => [it.id, it.entity, it.timestamp]),
+      )
+      .delete();
   }
 
   private dbFactRowsToTechInsightFacts(rows: RawDbFactRow[]) {
