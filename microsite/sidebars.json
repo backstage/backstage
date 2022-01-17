@@ -34,7 +34,7 @@
       {
         "type": "subcategory",
         "label": "CLI",
-        "ids": ["local-dev/cli-overview", "local-dev/cli-commands", "local-dev/cli-build-system"]
+        "ids": ["local-dev/cli-overview", "local-dev/cli-build-system", "local-dev/cli-commands"]
       },
       "local-dev/linking-local-packages"
     ],

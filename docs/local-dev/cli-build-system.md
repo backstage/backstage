@@ -4,8 +4,6 @@ title: Build System
 description: A deep dive into the Backstage build system
 ---
 
-## What is the Backstage build system?
-
 The Backstage build system is a collection of build and development tools that
 help you lint, test, develop and finally release your Backstage projects. The
 purpose of the build system is to provide an out-of-the-box solution that works
@@ -43,6 +41,7 @@ In addition, there are a number of hard and soft requirements:
 - Simple - Usage should simple and configuration should be kept minimal
 - Universal - Development towards both web applications, isomorphic packages,
   and Node.js
+- Modern - The build system targets modern environments
 - Editors - Type checking and linting should be available within most editors
 
 During the design of the build system this collection of requirements was not
@@ -50,7 +49,7 @@ something that was supported by existing tools like for example `react-scripts`.
 The requirements of scaling in combination of monorepo, publishing, and editor
 support led us to adopting our own specialized setup.
 
-## Architecture
+## Structure
 
 We can divide the development flow within Backstage into a couple of different
 steps:
@@ -73,7 +72,7 @@ or IDE that has support for formatting, linting, and type checking.
 Let's dive into a detailed look at each of these steps and how they are
 implemented in a typical Backstage app.
 
-### Formatting
+## Formatting
 
 The formatting setup lives completely within each Backstage application and is
 not part of the CLI. In an app created with `@backstage/create-app` the
@@ -81,7 +80,7 @@ formatting is handled by [prettier](https://prettier.io/), but each application
 can those their own formatting rules and switch to a different formatter if
 desired.
 
-### Linting
+## Linting
 
 The Backstage CLI includes a `lint` command, which is a thin wrapper around
 `eslint`. It adds a few options that can't be set through configuration, such as
@@ -101,7 +100,7 @@ the entire project. Each configuration is initially one that simply extends a
 base configuration provided by the Backstage CLI, but they can be customized to
 fit the needs of each package.
 
-### Type Checking
+## Type Checking
 
 Just like formatting, the Backstage CLI does not have its own command for type
 checking. It does however have a base configuration with both recommended
@@ -135,7 +134,7 @@ through the `tsc:full` script, which will run a full type check, including
 For the two reasons mentioned above, it is **highly** recommended to use the
 `tsc:full` script to run type checking in CI.
 
-### Testing
+## Testing
 
 As mentioned above, the Backstage CLI uses [Jest](https://jestjs.io/), which is
 a JavaScript test framework that covers both test execution and assertions. Jest
@@ -158,7 +157,7 @@ configuration, as well as allowing for configuration overrides to be defined in
 each `package.json`. How this can be done in practice is discussed in the
 [Jest configuration](#jest-configuration) section.
 
-### Building
+## Building
 
 The primary purpose of the build process is to prepare packages for publishing,
 but it's also used as part of the backend bundling process. Since it's only used
@@ -199,14 +198,14 @@ that are exported from the package, leaving a much cleaner type definition file
 and making sure that the type definitions are in sync with the generated
 JavaScript.
 
-### Bundling
+## Bundling
 
 The goal of the bundling process is to combine multiple packages together into a
 single runtime unit. The way this is done varies between frontend and backend,
 as well as local development versus production deployment. Because of that we
 cover each combination of these cases separately.
 
-#### Frontend Development Bundling
+### Frontend Development
 
 There are two different commands that starts the frontend development bundling,
 `app:serve`, which serves an app and uses `src/index` as the entrypoint, and
@@ -233,7 +232,7 @@ by passing the `--check` flag. Although as mentioned above, the recommended way
 to handle these checks during development is to use an editor that has built-in
 support for them instead.
 
-#### Frontend Production Bundling
+### Frontend Production
 
 The frontend production bundling creates your typical web content bundle, all
 contained within a single folder, ready for static serving. It is invoked using
@@ -277,7 +276,7 @@ changes to individual plugins and packages will invalidate a smaller number of
 files, thereby allowing for rapid development without much impact on the page
 load performance.
 
-#### Backend Development Bundling
+### Backend Development
 
 The backend development bundling is also based on Webpack, but rather than
 starting up a web server, the backend is started up using the
@@ -300,7 +299,7 @@ If you want to inspect the running Node.js process, the `--inspect` and
 `--inspect-brk` flags can be used, as they will be passed through as options to
 `node` execution.
 
-#### Backend Production Bundling
+### Backend Production
 
 The backend production bundling uses a completely different setup than the other
 bundling options. Rather than using Webpack, the backend production bundling
@@ -419,49 +418,6 @@ of all supported file extensions:
 | `.svg`      | URL Path        | Image                                                                         |
 | `.icon.svg` | React Component | SVG converted into a [MUI SvgIcon](https://mui.com/components/icons/#svgicon) |
 
-## Publishing
-
-Package publishing is an optional part of the Backstage build system and not
-something you well need to worry unless you are publishing packages to a
-registry. In order to publish a package, you first need to build it, which will
-populate the `dist` folder. Because the Backstage build system is optimized for
-local development along with our particular TypeScript and bundling setup, it is
-not possible to publish package immediately at this point. This is because the
-entry points of the package will still be pointing to `src/index.ts`, but we
-want them to point to `dist/` in the published package.
-
-In order to work around this, the Backstage CLI provides `prepack` and
-`postpack` commands that help prepare the package for publishing. These scripts
-are automatically run by Yarn before publishing a package.
-
-The `prepack` command will take entry point fields in `"publishConfig"`, such
-as, `"main"` and `"module"`, and move the top level of the `package.json`. This
-lets you point at the desired files in the `dist` folder during publishing. The
-`postpack` command will simply revert this change in order to leave your project
-clean.
-
-The following is an excerpt of a typical setup of an isomorphic library package:
-
-```json
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
-  },
-  "scripts": {
-    "build": "backstage-cli build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
-  },
-  "files": ["dist"],
-```
-
 ## Jest Configuration
 
 The Backstage CLI bundles its own Jest configuration file, which is used
@@ -506,4 +462,47 @@ The overrides in a single `package.json` may for example look like this:
       }
     }
   },
+```
+
+## Publishing
+
+Package publishing is an optional part of the Backstage build system and not
+something you well need to worry unless you are publishing packages to a
+registry. In order to publish a package, you first need to build it, which will
+populate the `dist` folder. Because the Backstage build system is optimized for
+local development along with our particular TypeScript and bundling setup, it is
+not possible to publish package immediately at this point. This is because the
+entry points of the package will still be pointing to `src/index.ts`, but we
+want them to point to `dist/` in the published package.
+
+In order to work around this, the Backstage CLI provides `prepack` and
+`postpack` commands that help prepare the package for publishing. These scripts
+are automatically run by Yarn before publishing a package.
+
+The `prepack` command will take entry point fields in `"publishConfig"`, such
+as, `"main"` and `"module"`, and move the top level of the `package.json`. This
+lets you point at the desired files in the `dist` folder during publishing. The
+`postpack` command will simply revert this change in order to leave your project
+clean.
+
+The following is an excerpt of a typical setup of an isomorphic library package:
+
+```json
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "scripts": {
+    "build": "backstage-cli build",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
+    "clean": "backstage-cli clean"
+  },
+  "files": ["dist"],
 ```

@@ -30,8 +30,8 @@ nav:
   - Local Development:
       - CLI:
           - Overview: 'local-dev/cli-overview.md'
-          - Commands: 'local-dev/cli-commands.md'
           - Build System: 'local-dev/cli-build-system.md'
+          - Commands: 'local-dev/cli-commands.md'
       - Linking in Local Packages: 'local-dev/linking-local-packages.md'
   - Core Features:
       - Software Catalog:

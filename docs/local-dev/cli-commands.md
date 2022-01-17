@@ -1,6 +1,6 @@
 ---
 id: cli-commands
-title: CLI Commands
+title: Commands
 description: Descriptions of all commands available in the CLI.
 ---
 
