@@ -21,35 +21,26 @@ jobs:
             });
             return reviewerMembers;
       - uses: actions/github-script@v5
+        id: are-all-reviews-from-reviewers
+        with:
+          script: |
+            const {data: requestedReviewers} = await github.rest.pulls.listRequestedReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+
+            console.log(requestedReviewers);;     
+      - uses: actions/github-script@v5
         id: fix-labels
         with:
           script: |
-            const isReviewer = ${{steps.get-reviewers.outputs.result}}.some(({login}) => login === context.actor);
             const isAuthor = context.payload.pull_request.user.login === context.actor
              if (isAuthor) {
-              github.rest.issues.removeLabel({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'awaiting-author'
-              }).catch(() => {});
               github.rest.issues.addLabels({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 labels: ['awaiting-review']
               });
-            } else if (isReviewer) {
-              github.rest.issues.removeLabel({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'awaiting-review'
-              }).catch(() => {});
-              github.rest.issues.addLabels({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                labels: ['awaiting-author']
-              });
-            }
