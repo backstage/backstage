@@ -20,9 +20,16 @@ import { Logger } from 'winston';
 import { z } from 'zod';
 import { errorHandler } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
+import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { SearchResultSet } from '@backstage/search-common';
-import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import {
+  DocumentTypeInfo,
+  SearchEngine,
+} from '@backstage/plugin-search-backend-node';
+import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
 
 const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
   const jsonValueSchema: z.ZodSchema<JsonValue> = z.lazy(() =>
@@ -41,6 +48,9 @@ const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
 
 export type RouterOptions = {
   engine: SearchEngine;
+  types: Record<string, DocumentTypeInfo>;
+  permissions: PermissionAuthorizer;
+  config: Config;
   logger: Logger;
 };
 
@@ -49,14 +59,20 @@ const allowedLocationProtocols = ['http:', 'https:'];
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { engine, logger } = options;
+  const { engine: inputEngine, types, permissions, config, logger } = options;
 
   const requestSchema = z.object({
     term: z.string().default(''),
     filters: jsonObjectSchema.optional(),
-    types: z.array(z.string()).optional(),
+    types: z
+      .array(z.string().refine(type => Object.keys(types).includes(type)))
+      .optional(),
     pageCursor: z.string().optional(),
   });
+
+  const engine = config.getOptionalBoolean('permission.enabled')
+    ? new AuthorizedSearchEngine(inputEngine, types, permissions, config)
+    : inputEngine;
 
   const filterResultSet = ({ results, ...resultSet }: SearchResultSet) => ({
     ...resultSet,
@@ -93,8 +109,10 @@ export async function createRouter(
         }, pageCursor=${query.pageCursor ?? ''}`,
       );
 
+      const token = IdentityClient.getBearerToken(req.header('authorization'));
+
       try {
-        const resultSet = await engine?.query(query);
+        const resultSet = await engine?.query(query, { token });
 
         res.send(filterResultSet(resultSet));
       } catch (err) {

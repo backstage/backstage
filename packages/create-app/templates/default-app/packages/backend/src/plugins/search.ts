@@ -10,6 +10,7 @@ import { DefaultTechDocsCollator } from '@backstage/plugin-techdocs-backend';
 
 export default async function createPlugin({
   logger,
+  permissions,
   discovery,
   config,
   tokenManager,
@@ -49,6 +50,9 @@ export default async function createPlugin({
 
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),
+    types: indexBuilder.getDocumentTypes(),
+    permissions,
+    config,
     logger,
   });
 }

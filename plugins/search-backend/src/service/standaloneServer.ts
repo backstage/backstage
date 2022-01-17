@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  loadBackendConfig,
+  ServerTokenManager,
+  SingleHostDiscovery,
+} from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
@@ -22,6 +27,7 @@ import {
   LunrSearchEngine,
   IndexBuilder,
 } from '@backstage/plugin-search-backend-node';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 export interface ServerOptions {
   port: number;
@@ -33,14 +39,26 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'search-backend' });
+  const config = await loadBackendConfig({ logger, argv: process.argv });
   const searchEngine = new LunrSearchEngine({ logger });
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
+  const discovery = SingleHostDiscovery.fromConfig(config);
+  const tokenManager = ServerTokenManager.fromConfig(config, {
+    logger,
+  });
+  const permissions = ServerPermissionClient.fromConfig(config, {
+    discovery,
+    tokenManager,
+  });
   logger.debug('Starting application server...');
 
   // TODO: stub out some documents/indices?
 
   const router = await createRouter({
     engine: indexBuilder.getSearchEngine(),
+    types: indexBuilder.getDocumentTypes(),
+    permissions,
+    config,
     logger,
   });
 
