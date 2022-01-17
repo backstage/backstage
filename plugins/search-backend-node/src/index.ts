@@ -21,6 +21,7 @@
  */
 
 export { IndexBuilder } from './IndexBuilder';
+export type { DocumentTypeInfo } from './IndexBuilder';
 export { Scheduler } from './Scheduler';
 export { LunrSearchEngine } from './engines';
 
