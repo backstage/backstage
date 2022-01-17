@@ -13,16 +13,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v5
-        id: are-all-reviews-from-reviewers
+        id: get-requested-reviewers
         with:
           script: |
-            const {data: requestedReviewers} = await github.rest.pulls.listRequestedReviewers({
+            // get all requested reviewers for the PR
+            const {data: requestedReviewers } = await github.rest.pulls.listRequestedReviewers({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.issue.number,
             });
 
-            console.log(requestedReviewers);     
+            return requestedReviewers;
+      - uses: actions/github-script@v5
+        id: get-reviewer-group-members
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            // Get all members of all required groups
+            const { data: groupMembers } = await Promise.all(
+              ${{steps.get-requested-reviewers.outputs.result}}.teams.map(
+                (team) => github.rest.teams.listMembersInOrg({
+                  org: context.payload.organization.login,
+                  team_slug: team.slug,
+                })
+              )
+            )
+            return groupMembers;
+      - uses: actions/github-script@v5
+        id: get-all-current-reviews
+        with:
+          script: |
+            // get all requested reviewers for the PR
+            const {data: allReviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            return allReviews;
       - uses: actions/github-script@v5
         id: fix-labels
         with:
@@ -36,3 +64,7 @@ jobs:
                 labels: ['awaiting-review']
               });
             }
+
+            console.log('requested reviewers', ${{steps.get-requested-reviewers.outputs.result}});
+            console.log('reviewer group members', ${{steps.get-reviewer-group-members.outputs.result}});
+            console.log('all reviews group members', ${{steps.get-all-current-reviews.outputs.result}});
