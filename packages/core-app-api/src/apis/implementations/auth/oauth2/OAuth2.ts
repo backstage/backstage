@@ -19,7 +19,7 @@ import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
   AuthRequestOptions,
-  BackstageIdentity,
+  BackstageIdentityResponse,
   OAuthApi,
   OpenIdConnectApi,
   ProfileInfo,
@@ -48,7 +48,7 @@ export type OAuth2Response = {
     expiresInSeconds: number;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
 const DEFAULT_PROVIDER = {
@@ -159,7 +159,7 @@ export default class OAuth2
 
   async getBackstageIdentity(
     options: AuthRequestOptions = {},
-  ): Promise<BackstageIdentity | undefined> {
+  ): Promise<BackstageIdentityResponse | undefined> {
     const session = await this.sessionManager.getSession(options);
     return session?.backstageIdentity;
   }

@@ -96,7 +96,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('azure-devops')}/`;
     const url = new URL(path, baseUrl);
 
-    const idToken = await this.identityApi.getIdToken();
+    const { token: idToken } = await this.identityApi.getCredentials();
     const response = await fetch(url.toString(), {
       headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
     });

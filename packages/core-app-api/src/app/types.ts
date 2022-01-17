@@ -18,7 +18,6 @@ import { ComponentType } from 'react';
 import {
   AnyApiFactory,
   AppTheme,
-  ProfileInfo,
   IconComponent,
   BackstagePlugin,
   RouteRef,
@@ -36,31 +35,6 @@ import { AppConfig } from '@backstage/config';
 export type BootErrorPageProps = {
   step: 'load-config' | 'load-chunk';
   error: Error;
-};
-
-/**
- * The outcome of signing in on the sign-in page.
- *
- * @public
- * @deprecated replaced by passing the {@link @backstage/core-plugin-api#IdentityApi} to the {@link SignInPageProps.onSignInSuccess} instead.
- */
-export type SignInResult = {
-  /**
-   * User ID that will be returned by the IdentityApi
-   */
-  userId: string;
-
-  profile: ProfileInfo;
-
-  /**
-   * Function used to retrieve an ID token for the signed in user.
-   */
-  getIdToken?: () => Promise<string>;
-
-  /**
-   * Sign out handler that will be called if the user requests to sign out.
-   */
-  signOut?: () => Promise<void>;
 };
 
 /**

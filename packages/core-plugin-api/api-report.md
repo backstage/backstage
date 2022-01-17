@@ -12,7 +12,6 @@ import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
-import { ProfileInfo as ProfileInfo_2 } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
@@ -195,9 +194,6 @@ export const auth0AuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
-// @public @deprecated (undocumented)
-export type AuthProvider = Omit<AuthProviderInfo, 'id'>;
-
 // @public
 export type AuthProviderInfo = {
   id: string;
@@ -205,20 +201,11 @@ export type AuthProviderInfo = {
   icon: IconComponent;
 };
 
-// @public @deprecated (undocumented)
-export type AuthRequester<T> = OAuthRequester<T>;
-
-// @public @deprecated (undocumented)
-export type AuthRequesterOptions<T> = OAuthRequesterOptions<T>;
-
 // @public
 export type AuthRequestOptions = {
   optional?: boolean;
   instantPopup?: boolean;
 };
-
-// @public @deprecated
-export type BackstageIdentity = BackstageIdentityResponse;
 
 // @public
 export type BackstageIdentityApi = {
@@ -229,7 +216,6 @@ export type BackstageIdentityApi = {
 
 // @public
 export type BackstageIdentityResponse = {
-  id: string;
   token: string;
   identity: BackstageUserIdentity;
 };
@@ -512,9 +498,6 @@ export type IconComponent = ComponentType<{
 
 // @public
 export type IdentityApi = {
-  getUserId(): string;
-  getIdToken(): Promise<string | undefined>;
-  getProfile(): ProfileInfo;
   getProfileInfo(): Promise<ProfileInfo>;
   getBackstageIdentity(): Promise<BackstageUserIdentity>;
   getCredentials(): Promise<{
@@ -657,9 +640,6 @@ export type PathParams<S extends string> = {
   [name in ParamNames<S>]: string;
 };
 
-// @public @deprecated (undocumented)
-export type PendingAuthRequest = PendingOAuthRequest;
-
 // @public
 export type PendingOAuthRequest = {
   provider: Omit<AuthProviderInfo, 'id'> & {
@@ -730,14 +710,6 @@ export enum SessionState {
 // @public
 export type SignInPageProps = {
   onSignInSuccess(identityApi: IdentityApi_2): void;
-};
-
-// @public @deprecated
-export type SignInResult = {
-  userId: string;
-  profile: ProfileInfo_2;
-  getIdToken?: () => Promise<string>;
-  signOut?: () => Promise<void>;
 };
 
 // @public

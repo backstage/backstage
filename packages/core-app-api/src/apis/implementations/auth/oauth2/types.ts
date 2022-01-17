@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { ProfileInfo, BackstageIdentity } from '@backstage/core-plugin-api';
+import {
+  ProfileInfo,
+  BackstageIdentityResponse,
+} from '@backstage/core-plugin-api';
 
 export type { OAuth2CreateOptions } from './OAuth2';
 /**
@@ -30,5 +33,5 @@ export type OAuth2Session = {
     expiresAt: Date;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };

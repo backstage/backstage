@@ -222,13 +222,6 @@ export type BackstageUserIdentity = {
  */
 export type BackstageIdentityResponse = {
   /**
-   * The backstage user ID.
-   *
-   * @deprecated The identity is now provided via the `identity` field instead.
-   */
-  id: string;
-
-  /**
    * The token used to authenticate the user within Backstage.
    */
   token: string;
@@ -238,14 +231,6 @@ export type BackstageIdentityResponse = {
    */
   identity: BackstageUserIdentity;
 };
-
-/**
- * The old exported symbol for {@link BackstageIdentityResponse}.
- *
- * @public
- * @deprecated use {@link BackstageIdentityResponse} instead.
- */
-export type BackstageIdentity = BackstageIdentityResponse;
 
 /**
  * Profile information of the user.

@@ -15,8 +15,10 @@
  */
 
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import useAsync from 'react-use/lib/useAsync';
 
 export function useUserEmail(): string | undefined {
   const identityApi = useApi(identityApiRef);
-  return identityApi.getProfile().email;
+  const state = useAsync(() => identityApi.getProfileInfo(), [identityApi]);
+  return state.value?.email;
 }

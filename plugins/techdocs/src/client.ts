@@ -65,7 +65,7 @@ export class TechDocsClient implements TechDocsApi {
 
     const apiOrigin = await this.getApiOrigin();
     const requestUrl = `${apiOrigin}/metadata/techdocs/${namespace}/${kind}/${name}`;
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
 
     const request = await fetch(`${requestUrl}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -93,7 +93,7 @@ export class TechDocsClient implements TechDocsApi {
 
     const apiOrigin = await this.getApiOrigin();
     const requestUrl = `${apiOrigin}/metadata/entity/${namespace}/${kind}/${name}`;
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
 
     const request = await fetch(`${requestUrl}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -160,7 +160,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 
     const storageUrl = await this.getStorageUrl();
     const url = `${storageUrl}/${namespace}/${kind}/${name}/${path}`;
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
@@ -207,7 +207,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 
     const apiOrigin = await this.getApiOrigin();
     const url = `${apiOrigin}/sync/${namespace}/${kind}/${name}`;
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
 
     return new Promise((resolve, reject) => {
       // Polyfill is used to add support for custom headers and auth

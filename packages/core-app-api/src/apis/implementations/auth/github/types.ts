@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { ProfileInfo, BackstageIdentity } from '@backstage/core-plugin-api';
+import {
+  ProfileInfo,
+  BackstageIdentityResponse,
+} from '@backstage/core-plugin-api';
 import { z } from 'zod';
 
 // TODO(Rugvip): Make GithubSession internal
@@ -33,7 +36,7 @@ export type GithubSession = {
   };
   profile: ProfileInfo;
   // TODO(Rugvip): This should be made optional once the type is no longer public
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
 export const githubSessionSchema: z.ZodSchema<GithubSession> = z.object({

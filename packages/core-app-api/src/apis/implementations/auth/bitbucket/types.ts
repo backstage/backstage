@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { ProfileInfo, BackstageIdentity } from '@backstage/core-plugin-api';
+import {
+  ProfileInfo,
+  BackstageIdentityResponse,
+} from '@backstage/core-plugin-api';
 
 /**
  * Session information for Bitbucket auth.
@@ -28,5 +31,5 @@ export type BitbucketSession = {
     expiresAt?: Date;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };

@@ -34,7 +34,7 @@ export class BadgesClient implements BadgesApi {
 
   public async getEntityBadgeSpecs(entity: Entity): Promise<BadgeSpec[]> {
     const entityBadgeSpecsUrl = await this.getEntityBadgeSpecsUrl(entity);
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const response = await fetch(entityBadgeSpecsUrl, {
       headers: token
         ? {

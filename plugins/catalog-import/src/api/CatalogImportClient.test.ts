@@ -67,21 +67,12 @@ describe('CatalogImportClient', () => {
     getCredentials: jest.fn().mockResolvedValue({ token: 'token' }),
   };
   const identityApi = {
-    getUserId: () => {
-      return 'user';
-    },
-    getProfile: () => {
-      return {};
-    },
-    getIdToken: () => {
-      return Promise.resolve('token');
-    },
     signOut: () => {
       return Promise.resolve();
     },
     getProfileInfo: jest.fn(),
     getBackstageIdentity: jest.fn(),
-    getCredentials: jest.fn(),
+    getCredentials: jest.fn().mockResolvedValue({ token: 'token' }),
   };
 
   const scmIntegrationsApi = ScmIntegrations.fromConfig(

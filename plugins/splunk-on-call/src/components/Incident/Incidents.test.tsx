@@ -20,16 +20,8 @@ import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { splunkOnCallApiRef } from '../../api';
 import { MOCK_TEAM, MOCK_INCIDENT } from '../../api/mocks';
 
-import {
-  alertApiRef,
-  IdentityApi,
-  identityApiRef,
-} from '@backstage/core-plugin-api';
+import { alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
-
-const mockIdentityApi: Partial<IdentityApi> = {
-  getUserId: () => 'test',
-};
 
 const mockSplunkOnCallApi = {
   getIncidents: jest.fn(),
@@ -37,7 +29,6 @@ const mockSplunkOnCallApi = {
 };
 const apis = TestApiRegistry.from(
   [alertApiRef, {}],
-  [identityApiRef, mockIdentityApi],
   [splunkOnCallApiRef, mockSplunkOnCallApi],
 );
 

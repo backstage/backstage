@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { BackstageIdentity, ProfileInfo } from '@backstage/core-plugin-api';
+import {
+  BackstageIdentityResponse,
+  ProfileInfo,
+} from '@backstage/core-plugin-api';
 import { z } from 'zod';
 
 /**
@@ -26,13 +29,13 @@ import { z } from 'zod';
 export type ExportedSamlSession = {
   userId: string;
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
 /** @internal */
 export type SamlSession = {
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
 /** @internal */

@@ -28,38 +28,16 @@ const discoveryApi: DiscoveryApi = {
   },
 };
 const identityApi: IdentityApi = {
-  getUserId() {
-    return 'jane-fonda';
-  },
-  getProfile() {
-    return { email: 'jane-fonda@spotify.com' };
-  },
-  async getIdToken() {
-    return Promise.resolve('fake-id-token');
-  },
-  async signOut() {
-    return Promise.resolve();
-  },
+  signOut: jest.fn(),
   getProfileInfo: jest.fn(),
   getBackstageIdentity: jest.fn(),
-  getCredentials: jest.fn(),
+  getCredentials: jest.fn().mockResolvedValue({ token: 'fake-id-token' }),
 };
 const guestIdentityApi: IdentityApi = {
-  getUserId() {
-    return 'guest';
-  },
-  getProfile() {
-    return {};
-  },
-  async getIdToken() {
-    return Promise.resolve(undefined);
-  },
-  async signOut() {
-    return Promise.resolve();
-  },
+  signOut: jest.fn(),
   getProfileInfo: jest.fn(),
   getBackstageIdentity: jest.fn(),
-  getCredentials: jest.fn(),
+  getCredentials: jest.fn().mockResolvedValue({ token: undefined }),
 };
 
 describe('CatalogClientWrapper', () => {

@@ -55,7 +55,7 @@ export class ProductionSentryApi implements SentryApi {
     if (!this.identityApi) {
       return {};
     }
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     return {
       headers: {
         authorization: `Bearer ${token}`,

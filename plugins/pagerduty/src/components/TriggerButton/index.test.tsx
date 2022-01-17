@@ -22,17 +22,9 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TriggerButton } from './';
 
 import { ApiProvider } from '@backstage/core-app-api';
-import {
-  alertApiRef,
-  IdentityApi,
-  identityApiRef,
-} from '@backstage/core-plugin-api';
+import { alertApiRef } from '@backstage/core-plugin-api';
 
 describe('TriggerButton', () => {
-  const mockIdentityApi: Partial<IdentityApi> = {
-    getUserId: () => 'guest@example.com',
-  };
-
   const mockTriggerAlarmFn = jest.fn();
   const mockPagerDutyApi = {
     triggerAlarm: mockTriggerAlarmFn,
@@ -40,7 +32,6 @@ describe('TriggerButton', () => {
 
   const apis = TestApiRegistry.from(
     [alertApiRef, {}],
-    [identityApiRef, mockIdentityApi],
     [pagerDutyApiRef, mockPagerDutyApi],
   );
 
