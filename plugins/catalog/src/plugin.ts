@@ -186,3 +186,15 @@ export const EntitySystemDiagramCard = catalogPlugin.provide(
     },
   }),
 );
+
+export const EntityGenericRelationshipCard = catalogPlugin.provide(
+  createComponentExtension({
+    name: 'EntityGenericRelationshipCard',
+    component: {
+      lazy: () =>
+        import('./components/RelatedEntitiesCard').then(
+          m => m.RelatedEntitiesCard,
+        ),
+    },
+  }),
+);

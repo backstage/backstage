@@ -34,7 +34,7 @@ type Props<T extends Entity> = {
   variant?: 'gridItem';
   title: string;
   columns: TableColumn<T>[];
-  entityKind: string;
+  entityKind?: string;
   relationType: string;
   emptyMessage: string;
   emptyHelpLink: string;
