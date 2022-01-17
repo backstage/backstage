@@ -99,6 +99,10 @@ export interface DocumentDecorator {
  */
 export type QueryTranslator = (query: SearchQuery) => unknown;
 
+export type QueryRequestOptions = {
+  token?: string;
+};
+
 /**
  * Interface that must be implemented by specific search engines, responsible
  * for performing indexing and querying and translating abstract queries into
@@ -118,5 +122,8 @@ export interface SearchEngine {
   /**
    * Perform a search query against the SearchEngine.
    */
-  query(query: SearchQuery): Promise<SearchResultSet>;
+  query(
+    query: SearchQuery,
+    options?: QueryRequestOptions,
+  ): Promise<SearchResultSet>;
 }
