@@ -24,6 +24,17 @@ import { TokenIssuer } from '../identity/types';
 import { OAuthStartRequest } from '../lib/oauth/types';
 import { CatalogIdentityClient } from '../lib/catalog';
 
+/**
+ * The context that is used for auth processing.
+ *
+ * @public
+ */
+export type AuthResolverContext = {
+  tokenIssuer: TokenIssuer;
+  catalogIdentityClient: CatalogIdentityClient;
+  logger: Logger;
+};
+
 export type AuthProviderConfig = {
   /**
    * The protocol://domain[:port] where the app is hosted. This is used to construct the
@@ -259,11 +270,7 @@ export type SignInInfo<TAuthResult> = {
  */
 export type SignInResolver<TAuthResult> = (
   info: SignInInfo<TAuthResult>,
-  context: {
-    tokenIssuer: TokenIssuer;
-    catalogIdentityClient: CatalogIdentityClient;
-    logger: Logger;
-  },
+  context: AuthResolverContext,
 ) => Promise<BackstageSignInResult>;
 
 /**
@@ -289,6 +296,7 @@ export type AuthHandlerResult = { profile: ProfileInfo };
  */
 export type AuthHandler<TAuthResult> = (
   input: TAuthResult,
+  context: AuthResolverContext,
 ) => Promise<AuthHandlerResult>;
 
 export type StateEncoder = (

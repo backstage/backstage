@@ -182,7 +182,12 @@ export class OidcAuthProvider implements OAuthHandlers {
   // Use this function to grab the user profile info from the token
   // Then populate the profile with it
   private async handleResult(result: OidcAuthResult): Promise<OAuthResponse> {
-    const { profile } = await this.authHandler(result);
+    const context = {
+      logger: this.logger,
+      catalogIdentityClient: this.catalogIdentityClient,
+      tokenIssuer: this.tokenIssuer,
+    };
+    const { profile } = await this.authHandler(result, context);
     const response: OAuthResponse = {
       providerInfo: {
         idToken: result.tokenset.id_token,
@@ -198,11 +203,7 @@ export class OidcAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        {
-          tokenIssuer: this.tokenIssuer,
-          catalogIdentityClient: this.catalogIdentityClient,
-          logger: this.logger,
-        },
+        context,
       );
     }
 

@@ -169,7 +169,12 @@ export class OktaAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult) {
-    const { profile } = await this._authHandler(result);
+    const context = {
+      logger: this._logger,
+      catalogIdentityClient: this._catalogIdentityClient,
+      tokenIssuer: this._tokenIssuer,
+    };
+    const { profile } = await this._authHandler(result, context);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -187,11 +192,7 @@ export class OktaAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        {
-          tokenIssuer: this._tokenIssuer,
-          catalogIdentityClient: this._catalogIdentityClient,
-          logger: this._logger,
-        },
+        context,
       );
     }
 

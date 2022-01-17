@@ -174,7 +174,12 @@ export class BitbucketAuthProvider implements OAuthHandlers {
   private async handleResult(result: BitbucketOAuthResult) {
     result.fullProfile.avatarUrl =
       result.fullProfile._json!.links!.avatar!.href;
-    const { profile } = await this.authHandler(result);
+    const context = {
+      logger: this.logger,
+      catalogIdentityClient: this.catalogIdentityClient,
+      tokenIssuer: this.tokenIssuer,
+    };
+    const { profile } = await this.authHandler(result, context);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -192,11 +197,7 @@ export class BitbucketAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        {
-          tokenIssuer: this.tokenIssuer,
-          catalogIdentityClient: this.catalogIdentityClient,
-          logger: this.logger,
-        },
+        context,
       );
     }
 
