@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
+import { NotAllowedError } from '@backstage/errors';
+import {
+  catalogEntityDeletePermission,
+  catalogEntityReadPermission,
+} from '@backstage/plugin-catalog-common';
 import {
   AuthorizeResult,
   PermissionAuthorizer,
@@ -27,6 +31,7 @@ import {
   EntityAncestryResponse,
   EntityFilter,
 } from '../catalog/types';
+import { basicEntityFilter } from './request/basicEntityFilter';
 
 export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   constructor(
@@ -65,8 +70,32 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     return this.entitiesCatalog.entities(request);
   }
 
-  removeEntityByUid(uid: string): Promise<void> {
-    // TODO: Implement permissioning
+  async removeEntityByUid(
+    uid: string,
+    options?: { authorizationToken?: string },
+  ): Promise<void> {
+    const authorizeResponse = (
+      await this.permissionApi.authorize(
+        [{ permission: catalogEntityDeletePermission }],
+        { token: options?.authorizationToken },
+      )
+    )[0];
+    if (authorizeResponse.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError();
+    }
+    if (authorizeResponse.result === AuthorizeResult.CONDITIONAL) {
+      const permissionFilter: EntityFilter = this.transformConditions(
+        authorizeResponse.conditions,
+      );
+      const { entities } = await this.entitiesCatalog.entities({
+        filter: {
+          allOf: [permissionFilter, basicEntityFilter({ 'metadata.uid': uid })],
+        },
+      });
+      if (entities.length === 0) {
+        throw new NotAllowedError();
+      }
+    }
     return this.entitiesCatalog.removeEntityByUid(uid);
   }
 
