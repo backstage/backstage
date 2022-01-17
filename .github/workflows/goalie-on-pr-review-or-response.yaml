@@ -12,13 +12,17 @@ jobs:
   label:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: Bhacaz/checkout-files
+        with:
+          files: .github/CODEOWNERS
+
       - uses: SvanBoxel/codeowners-action@v1
         id: codeowner
         with: 
-          path: './.github/CODEOWNERS'
+          path: ./.github/CODEOWNERS
+
       - uses: actions/github-script@v5
-        id: get-reviewer-group-members
+        id: get-all-group-members
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
@@ -39,53 +43,38 @@ jobs:
                 }
               )
             )
-
-            console.log(groupMembers)
-            console.log(${{ steps.codeowners.output.codeowners }})
+          
             return groupMembers;
             
-      # - uses: actions/github-script@v5
-      #   id: get-all-current-reviews
-      #   with:
-      #     script: |
-      #       // get all requested reviewers for the PR
-      #       const {data: allReviews } = await github.rest.pulls.listReviews({
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         pull_number: context.issue.number,
-      #       });
+      - uses: actions/github-script@v5
+        id: get-all-changed-files
+        with:
+          script: |
+            const { data: allFiles } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
 
-      #       return allReviews;
+            return allFiles;
             
-      # - uses: actions/github-script@v5
-      #   id: fix-labels
-      #   with:
-      #     script: |
-      #       // if it's the author, always add awaiting-review label
-      #       const isAuthor = context.payload.pull_request.user.login === context.actor
-      #        if (isAuthor) {
-      #         github.rest.issues.addLabels({
-      #           issue_number: context.issue.number,
-      #           owner: context.repo.owner,
-      #           repo: context.repo.repo,
-      #           labels: ['awaiting-review']
-      #         });
+      - uses: actions/github-script@v5
+        id: fix-labels
+        with:
+          script: |
+            // if it's the author, always add awaiting-review label
+            const isAuthor = context.payload.pull_request.user.login === context.actor
+             if (isAuthor) {
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ['awaiting-review']
+              });
 
-      #         return
-      #       }
+              return
+            }
 
-      #       // if it's not the author. go through all the required reviewers, and see if there's a review from at least one person in
-      #       // in those groups. Then remove the label
-
-      #       const requestedReviewers = ${{steps.get-requested-reviewers.outputs.result}}
-      #       const reviewerGroupMembers = ${{steps.get-reviewer-group-members.outputs.result}}
-      #       const allCurrentReviews = ${{steps.get-all-current-reviews.outputs.result}}         
-            
-      #       // HMM We have a problem here, that the requested reviewers is only there until 
-      #       const reviewersHasReview = requestedReviewers.teams.map((team) => {
-      #         const groupMembers = reviewerGroupMembers.find(({ team: teamSlug }) => teamSlug === team.slug)
-      #         const hasReview = allCurrentReviews.some(({ user: { login: reviewer } }) => groupMembers.some(({ login: groupMember}) => reviewer === groupMember))
-      #         return { name: team.slug, hasReview }
-      #       })
-
-      #       console.log(reviewersHasReview);
+            console.log('all files', ${{ steps.get-all-changed-files.output.result}})
+            console.log('codeowners', ${{ steps.codeowners.output.codeowners}})
+            console.log('all teams', ${{ steps.get-all-group-members.output.result}})
