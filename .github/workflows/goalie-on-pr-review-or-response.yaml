@@ -12,28 +12,20 @@ jobs:
   label:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v5
-        id: get-requested-reviewers
-        with:
-          script: |
-            // get all requested reviewers for the PR
-            const {data: requestedReviewers } = await github.rest.pulls.listRequestedReviewers({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number,
-            });
-
-            return requestedReviewers;
-
+      - uses: SvanBoxel/codeowners-action@v1
+        id: codeowner
       - uses: actions/github-script@v5
         id: get-reviewer-group-members
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
-            // Get all members of all required groups
-            const requestedReviewers = ${{steps.get-requested-reviewers.outputs.result}};
+            // Get all teams and their respective members
+            const {data: teams} = await github.rest.request('GET /orgs/{org}/teams', {
+              org: context.payload.organization.login,
+            })
+
             const groupMembers = await Promise.all(
-              requestedReviewers.teams.map(
+              teams.map(
                 async (team) => {
                   const { data } = await github.rest.teams.listMembersInOrg({
                     org: context.payload.organization.login,
@@ -44,49 +36,53 @@ jobs:
                 }
               )
             )
+
+            console.log(groupMembers)
+            console.log(${{ steps.codeowners.output.codeowners }})
             return groupMembers;
             
-      - uses: actions/github-script@v5
-        id: get-all-current-reviews
-        with:
-          script: |
-            // get all requested reviewers for the PR
-            const {data: allReviews } = await github.rest.pulls.listReviews({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number,
-            });
+      # - uses: actions/github-script@v5
+      #   id: get-all-current-reviews
+      #   with:
+      #     script: |
+      #       // get all requested reviewers for the PR
+      #       const {data: allReviews } = await github.rest.pulls.listReviews({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         pull_number: context.issue.number,
+      #       });
 
-            return allReviews;
+      #       return allReviews;
             
-      - uses: actions/github-script@v5
-        id: fix-labels
-        with:
-          script: |
-            // if it's the author, always add awaiting-review label
-            const isAuthor = context.payload.pull_request.user.login === context.actor
-             if (isAuthor) {
-              github.rest.issues.addLabels({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                labels: ['awaiting-review']
-              });
+      # - uses: actions/github-script@v5
+      #   id: fix-labels
+      #   with:
+      #     script: |
+      #       // if it's the author, always add awaiting-review label
+      #       const isAuthor = context.payload.pull_request.user.login === context.actor
+      #        if (isAuthor) {
+      #         github.rest.issues.addLabels({
+      #           issue_number: context.issue.number,
+      #           owner: context.repo.owner,
+      #           repo: context.repo.repo,
+      #           labels: ['awaiting-review']
+      #         });
 
-              return
-            }
+      #         return
+      #       }
 
-            // if it's not the author. go through all the required reivews, and see if there's a review from at least one person in
-            // in those groups. Then remove the label
+      #       // if it's not the author. go through all the required reviewers, and see if there's a review from at least one person in
+      #       // in those groups. Then remove the label
 
-            const requestedReviewers = ${{steps.get-requested-reviewers.outputs.result}}
-            const reviewerGroupMembers = ${{steps.get-reviewer-group-members.outputs.result}}
-            const allCurrentReviews = ${{steps.get-all-current-reviews.outputs.result}}         
+      #       const requestedReviewers = ${{steps.get-requested-reviewers.outputs.result}}
+      #       const reviewerGroupMembers = ${{steps.get-reviewer-group-members.outputs.result}}
+      #       const allCurrentReviews = ${{steps.get-all-current-reviews.outputs.result}}         
             
-            const reviewersHasReview = requestedReviewers.teams.map((team) => {
-              const groupMembers = reviewerGroupMembers.find(({ team: teamSlug }) => teamSlug === team.slug)
-              const hasReview = allCurrentReviews.some(({ user: { login: reviewer } }) => groupMembers.some(({ login: groupMember}) => reviewer === groupMember))
-              return { name: team.slug, hasReview }
-            })
+      #       // HMM We have a problem here, that the requested reviewers is only there until 
+      #       const reviewersHasReview = requestedReviewers.teams.map((team) => {
+      #         const groupMembers = reviewerGroupMembers.find(({ team: teamSlug }) => teamSlug === team.slug)
+      #         const hasReview = allCurrentReviews.some(({ user: { login: reviewer } }) => groupMembers.some(({ login: groupMember}) => reviewer === groupMember))
+      #         return { name: team.slug, hasReview }
+      #       })
 
-            console.log(reviewersHasReview);
+      #       console.log(reviewersHasReview);
