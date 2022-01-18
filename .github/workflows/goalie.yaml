@@ -74,7 +74,7 @@ jobs:
             // if it's the author, always add awaiting-review label
             const isAuthor = context.payload.pull_request.user.login === context.actor
             if (isAuthor) {
-              github.rest.issues.addLabels({
+              await github.rest.issues.addLabels({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -121,7 +121,7 @@ jobs:
             }
 
             if (hasReviewed.size === expectedReviewers.size) {
-              github.rest.issues.removeLabel({
+              await github.rest.issues.removeLabel({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
