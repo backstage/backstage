@@ -92,11 +92,11 @@ class GithubAppManager {
   async getInstallationCredentials(
     owner: string,
     repo?: string,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{ accessToken: string | undefined }> {
     const { installationId, suspended } = await this.getInstallationData(owner);
     if (this.allowedInstallationOwners) {
       if (!this.allowedInstallationOwners?.includes(owner)) {
-        return { accessToken: '' }; // An empty token allows anonymous access to public repos
+        return { accessToken: undefined }; // An empty token allows anonymous access to public repos
       }
     }
     if (suspended) {
