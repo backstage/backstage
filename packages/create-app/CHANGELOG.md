@@ -1,5 +1,149 @@
 # @backstage/create-app
 
+## 1.0.0-next.0
+
+### Patch Changes
+
+- fb08e2f285: Updated the configuration of the `app-backend` plugin to enable the static asset store by passing on `database` from the plugin environment to `createRouter`.
+
+  To apply this change to an existing app, make the following change to `packages/backend/src/plugins/app.ts`:
+
+  ```diff
+   export default async function createPlugin({
+     logger,
+     config,
+  +  database,
+   }: PluginEnvironment): Promise<Router> {
+     return await createRouter({
+       logger,
+       config,
+  +    database,
+       appPackageName: 'app',
+     });
+   }
+  ```
+
+- 7ba416be78: You can now add `SidebarGroup`s to the current `Sidebar`. This will not affect how the current sidebar is displayed, but allows a customization on how the `MobileSidebar` on smaller screens will look like. A `SidebarGroup` will be displayed with the given icon in the `MobileSidebar`.
+
+  A `SidebarGroup` can either link to an existing page (e.g. `/search` or `/settings`) or wrap components, which will be displayed in a full-screen overlay menu (e.g. `Menu`).
+
+  ```diff
+  <Sidebar>
+      <SidebarLogo />
+  +   <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+          <SidebarSearchModal />
+  +   </SidebarGroup>
+      <SidebarDivider />
+  +   <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+          <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+          <SidebarDivider />
+          <SidebarScrollWrapper>
+              <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+          </SidebarScrollWrapper>
+  +   </SidebarGroup>
+      <SidebarSpace />
+      <SidebarDivider />
+  +   <SidebarGroup
+  +       label="Settings"
+  +       icon={<UserSettingsSignInAvatar />}
+  +       to="/settings"
+  +   >
+          <SidebarSettings />
+  +   </SidebarGroup>
+  </Sidebar>
+  ```
+
+  Additionally, you can order the groups differently in the `MobileSidebar` than in the usual `Sidebar` simply by giving a group a priority. The groups will be displayed in descending order from left to right.
+
+  ```diff
+  <SidebarGroup
+      label="Settings"
+      icon={<UserSettingsSignInAvatar />}
+      to="/settings"
+  +   priority={1}
+  >
+      <SidebarSettings />
+  </SidebarGroup>
+  ```
+
+  If you decide against adding `SidebarGroup`s to your `Sidebar` the `MobileSidebar` will contain one default menu item, which will open a full-screen overlay menu displaying all the content of the current `Sidebar`.
+
+  More information on the `SidebarGroup` & the `MobileSidebar` component can be found in the changeset for the `core-components`.
+
+- 08fa6a604a: The app template has been updated to add an explicit dependency on `typescript` in the root `package.json`. This is because it was removed as a dependency of `@backstage/cli` in order to decouple the TypeScript versioning in Backstage projects.
+
+  To apply this change in an existing app, add a `typescript` dependency to your `package.json` in the project root:
+
+  ```json
+    "dependencies": {
+      ...
+      "typescript": "~4.5.4",
+    }
+  ```
+
+  We recommend using a `~` version range since TypeScript releases do not adhere to semver.
+
+  It may be the case that you end up with errors if you upgrade the TypeScript version. This is because there was a change to TypeScript not long ago that defaulted the type of errors caught in `catch` blocks to `unknown`. You can work around this by adding `"useUnknownInCatchVariables": false` to the `"compilerOptions"` in your `tsconfig.json`:
+
+  ```json
+    "compilerOptions": {
+      ...
+      "useUnknownInCatchVariables": false
+    }
+  ```
+
+  Another option is to use the utilities from `@backstage/errors` to assert the type of errors caught in `catch` blocks:
+
+  ```ts
+  import { assertError, isError } from '@backstage/errors';
+
+  try {
+    ...
+  } catch (error) {
+    assertError(error);
+    ...
+    // OR
+    if (isError(error)) {
+      ...
+    }
+  }
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-tech-radar@0.5.3-next.0
+  - @backstage/plugin-auth-backend@0.7.0-next.0
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/plugin-api-docs@0.6.23-next.0
+  - @backstage/plugin-catalog-backend@0.21.0-next.0
+  - @backstage/plugin-permission-common@0.4.0-next.0
+  - @backstage/cli@0.12.0-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/plugin-catalog@0.7.9-next.0
+  - @backstage/plugin-user-settings@0.3.17-next.0
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/plugin-app-backend@0.3.22-next.0
+  - @backstage/core-app-api@0.5.0-next.0
+  - @backstage/plugin-catalog-import@0.7.10-next.0
+  - @backstage/plugin-scaffolder@0.11.19-next.0
+  - @backstage/plugin-search@0.5.6-next.0
+  - @backstage/plugin-techdocs@0.12.15-next.0
+  - @backstage/plugin-permission-node@0.4.0-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/integration-react@0.1.19-next.0
+  - @backstage/plugin-explore@0.3.26-next.0
+  - @backstage/plugin-github-actions@0.4.32-next.0
+  - @backstage/plugin-lighthouse@0.2.35-next.0
+  - @backstage/plugin-scaffolder-backend@0.15.21-next.0
+  - @backstage/backend-tasks@0.1.4-next.0
+  - @backstage/catalog-client@0.5.5-next.0
+  - @backstage/test-utils@0.2.3-next.0
+  - @backstage/plugin-proxy-backend@0.2.16-next.0
+  - @backstage/plugin-rollbar-backend@0.1.19-next.0
+  - @backstage/plugin-search-backend@0.3.1-next.0
+  - @backstage/plugin-techdocs-backend@0.12.4-next.0
+
 ## 0.4.12
 
 ### Patch Changes

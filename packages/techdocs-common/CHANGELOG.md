@@ -1,5 +1,16 @@
 # @backstage/techdocs-common
 
+## 0.11.4-next.0
+
+### Patch Changes
+
+- 47277c0d8c: Updated the default version of the `@spotify/techdocs` container used when `techdocs.generator.runIn` is `docker` to `v0.3.6`, which includes an update to `mkdocs-monorepo-plugin` that allows glob-based wildcard includes.
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/integration@0.7.2-next.0
+
 ## 0.11.3
 
 ### Patch Changes

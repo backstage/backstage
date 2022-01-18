@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.3.10-next.0
+
+### Patch Changes
+
+- 3368dc6b62: Make sure to clone objects sent to `ldapjs` since the library modifies them
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.0-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+
 ## 0.3.9
 
 ### Patch Changes

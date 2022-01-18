@@ -1,5 +1,22 @@
 # embedded-techdocs-app
 
+## 0.2.60-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/cli@0.12.0-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/plugin-catalog@0.7.9-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/core-app-api@0.5.0-next.0
+  - @backstage/plugin-techdocs@0.12.15-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/app-defaults@0.1.5-next.0
+  - @backstage/integration-react@0.1.19-next.0
+  - @backstage/test-utils@0.2.3-next.0
+
 ## 0.2.59
 
 ### Patch Changes
