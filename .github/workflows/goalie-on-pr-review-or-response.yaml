@@ -36,7 +36,7 @@ jobs:
                     team_slug: team.slug,
                   });
 
-                  return { team: `$backstage/${team.slug}`, data };
+                  return { team: `@backstage/${team.slug}`, data };
                 }
               )
             )
@@ -106,9 +106,18 @@ jobs:
             // For each reviewer in the group, check to see if they have a review set
             for (const reviewer of expectedReviewers) {
               const members = groupMembers.find(member => member.team === reviewer);
-              const hasMemberReview = allReviews.some(review => members.data.some(member => member.login === review.user.login));
-              if (hasMemberReview) {
-                hasReviewed.add(reviewer);
+              if (members) {
+                // then we are dealing with a group
+                const hasMemberReview = allReviews.some(review => members.data.some(member => member.login === review.user.login));
+                if (hasMemberReview) {
+                  hasReviewed.add(reviewer);
+                }
+              } else {
+                // reviewer is a person
+                const hasReview = allReviews.some(review => reviewer === `@${review.user.login}`);
+                if (hasReview) {
+                  hasReviewed.add(reviewer);
+                }
               }
             }
 
