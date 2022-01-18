@@ -1,7 +1,9 @@
 name: 'Dependabot changeset maker'
 on:
   pull_request_target:
-    branches: 'dependabot/**'
+    paths:
+      - .github/workflows/dependabot-changeset-maker.yml
+      - '**/yarn.lock'
 
 jobs:
   generate-changeset:
