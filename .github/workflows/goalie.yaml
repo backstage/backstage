@@ -2,7 +2,7 @@
 name: Goalie Workflow
 on:
   schedule:
-  - cron: "* * * * *"
+    - cron: '* * * * *'
 
 jobs:
   label:
@@ -29,4 +29,3 @@ jobs:
           script: |
             const script = require('./scripts/goalie-labels.js')
             await script({github, context, core})
-            
