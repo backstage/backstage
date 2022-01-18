@@ -23,7 +23,6 @@
 
 export {
   RESOURCE_TYPE_CATALOG_ENTITY,
-  RESOURCE_TYPE_CATALOG_LOCATION,
   catalogEntityReadPermission,
   catalogEntityDeletePermission,
   catalogEntityRefreshPermission,

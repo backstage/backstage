@@ -20,10 +20,19 @@ export interface LocationService {
   createLocation(
     spec: LocationSpec,
     dryRun: boolean,
+    options?: {
+      authorizationToken?: string;
+    },
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }>;
-  listLocations(): Promise<Location[]>;
-  getLocation(id: string): Promise<Location>;
-  deleteLocation(id: string): Promise<void>;
+  listLocations(options?: { authorizationToken?: string }): Promise<Location[]>;
+  getLocation(
+    id: string,
+    options?: { authorizationToken?: string },
+  ): Promise<Location>;
+  deleteLocation(
+    id: string,
+    options?: { authorizationToken?: string },
+  ): Promise<void>;
 }
 
 /**
