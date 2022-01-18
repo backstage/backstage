@@ -155,16 +155,21 @@ export function SidebarPage(props: SidebarPageProps) {
  *
  * @public
  * @example
+ * Focus current content
+ * ```tsx
  *  const { focusContent} = useContent();
  * ...
  *  <Button onClick={focusContent}>
  *     focus main content
  *  </Button>
- *
+ * ```
  * @example
+ * Set the reference to an Html element
+ * ```
  *  const { contentRef } = useContent();
  * ...
  *  <article ref={contentRef} tabIndex={-1}>Main Content</article>
+ * ```
  */
 export function useContent() {
   const { content } = useContext(PageContext);

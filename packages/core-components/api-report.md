@@ -916,7 +916,6 @@ export const SidebarDivider: React_2.ComponentType<
     | 'translate'
     | 'prefix'
     | 'children'
-    | 'id'
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
@@ -925,6 +924,7 @@ export const SidebarDivider: React_2.ComponentType<
     | 'contentEditable'
     | 'contextMenu'
     | 'draggable'
+    | 'id'
     | 'lang'
     | 'placeholder'
     | 'spellCheck'
@@ -1278,7 +1278,6 @@ export const SidebarScrollWrapper: React_2.ComponentType<
     | 'translate'
     | 'prefix'
     | 'children'
-    | 'id'
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
@@ -1287,6 +1286,7 @@ export const SidebarScrollWrapper: React_2.ComponentType<
     | 'contentEditable'
     | 'contextMenu'
     | 'draggable'
+    | 'id'
     | 'lang'
     | 'placeholder'
     | 'spellCheck'
@@ -1553,7 +1553,6 @@ export const SidebarSpace: React_2.ComponentType<
     | 'translate'
     | 'prefix'
     | 'children'
-    | 'id'
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
@@ -1562,6 +1561,7 @@ export const SidebarSpace: React_2.ComponentType<
     | 'contentEditable'
     | 'contextMenu'
     | 'draggable'
+    | 'id'
     | 'lang'
     | 'placeholder'
     | 'spellCheck'
@@ -1827,7 +1827,6 @@ export const SidebarSpacer: React_2.ComponentType<
     | 'translate'
     | 'prefix'
     | 'children'
-    | 'id'
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
@@ -1836,6 +1835,7 @@ export const SidebarSpacer: React_2.ComponentType<
     | 'contentEditable'
     | 'contextMenu'
     | 'draggable'
+    | 'id'
     | 'lang'
     | 'placeholder'
     | 'spellCheck'
@@ -2404,9 +2404,7 @@ export function TrendLine(
     },
 ): JSX.Element | null;
 
-// Warning: (ae-missing-release-tag) "useContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function useContent(): {
   focusContent: () => void;
   contentRef: React_2.MutableRefObject<HTMLElement | null> | undefined;
