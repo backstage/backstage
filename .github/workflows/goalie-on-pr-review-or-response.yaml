@@ -73,17 +73,17 @@ jobs:
         with:
           script: |
             // if it's the author, always add awaiting-review label
-            const isAuthor = context.payload.pull_request.user.login === context.actor
-             if (isAuthor) {
-              github.rest.issues.addLabels({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                labels: ['awaiting-review']
-              });
+            // const isAuthor = context.payload.pull_request.user.login === context.actor
+            //  if (isAuthor) {
+            //   github.rest.issues.addLabels({
+            //     issue_number: context.issue.number,
+            //     owner: context.repo.owner,
+            //     repo: context.repo.repo,
+            //     labels: ['awaiting-review']
+            //   });
 
-              return
-            }
+            //   return
+            // }
 
             // Go through each file changed and go through each codeowner entry and use minimatch to see if the file matches
             // strip the backstage group from the name?
