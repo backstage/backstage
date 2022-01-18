@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export * from './conditionExports';
+export {
+  catalogConditions,
+  createCatalogPolicyDecision,
+} from './conditionExports';
 export * from './rules';

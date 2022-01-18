@@ -274,6 +274,32 @@ export class CatalogBuilder {
   setRefreshIntervalSeconds(seconds: number): CatalogBuilder;
 }
 
+// @public
+export const catalogConditions: Conditions<{
+  hasAnnotation: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [annotation: string]
+  >;
+  hasLabel: PermissionRule<Entity, EntitiesSearchFilter, [label: string]>;
+  hasMetadata: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [key: string, value?: string | undefined]
+  >;
+  hasSpec: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [key: string, value?: string | undefined]
+  >;
+  isEntityKind: PermissionRule<Entity, EntitiesSearchFilter, [kinds: string[]]>;
+  isEntityOwner: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [claims: string[]]
+  >;
+}>;
+
 // Warning: (ae-missing-release-tag) "CatalogEntityDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -454,38 +480,12 @@ export class CodeOwnersProcessor implements CatalogProcessor {
 }
 
 // @public
-export const conditions: Conditions<{
-  hasAnnotation: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    [annotation: string]
-  >;
-  hasLabel: PermissionRule<Entity, EntitiesSearchFilter, [label: string]>;
-  hasMetadata: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    [key: string, value?: string | undefined]
-  >;
-  hasSpec: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    [key: string, value?: string | undefined]
-  >;
-  isEntityKind: PermissionRule<Entity, EntitiesSearchFilter, [kinds: string[]]>;
-  isEntityOwner: PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    [claims: string[]]
-  >;
-}>;
-
-// @public
 export const createCatalogPermissionRule: <TParams extends unknown[]>(
   rule: PermissionRule<Entity, EntitiesSearchFilter, TParams>,
 ) => PermissionRule<Entity, EntitiesSearchFilter, TParams>;
 
 // @public
-export const createPolicyDecision: (
+export const createCatalogPolicyDecision: (
   conditions: PermissionCriteria<PermissionCondition<unknown[]>>,
 ) => ConditionalPolicyDecision;
 

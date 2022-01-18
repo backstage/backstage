@@ -29,7 +29,7 @@ const conditionExports = createConditionExports({
  * by authorization policies.
  * @public
  */
-export const conditions = conditionExports.conditions;
+export const catalogConditions = conditionExports.conditions;
 
 /**
  * `createPolicyDecision` can be used when authoring policies to create
@@ -38,7 +38,7 @@ export const conditions = conditionExports.conditions;
  * ```
  * // MyAuthorizationPolicy.ts
  * ...
- * import { createPolicyDecision as createCatalogPolicyDecision } from '@backstage/plugin-catalog-backend';
+ * import { createCatalogPolicyDecision } from '@backstage/plugin-catalog-backend';
  *
  * class MyAuthorizationPolicy implements PermissionPolicy {
  *   async handle(request, user) {
@@ -52,4 +52,5 @@ export const conditions = conditionExports.conditions;
  * ```
  * @public
  */
-export const createPolicyDecision = conditionExports.createPolicyDecision;
+export const createCatalogPolicyDecision =
+  conditionExports.createPolicyDecision;
