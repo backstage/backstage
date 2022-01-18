@@ -16,7 +16,7 @@
 
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 
 export function useUserTeamIds(userId: string | undefined): {
   teamIds?: string[];

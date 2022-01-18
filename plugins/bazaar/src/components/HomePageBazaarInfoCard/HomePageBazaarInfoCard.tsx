@@ -43,7 +43,7 @@ import {
 import { Member, BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
-import { useAsyncFn } from 'react-use';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 import {
   catalogApiRef,
   catalogRouteRef,
