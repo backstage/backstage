@@ -1,5 +1,5 @@
 # on a review from someone in the reviewers group, remove the awaiting-review label and add the awaiting-author label
-name: Update labels for awaiting review
+name: Set Goalie Labels
 on:
   pull_request_review:
     types: [submitted]
@@ -40,9 +40,9 @@ jobs:
                 }
               )
             )
-          
+
             return groupMembers;
-            
+
       - uses: actions/github-script@v5
         id: get-all-changed-files
         with:
@@ -66,23 +66,22 @@ jobs:
             });
 
             return allReviews;
-            
+
       - uses: actions/github-script@v5
         id: fix-labels
         with:
           script: |
             // if it's the author, always add awaiting-review label
-            // const isAuthor = context.payload.pull_request.user.login === context.actor
-            //  if (isAuthor) {
-            //   github.rest.issues.addLabels({
-            //     issue_number: context.issue.number,
-            //     owner: context.repo.owner,
-            //     repo: context.repo.repo,
-            //     labels: ['awaiting-review']
-            //   });
-
-            //   return
-            // }
+            const isAuthor = context.payload.pull_request.user.login === context.actor
+            if (isAuthor) {
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ['awaiting-review']
+              });
+              return;
+            }
 
             // Go through each file changed and go through each codeowner entry and use minimatch to see if the file matches
             // strip the backstage group from the name?
@@ -129,5 +128,3 @@ jobs:
                 name: 'awaiting-review'
               }).catch(() => {});
             }
-
-            
