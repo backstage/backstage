@@ -93,7 +93,7 @@ describe('GithubAuthProvider', () => {
       const expected = {
         backstageIdentity: {
           id: 'jimmymarkum',
-          token: 'token-for-jimmymarkum',
+          token: 'token-for-user:default/jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -138,7 +138,7 @@ describe('GithubAuthProvider', () => {
       const expected = {
         backstageIdentity: {
           id: 'jimmymarkum',
-          token: 'token-for-jimmymarkum',
+          token: 'token-for-user:default/jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -181,7 +181,7 @@ describe('GithubAuthProvider', () => {
       const expected = {
         backstageIdentity: {
           id: 'jimmymarkum',
-          token: 'token-for-jimmymarkum',
+          token: 'token-for-user:default/jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -224,7 +224,7 @@ describe('GithubAuthProvider', () => {
       const expected = {
         backstageIdentity: {
           id: 'daveboyle',
-          token: 'token-for-daveboyle',
+          token: 'token-for-user:default/daveboyle',
         },
         providerInfo: {
           accessToken:
@@ -268,7 +268,7 @@ describe('GithubAuthProvider', () => {
         response: {
           backstageIdentity: {
             id: 'ipd12039',
-            token: 'token-for-ipd12039',
+            token: 'token-for-user:default/ipd12039',
           },
           providerInfo: {
             accessToken: 'a.b.c',
@@ -322,7 +322,7 @@ describe('GithubAuthProvider', () => {
         response: {
           backstageIdentity: {
             id: 'mockuser',
-            token: 'token-for-mockuser',
+            token: 'token-for-user:default/mockuser',
           },
           profile: {
             displayName: 'Mocked User',
