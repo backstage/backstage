@@ -47,8 +47,9 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: yarn install
+      - name: storybook yarn install
         run: yarn install --frozen-lockfile
+        working-directory: storybook
       # End of yarn setup
 
       - run: yarn build-storybook
@@ -59,5 +60,5 @@ jobs:
           # projetToken intentionally shared to allow collaborators to run Chromatic on forks
           # https://www.chromatic.com/docs/custom-ci-provider#run-chromatic-on-external-forks-of-open-source-projects
           projectToken: 9tzak77m9nj
-          workingDir: 'packages/storybook'
-          storybookBuildDir: 'dist'
+          workingDir: storybook
+          storybookBuildDir: dist
