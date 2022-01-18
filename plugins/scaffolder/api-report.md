@@ -36,9 +36,7 @@ export function createScaffolderFieldExtension<T = any>(
   options: FieldExtensionOptions<T>,
 ): Extension<() => null>;
 
-// Warning: (ae-missing-release-tag) "CustomFieldValidator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type CustomFieldValidator<T> =
   | ((data: T, field: FieldValidation) => void)
   | ((
@@ -96,9 +94,18 @@ export const EntityTagsPickerFieldExtension: () => null;
 // @public
 export const FavouriteTemplate: (props: Props) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "FieldExtensionOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export interface FieldExtensionComponentProps<
+  ReturnValue,
+  UiOptions extends {} = {},
+> extends FieldProps<ReturnValue> {
+  // (undocumented)
+  uiSchema: {
+    'ui:options'?: UiOptions;
+  };
+}
+
+// @public
 export type FieldExtensionOptions<T = any> = {
   name: string;
   component: (props: FieldProps<T>) => JSX.Element | null;
@@ -140,17 +147,24 @@ export const OwnerPickerFieldExtension: () => null;
 // Warning: (ae-missing-release-tag) "RepoUrlPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const RepoUrlPicker: ({
-  onChange,
-  uiSchema,
-  rawErrors,
-  formData,
-}: FieldProps<string>) => JSX.Element;
+export const RepoUrlPicker: (
+  props: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>,
+) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "RepoUrlPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const RepoUrlPickerFieldExtension: () => null;
+
+// Warning: (ae-missing-release-tag) "RepoUrlPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface RepoUrlPickerUiOptions {
+  // (undocumented)
+  allowedHosts?: string[];
+  // (undocumented)
+  allowedOwners?: string[];
+}
 
 // Warning: (ae-missing-release-tag) "ScaffolderApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

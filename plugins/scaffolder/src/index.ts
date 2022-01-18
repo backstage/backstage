@@ -26,7 +26,11 @@ export {
   createScaffolderFieldExtension,
   ScaffolderFieldExtensions,
 } from './extensions';
-export type { CustomFieldValidator, FieldExtensionOptions } from './extensions';
+export type {
+  CustomFieldValidator,
+  FieldExtensionOptions,
+  FieldExtensionComponentProps,
+} from './extensions';
 export {
   EntityPickerFieldExtension,
   EntityNamePickerFieldExtension,
@@ -47,6 +51,7 @@ export {
   TextValuePicker,
   OwnedEntityPicker,
 } from './components/fields';
+export type { RepoUrlPickerUiOptions } from './components/fields';
 export { FavouriteTemplate } from './components/FavouriteTemplate';
 export { TemplateList } from './components/TemplateList';
 export type { TemplateListProps } from './components/TemplateList';

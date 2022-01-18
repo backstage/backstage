@@ -13,371 +13,100 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Progress,
-  Select,
-  SelectedItems,
-  SelectItem,
-} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import { FieldProps } from '@rjsf/core';
-import React, { useCallback, useEffect } from 'react';
-import useAsync from 'react-use/lib/useAsync';
-import { scaffolderApiRef } from '../../../api';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { GithubRepoPicker } from './GithubRepoPicker';
+import { GitlabRepoPicker } from './GitlabRepoPicker';
+import { AzureRepoPicker } from './AzureRepoPicker';
+import { BitbucketRepoPicker } from './BitbucketRepoPicker';
+import { FieldExtensionComponentProps } from '../../../extensions';
+import { RepoUrlPickerHost } from './RepoUrlPickerHost';
+import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
+import { RepoUrlPickerState } from './types';
 
-function splitFormData(url: string | undefined, allowedOwners?: string[]) {
-  let host = undefined;
-  let owner = undefined;
-  let repo = undefined;
-  let organization = undefined;
-  let workspace = undefined;
-  let project = undefined;
-
-  try {
-    if (url) {
-      const parsed = new URL(`https://${url}`);
-      host = parsed.host;
-      owner = parsed.searchParams.get('owner') || allowedOwners?.[0];
-      repo = parsed.searchParams.get('repo') || undefined;
-      // This is azure dev ops specific. not used for any other provider.
-      organization = parsed.searchParams.get('organization') || undefined;
-      // These are bitbucket specific, not used for any other provider.
-      workspace = parsed.searchParams.get('workspace') || undefined;
-      project = parsed.searchParams.get('project') || undefined;
-    }
-  } catch {
-    /* ok */
-  }
-
-  return { host, owner, repo, organization, workspace, project };
+export interface RepoUrlPickerUiOptions {
+  allowedHosts?: string[];
+  allowedOwners?: string[];
 }
 
-function serializeFormData(data: {
-  host?: string;
-  owner?: string;
-  repo?: string;
-  organization?: string;
-  workspace?: string;
-  project?: string;
-}) {
-  if (!data.host) {
-    return undefined;
-  }
-
-  const params = new URLSearchParams();
-  if (data.owner) {
-    params.set('owner', data.owner);
-  }
-  if (data.repo) {
-    params.set('repo', data.repo);
-  }
-  if (data.organization) {
-    params.set('organization', data.organization);
-  }
-  if (data.workspace) {
-    params.set('workspace', data.workspace);
-  }
-  if (data.project) {
-    params.set('project', data.project);
-  }
-
-  return `${data.host}?${params.toString()}`;
-}
-
-export const RepoUrlPicker = ({
-  onChange,
-  uiSchema,
-  rawErrors,
-  formData,
-}: FieldProps<string>) => {
-  const scaffolderApi = useApi(scaffolderApiRef);
+export const RepoUrlPicker = (
+  props: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>,
+) => {
+  const { uiSchema, onChange, rawErrors, formData } = props;
+  const [state, setState] = useState<RepoUrlPickerState>(
+    parseRepoPickerUrl(formData),
+  );
   const integrationApi = useApi(scmIntegrationsApiRef);
-  const allowedHosts = uiSchema['ui:options']?.allowedHosts as string[];
-  const allowedOwners = uiSchema['ui:options']?.allowedOwners as string[];
 
-  const { value: integrations, loading } = useAsync(async () => {
-    return await scaffolderApi.getIntegrationsList({ allowedHosts });
-  });
-
-  const { host, owner, repo, organization, workspace, project } = splitFormData(
-    formData,
-    allowedOwners,
+  const allowedHosts = useMemo(
+    () => uiSchema?.['ui:options']?.allowedHosts ?? [],
+    [uiSchema],
   );
-  const updateHost = useCallback(
-    (value: SelectedItems) => {
-      onChange(
-        serializeFormData({
-          host: value as string,
-          owner,
-          repo,
-          organization,
-          workspace,
-          project,
-        }),
-      );
-    },
-    [onChange, owner, repo, organization, workspace, project],
-  );
-
-  const updateOwnerSelect = useCallback(
-    (value: SelectedItems) =>
-      onChange(
-        serializeFormData({
-          host,
-          owner: value as string,
-          repo,
-          organization,
-          workspace,
-          project,
-        }),
-      ),
-    [onChange, host, repo, organization, workspace, project],
-  );
-
-  const updateOwner = useCallback(
-    (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
-      onChange(
-        serializeFormData({
-          host,
-          owner: evt.target.value as string,
-          repo,
-          organization,
-          workspace,
-          project,
-        }),
-      ),
-    [onChange, host, repo, organization, workspace, project],
-  );
-
-  const updateRepo = useCallback(
-    (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
-      onChange(
-        serializeFormData({
-          host,
-          owner,
-          repo: evt.target.value as string,
-          organization,
-          workspace,
-          project,
-        }),
-      ),
-    [onChange, host, owner, organization, workspace, project],
-  );
-
-  const updateOrganization = useCallback(
-    (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
-      onChange(
-        serializeFormData({
-          host,
-          owner,
-          repo,
-          organization: evt.target.value as string,
-          workspace,
-          project,
-        }),
-      ),
-    [onChange, host, owner, repo, workspace, project],
-  );
-
-  const updateWorkspace = useCallback(
-    (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
-      onChange(
-        serializeFormData({
-          host,
-          owner,
-          repo,
-          organization,
-          workspace: evt.target.value as string,
-          project,
-        }),
-      ),
-    [onChange, host, owner, repo, organization, project],
-  );
-
-  const updateProject = useCallback(
-    (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
-      onChange(
-        serializeFormData({
-          host,
-          owner,
-          repo,
-          organization,
-          workspace,
-          project: evt.target.value as string,
-        }),
-      ),
-    [onChange, host, owner, repo, organization, workspace],
+  const allowedOwners = useMemo(
+    () => uiSchema?.['ui:options']?.allowedOwners ?? [],
+    [uiSchema],
   );
 
   useEffect(() => {
-    if (host === undefined && integrations?.length) {
-      onChange(
-        serializeFormData({
-          host: integrations[0].host,
-          owner,
-          repo,
-          organization,
-          workspace,
-          project,
-        }),
-      );
+    onChange(serializeRepoPickerUrl(state));
+  }, [state, onChange]);
+
+  /* we deal with calling the repo setting here instead of in each components for ease */
+  useEffect(() => {
+    if (allowedOwners.length === 1) {
+      setState(prevState => ({ ...prevState, owner: allowedOwners[0] }));
     }
-  }, [
-    onChange,
-    integrations,
-    host,
-    owner,
-    repo,
-    organization,
-    workspace,
-    project,
-  ]);
+  }, [setState, allowedOwners]);
 
-  if (loading) {
-    return <Progress />;
-  }
+  const updateLocalState = useCallback(
+    (newState: RepoUrlPickerState) => {
+      setState(prevState => ({ ...prevState, ...newState }));
+    },
+    [setState],
+  );
 
-  const hostsOptions: SelectItem[] = integrations
-    ? integrations
-        .filter(i => allowedHosts?.includes(i.host))
-        .map(i => ({ label: i.title, value: i.host }))
-    : [{ label: 'Loading...', value: 'loading' }];
-
-  const ownersOptions: SelectItem[] = allowedOwners
-    ? allowedOwners.map(i => ({ label: i, value: i }))
-    : [{ label: 'Loading...', value: 'loading' }];
+  const hostType =
+    (state.host && integrationApi.byHost(state.host)?.type) ?? null;
 
   return (
     <>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !host}
-      >
-        <Select
-          native
-          disabled={hostsOptions.length === 1}
-          label="Host"
-          onChange={updateHost}
-          selected={host}
-          items={hostsOptions}
+      <RepoUrlPickerHost
+        host={state.host}
+        hosts={allowedHosts}
+        onChange={host => setState(prevState => ({ ...prevState, host }))}
+        rawErrors={rawErrors}
+      />
+      {hostType === 'github' && (
+        <GithubRepoPicker
+          allowedOwners={allowedOwners}
+          rawErrors={rawErrors}
+          state={state}
+          onChange={updateLocalState}
         />
-
-        <FormHelperText>
-          The host where the repository will be created
-        </FormHelperText>
-      </FormControl>
-      {/* Show this for dev.azure.com only */}
-      {host === 'dev.azure.com' && (
-        <FormControl
-          margin="normal"
-          required
-          error={rawErrors?.length > 0 && !organization}
-        >
-          <InputLabel htmlFor="repoInput">Organization</InputLabel>
-          <Input
-            id="repoInput"
-            onChange={updateOrganization}
-            value={organization}
-          />
-          <FormHelperText>The name of the organization</FormHelperText>
-        </FormControl>
       )}
-      {host && integrationApi.byHost(host)?.type === 'bitbucket' && (
-        <>
-          {/* Show this for bitbucket.org only */}
-          {host === 'bitbucket.org' && (
-            <FormControl
-              margin="normal"
-              required
-              error={rawErrors?.length > 0 && !workspace}
-            >
-              <InputLabel htmlFor="wokrspaceInput">Workspace</InputLabel>
-              <Input
-                id="wokrspaceInput"
-                onChange={updateWorkspace}
-                value={workspace}
-              />
-              <FormHelperText>
-                The workspace where the repository will be created
-              </FormHelperText>
-            </FormControl>
-          )}
-          <FormControl
-            margin="normal"
-            required
-            error={rawErrors?.length > 0 && !project}
-          >
-            <InputLabel htmlFor="wokrspaceInput">Project</InputLabel>
-            <Input
-              id="wokrspaceInput"
-              onChange={updateProject}
-              value={project}
-            />
-            <FormHelperText>
-              The project where the repository will be created
-            </FormHelperText>
-          </FormControl>
-        </>
+      {hostType === 'gitlab' && (
+        <GitlabRepoPicker
+          allowedOwners={allowedOwners}
+          rawErrors={rawErrors}
+          state={state}
+          onChange={updateLocalState}
+        />
       )}
-      {/* Show this for all hosts except bitbucket */}
-      {host &&
-        integrationApi.byHost(host)?.type !== 'bitbucket' &&
-        !allowedOwners && (
-          <>
-            <FormControl
-              margin="normal"
-              required
-              error={rawErrors?.length > 0 && !owner}
-            >
-              <InputLabel htmlFor="ownerInput">Owner</InputLabel>
-              <Input id="ownerInput" onChange={updateOwner} value={owner} />
-              <FormHelperText>
-                The organization, user or project that this repo will belong to
-              </FormHelperText>
-            </FormControl>
-          </>
-        )}
-      {/* Show this for all hosts except bitbucket where allowed owner is set */}
-      {host &&
-        integrationApi.byHost(host)?.type !== 'bitbucket' &&
-        allowedOwners && (
-          <>
-            <FormControl
-              margin="normal"
-              required
-              error={rawErrors?.length > 0 && !owner}
-            >
-              <Select
-                native
-                label="Owner Available"
-                onChange={updateOwnerSelect}
-                disabled={ownersOptions.length === 1}
-                selected={owner}
-                items={ownersOptions}
-              />
-
-              <FormHelperText>
-                The organization, user or project that this repo will belong to
-              </FormHelperText>
-            </FormControl>
-          </>
-        )}
-      {/* Show this for all hosts */}
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !repo}
-      >
-        <InputLabel htmlFor="repoInput">Repository</InputLabel>
-        <Input id="repoInput" onChange={updateRepo} value={repo} />
-        <FormHelperText>The name of the repository</FormHelperText>
-      </FormControl>
+      {hostType === 'bitbucket' && (
+        <BitbucketRepoPicker
+          rawErrors={rawErrors}
+          state={state}
+          onChange={updateLocalState}
+        />
+      )}
+      {hostType === 'azure' && (
+        <AzureRepoPicker
+          rawErrors={rawErrors}
+          state={state}
+          onChange={updateLocalState}
+        />
+      )}
     </>
   );
 };
