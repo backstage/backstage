@@ -82,6 +82,7 @@ jobs:
       - uses: actions/github-script@v5
         id: fix-labels
         with:
+          github-token: ${{ env.GITHUB_TOKEN }}
           script: |
             // if it's the author, always add awaiting-review label
             const isAuthor = context.payload.pull_request.user.login === context.actor
