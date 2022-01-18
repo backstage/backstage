@@ -88,17 +88,40 @@ module.exports = async ({ github, context, core }) => {
       }
     }
 
+    // if all required reviewers have reviewed
     if (hasReviewed.size === expectedReviewers.size) {
-      await github.rest.issues
-        .removeLabel({
+      const recentEventsForPR = await github.paginate(
+        github.issues.listEvents,
+        {
           issue_number: pullRequest.number,
           owner: context.repo.owner,
           repo: context.repo.repo,
-          name: 'awaiting-review',
-        })
-        .catch(e => {
-          console.error(e);
-        });
+        },
+      );
+
+      const { data: pr } = await github.pulls.get({
+        issue_number: pullRequest.number,
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+      });
+
+      // if the last event for the issue is not by the author, remove the label
+      if (
+        recentEventsForPR[recentEventsForPR.length - 1].actor.login !==
+        pr.author.login
+      ) {
+        await github.rest.issues
+          .removeLabel({
+            issue_number: pullRequest.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            name: 'awaiting-review',
+          })
+          .catch(e => {
+            console.error(e);
+          });
+      }
+      // add the awaiting-review label to tell us that the PR is waiting on reviews
     } else {
       await github.rest.issues
         .addLabels({
