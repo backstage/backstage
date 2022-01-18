@@ -16,11 +16,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14
-      - run: npm install minimatch
-      - uses: SvanBoxel/codeowners-action@v1
-        id: codeowners
-        with: 
-          path: ./.github/CODEOWNERS
+      - run: npm install codeowners
 
       - uses: actions/github-script@v5
         id: get-all-group-members
@@ -94,26 +90,15 @@ jobs:
             // check to see the reviews and if there is at least one matching reviewer from those group
 
             const changedFiles = ${{ steps.get-all-changed-files.outputs.result }}
-            const codeowners = ${{ steps.codeowners.outputs.codeowners }}
             const allReviews = ${{ steps.get-all-current-reviews.outputs.result }}
             const groupMembers = ${{ steps.get-all-group-members.outputs.result }}
-            const minimatch = require('minimatch');
+            const Codeowners = require('codeowners');
+            const codeowners = new Codeowners();
 
             const reviewers = new Set();
 
-            // The default catch all is not added to the codeowners response
-            codeowners['*'] = ['@backstage/reviewers'];
-
             for (const file of changedFiles) {
-              for (const [pattern, owners] of Object.entries(codeowners)) {
-
-              console.log(minimatch(`/${file.filename}`, `${pattern}/*`, { matchBase: true }), `/${file.filename}`, `${pattern}/*`)
-                if (minimatch(`/${file.filename}`, `${pattern}/*`, { matchBase: true })) {
-                  for (const owner of owners) {
-                    reviewers.add(owner);
-                  }
-                }
-              }
+              reviewers.add(...codeowners.getOwner(file.filename));
             }
 
             console.log(reviewers);
