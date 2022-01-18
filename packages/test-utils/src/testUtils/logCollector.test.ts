@@ -62,8 +62,7 @@ describe('logCollector', () => {
 
       expect(logs.log).toEqual(['a', '1']);
       expect(logs.warn).toEqual(['b', '2']);
-      // @ts-ignore
-      expect(logs.error).toEqual([]);
+      expect((logs as any).error).toEqual([]);
     });
 
     expect(missedLogs.log).toEqual([]);
@@ -82,10 +81,8 @@ describe('logCollector', () => {
         console.log('1');
       });
 
-      // @ts-ignore
-      expect(logs.log).toEqual([]);
-      // @ts-ignore
-      expect(logs.warn).toEqual([]);
+      expect((logs as any).log).toEqual([]);
+      expect((logs as any).warn).toEqual([]);
       expect(logs.error).toEqual(['c', '3']);
     });
 

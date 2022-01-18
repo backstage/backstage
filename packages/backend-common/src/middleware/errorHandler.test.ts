@@ -57,7 +57,6 @@ describe('errorHandler', () => {
 
       // mutate the response object to test the middleware.
       // it's hard to catch errors inside middleware from the outside.
-      // @ts-ignore
       res.send = mockSend;
       throw new Error('some message');
     });
