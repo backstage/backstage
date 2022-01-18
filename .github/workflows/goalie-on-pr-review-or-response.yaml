@@ -103,6 +103,8 @@ jobs:
 
             for (const file of changedFiles) {
               for (const [pattern, owners] of Object.entries(codeowners)) {
+
+               console.log(file.filename, pattern);
                 if (minimatch(file.filename, pattern)) {
                   for (const owner of owners) {
                     reviewers.add(owner);
