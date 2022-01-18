@@ -36,7 +36,7 @@ jobs:
                     team_slug: team.slug,
                   });
 
-                  return { team: team.slug, data };
+                  return { team: `$backstage/${team.slug}`, data };
                 }
               )
             )
@@ -95,12 +95,30 @@ jobs:
             const Codeowners = require('codeowners');
             const codeowners = new Codeowners();
 
-            const reviewers = new Set();
+            const expectedReviewers = new Set();
 
             for (const file of changedFiles) {
-              reviewers.add(...codeowners.getOwner(file.filename));
+              expectedReviewers.add(...codeowners.getOwner(file.filename));
             }
 
-            console.log(reviewers);
+            const hasReviewed = new Set();
+
+            // For each reviewer in the group, check to see if they have a review set
+            for (const reviewer of expectedReviewers) {
+              const members = groupMembers.find(member => member.team === reviewer);
+              const hasMemberReview = allReviews.some(review => members.data.some(member => member.login === review.user.login));
+              if (hasMemberReview) {
+                hasReviewed.add(reviewer);
+              }
+            }
+
+            if (hasReviewed.size === expectedReviewers.size) {
+              github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'awaiting-review'
+              }).catch(() => {});
+            }
 
             
