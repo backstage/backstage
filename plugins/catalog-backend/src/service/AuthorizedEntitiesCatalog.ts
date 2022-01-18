@@ -19,6 +19,7 @@ import {
   catalogEntityDeletePermission,
   catalogEntityReadPermission,
 } from '@backstage/plugin-catalog-common';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   AuthorizeResult,
   PermissionAuthorizer,
@@ -99,8 +100,79 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     return this.entitiesCatalog.removeEntityByUid(uid);
   }
 
-  entityAncestry(entityRef: string): Promise<EntityAncestryResponse> {
-    // TODO: Implement permissioning
-    return this.entitiesCatalog.entityAncestry(entityRef);
+  async entityAncestry(
+    entityRef: string,
+    options?: { authorizationToken?: string },
+  ): Promise<EntityAncestryResponse> {
+    const rootEntityAuthorizeResponse = (
+      await this.permissionApi.authorize(
+        [{ permission: catalogEntityReadPermission, resourceRef: entityRef }],
+        { token: options?.authorizationToken },
+      )
+    )[0];
+    if (rootEntityAuthorizeResponse.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError();
+    }
+
+    const ancestryResult = await this.entitiesCatalog.entityAncestry(entityRef);
+    const authorizeResponse = await this.permissionApi.authorize(
+      ancestryResult.items.map(item => ({
+        permission: catalogEntityReadPermission,
+        resourceRef: stringifyEntityRef(item.entity),
+      })),
+      { token: options?.authorizationToken },
+    );
+    const unauthorizedAncestryItems = ancestryResult.items.filter(
+      (_, index) => authorizeResponse[index].result === AuthorizeResult.DENY,
+    );
+    if (unauthorizedAncestryItems.length === 0) {
+      return ancestryResult;
+    }
+    const rootUnauthorizedEntityRefs = unauthorizedAncestryItems.map(
+      ancestryItem => stringifyEntityRef(ancestryItem.entity),
+    );
+    const allUnauthorizedEntityRefs = new Set(
+      rootUnauthorizedEntityRefs.flatMap(rootEntityRef =>
+        this.findParents(
+          rootEntityRef,
+          ancestryResult.items,
+          new Set(rootUnauthorizedEntityRefs),
+        ),
+      ),
+    );
+    return {
+      rootEntityRef: ancestryResult.rootEntityRef,
+      items: ancestryResult.items.filter(
+        ancestryItem =>
+          !allUnauthorizedEntityRefs.has(
+            stringifyEntityRef(ancestryItem.entity),
+          ),
+      ),
+    };
+  }
+
+  private findParents(
+    entityRef: string,
+    allAncestryItems: { entity: Entity; parentEntityRefs: string[] }[],
+    seenEntityRefs: Set<string>,
+  ): string[] {
+    const entity = allAncestryItems.find(
+      ancestryItem => stringifyEntityRef(ancestryItem.entity) === entityRef,
+    );
+    if (!entity) return [];
+
+    const newSeenEntityRefs = new Set(seenEntityRefs);
+    entity.parentEntityRefs.forEach(parentRef =>
+      newSeenEntityRefs.add(parentRef),
+    );
+
+    return [
+      entityRef,
+      ...entity.parentEntityRefs.flatMap(parentRef =>
+        seenEntityRefs.has(parentRef)
+          ? []
+          : this.findParents(parentRef, allAncestryItems, newSeenEntityRefs),
+      ),
+    ];
   }
 }
