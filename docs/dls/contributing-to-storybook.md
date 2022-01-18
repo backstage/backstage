@@ -60,8 +60,8 @@ core
 
 ## Running locally
 
-Go to `packages/storybook`, run `yarn install` and install the dependencies,
-then run the following on your command line: `yarn start`
+Go to `storybook`, run `yarn install` and install the dependencies, then run the
+following on your command line: `yarn start`
 
 ![Storybook command startup](../assets/dls/running-storybook.png)
 
