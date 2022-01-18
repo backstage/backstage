@@ -1,16 +1,8 @@
 # on a review from someone in the reviewers group, remove the awaiting-review label and add the awaiting-author label
 name: Set Goalie Labels
 on:
-  pull_request_review:
-    types: [submitted]
-  pull_request_review_comment:
-    types: [created]
-  pull_request:
-    types: [opened, reopened, synchronize]
-
-permissions:
-  issues: write
-  pull-requests: write
+  schedule:
+  - cron: "0 0 * * *"
 
 jobs:
   label:
@@ -24,120 +16,133 @@ jobs:
           application_private_key: ${{ secrets.BACKSTAGE_WORKFLOW_MEMBER_READ_PRIVATE_KEY }}
           organization: backstage
 
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14
-      - run: npm install codeowners
-
       - uses: actions/github-script@v5
-        id: get-all-group-members
+        id: get-all-open-prs
         with:
           github-token: ${{ steps.get_workflow_token.outputs.token }}
           script: |
-            // Get all teams and their respective members
-            const {data: teams} = await github.request('GET /orgs/{org}/teams', {
-              org: context.payload.organization.login,
-            })
-
-            const groupMembers = await Promise.all(
-              teams.map(
-                async (team) => {
-                  const { data } = await github.rest.teams.listMembersInOrg({
-                    org: context.payload.organization.login,
-                    team_slug: team.slug,
-                  });
-
-                  return { team: `@backstage/${team.slug}`, data };
-                }
-              )
-            )
-
-            return groupMembers;
-
-      - uses: actions/github-script@v5
-        id: get-all-changed-files
-        with:
-          script: |
-            const { data: allFiles } = await github.rest.pulls.listFiles({
+            const { data: allPrs } = await github.paginate(octokit.rest.pulls.list, {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.issue.number,
+              state: 'open',
             });
 
-            return allFiles;
+            return allPrs;
 
-      - uses: actions/github-script@v5
-        id: get-all-current-reviews
-        with:
-          script: |
-            const { data: allReviews } = await github.rest.pulls.listReviews({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number,
-            });
+      # - uses: actions/checkout@v2
+      # - uses: actions/setup-node@v2
+      #   with:
+      #     node-version: 14
+      # - run: npm install codeowners
 
-            return allReviews;
+      # - uses: actions/github-script@v5
+      #   id: get-all-group-members
+      #   with:
+      #     github-token: ${{ steps.get_workflow_token.outputs.token }}
+      #     script: |
+      #       // Get all teams and their respective members
+      #       const {data: teams} = await github.request('GET /orgs/{org}/teams', {
+      #         org: context.payload.organization.login,
+      #       })
 
-      - uses: actions/github-script@v5
-        id: fix-labels
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            // if it's the author, always add awaiting-review label
-            const isAuthor = context.payload.pull_request.user.login === context.actor
-            if (isAuthor) {
-              await github.rest.issues.addLabels({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                labels: ['awaiting-review']
-              });
-              return;
-            }
+      #       const groupMembers = await Promise.all(
+      #         teams.map(
+      #           async (team) => {
+      #             const { data } = await github.rest.teams.listMembersInOrg({
+      #               org: context.payload.organization.login,
+      #               team_slug: team.slug,
+      #             });
 
-            // Go through each file changed and go through each codeowner entry and use minimatch to see if the file matches
-            // strip the backstage group from the name?
-            // If it does match push the owner to a list of reviewers
-            // check to see the reviews and if there is at least one matching reviewer from those group
+      #             return { team: `@backstage/${team.slug}`, data };
+      #           }
+      #         )
+      #       )
 
-            const changedFiles = ${{ steps.get-all-changed-files.outputs.result }}
-            const allReviews = ${{ steps.get-all-current-reviews.outputs.result }}
-            const groupMembers = ${{ steps.get-all-group-members.outputs.result }}
-            const Codeowners = require('codeowners');
-            const codeowners = new Codeowners();
+      #       return groupMembers;
 
-            const expectedReviewers = new Set();
+      # - uses: actions/github-script@v5
+      #   id: get-all-changed-files
+      #   with:
+      #     script: |
+      #       const { data: allFiles } = await github.rest.pulls.listFiles({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         pull_number: context.issue.number,
+      #       });
 
-            for (const file of changedFiles) {
-              expectedReviewers.add(...codeowners.getOwner(file.filename));
-            }
+      #       return allFiles;
 
-            const hasReviewed = new Set();
+      # - uses: actions/github-script@v5
+      #   id: get-all-current-reviews
+      #   with:
+      #     script: |
+      #       const { data: allReviews } = await github.rest.pulls.listReviews({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         pull_number: context.issue.number,
+      #       });
 
-            // For each reviewer in the group, check to see if they have a review set
-            for (const reviewer of expectedReviewers) {
-              const members = groupMembers.find(member => member.team === reviewer);
-              if (members) {
-                // then we are dealing with a group
-                const hasMemberReview = allReviews.some(review => members.data.some(member => member.login === review.user.login));
-                if (hasMemberReview) {
-                  hasReviewed.add(reviewer);
-                }
-              } else {
-                // reviewer is a person
-                const hasReview = allReviews.some(review => reviewer === `@${review.user.login}`);
-                if (hasReview) {
-                  hasReviewed.add(reviewer);
-                }
-              }
-            }
+      #       return allReviews;
 
-            if (hasReviewed.size === expectedReviewers.size) {
-              await github.rest.issues.removeLabel({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'awaiting-review'
-              }).catch(() => {});
-            }
+      # - uses: actions/github-script@v5
+      #   id: fix-labels
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       // if it's the author, always add awaiting-review label
+      #       const isAuthor = context.payload.pull_request.user.login === context.actor
+      #       if (isAuthor) {
+      #         await github.rest.issues.addLabels({
+      #           issue_number: context.issue.number,
+      #           owner: context.repo.owner,
+      #           repo: context.repo.repo,
+      #           labels: ['awaiting-review']
+      #         });
+      #         return;
+      #       }
+
+      #       // Go through each file changed and go through each codeowner entry and use minimatch to see if the file matches
+      #       // strip the backstage group from the name?
+      #       // If it does match push the owner to a list of reviewers
+      #       // check to see the reviews and if there is at least one matching reviewer from those group
+
+      #       const changedFiles = ${{ steps.get-all-changed-files.outputs.result }}
+      #       const allReviews = ${{ steps.get-all-current-reviews.outputs.result }}
+      #       const groupMembers = ${{ steps.get-all-group-members.outputs.result }}
+      #       const Codeowners = require('codeowners');
+      #       const codeowners = new Codeowners();
+
+      #       const expectedReviewers = new Set();
+
+      #       for (const file of changedFiles) {
+      #         expectedReviewers.add(...codeowners.getOwner(file.filename));
+      #       }
+
+      #       const hasReviewed = new Set();
+
+      #       // For each reviewer in the group, check to see if they have a review set
+      #       for (const reviewer of expectedReviewers) {
+      #         const members = groupMembers.find(member => member.team === reviewer);
+      #         if (members) {
+      #           // then we are dealing with a group
+      #           const hasMemberReview = allReviews.some(review => members.data.some(member => member.login === review.user.login));
+      #           if (hasMemberReview) {
+      #             hasReviewed.add(reviewer);
+      #           }
+      #         } else {
+      #           // reviewer is a person
+      #           const hasReview = allReviews.some(review => reviewer === `@${review.user.login}`);
+      #           if (hasReview) {
+      #             hasReviewed.add(reviewer);
+      #           }
+      #         }
+      #       }
+
+      #       if (hasReviewed.size === expectedReviewers.size) {
+      #         await github.rest.issues.removeLabel({
+      #           issue_number: context.issue.number,
+      #           owner: context.repo.owner,
+      #           repo: context.repo.repo,
+      #           name: 'awaiting-review'
+      #         }).catch(() => {});
+      #       }
