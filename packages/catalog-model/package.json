@@ -10,7 +10,8 @@
     "access": "public",
     "main": "dist/index.cjs.js",
     "module": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "types": "dist/index.d.ts",
+    "alphaTypes": "dist/index.alpha.d.ts"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -22,7 +23,7 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli build",
+    "build": "backstage-cli build --experimental-type-build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
@@ -48,6 +49,7 @@
     "yaml": "^1.9.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "alpha"
   ]
 }

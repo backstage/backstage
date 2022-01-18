@@ -16,8 +16,9 @@
 
 import {
   Entity,
+  AlphaEntity,
   stringifyEntityRef,
-  UNSTABLE_EntityStatusItem,
+  EntityStatusItem,
   compareEntityToRef,
 } from '@backstage/catalog-model';
 import {
@@ -36,7 +37,7 @@ import { useApi, ApiHolder } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { SerializedError } from '@backstage/errors';
 
-const errorFilter = (i: UNSTABLE_EntityStatusItem) =>
+const errorFilter = (i: EntityStatusItem) =>
   i.error &&
   i.level === 'error' &&
   i.type === ENTITY_STATUS_CATALOG_PROCESSING_TYPE;
@@ -55,7 +56,7 @@ async function getOwnAndAncestorsErrors(
   const ancestors = await catalogApi.getEntityAncestors({ entityRef });
   const items = ancestors.items
     .map(item => {
-      const statuses = item.entity.status?.items ?? [];
+      const statuses = (item.entity as AlphaEntity).status?.items ?? [];
       const errors = statuses
         .filter(errorFilter)
         .map(e => e.error)

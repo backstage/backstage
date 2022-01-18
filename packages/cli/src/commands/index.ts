@@ -48,6 +48,7 @@ export function registerCommands(program: CommanderStatic) {
     .command('backend:build')
     .description('Build a backend plugin')
     .option('--minify', 'Minify the generated code')
+    .option('--experimental-type-build', 'Enable experimental type build')
     .action(lazy(() => import('./backend/build').then(m => m.default)));
 
   program
@@ -118,6 +119,7 @@ export function registerCommands(program: CommanderStatic) {
     .command('plugin:build')
     .description('Build a plugin')
     .option('--minify', 'Minify the generated code')
+    .option('--experimental-type-build', 'Enable experimental type build')
     .action(lazy(() => import('./plugin/build').then(m => m.default)));
 
   program
@@ -139,6 +141,7 @@ export function registerCommands(program: CommanderStatic) {
     .description('Build a package for publishing')
     .option('--outputs <formats>', 'List of formats to output [types,cjs,esm]')
     .option('--minify', 'Minify the generated code')
+    .option('--experimental-type-build', 'Enable experimental type build')
     .action(lazy(() => import('./build').then(m => m.default)));
 
   program

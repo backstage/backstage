@@ -23,4 +23,5 @@ export enum Output {
 export type BuildOptions = {
   outputs: Set<Output>;
   minify?: boolean;
+  useApiExtractor?: boolean;
 };

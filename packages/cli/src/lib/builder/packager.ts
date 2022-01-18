@@ -19,8 +19,9 @@ import { rollup, RollupOptions } from 'rollup';
 import chalk from 'chalk';
 import { relative as relativePath } from 'path';
 import { paths } from '../paths';
-import { makeConfigs } from './config';
-import { BuildOptions } from './types';
+import { makeRollupConfigs } from './config';
+import { BuildOptions, Output } from './types';
+import { buildTypeDefinitions } from './buildTypeDefinitions';
 
 export function formatErrorMessage(error: any) {
   let msg = '';
@@ -71,7 +72,7 @@ export function formatErrorMessage(error: any) {
   return msg;
 }
 
-async function build(config: RollupOptions) {
+async function rollupBuild(config: RollupOptions) {
   try {
     const bundle = await rollup(config);
     if (config.output) {
@@ -103,7 +104,15 @@ export const buildPackage = async (options: BuildOptions) => {
     /* Errors ignored, this is just a warning */
   }
 
-  const configs = await makeConfigs(options);
+  const rollupConfigs = await makeRollupConfigs(options);
+
   await fs.remove(paths.resolveTarget('dist'));
-  await Promise.all(configs.map(build));
+
+  const buildTasks = rollupConfigs.map(rollupBuild);
+
+  if (options.outputs.has(Output.types) && options.useApiExtractor) {
+    buildTasks.push(buildTypeDefinitions());
+  }
+
+  await Promise.all(buildTasks);
 };

@@ -33,9 +33,9 @@ import { BuildOptions, Output } from './types';
 import { paths } from '../paths';
 import { svgrTemplate } from '../svgrTemplate';
 
-export const makeConfigs = async (
+export async function makeRollupConfigs(
   options: BuildOptions,
-): Promise<RollupOptions[]> => {
+): Promise<RollupOptions[]> {
   const configs = new Array<RollupOptions>();
 
   if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
@@ -106,7 +106,7 @@ export const makeConfigs = async (
     });
   }
 
-  if (options.outputs.has(Output.types)) {
+  if (options.outputs.has(Output.types) && !options.useApiExtractor) {
     const typesInput = paths.resolveTargetRoot(
       'dist-types',
       relativePath(paths.targetRoot, paths.targetDir),
@@ -134,4 +134,4 @@ export const makeConfigs = async (
   }
 
   return configs;
-};
+}
