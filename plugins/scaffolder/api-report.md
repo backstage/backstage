@@ -147,12 +147,9 @@ export const OwnerPickerFieldExtension: () => null;
 // Warning: (ae-missing-release-tag) "RepoUrlPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const RepoUrlPicker: ({
-  uiSchema,
-  onChange,
-  rawErrors,
-  formData,
-}: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>) => JSX.Element;
+export const RepoUrlPicker: (
+  props: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>,
+) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "RepoUrlPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
