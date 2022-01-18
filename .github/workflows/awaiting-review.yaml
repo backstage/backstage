@@ -1,8 +1,9 @@
-# on a PR open on PR review or comment, assign the awaiting-review label if the actor is the author
+# When the target of the PR changes, open, re-open or sync, then re-add the label.
+
 name: Set Awaiting Review
 on:
   - pull_request_target
-  
+
 permissions:
   issues: write
   pull-requests: write
@@ -15,6 +16,10 @@ jobs:
         id: fix-labels
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          # THIS SCRIPT SHOULD BE INLINED AND NOT IN REPO
+          # DUE TO THE TOKEN PERMISSIONS THAT ARE GIVEN
+          # TO THE WORKFLOW. THIS SCRIPT WILL AND SHOULD
+          # RUN FROM THE BASE REPO ALL TIMES.
           script: |
             // if it's the author, always add awaiting-review label
             const isAuthor = context.payload.pull_request.user.login === context.actor
