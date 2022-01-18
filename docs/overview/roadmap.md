@@ -104,9 +104,15 @@ the maintainers’ radar, with clear interest expressed by the community.
 - **Security Plan (and Strategy):** The purpose of the Security Strategy is to
   move another step along the path to maturing the platform, setting the
   expectations of any adopters from a security standpoint.
-- **Search 1.0:** Fix the few remaining issues to get Backstage Search platform up to 1.0
-- **TechDocs Addon framework and Addons:** Addons are TechDocs features that are added on top of the base docs like code experience. An example would be a feature that showed comments on the page. We plan to add an Addon framework and open source a selection of the Addons that we use internally at Spotify. Further Addons can then be added by the Community.
-- **Composable Homepage 1.0:** Driving this to 1.0 and adding some composable elements.
+- **Search 1.0:** Fix the few remaining issues to get Backstage Search platform
+  up to 1.0
+- **TechDocs Addon framework and Addons:** Addons are TechDocs features that are
+  added on top of the base docs like code experience. An example would be a
+  feature that showed comments on the page. We plan to add an Addon framework
+  and open source a selection of the Addons that we use internally at Spotify.
+  Further Addons can then be added by the Community.
+- **Composable Homepage 1.0:** Driving this to 1.0 and adding some composable
+  elements.
 - **[GraphQL](https://graphql.org/) support:** Introduce the ability to query
   Backstage backend services with a standard query language for APIs.
 - **Telemetry:** To efficiently generate logging and metrics in such a way that
