@@ -21,17 +21,13 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { Select, SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
 
-export const GitlabRepoPicker = ({
-  allowedOwners = [],
-  rawErrors,
-  state,
-  onChange,
-}: {
+export const GitlabRepoPicker = (props: {
   allowedOwners?: string[];
   state: RepoUrlPickerState;
   onChange: (state: RepoUrlPickerState) => void;
   rawErrors: string[];
 }) => {
+  const { allowedOwners = [], rawErrors, state, onChange } = props;
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];

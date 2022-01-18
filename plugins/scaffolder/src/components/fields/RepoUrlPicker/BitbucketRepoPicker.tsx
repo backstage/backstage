@@ -20,15 +20,12 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { RepoUrlPickerState } from './types';
 
-export const BitbucketRepoPicker = ({
-  onChange,
-  rawErrors,
-  state,
-}: {
+export const BitbucketRepoPicker = (props: {
   onChange: (state: RepoUrlPickerState) => void;
   state: RepoUrlPickerState;
   rawErrors: string[];
 }) => {
+  const { onChange, rawErrors, state } = props;
   const { host, workspace, project, repoName } = state;
   return (
     <>

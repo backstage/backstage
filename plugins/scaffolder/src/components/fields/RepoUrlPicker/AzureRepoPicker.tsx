@@ -21,15 +21,12 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { RepoUrlPickerState } from './types';
 
-export const AzureRepoPicker = ({
-  rawErrors,
-  state,
-  onChange,
-}: {
+export const AzureRepoPicker = (props: {
   state: RepoUrlPickerState;
   onChange: (state: RepoUrlPickerState) => void;
   rawErrors: string[];
 }) => {
+  const { rawErrors, state, onChange } = props;
   const { organization, repoName, owner } = state;
   return (
     <>

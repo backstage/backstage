@@ -30,18 +30,19 @@ export interface RepoUrlPickerUiOptions {
   allowedOwners?: string[];
 }
 
-export const RepoUrlPicker = ({
-  uiSchema,
-  onChange,
-  rawErrors,
-  formData,
-}: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>) => {
+export const RepoUrlPicker = (
+  props: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>,
+) => {
+  const { uiSchema, onChange, rawErrors, formData } = props;
   const [state, setState] = useState<RepoUrlPickerState>(
     parseRepoPickerUrl(formData),
   );
   const integrationApi = useApi(scmIntegrationsApiRef);
 
-  const allowedHosts = uiSchema?.['ui:options']?.allowedHosts ?? [];
+  const allowedHosts = useMemo(
+    () => uiSchema?.['ui:options']?.allowedHosts ?? [],
+    [uiSchema],
+  );
   const allowedOwners = useMemo(
     () => uiSchema?.['ui:options']?.allowedOwners ?? [],
     [uiSchema],
@@ -65,6 +66,9 @@ export const RepoUrlPicker = ({
     [setState],
   );
 
+  const hostType =
+    (state.host && integrationApi.byHost(state.host)?.type) ?? null;
+
   return (
     <>
       <RepoUrlPickerHost
@@ -73,7 +77,7 @@ export const RepoUrlPicker = ({
         onChange={host => setState(prevState => ({ ...prevState, host }))}
         rawErrors={rawErrors}
       />
-      {state.host && integrationApi.byHost(state.host)?.type === 'github' && (
+      {hostType === 'github' && (
         <GithubRepoPicker
           allowedOwners={allowedOwners}
           rawErrors={rawErrors}
@@ -81,7 +85,7 @@ export const RepoUrlPicker = ({
           onChange={updateLocalState}
         />
       )}
-      {state.host && integrationApi.byHost(state.host)?.type === 'gitlab' && (
+      {hostType === 'gitlab' && (
         <GitlabRepoPicker
           allowedOwners={allowedOwners}
           rawErrors={rawErrors}
@@ -89,15 +93,14 @@ export const RepoUrlPicker = ({
           onChange={updateLocalState}
         />
       )}
-      {state.host &&
-        integrationApi.byHost(state.host)?.type === 'bitbucket' && (
-          <BitbucketRepoPicker
-            rawErrors={rawErrors}
-            state={state}
-            onChange={updateLocalState}
-          />
-        )}
-      {state.host && integrationApi.byHost(state.host)?.type === 'azure' && (
+      {hostType === 'bitbucket' && (
+        <BitbucketRepoPicker
+          rawErrors={rawErrors}
+          state={state}
+          onChange={updateLocalState}
+        />
+      )}
+      {hostType === 'azure' && (
         <AzureRepoPicker
           rawErrors={rawErrors}
           state={state}

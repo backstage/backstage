@@ -21,17 +21,13 @@ import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '../../../api';
 import useAsync from 'react-use/lib/useAsync';
 
-export const RepoUrlPickerHost = ({
-  host,
-  hosts,
-  onChange,
-  rawErrors,
-}: {
+export const RepoUrlPickerHost = (props: {
   host?: string;
   hosts?: string[];
   onChange: (host: string) => void;
   rawErrors: string[];
 }) => {
+  const { host, hosts, onChange, rawErrors } = props;
   const scaffolderApi = useApi(scaffolderApiRef);
 
   const { value: integrations, loading } = useAsync(async () => {
