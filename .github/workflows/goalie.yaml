@@ -8,10 +8,22 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+permissions:
+  issues: write
+  pull-requests: write
+
 jobs:
   label:
     runs-on: ubuntu-latest
     steps:
+      - name: Get Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v1
+        with:
+          application_id: ${{ secrets.BACKSTAGE_WORKFLOW_MEMBER_READ_APP_ID }}
+          application_private_key: ${{ secrets.BACKSTAGE_WORKFLOW_MEMBER_READ_PRIVATE_KEY }}
+          organization: backstage
+
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
@@ -21,7 +33,7 @@ jobs:
       - uses: actions/github-script@v5
         id: get-all-group-members
         with:
-          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          github-token: ${{ steps.get_workflow_token.outputs.token }}
           script: |
             // Get all teams and their respective members
             const {data: teams} = await github.request('GET /orgs/{org}/teams', {
@@ -70,6 +82,7 @@ jobs:
       - uses: actions/github-script@v5
         id: fix-labels
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             // if it's the author, always add awaiting-review label
             const isAuthor = context.payload.pull_request.user.login === context.actor
