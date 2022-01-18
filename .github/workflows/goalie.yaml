@@ -7,6 +7,10 @@ on:
     types: [created]
   pull_request:
     types: [opened, reopened, synchronize]
+    
+permissions: 
+  issues: write
+  pull-requests: read
 
 jobs:
   label:
@@ -52,6 +56,7 @@ jobs:
       - uses: actions/github-script@v5
         id: get-all-changed-files
         with:
+          github-token: ${{ github.token }}
           script: |
             const { data: allFiles } = await github.rest.pulls.listFiles({
               owner: context.repo.owner,
@@ -64,6 +69,7 @@ jobs:
       - uses: actions/github-script@v5
         id: get-all-current-reviews
         with:
+          github-token: ${{ github.token }}
           script: |
             const { data: allReviews } = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
@@ -76,7 +82,8 @@ jobs:
       - uses: actions/github-script@v5
         id: fix-labels
         with:
-          script: |
+            github-token: ${{ github.token }}
+            script: |
             // if it's the author, always add awaiting-review label
             const isAuthor = context.payload.pull_request.user.login === context.actor
             if (isAuthor) {
