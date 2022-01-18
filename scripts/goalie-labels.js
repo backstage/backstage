@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+const Codeowners = require('codeowners');
+
 module.exports = async ({ github, context, core }) => {
   // first get all open pull requests
   const allPullRequests = await github.paginate(github.rest.pulls.list, {
@@ -36,11 +39,13 @@ module.exports = async ({ github, context, core }) => {
     }),
   );
 
+  const codeowners = new Codeowners();
+
   for (const pullRequest of allPullRequests) {
     // Go through each file changed and go through each codeowner entry and use minimatch to see if the file matches
     // strip the backstage group from the name?
     // If it does match push the owner to a list of reviewers
-    // check to see the reviews and if there is at least one matching reviewer from those group
+    // check to see the reviews and if there is at least one matching reviewer from those groupx
     const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
       owner: context.repo.owner,
       repo: context.repo.repo,
