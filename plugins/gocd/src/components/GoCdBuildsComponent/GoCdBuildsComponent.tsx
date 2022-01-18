@@ -24,7 +24,7 @@ import {
   Page,
 } from '@backstage/core-components';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { gocdApiRef } from '../../plugin';
 import { GoCdBuildsTable } from '../GoCdBuildsTable/GoCdBuildsTable';
 import { GoCdApiError, PipelineHistory } from '../../api/gocdApi.model';
