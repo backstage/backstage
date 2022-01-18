@@ -69,7 +69,7 @@
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
-    "@backstage/plugin-permission-react": "^0.2.2",
+    "@backstage/plugin-permission-react": "^0.3.0-next.0",
     "@backstage/test-utils": "^0.2.3-next.0",
     "@rjsf/core": "^3.2.1",
     "@testing-library/cypress": "^8.0.2",

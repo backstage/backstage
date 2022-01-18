@@ -26,7 +26,9 @@ import {
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
+  MockPermissionApi,
   MockStorageApi,
   renderInTestApp,
   TestApiRegistry,
@@ -35,11 +37,6 @@ import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Route, Routes } from 'react-router';
 import { EntityLayout } from './EntityLayout';
-
-jest.mock('@backstage/plugin-catalog-react', () => ({
-  ...jest.requireActual('@backstage/plugin-catalog-react'),
-  useEntityPermission: () => ({ isAllowed: true }),
-}));
 
 const mockEntity = {
   kind: 'MyKind',
@@ -55,6 +52,7 @@ const mockApis = TestApiRegistry.from(
     starredEntitiesApiRef,
     new DefaultStarredEntitiesApi({ storageApi: MockStorageApi.create() }),
   ],
+  [permissionApiRef, new MockPermissionApi()],
 );
 
 describe('EntityLayout', () => {
