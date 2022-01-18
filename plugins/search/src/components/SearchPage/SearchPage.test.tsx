@@ -73,11 +73,10 @@ describe('SearchPage', () => {
     const expectedTerm = 'justin bieber';
     const expectedTypes = ['software-catalog'];
     const expectedFilters = { [expectedFilterField]: expectedFilterValue };
-    const expectedPageCursor = 'SOMEPAGE';
 
-    // e.g. ?query=petstore&pageCursor=SOMEPAGE&filters[lifecycle][]=experimental&filters[kind]=Component
+    // e.g. ?query=petstore&filters[lifecycle][]=experimental&filters[kind]=Component
     (useLocation as jest.Mock).mockReturnValue({
-      search: `?query=${expectedTerm}&types[]=${expectedTypes[0]}&filters[${expectedFilterField}]=${expectedFilterValue}&pageCursor=${expectedPageCursor}`,
+      search: `?query=${expectedTerm}&types[]=${expectedTypes[0]}&filters[${expectedFilterField}]=${expectedFilterValue}`,
     });
 
     // When we render the page...
@@ -86,7 +85,6 @@ describe('SearchPage', () => {
     // Then search context should be set with these values...
     expect(setTermMock).toHaveBeenCalledWith(expectedTerm);
     expect(setTypesMock).toHaveBeenCalledWith(expectedTypes);
-    expect(setPageCursorMock).toHaveBeenCalledWith(expectedPageCursor);
     expect(setFiltersMock).toHaveBeenCalledWith(expectedFilters);
   });
 
@@ -115,7 +113,7 @@ describe('SearchPage', () => {
       setPageCursor: setPageCursorMock,
     });
     const expectedLocation = encodeURI(
-      '?query=bieber&types[]=software-catalog&pageCursor=SOMEPAGE&filters[anyKey]=anyValue',
+      '?query=bieber&types[]=software-catalog&filters[anyKey]=anyValue',
     );
 
     await renderInTestApp(<SearchPage />);

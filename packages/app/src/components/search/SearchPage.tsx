@@ -29,8 +29,8 @@ import {
   SearchBar,
   SearchFilter,
   SearchResult,
-  SearchResultPager,
   SearchType,
+  useInfiniteScrollDocumentSearch,
 } from '@backstage/plugin-search';
 import { DocsResultListItem } from '@backstage/plugin-techdocs';
 import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
@@ -54,6 +54,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const SearchPage = () => {
   const classes = useStyles();
   const { isMobile } = useContext(SidebarPinStateContext);
+
+  useInfiniteScrollDocumentSearch();
 
   return (
     <Page themeId="home">
@@ -129,7 +131,6 @@ const SearchPage = () => {
                 </List>
               )}
             </SearchResult>
-            <SearchResultPager />
           </Grid>
         </Grid>
       </Content>

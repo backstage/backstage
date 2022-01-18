@@ -24,16 +24,8 @@ import { LegacySearchPage } from '../LegacySearchPage';
 
 export const UrlUpdater = () => {
   const location = useLocation();
-  const {
-    term,
-    setTerm,
-    types,
-    setTypes,
-    pageCursor,
-    setPageCursor,
-    filters,
-    setFilters,
-  } = useSearch();
+  const { term, setTerm, types, setTypes, setPageCursor, filters, setFilters } =
+    useSearch();
 
   const prevQueryParams = usePrevious(location.search);
   useEffect(() => {
@@ -53,10 +45,6 @@ export const UrlUpdater = () => {
       setTerm(query.query as string);
     }
 
-    if (query.pageCursor) {
-      setPageCursor(query.pageCursor as string);
-    }
-
     if (query.types) {
       setTypes(query.types as string[]);
     }
@@ -67,7 +55,6 @@ export const UrlUpdater = () => {
       {
         query: term,
         types,
-        pageCursor,
         filters,
       },
       { arrayFormat: 'brackets' },
@@ -79,7 +66,7 @@ export const UrlUpdater = () => {
     // code is just to ensure the right query/filters are loaded when a user
     // clicks the "back" button after clicking a result.
     window.history.replaceState(null, document.title, newUrl);
-  }, [term, types, pageCursor, filters]);
+  }, [term, types, filters]);
 
   return null;
 };

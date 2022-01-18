@@ -16,13 +16,14 @@
 
 import { JsonObject } from '@backstage/types';
 import { useApi, AnalyticsContext } from '@backstage/core-plugin-api';
-import { SearchResultSet } from '@backstage/search-common';
+import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import React, {
   createContext,
   PropsWithChildren,
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import useAsync, { AsyncState } from 'react-use/lib/useAsync';
@@ -31,31 +32,22 @@ import { searchApiRef } from '../../apis';
 
 type SearchContextValue = {
   result: AsyncState<SearchResultSet>;
-  term: string;
   setTerm: React.Dispatch<React.SetStateAction<string>>;
-  types: string[];
   setTypes: React.Dispatch<React.SetStateAction<string[]>>;
-  filters: JsonObject;
   setFilters: React.Dispatch<React.SetStateAction<JsonObject>>;
-  open?: boolean;
   toggleModal: () => void;
-  pageCursor?: string;
   setPageCursor: React.Dispatch<React.SetStateAction<string | undefined>>;
   fetchNextPage?: React.DispatchWithoutAction;
   fetchPreviousPage?: React.DispatchWithoutAction;
-};
+} & SearchContextInitialState;
 
-type SettableSearchContext = Omit<
-  SearchContextValue,
-  | 'result'
-  | 'setTerm'
-  | 'setTypes'
-  | 'setFilters'
-  | 'toggleModal'
-  | 'setPageCursor'
-  | 'fetchNextPage'
-  | 'fetchPreviousPage'
->;
+type SearchContextInitialState = {
+  term: string;
+  types: string[];
+  filters: JsonObject;
+  open?: boolean;
+  pageCursor?: string;
+};
 
 export const SearchContext = createContext<SearchContextValue | undefined>(
   undefined,
@@ -69,15 +61,13 @@ export const SearchContextProvider = ({
     types: [],
   },
   children,
-}: PropsWithChildren<{ initialState?: SettableSearchContext }>) => {
-  const searchApi = useApi(searchApiRef);
-  const [pageCursor, setPageCursor] = useState<string | undefined>(
-    initialState.pageCursor,
-  );
-  const [filters, setFilters] = useState<JsonObject>(initialState.filters);
-  const [term, setTerm] = useState<string>(initialState.term);
-  const [types, setTypes] = useState<string[]>(initialState.types);
-  const [open, setOpen] = useState<boolean>(false);
+}: PropsWithChildren<{ initialState?: SearchContextInitialState }>) => {
+  const query = useCachedSearchQuery();
+  const [pageCursor, setPageCursor] = useState(initialState.pageCursor);
+  const [filters, setFilters] = useState(initialState.filters);
+  const [term, setTerm] = useState(initialState.term);
+  const [types, setTypes] = useState(initialState.types);
+  const [open, setOpen] = useState(false);
   const toggleModal = useCallback(
     (): void => setOpen(prevState => !prevState),
     [],
@@ -87,7 +77,7 @@ export const SearchContextProvider = ({
 
   const result = useAsync(
     () =>
-      searchApi.query({
+      query({
         term,
         filters,
         pageCursor: pageCursor,
@@ -144,3 +134,28 @@ export const useSearch = () => {
   }
   return context;
 };
+
+function useCachedSearchQuery() {
+  const searchApi = useApi(searchApiRef);
+
+  const cache = useRef<SearchResultSet | undefined>();
+  const lastRequest = useRef<SearchQuery | undefined>();
+
+  return async (query: SearchQuery) => {
+    const result = await searchApi.query(query);
+    if (
+      lastRequest.current?.filters !== query.filters ||
+      lastRequest.current?.term !== query.term ||
+      lastRequest.current.types !== query.types
+    ) {
+      cache.current = undefined;
+    }
+    cache.current = {
+      ...result,
+      results: [...(cache.current?.results || []), ...result.results],
+    };
+    lastRequest.current = query;
+
+    return cache.current;
+  };
+}

@@ -31,7 +31,7 @@ export type {
   SearchBarBaseProps,
   SearchBarProps,
 } from './components/SearchBar';
-export { SearchContextProvider, useSearch } from './components/SearchContext';
+export * from './components/SearchContext';
 export { SearchFilter, SearchFilterNext } from './components/SearchFilter';
 export { SearchModal } from './components/SearchModal';
 export type { SearchModalProps } from './components/SearchModal';

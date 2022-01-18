@@ -17,7 +17,6 @@
 import React from 'react';
 import {
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
@@ -30,8 +29,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { SearchBar } from '../SearchBar';
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResult } from '../SearchResult';
-import { SearchContextProvider, useSearch } from '../SearchContext';
-import { SearchResultPager } from '../SearchResultPager';
+import {
+  SearchContextProvider,
+  useInfiniteScrollSearch,
+  useSearch,
+} from '../SearchContext';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
@@ -61,6 +63,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
   const classes = useStyles();
 
   const { term } = useSearch();
+  const scrollHandlers = useInfiniteScrollSearch();
 
   const handleResultClick = () => {
     toggleModal();
@@ -86,7 +89,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
           <SearchBar className={classes.input} />
         </Paper>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent {...scrollHandlers}>
         <Grid
           container
           direction="row-reverse"
@@ -122,13 +125,6 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
           )}
         </SearchResult>
       </DialogContent>
-      <DialogActions className={classes.dialogActionsContainer}>
-        <Grid container direction="row">
-          <Grid item xs={12}>
-            <SearchResultPager />
-          </Grid>
-        </Grid>
-      </DialogActions>
     </Dialog>
   );
 };

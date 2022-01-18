@@ -32,7 +32,7 @@ export const SearchResultComponent = ({ children }: Props) => {
     result: { loading, error, value },
   } = useSearch();
 
-  if (loading) {
+  if (loading && !value) {
     return <Progress />;
   }
   if (error) {
