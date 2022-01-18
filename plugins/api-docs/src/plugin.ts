@@ -45,7 +45,7 @@ export const apiDocsPlugin = createPlugin({
     }),
   ],
   externalRoutes: {
-    registerComponent: registerComponentRouteRef,
+    registerApi: registerComponentRouteRef,
   },
 });
 

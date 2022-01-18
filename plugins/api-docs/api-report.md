@@ -47,7 +47,7 @@ const apiDocsPlugin: BackstagePlugin<
     root: RouteRef<undefined>;
   },
   {
-    registerComponent: ExternalRouteRef<undefined, true>;
+    registerApi: ExternalRouteRef<undefined, true>;
   }
 >;
 export { apiDocsPlugin };

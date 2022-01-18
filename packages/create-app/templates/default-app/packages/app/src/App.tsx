@@ -37,7 +37,7 @@ const app = createApp({
       viewTechDoc: techdocsPlugin.routes.docRoot,
     });
     bind(apiDocsPlugin.externalRoutes, {
-      registerComponent: catalogImportPlugin.routes.importPage,
+      registerApi: catalogImportPlugin.routes.importPage,
     });
     bind(scaffolderPlugin.externalRoutes, {
       registerComponent: catalogImportPlugin.routes.importPage,

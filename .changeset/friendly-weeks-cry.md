@@ -13,7 +13,7 @@ const App = createApp({
     ...
     bind(apiDocsPlugin.externalRoutes, {
 -     createComponent: scaffolderPlugin.routes.root,
-+     registerComponent: catalogImportPlugin.routes.importPage,
++     registerApi: catalogImportPlugin.routes.importPage,
     });
     ...
   },
