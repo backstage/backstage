@@ -13,7 +13,7 @@ Removed the `typescript` dependency from the Backstage CLI in order to decouple 
 
 We recommend using a `~` version range since TypeScript releases do not adhere to semver.
 
-It may be the case that you end up with errors if upgrade the TypeScript version. This is because there was a change to TypeScript not long ago that defaulted the type of errors caught in `catch` blocks to `unknown`. You can work around this by adding `"useUnknownInCatchVariables": false` to the `"compilerOptions"` in your `tsconfig.json`:
+It may be the case that you end up with errors if you upgrade the TypeScript version. This is because there was a change to TypeScript not long ago that defaulted the type of errors caught in `catch` blocks to `unknown`. You can work around this by adding `"useUnknownInCatchVariables": false` to the `"compilerOptions"` in your `tsconfig.json`:
 
 ```json
   "compilerOptions": {
