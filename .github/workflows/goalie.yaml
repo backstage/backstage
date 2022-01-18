@@ -22,6 +22,7 @@ jobs:
         with:
           application_id: ${{ secrets.BACKSTAGE_WORKFLOW_MEMBER_READ_APP_ID }}
           application_private_key: ${{ secrets.BACKSTAGE_WORKFLOW_MEMBER_READ_PRIVATE_KEY }}
+          organization: backstage
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
