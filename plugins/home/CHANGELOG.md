@@ -1,5 +1,14 @@
 # @backstage/plugin-home
 
+## 0.4.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/plugin-search@0.5.6-next.0
+
 ## 0.4.10
 
 ### Patch Changes

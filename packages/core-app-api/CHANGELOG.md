@@ -1,5 +1,17 @@
 # @backstage/core-app-api
 
+## 0.5.0-next.0
+
+### Minor Changes
+
+- ceebe25391: Removed deprecated `SignInResult` type, which was replaced with the new `onSignInSuccess` callback.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/config@0.1.13-next.0
+
 ## 0.4.0
 
 ### Minor Changes

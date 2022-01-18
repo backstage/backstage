@@ -1,5 +1,23 @@
 # @backstage/core-components
 
+## 0.8.5-next.0
+
+### Patch Changes
+
+- 306d879536: chore(deps): bump `react-syntax-highligher` and `swagger-ui-react`
+- 6b05ad1265: Updated the `SignInPage`, `ProxiedSignInPage` and `UserIdentity` implementations to match the removals of the deprecated `IdentityApi` methods and types.
+- 7ba416be78: The `Bar` component will now render a `MobileSidebar` instead of the current sidebar on smaller screens. The state of the `MobileSidebar` will be treated as always open.
+
+  ***
+
+  **Add MobileSidebar:** A navigation component, which sticks to the bottom. If there is no content in the Sidebar, it won't be rendered. If there are `children` in the `Sidebar`, but no `SidebarGroup`s as `children`, it will render all `children` into a default overlay menu, which can be displayed by clicking a menu item. If `SidebarGroup`s are provided, it will render them in the bottom navigation. Additionally, a `MobileSidebarContext`, which wraps the component, will save the selected menu item.
+
+  **Add SidebarGroup:** Groups items of the `Sidebar` together. On bigger screens, this won't have any effect at the moment. On smaller screens, it will render a given icon into the `MobileSidebar`. If a route is provided, clicking the `SidebarGroup` in the `MobileSidebar` will route to the page. If no route is provided, it will add a provided icon to the `MobileSidebar` as a menu item & will render the children into an overlay menu, which will be displayed when the menu item is clicked.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/config@0.1.13-next.0
+
 ## 0.8.4
 
 ### Patch Changes

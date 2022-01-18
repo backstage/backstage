@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.4.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/plugin-kubernetes-common@0.2.2-next.0
+
 ## 0.4.3
 
 ### Patch Changes

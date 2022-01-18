@@ -1,5 +1,20 @@
 # @backstage/plugin-permission-backend
 
+## 0.4.0-next.0
+
+### Minor Changes
+
+- b768259244: **BREAKING**: Wrap batched requests and responses to /authorize in an envelope object. The latest version of the PermissionClient in @backstage/permission-common uses the new format - as long as the permission-backend is consumed using this client, no other changes are necessary.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.7.0-next.0
+  - @backstage/plugin-permission-common@0.4.0-next.0
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/plugin-permission-node@0.4.0-next.0
+
 ## 0.3.0
 
 ### Minor Changes
