@@ -15,7 +15,7 @@
  */
 
 import mockFs from 'mock-fs';
-import { createPackageVersionProvider } from './version';
+import { packageVersions, createPackageVersionProvider } from './version';
 import { Lockfile } from './versioning';
 // eslint-disable-next-line monorepo/no-internal-import
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
@@ -63,7 +63,11 @@ describe('createPackageVersionProvider', () => {
     expect(provider('c', '0.3.0-rc1')).toBe('0.3.0-rc1');
     expect(provider('c', '0.3.0')).toBe('^0.3.0');
     expect(provider('c', '0.3.6')).toBe('^0.3.4');
-    expect(provider('@backstage/cli')).toBe('*');
+    const cliVersion = packageVersions['@backstage/cli'];
+    expect(provider('@backstage/cli')).toBe(
+      // If we're currently in pre-release we expect that to be picked instead
+      cliVersion.includes('-') ? `^${cliVersion}` : '*',
+    );
     expect(provider('@backstage/core-plugin-api')).toBe(
       `^${corePluginApiPkg.version}`,
     );
