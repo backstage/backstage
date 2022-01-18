@@ -91,12 +91,25 @@ module.exports = async ({ github, context, core }) => {
     if (hasReviewed.size === expectedReviewers.size) {
       await github.rest.issues
         .removeLabel({
-          issue_number: context.issue.number,
+          issue_number: pullRequest.number,
           owner: context.repo.owner,
           repo: context.repo.repo,
           name: 'awaiting-review',
         })
-        .catch(() => {});
+        .catch(e => {
+          console.error(e);
+        });
+    } else {
+      await github.rest.issues
+        .addLabels({
+          issue_number: pullRequest.number,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          labels: ['awaiting-review'],
+        })
+        .catch(e => {
+          console.error(e);
+        });
     }
   }
 };
