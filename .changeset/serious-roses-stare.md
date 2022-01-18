@@ -2,5 +2,4 @@
 '@backstage/plugin-api-docs': minor
 ---
 
-Link 'Register Existing API' button on API page to /catalog-import instead of /create .
-We now expect to `bind` the route for `apiDocsPlugin` to `registerComponent` instead of `createComponent`.
+Renamed the `createComponent` external route to `registerApi` since it's now recommended to link to the entity registration page rather than the creation page.
