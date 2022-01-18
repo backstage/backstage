@@ -8134,9 +8134,9 @@
     "@types/react" "*"
 
 "@types/react-text-truncate@^0.14.0":
-  version "0.14.0"
-  resolved "https://registry.npmjs.org/@types/react-text-truncate/-/react-text-truncate-0.14.0.tgz#588bbabbc7f2a13815e805f3a48942db73fe65fe"
-  integrity sha512-XZNmx8mMPFjRLFjFqIF5uLPXEZ4THKxoEv1yU63JzInV3ES42PD+DaQOK6+Rd+cRolzrNoY4YIY9rrW8kh4ikw==
+  version "0.14.1"
+  resolved "https://registry.npmjs.org/@types/react-text-truncate/-/react-text-truncate-0.14.1.tgz#3d24eca927e5fd1bfd789b047ae8ec53ba878b28"
+  integrity sha512-yCtOOOJzrsfWF6TbnTDZz0gM5JYOxJmewExaTJTv01E7yrmpkNcmVny2fAtsNgSFCp8k2VgCePBoIvFBpKyEOw==
   dependencies:
     "@types/react" "*"
 
