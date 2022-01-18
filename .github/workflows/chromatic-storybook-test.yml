@@ -3,7 +3,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/chromatic-storybook-test.yml'
-      - 'packages/storybook/**'
+      - 'storybook/**'
       - 'packages/config/src/**'
       - 'packages/theme/src/**'
       - 'packages/types/src/**'
