@@ -25,7 +25,4 @@ export const catalogLocationReadPermission: Permission;
 
 // @public (undocumented)
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
-
-// @public (undocumented)
-export const RESOURCE_TYPE_CATALOG_LOCATION = 'catalog-location';
 ```
