@@ -62,30 +62,6 @@ jobs:
 
             return groupMembers;
 
-      # - uses: actions/github-script@v5
-      #   id: get-all-changed-files
-      #   with:
-      #     script: |
-      #       const { data: allFiles } = await github.rest.pulls.listFiles({
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         pull_number: context.issue.number,
-      #       });
-
-      #       return allFiles;
-
-      # - uses: actions/github-script@v5
-      #   id: get-all-current-reviews
-      #   with:
-      #     script: |
-      #       const { data: allReviews } = await github.rest.pulls.listReviews({
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         pull_number: context.issue.number,
-      #       });
-
-      #       return allReviews;
-
       - uses: actions/github-script@v5
         id: fix-labels
         with:
@@ -98,13 +74,7 @@ jobs:
             const Codeowners = require('codeowners');
             const codeowners = new Codeowners();
 
-
             for (const pullRequest of allPullRequests) {
-              // Go through each file changed and go through each codeowner entry and use minimatch to see if the file matches
-              // strip the backstage group from the name?
-              // If it does match push the owner to a list of reviewers
-              // check to see the reviews and if there is at least one matching reviewer from those group
-
               const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
