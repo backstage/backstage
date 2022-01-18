@@ -89,15 +89,14 @@ module.exports = async ({ github, context, core }) => {
     }
 
     if (hasReviewed.size === expectedReviewers.size) {
-      console.log('should remove label');
-      // await github.rest.issues.removeLabel({
-      //  issue_number: context.issue.number,
-      //  owner: context.repo.owner,
-      //  repo: context.repo.repo,
-      //  name: 'awaiting-review'
-      // }).catch(() => {});
-    } else {
-      console.log('should add label');
+      await github.rest.issues
+        .removeLabel({
+          issue_number: context.issue.number,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          name: 'awaiting-review',
+        })
+        .catch(() => {});
     }
   }
 };

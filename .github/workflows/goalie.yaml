@@ -1,10 +1,8 @@
 # on a review from someone in the reviewers group, remove the awaiting-review label and add the awaiting-author label
-name: Goalie Cron
-on: push
-
-# on:
-#   schedule:
-#   - cron: "* * * * *"
+name: Goalie Workflow
+on:
+  schedule:
+  - cron: "* * * * *"
 
 jobs:
   label:
@@ -14,8 +12,8 @@ jobs:
         id: get_workflow_token
         uses: peter-murray/workflow-application-token-action@v1
         with:
-          application_id: ${{ secrets.BACKSTAGE_WORKFLOW_MEMBER_READ_APP_ID }}
-          application_private_key: ${{ secrets.BACKSTAGE_WORKFLOW_MEMBER_READ_PRIVATE_KEY }}
+          application_id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
+          application_private_key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
           organization: backstage
 
       - uses: actions/checkout@v2
