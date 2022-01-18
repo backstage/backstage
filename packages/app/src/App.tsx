@@ -117,7 +117,7 @@ const app = createApp({
       catalogEntity: catalogPlugin.routes.catalogEntity,
     });
     bind(apiDocsPlugin.externalRoutes, {
-      registerComponent: catalogImportPlugin.routes.importPage,
+      registerApi: catalogImportPlugin.routes.importPage,
     });
     bind(explorePlugin.externalRoutes, {
       catalogEntity: catalogPlugin.routes.catalogEntity,
