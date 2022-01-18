@@ -2,7 +2,7 @@
 name: Goalie Cron
 on:
   schedule:
-  - cron: "0 0 * * *"
+  - cron: "* * * * *"
 
 jobs:
   label:
