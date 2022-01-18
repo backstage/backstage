@@ -2909,10 +2909,10 @@
   dependencies:
     google-gax "^2.12.0"
 
-"@google-cloud/firestore@^4.15.1":
-  version "4.15.1"
-  resolved "https://registry.npmjs.org/@google-cloud/firestore/-/firestore-4.15.1.tgz#ed764fc76823ce120e68fe8c27ef1edd0650cd93"
-  integrity sha512-2PWsCkEF1W02QbghSeRsNdYKN1qavrHBP3m72gPDMHQSYrGULOaTi7fSJquQmAtc4iPVB2/x6h80rdLHTATQtA==
+"@google-cloud/firestore@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.npmjs.org/@google-cloud/firestore/-/firestore-5.0.2.tgz#36923fde45987f928a220d347f341c5602f9e340"
+  integrity sha512-xlGcNYaW0nvUMzNn2+pLfbEBVt6oysVqtM89faMgZWkWfEtvIQGS0h5PRdLlcqufNzRCX3yIGv29Pb+03ys+VA==
   dependencies:
     fast-deep-equal "^3.1.1"
     functional-red-black-tree "^1.0.1"
