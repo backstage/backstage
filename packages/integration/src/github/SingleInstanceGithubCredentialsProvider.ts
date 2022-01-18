@@ -96,9 +96,7 @@ class GithubAppManager {
     const { installationId, suspended } = await this.getInstallationData(owner);
     if (this.allowedInstallationOwners) {
       if (!this.allowedInstallationOwners?.includes(owner)) {
-        throw new Error(
-          `The GitHub application for ${owner} is not included in the allowed installation list (${installationId}).`,
-        );
+        return { accessToken: '' }; // An empty token allows anonymous access to public repos
       }
     }
     if (suspended) {
