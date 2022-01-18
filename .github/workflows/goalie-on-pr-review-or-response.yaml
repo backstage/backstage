@@ -55,6 +55,18 @@ jobs:
             });
 
             return allFiles;
+
+      - uses: actions/github-script@v5
+        id: get-all-current-reviews
+        with:
+          script: |
+            const { data: allReviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            return allReviews;
             
       - uses: actions/github-script@v5
         id: fix-labels
@@ -73,11 +85,28 @@ jobs:
               return
             }
 
-            console.log('all files', ${{ steps.get-all-changed-files.outputs.result}})
-            console.log('codeowners', ${{ steps.codeowners.outputs.codeowners}})
-            console.log('all teams', ${{ steps.get-all-group-members.outputs.result}})
-
             // Go through each file changed and go through each codeowner entry and use minimatch to see if the file matches
             // strip the backstage group from the name?
             // If it does match push the owner to a list of reviewers
             // check to see the reviews and if there is at least one matching reviewer from those group
+
+            const changedFiles = ${{ steps.get-all-changed-files.outputs.result }}
+            const codeowners = ${{ steps.codeowners.outputs.codeowners }}
+            const allReviews = ${{ steps.get-all-current-reviews.outputs.result }}
+            const groupMembers = ${{ steps.get-all-group-members.outputs.result }}
+            const minimatch = require('mimimatch');
+
+            const reviewers = new Set();
+
+            for (const file of changedFiles) {
+              for (const [pattern, owners] of Object.entries(codeowners)) {
+                if (minimatch(file.filename, codeowner.pattern)) {
+                  for (const owner of owners) {
+                    reviewers.add(owner);
+                  }
+                }
+              }
+            }
+
+            console.log(reviewers);
+            
