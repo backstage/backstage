@@ -23,11 +23,13 @@ jobs:
         with:
           github-token: ${{ steps.get_workflow_token.outputs.token }}
           script: |
-            const { data: allPrs } = await github.paginate(octokit.rest.pulls.list, {
+            const { data: allPrs } = await github.paginate(github.rest.pulls.list, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
             });
+
+            console.log(allPrs);
 
             return allPrs;
 
