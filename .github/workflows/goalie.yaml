@@ -1,5 +1,5 @@
 # on a review from someone in the reviewers group, remove the awaiting-review label and add the awaiting-author label
-name: Set Goalie Labels
+name: Goalie Cron
 on:
   schedule:
   - cron: "0 0 * * *"
