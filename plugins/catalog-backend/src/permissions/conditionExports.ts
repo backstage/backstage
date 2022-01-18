@@ -25,14 +25,14 @@ const conditionExports = createConditionExports({
 });
 
 /**
- * These conditions are used to create conditional decisions that are returned
+ * These conditions are used when creating conditional decisions that are returned
  * by authorization policies.
  * @public
  */
 export const catalogConditions = conditionExports.conditions;
 
 /**
- * `createPolicyDecision` can be used when authoring policies to create
+ * `createCatalogPolicyDecision` can be used when authoring policies to create
  * conditional decisions.
  *
  * ```
