@@ -146,8 +146,7 @@ describe('PassportStrategyHelper', () => {
         }
       }
       class MyCustomRefreshTokenSuccess extends passport.Strategy {
-        // @ts-ignore
-        private _oauth2 = new MyCustomOAuth2Success();
+        _oauth2 = new MyCustomOAuth2Success();
         userProfile(_accessToken: string, callback: Function) {
           callback(null, {
             provider: 'a',
@@ -183,8 +182,7 @@ describe('PassportStrategyHelper', () => {
         }
       }
       class MyCustomRefreshTokenSuccess extends passport.Strategy {
-        // @ts-ignore
-        private _oauth2 = new MyCustomOAuth2Error();
+        _oauth2 = new MyCustomOAuth2Error();
       }
 
       const mockStrategy = new MyCustomRefreshTokenSuccess();
@@ -209,8 +207,7 @@ describe('PassportStrategyHelper', () => {
         }
       }
       class MyCustomRefreshTokenSuccess extends passport.Strategy {
-        // @ts-ignore
-        private _oauth2 = new MyCustomOAuth2AccessTokenMissing();
+        _oauth2 = new MyCustomOAuth2AccessTokenMissing();
       }
 
       const mockStrategy = new MyCustomRefreshTokenSuccess();

@@ -110,8 +110,7 @@ const isString = (str: string | undefined): str is string => str !== undefined;
 const numberOrBigIntToNumberOrString = (
   value: number | BigInt,
 ): number | string => {
-  // @ts-ignore
-  return typeof value === 'bigint' ? value.toString() : value;
+  return typeof value === 'bigint' ? value.toString() : (value as number);
 };
 
 const toClientSafeResource = (

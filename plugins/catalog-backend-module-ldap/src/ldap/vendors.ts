@@ -94,7 +94,6 @@ function formatGUID(objectGUID: string | Buffer): string {
 
   // check each byte
   for (let i = 0; i < data.length; i++) {
-    // @ts-ignore
     let dataStr = data[i].toString(16);
     dataStr = data[i] >= 16 ? dataStr : `0${dataStr}`;
 

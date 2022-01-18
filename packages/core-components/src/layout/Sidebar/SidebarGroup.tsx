@@ -96,12 +96,11 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
 
   return (
     // Material UI issue: https://github.com/mui-org/material-ui/issues/27820
-    // @ts-ignore
     <BottomNavigationAction
       label={label}
       icon={icon}
-      component={Link}
-      to={to ? to : location.pathname}
+      component={Link as any}
+      to={(to ? to : location.pathname) as any}
       onChange={onChange}
       value={value}
       selected={selected}
