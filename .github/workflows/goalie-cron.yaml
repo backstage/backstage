@@ -18,19 +18,6 @@ jobs:
           application_private_key: ${{ secrets.BACKSTAGE_WORKFLOW_MEMBER_READ_PRIVATE_KEY }}
           organization: backstage
 
-      - uses: actions/github-script@v5
-        id: get-all-open-prs
-        with:
-          github-token: ${{ steps.get_workflow_token.outputs.token }}
-          script: |
-            const allPrs = await github.paginate(github.rest.pulls.list, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-            });
-
-            return allPrs;
-
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
@@ -38,81 +25,10 @@ jobs:
       - run: npm install codeowners
 
       - uses: actions/github-script@v5
-        id: get-all-group-members
-        with:
-          github-token: ${{ steps.get_workflow_token.outputs.token }}
-          script: |
-            // Get all teams and their respective members
-            const {data: teams} = await github.request('GET /orgs/{org}/teams', {
-              org: context.repo.owner,
-            })
-
-            const groupMembers = await Promise.all(
-              teams.map(
-                async (team) => {
-                  const { data } = await github.rest.teams.listMembersInOrg({
-                    org: context.repo.owner,
-                    team_slug: team.slug,
-                  });
-
-                  return { team: `@backstage/${team.slug}`, data };
-                }
-              )
-            )
-
-            return groupMembers;
-
-      - uses: actions/github-script@v5
         id: fix-labels
         with:
           github-token: ${{ steps.get_workflow_token.outputs.token }}
           script: |
-            const allPullRequests = ${{ steps.get-all-open-prs.outputs.result }}
-            const groupMembers = ${{ steps.get-all-group-members.outputs.result }}
-            const Codeowners = require('codeowners');
-            const codeowners = new Codeowners();
-
-            for (const pullRequest of allPullRequests) {
-              const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: pullRequest.number,
-              });
-
-              const allReviews = await github.paginate(github.rest.pulls.listReviews, {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: pullRequest.number,
-              });
-   
-              const expectedReviewers = new Set();
-
-              for (const file of changedFiles) {
-                expectedReviewers.add(...codeowners.getOwner(file.filename));
-              }
-
-              const hasReviewed = new Set();
-
-              // For each reviewer in the group, check to see if they have a review set
-              for (const reviewer of expectedReviewers) {
-                const members = groupMembers.find(member => member.team === reviewer);
-                if (members) {
-                  // then we are dealing with a group
-                  const hasMemberReview = allReviews.some(review => members.data.some(member => member.login === review.user.login));
-                  if (hasMemberReview) {
-                    hasReviewed.add(reviewer);
-                  }
-                } else {
-                  // reviewer is a person
-                  const hasReview = allReviews.some(review => reviewer === `@${review.user.login}`);
-                  if (hasReview) {
-                    hasReviewed.add(reviewer);
-                  }
-                }
-              }
-
-              if (hasReviewed.size === expectedReviewers.size) {
-                console.log('should remove label');
-              } else { console.log('should add label')}
-            }
+            const script = require('./scripts/goalie-labels.js')
+            await script({github, context, core})
             
