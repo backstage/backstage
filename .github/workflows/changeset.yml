@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
       - name: Install Dependencies
         run: yarn --frozen-lockfile
       - name: Run release preparations
