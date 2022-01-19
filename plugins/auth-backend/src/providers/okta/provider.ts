@@ -236,7 +236,7 @@ export const oktaDefaultSignInResolver: SignInResolver<OAuthResult> = async (
   const userId = profile.email.split('@')[0];
 
   const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: userId, ent: [`user:default/${userId}`] },
+    claims: { sub: `user:default/${userId}`, ent: [`user:default/${userId}`] },
   });
 
   return { id: userId, token };
