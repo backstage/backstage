@@ -222,7 +222,7 @@ export const bitbucketUsernameSignInResolver: SignInResolver<BitbucketOAuthResul
     const claims = getEntityClaims(entity);
     const token = await ctx.tokenIssuer.issueToken({ claims });
 
-    return { id: `user:default/${entity.metadata.name}`, entity, token };
+    return { id: entity.metadata.name, entity, token };
   };
 
 export const bitbucketUserIdSignInResolver: SignInResolver<BitbucketOAuthResult> =
@@ -242,7 +242,7 @@ export const bitbucketUserIdSignInResolver: SignInResolver<BitbucketOAuthResult>
     const claims = getEntityClaims(entity);
     const token = await ctx.tokenIssuer.issueToken({ claims });
 
-    return { id: `user:default/${entity.metadata.name}`, entity, token };
+    return { id: entity.metadata.name, entity, token };
   };
 
 export type BitbucketProviderOptions = {

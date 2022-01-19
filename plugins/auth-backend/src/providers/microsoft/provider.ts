@@ -217,7 +217,7 @@ export const microsoftEmailSignInResolver: SignInResolver<OAuthResult> = async (
   const claims = getEntityClaims(entity);
   const token = await ctx.tokenIssuer.issueToken({ claims });
 
-  return { id: `user:default/${entity.metadata.name}`, entity, token };
+  return { id: entity.metadata.name, entity, token };
 };
 
 export const microsoftDefaultSignInResolver: SignInResolver<OAuthResult> =
