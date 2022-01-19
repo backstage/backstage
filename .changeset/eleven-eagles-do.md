@@ -2,4 +2,4 @@
 '@backstage/plugin-kubernetes-backend': patch
 ---
 
-If serviceAccountToken not provided, use defaul kubeconfig from cluster
+If serviceAccountToken not provided, use default Kube configuration from cluster
