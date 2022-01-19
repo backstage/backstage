@@ -3,11 +3,11 @@
 
 
 "@acuris/aws-es-connection@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/@acuris/aws-es-connection/-/aws-es-connection-2.2.0.tgz#43f7d6f3d15de0231642647a45eb84a8108e7d3e"
-  integrity sha512-xstECUJiWhj3kUK3aBpidoeHojXV611dcUewBwMG0hDRrRkIS+aj3xOhlfXcqYql7ITG84jgTfAidFqr8F+dnQ==
+  version "2.3.0"
+  resolved "https://registry.npmjs.org/@acuris/aws-es-connection/-/aws-es-connection-2.3.0.tgz#bfa736163bdfe2e7fc12f8529eead949fb4e73fe"
+  integrity sha512-k8jSkdNwpSPty7oautGaJXoAzzPjP7WKbmaAE9i+vJrKWg9n2UtjesHeDhOAPzV9MG8EzXofGozYjaLdeTP+Ug==
   dependencies:
-    aws4 "^1.8.0"
+    aws4 "^1.11.0"
 
 "@apidevtools/json-schema-ref-parser@^9.0.6":
   version "9.0.6"
