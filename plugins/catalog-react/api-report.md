@@ -6,7 +6,6 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AsyncPermissionResult } from '@backstage/plugin-permission-react';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -882,9 +881,11 @@ export function useEntityOwnership(): {
 };
 
 // @public
-export function useEntityPermission(
-  permission: Permission,
-): AsyncPermissionResult;
+export function useEntityPermission(permission: Permission): {
+  loading: boolean;
+  allowed: boolean;
+  error?: Error;
+};
 
 // Warning: (ae-forgotten-export) The symbol "EntityTypeReturn" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useEntityTypeFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

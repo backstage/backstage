@@ -14,51 +14,84 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common';
 import { renderHook } from '@testing-library/react-hooks';
 import { useEntityPermission } from './useEntityPermission';
-import { MockPermissionApi, TestApiProvider } from '@backstage/test-utils';
-import { permissionApiRef } from '@backstage/plugin-permission-react';
-import { Entity } from '@backstage/catalog-model';
-import { EntityProvider } from './useEntity';
+import { useEntity } from './useEntity';
+import { usePermission } from '@backstage/plugin-permission-react';
 
-const mockPermissionApi = new MockPermissionApi();
-
-function createWrapper(entity?: Entity) {
-  return ({ children }: PropsWithChildren<{}>) => (
-    <TestApiProvider apis={[[permissionApiRef, mockPermissionApi]]}>
-      <EntityProvider entity={entity} children={children} />
-    </TestApiProvider>
-  );
-}
+jest.mock('./useEntity', () => ({
+  ...jest.requireActual('./useEntity'),
+  useEntity: jest.fn(),
+}));
+jest.mock('@backstage/plugin-permission-react', () => ({
+  ...jest.requireActual('@backstage/plugin-permission-react'),
+  usePermission: jest.fn(),
+}));
+const useEntityMock = useEntity as jest.Mock;
+const usePermissionMock = usePermission as jest.Mock;
 
 describe('useEntityPermission', () => {
-  it('returns authorization result', async () => {
-    const { result, waitForValueToChange } = renderHook(
-      () => useEntityPermission(catalogEntityDeletePermission),
-      {
-        wrapper: createWrapper({
-          apiVersion: 'a',
-          kind: 'b',
-          metadata: { name: 'c' },
-        }),
-      },
-    );
-
-    await waitForValueToChange(() => result.current);
-
-    expect(result.current.allowed).toBe(true);
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
-  it('throws error if no entity is found', async () => {
-    const { waitForNextUpdate } = renderHook(
-      () => useEntityPermission(catalogEntityDeletePermission),
-      {
-        wrapper: createWrapper(),
-      },
+  it('returns loading when entity is loading', () => {
+    useEntityMock.mockReturnValue({ loading: true, entity: undefined });
+    usePermissionMock.mockReturnValue({ loading: false, allowed: false });
+    const { result } = renderHook(() =>
+      useEntityPermission(catalogEntityDeletePermission),
     );
 
-    await expect(() => waitForNextUpdate()).rejects.toThrowError();
+    expect(result.current.loading).toBe(true);
+  });
+
+  it('returns loading when permission is loading', () => {
+    useEntityMock.mockReturnValue({
+      loading: false,
+      entity: {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: { name: 'c' },
+      },
+    });
+    usePermissionMock.mockReturnValue({ loading: true, allowed: false });
+    const { result } = renderHook(() =>
+      useEntityPermission(catalogEntityDeletePermission),
+    );
+
+    expect(result.current.loading).toBe(true);
+  });
+
+  it('does not authorize when there is an entity error', () => {
+    useEntityMock.mockReturnValue({
+      loading: false,
+      entity: undefined,
+      error: new Error(),
+    });
+    usePermissionMock.mockReturnValue({ loading: false, allowed: false });
+    const { result } = renderHook(() =>
+      useEntityPermission(catalogEntityDeletePermission),
+    );
+
+    expect(result.current.error).toBeInstanceOf(Error);
+    expect(result.current.allowed).toBe(false);
+  });
+
+  it('returns authorization result', () => {
+    useEntityMock.mockReturnValue({
+      loading: false,
+      entity: {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: { name: 'c' },
+      },
+    });
+    usePermissionMock.mockReturnValue({ loading: false, allowed: true });
+    const { result } = renderHook(() =>
+      useEntityPermission(catalogEntityDeletePermission),
+    );
+
+    expect(result.current.allowed).toBe(true);
   });
 });

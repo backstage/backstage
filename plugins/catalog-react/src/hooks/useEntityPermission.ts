@@ -24,12 +24,32 @@ import { useEntity } from './useEntity';
  * {@link @backstage/plugin-permission-react#usePermission} hook which uses the
  * current entity in context to make an authorization request for the given
  * permission.
+ *
+ * Note: this hook blocks the permission request until the entity has loaded in
+ * context. If you have the entityRef and need concurrent requests, use the
+ * `usePermission` hook directly.
  * @public
  */
-export function useEntityPermission(permission: Permission) {
-  const { entity } = useEntity();
-  if (!entity) {
-    throw new Error('No entity in current context.');
+export function useEntityPermission(permission: Permission): {
+  loading: boolean;
+  allowed: boolean;
+  error?: Error;
+} {
+  const { entity, loading: loadingEntity, error: entityError } = useEntity();
+  const {
+    allowed,
+    loading: loadingPermission,
+    error: permissionError,
+  } = usePermission(
+    permission,
+    entity ? stringifyEntityRef(entity) : undefined,
+  );
+
+  if (loadingEntity || loadingPermission) {
+    return { loading: true, allowed: false };
   }
-  return usePermission(permission, stringifyEntityRef(entity));
+  if (entityError) {
+    return { loading: false, allowed: false, error: entityError };
+  }
+  return { loading: false, allowed, error: permissionError };
 }
