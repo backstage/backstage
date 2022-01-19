@@ -1,5 +1,11 @@
 # @backstage/plugin-todo
 
+## 0.1.19
+
+### Patch Changes
+
+- 074fbe8968: Fix typo in `README.md`
+
 ## 0.1.18
 
 ### Patch Changes
