@@ -172,7 +172,7 @@ export class ScaffolderClient implements ScaffolderApi {
       body: JSON.stringify({
         templateName,
         values: { ...values },
-        secrets: secrets,
+        secrets,
       }),
     });
 
