@@ -46,12 +46,12 @@ type CompatibilityIdentityApi = IdentityApi & {
  * and sign-in page.
  */
 export class AppIdentityProxy implements IdentityApi {
-private target?: CompatibilityIdentityApi;
-private waitForTarget: Promise<IdentityApi>;
-  private resolveTarget: (api: IdentityApi) => void = () => {};
+  private target?: CompatibilityIdentityApi;
+  private waitForTarget: Promise<CompatibilityIdentityApi>;
+  private resolveTarget: (api: CompatibilityIdentityApi) => void = () => {};
 
   constructor() {
-    this.waitForTarget = new Promise<IdentityApi>(resolve => {
+    this.waitForTarget = new Promise<CompatibilityIdentityApi>(resolve => {
       this.resolveTarget = resolve;
     });
   }
@@ -89,7 +89,9 @@ private waitForTarget: Promise<IdentityApi>;
   }
 
   async getBackstageIdentity(): Promise<BackstageUserIdentity> {
-    const identity = await this.waitForTarget.then(target => target.getBackstageIdentity());
+    const identity = await this.waitForTarget.then(target =>
+      target.getBackstageIdentity(),
+    );
     if (!identity.userEntityRef.match(/^.*:.*\/.*$/)) {
       // eslint-disable-next-line no-console
       console.warn(
@@ -106,12 +108,12 @@ private waitForTarget: Promise<IdentityApi>;
   }
 
   async getIdToken(): Promise<string | undefined> {
-    return this.waitForTarget.then((target: CompatibilityIdentityApi) => {
+    return this.waitForTarget.then(target => {
       if (!target.getIdToken) {
         throw new Error('IdentityApi does not implement getIdToken');
       }
       logDeprecation('getIdToken');
-      return target.getIdToken()
+      return target.getIdToken();
     });
   }
 
