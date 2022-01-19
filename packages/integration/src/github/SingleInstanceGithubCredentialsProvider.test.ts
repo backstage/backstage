@@ -136,6 +136,44 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     expect(token).toEqual('secret_token');
   });
 
+  it('does not return a token where the organisation is not in the allowedInstallationsList', async () => {
+    github = SingleInstanceGithubCredentialsProvider.create({
+      host: 'github.com',
+      apps: [
+        {
+          appId: 1,
+          privateKey: 'privateKey',
+          webhookSecret: '123',
+          clientId: 'CLIENT_ID',
+          clientSecret: 'CLIENT_SECRET',
+          allowedInstallationOwners: ['backstage'],
+        },
+      ],
+    });
+
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: {
+        etag: '123',
+      },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'all',
+          account: {
+            login: 'backstage',
+          },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    const { token, headers } = await github.getCredentials({
+      url: 'https://github.com/RoadiehHQ',
+    });
+
+    expect(headers).toEqual(undefined);
+    expect(token).toEqual(undefined);
+  });
+
   it('should not fail to issue tokens for an organization when the app is installed for a single repo', async () => {
     octokit.apps.listInstallations.mockResolvedValue({
       headers: {
