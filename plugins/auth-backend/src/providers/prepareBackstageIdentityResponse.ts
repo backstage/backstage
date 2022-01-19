@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import {
+  ENTITY_DEFAULT_NAMESPACE,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { BackstageIdentityResponse, BackstageSignInResult } from './types';
 
 function parseJwtPayload(token: string) {
@@ -32,6 +37,13 @@ export function prepareBackstageIdentityResponse(
   result: BackstageSignInResult,
 ): BackstageIdentityResponse {
   const { sub, ent } = parseJwtPayload(result.token);
+
+  const userEntityRef = stringifyEntityRef(
+    parseEntityRef(sub, {
+      defaultKind: 'user',
+      defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+    }),
+  );
   return {
     ...{
       // TODO: idToken is for backwards compatibility and can be removed in the future
@@ -40,7 +52,7 @@ export function prepareBackstageIdentityResponse(
     },
     identity: {
       type: 'user',
-      userEntityRef: sub,
+      userEntityRef,
       ownershipEntityRefs: ent ?? [],
     },
   };
