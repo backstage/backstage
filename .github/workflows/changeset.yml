@@ -15,8 +15,6 @@ jobs:
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
       - name: Install Dependencies
         run: yarn --frozen-lockfile
-      - name: Run release preparations
-        run: node scripts/prepare-release.js
       - name: Create Release Pull Request
         uses: changesets/action@master
         with:
