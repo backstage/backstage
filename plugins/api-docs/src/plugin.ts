@@ -17,7 +17,7 @@
 import { ApiEntity } from '@backstage/catalog-model';
 import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { apiDocsConfigRef } from './config';
-import { createComponentRouteRef, rootRoute } from './routes';
+import { registerComponentRouteRef, rootRoute } from './routes';
 import {
   createApiFactory,
   createComponentExtension,
@@ -45,7 +45,7 @@ export const apiDocsPlugin = createPlugin({
     }),
   ],
   externalRoutes: {
-    createComponent: createComponentRouteRef,
+    registerApi: registerComponentRouteRef,
   },
 });
 

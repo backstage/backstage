@@ -42,7 +42,7 @@ import {
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
-import { createComponentRouteRef } from '../../routes';
+import { registerComponentRouteRef } from '../../routes';
 
 const defaultColumns: TableColumn<CatalogTableRow>[] = [
   CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
@@ -77,7 +77,7 @@ export const DefaultApiExplorerPage = ({
   const generatedSubtitle = `${
     configApi.getOptionalString('organization.name') ?? 'Backstage'
   } API Explorer`;
-  const createComponentLink = useRouteRef(createComponentRouteRef);
+  const registerComponentLink = useRouteRef(registerComponentRouteRef);
 
   return (
     <PageWithHeader
@@ -90,7 +90,7 @@ export const DefaultApiExplorerPage = ({
         <ContentHeader title="">
           <CreateButton
             title="Register Existing API"
-            to={createComponentLink?.()}
+            to={registerComponentLink?.()}
           />
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
