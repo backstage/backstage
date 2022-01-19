@@ -4,7 +4,7 @@
 
 Migrated the app template to React 17.
 
-To apply this change to an existing app, make the following change to `packages/app/package.json`:
+To apply this change to an existing app, make sure you have updated to the latest version of `@backstage/cli`, and make the following change to `packages/app/package.json`:
 
 ```diff
      "history": "^5.0.0",
