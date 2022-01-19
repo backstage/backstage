@@ -42,10 +42,11 @@ module.exports = async ({ github, context, core }) => {
   const codeowners = new Codeowners();
 
   for (const pullRequest of allPullRequests) {
-    // Go through each file changed and go through each codeowner entry and use minimatch to see if the file matches
-    // strip the backstage group from the name?
+    // Go through each file changed and get the codeowners for that file.
+    // Find the group in the group list that matches the codeowner.
     // If it does match push the owner to a list of reviewers
-    // check to see the reviews and if there is at least one matching reviewer from those groupx
+    // check to see the reviews and if there is at least one matching reviewer from those group
+
     const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
       owner: context.repo.owner,
       repo: context.repo.repo,
@@ -102,7 +103,7 @@ module.exports = async ({ github, context, core }) => {
       // if the last event for the issue is not by the author, remove the label
       if (
         recentEventsForPR[recentEventsForPR.length - 1].actor.login !==
-        pullRequest.author.login
+        pullRequest.user.login
       ) {
         await github.rest.issues
           .removeLabel({
