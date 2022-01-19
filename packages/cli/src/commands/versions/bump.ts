@@ -60,7 +60,7 @@ export default async (cmd: Command) => {
     console.log(`Using custom pattern glob ${pattern}`);
   }
 
-  const findTargetVersion = createVersionFinder();
+  const findTargetVersion = createVersionFinder(cmd.releaseLine);
 
   // First we discover all Backstage dependencies within our own repo
   const dependencyMap = await mapDependencies(paths.targetDir, pattern);
@@ -284,7 +284,9 @@ export default async (cmd: Command) => {
   }
 };
 
-function createVersionFinder() {
+function createVersionFinder(releaseLine = 'latest') {
+  // The main release line is just an alias for latest
+  const distTag = releaseLine === 'main' ? 'latest' : releaseLine;
   const found = new Map<string, string>();
 
   return async function findTargetVersion(name: string) {
@@ -295,12 +297,23 @@ function createVersionFinder() {
 
     console.log(`Checking for updates of ${name}`);
     const info = await fetchPackageInfo(name);
-    const latest = info['dist-tags'].latest;
-    if (!latest) {
-      throw new Error(`No latest version found for ${name}`);
+    const latestVersion = info['dist-tags'].latest;
+    if (!latestVersion) {
+      throw new Error(`No target 'latest' version found for ${name}`);
     }
-    found.set(name, latest);
-    return latest;
+    if (distTag === 'latest') {
+      found.set(name, latestVersion);
+      return latestVersion;
+    }
+    const taggedVersion = info['dist-tags'][distTag];
+    if (!taggedVersion) {
+      found.set(name, latestVersion);
+      return latestVersion;
+    }
+
+    // Take release from latest of next release is older
+    found.set(name, targetVersion);
+    return targetVersion;
   };
 }
 
