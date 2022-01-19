@@ -102,7 +102,7 @@ module.exports = async ({ github, context, core }) => {
       // if the last event for the issue is not by the author, remove the label
       if (
         recentEventsForPR[recentEventsForPR.length - 1].actor.login !==
-        pullRequest.author.login
+        pullRequest.user.login
       ) {
         await github.rest.issues
           .removeLabel({
