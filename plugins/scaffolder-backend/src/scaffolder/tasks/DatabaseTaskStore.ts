@@ -43,7 +43,7 @@ export type RawDbTaskRow = {
   status: Status;
   last_heartbeat_at?: string;
   created_at: string;
-  secrets?: string;
+  secrets?: string | null;
 };
 
 export type RawDbTaskEventRow = {
@@ -139,8 +139,8 @@ export class DatabaseTaskStore implements TaskStore {
         .update({
           status: 'processing',
           last_heartbeat_at: this.db.fn.now(),
-          // remove the secrets when moving moving to processing state
-          secrets: undefined,
+          // remove the secrets when moving moving to processing state.
+          secrets: null,
         });
 
       if (updateCount < 1) {
@@ -237,8 +237,8 @@ export class DatabaseTaskStore implements TaskStore {
         })
         .update({
           status,
-          secrets: null as any,
         });
+
       if (updateCount !== 1) {
         throw new ConflictError(
           `Failed to update status to '${status}' for taskId ${taskId}`,
