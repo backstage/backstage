@@ -15,10 +15,15 @@
  */
 
 import { useApi } from '@backstage/core-plugin-api';
+import { SearchResultSet } from '@backstage/search-common';
 import { render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
-import { SearchContextProvider, useSearch } from './SearchContext';
+import {
+  SearchContextProvider,
+  useCachedSearchQuery,
+  useSearch,
+} from './SearchContext';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -41,12 +46,9 @@ describe('SearchContext', () => {
   };
 
   beforeEach(() => {
-    query.mockResolvedValue({});
-    (useApi as jest.Mock).mockReturnValue({ query: query });
-  });
-
-  afterAll(() => {
-    jest.resetAllMocks();
+    query.mockReset();
+    (useApi as jest.Mock).mockReset();
+    (useApi as jest.Mock).mockReturnValue({ query });
   });
 
   it('Passes children', async () => {
@@ -237,25 +239,65 @@ describe('SearchContext', () => {
 
       expect(result.current.fetchNextPage).toBeDefined();
       expect(result.current.fetchPreviousPage).toBeUndefined();
+    });
+
+    it('When fetchNextPage is invoked, concatenate results', async () => {
+      query
+        .mockResolvedValueOnce({
+          results: [1, 2, 3],
+          nextPageCursor: 'NEXT',
+        })
+        .mockResolvedValueOnce({
+          results: [4, 5, 6],
+          prevPageCursor: 'PREV',
+        });
+
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current.fetchNextPage).toBeDefined();
+      expect(result.current.fetchPreviousPage).toBeUndefined();
+
+      expect(query).toHaveBeenCalledTimes(1);
+      expect(query).toHaveBeenNthCalledWith(1, {
+        types: ['*'],
+        filters: {},
+        term: '',
+      });
+      expect(result.current.result.value).toEqual({
+        results: [1, 2, 3],
+        nextPageCursor: 'NEXT',
+      });
 
       act(() => {
         result.current.fetchNextPage!();
       });
 
       await waitForNextUpdate();
-
-      expect(query).toHaveBeenLastCalledWith({
+      expect(query).toHaveBeenCalledTimes(2);
+      expect(query).toHaveBeenNthCalledWith(2, {
         types: ['*'],
         filters: {},
         term: '',
         pageCursor: 'NEXT',
+      });
+
+      expect(result.current.result.value).toEqual({
+        results: [1, 2, 3, 4, 5, 6],
+        prevPageCursor: 'PREV',
       });
     });
 
     it('provides function for fetch the previous page', async () => {
       query.mockResolvedValue({
         results: [],
-        previousPageCursor: 'PREVIOUS',
+        previousPageCursor: 'PREV',
       });
 
       const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
@@ -280,8 +322,169 @@ describe('SearchContext', () => {
         types: ['*'],
         filters: {},
         term: '',
-        pageCursor: 'PREVIOUS',
+        pageCursor: 'PREV',
       });
+    });
+  });
+});
+
+describe('useCachedSearchQuery', () => {
+  const query = jest.fn();
+  beforeEach(() => {
+    query.mockReset();
+    (useApi as jest.Mock).mockReset();
+    (useApi as jest.Mock).mockReturnValue({ query });
+  });
+
+  it('should invoke searchApi.query', async () => {
+    query
+      .mockResolvedValueOnce({
+        results: [1, 2, 3],
+        nextPageCursor: 'NEXT',
+      })
+      .mockResolvedValueOnce({
+        results: [4, 5, 6],
+        prevPageCursor: 'PREV',
+      });
+
+    const { result } = renderHook(() => useCachedSearchQuery());
+
+    await expect(
+      result.current({ pageCursor: 'cursor', term: '' }),
+    ).resolves.toEqual({ results: [1, 2, 3], nextPageCursor: 'NEXT' });
+  });
+
+  it('should concatenate the results once invoked multiple times', async () => {
+    query
+      .mockResolvedValueOnce({
+        results: [1, 2, 3],
+        nextPageCursor: 'NEXT',
+      })
+      .mockResolvedValueOnce({
+        results: [4, 5, 6],
+        nextPageCursor: 'NEXTNEXT',
+        prevPageCursor: 'PREV',
+      })
+      .mockResolvedValueOnce({
+        results: [7, 8, 9],
+        prevPageCursor: 'PREVPREV',
+      });
+
+    const { result } = renderHook(() => useCachedSearchQuery());
+
+    await expect(
+      result.current({ pageCursor: 'cursor', term: '' }),
+    ).resolves.toEqual({ results: [1, 2, 3], nextPageCursor: 'NEXT' });
+    await expect(
+      result.current({ pageCursor: 'cursor', term: '' }),
+    ).resolves.toEqual({
+      results: [1, 2, 3, 4, 5, 6],
+      nextPageCursor: 'NEXTNEXT',
+      prevPageCursor: 'PREV',
+    });
+    await expect(
+      result.current({ pageCursor: 'cursor', term: '' }),
+    ).resolves.toEqual({
+      results: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      prevPageCursor: 'PREVPREV',
+    });
+  });
+
+  it('should reset the cached values once term, filters or types change', async () => {
+    query
+      .mockResolvedValueOnce({
+        results: [1, 2, 3],
+      })
+      .mockResolvedValueOnce({
+        results: [4, 5, 6],
+      })
+      .mockResolvedValueOnce({
+        results: ['a', 'b', 'c'],
+      })
+      .mockResolvedValueOnce({
+        results: [true, false, true],
+        nextPageCursor: 'NEXT',
+      })
+      .mockResolvedValueOnce({
+        results: [true, false, true],
+      });
+
+    const { result } = renderHook(() => useCachedSearchQuery());
+
+    await expect(
+      result.current({ pageCursor: 'cursor', term: '' }),
+    ).resolves.toEqual({ results: [1, 2, 3] });
+    await expect(
+      result.current({ pageCursor: 'cursor', term: 'just a term' }),
+    ).resolves.toEqual({
+      results: [4, 5, 6],
+    });
+
+    await expect(
+      result.current({
+        pageCursor: 'cursor',
+        term: 'just a term',
+        filters: { something: 'something' },
+      }),
+    ).resolves.toEqual({
+      results: ['a', 'b', 'c'],
+    });
+
+    await expect(
+      result.current({
+        pageCursor: 'cursor',
+        term: 'just a term',
+        filters: { something: 'something' },
+        types: ['cat'],
+      }),
+    ).resolves.toEqual({
+      results: [true, false, true],
+      nextPageCursor: 'NEXT',
+    });
+
+    await expect(
+      result.current({
+        pageCursor: 'cursor',
+        term: 'just a term',
+        filters: { something: 'something' },
+        types: ['cat'],
+      }),
+    ).resolves.toEqual({
+      results: [true, false, true, true, false, true],
+    });
+  });
+
+  it('should reset the cached if a previous cursor is passed', async () => {
+    const firstResult = {
+      results: [1, 2, 3],
+      nextPageCursor: 'NEXT',
+    };
+    const secondResult = {
+      results: [4, 5, 6],
+      prevPageCursor: 'PREV',
+    };
+    query
+      .mockResolvedValueOnce(firstResult)
+      .mockResolvedValueOnce(secondResult)
+      .mockResolvedValueOnce(firstResult);
+
+    const { result } = renderHook(() => useCachedSearchQuery());
+
+    await expect(result.current({ term: '' })).resolves.toEqual({
+      results: [1, 2, 3],
+      nextPageCursor: 'NEXT',
+    });
+    await expect(
+      result.current({ pageCursor: 'NEXT', term: '' }),
+    ).resolves.toEqual({
+      results: [1, 2, 3, 4, 5, 6],
+      prevPageCursor: 'PREV',
+    });
+    await expect(
+      result.current({ pageCursor: 'PREV', isPrevious: true, term: '' }),
+    ).resolves.toEqual({
+      results: [1, 2, 3],
+      nextPageCursor: 'NEXT',
     });
   });
 });

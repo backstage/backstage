@@ -29,6 +29,7 @@ import React, {
 import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 import usePrevious from 'react-use/lib/usePrevious';
 import { searchApiRef } from '../../apis';
+import isEqual from 'lodash/isEqual';
 
 type SearchContextValue = {
   result: AsyncState<SearchResultSet>;
@@ -135,18 +136,22 @@ export const useSearch = () => {
   return context;
 };
 
-function useCachedSearchQuery() {
+export function useCachedSearchQuery() {
   const searchApi = useApi(searchApiRef);
 
   const cache = useRef<SearchResultSet | undefined>();
   const lastRequest = useRef<SearchQuery | undefined>();
 
-  return async (query: SearchQuery) => {
+  return async ({
+    isPrevious,
+    ...query
+  }: SearchQuery & { isPrevious?: boolean }) => {
     const result = await searchApi.query(query);
     if (
-      lastRequest.current?.filters !== query.filters ||
+      !isEqual(lastRequest.current?.filters, query.filters) ||
       lastRequest.current?.term !== query.term ||
-      lastRequest.current.types !== query.types
+      lastRequest.current.types?.join(',') !== query.types?.join(',') ||
+      isPrevious
     ) {
       cache.current = undefined;
     }
