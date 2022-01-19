@@ -38,3 +38,23 @@ try {
   }
 }
 ```
+
+Yet another issue you might run into when upgrading TypeScript is incompatibilities in the types from `react-use`. The error you would run into looks something like this:
+
+```plain
+node_modules/react-use/lib/usePermission.d.ts:1:54 - error TS2304: Cannot find name 'DevicePermissionDescriptor'.
+
+1 declare type PermissionDesc = PermissionDescriptor | DevicePermissionDescriptor | MidiPermissionDescriptor | PushPermissionDescriptor;
+```
+
+If you encounter this error, the simplest fix is to replace full imports of `react-use` with more specific ones. For example, the following:
+
+```ts
+import { useAsync } from 'react-use';
+```
+
+Would be converted into this:
+
+```ts
+import useAsync from 'react-use/lib/useAsync';
+```
