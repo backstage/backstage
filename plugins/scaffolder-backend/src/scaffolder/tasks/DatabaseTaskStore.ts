@@ -139,6 +139,8 @@ export class DatabaseTaskStore implements TaskStore {
         .update({
           status: 'processing',
           last_heartbeat_at: this.db.fn.now(),
+          // remove the secrets when moving moving to processing state
+          secrets: undefined,
         });
 
       if (updateCount < 1) {
