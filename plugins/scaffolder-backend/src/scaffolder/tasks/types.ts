@@ -89,8 +89,10 @@ export type SerializedTaskEvent = {
  *
  * @public
  */
-export type TaskSecrets = {
-  token: string | undefined;
+export type TaskSecrets = JsonObject & {
+  /** @deprecated Use `backstageToken` instead */
+  token?: string;
+  backstageToken?: string;
 };
 
 /**
