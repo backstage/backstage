@@ -25,48 +25,55 @@ In the event of a severe bug being introduced in version `1.5.0` of the
 `@backstage/plugin-foo` released in the `2048-01-01` release, the following
 process is used to release an emergency fix as `1.5.1`:
 
-- [ ] Identify the release that needs to be patched, in this case we're fixing a
-      broken release, so it would be the most recent one, `2048-01-01`. In the
-      event of a backported security fix, the release that has the last
-      published version of each major version of the package should be the one
-      patched.
-- [ ] Make sure a patch branch exists for the release that is being patched. If
-      a patch already exists, reuse the existing branch. The branch **must
-      always** be named exactly `release-<release>-patch`.
+- [ ] Identify the release or releases that need to be patched. We should always
+      patch the most recent main-line release if needed, which in this example
+      would be `2048-01-01`. The fix may also need backporting to older major
+      versions, in which case we will want to patch the main-line release just
+      before the one that bumped the package to each new major version.
+- [ ] Repeat the following steps for each release that needs to be patched:
 
-  ```bash
-  git checkout release-2048-01-01
-  git checkout -b release-2048-01-01-patch
-  git push --set-upstream origin release-2048-01-01-patch
-  ```
+  - [ ] Make sure a patch branch exists for the release that is being patched.
+        If a patch already exists, reuse the existing branch. The branch **must
+        always** be named exactly `release-<release>-patch`.
 
-- [ ] With the `release-2048-01-01-patch` branch as a base, create a new branch
-      for your fix. This branch can be named anything, but the following naming
-      pattern may be suitable:
+    ```bash
+    git checkout release-2048-01-01
+    git checkout -b release-2048-01-01-patch
+    git push --set-upstream origin release-2048-01-01-patch
+    ```
 
-  ```bash
-  git checkout -b ${USER}/release-2048-01-01-emergency-fix
-  ```
+  - [ ] With the `release-2048-01-01-patch` branch as a base, create a new
+        branch for your fix. This branch can be named anything, but the
+        following naming pattern may be suitable:
 
-- [ ] Apply fixes and create a new patch changeset for the affected package,
-      then commit these changes.
-- [ ] Run `yarn release` in the root of the repo in order to convert your
-      changeset into package version bumps and changelog entries. Commit these
-      changes as a second `"Generated release"` commit.
-- [ ] Create PR towards the base branch (`release-2048-01-01-patch`) containing
-      the two commits.
-- [ ] Review/Merge the PR into `release-2048-01-01-patch`. This will
-      automatically trigger a release.
-- [ ] Make sure the same fix is applied in master before the next release, and
-      create an appropriate changeset for that as well. In the changeset towards
-      master you should refer back to all patch releases that also received the
-      same fix. Also be sure to update `.changeset/patched.json` in the same PR
-      to make sure that future releases of the packages are bumped accordingly:
+    ```bash
+    git checkout -b ${USER}/release-2048-01-01-emergency-fix
+    ```
 
-  ```json
-  {
-    "currentReleaseVersion": {
-      "@backstage/plugin-foo": "1.5.1"
+  - [ ] Create a single commit that applies fixes and creates a new patch
+        changeset for the affected package.
+  - [ ] Run `yarn release` in the root of the repo in order to convert your
+        changeset into package version bumps and changelog entries. Commit these
+        changes as a second `"Generated release"` commit.
+  - [ ] Create PR towards the base branch (`release-2048-01-01-patch`)
+        containing the two commits.
+  - [ ] Review/Merge the PR into `release-2048-01-01-patch`. This will
+        automatically trigger a release.
+
+- [ ] Once fixes have been created for each release, the fix should be applied
+      to the master branch as well. Create a PR that contains the following:
+
+  - [ ] The fix.
+  - [ ] A changeset with the message "Apply fix from the x.y.z patch release",
+        in this case `1.5.1`. You can find the version in your patch PR for the
+        most recent release.
+  - [ ] An entry in `.changeset/patched.json` that sets the current release to
+        that same version:
+
+    ```json
+    {
+      "currentReleaseVersion": {
+        "@backstage/plugin-foo": "1.5.1"
+      }
     }
-  }
-  ```
+    ```
