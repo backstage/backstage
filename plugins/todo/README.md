@@ -89,7 +89,7 @@ Below are some examples of formats that are supported by default:
 // FIXME Nobody knows why this is here
 ```
 
-Note the trailing comments are not supported, the following TODO would not be listed:
+Note that trailing comments are not supported, the following TODO would not be listed:
 
 ```ts
 function reverse(str: string) {
