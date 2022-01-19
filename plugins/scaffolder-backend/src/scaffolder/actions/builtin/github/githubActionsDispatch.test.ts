@@ -66,7 +66,7 @@ describe('github:actions:dispatch', () => {
     });
   });
 
-  it('should call the githubApis for creating WorkflowDispatch', async () => {
+  it('should call the githubApis for creating WorkflowDispatch without an input object', async () => {
     mockGithubClient.rest.actions.createWorkflowDispatch.mockResolvedValue({
       data: {
         foo: 'bar',
@@ -88,6 +88,33 @@ describe('github:actions:dispatch', () => {
       repo: 'repo',
       workflow_id: workflowId,
       ref: branchOrTagName,
+    });
+  });
+
+  it('should call the githubApis for creating WorkflowDispatch with an input object', async () => {
+    mockGithubClient.rest.actions.createWorkflowDispatch.mockResolvedValue({
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    const repoUrl = 'github.com?repo=repo&owner=owner';
+    const workflowId = 'dispatch_workflow';
+    const branchOrTagName = 'main';
+    const workflowInputs = '{ "foo": "bar" }';
+    const ctx = Object.assign({}, mockContext, {
+      input: { repoUrl, workflowId, branchOrTagName, workflowInputs },
+    });
+    await action.handler(ctx);
+
+    expect(
+      mockGithubClient.rest.actions.createWorkflowDispatch,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      workflow_id: workflowId,
+      ref: branchOrTagName,
+      inputs: workflowInputs,
     });
   });
 });
