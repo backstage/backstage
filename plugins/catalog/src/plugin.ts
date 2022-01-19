@@ -187,9 +187,9 @@ export const EntitySystemDiagramCard = catalogPlugin.provide(
   }),
 );
 
-export const EntityGenericRelationshipCard = catalogPlugin.provide(
+export const RelatedEntitiesCard = catalogPlugin.provide(
   createComponentExtension({
-    name: 'EntityGenericRelationshipCard',
+    name: 'RelatedEntitiesCard',
     component: {
       lazy: () =>
         import('./components/RelatedEntitiesCard').then(

@@ -44,7 +44,7 @@ export function AboutCard({ variant }: AboutCardProps): JSX.Element;
 // Warning: (ae-missing-release-tag) "AboutContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const AboutContent: ({ entity }: Props) => JSX.Element;
+export const AboutContent: ({ entity }: Props_2) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "AboutField" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -55,7 +55,7 @@ export const AboutField: ({
   value,
   gridSizes,
   children,
-}: Props_2) => JSX.Element;
+}: Props_3) => JSX.Element;
 
 // @public (undocumented)
 export type BackstageOverrides = Overrides & {
@@ -443,6 +443,12 @@ export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
 };
+
+// Warning: (ae-forgotten-export) The symbol "RelatedEntitiesCard" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "RelatedEntitiesCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const RelatedEntitiesCard: RelatedEntitiesCard_2;
 
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
