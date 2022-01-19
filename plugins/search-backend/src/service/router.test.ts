@@ -53,6 +53,39 @@ describe('createRouter', () => {
       expect(response.body).toMatchObject({ results: [] });
     });
 
+    it.each([
+      '',
+      'term=foo',
+      'term=foo&extra=param',
+      'types[0]=first-type',
+      'types[0]=first-type&types[1]=second-type',
+      'filters[prop]=value',
+      'pageCursor=foo',
+    ])('accepts valid query string "%s"', async queryString => {
+      const response = await request(app).get(`/query?${queryString}`);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toMatchObject({
+        results: [],
+      });
+    });
+
+    it.each([
+      'term[0]=foo',
+      'term[prop]=value',
+      'types=foo',
+      'types[length]=10000&types[0]=first-type',
+      'filters=stringValue',
+      'pageCursor[0]=1',
+    ])('rejects invalid query string "%s"', async queryString => {
+      const response = await request(app).get(`/query?${queryString}`);
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toMatchObject({
+        error: { message: /invalid query string/i },
+      });
+    });
+
     describe('search result filtering', () => {
       beforeAll(async () => {
         const logger = getVoidLogger();
