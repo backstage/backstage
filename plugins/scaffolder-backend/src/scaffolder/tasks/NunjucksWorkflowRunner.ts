@@ -257,7 +257,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           await action.handler({
             baseUrl: task.spec.baseUrl,
             input,
+            // this token is deprecated, and will be removed in favour of secrets.backstageToken instead.
             token: task.secrets?.token,
+            secrets: task.secrets ?? {},
             logger: taskLogger,
             logStream: streamLogger,
             workspacePath,
