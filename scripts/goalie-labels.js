@@ -42,10 +42,11 @@ module.exports = async ({ github, context, core }) => {
   const codeowners = new Codeowners();
 
   for (const pullRequest of allPullRequests) {
-    // Go through each file changed and go through each codeowner entry and use minimatch to see if the file matches
-    // strip the backstage group from the name?
+    // Go through each file changed and get the codeowners for that file.
+    // Find the group in the group list that matches the codeowner.
     // If it does match push the owner to a list of reviewers
-    // check to see the reviews and if there is at least one matching reviewer from those groupx
+    // check to see the reviews and if there is at least one matching reviewer from those group
+
     const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
       owner: context.repo.owner,
       repo: context.repo.repo,
@@ -88,17 +89,34 @@ module.exports = async ({ github, context, core }) => {
       }
     }
 
+    // if all required reviewers have reviewed
     if (hasReviewed.size === expectedReviewers.size) {
-      await github.rest.issues
-        .removeLabel({
+      const recentEventsForPR = await github.paginate(
+        github.rest.issues.listEvents,
+        {
           issue_number: pullRequest.number,
           owner: context.repo.owner,
           repo: context.repo.repo,
-          name: 'awaiting-review',
-        })
-        .catch(e => {
-          console.error(e);
-        });
+        },
+      );
+
+      // if the last event for the issue is not by the author, remove the label
+      if (
+        recentEventsForPR[recentEventsForPR.length - 1].actor.login !==
+        pullRequest.user.login
+      ) {
+        await github.rest.issues
+          .removeLabel({
+            issue_number: pullRequest.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            name: 'awaiting-review',
+          })
+          .catch(e => {
+            console.error(e);
+          });
+      }
+      // add the awaiting-review label to tell us that the PR is waiting on reviews
     } else {
       await github.rest.issues
         .addLabels({

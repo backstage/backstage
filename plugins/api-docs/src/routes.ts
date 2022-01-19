@@ -23,7 +23,7 @@ export const rootRoute = createRouteRef({
   id: 'api-docs',
 });
 
-export const createComponentRouteRef = createExternalRouteRef({
-  id: 'create-component',
+export const registerComponentRouteRef = createExternalRouteRef({
+  id: 'register-component',
   optional: true,
 });
