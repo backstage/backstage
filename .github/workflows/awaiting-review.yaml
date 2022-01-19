@@ -25,7 +25,7 @@ jobs:
           # TO THE WORKFLOW. THIS SCRIPT WILL AND SHOULD
           # RUN FROM THE BASE REPO ALL TIMES.
           script: |
-            if (['opened', 'synchronize'].includes(${{ github.event.action }})) {
+            if (['opened', 'synchronize'].includes('${{ github.event.action }}')) {
               // if it's the author, always add awaiting-review label
               const isAuthor = context.payload.pull_request.user.login === context.actor
               if (isAuthor) {
@@ -38,7 +38,7 @@ jobs:
               }
             }
 
-            if (${{ github.event.action}} === 'closed') {
+            if ('${{ github.event.action}}' === 'closed') {
               await github.rest.issues.removeLabel({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
