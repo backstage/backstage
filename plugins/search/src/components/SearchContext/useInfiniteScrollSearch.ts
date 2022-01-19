@@ -23,7 +23,7 @@ export function useInfiniteScrollSearch() {
       const element = e.target as HTMLElement;
 
       const isEndReached =
-        element.scrollHeight - Math.abs(element.scrollTop) ===
+        element.scrollHeight - Math.abs(element.scrollTop) <=
         element.clientHeight;
 
       if (isEndReached) {
