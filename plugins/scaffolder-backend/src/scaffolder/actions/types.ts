@@ -18,7 +18,7 @@ import { Logger } from 'winston';
 import { Writable } from 'stream';
 import { JsonValue, JsonObject } from '@backstage/types';
 import { Schema } from 'jsonschema';
-import { TemplateMetadata } from '../tasks/types';
+import { TaskSecrets, TemplateMetadata } from '../tasks/types';
 
 type PartialJsonObject = Partial<JsonObject>;
 type PartialJsonValue = PartialJsonObject | JsonValue | undefined;
@@ -38,9 +38,7 @@ export type ActionContext<Input extends InputBase> = {
    * @deprecated use `secrets.backstageToken` instead
    */
   token?: string | undefined;
-
   secrets?: TaskSecrets;
-
   workspacePath: string;
   input: Input;
   output(name: string, value: JsonValue): void;
