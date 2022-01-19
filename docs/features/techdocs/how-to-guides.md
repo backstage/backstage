@@ -132,7 +132,7 @@ maintain such a component in a new directory at
 `packages/app/src/components/techdocs`, and import and use it in `App.tsx`:
 
 ```tsx
-import { CustomTechDocsHome } from "./components/techdocs/CustomTechDocsHome";
+import { CustomTechDocsHome } from './components/techdocs/CustomTechDocsHome';
 // ...
 const AppRoutes = () => {
   <FlatRoutes>
@@ -406,10 +406,10 @@ plugins:
 
 The `docs/index.md` can for example have the following content:
 
-```md
-# \${{ values.component_id }}
+```
+# ${{ values.component_id }}
 
-\${{ values.description }}
+${{ values.description }}
 
 ## Getting started
 
@@ -441,19 +441,20 @@ techdocs:
 ```
 
 This way, all iframes where the host of src attribute is in the
-`sanitizer.allowedIframeHosts` list will be displayed
+`sanitizer.allowedIframeHosts` list will be displayed.
 
-<br>
+## How to add Mermaid support in TechDocs
 
-## How to add mermaid support in TechDocs
+To add `Mermaid` support in Techdocs, you can use [`kroki`](https://kroki.io)
+that creates diagrams from Textual descriptions. It is a single rendering
+gateway for all popular diagrams-as-a-code tools. It supports an enormous number
+of diagram types.
 
-To add `Mermaid support in Techdocs`, you can use [kroki](kroki.io) that creates diagrams from Textual descriptions. It is a single rendering gateway for all popular diagrams-as-a-code tools. It supports an enormous number of diagram types.
-
-1. **Create and Publish docker image:** Create the `docker image` from the following dockerfile and publish it to `dockerHub`.
+1. **Create and Publish docker image:** Create the docker image from the
+   following Dockerfile and publish it to DockerHub.
 
 ```docker
 FROM python:3.8-alpine
-
 
 RUN apk update && apk --no-cache add gcc musl-dev openjdk11-jdk curl graphviz ttf-dejavu fontconfig
 
@@ -464,14 +465,17 @@ RUN pip install mkdocs-kroki-plugin
 ENTRYPOINT [ "mkdocs" ]
 ```
 
-Create a repository in your `DockerHub` and run the below command in the same folder where your `dockerfile` is present
+Create a repository in your DockerHub and run the below command in the same
+folder where your Dockerfile is present:
 
-> docker build . -t dockerHub_Username/repositoryName:tagName
+```shell
+docker build . -t dockerHub_Username/repositoryName:tagName
+```
 
-Once the docker image is ready, push it to `DockerHub`.
-<br>
+Once the docker image is ready, push it to DockerHub.
 
-2. **Update app-config.yaml:** So that when your app generates the techdoc, it will pull your docker image from `DockerHub`.
+2. **Update app-config.yaml:** So that when your app generates techdocs, it will
+   pull your docker image from DockerHub.
 
 ```python
 techdocs:
@@ -482,10 +486,9 @@ techdocs:
     pullImage: true
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
-
 ```
 
-3. **Add kroki plugin in Mkdocs.yml:**
+3. **Add the `kroki` plugin in mkdocs.yml:**
 
 ```yml
 plugins:
@@ -507,24 +510,24 @@ Kroki-->>GitLab: Image
 
 Done! Now you have a support of the following diagrams along with mermaid:
 
-- PlantUML
-- BlockDiag
-- BPMN
-- ByteField
-- SeqDiag
-- ActDiag
-- NwDiag
-- PacketDiag
-- RackDiag
-- C4 with PlantUML
-- Ditaa
-- Erd
-- Excalidraw
-- GraphViz
-- Nomnoml
-- Pikchr
-- Svgbob
-- UMlet
-- Vega
-- Vega-Lite
-- WaveDrom
+- `PlantUML`
+- `BlockDiag`
+- `BPMN`
+- `ByteField`
+- `SeqDiag`
+- `ActDiag`
+- `NwDiag`
+- `PacketDiag`
+- `RackDiag`
+- `C4 with PlantUML`
+- `Ditaa`
+- `Erd`
+- `Excalidraw`
+- `GraphViz`
+- `Nomnoml`
+- `Pikchr`
+- `Svgbob`
+- `UMlet`
+- `Vega`
+- `Vega-Lite`
+- `WaveDrom`
