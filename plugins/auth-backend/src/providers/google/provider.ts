@@ -198,7 +198,7 @@ export const googleEmailSignInResolver: SignInResolver<OAuthResult> = async (
   const claims = getEntityClaims(entity);
   const token = await ctx.tokenIssuer.issueToken({ claims });
 
-  return { id: `user:default/${entity.metadata.name}`, entity, token };
+  return { id: entity.metadata.name, entity, token };
 };
 
 const googleDefaultSignInResolver: SignInResolver<OAuthResult> = async (
