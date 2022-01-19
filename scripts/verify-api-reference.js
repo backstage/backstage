@@ -26,9 +26,14 @@ async function main() {
     'utf8',
   );
 
+  // This makes sure we see the package description of the @backstage/types package
+  // on the API reference index page.
+  // Duplicate installations of @microsoft/api-extractor-model can cause this to
+  // happen, but it also serves as a general check that the API reference is OK.
   if (!indexContent.includes('types used within Backstage')) {
     throw new Error(
-      'Could not find package documentation for @backstage/types in the API reference index',
+      'Could not find package documentation for @backstage/types in the API reference index. ' +
+        'Make sure there are no duplicate @microsoft or @rushstack dependencies.',
     );
   }
 }
