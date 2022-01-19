@@ -18,8 +18,8 @@ import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { rootRouteRef } from '../../plugin';
 
-import { SidebarSearchField } from '@backstage/core-components';
 import { useRouteRef, IconComponent } from '@backstage/core-plugin-api';
+import { SidebarSearchField, useContent } from '@backstage/core-components';
 
 export type SidebarSearchProps = {
   icon?: IconComponent;
@@ -27,14 +27,15 @@ export type SidebarSearchProps = {
 
 export const SidebarSearch = (props: SidebarSearchProps) => {
   const searchRoute = useRouteRef(rootRouteRef);
+  const { focusContent } = useContent();
   const navigate = useNavigate();
   const handleSearch = useCallback(
     (query: string): void => {
       const queryString = qs.stringify({ query }, { addQueryPrefix: true });
-
+      focusContent();
       navigate(`${searchRoute()}${queryString}`);
     },
-    [navigate, searchRoute],
+    [focusContent, navigate, searchRoute],
   );
 
   return (

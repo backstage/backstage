@@ -2403,6 +2403,12 @@ export function TrendLine(
     },
 ): JSX.Element | null;
 
+// @public
+export function useContent(): {
+  focusContent: () => void;
+  contentRef: React_2.MutableRefObject<HTMLElement | null> | undefined;
+};
+
 // Warning: (ae-forgotten-export) The symbol "SetQueryParams" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useQueryParamState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
