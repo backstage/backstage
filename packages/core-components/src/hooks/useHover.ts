@@ -15,7 +15,7 @@
  */
 import { useEffect, RefObject, useState } from 'react';
 
-export const useHover = (ref: RefObject<HTMLInputElement> ) => {
+export const useHover = (ref: RefObject<HTMLInputElement>) => {
   const [value, setValue] = useState(false);
 
   const handleMouseOver = () => setValue(true);
