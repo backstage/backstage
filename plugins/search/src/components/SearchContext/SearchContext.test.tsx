@@ -15,7 +15,6 @@
  */
 
 import { useApi } from '@backstage/core-plugin-api';
-import { SearchResultSet } from '@backstage/search-common';
 import { render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
