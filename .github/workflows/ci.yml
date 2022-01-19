@@ -124,6 +124,9 @@ jobs:
       - name: check api reports and generate API reference
         run: yarn build:api-reports:only --ci --docs
 
+      - name: verify api reference
+        run: node scripts/verify-api-reference.js
+
       - name: verify changesets
         run: node scripts/verify-changesets.js
 
