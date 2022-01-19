@@ -44,7 +44,7 @@ export function AboutCard({ variant }: AboutCardProps): JSX.Element;
 // Warning: (ae-missing-release-tag) "AboutContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const AboutContent: ({ entity }: Props_2) => JSX.Element;
+export const AboutContent: ({ entity }: Props) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "AboutField" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -55,7 +55,7 @@ export const AboutField: ({
   value,
   gridSizes,
   children,
-}: Props_3) => JSX.Element;
+}: Props_2) => JSX.Element;
 
 // @public (undocumented)
 export type BackstageOverrides = Overrides & {
@@ -444,11 +444,19 @@ export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
 };
 
-// Warning: (ae-forgotten-export) The symbol "RelatedEntitiesCard" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "RelatedEntitiesCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const RelatedEntitiesCard: RelatedEntitiesCard_2;
+export const RelatedEntitiesCard: <T extends Entity>(props: {
+  variant?: 'gridItem' | undefined;
+  title: string;
+  columns: TableColumn<T>[];
+  entityKind?: string | undefined;
+  relationType: string;
+  emptyMessage: string;
+  emptyHelpLink: string;
+  asRenderableEntities: (entities: Entity[]) => T[];
+}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
