@@ -50,6 +50,7 @@ export {
   EntityHasSystemsCard,
   EntityLinksCard,
   EntitySystemDiagramCard,
+  RelatedEntitiesCard,
 } from './plugin';
 
 export type { EntityLinksEmptyStateClassKey } from './components/EntityLinksCard';

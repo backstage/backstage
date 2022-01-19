@@ -444,6 +444,20 @@ export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
 };
 
+// Warning: (ae-missing-release-tag) "RelatedEntitiesCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const RelatedEntitiesCard: <T extends Entity>(props: {
+  variant?: 'gridItem' | undefined;
+  title: string;
+  columns: TableColumn<T>[];
+  entityKind?: string | undefined;
+  relationType: string;
+  emptyMessage: string;
+  emptyHelpLink: string;
+  asRenderableEntities: (entities: Entity[]) => T[];
+}) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
