@@ -73,9 +73,18 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
     const DashboardEntityList = await this.callApi<DashboardEntity>(
       getDashboardParentGuidQuery,
       {
-        query: `parentId ='${guid}'`,
+        query: `id ='${guid}' OR parentId ='${guid}'`,
       },
     );
+    if (
+      DashboardEntityList &&
+      DashboardEntityList?.data?.actor.entitySearch.results.entities?.length > 1
+    ) {
+      DashboardEntityList.data.actor.entitySearch.results.entities =
+        DashboardEntityList?.data.actor.entitySearch.results.entities.filter(
+          entity => entity?.dashboardParentGuid !== null,
+        );
+    }
     return {
       getDashboardEntity: DashboardEntityList!,
     };
