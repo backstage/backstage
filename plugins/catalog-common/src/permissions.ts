@@ -39,6 +39,20 @@ export const catalogEntityReadPermission: Permission = {
 };
 
 /**
+ * This permission is used to authorize actions that involve creating a new
+ * catalog entity. This includes registering an existing component into the
+ * catalog.
+ * @public
+ */
+export const catalogEntityCreatePermission: Permission = {
+  name: 'catalog.entity.create',
+  attributes: {
+    action: 'create',
+  },
+  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+};
+
+/**
  * This permission is used to designate actions that involve removing one or
  * more entities from the catalog.
  * @public

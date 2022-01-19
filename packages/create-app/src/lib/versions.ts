@@ -49,6 +49,7 @@ import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.j
 import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
 import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/package.json';
 import { version as pluginCatalog } from '../../../../plugins/catalog/package.json';
+import { version as pluginCatalogCommon } from '../../../../plugins/catalog-common/package.json';
 import { version as pluginCatalogReact } from '../../../../plugins/catalog-react/package.json';
 import { version as pluginCatalogBackend } from '../../../../plugins/catalog-backend/package.json';
 import { version as pluginCatalogGraph } from '../../../../plugins/catalog-graph/package.json';
@@ -59,6 +60,7 @@ import { version as pluginGithubActions } from '../../../../plugins/github-actio
 import { version as pluginLighthouse } from '../../../../plugins/lighthouse/package.json';
 import { version as pluginOrg } from '../../../../plugins/org/package.json';
 import { version as pluginPermissionCommon } from '../../../../plugins/permission-common/package.json';
+import { version as pluginPermissionReact } from '../../../../plugins/permission-react/package.json';
 import { version as pluginPermissionNode } from '../../../../plugins/permission-node/package.json';
 import { version as pluginProxyBackend } from '../../../../plugins/proxy-backend/package.json';
 import { version as pluginRollbarBackend } from '../../../../plugins/rollbar-backend/package.json';
@@ -89,6 +91,7 @@ export const packageVersions = {
   '@backstage/plugin-app-backend': pluginAppBackend,
   '@backstage/plugin-auth-backend': pluginAuthBackend,
   '@backstage/plugin-catalog': pluginCatalog,
+  '@backstage/plugin-catalog-common': pluginCatalogCommon,
   '@backstage/plugin-catalog-react': pluginCatalogReact,
   '@backstage/plugin-catalog-backend': pluginCatalogBackend,
   '@backstage/plugin-catalog-graph': pluginCatalogGraph,
@@ -100,6 +103,7 @@ export const packageVersions = {
   '@backstage/plugin-org': pluginOrg,
   '@backstage/plugin-permission-common': pluginPermissionCommon,
   '@backstage/plugin-permission-node': pluginPermissionNode,
+  '@backstage/plugin-permission-react': pluginPermissionReact,
   '@backstage/plugin-proxy-backend': pluginProxyBackend,
   '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,

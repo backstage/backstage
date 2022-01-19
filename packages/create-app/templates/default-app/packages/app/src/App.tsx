@@ -30,6 +30,8 @@ import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
 import { createApp } from '@backstage/app-defaults';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
+import { PermissionedRoute } from '@backstage/plugin-permission-react';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 
 const app = createApp({
   apis,
@@ -76,7 +78,11 @@ const routes = (
       path="/tech-radar"
       element={<TechRadarPage width={1500} height={800} />}
     />
-    <Route path="/catalog-import" element={<CatalogImportPage />} />
+    <PermissionedRoute
+      path="/catalog-import"
+      permission={catalogEntityCreatePermission}
+      element={<CatalogImportPage />}
+    />
     <Route path="/search" element={<SearchPage />}>
       {searchPage}
     </Route>
