@@ -27242,9 +27242,9 @@ test-exclude@^6.0.0:
     minimatch "^3.0.4"
 
 testcontainers@^8.1.2:
-  version "8.1.2"
-  resolved "https://registry.npmjs.org/testcontainers/-/testcontainers-8.1.2.tgz#f679d908a295715a1d5eda8975d5e91891204406"
-  integrity sha512-/b3dWUjyTI+2qnWusAMcNSrQsCC5f2zhwn1c+fS/mwopx3xbkb0Q+glXKIs28hJryXk50QDPXOoIi2PF77HGdg==
+  version "8.2.0"
+  resolved "https://registry.npmjs.org/testcontainers/-/testcontainers-8.2.0.tgz#41a9ff1b9a1fb50654eeec5478c0451a0179bcef"
+  integrity sha512-s+w9WtgAPHkuEo+eLKEynT3EutaHeGsVqdZCe5xLDFzklToBF/jcUcfIFmI4rxDUI1kJqSnjr0dALzETiqnU6w==
   dependencies:
     "@types/archiver" "^5.1.1"
     "@types/dockerode" "^3.2.5"
