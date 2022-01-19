@@ -35,30 +35,8 @@ import {
   createRoutableExtension,
   analyticsApiRef,
 } from '@backstage/core-plugin-api';
-import { generateBoundRoutes, AppManager } from './AppManager';
+import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
-
-describe('generateBoundRoutes', () => {
-  it('runs happy path', () => {
-    const external = { myRoute: createExternalRouteRef({ id: '1' }) };
-    const ref = createRouteRef({ id: 'ref-1' });
-    const result = generateBoundRoutes(({ bind }) => {
-      bind(external, { myRoute: ref });
-    });
-
-    expect(result.get(external.myRoute)).toBe(ref);
-  });
-
-  it('throws on unknown keys', () => {
-    const external = { myRoute: createExternalRouteRef({ id: '2' }) };
-    const ref = createRouteRef({ id: 'ref-2' });
-    expect(() =>
-      generateBoundRoutes(({ bind }) => {
-        bind(external, { someOtherRoute: ref } as any);
-      }),
-    ).toThrow('Key someOtherRoute is not an existing external route');
-  });
-});
 
 describe('Integration Test', () => {
   const noOpAnalyticsApi = createApiFactory(
