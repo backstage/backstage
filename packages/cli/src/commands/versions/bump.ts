@@ -310,10 +310,18 @@ function createVersionFinder(releaseLine = 'latest') {
       found.set(name, latestVersion);
       return latestVersion;
     }
+    const latestVersionRelease = new Date(info.time[latestVersion]);
+    const taggedVersionRelease = new Date(info.time[taggedVersion]);
+    if (latestVersionRelease > taggedVersionRelease) {
+      console.log(
+        `using 'latest' dist tag for ${name} as its newer than '${distTag}'`,
+      );
+      found.set(name, latestVersion);
+      return latestVersion;
+    }
 
-    // Take release from latest of next release is older
-    found.set(name, targetVersion);
-    return targetVersion;
+    found.set(name, taggedVersion);
+    return taggedVersion;
   };
 }
 
