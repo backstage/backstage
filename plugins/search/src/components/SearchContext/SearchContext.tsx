@@ -40,9 +40,9 @@ type SearchContextValue = {
   setPageCursor: React.Dispatch<React.SetStateAction<string | undefined>>;
   fetchNextPage?: React.DispatchWithoutAction;
   fetchPreviousPage?: React.DispatchWithoutAction;
-} & SearchContextInitialState;
+} & SettableSearchContext;
 
-type SearchContextInitialState = {
+type SettableSearchContext = {
   term: string;
   types: string[];
   filters: JsonObject;
@@ -62,7 +62,7 @@ export const SearchContextProvider = ({
     types: [],
   },
   children,
-}: PropsWithChildren<{ initialState?: SearchContextInitialState }>) => {
+}: PropsWithChildren<{ initialState?: SettableSearchContext }>) => {
   const query = useCachedSearchQuery();
   const [pageCursor, setPageCursor] = useState(initialState.pageCursor);
   const [filters, setFilters] = useState(initialState.filters);
