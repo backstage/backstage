@@ -26,8 +26,8 @@ type Props = {
   variant?: InfoCardVariants;
   /** Progress in % specified as decimal, e.g. "0.23" */
   progress: number;
-  hoverMessage?: ReactNode;
-  iconInfoMessage?: string;
+  description?: ReactNode;
+  icon?: ReactNode;
   inverse?: boolean;
   deepLink?: BottomLinkProps;
   getColor?: GaugePropsGetColor;
@@ -60,15 +60,15 @@ export function GaugeCard(props: Props) {
     progress,
     inverse,
     deepLink,
-    hoverMessage,
-    iconInfoMessage,
+    description,
+    icon,
     variant,
     getColor,
   } = props;
 
   const gaugeProps = {
     inverse,
-    hoverMessage,
+    description,
     getColor,
     value: progress,
   };
@@ -80,7 +80,7 @@ export function GaugeCard(props: Props) {
         subheader={subheader}
         deepLink={deepLink}
         variant={variant}
-        iconInfoMessage={iconInfoMessage}
+        icon={icon}
       >
         <Gauge {...gaugeProps} />
       </InfoCard>

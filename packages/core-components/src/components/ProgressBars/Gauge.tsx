@@ -17,11 +17,15 @@
 import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Circle } from 'rc-progress';
-import { useHover } from '../../hooks';
-import React, { ReactNode, RefObject, useRef } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 
 /** @public */
-export type GaugeClassKey = 'root' | 'overlay' | 'circle' | 'colorUnknown';
+export type GaugeClassKey =
+  | 'root'
+  | 'overlay'
+  | 'description'
+  | 'circle'
+  | 'colorUnknown';
 
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
@@ -38,8 +42,8 @@ const useStyles = makeStyles<BackstageTheme>(
       fontWeight: 'bold',
       color: theme.palette.textContrast,
     },
-    hoveringMessage: {
-      fontSize: 13,
+    description: {
+      fontSize: '100%',
       top: '50%',
       left: '50%',
       transform: 'translate(-55%, -50%)',
@@ -63,7 +67,7 @@ export type GaugeProps = {
   inverse?: boolean;
   unit?: string;
   max?: number;
-  hoverMessage?: ReactNode;
+  description?: ReactNode;
   getColor?: GaugePropsGetColor;
 };
 
@@ -115,18 +119,37 @@ export const getProgressColor: GaugePropsGetColor = ({
  */
 
 export function Gauge(props: GaugeProps) {
-  const hoverRef = useRef() as RefObject<HTMLInputElement>;
-  const isHovering = useHover(hoverRef);
+  const hoverRef = useRef<HTMLDivElement>(null);
   const { getColor = getProgressColor } = props;
   const classes = useStyles(props);
   const { palette } = useTheme<BackstageTheme>();
-  const { value, fractional, inverse, unit, max, hoverMessage } = {
+  const { value, fractional, inverse, unit, max, description } = {
     ...defaultGaugeProps,
     ...props,
   };
 
   const asPercentage = fractional ? Math.round(value * max) : value;
   const asActual = max !== 100 ? Math.round(value) : asPercentage;
+
+  const [isHovering, setValue] = useState(false);
+  const handleMouseOver = () => setValue(true);
+  const handleMouseOut = () => setValue(false);
+
+  useEffect(() => {
+    const node = hoverRef.current;
+    if (node) {
+      node.addEventListener('mouseenter', handleMouseOver);
+      node.addEventListener('mouseleave', handleMouseOut);
+
+      return () => {
+        node.removeEventListener('mouseenter', handleMouseOver);
+        node.removeEventListener('mouseleave', handleMouseOut);
+      };
+    }
+    return () => {
+      setValue(false);
+    };
+  });
 
   return (
     <div ref={hoverRef} className={classes.root}>
@@ -138,8 +161,8 @@ export function Gauge(props: GaugeProps) {
         strokeColor={getColor({ palette, value: asActual, inverse, max })}
         className={classes.circle}
       />
-      {hoverMessage && isHovering ? (
-        <div className={classes.hoveringMessage}>{hoverMessage}</div>
+      {description && isHovering ? (
+        <div className={classes.description}>{description}</div>
       ) : (
         <div className={classes.overlay}>
           {isNaN(value) ? 'N/A' : `${asActual}${unit}`}

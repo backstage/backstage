@@ -18,6 +18,8 @@ import React, { PropsWithChildren } from 'react';
 import { GaugeCard } from './GaugeCard';
 import Grid from '@material-ui/core/Grid';
 import { MemoryRouter } from 'react-router';
+import Tooltip from '@material-ui/core/Tooltip';
+import Info from '@material-ui/icons/Info';
 
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
@@ -126,7 +128,11 @@ export const InfoMessage = () => (
         title="Progress"
         subheader="With a subheader"
         progress={0.3}
-        iconInfoMessage="Info Message"
+        icon={
+          <Tooltip title="Info Message" arrow>
+            <Info style={{ float: 'right' }} />
+          </Tooltip>
+        }
       />
     </Grid>
     <Grid item>
@@ -134,7 +140,11 @@ export const InfoMessage = () => (
         title="Progress"
         subheader="With a subheader"
         progress={0.57}
-        iconInfoMessage="Info Message"
+        icon={
+          <Tooltip title="Info Message" arrow>
+            <Info style={{ float: 'right' }} />
+          </Tooltip>
+        }
       />
     </Grid>
     <Grid item>
@@ -142,7 +152,11 @@ export const InfoMessage = () => (
         title="Progress"
         subheader="With a subheader"
         progress={0.89}
-        iconInfoMessage="Info Message"
+        icon={
+          <Tooltip title="Info Message" arrow>
+            <Info style={{ float: 'right' }} />
+          </Tooltip>
+        }
       />
     </Grid>
     <Grid item>
@@ -151,7 +165,11 @@ export const InfoMessage = () => (
         subheader="With a subheader"
         inverse
         progress={0.2}
-        iconInfoMessage="Info Message"
+        icon={
+          <Tooltip title="Info Message" arrow>
+            <Info style={{ float: 'right' }} />
+          </Tooltip>
+        }
       />
     </Grid>
   </Wrapper>
@@ -160,28 +178,20 @@ export const InfoMessage = () => (
 export const HoverMessage = () => (
   <Wrapper>
     <Grid item>
-      <GaugeCard title="Progress" progress={0.3} hoverMessage="Hover Message" />
+      <GaugeCard title="Progress" progress={0.3} description="Hover Message" />
     </Grid>
     <Grid item>
-      <GaugeCard
-        title="Progress"
-        progress={0.57}
-        hoverMessage="Hover Message"
-      />
+      <GaugeCard title="Progress" progress={0.57} description="Hover Message" />
     </Grid>
     <Grid item>
-      <GaugeCard
-        title="Progress"
-        progress={0.89}
-        hoverMessage="Hover Message"
-      />
+      <GaugeCard title="Progress" progress={0.89} description="Hover Message" />
     </Grid>
     <Grid item>
       <GaugeCard
         title="Progress"
         inverse
         progress={0.2}
-        hoverMessage="Hover Message"
+        description="Hover Message"
       />
     </Grid>
   </Wrapper>

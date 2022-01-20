@@ -37,7 +37,6 @@ import { default as React_2 } from 'react';
 import * as React_3 from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
-import { RefObject } from 'react';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { SignInPageProps } from '@backstage/core-plugin-api';
 import { SparklinesLineProps } from 'react-sparklines';
@@ -384,7 +383,12 @@ export function GaugeCard(props: Props_10): JSX.Element;
 export type GaugeCardClassKey = 'root';
 
 // @public (undocumented)
-export type GaugeClassKey = 'root' | 'overlay' | 'circle' | 'colorUnknown';
+export type GaugeClassKey =
+  | 'root'
+  | 'overlay'
+  | 'description'
+  | 'circle'
+  | 'colorUnknown';
 
 // @public (undocumented)
 export type GaugeProps = {
@@ -393,7 +397,7 @@ export type GaugeProps = {
   inverse?: boolean;
   unit?: string;
   max?: number;
-  hoverMessage?: ReactNode;
+  description?: ReactNode;
   getColor?: GaugePropsGetColor;
 };
 
@@ -924,6 +928,7 @@ export const SidebarDivider: React_2.ComponentType<
     | 'contentEditable'
     | 'inputMode'
     | 'tabIndex'
+    | 'onError'
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
@@ -1031,7 +1036,6 @@ export const SidebarDivider: React_2.ComponentType<
     | 'onInvalidCapture'
     | 'onLoad'
     | 'onLoadCapture'
-    | 'onError'
     | 'onErrorCapture'
     | 'onKeyDown'
     | 'onKeyDownCapture'
@@ -1286,6 +1290,7 @@ export const SidebarScrollWrapper: React_2.ComponentType<
     | 'contentEditable'
     | 'inputMode'
     | 'tabIndex'
+    | 'onError'
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
@@ -1393,7 +1398,6 @@ export const SidebarScrollWrapper: React_2.ComponentType<
     | 'onInvalidCapture'
     | 'onLoad'
     | 'onLoadCapture'
-    | 'onError'
     | 'onErrorCapture'
     | 'onKeyDown'
     | 'onKeyDownCapture'
@@ -1561,6 +1565,7 @@ export const SidebarSpace: React_2.ComponentType<
     | 'contentEditable'
     | 'inputMode'
     | 'tabIndex'
+    | 'onError'
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
@@ -1668,7 +1673,6 @@ export const SidebarSpace: React_2.ComponentType<
     | 'onInvalidCapture'
     | 'onLoad'
     | 'onLoadCapture'
-    | 'onError'
     | 'onErrorCapture'
     | 'onKeyDown'
     | 'onKeyDownCapture'
@@ -1835,6 +1839,7 @@ export const SidebarSpacer: React_2.ComponentType<
     | 'contentEditable'
     | 'inputMode'
     | 'tabIndex'
+    | 'onError'
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
@@ -1942,7 +1947,6 @@ export const SidebarSpacer: React_2.ComponentType<
     | 'onInvalidCapture'
     | 'onLoad'
     | 'onLoadCapture'
-    | 'onError'
     | 'onErrorCapture'
     | 'onKeyDown'
     | 'onKeyDownCapture'
@@ -2410,11 +2414,6 @@ export function useContent(): {
   focusContent: () => void;
   contentRef: React_2.MutableRefObject<HTMLElement | null> | undefined;
 };
-
-// Warning: (ae-missing-release-tag) "useHover" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const useHover: (ref: RefObject<HTMLInputElement>) => boolean;
 
 // Warning: (ae-forgotten-export) The symbol "SetQueryParams" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useQueryParamState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
