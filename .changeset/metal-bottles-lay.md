@@ -6,7 +6,7 @@ Replaced EntitySystemDiagramCard with EntityCatalogGraphCard
 
 To make this change to an existing app:
 
-`yarn add @backstage/catalog-graph-plugin`
+Add `@backstage/catalog-graph-plugin` in `packages/app`
 
 Apply the following changes to the `packages/app/src/components/catalog/EntityPage.tsx` file:
 
