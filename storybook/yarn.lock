@@ -1120,10 +1120,36 @@
     zen-observable "^0.8.15"
     zod "^3.11.6"
 
+"@backstage/core-app-api@file:../packages/core-app-api":
+  version "0.5.0"
+  dependencies:
+    "@backstage/config" "^0.1.13"
+    "@backstage/core-plugin-api" "^0.6.0"
+    "@backstage/types" "^0.1.1"
+    "@backstage/version-bridge" "^0.1.1"
+    "@types/prop-types" "^15.7.3"
+    prop-types "^15.7.2"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+    zen-observable "^0.8.15"
+    zod "^3.11.6"
+
 "@backstage/core-plugin-api@^0.6.0":
   version "0.6.0"
   resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-0.6.0.tgz#85e1f6e1a1d41ff8d56579671cc9a628e6e4a598"
   integrity sha512-EZFLQhGwr1ZcT60j+ePKIp1+BPcaxCTVjWu1MG4yiDBPa8iDD32vq/Us3NKurc6aCZCyI5lmZtYKwzSdTCkFcQ==
+  dependencies:
+    "@backstage/config" "^0.1.13"
+    "@backstage/types" "^0.1.1"
+    "@backstage/version-bridge" "^0.1.1"
+    history "^5.0.0"
+    prop-types "^15.7.2"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+    zen-observable "^0.8.15"
+
+"@backstage/core-plugin-api@file:../packages/core-plugin-api":
+  version "0.6.0"
   dependencies:
     "@backstage/config" "^0.1.13"
     "@backstage/types" "^0.1.1"
@@ -1166,10 +1192,8 @@
     react-router "6.0.0-beta.0"
     react-use "^17.2.4"
 
-"@backstage/test-utils@^0.2.3":
+"@backstage/test-utils@file:../packages/test-utils":
   version "0.2.3"
-  resolved "https://registry.npmjs.org/@backstage/test-utils/-/test-utils-0.2.3.tgz#58500d31c8d8e74b3fdcc72684c196c866b192b8"
-  integrity sha512-GweF5MIQf3hSxPu61Y/CLBa59p3tV+KvLhBol2M++ofhGeqNf3qpIxwAjmA4y1YP+ReZOuB1LR4NWMtkk7TWjw==
   dependencies:
     "@backstage/config" "^0.1.13"
     "@backstage/core-app-api" "^0.5.0"
@@ -1188,10 +1212,8 @@
     react-router-dom "6.0.0-beta.0"
     zen-observable "^0.8.15"
 
-"@backstage/theme@^0.2.0", "@backstage/theme@^0.2.14":
+"@backstage/theme@^0.2.14", "@backstage/theme@file:../packages/theme":
   version "0.2.14"
-  resolved "https://registry.npmjs.org/@backstage/theme/-/theme-0.2.14.tgz#5f285f4c1e4642b5bbf975d2cb2343c57816cf6d"
-  integrity sha512-M1O9pye+rslfaj56Mv7/GSbWCFLB0jQc0SWuWbD4xdZ9nQ3N7DPG8q6Qc7n+X6xn8e9hiq9YrKz9+TD+ZP3UxQ==
   dependencies:
     "@material-ui/core" "^4.12.2"
 
