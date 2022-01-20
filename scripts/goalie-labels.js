@@ -67,7 +67,9 @@ const getRepoEvents = async ({ github, context, pull_number }) => {
     })),
   ];
 
-  return events.sort((a, b) => new Date(a.updated_at) - new Date(b.updated_at));
+  return events
+    .sort((a, b) => new Date(a.updated_at) - new Date(b.updated_at))
+    .filter(({ user }) => !user.login.includes('[bot]'));
 };
 
 module.exports = async ({ github, context, core }) => {
