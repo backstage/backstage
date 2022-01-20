@@ -93,17 +93,7 @@ export async function createConfig(
   if (checksEnabled) {
     plugins.push(
       new ForkTsCheckerWebpackPlugin({
-        typescript: paths.targetTsConfig,
-        eslint: true,
-        eslintOptions: {
-          files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
-          options: {
-            parserOptions: {
-              project: paths.targetTsConfig,
-              tsconfigRootDir: paths.targetPath,
-            },
-          },
-        },
+        typescript: { configFile: paths.targetTsConfig },
       }),
     );
   }
@@ -350,17 +340,7 @@ export async function createBackendConfig(
       ...(checksEnabled
         ? [
             new ForkTsCheckerWebpackPlugin({
-              typescript: paths.targetTsConfig,
-              eslint: true,
-              eslintOptions: {
-                files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
-                options: {
-                  parserOptions: {
-                    project: paths.targetTsConfig,
-                    tsconfigRootDir: paths.targetPath,
-                  },
-                },
-              },
+              typescript: { configFile: paths.targetTsConfig },
             }),
           ]
         : []),
