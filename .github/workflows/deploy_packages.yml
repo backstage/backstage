@@ -1,4 +1,4 @@
-name: Main Master Build
+name: Deploy Packages
 
 on:
   workflow_dispatch:

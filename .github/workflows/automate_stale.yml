@@ -1,4 +1,4 @@
-name: 'Stale workflow'
+name: Automate staleness
 on:
   workflow_dispatch:
   schedule:

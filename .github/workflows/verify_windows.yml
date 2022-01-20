@@ -1,4 +1,4 @@
-name: Master Build Windows
+name: Verify Master Branch on Windows
 
 on:
   workflow_dispatch:
