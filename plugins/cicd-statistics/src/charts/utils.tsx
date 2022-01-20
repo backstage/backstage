@@ -15,7 +15,7 @@
  */
 
 import React, { CSSProperties } from 'react';
-import { formatISO9075, formatDistanceStrict } from 'date-fns';
+import { DateTime, Duration } from 'luxon';
 
 const infoText: CSSProperties = { color: 'InfoText' };
 
@@ -40,20 +40,25 @@ export function pickElements<T>(arr: ReadonlyArray<T>, num: number): Array<T> {
   ];
 }
 
-export function labelFormatter(epoch: number) {
-  return <span style={infoText}>{formatISO9075(new Date(epoch))}</span>;
+function formatDateShort(milliseconds: number) {
+  return DateTime.fromMillis(milliseconds).toLocaleString(DateTime.DATE_SHORT);
 }
-
-export function labelFormatterWithoutTime(epoch: number) {
-  return (
-    <span style={infoText}>
-      {formatISO9075(new Date(epoch), { representation: 'date' })}
-    </span>
+function formatDateTimeShort(milliseconds: number) {
+  return DateTime.fromMillis(milliseconds).toLocaleString(
+    DateTime.DATETIME_SHORT,
   );
 }
 
+export function labelFormatter(epoch: number) {
+  return <span style={infoText}>{formatDateTimeShort(epoch)}</span>;
+}
+
+export function labelFormatterWithoutTime(epoch: number) {
+  return <span style={infoText}>{formatDateShort(epoch)}</span>;
+}
+
 export function tickFormatterX(epoch: number) {
-  return formatISO9075(new Date(epoch), { representation: 'date' });
+  return formatDateShort(epoch);
 }
 
 export function tickFormatterY(duration: number) {
@@ -80,8 +85,32 @@ export function tooltipValueFormatter(duration: number, name: string) {
   ];
 }
 
-const baseDate = new Date();
-const baseEpoch = baseDate.getTime();
-export function formatDuration(milliseconds: number) {
-  return formatDistanceStrict(baseDate, new Date(baseEpoch + milliseconds));
+export function formatDuration(millis: number) {
+  let rest = Math.round(millis);
+  const days = Math.floor(rest / (1000 * 60 * 60 * 24));
+  rest -= days * (1000 * 60 * 60 * 24);
+  const hours = Math.floor(rest / (1000 * 60 * 60));
+  rest -= hours * (1000 * 60 * 60);
+  const minutes = Math.floor(rest / (1000 * 60));
+  rest -= minutes * (1000 * 60);
+  const seconds = Math.floor(rest / 1000);
+  rest -= seconds * 1000;
+  const milliseconds = rest;
+
+  if (!days && !hours && !minutes) {
+    if (seconds < 1) {
+      return `${milliseconds}ms`;
+    } else if (seconds < 2) {
+      return `${((milliseconds + seconds * 1000) / 1000).toFixed(1)}s`;
+    }
+  }
+
+  const dur = Duration.fromObject({
+    ...(days && { days }),
+    ...(hours && { hours }),
+    ...(minutes && !days && { minutes }),
+    ...(seconds && !days && !hours && { seconds }),
+  });
+
+  return dur.toHuman({ unitDisplay: 'narrow' }).replace(/, /g, '');
 }

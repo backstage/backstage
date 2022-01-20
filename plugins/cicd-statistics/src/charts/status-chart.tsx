@@ -34,8 +34,8 @@ import {
   Typography,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { formatISO9075, parseISO } from 'date-fns';
 import { countBy } from 'lodash';
+import { DateTime } from 'luxon';
 
 import { Build, FilterStatusType, statusTypes } from '../apis/types';
 import { labelFormatterWithoutTime, tickFormatterX } from './utils';
@@ -56,9 +56,7 @@ export function StatusChart(props: StatusChartProps) {
     builds.forEach(build => {
       foundStatuses.add(build.status);
 
-      const dayString = formatISO9075(build.requestedAt, {
-        representation: 'date',
-      });
+      const dayString = DateTime.fromJSDate(build.requestedAt).toISODate();
       const dayList = buildsByDay.get(dayString);
       if (dayList) {
         dayList.push(build);
@@ -75,7 +73,7 @@ export function StatusChart(props: StatusChartProps) {
         ),
       ],
       values: [...buildsByDay.entries()].map(([dayString, buildThisDay]) => ({
-        __epoch: parseISO(dayString).getTime(),
+        __epoch: DateTime.fromISO(dayString).toMillis(),
         ...countBy(buildThisDay, 'status'),
       })),
     };

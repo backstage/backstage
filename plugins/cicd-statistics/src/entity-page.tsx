@@ -16,9 +16,9 @@
 
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { Grid, makeStyles, Theme } from '@material-ui/core';
-import { startOfDay, endOfDay } from 'date-fns';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
+import { DateTime } from 'luxon';
 
 import {
   useCicdStatistics,
@@ -57,6 +57,13 @@ const useStyles = makeStyles<Theme>(
     name: 'CicdStatisticsView',
   },
 );
+
+function startOfDay(date: Date) {
+  return DateTime.fromJSDate(date).startOf('day').toJSDate();
+}
+function endOfDay(date: Date) {
+  return DateTime.fromJSDate(date).endOf('day').toJSDate();
+}
 
 interface CicdChartsProps {
   cicdConfiguration: CicdConfiguration;

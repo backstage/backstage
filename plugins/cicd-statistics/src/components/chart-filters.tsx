@@ -33,8 +33,8 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-import { subMonths, isSameDay } from 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
+import { DateTime } from 'luxon';
+import LuxonUtils from '@date-io/luxon';
 
 import {
   CicdConfiguration,
@@ -89,7 +89,9 @@ export function getDefaultChartFilter(
 ): ChartFilter {
   const toDate = cicdConfiguration.defaults?.timeTo ?? new Date();
   return {
-    fromDate: cicdConfiguration.defaults?.timeFrom ?? subMonths(toDate, 1),
+    fromDate:
+      cicdConfiguration.defaults?.timeFrom ??
+      DateTime.fromJSDate(toDate).minus({ months: 1 }).toJSDate(),
     toDate,
     branch: cicdConfiguration.defaults?.filterType ?? 'branch',
     status:
@@ -104,8 +106,11 @@ function isSameChartFilter(a: ChartFilter, b: ChartFilter): boolean {
   return (
     a.branch === b.branch &&
     [...a.status].sort().join(' ') === [...b.status].sort().join(' ') &&
-    isSameDay(a.fromDate, b.fromDate) &&
-    isSameDay(a.toDate, b.toDate)
+    DateTime.fromJSDate(a.fromDate).hasSame(
+      DateTime.fromJSDate(b.fromDate),
+      'day',
+    ) &&
+    DateTime.fromJSDate(a.toDate).hasSame(DateTime.fromJSDate(b.toDate), 'day')
   );
 }
 
@@ -218,7 +223,7 @@ export function ChartFilters(props: ChartFiltersProps) {
 
   const toggleUseNowAsDate = useCallback(() => {
     setUseNowAsToDate(!useNowAsToDate);
-    if (!isSameDay(toDate, new Date())) {
+    if (!DateTime.fromJSDate(toDate).hasSame(DateTime.now(), 'day')) {
       setToDate(new Date());
     }
   }, [useNowAsToDate, toDate]);
@@ -248,7 +253,7 @@ export function ChartFilters(props: ChartFiltersProps) {
   }, [toDate, fromDate, branch, selectedStatus, updateFetchFilter]);
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+    <MuiPickersUtilsProvider utils={LuxonUtils}>
       <Card className={classes.rootCard}>
         <CardHeader
           action={
@@ -283,7 +288,7 @@ export function ChartFilters(props: ChartFiltersProps) {
             format="yyyy-MM-dd"
             value={fromDate}
             InputAdornmentProps={{ position: 'start' }}
-            onChange={date => setFromDate(date as any as Date)}
+            onChange={date => setFromDate(date?.toJSDate() ?? new Date())}
           />
           <br />
           <FormControl component="fieldset">
@@ -306,7 +311,7 @@ export function ChartFilters(props: ChartFiltersProps) {
                   format="yyyy-MM-dd"
                   value={toDate}
                   InputAdornmentProps={{ position: 'start' }}
-                  onChange={date => setToDate(date as any as Date)}
+                  onChange={date => setToDate(date?.toJSDate() ?? new Date())}
                 />
               )}
             </FormGroup>
