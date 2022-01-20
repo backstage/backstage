@@ -102,7 +102,7 @@ export type CatalogReactUserListPickerClassKey =
 
 // Warning: (ae-missing-release-tag) "catalogRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const catalogRouteRef: RouteRef<undefined>;
 
 // Warning: (ae-missing-release-tag) "createDomainColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -592,7 +592,7 @@ export const EntityRefLinks: ({
 
 // Warning: (ae-missing-release-tag) "entityRoute" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const entityRoute: RouteRef<{
   name: string;
   kind: string;
@@ -610,7 +610,7 @@ export function entityRouteParams(entity: Entity): {
 
 // Warning: (ae-missing-release-tag) "entityRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export const entityRouteRef: RouteRef<{
   name: string;
   kind: string;
@@ -813,7 +813,7 @@ export function reduceEntityFilters(
 
 // Warning: (ae-missing-release-tag) "rootRoute" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const rootRoute: RouteRef<undefined>;
 
 // @public

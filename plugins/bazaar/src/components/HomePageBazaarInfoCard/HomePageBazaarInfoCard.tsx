@@ -44,10 +44,7 @@ import { Member, BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
-import {
-  catalogApiRef,
-  catalogRouteRef,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 
 import {
   parseEntityName,
@@ -85,7 +82,7 @@ export const HomePageBazaarInfoCard = ({
   initEntity,
 }: Props) => {
   const classes = useStyles();
-  const catalogLink = useRouteRef(catalogRouteRef);
+  const entityLink = useRouteRef(entityRouteRef);
   const bazaarApi = useApi(bazaarApiRef);
   const identity = useApi(identityApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -156,7 +153,7 @@ export const HomePageBazaarInfoCard = ({
       const { name, kind, namespace } = parseEntityName(
         bazaarProject.value.entityRef,
       );
-      return `${catalogLink()}/${namespace}/${kind}/${name}`;
+      return entityLink({ kind, namespace, name });
     }
     return '';
   };

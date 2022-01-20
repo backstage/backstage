@@ -53,6 +53,7 @@ import {
   CostInsightsPage,
   CostInsightsProjectGrowthInstructionsPage,
 } from '@backstage/plugin-cost-insights';
+import { orgPlugin } from '@backstage/plugin-org';
 import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
 import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
 import { GraphiQLPage } from '@backstage/plugin-graphiql';
@@ -124,6 +125,9 @@ const app = createApp({
     });
     bind(scaffolderPlugin.externalRoutes, {
       registerComponent: catalogImportPlugin.routes.importPage,
+    });
+    bind(orgPlugin.externalRoutes, {
+      catalogIndex: catalogPlugin.routes.catalogIndex,
     });
   },
 });

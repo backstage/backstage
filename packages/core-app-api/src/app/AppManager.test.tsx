@@ -35,30 +35,8 @@ import {
   createRoutableExtension,
   analyticsApiRef,
 } from '@backstage/core-plugin-api';
-import { generateBoundRoutes, AppManager } from './AppManager';
+import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
-
-describe('generateBoundRoutes', () => {
-  it('runs happy path', () => {
-    const external = { myRoute: createExternalRouteRef({ id: '1' }) };
-    const ref = createRouteRef({ id: 'ref-1' });
-    const result = generateBoundRoutes(({ bind }) => {
-      bind(external, { myRoute: ref });
-    });
-
-    expect(result.get(external.myRoute)).toBe(ref);
-  });
-
-  it('throws on unknown keys', () => {
-    const external = { myRoute: createExternalRouteRef({ id: '2' }) };
-    const ref = createRouteRef({ id: 'ref-2' });
-    expect(() =>
-      generateBoundRoutes(({ bind }) => {
-        bind(external, { someOtherRoute: ref } as any);
-      }),
-    ).toThrow('Key someOtherRoute is not an existing external route');
-  });
-});
 
 describe('Integration Test', () => {
   const noOpAnalyticsApi = createApiFactory(
@@ -545,8 +523,47 @@ describe('Integration Test', () => {
     });
     expect(errorLogs).toEqual([
       expect.stringContaining(
-        'Parameter :thing is duplicated in path /test/:thing/some/:thing',
+        'The above error occurred in the <Provider> component',
       ),
+    ]);
+  });
+
+  it('should throw an error when required external plugin routes are not bound', () => {
+    const app = new AppManager({
+      apis: [],
+      defaultApis: [],
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          Provider: ({ children }) => <>{children}</>,
+        },
+      ],
+      icons,
+      plugins: [],
+      components,
+      configLoader: async () => [],
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+    const { error: errorLogs } = withLogCollector(() => {
+      expect(() =>
+        render(
+          <Provider>
+            <Router>
+              <Routes>
+                <Route path="/test/:thing" element={<ExposedComponent />} />
+              </Routes>
+            </Router>
+          </Provider>,
+        ),
+      ).toThrow(
+        /^External route 'extRouteRef1' of the 'blob' plugin must be bound to a target route/,
+      );
+    });
+    expect(errorLogs).toEqual([
       expect.stringContaining(
         'The above error occurred in the <Provider> component',
       ),

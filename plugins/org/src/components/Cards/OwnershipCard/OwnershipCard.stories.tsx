@@ -19,7 +19,6 @@ import { ApiProvider } from '@backstage/core-app-api';
 import {
   CatalogApi,
   catalogApiRef,
-  catalogRouteRef,
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
@@ -31,6 +30,7 @@ import {
 } from '@backstage/theme';
 import { Grid, ThemeProvider } from '@material-ui/core';
 import React from 'react';
+import { catalogIndexRouteRef } from '../../../routes';
 import { OwnershipCard } from './OwnershipCard';
 
 export default {
@@ -100,7 +100,7 @@ export const Default = () =>
       </EntityProvider>
     </ApiProvider>,
     {
-      mountedRoutes: { '/catalog': catalogRouteRef },
+      mountedRoutes: { '/catalog': catalogIndexRouteRef },
     },
   );
 
@@ -134,6 +134,6 @@ export const Themed = () =>
       </ApiProvider>
     </ThemeProvider>,
     {
-      mountedRoutes: { '/catalog': catalogRouteRef },
+      mountedRoutes: { '/catalog': catalogIndexRouteRef },
     },
   );

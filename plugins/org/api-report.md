@@ -7,6 +7,7 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { GroupEntity } from '@backstage/catalog-model';
 import { InfoCardVariants } from '@backstage/core-components';
 import { UserEntity } from '@backstage/catalog-model';
@@ -74,7 +75,12 @@ export const MembersListCard: (_props: {
 // Warning: (ae-missing-release-tag) "orgPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const orgPlugin: BackstagePlugin<{}, {}>;
+const orgPlugin: BackstagePlugin<
+  {},
+  {
+    catalogIndex: ExternalRouteRef<undefined, false>;
+  }
+>;
 export { orgPlugin };
 export { orgPlugin as plugin };
 
