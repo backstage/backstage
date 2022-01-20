@@ -264,7 +264,7 @@ describe('SearchContext', () => {
       expect(result.current.fetchPreviousPage).toBeUndefined();
 
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, {
+      expect(query).toHaveBeenCalledWith({
         types: ['*'],
         filters: {},
         term: '',
