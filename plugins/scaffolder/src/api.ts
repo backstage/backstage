@@ -69,8 +69,13 @@ export interface ScaffolderApi {
    *
    * @param templateName - Name of the Template entity for the scaffolder to use. New project is going to be created out of this template.
    * @param values - Parameters for the template, e.g. name, description
+   * @param secrets - Optional secrets to pass to as the secrets parameter to the template.
    */
-  scaffold(templateName: string, values: Record<string, any>): Promise<string>;
+  scaffold(
+    templateName: string,
+    values: Record<string, any>,
+    secrets?: Record<string, string>,
+  ): Promise<string>;
 
   getTask(taskId: string): Promise<ScaffolderTask>;
 
@@ -151,10 +156,12 @@ export class ScaffolderClient implements ScaffolderApi {
    *
    * @param templateName - Template name for the scaffolder to use. New project is going to be created out of this template.
    * @param values - Parameters for the template, e.g. name, description
+   * @param secrets - Optional secrets to pass to as the secrets parameter to the template.
    */
   async scaffold(
     templateName: string,
     values: Record<string, any>,
+    secrets: Record<string, string> = {},
   ): Promise<string> {
     const { token } = await this.identityApi.getCredentials();
     const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v2/tasks`;
@@ -164,7 +171,11 @@ export class ScaffolderClient implements ScaffolderApi {
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
       },
-      body: JSON.stringify({ templateName, values: { ...values } }),
+      body: JSON.stringify({
+        templateName,
+        values: { ...values },
+        secrets,
+      }),
     });
 
     if (response.status !== 201) {

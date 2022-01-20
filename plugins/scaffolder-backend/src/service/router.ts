@@ -232,6 +232,9 @@ export async function createRouter(
       }
 
       const result = await taskBroker.dispatch(taskSpec, {
+        ...req.body.secrets,
+        backstageToken: token,
+        // This is deprecated, but we need to support it for now if people are running their own task broker.
         token: token,
       });
 

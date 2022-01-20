@@ -472,6 +472,33 @@ describe('DefaultWorkflowRunner', () => {
     });
   });
 
+  describe('secrets', () => {
+    it('should pass through the secrets to the context', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-mock-action',
+              input: {},
+            },
+          ],
+          output: {},
+          parameters: {},
+        },
+        { foo: 'bar' },
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ secrets: { foo: 'bar' } }),
+      );
+    });
+  });
+
   describe('filters', () => {
     it('provides the parseRepoUrl filter', async () => {
       const task = createMockTaskWithSpec({
