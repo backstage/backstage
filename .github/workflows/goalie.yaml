@@ -3,7 +3,7 @@ name: 'goalie: run cron'
 on:
   schedule:
     - cron: '* * * * *'
-    
+
 jobs:
   label:
     runs-on: ubuntu-latest
