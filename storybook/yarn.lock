@@ -1096,21 +1096,21 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@backstage/config@^0.1.12":
-  version "0.1.12"
-  resolved "https://registry.npmjs.org/@backstage/config/-/config-0.1.12.tgz#7b55dd852c7bddb0b9ef55eb58241f6a1d8a5047"
-  integrity sha512-awEm88/iORPlrC/aoGIKYYNnxPtfhQTQ1IrwfXDxsgltb3BsfGnas7e6nEJjbpCloXrcuo+jJL/B+CJ2GLEKEw==
+"@backstage/config@^0.1.13":
+  version "0.1.13"
+  resolved "https://registry.npmjs.org/@backstage/config/-/config-0.1.13.tgz#9c3908835aa9e014be31e8bc49f0fb1cbd39d46e"
+  integrity sha512-bB+UkDspGj2cQ1d3cRrPhpSVH3NsAph31/94H+BjAYxtz3XhylsESYXcuc/rtkWtZbSkiRjTEQVobiGt0ZPrNQ==
   dependencies:
     "@backstage/types" "^0.1.1"
     lodash "^4.17.21"
 
-"@backstage/core-app-api@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.npmjs.org/@backstage/core-app-api/-/core-app-api-0.4.0.tgz#55fcf880e4b589aaa5d24906de482f1e0bc1ffe6"
-  integrity sha512-lqDO0Zl60Rc+INGuj+olLB8yK5zuSbQTiff0Jbg1jlGsFef0GLNTBT2UlNA+dq0esg8KY4CR4a9uDsdPzT4sJw==
+"@backstage/core-app-api@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.npmjs.org/@backstage/core-app-api/-/core-app-api-0.5.0.tgz#5150ccd1d509a6ade44838cbae8f6e1b87df514b"
+  integrity sha512-B4XsuEzQGNiFKdAiIrZHEed5BBvxKMudSF1ZFLrVck6Vv5MKjje2WJwDDVj83Sgg0MsDNTk16DdVUxPrOpq7kg==
   dependencies:
-    "@backstage/config" "^0.1.12"
-    "@backstage/core-plugin-api" "^0.5.0"
+    "@backstage/config" "^0.1.13"
+    "@backstage/core-plugin-api" "^0.6.0"
     "@backstage/types" "^0.1.1"
     "@backstage/version-bridge" "^0.1.1"
     "@types/prop-types" "^15.7.3"
@@ -1120,12 +1120,12 @@
     zen-observable "^0.8.15"
     zod "^3.11.6"
 
-"@backstage/core-plugin-api@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-0.5.0.tgz#d9aaa88147fdda78fbb5ddce6c02761470162565"
-  integrity sha512-s4halcZK5IznggxmXDmf990svSOf4YmW7eP0WQb8/4N2xacwiPzkTRGMK4fxQ7vYpbyjPgLDSCdy6M+1lQzLOw==
+"@backstage/core-plugin-api@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-0.6.0.tgz#85e1f6e1a1d41ff8d56579671cc9a628e6e4a598"
+  integrity sha512-EZFLQhGwr1ZcT60j+ePKIp1+BPcaxCTVjWu1MG4yiDBPa8iDD32vq/Us3NKurc6aCZCyI5lmZtYKwzSdTCkFcQ==
   dependencies:
-    "@backstage/config" "^0.1.12"
+    "@backstage/config" "^0.1.13"
     "@backstage/types" "^0.1.1"
     "@backstage/version-bridge" "^0.1.1"
     history "^5.0.0"
@@ -1134,14 +1134,48 @@
     react-use "^17.2.4"
     zen-observable "^0.8.15"
 
-"@backstage/test-utils@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.npmjs.org/@backstage/test-utils/-/test-utils-0.2.2.tgz#2473abadf6578d22c78a2d5938bdc635f22150d3"
-  integrity sha512-3UOLvXw32cUjv2LUrR56V6Jg66mhCkKl/LtE3rPYQ6k3F14Goy33cfd/iqYnh17RZ5JsyMwaaD/gAgIesYcqyA==
+"@backstage/errors@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/@backstage/errors/-/errors-0.2.0.tgz#a432428209fb784a6fd0e09fcc7314e6c72f38d0"
+  integrity sha512-B1pT9qGB2CL9JETZTP+IFGXUl8MBPaeZqm0FdJ2W/W8D5pOZyBojLgmjF18W1YPcQ/m15ZUII1wt4z84E5z2rQ==
   dependencies:
-    "@backstage/config" "^0.1.12"
-    "@backstage/core-app-api" "^0.4.0"
-    "@backstage/core-plugin-api" "^0.5.0"
+    "@backstage/types" "^0.1.1"
+    cross-fetch "^3.0.6"
+    serialize-error "^8.0.1"
+
+"@backstage/plugin-permission-common@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.npmjs.org/@backstage/plugin-permission-common/-/plugin-permission-common-0.4.0.tgz#fb326505abdfd0eda027bb6a6c14b87068ecaa2c"
+  integrity sha512-GgbglCx7KTWO1FYvIaGfYekYlvlK4AWrtPnvgHa+TVgiAFFzqRSun8IdwXPQ0tggUdn/Yjo/kiNhDGlyIDVqHg==
+  dependencies:
+    "@backstage/config" "^0.1.13"
+    "@backstage/errors" "^0.2.0"
+    cross-fetch "^3.0.6"
+    uuid "^8.0.0"
+    zod "^3.11.6"
+
+"@backstage/plugin-permission-react@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.npmjs.org/@backstage/plugin-permission-react/-/plugin-permission-react-0.3.0.tgz#643f0d24aa3679b4a08eaa36bfa6c5734f134945"
+  integrity sha512-73CWsh9yGJCqZONNfZTaarZTiRautioN438v8pOq06k05yRdqT32WbPVFFLed7A0VE8/rabQCT/69jWZrspmKg==
+  dependencies:
+    "@backstage/config" "^0.1.13"
+    "@backstage/core-plugin-api" "^0.6.0"
+    "@backstage/plugin-permission-common" "^0.4.0"
+    cross-fetch "^3.0.6"
+    react-router "6.0.0-beta.0"
+    react-use "^17.2.4"
+
+"@backstage/test-utils@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.npmjs.org/@backstage/test-utils/-/test-utils-0.2.3.tgz#58500d31c8d8e74b3fdcc72684c196c866b192b8"
+  integrity sha512-GweF5MIQf3hSxPu61Y/CLBa59p3tV+KvLhBol2M++ofhGeqNf3qpIxwAjmA4y1YP+ReZOuB1LR4NWMtkk7TWjw==
+  dependencies:
+    "@backstage/config" "^0.1.13"
+    "@backstage/core-app-api" "^0.5.0"
+    "@backstage/core-plugin-api" "^0.6.0"
+    "@backstage/plugin-permission-common" "^0.4.0"
+    "@backstage/plugin-permission-react" "^0.3.0"
     "@backstage/theme" "^0.2.14"
     "@backstage/types" "^0.1.1"
     "@material-ui/core" "^4.12.2"
@@ -1149,6 +1183,7 @@
     "@testing-library/jest-dom" "^5.10.1"
     "@testing-library/react" "^11.2.5"
     "@testing-library/user-event" "^13.1.8"
+    cross-fetch "^3.0.6"
     react-router "6.0.0-beta.0"
     react-router-dom "6.0.0-beta.0"
     zen-observable "^0.8.15"
@@ -3917,6 +3952,13 @@ create-hmac@^1.1.0, create-hmac@^1.1.4, create-hmac@^1.1.7:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+cross-fetch@^3.0.6:
+  version "3.1.4"
+  resolved "https://registry.npmjs.org/cross-fetch/-/cross-fetch-3.1.4.tgz#9723f3a3a247bf8b89039f3a380a9244e8fa2f39"
+  integrity sha512-1eAtFWdIubi6T4XPy6ei9iUFoKpUkIF971QLN8lIvvvwueI65+Nw5haMNKUwfJxabqlIIDODJKGrQ66gxC0PbQ==
+  dependencies:
+    node-fetch "2.6.1"
+
 cross-spawn@^7.0.0:
   version "7.0.3"
   resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
@@ -6641,6 +6683,11 @@ node-dir@^0.1.10:
   dependencies:
     minimatch "^3.0.2"
 
+node-fetch@2.6.1:
+  version "2.6.1"
+  resolved "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
+
 node-fetch@^2.6.1:
   version "2.6.7"
   resolved "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
@@ -7517,15 +7564,14 @@ react-docgen@^5.0.0:
     node-dir "^0.1.10"
     strip-indent "^3.0.0"
 
-react-dom@^16.13.1:
-  version "16.14.0"
-  resolved "https://registry.npmjs.org/react-dom/-/react-dom-16.14.0.tgz#7ad838ec29a777fb3c75c3a190f661cf92ab8b89"
-  integrity sha512-1gCeQXDLoIqMgqD3IO2Ah9bnf0w9kzhwN5q4FGnHZ67hBm9yePzB5JJAIQCc8x3pFnNlwFq4RidZggNAAkzWWw==
+react-dom@^17.0.2:
+  version "17.0.2"
+  resolved "https://registry.npmjs.org/react-dom/-/react-dom-17.0.2.tgz#ecffb6845e3ad8dbfcdc498f0d0a939736502c23"
+  integrity sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
-    prop-types "^15.6.2"
-    scheduler "^0.19.1"
+    scheduler "^0.20.2"
 
 react-draggable@^4.4.3:
   version "4.4.4"
@@ -7687,14 +7733,13 @@ react-use@^17.2.4:
     ts-easing "^0.2.0"
     tslib "^2.1.0"
 
-react@^16.13.1:
-  version "16.14.0"
-  resolved "https://registry.npmjs.org/react/-/react-16.14.0.tgz#94d776ddd0aaa37da3eda8fc5b6b18a4c9a3114d"
-  integrity sha512-0X2CImDkJGApiAlcf0ODKIneSwBPhqJawOa5wCtKbu7ZECrmS26NvtSILynQ66cgkT/RJ4LidJOc3bUESwmU8g==
+react@^17.0.2:
+  version "17.0.2"
+  resolved "https://registry.npmjs.org/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"
+  integrity sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
-    prop-types "^15.6.2"
 
 read-pkg-up@^7.0.1:
   version "7.0.1"
@@ -8027,10 +8072,10 @@ safe-regex@^1.1.0:
   resolved "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-scheduler@^0.19.1:
-  version "0.19.1"
-  resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.19.1.tgz#4f3e2ed2c1a7d65681f4c854fa8c5a1ccb40f196"
-  integrity sha512-n/zwRWRYSUj0/3g/otKDRPMh6qv2SYMWNq85IEa8iZyAv8od9zDYpGSnpBEjNgcMNq6Scbu5KfIPxNF72R/2EA==
+scheduler@^0.20.2:
+  version "0.20.2"
+  resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.20.2.tgz#4baee39436e34aa93b4874bddcbf0fe8b8b50e91"
+  integrity sha512-2eWfGgAqqWFGqtdMmcL5zCMK1U8KlXv8SQFGglL3CEtd0aDVDWgeF/YoCmvln55m5zSk3J/20hTaSBeSObsQDQ==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
@@ -8116,6 +8161,13 @@ send@0.17.2:
     on-finished "~2.3.0"
     range-parser "~1.2.1"
     statuses "~1.5.0"
+
+serialize-error@^8.0.1:
+  version "8.1.0"
+  resolved "https://registry.npmjs.org/serialize-error/-/serialize-error-8.1.0.tgz#3a069970c712f78634942ddd50fbbc0eaebe2f67"
+  integrity sha512-3NnuWfM6vBYoy5gZFvHiYsVbafvI9vZv/+jlIigFn4oP4zjNPK3LhcY0xSCgeb1a5L8jO71Mit9LlNoi2UfDDQ==
+  dependencies:
+    type-fest "^0.20.2"
 
 serialize-javascript@^4.0.0:
   version "4.0.0"
@@ -9133,6 +9185,11 @@ uuid@^3.3.2:
   version "3.4.0"
   resolved "https://registry.npmjs.org/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
+
+uuid@^8.0.0:
+  version "8.3.2"
+  resolved "https://registry.npmjs.org/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
 v8-to-istanbul@^8.0.0:
   version "8.1.1"
