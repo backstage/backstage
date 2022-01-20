@@ -195,7 +195,7 @@ export interface ScaffolderApi {
   scaffold(
     templateName: string,
     values: Record<string, any>,
-    secrets?: JsonObject,
+    secrets?: Record<string, string>,
   ): Promise<string>;
   // Warning: (ae-forgotten-export) The symbol "LogEvent" needs to be exported by the entry point index.d.ts
   //
@@ -243,7 +243,7 @@ export class ScaffolderClient implements ScaffolderApi {
   scaffold(
     templateName: string,
     values: Record<string, any>,
-    secrets?: JsonObject,
+    secrets?: Record<string, string>,
   ): Promise<string>;
   // (undocumented)
   streamLogs(opts: { taskId: string; after?: number }): Observable<LogEvent>;
