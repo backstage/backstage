@@ -60,7 +60,7 @@ export const AutocompleteTextField: <TFieldValue extends string>({
   helperText,
   errorHelperText,
   textFieldProps,
-}: Props_4<TFieldValue>) => JSX.Element;
+}: Props_5<TFieldValue>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "CatalogImportApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -171,10 +171,14 @@ export const EntityListComponent: ({
   withLinks,
 }: Props) => JSX.Element;
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ImportInfoCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const ImportInfoCard: () => JSX.Element;
+export const ImportInfoCard: ({
+  exampleLocationUrl,
+  exampleRepositoryUrl,
+}: Props_2) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ImportStepper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -184,7 +188,7 @@ export const ImportStepper: ({
   initialUrl,
   generateStepper,
   variant,
-}: Props_2) => JSX.Element;
+}: Props_3) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "PreparePullRequestForm" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -196,7 +200,7 @@ export const PreparePullRequestForm: <
   defaultValues,
   onSubmit,
   render,
-}: Props_5<TFieldValues>) => JSX.Element;
+}: Props_6<TFieldValues>) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "PreviewCatalogInfoComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -206,7 +210,7 @@ export const PreviewCatalogInfoComponent: ({
   repositoryUrl,
   entities,
   classes,
-}: Props_6) => JSX.Element;
+}: Props_7) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "PreviewPullRequestComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -216,7 +220,7 @@ export const PreviewPullRequestComponent: ({
   title,
   description,
   classes,
-}: Props_7) => JSX.Element;
+}: Props_8) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "StepInitAnalyzeUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -226,7 +230,8 @@ export const StepInitAnalyzeUrl: ({
   onAnalysis,
   analysisUrl,
   disablePullRequest,
-}: Props_3) => JSX.Element;
+  exampleLocationUrl,
+}: Props_4) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "StepPrepareCreatePullRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -237,7 +242,7 @@ export const StepPrepareCreatePullRequest: ({
   onPrepare,
   onGoBack,
   renderFormFields,
-}: Props_8) => JSX.Element;
+}: Props_9) => JSX.Element;
 
 // Warnings were encountered during analysis:
 //
