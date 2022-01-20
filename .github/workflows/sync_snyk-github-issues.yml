@@ -1,4 +1,4 @@
-name: 'Snyk Github Issue Sync'
+name: Sync Snyk GitHub issues
 
 on:
   schedule:

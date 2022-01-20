@@ -1,4 +1,4 @@
-name: Automatically add new TechDocs Issues and PRs to the GitHub project board
+name: Automate TechDocs project board
 # Development of TechDocs in Backstage is managed by this Kanban board - https://github.com/orgs/backstage/projects/1
 # New issues and PRs with TechDocs in their title or docs-like-code label will be added to the board.
 # Caveat: New PRs created from forks will not be added since GitHub Actions don't share credentials with forks.

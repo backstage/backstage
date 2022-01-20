@@ -1,4 +1,4 @@
-name: 'Pull Request Labeler'
+name: Automate area labels
 on:
   - pull_request_target
 

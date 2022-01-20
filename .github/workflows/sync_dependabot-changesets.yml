@@ -1,4 +1,4 @@
-name: 'Dependabot changeset maker'
+name: Sync Dependabot changeset
 on:
   pull_request_target:
     paths:

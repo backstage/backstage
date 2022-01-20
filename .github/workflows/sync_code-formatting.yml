@@ -1,4 +1,4 @@
-name: Prettier
+name: Sync code formatting
 
 on:
   push:

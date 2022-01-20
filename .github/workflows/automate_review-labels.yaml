@@ -1,6 +1,6 @@
 # When the target of the PR changes, open, re-open or sync, then re-add the label.
 
-name: 'goalie: update awaiting-review label'
+name: Automate review labels
 on:
   pull_request_target:
     types:

@@ -1,4 +1,4 @@
-name: Snyk Monitoring
+name: Sync Snyk Monitoring
 
 on:
   workflow_dispatch:

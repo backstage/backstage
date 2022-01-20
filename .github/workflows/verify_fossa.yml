@@ -1,4 +1,4 @@
-name: FOSSA
+name: Verify FOSSA
 on:
   push:
     branches: [master]

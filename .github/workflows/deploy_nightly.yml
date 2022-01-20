@@ -1,4 +1,4 @@
-name: Nightly Snapshot Release
+name: Deploy Nightly Release
 
 on:
   schedule:

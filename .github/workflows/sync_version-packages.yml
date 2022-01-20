@@ -1,4 +1,4 @@
-name: Changeset
+name: Sync Version Packages PR
 
 on:
   push:
