@@ -178,7 +178,7 @@ export const EntityDependsOnResourcesCard = catalogPlugin.provide(
 );
 
 /**
- * @deprecated This component is replaced by EntityCatalogGraphCard which is imported from backstage/catalog-graph-plugin. This component will be removed in an
+ * @deprecated This component is replaced by EntityCatalogGraphCard which is imported from `@backstage/plugin-catalog-graph`. This component will be removed in an
  * upcoming release
  */
 export const EntitySystemDiagramCard = catalogPlugin.provide(
