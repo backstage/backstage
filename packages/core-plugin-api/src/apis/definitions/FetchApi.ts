@@ -23,6 +23,9 @@ import { ApiRef, createApiRef } from '../system';
  * @public
  */
 export type FetchApi = {
+  /**
+   * The `fetch` implementation.
+   */
   fetch: typeof fetch;
 };
 

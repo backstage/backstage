@@ -23,7 +23,7 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
     const middleware = IdentityAuthInjectorFetchMiddleware.create({
       identityApi: undefined as any,
     });
-    expect(middleware.urlPrefixAllowlist).toEqual([]);
+    expect(middleware.allowUrl('anything')).toEqual(false);
     expect(middleware.headerName).toEqual('authorization');
     expect(middleware.headerValue('t')).toEqual('Bearer t');
   });
@@ -36,7 +36,9 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
       }),
       header: { name: 'auth', value: t => `${t}!` },
     });
-    expect(middleware.urlPrefixAllowlist).toEqual(['https://example.com/api']);
+    expect(middleware.allowUrl('https://example.com/api')).toEqual(true);
+    expect(middleware.allowUrl('https://example.com/api/sss')).toEqual(true);
+    expect(middleware.allowUrl('https://evil.com/api')).toEqual(false);
     expect(middleware.headerName).toEqual('auth');
     expect(middleware.headerValue('t')).toEqual('t!');
   });
@@ -49,10 +51,10 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
       }),
       urlPrefixAllowlist: ['https://a.com', 'http://b.com:8080/'],
     });
-    expect(middleware.urlPrefixAllowlist).toEqual([
-      'https://a.com',
-      'http://b.com:8080',
-    ]);
+    expect(middleware.allowUrl('https://a.com')).toEqual(true);
+    expect(middleware.allowUrl('https://a.com:8080')).toEqual(false);
+    expect(middleware.allowUrl('https://a.com/sss')).toEqual(true);
+    expect(middleware.allowUrl('http://b.com:8080')).toEqual(true);
   });
 
   it('injects the header only when a token is available', async () => {
@@ -63,7 +65,7 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
 
     const middleware = new IdentityAuthInjectorFetchMiddleware(
       identityApi,
-      ['https://example.com'],
+      () => true,
       'Authorization',
       token => `Bearer ${token}`,
     );
@@ -95,7 +97,7 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
 
     const middleware = new IdentityAuthInjectorFetchMiddleware(
       identityApi,
-      ['https://example.com'],
+      () => true,
       'Authorization',
       token => `Bearer ${token}`,
     );
@@ -117,37 +119,5 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
     expect([...inner.mock.calls[1][0].headers.entries()]).toEqual([
       ['authorization', 'do-not-clobber'],
     ]);
-  });
-
-  it('does not affect requests outside the allowlist', async () => {
-    const identityApi = {
-      getCredentials: () => ({ token: 'token' }),
-    } as unknown as IdentityApi;
-
-    const middleware = new IdentityAuthInjectorFetchMiddleware(
-      identityApi,
-      ['https://example.com:8080/root'],
-      'Authorization',
-      token => `Bearer ${token}`,
-    );
-
-    const inner = jest.fn();
-    const outer = middleware.apply(inner);
-
-    await outer(new Request('https://example.com:8080/root'));
-    await outer(new Request('https://example.com:8080/root/sub'));
-    await outer(new Request('https://example.com:8080/root2'));
-    await outer(new Request('https://example.com/root'));
-    await outer(new Request('http://example.com:8080/root'));
-    await outer(new Request('https://example.com/root'));
-
-    const no: string[][] = [];
-    const yes: string[][] = [['authorization', 'Bearer token']];
-    expect([...inner.mock.calls[0][0].headers.entries()]).toEqual(yes);
-    expect([...inner.mock.calls[1][0].headers.entries()]).toEqual(yes);
-    expect([...inner.mock.calls[2][0].headers.entries()]).toEqual(no);
-    expect([...inner.mock.calls[3][0].headers.entries()]).toEqual(no);
-    expect([...inner.mock.calls[4][0].headers.entries()]).toEqual(no);
-    expect([...inner.mock.calls[5][0].headers.entries()]).toEqual(no);
   });
 });

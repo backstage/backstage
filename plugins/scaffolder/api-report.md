@@ -15,10 +15,10 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { Extension } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
 import { FieldValidation } from '@rjsf/core';
 import { IconButton } from '@material-ui/core';
-import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema } from '@backstage/catalog-model';
 import { Observable } from '@backstage/types';
@@ -166,9 +166,7 @@ export interface RepoUrlPickerUiOptions {
   allowedOwners?: string[];
 }
 
-// Warning: (ae-missing-release-tag) "ScaffolderApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface ScaffolderApi {
   // (undocumented)
   getIntegrationsList(options: { allowedHosts: string[] }): Promise<
@@ -189,8 +187,6 @@ export interface ScaffolderApi {
     templateName: EntityName,
   ): Promise<TemplateParameterSchema>;
   // Warning: (ae-forgotten-export) The symbol "ListActionsResponse" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
   listActions(): Promise<ListActionsResponse>;
   scaffold(
     templateName: string,
@@ -200,27 +196,17 @@ export interface ScaffolderApi {
   // Warning: (ae-forgotten-export) The symbol "LogEvent" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  streamLogs({
-    taskId,
-    after,
-  }: {
-    taskId: string;
-    after?: number;
-  }): Observable<LogEvent>;
+  streamLogs(options: { taskId: string; after?: number }): Observable<LogEvent>;
 }
 
-// Warning: (ae-missing-release-tag) "scaffolderApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const scaffolderApiRef: ApiRef<ScaffolderApi>;
 
-// Warning: (ae-missing-release-tag) "ScaffolderClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class ScaffolderClient implements ScaffolderApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
+    fetchApi: FetchApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   });
@@ -246,7 +232,7 @@ export class ScaffolderClient implements ScaffolderApi {
     secrets?: Record<string, string>,
   ): Promise<string>;
   // (undocumented)
-  streamLogs(opts: { taskId: string; after?: number }): Observable<LogEvent>;
+  streamLogs(options: { taskId: string; after?: number }): Observable<LogEvent>;
 }
 
 // Warning: (ae-missing-release-tag) "ScaffolderFieldExtensions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

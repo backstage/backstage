@@ -56,14 +56,16 @@ export class FetchMiddlewares {
    *
    * The header injection only happens on allowlisted URLs. Per default, if the
    * `config` option is passed in, the `backend.baseUrl` is allowlisted, unless
-   * the `urlPrefixAllowlist` option is passed in, in which case it takes
-   * precedence. If you pass in neither config nor an allowlist, the middleware
-   * will have no effect.
+   * the `urlPrefixAllowlist` or `allowUrl` options are passed in, in which case
+   * they take precedence. If you pass in neither config nor an
+   * allowlist/callback, the middleware will have no effect since effectively no
+   * request will match the (nonexistent) rules.
    */
   static injectIdentityAuth(options: {
     identityApi: IdentityApi;
     config?: Config;
     urlPrefixAllowlist?: string[];
+    allowUrl?: (url: string) => boolean;
     header?: {
       name: string;
       value: (backstageToken: string) => string;
