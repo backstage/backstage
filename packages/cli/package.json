@@ -63,6 +63,7 @@
     "esbuild": "^0.14.10",
     "esbuild-loader": "^2.18.0",
     "eslint": "^8.6.0",
+    "eslint-webpack-plugin": "^2.6.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-formatter-friendly": "^7.0.0",
     "eslint-plugin-import": "^2.25.4",
