@@ -16,7 +16,7 @@
 
 const Codeowners = require('codeowners');
 
-const getRepoEvents = ({ github, context, pull_number }) => {
+const getRepoEvents = async ({ github, context, pull_number }) => {
   const commits = await github.paginate(github.rest.pulls.listCommits, {
     owner: context.repo.owner,
     repo: context.repo.repo,
