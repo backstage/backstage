@@ -46,7 +46,8 @@ jobs:
         working-directory: microsite
 
       - name: build storybook
-        run: yarn workspace storybook build-storybook
+        run: yarn build-storybook
+        working-directory: storybook
 
       - name: move storybook dist into microsite
         run: mv storybook/dist/ microsite/build/backstage/storybook
