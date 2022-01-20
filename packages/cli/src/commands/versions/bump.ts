@@ -284,7 +284,10 @@ export default async (cmd: Command) => {
   }
 };
 
-function createVersionFinder(releaseLine = 'latest') {
+export function createVersionFinder(
+  releaseLine = 'latest',
+  packageInfoFetcher = fetchPackageInfo,
+) {
   // The main release line is just an alias for latest
   const distTag = releaseLine === 'main' ? 'latest' : releaseLine;
   const found = new Map<string, string>();
@@ -296,26 +299,35 @@ function createVersionFinder(releaseLine = 'latest') {
     }
 
     console.log(`Checking for updates of ${name}`);
-    const info = await fetchPackageInfo(name);
+    const info = await packageInfoFetcher(name);
     const latestVersion = info['dist-tags'].latest;
     if (!latestVersion) {
       throw new Error(`No target 'latest' version found for ${name}`);
     }
-    if (distTag === 'latest') {
-      found.set(name, latestVersion);
-      return latestVersion;
-    }
+
     const taggedVersion = info['dist-tags'][distTag];
-    if (!taggedVersion) {
+    if (distTag === 'latest' || !taggedVersion) {
       found.set(name, latestVersion);
       return latestVersion;
     }
-    const latestVersionRelease = new Date(info.time[latestVersion]);
-    const taggedVersionRelease = new Date(info.time[taggedVersion]);
-    if (latestVersionRelease > taggedVersionRelease) {
-      console.log(
-        `using 'latest' dist tag for ${name} as its newer than '${distTag}'`,
+
+    const latestVersionDateStr = info.time[latestVersion];
+    const taggedVersionDateStr = info.time[taggedVersion];
+    if (!latestVersionDateStr) {
+      throw new Error(
+        `No time available for version '${latestVersion}' of ${name}`,
       );
+    }
+    if (!taggedVersionDateStr) {
+      throw new Error(
+        `No time available for version '${taggedVersion}' of ${name}`,
+      );
+    }
+
+    const latestVersionRelease = new Date(latestVersionDateStr).getTime();
+    const taggedVersionRelease = new Date(taggedVersionDateStr).getTime();
+    if (latestVersionRelease > taggedVersionRelease) {
+      // Prefer latest version if it's newer.
       found.set(name, latestVersion);
       return latestVersion;
     }
