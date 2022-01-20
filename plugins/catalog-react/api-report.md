@@ -20,6 +20,7 @@ import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
+import { Permission } from '@backstage/plugin-permission-common';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
@@ -877,6 +878,13 @@ export function useEntityListProvider<
 export function useEntityOwnership(): {
   loading: boolean;
   isOwnedEntity: (entity: Entity | EntityName) => boolean;
+};
+
+// @public
+export function useEntityPermission(permission: Permission): {
+  loading: boolean;
+  allowed: boolean;
+  error?: Error;
 };
 
 // Warning: (ae-forgotten-export) The symbol "EntityTypeReturn" needs to be exported by the entry point index.d.ts
