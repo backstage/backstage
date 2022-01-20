@@ -173,6 +173,18 @@ export async function createConfig(
     }),
   );
 
+  const resolveAliases: Record<string, string> = {};
+  try {
+    // eslint-disable-next-line import/no-extraneous-dependencies
+    const { version: reactDomVersion } = require('react-dom/package.json');
+    // Only apply the alias for hook support if we're running with React 16
+    if (reactDomVersion.startsWith('16.')) {
+      resolveAliases['react-dom'] = '@hot-loader/react-dom';
+    }
+  } catch (error) {
+    console.warn(`WARNING: Failed to read react-dom version, ${error}`);
+  }
+
   return {
     mode: isDev ? 'development' : 'production',
     profile: false,
@@ -211,9 +223,7 @@ export async function createConfig(
           [paths.targetPackageJson],
         ),
       ],
-      alias: {
-        'react-dom': '@hot-loader/react-dom',
-      },
+      alias: resolveAliases,
     },
     module: {
       rules: loaders,
