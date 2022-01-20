@@ -1,5 +1,20 @@
 # @backstage/plugin-bazaar
 
+## 0.1.10
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- 8a6950b822: Switched out internal usage of the `catalogRouteRef` from `@backstage/plugin-catalog-react`.
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/cli@0.12.0
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog@0.7.9
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+
 ## 0.1.10-next.0
 
 ### Patch Changes

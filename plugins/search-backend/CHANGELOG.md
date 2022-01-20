@@ -1,5 +1,14 @@
 # @backstage/plugin-search-backend
 
+## 0.3.1
+
+### Patch Changes
+
+- cd6854046e: Validate query string in search endpoint
+- Updated dependencies
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+
 ## 0.3.1-next.0
 
 ### Patch Changes

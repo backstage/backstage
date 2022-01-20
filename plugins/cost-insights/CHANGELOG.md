@@ -1,5 +1,20 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.18
+
+### Patch Changes
+
+- 7ba416be78: **@backstage/plugin-user-settings:** Hide Header on mobile screens to improve the UI & give more space to the content. Furthermore, the "Pin Sidebar" setting is removed on mobile screens, as the mobile sidebar is always pinned to the bottom.
+
+  **Other plugins:** Smaller style adjustments across plugins to improve the UI on mobile devices.
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+
 ## 0.11.18-next.0
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # storybook
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/test-utils@0.2.3
+  - @backstage/core-app-api@0.5.0
+
 ## 0.2.2-next.0
 
 ### Patch Changes

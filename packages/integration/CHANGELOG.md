@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 0.7.2
+
+### Patch Changes
+
+- f45e99e5da: Do not return a token rather than fail where the owner is not in the allowed installation owners
+  for a GitHub app. This allows anonymous access to public files in the organisation.
+- Updated dependencies
+  - @backstage/config@0.1.13
+
 ## 0.7.2-next.0
 
 ### Patch Changes

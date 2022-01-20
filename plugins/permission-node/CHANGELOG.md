@@ -1,5 +1,20 @@
 # @backstage/plugin-permission-node
 
+## 0.4.0
+
+### Minor Changes
+
+- 0ae4f4cc82: **BREAKING**: `PolicyAuthorizeRequest` type has been renamed to `PolicyAuthorizeQuery`.
+  **BREAKING**: Update to use renamed request and response types from @backstage/plugin-permission-common.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.7.0
+  - @backstage/plugin-permission-common@0.4.0
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+
 ## 0.4.0-next.0
 
 ### Minor Changes

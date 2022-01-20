@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-tasks",
   "description": "Common distributed task management library for Backstage backends",
-  "version": "0.1.4-next.0",
+  "version": "0.1.4",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": false,
@@ -29,8 +29,8 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.10.4-next.0",
-    "@backstage/config": "^0.1.13-next.0",
+    "@backstage/backend-common": "^0.10.4",
+    "@backstage/config": "^0.1.13",
     "@backstage/errors": "^0.2.0",
     "@backstage/types": "^0.1.1",
     "@types/luxon": "^2.0.4",
@@ -43,8 +43,8 @@
     "zod": "^3.9.5"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^0.1.14-next.0",
-    "@backstage/cli": "^0.12.0-next.0",
+    "@backstage/backend-test-utils": "^0.1.14",
+    "@backstage/cli": "^0.12.0",
     "jest": "^26.0.1",
     "wait-for-expect": "^3.0.2"
   },

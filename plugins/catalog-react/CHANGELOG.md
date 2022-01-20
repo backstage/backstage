@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-react
 
+## 0.6.12
+
+### Patch Changes
+
+- 3d87019269: The `entityRouteRef` is now a well-known route that should be imported directly from `@backstage/plugin-catalog-react`. It is guaranteed to be globally unique across duplicate installations of the `@backstage/plugin-catalog-react`, starting at this version.
+
+  Deprecated `entityRoute` in favor of `entityRouteRef`.
+
+  Deprecated `rootRoute` and `catalogRouteRef`. If you want to refer to the catalog index page from a public plugin you now need to use an `ExternalRouteRef` instead. For private plugins it is possible to take the shortcut of referring directly to `catalogPlugin.routes.indexPage` instead.
+
+- 2916a83b9c: Deprecated `loadIdentityOwnerRefs`, since they can now be retrieved as `ownershipEntityRefs` from `identityApi.getBackstageIdentity()` instead.
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- c54c0d9d10: Add useEntityPermission hook
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.3.0
+  - @backstage/core-components@0.8.5
+  - @backstage/integration@0.7.2
+  - @backstage/plugin-permission-common@0.4.0
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+
 ## 0.6.12-next.0
 
 ### Patch Changes

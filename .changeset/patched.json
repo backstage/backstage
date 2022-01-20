@@ -1,5 +1,3 @@
 {
-  "currentReleaseVersion": {
-    "@backstage/plugin-todo": "0.1.19"
-  }
+  "currentReleaseVersion": {}
 }

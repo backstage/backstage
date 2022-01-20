@@ -1,5 +1,29 @@
 # @backstage/plugin-api-docs
 
+## 0.7.0
+
+### Minor Changes
+
+- b3831be2fe: Renamed the `createComponent` external route to `registerApi` since it's now recommended to link to the entity registration page rather than the creation page.
+
+### Patch Changes
+
+- 306d879536: chore(deps): bump `react-syntax-highligher` and `swagger-ui-react`
+- c007bea546: Export `GraphQlDefinitionWidget` to be reused.
+- cd4e3c4d4e: Using an explicitly empty string for the url argument ensures that the swagger UI does not run into undefined errors.
+- 0c0d8a47e7: Bump @asyncapi/react-component for CVE
+
+  [CVE-2022-21680](https://github.com/advisories/GHSA-rrrm-qjm4-v8hf) and [CVE-2022-21681](https://github.com/advisories/GHSA-5v2h-r2cx-5xgj)
+
+  See https://github.com/asyncapi/asyncapi-react/pull/522
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog@0.7.9
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/catalog-model@0.9.10
+
 ## 0.6.23-next.0
 
 ### Patch Changes

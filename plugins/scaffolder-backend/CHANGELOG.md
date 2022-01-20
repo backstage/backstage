@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.21
+
+### Patch Changes
+
+- b05d303226: Added the ability to support supplying secrets when creating tasks in the `scaffolder-backend`.
+
+  **deprecation**: Deprecated `ctx.token` from actions in the `scaffolder-backend`. Please move to using `ctx.secrets.backstageToken` instead.
+
+  **deprecation**: Deprecated `task.token` in `TaskSpec` in the `scaffolder-backend`. Please move to using `task.secrets.backstageToken` instead.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.0
+  - @backstage/integration@0.7.2
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.9
+  - @backstage/plugin-scaffolder-common@0.1.3
+
 ## 0.15.21-next.0
 
 ### Patch Changes

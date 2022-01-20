@@ -1,5 +1,18 @@
 # @backstage/plugin-search
 
+## 0.5.6
+
+### Patch Changes
+
+- 1523926507: Removes the focus from the sidebar and focus the main content after select one search result or navigate to the search result list
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+
 ## 0.5.6-next.0
 
 ### Patch Changes

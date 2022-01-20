@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-import
 
+## 0.7.10
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/integration@0.7.2
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+  - @backstage/integration-react@0.1.19
+
 ## 0.7.10-next.0
 
 ### Patch Changes

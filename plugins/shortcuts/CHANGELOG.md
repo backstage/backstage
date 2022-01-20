@@ -1,5 +1,18 @@
 # @backstage/plugin-shortcuts
 
+## 0.1.20
+
+### Patch Changes
+
+- 7ba416be78: **@backstage/plugin-user-settings:** Hide Header on mobile screens to improve the UI & give more space to the content. Furthermore, the "Pin Sidebar" setting is removed on mobile screens, as the mobile sidebar is always pinned to the bottom.
+
+  **Other plugins:** Smaller style adjustments across plugins to improve the UI on mobile devices.
+
+- c52ae0a73b: Allow shortcut side bar item icon to be configurable
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+
 ## 0.1.20-next.0
 
 ### Patch Changes
