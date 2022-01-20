@@ -51,8 +51,8 @@ const getRepoEvents = async ({ github, context, pull_number }) => {
       type: 'review',
     })),
     ...commits.map(({ commit, author, committer }) => ({
-      user: author ?? committer,
-      updated_at: commit.author.date ?? commit.committer.date,
+      user: author || committer,
+      updated_at: commit.author.date || commit.committer.date,
       type: 'commit',
     })),
     ...pullComments.map(({ user, updated_at }) => ({
