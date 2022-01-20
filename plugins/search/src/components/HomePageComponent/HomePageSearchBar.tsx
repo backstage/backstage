@@ -42,17 +42,10 @@ export type HomePageSearchBarProps = Partial<
  *
  * @public
  */
-export const HomePageSearchBar = ({
-  className: defaultClassName,
-  ...props
-}: HomePageSearchBarProps) => {
+export const HomePageSearchBar = ({ ...props }: HomePageSearchBarProps) => {
   const classes = useStyles();
   const [query, setQuery] = useState('');
   const handleSearch = useNavigateToQuery();
-
-  const className = defaultClassName
-    ? `${classes.searchBar} ${defaultClassName}`
-    : classes.searchBar;
 
   const handleSubmit = () => {
     handleSearch({ query });
@@ -67,7 +60,7 @@ export const HomePageSearchBar = ({
 
   return (
     <SearchBarBase
-      className={className}
+      className={props.className ? props.className : classes.searchBar}
       value={query}
       onSubmit={handleSubmit}
       onChange={handleChange}

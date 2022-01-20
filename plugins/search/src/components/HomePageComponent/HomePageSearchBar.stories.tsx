@@ -41,27 +41,35 @@ export default {
   ],
 };
 
+export const Default = () => {
+  return (
+    <Grid container justifyContent="center" spacing={6}>
+      <Grid container item xs={12} alignItems="center" direction="row">
+        <HomePageSearchBar placeholder="Search" />
+      </Grid>
+    </Grid>
+  );
+};
+
 const useStyles = makeStyles(theme => ({
-  search: {
+  searchBar: {
+    display: 'flex',
+    maxWidth: '60vw',
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[1],
-    maxWidth: '60vw',
-    display: 'flex',
-    justifyContent: 'space-between',
     padding: '8px 0',
-    borderColor: 'transparent',
     borderRadius: '50px',
     margin: 'auto',
   },
 }));
 
-export const Default = () => {
-  const { search } = useStyles();
+export const CustomStyles = () => {
+  const classes = useStyles();
 
   return (
     <Grid container justifyContent="center" spacing={6}>
       <Grid container item xs={12} alignItems="center" direction="row">
-        <HomePageSearchBar className={search} placeholder="Search" />
+        <HomePageSearchBar className={classes.searchBar} placeholder="Search" />
       </Grid>
     </Grid>
   );
