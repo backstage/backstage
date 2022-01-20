@@ -20259,7 +20259,7 @@ react-debounce-input@=3.2.4:
     lodash.debounce "^4"
     prop-types "^15.7.2"
 
-react-dev-utils@^12.0.0-next.47:
+react-dev-utils@^12.0.0-next.60:
   version "12.0.0"
   resolved "https://registry.npmjs.org/react-dev-utils/-/react-dev-utils-12.0.0.tgz#4eab12cdb95692a077616770b5988f0adf806526"
   integrity sha512-xBQkitdxozPxt1YZ9O1097EJiVpwHr9FoAuEVURCKV0Av8NBERovJauzP7bo1ThvuhZ4shsQ1AJiu4vQpoT1AQ==
@@ -20345,7 +20345,7 @@ react-hook-form@^7.13.0:
   resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.17.4.tgz#232b6aaccddb91eb4a228ac20b154abd90866fdb"
   integrity sha512-7XhbCr7d9fDC1TgcK/BUbt7D3q0VJMu7jPErfsa0JrxVjv/nni41xWdJcy0Zb7R+Np8OsCkQ2lMyloAtE3DLiQ==
 
-react-hot-loader@^4.12.21:
+react-hot-loader@^4.13.0:
   version "4.13.0"
   resolved "https://registry.npmjs.org/react-hot-loader/-/react-hot-loader-4.13.0.tgz#c27e9408581c2a678f5316e69c061b226dc6a202"
   integrity sha512-JrLlvUPqh6wIkrK2hZDfOyq/Uh/WeVEr8nc7hkn2/3Ul0sx1Kr5y4kOGNacNRoj7RhwLNcQ3Udf1KJXrqc0ZtA==
