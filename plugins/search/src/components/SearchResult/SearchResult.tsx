@@ -20,7 +20,7 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { SearchResult } from '@backstage/search-common';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSearch } from '../SearchContext';
 
 type Props = {
@@ -30,7 +30,55 @@ type Props = {
 export const SearchResultComponent = ({ children }: Props) => {
   const {
     result: { loading, error, value },
+    fetchNextPage,
   } = useSearch();
+
+  const [node, setDOMNode] = useState<HTMLElement | null>();
+
+  const handleScroll = useCallback(
+    (e: Event) => {
+      const element = e.target as HTMLElement;
+      const isEndReached =
+        element.scrollHeight - Math.abs(element.scrollTop) <=
+        element.clientHeight;
+
+      if (isEndReached) {
+        fetchNextPage?.();
+      }
+    },
+    [fetchNextPage],
+  );
+
+  const handleScrollOnWindow = useCallback(() => {
+    if (document.scrollingElement) {
+      handleScroll({ target: document.scrollingElement } as unknown as Event);
+    }
+  }, [handleScroll]);
+
+  useEffect(() => {
+    if (!node) {
+      return () => {
+        /* */
+      };
+    }
+    let element = node.parentElement;
+    while (element) {
+      const overflow = getComputedStyle(element).getPropertyValue('overflow');
+      if (['scroll', 'auto'].includes(overflow)) {
+        break;
+      }
+      element = element.parentElement;
+    }
+
+    if (element) {
+      const target = element;
+      target.addEventListener('scroll', handleScroll);
+      return () => target.removeEventListener('scroll', handleScroll);
+    }
+
+    document.addEventListener('scroll', handleScrollOnWindow);
+    return () => document.removeEventListener('scroll', handleScrollOnWindow);
+  }, [handleScroll, handleScrollOnWindow, node]);
 
   if (loading && !value) {
     return <Progress />;
@@ -48,7 +96,7 @@ export const SearchResultComponent = ({ children }: Props) => {
     return <EmptyState missing="data" title="Sorry, no results were found" />;
   }
 
-  return <>{children({ results: value.results })}</>;
+  return <div ref={setDOMNode}>{children({ results: value.results })}</div>;
 };
 
 export { SearchResultComponent as SearchResult };

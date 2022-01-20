@@ -19,5 +19,3 @@ export {
   SearchContext,
   useSearch,
 } from './SearchContext';
-
-export * from './useInfiniteScrollSearch';

@@ -30,11 +30,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { SearchBar } from '../SearchBar';
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResult } from '../SearchResult';
-import {
-  SearchContextProvider,
-  useInfiniteScrollSearch,
-  useSearch,
-} from '../SearchContext';
+import { SearchContextProvider, useSearch } from '../SearchContext';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link, useContent } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
@@ -64,7 +60,6 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
   const classes = useStyles();
 
   const { term } = useSearch();
-  const scrollHandlers = useInfiniteScrollSearch();
   const { focusContent } = useContent();
   const { transitions } = useTheme();
 
@@ -93,7 +88,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
           <SearchBar className={classes.input} />
         </Paper>
       </DialogTitle>
-      <DialogContent {...scrollHandlers}>
+      <DialogContent>
         <Grid
           container
           direction="row-reverse"

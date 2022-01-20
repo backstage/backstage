@@ -29,7 +29,7 @@ const useStyles = makeStyles<BackstageTheme>(
       gridTemplateRows: 'max-content auto 1fr',
       gridTemplateColumns: 'auto 1fr auto',
       height: '100%',
-      overflowY: 'auto',
+      // overflowY: 'auto',
     },
   }),
   { name: 'BackstagePage' },
