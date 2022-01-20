@@ -1,5 +1,11 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.2.1
+
+### Patch Changes
+
+- ad0a7eb088: Fixed invalid access that caused an immediate crash with a `TypeError` when loading the package.
+
 ## 0.2.0
 
 ### Minor Changes
