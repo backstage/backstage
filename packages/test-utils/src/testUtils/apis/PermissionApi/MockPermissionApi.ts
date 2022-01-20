@@ -22,7 +22,8 @@ import {
 } from '@backstage/plugin-permission-common';
 
 /**
- * Mock implementation of {@link core-plugin-api#PermissionApi}. Supply a
+ * Mock implementation of
+ * {@link @backstage/plugin-permission-react#PermissionApi}. Supply a
  * requestHandler function to override the mock result returned for a given
  * request.
  * @public
