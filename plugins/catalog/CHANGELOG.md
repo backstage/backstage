@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog
 
+## 0.7.9
+
+### Patch Changes
+
+- 7ba416be78: **@backstage/plugin-user-settings:** Hide Header on mobile screens to improve the UI & give more space to the content. Furthermore, the "Pin Sidebar" setting is removed on mobile screens, as the mobile sidebar is always pinned to the bottom.
+
+  **Other plugins:** Smaller style adjustments across plugins to improve the UI on mobile devices.
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- c54c0d9d10: Add permission check to unregister entity button
+
+  If the permissions framework is disabled, this change should have no effect. If the permission framework is enabled, the unregister entity button will be disabled for those who do not have access to the `catalogEntityDeletePermission` as specified in your permission policy.
+
+- 61ded2a863: Export the `RelatedEntitiesCard` component which is helpful in case you want to model custom relations between entities
+- 2b27e49eb1: Internal update to match status field changes in `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/plugin-catalog-common@0.1.1
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+  - @backstage/integration-react@0.1.19
+
 ## 0.7.9-next.0
 
 ### Patch Changes

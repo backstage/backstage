@@ -1,5 +1,97 @@
 # @backstage/plugin-techdocs
 
+## 0.13.0
+
+### Minor Changes
+
+- aecfe4f403: Make `TechDocsClient` and `TechDocsStorageClient` use the `FetchApi`. You now
+  need to pass in an instance of that API when constructing the client, if you
+  create a custom instance in your app.
+
+  If you are replacing the factory:
+
+  ```diff
+  +import { fetchApiRef } from '@backstage/core-plugin-api';
+
+   createApiFactory({
+     api: techdocsStorageApiRef,
+     deps: {
+       configApi: configApiRef,
+       discoveryApi: discoveryApiRef,
+       identityApi: identityApiRef,
+  +    fetchApi: fetchApiRef,
+     },
+     factory: ({
+       configApi,
+       discoveryApi,
+       identityApi,
+  +    fetchApi,
+     }) =>
+       new TechDocsStorageClient({
+         configApi,
+         discoveryApi,
+         identityApi,
+  +      fetchApi,
+       }),
+   }),
+   createApiFactory({
+     api: techdocsApiRef,
+     deps: {
+       configApi: configApiRef,
+       discoveryApi: discoveryApiRef,
+  -    identityApi: identityApiRef,
+  +    fetchApi: fetchApiRef,
+     },
+     factory: ({
+       configApi,
+       discoveryApi,
+  -    identityApi,
+  +    fetchApi,
+     }) =>
+       new TechDocsClient({
+         configApi,
+         discoveryApi,
+  -      identityApi,
+  +      fetchApi,
+       }),
+   }),
+  ```
+
+  If instantiating directly:
+
+  ```diff
+  +import { fetchApiRef } from '@backstage/core-plugin-api';
+
+  +const fetchApi = useApi(fetchApiRef);
+   const storageClient = new TechDocsStorageClient({
+     configApi,
+     discoveryApi,
+     identityApi,
+  +  fetchApi,
+   });
+   const techdocsClient = new TechDocsClient({
+     configApi,
+     discoveryApi,
+  -  identityApi,
+  +  fetchApi,
+   }),
+  ```
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- 29710c91c2: use lighter color for block quotes and horizontal rulers
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/integration@0.7.2
+  - @backstage/plugin-search@0.5.6
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog@0.7.9
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+  - @backstage/integration-react@0.1.19
+
 ## 0.12.15-next.0
 
 ### Patch Changes

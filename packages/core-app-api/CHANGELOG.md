@@ -1,5 +1,19 @@
 # @backstage/core-app-api
 
+## 0.5.0
+
+### Minor Changes
+
+- ceebe25391: Removed deprecated `SignInResult` type, which was replaced with the new `onSignInSuccess` callback.
+
+### Patch Changes
+
+- fb565073ec: Add an `allowUrl` callback option to `FetchMiddlewares.injectIdentityAuth`
+- f050eec2c0: Added validation during the application startup that detects if there are any plugins present that have not had their required external routes bound. Failing the validation will cause a hard crash as it is a programmer error. It lets you detect early on that there are dangling routes, rather than having them cause an error later on.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/config@0.1.13
+
 ## 0.5.0-next.0
 
 ### Minor Changes

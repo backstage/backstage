@@ -1,5 +1,16 @@
 # @backstage/plugin-ilert
 
+## 0.1.22
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/catalog-model@0.9.10
+
 ## 0.1.22-next.0
 
 ### Patch Changes

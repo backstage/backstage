@@ -1,5 +1,26 @@
 # @backstage/plugin-auth-backend
 
+## 0.7.0
+
+### Minor Changes
+
+- 6e92ee6267: Add new authentication provider to support the oauth2-proxy.
+
+  **BREAKING** The `AuthHandler` requires now an `AuthResolverContext` parameter. This aligns with the
+  behavior of the `SignInResolver`.
+
+- f8496730ab: Switched the handling of the `BackstageIdentityResponse` so that the returned `identity.userEntityRef` is always a full entity reference. If `userEntityRef` was previously set to `jane`, it will now be `user:default/jane`. The `userEntityRef` in the response is parsed from the `sub` claim in the payload of the Backstage token.
+- a53d7d8143: Update provider subs to return full entity ref.
+
+### Patch Changes
+
+- f815b7e4a4: build(deps): bump `@google-cloud/firestore` from 4.15.1 to 5.0.2
+- Updated dependencies
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+
 ## 0.7.0-next.0
 
 ### Minor Changes

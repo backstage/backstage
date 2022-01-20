@@ -1,5 +1,76 @@
 # @backstage/plugin-scaffolder
 
+## 0.12.0
+
+### Minor Changes
+
+- aecfe4f403: Make `ScaffolderClient` use the `FetchApi`. You now need to pass in an instance
+  of that API when constructing the client, if you create a custom instance in
+  your app.
+
+  If you are replacing the factory:
+
+  ```diff
+  +import { fetchApiRef } from '@backstage/core-plugin-api';
+
+   createApiFactory({
+     api: scaffolderApiRef,
+     deps: {
+       discoveryApi: discoveryApiRef,
+       scmIntegrationsApi: scmIntegrationsApiRef,
+  -    identityApi: identityApiRef,
+  +    fetchApi: fetchApiRef,
+     },
+     factory: ({
+       discoveryApi,
+       scmIntegrationsApi,
+  -    identityApi,
+  +    fetchApi,
+     }) =>
+       new ScaffolderClient({
+         discoveryApi,
+         scmIntegrationsApi,
+  -      identityApi,
+  +      fetchApi,
+       }),
+   }),
+  ```
+
+  If instantiating directly:
+
+  ```diff
+  +import { fetchApiRef } from '@backstage/core-plugin-api';
+
+  +const fetchApi = useApi(fetchApiRef);
+   const client = new ScaffolderClient({
+     discoveryApi,
+     scmIntegrationsApi,
+  -  identityApi,
+  +  fetchApi,
+   }),
+  ```
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- b05d303226: Added the ability to support supplying secrets when creating tasks in the `scaffolder-backend`.
+
+  **deprecation**: Deprecated `ctx.token` from actions in the `scaffolder-backend`. Please move to using `ctx.secrets.backstageToken` instead.
+
+  **deprecation**: Deprecated `task.token` in `TaskSpec` in the `scaffolder-backend`. Please move to using `task.secrets.backstageToken` instead.
+
+- cd05442ed2: Refactoring the `RepoUrlPicker` into separate provider components to encapsulate provider nonsense
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/integration@0.7.2
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+  - @backstage/integration-react@0.1.19
+  - @backstage/plugin-scaffolder-common@0.1.3
+
 ## 0.11.19-next.0
 
 ### Patch Changes

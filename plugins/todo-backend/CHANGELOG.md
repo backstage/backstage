@@ -1,5 +1,16 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.7.2
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+
 ## 0.1.19-next.0
 
 ### Patch Changes

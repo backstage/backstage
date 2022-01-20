@@ -1,5 +1,199 @@
 # @backstage/create-app
 
+## 0.4.14
+
+### Patch Changes
+
+- d4941024bc: Rebind external route for catalog import plugin from `scaffolderPlugin.routes.root` to `catalogImportPlugin.routes.importPage`.
+
+  To make this change to an existing app, make the following change to `packages/app/src/App.tsx`
+
+  ```diff
+  const App = createApp({
+    ...
+    bindRoutes({ bind }) {
+      ...
+      bind(apiDocsPlugin.externalRoutes, {
+  -     createComponent: scaffolderPlugin.routes.root,
+  +     registerApi: catalogImportPlugin.routes.importPage,
+      });
+      ...
+    },
+  });
+  ```
+
+- b5402d6d72: Migrated the app template to React 17.
+
+  To apply this change to an existing app, make sure you have updated to the latest version of `@backstage/cli`, and make the following change to `packages/app/package.json`:
+
+  ```diff
+       "history": "^5.0.0",
+  -    "react": "^16.13.1",
+  -    "react-dom": "^16.13.1",
+  +    "react": "^17.0.2",
+  +    "react-dom": "^17.0.2",
+       "react-router": "6.0.0-beta.0",
+  ```
+
+  Since we have recently moved over all `react` and `react-dom` dependencies to `peerDependencies` of all packages, and included React 17 in the version range, this should be all you need to do. If you end up with duplicate React installations, first make sure that all of your plugins are up-to-date, including ones for example from `@roadiehq`. If that doesn't work, you may need to fall back to adding [Yarn resolutions](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/) in the `package.json` of your project root:
+
+  ```diff
+  +  "resolutions": {
+  +    "react": "^17.0.2",
+  +    "react-dom": "^17.0.2"
+  +  },
+  ```
+
+- 5e8d278f8e: Added an external route binding from the `org` plugin to the catalog index page.
+
+  This change is needed because `@backstage/plugin-org` now has a required external route that needs to be bound for the app to start.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+   import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
+  +import { orgPlugin } from '@backstage/plugin-org';
+   import { SearchPage } from '@backstage/plugin-search';
+  ```
+
+  And further down within the `createApp` call:
+
+  ```diff
+       bind(scaffolderPlugin.externalRoutes, {
+         registerComponent: catalogImportPlugin.routes.importPage,
+       });
+  +    bind(orgPlugin.externalRoutes, {
+  +      catalogIndex: catalogPlugin.routes.catalogIndex,
+  +    });
+     },
+  ```
+
+- fb08e2f285: Updated the configuration of the `app-backend` plugin to enable the static asset store by passing on `database` from the plugin environment to `createRouter`.
+
+  To apply this change to an existing app, make the following change to `packages/backend/src/plugins/app.ts`:
+
+  ```diff
+   export default async function createPlugin({
+     logger,
+     config,
+  +  database,
+   }: PluginEnvironment): Promise<Router> {
+     return await createRouter({
+       logger,
+       config,
+  +    database,
+       appPackageName: 'app',
+     });
+   }
+  ```
+
+- 7ba416be78: You can now add `SidebarGroup`s to the current `Sidebar`. This will not affect how the current sidebar is displayed, but allows a customization on how the `MobileSidebar` on smaller screens will look like. A `SidebarGroup` will be displayed with the given icon in the `MobileSidebar`.
+
+  A `SidebarGroup` can either link to an existing page (e.g. `/search` or `/settings`) or wrap components, which will be displayed in a full-screen overlay menu (e.g. `Menu`).
+
+  ```diff
+  <Sidebar>
+      <SidebarLogo />
+  +   <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+          <SidebarSearchModal />
+  +   </SidebarGroup>
+      <SidebarDivider />
+  +   <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+          <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+          <SidebarDivider />
+          <SidebarScrollWrapper>
+              <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+          </SidebarScrollWrapper>
+  +   </SidebarGroup>
+      <SidebarSpace />
+      <SidebarDivider />
+  +   <SidebarGroup
+  +       label="Settings"
+  +       icon={<UserSettingsSignInAvatar />}
+  +       to="/settings"
+  +   >
+          <SidebarSettings />
+  +   </SidebarGroup>
+  </Sidebar>
+  ```
+
+  Additionally, you can order the groups differently in the `MobileSidebar` than in the usual `Sidebar` simply by giving a group a priority. The groups will be displayed in descending order from left to right.
+
+  ```diff
+  <SidebarGroup
+      label="Settings"
+      icon={<UserSettingsSignInAvatar />}
+      to="/settings"
+  +   priority={1}
+  >
+      <SidebarSettings />
+  </SidebarGroup>
+  ```
+
+  If you decide against adding `SidebarGroup`s to your `Sidebar` the `MobileSidebar` will contain one default menu item, which will open a full-screen overlay menu displaying all the content of the current `Sidebar`.
+
+  More information on the `SidebarGroup` & the `MobileSidebar` component can be found in the changeset for the `core-components`.
+
+- 08fa6a604a: The app template has been updated to add an explicit dependency on `typescript` in the root `package.json`. This is because it was removed as a dependency of `@backstage/cli` in order to decouple the TypeScript versioning in Backstage projects.
+
+  To apply this change in an existing app, add a `typescript` dependency to your `package.json` in the project root:
+
+  ```json
+    "dependencies": {
+      ...
+      "typescript": "~4.5.4",
+    }
+  ```
+
+  We recommend using a `~` version range since TypeScript releases do not adhere to semver.
+
+  It may be the case that you end up with errors if you upgrade the TypeScript version. This is because there was a change to TypeScript not long ago that defaulted the type of errors caught in `catch` blocks to `unknown`. You can work around this by adding `"useUnknownInCatchVariables": false` to the `"compilerOptions"` in your `tsconfig.json`:
+
+  ```json
+    "compilerOptions": {
+      ...
+      "useUnknownInCatchVariables": false
+    }
+  ```
+
+  Another option is to use the utilities from `@backstage/errors` to assert the type of errors caught in `catch` blocks:
+
+  ```ts
+  import { assertError, isError } from '@backstage/errors';
+
+  try {
+    ...
+  } catch (error) {
+    assertError(error);
+    ...
+    // OR
+    if (isError(error)) {
+      ...
+    }
+  }
+  ```
+
+  Yet another issue you might run into when upgrading TypeScript is incompatibilities in the types from `react-use`. The error you would run into looks something like this:
+
+  ```plain
+  node_modules/react-use/lib/usePermission.d.ts:1:54 - error TS2304: Cannot find name 'DevicePermissionDescriptor'.
+
+  1 declare type PermissionDesc = PermissionDescriptor | DevicePermissionDescriptor | MidiPermissionDescriptor | PushPermissionDescriptor;
+  ```
+
+  If you encounter this error, the simplest fix is to replace full imports of `react-use` with more specific ones. For example, the following:
+
+  ```ts
+  import { useAsync } from 'react-use';
+  ```
+
+  Would be converted into this:
+
+  ```ts
+  import useAsync from 'react-use/lib/useAsync';
+  ```
+
 ## 0.4.13
 
 ### Patch Changes

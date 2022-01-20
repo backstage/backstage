@@ -1,5 +1,99 @@
 # @backstage/plugin-catalog-backend
 
+## 0.21.0
+
+### Minor Changes
+
+- 9f2a8dc423: **BREAKING**: Removed all remnants of the old catalog engine implementation.
+
+  The old implementation has been deprecated for over half a year. To ensure that
+  you are not using the old implementation, check that your
+  `packages/backend/src/plugins/catalog.ts` creates the catalog builder using
+  `CatalogBuilder.create`. If you instead call `new CatalogBuilder`, you are on
+  the old implementation and will experience breakage if you upgrade to this
+  version. If you are still on the old version, see [the relevant change log
+  entry](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/CHANGELOG.md#patch-changes-27)
+  for migration instructions.
+
+  The minimal `packages/backend/src/plugins/catalog.ts` file is now:
+
+  ```ts
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    const builder = await CatalogBuilder.create(env);
+    builder.addProcessor(new ScaffolderEntitiesProcessor());
+    const { processingEngine, router } = await builder.build();
+    await processingEngine.start();
+    return router;
+  }
+  ```
+
+  The following classes and interfaces have been removed:
+
+  - The `CatalogBuilder` constructor (see above; use `CatalogBuilder.create`
+    instead)
+  - `AddLocationResult`
+  - `CommonDatabase`
+  - `CreateDatabaseOptions`
+  - `createNextRouter` (use `createRouter` instead - or preferably, use the
+    `router` field returned for you by `catalogBuilder.build()`)
+  - `Database`
+  - `DatabaseEntitiesCatalog` (use `EntitiesCatalog` instead)
+  - `DatabaseLocationsCatalog` (use `LocationService` instead)
+  - `DatabaseLocationUpdateLogEvent`
+  - `DatabaseLocationUpdateLogStatus`
+  - `DatabaseManager`
+  - `DbEntitiesRequest`
+  - `DbEntitiesResponse`
+  - `DbEntityRequest`
+  - `DbEntityResponse`
+  - `DbLocationsRow`
+  - `DbLocationsRowWithStatus`
+  - `DbPageInfo`
+  - `EntitiesCatalog.batchAddOrUpdateEntities` (was only used by the legacy
+    engine)
+  - `EntityUpsertRequest`
+  - `EntityUpsertResponse`
+  - `HigherOrderOperation`
+  - `HigherOrderOperations`
+  - `LocationReader`
+  - `LocationReaders`
+  - `LocationResponse`
+  - `LocationsCatalog`
+  - `LocationUpdateLogEvent`
+  - `LocationUpdateStatus`
+  - `NextCatalogBuilder` (use `CatalogBuilder.create` instead)
+  - `NextRouterOptions` (use `RouterOptions` instead)
+  - `ReadLocationEntity`
+  - `ReadLocationError`
+  - `ReadLocationResult`
+  - `Transaction`
+
+  The `RouterOptions` interface has been un-deprecated, and has instead found use
+  for passing into `createRouter`. Its shape has been significantly changed to
+  accommodate the new router.
+
+### Patch Changes
+
+- e15ce5c16e: Integrate authorization into the delete entities endpoint
+- dce98a92f7: Now when entities are deleted, the parent entity state is updated such that it will "heal" accidental deletes on the next refresh round.
+- 02687954ca: Fixed a typo and made a little clarification to a warning message
+- 48248e2db5: Integrate permissions into entity ancestry endpoint in catalog-backend
+- 68edbbeafd: Fix bug with resource loading in permission integration
+- 7e38acaa9e: Integrate permissions into catalog-backend location endpoints
+- 6680853e0c: Export conditional permission policy helpers from catalog-backend
+- 2b27e49eb1: Internal update to match status field changes in `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/integration@0.7.2
+  - @backstage/plugin-permission-common@0.4.0
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/plugin-permission-node@0.4.0
+  - @backstage/plugin-catalog-common@0.1.1
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+
 ## 0.21.0-next.0
 
 ### Minor Changes

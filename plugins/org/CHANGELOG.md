@@ -1,5 +1,36 @@
 # @backstage/plugin-org
 
+## 0.4.0
+
+### Minor Changes
+
+- 1285c2fe60: **BREAKING**: Added a new and required `catalogIndex` external route. It should typically be linked to the `catalogIndex` route of the Catalog plugin:
+
+  ```ts
+  bind(orgPlugin.externalRoutes, {
+    catalogIndex: catalogPlugin.routes.catalogIndex,
+  });
+  ```
+
+### Patch Changes
+
+- f006fe2529: For the component `EntityMembersListCard` you can now specify the pageSize. For example:
+
+  ```tsx
+  <Grid item xs={12}>
+    <EntityMembersListCard pageSize={100} />
+  </Grid>
+  ```
+
+  If left empty it will by default use 50.
+
+- 2908a41b9b: Fixed typo in `MembersListCard` component
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/catalog-model@0.9.10
+
 ## 0.3.35-next.0
 
 ### Patch Changes
