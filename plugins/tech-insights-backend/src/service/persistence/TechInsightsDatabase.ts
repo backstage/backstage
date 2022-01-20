@@ -28,7 +28,8 @@ import { DateTime } from 'luxon';
 import { Logger } from 'winston';
 import { parseEntityName, stringifyEntityRef } from '@backstage/catalog-model';
 import { isMaxItems, isTtl } from '../fact/factRetrievers/utils';
-import Transaction = Knex.Transaction;
+
+type Transaction = Knex.Transaction;
 
 export type RawDbFactRow = {
   id: string;
