@@ -144,7 +144,7 @@ describe('AwsAlbAuthProvider', () => {
           identity: {
             ownershipEntityRefs: ['user:default/jimmymarkum'],
             type: 'user',
-            userEntityRef: 'jimmymarkum',
+            userEntityRef: 'user:default/jimmymarkum',
           },
         },
         profile: {

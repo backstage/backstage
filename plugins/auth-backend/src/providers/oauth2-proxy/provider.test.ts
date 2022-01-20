@@ -167,7 +167,7 @@ describe('Oauth2ProxyAuthProvider', () => {
           identity: {
             ownershipEntityRefs: ['user:default/jimmymarkum'],
             type: 'user',
-            userEntityRef: 'jimmymarkum',
+            userEntityRef: 'user:default/jimmymarkum',
           },
           token: mockToken,
         },
