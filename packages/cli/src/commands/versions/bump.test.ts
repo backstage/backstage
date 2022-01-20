@@ -20,8 +20,9 @@ import { Command } from 'commander';
 import { resolve as resolvePath } from 'path';
 import { paths } from '../../lib/paths';
 import * as runObj from '../../lib/run';
-import bump, { bumpBackstageJsonVersion } from './bump';
+import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
 import { withLogCollector } from '@backstage/test-utils';
+import { YarnInfoInspectData } from '../../lib/versioning/packages';
 
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({
@@ -440,5 +441,94 @@ describe('bumpBackstageJsonVersion', () => {
 
     const json = await fs.readJson('/backstage.json');
     expect(json).toEqual({ version: '1.4.1' });
+  });
+});
+
+describe('createVersionFinder', () => {
+  async function findVersion(tag: string, data: Partial<YarnInfoInspectData>) {
+    const fetcher = () =>
+      Promise.resolve({
+        name: '@backstage/core',
+        'dist-tags': {},
+        versions: [],
+        time: {},
+        ...data,
+      });
+
+    const versionFinder = createVersionFinder(tag, fetcher);
+    let result;
+    await withLogCollector(async () => {
+      result = await versionFinder('@backstage/core');
+    });
+    return result;
+  }
+
+  it('should create version finder', async () => {
+    await expect(
+      findVersion('latest', {
+        time: { '1.0.0': '2020-01-01T00:00:00.000Z' },
+        'dist-tags': { latest: '1.0.0' },
+      }),
+    ).resolves.toBe('1.0.0');
+
+    await expect(
+      findVersion('main', {
+        time: { '1.0.0': '2020-01-01T00:00:00.000Z' },
+        'dist-tags': { latest: '1.0.0' },
+      }),
+    ).resolves.toBe('1.0.0');
+
+    await expect(
+      findVersion('next', {
+        time: { '1.0.0': '2020-01-01T00:00:00.000Z' },
+        'dist-tags': { latest: '1.0.0' },
+      }),
+    ).resolves.toBe('1.0.0');
+
+    await expect(
+      findVersion('next', {
+        time: {
+          '1.0.0': '2020-01-01T00:00:00.000Z',
+          '0.9.0': '2010-01-01T00:00:00.000Z',
+        },
+        'dist-tags': { latest: '1.0.0', next: '0.9.0' },
+      }),
+    ).resolves.toBe('1.0.0');
+
+    await expect(
+      findVersion('next', {
+        time: {
+          '1.0.0': '2020-01-01T00:00:00.000Z',
+          '0.9.0': '2020-02-01T00:00:00.000Z',
+        },
+        'dist-tags': { latest: '1.0.0', next: '0.9.0' },
+      }),
+    ).resolves.toBe('0.9.0');
+
+    await expect(findVersion('next', {})).rejects.toThrow(
+      "No target 'latest' version found for @backstage/core",
+    );
+
+    await expect(
+      findVersion('next', {
+        time: {
+          '0.9.0': '2020-02-01T00:00:00.000Z',
+        },
+        'dist-tags': { latest: '1.0.0', next: '0.9.0' },
+      }),
+    ).rejects.toThrow(
+      "No time available for version '1.0.0' of @backstage/core",
+    );
+
+    await expect(
+      findVersion('next', {
+        time: {
+          '1.0.0': '2020-01-01T00:00:00.000Z',
+        },
+        'dist-tags': { latest: '1.0.0', next: '0.9.0' },
+      }),
+    ).rejects.toThrow(
+      "No time available for version '0.9.0' of @backstage/core",
+    );
   });
 });
