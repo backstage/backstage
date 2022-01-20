@@ -16,6 +16,62 @@
 
 const Codeowners = require('codeowners');
 
+const getRepoEvents = async ({ github, context, pull_number }) => {
+  const commits = await github.paginate(github.rest.pulls.listCommits, {
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    pull_number,
+  });
+
+  const reviews = await github.paginate(github.rest.pulls.listReviews, {
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    pull_number,
+  });
+
+  const pullComments = await github.paginate(
+    'GET /repos/{owner}/{repo}/pulls/{pull_number}/comments',
+    {
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      pull_number,
+    },
+  );
+
+  const comments = await github.paginate(github.rest.issues.listComments, {
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    issue_number: pull_number,
+  });
+
+  const events = [
+    ...reviews.map(({ user, submitted_at }) => ({
+      user,
+      updated_at: submitted_at,
+      type: 'review',
+    })),
+    ...commits.map(({ commit, author }) => ({
+      user: author,
+      updated_at: commit.author.date,
+      type: 'commit',
+    })),
+    ...pullComments.map(({ user, updated_at }) => ({
+      user,
+      updated_at,
+      type: 'pr_comment',
+    })),
+    ...comments.map(({ user, updated_at }) => ({
+      user,
+      updated_at,
+      type: 'pr_comment',
+    })),
+  ];
+
+  return events
+    .sort((a, b) => new Date(a.updated_at) - new Date(b.updated_at))
+    .filter(({ user }) => !user.login.includes('[bot]'));
+};
+
 module.exports = async ({ github, context, core }) => {
   // first get all open pull requests
   const allPullRequests = await github.paginate(github.rest.pulls.list, {
@@ -91,19 +147,14 @@ module.exports = async ({ github, context, core }) => {
 
     // if all required reviewers have reviewed
     if (hasReviewed.size === expectedReviewers.size) {
-      const recentEventsForPR = await github.paginate(
-        github.rest.issues.listEvents,
-        {
-          issue_number: pullRequest.number,
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-        },
-      );
-
+      const repoEvents = await getRepoEvents({
+        github,
+        context,
+        pull_number: pullRequest.number,
+      });
       // if the last event for the issue is not by the author, remove the label
       if (
-        recentEventsForPR[recentEventsForPR.length - 1].actor.login !==
-        pullRequest.user.login
+        repoEvents[repoEvents.length - 1].user.login !== pullRequest.user.login
       ) {
         await github.rest.issues
           .removeLabel({
