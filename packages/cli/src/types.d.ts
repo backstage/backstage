@@ -19,7 +19,9 @@ declare namespace NodeJS {
     readonly NODE_ENV: 'development' | 'production' | 'test';
   }
 }
-
+declare module 'fs' {
+  export interface StatSyncFn {}
+}
 declare module 'rollup-plugin-image-files' {
   export default function image(options?: any): any;
 }
