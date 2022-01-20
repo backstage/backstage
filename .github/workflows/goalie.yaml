@@ -1,10 +1,8 @@
 # on a review from someone in the reviewers group, remove the awaiting-review label and add the awaiting-author label
 name: 'goalie: run cron'
-# on:
-#   schedule:
-#     - cron: '* * * * *'
-
-on: push
+on:
+  schedule:
+    - cron: '* * * * *'
 
 jobs:
   label:
