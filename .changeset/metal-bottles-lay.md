@@ -6,7 +6,7 @@ Replaced EntitySystemDiagramCard with EntityCatalogGraphCard
 
 To make this change to an existing app:
 
-Add `@backstage/catalog-graph-plugin` in `packages/app`
+Add `@backstage/catalog-graph-plugin` as a `dependency` in `packages/app/package.json`
 
 Apply the following changes to the `packages/app/src/components/catalog/EntityPage.tsx` file:
 
@@ -27,7 +27,7 @@ Apply the following changes to the `packages/app/src/components/catalog/EntityPa
 + } from '@backstage/catalog-model';
 ```
 
-`````diff
+```diff
     <EntityLayout.Route path="/diagram" title="Diagram">
 -      <EntitySystemDiagramCard />
 +      <EntityCatalogGraphCard
@@ -48,5 +48,16 @@ Apply the following changes to the `packages/app/src/components/catalog/EntityPa
 +        unidirectional={false}
 +      />
     </EntityLayout.Route>
-    ````
-`````
+```
+
+```diff
+const cicdContent = (
+    <Grid item md={6}>
+      <EntityAboutCard variant="gridItem" />
+    </Grid>
++    <Grid item md={6} xs={12}>
++      <EntityCatalogGraphCard variant="gridItem" height={400} />
++    </Grid>
+```
+
+Add the above component in `overviewContent`, `apiPage` , `systemPage` and domainPage` as well.
