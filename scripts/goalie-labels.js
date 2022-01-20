@@ -50,9 +50,9 @@ const getRepoEvents = async ({ github, context, pull_number }) => {
       updated_at: submitted_at,
       type: 'review',
     })),
-    ...commits.map(({ commit, author }) => ({
-      user: author,
-      updated_at: commit.author.date,
+    ...commits.map(({ commit, author, committer }) => ({
+      user: author || committer,
+      updated_at: commit.author.date || commit.committer.date,
       type: 'commit',
     })),
     ...pullComments.map(({ user, updated_at }) => ({
@@ -69,7 +69,7 @@ const getRepoEvents = async ({ github, context, pull_number }) => {
 
   return events
     .sort((a, b) => new Date(a.updated_at) - new Date(b.updated_at))
-    .filter(({ user }) => !user.login.includes('[bot]'));
+    .filter(({ user }) => (user ? !user.login.includes('[bot]') : false));
 };
 
 module.exports = async ({ github, context, core }) => {
