@@ -36,6 +36,7 @@ export { SearchFilter, SearchFilterNext } from './components/SearchFilter';
 export { SearchModal } from './components/SearchModal';
 export type { SearchModalProps } from './components/SearchModal';
 export { SearchPage as Router } from './components/SearchPage';
+export { SearchResultPager } from './components/SearchResultPager';
 export { SearchType } from './components/SearchType';
 export type {
   SearchTypeAccordionProps,
