@@ -47,6 +47,7 @@ import {
   simplifyMkdocsFooter,
   scrollIntoAnchor,
   transform as transformer,
+  copyToClipboard,
 } from '../transformers';
 
 import { TechDocsSearch } from './TechDocsSearch';
@@ -215,6 +216,8 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
 
             --md-code-fg-color: ${theme.palette.text.primary};
             --md-code-bg-color: ${theme.palette.background.paper};
+            --md-accent-fg-color: ${theme.palette.primary.main};
+            --md-default-fg-color--lightest: ${theme.palette.textVerySubtle};
           }
           .md-main__inner { margin-top: 0; }
           .md-sidebar {  position: fixed; bottom: 100px; width: 20rem; }
@@ -372,6 +375,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
     async (transformedElement: Element) =>
       transformer(transformedElement, [
         scrollIntoAnchor(),
+        copyToClipboard(),
         addLinkClickListener({
           baseUrl: window.location.origin,
           onClick: (event: MouseEvent, url: string) => {
