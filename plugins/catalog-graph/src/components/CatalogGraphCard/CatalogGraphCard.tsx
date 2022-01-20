@@ -23,12 +23,13 @@ import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
 import {
   formatEntityRefTitle,
   useEntity,
+  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { makeStyles, Theme } from '@material-ui/core';
 import qs from 'qs';
 import React, { MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router';
-import { catalogEntityRouteRef, catalogGraphRouteRef } from '../../routes';
+import { catalogGraphRouteRef } from '../../routes';
 import {
   ALL_RELATION_PAIRS,
   Direction,
@@ -77,7 +78,7 @@ export const CatalogGraphCard = ({
 }) => {
   const { entity } = useEntity();
   const entityName = getEntityName(entity);
-  const catalogEntityRoute = useRouteRef(catalogEntityRouteRef);
+  const catalogEntityRoute = useRouteRef(entityRouteRef);
   const catalogGraphRoute = useRouteRef(catalogGraphRouteRef);
   const navigate = useNavigate();
   const classes = useStyles({ height });

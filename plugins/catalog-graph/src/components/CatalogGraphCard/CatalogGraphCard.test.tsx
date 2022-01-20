@@ -20,6 +20,7 @@ import {
   CatalogApi,
   catalogApiRef,
   EntityProvider,
+  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import {
   MockAnalyticsApi,
@@ -29,7 +30,7 @@ import {
 } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { catalogEntityRouteRef, catalogGraphRouteRef } from '../../routes';
+import { catalogGraphRouteRef } from '../../routes';
 import { CatalogGraphCard } from './CatalogGraphCard';
 
 describe('<CatalogGraphCard/>', () => {
@@ -80,7 +81,7 @@ describe('<CatalogGraphCard/>', () => {
   test('renders without exploding', async () => {
     const { findByText, findAllByTestId } = await renderInTestApp(wrapper, {
       mountedRoutes: {
-        '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
         '/catalog-graph': catalogGraphRouteRef,
       },
     });
@@ -99,7 +100,7 @@ describe('<CatalogGraphCard/>', () => {
       </ApiProvider>,
       {
         mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
           '/catalog-graph': catalogGraphRouteRef,
         },
       },
@@ -111,7 +112,7 @@ describe('<CatalogGraphCard/>', () => {
   test('renders link to standalone viewer', async () => {
     const { findByText, getByText } = await renderInTestApp(wrapper, {
       mountedRoutes: {
-        '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
         '/catalog-graph': catalogGraphRouteRef,
       },
     });
@@ -133,7 +134,7 @@ describe('<CatalogGraphCard/>', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
           '/catalog-graph': catalogGraphRouteRef,
         },
       },

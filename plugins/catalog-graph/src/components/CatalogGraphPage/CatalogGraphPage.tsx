@@ -22,14 +22,16 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
-import { formatEntityRefTitle } from '@backstage/plugin-catalog-react';
+import {
+  entityRouteRef,
+  formatEntityRefTitle,
+} from '@backstage/plugin-catalog-react';
 import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import { ToggleButton } from '@material-ui/lab';
 import React, { MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router';
-import { catalogEntityRouteRef } from '../../routes';
 import {
   ALL_RELATION_PAIRS,
   Direction,
@@ -114,7 +116,7 @@ export const CatalogGraphPage = ({
 }) => {
   const navigate = useNavigate();
   const classes = useStyles();
-  const catalogEntityRoute = useRouteRef(catalogEntityRouteRef);
+  const catalogEntityRoute = useRouteRef(entityRouteRef);
   const {
     maxDepth,
     setMaxDepth,

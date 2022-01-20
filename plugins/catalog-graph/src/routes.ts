@@ -32,8 +32,10 @@ export const catalogGraphRouteRef = createRouteRef({
  * Used to navigate from the graph to an entity.
  *
  * @public
+ * @deprecated This route is no longer used and can be removed
  */
 export const catalogEntityRouteRef = createExternalRouteRef({
   id: 'catalog-entity',
   params: ['namespace', 'kind', 'name'],
+  optional: true,
 });

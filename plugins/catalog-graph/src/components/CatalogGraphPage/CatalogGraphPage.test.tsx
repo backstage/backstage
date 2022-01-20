@@ -15,7 +15,11 @@
  */
 import { RELATION_HAS_PART, RELATION_PART_OF } from '@backstage/catalog-model';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import {
   MockAnalyticsApi,
   renderInTestApp,
@@ -23,7 +27,6 @@ import {
 } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { catalogEntityRouteRef } from '../../routes';
 import { CatalogGraphPage } from './CatalogGraphPage';
 
 const navigate = jest.fn();
@@ -114,7 +117,7 @@ describe('<CatalogGraphPage/>', () => {
       wrapper,
       {
         mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
         },
       },
     );
@@ -129,7 +132,7 @@ describe('<CatalogGraphPage/>', () => {
   test('should toggle filters', async () => {
     const { getByText, queryByText } = await renderInTestApp(wrapper, {
       mountedRoutes: {
-        '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
       },
     });
 
@@ -145,7 +148,7 @@ describe('<CatalogGraphPage/>', () => {
       wrapper,
       {
         mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
         },
       },
     );
@@ -160,7 +163,7 @@ describe('<CatalogGraphPage/>', () => {
   test('should navigate to entity', async () => {
     const { getByText, findAllByTestId } = await renderInTestApp(wrapper, {
       mountedRoutes: {
-        '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
       },
     });
 
@@ -179,7 +182,7 @@ describe('<CatalogGraphPage/>', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
         },
       },
     );
@@ -202,7 +205,7 @@ describe('<CatalogGraphPage/>', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': catalogEntityRouteRef,
+          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
         },
       },
     );
