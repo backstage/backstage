@@ -156,5 +156,5 @@ scaffolder backend:
 | Cookiecutter  | [plugin-scaffolder-backend-module-cookiecutter](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-cookiecutter) | [Backstage](https://backstage.io)            |
 | Rails         | [plugin-scaffolder-backend-module-rails](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-rails)               | [Backstage](https://backstage.io)            |
 | HTTP requests | [scaffolder-backend-module-http-request](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-http-request)                | [Roadie](https://roadie.io)                  |
-| .NET Actions | [plugin-scaffolder-dotnet-backend](https://www.npmjs.com/package/@plusultra/plugin-scaffolder-dotnet-backend)                           | [Alef Carlos](https://github.com/alefcarlos) |
+| Scaffolder .NET Actions | [plugin-scaffolder-dotnet-backend](https://www.npmjs.com/package/@plusultra/plugin-scaffolder-dotnet-backend)                           | [Alef Carlos](https://github.com/alefcarlos) |
 Have fun! 🚀
