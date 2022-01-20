@@ -51,7 +51,7 @@
     "express-promise-router": "^4.1.0",
     "fs-extra": "9.1.0",
     "git-url-parse": "^11.6.0",
-    "helmet": "^5.0.1",
+    "helmet": "^4.0.0",
     "isomorphic-git": "^1.8.0",
     "jose": "^1.27.1",
     "keyv": "^4.0.3",

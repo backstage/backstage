@@ -56,7 +56,7 @@
     "git-url-parse": "^11.6.0",
     "globby": "^11.0.0",
     "handlebars": "^4.7.6",
-    "helmet": "^5.0.1",
+    "helmet": "^4.0.0",
     "isbinaryfile": "^4.0.8",
     "isomorphic-git": "^1.8.0",
     "jsonschema": "^1.2.6",
