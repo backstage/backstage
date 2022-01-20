@@ -42,10 +42,6 @@
     "packages": [
       "packages/*",
       "plugins/*"
-    ],
-    "nohoist": [
-      "**/@storybook/**",
-      "**/@storybook"
     ]
   },
   "resolutions": {
