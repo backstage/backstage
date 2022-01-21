@@ -32,6 +32,7 @@
     "@backstage/config": "^0.1.13",
     "@backstage/config-loader": "^0.9.3",
     "@backstage/errors": "^0.2.0",
+    "@backstage/release-manifest": "^0.0.1",
     "@backstage/types": "^0.1.1",
     "@hot-loader/react-dom": "^16.13.0",
     "@manypkg/get-packages": "^1.1.3",

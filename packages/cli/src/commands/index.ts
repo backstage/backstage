@@ -344,7 +344,10 @@ export function registerCommands(program: CommanderStatic) {
     .option(
       '--release-line <main|next>',
       'Bump to the latest version of a specific release line',
-      'main',
+    )
+    .option(
+      '--backstage-release <version>',
+      'Bump to a specific Backstage release',
     )
     .description('Bump Backstage packages to the latest versions')
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
