@@ -69,6 +69,8 @@ The following versioning policy applies to the main-line releases only.
   there will always be a deprecation path for a breaking change.
 - Security fixes **may** be backported to older releases based on the simplicity
   of the upgrade path, and the severity of the vulnerability.
+- Bug reports are valid only if reproducible in the most recent release, and bug
+  fixes are only applied to the next release.
 - We will do our best to adhere to this policy.
 
 ### Skew Policy
