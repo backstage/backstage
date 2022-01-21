@@ -40,7 +40,7 @@ export type GetByVersionOptions = {
 export async function getByVersion(
   options: GetByVersionOptions,
 ): Promise<ReleaseManifest> {
-  const url = `${VERSIONS_DOMAIN}/v1/releases/${options.version}`;
+  const url = `${VERSIONS_DOMAIN}/v1/releases/${options.version}/manifest.json`;
   const response = await fetch(url);
   if (response.status === 404) {
     throw new Error(`No release found for ${options.version} version`);
@@ -67,7 +67,7 @@ export type GetByReleaseLineOptions = {
 export async function getByReleaseLine(
   options: GetByReleaseLineOptions,
 ): Promise<ReleaseManifest> {
-  const url = `${VERSIONS_DOMAIN}/v1/tags/${options.releaseLine}`;
+  const url = `${VERSIONS_DOMAIN}/v1/tags/${options.releaseLine}/manifest.json`;
   const response = await fetch(url);
   if (response.status === 404) {
     throw new Error(`No '${options.releaseLine}' release line found`);
