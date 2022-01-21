@@ -486,7 +486,13 @@ const SidebarItemWithSubmenu = ({
 export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   // Filter children for SidebarSubmenu components
   const [submenu] = useElementFilter(props.children, elements =>
-    elements.getElements().filter(child => child.type === SidebarSubmenu),
+    // Directly comparing child.type with SidebarSubmenu will not work with in
+    // combination with react-hot-loader
+    //
+    // https://github.com/gaearon/react-hot-loader/issues/304#issuecomment-456569720
+    elements
+      .getElements()
+      .filter(child => child.type === React.createElement(SidebarSubmenu).type),
   );
 
   if (submenu) {

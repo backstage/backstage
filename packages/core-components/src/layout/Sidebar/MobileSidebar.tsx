@@ -162,8 +162,15 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
   }, [location.pathname]);
 
   // Filter children for SidebarGroups
+  //
+  // Directly comparing child.type with SidebarSubmenu will not work with in
+  // combination with react-hot-loader
+  //
+  // https://github.com/gaearon/react-hot-loader/issues/304#issuecomment-456569720
   let sidebarGroups = useElementFilter(children, elements =>
-    elements.getElements().filter(child => child.type === SidebarGroup),
+    elements
+      .getElements()
+      .filter(child => child.type === React.createElement(SidebarGroup).type),
   );
 
   if (!children) {
