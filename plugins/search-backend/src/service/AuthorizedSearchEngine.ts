@@ -32,7 +32,6 @@ import {
   SearchResult,
   SearchResultSet,
 } from '@backstage/search-common';
-import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 
 export function decodePageCursor(pageCursor?: string): { page: number } {
@@ -58,19 +57,21 @@ export function encodePageCursor({ page }: { page: number }): string {
   return Buffer.from(`${page}`, 'utf-8').toString('base64');
 }
 
+export type AuthorizedSearchEngineConfig = {
+  queryLatencyBudgetMs: number;
+  pageSize: number;
+};
+
 export class AuthorizedSearchEngine implements SearchEngine {
-  private readonly pageSize: number = 25;
-  private readonly queryLatencyBudgetMs: number;
+  private readonly config: AuthorizedSearchEngineConfig;
 
   constructor(
     private readonly searchEngine: SearchEngine,
     private readonly types: Record<string, DocumentTypeInfo>,
     private readonly permissions: PermissionAuthorizer,
-    config: Config,
+    config?: Partial<AuthorizedSearchEngineConfig>,
   ) {
-    this.queryLatencyBudgetMs =
-      config.getOptionalNumber('search.permissions.queryLatencyBudgetMs') ??
-      1000;
+    this.config = { queryLatencyBudgetMs: 1000, pageSize: 25, ...config };
   }
 
   setTranslator(translator: QueryTranslator): void {
@@ -133,7 +134,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
     }
 
     const { page } = decodePageCursor(query.pageCursor);
-    const targetResults = (page + 1) * this.pageSize;
+    const targetResults = (page + 1) * this.config.pageSize;
 
     let filteredResults: SearchResult[] = [];
     let nextPageCursor: string | undefined;
@@ -151,7 +152,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
       nextPageCursor = nextPage.nextPageCursor;
       latencyBudgetExhausted =
-        Date.now() - queryStartTime > this.queryLatencyBudgetMs;
+        Date.now() - queryStartTime > this.config.queryLatencyBudgetMs;
     } while (
       nextPageCursor &&
       filteredResults.length < targetResults &&
@@ -160,8 +161,8 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
     return {
       results: filteredResults.slice(
-        page * this.pageSize,
-        (page + 1) * this.pageSize,
+        page * this.config.pageSize,
+        (page + 1) * this.config.pageSize,
       ),
       previousPageCursor:
         page === 0 ? undefined : encodePageCursor({ page: page - 1 }),
