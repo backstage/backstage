@@ -85,10 +85,10 @@ const myFactRetriever = {
    */
 };
 
-const myFactRetrieverRegistration = createFactRetrieverRegistration(
-  '1 * 3 * * ', // On the first minute of the third day of the month
-  myFactRetriever,
-);
+const myFactRetrieverRegistration = createFactRetrieverRegistration({
+  cadence: '1 * 2 * * ', // On the first minute of the second day of the month
+  factRetriever: myFactRetriever,
+});
 ```
 
 FactRetrieverRegistration also accepts an optional `lifecycle` configuration value. This can be either MaxItems or TTL (time to live). Valid options for this value are either a number for MaxItems or a Luxon duration like object for TTL. For example:
