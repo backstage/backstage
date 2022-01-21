@@ -21,4 +21,8 @@
  */
 
 export { getByVersion, getByReleaseLine } from './manifest';
-export type { ReleaseManifest } from './manifest';
+export type {
+  ReleaseManifest,
+  GetByReleaseLineOptions,
+  GetByVersionOptions,
+} from './manifest';
