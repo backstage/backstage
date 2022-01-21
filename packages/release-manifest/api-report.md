@@ -8,8 +8,6 @@ export function getByReleaseLine(
   options: GetByReleaseLineOptions,
 ): Promise<ReleaseManifest>;
 
-// Warning: (ae-missing-release-tag) "GetByReleaseLineOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type GetByReleaseLineOptions = {
   releaseLine: string;
@@ -20,8 +18,6 @@ export function getByVersion(
   options: GetByVersionOptions,
 ): Promise<ReleaseManifest>;
 
-// Warning: (ae-missing-release-tag) "GetByVersionOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type GetByVersionOptions = {
   version: string;

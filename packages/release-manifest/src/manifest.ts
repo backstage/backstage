@@ -28,6 +28,7 @@ export type ReleaseManifest = {
 
 /**
  * Options for getByVersion.
+ * @public
  */
 export type GetByVersionOptions = {
   version: string;
@@ -55,6 +56,7 @@ export async function getByVersion(
 
 /**
  * Options for getByReleaseLine.
+ * @public
  */
 export type GetByReleaseLineOptions = {
   releaseLine: string;
