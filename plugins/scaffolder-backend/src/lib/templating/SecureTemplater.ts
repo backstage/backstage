@@ -17,8 +17,10 @@
 import { VM } from 'vm2';
 import { resolvePackagePath } from '@backstage/backend-common';
 import fs from 'fs-extra';
+import { JsonValue } from '@backstage/types';
 import { RepoSpec } from '../../scaffolder/actions/builtin/publish/util';
 
+// language=JavaScript
 const mkScript = (nunjucksSource: string) => `
 const { render, renderCompat } = (() => {
   const module = {};
@@ -56,6 +58,16 @@ const { render, renderCompat } = (() => {
     });
   }
 
+  if (typeof additionalFilters !== "undefined") {
+      Object.entries(additionalFilters)
+        .forEach(([filterName, filterFunction]) => {
+           env.addFilter(
+               filterName,
+               (...args) => JSON.parse(filterFunction.apply(null, args))
+           ); 
+        });
+  }
+
   let uninstallCompat = undefined;
 
   function render(str, values) {
@@ -87,6 +99,8 @@ const { render, renderCompat } = (() => {
 })();
 `;
 
+export type NunjucksFilter = (...args: JsonValue[]) => JsonValue | undefined;
+
 export interface SecureTemplaterOptions {
   /* Optional implementation of the parseRepoUrl filter */
   parseRepoUrl?(repoUrl: string): RepoSpec;
@@ -95,7 +109,7 @@ export interface SecureTemplaterOptions {
   cookiecutterCompat?: boolean;
 
   /* Extra user-provided nunjucks filters */
-  additionalFilters?: Record<string, (data: any) => any>;
+  additionalFilters?: Record<string, NunjucksFilter>;
 }
 
 export type SecureTemplateRenderer = (
@@ -106,17 +120,22 @@ export type SecureTemplateRenderer = (
 export class SecureTemplater {
   static async loadRenderer(options: SecureTemplaterOptions = {}) {
     const { parseRepoUrl, cookiecutterCompat, additionalFilters } = options;
-    let sandbox = undefined;
+    const sandbox: Record<string, any> = {};
 
     if (parseRepoUrl) {
-      sandbox = {
-        parseRepoUrl: (url: string) => JSON.stringify(parseRepoUrl(url)),
-      };
+      sandbox.parseRepoUrl = (url: string) => JSON.stringify(parseRepoUrl(url));
     }
-    sandbox = {
-      ...sandbox,
-      ...additionalFilters,
-    };
+
+    if (additionalFilters) {
+      sandbox.additionalFilters = Object.entries(additionalFilters)
+        .filter(([_, filterFunction]) => !!filterFunction)
+        .reduce((safeFilters, [filterName, filterFunction]) => {
+          const newSafeFilters = { ...safeFilters };
+          newSafeFilters[filterName] = (...args) =>
+            JSON.stringify(filterFunction.apply(null, args));
+          return newSafeFilters;
+        }, {} as Record<string, NunjucksFilter>);
+    }
 
     const vm = new VM({ sandbox });
 

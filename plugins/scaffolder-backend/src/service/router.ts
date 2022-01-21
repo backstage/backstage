@@ -41,6 +41,7 @@ import {
 } from '../scaffolder';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
+import { NunjucksFilter } from '../lib/templating/SecureTemplater';
 
 /**
  * RouterOptions
@@ -57,7 +58,7 @@ export interface RouterOptions {
   taskWorkers?: number;
   containerRunner?: ContainerRunner;
   taskBroker?: TaskBroker;
-  nunjucksFilters?: Record<string, (data: any) => any>;
+  nunjucksFilters?: Record<string, NunjucksFilter>;
 }
 
 function isSupportedTemplate(

@@ -23,7 +23,10 @@ import { createTemplateAction } from '../../createTemplateAction';
 import globby from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
-import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
+import {
+  NunjucksFilter,
+  SecureTemplater,
+} from '../../../../lib/templating/SecureTemplater';
 
 type CookieCompatInput = {
   copyWithoutRender?: string[];
@@ -44,7 +47,7 @@ export type FetchTemplateInput = {
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-  nunjucksFilters?: Record<string, (data: any) => any>;
+  nunjucksFilters?: Record<string, NunjucksFilter>;
 }) {
   const { reader, integrations, nunjucksFilters } = options;
 

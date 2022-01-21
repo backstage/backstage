@@ -46,6 +46,7 @@ import {
   createGithubActionsDispatchAction,
   createGithubWebhookAction,
 } from './github';
+import { NunjucksFilter } from '../../../lib/templating/SecureTemplater';
 
 export const createBuiltinActions = (options: {
   reader: UrlReader;
@@ -53,7 +54,7 @@ export const createBuiltinActions = (options: {
   catalogClient: CatalogApi;
   containerRunner?: ContainerRunner;
   config: Config;
-  nunjucksFilters?: Record<string, (data: any) => any>;
+  nunjucksFilters?: Record<string, NunjucksFilter>;
 }) => {
   const {
     reader,

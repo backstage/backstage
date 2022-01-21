@@ -21,6 +21,7 @@ import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { assertError } from '@backstage/errors';
+import { NunjucksFilter } from '../../lib/templating/SecureTemplater';
 
 /**
  * TaskWorkerOptions
@@ -46,7 +47,7 @@ export type CreateWorkerOptions = {
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
-  nunjucksFilters?: Record<string, (data: any) => any>;
+  nunjucksFilters?: Record<string, NunjucksFilter>;
 };
 
 /**
