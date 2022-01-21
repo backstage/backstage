@@ -104,7 +104,8 @@ export function StageChart(props: StageChartProps) {
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography>
-          {stage.name} (avg {formatDuration(stage.combinedAnalysis.avg)})
+          {stage.name} (med {formatDuration(stage.combinedAnalysis.med)}, avg{' '}
+          {formatDuration(stage.combinedAnalysis.avg)})
         </Typography>
       </AccordionSummary>
       <AccordionDetails>

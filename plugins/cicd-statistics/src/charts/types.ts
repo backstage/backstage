@@ -30,9 +30,14 @@ export type ChartableStageDatapoints = {
 };
 
 export interface ChartableStageAnalysis {
+  /** Maximum duration */
   max: number;
+  /** Minimum duration */
   min: number;
+  /** Average duration */
   avg: number;
+  /** Median duration */
+  med: number;
 }
 
 export interface ChartableStage {

@@ -17,7 +17,7 @@
 import { FilterStatusType, statusTypes } from '../../apis/types';
 import { Averagify, ChartableStage } from '../types';
 import { countBuildsPerDay } from './count-builds-per-day';
-import { getAnalysis } from './get-analysis';
+import { getAnalysis, makeCombinedAnalysis } from './analysis';
 import { average } from './utils';
 
 interface FinalizeStageOptions {
@@ -54,7 +54,7 @@ export function finalizeStage(
 
   countBuildsPerDay(values);
 
-  const avgDuration: [duration: number, count: number] = [0, 0];
+  const allDurations: Array<number> = [];
 
   statusTypes.forEach(status => {
     analysis[status] = getAnalysis(values, status);
@@ -70,8 +70,7 @@ export function finalizeStage(
         (duration): duration is number => typeof duration !== 'undefined',
       );
 
-    avgDuration[0] += durationsDense.reduce((prev, cur) => prev + cur, 0);
-    avgDuration[1] += durationsDense.length;
+    durationsDense.forEach(dur => allDurations.push(dur));
 
     const averages = durationsDense.map((_, i) =>
       average(
@@ -88,16 +87,7 @@ export function finalizeStage(
     });
   });
 
-  const analysisValues = Object.values(analysis);
-  combinedAnalysis.max = analysisValues.reduce(
-    (prev, cur) => Math.max(prev, cur.max),
-    0,
-  );
-  combinedAnalysis.min = analysisValues.reduce(
-    (prev, cur) => Math.min(prev, cur.min),
-    combinedAnalysis.max,
-  );
-  combinedAnalysis.avg = !avgDuration[1] ? 0 : avgDuration[0] / avgDuration[1];
+  Object.assign(combinedAnalysis, makeCombinedAnalysis(analysis, allDurations));
 
   stage.stages.forEach(subStage => finalizeStage(subStage, options));
 }
