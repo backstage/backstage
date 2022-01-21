@@ -25,9 +25,10 @@ import { useSearch } from '../SearchContext';
 
 type Props = {
   children: (results: { results: SearchResult[] }) => JSX.Element;
+  infinite?: boolean;
 };
 
-export const SearchResultComponent = ({ children }: Props) => {
+export const SearchResultComponent = ({ children, infinite }: Props) => {
   const {
     result: { loading, error, value },
     fetchNextPage,
@@ -56,7 +57,7 @@ export const SearchResultComponent = ({ children }: Props) => {
   }, [handleScroll]);
 
   useEffect(() => {
-    if (!node) {
+    if (!node || !infinite) {
       return () => {
         /* */
       };
@@ -78,7 +79,7 @@ export const SearchResultComponent = ({ children }: Props) => {
 
     document.addEventListener('scroll', handleScrollOnWindow);
     return () => document.removeEventListener('scroll', handleScrollOnWindow);
-  }, [handleScroll, handleScrollOnWindow, node]);
+  }, [handleScroll, handleScrollOnWindow, node, infinite]);
 
   if (loading && !value) {
     return <Progress />;
