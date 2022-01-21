@@ -1,0 +1,9 @@
+---
+title: Keptn Plugin
+author: cloud@krateoplatformops.io
+authorUrl: https://github.com/krateoplatformops/krateo
+category: Monitoring
+description: Keptn plugin is designed for to monitoring a project and a single service on your keptn installation. You can also post a new delivery with the sync button!
+documentation: https://github.com/krateoplatformops/krateo/blob/main/README.md
+iconUrl: https://raw.githubusercontent.com/krateoplatformops/community/main/logos/white/logo_vertical.svg
+npmPackageName: '@krateo/backstage-plugin-keptn'
