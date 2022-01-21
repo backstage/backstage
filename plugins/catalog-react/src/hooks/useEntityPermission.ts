@@ -17,8 +17,9 @@
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Permission } from '@backstage/plugin-permission-common';
 import { usePermission } from '@backstage/plugin-permission-react';
-import { useRef } from 'react';
 import { useEntity } from './useEntity';
+
+const cache: Record<string, boolean> = {};
 
 /**
  * A thin wrapper around the
@@ -44,13 +45,8 @@ export function useEntityPermission(permission: Permission): {
   const { entity, loading: loadingEntity, error: entityError } = useEntity();
 
   let defaultValue: boolean;
-  const cache = useRef<Record<string, boolean>>({});
-  if (
-    entity &&
-    cache.current[`${permission.name}${stringifyEntityRef(entity)}`]
-  ) {
-    defaultValue =
-      cache.current[`${permission.name}${stringifyEntityRef(entity)}`];
+  if (entity && cache[`${permission.name}${stringifyEntityRef(entity)}`]) {
+    defaultValue = cache[`${permission.name}${stringifyEntityRef(entity)}`];
   } else {
     defaultValue = false;
   }
@@ -70,6 +66,6 @@ export function useEntityPermission(permission: Permission): {
   if (entityError) {
     return { loading: false, allowed: false, error: entityError };
   }
-  cache.current[`${permission.name}${stringifyEntityRef(entity)}`] = allowed;
+  cache[`${permission.name}${stringifyEntityRef(entity)}`] = allowed;
   return { loading: false, allowed, error: permissionError };
 }
