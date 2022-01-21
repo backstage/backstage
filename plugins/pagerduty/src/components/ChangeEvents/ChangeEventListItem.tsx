@@ -47,7 +47,6 @@ type Props = {
 };
 
 export const ChangeEventListItem = ({ changeEvent }: Props) => {
-  console.log(changeEvent)
   const classes = useStyles();
   const duration =
     new Date().getTime() - new Date(changeEvent.timestamp).getTime();
