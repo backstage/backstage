@@ -17,14 +17,15 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import {
+  ApplicationContext,
   PluginCacheManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   TokenManager,
   UrlReader,
 } from '@backstage/backend-common';
-import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 
 export type PluginEnvironment = {
   logger: Logger;
@@ -34,6 +35,7 @@ export type PluginEnvironment = {
   reader: UrlReader;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
-  permissions: ServerPermissionClient;
+  permissions: PermissionAuthorizer;
   scheduler: PluginTaskScheduler;
+  applicationContext: ApplicationContext;
 };

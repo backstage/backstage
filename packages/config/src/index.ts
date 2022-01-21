@@ -28,3 +28,4 @@ export type {
 } from './deprecatedTypes';
 export { ConfigReader } from './reader';
 export type { AppConfig, Config } from './types';
+export * from './moduleContext';

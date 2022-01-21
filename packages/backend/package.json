@@ -24,6 +24,7 @@
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {
+    "@backstage/app-context-common": "0.1.0",
     "@backstage/backend-common": "^0.10.7",
     "@backstage/backend-tasks": "^0.1.6",
     "@backstage/catalog-client": "^0.6.0",
@@ -66,6 +67,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "express-prom-bundle": "^6.3.6",
+    "inversify": "^6.0.1",
     "knex": "^1.0.2",
     "pg": "^8.3.0",
     "pg-connection-string": "^2.3.0",

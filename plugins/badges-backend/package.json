@@ -31,6 +31,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/app-context-common": "^0.1.0",
     "@backstage/backend-common": "^0.10.7",
     "@backstage/catalog-client": "^0.6.0",
     "@backstage/catalog-model": "^0.9.10",
@@ -41,6 +42,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "inversify": "^6.0.1",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },

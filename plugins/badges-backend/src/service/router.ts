@@ -17,31 +17,25 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import {
+  ApplicationContext,
   errorHandler,
   PluginEndpointDiscovery,
+  pluginEndpointDiscoveryDep,
 } from '@backstage/backend-common';
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
+import { catalogApiDep } from '@backstage/catalog-client';
+import { configDep } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
-import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
-import { BadgeContext, BadgeFactories } from '../types';
-
-export interface RouterOptions {
-  badgeBuilder?: BadgeBuilder;
-  badgeFactories?: BadgeFactories;
-  catalog?: CatalogApi;
-  config: Config;
-  discovery: PluginEndpointDiscovery;
-}
+import { BadgeContext } from '../types';
+import { badgeBuilderDep } from './moduleContext';
 
 export async function createRouter(
-  options: RouterOptions,
+  ctx: ApplicationContext,
 ): Promise<express.Router> {
-  const catalog =
-    options.catalog || new CatalogClient({ discoveryApi: options.discovery });
-  const badgeBuilder =
-    options.badgeBuilder ||
-    new DefaultBadgeBuilder(options.badgeFactories || {});
+  const catalog = ctx.get(catalogApiDep);
+  const badgeBuilder = ctx.get(badgeBuilderDep);
+  const discovery = ctx.get(pluginEndpointDiscoveryDep);
+  const config = ctx.get(configDep);
+
   const router = Router();
 
   router.get('/entity/:namespace/:kind/:name/badge-specs', async (req, res) => {
@@ -66,9 +60,9 @@ export async function createRouter(
           kind,
           name,
           badgeInfo.id,
-          options,
+          discovery,
         ),
-        config: options.config,
+        config,
         entity,
       };
 
@@ -105,8 +99,14 @@ export async function createRouter(
       const badgeOptions = {
         badgeInfo: { id: badgeId },
         context: {
-          badgeUrl: await getBadgeUrl(namespace, kind, name, badgeId, options),
-          config: options.config,
+          badgeUrl: await getBadgeUrl(
+            namespace,
+            kind,
+            name,
+            badgeId,
+            discovery,
+          ),
+          config,
           entity,
         },
       };
@@ -137,9 +137,9 @@ async function getBadgeUrl(
   kind: string,
   name: string,
   badgeId: string,
-  options: RouterOptions,
+  discovery: PluginEndpointDiscovery,
 ): Promise<string> {
-  const baseUrl = await options.discovery.getExternalBaseUrl('badges');
+  const baseUrl = await discovery.getExternalBaseUrl('badges');
   return `${baseUrl}/entity/${namespace}/${kind}/${name}/badge/${badgeId}`;
 }
 

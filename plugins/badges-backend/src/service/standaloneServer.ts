@@ -18,10 +18,15 @@ import { Server } from 'http';
 import { Logger } from 'winston';
 import {
   createServiceBuilder,
+  InversifyApplicationContext,
   loadBackendConfig,
+  pluginEndpointDiscoveryDep,
   SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { createRouter } from './router';
+import { dependencies } from './moduleContext';
+import { Container } from 'inversify';
+import { configDep } from '@backstage/config';
 
 export interface ServerOptions {
   port: number;
@@ -36,9 +41,19 @@ export async function startStandaloneServer(
   const config = await loadBackendConfig({ logger, argv: process.argv });
   const discovery = SingleHostDiscovery.fromConfig(config);
 
+  const container = new Container();
+  container.bind(configDep.id).toConstantValue(config);
+  container.bind(pluginEndpointDiscoveryDep.id).toConstantValue(discovery);
+
+  const applicationContext = InversifyApplicationContext.fromConfig({
+    logger,
+    dependencies,
+    container,
+  });
+
   logger.debug('Creating application...');
 
-  const router = await createRouter({ config, discovery });
+  const router = await createRouter(applicationContext);
 
   let service = createServiceBuilder(module)
     .setPort(options.port)

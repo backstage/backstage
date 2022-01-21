@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,9 @@
  * limitations under the License.
  */
 
-/**
- * Common functionality library for Backstage backends
- *
- * @packageDocumentation
- */
+import { createDependencyRef } from '@backstage/app-context-common';
+import { TaskScheduler } from './tasks';
 
-export * from './cache';
-export { loadBackendConfig } from './config';
-export * from './context';
-export * from './database';
-export * from './discovery';
-export * from './hot';
-export * from './logging';
-export * from './middleware';
-export * from './paths';
-export * from './reading';
-export * from './scm';
-export * from './service';
-export * from './tokens';
-export * from './util';
-export * from './appContext';
+export const taskSchedulerDep = createDependencyRef<TaskScheduler>(
+  Symbol.for('@backstage/backend-tasks.TaskScheduler'),
+);

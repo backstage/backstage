@@ -15,18 +15,26 @@
  */
 
 import {
-  createRouter,
+  badgeFactoriesDep,
   createDefaultBadgeFactories,
+  createRouter,
+  dependencies,
 } from '@backstage/plugin-badges-backend';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  config,
-  discovery,
-}: PluginEnvironment) {
-  return await createRouter({
-    config,
-    discovery,
-    badgeFactories: createDefaultBadgeFactories(),
+export default async function createPlugin(environment: PluginEnvironment) {
+  const { applicationContext } = environment;
+  const pluginName = 'badges';
+
+  return applicationContext.createBoundPlugin({
+    plugin: pluginName,
+    dependencies: [
+      {
+        id: badgeFactoriesDep,
+        factory: () => createDefaultBadgeFactories(),
+      },
+      ...dependencies,
+    ],
+    createRouter,
   });
 }
