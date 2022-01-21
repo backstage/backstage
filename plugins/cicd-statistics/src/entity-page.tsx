@@ -25,7 +25,7 @@ import {
   UseCicdStatisticsOptions,
 } from './hooks/use-cicd-statistics';
 import { useCicdConfiguration } from './hooks/use-cicd-configuration';
-import { buildsToChartableStages } from './charts/conversions';
+import { buildsToChartableStages } from './charts/logic/conversions';
 import { StageChart } from './charts/stage-chart';
 import { StatusChart } from './charts/status-chart';
 import {
@@ -38,6 +38,7 @@ import {
 import { CicdConfiguration } from './apis';
 import { cleanupBuildTree } from './utils/stage-names';
 import { renderFallbacks, useAsyncChain } from './components/progress';
+import { sortFilterStatusType } from './utils/api';
 
 export function EntityPageCicdCharts() {
   const state = useCicdConfiguration();
@@ -63,6 +64,12 @@ function startOfDay(date: Date) {
 }
 function endOfDay(date: Date) {
   return DateTime.fromJSDate(date).endOf('day').toJSDate();
+}
+function cleanChartFilter(filter: ChartFilter): ChartFilter {
+  return {
+    ...filter,
+    status: sortFilterStatusType(filter.status),
+  };
 }
 
 interface CicdChartsProps {
@@ -125,7 +132,7 @@ function CicdCharts(props: CicdChartsProps) {
   );
 
   const onFilterChange = useCallback((filter: ChartFilter) => {
-    setChartFilter(filter);
+    setChartFilter(cleanChartFilter(filter));
   }, []);
 
   const onViewOptionsChange = useCallback(
@@ -166,12 +173,17 @@ function CicdCharts(props: CicdChartsProps) {
             {!statisticsState.value?.builds.length ? null : (
               <StatusChart builds={statisticsState.value?.builds} />
             )}
-            <StageChart stage={chartableStages.total} defaultCollapsed={0} />
+            <StageChart
+              stage={chartableStages.total}
+              defaultCollapsed={0}
+              chartTypes={viewOptions.chartTypes}
+            />
             {[...chartableStages.stages.entries()].map(([name, stage]) => (
               <StageChart
                 key={name}
                 stage={stage}
                 defaultCollapsed={collapsedLimit}
+                chartTypes={viewOptions.chartTypes}
               />
             ))}
           </>

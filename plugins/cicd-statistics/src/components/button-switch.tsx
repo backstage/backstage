@@ -20,6 +20,7 @@ import { ButtonGroup, Button, Tooltip, Zoom } from '@material-ui/core';
 export interface SwitchValueDetails<T extends string> {
   value: T;
   tooltip?: string;
+  text?: string | JSX.Element;
 }
 
 export type SwitchValue<T extends string> = T | SwitchValueDetails<T>;
@@ -49,12 +50,34 @@ function switchValue<T extends string>(value: SwitchValue<T>): T {
   return typeof value === 'object' ? value.value : value;
 }
 
+function switchText<T extends string>(
+  value: SwitchValue<T>,
+): string | JSX.Element {
+  return typeof value === 'object' ? value.text ?? value.value : value;
+}
+
+function findParent(tagName: string, elem: HTMLElement): HTMLElement {
+  let node: HTMLElement | null = elem;
+  while (node.tagName !== tagName) {
+    node = node.parentElement;
+    if (!node) {
+      throw new Error(`Couldn't find ${tagName} parent`);
+    }
+  }
+  return node;
+}
+
 export function ButtonSwitch<T extends string>(props: ButtonSwitchProps<T>) {
   const { values, vertical = false } = props;
 
   const onClick = useCallback(
     (ev: MouseEvent<HTMLSpanElement>) => {
-      const value = (ev.target as HTMLSpanElement).textContent!;
+      const btn = findParent('BUTTON', ev.target as HTMLElement);
+      const index = [...btn.parentElement!.children].findIndex(
+        child => child === btn,
+      );
+      const value = switchValue(values[index]);
+
       if (props.multi) {
         props.onChange(
           props.selection.includes(value as T)
@@ -108,7 +131,7 @@ export function ButtonSwitch<T extends string>(props: ButtonSwitchProps<T>) {
             }
             onClick={onClick}
           >
-            {switchValue(value)}
+            {switchText(value)}
           </Button>,
         ),
       )}

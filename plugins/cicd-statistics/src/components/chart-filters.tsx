@@ -23,12 +23,15 @@ import {
   FormControl,
   FormGroup,
   FormControlLabel,
+  Grid,
   Switch,
   Theme,
   Tooltip,
   Typography,
   makeStyles,
 } from '@material-ui/core';
+import ShowChartIcon from '@material-ui/icons/ShowChart';
+import BarChartIcon from '@material-ui/icons/BarChart';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -37,9 +40,13 @@ import { DateTime } from 'luxon';
 import LuxonUtils from '@date-io/luxon';
 
 import {
+  ChartType,
+  ChartTypes,
   CicdConfiguration,
+  CicdDefaults,
   FilterBranchType,
   FilterStatusType,
+  statusTypes,
 } from '../apis/types';
 import { ButtonSwitch, SwitchValue } from './button-switch';
 import { Toggle } from './toggle';
@@ -67,6 +74,10 @@ const useStyles = makeStyles<Theme>(
       '&:first-child': {
         margin: theme.spacing(1, 0, 1, 0),
       },
+    },
+    buttonDescription: {
+      textTransform: 'uppercase',
+      margin: theme.spacing(1, 0, 0, 1),
     },
   }),
   {
@@ -97,7 +108,7 @@ export function getDefaultChartFilter(
     status:
       cicdConfiguration.defaults?.filterStatus ??
       cicdConfiguration.availableStatuses.filter(
-        status => status === 'succeeded',
+        status => status === 'succeeded' || status === 'failed',
       ),
   };
 }
@@ -114,10 +125,10 @@ function isSameChartFilter(a: ChartFilter, b: ChartFilter): boolean {
   );
 }
 
-export interface ViewOptions {
-  lowercaseNames: boolean;
-  normalizeTimeRange: boolean;
-}
+export type ViewOptions = Pick<
+  CicdDefaults,
+  'lowercaseNames' | 'normalizeTimeRange' | 'chartTypes'
+>;
 
 export function getDefaultViewOptions(
   cicdConfiguration: CicdConfiguration,
@@ -125,8 +136,35 @@ export function getDefaultViewOptions(
   return {
     lowercaseNames: cicdConfiguration.defaults?.lowercaseNames ?? false,
     normalizeTimeRange: cicdConfiguration.defaults?.normalizeTimeRange ?? true,
+    chartTypes: {
+      succeeded: ['duration'],
+      failed: ['count'],
+      enqueued: ['count'],
+      scheduled: ['count'],
+      running: ['count'],
+      aborted: ['count'],
+      stalled: ['count'],
+      expired: ['count'],
+      unknown: ['count'],
+    },
   };
 }
+
+const branchValues: Array<SwitchValue<BranchSelection>> = [
+  'master',
+  'branch',
+  {
+    value: 'all',
+    tooltip:
+      'NOTE; If the build pipelines are very different between master and branch ' +
+      'builds, viewing them combined might not result in a very useful chart',
+  },
+];
+
+const chartTypeValues: Array<SwitchValue<ChartType>> = [
+  { value: 'duration', text: <ShowChartIcon />, tooltip: 'Duration' },
+  { value: 'count', text: <BarChartIcon />, tooltip: 'Count per day' },
+];
 
 export interface ChartFiltersProps {
   cicdConfiguration: CicdConfiguration;
@@ -162,16 +200,6 @@ export function ChartFilters(props: ChartFiltersProps) {
   const [toDate, setToDate] = useState(initialFetchFilter.toDate);
   const [fromDate, setFromDate] = useState(initialFetchFilter.fromDate);
 
-  const branchValues: Array<SwitchValue<BranchSelection>> = [
-    'master',
-    'branch',
-    {
-      value: 'all',
-      tooltip:
-        'NOTE; If the build pipelines are very different between master and branch ' +
-        'builds, viewing them combined might not result in a very useful chart',
-    },
-  ];
   const [branch, setBranch] = useState(initialFetchFilter.branch);
 
   const statusValues: ReadonlyArray<StatusSelection> =
@@ -194,6 +222,29 @@ export function ChartFilters(props: ChartFiltersProps) {
       setViewOptions(old => ({ ...old, normalizeTimeRange }));
     },
     [setViewOptions],
+  );
+
+  const setChartType = useCallback(
+    (statusType: FilterStatusType, chartTypes: ChartTypes) => {
+      setViewOptions(old => ({
+        ...old,
+        chartTypes: { ...old.chartTypes, [statusType]: chartTypes },
+      }));
+    },
+    [setViewOptions],
+  );
+  const setChartTypeSpecific = useMemo(
+    () =>
+      Object.fromEntries(
+        statusTypes.map(
+          status =>
+            [
+              status,
+              (chartTypes: ChartTypes) => setChartType(status, chartTypes),
+            ] as const,
+        ),
+      ),
+    [setChartType],
   );
 
   useEffect(() => {
@@ -380,6 +431,27 @@ export function ChartFilters(props: ChartFiltersProps) {
               <span>Normalize time range</span>
             </Tooltip>
           </Toggle>
+          <Typography
+            variant="subtitle2"
+            className={`${classes.title} ${classes.title}`}
+          >
+            Chart styles
+          </Typography>
+          {currentFetchFilter?.status.map(status => (
+            <Grid container spacing={0}>
+              <Grid item>
+                <ButtonSwitch<ChartType>
+                  values={chartTypeValues}
+                  selection={viewOptions.chartTypes[status]}
+                  onChange={setChartTypeSpecific[status]}
+                  multi
+                />
+              </Grid>
+              <Grid item className={classes.buttonDescription}>
+                <div>{status}</div>
+              </Grid>
+            </Grid>
+          ))}
         </CardContent>
       </Card>
     </MuiPickersUtilsProvider>

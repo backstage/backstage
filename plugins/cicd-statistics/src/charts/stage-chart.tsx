@@ -17,6 +17,7 @@
 import React, { Fragment, useMemo } from 'react';
 import {
   Area,
+  Bar,
   ComposedChart,
   XAxis,
   YAxis,
@@ -38,7 +39,7 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { statusTypes } from '../apis/types';
+import { CicdDefaults, statusTypes } from '../apis/types';
 import { ChartableStage } from './types';
 import {
   pickElements,
@@ -64,13 +65,14 @@ const transitionProps = { unmountOnExit: true };
 export interface StageChartProps {
   stage: ChartableStage;
 
+  chartTypes: CicdDefaults['chartTypes'];
   defaultCollapsed?: number;
   zeroYAxis?: boolean;
 }
 
 export function StageChart(props: StageChartProps) {
   const { stage, ...chartOptions } = props;
-  const { defaultCollapsed = 0, zeroYAxis = false } = chartOptions;
+  const { chartTypes, defaultCollapsed = 0, zeroYAxis = false } = chartOptions;
 
   const ticks = useMemo(
     () => pickElements(stage.values, 8).map(val => val.__epoch),
@@ -134,49 +136,74 @@ export function StageChart(props: StageChartProps) {
                     tickFormatter={tickFormatterX}
                   />
                   <YAxis
+                    yAxisId={1}
                     tickFormatter={tickFormatterY}
                     type="number"
                     tickCount={5}
                     name="Duration"
                     domain={domainY}
                   />
+                  <YAxis
+                    yAxisId={2}
+                    orientation="right"
+                    type="number"
+                    tickCount={5}
+                    name="Count"
+                  />
                   <Tooltip
                     formatter={tooltipValueFormatter}
                     labelFormatter={labelFormatter}
                   />
-                  {statuses.map(status => (
-                    <Fragment key={status}>
-                      <Area
-                        type="monotone"
-                        dataKey={status}
-                        stackId={status}
-                        stroke={
-                          statuses.length > 1
-                            ? statusColorMap[status]
-                            : colorStroke
-                        }
-                        fillOpacity={statuses.length > 1 ? 0.5 : 1}
-                        fill={
-                          statuses.length > 1
-                            ? statusColorMap[status]
-                            : 'url(#colorDur)'
-                        }
-                        connectNulls
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey={`${status} avg`}
-                        stroke={
-                          statuses.length > 1
-                            ? statusColorMap[status]
-                            : colorStrokeAvg
-                        }
-                        opacity={0.8}
-                        strokeWidth={2}
-                        dot={false}
-                        connectNulls
-                      />
-                    </Fragment>
+                  {statuses.reverse().map(status => (
+                    <>
+                      {!chartTypes[status].includes('duration') ? null : (
+                        <Fragment key={status}>
+                          <Area
+                            yAxisId={1}
+                            type="monotone"
+                            dataKey={status}
+                            stackId={status}
+                            stroke={
+                              statuses.length > 1
+                                ? statusColorMap[status]
+                                : colorStroke
+                            }
+                            fillOpacity={statuses.length > 1 ? 0.5 : 1}
+                            fill={
+                              statuses.length > 1
+                                ? statusColorMap[status]
+                                : 'url(#colorDur)'
+                            }
+                            connectNulls
+                          />
+                          <Line
+                            yAxisId={1}
+                            type="monotone"
+                            dataKey={`${status} avg`}
+                            stroke={
+                              statuses.length > 1
+                                ? statusColorMap[status]
+                                : colorStrokeAvg
+                            }
+                            opacity={0.8}
+                            strokeWidth={2}
+                            dot={false}
+                            connectNulls
+                          />
+                        </Fragment>
+                      )}
+                      {!chartTypes[status].includes('count') ? null : (
+                        <Bar
+                          yAxisId={2}
+                          type="monotone"
+                          dataKey={`${status} count`}
+                          stackId="1"
+                          stroke={statusColorMap[status] ?? ''}
+                          fillOpacity={0.5}
+                          fill={statusColorMap[status] ?? ''}
+                        />
+                      )}
+                    </>
                   ))}
                 </ComposedChart>
               </ResponsiveContainer>

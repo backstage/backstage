@@ -76,10 +76,13 @@ export function tickFormatterY(duration: number) {
     .replace(/year.*/, 'y');
 }
 
-export function tooltipValueFormatter(duration: number, name: string) {
+export function tooltipValueFormatter(durationOrCount: number, name: string) {
   return [
     <span style={infoText}>
-      {name}: {formatDuration(duration)}
+      {name}:{' '}
+      {name.endsWith(' count')
+        ? durationOrCount
+        : formatDuration(durationOrCount)}
     </span>,
     null,
   ];

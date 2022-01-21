@@ -63,6 +63,9 @@ export type FilterBranchType = 'master' | 'branch';
 export interface Stage {
   name: string;
 
+  /** The status of the stage */
+  status: FilterStatusType;
+
   /** Stage duration in milliseconds */
   duration: number;
 
@@ -108,6 +111,16 @@ export type BuildWithRaw<T = any> = Build & {
 };
 
 /**
+ * Chart type.
+ *
+ * Values are:
+ *  * `duration`: shows an area chart of the duration over time
+ *  * `count`: shows a bar chart of the number of build per day
+ */
+export type ChartType = 'duration' | 'count';
+export type ChartTypes = Array<ChartType>;
+
+/**
  * Default settings for the fetching options and view options.
  *
  * These are all optional, but can be overridden from the Api to whatever makes
@@ -119,12 +132,15 @@ export interface CicdDefaults {
   filterStatus: Array<FilterStatusType>;
   filterType: FilterBranchType | 'all';
 
+  /** Default collapse the stages with a max-duration below this value */
+  collapsedLimit: number;
+
   /** Lower-case all stage names (to potentially merge stages with different cases) */
   lowercaseNames: boolean;
   /** Normalize the from-to date range in all charts */
   normalizeTimeRange: boolean;
-  /** Default collapse the stages with a max-duration below this value */
-  collapsedLimit: number;
+  /** Chart types per status */
+  chartTypes: Record<FilterStatusType, ChartTypes>;
 }
 
 /**

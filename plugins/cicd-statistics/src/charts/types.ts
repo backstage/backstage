@@ -17,6 +17,7 @@
 import { FilterStatusType } from '../apis/types';
 
 export type Averagify<T extends string> = `${T} avg`;
+export type Countify<T extends string> = `${T} count`;
 
 export type ChartableStageDatapoints = {
   __epoch: number;
@@ -24,6 +25,8 @@ export type ChartableStageDatapoints = {
   [status in FilterStatusType]?: number;
 } & {
   [status in Averagify<FilterStatusType>]?: number;
+} & {
+  [status in Countify<FilterStatusType>]?: number;
 };
 
 export interface ChartableStageAnalysis {
