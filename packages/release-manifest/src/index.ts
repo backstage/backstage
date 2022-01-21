@@ -19,3 +19,6 @@
  *
  * @packageDocumentation
  */
+
+export { getByVersion, getByReleaseLine } from './manifest';
+export type { ReleaseManifest } from './manifest';

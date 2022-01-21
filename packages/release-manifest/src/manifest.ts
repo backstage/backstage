@@ -14,44 +14,68 @@
  * limitations under the License.
  */
 
+import fetch from 'node-fetch';
+
+const VERSIONS_DOMAIN = 'https://versions.backstage.io';
+
 /**
- * Mapping between a Backstage release and individual package versions.
+ * Contains mapping between Backstage release and package versions.
  * @public
  */
-import { resolvePackagePath } from '@backstage/backend-common';
-import fs from 'fs-extra';
-import path from 'path';
-
-const RELEASE_DIR = resolvePackagePath(
-  '@backstage/release-manifest',
-  'releases',
-);
-
 export type ReleaseManifest = {
-  packages: Map<string, string>;
+  packages: { name: string; version: string }[];
 };
 
-export async function getRelease(version: string): Promise<ReleaseManifest> {
-  const pkgs = new Map<string, string>();
-  try {
-    const content = await fs.readFile(path.resolve(RELEASE_DIR, `${version}`));
-    for (const line of content.toString().split('\n')) {
-      const [pkg, version] = line.split('=');
-      pkgs.set(pkg, version);
-    }
-  } catch (e) {
-    throw new Error(`No release found for ${version} version`);
+/**
+ * Options for getByVersion.
+ */
+export type GetByVersionOptions = {
+  version: string;
+};
+
+/**
+ * Returns a release manifest based on supplied version.
+ * @public
+ */
+export async function getByVersion(
+  options: GetByVersionOptions,
+): Promise<ReleaseManifest> {
+  const url = `${VERSIONS_DOMAIN}/v1/releases/${options.version}`;
+  const response = await fetch(url);
+  if (response.status === 404) {
+    throw new Error(`No release found for ${options.version} version`);
   }
-  return { packages: pkgs };
+  if (response.status !== 200) {
+    throw new Error(
+      `Unexpected response status ${response.status} when fetching release from ${url}.`,
+    );
+  }
+  return await response.json();
 }
 
-export type ReleaseList = {
-  items: {
-    version: string;
-  }[];
+/**
+ * Options for getByReleaseLine.
+ */
+export type GetByReleaseLineOptions = {
+  releaseLine: string;
 };
 
-export async function listReleases(): Promise<ReleaseList> {
-  const files = await fs.readdir(RELEASE_DIR);
-  return { items: files.map(file => ({ version: file })) };
+/**
+ * Returns a release manifest based on supplied release line.
+ * @public
+ */
+export async function getByReleaseLine(
+  options: GetByReleaseLineOptions,
+): Promise<ReleaseManifest> {
+  const url = `${VERSIONS_DOMAIN}/v1/tags/${options.releaseLine}`;
+  const response = await fetch(url);
+  if (response.status === 404) {
+    throw new Error(`No '${options.releaseLine}' release line found`);
+  }
+  if (response.status !== 200) {
+    throw new Error(
+      `Unexpected response status ${response.status} when fetching release from ${url}.`,
+    );
+  }
+  return await response.json();
 }
