@@ -6680,9 +6680,9 @@
     store2 "^2.12.0"
 
 "@sucrase/jest-plugin@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.npmjs.org/@sucrase/jest-plugin/-/jest-plugin-2.1.1.tgz#b1e5192e7057fec159151b6aed96eb5b3c08d5c4"
-  integrity sha512-1j+exUcbLRgka2lq/i0IVOYcmrMW1wYPtxJY/+RvZkAQG9GD7lygj5OiHWFKWmynltAg9+x1d5NWQQYNdBTkpQ==
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/@sucrase/jest-plugin/-/jest-plugin-2.2.0.tgz#a176ae754a4e142fd50f9952dc6a8d161a1db951"
+  integrity sha512-eBWmp771YXm0wIftlse4siG98J3HRnZBojhSrvPGYgj+R9Kbf1QeJGMr6iNC0e/0qlKkw01Ig3H8KjPVwUqiGQ==
   dependencies:
     sucrase "^3.18.0"
 
