@@ -7281,9 +7281,9 @@
   integrity sha512-NaIeSIBiFgSC6IGUBjZWcscUJEq7vpVu7KthHN8eieTV9d9MqkSOZLH4chq1PmcKy06PNe3axLeKmRIyxJ+PZQ==
 
 "@types/d3-selection@*", "@types/d3-selection@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/@types/d3-selection/-/d3-selection-3.0.1.tgz#e57b01ab69b18b380f68db97b76ceefe62f17191"
-  integrity sha512-aJ1d1SCUtERHH65bB8NNoLpUOI3z8kVcfg2BGm4rMMUwuZF4x6qnIEKjT60Vt0o7gP/a/xkRVs4D9CpDifbyRA==
+  version "3.0.2"
+  resolved "https://registry.npmjs.org/@types/d3-selection/-/d3-selection-3.0.2.tgz#23e48a285b24063630bbe312cc0cfe2276de4a59"
+  integrity sha512-d29EDd0iUBrRoKhPndhDY6U/PYxOWqgIZwKTooy2UkBfU7TNZNpRho0yLWPxlatQrFWk2mnTu71IZQ4+LRgKlQ==
 
 "@types/d3-shape@^1":
   version "1.3.5"
