@@ -14,14 +14,14 @@ import { TabProps } from '@material-ui/core';
 
 // Warning: (ae-missing-release-tag) "catalogEntityRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const catalogEntityRouteRef: ExternalRouteRef<
   {
     name: string;
     kind: string;
     namespace: string;
   },
-  false
+  true
 >;
 
 // Warning: (ae-forgotten-export) The symbol "DomainCardProps" needs to be exported by the entry point index.d.ts
@@ -66,7 +66,7 @@ const explorePlugin: BackstagePlugin<
         kind: string;
         namespace: string;
       },
-      false
+      true
     >;
   }
 >;

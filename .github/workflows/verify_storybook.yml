@@ -1,4 +1,4 @@
-name: 'test chromatic'
+name: Verify Storybook
 on:
   pull_request:
     paths:

@@ -18,6 +18,7 @@ import {
   EntityRefLinks,
   entityRouteParams,
   getEntityRelations,
+  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import {
   Box,
@@ -28,7 +29,6 @@ import {
   Chip,
 } from '@material-ui/core';
 import React from 'react';
-import { catalogEntityRouteRef } from '../../routes';
 
 import { Button, ItemCardHeader } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
@@ -38,7 +38,7 @@ type DomainCardProps = {
 };
 
 export const DomainCard = ({ entity }: DomainCardProps) => {
-  const catalogEntityRoute = useRouteRef(catalogEntityRouteRef);
+  const catalogEntityRoute = useRouteRef(entityRouteRef);
 
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
   const url = catalogEntityRoute(entityRouteParams(entity));

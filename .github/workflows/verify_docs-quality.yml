@@ -1,4 +1,4 @@
-name: Check Markdown files quality
+name: Verify Docs Quality
 
 on:
   pull_request:

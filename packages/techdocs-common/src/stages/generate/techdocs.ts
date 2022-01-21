@@ -150,7 +150,7 @@ export class TechdocsGenerator implements GeneratorBase {
         `Failed to generate docs from ${inputDir} into ${outputDir}`,
       );
       throw new ForwardedError(
-        'Failed to generate docs from ${inputDir} into ${outputDir}',
+        `Failed to generate docs from ${inputDir} into ${outputDir}`,
         error,
       );
     }

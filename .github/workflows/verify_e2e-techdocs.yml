@@ -1,4 +1,4 @@
-name: Techdocs E2E Test
+name: E2E Test Techdocs
 
 on:
   pull_request:

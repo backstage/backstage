@@ -1,4 +1,4 @@
-name: Deploy Microsite and Storybook
+name: Deploy Microsite
 
 on:
   push:
