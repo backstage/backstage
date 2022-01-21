@@ -901,12 +901,7 @@
   resolved "https://registry.npmjs.org/@babel/parser/-/parser-7.16.4.tgz#d5f92f57cf2c74ffe9b37981c0e72fee7311372e"
   integrity sha512-6V0qdPUaiVHH3RtZeLIsc+6pDhbYzHR8ogA8w+f+Wc77DuXto19g2QUwveINoS34Uw+W8/hQDGJCx+i4n7xcng==
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.12.11", "@babel/parser@^7.12.13", "@babel/parser@^7.12.7", "@babel/parser@^7.13.16", "@babel/parser@^7.14.2", "@babel/parser@^7.14.5", "@babel/parser@^7.14.9":
-  version "7.14.9"
-  resolved "https://registry.npmjs.org/@babel/parser/-/parser-7.14.9.tgz#596c1ad67608070058ebf8df50c1eaf65db895a4"
-  integrity sha512-RdUTOseXJ8POjjOeEBEvNMIZU/nm4yu2rufRkcibzkkg7DmQvXU8v3M4Xk9G7uuI86CDGkKcuDWgioqZm+mScQ==
-
-"@babel/parser@^7.14.0", "@babel/parser@^7.16.3", "@babel/parser@^7.16.7":
+"@babel/parser@^7.1.0", "@babel/parser@^7.12.11", "@babel/parser@^7.12.13", "@babel/parser@^7.12.7", "@babel/parser@^7.13.16", "@babel/parser@^7.14.0", "@babel/parser@^7.14.2", "@babel/parser@^7.14.5", "@babel/parser@^7.14.9", "@babel/parser@^7.16.3", "@babel/parser@^7.16.7":
   version "7.16.7"
   resolved "https://registry.npmjs.org/@babel/parser/-/parser-7.16.7.tgz#d372dda9c89fcec340a82630a9f533f2fe15877e"
   integrity sha512-sR4eaSrnM7BV7QPzGfEX5paG/6wrZM3I0HDzfIAK06ESvo9oy3xBuVBxE3MbQaKNhvg8g/ixjMWo2CGpzpHsDA==
@@ -18344,9 +18339,9 @@ jscodeshift-find-imports@^2.0.2:
   integrity sha512-HxOzjWDOFFSCf8EKSTQGqCxXeRFqZszOywnZ0HuMB9YPDFHVpxftGRsY+QS+Qq8o2qUojlmNU3JEHts5DWYS1A==
 
 jscodeshift@^0.13.0:
-  version "0.13.0"
-  resolved "https://registry.npmjs.org/jscodeshift/-/jscodeshift-0.13.0.tgz#4b3835c3755ea86bc4910ac80acd4acd230b53ee"
-  integrity sha512-FNHLuwh7TeI0F4EzNVIRwUSxSqsGWM5nTv596FK4NfBnEEKFpIcyFeG559DMFGHSTIYA5AY4Fqh2cBrJx0EAwg==
+  version "0.13.1"
+  resolved "https://registry.npmjs.org/jscodeshift/-/jscodeshift-0.13.1.tgz#69bfe51e54c831296380585c6d9e733512aecdef"
+  integrity sha512-lGyiEbGOvmMRKgWk4vf+lUrCWO/8YR8sUR3FKF1Cq5fovjZDlIcw3Hu5ppLHAnEXshVffvaM0eyuY/AbOeYpnQ==
   dependencies:
     "@babel/core" "^7.13.16"
     "@babel/parser" "^7.13.16"
@@ -18358,7 +18353,7 @@ jscodeshift@^0.13.0:
     "@babel/preset-typescript" "^7.13.0"
     "@babel/register" "^7.13.16"
     babel-core "^7.0.0-bridge.0"
-    colors "^1.1.2"
+    chalk "^4.1.2"
     flow-parser "0.*"
     graceful-fs "^4.2.4"
     micromatch "^3.1.10"
