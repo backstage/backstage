@@ -80,7 +80,7 @@ export class TaskWorker {
       integrations,
       logger,
       workingDirectory,
-      additionalFilters: nunjucksFilters,
+      nunjucksFilters: nunjucksFilters,
     });
 
     return new TaskWorker({

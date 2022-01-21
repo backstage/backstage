@@ -186,7 +186,7 @@ export function createFetchTemplateAction(options: {
 
       const renderTemplate = await SecureTemplater.loadRenderer({
         cookiecutterCompat: ctx.input.cookiecutterCompat,
-        additionalFilters: nunjucksFilters,
+        nunjucksFilters: nunjucksFilters,
       });
 
       for (const location of allEntriesInTemplate) {

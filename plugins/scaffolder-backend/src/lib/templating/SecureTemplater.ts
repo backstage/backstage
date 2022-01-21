@@ -58,14 +58,10 @@ const { render, renderCompat } = (() => {
     });
   }
 
-  if (typeof additionalFilters !== "undefined") {
-      Object.entries(additionalFilters)
-        .forEach(([filterName, filterFunction]) => {
-           env.addFilter(
-               filterName,
-               (...args) => JSON.parse(filterFunction.apply(null, args))
-           ); 
-        });
+  if (typeof nunjucksFilters !== 'undefined') {
+    for (const [filterName, filterFn] of Object.entries(nunjucksFilters)) {
+      env.addFilter(filterName, (...args) => JSON.parse(filterFn(...args)));
+    }
   }
 
   let uninstallCompat = undefined;
@@ -109,7 +105,7 @@ export interface SecureTemplaterOptions {
   cookiecutterCompat?: boolean;
 
   /* Extra user-provided nunjucks filters */
-  additionalFilters?: Record<string, NunjucksFilter>;
+  nunjucksFilters?: Record<string, NunjucksFilter>;
 }
 
 export type SecureTemplateRenderer = (
@@ -119,22 +115,22 @@ export type SecureTemplateRenderer = (
 
 export class SecureTemplater {
   static async loadRenderer(options: SecureTemplaterOptions = {}) {
-    const { parseRepoUrl, cookiecutterCompat, additionalFilters } = options;
+    const { parseRepoUrl, cookiecutterCompat, nunjucksFilters } = options;
     const sandbox: Record<string, any> = {};
 
     if (parseRepoUrl) {
       sandbox.parseRepoUrl = (url: string) => JSON.stringify(parseRepoUrl(url));
     }
 
-    if (additionalFilters) {
-      sandbox.additionalFilters = Object.entries(additionalFilters)
-        .filter(([_, filterFunction]) => !!filterFunction)
-        .reduce((safeFilters, [filterName, filterFunction]) => {
-          const newSafeFilters = { ...safeFilters };
-          newSafeFilters[filterName] = (...args) =>
-            JSON.stringify(filterFunction.apply(null, args));
-          return newSafeFilters;
-        }, {} as Record<string, NunjucksFilter>);
+    if (nunjucksFilters) {
+      sandbox.nunjucksFilters = Object.fromEntries(
+        Object.entries(nunjucksFilters)
+          .filter(([_, filterFunction]) => !!filterFunction)
+          .map(([filterName, filterFunction]) => [
+            filterName,
+            (...args: JsonValue[]) => JSON.stringify(filterFunction(...args)),
+          ]),
+      );
     }
 
     const vm = new VM({ sandbox });
