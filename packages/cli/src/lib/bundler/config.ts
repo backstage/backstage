@@ -34,6 +34,7 @@ import { BundlingOptions, BackendBundlingOptions } from './types';
 import { version } from '../../lib/version';
 import { paths as cliPaths } from '../../lib/paths';
 import { runPlain } from '../run';
+import ESLintPlugin from 'eslint-webpack-plugin';
 import pickBy from 'lodash/pickBy';
 
 export function resolveBaseUrl(config: Config): URL {
@@ -89,21 +90,14 @@ export async function createConfig(
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
   const validBaseUrl = new URL(baseUrl);
-
   if (checksEnabled) {
     plugins.push(
       new ForkTsCheckerWebpackPlugin({
-        typescript: paths.targetTsConfig,
-        eslint: true,
-        eslintOptions: {
-          files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
-          options: {
-            parserOptions: {
-              project: paths.targetTsConfig,
-              tsconfigRootDir: paths.targetPath,
-            },
-          },
-        },
+        typescript: { configFile: paths.targetTsConfig },
+      }),
+      new ESLintPlugin({
+        context: paths.targetPath,
+        files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
       }),
     );
   }
@@ -350,17 +344,10 @@ export async function createBackendConfig(
       ...(checksEnabled
         ? [
             new ForkTsCheckerWebpackPlugin({
-              typescript: paths.targetTsConfig,
-              eslint: true,
-              eslintOptions: {
-                files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
-                options: {
-                  parserOptions: {
-                    project: paths.targetTsConfig,
-                    tsconfigRootDir: paths.targetPath,
-                  },
-                },
-              },
+              typescript: { configFile: paths.targetTsConfig },
+            }),
+            new ESLintPlugin({
+              files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
             }),
           ]
         : []),

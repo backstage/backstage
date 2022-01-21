@@ -162,7 +162,7 @@ it's necessary it can be used, but there will be breaking changes.
 
 Stability: `0`
 
-### `storybook` [GitHub](https://github.com/backstage/backstage/tree/master/packages/storybook/)
+### `storybook` [GitHub](https://github.com/backstage/backstage/tree/master/storybook/)
 
 Internal storybook build for publishing stories to
 https://backstage.io/storybook

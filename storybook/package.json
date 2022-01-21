@@ -8,11 +8,10 @@
     "build-storybook": "build-storybook --output-dir dist"
   },
   "dependencies": {
-    "@backstage/theme": "^0.2.0",
-    "@backstage/test-utils": "^0.2.3",
-    "@backstage/core-app-api": "^0.5.0",
-    "@backstage/core-plugin-api": "^0.6.0",
+    "@sucrase/webpack-loader": "^2.0.0",
+    "sucrase": "^3.20.2",
     "react": "^17.0.2",
+    "react-hot-loader": "^4.13.0",
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
@@ -23,5 +22,11 @@
     "@storybook/addons": "^6.1.11",
     "@storybook/react": "^6.3.6",
     "storybook-dark-mode": "^1.0.3"
+  },
+  "peerDependencies": {
+    "@backstage/theme": "file:../packages/theme",
+    "@backstage/test-utils": "file:../packages/test-utils",
+    "@backstage/core-app-api": "file:../packages/core-app-api",
+    "@backstage/core-plugin-api": "file:../packages/core-plugin-api"
   }
 }
