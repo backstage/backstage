@@ -66,7 +66,6 @@ export type FiltersState = {
 //
 // @public (undocumented)
 export const HomePageSearchBar: ({
-  className: defaultClassName,
   ...props
 }: Partial<Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>>) => JSX.Element;
 
