@@ -28,7 +28,6 @@ import { DateTime, Duration } from 'luxon';
 import { ChangeEvent } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { BackstageTheme } from '@backstage/theme';
-import { Link } from '@backstage/core-components';
 
 const useStyles = makeStyles<BackstageTheme>({
   denseListIcon: {
@@ -48,6 +47,7 @@ type Props = {
 };
 
 export const ChangeEventListItem = ({ changeEvent }: Props) => {
+  console.log(changeEvent)
   const classes = useStyles();
   const duration =
     new Date().getTime() - new Date(changeEvent.timestamp).getTime();
@@ -60,8 +60,9 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
     externalLinkElem = (
       <Tooltip title={text} placement="top">
         <IconButton
-          component={Link}
-          to={changeEvent.links[0].href}
+          href={changeEvent.links[0].href}
+          target="_blank"
+          rel="noopener noreferrer"
           color="primary"
         >
           <OpenInBrowserIcon />
@@ -86,15 +87,18 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
       />
       <ListItemSecondaryAction>
         {externalLinkElem}
-        <Tooltip title="View in PagerDuty" placement="top">
-          <IconButton
-            component={Link}
-            to={changeEvent.html_url}
-            color="primary"
-          >
-            <OpenInBrowserIcon />
-          </IconButton>
-        </Tooltip>
+        {changeEvent.html_url === undefined ? null :
+          <Tooltip title="View in PagerDuty" placement="top">
+            <IconButton
+              href={changeEvent.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              color="primary"
+            >
+              <OpenInBrowserIcon />
+            </IconButton>
+          </Tooltip>
+        }
       </ListItemSecondaryAction>
     </ListItem>
   );
