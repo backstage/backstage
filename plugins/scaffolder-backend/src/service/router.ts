@@ -29,7 +29,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
-import { CatalogEntityClient } from '../lib/catalog';
+import { CatalogEntityClient, NunjucksFilter } from '../lib';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
@@ -41,7 +41,6 @@ import {
 } from '../scaffolder';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
-import { NunjucksFilter } from '../lib/templating/SecureTemplater';
 
 /**
  * RouterOptions
