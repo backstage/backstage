@@ -40,10 +40,7 @@ import {
   CatalogIndexPage,
   catalogPlugin,
 } from '@backstage/plugin-catalog';
-import {
-  CatalogGraphPage,
-  catalogGraphPlugin,
-} from '@backstage/plugin-catalog-graph';
+import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import {
   CatalogImportPage,
   catalogImportPlugin,
@@ -54,7 +51,7 @@ import {
   CostInsightsProjectGrowthInstructionsPage,
 } from '@backstage/plugin-cost-insights';
 import { orgPlugin } from '@backstage/plugin-org';
-import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
+import { ExplorePage } from '@backstage/plugin-explore';
 import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
 import { GraphiQLPage } from '@backstage/plugin-graphiql';
 import { HomepageCompositionRoot } from '@backstage/plugin-home';
@@ -114,14 +111,8 @@ const app = createApp({
       createComponent: scaffolderPlugin.routes.root,
       viewTechDoc: techdocsPlugin.routes.docRoot,
     });
-    bind(catalogGraphPlugin.externalRoutes, {
-      catalogEntity: catalogPlugin.routes.catalogEntity,
-    });
     bind(apiDocsPlugin.externalRoutes, {
       registerApi: catalogImportPlugin.routes.importPage,
-    });
-    bind(explorePlugin.externalRoutes, {
-      catalogEntity: catalogPlugin.routes.catalogEntity,
     });
     bind(scaffolderPlugin.externalRoutes, {
       registerComponent: catalogImportPlugin.routes.importPage,
