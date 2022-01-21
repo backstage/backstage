@@ -69,7 +69,10 @@ export const CustomStyles = () => {
   return (
     <Grid container justifyContent="center" spacing={6}>
       <Grid container item xs={12} alignItems="center" direction="row">
-        <HomePageSearchBar className={classes.searchBar} placeholder="Search" />
+        <HomePageSearchBar
+          classes={{ root: classes.searchBar }}
+          placeholder="Search"
+        />
       </Grid>
     </Grid>
   );

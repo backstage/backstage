@@ -72,7 +72,7 @@ const useLogoStyles = makeStyles(theme => ({
 }));
 
 export const DefaultTemplate = () => {
-  const { searchBar } = useStyles();
+  const classes = useStyles();
   const { svg, path, container } = useLogoStyles();
 
   return (
@@ -86,7 +86,7 @@ export const DefaultTemplate = () => {
             />
             <Grid container item xs={12} alignItems="center" direction="row">
               <HomePageSearchBar
-                className={searchBar}
+                classes={{root: classes.searchBar}}
                 placeholder="Search"
               />
             </Grid>

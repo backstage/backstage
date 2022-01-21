@@ -21,7 +21,7 @@ import { SearchBarBase, SearchBarBaseProps } from '../SearchBar';
 import { useNavigateToQuery } from '../util';
 
 const useStyles = makeStyles({
-  searchBar: {
+  root: {
     border: '1px solid #555',
     borderRadius: '6px',
     fontSize: '1.5em',
@@ -43,7 +43,7 @@ export type HomePageSearchBarProps = Partial<
  * @public
  */
 export const HomePageSearchBar = ({ ...props }: HomePageSearchBarProps) => {
-  const classes = useStyles();
+  const classes = useStyles(props);
   const [query, setQuery] = useState('');
   const handleSearch = useNavigateToQuery();
 
@@ -60,7 +60,7 @@ export const HomePageSearchBar = ({ ...props }: HomePageSearchBarProps) => {
 
   return (
     <SearchBarBase
-      className={props.className ? props.className : classes.searchBar}
+      classes={{ root: classes.root }}
       value={query}
       onSubmit={handleSubmit}
       onChange={handleChange}
