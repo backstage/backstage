@@ -93,6 +93,9 @@ export interface SecureTemplaterOptions {
 
   /* Enables jinja compatibility and the "jsonify" filter */
   cookiecutterCompat?: boolean;
+
+  /* Extra user-provided nunjucks filters */
+  additionalFilters?: Record<string, (data: any) => any>;
 }
 
 export type SecureTemplateRenderer = (
@@ -102,7 +105,7 @@ export type SecureTemplateRenderer = (
 
 export class SecureTemplater {
   static async loadRenderer(options: SecureTemplaterOptions = {}) {
-    const { parseRepoUrl, cookiecutterCompat } = options;
+    const { parseRepoUrl, cookiecutterCompat, additionalFilters } = options;
     let sandbox = undefined;
 
     if (parseRepoUrl) {
@@ -110,6 +113,10 @@ export class SecureTemplater {
         parseRepoUrl: (url: string) => JSON.stringify(parseRepoUrl(url)),
       };
     }
+    sandbox = {
+      ...sandbox,
+      ...additionalFilters,
+    };
 
     const vm = new VM({ sandbox });
 

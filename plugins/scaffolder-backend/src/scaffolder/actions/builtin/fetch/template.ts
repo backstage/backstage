@@ -44,8 +44,9 @@ export type FetchTemplateInput = {
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
+  nunjucksFilters?: Record<string, (data: any) => any>;
 }) {
-  const { reader, integrations } = options;
+  const { reader, integrations, nunjucksFilters } = options;
 
   return createTemplateAction<FetchTemplateInput>({
     id: 'fetch:template',
@@ -182,6 +183,7 @@ export function createFetchTemplateAction(options: {
 
       const renderTemplate = await SecureTemplater.loadRenderer({
         cookiecutterCompat: ctx.input.cookiecutterCompat,
+        additionalFilters: nunjucksFilters,
       });
 
       for (const location of allEntriesInTemplate) {

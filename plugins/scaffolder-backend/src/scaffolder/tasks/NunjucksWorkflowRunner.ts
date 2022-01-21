@@ -44,6 +44,7 @@ type NunjucksWorkflowRunnerOptions = {
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   logger: winston.Logger;
+  additionalFilters?: Record<string, (data: any) => any>;
 };
 
 type TemplateContext = {
@@ -190,6 +191,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       parseRepoUrl(url: string) {
         return parseRepoUrl(url, integrations);
       },
+      additionalFilters: this.options.additionalFilters,
     });
 
     try {

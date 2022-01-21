@@ -46,6 +46,7 @@ export type CreateWorkerOptions = {
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
+  nunjucksFilters?: Record<string, (data: any) => any>;
 };
 
 /**
@@ -63,6 +64,7 @@ export class TaskWorker {
       actionRegistry,
       integrations,
       workingDirectory,
+      nunjucksFilters,
     } = options;
 
     const legacyWorkflowRunner = new HandlebarsWorkflowRunner({
@@ -77,6 +79,7 @@ export class TaskWorker {
       integrations,
       logger,
       workingDirectory,
+      additionalFilters: nunjucksFilters,
     });
 
     return new TaskWorker({

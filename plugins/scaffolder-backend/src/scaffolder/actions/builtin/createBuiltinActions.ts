@@ -53,9 +53,16 @@ export const createBuiltinActions = (options: {
   catalogClient: CatalogApi;
   containerRunner?: ContainerRunner;
   config: Config;
+  nunjucksFilters?: Record<string, (data: any) => any>;
 }) => {
-  const { reader, integrations, containerRunner, catalogClient, config } =
-    options;
+  const {
+    reader,
+    integrations,
+    containerRunner,
+    catalogClient,
+    config,
+    nunjucksFilters,
+  } = options;
   const githubCredentialsProvider: GithubCredentialsProvider =
     DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
@@ -67,6 +74,7 @@ export const createBuiltinActions = (options: {
     createFetchTemplateAction({
       integrations,
       reader,
+      nunjucksFilters,
     }),
     createPublishGithubAction({
       integrations,

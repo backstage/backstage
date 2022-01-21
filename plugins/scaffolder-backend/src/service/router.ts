@@ -57,6 +57,7 @@ export interface RouterOptions {
   taskWorkers?: number;
   containerRunner?: ContainerRunner;
   taskBroker?: TaskBroker;
+  nunjucksFilters?: Record<string, (data: any) => any>;
 }
 
 function isSupportedTemplate(
@@ -83,6 +84,7 @@ export async function createRouter(
     actions,
     containerRunner,
     taskWorkers,
+    nunjucksFilters,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -110,6 +112,7 @@ export async function createRouter(
       integrations,
       logger,
       workingDirectory,
+      nunjucksFilters,
     });
     workers.push(worker);
   }
@@ -122,6 +125,7 @@ export async function createRouter(
         containerRunner,
         reader,
         config,
+        nunjucksFilters,
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
