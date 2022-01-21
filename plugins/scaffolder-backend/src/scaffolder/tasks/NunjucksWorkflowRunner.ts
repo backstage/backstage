@@ -35,7 +35,7 @@ import { validate as validateJsonSchema } from 'jsonschema';
 import { parseRepoUrl } from '../actions/builtin/publish/util';
 import { TemplateActionRegistry } from '../actions';
 import {
-  NunjucksFilter,
+  TemplateFilter,
   SecureTemplater,
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
@@ -45,7 +45,7 @@ type NunjucksWorkflowRunnerOptions = {
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   logger: winston.Logger;
-  nunjucksFilters?: Record<string, NunjucksFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 };
 
 type TemplateContext = {
@@ -192,7 +192,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       parseRepoUrl(url: string) {
         return parseRepoUrl(url, integrations);
       },
-      nunjucksFilters: this.options.nunjucksFilters,
+      additionalTemplateFilters: this.options.additionalTemplateFilters,
     });
 
     try {

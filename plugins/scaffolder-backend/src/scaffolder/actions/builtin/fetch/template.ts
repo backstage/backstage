@@ -24,7 +24,7 @@ import globby from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
 import {
-  NunjucksFilter,
+  TemplateFilter,
   SecureTemplater,
 } from '../../../../lib/templating/SecureTemplater';
 
@@ -47,9 +47,9 @@ export type FetchTemplateInput = {
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-  nunjucksFilters?: Record<string, NunjucksFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }) {
-  const { reader, integrations, nunjucksFilters } = options;
+  const { reader, integrations, additionalTemplateFilters } = options;
 
   return createTemplateAction<FetchTemplateInput>({
     id: 'fetch:template',
@@ -186,7 +186,7 @@ export function createFetchTemplateAction(options: {
 
       const renderTemplate = await SecureTemplater.loadRenderer({
         cookiecutterCompat: ctx.input.cookiecutterCompat,
-        nunjucksFilters: nunjucksFilters,
+        additionalTemplateFilters,
       });
 
       for (const location of allEntriesInTemplate) {

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type { NunjucksFilter } from './SecureTemplater';
+export type { TemplateFilter } from './SecureTemplater';

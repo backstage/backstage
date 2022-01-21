@@ -21,7 +21,7 @@ import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { assertError } from '@backstage/errors';
-import { NunjucksFilter } from '../../lib/templating/SecureTemplater';
+import { TemplateFilter } from '../../lib/templating/SecureTemplater';
 
 /**
  * TaskWorkerOptions
@@ -47,7 +47,7 @@ export type CreateWorkerOptions = {
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
-  nunjucksFilters?: Record<string, NunjucksFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 };
 
 /**
@@ -65,7 +65,7 @@ export class TaskWorker {
       actionRegistry,
       integrations,
       workingDirectory,
-      nunjucksFilters,
+      additionalTemplateFilters,
     } = options;
 
     const legacyWorkflowRunner = new HandlebarsWorkflowRunner({
@@ -80,7 +80,7 @@ export class TaskWorker {
       integrations,
       logger,
       workingDirectory,
-      nunjucksFilters: nunjucksFilters,
+      additionalTemplateFilters,
     });
 
     return new TaskWorker({

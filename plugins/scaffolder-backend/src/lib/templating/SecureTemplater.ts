@@ -58,8 +58,8 @@ const { render, renderCompat } = (() => {
     });
   }
 
-  if (typeof nunjucksFilters !== 'undefined') {
-    for (const [filterName, filterFn] of Object.entries(nunjucksFilters)) {
+  if (typeof additionalTemplateFilters !== 'undefined') {
+    for (const [filterName, filterFn] of Object.entries(additionalTemplateFilters)) {
       env.addFilter(filterName, (...args) => JSON.parse(filterFn(...args)));
     }
   }
@@ -95,7 +95,7 @@ const { render, renderCompat } = (() => {
 })();
 `;
 
-export type NunjucksFilter = (...args: JsonValue[]) => JsonValue | undefined;
+export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 
 export interface SecureTemplaterOptions {
   /* Optional implementation of the parseRepoUrl filter */
@@ -105,7 +105,7 @@ export interface SecureTemplaterOptions {
   cookiecutterCompat?: boolean;
 
   /* Extra user-provided nunjucks filters */
-  nunjucksFilters?: Record<string, NunjucksFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }
 
 export type SecureTemplateRenderer = (
@@ -115,16 +115,17 @@ export type SecureTemplateRenderer = (
 
 export class SecureTemplater {
   static async loadRenderer(options: SecureTemplaterOptions = {}) {
-    const { parseRepoUrl, cookiecutterCompat, nunjucksFilters } = options;
+    const { parseRepoUrl, cookiecutterCompat, additionalTemplateFilters } =
+      options;
     const sandbox: Record<string, any> = {};
 
     if (parseRepoUrl) {
       sandbox.parseRepoUrl = (url: string) => JSON.stringify(parseRepoUrl(url));
     }
 
-    if (nunjucksFilters) {
-      sandbox.nunjucksFilters = Object.fromEntries(
-        Object.entries(nunjucksFilters)
+    if (additionalTemplateFilters) {
+      sandbox.additionalTemplateFilters = Object.fromEntries(
+        Object.entries(additionalTemplateFilters)
           .filter(([_, filterFunction]) => !!filterFunction)
           .map(([filterName, filterFunction]) => [
             filterName,

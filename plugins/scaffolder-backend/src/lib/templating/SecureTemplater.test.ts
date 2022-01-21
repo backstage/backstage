@@ -104,7 +104,7 @@ describe('SecureTemplater', () => {
     const mockFilter2 = jest.fn((var1, var2) => `${var1} ${var2}`);
     const mockFilter3 = jest.fn((var1, var2) => ({ var1, var2 }));
     const renderWith = await SecureTemplater.loadRenderer({
-      nunjucksFilters: { mockFilter1, mockFilter2, mockFilter3 },
+      additionalTemplateFilters: { mockFilter1, mockFilter2, mockFilter3 },
     });
     const renderWithout = await SecureTemplater.loadRenderer();
 

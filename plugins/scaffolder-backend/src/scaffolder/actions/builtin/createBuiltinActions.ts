@@ -46,7 +46,7 @@ import {
   createGithubActionsDispatchAction,
   createGithubWebhookAction,
 } from './github';
-import { NunjucksFilter } from '../../../lib/templating/SecureTemplater';
+import { TemplateFilter } from '../../../lib';
 
 export const createBuiltinActions = (options: {
   reader: UrlReader;
@@ -54,7 +54,7 @@ export const createBuiltinActions = (options: {
   catalogClient: CatalogApi;
   containerRunner?: ContainerRunner;
   config: Config;
-  nunjucksFilters?: Record<string, NunjucksFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }) => {
   const {
     reader,
@@ -62,7 +62,7 @@ export const createBuiltinActions = (options: {
     containerRunner,
     catalogClient,
     config,
-    nunjucksFilters,
+    additionalTemplateFilters,
   } = options;
   const githubCredentialsProvider: GithubCredentialsProvider =
     DefaultGithubCredentialsProvider.fromIntegrations(integrations);
@@ -75,7 +75,7 @@ export const createBuiltinActions = (options: {
     createFetchTemplateAction({
       integrations,
       reader,
-      nunjucksFilters,
+      additionalTemplateFilters,
     }),
     createPublishGithubAction({
       integrations,
