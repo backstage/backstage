@@ -48,7 +48,7 @@ import {
   tickFormatterY,
   tooltipValueFormatter,
   formatDuration,
-} from './utils';
+} from '../components/utils';
 import {
   statusColorMap,
   fireColors,
@@ -67,12 +67,18 @@ export interface StageChartProps {
 
   chartTypes: CicdDefaults['chartTypes'];
   defaultCollapsed?: number;
+  defaultHidden?: number;
   zeroYAxis?: boolean;
 }
 
 export function StageChart(props: StageChartProps) {
   const { stage, ...chartOptions } = props;
-  const { chartTypes, defaultCollapsed = 0, zeroYAxis = false } = chartOptions;
+  const {
+    chartTypes,
+    defaultCollapsed = 0,
+    defaultHidden = 0,
+    zeroYAxis = false,
+  } = chartOptions;
 
   const ticks = useMemo(
     () => pickElements(stage.values, 8).map(val => val.__epoch),
@@ -97,7 +103,17 @@ export function StageChart(props: StageChartProps) {
     [statuses],
   );
 
-  return (
+  const subStages = useMemo(
+    () =>
+      new Map<string, ChartableStage>(
+        [...stage.stages.entries()].filter(
+          ([_name, subStage]) => subStage.combinedAnalysis.max > defaultHidden,
+        ),
+      ),
+    [stage.stages, defaultHidden],
+  );
+
+  return stage.combinedAnalysis.max < defaultHidden ? null : (
     <Accordion
       defaultExpanded={stage.combinedAnalysis.max > defaultCollapsed}
       TransitionProps={transitionProps}
@@ -209,18 +225,18 @@ export function StageChart(props: StageChartProps) {
                 </ComposedChart>
               </ResponsiveContainer>
             </Grid>
-            {stage.stages.size === 0 ? null : (
+            {subStages.size === 0 ? null : (
               <Grid item>
                 <Accordion
                   defaultExpanded={false}
                   TransitionProps={transitionProps}
                 >
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography>Sub stages ({stage.stages.size})</Typography>
+                    <Typography>Sub stages ({subStages.size})</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
                     <div style={fullWidth}>
-                      {[...stage.stages.values()].map(subStage => (
+                      {[...subStages.values()].map(subStage => (
                         <StageChart
                           key={subStage.name}
                           {...chartOptions}

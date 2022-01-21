@@ -38,7 +38,7 @@ import { countBy } from 'lodash';
 import { DateTime } from 'luxon';
 
 import { Build, FilterStatusType, statusTypes } from '../apis/types';
-import { labelFormatterWithoutTime, tickFormatterX } from './utils';
+import { labelFormatterWithoutTime, tickFormatterX } from '../components/utils';
 import { statusColorMap } from './colors';
 
 export interface StatusChartProps {

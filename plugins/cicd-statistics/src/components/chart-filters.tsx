@@ -25,9 +25,9 @@ import {
   FormControlLabel,
   Grid,
   Switch,
-  Theme,
   Tooltip,
   Typography,
+  Theme,
   makeStyles,
 } from '@material-ui/core';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
@@ -50,8 +50,10 @@ import {
 } from '../apis/types';
 import { ButtonSwitch, SwitchValue } from './button-switch';
 import { Toggle } from './toggle';
+import { DurationSlider } from './duration-slider';
+import { Label } from './label';
 
-const useStyles = makeStyles<Theme>(
+export const useStyles = makeStyles<Theme>(
   theme => ({
     rootCard: {
       padding: theme.spacing(0, 0, 0, 0),
@@ -81,7 +83,7 @@ const useStyles = makeStyles<Theme>(
     },
   }),
   {
-    name: 'CicdStatisticsChartFilters',
+    name: 'CicdStatistics',
   },
 );
 
@@ -127,7 +129,11 @@ function isSameChartFilter(a: ChartFilter, b: ChartFilter): boolean {
 
 export type ViewOptions = Pick<
   CicdDefaults,
-  'lowercaseNames' | 'normalizeTimeRange' | 'chartTypes'
+  | 'lowercaseNames'
+  | 'normalizeTimeRange'
+  | 'collapsedLimit'
+  | 'hideLimit'
+  | 'chartTypes'
 >;
 
 export function getDefaultViewOptions(
@@ -136,6 +142,8 @@ export function getDefaultViewOptions(
   return {
     lowercaseNames: cicdConfiguration.defaults?.lowercaseNames ?? false,
     normalizeTimeRange: cicdConfiguration.defaults?.normalizeTimeRange ?? true,
+    collapsedLimit: 60 * 1000, // 1m
+    hideLimit: 20 * 1000, // 20s
     chartTypes: {
       succeeded: ['duration'],
       failed: ['count'],
@@ -220,6 +228,20 @@ export function ChartFilters(props: ChartFiltersProps) {
   const setNormalizeTimeRange = useCallback(
     (normalizeTimeRange: boolean) => {
       setViewOptions(old => ({ ...old, normalizeTimeRange }));
+    },
+    [setViewOptions],
+  );
+
+  const setHideLimit = useCallback(
+    (value: number) => {
+      setViewOptions(old => ({ ...old, hideLimit: value }));
+    },
+    [setViewOptions],
+  );
+
+  const setCollapseLimit = useCallback(
+    (value: number) => {
+      setViewOptions(old => ({ ...old, collapsedLimit: value }));
     },
     [setViewOptions],
   );
@@ -351,7 +373,7 @@ export function ChartFilters(props: ChartFiltersProps) {
                     onChange={toggleUseNowAsDate}
                   />
                 }
-                label="To today"
+                label={<Label>To today</Label>}
               />
               {useNowAsToDate ? null : (
                 <KeyboardDatePicker
@@ -413,7 +435,7 @@ export function ChartFilters(props: ChartFiltersProps) {
                 'when stage names have changed casing'
               }
             >
-              <span>Lowercase names</span>
+              <Label>Lowercase names</Label>
             </Tooltip>
           </Toggle>
           <Toggle
@@ -428,9 +450,19 @@ export function ChartFilters(props: ChartFiltersProps) {
                 'and only appear in a part of the time range.'
               }
             >
-              <span>Normalize time range</span>
+              <Label>Normalize time range</Label>
             </Tooltip>
           </Toggle>
+          <DurationSlider
+            header="Hide under peak"
+            value={viewOptions.hideLimit}
+            setValue={setHideLimit}
+          />
+          <DurationSlider
+            header="Collapse under peak"
+            value={viewOptions.collapsedLimit}
+            setValue={setCollapseLimit}
+          />
           <Typography
             variant="subtitle2"
             className={`${classes.title} ${classes.title}`}

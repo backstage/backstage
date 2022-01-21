@@ -152,8 +152,6 @@ function CicdCharts(props: CicdChartsProps) {
     errorApi.post(chartableStagesState.error);
   }, [errorApi, chartableStagesState.error]);
 
-  const collapsedLimit = cicdConfiguration.defaults.collapsedLimit ?? 60 * 1000; // 1m
-
   return (
     <Grid container>
       <Grid item lg={2} className={classes.pane}>
@@ -176,13 +174,15 @@ function CicdCharts(props: CicdChartsProps) {
             <StageChart
               stage={chartableStages.total}
               defaultCollapsed={0}
+              defaultHidden={viewOptions.hideLimit}
               chartTypes={viewOptions.chartTypes}
             />
             {[...chartableStages.stages.entries()].map(([name, stage]) => (
               <StageChart
                 key={name}
                 stage={stage}
-                defaultCollapsed={collapsedLimit}
+                defaultCollapsed={viewOptions.collapsedLimit}
+                defaultHidden={viewOptions.hideLimit}
                 chartTypes={viewOptions.chartTypes}
               />
             ))}

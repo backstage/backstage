@@ -132,13 +132,14 @@ export interface CicdDefaults {
   filterStatus: Array<FilterStatusType>;
   filterType: FilterBranchType | 'all';
 
-  /** Default collapse the stages with a max-duration below this value */
-  collapsedLimit: number;
-
   /** Lower-case all stage names (to potentially merge stages with different cases) */
   lowercaseNames: boolean;
   /** Normalize the from-to date range in all charts */
   normalizeTimeRange: boolean;
+  /** Default collapse the stages with a max-duration below this value */
+  collapsedLimit: number;
+  /** Default hide stages with a max-duration below this value */
+  hideLimit: number;
   /** Chart types per status */
   chartTypes: Record<FilterStatusType, ChartTypes>;
 }

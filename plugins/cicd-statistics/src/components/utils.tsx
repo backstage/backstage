@@ -117,3 +117,7 @@ export function formatDuration(millis: number) {
 
   return dur.toHuman({ unitDisplay: 'narrow' }).replace(/, /g, '');
 }
+
+export function formatDurationFromSeconds(seconds: number) {
+  return formatDuration(seconds * 1000);
+}
