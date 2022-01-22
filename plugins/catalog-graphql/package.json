@@ -39,7 +39,7 @@
     "graphql": "^16.0.0",
     "graphql-tag": "^2.11.0",
     "graphql-type-json": "^0.3.2",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.1.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {
