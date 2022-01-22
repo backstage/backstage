@@ -51,13 +51,14 @@ spec:
 
 #### Azure Pipelines Only
 
-If you are only using Azure Pipelines along with a different SCM tool then you can use the following annotation to see Builds:
+If you are only using Azure Pipelines along with a different SCM tool then you can use the following two annotations to see Builds:
 
 ```yaml
-dev.azure.com/project-definition: <project-name>/<definition-name>
+dev.azure.com/project: <project-name>
+dev.azure.com/build-definition: <build-definition-name>
 ```
 
-In this case `<project-name>` will be the name of your Team Project and `<definition-name>` will be the name of the Build Definition you would like to see Builds for. If the Build Definition name has spaces in it make sure to put quotes around it
+In this case `<project-name>` will be the name of your Team Project and `<build-definition-name>` will be the name of the Build Definition you would like to see Builds for. If the Build Definition name has spaces in it make sure to put quotes around it
 
 ### Azure Pipelines Component
 
@@ -93,7 +94,7 @@ To get the Azure Pipelines component working you'll need to do the following two
         </EntitySwitch>
       ```
 
-   2. If you are using the `dev.azure.com/project-definition` annotation then you'll want to do this:
+   2. If you are using the ``dev.azure.com/project` and `dev.azure.com/build-definition` annotations then you'll want to do this:
 
       ```tsx
       // In packages/app/src/components/catalog/EntityPage.tsx

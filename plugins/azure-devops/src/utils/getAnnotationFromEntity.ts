@@ -15,7 +15,8 @@
  */
 
 import {
-  AZURE_DEVOPS_DEFINITION_ANNOTATION,
+  AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
+  AZURE_DEVOPS_PROJECT_ANNOTATION,
   AZURE_DEVOPS_REPO_ANNOTATION,
 } from '../constants';
 
@@ -26,37 +27,30 @@ export function getAnnotationFromEntity(entity: Entity): {
   repo?: string;
   definition?: string;
 } {
-  let annotation =
-    entity.metadata.annotations?.[AZURE_DEVOPS_DEFINITION_ANNOTATION];
-  if (annotation) {
-    const { project, definition } = getProjectDefinition(annotation);
-    const repo = undefined;
-    return { project, repo, definition };
-  }
-
-  annotation = entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION];
+  const annotation =
+    entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION];
   if (annotation) {
     const { project, repo } = getProjectRepo(annotation);
     const definition = undefined;
     return { project, repo, definition };
   }
 
-  throw new Error('No supported Azure DevOps annotation was found');
-}
+  const project =
+    entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_ANNOTATION];
+  if (!project) {
+    throw new Error('Value for annotation dev.azure.com/project was not found');
+  }
 
-function getProjectDefinition(annotation: string): {
-  project: string;
-  definition: string;
-} {
-  const [project, definition] = annotation.split('/');
-
-  if (!project && !definition) {
+  const definition =
+    entity.metadata.annotations?.[AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION];
+  if (!definition) {
     throw new Error(
-      'Value for annotation dev.azure.com/project-definition was not in the correct format: <project-name>/<definition-name>',
+      'Value for annotation dev.azure.com/build-definition was not found',
     );
   }
 
-  return { project, definition };
+  const repo = undefined;
+  return { project, repo, definition };
 }
 
 function getProjectRepo(annotation: string): {

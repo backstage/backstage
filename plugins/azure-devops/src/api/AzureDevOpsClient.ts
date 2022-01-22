@@ -93,7 +93,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   public getUserTeamIds(userId: string): Promise<string[]> {
     return this.get<string[]>(`users/${userId}/team-ids`);
   }
-  
+
   public async getBuildRuns(
     projectName: string,
     repoName?: string,

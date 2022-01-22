@@ -15,7 +15,8 @@
  */
 
 import {
-  AZURE_DEVOPS_DEFINITION_ANNOTATION,
+  AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
+  AZURE_DEVOPS_PROJECT_ANNOTATION,
   AZURE_DEVOPS_REPO_ANNOTATION,
 } from './constants';
 import {
@@ -40,7 +41,10 @@ export const isAzureDevOpsAvailable = (entity: Entity) =>
 
 export const isAzurePipelinesAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION]) ||
-  Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_DEFINITION_ANNOTATION]);
+  (Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_ANNOTATION]) &&
+    Boolean(
+      entity.metadata.annotations?.[AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION],
+    ));
 
 export const azureDevOpsPlugin = createPlugin({
   id: 'azureDevOps',

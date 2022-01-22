@@ -51,7 +51,7 @@ export interface AzureDevOpsApi {
   getAllTeams(): Promise<Team[]>;
 
   getUserTeamIds(userId: string): Promise<string[]>;
-  
+
   getBuildRuns(
     projectName: string,
     repoName?: string,
