@@ -11,6 +11,9 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "plugin-backend-module"
+  },
   "scripts": {
     "build": "backstage-cli backend:build",
     "start": "backstage-cli backend:dev",

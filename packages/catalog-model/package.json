@@ -13,6 +13,9 @@
     "types": "dist/index.d.ts",
     "alphaTypes": "dist/index.alpha.d.ts"
   },
+  "backstage": {
+    "role": "common-library"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",

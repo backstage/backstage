@@ -8,6 +8,9 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "plugin-frontend"
+  },
   "homepage": "https://github.com/backstage/backstage/tree/master/plugins/graphiql#readme",
   "repository": {
     "type": "git",

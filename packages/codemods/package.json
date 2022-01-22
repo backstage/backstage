@@ -7,6 +7,9 @@
     "access": "public",
     "main": "dist/index.cjs.js"
   },
+  "backstage": {
+    "role": "cli"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",

@@ -11,6 +11,9 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "plugin-frontend"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",

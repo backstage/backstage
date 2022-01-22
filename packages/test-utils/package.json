@@ -8,6 +8,9 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "web-library"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",

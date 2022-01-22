@@ -10,6 +10,9 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "node-library"
+  },
   "scripts": {
     "build": "backstage-cli backend:build",
     "lint": "backstage-cli lint",

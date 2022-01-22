@@ -9,6 +9,9 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "plugin-backend"
+  },
   "scripts": {
     "start": "backstage-cli backend:dev",
     "build": "backstage-cli backend:build",

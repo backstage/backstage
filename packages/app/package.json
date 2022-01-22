@@ -2,6 +2,9 @@
   "name": "example-app",
   "version": "0.2.64",
   "private": true,
+  "backstage": {
+    "role": "app"
+  },
   "bundled": true,
   "dependencies": {
     "@backstage/app-defaults": "^0.1.7",

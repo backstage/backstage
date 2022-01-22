@@ -10,6 +10,9 @@
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "common-library"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",

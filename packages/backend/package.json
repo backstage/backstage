@@ -5,6 +5,9 @@
   "types": "src/index.ts",
   "license": "Apache-2.0",
   "private": true,
+  "backstage": {
+    "role": "backend"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",

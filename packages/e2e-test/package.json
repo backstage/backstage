@@ -3,6 +3,9 @@
   "description": "E2E test for verifying Backstage packages",
   "version": "0.2.0",
   "private": true,
+  "backstage": {
+    "role": "cli"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",

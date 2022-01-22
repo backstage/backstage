@@ -10,6 +10,9 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "plugin-backend-module"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
