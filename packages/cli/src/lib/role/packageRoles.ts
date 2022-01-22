@@ -31,17 +31,43 @@ const packageRoles: PackageRoleInfo[] = [
 ];
 const roleMap = Object.fromEntries(packageRoles.map(i => [i.role, i]));
 
-const backstagePackageSchema = z.object({
+const readSchema = z.object({
+  name: z.string().optional(),
+  backstage: z
+    .object({
+      role: z.string().optional(),
+    })
+    .optional(),
+});
+
+export function readPackageRole(pkgJson: unknown): PackageRoleInfo | undefined {
+  const pkg = readSchema.parse(pkgJson);
+
+  // If there's an explicit role, use that.
+  if (pkg.backstage) {
+    const { role } = pkg.backstage;
+    if (!role) {
+      throw new Error(
+        `Package ${pkg.name} must specify a role in the "backstage" field`,
+      );
+    }
+
+    const roleInfo = packageRoles.find(r => r.role === role);
+    if (!roleInfo) {
+      throw new Error(`Unknown role '${role}' in package ${pkg.name}`);
+    }
+    return roleInfo;
+  }
+
+  return undefined;
+}
+
+const detectionSchema = z.object({
   name: z.string().optional(),
   scripts: z
     .object({
       start: z.string().optional(),
       build: z.string().optional(),
-    })
-    .optional(),
-  backstage: z
-    .object({
-      role: z.string().optional(),
     })
     .optional(),
   publishConfig: z
@@ -59,23 +85,7 @@ const backstagePackageSchema = z.object({
 export function detectPackageRole(
   pkgJson: unknown,
 ): PackageRoleInfo | undefined {
-  const pkg = backstagePackageSchema.parse(pkgJson);
-
-  // If there's an explicit role, use that.
-  if (pkg.backstage) {
-    const { role } = pkg.backstage;
-    if (!role) {
-      throw new Error(
-        `Package ${pkg.name} must specify a role in the "backstage" field`,
-      );
-    }
-
-    const roleInfo = packageRoles.find(r => r.role === role);
-    if (!roleInfo) {
-      throw new Error(`Unknown role '${role}' in package ${pkg.name}`);
-    }
-    return roleInfo;
-  }
+  const pkg = detectionSchema.parse(pkgJson);
 
   if (pkg.scripts?.start?.includes('app:serve')) {
     return roleMap.app;

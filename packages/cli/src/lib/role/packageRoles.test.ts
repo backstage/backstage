@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { detectPackageRole } from './detectPackageRole';
+import { readPackageRole, detectPackageRole } from './packageRoles';
 
-describe('detectPackageRole', () => {
-  it('detects explicit package roles', () => {
+describe('readPackageRole', () => {
+  it('reads explicit package roles', () => {
     expect(
-      detectPackageRole({
+      readPackageRole({
         backstage: {
           role: 'web-library',
         },
@@ -30,7 +30,7 @@ describe('detectPackageRole', () => {
     });
 
     expect(
-      detectPackageRole({
+      readPackageRole({
         backstage: {
           role: 'app',
         },
@@ -41,20 +41,22 @@ describe('detectPackageRole', () => {
     });
 
     expect(() =>
-      detectPackageRole({
+      readPackageRole({
         name: 'test',
         backstage: {},
       }),
     ).toThrow('Package test must specify a role in the "backstage" field');
 
     expect(() =>
-      detectPackageRole({
+      readPackageRole({
         name: 'test',
         backstage: { role: 'invalid' },
       }),
     ).toThrow(`Unknown role 'invalid' in package test`);
   });
+});
 
+describe('detectPackageRole', () => {
   it('detects the role of example-app', () => {
     expect(
       detectPackageRole({
