@@ -93,10 +93,10 @@ export function detectPackageRole(
   if (pkg.scripts?.build?.includes('backend:bundle')) {
     return roleMap.backend;
   }
-  if (pkg.name?.includes('plugin') && pkg.name?.includes('backend-module')) {
+  if (pkg.name?.includes('plugin-') && pkg.name?.includes('-backend-module-')) {
     return roleMap['plugin-backend-module'];
   }
-  if (pkg.name?.includes('plugin') && pkg.name?.includes('module')) {
+  if (pkg.name?.includes('plugin-') && pkg.name?.includes('-module-')) {
     return roleMap['plugin-frontend-module'];
   }
   if (pkg.scripts?.start?.includes('plugin:serve')) {
