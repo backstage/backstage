@@ -149,6 +149,19 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./bundle').then(m => m.command)));
 
   program
+    .command('start')
+    .description('Start a package for local development')
+    .option(...configOption)
+    .option('--role <name>', 'Run the command with an explicit package role')
+    .option('--check', 'Enable type checking and linting if available')
+    .option('--inspect', 'Enable debugger in Node.js environments')
+    .option(
+      '--inspect-brk',
+      'Enable debugger in Node.js environments, breaking before code starts',
+    )
+    .action(lazy(() => import('./start').then(m => m.command)));
+
+  program
     .command('lint')
     .option(
       '--format <format>',
