@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import mockFs from 'mock-fs';
+import { Command } from 'commander';
 import {
   getRoleInfo,
   readPackageRole,
+  readRoleForCommand,
   detectPackageRole,
 } from './packageRoles';
 
@@ -75,6 +78,47 @@ describe('readPackageRole', () => {
         backstage: { role: 'invalid' },
       }),
     ).toThrow(`Unknown package role 'invalid'`);
+  });
+});
+
+describe('readRoleForCommand', () => {
+  function mkCommand(args: string) {
+    return new Command()
+      .option('--role <role>', 'test role')
+      .parse(['node', 'entry.js', ...args.split(' ')]) as Command;
+  }
+
+  beforeEach(() => {
+    mockFs({
+      'package.json': JSON.stringify({
+        name: 'test',
+        backstage: {
+          role: 'web-library',
+        },
+      }),
+    });
+  });
+
+  afterEach(() => {
+    mockFs.restore();
+  });
+
+  it('provides role info by role', async () => {
+    await expect(readRoleForCommand(mkCommand(''))).resolves.toEqual({
+      role: 'web-library',
+      platform: 'web',
+    });
+
+    await expect(
+      readRoleForCommand(mkCommand('--role node-library')),
+    ).resolves.toEqual({
+      role: 'node-library',
+      platform: 'node',
+    });
+
+    await expect(
+      readRoleForCommand(mkCommand('--role invalid')),
+    ).rejects.toThrow(`Unknown package role 'invalid'`);
   });
 });
 

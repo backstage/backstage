@@ -136,6 +136,8 @@ export function registerCommands(program: CommanderStatic) {
   program
     .command('bundle')
     .description('Bundle a package for deployment')
+    .option(...configOption)
+    .option('--role <name>', 'Run the command with an explicit package role')
     .option(
       '--skip-build-dependencies',
       'Skip the automatic building of local dependencies',
@@ -144,7 +146,6 @@ export function registerCommands(program: CommanderStatic) {
       '--stats',
       'If bundle stats are available, write them to the output directory',
     )
-    .option(...configOption)
     .action(lazy(() => import('./bundle').then(m => m.command)));
 
   program

@@ -15,6 +15,9 @@
  */
 
 import { z } from 'zod';
+import fs from 'fs-extra';
+import { Command } from 'commander';
+import { paths } from '../paths';
 import { PackageRoleInfo } from './types';
 
 const packageRoles: PackageRoleInfo[] = [
@@ -64,6 +67,21 @@ export function readPackageRole(pkgJson: unknown): PackageRoleInfo | undefined {
   }
 
   return undefined;
+}
+
+export async function readRoleForCommand(
+  cmd: Command,
+): Promise<PackageRoleInfo> {
+  if (cmd.role) {
+    return getRoleInfo(cmd.role);
+  }
+
+  const pkg = await fs.readJson(paths.resolveTarget('package.json'));
+  const info = readPackageRole(pkg);
+  if (!info) {
+    throw new Error(`Target package must have 'backstage.role' set`);
+  }
+  return info;
 }
 
 const detectionSchema = z.object({

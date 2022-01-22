@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import { Command } from 'commander';
-import { paths } from '../../lib/paths';
-import { readPackageRole } from '../../lib/role/packageRoles';
 import { bundleApp } from './bundleApp';
 import { bundleBackend } from './bundleBackend';
+import { readRoleForCommand } from '../../lib/role';
 
 export async function command(cmd: Command): Promise<void> {
-  const pkg = await fs.readJson(paths.resolveTarget('package.json'));
-  const roleInfo = readPackageRole(pkg);
-  if (!roleInfo) {
-    throw new Error(`Target package must have 'backstage.role' set`);
-  }
+  const roleInfo = await readRoleForCommand(cmd);
 
   const options = {
     configPaths: cmd.config as string[],

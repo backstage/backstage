@@ -21,6 +21,7 @@ export type {
 } from './types';
 export {
   getRoleInfo,
-  detectPackageRole,
   readPackageRole,
+  readRoleForCommand,
+  detectPackageRole,
 } from './packageRoles';
