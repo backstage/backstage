@@ -134,6 +134,20 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./build').then(m => m.default)));
 
   program
+    .command('bundle')
+    .description('Bundle a package for deployment')
+    .option(
+      '--skip-build-dependencies',
+      'Skip the automatic building of local dependencies',
+    )
+    .option(
+      '--stats',
+      'If bundle stats are available, write them to the output directory',
+    )
+    .option(...configOption)
+    .action(lazy(() => import('./bundle').then(m => m.command)));
+
+  program
     .command('lint')
     .option(
       '--format <format>',
