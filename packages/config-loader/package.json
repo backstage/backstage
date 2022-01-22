@@ -10,7 +10,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "common-library"
+    "role": "node-library"
   },
   "homepage": "https://backstage.io",
   "repository": {

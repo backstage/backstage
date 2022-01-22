@@ -12,7 +12,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "web-library"
+    "role": "plugin-frontend"
   },
   "homepage": "https://backstage.io",
   "repository": {

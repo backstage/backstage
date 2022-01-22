@@ -11,7 +11,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "plugin-backend"
+    "role": "node-library"
   },
   "scripts": {
     "start": "backstage-cli backend:dev",
