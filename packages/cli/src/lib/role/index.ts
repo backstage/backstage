@@ -19,4 +19,8 @@ export type {
   PackagePlatform,
   PackageRoleName,
 } from './types';
-export { detectPackageRole, readPackageRole } from './packageRoles';
+export {
+  getRoleInfo,
+  detectPackageRole,
+  readPackageRole,
+} from './packageRoles';

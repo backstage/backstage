@@ -14,7 +14,29 @@
  * limitations under the License.
  */
 
-import { readPackageRole, detectPackageRole } from './packageRoles';
+import {
+  getRoleInfo,
+  readPackageRole,
+  detectPackageRole,
+} from './packageRoles';
+
+describe('getRoleInfo', () => {
+  it('provides role info by role', () => {
+    expect(getRoleInfo('web-library')).toEqual({
+      role: 'web-library',
+      platform: 'web',
+    });
+
+    expect(getRoleInfo('app')).toEqual({
+      role: 'app',
+      platform: 'web',
+    });
+
+    expect(() => getRoleInfo('invalid')).toThrow(
+      `Unknown package role 'invalid'`,
+    );
+  });
+});
 
 describe('readPackageRole', () => {
   it('reads explicit package roles', () => {
@@ -52,7 +74,7 @@ describe('readPackageRole', () => {
         name: 'test',
         backstage: { role: 'invalid' },
       }),
-    ).toThrow(`Unknown role 'invalid' in package test`);
+    ).toThrow(`Unknown package role 'invalid'`);
   });
 });
 

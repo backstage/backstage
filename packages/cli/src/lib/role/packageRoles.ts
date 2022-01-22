@@ -31,6 +31,14 @@ const packageRoles: PackageRoleInfo[] = [
 ];
 const roleMap = Object.fromEntries(packageRoles.map(i => [i.role, i]));
 
+export function getRoleInfo(role: string): PackageRoleInfo {
+  const roleInfo = packageRoles.find(r => r.role === role);
+  if (!roleInfo) {
+    throw new Error(`Unknown package role '${role}'`);
+  }
+  return roleInfo;
+}
+
 const readSchema = z.object({
   name: z.string().optional(),
   backstage: z
@@ -52,11 +60,7 @@ export function readPackageRole(pkgJson: unknown): PackageRoleInfo | undefined {
       );
     }
 
-    const roleInfo = packageRoles.find(r => r.role === role);
-    if (!roleInfo) {
-      throw new Error(`Unknown role '${role}' in package ${pkg.name}`);
-    }
-    return roleInfo;
+    return getRoleInfo(role);
   }
 
   return undefined;
