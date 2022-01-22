@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiProvider } from '@backstage/core-app-api';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/test-utils';
 import { screen, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -35,7 +34,6 @@ const SearchContextFilterSpy = ({ name }: { name: string }) => {
 
 describe('SearchFilter.Autocomplete', () => {
   const query = jest.fn().mockResolvedValue({});
-  const mockApis = TestApiRegistry.from([searchApiRef, { query }]);
   const emptySearchContext = {
     term: '',
     types: [],
@@ -47,11 +45,11 @@ describe('SearchFilter.Autocomplete', () => {
 
   it('renders as expected', async () => {
     render(
-      <ApiProvider apis={mockApis}>
+      <TestApiProvider apis={[[searchApiRef, { query }]]}>
         <SearchContextProvider>
           <SearchFilter.Autocomplete name={name} values={values} />
         </SearchContextProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     const autocomplete = screen.getByRole('combobox');
@@ -68,14 +66,11 @@ describe('SearchFilter.Autocomplete', () => {
 
   it('renders as expected with async values', async () => {
     render(
-      <ApiProvider apis={mockApis}>
+      <TestApiProvider apis={[[searchApiRef, { query }]]}>
         <SearchContextProvider>
-          <SearchFilter.Autocomplete
-            name={name}
-            asyncValues={async () => values}
-          />
+          <SearchFilter.Autocomplete name={name} values={async () => values} />
         </SearchContextProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     const autocomplete = screen.getByRole('combobox');
@@ -92,7 +87,7 @@ describe('SearchFilter.Autocomplete', () => {
 
   it('does not affect unrelated filter state', async () => {
     render(
-      <ApiProvider apis={mockApis}>
+      <TestApiProvider apis={[[searchApiRef, { query }]]}>
         <SearchContextProvider
           initialState={{
             ...emptySearchContext,
@@ -103,7 +98,7 @@ describe('SearchFilter.Autocomplete', () => {
           <SearchContextFilterSpy name={name} />
           <SearchContextFilterSpy name="unrelated" />
         </SearchContextProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     // The spy should show the initial value.
@@ -136,7 +131,7 @@ describe('SearchFilter.Autocomplete', () => {
   describe('single', () => {
     it('renders as expected with defaultValue', async () => {
       render(
-        <ApiProvider apis={mockApis}>
+        <TestApiProvider apis={[[searchApiRef, { query }]]}>
           <SearchContextProvider>
             <SearchFilter.Autocomplete
               name={name}
@@ -145,7 +140,7 @@ describe('SearchFilter.Autocomplete', () => {
             />
             <SearchContextFilterSpy name={name} />
           </SearchContextProvider>
-        </ApiProvider>,
+        </TestApiProvider>,
       );
 
       const autocomplete = screen.getByRole('combobox');
@@ -161,7 +156,7 @@ describe('SearchFilter.Autocomplete', () => {
 
     it('renders as expected with initial context', async () => {
       render(
-        <ApiProvider apis={mockApis}>
+        <TestApiProvider apis={[[searchApiRef, { query }]]}>
           <SearchContextProvider
             initialState={{
               ...emptySearchContext,
@@ -171,7 +166,7 @@ describe('SearchFilter.Autocomplete', () => {
             <SearchFilter.Autocomplete name={name} values={values} />
             <SearchContextFilterSpy name={name} />
           </SearchContextProvider>
-        </ApiProvider>,
+        </TestApiProvider>,
       );
 
       const autocomplete = screen.getByRole('combobox');
@@ -187,12 +182,12 @@ describe('SearchFilter.Autocomplete', () => {
 
     it('sets filter state when selecting a value', async () => {
       render(
-        <ApiProvider apis={mockApis}>
+        <TestApiProvider apis={[[searchApiRef, { query }]]}>
           <SearchContextProvider>
             <SearchFilter.Autocomplete name={name} values={values} />
             <SearchContextFilterSpy name={name} />
           </SearchContextProvider>
-        </ApiProvider>,
+        </TestApiProvider>,
       );
 
       // Select the first option in the autocomplete.
@@ -225,7 +220,7 @@ describe('SearchFilter.Autocomplete', () => {
   describe('multiple', () => {
     it('renders as expected with defaultValue', async () => {
       render(
-        <ApiProvider apis={mockApis}>
+        <TestApiProvider apis={[[searchApiRef, { query }]]}>
           <SearchContextProvider>
             <SearchFilter.Autocomplete
               multiple
@@ -235,7 +230,7 @@ describe('SearchFilter.Autocomplete', () => {
             />
             <SearchContextFilterSpy name={name} />
           </SearchContextProvider>
-        </ApiProvider>,
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -249,7 +244,7 @@ describe('SearchFilter.Autocomplete', () => {
 
     it('renders as expected with initial context', async () => {
       render(
-        <ApiProvider apis={mockApis}>
+        <TestApiProvider apis={[[searchApiRef, { query }]]}>
           <SearchContextProvider
             initialState={{
               ...emptySearchContext,
@@ -259,7 +254,7 @@ describe('SearchFilter.Autocomplete', () => {
             <SearchFilter.Autocomplete multiple name={name} values={values} />
             <SearchContextFilterSpy name={name} />
           </SearchContextProvider>
-        </ApiProvider>,
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -273,7 +268,7 @@ describe('SearchFilter.Autocomplete', () => {
 
     it('respects tag limit configuration', async () => {
       render(
-        <ApiProvider apis={mockApis}>
+        <TestApiProvider apis={[[searchApiRef, { query }]]}>
           <SearchContextProvider>
             <SearchFilter.Autocomplete
               multiple
@@ -282,7 +277,7 @@ describe('SearchFilter.Autocomplete', () => {
               values={values}
             />
           </SearchContextProvider>
-        </ApiProvider>,
+        </TestApiProvider>,
       );
 
       const autocomplete = screen.getByRole('combobox');
@@ -322,12 +317,12 @@ describe('SearchFilter.Autocomplete', () => {
 
     it('sets filter state when selecting a value', async () => {
       render(
-        <ApiProvider apis={mockApis}>
+        <TestApiProvider apis={[[searchApiRef, { query }]]}>
           <SearchContextProvider>
             <SearchFilter.Autocomplete multiple name={name} values={values} />
             <SearchContextFilterSpy name={name} />
           </SearchContextProvider>
-        </ApiProvider>,
+        </TestApiProvider>,
       );
 
       const autocomplete = screen.getByRole('combobox');

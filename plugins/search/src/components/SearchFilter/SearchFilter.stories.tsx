@@ -50,7 +50,8 @@ export const SelectFilter = () => {
   return (
     <Paper style={{ padding: 10 }}>
       <SearchFilter.Select
-        name="Search Select Filter"
+        label="Search Select Filter"
+        name="select_filter"
         values={['value1', 'value2']}
       />
     </Paper>
@@ -61,8 +62,9 @@ export const AsyncSelectFilter = () => {
   return (
     <Paper style={{ padding: 10 }}>
       <SearchFilter.Select
-        name="Asynchronous Values"
-        asyncValues={async () => {
+        label="Asynchronous Values"
+        name="async_values"
+        values={async () => {
           const response = await fetch('https://swapi.dev/api/planets');
           const json: { results: Array<{ name: string }> } =
             await response.json();
@@ -79,7 +81,7 @@ export const Autocomplete = () => {
       <SearchFilter.Autocomplete
         name="autocomplete"
         label="Single-Select Autocomplete Filter"
-        values={['abba', 'cadaver']}
+        values={['value1', 'value2']}
       />
     </Paper>
   );
@@ -92,7 +94,7 @@ export const MultiSelectAutocomplete = () => {
         multiple
         name="autocomplete"
         label="Multi-Select Autocomplete Filter"
-        values={['abba', 'cadaver']}
+        values={['value1', 'value2']}
       />
     </Paper>
   );
@@ -105,10 +107,12 @@ export const AsyncMultiSelectAutocomplete = () => {
         multiple
         name="starwarsPerson"
         label="Starwars Character"
-        asyncValues={async partial => {
+        values={async partial => {
           if (partial === '') return [];
           const response = await fetch(
-            `https://swapi.dev/api/people?search=${partial}`,
+            `https://swapi.dev/api/people?search=${encodeURIComponent(
+              partial,
+            )}`,
           );
           const json: { results: Array<{ name: string }> } =
             await response.json();

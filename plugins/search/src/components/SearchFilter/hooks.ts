@@ -29,7 +29,7 @@ export const useAsyncFilterValues = (
   defaultValues: string[] = [],
   debounce: number = 250,
 ) => {
-  const valuesMemo = useRef<Record<string, string[]>>({});
+  const valuesMemo = useRef<Record<string, string[] | Promise<string[]>>>({});
   const definiteFn = fn || (() => Promise.resolve([]));
 
   const [state, callback] = useAsyncFn(definiteFn, [inputValue], {
@@ -42,8 +42,10 @@ export const useAsyncFilterValues = (
       // Performance optimization: only invoke the callback once per inputValue
       // for the lifetime of the hook/component.
       if (valuesMemo.current[inputValue] === undefined) {
-        callback(inputValue).then(values => {
+        valuesMemo.current[inputValue] = callback(inputValue).then(values => {
+          // Overrite the value for future immediate returns.
           valuesMemo.current[inputValue] = values;
+          return values;
         });
       }
     },
@@ -59,11 +61,12 @@ export const useAsyncFilterValues = (
     };
   }
 
-  // Immediately return a memoized value if it is set.
-  if (valuesMemo.current[inputValue] !== undefined) {
+  // Immediately return a memoized value if it is set (and not a promise).
+  const possibleValue = valuesMemo.current[inputValue];
+  if (Array.isArray(possibleValue)) {
     return {
       loading: false,
-      value: valuesMemo.current[inputValue],
+      value: possibleValue,
     };
   }
 
@@ -80,11 +83,7 @@ export const useDefaultFilterValue = (
   const { setFilters } = useSearch();
 
   useEffect(() => {
-    const defaultIsEmpty = !defaultValue;
-    const defaultIsEmptyArray =
-      Array.isArray(defaultValue) && defaultValue.length === 0;
-
-    if (!defaultIsEmpty && !defaultIsEmptyArray) {
+    if (defaultValue && [defaultValue].flat().length > 0) {
       setFilters(prevFilters => ({
         ...prevFilters,
         [name]: defaultValue,

@@ -2,7 +2,7 @@
 '@backstage/create-app': patch
 ---
 
-An example instance of the new `<SearchFilter.Autocomplete />` was added to the composed `SearchPage.tsx`, allowing searches bound to the `techdocs` type to be filtered by entity name.
+An example instance of a `<SearchFilter.Select />` with asynchronously loaded values was added to the composed `SearchPage.tsx`, allowing searches bound to the `techdocs` type to be filtered by entity name.
 
 This is an entirely optional change; if you wish to adopt it, you can make the following (or similar) changes to your search page layout:
 
@@ -50,12 +50,12 @@ This is an entirely optional change; if you wish to adopt it, you can make the f
              />
              <Paper className={classes.filters}>
 +              {types.includes('techdocs') && (
-+                <SearchFilter.Autocomplete
++                <SearchFilter.Select
 +                  className={classes.filter}
 +                  label="Entity"
 +                  name="name"
-+                  asyncValues={async partial => {
-+                    // Return a list of entitis which are documented.
++                  values={async () => {
++                    // Return a list of entities which are documented.
 +                    const { items } = await catalogApi.getEntities({
 +                      fields: ['metadata.name'],
 +                      filter: {
@@ -64,9 +64,9 @@ This is an entirely optional change; if you wish to adopt it, you can make the f
 +                      },
 +                    });
 +
-+                    return items
-+                      .map(entity => entity.metadata.name)
-+                      .filter(name => name.includes(partial));
++                    const names = items.map(entity => entity.metadata.name);
++                    names.sort();
++                    return names;
 +                  }}
 +                />
 +              )}

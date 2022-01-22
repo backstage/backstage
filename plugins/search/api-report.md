@@ -94,8 +94,9 @@ export const searchApiRef: ApiRef<SearchApi>;
 
 // @public (undocumented)
 export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
-  multiple?: boolean;
+  filterSelectedOptions?: boolean;
   limitTags?: number;
+  multiple?: boolean;
 };
 
 // @public
@@ -166,10 +167,9 @@ export type SearchFilterComponentProps = {
   className?: string;
   name: string;
   label?: string;
-  values?: string[];
-  asyncValues?: (partial: string) => Promise<string[]>;
-  asyncDebounce?: number;
+  values?: string[] | ((partial: string) => Promise<string[]>);
   defaultValue?: string[] | string | null;
+  valuesDebounceMs?: number;
 };
 
 // Warning: (ae-missing-release-tag) "SearchFilterNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

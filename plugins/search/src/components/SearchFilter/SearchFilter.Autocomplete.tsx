@@ -29,29 +29,34 @@ import { SearchFilterComponentProps } from './SearchFilter';
  * @public
  */
 export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
-  multiple?: boolean;
+  filterSelectedOptions?: boolean;
   limitTags?: number;
+  multiple?: boolean;
 };
 
 export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
   const {
-    asyncValues,
-    asyncDebounce,
     className,
     defaultValue,
-    multiple,
     name,
     values: givenValues,
+    valuesDebounceMs,
     label,
+    filterSelectedOptions,
     limitTags,
+    multiple,
   } = props;
   const [inputValue, setInputValue] = useState<string>('');
   useDefaultFilterValue(name, defaultValue);
+  const asyncValues =
+    typeof givenValues === 'function' ? givenValues : undefined;
+  const defaultValues =
+    typeof givenValues === 'function' ? undefined : givenValues;
   const { value: values, loading } = useAsyncFilterValues(
     asyncValues,
     inputValue,
-    givenValues,
-    asyncDebounce,
+    defaultValues,
+    valuesDebounceMs,
   );
   const { filters, setFilters } = useSearch();
   const filterValue =
@@ -94,12 +99,13 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
 
   return (
     <Autocomplete
+      filterSelectedOptions={filterSelectedOptions}
+      limitTags={limitTags}
       multiple={multiple}
       className={className}
       id={`${multiple ? 'multi-' : ''}select-filter-${name}--select`}
       options={values || []}
       loading={loading}
-      limitTags={limitTags}
       value={filterValue}
       onChange={handleChange}
       onInputChange={(_, newValue) => setInputValue(newValue)}

@@ -93,12 +93,12 @@ const SearchPage = () => {
               />
               <Paper className={classes.filters}>
                 {types.includes('techdocs') && (
-                  <SearchFilter.Autocomplete
+                  <SearchFilter.Select
                     className={classes.filter}
                     label="Entity"
                     name="name"
-                    asyncValues={async partial => {
-                      // Return a list of entitis which are documented.
+                    values={async () => {
+                      // Return a list of entities which are documented.
                       const { items } = await catalogApi.getEntities({
                         fields: ['metadata.name'],
                         filter: {
@@ -107,9 +107,9 @@ const SearchPage = () => {
                         },
                       });
 
-                      return items
-                        .map(entity => entity.metadata.name)
-                        .filter(name => name.includes(partial));
+                      const names = items.map(entity => entity.metadata.name);
+                      names.sort();
+                      return names;
                     }}
                   />
                 )}

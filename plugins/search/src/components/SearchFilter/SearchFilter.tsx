@@ -46,18 +46,19 @@ export type SearchFilterComponentProps = {
   className?: string;
   name: string;
   label?: string;
-  values?: string[];
   /**
-   * An async function to return a list of values to be used in the filter. In
-   * the autocomplete filter, the last input value is provided as an input to
-   * allow values to be filtered. This function is debounced and values cached.
+   * Either an array of values directly, or an async function to return a list
+   * of values to be used in the filter. In the autocomplete filter, the last
+   * input value is provided as an input to allow values to be filtered. This
+   * function is debounced and values cached.
    */
-  asyncValues?: (partial: string) => Promise<string[]>;
-  /**
-   * Debounce time (ms) used by the asyncValues callback. Defaults to 250ms.
-   */
-  asyncDebounce?: number;
+  values?: string[] | ((partial: string) => Promise<string[]>);
   defaultValue?: string[] | string | null;
+  /**
+   * Debounce time in milliseconds, used when values is an async callback.
+   * Defaults to 250ms.
+   */
+  valuesDebounceMs?: number;
 };
 
 /**
@@ -69,10 +70,27 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 };
 
 const CheckboxFilter = (props: SearchFilterComponentProps) => {
-  const { className, defaultValue, label, name, values = [] } = props;
+  const {
+    className,
+    defaultValue,
+    label,
+    name,
+    values: givenValues = [],
+    valuesDebounceMs,
+  } = props;
   const classes = useStyles();
   const { filters, setFilters } = useSearch();
   useDefaultFilterValue(name, defaultValue);
+  const asyncValues =
+    typeof givenValues === 'function' ? givenValues : undefined;
+  const defaultValues =
+    typeof givenValues === 'function' ? undefined : givenValues;
+  const { value: values = [], loading } = useAsyncFilterValues(
+    asyncValues,
+    '',
+    defaultValues,
+    valuesDebounceMs,
+  );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const {
@@ -90,6 +108,7 @@ const CheckboxFilter = (props: SearchFilterComponentProps) => {
   return (
     <FormControl
       className={className}
+      disabled={loading}
       fullWidth
       data-testid="search-checkboxfilter-next"
     >
@@ -117,21 +136,24 @@ const CheckboxFilter = (props: SearchFilterComponentProps) => {
 
 const SelectFilter = (props: SearchFilterComponentProps) => {
   const {
-    asyncValues,
-    asyncDebounce,
     className,
     defaultValue,
     label,
     name,
     values: givenValues,
+    valuesDebounceMs,
   } = props;
   const classes = useStyles();
   useDefaultFilterValue(name, defaultValue);
+  const asyncValues =
+    typeof givenValues === 'function' ? givenValues : undefined;
+  const defaultValues =
+    typeof givenValues === 'function' ? undefined : givenValues;
   const { value: values = [], loading } = useAsyncFilterValues(
     asyncValues,
     '',
-    givenValues,
-    asyncDebounce,
+    defaultValues,
+    valuesDebounceMs,
   );
   const { filters, setFilters } = useSearch();
 

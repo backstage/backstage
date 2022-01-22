@@ -215,7 +215,7 @@ describe('SearchFilter', () => {
           <SearchFilter.Select
             label={label}
             name={name}
-            asyncValues={async () => values}
+            values={async () => values}
           />
         </SearchContextProvider>,
       );
