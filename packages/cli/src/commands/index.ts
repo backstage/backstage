@@ -234,6 +234,11 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./config/schema').then(m => m.default)));
 
   program
+    .command('migrate:package-role')
+    .description(`Add package role field to packages that don't have it`)
+    .action(lazy(() => import('./migrate/packageRole').then(m => m.default)));
+
+  program
     .command('versions:bump')
     .option(
       '--pattern <glob>',
