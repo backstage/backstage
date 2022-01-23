@@ -17,10 +17,10 @@
 import { Command } from 'commander';
 import { bundleApp } from './bundleApp';
 import { bundleBackend } from './bundleBackend';
-import { readRoleForCommand } from '../../lib/role';
+import { findRoleFromCommand } from '../../lib/role';
 
 export async function command(cmd: Command): Promise<void> {
-  const roleInfo = await readRoleForCommand(cmd);
+  const role = await findRoleFromCommand(cmd);
 
   const options = {
     configPaths: cmd.config as string[],
@@ -28,13 +28,11 @@ export async function command(cmd: Command): Promise<void> {
     skipBuildDependencies: Boolean(cmd.skipBuildDependencies),
   };
 
-  if (roleInfo.role === 'app') {
+  if (role === 'app') {
     return bundleApp(options);
-  } else if (roleInfo.role === 'backend') {
+  } else if (role === 'backend') {
     return bundleBackend(options);
   }
 
-  throw new Error(
-    `Bundle command is not supported for package role '${roleInfo.role}'`,
-  );
+  throw new Error(`Bundle command is not supported for package role '${role}'`);
 }

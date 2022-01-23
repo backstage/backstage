@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { getPackages } from '@manypkg/get-packages';
 import { paths } from '../../lib/paths';
-import { readPackageRole, detectPackageRole } from '../../lib/role';
+import { getRoleFromPackage, detectRoleFromPackage } from '../../lib/role';
 
 export default async () => {
   const { packages } = await getPackages(paths.targetDir);
@@ -26,18 +26,18 @@ export default async () => {
   await Promise.all(
     packages.map(async ({ dir, packageJson: pkg }) => {
       const { name } = pkg;
-      const existingRole = readPackageRole(pkg);
+      const existingRole = getRoleFromPackage(pkg);
       if (existingRole) {
         return;
       }
 
-      const detectedRole = detectPackageRole(pkg);
+      const detectedRole = detectRoleFromPackage(pkg);
       if (!detectedRole) {
         console.error(`No role detected for package ${name}`);
         return;
       }
 
-      console.log(`Detected package role of ${name} as ${detectedRole.role}`);
+      console.log(`Detected package role of ${name} as ${detectedRole}`);
 
       let newPkg = pkg as any;
 
@@ -45,7 +45,7 @@ export default async () => {
       if (pkgKeys.includes('backstage')) {
         newPkg.backstage = {
           ...newPkg.backstage,
-          role: detectedRole.role,
+          role: detectedRole,
         };
       } else {
         // We insert the backstage field after one of these fields, otherwise at the end
@@ -57,7 +57,7 @@ export default async () => {
           ) + 1 || pkgKeys.length;
 
         const pkgEntries = Object.entries(pkg);
-        pkgEntries.splice(index, 0, ['backstage', { role: detectedRole.role }]);
+        pkgEntries.splice(index, 0, ['backstage', { role: detectedRole }]);
         newPkg = Object.fromEntries(pkgEntries);
       }
 

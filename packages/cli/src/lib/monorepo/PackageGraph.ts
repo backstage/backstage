@@ -16,7 +16,7 @@
 
 import { getPackages, Package } from '@manypkg/get-packages';
 import { paths } from '../paths';
-import { PackageRoleName } from '../role';
+import { PackageRole } from '../role';
 
 type PackageJSON = Package['packageJson'];
 
@@ -29,7 +29,7 @@ export interface ExtendedPackageJSON extends PackageJSON {
   bundled?: boolean;
 
   backstage?: {
-    role?: PackageRoleName;
+    role?: PackageRole;
   };
 }
 

@@ -18,24 +18,23 @@ import { z } from 'zod';
 import fs from 'fs-extra';
 import { Command } from 'commander';
 import { paths } from '../paths';
-import { PackageRoleInfo } from './types';
+import { PackageRole, PackageRoleInfo } from './types';
 
-const packageRoles: PackageRoleInfo[] = [
-  { role: 'app', platform: 'web' },
-  { role: 'backend', platform: 'node' },
-  { role: 'cli', platform: 'node' },
-  { role: 'web-library', platform: 'web' },
-  { role: 'node-library', platform: 'node' },
-  { role: 'common-library', platform: 'common' },
-  { role: 'plugin-frontend', platform: 'web' },
-  { role: 'plugin-frontend-module', platform: 'web' },
-  { role: 'plugin-backend', platform: 'node' },
-  { role: 'plugin-backend-module', platform: 'node' },
+const packageRoleInfos: PackageRoleInfo[] = [
+  { role: 'app', bundled: true, platform: 'web' },
+  { role: 'backend', bundled: true, platform: 'node' },
+  { role: 'cli', bundled: false, platform: 'node' },
+  { role: 'web-library', bundled: false, platform: 'web' },
+  { role: 'node-library', bundled: false, platform: 'node' },
+  { role: 'common-library', bundled: false, platform: 'common' },
+  { role: 'plugin-frontend', bundled: false, platform: 'web' },
+  { role: 'plugin-frontend-module', bundled: false, platform: 'web' },
+  { role: 'plugin-backend', bundled: false, platform: 'node' },
+  { role: 'plugin-backend-module', bundled: false, platform: 'node' },
 ];
-const roleMap = Object.fromEntries(packageRoles.map(i => [i.role, i]));
 
 export function getRoleInfo(role: string): PackageRoleInfo {
-  const roleInfo = packageRoles.find(r => r.role === role);
+  const roleInfo = packageRoleInfos.find(r => r.role === role);
   if (!roleInfo) {
     throw new Error(`Unknown package role '${role}'`);
   }
@@ -51,7 +50,7 @@ const readSchema = z.object({
     .optional(),
 });
 
-export function readPackageRole(pkgJson: unknown): PackageRoleInfo | undefined {
+export function getRoleFromPackage(pkgJson: unknown): PackageRole | undefined {
   const pkg = readSchema.parse(pkgJson);
 
   // If there's an explicit role, use that.
@@ -63,21 +62,19 @@ export function readPackageRole(pkgJson: unknown): PackageRoleInfo | undefined {
       );
     }
 
-    return getRoleInfo(role);
+    return getRoleInfo(role).role;
   }
 
   return undefined;
 }
 
-export async function readRoleForCommand(
-  cmd: Command,
-): Promise<PackageRoleInfo> {
+export async function findRoleFromCommand(cmd: Command): Promise<PackageRole> {
   if (cmd.role) {
-    return getRoleInfo(cmd.role);
+    return getRoleInfo(cmd.role)?.role;
   }
 
   const pkg = await fs.readJson(paths.resolveTarget('package.json'));
-  const info = readPackageRole(pkg);
+  const info = getRoleFromPackage(pkg);
   if (!info) {
     throw new Error(`Target package must have 'backstage.role' set`);
   }
@@ -104,28 +101,28 @@ const detectionSchema = z.object({
   module: z.string().optional(),
 });
 
-export function detectPackageRole(
+export function detectRoleFromPackage(
   pkgJson: unknown,
-): PackageRoleInfo | undefined {
+): PackageRole | undefined {
   const pkg = detectionSchema.parse(pkgJson);
 
   if (pkg.scripts?.start?.includes('app:serve')) {
-    return roleMap.app;
+    return 'app';
   }
   if (pkg.scripts?.build?.includes('backend:bundle')) {
-    return roleMap.backend;
+    return 'backend';
   }
   if (pkg.name?.includes('plugin-') && pkg.name?.includes('-backend-module-')) {
-    return roleMap['plugin-backend-module'];
+    return 'plugin-backend-module';
   }
   if (pkg.name?.includes('plugin-') && pkg.name?.includes('-module-')) {
-    return roleMap['plugin-frontend-module'];
+    return 'plugin-frontend-module';
   }
   if (pkg.scripts?.start?.includes('plugin:serve')) {
-    return roleMap['plugin-frontend'];
+    return 'plugin-frontend';
   }
   if (pkg.scripts?.start?.includes('backend:dev')) {
-    return roleMap['plugin-backend'];
+    return 'plugin-backend';
   }
 
   const mainEntry = pkg.publishConfig?.main || pkg.main;
@@ -133,16 +130,16 @@ export function detectPackageRole(
   const typesEntry = pkg.publishConfig?.types || pkg.types;
   if (typesEntry) {
     if (mainEntry && moduleEntry) {
-      return roleMap['common-library'];
+      return 'common-library';
     }
     if (moduleEntry || mainEntry?.endsWith('.esm.js')) {
-      return roleMap['web-library'];
+      return 'web-library';
     }
     if (mainEntry) {
-      return roleMap['node-library'];
+      return 'node-library';
     }
   } else if (mainEntry) {
-    return roleMap.cli;
+    return 'cli';
   }
 
   return undefined;

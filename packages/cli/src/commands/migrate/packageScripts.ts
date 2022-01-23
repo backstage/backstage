@@ -17,23 +17,23 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { PackageGraph } from '../../lib/monorepo';
-import { readPackageRole, PackageRoleName } from '../../lib/role';
+import { getRoleFromPackage, PackageRole } from '../../lib/role';
 
-const bundledRoles: PackageRoleName[] = ['app', 'backend'];
-const noStartRoles: PackageRoleName[] = ['cli', 'common-library'];
+const bundledRoles: PackageRole[] = ['app', 'backend'];
+const noStartRoles: PackageRole[] = ['cli', 'common-library'];
 
 export async function command() {
   const packages = await PackageGraph.listTargetPackages();
 
   await Promise.all(
     packages.map(async ({ dir, packageJson }) => {
-      const roleInfo = readPackageRole(packageJson);
-      if (!roleInfo) {
+      const role = getRoleFromPackage(packageJson);
+      if (!role) {
         return;
       }
 
-      const hasStart = !noStartRoles.includes(roleInfo.role);
-      const isBundled = bundledRoles.includes(roleInfo.role);
+      const hasStart = !noStartRoles.includes(role);
+      const isBundled = bundledRoles.includes(role);
 
       const expectedScripts = {
         ...(hasStart && { start: 'backstage-cli script start' }),

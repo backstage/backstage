@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export type PackageRoleName =
+export type PackageRole =
   | 'app'
   | 'backend'
   | 'cli'
@@ -29,6 +29,7 @@ export type PackageRoleName =
 export type PackagePlatform = 'node' | 'web' | 'common';
 
 export interface PackageRoleInfo {
-  role: PackageRoleName;
+  role: PackageRole;
+  bundled: boolean;
   platform: PackagePlatform;
 }

@@ -17,10 +17,10 @@
 import { Command } from 'commander';
 import { startBackend } from './startBackend';
 import { startFrontend } from './startFrontend';
-import { readRoleForCommand } from '../../lib/role';
+import { findRoleFromCommand } from '../../lib/role';
 
 export async function command(cmd: Command): Promise<void> {
-  const roleInfo = await readRoleForCommand(cmd);
+  const role = await findRoleFromCommand(cmd);
 
   const options = {
     configPaths: cmd.config as string[],
@@ -29,7 +29,7 @@ export async function command(cmd: Command): Promise<void> {
     inspectBrkEnabled: Boolean(cmd.inspectBrk),
   };
 
-  switch (roleInfo.role) {
+  switch (role) {
     case 'backend':
     case 'plugin-backend':
     case 'plugin-backend-module':
@@ -47,7 +47,7 @@ export async function command(cmd: Command): Promise<void> {
       return startFrontend({ entry: 'dev/index', ...options });
     default:
       throw new Error(
-        `Start command is not supported for package role '${roleInfo.role}'`,
+        `Start command is not supported for package role '${role}'`,
       );
   }
 }

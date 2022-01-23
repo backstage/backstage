@@ -16,19 +16,20 @@
 
 import { Command } from 'commander';
 import { buildPackage, Output } from '../../lib/builder';
-import { PackageRoleName, readRoleForCommand } from '../../lib/role';
+import { PackageRole, findRoleFromCommand, getRoleInfo } from '../../lib/role';
 
-const bundledRoles: PackageRoleName[] = ['app', 'backend'];
+const bundledRoles: PackageRole[] = ['app', 'backend'];
 
 const esmPlatforms = ['web', 'common'];
 const cjsPlatforms = ['node', 'common'];
 
 export async function command(cmd: Command): Promise<void> {
-  const roleInfo = await readRoleForCommand(cmd);
+  const role = await findRoleFromCommand(cmd);
+  const roleInfo = getRoleInfo(role);
 
-  if (bundledRoles.includes(roleInfo.role)) {
+  if (bundledRoles.includes(role)) {
     throw new Error(
-      `Build command is not supported for package role '${roleInfo.role}'`,
+      `Build command is not supported for package role '${role}'`,
     );
   }
 
@@ -40,7 +41,7 @@ export async function command(cmd: Command): Promise<void> {
   if (esmPlatforms.includes(roleInfo.platform)) {
     outputs.add(Output.esm);
   }
-  if (roleInfo.role !== 'cli') {
+  if (role !== 'cli') {
     outputs.add(Output.types);
   }
 

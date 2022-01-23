@@ -18,9 +18,9 @@ import mockFs from 'mock-fs';
 import { Command } from 'commander';
 import {
   getRoleInfo,
-  readPackageRole,
-  readRoleForCommand,
-  detectPackageRole,
+  getRoleFromPackage,
+  findRoleFromCommand,
+  detectRoleFromPackage,
 } from './packageRoles';
 
 describe('getRoleInfo', () => {
@@ -28,11 +28,13 @@ describe('getRoleInfo', () => {
     expect(getRoleInfo('web-library')).toEqual({
       role: 'web-library',
       platform: 'web',
+      bundled: false,
     });
 
     expect(getRoleInfo('app')).toEqual({
       role: 'app',
       platform: 'web',
+      bundled: true,
     });
 
     expect(() => getRoleInfo('invalid')).toThrow(
@@ -41,39 +43,33 @@ describe('getRoleInfo', () => {
   });
 });
 
-describe('readPackageRole', () => {
+describe('getRoleFromPackage', () => {
   it('reads explicit package roles', () => {
     expect(
-      readPackageRole({
+      getRoleFromPackage({
         backstage: {
           role: 'web-library',
         },
       }),
-    ).toEqual({
-      role: 'web-library',
-      platform: 'web',
-    });
+    ).toEqual('web-library');
 
     expect(
-      readPackageRole({
+      getRoleFromPackage({
         backstage: {
           role: 'app',
         },
       }),
-    ).toEqual({
-      role: 'app',
-      platform: 'web',
-    });
+    ).toEqual('app');
 
     expect(() =>
-      readPackageRole({
+      getRoleFromPackage({
         name: 'test',
         backstage: {},
       }),
     ).toThrow('Package test must specify a role in the "backstage" field');
 
     expect(() =>
-      readPackageRole({
+      getRoleFromPackage({
         name: 'test',
         backstage: { role: 'invalid' },
       }),
@@ -81,7 +77,7 @@ describe('readPackageRole', () => {
   });
 });
 
-describe('readRoleForCommand', () => {
+describe('findRoleFromCommand', () => {
   function mkCommand(args: string) {
     return new Command()
       .option('--role <role>', 'test role')
@@ -104,28 +100,24 @@ describe('readRoleForCommand', () => {
   });
 
   it('provides role info by role', async () => {
-    await expect(readRoleForCommand(mkCommand(''))).resolves.toEqual({
-      role: 'web-library',
-      platform: 'web',
-    });
+    await expect(findRoleFromCommand(mkCommand(''))).resolves.toEqual(
+      'web-library',
+    );
 
     await expect(
-      readRoleForCommand(mkCommand('--role node-library')),
-    ).resolves.toEqual({
-      role: 'node-library',
-      platform: 'node',
-    });
+      findRoleFromCommand(mkCommand('--role node-library')),
+    ).resolves.toEqual('node-library');
 
     await expect(
-      readRoleForCommand(mkCommand('--role invalid')),
+      findRoleFromCommand(mkCommand('--role invalid')),
     ).rejects.toThrow(`Unknown package role 'invalid'`);
   });
 });
 
-describe('detectPackageRole', () => {
+describe('detectRoleFromPackage', () => {
   it('detects the role of example-app', () => {
     expect(
-      detectPackageRole({
+      detectRoleFromPackage({
         name: 'example-app',
         private: true,
         bundled: true,
@@ -143,15 +135,12 @@ describe('detectPackageRole', () => {
           'cy:run': 'cypress run',
         },
       }),
-    ).toEqual({
-      role: 'app',
-      platform: 'web',
-    });
+    ).toEqual('app');
   });
 
   it('detects the role of example-backend', () => {
     expect(
-      detectPackageRole({
+      detectRoleFromPackage({
         name: 'example-backend',
         main: 'dist/index.cjs.js',
         types: 'src/index.ts',
@@ -166,15 +155,12 @@ describe('detectPackageRole', () => {
           'migrate:create': 'knex migrate:make -x ts',
         },
       }),
-    ).toEqual({
-      role: 'backend',
-      platform: 'node',
-    });
+    ).toEqual('backend');
   });
 
   it('detects the role of @backstage/plugin-catalog', () => {
     expect(
-      detectPackageRole({
+      detectRoleFromPackage({
         name: '@backstage/plugin-catalog',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -194,15 +180,12 @@ describe('detectPackageRole', () => {
           clean: 'backstage-cli clean',
         },
       }),
-    ).toEqual({
-      role: 'plugin-frontend',
-      platform: 'web',
-    });
+    ).toEqual('plugin-frontend');
   });
 
   it('detects the role of @backstage/plugin-catalog-backend', () => {
     expect(
-      detectPackageRole({
+      detectRoleFromPackage({
         name: '@backstage/plugin-catalog-backend',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -221,15 +204,12 @@ describe('detectPackageRole', () => {
           clean: 'backstage-cli clean',
         },
       }),
-    ).toEqual({
-      role: 'plugin-backend',
-      platform: 'node',
-    });
+    ).toEqual('plugin-backend');
   });
 
   it('detects the role of @backstage/plugin-catalog-react', () => {
     expect(
-      detectPackageRole({
+      detectRoleFromPackage({
         name: '@backstage/plugin-catalog-react',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -247,15 +227,12 @@ describe('detectPackageRole', () => {
           clean: 'backstage-cli clean',
         },
       }),
-    ).toEqual({
-      role: 'web-library',
-      platform: 'web',
-    });
+    ).toEqual('web-library');
   });
 
   it('detects the role of @backstage/plugin-catalog-common', () => {
     expect(
-      detectPackageRole({
+      detectRoleFromPackage({
         name: '@backstage/plugin-catalog-common',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -274,15 +251,12 @@ describe('detectPackageRole', () => {
           clean: 'backstage-cli clean',
         },
       }),
-    ).toEqual({
-      role: 'common-library',
-      platform: 'common',
-    });
+    ).toEqual('common-library');
   });
 
   it('detects the role of @backstage/plugin-catalog-backend-module-ldap', () => {
     expect(
-      detectPackageRole({
+      detectRoleFromPackage({
         name: '@backstage/plugin-catalog-backend-module-ldap',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -300,15 +274,12 @@ describe('detectPackageRole', () => {
           clean: 'backstage-cli clean',
         },
       }),
-    ).toEqual({
-      role: 'plugin-backend-module',
-      platform: 'node',
-    });
+    ).toEqual('plugin-backend-module');
   });
 
   it('detects the role of @backstage/plugin-permission-node', () => {
     expect(
-      detectPackageRole({
+      detectRoleFromPackage({
         name: '@backstage/plugin-permission-node',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -327,15 +298,12 @@ describe('detectPackageRole', () => {
           clean: 'backstage-cli clean',
         },
       }),
-    ).toEqual({
-      role: 'node-library',
-      platform: 'node',
-    });
+    ).toEqual('node-library');
   });
 
   it('detects the role of @backstage/plugin-analytics-module-ga', () => {
     expect(
-      detectPackageRole({
+      detectRoleFromPackage({
         name: '@backstage/plugin-analytics-module-ga',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -355,9 +323,6 @@ describe('detectPackageRole', () => {
           clean: 'backstage-cli clean',
         },
       }),
-    ).toEqual({
-      role: 'plugin-frontend-module',
-      platform: 'web',
-    });
+    ).toEqual('plugin-frontend-module');
   });
 });
