@@ -239,6 +239,13 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./migrate/packageRole').then(m => m.default)));
 
   program
+    .command('migrate:package-scripts')
+    .description('Set package scripts according to each package role')
+    .action(
+      lazy(() => import('./migrate/packageScripts').then(m => m.command)),
+    );
+
+  program
     .command('versions:bump')
     .option(
       '--pattern <glob>',
