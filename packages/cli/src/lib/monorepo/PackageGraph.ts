@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { Package } from '@manypkg/get-packages';
+import { getPackages, Package } from '@manypkg/get-packages';
+import { paths } from '../paths';
+import { PackageRoleName } from '../role';
 
 type PackageJSON = Package['packageJson'];
 
@@ -25,7 +27,16 @@ export interface ExtendedPackageJSON extends PackageJSON {
   // The `bundled` field is a field known within Backstage, it means
   // that the package bundles all of its dependencies in its build output.
   bundled?: boolean;
+
+  backstage?: {
+    role?: PackageRoleName;
+  };
 }
+
+export type ExtendedPackage = {
+  dir: string;
+  packageJson: ExtendedPackageJSON;
+};
 
 export type PackageGraphNode = {
   /** The name of the package */
@@ -47,6 +58,11 @@ export type PackageGraphNode = {
 };
 
 export class PackageGraph extends Map<string, PackageGraphNode> {
+  static async listTargetPackages(): Promise<ExtendedPackage[]> {
+    const { packages } = await getPackages(paths.targetDir);
+    return packages as ExtendedPackage[];
+  }
+
   static fromPackages(packages: Package[]): PackageGraph {
     const graph = new PackageGraph();
 
