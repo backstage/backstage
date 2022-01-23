@@ -131,7 +131,7 @@ export function registerCommands(program: CommanderStatic) {
     .option('--outputs <formats>', 'List of formats to output [types,cjs,esm]')
     .option('--minify', 'Minify the generated code')
     .option('--experimental-type-build', 'Enable experimental type build')
-    .action(lazy(() => import('./build').then(m => m.default)));
+    .action(lazy(() => import('./oldBuild').then(m => m.default)));
 
   program
     .command('lint')
@@ -223,6 +223,13 @@ export function registerCommands(program: CommanderStatic) {
       'If bundle stats are available, write them to the output directory',
     )
     .action(lazy(() => import('./bundle').then(m => m.command)));
+
+  script
+    .command('build')
+    .description('Build a package for publishing')
+    .option('--minify', 'Minify the generated code')
+    .option('--experimental-type-build', 'Enable experimental type build')
+    .action(lazy(() => import('./build').then(m => m.command)));
 
   script
     .command('start')
