@@ -193,7 +193,7 @@ const App = () => (
 
 ### Naming Patterns
 
-There are a couple of naming patters to adhere to as you build plugins, which
+There are a couple of naming patterns to adhere to as you build plugins, which
 helps clarify the intent and usage of the exports.
 
 | Description           | Pattern         | Examples                                       |
