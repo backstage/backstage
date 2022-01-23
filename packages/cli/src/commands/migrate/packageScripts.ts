@@ -38,19 +38,20 @@ export async function command() {
       const expectedScripts = {
         ...(hasStart && { start: 'backstage-cli script start' }),
         ...(isBundled
-          ? { bundle: 'backstage-cli script bundle' }
-          : { build: 'backstage-cli build' }),
-        lint: 'backstage-cli lint',
-        test: 'backstage-cli test',
-        clean: 'backstage-cli clean',
+          ? { bundle: 'backstage-cli script bundle', build: undefined }
+          : { build: 'backstage-cli script build', bundle: undefined }),
+        lint: 'backstage-cli script lint',
+        test: 'backstage-cli script test',
+        clean: 'backstage-cli script clean',
         ...(!isBundled && {
-          postpack: 'backstage-cli postpack',
-          prepack: 'backstage-cli prepack',
+          postpack: 'backstage-cli script postpack',
+          prepack: 'backstage-cli script prepack',
         }),
       };
 
       let changed = false;
-      const currentScripts = (packageJson.scripts = packageJson.scripts || {});
+      const currentScripts: Record<string, string | undefined> =
+        (packageJson.scripts = packageJson.scripts || {});
 
       for (const [name, value] of Object.entries(expectedScripts)) {
         if (currentScripts[name] !== value) {
