@@ -134,34 +134,6 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./build').then(m => m.default)));
 
   program
-    .command('bundle')
-    .description('Bundle a package for deployment')
-    .option(...configOption)
-    .option('--role <name>', 'Run the command with an explicit package role')
-    .option(
-      '--skip-build-dependencies',
-      'Skip the automatic building of local dependencies',
-    )
-    .option(
-      '--stats',
-      'If bundle stats are available, write them to the output directory',
-    )
-    .action(lazy(() => import('./bundle').then(m => m.command)));
-
-  program
-    .command('start')
-    .description('Start a package for local development')
-    .option(...configOption)
-    .option('--role <name>', 'Run the command with an explicit package role')
-    .option('--check', 'Enable type checking and linting if available')
-    .option('--inspect', 'Enable debugger in Node.js environments')
-    .option(
-      '--inspect-brk',
-      'Enable debugger in Node.js environments, breaking before code starts',
-    )
-    .action(lazy(() => import('./start').then(m => m.command)));
-
-  program
     .command('lint')
     .option(
       '--format <format>',
@@ -233,13 +205,49 @@ export function registerCommands(program: CommanderStatic) {
     .description('Print configuration schema')
     .action(lazy(() => import('./config/schema').then(m => m.default)));
 
-  program
-    .command('migrate:package-role')
+  const script = program
+    .command('script [command]', { hidden: true })
+    .description('Lifecycle scripts for Backstage packages [EXPERIMENTAL]');
+
+  script
+    .command('bundle')
+    .description('Bundle a package for deployment')
+    .option(...configOption)
+    .option('--role <name>', 'Run the command with an explicit package role')
+    .option(
+      '--skip-build-dependencies',
+      'Skip the automatic building of local dependencies',
+    )
+    .option(
+      '--stats',
+      'If bundle stats are available, write them to the output directory',
+    )
+    .action(lazy(() => import('./bundle').then(m => m.command)));
+
+  script
+    .command('start')
+    .description('Start a package for local development')
+    .option(...configOption)
+    .option('--role <name>', 'Run the command with an explicit package role')
+    .option('--check', 'Enable type checking and linting if available')
+    .option('--inspect', 'Enable debugger in Node.js environments')
+    .option(
+      '--inspect-brk',
+      'Enable debugger in Node.js environments, breaking before code starts',
+    )
+    .action(lazy(() => import('./start').then(m => m.command)));
+
+  const migrate = program
+    .command('migrate [command]', { hidden: true })
+    .description('Migration utilities [EXPERIMENTAL]');
+
+  migrate
+    .command('package-role')
     .description(`Add package role field to packages that don't have it`)
     .action(lazy(() => import('./migrate/packageRole').then(m => m.default)));
 
-  program
-    .command('migrate:package-scripts')
+  migrate
+    .command('package-scripts')
     .description('Set package scripts according to each package role')
     .action(
       lazy(() => import('./migrate/packageScripts').then(m => m.command)),

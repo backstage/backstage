@@ -36,9 +36,9 @@ export async function command() {
       const isBundled = bundledRoles.includes(roleInfo.role);
 
       const expectedScripts = {
-        ...(hasStart && { start: 'backstage-cli start' }),
+        ...(hasStart && { start: 'backstage-cli script start' }),
         ...(isBundled
-          ? { bundle: 'backstage-cli bundle' }
+          ? { bundle: 'backstage-cli script bundle' }
           : { build: 'backstage-cli build' }),
         lint: 'backstage-cli lint',
         test: 'backstage-cli test',
