@@ -37,6 +37,7 @@ import {
   EntityAzurePipelinesContent,
   EntityAzurePullRequestsContent,
   isAzureDevOpsAvailable,
+  isAzurePipelinesAvailable,
 } from '@backstage/plugin-azure-devops';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
@@ -202,7 +203,7 @@ export const cicdContent = (
       <EntityGithubActionsContent />
     </EntitySwitch.Case>
 
-    <EntitySwitch.Case if={isAzureDevOpsAvailable}>
+    <EntitySwitch.Case if={isAzurePipelinesAvailable}>
       <EntityAzurePipelinesContent defaultLimit={25} />
     </EntitySwitch.Case>
 

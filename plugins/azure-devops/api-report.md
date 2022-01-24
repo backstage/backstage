@@ -199,6 +199,11 @@ export enum FilterType {
 // @public (undocumented)
 export const isAzureDevOpsAvailable: (entity: Entity) => boolean;
 
+// Warning: (ae-missing-release-tag) "isAzurePipelinesAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const isAzurePipelinesAvailable: (entity: Entity) => boolean;
+
 // Warning: (ae-missing-release-tag) "PullRequestColumnConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

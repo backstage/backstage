@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-react';
-import React from 'react';
-import { useRepoBuilds } from '../../hooks/useRepoBuilds';
 import { BuildTable } from '../BuildTable/BuildTable';
+import React from 'react';
+import { getAnnotationFromEntity } from '../../utils/getAnnotationFromEntity';
+import { useBuildRuns } from '../../hooks/useBuildRuns';
+import { useEntity } from '@backstage/plugin-catalog-react';
 
 export const EntityPageAzurePipelines = ({
   defaultLimit,
@@ -25,7 +26,15 @@ export const EntityPageAzurePipelines = ({
   defaultLimit?: number;
 }) => {
   const { entity } = useEntity();
-  const { items, loading, error } = useRepoBuilds(entity, defaultLimit);
+
+  const { project, repo, definition } = getAnnotationFromEntity(entity);
+
+  const { items, loading, error } = useBuildRuns(
+    project,
+    defaultLimit,
+    repo,
+    definition,
+  );
 
   return <BuildTable items={items} loading={loading} error={error} />;
 };

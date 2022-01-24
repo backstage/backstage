@@ -49,6 +49,17 @@ spec:
   # ...
 ```
 
+#### Azure Pipelines Only
+
+If you are only using Azure Pipelines along with a different SCM tool then you can use the following two annotations to see Builds:
+
+```yaml
+dev.azure.com/project: <project-name>
+dev.azure.com/build-definition: <build-definition-name>
+```
+
+In this case `<project-name>` will be the name of your Team Project and `<build-definition-name>` will be the name of the Build Definition you would like to see Builds for. If the Build Definition name has spaces in it make sure to put quotes around it
+
 ### Azure Pipelines Component
 
 To get the Azure Pipelines component working you'll need to do the following two steps:
@@ -61,25 +72,47 @@ To get the Azure Pipelines component working you'll need to do the following two
    yarn add @backstage/plugin-azure-devops
    ```
 
-2. Second we need to add the `EntityAzurePipelinesContent` extension to the entity page in your app:
+2. Second we need to add the `EntityAzurePipelinesContent` extension to the entity page in your app. How to do this will depend on which annotation you are using in your entities:
 
-   ```tsx
-   // In packages/app/src/components/catalog/EntityPage.tsx
-   import {
-     EntityAzurePipelinesContent,
-     isAzureDevOpsAvailable,
-   } from '@backstage/plugin-azure-devops';
+   1. If you are using the `dev.azure.com/project-repo` annotation then you'll want to do the following:
 
-   // For example in the CI/CD section
-   const cicdContent = (
-     <EntitySwitch>
-       // ...
-       <EntitySwitch.Case if={isAzureDevOpsAvailable}>
-          <EntityAzurePipelinesContent defaultLimit={25} />
-       </EntitySwitch.Case>
-       // ...
-     </EntitySwitch>
-   ```
+      ```tsx
+      // In packages/app/src/components/catalog/EntityPage.tsx
+      import {
+        EntityAzurePipelinesContent,
+        isAzureDevOpsAvailable,
+      } from '@backstage/plugin-azure-devops';
+
+      // For example in the CI/CD section
+      const cicdContent = (
+        <EntitySwitch>
+          // ...
+          <EntitySwitch.Case if={isAzureDevOpsAvailable}>
+              <EntityAzurePipelinesContent defaultLimit={25} />
+          </EntitySwitch.Case>
+          // ...
+        </EntitySwitch>
+      ```
+
+   2. If you are using the ``dev.azure.com/project` and `dev.azure.com/build-definition` annotations then you'll want to do this:
+
+      ```tsx
+      // In packages/app/src/components/catalog/EntityPage.tsx
+      import {
+        EntityAzurePipelinesContent,
+        isAzurePipelinesAvailable,
+      } from '@backstage/plugin-azure-devops';
+
+      // For example in the CI/CD section
+      const cicdContent = (
+        <EntitySwitch>
+          // ...
+          <EntitySwitch.Case if={isAzurePipelinesAvailable}>
+            <EntityAzurePipelinesContent defaultLimit={25} />
+          </EntitySwitch.Case>
+          // ...
+        </EntitySwitch>
+      ```
 
 **Notes:**
 

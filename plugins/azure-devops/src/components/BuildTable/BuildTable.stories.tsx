@@ -16,8 +16,8 @@
 
 import {
   BuildResult,
+  BuildRun,
   BuildStatus,
-  RepoBuild,
 } from '@backstage/plugin-azure-devops-common';
 
 import { BuildTable } from './BuildTable';
@@ -42,8 +42,8 @@ const buildStatuses: Array<[BuildStatus, BuildResult]> = [
   [BuildStatus.None, BuildResult.None], // Unknown
 ];
 
-const generateTestData = (rows = 10): RepoBuild[] => {
-  const repoBuilds: RepoBuild[] = [];
+const generateTestData = (rows = 10): BuildRun[] => {
+  const buildRuns: BuildRun[] = [];
 
   for (let i = 0; i < rows; i++) {
     const [status, result] = buildStatuses[i] ?? [
@@ -51,7 +51,7 @@ const generateTestData = (rows = 10): RepoBuild[] => {
       BuildResult.Succeeded,
     ];
 
-    repoBuilds.push({
+    buildRuns.push({
       id: rows - i + 12534,
       title: `backstage ci - 1.0.0-preview-${rows - i}`,
       status,
@@ -62,7 +62,7 @@ const generateTestData = (rows = 10): RepoBuild[] => {
     });
   }
 
-  return repoBuilds;
+  return buildRuns;
 };
 
 export const Default = () => (

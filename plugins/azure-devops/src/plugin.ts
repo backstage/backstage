@@ -15,6 +15,11 @@
  */
 
 import {
+  AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
+  AZURE_DEVOPS_PROJECT_ANNOTATION,
+  AZURE_DEVOPS_REPO_ANNOTATION,
+} from './constants';
+import {
   azurePipelinesEntityContentRouteRef,
   azurePullRequestDashboardRouteRef,
   azurePullRequestsEntityContentRouteRef,
@@ -27,13 +32,19 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
-import { AZURE_DEVOPS_ANNOTATION } from './constants';
 import { AzureDevOpsClient } from './api/AzureDevOpsClient';
 import { Entity } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from './api/AzureDevOpsApi';
 
 export const isAzureDevOpsAvailable = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_ANNOTATION]);
+  Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION]);
+
+export const isAzurePipelinesAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_REPO_ANNOTATION]) ||
+  (Boolean(entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_ANNOTATION]) &&
+    Boolean(
+      entity.metadata.annotations?.[AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION],
+    ));
 
 export const azureDevOpsPlugin = createPlugin({
   id: 'azureDevOps',
