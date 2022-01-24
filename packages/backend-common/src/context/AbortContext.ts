@@ -15,7 +15,7 @@
  */
 
 import { AbortController, AbortSignal } from 'node-abort-controller';
-import { Context, ContextDecorator } from './types';
+import { Context } from './types';
 
 /**
  * A context that implements various abort related functionality.
@@ -129,9 +129,5 @@ export class AbortContext implements Context {
 
   value<T = unknown>(key: string): T | undefined {
     return this.parent.value(key);
-  }
-
-  use(...items: ContextDecorator[]): Context {
-    return items.reduce((prev, curr) => curr(prev), this as Context);
   }
 }

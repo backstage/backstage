@@ -17,14 +17,6 @@
 import { AbortSignal } from 'node-abort-controller';
 
 /**
- * A function that accepts a context and produces a new, derived context from,
- * decorated with some specific behavior.
- *
- * @public
- */
-export type ContextDecorator = (ctx: Context) => Context;
-
-/**
  * A context that is meant to be passed as a ctx variable down the call chain,
  * to pass along scoped information and abort signals.
  *
@@ -50,16 +42,4 @@ export interface Context {
    * @returns The associated value, or undefined if not set
    */
   value<T = unknown>(key: string): T | undefined;
-
-  /**
-   * Decorates this context with one or more behaviors.
-   *
-   * @remarks
-   *
-   * The decorators are applied in the order that they are given.
-   *
-   * @param decorators - The decorators to apply
-   * @returns A derived context with the relevant behaviors
-   */
-  use(...decorators: ContextDecorator[]): Context;
 }

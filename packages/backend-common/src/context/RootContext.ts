@@ -14,21 +14,32 @@
  * limitations under the License.
  */
 
-import { AbortController } from 'node-abort-controller';
-import { Context, ContextDecorator } from './types';
+import { AbortSignal } from 'node-abort-controller';
+import { Context } from './types';
+
+/**
+ * Since the root context can never abort, and since nobody is every meant to
+ * dispatch events through it, we can use a static dummy instance for
+ * efficiency.
+ */
+const dummyAbortSignal: AbortSignal = Object.freeze({
+  aborted: false,
+  addEventListener() {},
+  removeEventListener() {},
+  dispatchEvent() {
+    return true;
+  },
+  onabort: null,
+});
 
 /**
  * An empty root context.
  */
 export class RootContext implements Context {
-  readonly abortSignal = new AbortController().signal;
+  readonly abortSignal = dummyAbortSignal;
   readonly deadline = undefined;
 
   value<T = unknown>(_key: string): T | undefined {
     return undefined;
-  }
-
-  use(...items: ContextDecorator[]): Context {
-    return items.reduce((prev, curr) => curr(prev), this as Context);
   }
 }

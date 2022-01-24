@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-import { Contexts } from './Contexts';
 import { RootContext } from './RootContext';
 
 describe('RootContext', () => {
   it('returns empty values', async () => {
     const ctx = new RootContext();
     expect(ctx.abortSignal).toBeDefined();
+    expect(ctx.abortSignal.aborted).toBe(false);
     expect(ctx.deadline).toBeUndefined();
     expect(ctx.value('a')).toBeUndefined();
-  });
-
-  it('can decorate', () => {
-    const parent = new RootContext();
-    const child = parent.use(
-      Contexts.setValue('a', 2),
-      Contexts.setValue('a', 3),
-    );
-    expect(child.value('a')).toBe(3);
   });
 });

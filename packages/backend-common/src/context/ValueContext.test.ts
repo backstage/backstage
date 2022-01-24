@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Contexts } from './Contexts';
 import { RootContext } from './RootContext';
 import { ValueContext } from './ValueContext';
 
@@ -41,15 +40,5 @@ describe('ValueContext', () => {
     expect(d.value('a')).toBe(3);
     expect(d.value('b')).toBe(4);
     expect(d.value('x')).toBe(2);
-  });
-
-  it('can decorate', () => {
-    const root = new RootContext();
-    const parent = ValueContext.forConstantValue(root, 'a', 1);
-    const child = parent.use(
-      Contexts.setValue('a', 2),
-      Contexts.setValue('a', 3),
-    );
-    expect(child.value('a')).toBe(3);
   });
 });
