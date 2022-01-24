@@ -32,6 +32,7 @@ import {
   SearchResult,
   SearchResultSet,
 } from '@backstage/search-common';
+import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 
 export function decodePageCursor(pageCursor?: string): { page: number } {
@@ -63,15 +64,18 @@ export type AuthorizedSearchEngineConfig = {
 };
 
 export class AuthorizedSearchEngine implements SearchEngine {
-  private readonly config: AuthorizedSearchEngineConfig;
+  private readonly pageSize = 25;
+  private readonly queryLatencyBudgetMs: number;
 
   constructor(
     private readonly searchEngine: SearchEngine,
     private readonly types: Record<string, DocumentTypeInfo>,
     private readonly permissions: PermissionAuthorizer,
-    config?: Partial<AuthorizedSearchEngineConfig>,
+    config: Config,
   ) {
-    this.config = { queryLatencyBudgetMs: 1000, pageSize: 25, ...config };
+    this.queryLatencyBudgetMs =
+      config.getOptionalNumber('search.permissions.queryLatencyBudgetMs') ??
+      1000;
   }
 
   setTranslator(translator: QueryTranslator): void {
@@ -134,7 +138,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
     }
 
     const { page } = decodePageCursor(query.pageCursor);
-    const targetResults = (page + 1) * this.config.pageSize;
+    const targetResults = (page + 1) * this.pageSize;
 
     let filteredResults: SearchResult[] = [];
     let nextPageCursor: string | undefined;
@@ -152,7 +156,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
       nextPageCursor = nextPage.nextPageCursor;
       latencyBudgetExhausted =
-        Date.now() - queryStartTime > this.config.queryLatencyBudgetMs;
+        Date.now() - queryStartTime > this.queryLatencyBudgetMs;
     } while (
       nextPageCursor &&
       filteredResults.length < targetResults &&
@@ -161,8 +165,8 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
     return {
       results: filteredResults.slice(
-        page * this.config.pageSize,
-        (page + 1) * this.config.pageSize,
+        page * this.pageSize,
+        (page + 1) * this.pageSize,
       ),
       previousPageCursor:
         page === 0 ? undefined : encodePageCursor({ page: page - 1 }),

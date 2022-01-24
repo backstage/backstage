@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { ConfigReader } from '@backstage/config';
 import {
   AuthorizeDecision,
   AuthorizeResult,
@@ -91,6 +93,7 @@ describe('AuthorizedSearchEngine', () => {
     searchEngine,
     defaultTypes,
     permissionAuthorizer,
+    new ConfigReader({}),
   );
 
   const options = { token: 'token' };
@@ -201,7 +204,6 @@ describe('AuthorizedSearchEngine', () => {
 
     const userToBeReturned = 8;
 
-    // TODO(vinzscam): I am not sure if such authorizer makes sense
     mockedAuthorize.mockImplementation(async queries =>
       queries.map(query => {
         if (
@@ -217,11 +219,7 @@ describe('AuthorizedSearchEngine', () => {
           }
           return {
             result: AuthorizeResult.CONDITIONAL,
-            // TODO(vinzscam): is something like this allowed?
-            // I guess NO, but I am not sure.
-            // if yes, who is responsible for evaluating this?
-            conditions: { not: { rule: 'ok', params: [] } },
-          };
+          } as AuthorizeDecision;
         }
 
         return {
@@ -246,7 +244,6 @@ describe('AuthorizedSearchEngine', () => {
         if (query.resourceRef) {
           return { result: AuthorizeResult.ALLOW };
         }
-        // TODO(vinzscam): again, not sure about this
         return { result: AuthorizeResult.CONDITIONAL } as AuthorizeDecision;
       }),
     );
@@ -255,17 +252,23 @@ describe('AuthorizedSearchEngine', () => {
     const templatesWithAuth = generateSampleResults(typeTemplates, true);
     const servicesWithAuth = generateSampleResults(typeServices, true);
 
+    const allDocuments = [
+      ...usersWithAuth,
+      ...templatesWithAuth,
+      ...servicesWithAuth,
+    ].sort(() => Math.floor(Math.random() * 3 - 1));
+
     mockedQuery
       .mockImplementationOnce(async () => ({
-        results: usersWithAuth,
+        results: allDocuments.slice(0, 10),
         nextPageCursor: encodePageCursor({ page: 1 }),
       }))
       .mockImplementationOnce(async () => ({
-        results: templatesWithAuth,
+        results: allDocuments.slice(10, 20),
         nextPageCursor: encodePageCursor({ page: 2 }),
       }))
       .mockImplementationOnce(async () => ({
-        results: servicesWithAuth,
+        results: allDocuments.slice(20, 30),
       }));
 
     const result = await authorizedSearchEngine.query({ term: '' }, options);
@@ -287,11 +290,7 @@ describe('AuthorizedSearchEngine', () => {
       { token: 'token' },
     );
 
-    const expectedResult = [
-      ...usersWithAuth,
-      ...templatesWithAuth,
-      ...servicesWithAuth,
-    ].slice(0, 25);
+    const expectedResult = allDocuments.slice(0, 25);
 
     const expectedFirstRequestCursor = 'MQ==';
     expect(result).toEqual({
@@ -306,7 +305,6 @@ describe('AuthorizedSearchEngine', () => {
         if (query.resourceRef) {
           return { result: AuthorizeResult.ALLOW };
         }
-        // TODO(vinzscam): again, not sure about this
         return { result: AuthorizeResult.CONDITIONAL } as AuthorizeDecision;
       }),
     );

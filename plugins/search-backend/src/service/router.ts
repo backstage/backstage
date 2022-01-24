@@ -68,11 +68,7 @@ export async function createRouter(
   });
 
   const engine = config.getOptionalBoolean('permission.enabled')
-    ? new AuthorizedSearchEngine(inputEngine, types, permissions, {
-        queryLatencyBudgetMs: config.getOptionalNumber(
-          'search.permissions.queryLatencyBudgetMs',
-        ),
-      })
+    ? new AuthorizedSearchEngine(inputEngine, types, permissions, config)
     : inputEngine;
 
   const filterResultSet = ({ results, ...resultSet }: SearchResultSet) => ({
