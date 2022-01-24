@@ -147,14 +147,14 @@ export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
 }
 
-// @public
+// @alpha
 export interface Context {
   readonly abortSignal: AbortSignal_2;
   readonly deadline: Date | undefined;
   value<T = unknown>(key: string): T | undefined;
 }
 
-// @public
+// @alpha
 export class Contexts {
   static root(): Context;
   static withAbort(

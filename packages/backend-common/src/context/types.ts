@@ -20,7 +20,7 @@ import { AbortSignal } from 'node-abort-controller';
  * A context that is meant to be passed as a ctx variable down the call chain,
  * to pass along scoped information and abort signals.
  *
- * @public
+ * @alpha
  */
 export interface Context {
   /**

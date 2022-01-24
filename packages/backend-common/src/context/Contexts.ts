@@ -24,7 +24,7 @@ import { ValueContext } from './ValueContext';
 /**
  * Common context decorators.
  *
- * @public
+ * @alpha
  */
 export class Contexts {
   /**
