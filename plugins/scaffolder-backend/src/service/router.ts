@@ -29,7 +29,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
-import { CatalogEntityClient } from '../lib/catalog';
+import { CatalogEntityClient, TemplateFilter } from '../lib';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
@@ -57,6 +57,7 @@ export interface RouterOptions {
   taskWorkers?: number;
   containerRunner?: ContainerRunner;
   taskBroker?: TaskBroker;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }
 
 function isSupportedTemplate(
@@ -83,6 +84,7 @@ export async function createRouter(
     actions,
     containerRunner,
     taskWorkers,
+    additionalTemplateFilters,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -110,6 +112,7 @@ export async function createRouter(
       integrations,
       logger,
       workingDirectory,
+      additionalTemplateFilters,
     });
     workers.push(worker);
   }
@@ -122,6 +125,7 @@ export async function createRouter(
         containerRunner,
         reader,
         config,
+        additionalTemplateFilters,
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));

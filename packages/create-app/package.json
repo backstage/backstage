@@ -63,6 +63,7 @@
     "@backstage/plugin-auth-backend": "",
     "@backstage/plugin-catalog": "",
     "@backstage/plugin-catalog-backend": "",
+    "@backstage/plugin-catalog-graph": "",
     "@backstage/plugin-catalog-import": "",
     "@backstage/plugin-explore": "",
     "@backstage/plugin-github-actions": "",

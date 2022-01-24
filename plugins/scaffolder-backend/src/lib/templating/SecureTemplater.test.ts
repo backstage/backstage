@@ -99,6 +99,52 @@ describe('SecureTemplater', () => {
     ]);
   });
 
+  it('should make additional filters available when requested', async () => {
+    const mockFilter1 = jest.fn(() => 'filtered text');
+    const mockFilter2 = jest.fn((var1, var2) => `${var1} ${var2}`);
+    const mockFilter3 = jest.fn((var1, var2) => ({ var1, var2 }));
+    const renderWith = await SecureTemplater.loadRenderer({
+      additionalTemplateFilters: { mockFilter1, mockFilter2, mockFilter3 },
+    });
+    const renderWithout = await SecureTemplater.loadRenderer();
+
+    const ctx = { inputValue: 'the input value' };
+
+    expect(renderWith('${{ inputValue | mockFilter1 }}', ctx)).toBe(
+      'filtered text',
+    );
+    expect(
+      renderWith('${{ inputValue | mockFilter2("extra arg") }}', ctx),
+    ).toBe('the input value extra arg');
+    expect(
+      renderWith(
+        '${{ inputValue | mockFilter3("another extra arg") | dump }}',
+        ctx,
+      ),
+    ).toBe(
+      JSON.stringify({
+        var1: 'the input value',
+        var2: 'another extra arg',
+      }),
+    );
+
+    expect(() => renderWithout('${{ inputValue | mockFilter1 }}', ctx)).toThrow(
+      /Error: filter not found: mockFilter1/,
+    );
+    expect(() =>
+      renderWithout('${{ inputValue | mockFilter2("extra arg") }}', ctx),
+    ).toThrow(/Error: filter not found: mockFilter2/);
+    expect(() =>
+      renderWithout('${{ inputValue | mockFilter3("extra arg") }}', ctx),
+    ).toThrow(/Error: filter not found: mockFilter3/);
+
+    expect(mockFilter1.mock.calls).toEqual([['the input value']]);
+    expect(mockFilter2.mock.calls).toEqual([['the input value', 'extra arg']]);
+    expect(mockFilter3.mock.calls).toEqual([
+      ['the input value', 'another extra arg'],
+    ]);
+  });
+
   it('should not allow helpers to be rewritten', async () => {
     const render = await SecureTemplater.loadRenderer({
       parseRepoUrl: () => ({

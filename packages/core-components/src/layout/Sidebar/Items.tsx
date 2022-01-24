@@ -284,6 +284,8 @@ function isButtonItem(
   return (props as SidebarItemLinkProps).to === undefined;
 }
 
+const sidebarSubmenuType = React.createElement(SidebarSubmenu).type;
+
 // TODO(Rugvip): Remove this once NavLink is updated in react-router-dom.
 //               This is needed because react-router doesn't handle the path comparison
 //               properly yet, matching for example /foobar with /foo.
@@ -486,7 +488,11 @@ const SidebarItemWithSubmenu = ({
 export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   // Filter children for SidebarSubmenu components
   const [submenu] = useElementFilter(props.children, elements =>
-    elements.getElements().filter(child => child.type === SidebarSubmenu),
+    // Directly comparing child.type with SidebarSubmenu will not work with in
+    // combination with react-hot-loader
+    //
+    // https://github.com/gaearon/react-hot-loader/issues/304#issuecomment-456569720
+    elements.getElements().filter(child => child.type === sidebarSubmenuType),
   );
 
   if (submenu) {

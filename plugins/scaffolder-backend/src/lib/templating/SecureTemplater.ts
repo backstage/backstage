@@ -17,8 +17,10 @@
 import { VM } from 'vm2';
 import { resolvePackagePath } from '@backstage/backend-common';
 import fs from 'fs-extra';
+import { JsonValue } from '@backstage/types';
 import { RepoSpec } from '../../scaffolder/actions/builtin/publish/util';
 
+// language=JavaScript
 const mkScript = (nunjucksSource: string) => `
 const { render, renderCompat } = (() => {
   const module = {};
@@ -56,6 +58,12 @@ const { render, renderCompat } = (() => {
     });
   }
 
+  if (typeof additionalTemplateFilters !== 'undefined') {
+    for (const [filterName, filterFn] of Object.entries(additionalTemplateFilters)) {
+      env.addFilter(filterName, (...args) => JSON.parse(filterFn(...args)));
+    }
+  }
+
   let uninstallCompat = undefined;
 
   function render(str, values) {
@@ -87,12 +95,17 @@ const { render, renderCompat } = (() => {
 })();
 `;
 
+export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+
 export interface SecureTemplaterOptions {
   /* Optional implementation of the parseRepoUrl filter */
   parseRepoUrl?(repoUrl: string): RepoSpec;
 
   /* Enables jinja compatibility and the "jsonify" filter */
   cookiecutterCompat?: boolean;
+
+  /* Extra user-provided nunjucks filters */
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }
 
 export type SecureTemplateRenderer = (
@@ -102,13 +115,23 @@ export type SecureTemplateRenderer = (
 
 export class SecureTemplater {
   static async loadRenderer(options: SecureTemplaterOptions = {}) {
-    const { parseRepoUrl, cookiecutterCompat } = options;
-    let sandbox = undefined;
+    const { parseRepoUrl, cookiecutterCompat, additionalTemplateFilters } =
+      options;
+    const sandbox: Record<string, any> = {};
 
     if (parseRepoUrl) {
-      sandbox = {
-        parseRepoUrl: (url: string) => JSON.stringify(parseRepoUrl(url)),
-      };
+      sandbox.parseRepoUrl = (url: string) => JSON.stringify(parseRepoUrl(url));
+    }
+
+    if (additionalTemplateFilters) {
+      sandbox.additionalTemplateFilters = Object.fromEntries(
+        Object.entries(additionalTemplateFilters)
+          .filter(([_, filterFunction]) => !!filterFunction)
+          .map(([filterName, filterFunction]) => [
+            filterName,
+            (...args: JsonValue[]) => JSON.stringify(filterFunction(...args)),
+          ]),
+      );
     }
 
     const vm = new VM({ sandbox });

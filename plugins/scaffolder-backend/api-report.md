@@ -76,6 +76,7 @@ export const createBuiltinActions: (options: {
   catalogClient: CatalogApi;
   containerRunner?: ContainerRunner;
   config: Config;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }) => TemplateAction<any>[];
 
 // Warning: (ae-missing-release-tag) "createCatalogRegisterAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -112,6 +113,7 @@ export function createFetchPlainAction(options: {
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }): TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createFilesystemDeleteAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -219,6 +221,7 @@ export type CreateWorkerOptions = {
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger_2;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 };
 
 // @public
@@ -303,6 +306,8 @@ export class OctokitProvider {
 export interface RouterOptions {
   // (undocumented)
   actions?: TemplateAction<any>[];
+  // (undocumented)
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
   // (undocumented)
   catalogClient: CatalogApi;
   // (undocumented)
@@ -544,6 +549,11 @@ export class TemplateActionRegistry {
     action: TemplateAction<Parameters>,
   ): void;
 }
+
+// Warning: (ae-missing-release-tag) "TemplateFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 
 export { TemplateMetadata };
 ```

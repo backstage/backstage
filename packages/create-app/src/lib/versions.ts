@@ -51,6 +51,7 @@ import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/p
 import { version as pluginCatalog } from '../../../../plugins/catalog/package.json';
 import { version as pluginCatalogReact } from '../../../../plugins/catalog-react/package.json';
 import { version as pluginCatalogBackend } from '../../../../plugins/catalog-backend/package.json';
+import { version as pluginCatalogGraph } from '../../../../plugins/catalog-graph/package.json';
 import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
 import { version as pluginCircleci } from '../../../../plugins/circleci/package.json';
 import { version as pluginExplore } from '../../../../plugins/explore/package.json';
@@ -90,6 +91,7 @@ export const packageVersions = {
   '@backstage/plugin-catalog': pluginCatalog,
   '@backstage/plugin-catalog-react': pluginCatalogReact,
   '@backstage/plugin-catalog-backend': pluginCatalogBackend,
+  '@backstage/plugin-catalog-graph': pluginCatalogGraph,
   '@backstage/plugin-catalog-import': pluginCatalogImport,
   '@backstage/plugin-circleci': pluginCircleci,
   '@backstage/plugin-explore': pluginExplore,

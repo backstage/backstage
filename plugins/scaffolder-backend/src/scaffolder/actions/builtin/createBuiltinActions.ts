@@ -46,6 +46,7 @@ import {
   createGithubActionsDispatchAction,
   createGithubWebhookAction,
 } from './github';
+import { TemplateFilter } from '../../../lib';
 
 export const createBuiltinActions = (options: {
   reader: UrlReader;
@@ -53,9 +54,16 @@ export const createBuiltinActions = (options: {
   catalogClient: CatalogApi;
   containerRunner?: ContainerRunner;
   config: Config;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }) => {
-  const { reader, integrations, containerRunner, catalogClient, config } =
-    options;
+  const {
+    reader,
+    integrations,
+    containerRunner,
+    catalogClient,
+    config,
+    additionalTemplateFilters,
+  } = options;
   const githubCredentialsProvider: GithubCredentialsProvider =
     DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
@@ -67,6 +75,7 @@ export const createBuiltinActions = (options: {
     createFetchTemplateAction({
       integrations,
       reader,
+      additionalTemplateFilters,
     }),
     createPublishGithubAction({
       integrations,
