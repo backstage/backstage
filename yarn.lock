@@ -2121,13 +2121,25 @@
     query-string "^7.0.0"
     xcase "^2.0.1"
 
-"@gitbeaker/node@^34.6.0":
-  version "34.6.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-34.6.0.tgz#104f122433b65ceb45b0e645001d15cbcc9b1280"
-  integrity sha512-gVV4Wuev43Jbyoy1fszC885+bkvWH4zWiUhtIu0PSAm628j/OxO7idLIqUEMV0hDf6wm/PE/vOSP6PhjE0N+fA==
+"@gitbeaker/core@^35.1.0":
+  version "35.1.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-35.1.0.tgz#57f294886451b5ab2bccf0fc5fd8f6507473cd3a"
+  integrity sha512-DM9w3wgrS8GoXMLJb0DL2VSxTvP3yoaGDfX2d8n3wMGSjZbCknh3YnbVG/OfnaPbh9PH71kGll3SY5rJgz7XJg==
   dependencies:
-    "@gitbeaker/core" "^34.6.0"
-    "@gitbeaker/requester-utils" "^34.6.0"
+    "@gitbeaker/requester-utils" "^35.1.0"
+    form-data "^4.0.0"
+    li "^1.3.0"
+    mime "^3.0.0"
+    query-string "^7.0.0"
+    xcase "^2.0.1"
+
+"@gitbeaker/node@^35.1.0":
+  version "35.1.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-35.1.0.tgz#a3b2d96534b54d8e3a3c8130da82ebc8802257d8"
+  integrity sha512-t0lXqSuY93jVffo6WMeo4tvZtkMQXPKuGb1qNh3HOuW4+KyEqmrdQnorGyyRYH7uRTmQeHEe33BL1Ttc5F5YrA==
+  dependencies:
+    "@gitbeaker/core" "^35.1.0"
+    "@gitbeaker/requester-utils" "^35.1.0"
     delay "^5.0.0"
     got "^11.8.2"
     xcase "^2.0.1"
@@ -2136,6 +2148,15 @@
   version "34.6.0"
   resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-34.6.0.tgz#4489009b759ca6f9a83f244453f4f610f1ac7349"
   integrity sha512-H8utxbSP1kEdX0KcyVYrTDTT0A3UcPwrIV1ahyufX9ZLybYSUsA56B8Wx5kJSbWGFT1ffu2f8H2YDMwNCKKsBg==
+  dependencies:
+    form-data "^4.0.0"
+    qs "^6.10.1"
+    xcase "^2.0.1"
+
+"@gitbeaker/requester-utils@^35.1.0":
+  version "35.1.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-35.1.0.tgz#98c049d6b4e3f5ce222d7376b605e15c59d7bc93"
+  integrity sha512-00aQYCxs3wBHrD5HGWh0l1FRsX1NYJ1GEq4Reyo1NpVgjwzO/T1jjMFy3jikjJ+UGeg0sfqV9h91mwtCQ4SmRA==
   dependencies:
     form-data "^4.0.0"
     qs "^6.10.1"
