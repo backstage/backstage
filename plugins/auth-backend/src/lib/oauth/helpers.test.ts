@@ -15,7 +15,12 @@
  */
 
 import express from 'express';
-import { verifyNonce, encodeState, readState } from './helpers';
+import {
+  verifyNonce,
+  encodeState,
+  readState,
+  getCookieConfig,
+} from './helpers';
 
 describe('OAuthProvider Utils', () => {
   describe('encodeState', () => {
@@ -102,6 +107,33 @@ describe('OAuthProvider Utils', () => {
       expect(() => {
         verifyNonce(mockRequest, 'providera');
       }).not.toThrow();
+    });
+  });
+
+  describe('getCookieConfig', () => {
+    it('should set the correct domain and path for a base url', () => {
+      const mockAuthUrl = new URL('http://domain.org/auth');
+      expect(getCookieConfig(mockAuthUrl, 'test-provider')).toMatchObject({
+        cookieDomain: 'domain.org',
+        cookiePath: '/auth/test-provider',
+      });
+    });
+
+    it('should set the correct domain and path for a url containing a frame handler', () => {
+      const mockAuthUrl = new URL(
+        'http://domain.org/auth/test-provider/handler/frame',
+      );
+      expect(getCookieConfig(mockAuthUrl, 'test-provider')).toMatchObject({
+        cookieDomain: 'domain.org',
+        cookiePath: '/auth/test-provider',
+      });
+    });
+
+    it('should set the secure flag if url is using https', () => {
+      const mockAuthUrl = new URL('https://domain.org/auth');
+      expect(getCookieConfig(mockAuthUrl, 'test-provider')).toMatchObject({
+        secure: true,
+      });
     });
   });
 });
