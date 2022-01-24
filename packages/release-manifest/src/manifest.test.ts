@@ -25,7 +25,7 @@ describe('Get Packages', () => {
 
   it('should return a list of packages in a release', async () => {
     worker.use(
-      rest.get('*/v1/releases/0.0.0', (_, res, ctx) =>
+      rest.get('*/v1/releases/0.0.0/manifest.json', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json({
@@ -33,7 +33,7 @@ describe('Get Packages', () => {
           }),
         ),
       ),
-      rest.get('*/v1/releases/999.0.1', (_, res, ctx) =>
+      rest.get('*/v1/releases/999.0.1/manifest.json', (_, res, ctx) =>
         res(ctx.status(404), ctx.json({})),
       ),
     );
