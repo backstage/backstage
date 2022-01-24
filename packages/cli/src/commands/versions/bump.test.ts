@@ -455,7 +455,10 @@ describe('createVersionFinder', () => {
         ...data,
       });
 
-    const versionFinder = createVersionFinder(tag, fetcher);
+    const versionFinder = createVersionFinder({
+      releaseLine: tag,
+      packageInfoFetcher: fetcher,
+    });
     let result;
     await withLogCollector(async () => {
       result = await versionFinder('@backstage/core');
