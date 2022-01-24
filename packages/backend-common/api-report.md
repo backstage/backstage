@@ -151,23 +151,23 @@ export interface ContainerRunner {
 export interface Context {
   readonly abortSignal: AbortSignal_2;
   readonly deadline: Date | undefined;
-  use(...decorators: ContextDecorator[]): Context;
   value<T = unknown>(key: string): T | undefined;
 }
 
 // @public
-export type ContextDecorator = (ctx: Context) => Context;
-
-// @public
 export class Contexts {
   static root(): Context;
-  static setAbort(source: AbortController_2 | AbortSignal_2): ContextDecorator;
-  static setTimeoutDuration(timeout: Duration): ContextDecorator;
-  static setTimeoutMillis(timeout: number): ContextDecorator;
-  static setValue(
+  static withAbort(
+    parentCtx: Context,
+    source: AbortController_2 | AbortSignal_2,
+  ): Context;
+  static withTimeoutDuration(parentCtx: Context, timeout: Duration): Context;
+  static withTimeoutMillis(parentCtx: Context, timeout: number): Context;
+  static withValue(
+    parentCtx: Context,
     key: string,
     value: unknown | ((previous: unknown | undefined) => unknown),
-  ): ContextDecorator;
+  ): Context;
 }
 
 // @public @deprecated

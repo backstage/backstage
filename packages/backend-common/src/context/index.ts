@@ -15,4 +15,4 @@
  */
 
 export { Contexts } from './Contexts';
-export type { Context, ContextDecorator } from './types';
+export type { Context } from './types';

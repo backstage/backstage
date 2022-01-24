@@ -35,7 +35,7 @@ describe('Contexts', () => {
     it('works for controllers', () => {
       const controller = new AbortController();
       const parent = Contexts.root();
-      const child = parent.use(Contexts.setAbort(controller));
+      const child = Contexts.withAbort(parent, controller);
       expect(child.abortSignal.aborted).toBe(false);
       controller.abort();
       expect(child.abortSignal.aborted).toBe(true);
@@ -44,7 +44,7 @@ describe('Contexts', () => {
     it('works for signals', () => {
       const controller = new AbortController();
       const parent = Contexts.root();
-      const child = parent.use(Contexts.setAbort(controller.signal));
+      const child = Contexts.withAbort(parent, controller.signal);
       expect(child.abortSignal.aborted).toBe(false);
       controller.abort();
       expect(child.abortSignal.aborted).toBe(true);
@@ -55,8 +55,9 @@ describe('Contexts', () => {
     it('works', () => {
       jest.useFakeTimers();
       const parent = Contexts.root();
-      const child = parent.use(
-        Contexts.setTimeoutDuration(Duration.fromMillis(200)),
+      const child = Contexts.withTimeoutDuration(
+        parent,
+        Duration.fromMillis(200),
       );
       expect(child.abortSignal.aborted).toBe(false);
       jest.advanceTimersByTime(100);
@@ -70,7 +71,7 @@ describe('Contexts', () => {
     it('works', () => {
       jest.useFakeTimers();
       const parent = Contexts.root();
-      const child = parent.use(Contexts.setTimeoutMillis(200));
+      const child = Contexts.withTimeoutMillis(parent, 200);
       expect(child.abortSignal.aborted).toBe(false);
       jest.advanceTimersByTime(100);
       expect(child.abortSignal.aborted).toBe(false);
@@ -82,7 +83,7 @@ describe('Contexts', () => {
   describe('setValue', () => {
     it('works', () => {
       const parent = Contexts.root();
-      const child = parent.use(Contexts.setValue('k', 'v'));
+      const child = Contexts.withValue(parent, 'k', 'v');
       expect(child.value('k')).toBe('v');
     });
   });

@@ -18,7 +18,7 @@ import { Duration } from 'luxon';
 import { AbortController, AbortSignal } from 'node-abort-controller';
 import { AbortContext } from './AbortContext';
 import { RootContext } from './RootContext';
-import { Context, ContextDecorator } from './types';
+import { Context } from './types';
 import { ValueContext } from './ValueContext';
 
 /**
@@ -51,15 +51,18 @@ export class Contexts {
    * If the given source was already aborted, then a new already-aborted context
    * is returned.
    *
+   * @param parentCtx - A parent context that shall be used as a base
    * @param source - An abort controller or signal that you intend to perhaps
    *                 trigger at some later point in time.
-   * @returns A decorator that can be passed to {@link Context.use}
+   * @returns A new {@link Context}
    */
-  static setAbort(source: AbortController | AbortSignal): ContextDecorator {
-    return ctx =>
-      'aborted' in source
-        ? AbortContext.forSignal(ctx, source)
-        : AbortContext.forController(ctx, source);
+  static withAbort(
+    parentCtx: Context,
+    source: AbortController | AbortSignal,
+  ): Context {
+    return 'aborted' in source
+      ? AbortContext.forSignal(parentCtx, source)
+      : AbortContext.forController(parentCtx, source);
   }
 
   /**
@@ -67,13 +70,13 @@ export class Contexts {
    * any parent context signals, or when the given amount of time has passed.
    * This may affect the deadline.
    *
+   * @param parentCtx - A parent context that shall be used as a base
    * @param timeout - The duration of time, after which the derived context will
    *                  signal to abort.
-   * @returns A decorator that can be passed to {@link Context.use}
+   * @returns A new {@link Context}
    */
-  static setTimeoutDuration(timeout: Duration): ContextDecorator {
-    return ctx =>
-      AbortContext.forTimeoutMillis(ctx, timeout.as('milliseconds'));
+  static withTimeoutDuration(parentCtx: Context, timeout: Duration): Context {
+    return AbortContext.forTimeoutMillis(parentCtx, timeout.as('milliseconds'));
   }
 
   /**
@@ -81,30 +84,31 @@ export class Contexts {
    * any parent context signals, or when the given amount of time has passed.
    * This may affect the deadline.
    *
+   * @param parentCtx - A parent context that shall be used as a base
    * @param timeout - The number of milliseconds, after which the derived
    *                  context will signal to abort.
-   * @returns A decorator that can be passed to {@link Context.use}
+   * @returns A new {@link Context}
    */
-  static setTimeoutMillis(timeout: number): ContextDecorator {
-    return ctx => AbortContext.forTimeoutMillis(ctx, timeout);
+  static withTimeoutMillis(parentCtx: Context, timeout: number): Context {
+    return AbortContext.forTimeoutMillis(parentCtx, timeout);
   }
 
   /**
    * Creates a derived context, which has a specific key-value pair set as well
    * as all key-value pairs that were set in the original context.
    *
+   * @param parentCtx - A parent context that shall be used as a base
    * @param key - The key of the value to set
    * @param value - The value, or a function that accepts the previous value (or
    *                undefined if not set yet) and computes the new value
-   * @returns A decorator that can be passed to {@link Context.use}
+   * @returns A new {@link Context}
    */
-  static setValue(
+  static withValue(
+    parentCtx: Context,
     key: string,
     value: unknown | ((previous: unknown | undefined) => unknown),
-  ): ContextDecorator {
-    return ctx => {
-      const v = typeof value === 'function' ? value(ctx.value(key)) : value;
-      return ValueContext.forConstantValue(ctx, key, v);
-    };
+  ): Context {
+    const v = typeof value === 'function' ? value(parentCtx.value(key)) : value;
+    return ValueContext.forConstantValue(parentCtx, key, v);
   }
 }

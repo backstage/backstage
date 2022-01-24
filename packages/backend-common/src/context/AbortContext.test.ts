@@ -16,7 +16,6 @@
 
 import { AbortController } from 'node-abort-controller';
 import { AbortContext } from './AbortContext';
-import { Contexts } from './Contexts';
 import { RootContext } from './RootContext';
 
 describe('AbortContext', () => {
@@ -342,16 +341,5 @@ describe('AbortContext', () => {
       expect(child.abortSignal.aborted).toBe(true);
       expect(childListener).toBeCalledTimes(0);
     });
-  });
-
-  it('can decorate', () => {
-    const root = new RootContext();
-    const controller = new AbortController();
-    const parent = AbortContext.forSignal(root, controller.signal);
-    const child = parent.use(
-      Contexts.setValue('a', 2),
-      Contexts.setValue('a', 3),
-    );
-    expect(child.value('a')).toBe(3);
   });
 });
