@@ -21,9 +21,9 @@ const { getPackages } = require('@manypkg/get-packages');
 const path = require('path');
 
 async function main() {
-  const [version, outputPath] = process.argv.slice(2);
+  const [script, version, outputPath] = process.argv.slice(1);
   if (!version || !outputPath) {
-    throw new Error('Argument must be script.js <version> <outputPath>');
+    throw new Error(`Argument must be ${script} <version> <outputPath>`);
   }
 
   const manifestDir = path.resolve(outputPath, version);
