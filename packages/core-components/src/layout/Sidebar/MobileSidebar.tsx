@@ -102,6 +102,8 @@ const sortSidebarGroupsForPriority = (children: React.ReactElement[]) =>
     'desc',
   );
 
+const sidebarGroupType = React.createElement(SidebarGroup).type;
+
 const OverlayMenu = ({
   children,
   label = 'Menu',
@@ -168,9 +170,7 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
   //
   // https://github.com/gaearon/react-hot-loader/issues/304#issuecomment-456569720
   let sidebarGroups = useElementFilter(children, elements =>
-    elements
-      .getElements()
-      .filter(child => child.type === React.createElement(SidebarGroup).type),
+    elements.getElements().filter(child => child.type === sidebarGroupType),
   );
 
   if (!children) {
