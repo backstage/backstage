@@ -50,7 +50,7 @@ async function main() {
     .map(p => {
       return { name: p.packageJson.name, version: p.packageJson.version };
     });
-  await fs.mkdir(manifestDir);
+  await fs.ensureDir(manifestDir);
   await fs.writeJSON(
     path.resolve(manifestDir, 'manifest.json'),
     { releaseVersion: version, packages: versions },
@@ -58,12 +58,16 @@ async function main() {
   );
   const tag = version.includes('next') ? 'next' : 'main';
   const tagPath = path.resolve('versions', 'v1', 'tags', tag);
-  const currentTag = await fs.readJSON(path.resolve(tagPath, 'manifest.json'));
-  if (semver.gt(currentTag.releaseVersion, version)) {
-    console.log(
-      `Skipping update of ${tagPath} since current current ${tag} version is ${currentTag.releaseVersion}`,
+  if (await fs.pathExists(tagPath)) {
+    const currentTag = await fs.readJSON(
+      path.resolve(tagPath, 'manifest.json'),
     );
-    return;
+    if (semver.gt(currentTag.releaseVersion, version)) {
+      console.log(
+        `Skipping update of ${tagPath} since current current ${tag} version is ${currentTag.releaseVersion}`,
+      );
+      process.exit(1);
+    }
   }
   await fs.remove(tagPath);
   await fs.ensureSymlink(path.join('..', 'releases', version), tagPath);
