@@ -18,8 +18,9 @@ import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { getByVersion } from './manifest';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { getByReleaseLine } from '.';
 
-describe('Get Packages', () => {
+describe('getByVersion', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
@@ -48,6 +49,39 @@ describe('Get Packages', () => {
 
     await expect(getByVersion({ version: '999.0.1' })).rejects.toThrow(
       'No release found for 999.0.1 version',
+    );
+  });
+});
+
+describe('getByReleaseLine', () => {
+  const worker = setupServer();
+  setupRequestMockHandlers(worker);
+
+  it('should return a list of packages in a release', async () => {
+    worker.use(
+      rest.get('*/v1/tags/main/manifest.json', (_, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.json({
+            packages: [{ name: '@backstage/core', version: '1.2.3' }],
+          }),
+        ),
+      ),
+      rest.get('*/v1/tags/foo/manifest.json', (_, res, ctx) =>
+        res(ctx.status(404), ctx.json({})),
+      ),
+    );
+
+    const pkgs = await getByReleaseLine({ releaseLine: 'main' });
+    expect(pkgs.packages).toEqual([
+      {
+        name: '@backstage/core',
+        version: '1.2.3',
+      },
+    ]);
+
+    await expect(getByReleaseLine({ releaseLine: 'foo' })).rejects.toThrow(
+      "No 'foo' release line found",
     );
   });
 });
