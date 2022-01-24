@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { InputError } from '@backstage/errors';
 import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
-import { InputError } from '@backstage/errors';
-import { ScmIntegration, ScmIntegrationsGroup, ScmLocation } from './types';
+import { ScmUrl } from './ScmUrl';
+import { ScmIntegration, ScmIntegrationsGroup } from './types';
 
 /** Checks whether the given argument is a valid URL hostname */
 export function isValidHost(host: string): boolean {
@@ -113,7 +114,7 @@ export function defaultScmResolveUrl(options: {
  *
  * @public
  */
-export function defaultScmParseUrl(url: string): ScmLocation {
+export function defaultScmParseUrl(url: string): ScmUrl {
   try {
     const result = parseGitUrl(url);
     const raw = new URL(url);
@@ -123,20 +124,14 @@ export function defaultScmParseUrl(url: string): ScmLocation {
     }
 
     return {
-      url: {
-        host: raw.hostname,
-        root: `${raw.protocol}//${raw.host}`,
-      },
-      repository: {
-        organization: result.organization || undefined,
-        owner: result.owner,
-        name: result.name,
-      },
-      target: {
-        ref: result.ref || undefined,
-        path: ensureLeadingSlash(result.filepath),
-        pathType: result.filepathtype || undefined,
-      },
+      host: raw.hostname,
+      root: `${raw.protocol}//${raw.host}`,
+      organization: result.organization || undefined,
+      owner: result.owner,
+      name: result.name,
+      ref: result.ref || undefined,
+      path: ensureLeadingSlash(result.filepath),
+      pathType: result.filepathtype || undefined,
     };
   } catch (error) {
     throw new InputError(`Unparseable URL, ${error}`);
@@ -162,7 +157,7 @@ export function defaultScmParseUrl(url: string): ScmLocation {
  *
  * @public
  */
-export function parseShorthandScmUrl(url: string): ScmLocation | false {
+export function parseShorthandScmUrl(url: string): ScmUrl | false {
   try {
     // Support shorthands both with and without a protocol part
     const urlWithProtocol = url.includes('://') ? url : `https://${url}`;
@@ -192,20 +187,14 @@ export function parseShorthandScmUrl(url: string): ScmLocation | false {
     }
 
     return {
-      url: {
-        host: raw.hostname,
-        root: `${raw.protocol}//${raw.host}${raw.pathname}`.replace(/\/$/, ''),
-      },
-      repository: {
-        organization: organization || undefined,
-        owner,
-        name,
-      },
-      target: {
-        ref: ref || undefined,
-        path: ensureLeadingSlash(path),
-        pathType: pathType || undefined,
-      },
+      host: raw.hostname,
+      root: `${raw.protocol}//${raw.host}${raw.pathname}`.replace(/\/$/, ''),
+      organization: organization || undefined,
+      owner,
+      name,
+      ref: ref || undefined,
+      path: ensureLeadingSlash(path),
+      pathType: pathType || undefined,
     };
   } catch {
     return false;

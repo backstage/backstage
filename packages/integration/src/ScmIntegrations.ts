@@ -26,7 +26,8 @@ import {
   parseShorthandScmUrl,
 } from './helpers';
 import { ScmIntegrationRegistry } from './ScmIntegrationRegistry';
-import { ScmIntegration, ScmIntegrationsGroup, ScmLocation } from './types';
+import { ScmUrl } from './ScmUrl';
+import { ScmIntegration, ScmIntegrationsGroup } from './types';
 
 /**
  * The set of supported integrations.
@@ -123,11 +124,13 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
     return integration.resolveEditUrl(url);
   }
 
-  parseUrl(url: string): ScmLocation {
+  parseUrl(url: string): ScmUrl {
     const shorthand = parseShorthandScmUrl(url);
     if (shorthand) {
       return shorthand;
     }
+
+    // TODO: Call per-integration parseUrl when available
 
     return defaultScmParseUrl(url);
   }
