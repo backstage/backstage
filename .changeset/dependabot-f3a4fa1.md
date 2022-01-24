@@ -1,5 +1,4 @@
 ---
-'example-backend': patch
 '@backstage/plugin-scaffolder-backend': patch
 ---
 

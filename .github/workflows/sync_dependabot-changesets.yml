@@ -30,7 +30,9 @@ jobs:
               const names = [];
               for (const file of files) {
                 const data = JSON.parse(await fs.readFile(file, 'utf8'));
-                names.push(data.name);
+                if (!data.private) {
+                  names.push(data.name);
+                }
               }
               return names;
             }
@@ -60,12 +62,12 @@ jobs:
               .filter(file => file !== 'package.json') // skip root package.json
               .filter(file => file.includes('package.json'));
 
-            if (!files.length) {
-              console.log('No package.json changes, skipping');
+            const packageNames = await getPackagesNames(files);
+            if (!packageNames.length) {
+              console.log('No package.json changes to published packages, skipping');
               return;
             }
 
-            const packageNames = await getPackagesNames(files);
             const { stdout: shortHash } = await exec.getExecOutput('git rev-parse --short HEAD');
             const fileName = `.changeset/dependabot-${shortHash.trim()}.md`;
             const { stdout: commitMessage } = await exec.getExecOutput('git show --pretty=format:%s -s HEAD');
