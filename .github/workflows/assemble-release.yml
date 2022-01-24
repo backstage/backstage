@@ -1,0 +1,37 @@
+name: Assemble release and generate versions file
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number'
+        required: true
+jobs:
+  create-new-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout versions
+        uses: actions/checkout@v2
+        with:
+          repository: backstage/versions
+          path: versions
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+      - name: Configure Git
+        run: |
+          git config --global user.email noreply@backstage.io
+          git config --global user.name 'Github versions workflow'
+      - name: Create release
+        run: |
+          node scripts/assemble-manifest.js ${{ github.event.inputs.version }} versions/v1/releases
+          cd versions
+          if [[ "${{ github.event.inputs.version }}" == *"next"* ]]; then
+            echo Updating next tag
+            rm -f v1/tags/next && ln -s ../releases/${{ github.event.inputs.version }} v1/tags/next
+            else
+            echo Updating main tag
+            rm -f v1/tags/main && ln -s ../releases/${{ github.event.inputs.version }} v1/tags/main
+          fi
+          git add .
+          git commit -am "${{ github.event.inputs.version }}"
+          git push
