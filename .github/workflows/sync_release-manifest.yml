@@ -23,15 +23,8 @@ jobs:
           git config --global user.name 'Github versions workflow'
       - name: Create release
         run: |
-          node scripts/assemble-manifest.js ${{ github.event.inputs.version }} versions/v1/releases
+          node scripts/assemble-manifest.js ${{ github.event.inputs.version }}
           cd versions
-          if [[ "${{ github.event.inputs.version }}" == *"next"* ]]; then
-            echo Updating next tag
-            rm -f v1/tags/next && ln -s ../releases/${{ github.event.inputs.version }} v1/tags/next
-            else
-            echo Updating main tag
-            rm -f v1/tags/main && ln -s ../releases/${{ github.event.inputs.version }} v1/tags/main
-          fi
           git add .
           git commit -am "${{ github.event.inputs.version }}"
           git push

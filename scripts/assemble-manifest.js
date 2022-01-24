@@ -16,17 +16,21 @@
  * limitations under the License.
  */
 
+const semver = require('semver');
 const fs = require('fs-extra');
 const { getPackages } = require('@manypkg/get-packages');
 const path = require('path');
 
 async function main() {
-  const [script, version, outputPath] = process.argv.slice(1);
-  if (!version || !outputPath) {
-    throw new Error(`Argument must be ${script} <version> <outputPath>`);
+  const [script, version] = process.argv.slice(1);
+  if (!version) {
+    throw new Error(`Argument must be ${script} <version>`);
+  }
+  if (!semver.valid(version)) {
+    throw new Error(`version '${version}' must be a valid semver`);
   }
 
-  const manifestDir = path.resolve(outputPath, version);
+  const manifestDir = path.resolve('versions', 'v1', 'releases', version);
   if (await fs.pathExists(manifestDir)) {
     throw new Error(
       `Release manifest path for version ${version} already exists`,
@@ -49,9 +53,20 @@ async function main() {
   await fs.mkdir(manifestDir);
   await fs.writeJSON(
     path.resolve(manifestDir, 'manifest.json'),
-    { packages: versions },
+    { releaseVersion: version, packages: versions },
     { spaces: 2 },
   );
+  const tag = version.includes('next') ? 'next' : 'main';
+  const tagPath = path.resolve('versions', 'v1', 'tags', tag);
+  const currentTag = await fs.readJSON(path.resolve(tagPath, 'manifest.json'));
+  if (semver.gt(currentTag.releaseVersion, version)) {
+    console.log(
+      `Skipping update of ${tagPath} since current current ${tag} version is ${currentTag.releaseVersion}`,
+    );
+    return;
+  }
+  await fs.remove(tagPath);
+  await fs.ensureSymlink(path.join('..', 'releases', version), tagPath);
 }
 
 main().catch(error => {
