@@ -32,6 +32,7 @@ describe('AuthorizedSearchEngine', () => {
   const typeUsers = 'users';
   const typeTemplates = 'templates';
   const typeServices = 'services';
+  const typeGroups = 'groups';
 
   function generateSampleResults(type: string, withAuthorization?: boolean) {
     return Array(10)
@@ -52,9 +53,7 @@ describe('AuthorizedSearchEngine', () => {
 
   const results = allUsers.concat(allTemplates);
 
-  const mockedQuery: jest.MockedFunction<SearchEngine['query']> = jest
-    .fn()
-    .mockImplementation(async () => ({ results }));
+  const mockedQuery: jest.MockedFunction<SearchEngine['query']> = jest.fn();
 
   const searchEngine: SearchEngine = {
     setTranslator: () => {
@@ -87,6 +86,18 @@ describe('AuthorizedSearchEngine', () => {
         attributes: { action: 'read' },
       },
     },
+    [typeServices]: {
+      visibilityPermission: {
+        name: 'search.services.read',
+        attributes: { action: 'read' },
+      },
+    },
+    [typeGroups]: {
+      visibilityPermission: {
+        name: 'search.groups.read',
+        attributes: { action: 'read' },
+      },
+    },
   };
 
   const authorizedSearchEngine = new AuthorizedSearchEngine(
@@ -105,11 +116,12 @@ describe('AuthorizedSearchEngine', () => {
   };
 
   beforeEach(() => {
-    mockedQuery.mockClear();
+    mockedQuery.mockReset();
     mockedAuthorize.mockClear();
   });
 
   it('should forward the parameters correctly', async () => {
+    mockedQuery.mockImplementation(async () => ({ results }));
     mockedAuthorize.mockImplementation(allowAll);
     const filters = { just: 1, a: 2, filter: 3 };
     await authorizedSearchEngine.query(
@@ -127,15 +139,17 @@ describe('AuthorizedSearchEngine', () => {
   });
 
   it('should forward the default types if none are passed', async () => {
+    mockedQuery.mockImplementation(async () => ({ results }));
     mockedAuthorize.mockImplementation(allowAll);
     await authorizedSearchEngine.query({ term: '' }, options);
     expect(mockedQuery).toHaveBeenCalledWith(
-      { term: '', types: ['users', 'templates'] },
+      { term: '', types: ['users', 'templates', 'services', 'groups'] },
       { token: 'token' },
     );
   });
 
   it('should return all the results if all queries are allowed', async () => {
+    mockedQuery.mockImplementation(async () => ({ results }));
     mockedAuthorize.mockImplementation(allowAll);
 
     await expect(
@@ -145,6 +159,7 @@ describe('AuthorizedSearchEngine', () => {
   });
 
   it('should batch authorized requests', async () => {
+    mockedQuery.mockImplementation(async () => ({ results }));
     mockedAuthorize.mockImplementation(allowAll);
 
     await authorizedSearchEngine.query(
@@ -166,6 +181,7 @@ describe('AuthorizedSearchEngine', () => {
   });
 
   it('should skip sending request for types that are not allowed', async () => {
+    mockedQuery.mockImplementation(async () => ({ results }));
     mockedAuthorize.mockImplementation(async queries => {
       return queries.map(query => {
         if (
@@ -185,7 +201,7 @@ describe('AuthorizedSearchEngine', () => {
     await authorizedSearchEngine.query({ term: '' }, options);
 
     expect(mockedQuery).toHaveBeenCalledWith(
-      { term: '', types: ['templates'] },
+      { term: '', types: ['templates', 'services', 'groups'] },
       { token: 'token' },
     );
 
@@ -242,7 +258,9 @@ describe('AuthorizedSearchEngine', () => {
     mockedAuthorize.mockImplementation(async queries =>
       queries.map(query => {
         if (query.resourceRef) {
-          return { result: AuthorizeResult.ALLOW };
+          return {
+            result: AuthorizeResult.ALLOW,
+          };
         }
         return { result: AuthorizeResult.CONDITIONAL } as AuthorizeDecision;
       }),
@@ -256,7 +274,7 @@ describe('AuthorizedSearchEngine', () => {
       ...usersWithAuth,
       ...templatesWithAuth,
       ...servicesWithAuth,
-    ].sort(() => Math.floor(Math.random() * 3 - 1));
+    ];
 
     mockedQuery
       .mockImplementationOnce(async () => ({
@@ -271,26 +289,124 @@ describe('AuthorizedSearchEngine', () => {
         results: allDocuments.slice(20, 30),
       }));
 
-    const result = await authorizedSearchEngine.query({ term: '' }, options);
+    const result = await authorizedSearchEngine.query(
+      { term: '', types: ['users', 'templates', 'services'] },
+      options,
+    );
 
     expect(mockedQuery).toHaveBeenCalledTimes(3);
     expect(mockedQuery).toHaveBeenNthCalledWith(
       1,
-      { term: '', types: ['users', 'templates'] },
+      { term: '', types: ['users', 'templates', 'services'] },
       { token: 'token' },
     );
     expect(mockedQuery).toHaveBeenNthCalledWith(
       2,
-      { term: '', types: ['users', 'templates'], pageCursor: 'MQ==' },
+      {
+        term: '',
+        types: ['users', 'templates', 'services'],
+        pageCursor: 'MQ==',
+      },
       { token: 'token' },
     );
     expect(mockedQuery).toHaveBeenNthCalledWith(
       3,
-      { term: '', types: ['users', 'templates'], pageCursor: 'Mg==' },
+      {
+        term: '',
+        types: ['users', 'templates', 'services'],
+        pageCursor: 'Mg==',
+      },
       { token: 'token' },
     );
 
     const expectedResult = allDocuments.slice(0, 25);
+
+    const expectedFirstRequestCursor = 'MQ==';
+    expect(result).toEqual({
+      results: expectedResult,
+      nextPageCursor: expectedFirstRequestCursor,
+    });
+  });
+
+  it('should perform search until the target number of results is reached, excluding unauthorized results', async () => {
+    mockedAuthorize.mockImplementation(async queries =>
+      queries.map(query => {
+        if (query.resourceRef) {
+          return {
+            result:
+              query.permission.name === 'search.services.read'
+                ? AuthorizeResult.DENY
+                : AuthorizeResult.ALLOW,
+          };
+        }
+        return { result: AuthorizeResult.CONDITIONAL } as AuthorizeDecision;
+      }),
+    );
+
+    const usersWithAuth = generateSampleResults(typeUsers, true);
+    const templatesWithAuth = generateSampleResults(typeTemplates, true);
+    const servicesWithAuth = generateSampleResults(typeServices, true);
+    const groupsWithAuth = generateSampleResults(typeGroups, true);
+
+    const allDocuments = [
+      ...usersWithAuth,
+      ...templatesWithAuth,
+      ...servicesWithAuth,
+      ...groupsWithAuth,
+    ].sort(() => Math.floor(Math.random() * 3 - 1));
+
+    mockedQuery
+      .mockImplementationOnce(async () => ({
+        results: allDocuments.slice(0, 10),
+        nextPageCursor: encodePageCursor({ page: 1 }),
+      }))
+      .mockImplementationOnce(async () => ({
+        results: allDocuments.slice(10, 20),
+        nextPageCursor: encodePageCursor({ page: 2 }),
+      }))
+      .mockImplementationOnce(async () => ({
+        results: allDocuments.slice(20, 30),
+        nextPageCursor: encodePageCursor({ page: 3 }),
+      }))
+      .mockImplementationOnce(async () => ({
+        results: allDocuments.slice(30, 40),
+      }));
+
+    const result = await authorizedSearchEngine.query({ term: '' }, options);
+
+    // check if a fourth request is needed for retrieving all results
+    const fourthRequestNeeded =
+      allDocuments.slice(0, 30).filter(d => d.type !== typeServices).length <
+      25;
+
+    expect(mockedQuery).toHaveBeenCalledTimes(fourthRequestNeeded ? 4 : 3);
+    expect(mockedQuery).toHaveBeenNthCalledWith(
+      1,
+      { term: '', types: ['users', 'templates', 'services', 'groups'] },
+      { token: 'token' },
+    );
+    expect(mockedQuery).toHaveBeenNthCalledWith(
+      2,
+      {
+        term: '',
+        types: ['users', 'templates', 'services', 'groups'],
+        pageCursor: 'MQ==',
+      },
+      { token: 'token' },
+    );
+    expect(mockedQuery).toHaveBeenNthCalledWith(
+      3,
+      {
+        term: '',
+        types: ['users', 'templates', 'services', 'groups'],
+        pageCursor: 'Mg==',
+      },
+      { token: 'token' },
+    );
+
+    const expectedResult = allDocuments
+      .filter(d => d.type !== typeServices)
+      .slice(0, 25);
 
     const expectedFirstRequestCursor = 'MQ==';
     expect(result).toEqual({
@@ -329,23 +445,35 @@ describe('AuthorizedSearchEngine', () => {
     const startingFromCursor = encodePageCursor({ page: 1 });
 
     const result = await authorizedSearchEngine.query(
-      { term: '', pageCursor: startingFromCursor },
+      {
+        term: '',
+        pageCursor: startingFromCursor,
+        types: ['users', 'templates', 'services'],
+      },
       options,
     );
     expect(mockedQuery).toHaveBeenCalledTimes(3);
     expect(mockedQuery).toHaveBeenNthCalledWith(
       1,
-      { term: '', types: ['users', 'templates'] },
+      { term: '', types: ['users', 'templates', 'services'] },
       { token: 'token' },
     );
     expect(mockedQuery).toHaveBeenNthCalledWith(
       2,
-      { term: '', types: ['users', 'templates'], pageCursor: 'MQ==' },
+      {
+        term: '',
+        types: ['users', 'templates', 'services'],
+        pageCursor: 'MQ==',
+      },
       { token: 'token' },
     );
     expect(mockedQuery).toHaveBeenNthCalledWith(
       3,
-      { term: '', types: ['users', 'templates'], pageCursor: 'Mg==' },
+      {
+        term: '',
+        types: ['users', 'templates', 'services'],
+        pageCursor: 'Mg==',
+      },
       { token: 'token' },
     );
 
