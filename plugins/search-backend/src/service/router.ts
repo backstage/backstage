@@ -24,11 +24,8 @@ import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { IdentityClient } from '@backstage/plugin-auth-backend';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
-import { SearchResultSet } from '@backstage/search-common';
-import {
-  DocumentTypeInfo,
-  SearchEngine,
-} from '@backstage/plugin-search-backend-node';
+import { DocumentTypeInfo, SearchResultSet } from '@backstage/search-common';
+import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
 
 const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {

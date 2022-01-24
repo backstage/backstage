@@ -23,7 +23,7 @@
     "@backstage/backend-common": "^0.10.4",
     "@backstage/config": "^0.1.13",
     "@backstage/errors": "^0.2.0",
-    "@backstage/search-common": "^0.2.0",
+    "@backstage/search-common": "^0.2.1",
     "@backstage/plugin-auth-backend": "^0.7.0-next.0",
     "@backstage/plugin-permission-common": "^0.4.0-next.0",
     "@backstage/plugin-permission-node": "^0.4.0-next.0",

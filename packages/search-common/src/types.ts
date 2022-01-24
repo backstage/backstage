@@ -69,6 +69,19 @@ export interface IndexableDocument {
 }
 
 /**
+ * Information about a specific document type. Intended to be used in the
+ * {@link @backstage/search-backend-node#IndexBuilder} to collect information
+ * about the types stored in the index.
+ */
+export type DocumentTypeInfo = {
+  /**
+   * The {@link @backstage/plugin-permission-common#Permission} that controls
+   * visibility of resources associated with this collator's documents.
+   */
+  visibilityPermission?: Permission;
+};
+
+/**
  * Interface that must be implemented in order to expose new documents to
  * search.
  */
