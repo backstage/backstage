@@ -383,7 +383,7 @@ describe('OAuthAdapter', () => {
       expect.any(String),
       expect.objectContaining({
         domain: 'domain.org',
-        path: '/auth/test-provider',
+        path: '/auth/test-provider/handler',
         secure: false,
       }),
     );
@@ -423,7 +423,7 @@ describe('OAuthAdapter', () => {
       expect.any(String),
       expect.objectContaining({
         domain: 'authdomain.org',
-        path: '/auth/test-provider',
+        path: '/auth/test-provider/handler',
         secure: true,
       }),
     );

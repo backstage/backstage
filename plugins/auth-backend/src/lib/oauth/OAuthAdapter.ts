@@ -270,7 +270,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       secure: this.options.secure,
       sameSite: 'lax',
       domain: this.options.cookieDomain,
-      path: this.options.cookiePath,
+      path: `${this.options.cookiePath}/handler`,
       httpOnly: true,
     });
   };
@@ -281,7 +281,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       secure: this.options.secure,
       sameSite: 'lax',
       domain: this.options.cookieDomain,
-      path: this.options.cookiePath,
+      path: `${this.options.cookiePath}/handler`,
       httpOnly: true,
     });
   };
