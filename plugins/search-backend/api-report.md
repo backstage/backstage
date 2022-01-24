@@ -4,7 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { DocumentTypeInfo } from '@backstage/plugin-search-backend-node';
+import { DocumentTypeInfo } from '@backstage/search-common';
 import express from 'express';
 import { Logger as Logger_2 } from 'winston';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';

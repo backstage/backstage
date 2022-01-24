@@ -25,6 +25,13 @@ export interface DocumentDecorator {
   readonly types?: string[];
 }
 
+// Warning: (ae-missing-release-tag) "DocumentTypeInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type DocumentTypeInfo = {
+  visibilityPermission?: Permission;
+};
+
 // Warning: (ae-missing-release-tag) "IndexableDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public

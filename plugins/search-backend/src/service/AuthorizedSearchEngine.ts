@@ -23,6 +23,7 @@ import {
   PermissionAuthorizer,
 } from '@backstage/plugin-permission-common';
 import {
+  DocumentTypeInfo,
   IndexableDocument,
   QueryRequestOptions,
   QueryTranslator,
@@ -31,7 +32,6 @@ import {
   SearchResult,
   SearchResultSet,
 } from '@backstage/search-common';
-import { DocumentTypeInfo } from '@backstage/plugin-search-backend-node';
 import { Config } from '@backstage/config';
 
 export function decodePageCursor(pageCursor?: string): { page: number } {

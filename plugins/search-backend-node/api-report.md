@@ -5,21 +5,14 @@
 ```ts
 import { DocumentCollator } from '@backstage/search-common';
 import { DocumentDecorator } from '@backstage/search-common';
+import { DocumentTypeInfo } from '@backstage/search-common';
 import { IndexableDocument } from '@backstage/search-common';
 import { Logger as Logger_2 } from 'winston';
 import { default as lunr_2 } from 'lunr';
-import { Permission } from '@backstage/plugin-permission-common';
 import { QueryTranslator } from '@backstage/search-common';
 import { SearchEngine } from '@backstage/search-common';
 import { SearchQuery } from '@backstage/search-common';
 import { SearchResultSet } from '@backstage/search-common';
-
-// Warning: (ae-missing-release-tag) "DocumentTypeInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type DocumentTypeInfo = {
-  visibilityPermission?: Permission;
-};
 
 // Warning: (ae-missing-release-tag) "IndexBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

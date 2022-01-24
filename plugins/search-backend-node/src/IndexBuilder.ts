@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Permission } from '@backstage/plugin-permission-common';
 import {
   DocumentCollator,
   DocumentDecorator,
+  DocumentTypeInfo,
   IndexableDocument,
   SearchEngine,
 } from '@backstage/search-common';
@@ -36,14 +36,6 @@ interface CollatorEnvelope {
 type IndexBuilderOptions = {
   searchEngine: SearchEngine;
   logger: Logger;
-};
-
-export type DocumentTypeInfo = {
-  /**
-   * The {@link @backstage/plugin-permission-common#Permission} that controls
-   * visibility of resources associated with this collator's documents.
-   */
-  visibilityPermission?: Permission;
 };
 
 export class IndexBuilder {
