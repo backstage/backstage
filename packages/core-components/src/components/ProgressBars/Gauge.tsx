@@ -16,8 +16,9 @@
 
 import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { isNull } from 'lodash';
 import { Circle } from 'rc-progress';
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 
 /** @public */
 export type GaugeClassKey =
@@ -46,7 +47,7 @@ const useStyles = makeStyles<BackstageTheme>(
       fontSize: '100%',
       top: '50%',
       left: '50%',
-      transform: 'translate(-55%, -50%)',
+      transform: 'translate(-50%, -50%)',
       position: 'absolute',
       wordBreak: 'break-all',
       display: 'inline-block',
@@ -119,7 +120,8 @@ export const getProgressColor: GaugePropsGetColor = ({
  */
 
 export function Gauge(props: GaugeProps) {
-  const hoverRef = useRef<HTMLDivElement>(null);
+  // const hoverRef = useRef<HTMLDivElement>(null);
+  const [hoverRef, setHoverRef] = useState<HTMLDivElement | null>(null);
   const { getColor = getProgressColor } = props;
   const classes = useStyles(props);
   const { palette } = useTheme<BackstageTheme>();
@@ -131,13 +133,13 @@ export function Gauge(props: GaugeProps) {
   const asPercentage = fractional ? Math.round(value * max) : value;
   const asActual = max !== 100 ? Math.round(value) : asPercentage;
 
-  const [isHovering, setValue] = useState(false);
-  const handleMouseOver = () => setValue(true);
-  const handleMouseOut = () => setValue(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const handleMouseOver = () => setIsHovering(true);
+  const handleMouseOut = () => setIsHovering(false);
 
   useEffect(() => {
-    const node = hoverRef.current;
-    if (node) {
+    const node = hoverRef;
+    if (node && !isNull(isHovering)) {
       node.addEventListener('mouseenter', handleMouseOver);
       node.addEventListener('mouseleave', handleMouseOut);
 
@@ -147,12 +149,12 @@ export function Gauge(props: GaugeProps) {
       };
     }
     return () => {
-      setValue(false);
+      setIsHovering(false);
     };
   });
 
   return (
-    <div ref={hoverRef} className={classes.root}>
+    <div ref={setHoverRef} className={classes.root}>
       <Circle
         strokeLinecap="butt"
         percent={asPercentage}

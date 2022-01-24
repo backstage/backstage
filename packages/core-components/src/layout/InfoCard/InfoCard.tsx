@@ -56,7 +56,7 @@ const useStyles = makeStyles(
     headerAction: {},
     headerContent: {},
     subheader: {
-      float: 'left',
+      display: 'flex',
     },
   }),
   { name: 'BackstageInfoCard' },
@@ -203,7 +203,7 @@ export function InfoCard(props: Props): JSX.Element {
     return (
       <div className={classes.headerSubheader}>
         {subheader && <div className={classes.subheader}>{subheader}</div>}
-        {icon && icon}
+        {icon}
       </div>
     );
   };
