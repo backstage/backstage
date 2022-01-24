@@ -65,7 +65,8 @@ export function createGithubActionsDispatchAction(options: {
           workflowInputs: {
             title: 'Workflow Inputs',
             description:
-              'Inputs keys and values to send to GitHub Action configured on the workflow file. The maximum number of properties is 10. Any default properties configured in the workflow file will be used when inputs are omitted.',
+              'Inputs keys and values to send to GitHub Action configured on the workflow file. The maximum number of properties is 10. ',
+            type: 'object',
           },
         },
       },
