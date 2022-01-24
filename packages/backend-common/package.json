@@ -8,7 +8,8 @@
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "types": "dist/index.d.ts",
+    "alphaTypes": "dist/index.alpha.d.ts"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -21,7 +22,7 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "build": "backstage-cli build --outputs cjs,types",
+    "build": "backstage-cli build --experimental-type-build --outputs cjs,types",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
@@ -111,7 +112,8 @@
   },
   "files": [
     "dist",
-    "config.d.ts"
+    "config.d.ts",
+    "alpha"
   ],
   "configSchema": "config.d.ts"
 }
