@@ -49,7 +49,7 @@ export interface Context {
    * @param key - The key of the value to get
    * @returns The associated value, or undefined if not set
    */
-  value<T = unknown>(key: string | symbol): T | undefined;
+  value<T = unknown>(key: string): T | undefined;
 
   /**
    * Decorates this context with one or more behaviors.

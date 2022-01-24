@@ -127,7 +127,7 @@ export class AbortContext implements Context {
     readonly deadline: Date | undefined,
   ) {}
 
-  value<T = unknown>(key: string | symbol): T | undefined {
+  value<T = unknown>(key: string): T | undefined {
     return this.parent.value(key);
   }
 

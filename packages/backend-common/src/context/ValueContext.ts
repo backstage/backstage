@@ -22,17 +22,13 @@ import { Context, ContextDecorator } from './types';
  * parent.
  */
 export class ValueContext implements Context {
-  static forConstantValue(
-    ctx: Context,
-    key: string | symbol,
-    value: unknown,
-  ): Context {
+  static forConstantValue(ctx: Context, key: string, value: unknown): Context {
     return new ValueContext(ctx, key, value);
   }
 
   constructor(
     private readonly _parent: Context,
-    private readonly _key: string | symbol,
+    private readonly _key: string,
     private readonly _value: unknown,
   ) {}
 
@@ -44,7 +40,7 @@ export class ValueContext implements Context {
     return this._parent.deadline;
   }
 
-  value<T = unknown>(key: string | symbol): T | undefined {
+  value<T = unknown>(key: string): T | undefined {
     return key === this._key ? (this._value as T) : this._parent.value(key);
   }
 

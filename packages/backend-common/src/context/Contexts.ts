@@ -99,7 +99,7 @@ export class Contexts {
    * @returns A decorator that can be passed to {@link Context.use}
    */
   static setValue(
-    key: string | symbol,
+    key: string,
     value: unknown | ((previous: unknown | undefined) => unknown),
   ): ContextDecorator {
     return ctx => {

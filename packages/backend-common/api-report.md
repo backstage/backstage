@@ -152,7 +152,7 @@ export interface Context {
   readonly abortSignal: AbortSignal_2;
   readonly deadline: Date | undefined;
   use(...decorators: ContextDecorator[]): Context;
-  value<T = unknown>(key: string | symbol): T | undefined;
+  value<T = unknown>(key: string): T | undefined;
 }
 
 // @public
@@ -165,7 +165,7 @@ export class Contexts {
   static setTimeoutDuration(timeout: Duration): ContextDecorator;
   static setTimeoutMillis(timeout: number): ContextDecorator;
   static setValue(
-    key: string | symbol,
+    key: string,
     value: unknown | ((previous: unknown | undefined) => unknown),
   ): ContextDecorator;
 }
