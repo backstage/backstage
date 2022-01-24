@@ -16,7 +16,6 @@
 
 import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { isNull } from 'lodash';
 import { Circle } from 'rc-progress';
 import React, { ReactNode, useEffect, useState } from 'react';
 
@@ -139,7 +138,7 @@ export function Gauge(props: GaugeProps) {
 
   useEffect(() => {
     const node = hoverRef;
-    if (node && !isNull(isHovering)) {
+    if (node && description) {
       node.addEventListener('mouseenter', handleMouseOver);
       node.addEventListener('mouseleave', handleMouseOut);
 
