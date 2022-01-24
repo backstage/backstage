@@ -116,6 +116,7 @@ describe('OAuthProvider Utils', () => {
       expect(getCookieConfig(mockAuthUrl, 'test-provider')).toMatchObject({
         cookieDomain: 'domain.org',
         cookiePath: '/auth/test-provider',
+        secure: false,
       });
     });
 
@@ -126,6 +127,7 @@ describe('OAuthProvider Utils', () => {
       expect(getCookieConfig(mockAuthUrl, 'test-provider')).toMatchObject({
         cookieDomain: 'domain.org',
         cookiePath: '/auth/test-provider',
+        secure: false,
       });
     });
 

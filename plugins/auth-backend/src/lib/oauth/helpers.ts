@@ -63,17 +63,11 @@ export const getCookieConfig = (authUrl: URL, providerId: string) => {
   const secure = protocol === 'https:';
 
   // If the provider supports callbackUrls, the pathname will
-  // contain the complete path to the frame handler.
-  // The regex captures the leading path including the provider.
-  //
-  // Example match:  /api/auth/provider/handler/frame
-  // Example result: /api/auth/provider
-  const matcher = pathname.match(
-    new RegExp(`(?<path>^\/.*?\/${providerId})\/handler\/frame$`),
-  )?.groups;
-
-  // If there's no match we can manually construct the path
-  const cookiePath = matcher?.path ?? `${pathname}/${providerId}`;
+  // contain the complete path to the frame handler so we need
+  // to slice off the trailing part of the path.
+  const cookiePath = pathname.endsWith(`${providerId}/handler/frame`)
+    ? pathname.slice(0, -'/handler/frame'.length)
+    : `${pathname}/${providerId}`;
 
   return {
     cookieDomain,
