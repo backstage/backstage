@@ -22,7 +22,7 @@ import {
 import { AZURE_DEVOPS_DEFAULT_TOP } from '../constants';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 
 export function useBuildRuns(
   projectName: string,
