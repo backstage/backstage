@@ -57,3 +57,27 @@ export const verifyNonce = (req: express.Request, providerId: string) => {
     throw new Error('Invalid nonce');
   }
 };
+
+export const getCookieConfig = (authUrl: URL, providerId: string) => {
+  const { hostname: cookieDomain, pathname, protocol } = authUrl;
+  const secure = protocol === 'https:';
+
+  // If the provider supports callbackUrls, the pathname will
+  // contain the complete path to the frame handler.
+  // The regex captures the leading path including the provider.
+  //
+  // Example match:  /api/auth/provider/handler/frame
+  // Example result: /api/auth/provider
+  const matcher = pathname.match(
+    new RegExp(`(?<path>^\/.*?\/${providerId})\/handler\/frame$`),
+  )?.groups;
+
+  // If there's no match we can manually construct the path
+  const cookiePath = matcher?.path ?? `${pathname}/${providerId}`;
+
+  return {
+    cookieDomain,
+    cookiePath,
+    secure,
+  };
+};
