@@ -11,6 +11,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: {{ github.event.inputs.version }}
+      - name: Install dependencies
+        run: yarn install
       - name: Checkout versions
         uses: actions/checkout@v2
         with:
