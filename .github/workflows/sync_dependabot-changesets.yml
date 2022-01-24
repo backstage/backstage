@@ -15,6 +15,7 @@ jobs:
         with:
           fetch-depth: 2
           ref: ${{ github.head_ref }}
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
       - name: Configure Git
         run: |
           git config --global user.email noreply@backstage.io
