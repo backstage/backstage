@@ -24,7 +24,7 @@ export class RootContext implements Context {
   readonly abortSignal = new AbortController().signal;
   readonly deadline = undefined;
 
-  value<T = unknown>(_key: string | symbol): T | undefined {
+  value<T = unknown>(_key: string): T | undefined {
     return undefined;
   }
 

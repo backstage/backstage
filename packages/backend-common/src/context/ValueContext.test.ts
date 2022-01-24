@@ -18,31 +18,29 @@ import { Contexts } from './Contexts';
 import { RootContext } from './RootContext';
 import { ValueContext } from './ValueContext';
 
-const s = Symbol();
-
 describe('ValueContext', () => {
   it('returns its own values, or delegates to the parent', async () => {
     const root = new RootContext();
     const a = ValueContext.forConstantValue(root, 'a', 1);
-    const b = ValueContext.forConstantValue(a, s, 2);
+    const b = ValueContext.forConstantValue(a, 'x', 2);
     const c = ValueContext.forConstantValue(b, 'a', 3);
     const d = ValueContext.forConstantValue(c, 'b', 4);
 
     expect(a.value('a')).toBe(1);
     expect(a.value('b')).toBeUndefined();
-    expect(a.value(s)).toBeUndefined();
+    expect(a.value('x')).toBeUndefined();
 
     expect(b.value('a')).toBe(1);
     expect(b.value('b')).toBeUndefined();
-    expect(b.value(s)).toBe(2);
+    expect(b.value('x')).toBe(2);
 
     expect(c.value('a')).toBe(3);
     expect(c.value('b')).toBeUndefined();
-    expect(c.value(s)).toBe(2);
+    expect(c.value('x')).toBe(2);
 
     expect(d.value('a')).toBe(3);
     expect(d.value('b')).toBe(4);
-    expect(d.value(s)).toBe(2);
+    expect(d.value('x')).toBe(2);
   });
 
   it('can decorate', () => {
