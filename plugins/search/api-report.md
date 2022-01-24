@@ -92,6 +92,13 @@ export interface SearchApi {
 // @public (undocumented)
 export const searchApiRef: ApiRef<SearchApi>;
 
+// @public (undocumented)
+export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
+  filterSelectedOptions?: boolean;
+  limitTags?: number;
+  multiple?: boolean;
+};
+
 // @public
 export const SearchBar: ({ onChange, ...props }: SearchBarProps) => JSX.Element;
 
@@ -143,18 +150,48 @@ export const SearchContextProvider: ({
 //
 // @public (undocumented)
 export const SearchFilter: {
-  ({ component: Element, ...props }: Props): JSX.Element;
-  Checkbox(props: Omit<Props, 'component'> & Component): JSX.Element;
-  Select(props: Omit<Props, 'component'> & Component): JSX.Element;
+  ({ component: Element, ...props }: SearchFilterWrapperProps): JSX.Element;
+  Checkbox(
+    props: Omit<SearchFilterWrapperProps, 'component'> &
+      SearchFilterComponentProps,
+  ): JSX.Element;
+  Select(
+    props: Omit<SearchFilterWrapperProps, 'component'> &
+      SearchFilterComponentProps,
+  ): JSX.Element;
+  Autocomplete(props: SearchAutocompleteFilterProps): JSX.Element;
+};
+
+// @public (undocumented)
+export type SearchFilterComponentProps = {
+  className?: string;
+  name: string;
+  label?: string;
+  values?: string[] | ((partial: string) => Promise<string[]>);
+  defaultValue?: string[] | string | null;
+  valuesDebounceMs?: number;
 };
 
 // Warning: (ae-missing-release-tag) "SearchFilterNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
 export const SearchFilterNext: {
-  ({ component: Element, ...props }: Props): JSX.Element;
-  Checkbox(props: Omit<Props, 'component'> & Component): JSX.Element;
-  Select(props: Omit<Props, 'component'> & Component): JSX.Element;
+  ({ component: Element, ...props }: SearchFilterWrapperProps): JSX.Element;
+  Checkbox(
+    props: Omit<SearchFilterWrapperProps, 'component'> &
+      SearchFilterComponentProps,
+  ): JSX.Element;
+  Select(
+    props: Omit<SearchFilterWrapperProps, 'component'> &
+      SearchFilterComponentProps,
+  ): JSX.Element;
+  Autocomplete(props: SearchAutocompleteFilterProps): JSX.Element;
+};
+
+// @public (undocumented)
+export type SearchFilterWrapperProps = SearchFilterComponentProps & {
+  component: (props: SearchFilterComponentProps) => ReactElement;
+  debug?: boolean;
 };
 
 // Warning: (ae-missing-release-tag) "SearchModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -284,6 +321,4 @@ export const useSearch: () => SearchContextValue;
 // Warnings were encountered during analysis:
 //
 // src/components/SearchContext/SearchContext.d.ts:23:5 - (ae-forgotten-export) The symbol "SettableSearchContext" needs to be exported by the entry point index.d.ts
-// src/components/SearchFilter/SearchFilter.d.ts:13:5 - (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// src/components/SearchFilter/SearchFilter.d.ts:14:5 - (ae-forgotten-export) The symbol "Component" needs to be exported by the entry point index.d.ts
 ```

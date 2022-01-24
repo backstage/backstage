@@ -23,7 +23,12 @@ import {
   Page,
   SidebarPinStateContext,
 } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
+import {
+  catalogApiRef,
+  CATALOG_FILTER_EXISTS,
+} from '@backstage/plugin-catalog-react';
 import {
   DefaultResultListItem,
   SearchBar,
@@ -31,6 +36,7 @@ import {
   SearchResult,
   SearchResultPager,
   SearchType,
+  useSearch,
 } from '@backstage/plugin-search';
 import { DocsResultListItem } from '@backstage/plugin-techdocs';
 import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
@@ -54,6 +60,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const SearchPage = () => {
   const classes = useStyles();
   const { isMobile } = useContext(SidebarPinStateContext);
+  const { types } = useSearch();
+  const catalogApi = useApi(catalogApiRef);
 
   return (
     <Page themeId="home">
@@ -84,13 +92,36 @@ const SearchPage = () => {
                 ]}
               />
               <Paper className={classes.filters}>
+                {types.includes('techdocs') && (
+                  <SearchFilter.Select
+                    className={classes.filter}
+                    label="Entity"
+                    name="name"
+                    values={async () => {
+                      // Return a list of entities which are documented.
+                      const { items } = await catalogApi.getEntities({
+                        fields: ['metadata.name'],
+                        filter: {
+                          'metadata.annotations.backstage.io/techdocs-ref':
+                            CATALOG_FILTER_EXISTS,
+                        },
+                      });
+
+                      const names = items.map(entity => entity.metadata.name);
+                      names.sort();
+                      return names;
+                    }}
+                  />
+                )}
                 <SearchFilter.Select
                   className={classes.filter}
+                  label="Kind"
                   name="kind"
                   values={['Component', 'Template']}
                 />
                 <SearchFilter.Checkbox
                   className={classes.filter}
+                  label="Lifecycle"
                   name="lifecycle"
                   values={['experimental', 'production']}
                 />
