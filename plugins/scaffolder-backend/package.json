@@ -42,7 +42,7 @@
     "@backstage/plugin-scaffolder-backend-module-cookiecutter": "^0.1.9",
     "@backstage/types": "^0.1.1",
     "@gitbeaker/core": "^34.6.0",
-    "@gitbeaker/node": "^34.6.0",
+    "@gitbeaker/node": "^35.1.0",
     "@octokit/rest": "^18.5.3",
     "@octokit/webhooks": "^9.14.1",
     "@types/express": "^4.17.6",
