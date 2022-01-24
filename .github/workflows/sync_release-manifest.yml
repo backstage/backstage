@@ -1,4 +1,4 @@
-name: Assemble release and generate versions file
+name: Sync Release Manifest
 on:
   workflow_dispatch:
     inputs:
