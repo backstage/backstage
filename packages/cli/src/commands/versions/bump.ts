@@ -36,7 +36,7 @@ import {
   getByReleaseLine,
   getByVersion,
   ReleaseManifest,
-} from '@backstage/release-manifest';
+} from '@backstage/release-manifests';
 
 const DEP_TYPES = [
   'dependencies',
@@ -321,7 +321,7 @@ export function createStrictVersionFinder(options: {
 export function createVersionFinder(options: {
   releaseLine?: string;
   packageInfoFetcher?: () => Promise<YarnInfoInspectData>;
-  releaseManifest: ReleaseManifest;
+  releaseManifest?: ReleaseManifest;
 }) {
   const {
     releaseLine = 'latest',
@@ -332,7 +332,7 @@ export function createVersionFinder(options: {
   const distTag = releaseLine === 'main' ? 'latest' : releaseLine;
   const found = new Map<string, string>();
   const releasePackages = new Map(
-    releaseManifest.packages.map(p => [p.name, p.version]),
+    releaseManifest?.packages.map(p => [p.name, p.version]),
   );
   return async function findTargetVersion(name: string) {
     const existing = found.get(name);

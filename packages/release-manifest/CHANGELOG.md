@@ -1,1 +1,0 @@
-# @backstage/release-manifest
