@@ -32,7 +32,8 @@
     "@backstage/plugin-permission-common": "^0.4.0",
     "cross-fetch": "^3.0.6",
     "react-router": "6.0.0-beta.0",
-    "react-use": "^17.2.4"
+    "react-use": "^17.2.4",
+    "swr": "^1.1.2"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",

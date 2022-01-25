@@ -19,18 +19,11 @@ import { Permission } from '@backstage/plugin-permission-common';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { useEntity } from './useEntity';
 
-const cache: Record<string, boolean> = {};
-
 /**
  * A thin wrapper around the
  * {@link @backstage/plugin-permission-react#usePermission} hook which uses the
  * current entity in context to make an authorization request for the given
  * permission.
- *
- * This hook caches the authorization decision based on the permission + the
- * entity, and returns the cache match value as the default `allowed` value
- * while loading. This helps avoid flicker in UI elements that would be
- * conditionally rendered based on the `allowed` result of this hook.
  *
  * Note: this hook blocks the permission request until the entity has loaded in
  * context. If you have the entityRef and need concurrent requests, use the
@@ -43,14 +36,6 @@ export function useEntityPermission(permission: Permission): {
   error?: Error;
 } {
   const { entity, loading: loadingEntity, error: entityError } = useEntity();
-
-  let defaultValue: boolean;
-  if (entity && cache[`${permission.name}${stringifyEntityRef(entity)}`]) {
-    defaultValue = cache[`${permission.name}${stringifyEntityRef(entity)}`];
-  } else {
-    defaultValue = false;
-  }
-
   const {
     allowed,
     loading: loadingPermission,
@@ -61,11 +46,10 @@ export function useEntityPermission(permission: Permission): {
   );
 
   if (loadingEntity || loadingPermission) {
-    return { loading: true, allowed: defaultValue };
+    return { loading: true, allowed: false };
   }
   if (entityError) {
     return { loading: false, allowed: false, error: entityError };
   }
-  cache[`${permission.name}${stringifyEntityRef(entity)}`] = allowed;
   return { loading: false, allowed, error: permissionError };
 }

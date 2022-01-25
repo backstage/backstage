@@ -94,24 +94,4 @@ describe('useEntityPermission', () => {
 
     expect(result.current.allowed).toBe(true);
   });
-
-  it('returns cached result while loading', () => {
-    useEntityMock.mockReturnValue({
-      loading: false,
-      entity: {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: { name: 'c' },
-      },
-    });
-    usePermissionMock.mockReturnValueOnce({ loading: false, allowed: true });
-    const { result, rerender } = renderHook(() =>
-      useEntityPermission(catalogEntityDeletePermission),
-    );
-    usePermissionMock.mockReturnValueOnce({ loading: true, allowed: false });
-    rerender();
-
-    expect(result.current.loading).toBe(true);
-    expect(result.current.allowed).toBe(true);
-  });
 });
