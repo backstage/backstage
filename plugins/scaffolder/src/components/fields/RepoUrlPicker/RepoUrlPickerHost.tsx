@@ -37,16 +37,23 @@ export const RepoUrlPickerHost = (props: {
   });
 
   useEffect(() => {
-    if (hosts && hosts.length && !host) {
-      // This is only hear to set the default as the first one in the hosts array
-      // if the host is not set yet and there is a list of hosts.
-      onChange(hosts[0]);
+    // If there is no host chosen currently
+    if (!host) {
+      // Set the first of the allowedHosts option if that available
+      if (hosts?.length) {
+        onChange(hosts[0]);
+        // if there's no hosts provided, fallback to using the first integration
+      } else if (integrations?.length) {
+        onChange(integrations[0].host);
+      }
     }
-  }, [hosts, host, onChange]);
+  }, [hosts, host, onChange, integrations]);
 
+  // If there are no allowedHosts provided, then show all integrations. Otherwise, only show integrations
+  // that are provided in the dropdown for the user to choose from.
   const hostsOptions: SelectItem[] = integrations
     ? integrations
-        .filter(i => hosts?.includes(i.host))
+        .filter(i => (hosts?.length ? hosts?.includes(i.host) : true))
         .map(i => ({ label: i.title, value: i.host }))
     : [{ label: 'Loading...', value: 'loading' }];
 

@@ -93,6 +93,8 @@ export const RepoUrlPicker = (
       }
 
       // user has requested that we use the users credentials
+      // so lets grab them using the scmAuthApi and pass through
+      // any additional scopes from the ui:options
       const { token } = await scmAuthApi.getCredentials({
         url: `https://${state.host}/${state.owner}/${state.repoName}`,
         additionalScope: {
@@ -101,10 +103,12 @@ export const RepoUrlPicker = (
         },
       });
 
+      // set the secret using the key provided in the the ui:options for use
+      // in the templating the manifest with ${{ secrets[resultSecretsKey] }}
       setSecret({ [requestUserCredentials.resultSecretsKey]: token });
     },
     1000,
-    [state],
+    [state, uiSchema],
   );
 
   const hostType =

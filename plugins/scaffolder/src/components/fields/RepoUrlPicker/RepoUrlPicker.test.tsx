@@ -14,26 +14,37 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render } from '@testing-library/react';
 import { RepoUrlPicker } from './RepoUrlPicker';
 import Form from '@rjsf/core';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   scmIntegrationsApiRef,
+  ScmIntegrationsApi,
   scmAuthApiRef,
 } from '@backstage/integration-react';
 import { scaffolderApiRef } from '../../../api';
 import { SecretsContextProvider } from '../../secrets/SecretsContext';
+import { ScaffolderApi } from '../../..';
 
 describe('RepoUrlPicker', () => {
+  const mockScaffolderApi: Partial<ScaffolderApi> = {
+    getIntegrationsList: async () => [
+      { host: 'github.com', type: 'github', title: 'github.com' },
+    ],
+  };
+
+  const mockIntegrationsApi: Partial<ScmIntegrationsApi> = {
+    byHost: () => ({ type: 'github' }),
+  };
+
   describe('happy path rendering', () => {
     it('should render the repo url picker', async () => {
       const { getByRole } = await renderInTestApp(
         <TestApiProvider
           apis={[
-            [scmIntegrationsApiRef, {}],
+            [scmIntegrationsApiRef, mockIntegrationsApi],
             [scmAuthApiRef, {}],
-            [scaffolderApiRef, {}],
+            [scaffolderApiRef, mockScaffolderApi],
           ]}
         >
           <SecretsContextProvider>
@@ -46,6 +57,8 @@ describe('RepoUrlPicker', () => {
           ,
         </TestApiProvider>,
       );
+
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
       console.log(getByRole('form'));
     });
