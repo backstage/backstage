@@ -16,15 +16,9 @@
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { airbrakePlugin, EntityAirbrakeContent } from '../src';
-import {
-  Content,
-  ContentHeader,
-  Header,
-  HeaderLabel,
-  Page,
-  SupportButton,
-} from '@backstage/core-components';
 import { airbrakeApiRef, MockAirbrakeApi } from '../src/api';
+import { ApiBar } from './components/ApiBar';
+import { Content, Header, Page } from '@backstage/core-components';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { createEntity } from '../src/api/mock/mock-entity';
 
@@ -41,19 +35,20 @@ createDevApp()
         <Header
           title="Airbrake demo application"
           subtitle="Test the plugin below"
-        >
-          <HeaderLabel label="Owner" value="Owner" />
-          <HeaderLabel label="Lifecycle" value="Alpha" />
-        </Header>
+        />
         <Content>
-          <ContentHeader title="Airbrake">
-            <SupportButton>
-              A description of your plugin goes here.
-            </SupportButton>
-          </ContentHeader>
-          <EntityProvider entity={createEntity('demo')}>
-            <EntityAirbrakeContent />
-          </EntityProvider>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '2em',
+            }}
+          >
+            <ApiBar />
+            <EntityProvider entity={createEntity('demo')}>
+              <EntityAirbrakeContent />
+            </EntityProvider>
+          </div>
         </Content>
       </Page>
     ),
