@@ -58,11 +58,6 @@ export function encodePageCursor({ page }: { page: number }): string {
   return Buffer.from(`${page}`, 'utf-8').toString('base64');
 }
 
-export type AuthorizedSearchEngineConfig = {
-  queryLatencyBudgetMs: number;
-  pageSize: number;
-};
-
 export class AuthorizedSearchEngine implements SearchEngine {
   private readonly pageSize = 25;
   private readonly queryLatencyBudgetMs: number;
