@@ -109,6 +109,29 @@ export class AuthorizedSearchEngine implements SearchEngine {
       type => typeDecisions[type]?.result !== AuthorizeResult.DENY,
     );
 
+    const resultByResultFilteringRequired = authorizedTypes.some(
+      type => typeDecisions[type]?.result === AuthorizeResult.CONDITIONAL,
+    );
+
+    // When there are no CONDITIONAL decisions for any of the requested
+    // result types, we can skip filtering result by result by simply
+    // skipping the types the user is not permitted to see, which will
+    // be much more efficient.
+    //
+    // Since it's not currently possible to configure the page size used
+    // by search engines, this detail means that a single user might see
+    // a different page size depending on whether their search required
+    // result-by-result filtering or not. We can fix this minor
+    // inconsistency by introducing a configurable page size.
+    //
+    // cf. https://github.com/backstage/backstage/issues/9162
+    if (!resultByResultFilteringRequired) {
+      return this.searchEngine.query(
+        { ...query, types: authorizedTypes },
+        options,
+      );
+    }
+
     const { page } = decodePageCursor(query.pageCursor);
     const targetResults = (page + 1) * this.pageSize;
 
