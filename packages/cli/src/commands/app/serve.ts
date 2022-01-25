@@ -33,7 +33,7 @@ export default async (cmd: Command) => {
     .map(({ name }) => name)
     .filter(name => forbiddenDuplicatesFilter(name));
 
-  if (problemPackages.length > 1) {
+  if (problemPackages.length > 0) {
     console.log(
       chalk.yellow(
         `⚠️ Some of the following packages may be outdated or have duplicate installations:
