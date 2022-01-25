@@ -158,5 +158,7 @@ describe('RepoUrlPicker', () => {
         },
       });
     });
+
+    // TODO(blam): need a test here for making sure that the secret is pushed to the context
   });
 });
