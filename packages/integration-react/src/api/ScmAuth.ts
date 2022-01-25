@@ -15,6 +15,7 @@
  */
 
 import {
+  bitbucketAuthApiRef,
   createApiFactory,
   githubAuthApiRef,
   gitlabAuthApiRef,

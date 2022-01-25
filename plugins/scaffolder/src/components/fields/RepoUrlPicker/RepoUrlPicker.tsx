@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import { useApi } from '@backstage/core-plugin-api';
-import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import {
+  scmIntegrationsApiRef,
+  scmAuthApiRef,
+} from '@backstage/integration-react';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { GithubRepoPicker } from './GithubRepoPicker';
 import { GitlabRepoPicker } from './GitlabRepoPicker';
@@ -24,10 +27,21 @@ import { FieldExtensionComponentProps } from '../../../extensions';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
 import { RepoUrlPickerState } from './types';
+import useDebounce from 'react-use/lib/useDebounce';
+import { useSecretsContext } from '../../secrets';
 
 export interface RepoUrlPickerUiOptions {
   allowedHosts?: string[];
   allowedOwners?: string[];
+  requestUserCredentials?: {
+    resultSecretsKey: string;
+    additionalScopes?: {
+      github?: string[];
+      gitlab?: string[];
+      bitbucket?: string[];
+      azure?: string[];
+    };
+  };
 }
 
 export const RepoUrlPicker = (
@@ -38,7 +52,8 @@ export const RepoUrlPicker = (
     parseRepoPickerUrl(formData),
   );
   const integrationApi = useApi(scmIntegrationsApiRef);
-
+  const scmAuthApi = useApi(scmAuthApiRef);
+  const { setSecret } = useSecretsContext();
   const allowedHosts = useMemo(
     () => uiSchema?.['ui:options']?.allowedHosts ?? [],
     [uiSchema],
@@ -64,6 +79,32 @@ export const RepoUrlPicker = (
       setState(prevState => ({ ...prevState, ...newState }));
     },
     [setState],
+  );
+
+  useDebounce(
+    async () => {
+      const { requestUserCredentials } = uiSchema?.['ui:options'] ?? {};
+
+      if (
+        !requestUserCredentials ||
+        !(state.host && state.owner && !state.repoName)
+      ) {
+        return;
+      }
+
+      // user has requested that we use the users credentials
+      const { token } = await scmAuthApi.getCredentials({
+        url: `https://${state.host}/${state.owner}/${state.repoName}`,
+        additionalScope: {
+          repoWrite: true,
+          customScopes: requestUserCredentials.additionalScopes,
+        },
+      });
+
+      setSecret({ [requestUserCredentials.resultSecretsKey]: token });
+    },
+    1000,
+    [state],
   );
 
   const hostType =
