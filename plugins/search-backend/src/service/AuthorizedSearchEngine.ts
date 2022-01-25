@@ -59,7 +59,7 @@ export function encodePageCursor({ page }: { page: number }): string {
 }
 
 export class AuthorizedSearchEngine implements SearchEngine {
-  private readonly pageSize: number = 25;
+  private readonly pageSize = 25;
   private readonly queryLatencyBudgetMs: number;
 
   constructor(
