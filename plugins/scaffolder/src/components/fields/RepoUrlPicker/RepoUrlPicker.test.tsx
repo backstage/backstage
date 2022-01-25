@@ -21,21 +21,27 @@ import {
   scmIntegrationsApiRef,
   ScmIntegrationsApi,
   scmAuthApiRef,
+  ScmAuthApi,
 } from '@backstage/integration-react';
 import { scaffolderApiRef } from '../../../api';
 import { SecretsContextProvider } from '../../secrets/SecretsContext';
 import { ScaffolderApi } from '../../..';
-import { fireEvent } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 
 describe('RepoUrlPicker', () => {
   const mockScaffolderApi: Partial<ScaffolderApi> = {
     getIntegrationsList: async () => [
       { host: 'github.com', type: 'github', title: 'github.com' },
+      { host: 'dev.azure.com', type: 'azure', title: 'dev.azure.com' },
     ],
   };
 
   const mockIntegrationsApi: Partial<ScmIntegrationsApi> = {
     byHost: () => ({ type: 'github' }),
+  };
+
+  const mockScmAuthApi: Partial<ScmAuthApi> = {
+    getCredentials: jest.fn().mockResolvedValue({ token: 'abc123' }),
   };
 
   describe('happy path rendering', () => {
@@ -74,6 +80,83 @@ describe('RepoUrlPicker', () => {
         }),
         expect.anything(),
       );
+    });
+
+    it('should render properly with allowedHosts', async () => {
+      const { getByRole } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, {}],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              schema={{ type: 'string' }}
+              uiSchema={{
+                'ui:field': 'RepoUrlPicker',
+                'ui:options': { allowedHosts: ['dev.azure.com'] },
+              }}
+              fields={{ RepoUrlPicker: RepoUrlPicker }}
+            />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      expect(
+        getByRole('option', { name: 'dev.azure.com' }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('requestUserCredentials', () => {
+    it('should call the scmAuthApi with the correct params', async () => {
+      const { getByRole, getAllByRole } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, mockScmAuthApi],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              schema={{ type: 'string' }}
+              uiSchema={{
+                'ui:field': 'RepoUrlPicker',
+                'ui:options': {
+                  requestUserCredentials: {
+                    resultSecretsKey: 'testKey',
+                    additionalScopes: { github: ['workflow:write'] },
+                  },
+                },
+              }}
+              fields={{ RepoUrlPicker: RepoUrlPicker }}
+            />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      const [ownerInput, repoInput] = getAllByRole('textbox');
+
+      await act(async () => {
+        fireEvent.change(ownerInput, { target: { value: 'backstage' } });
+        fireEvent.change(repoInput, { target: { value: 'repo123' } });
+
+        // need to wait for the debounce to finish
+        await new Promise(resolve => setTimeout(resolve, 600));
+      });
+
+      expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
+        url: 'https://github.com/backstage/repo123',
+        additionalScope: {
+          repoWrite: true,
+          customScopes: {
+            github: ['workflow:write'],
+          },
+        },
+      });
     });
   });
 });

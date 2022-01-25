@@ -87,7 +87,7 @@ export const RepoUrlPicker = (
 
       if (
         !requestUserCredentials ||
-        !(state.host && state.owner && !state.repoName)
+        !(state.host && state.owner && state.repoName)
       ) {
         return;
       }
@@ -107,7 +107,7 @@ export const RepoUrlPicker = (
       // in the templating the manifest with ${{ secrets[resultSecretsKey] }}
       setSecret({ [requestUserCredentials.resultSecretsKey]: token });
     },
-    1000,
+    500,
     [state, uiSchema],
   );
 
