@@ -44,6 +44,16 @@ export interface ScmAuthTokenOptions extends AuthRequestOptions {
      * the ability to create things like issues and pull requests.
      */
     repoWrite?: boolean;
+    /**
+     * Allow an arbitrary list of scopes provided from the user
+     * to request from the provider.
+     */
+    customScopes?: {
+      github?: string[];
+      azure?: string[];
+      bitbucket?: string[];
+      gitlab?: string[];
+    };
   };
 }
 
