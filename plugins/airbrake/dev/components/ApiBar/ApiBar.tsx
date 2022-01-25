@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import { Select, SelectItem } from '@backstage/core-components';
-import { makeStyles, TextField } from '@material-ui/core';
+import { makeStyles, MenuItem, TextField } from '@material-ui/core';
 
 const useStyles = makeStyles({
   root: {
@@ -27,7 +26,7 @@ const useStyles = makeStyles({
 
 export const ApiBar = () => {
   const classes = useStyles();
-  const apiOptions: SelectItem[] = [
+  const apiOptions = [
     { label: 'Fake', value: 'fake' },
     { label: 'Real', value: 'real' },
   ];
@@ -37,12 +36,18 @@ export const ApiBar = () => {
 
   return (
     <div className={classes.root}>
-      <Select
-        items={apiOptions}
+      <TextField
+        select
         label="API"
-        selected={api}
-        onChange={newValue => setApi(newValue as string)}
-      />
+        value={api}
+        onChange={e => setApi(e.target.value)}
+      >
+        {apiOptions.map(option => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </TextField>
       {api === 'real' && (
         <>
           <TextField
