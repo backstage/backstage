@@ -119,7 +119,6 @@ export const getProgressColor: GaugePropsGetColor = ({
  */
 
 export function Gauge(props: GaugeProps) {
-  // const hoverRef = useRef<HTMLDivElement>(null);
   const [hoverRef, setHoverRef] = useState<HTMLDivElement | null>(null);
   const { getColor = getProgressColor } = props;
   const classes = useStyles(props);
