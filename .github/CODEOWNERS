@@ -14,10 +14,10 @@
 /plugins/code-coverage-backend              @backstage/reviewers @alde @nissayeva
 /plugins/cost-insights                      @backstage/silver-lining
 /plugins/cloudbuild                         @backstage/reviewers @trivago/ebarrios
-/plugins/search                             @backstage/techdocs-core
-/plugins/search-*                           @backstage/techdocs-core
-/plugins/techdocs                           @backstage/techdocs-core
-/plugins/techdocs-backend                   @backstage/techdocs-core
+/plugins/search                             @backstage/techdocs-core @hhcgit
+/plugins/search-*                           @backstage/techdocs-core @hhcgit
+/plugins/techdocs                           @backstage/techdocs-core @hhcgit
+/plugins/techdocs-backend                   @backstage/techdocs-core @hhcgit
 /plugins/ilert                              @backstage/reviewers @yacut
 /plugins/home                               @backstage/techdocs-core
 /plugins/azure-devops                       @backstage/reviewers @marleypowell @awanlin
