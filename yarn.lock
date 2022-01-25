@@ -2064,10 +2064,10 @@
     find-my-way "^2.2.2"
     into-stream "^5.1.1"
 
-"@elastic/elasticsearch@7.13.0":
-  version "7.13.0"
-  resolved "https://registry.npmjs.org/@elastic/elasticsearch/-/elasticsearch-7.13.0.tgz#6dcf511dfa91187e22c81e54f41f4bd0fd96b4d6"
-  integrity sha512-WgwLWo2p9P2tdqzBGX9fHeG8p5IOTXprXNTECQG2mJ7z9n93N5AFBJpEw4d35tWWeCWi9jI13A2wzQZH7XZ/xw==
+"@elastic/elasticsearch@7.16.0":
+  version "7.16.0"
+  resolved "https://registry.npmjs.org/@elastic/elasticsearch/-/elasticsearch-7.16.0.tgz#c1c64b6f0343c0f5ca6893fb77ceecd763455024"
+  integrity sha512-lMY2MFZZFG3om7QNHninxZZOXYx3NdIUwEISZxqaI9dXPoL3DNhU31keqjvx1gN6T74lGXAzrRNP4ag8CJ/VXw==
   dependencies:
     debug "^4.3.1"
     hpagent "^0.1.1"
