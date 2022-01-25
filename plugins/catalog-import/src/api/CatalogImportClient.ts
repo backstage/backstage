@@ -32,6 +32,7 @@ import { PartialEntity } from '../types';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
 import { trimEnd } from 'lodash';
+import { getBranchName, getCatalogFilename } from '../components/helpers';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -87,9 +88,7 @@ export class CatalogImportClient implements CatalogImportApi {
     const ghConfig = getGithubIntegrationConfig(this.scmIntegrationsApi, url);
     if (!ghConfig) {
       const other = this.scmIntegrationsApi.byUrl(url);
-      const catalogFilename =
-        this.configApi.getOptionalString('catalog.import.entityFilename') ??
-        'catalog-info.yaml';
+      const catalogFilename = getCatalogFilename(this.configApi);
 
       if (other) {
         throw new Error(
@@ -131,9 +130,7 @@ export class CatalogImportClient implements CatalogImportApi {
     const appTitle =
       this.configApi.getOptionalString('app.title') ?? 'Backstage';
     const appBaseUrl = this.configApi.getString('app.baseUrl');
-    const catalogFilename =
-      this.configApi.getOptionalString('catalog.import.entityFilename') ??
-      'catalog-info.yaml';
+    const catalogFilename = getCatalogFilename(this.configApi);
 
     return {
       title: `Add ${catalogFilename} config file`,
@@ -228,9 +225,7 @@ the component will become available.\n\nFor more information, read an \
       auth: token,
       baseUrl: githubIntegrationConfig.apiBaseUrl,
     });
-    const catalogFilename =
-      this.configApi.getOptionalString('catalog.import.entityFilename') ??
-      'catalog-info.yaml';
+    const catalogFilename = getCatalogFilename(this.configApi);
     const query = `repo:${owner}/${repo}+filename:${catalogFilename}`;
 
     const searchResult = await octo.search.code({ q: query }).catch(e => {
@@ -303,12 +298,8 @@ the component will become available.\n\nFor more information, read an \
       baseUrl: githubIntegrationConfig.apiBaseUrl,
     });
 
-    const branchName =
-      this.configApi.getOptionalString('catalog.pullRequestBranchName') ??
-      'backstage-integration';
-    const fileName =
-      this.configApi.getOptionalString('catalog.import.entityFilename') ??
-      'catalog-info.yaml';
+    const branchName = getBranchName(this.configApi);
+    const fileName = getCatalogFilename(this.configApi);
 
     const repoData = await octo.repos
       .get({

@@ -19,6 +19,7 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Chip, Typography } from '@material-ui/core';
 import React from 'react';
 import { catalogImportApiRef } from '../../api';
+import { useCatalogFilename } from '../../hooks';
 
 type Props = {
   exampleLocationUrl?: string;
@@ -36,9 +37,7 @@ export const ImportInfoCard = ({
   const integrations = configApi.getConfig('integrations');
   const hasGithubIntegration = integrations.has('github');
 
-  const catalogFilename =
-    configApi.getOptionalString('catalog.import.entityFilename') ??
-    'catalog-info.yaml';
+  const catalogFilename = useCatalogFilename();
 
   return (
     <InfoCard

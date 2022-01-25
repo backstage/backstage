@@ -19,8 +19,8 @@ import { Card, CardContent, CardHeader } from '@material-ui/core';
 import React from 'react';
 import YAML from 'yaml';
 import { CodeSnippet } from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { trimEnd } from 'lodash';
+import { useCatalogFilename } from '../../hooks';
 
 type Props = {
   repositoryUrl: string;
@@ -33,10 +33,7 @@ export const PreviewCatalogInfoComponent = ({
   entities,
   classes,
 }: Props) => {
-  const configApi = useApi(configApiRef);
-  const catalogFilename =
-    configApi.getOptionalString('catalog.import.entityFilename') ??
-    'catalog-info.yaml';
+  const catalogFilename = useCatalogFilename();
 
   return (
     <Card variant="outlined" className={classes?.card}>
