@@ -30,10 +30,6 @@ export function registerCommands(program: CommanderStatic) {
     .command('app:build')
     .description('Build an app for a production release')
     .option('--stats', 'Write bundle stats to output directory')
-    .option(
-      '--lax',
-      '[DEPRECATED] - Do not require environment variables to be set',
-    )
     .option(...configOption)
     .action(lazy(() => import('./app/build').then(m => m.default)));
 
@@ -106,13 +102,6 @@ export function registerCommands(program: CommanderStatic) {
     .option('--no-private', 'Public npm package')
     .action(
       lazy(() => import('./create-plugin/createPlugin').then(m => m.default)),
-    );
-
-  program
-    .command('remove-plugin')
-    .description('[DEPRECATED] - Removes plugin in the current repository')
-    .action(
-      lazy(() => import('./remove-plugin/removePlugin').then(m => m.default)),
     );
 
   program
