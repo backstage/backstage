@@ -55,8 +55,6 @@ done like this:
 
 ```tsx
 import { createApp } from '@backstage/app-defaults';
-import { ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
 
 const app = createApp({
   apis: ...,
@@ -65,11 +63,7 @@ const app = createApp({
     id: 'my-theme',
     title: 'My Custom Theme',
     variant: 'light',
-    Provider: ({ children }) => (
-      <ThemeProvider theme={myTheme}>
-        <CssBaseline>{children}</CssBaseline>
-      </ThemeProvider>
-    ),
+    theme: myTheme
   }]
 })
 ```
@@ -217,11 +211,7 @@ const app = createApp({
     id: 'my-theme',
     title: 'My Custom Theme',
     variant: 'light',
-    Provider: ({ children }) => (
-      <ThemeProvider theme={customTheme}>
-        <CssBaseline>{children}</CssBaseline>
-      </ThemeProvider>
-    ),
+    theme: customTheme
   }]
 });
 ```
