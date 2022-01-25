@@ -114,7 +114,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
     let filteredResults: SearchResult[] = [];
     let nextPageCursor: string | undefined;
-    let latencyBudgetExhausted: boolean;
+    let latencyBudgetExhausted = false;
 
     do {
       const nextPage = await this.searchEngine.query(
