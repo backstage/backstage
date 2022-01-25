@@ -5952,17 +5952,10 @@
   resolved "https://registry.npmjs.org/@types/ms/-/ms-0.7.31.tgz#31b7ca6407128a3d2bbc27fe2d21b345397f6197"
   integrity sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==
 
-"@types/node-cron@^2.0.4":
-  version "2.0.5"
-  resolved "https://registry.npmjs.org/@types/node-cron/-/node-cron-2.0.5.tgz#e244709a86d32453c5a702ced35b53db683fbc8e"
-  integrity sha512-rQ4kduTmgW11tbtx0/RsoybYHHPu4Vxw5v5ZS5qUKNerlEAI8r8P1F5UUZ2o2HTvzG759sbFxuRuqWxU8zc+EQ==
-  dependencies:
-    "@types/tz-offset" "*"
-
-"@types/node-cron@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/@types/node-cron/-/node-cron-3.0.0.tgz#f946cefb5c05c64f460090f6be97bd50460c8898"
-  integrity sha512-RNBIyVwa/1v2r8/SqK8tadH2sJlFRAo5Ghac/cOcCv4Kp94m0I03UmAh9WVhCqS9ZdB84dF3x47p9aTw8E4c4A==
+"@types/node-cron@^3.0.0", "@types/node-cron@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/@types/node-cron/-/node-cron-3.0.1.tgz#e01a874d4c2aa1a02ebc64cfd1cd8ebdbad7a996"
+  integrity sha512-BkMHHonDT8NJUE/pQ3kr5v2GLDKm5or9btLBoBx4F2MB2cuqYC748LYMDC55VlrLI5qZZv+Qgc3m4P3dBPcmeg==
 
 "@types/node-fetch@^2.5.0", "@types/node-fetch@^2.5.12", "@types/node-fetch@^2.5.7":
   version "2.5.12"
@@ -6458,11 +6451,6 @@
   integrity sha512-AOqu6bQu5MSWwYvehMXLukFHnupHrpZ8nvgae5Ggie9UwzDR1CCwoXgSSWNZJuyOlCdfdsWMA5F2LlmvyoTv8A==
   dependencies:
     "@types/node" "*"
-
-"@types/tz-offset@*":
-  version "0.0.0"
-  resolved "https://registry.npmjs.org/@types/tz-offset/-/tz-offset-0.0.0.tgz#d58f1cebd794148d245420f8f0660305d320e565"
-  integrity sha512-XLD/llTSB6EBe3thkN+/I0L+yCTB6sjrcVovQdx2Cnl6N6bTzHmwe/J8mWnsXFgxLrj/emzdv8IR4evKYG2qxQ==
 
 "@types/underscore@^1.8.9":
   version "1.10.23"

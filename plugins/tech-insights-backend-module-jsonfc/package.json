@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.12.0",
-    "@types/node-cron": "^2.0.4"
+    "@types/node-cron": "^3.0.1"
   },
   "files": [
     "dist"
