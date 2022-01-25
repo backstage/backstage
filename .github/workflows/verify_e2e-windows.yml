@@ -10,6 +10,10 @@ on:
       - 'packages/e2e-test/**'
       - 'packages/create-app/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
