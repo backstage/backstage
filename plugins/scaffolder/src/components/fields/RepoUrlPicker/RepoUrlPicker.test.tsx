@@ -25,6 +25,7 @@ import {
 import { scaffolderApiRef } from '../../../api';
 import { SecretsContextProvider } from '../../secrets/SecretsContext';
 import { ScaffolderApi } from '../../..';
+import { fireEvent } from '@testing-library/react';
 
 describe('RepoUrlPicker', () => {
   const mockScaffolderApi: Partial<ScaffolderApi> = {
@@ -38,8 +39,9 @@ describe('RepoUrlPicker', () => {
   };
 
   describe('happy path rendering', () => {
-    it('should render the repo url picker', async () => {
-      const { getByRole } = await renderInTestApp(
+    it('should render the repo url picker with minimal props', async () => {
+      const onSubmit = jest.fn();
+      const { getAllByRole, getByRole } = await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],
@@ -52,15 +54,26 @@ describe('RepoUrlPicker', () => {
               schema={{ type: 'string' }}
               uiSchema={{ 'ui:field': 'RepoUrlPicker' }}
               fields={{ RepoUrlPicker: RepoUrlPicker }}
+              onSubmit={onSubmit}
             />
           </SecretsContextProvider>
-          ,
         </TestApiProvider>,
       );
 
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      const [ownerInput, repoInput] = getAllByRole('textbox');
+      const submitButton = getByRole('button');
 
-      console.log(getByRole('form'));
+      fireEvent.change(ownerInput, { target: { value: 'backstage' } });
+      fireEvent.change(repoInput, { target: { value: 'repo123' } });
+
+      fireEvent.click(submitButton);
+
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          formData: 'github.com?owner=backstage&repo=repo123',
+        }),
+        expect.anything(),
+      );
     });
   });
 });
