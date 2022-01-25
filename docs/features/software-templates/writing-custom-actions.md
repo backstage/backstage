@@ -150,11 +150,12 @@ return await createRouter({
 Here is a list of Open Source custom actions that you can add to your Backstage
 scaffolder backend:
 
-| Name          | Package                                                                                                                                 | Owner                                        |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| Yeoman        | [plugin-scaffolder-backend-module-yeoman](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-yeoman)             | [Backstage](https://backstage.io)            |
-| Cookiecutter  | [plugin-scaffolder-backend-module-cookiecutter](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-cookiecutter) | [Backstage](https://backstage.io)            |
-| Rails         | [plugin-scaffolder-backend-module-rails](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-rails)               | [Backstage](https://backstage.io)            |
-| HTTP requests | [scaffolder-backend-module-http-request](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-http-request)                | [Roadie](https://roadie.io)                  |
+| Name                    | Package                                                                                                                                 | Owner                                        |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Yeoman                  | [plugin-scaffolder-backend-module-yeoman](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-yeoman)             | [Backstage](https://backstage.io)            |
+| Cookiecutter            | [plugin-scaffolder-backend-module-cookiecutter](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-cookiecutter) | [Backstage](https://backstage.io)            |
+| Rails                   | [plugin-scaffolder-backend-module-rails](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-rails)               | [Backstage](https://backstage.io)            |
+| HTTP requests           | [scaffolder-backend-module-http-request](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-http-request)                | [Roadie](https://roadie.io)                  |
 | Scaffolder .NET Actions | [plugin-scaffolder-dotnet-backend](https://www.npmjs.com/package/@plusultra/plugin-scaffolder-dotnet-backend)                           | [Alef Carlos](https://github.com/alefcarlos) |
+
 Have fun! 🚀
