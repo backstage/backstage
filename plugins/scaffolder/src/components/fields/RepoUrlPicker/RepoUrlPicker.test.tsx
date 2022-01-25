@@ -112,7 +112,7 @@ describe('RepoUrlPicker', () => {
 
   describe('requestUserCredentials', () => {
     it('should call the scmAuthApi with the correct params', async () => {
-      const { getByRole, getAllByRole } = await renderInTestApp(
+      const { getAllByRole } = await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],

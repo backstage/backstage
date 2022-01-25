@@ -60,7 +60,7 @@ export const useSecretsContext = () => {
     );
   }
 
-  const { secrets, setSecrets } = value;
+  const { setSecrets } = value;
 
   const setSecret = useCallback(
     (input: Record<string, string>) => {
