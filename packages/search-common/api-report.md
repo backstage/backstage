@@ -6,12 +6,21 @@
 import { JsonObject } from '@backstage/types';
 import { Permission } from '@backstage/plugin-permission-common';
 
+// Warning: (ae-missing-release-tag) "AuthorizableIndexableDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type AuthorizableIndexableDocument = IndexableDocument & {
+  authorization?: {
+    resourceRef: string;
+  };
+};
+
 // Warning: (ae-missing-release-tag) "DocumentCollator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export interface DocumentCollator {
   // (undocumented)
-  execute(): Promise<IndexableDocument[]>;
+  execute(): Promise<AuthorizableIndexableDocument[]>;
   readonly type: string;
   readonly visibilityPermission?: Permission;
 }
@@ -21,7 +30,9 @@ export interface DocumentCollator {
 // @public
 export interface DocumentDecorator {
   // (undocumented)
-  execute(documents: IndexableDocument[]): Promise<IndexableDocument[]>;
+  execute(
+    documents: AuthorizableIndexableDocument[],
+  ): Promise<AuthorizableIndexableDocument[]>;
   readonly types?: string[];
 }
 
@@ -36,9 +47,6 @@ export type DocumentTypeInfo = {
 //
 // @public
 export interface IndexableDocument {
-  authorization?: {
-    resourceRef: string;
-  };
   location: string;
   text: string;
   title: string;
@@ -60,7 +68,10 @@ export type QueryTranslator = (query: SearchQuery) => unknown;
 //
 // @public
 export interface SearchEngine {
-  index(type: string, documents: IndexableDocument[]): Promise<void>;
+  index(
+    type: string,
+    documents: AuthorizableIndexableDocument[],
+  ): Promise<void>;
   query(
     query: SearchQuery,
     options?: QueryRequestOptions,
@@ -87,7 +98,7 @@ export interface SearchQuery {
 // @public (undocumented)
 export interface SearchResult {
   // (undocumented)
-  document: IndexableDocument;
+  document: AuthorizableIndexableDocument;
   // (undocumented)
   type: string;
 }

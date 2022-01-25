@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { Account } from 'aws-sdk/clients/organizations';
+import { AuthorizableIndexableDocument } from '@backstage/search-common';
 import { BitbucketIntegration } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntitiesRequest } from '@backstage/catalog-client';
@@ -19,7 +20,6 @@ import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegrationConfig } from '@backstage/integration';
-import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Location as Location_2 } from '@backstage/catalog-model';
@@ -304,7 +304,7 @@ export const catalogConditions: Conditions<{
 // Warning: (ae-missing-release-tag) "CatalogEntityDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export interface CatalogEntityDocument extends IndexableDocument {
+export interface CatalogEntityDocument extends AuthorizableIndexableDocument {
   // (undocumented)
   componentType: string;
   // (undocumented)

@@ -5,12 +5,12 @@
 ```ts
 /// <reference types="node" />
 
+import { AuthorizableIndexableDocument } from '@backstage/search-common';
 import { Config } from '@backstage/config';
 import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
-import { IndexableDocument } from '@backstage/search-common';
 import { Logger as Logger_2 } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -202,7 +202,7 @@ export type RemoteProtocol = 'url' | 'dir';
 // Warning: (ae-missing-release-tag) "TechDocsDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export interface TechDocsDocument extends IndexableDocument {
+export interface TechDocsDocument extends AuthorizableIndexableDocument {
   // (undocumented)
   kind: string;
   // (undocumented)

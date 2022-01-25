@@ -23,8 +23,8 @@ import {
   PermissionAuthorizer,
 } from '@backstage/plugin-permission-common';
 import {
+  AuthorizableIndexableDocument,
   DocumentTypeInfo,
-  IndexableDocument,
   QueryRequestOptions,
   QueryTranslator,
   SearchEngine,
@@ -77,7 +77,10 @@ export class AuthorizedSearchEngine implements SearchEngine {
     this.searchEngine.setTranslator(translator);
   }
 
-  async index(type: string, documents: IndexableDocument[]): Promise<void> {
+  async index(
+    type: string,
+    documents: AuthorizableIndexableDocument[],
+  ): Promise<void> {
     this.searchEngine.index(type, documents);
   }
 

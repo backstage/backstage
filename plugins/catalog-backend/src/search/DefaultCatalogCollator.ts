@@ -23,7 +23,10 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
+import {
+  AuthorizableIndexableDocument,
+  DocumentCollator,
+} from '@backstage/search-common';
 import { Config } from '@backstage/config';
 import {
   CatalogApi,
@@ -32,7 +35,7 @@ import {
 } from '@backstage/catalog-client';
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
 
-export interface CatalogEntityDocument extends IndexableDocument {
+export interface CatalogEntityDocument extends AuthorizableIndexableDocument {
   componentType: string;
   namespace: string;
   kind: string;

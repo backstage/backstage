@@ -26,7 +26,7 @@ export interface SearchQuery {
 
 export interface SearchResult {
   type: string;
-  document: IndexableDocument;
+  document: AuthorizableIndexableDocument;
 }
 
 export interface SearchResultSet {
@@ -55,7 +55,13 @@ export interface IndexableDocument {
    * is clicked).
    */
   location: string;
+}
 
+/**
+ * {@link IndexableDocument} with additional information related to
+ * authorization.
+ */
+export type AuthorizableIndexableDocument = IndexableDocument & {
   /**
    * Optional authorization information to be used when determining whether this
    * search result should be visible to a given user.
@@ -66,7 +72,7 @@ export interface IndexableDocument {
      */
     resourceRef: string;
   };
-}
+};
 
 /**
  * Information about a specific document type. Intended to be used in the
@@ -98,7 +104,7 @@ export interface DocumentCollator {
    */
   readonly visibilityPermission?: Permission;
 
-  execute(): Promise<IndexableDocument[]>;
+  execute(): Promise<AuthorizableIndexableDocument[]>;
 }
 
 /**
@@ -112,7 +118,9 @@ export interface DocumentDecorator {
    * all document/index types.
    */
   readonly types?: string[];
-  execute(documents: IndexableDocument[]): Promise<IndexableDocument[]>;
+  execute(
+    documents: AuthorizableIndexableDocument[],
+  ): Promise<AuthorizableIndexableDocument[]>;
 }
 
 /**
@@ -139,7 +147,10 @@ export interface SearchEngine {
   /**
    * Add the given documents to the SearchEngine index of the given type.
    */
-  index(type: string, documents: IndexableDocument[]): Promise<void>;
+  index(
+    type: string,
+    documents: AuthorizableIndexableDocument[],
+  ): Promise<void>;
 
   /**
    * Perform a search query against the SearchEngine.

@@ -18,7 +18,7 @@ import {
   DocumentCollator,
   DocumentDecorator,
   DocumentTypeInfo,
-  IndexableDocument,
+  AuthorizableIndexableDocument,
   SearchEngine,
 } from '@backstage/search-common';
 import { Logger } from 'winston';
@@ -119,7 +119,7 @@ export class IndexBuilder {
         this.logger.debug(
           `Collating documents for ${type} via ${this.collators[type].collate.constructor.name}`,
         );
-        let documents: IndexableDocument[];
+        let documents: AuthorizableIndexableDocument[];
 
         try {
           documents = await this.collators[type].collate.execute();

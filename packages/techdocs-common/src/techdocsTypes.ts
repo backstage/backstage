@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { IndexableDocument } from '@backstage/search-common';
+import { AuthorizableIndexableDocument } from '@backstage/search-common';
 
-export interface TechDocsDocument extends IndexableDocument {
+export interface TechDocsDocument extends AuthorizableIndexableDocument {
   kind: string;
   namespace: string;
   name: string;
