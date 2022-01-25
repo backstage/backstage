@@ -132,11 +132,11 @@ export function Gauge(props: GaugeProps) {
   const asActual = max !== 100 ? Math.round(value) : asPercentage;
 
   const [isHovering, setIsHovering] = useState(false);
-  const handleMouseOver = () => setIsHovering(true);
-  const handleMouseOut = () => setIsHovering(false);
 
   useEffect(() => {
     const node = hoverRef;
+    const handleMouseOver = () => setIsHovering(true);
+    const handleMouseOut = () => setIsHovering(false);
     if (node && description) {
       node.addEventListener('mouseenter', handleMouseOver);
       node.addEventListener('mouseleave', handleMouseOut);
@@ -149,7 +149,7 @@ export function Gauge(props: GaugeProps) {
     return () => {
       setIsHovering(false);
     };
-  });
+  }, [description, hoverRef]);
 
   return (
     <div ref={setHoverRef} className={classes.root}>
