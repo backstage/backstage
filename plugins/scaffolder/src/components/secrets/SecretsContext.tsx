@@ -20,11 +20,10 @@ import React, {
   createContext,
   PropsWithChildren,
 } from 'react';
-import { JsonObject } from '@backstage/types';
 
 type SecretsContextContents = {
-  secrets: JsonObject;
-  setSecrets: React.Dispatch<React.SetStateAction<JsonObject>>;
+  secrets: Record<string, string>;
+  setSecrets: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 };
 
 /**
@@ -40,7 +39,7 @@ export const SecretsContext = createContext<SecretsContextContents | undefined>(
  * @public
  */
 export const SecretsContextProvider = ({ children }: PropsWithChildren<{}>) => {
-  const [secrets, setSecrets] = useState<JsonObject>({});
+  const [secrets, setSecrets] = useState<Record<string, string>>({});
 
   return (
     <SecretsContext.Provider value={{ secrets, setSecrets }}>
@@ -64,7 +63,7 @@ export const useSecretsContext = () => {
   const { secrets, setSecrets } = value;
 
   const setSecret = useCallback(
-    (input: JsonObject) => {
+    (input: Record<string, string>) => {
       setSecrets({ ...secrets, ...input });
     },
     [secrets, setSecrets],
