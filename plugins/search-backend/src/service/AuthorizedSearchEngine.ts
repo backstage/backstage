@@ -33,14 +33,24 @@ import {
   SearchResultSet,
 } from '@backstage/search-common';
 import { Config } from '@backstage/config';
+import { InputError } from '@backstage/errors';
 
 export function decodePageCursor(pageCursor?: string): { page: number } {
   if (!pageCursor) {
     return { page: 0 };
   }
 
+  const page = Number(Buffer.from(pageCursor, 'base64').toString('utf-8'));
+  if (isNaN(page)) {
+    throw new InputError('Invalid page cursor');
+  }
+
+  if (page < 0) {
+    throw new InputError('Invalid page cursor');
+  }
+
   return {
-    page: Number(Buffer.from(pageCursor, 'base64').toString('utf-8')),
+    page,
   };
 }
 
