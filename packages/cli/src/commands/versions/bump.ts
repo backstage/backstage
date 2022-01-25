@@ -19,7 +19,7 @@ import chalk from 'chalk';
 import semver from 'semver';
 import minimatch from 'minimatch';
 import { Command } from 'commander';
-import { isError } from '@backstage/errors';
+import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 import { run } from '../../lib/run';
 import { paths } from '../../lib/paths';
@@ -66,22 +66,19 @@ export default async (cmd: Command) => {
     console.log(`Using custom pattern glob ${pattern}`);
   }
 
-  if (cmd.releaseLine && cmd.backstageRelease) {
-    throw new Error(
-      'Cannot specify both --release-line and --backstage-release',
-    );
+  let findTargetVersion: (name: string) => Promise<string>;
+  if (semver.valid(cmd.release)) {
+    findTargetVersion = createStrictVersionFinder({
+      releaseManifest: await getByVersion({ version: cmd.release }),
+    });
+  } else {
+    findTargetVersion = createVersionFinder({
+      releaseLine: cmd.releaseLine,
+      releaseManifest: await getByReleaseLine({
+        releaseLine: cmd.release,
+      }),
+    });
   }
-
-  let releaseManifest;
-  if (cmd.backstageRelease) {
-    releaseManifest = await getByVersion({ version: cmd.backstageRelease });
-  } else if (cmd.releaseLine) {
-    releaseManifest = await getByReleaseLine({ releaseLine: cmd.releaseLine });
-  }
-  const findTargetVersion = createVersionFinder({
-    releaseLine: cmd.releaseLine,
-    releaseManifest,
-  });
 
   // First we discover all Backstage dependencies within our own repo
   const dependencyMap = await mapDependencies(paths.targetDir, pattern);
@@ -305,10 +302,26 @@ export default async (cmd: Command) => {
   }
 };
 
+export function createStrictVersionFinder(options: {
+  releaseManifest: ReleaseManifest;
+}) {
+  const releasePackages = new Map(
+    options.releaseManifest.packages.map(p => [p.name, p.version]),
+  );
+  return async function findTargetVersion(name: string) {
+    console.log(`Checking for updates of ${name}`);
+    const manifestVersion = releasePackages.get(name);
+    if (manifestVersion) {
+      return manifestVersion;
+    }
+    throw new NotFoundError(`Package ${name} not found in release manifest`);
+  };
+}
+
 export function createVersionFinder(options: {
   releaseLine?: string;
   packageInfoFetcher?: () => Promise<YarnInfoInspectData>;
-  releaseManifest?: ReleaseManifest;
+  releaseManifest: ReleaseManifest;
 }) {
   const {
     releaseLine = 'latest',
@@ -319,7 +332,7 @@ export function createVersionFinder(options: {
   const distTag = releaseLine === 'main' ? 'latest' : releaseLine;
   const found = new Map<string, string>();
   const releasePackages = new Map(
-    releaseManifest?.packages.map(p => [p.name, p.version]),
+    releaseManifest.packages.map(p => [p.name, p.version]),
   );
   return async function findTargetVersion(name: string) {
     const existing = found.get(name);
