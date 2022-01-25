@@ -20,8 +20,11 @@ import {
   AuthorizeResult,
   PermissionAuthorizer,
 } from '@backstage/plugin-permission-common';
-import { DocumentTypeInfo } from '@backstage/plugin-search-backend-node';
-import { IndexableDocument, SearchEngine } from '@backstage/search-common';
+import {
+  DocumentTypeInfo,
+  IndexableDocument,
+  SearchEngine,
+} from '@backstage/search-common';
 import {
   encodePageCursor,
   decodePageCursor,
