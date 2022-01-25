@@ -35,6 +35,8 @@ import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 
 ## Customizations
 
+### Custom layout
+
 A custom layout can be passed to the import page, as it's already
 supported by the search page. If no custom layout is passed, the default layout
 is used.
@@ -71,6 +73,37 @@ feature by passing options to `<CatalogImportPage>` (`pullRequest.disable` and
 `CatalogImportApi` which now provides an optional `preparePullRequest()`
 function. The function can either be overridden to generate a different content
 for the pull request, or removed to disable this feature.
+
+### Entity filename and branch name
+
+Entity filename (default: `catalog-info.yaml`) and branch name (default: `backstage-integration`) used in pull requests can be configured in `app-config.yaml` as follows:
+
+```yaml
+// app-config.yaml
+
+catalog:
+  import:
+    entityFilename: anvil.yaml
+    pullRequestBranchName: anvil-integration
+```
+
+### Entity examples
+
+Following React components accept optional props for providing custom example entity and repository paths:
+
+```tsx
+<StepInitAnalyzeUrl
+  ...
+  exampleLocationUrl="https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml"
+/>
+```
+
+```tsx
+<ImportInfoCard
+  exampleLocationUrl="https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml"
+  exampleRepositoryUrl="https://github.com/acme-corp/our-awesome-api"
+/>
+```
 
 ## Development
 
