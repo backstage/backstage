@@ -86,7 +86,7 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
       />
       <ListItemSecondaryAction>
         {externalLinkElem}
-        {changeEvent.html_url === undefined ? null :
+        {changeEvent.html_url === undefined ? null : (
           <Tooltip title="View in PagerDuty" placement="top">
             <IconButton
               href={changeEvent.html_url}
@@ -97,7 +97,7 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
               <OpenInBrowserIcon />
             </IconButton>
           </Tooltip>
-        }
+        )}
       </ListItemSecondaryAction>
     </ListItem>
   );
