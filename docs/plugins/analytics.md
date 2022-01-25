@@ -141,6 +141,63 @@ By convention, such packages should be named
 `@backstage/analytics-module-[name]`, and any configuration should be keyed
 under `app.analytics.[name]`.
 
+### Handling User Identity
+
+If the analytics platform you are integrating with has a first-class concept of
+user identity, you can (optionally) choose to support this by the following this
+convention:
+
+- Allow your implementation to be instantiated with the `identityApi` as one of
+  its options in a `fromConfig` static method.
+- Use the `userEntityRef` resolved by `identityApi`'s `getBackstageIdentity()`
+  method as the basis for the user ID you send to your analytics platform.
+
+For example:
+
+```typescript
+import {
+  AnalyticsApi,
+  analyticsApiRef,
+  AnyApiFactory,
+  configApiRef,
+  createApiFactory,
+  identityApiRef,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
+
+// Implementation that optionally initializes with a userId.
+class AcmeAnalytics implements AnalyticsApi {
+  private constructor(accountId: number, identityApi?: IdentityApi) {
+    if (identityApi) {
+      identityApi.getBackstageIdentity().then(identity => {
+        AcmeAnalytics.init(accountId, {
+          userId: identity.userEntityRef,
+        });
+      });
+    } else {
+      AcmeAnalytics.init(accountId);
+    }
+  }
+
+  static fromConfig(config, options) {
+    const accountId = config.getString('app.analytics.acme.id');
+    return new AcmeAnalytics(accountId, options.identityApi);
+  }
+}
+
+// Your implementation should be instantiated like this:
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: analyticsApiRef,
+    deps: { configApi: configApiRef, identityApi: identityApiRef },
+    factory: ({ configApi, identityApi }) =>
+      AcmeAnalytics.fromConfig(configApi, {
+        identityApi,
+      }),
+  }),
+];
+```
+
 ## Capturing Events
 
 To instrument an event in a component, start by retrieving an analytics tracker
