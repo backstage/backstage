@@ -90,13 +90,13 @@ export class AuthorizedSearchEngine implements SearchEngine {
     const authorizer = new DataLoader((requests: readonly AuthorizeQuery[]) =>
       this.permissions.authorize(requests.slice(), options),
     );
-
     const requestedTypes = query.types || Object.keys(this.types);
+
     const typeDecisions = zipObject(
       requestedTypes,
       await Promise.all(
         requestedTypes.map(type => {
-          const permission = this.types[type].visibilityPermission;
+          const permission = this.types[type]?.visibilityPermission;
 
           return permission
             ? authorizer.load({ permission })
@@ -162,7 +162,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
             return result;
           }
 
-          const permission = this.types[result.type].visibilityPermission;
+          const permission = this.types[result.type]?.visibilityPermission;
           const resourceRef = result.document.authorization?.resourceRef;
 
           if (!permission || !resourceRef) {
