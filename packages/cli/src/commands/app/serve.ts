@@ -22,16 +22,16 @@ import { serveBundle } from '../../lib/bundler';
 import { loadCliConfig } from '../../lib/config';
 import { paths } from '../../lib/paths';
 import { Lockfile } from '../../lib/versioning';
-import { includedFilter } from '../versions/lint';
+import { forbiddenDuplicatesFilter, includedFilter } from '../versions/lint';
 
 export default async (cmd: Command) => {
   const lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
   const result = lockfile.analyze({
     filter: includedFilter,
   });
-  const problemPackages = [...result.newVersions, ...result.newRanges].map(
-    ({ name }) => name,
-  );
+  const problemPackages = [...result.newVersions, ...result.newRanges]
+    .map(({ name }) => name)
+    .filter(name => forbiddenDuplicatesFilter(name));
 
   if (problemPackages.length > 1) {
     console.log(
@@ -44,7 +44,7 @@ export default async (cmd: Command) => {
     );
     console.log(
       chalk.yellow(
-        `⚠️ This can be resolved using the following command:
+        `⚠️ The following command may fix the issue, but it could also be an issue within one of your dependencies:
 
           yarn backstage-cli versions:check --fix
       `,
