@@ -21,16 +21,56 @@ import { paths } from '../paths';
 import { PackageRole, PackageRoleInfo } from './types';
 
 const packageRoleInfos: PackageRoleInfo[] = [
-  { role: 'app', bundled: true, platform: 'web' },
-  { role: 'backend', bundled: true, platform: 'node' },
-  { role: 'cli', bundled: false, platform: 'node' },
-  { role: 'web-library', bundled: false, platform: 'web' },
-  { role: 'node-library', bundled: false, platform: 'node' },
-  { role: 'common-library', bundled: false, platform: 'common' },
-  { role: 'plugin-frontend', bundled: false, platform: 'web' },
-  { role: 'plugin-frontend-module', bundled: false, platform: 'web' },
-  { role: 'plugin-backend', bundled: false, platform: 'node' },
-  { role: 'plugin-backend-module', bundled: false, platform: 'node' },
+  {
+    role: 'app',
+    platform: 'web',
+    output: ['bundle'],
+  },
+  {
+    role: 'backend',
+    platform: 'node',
+    output: ['bundle'],
+  },
+  {
+    role: 'cli',
+    platform: 'node',
+    output: ['cjs'],
+  },
+  {
+    role: 'web-library',
+    platform: 'web',
+    output: ['types', 'esm'],
+  },
+  {
+    role: 'node-library',
+    platform: 'node',
+    output: ['types', 'cjs'],
+  },
+  {
+    role: 'common-library',
+    platform: 'common',
+    output: ['types', 'esm', 'cjs'],
+  },
+  {
+    role: 'plugin-frontend',
+    platform: 'web',
+    output: ['types', 'esm'],
+  },
+  {
+    role: 'plugin-frontend-module',
+    platform: 'web',
+    output: ['types', 'esm'],
+  },
+  {
+    role: 'plugin-backend',
+    platform: 'node',
+    output: ['types', 'cjs'],
+  },
+  {
+    role: 'plugin-backend-module',
+    platform: 'node',
+    output: ['types', 'cjs'],
+  },
 ];
 
 export function getRoleInfo(role: string): PackageRoleInfo {

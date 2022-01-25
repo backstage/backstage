@@ -28,13 +28,13 @@ describe('getRoleInfo', () => {
     expect(getRoleInfo('web-library')).toEqual({
       role: 'web-library',
       platform: 'web',
-      bundled: false,
+      output: ['types', 'esm'],
     });
 
     expect(getRoleInfo('app')).toEqual({
       role: 'app',
       platform: 'web',
-      bundled: true,
+      output: ['bundle'],
     });
 
     expect(() => getRoleInfo('invalid')).toThrow(

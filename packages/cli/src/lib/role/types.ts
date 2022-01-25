@@ -27,9 +27,10 @@ export type PackageRole =
   | 'plugin-backend-module';
 
 export type PackagePlatform = 'node' | 'web' | 'common';
+export type PackageOutputType = 'bundle' | 'types' | 'esm' | 'cjs';
 
 export interface PackageRoleInfo {
   role: PackageRole;
-  bundled: boolean;
   platform: PackagePlatform;
+  output: PackageOutputType[];
 }

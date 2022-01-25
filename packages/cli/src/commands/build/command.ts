@@ -20,9 +20,6 @@ import { PackageRole, findRoleFromCommand, getRoleInfo } from '../../lib/role';
 
 const bundledRoles: PackageRole[] = ['app', 'backend'];
 
-const esmPlatforms = ['web', 'common'];
-const cjsPlatforms = ['node', 'common'];
-
 export async function command(cmd: Command): Promise<void> {
   const role = await findRoleFromCommand(cmd);
   const roleInfo = getRoleInfo(role);
@@ -35,13 +32,13 @@ export async function command(cmd: Command): Promise<void> {
 
   const outputs = new Set<Output>();
 
-  if (cjsPlatforms.includes(roleInfo.platform)) {
+  if (roleInfo.output.includes('cjs')) {
     outputs.add(Output.cjs);
   }
-  if (esmPlatforms.includes(roleInfo.platform)) {
+  if (roleInfo.output.includes('esm')) {
     outputs.add(Output.esm);
   }
-  if (role !== 'cli') {
+  if (roleInfo.output.includes('types')) {
     outputs.add(Output.types);
   }
 
