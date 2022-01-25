@@ -211,19 +211,20 @@ export class OidcAuthProvider implements OAuthHandlers {
   }
 }
 
-export const oAuth2DefaultSignInResolver: SignInResolver<OidcAuthResult> =
-  async (info, ctx) => {
-    const { profile } = info;
+export const oAuth2DefaultSignInResolver: SignInResolver<
+  OidcAuthResult
+> = async (info, ctx) => {
+  const { profile } = info;
 
-    if (!profile.email) {
-      throw new Error('Profile contained no email');
-    }
-    const userId = profile.email.split('@')[0];
-    const token = await ctx.tokenIssuer.issueToken({
-      claims: { sub: userId, ent: [`user:default/${userId}`] },
-    });
-    return { id: userId, token };
-  };
+  if (!profile.email) {
+    throw new Error('Profile contained no email');
+  }
+  const userId = profile.email.split('@')[0];
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: { sub: userId, ent: [`user:default/${userId}`] },
+  });
+  return { id: userId, token };
+};
 
 /**
  * OIDC provider callback options. An auth handler and a sign in resolver
