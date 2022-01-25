@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { assertError } from '@backstage/errors';
 import {
   catalogApiRef,
@@ -28,6 +28,7 @@ import { UnpackNestedValue, UseFormReturn } from 'react-hook-form';
 import useAsync from 'react-use/lib/useAsync';
 import YAML from 'yaml';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
+import { useCatalogFilename } from '../../hooks';
 import { PartialEntity } from '../../types';
 import { BackButton, NextButton } from '../Buttons';
 import { PrepareResult } from '../useImportState';
@@ -102,14 +103,11 @@ export const StepPrepareCreatePullRequest = ({
   const catalogApi = useApi(catalogApiRef);
   const catalogImportApi = useApi(catalogImportApiRef);
   const errorApi = useApi(errorApiRef);
-  const configApi = useApi(configApiRef);
 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string>();
 
-  const catalogFilename =
-    configApi.getOptionalString('catalog.import.entityFilename') ??
-    'catalog-info.yaml';
+  const catalogFilename = useCatalogFilename();
 
   const {
     loading: prDefaultsLoading,
