@@ -21,9 +21,8 @@ import { ApiBar } from './components/ApiBar';
 import { Content, Header, Page } from '@backstage/core-components';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { createEntity } from '../src/api/mock/mock-entity';
-import AirplanemodeActiveIcon from '@material-ui/icons/AirplanemodeActive';
-import AirplanemodeInactiveIcon from '@material-ui/icons/AirplanemodeInactive';
-import { FlexColumn } from './components/FlexColumn';
+import CloudOffIcon from '@material-ui/icons/CloudOff';
+import CloudIcon from '@material-ui/icons/Cloud';
 
 createDevApp()
   .registerPlugin(airbrakePlugin)
@@ -35,42 +34,33 @@ createDevApp()
   .addPage({
     element: (
       <Page themeId="tool">
-        <Header
-          title="Airbrake demo application"
-          subtitle="This uses a fake API"
-        />
+        <Header title="Airbrake demo application" subtitle="Mock API" />
         <Content>
-          <FlexColumn>
-            <EntityProvider entity={createEntity('demo')}>
-              <EntityAirbrakeContent />
-            </EntityProvider>
-          </FlexColumn>
+          <EntityProvider entity={createEntity('demo')}>
+            <EntityAirbrakeContent />
+          </EntityProvider>
         </Content>
       </Page>
     ),
     title: 'Mock API',
     path: '/airbrake-mock-api',
-    icon: AirplanemodeActiveIcon,
+    icon: CloudOffIcon,
   })
   .addPage({
     element: (
       <Page themeId="tool">
-        <Header
-          title="Airbrake demo application"
-          subtitle="Test the plugin below"
-        />
+        <Header title="Airbrake demo application" subtitle="Real API">
+          <ApiBar />
+        </Header>
         <Content>
-          <FlexColumn>
-            <ApiBar />
-            <EntityProvider entity={createEntity('demo')}>
-              <EntityAirbrakeContent />
-            </EntityProvider>
-          </FlexColumn>
+          <EntityProvider entity={createEntity('demo')}>
+            <EntityAirbrakeContent />
+          </EntityProvider>
         </Content>
       </Page>
     ),
     title: 'Real API',
     path: '/airbrake-real-api',
-    icon: AirplanemodeInactiveIcon,
+    icon: CloudIcon,
   })
   .render();
