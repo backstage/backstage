@@ -225,7 +225,7 @@ This may seem complex, but is a vital mechanism for ensuring that users aren't
 permitted to do "rogue" takeovers of already registered entities that belong to
 others.
 
-## Installing the Provider
+### Installing the Provider
 
 You should now be able to add this class to your backend in
 `packages/backend/src/plugins/catalog.ts`:
@@ -242,10 +242,12 @@ You should now be able to add this class to your backend in
 +  const frobs = new FrobsProvider('production', env.reader);
 +  builder.addEntityProvider(frobs);
 
+   const { processingEngine, router } = await builder.build();
+   await processingEngine.start();
+
 +  await env.scheduler.scheduleTask({
 +    id: 'run_frobs_refresh',
 +    fn: async () => { await frobs.run(); },
-+    initialDelay: Duration.fromObject({ seconds: 10 }),
 +    frequency: Duration.fromObject({ minutes: 30 }),
 +    timeout: Duration.fromObject({ minutes: 10 }),
 +  });
@@ -253,7 +255,9 @@ You should now be able to add this class to your backend in
 
 Note that we used the builtin scheduler facility to regularly call the `run`
 method of the provider, in this example. It is a suitable driver for this
-particular type of recurring task.
+particular type of recurring task. We placed the scheduling after the actual
+construction and startup phase of the rest of the catalog, because at that point
+the `connect` call has been made to the provider.
 
 Start up the backend - it should now start reading from the previously
 registered location and you'll see your entities start to appear in Backstage.
