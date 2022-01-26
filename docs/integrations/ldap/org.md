@@ -336,13 +336,11 @@ import { PluginEnvironment } from '../types';
 import { Router } from 'express';
 import { LdapOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-ldap';
 
-import { TaskScheduler } from '@backstage/backend-tasks';
 import { Duration } from 'luxon';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const scheduler = TaskScheduler.fromConfig(env.config).forPlugin('catalog');
   const ldapEntityProvider = LdapOrgEntityProvider.fromConfig(env.config, {
     id: 'custom-ldap',
     // target needs to match the catalog.processors.ldapOrg.providers.target specified in app-config
@@ -350,10 +348,17 @@ export default async function createPlugin(
     logger: env.logger,
   });
 
-  await scheduler.scheduleTask({
-    id: 'refresh-ldap',
-    // initialDelay is the time to wait before running the first cycle, you might need to adjust this delay to make sure that the ldapEntityProvider has been initialized before running.
-    initialDelay: Duration.fromMillis(10000),
+  const builder = await CatalogBuilder.create(env);
+  builder.addEntityProvider(ldapEntityProvider);
+
+  // You can change the refresh interval for the other catalog entries independently, or just leave the line below out to use the default refresh interval
+  builder.setRefreshIntervalSeconds(100);
+
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+
+  await env.scheduler.scheduleTask({
+    id: 'refresh_ldap',
     // frequency sets how often you want to ingest users and groups from LDAP, in this case every 60 minutes
     frequency: Duration.fromObject({ minutes: 60 }),
     timeout: Duration.fromObject({ minutes: 15 }),
@@ -361,19 +366,11 @@ export default async function createPlugin(
       try {
         await ldapEntityProvider.read();
       } catch (error) {
-        console.error(error);
+        env.logger.error(error);
       }
     },
   });
 
-  const builder = await CatalogBuilder.create(env);
-  builder.addEntityProvider(ldapEntityProvider);
-
-  // Now you can change the refresh interval for the other catalog entries independantly, or just leave the line below out to use the default refresh interval
-  builder.setRefreshIntervalSeconds(100);
-
-  const { processingEngine, router } = await builder.build();
-  await processingEngine.start();
   return router;
 }
 ```
