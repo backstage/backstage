@@ -53,6 +53,9 @@ const useStyles = makeStyles<BackstageTheme>(
       backgroundImage: theme.page.backgroundImage,
       backgroundPosition: 'center',
       backgroundSize: 'cover',
+      [theme.breakpoints.down('sm')]: {
+        flexWrap: 'wrap',
+      },
     },
     leftItemsBox: {
       maxWidth: '100%',
