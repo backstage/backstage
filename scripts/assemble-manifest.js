@@ -45,7 +45,7 @@ async function main() {
       p =>
         (p.packageJson.name.startsWith('@backstage/') ||
           p.packageJson.name.startsWith('@techdocs/')) &&
-        p.packageJson.private === false,
+        p.packageJson.private !== true,
     )
     .map(p => {
       return { name: p.packageJson.name, version: p.packageJson.version };
