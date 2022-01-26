@@ -478,7 +478,11 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     handlers: OAuthHandlers,
     options: Pick<
       Options,
-      'providerId' | 'persistScopes' | 'disableRefresh' | 'tokenIssuer'
+      | 'providerId'
+      | 'persistScopes'
+      | 'disableRefresh'
+      | 'tokenIssuer'
+      | 'callbackUrl'
     >,
   ): OAuthAdapter;
   // (undocumented)
