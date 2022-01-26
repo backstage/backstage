@@ -67,6 +67,9 @@ export async function serveBundle(options: ServeOptions) {
       proxy: pkg.proxy,
       // When the dev server is behind a proxy, the host and public hostname differ
       allowedHosts: [url.hostname],
+      client: {
+        webSocketURL: 'auto://0.0.0.0:0/ws',
+      },
     } as any,
   );
 
