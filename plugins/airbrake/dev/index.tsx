@@ -23,6 +23,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { createEntity } from '../src/api/mock/mock-entity';
 import AirplanemodeActiveIcon from '@material-ui/icons/AirplanemodeActive';
 import AirplanemodeInactiveIcon from '@material-ui/icons/AirplanemodeInactive';
+import { FlexColumn } from './components/FlexColumn';
 
 createDevApp()
   .registerPlugin(airbrakePlugin)
@@ -39,17 +40,11 @@ createDevApp()
           subtitle="This uses a fake API"
         />
         <Content>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '2em',
-            }}
-          >
+          <FlexColumn>
             <EntityProvider entity={createEntity('demo')}>
               <EntityAirbrakeContent />
             </EntityProvider>
-          </div>
+          </FlexColumn>
         </Content>
       </Page>
     ),
@@ -65,18 +60,12 @@ createDevApp()
           subtitle="Test the plugin below"
         />
         <Content>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '2em',
-            }}
-          >
+          <FlexColumn>
             <ApiBar />
             <EntityProvider entity={createEntity('demo')}>
               <EntityAirbrakeContent />
             </EntityProvider>
-          </div>
+          </FlexColumn>
         </Content>
       </Page>
     ),

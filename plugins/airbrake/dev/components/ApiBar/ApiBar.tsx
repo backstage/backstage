@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import { makeStyles, MenuItem, TextField } from '@material-ui/core';
+import { makeStyles, TextField } from '@material-ui/core';
 
 const useStyles = makeStyles({
   root: {
@@ -26,42 +26,21 @@ const useStyles = makeStyles({
 
 export const ApiBar = () => {
   const classes = useStyles();
-  const apiOptions = [
-    { label: 'Fake', value: 'fake' },
-    { label: 'Real', value: 'real' },
-  ];
-  const [api, setApi] = useState<string>('fake');
   const [projectId, setProjectId] = useState<number>();
   const [apiKey, setApiKey] = useState<string>('');
 
   return (
     <div className={classes.root}>
       <TextField
-        select
-        label="API"
-        value={api}
-        onChange={e => setApi(e.target.value)}
-      >
-        {apiOptions.map(option => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </TextField>
-      {api === 'real' && (
-        <>
-          <TextField
-            label="Project ID"
-            value={projectId}
-            onChange={e => setProjectId(parseInt(e.target.value, 10))}
-          />
-          <TextField
-            label="API Key"
-            value={apiKey}
-            onChange={e => setApiKey(e.target.value)}
-          />
-        </>
-      )}
+        label="Project ID"
+        value={projectId}
+        onChange={e => setProjectId(parseInt(e.target.value, 10))}
+      />
+      <TextField
+        label="API Key"
+        value={apiKey}
+        onChange={e => setApiKey(e.target.value)}
+      />
     </div>
   );
 };
