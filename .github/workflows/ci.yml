@@ -4,6 +4,11 @@ on:
   pull_request:
     paths-ignore:
       - 'microsite/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
     runs-on: ubuntu-latest
