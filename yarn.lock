@@ -20544,10 +20544,10 @@ react-test-renderer@^16.13.1:
     react-is "^16.8.6"
     scheduler "^0.19.1"
 
-react-text-truncate@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.npmjs.org/react-text-truncate/-/react-text-truncate-0.16.0.tgz#03bbb942437dfba5cc0faf614f1339f888926f80"
-  integrity sha512-hMFXhUHgIBCCDaOfOsZAFeO4DGfG/paLyaS/F+X11CXseuScpxmMBUW6Luwjk9/FlGrVJWNGy1FSfK6b4yyiIg==
+react-text-truncate@^0.17.0:
+  version "0.17.0"
+  resolved "https://registry.npmjs.org/react-text-truncate/-/react-text-truncate-0.17.0.tgz#a820bfd9d084caf85d900a011fe2ab4216fc3821"
+  integrity sha512-EUL7s47XApOgbR//t/9X+fXg1feS47RcTywNXEQZAlNL0vrCIYGye1C+mpUgGIIXKTkabweid6z7s16AkTo5sA==
   dependencies:
     prop-types "^15.5.7"
 
