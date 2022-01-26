@@ -71,6 +71,5 @@ which carries a much higher rate limit at GitHub.
 This is true for any method of adding GitHub entities to the catalog, but
 especially easy to hit with automatic discovery.
 
-[rate limits]:
-  https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
+[rate limits]: https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
 [github-apps]: ../../plugins/github-apps.md

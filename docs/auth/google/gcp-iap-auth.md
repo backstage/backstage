@@ -25,8 +25,7 @@ Let's start by adding the following `auth` configuration in your
 auth:
   providers:
     gcp-iap:
-      audience:
-        '/projects/<project number>/global/backendServices/<backend service id>'
+      audience: '/projects/<project number>/global/backendServices/<backend service id>'
 ```
 
 You can find the project number and service ID in the Google Cloud Console.

@@ -110,10 +110,8 @@ needs to be addressed.
 | CLI (for local development and generating docs) | [`@techdocs/cli`][techdocs/cli]                          |
 | Docker Container (for generating docs)          | [`techdocs-container`][techdocs/container]               |
 
-[techdocs/frontend]:
-  https://github.com/backstage/backstage/blob/master/plugins/techdocs
-[techdocs/backend]:
-  https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend
+[techdocs/frontend]: https://github.com/backstage/backstage/blob/master/plugins/techdocs
+[techdocs/backend]: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend
 [techdocs/container]: https://github.com/backstage/techdocs-container
 [techdocs/cli]: https://github.com/backstage/techdocs-cli
 

@@ -51,5 +51,4 @@ console and browse the file you would like to import. Then copy the
 form. This url should look like
 `https://storage.cloud.google.com/<bucket>/<path>/catalog-info.yaml`.
 
-[google gcs docs]:
-  https://cloud.google.com/docs/authentication/production#auth-cloud-implicit-nodejs
+[google gcs docs]: https://cloud.google.com/docs/authentication/production#auth-cloud-implicit-nodejs

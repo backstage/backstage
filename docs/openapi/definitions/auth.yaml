@@ -86,8 +86,7 @@ paths:
             example: email
         - name: code
           in: query
-          description:
-            Short-term authorization code used to be exchanged for access tokens
+          description: Short-term authorization code used to be exchanged for access tokens
           required: true
           schema:
             type: string
