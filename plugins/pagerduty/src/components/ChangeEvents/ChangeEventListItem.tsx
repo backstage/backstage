@@ -59,7 +59,11 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
     const text: string = changeEvent.links[0].text;
     externalLinkElem = (
       <Tooltip title={text} placement="top">
-        <IconButton component={Link} to={changeEvent.links[0].href}>
+        <IconButton
+          component={Link}
+          to={changeEvent.links[0].href}
+          color="primary"
+        >
           <OpenInBrowserIcon />
         </IconButton>
       </Tooltip>
