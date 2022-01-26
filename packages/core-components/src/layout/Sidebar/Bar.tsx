@@ -182,13 +182,9 @@ const DesktopSidebar = (props: SidebarProps) => {
           className={classes.root}
           data-testid="sidebar-root"
           onMouseEnter={disableExpandOnHover ? () => {} : handleOpen}
-          onFocus={
-            disableExpandOnHover ? () => {} : ignoreChildEvent(handleOpen)
-          }
+          onFocus={disableExpandOnHover ? () => {} : handleOpen}
           onMouseLeave={disableExpandOnHover ? () => {} : handleClose}
-          onBlur={
-            disableExpandOnHover ? () => {} : ignoreChildEvent(handleClose)
-          }
+          onBlur={disableExpandOnHover ? () => {} : handleClose}
         >
           <div
             className={classnames(classes.drawer, {
@@ -241,14 +237,4 @@ function A11ySkipSidebar() {
       Skip to content
     </Button>
   );
-}
-
-function ignoreChildEvent(handlerFn: (e?: any) => void) {
-  // TODO type the event
-  return (event: any) => {
-    const currentTarget = event?.currentTarget as HTMLElement;
-    if (!currentTarget?.contains(event.relatedTarget as HTMLElement)) {
-      handlerFn(event);
-    }
-  };
 }
