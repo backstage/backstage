@@ -2,4 +2,4 @@
 '@backstage/plugin-pagerduty': patch
 ---
 
-Fixes change events tab from erroring when change events exist
+Fix change events tab error when change events exist
