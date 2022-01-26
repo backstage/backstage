@@ -267,6 +267,7 @@ export const createMicrosoftProvider = (
     globalConfig,
     config,
     tokenIssuer,
+    tokenManager,
     catalogApi,
     logger,
   }) =>
@@ -281,7 +282,7 @@ export const createMicrosoftProvider = (
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
-        tokenIssuer,
+        tokenManager,
       });
 
       const authHandler: AuthHandler<OAuthResult> = options?.authHandler

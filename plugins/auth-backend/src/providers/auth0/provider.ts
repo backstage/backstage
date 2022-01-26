@@ -220,6 +220,7 @@ export const createAuth0Provider = (
     globalConfig,
     config,
     tokenIssuer,
+    tokenManager,
     catalogApi,
     logger,
   }) =>
@@ -231,7 +232,7 @@ export const createAuth0Provider = (
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
-        tokenIssuer,
+        tokenManager,
       });
 
       const authHandler: AuthHandler<OAuthResult> = options?.authHandler

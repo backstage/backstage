@@ -245,6 +245,7 @@ export const createGithubProvider = (
     globalConfig,
     config,
     tokenIssuer,
+    tokenManager,
     catalogApi,
     logger,
   }) =>
@@ -270,7 +271,7 @@ export const createGithubProvider = (
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
-        tokenIssuer,
+        tokenManager,
       });
 
       const authHandler: AuthHandler<GithubOAuthResult> = options?.authHandler

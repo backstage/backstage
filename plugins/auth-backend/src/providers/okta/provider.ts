@@ -268,6 +268,7 @@ export const createOktaProvider = (
     globalConfig,
     config,
     tokenIssuer,
+    tokenManager,
     catalogApi,
     logger,
   }) =>
@@ -286,7 +287,7 @@ export const createOktaProvider = (
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
-        tokenIssuer,
+        tokenManager,
       });
 
       const authHandler: AuthHandler<OAuthResult> = _options?.authHandler

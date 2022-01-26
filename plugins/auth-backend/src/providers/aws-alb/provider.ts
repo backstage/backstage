@@ -241,7 +241,7 @@ export type AwsAlbProviderOptions = {
 export const createAwsAlbProvider = (
   options?: AwsAlbProviderOptions,
 ): AuthProviderFactory => {
-  return ({ config, tokenIssuer, catalogApi, logger }) => {
+  return ({ config, tokenIssuer, catalogApi, logger, tokenManager }) => {
     const region = config.getString('region');
     const issuer = config.getOptionalString('iss');
 
@@ -253,7 +253,7 @@ export const createAwsAlbProvider = (
 
     const catalogIdentityClient = new CatalogIdentityClient({
       catalogApi,
-      tokenIssuer,
+      tokenManager,
     });
 
     const authHandler: AuthHandler<AwsAlbResult> = options?.authHandler
