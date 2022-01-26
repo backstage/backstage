@@ -231,8 +231,12 @@ export default async (cmd: Command) => {
 
     console.log();
 
-    await bumpBackstageJsonVersion();
-
+    // Do not update backstage.json when upgrade patterns are used.
+    if (pattern === DEFAULT_PATTERN_GLOB) {
+      await bumpBackstageJsonVersion(
+        await findTargetVersion('@backstage/create-app'),
+      );
+    }
     console.log();
     console.log(
       `Running ${chalk.blue('yarn install')} to install new versions`,
@@ -384,7 +388,7 @@ export function createVersionFinder(options: {
   };
 }
 
-export async function bumpBackstageJsonVersion() {
+export async function bumpBackstageJsonVersion(createAppVersion: string) {
   const backstageJsonPath = paths.resolveTargetRoot(BACKSTAGE_JSON);
   const backstageJson = await fs.readJSON(backstageJsonPath).catch(e => {
     if (e.code === 'ENOENT') {
@@ -394,10 +398,7 @@ export async function bumpBackstageJsonVersion() {
     throw e;
   });
 
-  const info = await fetchPackageInfo('@backstage/create-app');
-  const { latest } = info['dist-tags'];
-
-  if (backstageJson?.version === latest) {
+  if (backstageJson?.version === createAppVersion) {
     return;
   }
 
@@ -411,7 +412,7 @@ export async function bumpBackstageJsonVersion() {
 
   await fs.writeJson(
     backstageJsonPath,
-    { ...backstageJson, version: latest },
+    { ...backstageJson, version: createAppVersion },
     {
       spaces: 2,
       encoding: 'utf8',
