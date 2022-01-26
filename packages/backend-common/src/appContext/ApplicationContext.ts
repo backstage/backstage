@@ -60,16 +60,13 @@ export class InversifyApplicationContext implements ApplicationContext {
         ...new Set(dependencies.map(it => it.id)),
       ].join(', ')}`,
     );
-    const boundContainer =
-      InversifyApplicationContext.bindDependenciesIfNotBound(
-        dependencies,
-        container ?? new Container(),
-      );
-    return new InversifyApplicationContext({
+    const context = new InversifyApplicationContext({
       identifier: identifier ?? 'root',
-      container: boundContainer,
+      container: container ?? new Container(),
       logger,
     });
+    context.bindDependenciesIfNotBound(dependencies);
+    return context;
   }
 
   private constructor(opts: {
@@ -122,10 +119,7 @@ export class InversifyApplicationContext implements ApplicationContext {
         ...new Set(dependencies.map(it => it.id)),
       ].join(', ')}.`,
     );
-    InversifyApplicationContext.bindDependenciesIfNotBound(
-      dependencies,
-      childContainer,
-    );
+    childContext.bindDependenciesIfNotBound(dependencies);
     return {
       name: plugin,
       instance: initialize(childContext),
@@ -135,39 +129,35 @@ export class InversifyApplicationContext implements ApplicationContext {
     };
   }
 
-  private static bindDependenciesIfNotBound(
-    configs: AnyDependencyConfig[],
-    container: interfaces.Container,
-  ) {
+  private bindDependenciesIfNotBound(configs: AnyDependencyConfig[]) {
+    const extractDependenciesFromContainer = (
+      dependencyConfig: AnyDependencyConfig,
+      c: interfaces.Container,
+    ) => {
+      return Object.entries(dependencyConfig.dependencies ?? {}).reduce(
+        (acc, [id, dep]) => ({
+          ...acc,
+          [id]: c.get<typeof dep.T>(dep.id),
+        }),
+        {},
+      );
+    };
+
     configs.forEach(dependencyConfig => {
-      if (!container.isBound(dependencyConfig.id.id)) {
-        container
+      // TODO: We are checking binding status naively here.
+      // We should accept a config option in dependencyConfig the correct way to check binding status
+      // Giving the possibility to force rebind etc. if needed.
+      if (!this.container.isBound(dependencyConfig.id.id)) {
+        this.container
           .bind(dependencyConfig.id.id)
           // TODO: We are always binding to a dynamic value here by calling the factory to construct a dependency.
           // We should accept a config option in dependencyConfig to determine the binding type instead
-          .toDynamicValue(({ container: c }) => {
-            const deps =
-              InversifyApplicationContext.extractDependenciesFromContainer(
-                dependencyConfig,
-                c,
-              );
-            return dependencyConfig.factory(deps);
-          });
+          .toDynamicValue(({ container: c }) =>
+            dependencyConfig.factory(
+              extractDependenciesFromContainer(dependencyConfig, c),
+            ),
+          );
       }
     });
-    return container;
-  }
-
-  private static extractDependenciesFromContainer(
-    dependencyConfig: AnyDependencyConfig,
-    c: interfaces.Container,
-  ) {
-    return Object.entries(dependencyConfig.dependencies ?? {}).reduce(
-      (acc, [id, dep]) => ({
-        ...acc,
-        [id]: c.get<typeof dep.T>(dep.id),
-      }),
-      {},
-    );
   }
 }
