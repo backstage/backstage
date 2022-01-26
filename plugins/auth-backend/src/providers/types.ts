@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -124,6 +127,7 @@ export type AuthProviderFactoryOptions = {
   globalConfig: AuthProviderConfig;
   config: Config;
   logger: Logger;
+  tokenManager: TokenManager;
   tokenIssuer: TokenIssuer;
   discovery: PluginEndpointDiscovery;
   catalogApi: CatalogApi;

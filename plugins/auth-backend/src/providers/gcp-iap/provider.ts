@@ -102,7 +102,7 @@ export class GcpIapProvider implements AuthProviderRouteHandlers {
 export function createGcpIapProvider(
   options: GcpIapProviderOptions,
 ): AuthProviderFactory {
-  return ({ config, tokenIssuer, catalogApi, logger }) => {
+  return ({ config, tokenIssuer, catalogApi, logger, tokenManager }) => {
     const audience = config.getString('audience');
 
     const authHandler = options.authHandler ?? defaultAuthHandler;
@@ -111,7 +111,7 @@ export function createGcpIapProvider(
 
     const catalogIdentityClient = new CatalogIdentityClient({
       catalogApi,
-      tokenIssuer,
+      tokenManager,
     });
 
     return new GcpIapProvider({
