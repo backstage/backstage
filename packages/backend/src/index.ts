@@ -62,6 +62,7 @@ import permission from './plugins/permission';
 import { PluginEnvironment } from './types';
 import { rootDependencies } from './rootContext';
 import { permissionAuthorizerDep } from '@backstage/plugin-permission-common';
+import { CustomErrorBase } from '@backstage/errors';
 
 function makeCreateEnv(config: Config, applicationContext: ApplicationContext) {
   const root = getRootLogger();
@@ -84,7 +85,7 @@ function makeCreateEnv(config: Config, applicationContext: ApplicationContext) {
       tokenManager: applicationContext.get(tokenManagerDep),
       permissions: applicationContext.get(permissionAuthorizerDep),
       scheduler,
-      applicationContext: applicationContext.forPlugin(plugin),
+      applicationContext,
     };
   };
 }
@@ -157,7 +158,7 @@ async function main() {
   apiRouter.use('/kafka', await kafka(kafkaEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/graphql', await graphql(graphqlEnv));
-  apiRouter.use('/badges', await containerizedBadgesPlugin.router);
+  apiRouter.use('/badges', await containerizedBadgesPlugin.instance);
   apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
   apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use(notFoundHandler());
@@ -176,9 +177,10 @@ async function main() {
       try {
         container.get(dependency);
       } catch (e) {
-        const s = `Failed to retrieve injected dependency for ${dependency}`;
-        logger.error(s);
-        throw Error(e);
+        throw new CustomErrorBase(
+          `failed to retrieve injected dependency for ${dependency}`,
+          e,
+        );
       }
     });
   });

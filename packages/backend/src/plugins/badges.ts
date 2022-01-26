@@ -35,6 +35,6 @@ export default async function createPlugin(environment: PluginEnvironment) {
       },
       ...dependencies,
     ],
-    createRouter,
+    initialize: createRouter,
   });
 }

@@ -16,7 +16,6 @@
 
 import { Logger } from 'winston';
 import { Container, interfaces } from 'inversify';
-import express from 'express';
 import { AnyDependencyConfig, Dependency } from '@backstage/app-context-common';
 
 export interface ApplicationContext {
@@ -26,22 +25,27 @@ export interface ApplicationContext {
 
   get<T>(dep: Dependency<T>): T;
 
-  createBoundPlugin(options: BoundPluginOptions): BoundPlugin;
-
-  forPlugin(plugin: string): ApplicationContext;
+  createBoundPlugin<T>(options: BoundPluginOptions<T>): BoundPlugin<T>;
 }
 
-export type BoundPluginOptions = {
+export type BoundPluginOptions<T> = {
   plugin: string;
-  createRouter: (ctx: ApplicationContext) => Promise<express.Router>;
+  initialize: (ctx: ApplicationContext) => T;
   dependencies: AnyDependencyConfig[];
 };
 
-export interface BoundPlugin {
+export interface BoundPlugin<T> {
   name: string;
-  router: Promise<express.Router>;
+  instance: T;
   getDependencies(): Dependency<unknown>[];
 }
+
+export type InversifyAppContextOptions = {
+  logger: Logger;
+  dependencies: AnyDependencyConfig[];
+  container?: interfaces.Container;
+  identifier?: string;
+};
 
 export class InversifyApplicationContext implements ApplicationContext {
   private readonly childContexts: Map<string, ApplicationContext>;
@@ -49,17 +53,8 @@ export class InversifyApplicationContext implements ApplicationContext {
   private readonly identifier: string;
   private readonly logger: Logger;
 
-  static fromConfig({
-    logger,
-    dependencies,
-    container,
-    identifier,
-  }: {
-    logger: Logger;
-    dependencies: AnyDependencyConfig[];
-    container?: interfaces.Container;
-    identifier?: string;
-  }) {
+  static fromConfig(opts: InversifyAppContextOptions) {
+    const { logger, dependencies, container, identifier } = opts;
     logger.info(
       `Constructing Inversify root container with dependencies ${[
         ...new Set(dependencies.map(it => it.id)),
@@ -77,17 +72,13 @@ export class InversifyApplicationContext implements ApplicationContext {
     });
   }
 
-  private constructor({
-    identifier,
-    container,
-    childContexts,
-    logger,
-  }: {
+  private constructor(opts: {
     identifier: string;
     container: interfaces.Container;
     childContexts?: Map<string, ApplicationContext>;
     logger: Logger;
   }) {
+    const { identifier, container, childContexts, logger } = opts;
     this.identifier = identifier;
     this.container = container;
     this.logger = logger;
@@ -111,40 +102,37 @@ export class InversifyApplicationContext implements ApplicationContext {
     );
   }
 
-  createBoundPlugin({
+  createBoundPlugin<T>({
     plugin,
-    createRouter,
+    initialize,
     dependencies,
-  }: BoundPluginOptions): BoundPlugin {
+  }: BoundPluginOptions<T>): BoundPlugin<T> {
+    const childContainer = this.container.createChild();
+    const childContext = new InversifyApplicationContext({
+      identifier: plugin,
+      container: childContainer,
+      logger: this.logger.child({ type: 'plugin', plugin }),
+    });
+    this.childContexts.set(plugin, childContext);
+
     this.logger.info(
-      `Creating application context for plugin '${
+      `Creating application context for plugin '${plugin}' as a child of ${
         this.identifier
-      }'. Binding dependencies ${[
+      }. Binding dependencies ${[
         ...new Set(dependencies.map(it => it.id)),
       ].join(', ')}.`,
     );
-    const childContainer = this.getContainer();
     InversifyApplicationContext.bindDependenciesIfNotBound(
       dependencies,
       childContainer,
     );
     return {
       name: plugin,
-      router: createRouter(this),
+      instance: initialize(childContext),
       getDependencies() {
         return dependencies.map(it => it.id);
       },
     };
-  }
-
-  forPlugin(plugin: string): ApplicationContext {
-    const childContext = new InversifyApplicationContext({
-      identifier: plugin,
-      container: this.container.createChild(),
-      logger: this.logger.child({ type: 'plugin', plugin }),
-    });
-    this.childContexts.set(plugin, childContext);
-    return childContext;
   }
 
   private static bindDependenciesIfNotBound(

@@ -31,17 +31,13 @@ export function createDependencyConfig<
   Dep,
   Deps extends { [name in string]: unknown },
 >(factory: DependencyConfig<Dep, Deps>): DependencyConfig<Dep, Deps> {
-  if ('id' in factory) {
-    const dependencies =
-      (factory.dependencies as TypesToIocDependencies<Deps>) ??
-      ({} as TypesToIocDependencies<Deps>);
-    return {
-      id: factory.id,
-      dependencies,
-      factory: factory.factory,
-    };
-  }
-  return factory;
+  const dependencies = (factory.dependencies ??
+    {}) as TypesToIocDependencies<Deps>;
+  return {
+    id: factory.id,
+    dependencies,
+    factory: factory.factory,
+  };
 }
 
 class DependencyHolder<T> implements Dependency<T> {

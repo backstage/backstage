@@ -30,6 +30,7 @@
     "@backstage/catalog-client": "^0.6.0",
     "@backstage/catalog-model": "^0.9.10",
     "@backstage/config": "^0.1.13",
+    "@backstage/errors": "^0.2.0",
     "@backstage/integration": "^0.7.2",
     "@backstage/plugin-app-backend": "^0.3.24",
     "@backstage/plugin-auth-backend": "^0.10.0",
