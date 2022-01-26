@@ -60,7 +60,6 @@ export class CatalogIdentityClient {
       filter[`metadata.annotations.${key}`] = value;
     }
 
-    // TODO(Rugvip): cache the token
     const { token } = await this.tokenManager.getToken();
     const { items } = await this.catalogApi.getEntities({ filter }, { token });
 
