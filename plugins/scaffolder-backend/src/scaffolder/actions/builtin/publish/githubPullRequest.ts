@@ -24,7 +24,7 @@ import {
 } from '@backstage/integration';
 import { zipObject } from 'lodash';
 import { createTemplateAction } from '../../createTemplateAction';
-import { Octokit } from '@octokit/rest';
+import { Octokit } from 'octokit';
 import { InputError, CustomErrorBase } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import globby from 'globby';

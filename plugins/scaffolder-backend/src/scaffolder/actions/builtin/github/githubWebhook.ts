@@ -127,7 +127,7 @@ export function createGithubWebhookAction(options: {
 
       try {
         const insecure_ssl = insecureSsl ? '1' : '0';
-        await client.repos.createWebhook({
+        await client.rest.repos.createWebhook({
           owner,
           repo,
           config: {
