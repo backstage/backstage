@@ -300,10 +300,8 @@ perform operations on top of an existing repository.
 A sample template that takes advantage of this is like so:
 
 ```yaml
-# Notice the v1beta3 version
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
-# some metadata about the template itself
 metadata:
   name: v1beta3-demo
   title: Test Action template
@@ -312,27 +310,9 @@ spec:
   owner: backstage/techdocs-core
   type: service
 
-  # these are the steps which are rendered in the frontend with the form input
   parameters:
-    - title: Fill in some steps
-      required:
-        - name
-      properties:
-        name:
-          title: Name
-          type: string
-          description: Unique name of the component
-          ui:autofocus: true
-          ui:options:
-            rows: 5
-        owner:
-          title: Owner
-          type: string
-          description: Owner of the component
-          ui:field: OwnerPicker
-          ui:options:
-            allowedKinds:
-              - Group
+    ...
+
     - title: Choose a location
       required:
         - repoUrl
@@ -342,6 +322,7 @@ spec:
           type: string
           ui:field: RepoUrlPicker
           ui:options:
+            # here's the new option you can pass to the RepoUrlPicker
             requestUserCredentials:
               resultSecretsKey: USER_OAUTH_TOKEN
               additionalScopes:
@@ -349,24 +330,10 @@ spec:
                   - workflow:write
             allowedHosts:
               - github.com
+    ...
 
-  # here's the steps that are executed in series in the scaffolder backend
   steps:
-    - id: fetch-base
-      name: Fetch Base
-      action: fetch:template
-      input:
-        url: ./template
-        values:
-          name: ${{ parameters.name }}
-          owner: ${{ parameters.owner }}
-
-    - id: fetch-docs
-      name: Fetch Docs
-      action: fetch:plain
-      input:
-        targetPath: ./community
-        url: https://github.com/backstage/community/tree/main/backstage-community-sessions
+    ...
 
     - id: publish
       name: Publish
@@ -375,19 +342,10 @@ spec:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
+        # here's where the secret can be used
         token: ${{ secrets.USER_OAUTH_TOKEN }}
 
-    - id: register
-      name: Register
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
-
-  # some outputs which are saved along with the job for use in the frontend
-  output:
-    remoteUrl: ${{ steps.publish.output.remoteUrl }}
-    entityRef: ${{ steps.register.output.entityRef }}
+    ...
 ```
 
 You will see from above that there is an additional `requestUserCredentials`
