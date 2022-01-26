@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import { RepoUrlPicker } from './RepoUrlPicker';
 import Form from '@rjsf/core';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -24,7 +24,10 @@ import {
   ScmAuthApi,
 } from '@backstage/integration-react';
 import { scaffolderApiRef } from '../../../api';
-import { SecretsContextProvider } from '../../secrets/SecretsContext';
+import {
+  SecretsContextProvider,
+  SecretsContext,
+} from '../../secrets/SecretsContext';
 import { ScaffolderApi } from '../../..';
 import { act, fireEvent } from '@testing-library/react';
 
@@ -112,7 +115,11 @@ describe('RepoUrlPicker', () => {
 
   describe('requestUserCredentials', () => {
     it('should call the scmAuthApi with the correct params', async () => {
-      const { getAllByRole } = await renderInTestApp(
+      const SecretsComponent = () => {
+        const value = useContext(SecretsContext);
+        return <div data-testid="current-secrets">{JSON.stringify(value)}</div>;
+      };
+      const { getAllByRole, getByTestId } = await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],
@@ -134,6 +141,7 @@ describe('RepoUrlPicker', () => {
               }}
               fields={{ RepoUrlPicker: RepoUrlPicker }}
             />
+            <SecretsComponent />
           </SecretsContextProvider>
         </TestApiProvider>,
       );
@@ -157,8 +165,14 @@ describe('RepoUrlPicker', () => {
           },
         },
       });
-    });
 
-    // TODO(blam): need a test here for making sure that the secret is pushed to the context
+      const currentSecrets = JSON.parse(
+        getByTestId('current-secrets').textContent!,
+      );
+
+      expect(currentSecrets).toEqual({
+        secrets: { testKey: 'abc123' },
+      });
+    });
   });
 });
