@@ -173,9 +173,7 @@ jobs:
         run: techdocs-cli generate --no-docker --verbose
 
       - name: Publish docs site
-        run: techdocs-cli publish --publisher-type awsS3 --storage-name
-          $TECHDOCS_S3_BUCKET_NAME --entity
-          $ENTITY_NAMESPACE/$ENTITY_KIND/$ENTITY_NAME
+        run: techdocs-cli publish --publisher-type awsS3 --storage-name $TECHDOCS_S3_BUCKET_NAME --entity $ENTITY_NAMESPACE/$ENTITY_KIND/$ENTITY_NAME
 ```
 
 When the new repository is scaffolded or new documentation updates are
