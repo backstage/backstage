@@ -15,6 +15,7 @@
  */
 
 import { compact, zipObject } from 'lodash';
+import qs from 'qs';
 import DataLoader from 'dataloader';
 import {
   AuthorizeDecision,
@@ -87,8 +88,16 @@ export class AuthorizedSearchEngine implements SearchEngine {
   ): Promise<SearchResultSet> {
     const queryStartTime = Date.now();
 
-    const authorizer = new DataLoader((requests: readonly AuthorizeQuery[]) =>
-      this.permissions.authorize(requests.slice(), options),
+    const authorizer = new DataLoader(
+      (requests: readonly AuthorizeQuery[]) =>
+        this.permissions.authorize(requests.slice(), options),
+      {
+        // Serialize the permission name and resourceRef as
+        // a query string to avoid collisions from overlapping
+        // permission names and resourceRefs.
+        cacheKeyFn: ({ permission: { name }, resourceRef }) =>
+          qs.stringify({ name, resourceRef }),
+      },
     );
     const requestedTypes = query.types || Object.keys(this.types);
 

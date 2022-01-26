@@ -257,6 +257,72 @@ describe('AuthorizedSearchEngine', () => {
     );
   });
 
+  it('should deduplicate authorization queries when resourceRefs match', async () => {
+    const searchResults = [
+      {
+        type: 'templates',
+        document: {
+          title: `doc_0_a`,
+          authorization: { resourceRef: `template_doc_0` },
+        } as IndexableDocument,
+      },
+      {
+        type: 'templates',
+        document: {
+          title: `doc_0_b`,
+          authorization: { resourceRef: `template_doc_0` },
+        } as IndexableDocument,
+      },
+    ];
+
+    mockedQuery.mockImplementation(async () => ({
+      results: searchResults,
+    }));
+
+    mockedAuthorize.mockImplementation(async queries =>
+      queries.map(query => {
+        if (query.resourceRef) {
+          return {
+            result: AuthorizeResult.ALLOW,
+          };
+        }
+
+        return {
+          result: AuthorizeResult.CONDITIONAL,
+        } as AuthorizeDecision;
+      }),
+    );
+
+    await expect(
+      authorizedSearchEngine.query({ term: '', types: ['templates'] }, options),
+    ).resolves.toEqual({ results: searchResults });
+
+    expect(mockedAuthorize).toHaveBeenCalledTimes(2);
+    expect(mockedAuthorize).toHaveBeenNthCalledWith(
+      1,
+      [
+        {
+          permission: expect.objectContaining({
+            name: 'search.templates.read',
+          }),
+        },
+      ],
+      { token: 'token' },
+    );
+    expect(mockedAuthorize).toHaveBeenNthCalledWith(
+      2,
+      [
+        {
+          permission: expect.objectContaining({
+            name: 'search.templates.read',
+          }),
+          resourceRef: 'template_doc_0',
+        },
+      ],
+      { token: 'token' },
+    );
+  });
+
   it('should perform search until the target number of results is reached', async () => {
     mockedAuthorize.mockImplementation(async queries =>
       queries.map(query => {
