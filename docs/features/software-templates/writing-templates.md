@@ -287,6 +287,121 @@ The `RepoUrlPicker` is a custom field that we provide part of the
 `plugin-scaffolder`. You can provide your own custom fields by
 [writing your own Custom Field Extensions](./writing-custom-field-extensions.md)
 
+##### Using the Users `oauth` token
+
+There's a little bit of extra magic that you get out of the box when using the
+`RepoUrlPicker` as a field input. You can provide some additional options under
+`ui:options` to allow the `RepoUrlPicker` to grab an `oauth` token for the user
+for the required `repository`.
+
+This is great for when you are wanting to create a new repository, or wanting to
+perform operations on top of an existing repository.
+
+A sample template that takes advantage of this is like so:
+
+```yaml
+# Notice the v1beta3 version
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+# some metadata about the template itself
+metadata:
+  name: v1beta3-demo
+  title: Test Action template
+  description: scaffolder v1beta3 template demo
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  # these are the steps which are rendered in the frontend with the form input
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds:
+              - Group
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            requestUserCredentials:
+              resultSecretsKey: USER_OAUTH_TOKEN
+              additionalScopes:
+                github:
+                  - workflow:write
+            allowedHosts:
+              - github.com
+
+  # here's the steps that are executed in series in the scaffolder backend
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./template
+        values:
+          name: ${{ parameters.name }}
+          owner: ${{ parameters.owner }}
+
+    - id: fetch-docs
+      name: Fetch Docs
+      action: fetch:plain
+      input:
+        targetPath: ./community
+        url: https://github.com/backstage/community/tree/main/backstage-community-sessions
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+  # some outputs which are saved along with the job for use in the frontend
+  output:
+    remoteUrl: ${{ steps.publish.output.remoteUrl }}
+    entityRef: ${{ steps.register.output.entityRef }}
+```
+
+You will see from above that there is an additional `requestUserCredentials`
+object that is passed to the `RepoUrlPicker`. This object defines what the
+returned `secret` should be stored as when accessing using
+`${{ secrets.secretName }}`, in this case it is `USER_OAUTH_TOKEN`. And then you
+will see that there is an additional `input` field into the `publish:github`
+action called `token`, in which you can use the `secret` like so:
+`token: ${{ secrets.USER_OAUTH_TOKEN }}`.
+
+There's also the ability to pass additional scopes when requesting the `oauth`
+token from the user, which you can do on a per-provider basis, in case your
+template can be published to multiple providers.
+
 #### The Owner Picker
 
 When the scaffolder needs to add new components to the catalog, it needs to have
