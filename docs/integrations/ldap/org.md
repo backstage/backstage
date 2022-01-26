@@ -314,3 +314,66 @@ builder.addProcessor(
   }),
 );
 ```
+
+## Using a Provider instead of a Processor
+
+An alternative to using the Processor for ingesting LDAP entries is to use a
+Provider. Doing this can give you a little bit more freedom to handle the LDAP
+ingestion more independently from the rest of the catalog ingestion.
+
+This can be useful if you have a lot of Users and Groups and hitting your LDAP
+server is resource intensive but you still want your other catalog entries to be
+updated frequently.
+
+> Note: When configuring to use a Provider instead of a Processor you do not
+> need to add a _location_ pointing to your LDAP server
+
+```ts
+// packages/backend/src/plugins/catalog.ts
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+import { PluginEnvironment } from '../types';
+
+import { Router } from 'express';
+import { LdapOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-ldap';
+
+import { TaskScheduler } from '@backstage/backend-tasks';
+import { Duration } from 'luxon';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const scheduler = TaskScheduler.fromConfig(env.config).forPlugin('catalog');
+  const ldapEntityProvider = LdapOrgEntityProvider.fromConfig(env.config, {
+    id: 'custom-ldap',
+    // target needs to match the catalog.processors.ldapOrg.providers.target specified in app-config
+    target: 'ldaps://ds.example.net',
+    logger: env.logger,
+  });
+
+  await scheduler.scheduleTask({
+    id: 'refresh-ldap',
+    // initialDelay is the time to wait before running the first cycle, you might need to adjust this delay to make sure that the ldapEntityProvider has been initialized before running.
+    initialDelay: Duration.fromMillis(10000),
+    // frequency sets how often you want to ingest users and groups from LDAP, in this case every 60 minutes
+    frequency: Duration.fromObject({ minutes: 60 }),
+    timeout: Duration.fromObject({ minutes: 15 }),
+    fn: async () => {
+      try {
+        await ldapEntityProvider.read();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  });
+
+  const builder = await CatalogBuilder.create(env);
+  builder.addEntityProvider(ldapEntityProvider);
+
+  // Now you can change the refresh interval for the other catalog entries independantly, or just leave the line below out to use the default refresh interval
+  builder.setRefreshIntervalSeconds(100);
+
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+  return router;
+}
+```
