@@ -21,8 +21,13 @@ import { resolve as resolvePath } from 'path';
 import { paths } from '../../lib/paths';
 import * as runObj from '../../lib/run';
 import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
-import { withLogCollector } from '@backstage/test-utils';
+import {
+  setupRequestMockHandlers,
+  withLogCollector,
+} from '@backstage/test-utils';
 import { YarnInfoInspectData } from '../../lib/versioning/packages';
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
 
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({
@@ -83,6 +88,8 @@ describe('bump', () => {
     mockFs.restore();
     jest.resetAllMocks();
   });
+  const worker = setupServer();
+  setupRequestMockHandlers(worker);
 
   it('should bump backstage dependencies', async () => {
     mockFs({
@@ -122,9 +129,20 @@ describe('bump', () => {
       }),
     );
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
-
+    worker.use(
+      rest.get(
+        'https://versions.backstage.io/v1/tags/main/manifest.json',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              packages: [],
+            }),
+          ),
+      ),
+    );
     const { log: logs } = await withLogCollector(['log'], async () => {
-      await bump({ pattern: null } as unknown as Command);
+      await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expect(logs.filter(Boolean)).toEqual([
       'Using default pattern glob @backstage/*',
@@ -176,6 +194,114 @@ describe('bump', () => {
       dependencies: {
         '@backstage/core': '^1.0.3', // not bumped
         '@backstage/theme': '^2.0.0', // bumped since newer
+      },
+    });
+  });
+
+  it('should prefer dependency versions from release manifest', async () => {
+    mockFs({
+      '/yarn.lock': lockfileMock,
+      '/package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+      '/packages/a/package.json': JSON.stringify({
+        name: 'a',
+        dependencies: {
+          '@backstage/core': '^1.0.5',
+        },
+      }),
+      '/packages/b/package.json': JSON.stringify({
+        name: 'b',
+        dependencies: {
+          '@backstage/core': '^1.0.3',
+          '@backstage/theme': '^1.0.0',
+        },
+      }),
+    });
+
+    jest
+      .spyOn(paths, 'resolveTargetRoot')
+      .mockImplementation((...path) => resolvePath('/', ...path));
+    jest.spyOn(runObj, 'runPlain').mockImplementation(async (...[, , , name]) =>
+      JSON.stringify({
+        type: 'inspect',
+        data: {
+          name: name,
+          'dist-tags': {
+            latest: REGISTRY_VERSIONS[name],
+          },
+        },
+      }),
+    );
+    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    worker.use(
+      rest.get(
+        'https://versions.backstage.io/v1/tags/main/manifest.json',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              packages: [{ name: '@backstage/theme', version: '5.0.0' }],
+            }),
+          ),
+      ),
+    );
+    const { log: logs } = await withLogCollector(['log'], async () => {
+      await bump({ pattern: null, release: 'main' } as unknown as Command);
+    });
+    expect(logs.filter(Boolean)).toEqual([
+      'Using default pattern glob @backstage/*',
+      'Checking for updates of @backstage/core',
+      'Checking for updates of @backstage/theme',
+      'Checking for updates of @backstage/theme',
+      'Checking for updates of @backstage/core-api',
+      'Some packages are outdated, updating',
+      'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
+      'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
+      'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
+      'bumping @backstage/theme in b to ^5.0.0',
+      'Running yarn install to install new versions',
+      '⚠️  The following packages may have breaking changes:',
+      '  @backstage/theme : 1.0.0 ~> 5.0.0',
+      '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
+      'Version bump complete!',
+    ]);
+
+    expect(runObj.runPlain).toHaveBeenCalledTimes(3);
+    expect(runObj.runPlain).toHaveBeenCalledWith(
+      'yarn',
+      'info',
+      '--json',
+      '@backstage/core',
+    );
+    expect(runObj.runPlain).not.toHaveBeenCalledWith(
+      'yarn',
+      'info',
+      '--json',
+      '@backstage/theme',
+    );
+
+    expect(runObj.run).toHaveBeenCalledTimes(1);
+    expect(runObj.run).toHaveBeenCalledWith('yarn', ['install']);
+
+    const lockfileContents = await fs.readFile('/yarn.lock', 'utf8');
+    expect(lockfileContents).toBe(lockfileMockResult);
+
+    const packageA = await fs.readJson('/packages/a/package.json');
+    expect(packageA).toEqual({
+      name: 'a',
+      dependencies: {
+        '@backstage/core': '^1.0.5', // not bumped since new version is within range
+      },
+    });
+    const packageB = await fs.readJson('/packages/b/package.json');
+    expect(packageB).toEqual({
+      name: 'b',
+      dependencies: {
+        '@backstage/core': '^1.0.3', // not bumped
+        '@backstage/theme': '^5.0.0', // bumped since newer
       },
     });
   });
@@ -247,9 +373,23 @@ describe('bump', () => {
       }),
     );
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
-
+    worker.use(
+      rest.get(
+        'https://versions.backstage.io/v1/tags/main/manifest.json',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              packages: [],
+            }),
+          ),
+      ),
+    );
     const { log: logs } = await withLogCollector(['log'], async () => {
-      await bump({ pattern: '@{backstage,backstage-extra}/*' } as any);
+      await bump({
+        pattern: '@{backstage,backstage-extra}/*',
+        release: 'main',
+      } as any);
     });
     expect(logs.filter(Boolean)).toEqual([
       'Using custom pattern glob @{backstage,backstage-extra}/*',
@@ -343,9 +483,20 @@ describe('bump', () => {
       .mockImplementation((...path) => resolvePath('/', ...path));
     jest.spyOn(runObj, 'runPlain').mockImplementation(async () => '');
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
-
+    worker.use(
+      rest.get(
+        'https://versions.backstage.io/v1/tags/main/manifest.json',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              packages: [],
+            }),
+          ),
+      ),
+    );
     const { log: logs } = await withLogCollector(['log'], async () => {
-      await bump({ pattern: null } as unknown as Command);
+      await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expect(logs.filter(Boolean)).toEqual([
       'Using default pattern glob @backstage/*',
