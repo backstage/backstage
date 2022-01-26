@@ -205,6 +205,7 @@ export function createPublishBitbucketAction(options: {
     repoVisibility: 'private' | 'public';
     sourcePath?: string;
     enableLFS: boolean;
+    token?: string;
   }>({
     id: 'publish:bitbucket',
     description:
@@ -233,14 +234,22 @@ export function createPublishBitbucketAction(options: {
             description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
-            title:
+            title: 'Source Path',
+            description:
               'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
             type: 'string',
           },
           enableLFS: {
-            title:
+            title: 'Enable LFS?',
+            description:
               'Enable LFS for the repository. Only available for hosted Bitbucket.',
             type: 'boolean',
+          },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description:
+              'The BITBUCKET_TOKEN to use for authorization to BitBucket',
           },
         },
       },
@@ -296,7 +305,12 @@ export function createPublishBitbucketAction(options: {
         );
       }
 
-      const authorization = getAuthorizationHeader(integrationConfig.config);
+      const authorization = getAuthorizationHeader(
+        ctx.input.token
+          ? { host: integrationConfig.config.host, token: ctx.input.token }
+          : integrationConfig.config,
+      );
+
       const apiBaseUrl = integrationConfig.config.apiBaseUrl;
 
       const createMethod =
@@ -320,17 +334,28 @@ export function createPublishBitbucketAction(options: {
         email: config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
-      await initRepoAndPush({
-        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
-        remoteUrl,
-        auth: {
+      let auth;
+
+      if (ctx.input.token) {
+        auth = {
+          username: 'x-token-auth',
+          password: ctx.input.token,
+        };
+      } else {
+        auth = {
           username: integrationConfig.config.username
             ? integrationConfig.config.username
             : 'x-token-auth',
           password: integrationConfig.config.appPassword
             ? integrationConfig.config.appPassword
             : integrationConfig.config.token ?? '',
-        },
+        };
+      }
+
+      await initRepoAndPush({
+        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
+        remoteUrl,
+        auth,
         defaultBranch,
         logger: ctx.logger,
         commitMessage: config.getOptionalString(

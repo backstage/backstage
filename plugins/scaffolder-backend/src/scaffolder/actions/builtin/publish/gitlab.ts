@@ -33,6 +33,7 @@ export function createPublishGitlabAction(options: {
     defaultBranch?: string;
     repoVisibility: 'private' | 'internal' | 'public';
     sourcePath?: string;
+    token?: string;
   }>({
     id: 'publish:gitlab',
     description:
@@ -57,9 +58,15 @@ export function createPublishGitlabAction(options: {
             description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
-            title:
+            title: 'Source Path',
+            description:
               'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
             type: 'string',
+          },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description: 'The GITLAB_TOKEN to use for authorization to GitLab',
           },
         },
       },
@@ -100,13 +107,15 @@ export function createPublishGitlabAction(options: {
         );
       }
 
-      if (!integrationConfig.config.token) {
+      if (!integrationConfig.config.token && !ctx.input.token) {
         throw new InputError(`No token available for host ${host}`);
       }
 
+      const token = ctx.input.token || integrationConfig.config.token!;
+
       const client = new Gitlab({
         host: integrationConfig.config.baseUrl,
-        token: integrationConfig.config.token,
+        token,
       });
 
       let { id: targetNamespace } = (await client.Namespaces.show(owner)) as {
@@ -140,7 +149,7 @@ export function createPublishGitlabAction(options: {
         defaultBranch,
         auth: {
           username: 'oauth2',
-          password: integrationConfig.config.token,
+          password: token,
         },
         logger: ctx.logger,
         commitMessage: config.getOptionalString(

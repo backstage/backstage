@@ -31,6 +31,7 @@ export type GitlabMergeRequestActionInput = {
   description: string;
   branchName: string;
   targetPath: string;
+  token?: string;
 };
 
 export const createPublishGitlabMergeRequestAction = (options: {
@@ -75,6 +76,11 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Repository Subdirectory',
             description: 'Subdirectory of repository to apply changes to',
           },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description: 'The GITLAB_TOKEN to use for authorization to GitLab',
+          },
         },
       },
       output: {
@@ -107,13 +113,15 @@ export const createPublishGitlabMergeRequestAction = (options: {
         );
       }
 
-      if (!integrationConfig.config.token) {
+      if (!integrationConfig.config.token && !ctx.input.token) {
         throw new InputError(`No token available for host ${host}`);
       }
 
+      const token = ctx.input.token ?? integrationConfig.config.token!;
+
       const api = new Gitlab({
         host: integrationConfig.config.baseUrl,
-        token: integrationConfig.config.token,
+        token,
       });
 
       const fileRoot = ctx.workspacePath;

@@ -52,7 +52,10 @@ export class OctokitProvider {
    *
    * @param repoUrl - Repository URL
    */
-  async getOctokit(repoUrl: string): Promise<OctokitIntegration> {
+  async getOctokit(
+    repoUrl: string,
+    options?: { token?: string },
+  ): Promise<OctokitIntegration> {
     const { owner, repo, host } = parseRepoUrl(repoUrl, this.integrations);
 
     if (!owner) {
@@ -65,7 +68,19 @@ export class OctokitProvider {
       throw new InputError(`No integration for host ${host}`);
     }
 
-    // TODO(blam): Consider changing this API to have owner, repo interface instead of URL as the it's
+    // Short circuit the internal Github Token provider the token provided
+    // by the action or the caller.
+    if (options?.token) {
+      const client = new Octokit({
+        auth: options.token,
+        baseUrl: integrationConfig.apiBaseUrl,
+        previews: ['nebula-preview'],
+      });
+
+      return { client, token: options.token, owner, repo };
+    }
+
+    // TODO(blam): Consider changing this API to have owner, repoo interface instead of URL as the it's
     // needless to create URL and then parse again the other side.
     const { token } = await this.githubCredentialsProvider.getCredentials({
       url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(

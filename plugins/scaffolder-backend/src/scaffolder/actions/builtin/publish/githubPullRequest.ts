@@ -55,6 +55,7 @@ export type GithubPullRequestActionInput = {
   repoUrl: string;
   targetPath?: string;
   sourcePath?: string;
+  token?: string;
 };
 
 export type ClientFactoryInput = {
@@ -63,6 +64,7 @@ export type ClientFactoryInput = {
   host: string;
   owner: string;
   repo: string;
+  token?: string;
 };
 
 export const defaultClientFactory = async ({
@@ -71,11 +73,20 @@ export const defaultClientFactory = async ({
   owner,
   repo,
   host = 'github.com',
+  token: providedToken,
 }: ClientFactoryInput): Promise<PullRequestCreator> => {
   const integrationConfig = integrations.github.byHost(host)?.config;
+  const OctokitPR = Octokit.plugin(createPullRequest);
 
   if (!integrationConfig) {
     throw new InputError(`No integration for host ${host}`);
+  }
+
+  if (providedToken) {
+    return new OctokitPR({
+      auth: providedToken,
+      baseUrl: integrationConfig.apiBaseUrl,
+    });
   }
 
   const credentialsProvider =
@@ -93,8 +104,6 @@ export const defaultClientFactory = async ({
       `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
     );
   }
-
-  const OctokitPR = Octokit.plugin(createPullRequest);
 
   return new OctokitPR({
     auth: token,
@@ -151,6 +160,11 @@ export const createPublishGithubPullRequestAction = ({
             title: 'Repository Subdirectory',
             description: 'Subdirectory of repository to apply changes to',
           },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description: 'The GITHUB_TOKEN to use for authorization to GitHub',
+          },
         },
       },
       output: {
@@ -173,6 +187,7 @@ export const createPublishGithubPullRequestAction = ({
         description,
         targetPath,
         sourcePath,
+        token: providedToken,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -189,7 +204,9 @@ export const createPublishGithubPullRequestAction = ({
         host,
         owner,
         repo,
+        token: providedToken,
       });
+
       const fileRoot = sourcePath
         ? resolveSafeChildPath(ctx.workspacePath, sourcePath)
         : ctx.workspacePath;
