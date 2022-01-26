@@ -26,6 +26,7 @@ import {
 } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { CustomErrorBase } from '@backstage/errors';
 
 export type PluginEnvironment = {
   logger: Logger;
@@ -39,3 +40,5 @@ export type PluginEnvironment = {
   scheduler: PluginTaskScheduler;
   applicationContext: ApplicationContext;
 };
+
+export class DependencyNotBoundError extends CustomErrorBase {}

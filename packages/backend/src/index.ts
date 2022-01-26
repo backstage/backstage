@@ -59,10 +59,9 @@ import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
-import { PluginEnvironment } from './types';
+import { DependencyNotBoundError, PluginEnvironment } from './types';
 import { rootDependencies } from './rootContext';
 import { permissionAuthorizerDep } from '@backstage/plugin-permission-common';
-import { CustomErrorBase } from '@backstage/errors';
 
 function makeCreateEnv(config: Config, applicationContext: ApplicationContext) {
   const root = getRootLogger();
@@ -177,7 +176,7 @@ async function main() {
       try {
         container.get(dependency);
       } catch (e) {
-        throw new CustomErrorBase(
+        throw new DependencyNotBoundError(
           `failed to retrieve injected dependency for ${dependency}`,
           e,
         );
