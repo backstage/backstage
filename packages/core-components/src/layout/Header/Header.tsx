@@ -49,7 +49,6 @@ const useStyles = makeStyles<BackstageTheme>(
       zIndex: 100,
       display: 'flex',
       flexDirection: 'row',
-      flexWrap: 'wrap',
       alignItems: 'center',
       backgroundImage: theme.page.backgroundImage,
       backgroundPosition: 'center',
@@ -73,6 +72,7 @@ const useStyles = makeStyles<BackstageTheme>(
       opacity: 0.8,
       display: 'inline-block', // prevents margin collapse of adjacent siblings
       marginTop: theme.spacing(1),
+      maxWidth: '75ch',
     },
     type: {
       textTransform: 'uppercase',
