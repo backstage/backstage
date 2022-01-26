@@ -21,7 +21,7 @@
   -  entityOwnershipFactRetriever,
   -),
   +createFactRetrieverRegistration({
-  +  cadende: '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
+  +  cadence: '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
   +  factRetriever: entityOwnershipFactRetriever,
   +}),
 
@@ -70,7 +70,7 @@
   -  entityOwnershipFactRetriever,
   -),
   +createFactRetrieverRegistration({
-  +  cadende: '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
+  +  cadence: '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
   +  factRetriever: entityOwnershipFactRetriever,
   +}),
 
