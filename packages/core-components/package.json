@@ -63,7 +63,7 @@
     "react-use": "^17.2.4",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
-    "remark-gfm": "^2.0.0",
+    "remark-gfm": "^3.0.1",
     "zen-observable": "^0.8.15",
     "zod": "^3.11.6"
   },
