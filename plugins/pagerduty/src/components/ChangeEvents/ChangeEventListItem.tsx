@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { Link } from '@backstage/core-components';
 import {
   ListItem,
   ListItemSecondaryAction,
@@ -58,12 +59,7 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
     const text: string = changeEvent.links[0].text;
     externalLinkElem = (
       <Tooltip title={text} placement="top">
-        <IconButton
-          href={changeEvent.links[0].href}
-          target="_blank"
-          rel="noopener noreferrer"
-          color="primary"
-        >
+        <IconButton component={Link} to={changeEvent.links[0].href}>
           <OpenInBrowserIcon />
         </IconButton>
       </Tooltip>
@@ -89,9 +85,8 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
         {changeEvent.html_url === undefined ? null : (
           <Tooltip title="View in PagerDuty" placement="top">
             <IconButton
-              href={changeEvent.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
+              component={Link}
+              to={changeEvent.html_url}
               color="primary"
             >
               <OpenInBrowserIcon />
