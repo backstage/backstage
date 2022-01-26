@@ -21,6 +21,8 @@ import { ApiBar } from './components/ApiBar';
 import { Content, Header, Page } from '@backstage/core-components';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { createEntity } from '../src/api/mock/mock-entity';
+import AirplanemodeActiveIcon from '@material-ui/icons/AirplanemodeActive';
+import AirplanemodeInactiveIcon from '@material-ui/icons/AirplanemodeInactive';
 
 createDevApp()
   .registerPlugin(airbrakePlugin)
@@ -28,6 +30,32 @@ createDevApp()
     api: airbrakeApiRef,
     deps: {},
     factory: () => new MockAirbrakeApi(),
+  })
+  .addPage({
+    element: (
+      <Page themeId="tool">
+        <Header
+          title="Airbrake demo application"
+          subtitle="This uses a fake API"
+        />
+        <Content>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '2em',
+            }}
+          >
+            <EntityProvider entity={createEntity('demo')}>
+              <EntityAirbrakeContent />
+            </EntityProvider>
+          </div>
+        </Content>
+      </Page>
+    ),
+    title: 'Mock API',
+    path: '/airbrake-mock-api',
+    icon: AirplanemodeActiveIcon,
   })
   .addPage({
     element: (
@@ -52,7 +80,8 @@ createDevApp()
         </Content>
       </Page>
     ),
-    title: 'Root Page',
-    path: '/airbrake',
+    title: 'Real API',
+    path: '/airbrake-real-api',
+    icon: AirplanemodeInactiveIcon,
   })
   .render();
