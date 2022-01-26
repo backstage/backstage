@@ -28,7 +28,7 @@
     "express-promise-router": "^4.1.0",
     "knex": "^0.95.1",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.12.0"

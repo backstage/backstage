@@ -45,7 +45,7 @@
     "helmet": "^4.0.0",
     "reflect-metadata": "^0.1.13",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.12.0",

@@ -70,7 +70,7 @@
     "tar": "^6.1.2",
     "unzipper": "^0.10.11",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "peerDependencies": {
     "pg-connection-string": "^2.3.0"

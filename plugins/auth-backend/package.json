@@ -70,7 +70,7 @@
     "passport-saml": "^3.1.2",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.12.0",

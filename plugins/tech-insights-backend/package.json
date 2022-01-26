@@ -48,7 +48,7 @@
     "semver": "^7.3.5",
     "uuid": "^8.3.2",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "^0.1.14",
