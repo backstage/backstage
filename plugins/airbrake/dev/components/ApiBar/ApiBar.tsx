@@ -35,7 +35,9 @@ export const ApiBar = () => {
           <TextField
             label="Project ID"
             value={value.projectId}
-            onChange={e => value.setProjectId?.(parseInt(e.target.value, 10))}
+            onChange={e =>
+              value.setProjectId?.(parseInt(e.target.value, 10) || undefined)
+            }
           />
           <TextField
             label="API Key"

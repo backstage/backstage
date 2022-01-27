@@ -23,7 +23,7 @@ import { createEntity } from '../../api/mock/mock-entity';
 describe('EntityAirbrakeContent', () => {
   it('renders all errors sent from Airbrake', async () => {
     const table = await renderInTestApp(
-      <EntityAirbrakeWidget entity={createEntity('test')} />,
+      <EntityAirbrakeWidget entity={createEntity(123)} />,
     );
     expect(exampleData.groups.length).toBeGreaterThan(0);
     for (const group of exampleData.groups) {

@@ -37,7 +37,7 @@ createDevApp()
       <Page themeId="tool">
         <Header title="Airbrake demo application" subtitle="Mock API" />
         <Content>
-          <EntityProvider entity={createEntity('demo')}>
+          <EntityProvider entity={createEntity(1234)}>
             <EntityAirbrakeContent />
           </EntityProvider>
         </Content>
@@ -57,9 +57,7 @@ createDevApp()
           <Content>
             <Context.Consumer>
               {value => (
-                <EntityProvider
-                  entity={createEntity(value.projectId?.toString())}
-                >
+                <EntityProvider entity={createEntity(value.projectId)}>
                   <EntityAirbrakeContent />
                 </EntityProvider>
               )}

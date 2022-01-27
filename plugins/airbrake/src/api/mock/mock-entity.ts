@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AIRBRAKE_PROJECT_SLUG_ANNOTATION } from '../../components/useProjectSlug';
+import { AIRBRAKE_PROJECT_ID_ANNOTATION } from '../../components/useProjectSlug';
 import { Entity } from '@backstage/catalog-model';
 
-export const createEntity = (name?: string) =>
-  ({
+export const createEntity = (projectId?: number) => {
+  const projectIdString = projectId?.toString();
+
+  return {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
     metadata: {
       annotations: {
-        [AIRBRAKE_PROJECT_SLUG_ANNOTATION]: name,
+        [AIRBRAKE_PROJECT_ID_ANNOTATION]: projectIdString,
       },
-      name: name,
+      name: projectIdString,
     },
-  } as Entity);
+  } as Entity;
+};

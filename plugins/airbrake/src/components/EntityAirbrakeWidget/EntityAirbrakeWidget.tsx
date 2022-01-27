@@ -29,7 +29,7 @@ import { ErrorApi, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { airbrakeApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import {
-  AIRBRAKE_PROJECT_SLUG_ANNOTATION,
+  AIRBRAKE_PROJECT_ID_ANNOTATION,
   useProjectSlug,
 } from '../useProjectSlug';
 
@@ -64,7 +64,7 @@ export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
 
         {!loading && !projectId && (
           <MissingAnnotationEmptyState
-            annotation={AIRBRAKE_PROJECT_SLUG_ANNOTATION}
+            annotation={AIRBRAKE_PROJECT_ID_ANNOTATION}
           />
         )}
 
