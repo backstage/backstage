@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.8
+
+### Patch Changes
+
+- a3c4438abf: Deprecated the external `catalogEntity` route as this is now imported directly from `@backstage/plugin-catalog-react` instead.
+
+  This means you can remove the route binding from your `App.tsx`:
+
+  ```diff
+  -    bind(catalogGraphPlugin.externalRoutes, {
+  -      catalogEntity: catalogPlugin.routes.catalogEntity,
+  -    });
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+
 ## 0.2.7
 
 ### Patch Changes

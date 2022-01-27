@@ -1,5 +1,13 @@
 # @backstage/plugin-sonarqube
 
+## 0.2.14
+
+### Patch Changes
+
+- 7346b5fb96: chore(deps): bump `rc-progress` from 3.1.4 to 3.2.4
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+
 ## 0.2.13
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/techdocs-common
 
+## 0.11.5
+
+### Patch Changes
+
+- ff93fbeeec: Fix interpolated string for "Failed to generate docs from ..."
+- Updated dependencies
+  - @backstage/search-common@0.2.2
+  - @backstage/backend-common@0.10.5
+
 ## 0.11.4
 
 ### Patch Changes

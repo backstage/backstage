@@ -1,5 +1,38 @@
 # @backstage/plugin-search
 
+## 0.6.0
+
+### Minor Changes
+
+- 2f0d3d3278: Forwarding classes to HomePageSearchBar instead of using className prop. For custom styles of the HomePageSearchBar, use classes prop instead:
+
+  ```diff
+  <HomePageSearchBar
+  -  className={searchBar}
+  +  classes={{ root: classes.searchBar }}
+    placeholder="Search"
+  />
+  ```
+
+- 1dbe63ec39: The way labels are controlled on both the `<SearchFilter.Checkbox />` and
+  `<SearchFilter.Select />` components has changed. Previously, the string passed
+  on the `name` prop (which controls the field being filtered on) was also
+  rendered as the field label. Now, if you want a label rendered, it must be
+  passed on the new `label` prop. If no `label` is provided, no label will be
+  rendered.
+
+### Patch Changes
+
+- 4aca2a5307: Introduces a `<SearchFilter.Autocomplete />` variant, which can be used as either a single- or multi-select autocomplete filter.
+
+  This variant, as well as `<SearchFilter.Select />`, now also supports loading allowed values asynchronously by passing a function that resolves the list of values to the `values` prop. (An optional `valuesDebounceMs` prop may also be provided to control the debounce time).
+
+  Check the [search plugin storybook](https://backstage.io/storybook/?path=/story/plugins-search-searchfilter) to see how to leverage these new additions.
+
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+  - @backstage/search-common@0.2.2
+
 ## 0.5.6
 
 ### Patch Changes

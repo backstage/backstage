@@ -1,5 +1,40 @@
 # @backstage/plugin-search-backend
 
+## 0.4.0
+
+### Minor Changes
+
+- bbfbc755aa: **BREAKING** Added three additional required properties to `createRouter` to support filtering search results based on permissions. To make this change to an existing app, add the required parameters to the `createRouter` call in `packages/backend/src/plugins/search.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+  +  permissions,
+    discovery,
+    config,
+    tokenManager,
+  }: PluginEnvironment) {
+    /* ... */
+
+    return await createRouter({
+      engine: indexBuilder.getSearchEngine(),
+  +    types: indexBuilder.getDocumentTypes(),
+  +    permissions,
+  +    config,
+      logger,
+    });
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.4.5
+  - @backstage/plugin-auth-backend@0.8.0
+  - @backstage/search-common@0.2.2
+  - @backstage/backend-common@0.10.5
+  - @backstage/plugin-permission-node@0.4.1
+
 ## 0.3.1
 
 ### Patch Changes

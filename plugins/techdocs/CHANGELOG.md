@@ -1,5 +1,16 @@
 # @backstage/plugin-techdocs
 
+## 0.13.1
+
+### Patch Changes
+
+- bdc53553eb: chore(deps): bump `react-text-truncate` from 0.16.0 to 0.17.0
+- a64f99f734: Code snippets now include a "copy to clipboard" button.
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+  - @backstage/plugin-search@0.6.0
+  - @backstage/plugin-catalog@0.7.10
+
 ## 0.13.0
 
 ### Minor Changes

@@ -45,7 +45,7 @@
     "zod": "^3.11.6"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.12.0",
+    "@backstage/cli": "^0.13.0",
     "@types/jest": "^26.0.7",
     "msw": "^0.35.0"
   }

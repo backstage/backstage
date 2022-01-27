@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.8.6
+
+### Patch Changes
+
+- b97a2460d5: Remove the `ignoreChildEvent` utility from the sidebar component to avoid conflicts with popovers
+- bdc53553eb: chore(deps): bump `react-text-truncate` from 0.16.0 to 0.17.0
+- 05f0f44180: chore(deps): bump `remark-gfm` from 2.0.0 to 3.0.1
+- 15bac1d738: chore(deps): bump `react-markdown` from 7.1.2 to 8.0.0
+- 7346b5fb96: chore(deps): bump `rc-progress` from 3.1.4 to 3.2.4
+- 9abb28bb22: Fix issue where component types are not recognized causing the `MobileSidebar` to not render as intended.
+- 1787694435: Updates styling of Header component by removing flex wrap and add max width of characters for subtitle
+
 ## 0.8.5
 
 ### Patch Changes
