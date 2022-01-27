@@ -6108,9 +6108,9 @@
     terser-webpack-plugin "*"
 
 "@types/testing-library__jest-dom@^5.9.1":
-  version "5.9.5"
-  resolved "https://registry.npmjs.org/@types/testing-library__jest-dom/-/testing-library__jest-dom-5.9.5.tgz#5bf25c91ad2d7b38f264b12275e5c92a66d849b0"
-  integrity sha512-ggn3ws+yRbOHog9GxnXiEZ/35Mow6YtPZpd7Z5mKDeZS/o7zx3yAle0ov/wjhVB5QT4N2Dt+GNoGCdqkBGCajQ==
+  version "5.14.2"
+  resolved "https://registry.npmjs.org/@types/testing-library__jest-dom/-/testing-library__jest-dom-5.14.2.tgz#564fb2b2dc827147e937a75b639a05d17ce18b44"
+  integrity sha512-vehbtyHUShPxIa9SioxDwCvgxukDMH//icJG90sXQBUm5lJOHLT5kNeU9tnivhnA/TkOFMzGIXN2cTc4hY8/kg==
   dependencies:
     "@types/jest" "*"
 
