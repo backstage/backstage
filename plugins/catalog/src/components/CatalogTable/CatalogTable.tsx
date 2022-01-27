@@ -37,6 +37,11 @@ import {
   TableProps,
   WarningPanel,
 } from '@backstage/core-components';
+import { createPermissionedComponent } from '@backstage/plugin-permission-react';
+import {
+  catalogEntityCreatePermission,
+  catalogEntityReadPermission,
+} from '@backstage/plugin-catalog-common';
 
 type CatalogTableProps = {
   columns?: TableColumn<EntityRow>[];
@@ -168,3 +173,8 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
 };
 
 CatalogTable.columns = columnFactories;
+
+export const CatalogTablePermissioned = createPermissionedComponent(
+  CatalogTable,
+  catalogEntityReadPermission,
+);

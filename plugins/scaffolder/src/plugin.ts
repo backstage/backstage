@@ -30,6 +30,7 @@ import { createScaffolderFieldExtension } from './extensions';
 import { registerComponentRouteRef, rootRouteRef } from './routes';
 import {
   createApiFactory,
+  createComponentExtension,
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
@@ -37,6 +38,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker';
 import { EntityTagsPicker } from './components/fields/EntityTagsPicker';
+import React from 'react';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 
 export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',
@@ -99,6 +102,27 @@ export const ScaffolderPage = scaffolderPlugin.provide(
     name: 'ScaffolderPage',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
+  }),
+);
+
+export const ScaffolderPagePermissionedExample = scaffolderPlugin.provide(
+  createRoutableExtension({
+    name: 'ScaffolderPage',
+    component: () => import('./components/Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
+    permission: catalogEntityCreatePermission,
+  }),
+);
+
+export const ILoveScaffolder = scaffolderPlugin.provide(
+  createComponentExtension({
+    name: 'ILoveScaffolder',
+    component: {
+      sync: function ILoveScaffolder({}: {}) {
+        return React.createElement('h1', {}, 'I love scaffolder');
+      },
+    },
+    permission: catalogEntityCreatePermission,
   }),
 );
 

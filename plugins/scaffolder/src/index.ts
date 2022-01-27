@@ -39,6 +39,8 @@ export {
   OwnedEntityPickerFieldExtension,
   RepoUrlPickerFieldExtension,
   ScaffolderPage,
+  ScaffolderPagePermissionedExample,
+  ILoveScaffolder,
   scaffolderPlugin as plugin,
   scaffolderPlugin,
 } from './plugin';

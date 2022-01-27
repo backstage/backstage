@@ -14,21 +14,30 @@
  * limitations under the License.
  */
 
-import { IdentityClient } from '@backstage/plugin-auth-backend';
+import {
+  BackstageIdentityResponse,
+  IdentityClient,
+} from '@backstage/plugin-auth-backend';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   PermissionPolicy,
+  PolicyAuthorizeQuery,
   PolicyDecision,
 } from '@backstage/plugin-permission-node';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-class AllowAllPermissionPolicy implements PermissionPolicy {
-  async handle(): Promise<PolicyDecision> {
-    return {
-      result: AuthorizeResult.ALLOW,
-    };
+class DemoPermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyAuthorizeQuery,
+    _user?: BackstageIdentityResponse,
+  ): Promise<PolicyDecision> {
+    if (request.permission.name === catalogEntityCreatePermission.name) {
+      return { result: AuthorizeResult.DENY };
+    }
+    return { result: AuthorizeResult.ALLOW };
   }
 }
 
@@ -39,7 +48,7 @@ export default async function createPlugin(
   return await createRouter({
     logger,
     discovery,
-    policy: new AllowAllPermissionPolicy(),
+    policy: new DemoPermissionPolicy(),
     identity: new IdentityClient({
       discovery,
       issuer: await discovery.getExternalBaseUrl('auth'),

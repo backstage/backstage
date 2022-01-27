@@ -23,6 +23,7 @@
 
 export {
   RESOURCE_TYPE_CATALOG_ENTITY,
+  catalogEntityCreatePermission,
   catalogEntityReadPermission,
   catalogEntityDeletePermission,
   catalogEntityRefreshPermission,

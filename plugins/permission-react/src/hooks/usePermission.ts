@@ -30,7 +30,7 @@ export type AsyncPermissionResult = {
 };
 
 /**
- * React hook utlity for authorization. Given a {@link @backstage/plugin-permission-common#Permission} and an optional
+ * React hook utility for authorization. Given a {@link @backstage/plugin-permission-common#Permission} and an optional
  * resourceRef, it will return whether or not access is allowed (for the given resource, if resourceRef is provided). See
  * {@link @backstage/plugin-permission-common/PermissionClient#authorize} for more details.
  * @public

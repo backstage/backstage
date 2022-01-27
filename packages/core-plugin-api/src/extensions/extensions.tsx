@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react';
+import React, { FC, lazy, Suspense } from 'react';
 import { AnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin/types';
 import { PluginErrorBoundary } from './PluginErrorBoundary';
+import type { Permission } from '@backstage/plugin-permission-common';
+import { Permissioned } from '@backstage/plugin-permission-react';
 
 /**
  * Lazy or synchronous retrieving of extension components.
@@ -73,14 +75,22 @@ export function createRoutableExtension<
    * variable for this extension.
    */
   name?: string;
+  /**
+   * TODO(vinzscam)
+   */
+  permission?: Permission;
 }): Extension<T> {
-  const { component, mountPoint, name } = options;
+  const { component, mountPoint, name, permission } = options;
+
   return createReactExtension({
     component: {
       lazy: () =>
         component().then(
           InnerComponent => {
             const RoutableExtensionWrapper: any = (props: any) => {
+              const app = useApp();
+              const { NotFoundErrorPage } = app.getComponents();
+
               // Validate that the routing is wired up correctly in the App.tsx
               try {
                 useRouteRef(mountPoint);
@@ -99,6 +109,17 @@ export function createRoutableExtension<
                   }
                 }
                 throw error;
+              }
+
+              if (permission) {
+                return (
+                  <Permissioned
+                    permission={permission}
+                    fallback={<NotFoundErrorPage />}
+                  >
+                    <InnerComponent {...props} />
+                  </Permissioned>
+                );
               }
               return <InnerComponent {...props} />;
             };
@@ -160,9 +181,28 @@ export function createComponentExtension<
    * variable for this extension.
    */
   name?: string;
+  /**
+   * TODO(vinzscam)
+   */
+  permission?: Permission;
 }): Extension<T> {
-  const { component, name } = options;
-  return createReactExtension({ component, name });
+  const { component, name, permission } = options;
+  const ExtensionInstance = createReactExtension({ component, name });
+
+  if (permission) {
+    return {
+      expose(plugin: BackstagePlugin<any, any>) {
+        const Wrapper: FC<{}> = props => (
+          <Permissioned permission={permission}>
+            {ExtensionInstance.expose(plugin)(props)}
+          </Permissioned>
+        );
+        Wrapper.displayName = `ExtensionWrapper(${name})`;
+        return Wrapper as T;
+      },
+    };
+  }
+  return ExtensionInstance;
 }
 
 /**

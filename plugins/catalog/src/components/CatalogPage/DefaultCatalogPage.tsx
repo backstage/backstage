@@ -43,6 +43,9 @@ import {
   FilterContainer,
 } from '../FilteredEntityLayout';
 import { CatalogKindHeader } from '../CatalogKindHeader';
+import { Permissioned } from '@backstage/plugin-permission-react';
+import { ILoveScaffolder } from '@backstage/plugin-scaffolder';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 
 /**
  * DefaultCatalogPageProps
@@ -68,10 +71,12 @@ export const DefaultCatalogPage = ({
       <EntityListProvider>
         <Content>
           <ContentHeader titleComponent={<CatalogKindHeader />}>
-            <CreateButton
-              title="Create Component"
-              to={createComponentLink && createComponentLink()}
-            />
+            <Permissioned permission={catalogEntityCreatePermission}>
+              <CreateButton
+                title="Create Component"
+                to={createComponentLink && createComponentLink()}
+              />
+            </Permissioned>
             <SupportButton>All your software catalog entities</SupportButton>
           </ContentHeader>
           <FilteredEntityLayout>
@@ -83,6 +88,7 @@ export const DefaultCatalogPage = ({
               <EntityTagPicker />
             </FilterContainer>
             <EntityListContainer>
+              <ILoveScaffolder />
               <CatalogTable columns={columns} actions={actions} />
             </EntityListContainer>
           </FilteredEntityLayout>

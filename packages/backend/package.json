@@ -35,6 +35,7 @@
     "@backstage/plugin-azure-devops-backend": "^0.3.1",
     "@backstage/plugin-badges-backend": "^0.1.16",
     "@backstage/plugin-catalog-backend": "^0.21.1",
+    "@backstage/plugin-catalog-common": "^0.1.1",
     "@backstage/plugin-code-coverage-backend": "^0.1.20",
     "@backstage/plugin-graphql-backend": "^0.1.12",
     "@backstage/plugin-jenkins-backend": "^0.1.11",

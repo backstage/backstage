@@ -60,6 +60,7 @@ import { NewRelicPage } from '@backstage/plugin-newrelic';
 import {
   ScaffolderFieldExtensions,
   ScaffolderPage,
+  ScaffolderPagePermissionedExample,
   scaffolderPlugin,
 } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
@@ -86,6 +87,8 @@ import * as plugins from './plugins';
 
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
+import { PermissionedRoute } from '@backstage/plugin-permission-react';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 
 const app = createApp({
   apis,
@@ -172,10 +175,29 @@ const routes = (
     >
       {techDocsPage}
     </Route>
-    <Route
+    <PermissionedRoute
       path="/create"
       element={
         <ScaffolderPage
+          groups={[
+            {
+              title: 'Recommended',
+              filter: entity =>
+                entity?.metadata?.tags?.includes('recommended') ?? false,
+            },
+          ]}
+        />
+      }
+      permission={catalogEntityCreatePermission}
+    >
+      <ScaffolderFieldExtensions>
+        <LowerCaseValuePickerFieldExtension />
+      </ScaffolderFieldExtensions>
+    </PermissionedRoute>
+    <Route
+      path="/create-prfc-example"
+      element={
+        <ScaffolderPagePermissionedExample
           groups={[
             {
               title: 'Recommended',

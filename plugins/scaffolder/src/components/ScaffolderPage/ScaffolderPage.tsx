@@ -37,6 +37,8 @@ import React, { ComponentType } from 'react';
 import { registerComponentRouteRef } from '../../routes';
 import { TemplateList } from '../TemplateList';
 import { TemplateTypePicker } from '../TemplateTypePicker';
+import { createPermissionedComponent } from '@backstage/plugin-permission-react';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -57,6 +59,11 @@ export type ScaffolderPageProps = {
     filter: (entity: Entity) => boolean;
   }>;
 };
+
+const RegisterComponentButton = createPermissionedComponent(
+  CreateButton,
+  catalogEntityCreatePermission,
+);
 
 export const ScaffolderPageContents = ({
   TemplateCardComponent,
@@ -85,7 +92,7 @@ export const ScaffolderPageContents = ({
       />
       <Content>
         <ContentHeader title="Available Templates">
-          <CreateButton
+          <RegisterComponentButton
             title="Register Existing Component"
             to={registerComponentLink && registerComponentLink()}
           />
