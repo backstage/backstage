@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 import React from 'react';
-import { makeStyles, TextField } from '@material-ui/core';
+import {
+  createTheme,
+  makeStyles,
+  MuiThemeProvider,
+  TextField,
+} from '@material-ui/core';
 import { Context } from '../ContextProvider';
 
 const useStyles = makeStyles({
@@ -25,6 +30,31 @@ const useStyles = makeStyles({
   },
 });
 
+const textFieldTheme = createTheme({
+  palette: {
+    type: 'dark',
+    primary: {
+      light: '#fff',
+      main: '#fff',
+      dark: '#fff',
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: '#fff',
+      main: '#fff',
+      dark: '#fff',
+      contrastText: '#fff',
+    },
+    action: {
+      disabled: '#fff',
+    },
+    text: {
+      primary: '#fff',
+      secondary: '#fff',
+    },
+  },
+});
+
 export const ApiBar = () => {
   const classes = useStyles();
 
@@ -32,18 +62,22 @@ export const ApiBar = () => {
     <Context.Consumer>
       {value => (
         <div className={classes.root}>
-          <TextField
-            label="Project ID"
-            value={value.projectId}
-            onChange={e =>
-              value.setProjectId?.(parseInt(e.target.value, 10) || undefined)
-            }
-          />
-          <TextField
-            label="API Key"
-            value={value.apiKey}
-            onChange={e => value.setApiKey?.(e.target.value)}
-          />
+          <MuiThemeProvider theme={textFieldTheme}>
+            <TextField
+              label="Project ID"
+              variant="outlined"
+              value={value.projectId}
+              onChange={e =>
+                value.setProjectId?.(parseInt(e.target.value, 10) || undefined)
+              }
+            />
+            <TextField
+              label="API Key"
+              variant="outlined"
+              value={value.apiKey}
+              onChange={e => value.setApiKey?.(e.target.value)}
+            />
+          </MuiThemeProvider>
         </div>
       )}
     </Context.Consumer>
