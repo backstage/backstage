@@ -20,7 +20,7 @@ import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
-import { Octokit } from '@octokit/rest';
+import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
