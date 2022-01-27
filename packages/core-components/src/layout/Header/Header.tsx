@@ -71,7 +71,7 @@ const useStyles = makeStyles<BackstageTheme>(
       marginBottom: 0,
     },
     subtitle: {
-      color: theme.palette.common.white,
+      color: theme.palette.bursts.fontColor,
       opacity: 0.8,
       display: 'inline-block', // prevents margin collapse of adjacent siblings
       marginTop: theme.spacing(1),
