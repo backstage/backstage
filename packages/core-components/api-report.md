@@ -29,6 +29,7 @@ import { LinkProps as LinkProps_3 } from 'react-router-dom';
 import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import { MaterialTableProps } from '@material-table/core';
 import { NavLinkProps } from 'react-router-dom';
+import { Options } from 'react-markdown';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
