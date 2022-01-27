@@ -227,7 +227,7 @@ const googleDefaultSignInResolver: SignInResolver<OAuthResult> = async (
   }
 
   const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: userId, ent: [`user:default/${userId}`] },
+    claims: { sub: `user:default/${userId}`, ent: [`user:default/${userId}`] },
   });
 
   return { id: userId, token };
