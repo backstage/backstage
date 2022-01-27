@@ -93,6 +93,10 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   overlayHeaderClose: {
     color: theme.palette.bursts.fontColor,
   },
+
+  marginMobileSidebar: {
+    marginBottom: `${sidebarConfig.mobileSidebarHeight}px`,
+  },
 }));
 
 const sortSidebarGroupsForPriority = (children: React.ReactElement[]) =>
@@ -117,7 +121,13 @@ const OverlayMenu = ({
       anchor="bottom"
       open={open}
       onClose={onClose}
-      classes={{ paperAnchorBottom: classes.overlay }}
+      ModalProps={{
+        BackdropProps: { classes: { root: classes.marginMobileSidebar } },
+      }}
+      classes={{
+        root: classes.marginMobileSidebar,
+        paperAnchorBottom: classes.overlay,
+      }}
     >
       <Box className={classes.overlayHeader}>
         <Typography variant="h3">{label}</Typography>
