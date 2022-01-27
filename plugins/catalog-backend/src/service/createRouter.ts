@@ -174,24 +174,32 @@ export async function createRouter(
           disallowReadonlyMode(readonlyEnabled);
         }
 
-        const output = await locationService.createLocation(input, dryRun);
+        const output = await locationService.createLocation(input, dryRun, {
+          authorizationToken: getBearerToken(req.header('authorization')),
+        });
         res.status(201).json(output);
       })
-      .get('/locations', async (_req, res) => {
-        const locations = await locationService.listLocations();
+      .get('/locations', async (req, res) => {
+        const locations = await locationService.listLocations({
+          authorizationToken: getBearerToken(req.header('authorization')),
+        });
         res.status(200).json(locations.map(l => ({ data: l })));
       })
 
       .get('/locations/:id', async (req, res) => {
         const { id } = req.params;
-        const output = await locationService.getLocation(id);
+        const output = await locationService.getLocation(id, {
+          authorizationToken: getBearerToken(req.header('authorization')),
+        });
         res.status(200).json(output);
       })
       .delete('/locations/:id', async (req, res) => {
         disallowReadonlyMode(readonlyEnabled);
 
         const { id } = req.params;
-        await locationService.deleteLocation(id);
+        await locationService.deleteLocation(id, {
+          authorizationToken: getBearerToken(req.header('authorization')),
+        });
         res.status(204).end();
       });
   }

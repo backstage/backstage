@@ -250,8 +250,14 @@ describe('createRouter readonly disabled', () => {
       ];
       locationService.listLocations.mockResolvedValueOnce(locations);
 
-      const response = await request(app).get('/locations');
+      const response = await request(app)
+        .get('/locations')
+        .set('authorization', 'Bearer someauthtoken');
 
+      expect(locationService.listLocations).toHaveBeenCalledTimes(1);
+      expect(locationService.listLocations).toHaveBeenCalledWith({
+        authorizationToken: 'someauthtoken',
+      });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([
         { data: { id: 'foo', target: 'example.com', type: 'url' } },
@@ -266,7 +272,10 @@ describe('createRouter readonly disabled', () => {
         target: 'c',
       } as unknown as LocationSpec;
 
-      const response = await request(app).post('/locations').send(spec);
+      const response = await request(app)
+        .post('/locations')
+        .set('authorization', 'Bearer someauthtoken')
+        .send(spec);
 
       expect(locationService.createLocation).not.toHaveBeenCalled();
       expect(response.status).toEqual(400);
@@ -283,10 +292,15 @@ describe('createRouter readonly disabled', () => {
         entities: [],
       });
 
-      const response = await request(app).post('/locations').send(spec);
+      const response = await request(app)
+        .post('/locations')
+        .set('authorization', 'Bearer someauthtoken')
+        .send(spec);
 
       expect(locationService.createLocation).toHaveBeenCalledTimes(1);
-      expect(locationService.createLocation).toHaveBeenCalledWith(spec, false);
+      expect(locationService.createLocation).toHaveBeenCalledWith(spec, false, {
+        authorizationToken: 'someauthtoken',
+      });
       expect(response.status).toEqual(201);
       expect(response.body).toEqual(
         expect.objectContaining({
@@ -308,10 +322,13 @@ describe('createRouter readonly disabled', () => {
 
       const response = await request(app)
         .post('/locations?dryRun=true')
+        .set('authorization', 'Bearer someauthtoken')
         .send(spec);
 
       expect(locationService.createLocation).toHaveBeenCalledTimes(1);
-      expect(locationService.createLocation).toHaveBeenCalledWith(spec, true);
+      expect(locationService.createLocation).toHaveBeenCalledWith(spec, true, {
+        authorizationToken: 'someauthtoken',
+      });
       expect(response.status).toEqual(201);
       expect(response.body).toEqual(
         expect.objectContaining({
@@ -397,7 +414,14 @@ describe('createRouter readonly enabled', () => {
       ];
       locationService.listLocations.mockResolvedValueOnce(locations);
 
-      const response = await request(app).get('/locations');
+      const response = await request(app)
+        .get('/locations')
+        .set('authorization', 'Bearer someauthtoken');
+
+      expect(locationService.listLocations).toHaveBeenCalledTimes(1);
+      expect(locationService.listLocations).toHaveBeenCalledWith({
+        authorizationToken: 'someauthtoken',
+      });
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([
@@ -413,7 +437,10 @@ describe('createRouter readonly enabled', () => {
         target: 'c',
       };
 
-      const response = await request(app).post('/locations').send(spec);
+      const response = await request(app)
+        .post('/locations')
+        .set('authorization', 'Bearer someauthtoken')
+        .send(spec);
 
       expect(locationService.createLocation).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
@@ -433,10 +460,13 @@ describe('createRouter readonly enabled', () => {
 
       const response = await request(app)
         .post('/locations?dryRun=true')
+        .set('authorization', 'Bearer someauthtoken')
         .send(spec);
 
       expect(locationService.createLocation).toHaveBeenCalledTimes(1);
-      expect(locationService.createLocation).toHaveBeenCalledWith(spec, true);
+      expect(locationService.createLocation).toHaveBeenCalledWith(spec, true, {
+        authorizationToken: 'someauthtoken',
+      });
       expect(response.status).toEqual(201);
       expect(response.body).toEqual(
         expect.objectContaining({
