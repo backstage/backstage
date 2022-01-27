@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.13",
+    "@backstage/plugin-permission-react": "^0.3.0",
     "@backstage/types": "^0.1.1",
     "@backstage/version-bridge": "^0.1.1",
     "history": "^5.0.0",

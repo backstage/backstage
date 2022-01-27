@@ -37,6 +37,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker';
 import { EntityTagsPicker } from './components/fields/EntityTagsPicker';
+import React from 'react';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 
 export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',

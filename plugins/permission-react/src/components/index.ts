@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { PermissionedRoute } from './PermissionedRoute';
+export * from './PermissionedRoute';

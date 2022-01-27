@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps, ReactElement } from 'react';
+import React, {
+  ComponentProps,
+  ComponentType,
+  PropsWithChildren,
+  ReactElement,
+} from 'react';
 import { Route } from 'react-router';
 import { useApp } from '@backstage/core-plugin-api';
 import { usePermission } from '../hooks';
@@ -49,3 +54,64 @@ export const PermissionedRoute = (
 
   return <Route {...otherProps} element={shownElement} />;
 };
+
+export function createPermissionedComponent<T>(
+  TargetComponent: ComponentType<T>,
+  permission: Permission,
+  helperComponents: {
+    fallback?: ReactElement;
+    loading?: ReactElement;
+    error?: ReactElement;
+  } = {},
+) {
+  const { error, fallback, loading } = helperComponents;
+
+  function AuthorizedComponent({
+    resourceRef,
+    ...props
+  }: T & { resourceRef?: string }) {
+    const permissionResult = usePermission(permission, resourceRef);
+
+    if (permissionResult.loading) {
+      return loading ?? null;
+    }
+    if (permissionResult.error) {
+      return error ?? null;
+    }
+
+    if (permissionResult.allowed) {
+      return <TargetComponent {...(props as T)} />;
+    }
+    return fallback || null;
+  }
+  AuthorizedComponent.displayName = `Authorized(${
+    TargetComponent.displayName || TargetComponent.name
+  })`;
+
+  return AuthorizedComponent;
+}
+
+export function Permissioned(
+  props: PropsWithChildren<{
+    permission: Permission;
+    resourceRef?: string;
+    fallback?: ReactElement;
+    loading?: ReactElement;
+    error?: ReactElement;
+  }>,
+) {
+  const { children, permission, fallback, loading, error, resourceRef } = props;
+  const permissionResult = usePermission(permission, resourceRef);
+
+  if (permissionResult.loading) {
+    return loading ?? null;
+  }
+  if (permissionResult.error) {
+    return error ?? null;
+  }
+
+  if (permissionResult.allowed) {
+    return <>{children}</>;
+  }
+  return fallback ?? null;
+}

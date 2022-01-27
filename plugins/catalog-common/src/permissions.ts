@@ -55,6 +55,7 @@ export const catalogEntityCreatePermission: Permission = {
 /**
  * This permission is used to designate actions that involve removing one or
  * more entities from the catalog.
+ *
  * @public
  */
 export const catalogEntityDeletePermission: Permission = {
