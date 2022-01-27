@@ -26,6 +26,7 @@ import { Location as Location_2 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Organizations } from 'aws-sdk';
+import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -539,6 +540,8 @@ export class DefaultCatalogCollator implements DocumentCollator {
   protected tokenManager: TokenManager;
   // (undocumented)
   readonly type: string;
+  // (undocumented)
+  readonly visibilityPermission: Permission;
 }
 
 // Warning: (ae-missing-release-tag) "DefaultCatalogProcessingOrchestrator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

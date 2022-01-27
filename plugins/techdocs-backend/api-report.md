@@ -10,6 +10,7 @@ import express from 'express';
 import { GeneratorBuilder } from '@backstage/techdocs-common';
 import { Knex } from 'knex';
 import { Logger as Logger_2 } from 'winston';
+import { Permission } from '@backstage/plugin-permission-common';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PreparerBuilder } from '@backstage/techdocs-common';
@@ -46,6 +47,8 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   protected locationTemplate: string;
   // (undocumented)
   readonly type: string;
+  // (undocumented)
+  readonly visibilityPermission: Permission;
 }
 
 // Warning: (ae-missing-release-tag) "OutOfTheBoxDeploymentOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

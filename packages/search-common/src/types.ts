@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { Permission } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 
 export interface SearchQuery {
@@ -53,7 +55,31 @@ export interface IndexableDocument {
    * is clicked).
    */
   location: string;
+
+  /**
+   * Optional authorization information to be used when determining whether this
+   * search result should be visible to a given user.
+   */
+  authorization?: {
+    /**
+     * Identifier for the resource.
+     */
+    resourceRef: string;
+  };
 }
+
+/**
+ * Information about a specific document type. Intended to be used in the
+ * {@link @backstage/search-backend-node#IndexBuilder} to collect information
+ * about the types stored in the index.
+ */
+export type DocumentTypeInfo = {
+  /**
+   * The {@link @backstage/plugin-permission-common#Permission} that controls
+   * visibility of resources associated with this collator's documents.
+   */
+  visibilityPermission?: Permission;
+};
 
 /**
  * Interface that must be implemented in order to expose new documents to
@@ -65,6 +91,13 @@ export interface DocumentCollator {
    * index name by Search Engines.
    */
   readonly type: string;
+
+  /**
+   * The {@link @backstage/plugin-permission-common#Permission} that controls
+   * visibility of resources associated with this collator's documents.
+   */
+  readonly visibilityPermission?: Permission;
+
   execute(): Promise<IndexableDocument[]>;
 }
 
@@ -88,6 +121,10 @@ export interface DocumentDecorator {
  */
 export type QueryTranslator = (query: SearchQuery) => unknown;
 
+export type QueryRequestOptions = {
+  token?: string;
+};
+
 /**
  * Interface that must be implemented by specific search engines, responsible
  * for performing indexing and querying and translating abstract queries into
@@ -107,5 +144,8 @@ export interface SearchEngine {
   /**
    * Perform a search query against the SearchEngine.
    */
-  query(query: SearchQuery): Promise<SearchResultSet>;
+  query(
+    query: SearchQuery,
+    options?: QueryRequestOptions,
+  ): Promise<SearchResultSet>;
 }

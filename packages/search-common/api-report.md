@@ -4,6 +4,7 @@
 
 ```ts
 import { JsonObject } from '@backstage/types';
+import { Permission } from '@backstage/plugin-permission-common';
 
 // Warning: (ae-missing-release-tag) "DocumentCollator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -12,6 +13,7 @@ export interface DocumentCollator {
   // (undocumented)
   execute(): Promise<IndexableDocument[]>;
   readonly type: string;
+  readonly visibilityPermission?: Permission;
 }
 
 // Warning: (ae-missing-release-tag) "DocumentDecorator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -23,14 +25,31 @@ export interface DocumentDecorator {
   readonly types?: string[];
 }
 
+// Warning: (ae-missing-release-tag) "DocumentTypeInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type DocumentTypeInfo = {
+  visibilityPermission?: Permission;
+};
+
 // Warning: (ae-missing-release-tag) "IndexableDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export interface IndexableDocument {
+  authorization?: {
+    resourceRef: string;
+  };
   location: string;
   text: string;
   title: string;
 }
+
+// Warning: (ae-missing-release-tag) "QueryRequestOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type QueryRequestOptions = {
+  token?: string;
+};
 
 // Warning: (ae-missing-release-tag) "QueryTranslator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -42,7 +61,10 @@ export type QueryTranslator = (query: SearchQuery) => unknown;
 // @public
 export interface SearchEngine {
   index(type: string, documents: IndexableDocument[]): Promise<void>;
-  query(query: SearchQuery): Promise<SearchResultSet>;
+  query(
+    query: SearchQuery,
+    options?: QueryRequestOptions,
+  ): Promise<SearchResultSet>;
   setTranslator(translator: QueryTranslator): void;
 }
 
