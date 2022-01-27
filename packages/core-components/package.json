@@ -59,7 +59,7 @@
     "react-router-dom": "6.0.0-beta.0",
     "react-sparklines": "^1.7.0",
     "react-syntax-highlighter": "^15.4.5",
-    "react-text-truncate": "^0.16.0",
+    "react-text-truncate": "^0.17.0",
     "react-use": "^17.2.4",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
