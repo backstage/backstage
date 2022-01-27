@@ -1,5 +1,13 @@
 # @backstage/plugin-search-backend-node
 
+## 0.4.5
+
+### Patch Changes
+
+- f6389e9e5d: Track visibility permissions by document type in IndexBuilder
+- Updated dependencies
+  - @backstage/search-common@0.2.2
+
 ## 0.4.4
 
 ### Patch Changes

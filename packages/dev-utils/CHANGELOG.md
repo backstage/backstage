@@ -1,5 +1,14 @@
 # @backstage/dev-utils
 
+## 0.2.19
+
+### Patch Changes
+
+- 10086f5873: Bumped `react-hot-loader` from `^4.12.21` to `^4.13.0`.
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+  - @backstage/core-app-api@0.5.1
+
 ## 0.2.18
 
 ### Patch Changes

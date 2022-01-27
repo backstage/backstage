@@ -20,8 +20,8 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.10.4",
-    "@backstage/backend-test-utils": "^0.1.14",
+    "@backstage/backend-common": "^0.10.5",
+    "@backstage/backend-test-utils": "^0.1.15",
     "@backstage/config": "^0.1.13",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
@@ -31,7 +31,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.12.0"
+    "@backstage/cli": "^0.13.0"
   },
   "files": [
     "dist",

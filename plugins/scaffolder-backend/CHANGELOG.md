@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.22
+
+### Patch Changes
+
+- b09dd8f43b: chore(deps): bump `@gitbeaker/node` from 34.6.0 to 35.1.0
+- ac2f1eeec0: This change is for adding the option of inputs on the `github:actions:dispatch` Backstage Action. This will allow users to pass data from Backstage to the GitHub Action.
+- 0d5e846a78: Expose a new option to provide additional template filters via `@backstage/scaffolder-backend`'s `createRouter()` function.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.1
+  - @backstage/backend-common@0.10.5
+
 ## 0.15.21
 
 ### Patch Changes

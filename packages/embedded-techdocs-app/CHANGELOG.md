@@ -1,5 +1,16 @@
 # embedded-techdocs-app
 
+## 0.2.61
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+  - @backstage/cli@0.13.0
+  - @backstage/plugin-techdocs@0.13.1
+  - @backstage/plugin-catalog@0.7.10
+  - @backstage/core-app-api@0.5.1
+
 ## 0.2.60
 
 ### Patch Changes

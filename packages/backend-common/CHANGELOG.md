@@ -1,5 +1,11 @@
 # @backstage/backend-common
 
+## 0.10.5
+
+### Patch Changes
+
+- de9d7eba63: Fixed configuration schema incorrectly declaring `backend.listen.address` to exist, rather than `backend.listen.host`, which is the correct key.
+
 ## 0.10.4
 
 ### Patch Changes

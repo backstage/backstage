@@ -1,5 +1,23 @@
 # example-backend
 
+## 0.2.62
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.4.5
+  - @backstage/plugin-catalog-backend@0.21.1
+  - @backstage/plugin-scaffolder-backend@0.15.22
+  - @backstage/plugin-kubernetes-backend@0.4.5
+  - @backstage/plugin-auth-backend@0.8.0
+  - @backstage/plugin-search-backend@0.4.0
+  - @backstage/plugin-tech-insights-backend@0.2.2
+  - @backstage/plugin-techdocs-backend@0.13.1
+  - @backstage/backend-common@0.10.5
+  - example-app@0.2.62
+  - @backstage/plugin-permission-backend@0.4.1
+  - @backstage/plugin-permission-node@0.4.1
+
 ## 0.2.61
 
 ### Patch Changes

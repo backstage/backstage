@@ -1,5 +1,15 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.13.1
+
+### Patch Changes
+
+- 4682340457: Add support for permissions to the DefaultTechDocsCollator.
+- Updated dependencies
+  - @backstage/search-common@0.2.2
+  - @backstage/techdocs-common@0.11.5
+  - @backstage/backend-common@0.10.5
+
 ## 0.13.0
 
 ### Minor Changes

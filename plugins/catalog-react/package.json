@@ -31,7 +31,7 @@
   "dependencies": {
     "@backstage/catalog-client": "^0.5.5",
     "@backstage/catalog-model": "^0.9.10",
-    "@backstage/core-components": "^0.8.5",
+    "@backstage/core-components": "^0.8.6",
     "@backstage/core-plugin-api": "^0.6.0",
     "@backstage/errors": "^0.2.0",
     "@backstage/integration": "^0.7.2",
@@ -54,8 +54,8 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.12.0",
-    "@backstage/core-app-api": "^0.5.0",
+    "@backstage/cli": "^0.13.0",
+    "@backstage/core-app-api": "^0.5.1",
     "@backstage/plugin-catalog-common": "^0.1.1",
     "@backstage/test-utils": "^0.2.3",
     "@testing-library/jest-dom": "^5.10.1",

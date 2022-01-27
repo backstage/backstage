@@ -1,5 +1,13 @@
 # @backstage/core-app-api
 
+## 0.5.1
+
+### Patch Changes
+
+- f959c22787: Asynchronous methods on the identity API can now reliably be called at any time, including early in the bootstrap process or prior to successful sign-in.
+
+  Previously in such situations, a `Tried to access IdentityApi before app was loaded` error would be thrown. Now, those methods will wait and resolve eventually (as soon as a concrete identity API is provided).
+
 ## 0.5.0
 
 ### Minor Changes

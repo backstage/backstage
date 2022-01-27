@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend
 
+## 0.21.1
+
+### Patch Changes
+
+- 4f5bde47e9: Add support for permissions to the DefaultCatalogCollator.
+- Updated dependencies
+  - @backstage/search-common@0.2.2
+  - @backstage/backend-common@0.10.5
+  - @backstage/plugin-permission-node@0.4.1
+
 ## 0.21.0
 
 ### Minor Changes

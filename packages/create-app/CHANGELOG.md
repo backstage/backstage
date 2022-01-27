@@ -1,5 +1,188 @@
 # @backstage/create-app
 
+## 0.4.15
+
+### Patch Changes
+
+- 01b27d547c: Added three additional required properties to the search-backend `createRouter` function to support filtering search results based on permissions. To make this change to an existing app, add the required parameters to the `createRouter` call in `packages/backend/src/plugins/search.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+  +  permissions,
+    discovery,
+    config,
+    tokenManager,
+  }: PluginEnvironment) {
+    /* ... */
+
+    return await createRouter({
+      engine: indexBuilder.getSearchEngine(),
+  +    types: indexBuilder.getDocumentTypes(),
+  +    permissions,
+  +    config,
+      logger,
+    });
+  }
+  ```
+
+- a0d446c8ec: Replaced EntitySystemDiagramCard with EntityCatalogGraphCard
+
+  To make this change to an existing app:
+
+  Add `@backstage/catalog-graph-plugin` as a `dependency` in `packages/app/package.json`
+
+  Apply the following changes to the `packages/app/src/components/catalog/EntityPage.tsx` file:
+
+  ```diff
+  + import {
+  +  Direction,
+  +  EntityCatalogGraphCard,
+  + } from '@backstage/plugin-catalog-graph';
+  + import {
+  +  RELATION_API_CONSUMED_BY,
+  +  RELATION_API_PROVIDED_BY,
+  +  RELATION_CONSUMES_API,
+  +  RELATION_DEPENDENCY_OF,
+  +  RELATION_DEPENDS_ON,
+  +  RELATION_HAS_PART,
+  +  RELATION_PART_OF,
+  +  RELATION_PROVIDES_API,
+  + } from '@backstage/catalog-model';
+  ```
+
+  ```diff
+      <EntityLayout.Route path="/diagram" title="Diagram">
+  -      <EntitySystemDiagramCard />
+  +      <EntityCatalogGraphCard
+  +        variant="gridItem"
+  +        direction={Direction.TOP_BOTTOM}
+  +        title="System Diagram"
+  +        height={700}
+  +        relations={[
+  +          RELATION_PART_OF,
+  +          RELATION_HAS_PART,
+  +          RELATION_API_CONSUMED_BY,
+  +          RELATION_API_PROVIDED_BY,
+  +          RELATION_CONSUMES_API,
+  +          RELATION_PROVIDES_API,
+  +          RELATION_DEPENDENCY_OF,
+  +          RELATION_DEPENDS_ON,
+  +        ]}
+  +        unidirectional={false}
+  +      />
+      </EntityLayout.Route>
+  ```
+
+  ```diff
+  const cicdContent = (
+      <Grid item md={6}>
+        <EntityAboutCard variant="gridItem" />
+      </Grid>
+  +    <Grid item md={6} xs={12}>
+  +      <EntityCatalogGraphCard variant="gridItem" height={400} />
+  +    </Grid>
+  ```
+
+  Add the above component in `overviewContent`, `apiPage` , `systemPage` and domainPage` as well.
+
+- 4aca2a5307: An example instance of a `<SearchFilter.Select />` with asynchronously loaded values was added to the composed `SearchPage.tsx`, allowing searches bound to the `techdocs` type to be filtered by entity name.
+
+  This is an entirely optional change; if you wish to adopt it, you can make the following (or similar) changes to your search page layout:
+
+  ```diff
+  --- a/packages/app/src/components/search/SearchPage.tsx
+  +++ b/packages/app/src/components/search/SearchPage.tsx
+  @@ -2,6 +2,10 @@ import React from 'react';
+   import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
+
+   import { CatalogResultListItem } from '@backstage/plugin-catalog';
+  +import {
+  +  catalogApiRef,
+  +  CATALOG_FILTER_EXISTS,
+  +} from '@backstage/plugin-catalog-react';
+   import { DocsResultListItem } from '@backstage/plugin-techdocs';
+
+   import {
+  @@ -10,6 +14,7 @@ import {
+     SearchResult,
+     SearchType,
+     DefaultResultListItem,
+  +  useSearch,
+   } from '@backstage/plugin-search';
+   import {
+     CatalogIcon,
+  @@ -18,6 +23,7 @@ import {
+     Header,
+     Page,
+   } from '@backstage/core-components';
+  +import { useApi } from '@backstage/core-plugin-api';
+
+   const useStyles = makeStyles((theme: Theme) => ({
+     bar: {
+  @@ -36,6 +42,8 @@ const useStyles = makeStyles((theme: Theme) => ({
+
+   const SearchPage = () => {
+     const classes = useStyles();
+  +  const { types } = useSearch();
+  +  const catalogApi = useApi(catalogApiRef);
+
+     return (
+       <Page themeId="home">
+  @@ -65,6 +73,27 @@ const SearchPage = () => {
+                 ]}
+               />
+               <Paper className={classes.filters}>
+  +              {types.includes('techdocs') && (
+  +                <SearchFilter.Select
+  +                  className={classes.filter}
+  +                  label="Entity"
+  +                  name="name"
+  +                  values={async () => {
+  +                    // Return a list of entities which are documented.
+  +                    const { items } = await catalogApi.getEntities({
+  +                      fields: ['metadata.name'],
+  +                      filter: {
+  +                        'metadata.annotations.backstage.io/techdocs-ref':
+  +                          CATALOG_FILTER_EXISTS,
+  +                      },
+  +                    });
+  +
+  +                    const names = items.map(entity => entity.metadata.name);
+  +                    names.sort();
+  +                    return names;
+  +                  }}
+  +                />
+  +              )}
+                 <SearchFilter.Select
+                   className={classes.filter}
+                   name="kind"
+  ```
+
+- 1dbe63ec39: A `label` prop was added to `<SearchFilter.* />` components in order to allow
+  user-friendly label strings (as well as the option to omit a label). In order
+  to maintain labels on your existing filters, add a `label` prop to them in your
+  `SearchPage.tsx`.
+
+  ```diff
+  --- a/packages/app/src/components/search/SearchPage.tsx
+  +++ b/packages/app/src/components/search/SearchPage.tsx
+  @@ -96,11 +96,13 @@ const SearchPage = () => {
+                 )}
+                 <SearchFilter.Select
+                   className={classes.filter}
+  +                label="Kind"
+                   name="kind"
+                   values={['Component', 'Template']}
+                 />
+                 <SearchFilter.Checkbox
+                   className={classes.filter}
+  +                label="Lifecycle"
+                   name="lifecycle"
+                   values={['experimental', 'production']}
+                 />
+  ```
+
 ## 0.4.14
 
 ### Patch Changes

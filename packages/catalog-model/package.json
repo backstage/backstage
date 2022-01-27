@@ -43,7 +43,7 @@
     "yup": "^0.32.9"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.12.0",
+    "@backstage/cli": "^0.13.0",
     "@types/jest": "^26.0.7",
     "@types/lodash": "^4.14.151",
     "yaml": "^1.9.2"

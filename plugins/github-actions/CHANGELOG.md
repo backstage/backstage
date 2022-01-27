@@ -1,5 +1,13 @@
 # @backstage/plugin-github-actions
 
+## 0.4.33
+
+### Patch Changes
+
+- a9bede36e1: Update GitHub OAuth documentation to include it must be created as a GitHub Organization OAuth application.
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+
 ## 0.4.32
 
 ### Patch Changes

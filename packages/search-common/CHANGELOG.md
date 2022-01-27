@@ -1,5 +1,14 @@
 # @backstage/search-common
 
+## 0.2.2
+
+### Patch Changes
+
+- 9a511968b1: - Add optional visibilityPermission property to DocumentCollator type
+  - Add new DocumentTypeInfo type for housing information about the document types stored in a search engine.
+- b2e918fa0b: Add optional resourceRef field to the IndexableDocument type for use when authorizing access to documents.
+- 96cbebc629: Add optional query request options containing authorization token to SearchEngine#query.
+
 ## 0.2.1
 
 ### Patch Changes

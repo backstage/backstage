@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog
 
+## 0.7.10
+
+### Patch Changes
+
+- aac316279f: Deprecated `EntitySystemDiagramCard`
+  `EntitySystemDiagramCard` is replaced by `EntityCatalogGraphCard` which is imported from `@backstage/plugin-catalog-graph`. This component will be removed in an upcoming release
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+
 ## 0.7.9
 
 ### Patch Changes

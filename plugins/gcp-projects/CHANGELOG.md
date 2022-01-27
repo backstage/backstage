@@ -1,5 +1,13 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.15
+
+### Patch Changes
+
+- 977c87a905: Pin the `react-router-dom` version to `6.0.0-beta.0`. This avoids issues caused by newer versions of the package being installed.
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+
 ## 0.3.14
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.4.5
+
+### Patch Changes
+
+- 8fc0d122e8: If serviceAccountToken not provided, use default config file from cluster
+- Updated dependencies
+  - @backstage/backend-common@0.10.5
+
 ## 0.4.4
 
 ### Patch Changes
