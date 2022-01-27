@@ -208,6 +208,7 @@ pageview
 parallelization
 Patrik
 Peloton
+performant
 plantuml
 Platformize
 Podman
@@ -222,6 +223,7 @@ productional
 Protobuf
 proxying
 Proxying
+pubsub
 pygments
 pymdownx
 rankdir
@@ -314,6 +316,7 @@ unmanaged
 unregister
 unregistration
 untracked
+upsert
 upvote
 url
 URLs
@@ -334,3 +337,4 @@ Zalando
 Zhou
 zoomable
 zsh
+Alef

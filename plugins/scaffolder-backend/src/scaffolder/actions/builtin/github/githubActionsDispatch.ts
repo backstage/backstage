@@ -36,6 +36,7 @@ export function createGithubActionsDispatchAction(options: {
     repoUrl: string;
     workflowId: string;
     branchOrTagName: string;
+    workflowInputs?: { [key: string]: string };
   }>({
     id: 'github:actions:dispatch',
     description:
@@ -61,11 +62,18 @@ export function createGithubActionsDispatchAction(options: {
               'The git branch or tag name used to dispatch the workflow',
             type: 'string',
           },
+          workflowInputs: {
+            title: 'Workflow Inputs',
+            description:
+              'Inputs keys and values to send to GitHub Action configured on the workflow file. The maximum number of properties is 10. ',
+            type: 'object',
+          },
         },
       },
     },
     async handler(ctx) {
-      const { repoUrl, workflowId, branchOrTagName } = ctx.input;
+      const { repoUrl, workflowId, branchOrTagName, workflowInputs } =
+        ctx.input;
 
       ctx.logger.info(
         `Dispatching workflow ${workflowId} for repo ${repoUrl} on ${branchOrTagName}`,
@@ -78,6 +86,7 @@ export function createGithubActionsDispatchAction(options: {
         repo,
         workflow_id: workflowId,
         ref: branchOrTagName,
+        inputs: workflowInputs,
       });
 
       ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);

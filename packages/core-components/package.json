@@ -54,7 +54,7 @@
     "rc-progress": "3.2.4",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.12.2",
-    "react-markdown": "^7.0.1",
+    "react-markdown": "^8.0.0",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-sparklines": "^1.7.0",
@@ -63,7 +63,7 @@
     "react-use": "^17.2.4",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
-    "remark-gfm": "^2.0.0",
+    "remark-gfm": "^3.0.1",
     "zen-observable": "^0.8.15",
     "zod": "^3.11.6"
   },

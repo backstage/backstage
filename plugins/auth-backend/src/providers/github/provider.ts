@@ -314,6 +314,7 @@ export const createGithubProvider = (
         persistScopes: true,
         providerId,
         tokenIssuer,
+        callbackUrl,
       });
     });
 };
