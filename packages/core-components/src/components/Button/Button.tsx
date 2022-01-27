@@ -58,4 +58,5 @@ const ActualButton = React.forwardRef<any, ButtonProps>((props, ref) => (
 //               The first type to be exported gets priority, but it will
 //               be thrown away when compiling to JS.
 // @ts-ignore
-export { ButtonType as Button, ActualButton as Button };
+export type { ButtonType as Button };
+export { ActualButton as Button };

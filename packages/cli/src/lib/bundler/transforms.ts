@@ -18,6 +18,8 @@ import webpack, { ModuleOptions, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
 
+const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
 type Transforms = {
   loaders: ModuleOptions['rules'];
   plugins: WebpackPluginInstance[];
@@ -29,8 +31,6 @@ type TransformOptions = {
 
 export const transforms = (options: TransformOptions): Transforms => {
   const { isDev } = options;
-
-  const extraTransforms = isDev ? ['react-hot-loader'] : [];
 
   // This ensures that styles inserted from the style-loader and any
   // async style chunks are always given lower priority than JSS styles.
@@ -53,21 +53,49 @@ export const transforms = (options: TransformOptions): Transforms => {
     {
       test: /\.(tsx?)$/,
       exclude: /node_modules/,
-      loader: require.resolve('@sucrase/webpack-loader'),
+      loader: require.resolve('swc-loader'),
       options: {
-        transforms: ['typescript', 'jsx', ...extraTransforms],
-        disableESTransforms: true,
-        production: !isDev,
+        env: { mode: 'usage' },
+        jsc: {
+          parser: {
+            syntax: 'typescript',
+            tsx: true,
+            dynamicImport: true,
+          },
+          transform: {
+            react: {
+              // swc-loader will check whether webpack mode is 'development'
+              // and set this automatically starting from 0.1.13. You could also set it yourself.
+              // swc won't enable fast refresh when development is false
+              runtime: 'automatic',
+              refresh: isDev,
+            },
+          },
+        },
       },
     },
     {
       test: /\.(jsx?|mjs|cjs)$/,
       exclude: /node_modules/,
-      loader: require.resolve('@sucrase/webpack-loader'),
+      loader: require.resolve('swc-loader'),
       options: {
-        transforms: ['jsx', ...extraTransforms],
-        disableESTransforms: true,
-        production: !isDev,
+        env: { mode: 'usage' },
+        jsc: {
+          parser: {
+            syntax: 'typescript',
+            tsx: true,
+            dynamicImport: true,
+          },
+          transform: {
+            react: {
+              // swc-loader will check whether webpack mode is 'development'
+              // and set this automatically starting from 0.1.13. You could also set it yourself.
+              // swc won't enable fast refresh when development is false
+              runtime: 'automatic',
+              refresh: isDev,
+            },
+          },
+        },
       },
     },
     {
@@ -80,11 +108,9 @@ export const transforms = (options: TransformOptions): Transforms => {
       test: [/\.icon\.svg$/],
       use: [
         {
-          loader: require.resolve('@sucrase/webpack-loader'),
+          loader: require.resolve('esbuild-loader'),
           options: {
-            transforms: ['jsx', ...extraTransforms],
-            disableESTransforms: true,
-            production: !isDev,
+            loader: 'jsx',
           },
         },
         {
@@ -150,7 +176,7 @@ export const transforms = (options: TransformOptions): Transforms => {
   const plugins = new Array<WebpackPluginInstance>();
 
   if (isDev) {
-    plugins.push(new webpack.HotModuleReplacementPlugin());
+    plugins.push(new ReactRefreshPlugin());
   } else {
     plugins.push(
       new MiniCssExtractPlugin({

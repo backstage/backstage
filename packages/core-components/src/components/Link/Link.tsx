@@ -103,4 +103,5 @@ const ActualLink = React.forwardRef<any, LinkProps>(
 //               The first type to be exported gets priority, but it will
 //               be thrown away when compiling to JS.
 // @ts-ignore
-export { LinkType as Link, ActualLink as Link };
+export type { LinkType as Link };
+export { ActualLink as Link };
