@@ -368,5 +368,4 @@ for more info.
 
 [1]: https://cloud.google.com/kubernetes-engine
 [2]: https://cloud.google.com/docs/authentication/production#linux-or-macos
-[3]:
-  https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
+[3]: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/

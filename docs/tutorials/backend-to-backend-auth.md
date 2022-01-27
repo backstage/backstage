@@ -1,8 +1,7 @@
 ---
 id: backend-to-backend-auth
 title: Backend-to-Backend Authentication
-description:
-  Guide for authenticating API requests between Backstage plugin backends
+description: Guide for authenticating API requests between Backstage plugin backends
 ---
 
 This tutorial describes the steps needed to handle _backend-to-backend
