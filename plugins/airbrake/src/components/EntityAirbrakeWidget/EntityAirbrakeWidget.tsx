@@ -28,10 +28,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { ErrorApi, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { airbrakeApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
-import {
-  AIRBRAKE_PROJECT_ID_ANNOTATION,
-  useProjectSlug,
-} from '../useProjectSlug';
+import { AIRBRAKE_PROJECT_ID_ANNOTATION, useProjectId } from '../useProjectId';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   multilineText: {
@@ -42,7 +39,7 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
 export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
   const classes = useStyles();
 
-  const projectId = useProjectSlug(entity);
+  const projectId = useProjectId(entity);
   const errorApi = useApi<ErrorApi>(errorApiRef);
   const airbrakeApi = useApi(airbrakeApiRef);
 

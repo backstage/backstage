@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AIRBRAKE_PROJECT_ID_ANNOTATION } from '../../components/useProjectSlug';
+import { AIRBRAKE_PROJECT_ID_ANNOTATION } from '../../components/useProjectId';
 import { Entity } from '@backstage/catalog-model';
 
 export const createEntity = (projectId?: number) => {

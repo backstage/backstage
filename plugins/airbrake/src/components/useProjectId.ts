@@ -18,6 +18,6 @@ import { Entity } from '@backstage/catalog-model';
 
 export const AIRBRAKE_PROJECT_ID_ANNOTATION = 'airbrake.io/project-id';
 
-export const useProjectSlug = (entity: Entity) => {
+export const useProjectId = (entity: Entity) => {
   return entity?.metadata.annotations?.[AIRBRAKE_PROJECT_ID_ANNOTATION] ?? '';
 };
