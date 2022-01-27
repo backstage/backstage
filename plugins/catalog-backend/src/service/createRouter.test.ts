@@ -265,6 +265,33 @@ describe('createRouter readonly disabled', () => {
     });
   });
 
+  describe('GET /locations/:id', () => {
+    it('happy path: gets location by id', async () => {
+      const location: Location = {
+        id: 'foo',
+        type: 'url',
+        target: 'example.com',
+      };
+      locationService.getLocation.mockResolvedValueOnce(location);
+
+      const response = await request(app)
+        .get('/locations/foo')
+        .set('authorization', 'Bearer someauthtoken');
+
+      expect(locationService.getLocation).toHaveBeenCalledTimes(1);
+      expect(locationService.getLocation).toHaveBeenCalledWith('foo', {
+        authorizationToken: 'someauthtoken',
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        id: 'foo',
+        target: 'example.com',
+        type: 'url',
+      });
+    });
+  });
+
   describe('POST /locations', () => {
     it('rejects malformed locations', async () => {
       const spec = {
@@ -335,6 +362,23 @@ describe('createRouter readonly disabled', () => {
           location: { id: 'a', ...spec },
         }),
       );
+    });
+  });
+
+  describe('DELETE /locations', () => {
+    it('deletes the location', async () => {
+      locationService.deleteLocation.mockResolvedValueOnce(undefined);
+
+      const response = await request(app)
+        .delete('/locations/foo')
+        .set('authorization', 'Bearer someauthtoken');
+
+      expect(locationService.deleteLocation).toHaveBeenCalledTimes(1);
+      expect(locationService.deleteLocation).toHaveBeenCalledWith('foo', {
+        authorizationToken: 'someauthtoken',
+      });
+
+      expect(response.status).toEqual(204);
     });
   });
 });
@@ -430,6 +474,33 @@ describe('createRouter readonly enabled', () => {
     });
   });
 
+  describe('GET /locations/:id', () => {
+    it('happy path: gets location by id', async () => {
+      const location: Location = {
+        id: 'foo',
+        type: 'url',
+        target: 'example.com',
+      };
+      locationService.getLocation.mockResolvedValueOnce(location);
+
+      const response = await request(app)
+        .get('/locations/foo')
+        .set('authorization', 'Bearer someauthtoken');
+
+      expect(locationService.getLocation).toHaveBeenCalledTimes(1);
+      expect(locationService.getLocation).toHaveBeenCalledWith('foo', {
+        authorizationToken: 'someauthtoken',
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        id: 'foo',
+        target: 'example.com',
+        type: 'url',
+      });
+    });
+  });
+
   describe('POST /locations', () => {
     it('is not allowed', async () => {
       const spec: LocationSpec = {
@@ -473,6 +544,17 @@ describe('createRouter readonly enabled', () => {
           location: { id: 'a', ...spec },
         }),
       );
+    });
+  });
+
+  describe('DELETE /locations', () => {
+    it('is not allowed', async () => {
+      const response = await request(app)
+        .delete('/locations/foo')
+        .set('authorization', 'Bearer someauthtoken');
+
+      expect(locationService.deleteLocation).not.toHaveBeenCalled();
+      expect(response.status).toEqual(403);
     });
   });
 });
