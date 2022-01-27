@@ -9,7 +9,7 @@ _This blog post is co-authored by Emma Indal ([@emmaindal](https://github.com/em
 
 ![homepage template](assets/22-01-25/homepage-template-blog-post-header.png)
 
-_TLDR;_ We’re excited to announce the arrival of homepage templates for Backstage. It can be intimidating to build up your own instance of Backstage, so we decided to make your life a bit easier by giving you an out-of-the-box homepage to hit the ground running. This template can be found in our [Backstage Storybook](https://backstage.io/storybook/), as well as future templates that we build.
+_TLDR;_ We’re excited to announce the arrival of homepage templates for Backstage. It can be intimidating to build up your own instance of Backstage, so we decided to make your life a bit easier by giving you an out-of-the-box homepage to hit the ground running. This template can be found in our [Backstage Storybook](https://backstage.io/storybook/?path=/story/plugins-home-templates--default-template), as well as future templates that we build.
 
 <!--truncate-->
 
@@ -23,7 +23,7 @@ But we also know that all organizations look different and have different needs.
 
 ## What are homepage templates?
 
-A homepage template is just a template of what a homepage can look like. You can either copy it as a whole, or pick different components from it to use. The homepage templates live in our [Backstage Storybook](https://backstage.io/storybook/) and we hope to see this collection grow with contributions from you all. If you don’t want to use one of the templates, you can pick and choose from our collection of [homepage components](https://backstage.io/storybook/?path=/story/plugins-home-components) that you can use right out of the box and compose your own homepage. We’ve included the [SearchBar](https://backstage.io/storybook/?path=/story/plugins-home-components-searchbar--custom-styles), [CompanyLogo](https://backstage.io/storybook/?path=/story/plugins-home-components-companylogo--custom-logo) and [Toolkit](https://backstage.io/storybook/?path=/story/plugins-home-components-toolkit--default) components in our Backstage Storybook as of today. In the future, we plan on open sourcing the widely popular QuickAccess card, which includes Favorites, Frequently Visited, and Recently Visited options.
+A homepage template is just a template of what a homepage can look like. You can either copy it as a whole, or pick different components from it to use. The homepage templates live in our [Backstage Storybook](https://backstage.io/storybook/?path=/story/plugins-home-templates--default-template) and we hope to see this collection grow with contributions from you all. If you don’t want to use one of the templates, you can pick and choose from our collection of [homepage components](https://backstage.io/storybook/?path=/story/plugins-home-components) that you can use right out of the box and compose your own homepage. We’ve included the [SearchBar](https://backstage.io/storybook/?path=/story/plugins-home-components-searchbar--custom-styles), [CompanyLogo](https://backstage.io/storybook/?path=/story/plugins-home-components-companylogo--custom-logo) and [Toolkit](https://backstage.io/storybook/?path=/story/plugins-home-components-toolkit--default) components in our Backstage Storybook as of today. In the future, we plan on open sourcing the widely popular QuickAccess card, which includes Favorites, Frequently Visited, and Recently Visited options.
 
 ![Composed Backstage homepage](assets/22-01-25/composed-backstage-homepage.png)
 _Composed homepage for the app using the default homepage template_
@@ -40,7 +40,7 @@ _Example of the homepage components in the Backstage UI Kit in Figma_
 
 ## What’s next?
 
-Some future templates that we have in mind are more dashboard-esque ones that display a variety of relevant data for your organization. We will also open source more homepage components such as Starred Entities ([[Home] Starred Entities homepage component #6906](https://github.com/backstage/backstage/issues/6906)) that you can use when you are composing your components.
+Some future templates that we have in mind are more dashboard-esque ones that display a variety of relevant data for your organization. We will also open source more homepage components such as [Starred Entities](https://github.com/backstage/backstage/issues/6906) that you can use when you are composing your components.
 
 ## How to contribute
 
