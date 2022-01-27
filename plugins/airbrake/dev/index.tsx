@@ -23,6 +23,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { createEntity } from '../src/api/mock/mock-entity';
 import CloudOffIcon from '@material-ui/icons/CloudOff';
 import CloudIcon from '@material-ui/icons/Cloud';
+import { ContextProvider, Context } from './components/ContextProvider';
 
 createDevApp()
   .registerPlugin(airbrakePlugin)
@@ -48,16 +49,24 @@ createDevApp()
   })
   .addPage({
     element: (
-      <Page themeId="tool">
-        <Header title="Airbrake demo application" subtitle="Real API">
-          <ApiBar />
-        </Header>
-        <Content>
-          <EntityProvider entity={createEntity('demo')}>
-            <EntityAirbrakeContent />
-          </EntityProvider>
-        </Content>
-      </Page>
+      <ContextProvider>
+        <Page themeId="tool">
+          <Header title="Airbrake demo application" subtitle="Real API">
+            <ApiBar />
+          </Header>
+          <Content>
+            <Context.Consumer>
+              {value => (
+                <EntityProvider
+                  entity={createEntity(value.projectId?.toString())}
+                >
+                  <EntityAirbrakeContent />
+                </EntityProvider>
+              )}
+            </Context.Consumer>
+          </Content>
+        </Page>
+      </ContextProvider>
     ),
     title: 'Real API',
     path: '/airbrake-real-api',

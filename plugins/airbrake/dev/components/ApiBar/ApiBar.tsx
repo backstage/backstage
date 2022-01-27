@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles, TextField } from '@material-ui/core';
+import { Context } from '../ContextProvider';
 
 const useStyles = makeStyles({
   root: {
@@ -26,21 +27,23 @@ const useStyles = makeStyles({
 
 export const ApiBar = () => {
   const classes = useStyles();
-  const [projectId, setProjectId] = useState<number>();
-  const [apiKey, setApiKey] = useState<string>('');
 
   return (
-    <div className={classes.root}>
-      <TextField
-        label="Project ID"
-        value={projectId}
-        onChange={e => setProjectId(parseInt(e.target.value, 10))}
-      />
-      <TextField
-        label="API Key"
-        value={apiKey}
-        onChange={e => setApiKey(e.target.value)}
-      />
-    </div>
+    <Context.Consumer>
+      {value => (
+        <div className={classes.root}>
+          <TextField
+            label="Project ID"
+            value={value.projectId}
+            onChange={e => value.setProjectId?.(parseInt(e.target.value, 10))}
+          />
+          <TextField
+            label="API Key"
+            value={value.apiKey}
+            onChange={e => value.setApiKey?.(e.target.value)}
+          />
+        </div>
+      )}
+    </Context.Consumer>
   );
 };
