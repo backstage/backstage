@@ -6,15 +6,21 @@ description: Roadmap of Backstage
 
 ## The Backstage Roadmap
 
-Backstage is currently under rapid development. This page details the project’s public roadmap, the result of ongoing collaboration between the core maintainers and the broader Backstage community. 
+Backstage is currently under rapid development. This page details the project’s
+public roadmap, the result of ongoing collaboration between the core maintainers
+and the broader Backstage community.
 
-The Backstage roadmap lays out both [“what’s next”](#whats-next) and [“future work”](#future-work). With "next" we mean features planned for release within the ongoing quarter from January through March 2022. With "future" we mean features in the radar, but not yet scheduled.
+The Backstage roadmap lays out both [“what’s next”](#whats-next) and
+[“future work”](#future-work). With "next" we mean features planned for release
+within the ongoing quarter from January through March 2022. With "future" we
+mean features in the radar, but not yet scheduled.
 
-| What's next | [Future work](#future-work) |
-|--|--|
+| [What's next](#whats-next)                                                                                                                                                                                     | [Future work](#future-work)                                                                                                                                             |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Backstage 1.0 (and following versions)](#backstage-10-and-following-versions) <br/> [Backstage Security Audit](#backstage-security-audit) <br/> [Moving to Incubation in CNCF](#moving-to-incubation-in-cncf) | Backend Services <br/> Security Plan (and Strategy) <br/> TechDocs Addon framework <br/> Composable Homepage 1.0 <br/> GraphQL <br/> Telemetry <br/> Improved UX design |
 
-The long-term roadmap (12 - 36 months) is not detailed in the public roadmap. Third-party contributions are also not currently included in the roadmap. Let us
+The long-term roadmap (12 - 36 months) is not detailed in the public roadmap.
+Third-party contributions are also not currently included in the roadmap. Let us
 know about any ongoing developments and we’re happy to include it here as well.
 
 ## What’s next
@@ -26,9 +32,17 @@ cycle will vary based on maintainer schedules.
 ### Backstage 1.0 (and following versions)
 
 During the first quarter of 2022, we plan to finalize and release version 1.0 of
-the Backstage platform (which includes Core, [Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview), [Scaffolder](https://backstage.io/docs/features/software-templates/software-templates-index) and [TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview)). Included as part of this milestone:
-- Deciding on the cadence of minor/weekly/daily releases to provide clarity on the frequency and expectations for future versions of the platform and its defining modules.
-- Establish the support model to set the expectations from the adopters in their respective use cases.
+the Backstage platform (which includes Core,
+[Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview),
+[Scaffolder](https://backstage.io/docs/features/software-templates/software-templates-index)
+and [TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview)).
+Included as part of this milestone:
+
+- Deciding on the cadence of minor/weekly/daily releases to provide clarity on
+  the frequency and expectations for future versions of the platform and its
+  defining modules.
+- Establish the support model to set the expectations from the adopters in their
+  respective use cases.
 
 ### Backstage Security Audit
 
@@ -37,11 +51,13 @@ purpose of the Security Audit is to involve third-party companies in auditing
 the platform and highlighting potential vulnerabilities. The benefit for the
 adopters is clear: We want Backstage to be as secure as possible, and we want to
 make it reliable through a specific initiative. This initiative in particular is
-done together, and with the support of, the [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io/).
+done together, and with the support of, the
+[Cloud Native Computing Foundation (CNCF)](https://www.cncf.io/).
 
 ### Moving to Incubation in CNCF
 
-The progress of the request can be seen [here](https://github.com/cncf/toc/pull/717).
+The progress of the request can be seen
+[here](https://github.com/cncf/toc/pull/717).
 
 ## Future work
 
@@ -57,13 +73,22 @@ the maintainers’ radar, with clear interest expressed by the community.
   move another step along the path to maturing the platform, setting the
   expectations of any adopters from a security standpoint.
 - **Search 1.0:** Fix the few remaining issues to get Backstage Search platform
-  up to 1.0 ([here](https://github.com/backstage/backstage/milestone/27) and [here](https://github.com/backstage/backstage/milestone/28)).
-- **TechDocs Addon framework and Addons:** Addons are TechDocs features that are added on top of the base docs like code experience. An example would be a feature that showed comments on the page. We plan to add an Addon framework and open source a selection of the Addons that we use internally at Spotify. Further Addons can then be added by the Community.
+  up to 1.0 ([here](https://github.com/backstage/backstage/milestone/27) and
+  [here](https://github.com/backstage/backstage/milestone/28)).
+- **TechDocs Addon framework and Addons:** Addons are TechDocs features that are
+  added on top of the base docs like code experience. An example would be a
+  feature that showed comments on the page. We plan to add an Addon framework
+  and open source a selection of the Addons that we use internally at Spotify.
+  Further Addons can then be added by the Community.
 - **Composable Homepage 1.0:** Driving this to 1.0 by adding some composable
   components.
-- **[GraphQL](https://graphql.org/) support:** Introduce the ability to query Backstage backend services with a standard query language for APIs.
-- **Telemetry:** To efficiently generate logging and metrics in such a way that adopters can get insights so that Backstage can be monitored and improved.
-- **Improved UX design:** Provide a better Backstage user experience through visual guidelines and templates, especially navigation across plug-ins and portal functionalities.
+- **[GraphQL](https://graphql.org/) support:** Introduce the ability to query
+  Backstage backend services with a standard query language for APIs.
+- **Telemetry:** To efficiently generate logging and metrics in such a way that
+  adopters can get insights so that Backstage can be monitored and improved.
+- **Improved UX design:** Provide a better Backstage user experience through
+  visual guidelines and templates, especially navigation across plug-ins and
+  portal functionalities.
 
 ## How to influence the roadmap
 
@@ -76,9 +101,14 @@ already working) on a new or existing feature, please let us know, so that we
 can update the roadmap accordingly. We are also happy to share knowledge and
 context that will help your feature land successfully.
 
-You can also head over to the [CONTRIBUTING](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) guidelines to get started.
+You can also head over to the
+[CONTRIBUTING](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)
+guidelines to get started.
 
-If you have specific questions about the roadmap, please create an [issue](https://github.com/backstage/backstage/issues/new/choose), ping us on [Discord](https://discord.gg/qxsEfa8Vq8), or [book time](http://calendly.com/spotify-backstage) with the Spotify team.
+If you have specific questions about the roadmap, please create an
+[issue](https://github.com/backstage/backstage/issues/new/choose), ping us on
+[Discord](https://discord.gg/qxsEfa8Vq8), or
+[book time](http://calendly.com/spotify-backstage) with the Spotify team.
 
 ## Completed milestones
 
