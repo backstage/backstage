@@ -739,7 +739,7 @@ export type OverflowTooltipClassKey = 'container';
 // Warning: (ae-missing-release-tag) "Page" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function Page(props: PropsWithChildren<Props_16>): JSX.Element;
+export function Page(props: Props_16): JSX.Element;
 
 // Warning: (ae-missing-release-tag) "PageClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
