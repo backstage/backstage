@@ -63,7 +63,7 @@ jobs:
       # Pre-mode is exited if case we're in it, otherwise it has no effect
       - name: prepare nightly release
         run: |
-          yarn changeset pre exit
+          yarn changeset pre exit || true
           yarn changeset version --snapshot nightly
 
       # Publishes the nightly release to npm, by using tag we make sure the release is
