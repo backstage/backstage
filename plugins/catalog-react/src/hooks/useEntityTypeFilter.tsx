@@ -42,12 +42,18 @@ export function useEntityTypeFilter(): EntityTypeReturn {
     updateFilters,
   } = useEntityListProvider();
 
-  const queryParamTypes = [queryParameters.type]
-    .flat()
-    .filter(Boolean) as string[];
   const [selectedTypes, setSelectedTypes] = useState(
-    queryParamTypes.length ? queryParamTypes : typeFilter?.getTypes() ?? [],
+    typeFilter?.getTypes() ?? [],
   );
+
+  // Set selected types on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    const queryParamTypes = [queryParameters.type]
+      .flat()
+      .filter(Boolean) as string[];
+    setSelectedTypes(queryParamTypes);
+  }, [queryParameters]);
 
   const [availableTypes, setAvailableTypes] = useState<string[]>([]);
   const kind = useMemo(() => kindFilter?.value, [kindFilter]);

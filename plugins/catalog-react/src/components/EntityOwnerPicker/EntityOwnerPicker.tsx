@@ -53,12 +53,18 @@ export const EntityOwnerPicker = () => {
   const { updateFilters, backendEntities, filters, queryParameters } =
     useEntityListProvider();
 
-  const queryParamOwners = [queryParameters.owners]
-    .flat()
-    .filter(Boolean) as string[];
   const [selectedOwners, setSelectedOwners] = useState(
-    queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
+    filters.owners?.values ?? [],
   );
+
+  // Set selected owners on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    const queryParamOwners = [queryParameters.owners]
+      .flat()
+      .filter(Boolean) as string[];
+    setSelectedOwners(queryParamOwners);
+  }, [queryParameters]);
 
   useEffect(() => {
     updateFilters({
