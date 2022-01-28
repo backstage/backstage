@@ -7280,45 +7280,15 @@ aws-sdk-mock@^5.2.1:
     sinon "^11.1.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.840.0:
-  version "2.922.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.922.0.tgz#4568be067dceaaeda5d2d5a7e2f22666687f0b32"
-  integrity sha512-SufbR5TTCK94Zk/xIv4v/m0MM9z+KW999XnjXOyNWGFGHP9/FArjtHtq69+a3KpohYBR1dBj8wUhVjbClmQIBA==
+aws-sdk@^2.840.0, aws-sdk@^2.928.0, aws-sdk@^2.948.0:
+  version "2.1065.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1065.0.tgz#82b6e4e2a6fbccb1767339e309edd4f0daa958e6"
+  integrity sha512-OFvpXoL104dTFKpU14ILcLDPAlDbkJNIKXnnG2pK+2x++CvzIRJeNyERtUuEo7QMUOwq5U4nIQJKSPt5fBC/HA==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
     ieee754 "1.1.13"
-    jmespath "0.15.0"
-    querystring "0.2.0"
-    sax "1.2.1"
-    url "0.10.3"
-    uuid "3.3.2"
-    xml2js "0.4.19"
-
-aws-sdk@^2.928.0:
-  version "2.951.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.951.0.tgz#3cd8c0a4610407623ae8f1724f431fd328441033"
-  integrity sha512-YPqhdESUzd4+pSuGJcfMnG1qNVbmZjnmsa85Z9jofR1ilIpuV31onIiFHv8iubM59ETok/+zy3QOmxRSLYzFmQ==
-  dependencies:
-    buffer "4.9.2"
-    events "1.1.1"
-    ieee754 "1.1.13"
-    jmespath "0.15.0"
-    querystring "0.2.0"
-    sax "1.2.1"
-    url "0.10.3"
-    uuid "3.3.2"
-    xml2js "0.4.19"
-
-aws-sdk@^2.948.0:
-  version "2.948.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.948.0.tgz#0c974c351af97dbc66dbd96bd6c20928baf10415"
-  integrity sha512-UJaCwccNaNNFtbhlvg+BmcaVWNI7RPonZA16nca0s3O+UnHm5y5H/nN6XpuJp+NUrxrLgTFaztPvjmBp5q6p+g==
-  dependencies:
-    buffer "4.9.2"
-    events "1.1.1"
-    ieee754 "1.1.13"
-    jmespath "0.15.0"
+    jmespath "0.16.0"
     querystring "0.2.0"
     sax "1.2.1"
     url "0.10.3"
@@ -10635,18 +10605,18 @@ elliptic@^6.0.0:
     minimalistic-crypto-utils "^1.0.1"
 
 "embedded-techdocs-app@file:packages/embedded-techdocs-app":
-  version "0.2.60"
+  version "0.2.61"
   dependencies:
     "@backstage/app-defaults" "^0.1.5"
     "@backstage/catalog-model" "^0.9.10"
-    "@backstage/cli" "^0.12.0"
+    "@backstage/cli" "^0.13.0"
     "@backstage/config" "^0.1.13"
-    "@backstage/core-app-api" "^0.5.0"
-    "@backstage/core-components" "^0.8.5"
+    "@backstage/core-app-api" "^0.5.1"
+    "@backstage/core-components" "^0.8.6"
     "@backstage/core-plugin-api" "^0.6.0"
     "@backstage/integration-react" "^0.1.19"
-    "@backstage/plugin-catalog" "^0.7.9"
-    "@backstage/plugin-techdocs" "^0.13.0"
+    "@backstage/plugin-catalog" "^0.7.10"
+    "@backstage/plugin-techdocs" "^0.13.1"
     "@backstage/test-utils" "^0.2.3"
     "@backstage/theme" "^0.2.14"
     "@material-ui/core" "^4.11.0"
@@ -14958,7 +14928,12 @@ jju@~1.4.0:
   resolved "https://registry.npmjs.org/jju/-/jju-1.4.0.tgz#a3abe2718af241a2b2904f84a625970f389ae32a"
   integrity sha1-o6vicYryQaKykE+EpiWXDzia4yo=
 
-jmespath@0.15.0, jmespath@^0.15.0:
+jmespath@0.16.0:
+  version "0.16.0"
+  resolved "https://registry.npmjs.org/jmespath/-/jmespath-0.16.0.tgz#b15b0a85dfd4d930d43e69ed605943c802785076"
+  integrity sha512-9FzQjJ7MATs1tSpnco1K6ayiYE3figslrXA72G2HQ/n76RzvYlofyi5QM+iX4YRs/pu3yzxlVQSST23+dMDknw==
+
+jmespath@^0.15.0:
   version "0.15.0"
   resolved "https://registry.npmjs.org/jmespath/-/jmespath-0.15.0.tgz#a3f222a9aae9f966f5d27c796510e28091764217"
   integrity sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc=
