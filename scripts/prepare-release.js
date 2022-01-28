@@ -20,6 +20,10 @@ const fs = require('fs-extra');
 const semver = require('semver');
 const { getPackages } = require('@manypkg/get-packages');
 const path = require('path');
+const { execFile: execFileCb } = require('child_process');
+const { promisify } = require('util');
+
+const execFile = promisify(execFileCb);
 
 const DEPENDENCY_TYPES = [
   'dependencies',
@@ -28,9 +32,14 @@ const DEPENDENCY_TYPES = [
   'peerDependencies',
 ];
 
-async function main() {
+/**
+ * Bumps up the versions of packages to account for
+ * the base versions that are set in .changeset/patched.json.
+ * This may be needed when we have made emergency releases.
+ */
+async function updatePatchVersions() {
   const patchedJsonPath = path.resolve('.changeset', 'patched.json');
-  const { currentReleaseVersion } = await fs.readJSON(patchedJsonPath);
+  const { currentReleaseVersion } = await fs.readJson(patchedJsonPath);
   if (Object.keys(currentReleaseVersion).length === 0) {
     console.log('No currentReleaseVersion overrides found, skipping.');
     return;
@@ -91,7 +100,7 @@ async function main() {
     }
 
     if (hasChanges) {
-      await fs.writeJSON(path.resolve(dir, 'package.json'), packageJson, {
+      await fs.writeJson(path.resolve(dir, 'package.json'), packageJson, {
         spaces: 2,
       });
     }
@@ -102,6 +111,69 @@ async function main() {
     { currentReleaseVersion: {} },
     { spaces: 2 },
   );
+}
+
+/**
+ * Returns the mode and tag that is currently set
+ * in the .changeset/pre.json file
+ */
+async function getPreInfo(rootPath) {
+  const pre = path.join(rootPath, '.changeset', 'pre.json');
+  if (!(await fs.pathExists(pre))) {
+    return { mode: undefined, tag: undefined };
+  }
+
+  const { mode, tag } = await fs.readJson(pre);
+  return { mode, tag };
+}
+
+/**
+ * Bumps the release version in the root package.json.
+ *
+ * This takes into account whether we're in pre-release mode or on a patch branch.
+ */
+async function updateBackstageReleaseVersion() {
+  const rootPath = path.resolve(__dirname, '..');
+  const branchName = await execFile(
+    'git',
+    ['rev-parse', '--abbrev-ref', 'HEAD'],
+    { shell: true },
+  ).then(({ stdout }) => stdout.trim());
+  const { mode: preMode, tag: preTag } = await getPreInfo(rootPath);
+
+  const packagePath = path.join(rootPath, 'package.json');
+  const package = await fs.readJson(packagePath);
+  const { version: currentVersion } = package;
+
+  let nextVersion;
+  if (branchName === 'master') {
+    if (preMode === 'pre') {
+      if (semver.prerelease(currentVersion)) {
+        nextVersion = semver.inc(currentVersion, 'pre', preTag);
+      } else {
+        nextVersion = semver.inc(currentVersion, 'preminor', preTag);
+      }
+    } else if (preMode === 'exit') {
+      nextVersion = semver.inc(currentVersion, 'patch');
+    } else {
+      nextVersion = semver.inc(currentVersion, 'minor');
+    }
+  } else {
+    if (preMode) {
+      throw new Error(`Unexpected pre mode ${preMode} on branch ${branchName}`);
+    }
+    nextVersion = semver.inc(currentVersion, 'patch');
+  }
+
+  await fs.writeJson(packagePath, {
+    ...package,
+    version: nextVersion,
+  });
+}
+
+async function main() {
+  await updatePatchVersions();
+  await updateBackstageReleaseVersion();
 }
 
 main().catch(error => {
