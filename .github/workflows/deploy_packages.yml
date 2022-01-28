@@ -3,7 +3,7 @@ name: Deploy Packages
 on:
   workflow_dispatch:
   push:
-    branches: [master, release-*-patch]
+    branches: [master, patch/*]
 
 jobs:
   build:
