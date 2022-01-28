@@ -36,6 +36,25 @@ const transformIgnorePattern = [
   'typescript',
 ].join('|');
 
+// Provides additional config that's based on the role of the target package
+function getRoleConfig(role) {
+  switch (role) {
+    case 'app':
+    case 'web-library':
+    case 'common-library':
+    case 'plugin-frontend':
+    case 'plugin-frontend-module':
+    default:
+      return { testEnvironment: 'jsdom' };
+    case 'cli':
+    case 'backend':
+    case 'node-library':
+    case 'plugin-backend':
+    case 'plugin-backend-module':
+      return { testEnvironment: 'node' };
+  }
+}
+
 async function getProjectConfig(targetPath, displayName) {
   const configJsPath = path.resolve(targetPath, 'jest.config.js');
   const configTsPath = path.resolve(targetPath, 'jest.config.ts');
@@ -50,6 +69,7 @@ async function getProjectConfig(targetPath, displayName) {
   // All configs are merged together to create the final config, with longer paths taking precedence.
   // The merging of the configs is shallow, meaning e.g. all transforms are replaced if new ones are defined.
   const pkgJsonConfigs = [];
+  let closestPkgJson = undefined;
   let currentPath = targetPath;
 
   // Some sanity check to avoid infinite loop
@@ -59,6 +79,9 @@ async function getProjectConfig(targetPath, displayName) {
     if (exists) {
       try {
         const data = fs.readJsonSync(packagePath);
+        if (!closestPkgJson) {
+          closestPkgJson = data;
+        }
         if (data.jest) {
           pkgJsonConfigs.unshift(data.jest);
         }
@@ -115,6 +138,8 @@ async function getProjectConfig(targetPath, displayName) {
     testMatch: ['**/*.test.{js,jsx,ts,tsx,mjs,cjs}'],
 
     transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
+
+    ...getRoleConfig(closestPkgJson?.backstage?.role),
   };
 
   // Use src/setupTests.ts as the default location for configuring test env
