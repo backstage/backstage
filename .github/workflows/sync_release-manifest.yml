@@ -9,6 +9,14 @@ jobs:
   create-new-version:
     runs-on: ubuntu-latest
     steps:
+        # Setup node & install deps before checkout, keeping install quick
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - name: Install dependencies
+        # Just the deps for the assemble manifest script
+        run: npm install semver@7.3.5 fs-extra@10.0.0 @manypkg/get-packages@1.1.1
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -26,13 +34,6 @@ jobs:
         run: |
           git config --global user.email noreply@backstage.io
           git config --global user.name 'Github versions workflow'
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - name: Install dependencies
-        # Just the deps for the assemble manifest script
-        run: npm install semver@7.3.5 fs-extra@10.0.0 @manypkg/get-packages@1.1.1
 
       - name: Create release
         # This grabs the scripts from master in order to support backfills
