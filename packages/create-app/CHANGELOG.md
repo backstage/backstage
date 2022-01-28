@@ -15,6 +15,11 @@
     tokenManager,
   }: PluginEnvironment) {
     /* ... */
+    indexBuilder.addCollator({
+      defaultRefreshIntervalSeconds: 600,
+  -   collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
+  +   collator: DefaultCatalogCollator.fromConfig(config, { discovery, tokenManager }),
+    });
 
     return await createRouter({
       engine: indexBuilder.getSearchEngine(),
