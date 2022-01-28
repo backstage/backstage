@@ -29,6 +29,7 @@ import { Root } from './components/Root';
 import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
 import { createApp } from '@backstage/app-defaults';
 import { FlatRoutes } from '@backstage/core-app-api';
+import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 
 const app = createApp({
   apis,
@@ -80,6 +81,7 @@ const routes = (
       {searchPage}
     </Route>
     <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/catalog-graph" element={<CatalogGraphPage />} />
   </FlatRoutes>
 );
 
