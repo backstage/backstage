@@ -10635,18 +10635,18 @@ elliptic@^6.0.0:
     minimalistic-crypto-utils "^1.0.1"
 
 "embedded-techdocs-app@file:packages/embedded-techdocs-app":
-  version "0.2.60"
+  version "0.2.61"
   dependencies:
     "@backstage/app-defaults" "^0.1.5"
     "@backstage/catalog-model" "^0.9.10"
-    "@backstage/cli" "^0.12.0"
+    "@backstage/cli" "^0.13.0"
     "@backstage/config" "^0.1.13"
-    "@backstage/core-app-api" "^0.5.0"
-    "@backstage/core-components" "^0.8.5"
+    "@backstage/core-app-api" "^0.5.1"
+    "@backstage/core-components" "^0.8.6"
     "@backstage/core-plugin-api" "^0.6.0"
     "@backstage/integration-react" "^0.1.19"
-    "@backstage/plugin-catalog" "^0.7.9"
-    "@backstage/plugin-techdocs" "^0.13.0"
+    "@backstage/plugin-catalog" "^0.7.10"
+    "@backstage/plugin-techdocs" "^0.13.1"
     "@backstage/test-utils" "^0.2.3"
     "@backstage/theme" "^0.2.14"
     "@material-ui/core" "^4.11.0"
@@ -19638,10 +19638,10 @@ progress@2.0.3:
   resolved "https://registry.npmjs.org/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-prom-client@^13.2.0:
-  version "13.2.0"
-  resolved "https://registry.npmjs.org/prom-client/-/prom-client-13.2.0.tgz#99d13357912dd400f8911b77df19f7b328a93e92"
-  integrity sha512-wGr5mlNNdRNzEhRYXgboUU2LxHWIojxscJKmtG3R8f4/KiWqyYgXTLHs0+Ted7tG3zFT7pgHJbtomzZ1L0ARaQ==
+prom-client@^14.0.1:
+  version "14.0.1"
+  resolved "https://registry.npmjs.org/prom-client/-/prom-client-14.0.1.tgz#bdd9583e02ec95429677c0e013712d42ef1f86a8"
+  integrity sha512-HxTArb6fkOntQHoRGvv4qd/BkorjliiuO2uSWC2KC17MUTKYttWdDoXX/vxOhQdkoECEM9BBH0pj2l8G8kev6w==
   dependencies:
     tdigest "^0.1.1"
 

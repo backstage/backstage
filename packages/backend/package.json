@@ -67,7 +67,7 @@
     "knex": "^0.95.1",
     "pg": "^8.3.0",
     "pg-connection-string": "^2.3.0",
-    "prom-client": "^13.2.0",
+    "prom-client": "^14.0.1",
     "sqlite3": "^5.0.1",
     "winston": "^3.2.1"
   },
