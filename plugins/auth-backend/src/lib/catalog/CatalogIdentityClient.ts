@@ -24,7 +24,7 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { TokenIssuer } from '../../identity';
+import { TokenManager } from '@backstage/backend-common';
 
 type UserQuery = {
   annotations: Record<string, string>;
@@ -40,11 +40,11 @@ type MemberClaimQuery = {
  */
 export class CatalogIdentityClient {
   private readonly catalogApi: CatalogApi;
-  private readonly tokenIssuer: TokenIssuer;
+  private readonly tokenManager: TokenManager;
 
-  constructor(options: { catalogApi: CatalogApi; tokenIssuer: TokenIssuer }) {
+  constructor(options: { catalogApi: CatalogApi; tokenManager: TokenManager }) {
     this.catalogApi = options.catalogApi;
-    this.tokenIssuer = options.tokenIssuer;
+    this.tokenManager = options.tokenManager;
   }
 
   /**
@@ -60,10 +60,7 @@ export class CatalogIdentityClient {
       filter[`metadata.annotations.${key}`] = value;
     }
 
-    // TODO(Rugvip): cache the token
-    const token = await this.tokenIssuer.issueToken({
-      claims: { sub: 'backstage.io/auth-backend' },
-    });
+    const { token } = await this.tokenManager.getToken();
     const { items } = await this.catalogApi.getEntities({ filter }, { token });
 
     if (items.length !== 1) {
@@ -106,8 +103,9 @@ export class CatalogIdentityClient {
       'metadata.namespace': ref.namespace,
       'metadata.name': ref.name,
     }));
+    const { token } = await this.tokenManager.getToken();
     const entities = await this.catalogApi
-      .getEntities({ filter })
+      .getEntities({ filter }, { token })
       .then(r => r.items);
 
     if (entityRefs.length !== entities.length) {

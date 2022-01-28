@@ -182,12 +182,12 @@ export const createOauth2ProxyProvider =
   <JWTPayload>(
     options: Oauth2ProxyProviderOptions<JWTPayload>,
   ): AuthProviderFactory =>
-  ({ catalogApi, logger, tokenIssuer }) => {
+  ({ catalogApi, logger, tokenIssuer, tokenManager }) => {
     const signInResolver = options.signIn.resolver;
     const authHandler = options.authHandler;
     const catalogIdentityClient = new CatalogIdentityClient({
       catalogApi,
-      tokenIssuer,
+      tokenManager,
     });
     return new Oauth2ProxyAuthProvider<JWTPayload>({
       logger,

@@ -187,12 +187,13 @@ export const createSamlProvider = (
     globalConfig,
     config,
     tokenIssuer,
+    tokenManager,
     catalogApi,
     logger,
   }) => {
     const catalogIdentityClient = new CatalogIdentityClient({
       catalogApi,
-      tokenIssuer,
+      tokenManager,
     });
 
     const authHandler: AuthHandler<SamlAuthResult> = options?.authHandler
