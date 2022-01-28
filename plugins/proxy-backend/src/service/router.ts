@@ -51,6 +51,7 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   discovery: PluginEndpointDiscovery;
+  skipBrokenProxies?: boolean;
 }
 
 export interface ProxyConfig extends Options {
@@ -193,7 +194,11 @@ export async function createRouter(
         buildMiddleware(pathPrefix, options.logger, route, proxyRouteConfig),
       );
     } catch (e) {
-      options.logger.warn(`skipped configuring ${route} due to ${e.message}`);
+      if (options.skipBrokenProxies) {
+        options.logger.warn(`skipped configuring ${route} due to ${e.message}`);
+      } else {
+        throw e;
+      }
     }
   });
 
