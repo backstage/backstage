@@ -231,6 +231,7 @@ export const UserListPicker = ({
                   selected={item.id === filters.user?.value}
                   className={classes.menuItem}
                   disabled={filterCounts[item.id] === 0}
+                  data-testid={`user-picker-${item.id}`}
                 >
                   {item.icon && (
                     <ListItemIcon className={classes.listIcon}>
@@ -238,12 +239,7 @@ export const UserListPicker = ({
                     </ListItemIcon>
                   )}
                   <ListItemText>
-                    <Typography
-                      variant="body1"
-                      data-testid={`user-picker-${item.id}`}
-                    >
-                      {item.label}
-                    </Typography>
+                    <Typography variant="body1">{item.label}</Typography>
                   </ListItemText>
                   <ListItemSecondaryAction>
                     {filterCounts[item.id] ?? '-'}
