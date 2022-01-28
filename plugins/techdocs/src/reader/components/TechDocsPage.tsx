@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, ComponentType } from 'react';
 import { useOutlet } from 'react-router';
 import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
@@ -39,9 +39,13 @@ export type TechDocsPageRenderFunction = ({
 
 export type TechDocsPageProps = {
   children?: TechDocsPageRenderFunction | React.ReactNode;
+  NotFoundPage?: ComponentType<{errorMessage: string}>
 };
 
-export const TechDocsPage = ({ children }: TechDocsPageProps) => {
+export const TechDocsPage = ({
+  children,
+  NotFoundPage = TechDocsNotFound,
+}: TechDocsPageProps) => {
   const outlet = useOutlet();
 
   const [documentReady, setDocumentReady] = useState<boolean>(false);
@@ -67,7 +71,7 @@ export const TechDocsPage = ({ children }: TechDocsPageProps) => {
   }, [setDocumentReady]);
 
   if (entityMetadataError) {
-    return <TechDocsNotFound errorMessage={entityMetadataError.message} />;
+    return <NotFoundPage errorMessage={entityMetadataError.message} />;
   }
 
   if (!children) return outlet || <LegacyTechDocsPage />;

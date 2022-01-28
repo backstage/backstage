@@ -173,4 +173,62 @@ describe('<TechDocsPage />', () => {
       expect(rendered.getByText('A custom header')).toBeInTheDocument();
     });
   });
+
+  it('should render a custom error page if supplied', async () => {
+    const CustomErrorPage = ({ errorMessage }: { errorMessage: string }) => (
+      <div>{errorMessage}</div>
+    );
+
+    useParams.mockReturnValue({
+      entityRef: 'Component::backstage',
+    });
+
+    const scmIntegrationsApi: ScmIntegrationsApi =
+      ScmIntegrationsApi.fromConfig(
+        new ConfigReader({
+          integrations: {},
+        }),
+      );
+    const techdocsApi: Partial<TechDocsApi> = {
+      getEntityMetadata: () =>
+        Promise.reject({
+          name: 'error',
+          message: 'error message',
+        }),
+      getTechDocsMetadata: () =>
+        Promise.resolve({
+          site_name: 'string',
+          site_description: 'string',
+        }),
+    };
+
+    const techdocsStorageApi: Partial<TechDocsStorageApi> = {
+      getEntityDocs: (): Promise<string> => Promise.resolve('String'),
+      getBaseUrl: (): Promise<string> => Promise.resolve('String'),
+      getApiOrigin: (): Promise<string> => Promise.resolve('String'),
+    };
+    const searchApi = {
+      query: () =>
+        Promise.resolve({
+          results: [],
+        }),
+    };
+    const apiRegistry = TestApiRegistry.from(
+      [scmIntegrationsApiRef, scmIntegrationsApi],
+      [techdocsApiRef, techdocsApi],
+      [techdocsStorageApiRef, techdocsStorageApi],
+      [searchApiRef, searchApi],
+    );
+
+    await act(async () => {
+      const rendered = render(
+        wrapInTestApp(
+          <ApiProvider apis={apiRegistry}>
+            <TechDocsPage NotFoundPage={CustomErrorPage} />
+          </ApiProvider>,
+        ),
+      );
+      expect(await rendered.findByText('error message')).toBeInTheDocument();
+    });
+  });
 });
