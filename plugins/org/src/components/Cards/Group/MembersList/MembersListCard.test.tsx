@@ -75,33 +75,6 @@ describe('MemberTab Test', () => {
               memberOf: ['team-d'],
             },
           },
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'User',
-            metadata: {
-              name: 'sara.macgovern',
-              namespace: 'default',
-              uid: 'a5gerth57',
-            },
-            relations: [
-              {
-                type: 'memberOf',
-                target: {
-                  kind: 'group',
-                  name: 'team-d',
-                  namespace: 'foo-bar',
-                },
-              },
-            ],
-            spec: {
-              profile: {
-                displayName: 'Sara MacGovern',
-                email: 'sara-macgovern@example.com',
-                picture: 'https://example.com/staff/sara.jpeg',
-              },
-              memberOf: ['foo-bar/team-d'],
-            },
-          },
         ] as Entity[],
       }),
   };
