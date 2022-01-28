@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { Link } from '@backstage/core-components';
 import {
   ListItem,
   ListItemSecondaryAction,
@@ -28,7 +29,6 @@ import { DateTime, Duration } from 'luxon';
 import { ChangeEvent } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { BackstageTheme } from '@backstage/theme';
-import { Link } from '@backstage/core-components';
 
 const useStyles = makeStyles<BackstageTheme>({
   denseListIcon: {
@@ -86,15 +86,17 @@ export const ChangeEventListItem = ({ changeEvent }: Props) => {
       />
       <ListItemSecondaryAction>
         {externalLinkElem}
-        <Tooltip title="View in PagerDuty" placement="top">
-          <IconButton
-            component={Link}
-            to={changeEvent.html_url}
-            color="primary"
-          >
-            <OpenInBrowserIcon />
-          </IconButton>
-        </Tooltip>
+        {changeEvent.html_url === undefined ? null : (
+          <Tooltip title="View in PagerDuty" placement="top">
+            <IconButton
+              component={Link}
+              to={changeEvent.html_url}
+              color="primary"
+            >
+              <OpenInBrowserIcon />
+            </IconButton>
+          </Tooltip>
+        )}
       </ListItemSecondaryAction>
     </ListItem>
   );

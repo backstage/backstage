@@ -7,6 +7,7 @@
 
 - The Backstage PagerDuty plugin allows PagerDuty information about a Backstage entity to be displayed within Backstage. This includes active incidents, recent change events, as well as the current on-call responders' names, email addresses, and links to their profiles in PagerDuty.
 - Incidents can be manually triggered via the plugin with a user-provided description, which will in turn notify the current on-call responders.
+- Change events will be displayed in a separate tab. If the change event payload has additional links the first link only will be rendered.
 
 # Requirements
 
