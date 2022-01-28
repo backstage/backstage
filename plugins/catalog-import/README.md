@@ -35,39 +35,73 @@ import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 
 ## Customizations
 
-### Disable the creation of Pull Requests
+### Custom layout
 
-The pull request feature can be disabled by options that are passed to the `CatalogImportPage`:
+A custom layout can be passed to the import page, as it's already
+supported by the search page. If no custom layout is passed, the default layout
+is used.
+
+```typescript
+<Route path="/catalog-import" element={<CatalogImportPage />}>
+  <Page themeId="home">
+    <Header title="Register an existing component" />
+    <Content>
+      <ContentHeader title="Start tracking your components">
+        <SupportButton>
+          Start tracking your component in Backstage by adding it to the
+          software catalog.
+        </SupportButton>
+      </ContentHeader>
+
+      <Grid container spacing={2} direction="row-reverse">
+        <Grid item xs={12} md={4} lg={6} xl={8}>
+          Hello World
+        </Grid>
+
+        <Grid item xs={12} md={8} lg={6} xl={4}>
+          <ImportStepper />
+        </Grid>
+      </Grid>
+    </Content>
+  </Page>
+</Route>
+```
+
+Previously it was possible to disable and customize the automatic pull request
+feature by passing options to `<CatalogImportPage>` (`pullRequest.disable` and
+`pullRequest.preparePullRequest`). This functionality is moved to the
+`CatalogImportApi` which now provides an optional `preparePullRequest()`
+function. The function can either be overridden to generate a different content
+for the pull request, or removed to disable this feature.
+
+### Entity filename and branch name
+
+Entity filename (default: `catalog-info.yaml`) and branch name (default: `backstage-integration`) used in pull requests can be configured in `app-config.yaml` as follows:
+
+```yaml
+// app-config.yaml
+
+catalog:
+  import:
+    entityFilename: anvil.yaml
+    pullRequestBranchName: anvil-integration
+```
+
+### Entity examples
+
+Following React components accept optional props for providing custom example entity and repository paths:
 
 ```tsx
-// packages/app/src/App.tsx
-
-<Route
-  path="/catalog-import"
-  element={<CatalogImportPage pullRequest={{ disable: true }} />}
+<StepInitAnalyzeUrl
+  ...
+  exampleLocationUrl="https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml"
 />
 ```
 
-### Customize the title and body of the Pull Request
-
-The pull request form is filled with a default title and body.
-This can be configured by options that are passed to the `CatalogImportPage`:
-
 ```tsx
-// packages/app/src/App.tsx
-
-<Route
-  path="/catalog-import"
-  element={
-    <CatalogImportPage
-      pullRequest={{
-        preparePullRequest: () => ({
-          title: 'My title',
-          body: 'My **markdown** body',
-        }),
-      }}
-    />
-  }
+<ImportInfoCard
+  exampleLocationUrl="https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml"
+  exampleRepositoryUrl="https://github.com/acme-corp/our-awesome-api"
 />
 ```
 

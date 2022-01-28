@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-auth-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { getCatalogFilename } from '../components/helpers';
 
-export default async function createPlugin({
-  logger,
-  database,
-  config,
-  discovery,
-  tokenManager,
-}: PluginEnvironment): Promise<Router> {
-  return await createRouter({
-    logger,
-    config,
-    database,
-    discovery,
-    tokenManager,
-  });
+export function useCatalogFilename(): string {
+  const config = useApi(configApiRef);
+
+  return getCatalogFilename(config);
 }

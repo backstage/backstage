@@ -58,6 +58,8 @@ async function main() {
   );
   const tag = version.includes('next') ? 'next' : 'main';
   const tagPath = path.resolve('versions', 'v1', 'tags', tag);
+
+  // Check if there's an existing version for the tag, and that it's not newer than the one we're adding
   if (await fs.pathExists(tagPath)) {
     const currentTag = await fs.readJSON(
       path.resolve(tagPath, 'manifest.json'),
@@ -66,9 +68,11 @@ async function main() {
       console.log(
         `Skipping update of ${tagPath} since current current ${tag} version is ${currentTag.releaseVersion}`,
       );
-      process.exit(1);
+      return;
     }
   }
+
+  // Switch the tag to our new version
   await fs.remove(tagPath);
   await fs.ensureSymlink(path.join('..', 'releases', version), tagPath);
 }

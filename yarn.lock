@@ -3683,9 +3683,9 @@
   integrity sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==
 
 "@microsoft/microsoft-graph-types@^2.6.0":
-  version "2.11.0"
-  resolved "https://registry.npmjs.org/@microsoft/microsoft-graph-types/-/microsoft-graph-types-2.11.0.tgz#0e1d3a0795855fc726e08836b1d3c4a72a8bcd00"
-  integrity sha512-v4Wuxp+kbcxeJGmb2UHbcukNr05XItFYXL+U3ReignI3Vl8tp1vfq0hkqP35Fun2QpqHJiu8Rkxj1MUF8d82ag==
+  version "2.13.0"
+  resolved "https://registry.npmjs.org/@microsoft/microsoft-graph-types/-/microsoft-graph-types-2.13.0.tgz#aa584e4897665df5a9c8869a226264cd6ec5882b"
+  integrity sha512-63FfWBLcyNo8tMP4oPcdqHQvk4ehuWpiUMjVLD7zJXPENIowpdwudP969AALkKzlwsjWImamdivGKd2Zc8Z1Uw==
 
 "@microsoft/tsdoc-config@~0.15.2":
   version "0.15.2"
@@ -11401,6 +11401,73 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     md5.js "^1.3.4"
     safe-buffer "^5.1.1"
 
+"example-app@file:packages/app":
+  version "0.2.62"
+  dependencies:
+    "@backstage/app-defaults" "^0.1.5"
+    "@backstage/catalog-model" "^0.9.10"
+    "@backstage/cli" "^0.13.0"
+    "@backstage/core-app-api" "^0.5.1"
+    "@backstage/core-components" "^0.8.6"
+    "@backstage/core-plugin-api" "^0.6.0"
+    "@backstage/integration-react" "^0.1.19"
+    "@backstage/plugin-airbrake" "^0.1.1"
+    "@backstage/plugin-apache-airflow" "^0.1.4"
+    "@backstage/plugin-api-docs" "^0.7.0"
+    "@backstage/plugin-azure-devops" "^0.1.12"
+    "@backstage/plugin-badges" "^0.2.20"
+    "@backstage/plugin-catalog" "^0.7.10"
+    "@backstage/plugin-catalog-graph" "^0.2.8"
+    "@backstage/plugin-catalog-import" "^0.7.10"
+    "@backstage/plugin-catalog-react" "^0.6.12"
+    "@backstage/plugin-circleci" "^0.2.35"
+    "@backstage/plugin-cloudbuild" "^0.2.33"
+    "@backstage/plugin-code-coverage" "^0.1.23"
+    "@backstage/plugin-cost-insights" "^0.11.18"
+    "@backstage/plugin-explore" "^0.3.27"
+    "@backstage/plugin-gcp-projects" "^0.3.15"
+    "@backstage/plugin-github-actions" "^0.4.33"
+    "@backstage/plugin-gocd" "^0.1.2"
+    "@backstage/plugin-graphiql" "^0.2.28"
+    "@backstage/plugin-home" "^0.4.12"
+    "@backstage/plugin-jenkins" "^0.5.18"
+    "@backstage/plugin-kafka" "^0.2.26"
+    "@backstage/plugin-kubernetes" "^0.5.5"
+    "@backstage/plugin-lighthouse" "^0.2.35"
+    "@backstage/plugin-newrelic" "^0.3.14"
+    "@backstage/plugin-newrelic-dashboard" "^0.1.4"
+    "@backstage/plugin-org" "^0.4.0"
+    "@backstage/plugin-pagerduty" "0.3.23"
+    "@backstage/plugin-rollbar" "^0.3.24"
+    "@backstage/plugin-scaffolder" "^0.12.0"
+    "@backstage/plugin-search" "^0.6.0"
+    "@backstage/plugin-sentry" "^0.3.34"
+    "@backstage/plugin-shortcuts" "^0.1.20"
+    "@backstage/plugin-tech-insights" "^0.1.6"
+    "@backstage/plugin-tech-radar" "^0.5.3"
+    "@backstage/plugin-techdocs" "^0.13.1"
+    "@backstage/plugin-todo" "^0.1.20"
+    "@backstage/plugin-user-settings" "^0.3.17"
+    "@backstage/search-common" "^0.2.2"
+    "@backstage/theme" "^0.2.14"
+    "@material-ui/core" "^4.12.2"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.57"
+    "@octokit/rest" "^18.5.3"
+    "@roadiehq/backstage-plugin-buildkite" "^1.3.4"
+    "@roadiehq/backstage-plugin-github-insights" "^1.4.2"
+    "@roadiehq/backstage-plugin-github-pull-requests" "^1.3.2"
+    "@roadiehq/backstage-plugin-travis-ci" "^1.3.2"
+    history "^5.0.0"
+    prop-types "^15.7.2"
+    react "^17.0.2"
+    react-dom "^17.0.2"
+    react-hot-loader "^4.13.0"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+    zen-observable "^0.8.15"
+
 exec-sh@^0.3.2:
   version "0.3.4"
   resolved "https://registry.npmjs.org/exec-sh/-/exec-sh-0.3.4.tgz#3a018ceb526cc6f6df2bb504b2bfe8e3a4934ec5"
@@ -12879,9 +12946,9 @@ graphql@^15.5.1:
   integrity sha512-5gghUc24tP9HRznNpV2+FIoq3xKkj5dTQqf4v0CpdPbFVwFkWoxOM+o+2OC9ZSvjEMTjfmG9QT+gcvggTwW1zw==
 
 graphql@^16.0.0:
-  version "16.0.1"
-  resolved "https://registry.npmjs.org/graphql/-/graphql-16.0.1.tgz#93a13cd4e0e38ca8d0832e79614c8578bfd34f10"
-  integrity sha512-oPvCuu6dlLdiz8gZupJ47o1clgb72r1u8NDBcQYjcV6G/iEdmE11B1bBlkhXRvV0LisP/SXRFP7tT6AgaTjpzg==
+  version "16.3.0"
+  resolved "https://registry.npmjs.org/graphql/-/graphql-16.3.0.tgz#a91e24d10babf9e60c706919bb182b53ccdffc05"
+  integrity sha512-xm+ANmA16BzCT5pLjuXySbQVFwH3oJctUVdy81w1sV0vBU0KgDdBGtxQOUd5zqOBk/JayAFeG8Dlmeq74rjm/A==
 
 grouped-queue@^2.0.0:
   version "2.0.0"
@@ -18832,10 +18899,10 @@ passport-strategy@1.x.x, passport-strategy@^1.0.0:
   resolved "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz#b5539aa8fc225a3d1ad179476ddf236b440f52e4"
   integrity sha1-tVOaqPwiWj0a0XlHbd8ja0QPUuQ=
 
-passport@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.npmjs.org/passport/-/passport-0.4.1.tgz#941446a21cb92fc688d97a0861c38ce9f738f270"
-  integrity sha512-IxXgZZs8d7uFSt3eqNjM9NQ3g3uQCW5avD8mRNoXV99Yig50vjuaez6dQK2qC0kVWPRTujxY0dWgGfT09adjYg==
+passport@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.npmjs.org/passport/-/passport-0.5.2.tgz#0cb38dd8a71552c8390dfa6a9a6f7f3909954bcf"
+  integrity sha512-w9n/Ot5I7orGD4y+7V3EFJCQEznE5RxHamUxcqLT2QoJY0f2JdN8GyHonYFvN0Vz+L6lUJfVhrk2aZz2LbuREw==
   dependencies:
     passport-strategy "1.x.x"
     pause "0.0.1"
@@ -19613,10 +19680,10 @@ progress@2.0.3:
   resolved "https://registry.npmjs.org/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-prom-client@^13.2.0:
-  version "13.2.0"
-  resolved "https://registry.npmjs.org/prom-client/-/prom-client-13.2.0.tgz#99d13357912dd400f8911b77df19f7b328a93e92"
-  integrity sha512-wGr5mlNNdRNzEhRYXgboUU2LxHWIojxscJKmtG3R8f4/KiWqyYgXTLHs0+Ted7tG3zFT7pgHJbtomzZ1L0ARaQ==
+prom-client@^14.0.1:
+  version "14.0.1"
+  resolved "https://registry.npmjs.org/prom-client/-/prom-client-14.0.1.tgz#bdd9583e02ec95429677c0e013712d42ef1f86a8"
+  integrity sha512-HxTArb6fkOntQHoRGvv4qd/BkorjliiuO2uSWC2KC17MUTKYttWdDoXX/vxOhQdkoECEM9BBH0pj2l8G8kev6w==
   dependencies:
     tdigest "^0.1.1"
 
@@ -19671,9 +19738,9 @@ promzard@^0.3.0:
     read "1"
 
 prop-types@^15.0.0, prop-types@^15.5.10, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
-  version "15.8.0"
-  resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.0.tgz#d237e624c45a9846e469f5f31117f970017ff588"
-  integrity sha512-fDGekdaHh65eI3lMi5OnErU6a8Ighg2KjcjQxO7m8VHyWjcPyj5kiOgV1LQDOOOgVy3+5FgjXvdSSX7B8/5/4g==
+  version "15.8.1"
+  resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
+  integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
   dependencies:
     loose-envify "^1.4.0"
     object-assign "^4.1.1"

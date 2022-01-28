@@ -57,7 +57,7 @@
     "luxon": "^2.0.2",
     "node-fetch": "^2.6.1",
     "p-limit": "^3.0.2",
-    "prom-client": "^13.2.0",
+    "prom-client": "^14.0.1",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
     "yaml": "^1.9.2",

@@ -15,6 +15,7 @@ import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Profile } from 'passport';
+import { TokenManager } from '@backstage/backend-common';
 import { TokenSet } from 'openid-client';
 import { UserEntity } from '@backstage/catalog-model';
 import { UserinfoResponse } from 'openid-client';
@@ -85,6 +86,7 @@ export type AuthProviderFactoryOptions = {
   globalConfig: AuthProviderConfig;
   config: Config;
   logger: Logger_2;
+  tokenManager: TokenManager;
   tokenIssuer: TokenIssuer;
   discovery: PluginEndpointDiscovery;
   catalogApi: CatalogApi;
@@ -205,7 +207,7 @@ export const bitbucketUsernameSignInResolver: SignInResolver<BitbucketOAuthResul
 //
 // @public
 export class CatalogIdentityClient {
-  constructor(options: { catalogApi: CatalogApi; tokenIssuer: TokenIssuer });
+  constructor(options: { catalogApi: CatalogApi; tokenManager: TokenManager });
   // Warning: (ae-forgotten-export) The symbol "UserQuery" needs to be exported by the entry point index.d.ts
   findUser(query: UserQuery): Promise<UserEntity>;
   // Warning: (ae-forgotten-export) The symbol "MemberClaimQuery" needs to be exported by the entry point index.d.ts
@@ -671,6 +673,8 @@ export interface RouterOptions {
   //
   // (undocumented)
   providerFactories?: ProviderFactories;
+  // (undocumented)
+  tokenManager: TokenManager;
 }
 
 // @public (undocumented)
