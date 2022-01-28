@@ -102,6 +102,7 @@ async function updatePatchVersions() {
     if (hasChanges) {
       await fs.writeJson(path.resolve(dir, 'package.json'), packageJson, {
         spaces: 2,
+        encoding: 'utf8',
       });
     }
   }
@@ -109,7 +110,7 @@ async function updatePatchVersions() {
   await fs.writeJSON(
     patchedJsonPath,
     { currentReleaseVersion: {} },
-    { spaces: 2 },
+    { spaces: 2, encoding: 'utf8' },
   );
 }
 
@@ -165,10 +166,14 @@ async function updateBackstageReleaseVersion() {
     nextVersion = semver.inc(currentVersion, 'patch');
   }
 
-  await fs.writeJson(packagePath, {
-    ...package,
-    version: nextVersion,
-  });
+  await fs.writeJson(
+    packagePath,
+    {
+      ...package,
+      version: nextVersion,
+    },
+    { spaces: 2, encoding: 'utf8' },
+  );
 }
 
 async function main() {
