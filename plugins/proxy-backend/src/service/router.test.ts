@@ -30,23 +30,66 @@ const mockCreateProxyMiddleware = createProxyMiddleware as jest.MockedFunction<
 >;
 
 describe('createRouter', () => {
-  it('works', async () => {
-    const logger = getVoidLogger();
-    const config = new ConfigReader({
-      backend: {
-        baseUrl: 'https://example.com:7007',
-        listen: {
-          port: 7007,
+  describe('where all proxy config are valid', () => {
+    it('works', async () => {
+      const logger = getVoidLogger();
+      const config = new ConfigReader({
+        backend: {
+          baseUrl: 'https://example.com:7007',
+          listen: {
+            port: 7007,
+          },
         },
-      },
+        proxy: {
+          '/test': {
+            target: 'https://example.com',
+            headers: {
+              Authorization: 'Bearer supersecret',
+            },
+          },
+        },
+      });
+      const discovery = SingleHostDiscovery.fromConfig(config);
+      const router = await createRouter({
+        config,
+        logger,
+        discovery,
+      });
+      expect(router).toBeDefined();
     });
-    const discovery = SingleHostDiscovery.fromConfig(config);
-    const router = await createRouter({
-      config,
-      logger,
-      discovery,
+  });
+
+  describe('where buildMiddleware would fail', () => {
+    it('works', async () => {
+      const logger = getVoidLogger();
+      logger.warn = jest.fn();
+      const config = new ConfigReader({
+        backend: {
+          baseUrl: 'https://example.com:7007',
+          listen: {
+            port: 7007,
+          },
+        },
+        // no target would cause the buildMiddleware to fail
+        proxy: {
+          '/test': {
+            headers: {
+              Authorization: 'Bearer supersecret',
+            },
+          },
+        },
+      });
+      const discovery = SingleHostDiscovery.fromConfig(config);
+      const router = await createRouter({
+        config,
+        logger,
+        discovery,
+      });
+      expect((logger.warn as jest.Mock).mock.calls[0][0]).toEqual(
+        'skipped configuring /test due to Proxy target must be a string',
+      );
+      expect(router).toBeDefined();
     });
-    expect(router).toBeDefined();
   });
 });
 

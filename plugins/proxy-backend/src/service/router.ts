@@ -185,11 +185,16 @@ export async function createRouter(
   const { pathname: pathPrefix } = new URL(externalUrl);
 
   const proxyConfig = options.config.getOptional('proxy') ?? {};
+
   Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
-    router.use(
-      route,
-      buildMiddleware(pathPrefix, options.logger, route, proxyRouteConfig),
-    );
+    try {
+      router.use(
+        route,
+        buildMiddleware(pathPrefix, options.logger, route, proxyRouteConfig),
+      );
+    } catch (e) {
+      options.logger.warn(`skipped configuring ${route} due to ${e.message}`);
+    }
   });
 
   return router;
