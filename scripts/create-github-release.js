@@ -41,6 +41,7 @@
  */
 
 const { Octokit } = require('@octokit/rest');
+const semver = require('semver');
 
 // See Examples above to learn about these command line arguments.
 const [TAG_NAME, BOOL_CREATE_RELEASE] = process.argv.slice(2);
@@ -160,7 +161,7 @@ async function createRelease(releaseDescription) {
     name: TAG_NAME,
     body: releaseDescription,
     draft: boolCreateDraft,
-    prerelease: false,
+    prerelease: Boolean(semver.prerelease(TAG_NAME)),
   });
 
   if (releaseResponse.status === 201) {
