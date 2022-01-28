@@ -14,7 +14,8 @@ jobs:
         with:
           ref: ${{ github.event.inputs.version }}
       - name: Install dependencies
-        run: yarn install
+        # Just the deps for the assemble manifest script
+        run: npm install --global semver@7.3.5 fs-extra@10.0.0 @manypkg/get-packages@1.1.1
       - name: Checkout versions
         uses: actions/checkout@v2
         with:
@@ -26,7 +27,10 @@ jobs:
           git config --global user.email noreply@backstage.io
           git config --global user.name 'Github versions workflow'
       - name: Create release
+        # This grabs the scripts from master in order to support backfills
         run: |
+          mkdir -p scripts
+          wget -O scripts/assemble-manifest.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/assemble-manifest.js
           node scripts/assemble-manifest.js ${{ github.event.inputs.version }}
           cd versions
           git add .
