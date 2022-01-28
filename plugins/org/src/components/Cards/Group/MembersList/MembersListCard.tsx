@@ -16,8 +16,8 @@
 import {
   ENTITY_DEFAULT_NAMESPACE,
   GroupEntity,
-  RELATION_MEMBER_OF,
   UserEntity,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -139,20 +139,19 @@ export const MembersListCard = (_props: {
     value: members,
   } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
-      filter: { kind: 'User' },
+      filter: {
+        kind: 'User',
+        'relations.memberof': [
+          stringifyEntityRef({
+            kind: 'group',
+            namespace: groupNamespace.toLocaleLowerCase('en-US'),
+            name: groupName.toLocaleLowerCase('en-US'),
+          }),
+        ],
+      },
     });
-    const groupMembersList = (membersList.items as UserEntity[]).filter(
-      member =>
-        member?.relations?.some(
-          r =>
-            r.type === RELATION_MEMBER_OF &&
-            r.target.name.toLocaleLowerCase('en-US') ===
-              groupName.toLocaleLowerCase('en-US') &&
-            r.target.namespace.toLocaleLowerCase('en-US') ===
-              groupNamespace.toLocaleLowerCase('en-US'),
-        ),
-    );
-    return groupMembersList;
+
+    return membersList.items as UserEntity[];
   }, [catalogApi, groupEntity]);
 
   if (loading) {
