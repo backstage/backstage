@@ -5588,9 +5588,9 @@
   integrity sha512-eC4U9MlIcu2q0KQmXszyn5Akca/0jrQmwDRgpAMJai7qBWq4amIQhZyNau4VYGtCeALvW1/NtjzJJ567aZxfKA==
 
 "@types/mime-types@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/@types/mime-types/-/mime-types-2.1.0.tgz#9ca52cda363f699c69466c2a6ccdaad913ea7a73"
-  integrity sha1-nKUs2jY/aZxpRmwqbM2q2RPqenM=
+  version "2.1.1"
+  resolved "https://registry.npmjs.org/@types/mime-types/-/mime-types-2.1.1.tgz#d9ba43490fa3a3df958759adf69396c3532cf2c1"
+  integrity sha512-vXOTGVSLR2jMw440moWTC7H19iUyLtP3Z1YTj7cSsubOICinjMxFeb/V57v9QdyyPGbbWolUFSSmSiRSn94tFw==
 
 "@types/mime@^1":
   version "1.3.2"
@@ -10635,18 +10635,18 @@ elliptic@^6.0.0:
     minimalistic-crypto-utils "^1.0.1"
 
 "embedded-techdocs-app@file:packages/embedded-techdocs-app":
-  version "0.2.60"
+  version "0.2.61"
   dependencies:
     "@backstage/app-defaults" "^0.1.5"
     "@backstage/catalog-model" "^0.9.10"
-    "@backstage/cli" "^0.12.0"
+    "@backstage/cli" "^0.13.0"
     "@backstage/config" "^0.1.13"
-    "@backstage/core-app-api" "^0.5.0"
-    "@backstage/core-components" "^0.8.5"
+    "@backstage/core-app-api" "^0.5.1"
+    "@backstage/core-components" "^0.8.6"
     "@backstage/core-plugin-api" "^0.6.0"
     "@backstage/integration-react" "^0.1.19"
-    "@backstage/plugin-catalog" "^0.7.9"
-    "@backstage/plugin-techdocs" "^0.13.0"
+    "@backstage/plugin-catalog" "^0.7.10"
+    "@backstage/plugin-techdocs" "^0.13.1"
     "@backstage/test-utils" "^0.2.3"
     "@backstage/theme" "^0.2.14"
     "@material-ui/core" "^4.11.0"
