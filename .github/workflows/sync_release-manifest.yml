@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version number'
+        description: Version number, without any 'v' prefix
         required: true
 jobs:
   create-new-version:
@@ -21,7 +21,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: backstage
-          ref: ${{ github.event.inputs.version }}
+          # 'v' prefix is added here for the tag, we keep it out of the manifest logic
+          ref: v${{ github.event.inputs.version }}
 
       # Checkout backstage/versions into /backstage/versions, which is where store the output
       - name: Checkout versions
