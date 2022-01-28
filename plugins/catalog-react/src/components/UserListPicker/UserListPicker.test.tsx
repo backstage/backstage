@@ -73,8 +73,9 @@ const mockIsOwnedEntity = jest.fn(
   (entity: Entity) => entity.metadata.name === 'component-1',
 );
 
-const mockIsStarredEntity = (entity: Entity) =>
-  entity.metadata.name === 'component-3';
+const mockIsStarredEntity = jest.fn(
+  (entity: Entity) => entity.metadata.name === 'component-3',
+);
 
 jest.mock('../../hooks', () => {
   const actual = jest.requireActual('../../hooks');
@@ -252,7 +253,11 @@ describe('<UserListPicker />', () => {
     });
   });
 
-  describe('filter resetting', () => {
+  describe.each`
+    type         | filterFn
+    ${'owned'}   | ${mockIsOwnedEntity}
+    ${'starred'} | ${mockIsStarredEntity}
+  `('filter resetting for $type entities', ({ type, filterFn }) => {
     let updateFilters: jest.Mock;
 
     const picker = ({ loading }: { loading: boolean }) => (
@@ -260,7 +265,7 @@ describe('<UserListPicker />', () => {
         <MockEntityListContextProvider
           value={{ backendEntities, updateFilters, loading }}
         >
-          <UserListPicker initialFilter="owned" />
+          <UserListPicker initialFilter={type} />
         </MockEntityListContextProvider>
       </ApiProvider>
     );
@@ -269,9 +274,9 @@ describe('<UserListPicker />', () => {
       updateFilters = jest.fn();
     });
 
-    describe('when the user does not own any entities', () => {
+    describe(`when there are no ${type} entities match the filter`, () => {
       beforeEach(() => {
-        mockIsOwnedEntity.mockReturnValue(false);
+        filterFn.mockReturnValue(false);
       });
 
       it('does not reset the filter while entities are loading', () => {
@@ -299,9 +304,9 @@ describe('<UserListPicker />', () => {
       });
     });
 
-    describe('when the user owns entities', () => {
+    describe(`when there are some ${type} entities present`, () => {
       beforeEach(() => {
-        mockIsOwnedEntity.mockReturnValue(true);
+        filterFn.mockReturnValue(true);
       });
 
       it('does not reset the filter while entities are loading', () => {
@@ -321,7 +326,7 @@ describe('<UserListPicker />', () => {
 
         expect(updateFilters).toHaveBeenLastCalledWith({
           user: new UserListFilter(
-            'owned',
+            type,
             mockIsOwnedEntity,
             mockIsStarredEntity,
           ),
