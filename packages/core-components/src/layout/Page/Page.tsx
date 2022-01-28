@@ -17,7 +17,7 @@
 import React, { useContext } from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import { SidebarPinStateContext } from '..';
+import { SidebarPinStateContext } from '../Sidebar/Page';
 
 export type PageClassKey = 'root';
 
