@@ -58,7 +58,7 @@
     "node-fetch": "^2.6.1",
     "node-cache": "^5.1.2",
     "openid-client": "^4.2.1",
-    "passport": "^0.4.1",
+    "passport": "^0.5.2",
     "passport-bitbucket-oauth2": "^0.1.2",
     "passport-github2": "^0.1.12",
     "passport-gitlab2": "^5.0.0",
