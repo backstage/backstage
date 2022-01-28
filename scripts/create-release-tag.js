@@ -34,26 +34,12 @@ async function main() {
 
   const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
-  const date = new Date();
-  const yyyy = date.getUTCFullYear();
-  const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
-  const dd = String(date.getUTCDate()).padStart(2, '0');
-  const baseTagName = `release-${yyyy}-${mm}-${dd}`;
+  const rootPath = path.resolve(__dirname, '..');
+  const { version: currentVersion } = await fs.readJson(
+    path.join(rootPath, 'package.json'),
+  );
 
-  console.log('Requesting existing tags');
-
-  const existingTags = await octokit.repos.listTags({
-    ...baseOptions,
-    per_page: 100,
-  });
-  const existingTagNames = existingTags.data.map(obj => obj.name);
-
-  let tagName = baseTagName;
-  let index = 0;
-  while (existingTagNames.includes(tagName)) {
-    index += 1;
-    tagName = `${baseTagName}.${index}`;
-  }
+  const tagName = `v${currentVersion}`;
 
   console.log(`Creating release tag ${tagName}`);
 
@@ -65,11 +51,22 @@ async function main() {
     type: 'commit',
   });
 
-  await octokit.git.createRef({
-    ...baseOptions,
-    ref: `refs/tags/${tagName}`,
-    sha: annotatedTag.data.sha,
-  });
+  try {
+    await octokit.git.createRef({
+      ...baseOptions,
+      ref: `refs/tags/${tagName}`,
+      sha: annotatedTag.data.sha,
+    });
+  } catch (ex) {
+    if (
+      ex.status === 422 &&
+      ex.response.data.message === 'Reference already exists'
+    ) {
+      throw new Error(`Tag ${tagName} already exists in repository`);
+    }
+    console.error(`Tag creation for ${tagName} failed`);
+    throw ex;
+  }
 
   console.log(`::set-output name=tag_name::${tagName}`);
 }
