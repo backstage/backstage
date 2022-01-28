@@ -13,19 +13,27 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.version }}
-      - name: Install dependencies
-        # Just the deps for the assemble manifest script
-        run: npm install --global semver@7.3.5 fs-extra@10.0.0 @manypkg/get-packages@1.1.1
+
+      # Checkout backstage/versions into /versions, which is where store the output
       - name: Checkout versions
         uses: actions/checkout@v2
         with:
           repository: backstage/versions
           path: versions
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
       - name: Configure Git
         run: |
           git config --global user.email noreply@backstage.io
           git config --global user.name 'Github versions workflow'
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - name: Install dependencies
+        # Just the deps for the assemble manifest script
+        run: npm install semver@7.3.5 fs-extra@10.0.0 @manypkg/get-packages@1.1.1
+
       - name: Create release
         # This grabs the scripts from master in order to support backfills
         run: |
