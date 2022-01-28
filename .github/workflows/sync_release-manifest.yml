@@ -9,7 +9,7 @@ jobs:
   create-new-version:
     runs-on: ubuntu-latest
     steps:
-        # Setup node & install deps before checkout, keeping install quick
+      # Setup node & install deps before checkout, keeping install quick
       - uses: actions/setup-node@v2
         with:
           node-version: 16
