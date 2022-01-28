@@ -28,6 +28,7 @@ import { UnpackNestedValue, UseFormReturn } from 'react-hook-form';
 import useAsync from 'react-use/lib/useAsync';
 import YAML from 'yaml';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
+import { useCatalogFilename } from '../../hooks';
 import { PartialEntity } from '../../types';
 import { BackButton, NextButton } from '../Buttons';
 import { PrepareResult } from '../useImportState';
@@ -105,6 +106,8 @@ export const StepPrepareCreatePullRequest = ({
 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string>();
+
+  const catalogFilename = useCatalogFilename();
 
   const {
     loading: prDefaultsLoading,
@@ -193,7 +196,7 @@ export const StepPrepareCreatePullRequest = ({
     <>
       <Typography>
         You entered a link to a {analyzeResult.integrationType} repository but a{' '}
-        <code>catalog-info.yaml</code> could not be found. Use this form to open
+        <code>{catalogFilename}</code> could not be found. Use this form to open
         a Pull Request that creates one.
       </Typography>
 

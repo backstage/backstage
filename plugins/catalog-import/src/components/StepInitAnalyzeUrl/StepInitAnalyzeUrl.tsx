@@ -36,6 +36,7 @@ type Props = {
   ) => void;
   disablePullRequest?: boolean;
   analysisUrl?: string;
+  exampleLocationUrl?: string;
 };
 
 /**
@@ -49,6 +50,7 @@ export const StepInitAnalyzeUrl = ({
   onAnalysis,
   analysisUrl = '',
   disablePullRequest = false,
+  exampleLocationUrl = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
 }: Props) => {
   const errorApi = useApi(errorApiRef);
   const catalogImportApi = useApi(catalogImportApiRef);
@@ -138,7 +140,7 @@ export const StepInitAnalyzeUrl = ({
         fullWidth
         id="url"
         label="Repository URL"
-        placeholder="https://github.com/backstage/backstage/blob/master/catalog-info.yaml"
+        placeholder={exampleLocationUrl}
         helperText="Enter the full path to your entity file to start tracking your component"
         margin="normal"
         variant="outlined"
