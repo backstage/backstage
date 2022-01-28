@@ -496,6 +496,13 @@ plugins:
   - kroki
 ```
 
+> Note: you will very likely want to set a `kroki` `ServerURL` configuration in your
+> `mkdocs.yml` as well. The default value is the publicly hosted `kroki.io`. If
+> you have sensitive information in your organization's diagrams, you should set
+> up a [server of your own](https://docs.kroki.io/kroki/setup/install/) and use it
+> instead. Check out [mkdocs-kroki-plugin config](https://github.com/AVATEAM-IT-SYSTEMHAUS/mkdocs-kroki-plugin#config)
+> for more plugin configuration details.
+
 4. **Add mermaid code into techdocs:**
 
 ````md
