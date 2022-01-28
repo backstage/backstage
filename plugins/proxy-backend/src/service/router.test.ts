@@ -113,7 +113,7 @@ describe('createRouter', () => {
         config,
         logger,
         discovery,
-        skipBrokenProxies: true,
+        skipInvalidProxies: true,
       });
       expect((logger.warn as jest.Mock).mock.calls[0][0]).toEqual(
         'skipped configuring /test due to Proxy target must be a string',
