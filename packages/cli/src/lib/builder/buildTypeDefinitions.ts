@@ -71,91 +71,108 @@ function prepareApiExtractor() {
   return apiExtractor!;
 }
 
-export async function buildTypeDefinitions() {
-  const { Extractor, ExtractorConfig } = prepareApiExtractor();
+export async function buildTypeDefinitions(
+  targetDirs: string[] = [paths.targetDir],
+) {
+  const { Extractor, ExtractorConfig, CompilerState } = prepareApiExtractor();
 
-  const distTypesPackageDir = paths.resolveTargetRoot(
-    'dist-types',
-    relativePath(paths.targetRoot, paths.targetDir),
+  const packageDirs = targetDirs.map(dir =>
+    relativePath(paths.targetRoot, dir),
   );
-  const entryPoint = resolvePath(distTypesPackageDir, 'src/index.d.ts');
+  const entryPoints = packageDirs.map(dir =>
+    paths.resolveTargetRoot('dist-types', dir, 'src/index.d.ts'),
+  );
 
-  const declarationsExist = await fs.pathExists(entryPoint);
-  if (!declarationsExist) {
-    const path = relativePath(paths.targetDir, entryPoint);
-    throw new Error(
-      `No declaration files found at ${path}, be sure to run ${chalk.bgRed.white(
-        'yarn tsc',
-      )} to generate .d.ts files before packaging`,
-    );
-  }
+  let compilerState;
 
-  const extractorConfig = ExtractorConfig.prepare({
-    configObject: {
-      mainEntryPointFilePath: entryPoint,
-      bundledPackages: [],
+  for (const packageDir of packageDirs) {
+    const targetDir = paths.resolveTargetRoot(packageDir);
+    const targetTypesDir = paths.resolveTargetRoot('dist-types', packageDir);
+    const entryPoint = resolvePath(targetTypesDir, 'src/index.d.ts');
 
-      compiler: {
-        skipLibCheck: true,
-        tsconfigFilePath: paths.resolveTargetRoot('tsconfig.json'),
+    const declarationsExist = await fs.pathExists(entryPoint);
+    if (!declarationsExist) {
+      throw new Error(
+        `No declaration files found at ${entryPoint}, be sure to run ${chalk.bgRed.white(
+          'yarn tsc',
+        )} to generate .d.ts files before packaging`,
+      );
+    }
+
+    const extractorConfig = ExtractorConfig.prepare({
+      configObject: {
+        mainEntryPointFilePath: entryPoint,
+        bundledPackages: [],
+
+        compiler: {
+          skipLibCheck: true,
+          tsconfigFilePath: paths.resolveTargetRoot('tsconfig.json'),
+        },
+
+        dtsRollup: {
+          enabled: true,
+          untrimmedFilePath: resolvePath(targetDir, 'dist/index.alpha.d.ts'),
+          betaTrimmedFilePath: resolvePath(targetDir, 'dist/index.beta.d.ts'),
+          publicTrimmedFilePath: resolvePath(targetDir, 'dist/index.d.ts'),
+        },
+
+        newlineKind: 'lf',
+
+        projectFolder: targetDir,
       },
+      configObjectFullPath: targetDir,
+      packageJsonFullPath: resolvePath(targetDir, 'package.json'),
+    });
 
-      dtsRollup: {
-        enabled: true,
-        untrimmedFilePath: paths.resolveTarget('dist/index.alpha.d.ts'),
-        betaTrimmedFilePath: paths.resolveTarget('dist/index.beta.d.ts'),
-        publicTrimmedFilePath: paths.resolveTarget('dist/index.d.ts'),
-      },
+    if (!compilerState) {
+      compilerState = CompilerState.create(extractorConfig, {
+        additionalEntryPoints: entryPoints,
+      });
+    }
 
-      newlineKind: 'lf',
+    const typescriptDir = paths.resolveTargetRoot('node_modules/typescript');
+    const hasTypescript = await fs.pathExists(typescriptDir);
+    const extractorResult = Extractor.invoke(extractorConfig, {
+      typescriptCompilerFolder: hasTypescript ? typescriptDir : undefined,
+      compilerState,
+      localBuild: false,
+      showVerboseMessages: false,
+      showDiagnostics: false,
+      messageCallback(message) {
+        message.handled = true;
+        if (ignoredMessages.has(message.messageId)) {
+          return;
+        }
 
-      projectFolder: paths.targetDir,
-    },
-    configObjectFullPath: paths.targetDir,
-    packageJsonFullPath: paths.resolveTarget('package.json'),
-  });
-
-  const typescriptDir = paths.resolveTargetRoot('node_modules/typescript');
-  const hasTypescript = await fs.pathExists(typescriptDir);
-  const extractorResult = Extractor.invoke(extractorConfig, {
-    typescriptCompilerFolder: hasTypescript ? typescriptDir : undefined,
-    localBuild: false,
-    showVerboseMessages: false,
-    showDiagnostics: false,
-    messageCallback(message) {
-      message.handled = true;
-      if (ignoredMessages.has(message.messageId)) {
-        return;
-      }
-
-      let text = `${message.text} (${message.messageId})`;
-      if (message.sourceFilePath) {
-        text += ' at ';
-        text += relativePath(distTypesPackageDir, message.sourceFilePath);
-        if (message.sourceFileLine) {
-          text += `:${message.sourceFileLine}`;
-          if (message.sourceFileColumn) {
-            text += `:${message.sourceFileColumn}`;
+        let text = `${message.text} (${message.messageId})`;
+        if (message.sourceFilePath) {
+          text += ' at ';
+          text += relativePath(targetTypesDir, message.sourceFilePath);
+          if (message.sourceFileLine) {
+            text += `:${message.sourceFileLine}`;
+            if (message.sourceFileColumn) {
+              text += `:${message.sourceFileColumn}`;
+            }
           }
         }
-      }
-      if (message.logLevel === 'error') {
-        console.error(chalk.red(`Error: ${text}`));
-      } else if (
-        message.logLevel === 'warning' ||
-        message.category === 'Extractor'
-      ) {
-        console.warn(`Warning: ${text}`);
-      } else {
-        console.log(text);
-      }
-    },
-  });
+        if (message.logLevel === 'error') {
+          console.error(chalk.red(`Error: ${text}`));
+        } else if (
+          message.logLevel === 'warning' ||
+          message.category === 'Extractor'
+        ) {
+          console.warn(`Warning: ${text}`);
+        } else {
+          console.log(text);
+        }
+      },
+    });
 
-  if (!extractorResult.succeeded) {
-    throw new Error(
-      `Type definition build completed with ${extractorResult.errorCount} errors` +
-        ` and ${extractorResult.warningCount} warnings`,
-    );
+    if (!extractorResult.succeeded) {
+      throw new Error(
+        `Type definition build completed with ${extractorResult.errorCount} errors` +
+          ` and ${extractorResult.warningCount} warnings`,
+      );
+    }
   }
 }
