@@ -25,6 +25,21 @@ const configOption = [
   Array<string>(),
 ] as const;
 
+export function registerRepoCommand(program: CommanderStatic) {
+  const command = program
+    .command('repo [command]', { hidden: true })
+    .description(
+      'Command that run across an entire Backstage project [EXPERIMENTAL]',
+    );
+
+  command
+    .command('build')
+    .description(
+      'Build all packages in the project that use the standard backstage build script',
+    )
+    .action(lazy(() => import('./repo/build').then(m => m.command)));
+}
+
 export function registerScriptCommand(program: CommanderStatic) {
   const command = program
     .command('script [command]', { hidden: true })
@@ -312,6 +327,7 @@ export function registerCommands(program: CommanderStatic) {
     .description('Print configuration schema')
     .action(lazy(() => import('./config/schema').then(m => m.default)));
 
+  registerRepoCommand(program);
   registerScriptCommand(program);
   registerMigrateCommand(program);
 
