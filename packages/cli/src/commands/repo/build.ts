@@ -16,17 +16,9 @@
 
 import chalk from 'chalk';
 import { relative as relativePath } from 'path';
-import { buildPackages, Output } from '../../lib/builder';
+import { buildPackages, getOutputsForRole } from '../../lib/builder';
 import { PackageGraph } from '../../lib/monorepo';
 import { paths } from '../../lib/paths';
-import { getRoleInfo } from '../../lib/role';
-
-const outputMap = {
-  esm: Output.esm,
-  cjs: Output.cjs,
-  types: Output.types,
-  bundle: undefined,
-};
 
 export async function command(): Promise<void> {
   const packages = await PackageGraph.listTargetPackages();
@@ -38,11 +30,8 @@ export async function command(): Promise<void> {
       return [];
     }
 
-    const roleInfo = getRoleInfo(role);
-    const outputs = roleInfo.output
-      .map(output => outputMap[output])
-      .filter((x): x is Output => Boolean(x));
-    if (outputs.length === 0) {
+    const outputs = getOutputsForRole(role);
+    if (outputs.size === 0) {
       console.warn(`Ignored ${pkg.packageJson.name} because it has no output`);
       return [];
     }
@@ -63,7 +52,7 @@ export async function command(): Promise<void> {
 
     return {
       targetDir: pkg.dir,
-      outputs: new Set(outputs),
+      outputs,
       logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
       // TODO(Rugvip): Use commander to parse the script and grab these instead
       minify: buildScript.includes('--minify'),

@@ -22,6 +22,7 @@ import { paths } from '../paths';
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
 import { buildTypeDefinitions } from './buildTypeDefinitions';
+import { getRoleInfo } from '../role';
 
 export function formatErrorMessage(error: any) {
   let msg = '';
@@ -141,3 +142,21 @@ export const buildPackages = async (
 
   await Promise.all(buildTasks);
 };
+
+export function getOutputsForRole(role: string): Set<Output> {
+  const outputs = new Set<Output>();
+
+  for (const output of getRoleInfo(role).output) {
+    if (output === 'cjs') {
+      outputs.add(Output.cjs);
+    }
+    if (output === 'esm') {
+      outputs.add(Output.esm);
+    }
+    if (output === 'types') {
+      outputs.add(Output.types);
+    }
+  }
+
+  return outputs;
+}
