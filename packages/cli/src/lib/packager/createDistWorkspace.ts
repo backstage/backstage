@@ -23,6 +23,7 @@ import {
 } from 'path';
 import { tmpdir } from 'os';
 import tar, { CreateOptions } from 'tar';
+import partition from 'lodash/partition';
 import { paths } from '../paths';
 import { run } from '../run';
 import {
@@ -212,10 +213,33 @@ export async function createDistWorkspace(
   return targetDir;
 }
 
+const FAST_PACK_SCRIPTS = [
+  undefined,
+  'backstage-cli prepack',
+  'backstage-cli script prepack',
+];
+
 async function moveToDistWorkspace(
   workspaceDir: string,
   localPackages: PackageGraphNode[],
 ): Promise<void> {
+  const [fastPackPackages, slowPackPackages] = partition(localPackages, pkg =>
+    FAST_PACK_SCRIPTS.includes(pkg.packageJson.scripts?.prepack),
+  );
+
+  // New an improved flow where we avoid calling `yarn pack`
+  await Promise.all(
+    fastPackPackages.map(async target => {
+      console.log(`Moving ${target.name} into dist workspace`);
+
+      const outputDir = relativePath(paths.targetRoot, target.dir);
+      const absoluteOutputPath = resolvePath(workspaceDir, outputDir);
+      await copyPackageDist(target.dir, absoluteOutputPath);
+    }),
+  );
+
+  // Old flow is below, which calls `yarn pack` and extracts the tarball
+
   async function pack(target: PackageGraphNode, archive: string) {
     console.log(`Repacking ${target.name} into dist workspace`);
     const archivePath = resolvePath(workspaceDir, archive);
@@ -260,11 +284,8 @@ async function moveToDistWorkspace(
     }
   }
 
-  const unsafePackages = localPackages.filter(p =>
+  const [unsafePackages, safePackages] = partition(slowPackPackages, p =>
     UNSAFE_PACKAGES.includes(p.name),
-  );
-  const safePackages = localPackages.filter(
-    p => !UNSAFE_PACKAGES.includes(p.name),
   );
 
   // The unsafe package are packed first one by one in order to avoid race conditions
