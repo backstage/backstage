@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { buildPackage } from './packager';
+export { buildPackage, buildPackages } from './packager';
 export { Output } from './types';
 export type { BuildOptions } from './types';

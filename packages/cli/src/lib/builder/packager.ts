@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { rollup, RollupOptions } from 'rollup';
 import chalk from 'chalk';
-import { relative as relativePath } from 'path';
+import { relative as relativePath, resolve as resolvePath } from 'path';
 import { paths } from '../paths';
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
@@ -112,6 +112,31 @@ export const buildPackage = async (options: BuildOptions) => {
 
   if (options.outputs.has(Output.types) && options.useApiExtractor) {
     buildTasks.push(buildTypeDefinitions());
+  }
+
+  await Promise.all(buildTasks);
+};
+
+export const buildPackages = async (
+  options: (BuildOptions & { targetDir: string })[],
+) => {
+  const rollupConfigs = await Promise.all(options.map(makeRollupConfigs));
+
+  await Promise.all(
+    options.map(({ targetDir }) => fs.remove(resolvePath(targetDir, 'dist'))),
+  );
+
+  const buildTasks = rollupConfigs.flat().map(rollupBuild);
+
+  const typeDefinitionTargetDirs = options
+    .filter(
+      ({ outputs, useApiExtractor }) =>
+        outputs.has(Output.types) && useApiExtractor,
+    )
+    .map(_ => _.targetDir);
+
+  if (typeDefinitionTargetDirs.length > 0) {
+    buildTasks.push(buildTypeDefinitions(typeDefinitionTargetDirs));
   }
 
   await Promise.all(buildTasks);
