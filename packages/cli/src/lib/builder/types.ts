@@ -21,6 +21,7 @@ export enum Output {
 }
 
 export type BuildOptions = {
+  targetDir?: string;
   outputs: Set<Output>;
   minify?: boolean;
   useApiExtractor?: boolean;

@@ -16,7 +16,7 @@
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { relative as relativePath } from 'path';
+import { relative as relativePath, resolve as resolvePath } from 'path';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
@@ -37,6 +37,9 @@ export async function makeRollupConfigs(
   options: BuildOptions,
 ): Promise<RollupOptions[]> {
   const configs = new Array<RollupOptions>();
+  const targetDir = options.targetDir ?? paths.targetDir;
+
+  const distDir = resolvePath(targetDir, 'dist');
 
   if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
     const output = new Array<OutputOptions>();
@@ -44,7 +47,7 @@ export async function makeRollupConfigs(
 
     if (options.outputs.has(Output.cjs)) {
       output.push({
-        dir: 'dist',
+        dir: distDir,
         entryFileNames: 'index.cjs.js',
         chunkFileNames: 'cjs/[name]-[hash].cjs.js',
         format: 'commonjs',
@@ -53,7 +56,7 @@ export async function makeRollupConfigs(
     }
     if (options.outputs.has(Output.esm)) {
       output.push({
-        dir: 'dist',
+        dir: distDir,
         entryFileNames: 'index.esm.js',
         chunkFileNames: 'esm/[name]-[hash].esm.js',
         format: 'module',
@@ -64,12 +67,13 @@ export async function makeRollupConfigs(
     }
 
     configs.push({
-      input: 'src/index.ts',
+      input: resolvePath(targetDir, 'src/index.ts'),
       output,
       preserveEntrySignatures: 'strict',
       external: require('module').builtinModules,
       plugins: [
         peerDepsExternal({
+          packageJsonPath: resolvePath(targetDir, 'package.json'),
           includeDependencies: true,
         }),
         resolve({ mainFields }),
@@ -109,13 +113,13 @@ export async function makeRollupConfigs(
   if (options.outputs.has(Output.types) && !options.useApiExtractor) {
     const typesInput = paths.resolveTargetRoot(
       'dist-types',
-      relativePath(paths.targetRoot, paths.targetDir),
+      relativePath(paths.targetRoot, targetDir),
       'src/index.d.ts',
     );
 
     const declarationsExist = await fs.pathExists(typesInput);
     if (!declarationsExist) {
-      const path = relativePath(paths.targetDir, typesInput);
+      const path = relativePath(targetDir, typesInput);
       throw new Error(
         `No declaration files found at ${path}, be sure to run ${chalk.bgRed.white(
           'yarn tsc',
@@ -126,7 +130,7 @@ export async function makeRollupConfigs(
     configs.push({
       input: typesInput,
       output: {
-        file: 'dist/index.d.ts',
+        file: resolvePath(distDir, 'index.d.ts'),
         format: 'es',
       },
       plugins: [dts()],
