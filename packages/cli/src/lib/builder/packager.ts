@@ -118,13 +118,14 @@ export const buildPackage = async (options: BuildOptions) => {
   await Promise.all(buildTasks);
 };
 
-export const buildPackages = async (
-  options: (BuildOptions & { targetDir: string })[],
-) => {
+export const buildPackages = async (options: BuildOptions[]) => {
+  if (options.some(opt => !opt.targetDir)) {
+    throw new Error('targetDir must be set for all build options');
+  }
   const rollupConfigs = await Promise.all(options.map(makeRollupConfigs));
 
   await Promise.all(
-    options.map(({ targetDir }) => fs.remove(resolvePath(targetDir, 'dist'))),
+    options.map(({ targetDir }) => fs.remove(resolvePath(targetDir!, 'dist'))),
   );
 
   const buildTasks = rollupConfigs.flat().map(rollupBuild);
@@ -134,7 +135,7 @@ export const buildPackages = async (
       ({ outputs, useApiExtractor }) =>
         outputs.has(Output.types) && useApiExtractor,
     )
-    .map(_ => _.targetDir);
+    .map(_ => _.targetDir!);
 
   if (typeDefinitionTargetDirs.length > 0) {
     buildTasks.push(buildTypeDefinitions(typeDefinitionTargetDirs));
