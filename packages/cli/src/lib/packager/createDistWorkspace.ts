@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import chalk from 'chalk';
 import fs from 'fs-extra';
 import {
   join as joinPath,
@@ -28,8 +29,14 @@ import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
 } from '../../../package.json';
-import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph, PackageGraphNode } from '../monorepo';
+import {
+  BuildOptions,
+  buildPackages,
+  getOutputsForRole,
+  Output,
+} from '../builder';
+import { copyPackageDist } from './copyPackageDist';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
@@ -95,7 +102,7 @@ export async function createDistWorkspace(
     options.targetDir ??
     (await fs.mkdtemp(resolvePath(tmpdir(), 'dist-workspace')));
 
-  const { packages } = await getPackages(paths.targetDir);
+  const packages = await PackageGraph.listTargetPackages();
   const packageGraph = PackageGraph.fromPackages(packages);
   const targetNames = packageGraph.collectPackageNames(packageNames, node => {
     // Don't include dependencies of packages that are marked as bundled
@@ -110,9 +117,59 @@ export async function createDistWorkspace(
   if (options.buildDependencies) {
     const exclude = options.buildExcludes ?? [];
 
-    const toBuild = targets.filter(target => !exclude.includes(target.name));
-    if (toBuild.length > 0) {
-      const scopeArgs = toBuild.flatMap(target => ['--scope', target.name]);
+    const toBuild = new Set(
+      targets.map(_ => _.name).filter(name => !exclude.includes(name)),
+    );
+
+    const standardBuilds = new Array<BuildOptions>();
+    const customBuild = new Array<string>();
+
+    for (const pkg of packages) {
+      if (!toBuild.has(pkg.packageJson.name)) {
+        continue;
+      }
+      const role = pkg.packageJson.backstage?.role;
+      if (!role) {
+        console.warn(`Ignored ${pkg.packageJson.name} because it has no role`);
+        customBuild.push(pkg.packageJson.name);
+        continue;
+      }
+
+      const buildScript = pkg.packageJson.scripts?.build;
+      if (!buildScript) {
+        customBuild.push(pkg.packageJson.name);
+        continue;
+      }
+
+      if (!buildScript.startsWith('backstage-cli script build')) {
+        console.warn(
+          `Ignored ${pkg.packageJson.name} because it has a custom build script, '${buildScript}'`,
+        );
+        customBuild.push(pkg.packageJson.name);
+        continue;
+      }
+
+      const outputs = getOutputsForRole(role);
+
+      // No need to build and include types in the production runtime
+      outputs.delete(Output.types);
+
+      if (outputs.size > 0) {
+        standardBuilds.push({
+          targetDir: pkg.dir,
+          outputs: outputs,
+          logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
+          // No need to detect these for the backend builds, we assume no minification or types
+          minify: false,
+          useApiExtractor: false,
+        });
+      }
+    }
+
+    await buildPackages(standardBuilds);
+
+    if (customBuild.length > 0) {
+      const scopeArgs = customBuild.flatMap(name => ['--scope', name]);
       const lernaArgs =
         options.parallelism && Number.isInteger(options.parallelism)
           ? ['--concurrency', options.parallelism.toString()]
