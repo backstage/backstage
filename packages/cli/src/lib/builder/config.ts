@@ -26,7 +26,7 @@ import svgr from '@svgr/rollup';
 import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
 import yaml from '@rollup/plugin-yaml';
-import { RollupOptions, OutputOptions } from 'rollup';
+import { RollupOptions, OutputOptions, RollupWarning } from 'rollup';
 
 import { forwardFileImports } from './plugins';
 import { BuildOptions, Output } from './types';
@@ -38,6 +38,16 @@ export async function makeRollupConfigs(
 ): Promise<RollupOptions[]> {
   const configs = new Array<RollupOptions>();
   const targetDir = options.targetDir ?? paths.targetDir;
+  const onwarn = ({ code, message }: RollupWarning) => {
+    if (code === 'EMPTY_BUNDLE') {
+      return; // We don't care about this one
+    }
+    if (options.logPrefix) {
+      console.log(options.logPrefix + message);
+    } else {
+      console.log(message);
+    }
+  };
 
   const distDir = resolvePath(targetDir, 'dist');
 
@@ -69,6 +79,7 @@ export async function makeRollupConfigs(
     configs.push({
       input: resolvePath(targetDir, 'src/index.ts'),
       output,
+      onwarn,
       preserveEntrySignatures: 'strict',
       external: require('module').builtinModules,
       plugins: [
@@ -133,6 +144,7 @@ export async function makeRollupConfigs(
         file: resolvePath(distDir, 'index.d.ts'),
         format: 'es',
       },
+      onwarn,
       plugins: [dts()],
     });
   }

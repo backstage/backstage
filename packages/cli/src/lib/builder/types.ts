@@ -21,6 +21,7 @@ export enum Output {
 }
 
 export type BuildOptions = {
+  logPrefix?: string;
   targetDir?: string;
   outputs: Set<Output>;
   minify?: boolean;
