@@ -270,10 +270,8 @@ describe('GoogleAnalytics', () => {
       });
     });
 
-    it('sets pre-hashed userId when PrivateUser entity ref is provided', async () => {
-      (identityApi.getBackstageIdentity as jest.Mock).mockResolvedValueOnce({
-        userEntityRef: 'PrivateUser:hashed/s0m3hash3dvalu3',
-      });
+    it('set custom-hashed userId when userIdTransform is provided', async () => {
+      const userIdTransform = jest.fn().mockResolvedValue('s0m3hash3dvalu3');
       const optionalConfig = new ConfigReader({
         app: {
           analytics: {
@@ -281,7 +279,10 @@ describe('GoogleAnalytics', () => {
           },
         },
       });
-      const api = GoogleAnalytics.fromConfig(optionalConfig, { identityApi });
+      const api = GoogleAnalytics.fromConfig(optionalConfig, {
+        identityApi,
+        userIdTransform,
+      });
       api.captureEvent({
         action: 'navigate',
         subject: '/',
@@ -297,6 +298,7 @@ describe('GoogleAnalytics', () => {
       expect(setData).toMatchObject({
         userId: 's0m3hash3dvalu3',
       });
+      expect(userIdTransform).toHaveBeenCalledWith('User:default/someone');
     });
 
     it('does not set userId when identityApi is provided and ga.identity is explicitly disabled', async () => {

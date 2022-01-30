@@ -15,7 +15,6 @@
  */
 
 import ReactGA from 'react-ga';
-import { parseEntityRef } from '@backstage/catalog-model';
 import {
   AnalyticsApi,
   AnalyticsContextValue,
@@ -39,6 +38,7 @@ type CustomDimensionOrMetricConfig = {
  */
 export class GoogleAnalytics implements AnalyticsApi {
   private readonly cdmConfig: CustomDimensionOrMetricConfig[];
+  private customUserIdTransform?: (userEntityRef: string) => Promise<string>;
   private readonly capture: DeferredCapture;
 
   /**
@@ -46,6 +46,7 @@ export class GoogleAnalytics implements AnalyticsApi {
    */
   private constructor(options: {
     identityApi?: IdentityApi;
+    userIdTransform?: 'sha-256' | ((userEntityRef: string) => Promise<string>);
     cdmConfig: CustomDimensionOrMetricConfig[];
     identity: string;
     trackingId: string;
@@ -58,6 +59,7 @@ export class GoogleAnalytics implements AnalyticsApi {
       identity,
       trackingId,
       identityApi,
+      userIdTransform = 'sha-256',
       scriptSrc,
       testMode,
       debug,
@@ -76,6 +78,10 @@ export class GoogleAnalytics implements AnalyticsApi {
     // If identity is required, defer event capture until identity is known.
     this.capture = new DeferredCapture({ defer: identity === 'required' });
 
+    // Allow custom userId transformation.
+    this.customUserIdTransform =
+      typeof userIdTransform === 'function' ? userIdTransform : undefined;
+
     // Capture user only when explicitly enabled and provided.
     if (identity !== 'disabled' && identityApi) {
       this.setUserFrom(identityApi);
@@ -87,7 +93,12 @@ export class GoogleAnalytics implements AnalyticsApi {
    */
   static fromConfig(
     config: Config,
-    options: { identityApi?: IdentityApi } = {},
+    options: {
+      identityApi?: IdentityApi;
+      userIdTransform?:
+        | 'sha-256'
+        | ((userEntityRef: string) => Promise<string>);
+    } = {},
   ) {
     // Get all necessary configuration.
     const trackingId = config.getString('app.analytics.ga.trackingId');
@@ -220,11 +231,9 @@ export class GoogleAnalytics implements AnalyticsApi {
    * Returns a PII-free user ID for use in Google Analytics.
    */
   private getPrivateUserId(userEntityRef: string): Promise<string> {
-    const entity = parseEntityRef(userEntityRef);
-
-    // Mechanism allowing integrators to provide their own hashed values.
-    if (entity.kind === 'PrivateUser') {
-      return Promise.resolve(entity.name);
+    // Allow integrators to provide their own hashing transformer.
+    if (this.customUserIdTransform) {
+      return this.customUserIdTransform(userEntityRef);
     }
 
     return this.hash(userEntityRef);
