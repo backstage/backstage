@@ -108,7 +108,6 @@
     "aws-sdk-mock": "^5.2.1",
     "better-sqlite3": "^7.5.0",
     "http-errors": "^2.0.0",
-    "jest": "^26.0.1",
     "mock-fs": "^5.1.0",
     "msw": "^0.35.0",
     "mysql2": "^2.2.5",
