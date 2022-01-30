@@ -29,6 +29,7 @@ export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
 export type LinkProps = MaterialLinkProps &
   RouterLinkProps & {
     component?: ElementType<any>;
+    noTrack?: boolean;
   };
 
 declare function LinkType(props: LinkProps): JSX.Element;
@@ -62,7 +63,7 @@ const getNodeText = (node: React.ReactNode): string => {
  * - Captures Link clicks as analytics events.
  */
 const ActualLink = React.forwardRef<any, LinkProps>(
-  ({ onClick, ...props }, ref) => {
+  ({ onClick, noTrack, ...props }, ref) => {
     const analytics = useAnalytics();
     const to = String(props.to);
     const linkText = getNodeText(props.children) || to;
@@ -71,7 +72,9 @@ const ActualLink = React.forwardRef<any, LinkProps>(
 
     const handleClick = (event: React.MouseEvent<any, MouseEvent>) => {
       onClick?.(event);
-      analytics.captureEvent('click', linkText, { attributes: { to } });
+      if (!noTrack) {
+        analytics.captureEvent('click', linkText, { attributes: { to } });
+      }
     };
 
     return external ? (
