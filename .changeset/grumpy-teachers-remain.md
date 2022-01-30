@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend': minor
+'@backstage/plugin-scaffolder-backend': patch
 ---
 
 Migrate from deprecated package @octokit/rest to octokit
