@@ -19,6 +19,9 @@ export class GoogleAnalytics implements AnalyticsApi {
     config: Config,
     options?: {
       identityApi?: IdentityApi;
+      userIdTransform?:
+        | 'sha-256'
+        | ((userEntityRef: string) => Promise<string>);
     },
   ): GoogleAnalytics;
 }
