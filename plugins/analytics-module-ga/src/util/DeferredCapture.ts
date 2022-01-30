@@ -35,45 +35,22 @@ type Hit = {
  */
 export class DeferredCapture {
   /**
-   * Queue of deferred hits to be processed when ready.
+   * Queue of deferred hits to be processed when ready. When undefined, hits
+   * can safely be sent without delay.
    */
-  private queue: Hit[] = [];
-
-  /**
-   * Marker indicating when it's okay to revert to synchronous capture.
-   */
-  private doneDeferring = false;
-
-  /**
-   * Whether or not deferred capture is desired.
-   */
-  private defer: boolean;
-
-  /**
-   * Holds a reference to the internal promise's resolver. When called, it will
-   * begin processing hits in the queue.
-   */
-  private isReady: () => void = () => {};
+  private queue: Hit[] | undefined;
 
   constructor({ defer = false }: { defer: boolean }) {
-    this.defer = defer;
-
-    // Set up a readiness promise that, when resolved from the outside, goes
-    // through all queued hits and sends them.
-    new Promise<void>(resolve => {
-      this.isReady = resolve;
-    }).then(() => {
-      this.queue.forEach(this.sendDeferred);
-    });
+    this.queue = defer ? [] : undefined;
   }
 
   /**
    * Indicates that deferred capture may now proceed.
    */
   setReady() {
-    if (!this.doneDeferring) {
-      this.isReady();
-      this.doneDeferring = true;
+    if (this.queue) {
+      this.queue.forEach(this.sendDeferred);
+      this.queue = undefined;
     }
   }
 
@@ -82,7 +59,7 @@ export class DeferredCapture {
    * the pageview hit to be captured when ready.
    */
   pageview(path: string, metadata: ReactGA.FieldsObject = {}) {
-    if (this.shouldDefer()) {
+    if (this.queue) {
       this.queue.push({
         timestamp: Date.now(),
         data: {
@@ -106,7 +83,7 @@ export class DeferredCapture {
    * event hit to be captured when ready.
    */
   event(eventDetails: ReactGA.EventArgs) {
-    if (this.shouldDefer()) {
+    if (this.queue) {
       this.queue.push({
         timestamp: Date.now(),
         data: {
@@ -118,13 +95,6 @@ export class DeferredCapture {
     }
 
     ReactGA.event(eventDetails);
-  }
-
-  /**
-   * Only defer if configured and if we are still not ready.
-   */
-  private shouldDefer() {
-    return this.defer && !this.doneDeferring;
   }
 
   /**
