@@ -36,6 +36,23 @@ To become a maintainer you need to demonstrate the following:
 
 If a maintainer is no longer interested or cannot perform the maintainer duties listed above, they should volunteer to be moved to emeritus status. In extreme cases this can also occur by a vote of the sponsors and maintainers per the voting process below.
 
+# Sponsors
+
+## Role of a Backstage Sponsor
+
+- Provide support for Backstage by removing blockers, securing funding, providing advocacy, feedback, and ensuring project continuity and long term success.
+- Assist Backstage maintainers in prioritizing upcoming roadmap items and planned work.
+- Provide neutral mediation for any disputes that arise as part of the project.
+
+## Backstage Sponsor Membership
+The Sponsors group comprises at most 5 people. To be eligible for membership in the group, you must:
+- Be responsible for a production Backstage deployment of non-trivial size
+- Be willing and able to attend regularly-scheduled Sponsor meetings
+- Abide by Backstage’s Code of Conduct.
+
+Candidates for membership will be nominated by current Sponsor members or by Backstage maintainers. If there are more nominations than Sponsor seats remaining, the same group shall vote on the candidates, and the candidates with the most votes will become Sponsors. Any ties will be broken by current Backstage sponsors.
+
+
 # Reviewers
 
 The project also contains a team called [@backstage/reviewers](https://github.com/orgs/backstage/teams/reviewers). This is the team of people who are the fallback in [`CODEOWNERS`](./.github/CODEOWNERS). This team will typically contain the maintainers, and a small number of additional people who are permitted to approve and merge pull requests. The purpose of this group is to offload some of the review work from the maintainers, simplifying and speeding up the review process for contributors.
