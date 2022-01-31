@@ -163,7 +163,7 @@ export const createPublishGithubPullRequestAction = ({
           token: {
             title: 'Authentication Token',
             type: 'string',
-            description: 'The GITHUB_TOKEN to use for authorization to GitHub',
+            description: 'The token to use for authorization to GitHub',
           },
         },
       },

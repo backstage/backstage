@@ -248,8 +248,7 @@ export function createPublishBitbucketAction(options: {
           token: {
             title: 'Authentication Token',
             type: 'string',
-            description:
-              'The BITBUCKET_TOKEN to use for authorization to BitBucket',
+            description: 'The token to use for authorization to BitBucket',
           },
         },
       },

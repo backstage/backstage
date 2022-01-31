@@ -66,7 +66,7 @@ export function createPublishAzureAction(options: {
           token: {
             title: 'Authentication Token',
             type: 'string',
-            description: 'The AZURE_TOKEN to use for authorization to Azure',
+            description: 'The token to use for authorization to Azure',
           },
         },
       },

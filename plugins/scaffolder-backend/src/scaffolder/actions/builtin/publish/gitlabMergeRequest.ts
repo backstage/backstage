@@ -79,7 +79,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
           token: {
             title: 'Authentication Token',
             type: 'string',
-            description: 'The GITLAB_TOKEN to use for authorization to GitLab',
+            description: 'The token to use for authorization to GitLab',
           },
         },
       },
