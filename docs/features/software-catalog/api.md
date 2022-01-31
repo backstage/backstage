@@ -12,12 +12,8 @@ by external systems. This page describes its shape and features.
 The API surface consists of a few distinct groups of functionality. Each has a
 dedicated section below.
 
-{% note %}
-
-**Note:** This page only describes some of the most commonly used parts of the
-API, and is a work in progress.
-
-{% endnote %}
+> **Note:** This page only describes some of the most commonly used parts of the
+> API, and is a work in progress.
 
 All of the URL paths in this article are assumed to be on top of some base URL
 pointing at your catalog installation. For example, if the path given in a
@@ -199,13 +195,9 @@ error if there was no entity with that UID.
 
 Deletes an entity by its `metadata.uid` field value.
 
-{% note %}
-
-**Note:** This method of deletion is appropriate for orphaned entities, but not
-for removal of "live" entities that are actively being updated by a location.
-Please read below.
-
-{% endnote %}
+> **Note:** This method of deletion is appropriate for orphaned entities, but
+> not for removal of "live" entities that are actively being updated by a
+> location. Please read below.
 
 The most common user flow is that you register a location (see below), and then
 the catalog keeps itself up to date with that location and the subtree of things
