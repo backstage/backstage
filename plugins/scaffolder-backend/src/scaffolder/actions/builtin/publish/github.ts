@@ -155,20 +155,20 @@ export function createPublishGithubAction(options: {
         repoUrl,
       );
 
-      const user = await client.users.getByUsername({
+      const user = await client.rest.users.getByUsername({
         username: owner,
       });
 
       const repoCreationPromise =
         user.data.type === 'Organization'
-          ? client.repos.createInOrg({
+          ? client.rest.repos.createInOrg({
               name: repo,
               org: owner,
               private: repoVisibility === 'private',
               visibility: repoVisibility,
               description: description,
             })
-          : client.repos.createForAuthenticatedUser({
+          : client.rest.repos.createForAuthenticatedUser({
               name: repo,
               private: repoVisibility === 'private',
               description: description,
@@ -177,7 +177,7 @@ export function createPublishGithubAction(options: {
       const { data: newRepo } = await repoCreationPromise;
       if (access?.startsWith(`${owner}/`)) {
         const [, team] = access.split('/');
-        await client.teams.addOrUpdateRepoPermissionsInOrg({
+        await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
           org: owner,
           team_slug: team,
           owner,
@@ -186,7 +186,7 @@ export function createPublishGithubAction(options: {
         });
         // No need to add access if it's the person who owns the personal account
       } else if (access && access !== owner) {
-        await client.repos.addCollaborator({
+        await client.rest.repos.addCollaborator({
           owner,
           repo,
           username: access,
@@ -200,7 +200,7 @@ export function createPublishGithubAction(options: {
           username: team_slug,
         } of collaborators) {
           try {
-            await client.teams.addOrUpdateRepoPermissionsInOrg({
+            await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
               org: owner,
               team_slug,
               owner,
@@ -218,7 +218,7 @@ export function createPublishGithubAction(options: {
 
       if (topics) {
         try {
-          await client.repos.replaceAllTopics({
+          await client.rest.repos.replaceAllTopics({
             owner,
             repo,
             names: topics.map(t => t.toLowerCase()),
