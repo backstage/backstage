@@ -1356,16 +1356,16 @@
     util-deprecate "^1.0.2"
     uuid-browser "^3.1.0"
 
-"@storybook/addon-links@^6.4.14":
-  version "6.4.14"
-  resolved "https://registry.npmjs.org/@storybook/addon-links/-/addon-links-6.4.14.tgz#7dedd5502cf1fecdcfc845e59a10769cb32ec175"
-  integrity sha512-Y+5tdmAdkFzk0OC9wJnHdpVfhq3uqqlrAUFE3QYeof4uL6wLNSr2pl0BzCGQtnTfLs0i0bExXaTP5pZhwSnQoA==
+"@storybook/addon-links@^6.4.17":
+  version "6.4.17"
+  resolved "https://registry.npmjs.org/@storybook/addon-links/-/addon-links-6.4.17.tgz#83675642669c239c8d3ddaacd75348366e280426"
+  integrity sha512-ytGEe7sfOW10wwc0NIWSGtNgGM8ql8EOg7ZhrgXiRgQE0vD5NXRJi8FWzBdb06/G3cURYwveKR4Ea9mABZEaUw==
   dependencies:
-    "@storybook/addons" "6.4.14"
-    "@storybook/client-logger" "6.4.14"
-    "@storybook/core-events" "6.4.14"
+    "@storybook/addons" "6.4.17"
+    "@storybook/client-logger" "6.4.17"
+    "@storybook/core-events" "6.4.17"
     "@storybook/csf" "0.0.2--canary.87bc651.0"
-    "@storybook/router" "6.4.14"
+    "@storybook/router" "6.4.17"
     "@types/qs" "^6.9.5"
     core-js "^3.8.2"
     global "^4.4.0"
