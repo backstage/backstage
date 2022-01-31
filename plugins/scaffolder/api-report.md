@@ -166,7 +166,7 @@ export interface RepoUrlPickerUiOptions {
   allowedOwners?: string[];
   // (undocumented)
   requestUserCredentials?: {
-    resultSecretsKey: string;
+    secretsKey: string;
     additionalScopes?: {
       github?: string[];
       gitlab?: string[];
@@ -329,7 +329,7 @@ export const TextValuePicker: ({
 }: FieldProps<string>) => JSX.Element;
 
 // @public
-export const useSecretsContext: () => {
+export const useTemplateSecrets: () => {
   setSecret: (input: Record<string, string>) => void;
 };
 ```

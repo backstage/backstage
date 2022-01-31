@@ -15,7 +15,7 @@
  */
 import React, { useContext } from 'react';
 import {
-  useSecretsContext,
+  useTemplateSecrets,
   SecretsContextProvider,
   SecretsContext,
 } from './SecretsContext';
@@ -25,7 +25,7 @@ describe('SecretsContext', () => {
   it('should allow the setting of secrets in the context', async () => {
     const { result } = renderHook(
       () => ({
-        hook: useSecretsContext(),
+        hook: useTemplateSecrets(),
         context: useContext(SecretsContext),
       }),
       {

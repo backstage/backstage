@@ -322,9 +322,9 @@ spec:
           type: string
           ui:field: RepoUrlPicker
           ui:options:
-            # here's the new option you can pass to the RepoUrlPicker
+            # Here's the option you can pass to the RepoUrlPicker
             requestUserCredentials:
-              resultSecretsKey: USER_OAUTH_TOKEN
+              secretsKey: USER_OAUTH_TOKEN
               additionalScopes:
                 github:
                   - workflow:write

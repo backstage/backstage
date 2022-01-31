@@ -134,7 +134,7 @@ describe('RepoUrlPicker', () => {
                 'ui:field': 'RepoUrlPicker',
                 'ui:options': {
                   requestUserCredentials: {
-                    resultSecretsKey: 'testKey',
+                    secretsKey: 'testKey',
                     additionalScopes: { github: ['workflow:write'] },
                   },
                 },

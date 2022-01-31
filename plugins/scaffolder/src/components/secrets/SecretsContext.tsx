@@ -52,11 +52,11 @@ export const SecretsContextProvider = ({ children }: PropsWithChildren<{}>) => {
  * Hook to access the secrets context.
  * @public
  */
-export const useSecretsContext = () => {
+export const useTemplateSecrets = () => {
   const value = useContext(SecretsContext);
   if (!value) {
     throw new Error(
-      'useSecretsContext must be used within a SecretsContextProvider',
+      'useTemplateSecrets must be used within a SecretsContextProvider',
     );
   }
 

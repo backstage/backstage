@@ -28,13 +28,13 @@ import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
 import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
-import { useSecretsContext } from '../../secrets';
+import { useTemplateSecrets } from '../../secrets';
 
 export interface RepoUrlPickerUiOptions {
   allowedHosts?: string[];
   allowedOwners?: string[];
   requestUserCredentials?: {
-    resultSecretsKey: string;
+    secretsKey: string;
     additionalScopes?: {
       github?: string[];
       gitlab?: string[];
@@ -53,7 +53,7 @@ export const RepoUrlPicker = (
   );
   const integrationApi = useApi(scmIntegrationsApiRef);
   const scmAuthApi = useApi(scmAuthApiRef);
-  const { setSecret } = useSecretsContext();
+  const { setSecret } = useTemplateSecrets();
   const allowedHosts = useMemo(
     () => uiSchema?.['ui:options']?.allowedHosts ?? [],
     [uiSchema],
@@ -104,8 +104,8 @@ export const RepoUrlPicker = (
       });
 
       // set the secret using the key provided in the the ui:options for use
-      // in the templating the manifest with ${{ secrets[resultSecretsKey] }}
-      setSecret({ [requestUserCredentials.resultSecretsKey]: token });
+      // in the templating the manifest with ${{ secrets[secretsKey] }}
+      setSecret({ [requestUserCredentials.secretsKey]: token });
     },
     500,
     [state, uiSchema],
