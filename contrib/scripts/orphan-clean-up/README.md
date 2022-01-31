@@ -2,7 +2,9 @@
 
 ## Overview
 
-The Orphan Clean Up script is a basic PowerShell script to delete orphaned entities in the catalog.
+The Orphan Clean Up script is a basic PowerShell script to delete orphaned entities in the catalog. This script also assumes that you do not have authentication setup for your Backstage API endpoints.
+
+_Warning:_ There is a risk of entities being orphaned (and being deleted by this script) in case of the location having problems and returning a 404 status code. This might lead to accidental deletion of entities until the processing loop has recreated the entity.
 
 ## Requirements
 
