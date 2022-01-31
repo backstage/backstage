@@ -92,11 +92,17 @@ export const RepoUrlPicker = (
         return;
       }
 
+      const [host, owner, repoName] = [
+        state.host,
+        state.owner,
+        state.repoName,
+      ].map(encodeURIComponent);
+
       // user has requested that we use the users credentials
       // so lets grab them using the scmAuthApi and pass through
       // any additional scopes from the ui:options
       const { token } = await scmAuthApi.getCredentials({
-        url: `https://${state.host}/${state.owner}/${state.repoName}`,
+        url: `https://${host}/${owner}/${repoName}`,
         additionalScope: {
           repoWrite: true,
           customScopes: requestUserCredentials.additionalScopes,

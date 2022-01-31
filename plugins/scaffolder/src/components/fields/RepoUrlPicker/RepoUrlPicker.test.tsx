@@ -23,12 +23,11 @@ import {
   scmAuthApiRef,
   ScmAuthApi,
 } from '@backstage/integration-react';
-import { scaffolderApiRef } from '../../../api';
+import { scaffolderApiRef, ScaffolderApi } from '../../../api';
 import {
   SecretsContextProvider,
   SecretsContext,
 } from '../../secrets/SecretsContext';
-import { ScaffolderApi } from '../../..';
 import { act, fireEvent } from '@testing-library/react';
 
 describe('RepoUrlPicker', () => {
