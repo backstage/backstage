@@ -25,6 +25,9 @@ const { promisify } = require('util');
 
 const execFile = promisify(execFileCb);
 
+// All of these are considered to be main-line release branches
+const MAIN_BRANCHES = ['master', 'origin/master', 'changeset-release/master'];
+
 const DEPENDENCY_TYPES = [
   'dependencies',
   'devDependencies',
@@ -147,7 +150,7 @@ async function updateBackstageReleaseVersion() {
   const { version: currentVersion } = package;
 
   let nextVersion;
-  if (branchName === 'master') {
+  if (MAIN_BRANCHES.includes(branchName)) {
     if (preMode === 'pre') {
       if (semver.prerelease(currentVersion)) {
         nextVersion = semver.inc(currentVersion, 'pre', preTag);
