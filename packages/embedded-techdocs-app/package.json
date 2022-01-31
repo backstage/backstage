@@ -28,7 +28,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.13.0",
     "@testing-library/jest-dom": "^5.10.1",
-    "@testing-library/react": "^11.2.5",
+    "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.1.8",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.14.32",

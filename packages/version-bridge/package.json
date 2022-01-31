@@ -35,7 +35,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.13.0",
     "@testing-library/jest-dom": "^5.10.1",
-    "@testing-library/react": "^11.2.5",
+    "@testing-library/react": "^12.1.2",
     "@testing-library/react-hooks": "^7.0.2"
   },
   "files": [

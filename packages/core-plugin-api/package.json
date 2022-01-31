@@ -47,7 +47,7 @@
     "@backstage/core-app-api": "^0.5.1",
     "@backstage/test-utils": "^0.2.3",
     "@testing-library/jest-dom": "^5.10.1",
-    "@testing-library/react": "^11.2.5",
+    "@testing-library/react": "^12.1.2",
     "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^13.1.8",
     "@types/jest": "^26.0.7",
