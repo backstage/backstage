@@ -246,7 +246,9 @@ export const ScaffolderFieldExtensions: React_2.ComponentType;
 export const ScaffolderPage: ({
   TemplateCardComponent,
   groups,
+  loadingHoldingText,
 }: {
+  loadingHoldingText?: string | undefined;
   TemplateCardComponent?:
     | ComponentType<{
         template: TemplateEntityV1beta2;

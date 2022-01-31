@@ -218,7 +218,11 @@ export const TaskStatusStepper = memo(
 const hasLinks = ({ entityRef, remoteUrl, links = [] }: TaskOutput): boolean =>
   !!(entityRef || remoteUrl || links.length > 0);
 
-export const TaskPage = () => {
+type TaskPageProps = {
+  loadingHoldingText?: string;
+};
+
+export const TaskPage = ({ loadingHoldingText }: TaskPageProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const rootLink = useRouteRef(rootRouteRef);
@@ -256,7 +260,7 @@ export const TaskPage = () => {
 
   const logAsString = useMemo(() => {
     if (!currentStepId) {
-      return 'Loading...';
+      return loadingHoldingText ? loadingHoldingText : 'Loading...';
     }
     const log = taskStream.stepLogs[currentStepId];
 
@@ -264,7 +268,7 @@ export const TaskPage = () => {
       return 'Waiting for logs...';
     }
     return log.join('\n');
-  }, [taskStream.stepLogs, currentStepId]);
+  }, [taskStream.stepLogs, currentStepId, loadingHoldingText]);
 
   const taskNotFound =
     taskStream.completed === true &&
