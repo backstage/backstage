@@ -203,13 +203,10 @@ export class GoogleAnalytics implements AnalyticsApi {
    * - With value `User:default/name`, userId becomes `sha256(User:default/name)`
    *
    * If an integrator wishes to use an alternative hashing mechanism or an
-   * entirely different value, they may do so by passing a dummy Identity API
-   * implementation which returns a `userEntityRef` whose kind is the literal
-   * string `PrivateUser`, whose namespace is anything (it will be ignored) and
-   * whose name is the pre-hashed ID value.
-   *
-   * - With value `PrivateUser:default/a0n3b4n3`, userId becomes `a0n3b4n3`
-   * - With `PrivateUser:xyz/a0n3b4n3`, userId is `a0n3b4n3`
+   * entirely different value, they may do so by passing a `userIdTransform`
+   * function alongside the `identityApi` to `GoogleAnalytics.fromConfig()`.
+   * This function receives the `userEntityRef` as an argument and should
+   * resolve to a hashed version of whatever identifier they choose.
    *
    * Note: this feature requires that an integrator has set up a Google
    * Analytics User ID view in the property used to track Backstage.
@@ -228,7 +225,8 @@ export class GoogleAnalytics implements AnalyticsApi {
   }
 
   /**
-   * Returns a PII-free user ID for use in Google Analytics.
+   * Returns a PII-free (according to Google's terms of service) user ID for
+   * use in Google Analytics.
    */
   private getPrivateUserId(userEntityRef: string): Promise<string> {
     // Allow integrators to provide their own hashing transformer.
