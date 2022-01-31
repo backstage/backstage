@@ -45,7 +45,7 @@ export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
 
   const { loading, value, error } = useAsync(
     () => airbrakeApi.fetchGroups(projectId),
-    [projectId],
+    [airbrakeApi, projectId],
   );
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
           <EmptyState
             missing="info"
             title="No information to display"
-            description={`There is no Sentry project with id '${projectId}'.`}
+            description={`There is no Airbrake project with id '${projectId}' or there was an issue communicating with Airbrake.`}
           />
         )}
       </InfoCard>

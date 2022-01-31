@@ -15,31 +15,33 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
+import { TestApiProvider } from '@backstage/test-utils';
 import { airbrakePlugin, EntityAirbrakeContent } from '../src';
-import { airbrakeApiRef, MockAirbrakeApi } from '../src/api';
+import {
+  airbrakeApiRef,
+  MockAirbrakeApi,
+  ProductionAirbrakeApi,
+} from '../src/api';
 import { ApiBar } from './components/ApiBar';
 import { Content, Header, Page } from '@backstage/core-components';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { createEntity } from '../src/api/mock/mock-entity';
 import CloudOffIcon from '@material-ui/icons/CloudOff';
 import CloudIcon from '@material-ui/icons/Cloud';
-import { ContextProvider, Context } from './components/ContextProvider';
+import { Context, ContextProvider } from './components/ContextProvider';
 
 createDevApp()
   .registerPlugin(airbrakePlugin)
-  .registerApi({
-    api: airbrakeApiRef,
-    deps: {},
-    factory: () => new MockAirbrakeApi(),
-  })
   .addPage({
     element: (
       <Page themeId="tool">
         <Header title="Airbrake demo application" subtitle="Mock API" />
         <Content>
-          <EntityProvider entity={createEntity(1234)}>
-            <EntityAirbrakeContent />
-          </EntityProvider>
+          <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi()]]}>
+            <EntityProvider entity={createEntity(1234)}>
+              <EntityAirbrakeContent />
+            </EntityProvider>
+          </TestApiProvider>
         </Content>
       </Page>
     ),
@@ -57,9 +59,15 @@ createDevApp()
           <Content>
             <Context.Consumer>
               {value => (
-                <EntityProvider entity={createEntity(value.projectId)}>
-                  <EntityAirbrakeContent />
-                </EntityProvider>
+                <TestApiProvider
+                  apis={[
+                    [airbrakeApiRef, new ProductionAirbrakeApi(value.apiKey)],
+                  ]}
+                >
+                  <EntityProvider entity={createEntity(value.projectId)}>
+                    <EntityAirbrakeContent />
+                  </EntityProvider>
+                </TestApiProvider>
               )}
             </Context.Consumer>
           </Content>

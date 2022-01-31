@@ -23,7 +23,7 @@ import React, {
 interface ContextInterface {
   projectId?: number;
   setProjectId?: Dispatch<SetStateAction<number | undefined>>;
-  apiKey?: String;
+  apiKey?: string;
   setApiKey?: Dispatch<SetStateAction<string>>;
 }
 

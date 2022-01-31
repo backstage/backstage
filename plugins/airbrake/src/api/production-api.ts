@@ -16,20 +16,17 @@
 
 import { Groups } from './airbrake-groups';
 import { AirbrakeApi } from './airbrake-api';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 export class ProductionAirbrakeApi implements AirbrakeApi {
-  constructor(private readonly discoveryApi: DiscoveryApi) {}
+  constructor(private readonly apiKey?: string) {}
 
-  async fetchGroups(project: string): Promise<Groups> {
-    const apiUrl = `${await this.discoveryApi.getBaseUrl(
-      'proxy',
-    )}/airbrake/api`;
+  async fetchGroups(projectId: string): Promise<Groups> {
+    const apiUrl = `https://api.airbrake.io/api/v4/projects/${projectId}/groups?key=${this.apiKey}`;
 
-    const response = await fetch(`${apiUrl}/v4/projects/${project}/groups`);
+    const response = await fetch(apiUrl);
 
     if (response.status >= 400 && response.status < 600) {
-      throw new Error('Failed fetching Airbrake issues');
+      throw new Error('Failed fetching Airbrake groups');
     }
 
     return (await response.json()) as Groups;

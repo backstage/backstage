@@ -66,7 +66,7 @@ export const ApiBar = () => {
             <TextField
               label="Project ID"
               variant="outlined"
-              value={value.projectId}
+              defaultValue={value.projectId}
               onChange={e =>
                 value.setProjectId?.(parseInt(e.target.value, 10) || undefined)
               }
@@ -74,7 +74,7 @@ export const ApiBar = () => {
             <TextField
               label="API Key"
               variant="outlined"
-              value={value.apiKey}
+              defaultValue={value.apiKey}
               onChange={e => value.setApiKey?.(e.target.value)}
             />
           </MuiThemeProvider>

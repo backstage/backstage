@@ -22,5 +22,5 @@ export const airbrakeApiRef = createApiRef<AirbrakeApi>({
 });
 
 export interface AirbrakeApi {
-  fetchGroups(project: string): Promise<Groups>;
+  fetchGroups(projectId: string): Promise<Groups>;
 }
