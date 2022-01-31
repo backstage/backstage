@@ -45,13 +45,14 @@ If a maintainer is no longer interested or cannot perform the maintainer duties 
 - Provide neutral mediation for any disputes that arise as part of the project.
 
 ## Backstage Sponsor Membership
+
 The Sponsors group comprises at most 5 people. To be eligible for membership in the group, you must:
+
 - Be responsible for a production Backstage deployment of non-trivial size
 - Be willing and able to attend regularly-scheduled Sponsor meetings
 - Abide by Backstage’s Code of Conduct.
 
 Candidates for membership will be nominated by current Sponsor members or by Backstage maintainers. If there are more nominations than Sponsor seats remaining, the same group shall vote on the candidates, and the candidates with the most votes will become Sponsors. Any ties will be broken by current Backstage sponsors.
-
 
 # Reviewers
 
