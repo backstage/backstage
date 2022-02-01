@@ -1,5 +1,11 @@
 # @techdocs/cli
 
+## 0.8.12-next.0
+
+### Patch Changes
+
+- 14472509a3: Use a local file dependency for embedded-techdocs-app, to ensure that it's always pulled out of the workspace
+
 ## 0.8.11
 
 ### Patch Changes

@@ -81,7 +81,7 @@
     }
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.0",
+    "@backstage/cli": "^0.13.1-next.0",
     "@backstage/test-utils": "^0.2.3",
     "@types/archiver": "^5.1.0",
     "@types/compression": "^1.7.0",
