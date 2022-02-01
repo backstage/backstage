@@ -1,0 +1,208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/CacheControl/json-rules-engine/rule-schema.json",
+  "type": "object",
+  "title": "Fact Checks",
+  "description": "Checks contain a set of conditions and a single event. When the engine is run, each check condition is evaluated and results returned",
+  "required": ["conditions"],
+  "properties": {
+    "conditions": {
+      "$ref": "#/definitions/conditions"
+    },
+    "priority": {
+      "$id": "#/properties/priority",
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ],
+      "title": "Priority",
+      "description": "Dictates when check should be run, relative to other check. Higher priority checks are run before lower priority checks. Checks with the same priority are run in parallel. Priority must be a positive, non-zero integer.",
+      "default": 1,
+      "examples": [1]
+    }
+  },
+  "definitions": {
+    "conditions": {
+      "type": "object",
+      "title": "Conditions",
+      "description": "Check conditions are a combination of facts, operators, and values that determine whether the check is a success or a failure. The simplest form of a condition consists of a fact, an operator, and a value. When the engine runs, the operator is used to compare the fact against the value. Each check's conditions must have either an all or an any operator at its root, containing an array of conditions. The all operator specifies that all conditions contained within must be truthy for the check to be considered a success. The any operator only requires one condition to be truthy for the check to succeed.",
+      "default": {},
+      "examples": [
+        {
+          "all": [
+            {
+              "value": true,
+              "fact": "displayMessage",
+              "operator": "equal"
+            }
+          ]
+        }
+      ],
+      "oneOf": [
+        {
+          "required": ["any"]
+        },
+        {
+          "required": ["all"]
+        }
+      ],
+      "properties": {
+        "any": {
+          "$ref": "#/definitions/conditionArray"
+        },
+        "all": {
+          "$ref": "#/definitions/conditionArray"
+        }
+      }
+    },
+    "conditionArray": {
+      "type": "array",
+      "title": "Condition Array",
+      "description": "An array of conditions with a possible recursive inclusion of another condition array.",
+      "default": [],
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/conditions"
+          },
+          {
+            "$ref": "#/definitions/condition"
+          }
+        ]
+      }
+    },
+    "condition": {
+      "type": "object",
+      "title": "Condition",
+      "description": "Check conditions are a combination of facts, operators, and values that determine whether the check is a success or a failure. The simplest form of a condition consists of a fact, an operator, and a value. When the engine runs, the operator is used to compare the fact against the value.",
+      "default": {
+        "fact": "my-fact",
+        "operator": "lessThanInclusive",
+        "value": 1
+      },
+      "examples": [
+        {
+          "fact": "gameDuration",
+          "operator": "equal",
+          "value": 40.0
+        },
+        {
+          "value": 5.0,
+          "fact": "personalFoulCount",
+          "operator": "greaterThanInclusive"
+        },
+        {
+          "fact": "product-price",
+          "operator": "greaterThan",
+          "path": "$.price",
+          "value": 100.0,
+          "params": {
+            "productId": "widget"
+          }
+        }
+      ],
+      "required": ["fact", "operator", "value"],
+      "properties": {
+        "fact": {
+          "type": "string",
+          "title": "Fact",
+          "description": "Facts are methods or constants registered with the engine prior to runtime and referenced within check conditions. Each fact method should be a pure function that may return a either computed value, or promise that resolves to a computed value. As check conditions are evaluated during runtime, they retrieve fact values dynamically and use the condition operator to compare the fact result with the condition value.",
+          "default": "",
+          "examples": ["gameDuration"]
+        },
+        "operator": {
+          "type": "string",
+          "anyOf": [
+            {
+              "const": "equal",
+              "title": "fact must equal value"
+            },
+            {
+              "const": "notEqual",
+              "title": "fact must not equal value"
+            },
+            {
+              "const": "lessThan",
+              "title": "fact must be less than value"
+            },
+            {
+              "const": "lessThanInclusive",
+              "title": "fact must be less than or equal to value"
+            },
+            {
+              "const": "greaterThan",
+              "title": "fact must be greater than value"
+            },
+            {
+              "const": "greaterThanInclusive",
+              "title": "fact must be greater than or equal to value"
+            },
+            {
+              "const": "in",
+              "title": "fact must be included in value (an array)"
+            },
+            {
+              "const": "notIn",
+              "title": "fact must not be included in value (an array)"
+            },
+            {
+              "const": "contains",
+              "title": "fact (an array) must include value"
+            },
+            {
+              "const": "doesNotContain",
+              "title": "fact (an array) must not include value"
+            }
+          ],
+          "title": "Operator",
+          "description": "The operator compares the value returned by the fact to what is stored in the value property. If the result is truthy, the condition passes.",
+          "default": "",
+          "examples": ["equal"]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object"
+            },
+            {
+              "type": "array"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "title": "Value",
+          "description": "The value the fact should be compared to.",
+          "default": 0,
+          "examples": [40]
+        },
+        "params": {
+          "type": "object",
+          "title": "Event Params",
+          "description": "Optional helper params to make available to the event processor.",
+          "default": {},
+          "examples": [
+            {
+              "customProperty": "customValue"
+            }
+          ]
+        },
+        "path": {
+          "type": "string",
+          "title": "Path",
+          "description": "For more complex data structures, writing a separate fact handler for each object property quickly becomes verbose and unwieldy. To address this, a path property may be provided to traverse fact data using json-path syntax. Json-path support is provided by jsonpath-plus",
+          "default": "",
+          "examples": ["$.price"]
+        }
+      }
+    }
+  }
+}

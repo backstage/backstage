@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: example-templates-remote
+  description: A collection of remotely available Backstage example templates
+spec:
+  type: url
+  targets:
+    - https://github.com/backstage/software-templates/blob/main/scaffolder-templates/create-react-app/template.yaml
+    - https://github.com/backstage/software-templates/blob/main/scaffolder-templates/docs-template/template.yaml
+    - https://github.com/backstage/software-templates/blob/main/scaffolder-templates/pull-request/template.yaml
+    - https://github.com/backstage/software-templates/blob/main/scaffolder-templates/react-ssr-template/template.yaml
+    - https://github.com/backstage/software-templates/blob/main/scaffolder-templates/springboot-grpc-template/template.yaml
+    - https://github.com/backstage/software-templates/blob/main/scaffolder-templates/v1beta2-demo/template.yaml

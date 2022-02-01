@@ -1,0 +1,317 @@
+/*
+ * Copyright 2020 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import express from 'express';
+import crypto from 'crypto';
+import { URL } from 'url';
+import {
+  ENTITY_DEFAULT_NAMESPACE,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import {
+  AuthProviderRouteHandlers,
+  AuthProviderConfig,
+  BackstageIdentityResponse,
+  BackstageSignInResult,
+} from '../../providers/types';
+import {
+  AuthenticationError,
+  InputError,
+  isError,
+  NotAllowedError,
+} from '@backstage/errors';
+import { TokenIssuer } from '../../identity/types';
+import { getCookieConfig, readState, verifyNonce } from './helpers';
+import { postMessageResponse, ensuresXRequestedWith } from '../flow';
+import {
+  OAuthHandlers,
+  OAuthStartRequest,
+  OAuthRefreshRequest,
+  OAuthState,
+} from './types';
+import { prepareBackstageIdentityResponse } from '../../providers/prepareBackstageIdentityResponse';
+
+export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
+export const TEN_MINUTES_MS = 600 * 1000;
+
+export type Options = {
+  providerId: string;
+  secure: boolean;
+  disableRefresh?: boolean;
+  persistScopes?: boolean;
+  cookieDomain: string;
+  cookiePath: string;
+  appOrigin: string;
+  tokenIssuer: TokenIssuer;
+  isOriginAllowed: (origin: string) => boolean;
+  callbackUrl?: string;
+};
+export class OAuthAdapter implements AuthProviderRouteHandlers {
+  static fromConfig(
+    config: AuthProviderConfig,
+    handlers: OAuthHandlers,
+    options: Pick<
+      Options,
+      | 'providerId'
+      | 'persistScopes'
+      | 'disableRefresh'
+      | 'tokenIssuer'
+      | 'callbackUrl'
+    >,
+  ): OAuthAdapter {
+    const { origin: appOrigin } = new URL(config.appUrl);
+    const authUrl = new URL(options.callbackUrl ?? config.baseUrl);
+    const { cookieDomain, cookiePath, secure } = getCookieConfig(
+      authUrl,
+      options.providerId,
+    );
+
+    return new OAuthAdapter(handlers, {
+      ...options,
+      appOrigin,
+      cookieDomain,
+      cookiePath,
+      secure,
+      isOriginAllowed: config.isOriginAllowed,
+    });
+  }
+
+  constructor(
+    private readonly handlers: OAuthHandlers,
+    private readonly options: Options,
+  ) {}
+
+  async start(req: express.Request, res: express.Response): Promise<void> {
+    // retrieve scopes from request
+    const scope = req.query.scope?.toString() ?? '';
+    const env = req.query.env?.toString();
+    const origin = req.query.origin?.toString();
+
+    if (!env) {
+      throw new InputError('No env provided in request query parameters');
+    }
+
+    if (this.options.persistScopes) {
+      this.setScopesCookie(res, scope);
+    }
+
+    const nonce = crypto.randomBytes(16).toString('base64');
+    // set a nonce cookie before redirecting to oauth provider
+    this.setNonceCookie(res, nonce);
+
+    const state = { nonce, env, origin };
+    const forwardReq = Object.assign(req, { scope, state });
+
+    const { url, status } = await this.handlers.start(
+      forwardReq as OAuthStartRequest,
+    );
+
+    res.statusCode = status || 302;
+    res.setHeader('Location', url);
+    res.setHeader('Content-Length', '0');
+    res.end();
+  }
+
+  async frameHandler(
+    req: express.Request,
+    res: express.Response,
+  ): Promise<void> {
+    let appOrigin = this.options.appOrigin;
+
+    try {
+      const state: OAuthState = readState(req.query.state?.toString() ?? '');
+
+      if (state.origin) {
+        try {
+          appOrigin = new URL(state.origin).origin;
+        } catch {
+          throw new NotAllowedError('App origin is invalid, failed to parse');
+        }
+        if (!this.options.isOriginAllowed(appOrigin)) {
+          throw new NotAllowedError(`Origin '${appOrigin}' is not allowed`);
+        }
+      }
+
+      // verify nonce cookie and state cookie on callback
+      verifyNonce(req, this.options.providerId);
+
+      const { response, refreshToken } = await this.handlers.handler(req);
+
+      if (this.options.persistScopes) {
+        const grantedScopes = this.getScopesFromCookie(
+          req,
+          this.options.providerId,
+        );
+        response.providerInfo.scope = grantedScopes;
+      }
+
+      if (refreshToken && !this.options.disableRefresh) {
+        // set new refresh token
+        this.setRefreshTokenCookie(res, refreshToken);
+      }
+
+      const identity = await this.populateIdentity(response.backstageIdentity);
+
+      // post message back to popup if successful
+      return postMessageResponse(res, appOrigin, {
+        type: 'authorization_response',
+        response: { ...response, backstageIdentity: identity },
+      });
+    } catch (error) {
+      const { name, message } = isError(error)
+        ? error
+        : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
+      // post error message back to popup if failure
+      return postMessageResponse(res, appOrigin, {
+        type: 'authorization_response',
+        error: { name, message },
+      });
+    }
+  }
+
+  async logout(req: express.Request, res: express.Response): Promise<void> {
+    if (!ensuresXRequestedWith(req)) {
+      throw new AuthenticationError('Invalid X-Requested-With header');
+    }
+
+    // remove refresh token cookie if it is set
+    this.removeRefreshTokenCookie(res);
+
+    res.status(200).end();
+  }
+
+  async refresh(req: express.Request, res: express.Response): Promise<void> {
+    if (!ensuresXRequestedWith(req)) {
+      throw new AuthenticationError('Invalid X-Requested-With header');
+    }
+
+    if (!this.handlers.refresh || this.options.disableRefresh) {
+      throw new InputError(
+        `Refresh token is not supported for provider ${this.options.providerId}`,
+      );
+    }
+
+    try {
+      const refreshToken =
+        req.cookies[`${this.options.providerId}-refresh-token`];
+
+      // throw error if refresh token is missing in the request
+      if (!refreshToken) {
+        throw new InputError('Missing session cookie');
+      }
+
+      const scope = req.query.scope?.toString() ?? '';
+
+      const forwardReq = Object.assign(req, { scope, refreshToken });
+
+      // get new access_token
+      const { response, refreshToken: newRefreshToken } =
+        await this.handlers.refresh(forwardReq as OAuthRefreshRequest);
+
+      const backstageIdentity = await this.populateIdentity(
+        response.backstageIdentity,
+      );
+
+      if (newRefreshToken && newRefreshToken !== refreshToken) {
+        this.setRefreshTokenCookie(res, newRefreshToken);
+      }
+
+      res.status(200).json({ ...response, backstageIdentity });
+    } catch (error) {
+      throw new AuthenticationError('Refresh failed', error);
+    }
+  }
+
+  /**
+   * If the response from the OAuth provider includes a Backstage identity, we
+   * make sure it's populated with all the information we can derive from the user ID.
+   */
+  private async populateIdentity(
+    identity?: BackstageSignInResult,
+  ): Promise<BackstageIdentityResponse | undefined> {
+    if (!identity) {
+      return undefined;
+    }
+
+    if (identity.token) {
+      return prepareBackstageIdentityResponse(identity);
+    }
+
+    const userEntityRef = stringifyEntityRef(
+      parseEntityRef(identity.id, {
+        defaultKind: 'user',
+        defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+      }),
+    );
+    const token = await this.options.tokenIssuer.issueToken({
+      claims: { sub: userEntityRef },
+    });
+
+    return prepareBackstageIdentityResponse({ ...identity, token });
+  }
+
+  private setNonceCookie = (res: express.Response, nonce: string) => {
+    res.cookie(`${this.options.providerId}-nonce`, nonce, {
+      maxAge: TEN_MINUTES_MS,
+      secure: this.options.secure,
+      sameSite: 'lax',
+      domain: this.options.cookieDomain,
+      path: `${this.options.cookiePath}/handler`,
+      httpOnly: true,
+    });
+  };
+
+  private setScopesCookie = (res: express.Response, scope: string) => {
+    res.cookie(`${this.options.providerId}-scope`, scope, {
+      maxAge: TEN_MINUTES_MS,
+      secure: this.options.secure,
+      sameSite: 'lax',
+      domain: this.options.cookieDomain,
+      path: `${this.options.cookiePath}/handler`,
+      httpOnly: true,
+    });
+  };
+
+  private getScopesFromCookie = (req: express.Request, providerId: string) => {
+    return req.cookies[`${providerId}-scope`];
+  };
+
+  private setRefreshTokenCookie = (
+    res: express.Response,
+    refreshToken: string,
+  ) => {
+    res.cookie(`${this.options.providerId}-refresh-token`, refreshToken, {
+      maxAge: THOUSAND_DAYS_MS,
+      secure: this.options.secure,
+      sameSite: 'lax',
+      domain: this.options.cookieDomain,
+      path: this.options.cookiePath,
+      httpOnly: true,
+    });
+  };
+
+  private removeRefreshTokenCookie = (res: express.Response) => {
+    res.cookie(`${this.options.providerId}-refresh-token`, '', {
+      maxAge: 0,
+      secure: this.options.secure,
+      sameSite: 'lax',
+      domain: this.options.cookieDomain,
+      path: this.options.cookiePath,
+      httpOnly: true,
+    });
+  };
+}

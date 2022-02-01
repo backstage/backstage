@@ -1,0 +1,68 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: team-b
+  description: Team B
+spec:
+  type: team
+  profile:
+    displayName: Team B
+    email: team-b@example.com
+    picture: https://avatars.dicebear.com/api/identicon/team-b@example.com.svg?background=%23fff&margin=25
+  parent: backstage
+  children: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: amelia.park
+spec:
+  profile:
+    displayName: Amelia Park
+    email: amelia-park@example.com
+    picture: https://avatars.dicebear.com/api/avataaars/amelia-park@example.com.svg?background=%23fff
+  memberOf: [team-b]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: colette.brock
+spec:
+  profile:
+    displayName: Colette Brock
+    email: colette-brock@example.com
+    picture: https://avatars.dicebear.com/api/avataaars/colette-brock@example.com.svg?background=%23fff
+  memberOf: [team-b]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: jenny.doe
+spec:
+  profile:
+    displayName: Jenny Doe
+    email: jenny-doe@example.com
+    picture: https://avatars.dicebear.com/api/avataaars/jenny-doe@example.com.svg?background=%23fff
+  memberOf: [team-b]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: jonathon.page
+spec:
+  profile:
+    displayName: Jonathon Page
+    email: jonathon-page@example.com
+    picture: https://avatars.dicebear.com/api/avataaars/jonathon-page@example.com.svg?background=%23fff
+  memberOf: [team-b]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: justine.barrow
+spec:
+  profile:
+    displayName: Justine Barrow
+    email: justine-barrow@example.com
+    picture: https://avatars.dicebear.com/api/avataaars/justine-barrow@example.com.svg?background=%23fff
+  memberOf: [team-b]

@@ -1,0 +1,35 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: team-d
+  description: Team D
+spec:
+  type: team
+  profile:
+    displayName: Team D
+    email: team-d@example.com
+    picture: https://avatars.dicebear.com/api/identicon/team-d@example.com.svg?background=%23fff&margin=25
+  parent: boxoffice
+  children: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: eva.macdowell
+spec:
+  profile:
+    displayName: Eva MacDowell
+    email: eva-macdowell@example.com
+    picture: https://avatars.dicebear.com/api/avataaars/eva-macdowell@example.com.svg?background=%23fff
+  memberOf: [team-d]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: lucy.sheehan
+spec:
+  profile:
+    displayName: Lucy Sheehan
+    email: lucy-sheehan@example.com
+    picture: https://avatars.dicebear.com/api/avataaars/lucy-sheehan@example.com.svg?background=%23fff
+  memberOf: [team-d]

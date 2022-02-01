@@ -1,0 +1,13 @@
+---
+title: Google Cloud Build
+author: Trivago
+authorUrl: https://www.trivago.com
+category: CI/CD
+description: Build, test, and deploy on Google's serverless CI/CD platform.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/cloudbuild
+iconUrl: https://avatars2.githubusercontent.com/u/38220399?s=400&v=4
+npmPackageName: '@backstage/plugin-cloudbuild'
+tags:
+  - ci
+  - cd
+  - test

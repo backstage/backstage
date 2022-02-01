@@ -1,0 +1,59 @@
+{
+  "name": "@backstage/plugin-catalog-graphql",
+  "description": "An experimental Backstage catalog GraphQL module",
+  "version": "0.3.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-graphql"
+  },
+  "keywords": [
+    "backstage",
+    "graphql"
+  ],
+  "scripts": {
+    "start": "backstage-cli backend:dev",
+    "build": "backstage-cli backend:build",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
+    "generate:types": "graphql-codegen",
+    "clean": "backstage-cli clean"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "^0.9.10",
+    "@backstage/config": "^0.1.13",
+    "@backstage/types": "^0.1.1",
+    "graphql-modules": "^1.0.0",
+    "apollo-server": "^3.0.0",
+    "graphql": "^16.0.0",
+    "graphql-tag": "^2.11.0",
+    "graphql-type-json": "^0.3.2",
+    "node-fetch": "^2.6.1",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.13.1-next.0",
+    "@backstage/test-utils": "^0.2.3",
+    "@graphql-codegen/cli": "^2.3.1",
+    "@graphql-codegen/typescript": "^2.4.2",
+    "@graphql-codegen/typescript-resolvers": "^2.4.3",
+    "@graphql-codegen/graphql-modules-preset": "^2.3.2",
+    "@graphql-tools/schema": "^8.3.1",
+    "eslint-plugin-graphql": "^4.0.0",
+    "msw": "^0.35.0"
+  },
+  "files": [
+    "dist"
+  ]
+}

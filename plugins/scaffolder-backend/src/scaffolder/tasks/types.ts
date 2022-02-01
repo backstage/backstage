@@ -1,0 +1,195 @@
+/*
+ * Copyright 2021 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { JsonValue, JsonObject } from '@backstage/types';
+import {
+  TaskSpec,
+  TaskStep,
+  TemplateMetadata,
+  TaskSpecV1beta2,
+  TaskSpecV1beta3,
+} from '@backstage/plugin-scaffolder-common';
+
+export type {
+  TaskSpec,
+  TaskStep,
+  TemplateMetadata,
+  TaskSpecV1beta2,
+  TaskSpecV1beta3,
+};
+
+/**
+ * Status
+ *
+ * @public
+ */
+export type Status =
+  | 'open'
+  | 'processing'
+  | 'failed'
+  | 'cancelled'
+  | 'completed';
+
+/**
+ * CompletedTaskState
+ *
+ * @public
+ */
+export type CompletedTaskState = 'failed' | 'completed';
+
+/**
+ * SerializedTask
+ *
+ * @public
+ */
+export type SerializedTask = {
+  id: string;
+  spec: TaskSpec;
+  status: Status;
+  createdAt: string;
+  lastHeartbeatAt?: string;
+  secrets?: TaskSecrets;
+};
+
+/**
+ * TaskEventType
+ *
+ * @public
+ */
+export type TaskEventType = 'completion' | 'log';
+
+/**
+ * SerializedTaskEvent
+ *
+ * @public
+ */
+export type SerializedTaskEvent = {
+  id: number;
+  taskId: string;
+  body: JsonObject;
+  type: TaskEventType;
+  createdAt: string;
+};
+
+/**
+ * TaskSecrets
+ *
+ * @public
+ */
+export type TaskSecrets = Record<string, string> & {
+  /** @deprecated Use `backstageToken` instead */
+  token?: string;
+  backstageToken?: string;
+};
+
+/**
+ * DispatchResult
+ *
+ * @public
+ */
+export type DispatchResult = {
+  taskId: string;
+};
+
+/**
+ * Task
+ *
+ * @public
+ */
+export interface TaskContext {
+  spec: TaskSpec;
+  secrets?: TaskSecrets;
+  done: boolean;
+  emitLog(message: string, metadata?: JsonValue): Promise<void>;
+  complete(result: CompletedTaskState, metadata?: JsonValue): Promise<void>;
+  getWorkspaceName(): Promise<string>;
+}
+
+/**
+ * TaskBroker
+ *
+ * @public
+ */
+export interface TaskBroker {
+  claim(): Promise<TaskContext>;
+  dispatch(spec: TaskSpec, secrets?: TaskSecrets): Promise<DispatchResult>;
+  vacuumTasks(timeoutS: { timeoutS: number }): Promise<void>;
+  observe(
+    options: {
+      taskId: string;
+      after: number | undefined;
+    },
+    callback: (
+      error: Error | undefined,
+      result: { events: SerializedTaskEvent[] },
+    ) => void,
+  ): { unsubscribe: () => void };
+  get(taskId: string): Promise<SerializedTask>;
+}
+
+/**
+ * TaskStoreEmitOptions
+ *
+ * @public
+ */
+export type TaskStoreEmitOptions = {
+  taskId: string;
+  body: JsonObject;
+};
+
+/**
+ * TaskStoreListEventsOptions
+ *
+ * @public
+ */
+export type TaskStoreListEventsOptions = {
+  taskId: string;
+  after?: number | undefined;
+};
+
+/**
+ * TaskStore
+ *
+ * @public
+ */
+export interface TaskStore {
+  createTask(
+    task: TaskSpec,
+    secrets?: TaskSecrets,
+  ): Promise<{ taskId: string }>;
+  getTask(taskId: string): Promise<SerializedTask>;
+  claimTask(): Promise<SerializedTask | undefined>;
+  completeTask(options: {
+    taskId: string;
+    status: Status;
+    eventBody: JsonObject;
+  }): Promise<void>;
+  heartbeatTask(taskId: string): Promise<void>;
+  listStaleTasks(options: { timeoutS: number }): Promise<{
+    tasks: { taskId: string }[];
+  }>;
+
+  emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
+  listEvents({
+    taskId,
+    after,
+  }: TaskStoreListEventsOptions): Promise<{ events: SerializedTaskEvent[] }>;
+}
+
+export type WorkflowResponse = { output: { [key: string]: JsonValue } };
+export interface WorkflowRunner {
+  execute(task: TaskContext): Promise<WorkflowResponse>;
+}

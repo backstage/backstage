@@ -1,0 +1,10 @@
+site_name: 'Example Documentation'
+
+nav:
+  - Home: index.md
+  - Subpage: sub-page.md
+  - 'Code Sample': code/code-sample.md
+  - Extensions: extensions.md
+
+plugins:
+  - techdocs-core

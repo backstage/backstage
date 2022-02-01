@@ -1,0 +1,239 @@
+{
+  "name": "@backstage/cli",
+  "description": "CLI for developing Backstage plugins and apps",
+  "version": "0.13.1-next.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/cli"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "scripts": {
+    "build": "backstage-cli build --outputs cjs",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "clean": "backstage-cli clean",
+    "start": "nodemon --"
+  },
+  "bin": {
+    "backstage-cli": "bin/backstage-cli"
+  },
+  "dependencies": {
+    "@backstage/cli-common": "^0.1.6",
+    "@backstage/config": "^0.1.13",
+    "@backstage/config-loader": "^0.9.3",
+    "@backstage/errors": "^0.2.0",
+    "@backstage/types": "^0.1.1",
+    "@hot-loader/react-dom": "^16.13.0",
+    "@manypkg/get-packages": "^1.1.3",
+    "@octokit/request": "^5.4.12",
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@rollup/plugin-yaml": "^3.1.0",
+    "@spotify/eslint-config-base": "^12.0.0",
+    "@spotify/eslint-config-react": "^12.0.0",
+    "@spotify/eslint-config-typescript": "^12.0.0",
+    "@sucrase/jest-plugin": "^2.1.1",
+    "@sucrase/webpack-loader": "^2.0.0",
+    "@svgr/plugin-jsx": "6.2.x",
+    "@svgr/plugin-svgo": "6.2.x",
+    "@svgr/rollup": "5.5.x",
+    "@svgr/webpack": "5.5.x",
+    "@types/webpack-env": "^1.15.2",
+    "@typescript-eslint/eslint-plugin": "^5.9.0",
+    "@typescript-eslint/parser": "^5.9.0",
+    "@yarnpkg/lockfile": "^1.1.0",
+    "bfj": "^7.0.2",
+    "buffer": "^6.0.3",
+    "chalk": "^4.0.0",
+    "chokidar": "^3.3.1",
+    "commander": "^6.1.0",
+    "css-loader": "^6.5.1",
+    "diff": "^5.0.0",
+    "esbuild": "^0.14.10",
+    "esbuild-loader": "^2.18.0",
+    "eslint": "^8.6.0",
+    "eslint-webpack-plugin": "^2.6.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-formatter-friendly": "^7.0.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jest": "^25.3.4",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-monorepo": "^0.3.2",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "express": "^4.17.1",
+    "fork-ts-checker-webpack-plugin": "^7.0.0-alpha.8",
+    "fs-extra": "9.1.0",
+    "glob": "^7.1.7",
+    "handlebars": "^4.7.3",
+    "html-webpack-plugin": "^5.3.1",
+    "inquirer": "^7.0.4",
+    "jest": "^26.0.1",
+    "jest-css-modules": "^2.1.0",
+    "json-schema": "^0.4.0",
+    "jest-transform-yaml": "^1.0.0",
+    "lodash": "^4.17.21",
+    "minimatch": "3.0.4",
+    "mini-css-extract-plugin": "^2.4.2",
+    "node-libs-browser": "^2.2.1",
+    "ora": "^5.3.0",
+    "postcss": "^8.1.0",
+    "process": "^0.11.10",
+    "react-dev-utils": "^12.0.0-next.60",
+    "react-hot-loader": "^4.13.0",
+    "recursive-readdir": "^2.2.2",
+    "replace-in-file": "^6.0.0",
+    "rollup": "^2.60.2",
+    "rollup-plugin-dts": "^4.0.1",
+    "rollup-plugin-esbuild": "^4.7.2",
+    "rollup-plugin-peer-deps-external": "^2.2.2",
+    "rollup-plugin-postcss": "^4.0.0",
+    "rollup-pluginutils": "^2.8.2",
+    "run-script-webpack-plugin": "^0.0.11",
+    "semver": "^7.3.2",
+    "style-loader": "^3.3.1",
+    "sucrase": "^3.20.2",
+    "tar": "^6.1.2",
+    "terser-webpack-plugin": "^5.1.3",
+    "util": "^0.12.3",
+    "webpack": "^5.66.0",
+    "webpack-dev-server": "^4.7.3",
+    "webpack-node-externals": "^3.0.0",
+    "yaml": "^1.10.0",
+    "yml-loader": "^2.1.0",
+    "yn": "^4.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-common": "^0.10.5",
+    "@backstage/config": "^0.1.13",
+    "@backstage/core-components": "^0.8.7-next.0",
+    "@backstage/core-plugin-api": "^0.6.0",
+    "@backstage/core-app-api": "^0.5.1",
+    "@backstage/dev-utils": "^0.2.20-next.0",
+    "@backstage/test-utils": "^0.2.3",
+    "@backstage/theme": "^0.2.14",
+    "@types/diff": "^5.0.0",
+    "@types/express": "^4.17.6",
+    "@types/fs-extra": "^9.0.1",
+    "@types/http-proxy": "^1.17.4",
+    "@types/inquirer": "^8.1.3",
+    "@types/minimatch": "^3.0.5",
+    "@types/mock-fs": "^4.13.0",
+    "@types/node": "^14.14.32",
+    "@types/recursive-readdir": "^2.2.0",
+    "@types/rollup-plugin-peer-deps-external": "^2.2.0",
+    "@types/rollup-plugin-postcss": "^2.0.0",
+    "@types/tar": "^6.1.1",
+    "@types/terser-webpack-plugin": "^5.0.4",
+    "@types/yarnpkg__lockfile": "^1.1.4",
+    "del": "^6.0.0",
+    "mock-fs": "^5.1.0",
+    "nodemon": "^2.0.2",
+    "ts-node": "^10.0.0"
+  },
+  "peerDependencies": {
+    "@microsoft/api-extractor": "^7.19.2"
+  },
+  "peerDependenciesMeta": {
+    "@microsoft/api-extractor": {
+      "optional": true
+    }
+  },
+  "files": [
+    "asset-types",
+    "templates",
+    "config",
+    "bin",
+    "dist/**/*.js"
+  ],
+  "nodemonConfig": {
+    "watch": "./src",
+    "exec": "bin/backstage-cli",
+    "ext": "ts"
+  },
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/cli",
+    "type": "object",
+    "properties": {
+      "app": {
+        "type": "object",
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "title": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "googleAnalyticsTrackingId": {
+            "type": "string",
+            "visibility": "frontend",
+            "description": "Tracking ID for Google Analytics",
+            "examples": [
+              "UA-000000-0"
+            ]
+          },
+          "datadogRum": {
+            "type": "object",
+            "description": "Datadog RUM events configuration",
+            "properties": {
+              "env": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "Environment for Datadog RUM events"
+              },
+              "clientToken": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "clientToken for Datadog RUM events"
+              },
+              "applicationId": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "applicationId for Datadog RUM events"
+              },
+              "site": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "site for Datadog RUM events"
+              }
+            },
+            "required": [
+              "clientToken",
+              "applicationId"
+            ]
+          },
+          "listen": {
+            "type": "object",
+            "description": "Listening configuration for local development",
+            "properties": {
+              "host": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "The host that the frontend should be bound to. Only used for local development."
+              },
+              "port": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "The port that the frontend should be bound to. Only used for local development."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

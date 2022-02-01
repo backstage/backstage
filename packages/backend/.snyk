@@ -1,0 +1,47 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.22.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-TAR-1579155:
+    - 'sqlite3 > node-gyp > tar':
+        reason: >-
+          The only usage is via node-gyp; there is no unpacking of untrusted tar
+          files
+        expires: 2022-11-11T14:30:05.581Z
+        created: 2021-11-11T14:30:05.582Z
+  SNYK-JS-TAR-1579152:
+    - 'sqlite3 > node-gyp > tar':
+        reason: >-
+          The only usage is via node-gyp; there is no unpacking of untrusted tar
+          files
+        expires: 2022-11-11T14:30:05.581Z
+        created: 2021-11-11T14:30:05.582Z
+  SNYK-JS-TAR-1579147:
+    - 'sqlite3 > node-gyp > tar':
+        reason: >-
+          The only usage is via node-gyp; there is no unpacking of untrusted tar
+          files
+        expires: 2022-11-11T14:30:05.581Z
+        created: 2021-11-11T14:30:05.582Z
+  SNYK-JS-TAR-1536758:
+    - 'sqlite3 > node-gyp > tar':
+        reason: >-
+          The only usage is via node-gyp; there is no unpacking of untrusted tar
+          files
+        expires: 2022-11-11T14:30:05.581Z
+        created: 2021-11-11T14:30:05.582Z
+  SNYK-JS-TAR-1536531:
+    - 'sqlite3 > node-gyp > tar':
+        reason: >-
+          The only usage is via node-gyp; there is no unpacking of untrusted tar
+          files
+        expires: 2022-11-11T14:30:05.581Z
+        created: 2021-11-11T14:30:05.582Z
+  SNYK-JS-TAR-1536528:
+    - 'sqlite3 > node-gyp > tar':
+        reason: >-
+          The only usage is via node-gyp; there is no unpacking of untrusted tar
+          files
+        expires: 2022-11-11T14:30:05.581Z
+        created: 2021-11-11T14:30:05.582Z
+patch: {}

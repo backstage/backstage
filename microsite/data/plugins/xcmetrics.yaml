@@ -1,0 +1,9 @@
+---
+title: XCMetrics
+author: Spotify
+authorUrl: https://github.com/spotify
+category: Monitoring
+description: Discover valuable insights hiding inside Xcode’s build logs.
+documentation: https://xcmetrics.io/
+iconUrl: img/xcmetrics-icon.png
+npmPackageName: '@backstage/plugin-xcmetrics'

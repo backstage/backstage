@@ -1,0 +1,8 @@
+app:
+  # Should be the same as backend.baseUrl when using the `app-backend` plugin
+  baseUrl: http://localhost:7007
+
+backend:
+  baseUrl: http://localhost:7007
+  listen:
+    port: 7007
