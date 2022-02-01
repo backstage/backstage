@@ -34,7 +34,7 @@ type RouterProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
-  TaskPageComponent?: React.ReactElement | undefined;
+  TaskPageComponent?: ComponentType<{}> | undefined;
   groups?: Array<{
     title?: string;
     titleComponent?: React.ReactNode;
@@ -48,7 +48,7 @@ export const Router = ({
   groups,
 }: RouterProps) => {
   const outlet = useOutlet();
-  const TaskPageElement = TaskPageComponent || <TaskPage />;
+  const TaskPageElement = TaskPageComponent || TaskPage;
 
   const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
@@ -85,7 +85,7 @@ export const Router = ({
         path="/templates/:templateName"
         element={<TemplatePage customFieldExtensions={fieldExtensions} />}
       />
-      <Route path="/tasks/:taskId" element={TaskPageElement} />
+      <Route path="/tasks/:taskId" element={<TaskPageElement />} />
       <Route path="/actions" element={<ActionsPage />} />
     </Routes>
   );

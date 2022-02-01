@@ -21,10 +21,8 @@ import { FieldValidation } from '@rjsf/core';
 import { IconButton } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema } from '@backstage/catalog-model';
-import { JSXElementConstructor } from 'react';
 import { Observable } from '@backstage/types';
 import { default as React_2 } from 'react';
-import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -255,9 +253,7 @@ export const ScaffolderPage: ({
         template: TemplateEntityV1beta2;
       }>
     | undefined;
-  TaskPageComponent?:
-    | ReactElement<any, string | JSXElementConstructor<any>>
-    | undefined;
+  TaskPageComponent?: ComponentType<{}> | undefined;
   groups?:
     | {
         title?: string | undefined;
