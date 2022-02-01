@@ -219,10 +219,10 @@ const hasLinks = ({ entityRef, remoteUrl, links = [] }: TaskOutput): boolean =>
   !!(entityRef || remoteUrl || links.length > 0);
 
 type TaskPageProps = {
-  loadingHoldingText?: string;
+  loadingText?: string;
 };
 
-export const TaskPage = ({ loadingHoldingText }: TaskPageProps) => {
+export const TaskPage = ({ loadingText }: TaskPageProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const rootLink = useRouteRef(rootRouteRef);
@@ -260,7 +260,7 @@ export const TaskPage = ({ loadingHoldingText }: TaskPageProps) => {
 
   const logAsString = useMemo(() => {
     if (!currentStepId) {
-      return loadingHoldingText ? loadingHoldingText : 'Loading...';
+      return loadingText ? loadingText : 'Loading...';
     }
     const log = taskStream.stepLogs[currentStepId];
 
@@ -268,7 +268,7 @@ export const TaskPage = ({ loadingHoldingText }: TaskPageProps) => {
       return 'Waiting for logs...';
     }
     return log.join('\n');
-  }, [taskStream.stepLogs, currentStepId, loadingHoldingText]);
+  }, [taskStream.stepLogs, currentStepId, loadingText]);
 
   const taskNotFound =
     taskStream.completed === true &&

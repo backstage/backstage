@@ -21,8 +21,10 @@ import { FieldValidation } from '@rjsf/core';
 import { IconButton } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema } from '@backstage/catalog-model';
+import { JSXElementConstructor } from 'react';
 import { Observable } from '@backstage/types';
 import { default as React_2 } from 'react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -245,14 +247,16 @@ export const ScaffolderFieldExtensions: React_2.ComponentType;
 // @public (undocumented)
 export const ScaffolderPage: ({
   TemplateCardComponent,
+  TaskPageComponent,
   groups,
-  loadingHoldingText,
 }: {
-  loadingHoldingText?: string | undefined;
   TemplateCardComponent?:
     | ComponentType<{
         template: TemplateEntityV1beta2;
       }>
+    | undefined;
+  TaskPageComponent?:
+    | ReactElement<any, string | JSXElementConstructor<any>>
     | undefined;
   groups?:
     | {
@@ -276,6 +280,12 @@ const scaffolderPlugin: BackstagePlugin<
 >;
 export { scaffolderPlugin as plugin };
 export { scaffolderPlugin };
+
+// Warning: (ae-forgotten-export) The symbol "TaskPageProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "TaskPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "TemplateList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

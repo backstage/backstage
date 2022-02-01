@@ -31,10 +31,10 @@ import {
 import { useElementFilter } from '@backstage/core-plugin-api';
 
 type RouterProps = {
-  loadingHoldingText?: string;
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
+  TaskPageComponent?: React.ReactElement | undefined;
   groups?: Array<{
     title?: string;
     titleComponent?: React.ReactNode;
@@ -44,10 +44,11 @@ type RouterProps = {
 
 export const Router = ({
   TemplateCardComponent,
+  TaskPageComponent,
   groups,
-  loadingHoldingText,
 }: RouterProps) => {
   const outlet = useOutlet();
+  const TaskPageElement = TaskPageComponent || <TaskPage />;
 
   const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
@@ -84,10 +85,7 @@ export const Router = ({
         path="/templates/:templateName"
         element={<TemplatePage customFieldExtensions={fieldExtensions} />}
       />
-      <Route
-        path="/tasks/:taskId"
-        element={<TaskPage loadingHoldingText={loadingHoldingText} />}
-      />
+      <Route path="/tasks/:taskId" element={TaskPageElement} />
       <Route path="/actions" element={<ActionsPage />} />
     </Routes>
   );
