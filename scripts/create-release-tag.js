@@ -17,6 +17,7 @@
  */
 
 const { Octokit } = require('@octokit/rest');
+const path = require('path');
 
 const baseOptions = {
   owner: 'backstage',
