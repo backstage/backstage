@@ -15,11 +15,23 @@
  */
 import React from 'react';
 import { EntityAirbrakeContent } from './extensions';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { airbrakeApiRef, MockAirbrakeApi } from './api';
+import { rootRouteRef } from './routes';
 
 describe('The Airbrake entity', () => {
   it('should render the content properly', async () => {
-    const rendered = await renderInTestApp(<EntityAirbrakeContent />);
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi()]]}>
+        <EntityAirbrakeContent />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/': rootRouteRef,
+        },
+        routeEntries: ['/'],
+      },
+    );
     expect(rendered.getByText('ChunkLoadError')).toBeInTheDocument();
   });
 });
