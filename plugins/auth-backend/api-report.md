@@ -592,6 +592,7 @@ export type OAuthState = {
   nonce: string;
   env: string;
   origin?: string;
+  scope?: string;
 };
 
 // @public
