@@ -102,7 +102,7 @@
 
   To make this change to an existing app:
 
-  Add `@backstage/catalog-graph-plugin` as a `dependency` in `packages/app/package.json`
+  Add `@backstage/plugin-catalog-graph` as a `dependency` in `packages/app/package.json`
 
   Apply the following changes to the `packages/app/src/components/catalog/EntityPage.tsx` file:
 
