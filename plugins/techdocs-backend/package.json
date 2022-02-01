@@ -53,7 +53,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.0",
+    "@backstage/cli": "^0.13.1-next.0",
     "@backstage/test-utils": "^0.2.3",
     "@types/dockerode": "^3.3.0",
     "msw": "^0.35.0",

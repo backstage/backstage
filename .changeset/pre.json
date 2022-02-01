@@ -123,5 +123,28 @@
     "@backstage/plugin-user-settings": "0.3.17",
     "@backstage/plugin-xcmetrics": "0.2.16"
   },
-  "changesets": []
+  "changesets": [
+    "analytics-station-eleven",
+    "bright-buttons-rescue",
+    "dependabot-2f11dff",
+    "dependabot-9ec400d",
+    "dependabot-f969614",
+    "early-cooks-brake",
+    "flat-cars-begin",
+    "gold-queens-clap",
+    "grumpy-teachers-remain",
+    "nasty-pets-glow",
+    "neat-mangos-study",
+    "purple-steaks-design",
+    "quick-jars-wait",
+    "sharp-dragons-divide",
+    "sour-chairs-double",
+    "tall-rats-lie",
+    "tame-ads-exercise",
+    "techdocs-lets-call-the-whole-thing-off",
+    "thirty-houses-juggle",
+    "tiny-buses-compete",
+    "witty-lamps-laugh",
+    "witty-lizards-nail"
+  ]
 }

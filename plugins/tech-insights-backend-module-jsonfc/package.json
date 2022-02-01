@@ -43,7 +43,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.0",
+    "@backstage/cli": "^0.13.1-next.0",
     "@types/node-cron": "^3.0.1"
   },
   "files": [
