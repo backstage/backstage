@@ -1,5 +1,30 @@
 # @backstage/integration
 
+## 0.7.2
+
+### Patch Changes
+
+- f45e99e5da: Do not return a token rather than fail where the owner is not in the allowed installation owners
+  for a GitHub app. This allows anonymous access to public files in the organisation.
+- Updated dependencies
+  - @backstage/config@0.1.13
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@0.1.13-next.0
+
+## 0.7.1
+
+### Patch Changes
+
+- 3b4d8caff6: Adds a new GitHub credentials provider (DefaultGithubCredentialsProvider). It handles multiple app configurations. It looks up the app configuration based on the url.
+- 5333451def: Cleaned up API exports
+- Updated dependencies
+  - @backstage/config@0.1.12
+
 ## 0.7.0
 
 ### Minor Changes

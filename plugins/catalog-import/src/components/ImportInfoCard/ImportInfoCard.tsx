@@ -19,14 +19,25 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Chip, Typography } from '@material-ui/core';
 import React from 'react';
 import { catalogImportApiRef } from '../../api';
+import { useCatalogFilename } from '../../hooks';
 
-export const ImportInfoCard = () => {
+type Props = {
+  exampleLocationUrl?: string;
+  exampleRepositoryUrl?: string;
+};
+
+export const ImportInfoCard = ({
+  exampleLocationUrl = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+  exampleRepositoryUrl = 'https://github.com/backstage/backstage',
+}: Props) => {
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
   const catalogImportApi = useApi(catalogImportApiRef);
 
   const integrations = configApi.getConfig('integrations');
   const hasGithubIntegration = integrations.has('github');
+
+  const catalogFilename = useCatalogFilename();
 
   return (
     <InfoCard
@@ -41,10 +52,7 @@ export const ImportInfoCard = () => {
       </Typography>
       <Typography variant="h6">Link to an existing entity file</Typography>
       <Typography variant="subtitle2" color="textSecondary" paragraph>
-        Example:{' '}
-        <code>
-          https://github.com/backstage/backstage/blob/master/catalog-info.yaml
-        </code>
+        Example: <code>{exampleLocationUrl}</code>
       </Typography>
       <Typography variant="body2" paragraph>
         The wizard analyzes the file, previews the entities, and adds them to
@@ -57,17 +65,17 @@ export const ImportInfoCard = () => {
             <Chip label="GitHub only" variant="outlined" size="small" />
           </Typography>
           <Typography variant="subtitle2" color="textSecondary" paragraph>
-            Example: <code>https://github.com/backstage/backstage</code>
+            Example: <code>{exampleRepositoryUrl}</code>
           </Typography>
           <Typography variant="body2" paragraph>
-            The wizard discovers all <code>catalog-info.yaml</code> files in the
+            The wizard discovers all <code>{catalogFilename}</code> files in the
             repository, previews the entities, and adds them to the {appTitle}{' '}
             catalog.
           </Typography>
           {catalogImportApi.preparePullRequest && (
             <Typography variant="body2" paragraph>
               If no entities are found, the wizard will prepare a Pull Request
-              that adds an example <code>catalog-info.yaml</code> and prepares
+              that adds an example <code>{catalogFilename}</code> and prepares
               the {appTitle} catalog to load all entities as soon as the Pull
               Request is merged.
             </Typography>

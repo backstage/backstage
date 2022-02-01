@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -23,6 +26,17 @@ import { Logger } from 'winston';
 import { TokenIssuer } from '../identity/types';
 import { OAuthStartRequest } from '../lib/oauth/types';
 import { CatalogIdentityClient } from '../lib/catalog';
+
+/**
+ * The context that is used for auth processing.
+ *
+ * @public
+ */
+export type AuthResolverContext = {
+  tokenIssuer: TokenIssuer;
+  catalogIdentityClient: CatalogIdentityClient;
+  logger: Logger;
+};
 
 export type AuthProviderConfig = {
   /**
@@ -59,10 +73,10 @@ export type RedirectInfo = {
  *
  * The routes in the auth backend API are tied to these methods like below
  *
- * /auth/[provider]/start -> start
- * /auth/[provider]/handler/frame -> frameHandler
- * /auth/[provider]/refresh -> refresh
- * /auth/[provider]/logout -> logout
+ * `/auth/[provider]/start -> start`
+ * `/auth/[provider]/handler/frame -> frameHandler`
+ * `/auth/[provider]/refresh -> refresh`
+ * `/auth/[provider]/logout -> logout`
  */
 export interface AuthProviderRouteHandlers {
   /**
@@ -73,9 +87,6 @@ export interface AuthProviderRouteHandlers {
    * Response
    * - redirect to the auth provider for the user to sign in or consent.
    * - sets a nonce cookie and also pass the nonce as 'state' query parameter in the redirect request
-   *
-   * @param {express.Request} req
-   * @param {express.Response} res
    */
   start(req: express.Request, res: express.Response): Promise<void>;
 
@@ -88,9 +99,6 @@ export interface AuthProviderRouteHandlers {
    * Response
    * - postMessage to the window with a payload that contains accessToken, expiryInSeconds?, idToken? and scope.
    * - sets a refresh token cookie if the auth provider supports refresh tokens
-   *
-   * @param {express.Request} req
-   * @param {express.Response} res
    */
   frameHandler(req: express.Request, res: express.Response): Promise<void>;
 
@@ -102,9 +110,6 @@ export interface AuthProviderRouteHandlers {
    * - to contain a refresh token cookie and scope (Optional) query parameter.
    * Response
    * - payload with accessToken, expiryInSeconds?, idToken?, scope and user profile information.
-   *
-   * @param {express.Request} req
-   * @param {express.Response} res
    */
   refresh?(req: express.Request, res: express.Response): Promise<void>;
 
@@ -113,9 +118,6 @@ export interface AuthProviderRouteHandlers {
    *
    * Response
    * - removes the refresh token cookie
-   *
-   * @param {express.Request} req
-   * @param {express.Response} res
    */
   logout?(req: express.Request, res: express.Response): Promise<void>;
 }
@@ -125,6 +127,7 @@ export type AuthProviderFactoryOptions = {
   globalConfig: AuthProviderConfig;
   config: Config;
   logger: Logger;
+  tokenManager: TokenManager;
   tokenIssuer: TokenIssuer;
   discovery: PluginEndpointDiscovery;
   catalogApi: CatalogApi;
@@ -271,11 +274,7 @@ export type SignInInfo<TAuthResult> = {
  */
 export type SignInResolver<TAuthResult> = (
   info: SignInInfo<TAuthResult>,
-  context: {
-    tokenIssuer: TokenIssuer;
-    catalogIdentityClient: CatalogIdentityClient;
-    logger: Logger;
-  },
+  context: AuthResolverContext,
 ) => Promise<BackstageSignInResult>;
 
 /**
@@ -301,6 +300,7 @@ export type AuthHandlerResult = { profile: ProfileInfo };
  */
 export type AuthHandler<TAuthResult> = (
   input: TAuthResult,
+  context: AuthResolverContext,
 ) => Promise<AuthHandlerResult>;
 
 export type StateEncoder = (

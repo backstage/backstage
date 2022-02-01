@@ -39,7 +39,7 @@ import {
   routeParentCollector,
   routeObjectCollector,
 } from './collectors';
-import { validateRoutes } from './validation';
+import { validateRouteParameters } from './validation';
 import { RouteResolver } from './RouteResolver';
 import { AnyRouteRef, RouteFunc } from './types';
 import { AppContextProvider } from '../app/AppContext';
@@ -323,7 +323,7 @@ describe('discovery', () => {
       },
     });
 
-    expect(() => validateRoutes(routePaths, routeParents)).toThrow(
+    expect(() => validateRouteParameters(routePaths, routeParents)).toThrow(
       'Parameter :id is duplicated in path /foo/:id/bar/:id',
     );
   });

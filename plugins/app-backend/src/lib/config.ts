@@ -91,7 +91,7 @@ export async function readConfigs(options: ReadOptions): Promise<AppConfig[]> {
 
       const frontendConfigs = await schema.process(
         [{ data: config.get() as JsonObject, context: 'app' }],
-        { visibility: ['frontend'] },
+        { visibility: ['frontend'], withDeprecatedKeys: true },
       );
       appConfigs.push(...frontendConfigs);
     } catch (error) {

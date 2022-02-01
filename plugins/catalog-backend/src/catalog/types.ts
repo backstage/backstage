@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 
 /**
  * A filter expression for entities.
@@ -70,23 +70,12 @@ export type EntitiesRequest = {
   filter?: EntityFilter;
   fields?: (entity: Entity) => Entity;
   pagination?: EntityPagination;
+  authorizationToken?: string;
 };
 
 export type EntitiesResponse = {
   entities: Entity[];
   pageInfo: PageInfo;
-};
-
-/** @deprecated This was part of the legacy catalog engine */
-export type EntityUpsertRequest = {
-  entity: Entity;
-  relations: EntityRelationSpec[];
-};
-
-/** @deprecated This was part of the legacy catalog engine */
-export type EntityUpsertResponse = {
-  entityId: string;
-  entity?: Entity;
 };
 
 /** @public */
@@ -112,31 +101,18 @@ export type EntitiesCatalog = {
    *
    * @param uid - The metadata.uid of the entity
    */
-  removeEntityByUid(uid: string): Promise<void>;
-
-  /**
-   * Writes a number of entities efficiently to storage.
-   *
-   * @deprecated This method was part of the legacy catalog engine an will be removed.
-   *
-   * @param requests - The entities and their relations
-   * @param options.locationId - The location that they all belong to (default none)
-   * @param options.dryRun - Whether to throw away the results (default false)
-   * @param options.outputEntities - Whether to return the resulting entities (default false)
-   */
-  batchAddOrUpdateEntities?(
-    requests: EntityUpsertRequest[],
-    options?: {
-      locationId?: string;
-      dryRun?: boolean;
-      outputEntities?: boolean;
-    },
-  ): Promise<EntityUpsertResponse[]>;
+  removeEntityByUid(
+    uid: string,
+    options?: { authorizationToken?: string },
+  ): Promise<void>;
 
   /**
    * Returns the full ancestry tree upward along reference edges.
    *
    * @param entityRef - An entity reference to the root of the tree
    */
-  entityAncestry(entityRef: string): Promise<EntityAncestryResponse>;
+  entityAncestry(
+    entityRef: string,
+    options?: { authorizationToken?: string },
+  ): Promise<EntityAncestryResponse>;
 };

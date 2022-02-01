@@ -30,6 +30,7 @@ nav:
   - Local Development:
       - CLI:
           - Overview: 'local-dev/cli-overview.md'
+          - Build System: 'local-dev/cli-build-system.md'
           - Commands: 'local-dev/cli-commands.md'
       - Linking in Local Packages: 'local-dev/linking-local-packages.md'
   - Core Features:
@@ -126,7 +127,6 @@ nav:
       - Testing:
           - Testing with Jest: 'plugins/testing.md'
       - Publishing:
-          - Publishing: 'plugins/publishing.md'
           - Publish private: 'plugins/publish-private.md'
           - Add to Marketplace: 'plugins/add-to-marketplace.md'
           - Observability: 'plugins/observability.md'
@@ -145,6 +145,7 @@ nav:
           - Google: 'auth/google/provider.md'
           - Okta: 'auth/okta/provider.md'
           - OneLogin: 'auth/onelogin/provider.md'
+          - OAuth2Proxy: 'auth/oauth2-proxy/provider.md'
           - Bitbucket: 'auth/bitbucket/provider.md'
       - Adding authentication providers: 'auth/add-auth-provider.md'
       - Using authentication and identity: 'auth/using-auth.md'

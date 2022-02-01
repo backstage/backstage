@@ -56,7 +56,7 @@ export class KubernetesBackendClient implements KubernetesApi {
     requestBody: KubernetesRequestBody,
   ): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
-    const idToken = await this.identityApi.getIdToken();
+    const { token: idToken } = await this.identityApi.getCredentials();
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -79,7 +79,7 @@ export class KubernetesBackendClient implements KubernetesApi {
   }
 
   async getClusters(): Promise<{ name: string; authProvider: string }[]> {
-    const idToken = await this.identityApi.getIdToken();
+    const { token: idToken } = await this.identityApi.getCredentials();
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}/clusters`;
 
     const response = await fetch(url, {

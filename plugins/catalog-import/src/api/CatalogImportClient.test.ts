@@ -67,21 +67,12 @@ describe('CatalogImportClient', () => {
     getCredentials: jest.fn().mockResolvedValue({ token: 'token' }),
   };
   const identityApi = {
-    getUserId: () => {
-      return 'user';
-    },
-    getProfile: () => {
-      return {};
-    },
-    getIdToken: () => {
-      return Promise.resolve('token');
-    },
     signOut: () => {
       return Promise.resolve();
     },
     getProfileInfo: jest.fn(),
     getBackstageIdentity: jest.fn(),
-    getCredentials: jest.fn(),
+    getCredentials: jest.fn().mockResolvedValue({ token: 'token' }),
   };
 
   const scmIntegrationsApi = ScmIntegrations.fromConfig(
@@ -405,6 +396,84 @@ describe('CatalogImportClient', () => {
         ],
       });
     });
+
+    it('should find location with custom catalog filename', async () => {
+      const repositoryUrl = 'https://github.com/acme-corp/our-awesome-api';
+      const entityFilename = 'anvil.yaml';
+
+      catalogImportClient = new CatalogImportClient({
+        discoveryApi,
+        scmAuthApi,
+        scmIntegrationsApi,
+        identityApi,
+        catalogApi,
+        configApi: new ConfigReader({
+          catalog: {
+            import: {
+              entityFilename,
+            },
+          },
+        }),
+      });
+
+      (new Octokit().search.code as any as jest.Mock).mockImplementationOnce(
+        async params => ({
+          data: {
+            total_count: 1,
+            items: [{ path: params.q.split('+filename:').slice(-1)[0] }],
+          },
+        }),
+      );
+
+      catalogApi.addLocation.mockImplementation(async ({ type, target }) => ({
+        location: {
+          id: 'id-0',
+          type: type ?? 'url',
+          target,
+        },
+        entities: [
+          {
+            apiVersion: '1',
+            kind: 'Location',
+            metadata: {
+              name: 'my-entity',
+              namespace: 'my-namespace',
+            },
+          },
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'my-entity',
+              namespace: 'my-namespace',
+            },
+          },
+        ],
+      }));
+
+      await expect(
+        catalogImportClient.analyzeUrl(repositoryUrl),
+      ).resolves.toEqual({
+        locations: [
+          {
+            entities: [
+              {
+                kind: 'Location',
+                namespace: 'my-namespace',
+                name: 'my-entity',
+              },
+              {
+                kind: 'Component',
+                namespace: 'my-namespace',
+                name: 'my-entity',
+              },
+            ],
+            target: `${repositoryUrl}/blob/main/${entityFilename}`,
+          },
+        ],
+        type: 'locations',
+      });
+    });
   });
 
   describe('submitPullRequest', () => {
@@ -452,12 +521,102 @@ describe('CatalogImportClient', () => {
         base: 'main',
       });
     });
+
+    it('should create GitHub pull request with custom filename and branch name', async () => {
+      const entityFilename = 'anvil.yaml';
+      const pullRequestBranchName = 'anvil-integration';
+
+      catalogImportClient = new CatalogImportClient({
+        discoveryApi,
+        scmAuthApi,
+        scmIntegrationsApi,
+        identityApi,
+        catalogApi,
+        configApi: new ConfigReader({
+          catalog: {
+            import: {
+              entityFilename,
+              pullRequestBranchName,
+            },
+          },
+        }),
+      });
+
+      await expect(
+        catalogImportClient.submitPullRequest({
+          repositoryUrl: 'https://github.com/acme-corp/our-awesome-api',
+          fileContent: '',
+          title: `Add ${entityFilename} config file`,
+          body: `Add ${entityFilename} config file`,
+        }),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          link: 'http://pull/request/0',
+          location: `https://github.com/acme-corp/our-awesome-api/blob/main/${entityFilename}`,
+        }),
+      );
+
+      expect(
+        (new Octokit().git.createRef as any as jest.Mock).mock.calls[0][0],
+      ).toEqual(
+        expect.objectContaining({
+          ref: `refs/heads/${pullRequestBranchName}`,
+        }),
+      );
+
+      expect(
+        (new Octokit().repos.createOrUpdateFileContents as any as jest.Mock)
+          .mock.calls[0][0],
+      ).toEqual(
+        expect.objectContaining({
+          path: entityFilename,
+          branch: pullRequestBranchName,
+        }),
+      );
+
+      expect(
+        (new Octokit().pulls.create as any as jest.Mock).mock.calls[0][0],
+      ).toEqual(
+        expect.objectContaining({
+          head: pullRequestBranchName,
+        }),
+      );
+    });
   });
 
   describe('preparePullRequest', () => {
     test('should prepare pull request details', async () => {
       await expect(catalogImportClient.preparePullRequest()).resolves.toEqual({
         title: 'Add catalog-info.yaml config file',
+        body: expect.any(String),
+      });
+    });
+
+    test('should prepare pull request details with custom filename', async () => {
+      const entityFilename = 'anvil.yaml';
+      const pullRequestBranchName = 'anvil-integration';
+
+      catalogImportClient = new CatalogImportClient({
+        discoveryApi,
+        scmAuthApi,
+        scmIntegrationsApi,
+        identityApi,
+        catalogApi,
+        configApi: new ConfigReader({
+          catalog: {
+            import: {
+              entityFilename,
+              pullRequestBranchName,
+            },
+          },
+          app: {
+            baseUrl: 'https://demo.backstage.io/',
+          },
+        }),
+      });
+
+      await expect(catalogImportClient.preparePullRequest()).resolves.toEqual({
+        title: `Add ${entityFilename} config file`,
         body: expect.any(String),
       });
     });

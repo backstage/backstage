@@ -1,5 +1,63 @@
 # @backstage/plugin-api-docs
 
+## 0.7.0
+
+### Minor Changes
+
+- b3831be2fe: Renamed the `createComponent` external route to `registerApi` since it's now recommended to link to the entity registration page rather than the creation page.
+
+### Patch Changes
+
+- 306d879536: chore(deps): bump `react-syntax-highligher` and `swagger-ui-react`
+- c007bea546: Export `GraphQlDefinitionWidget` to be reused.
+- cd4e3c4d4e: Using an explicitly empty string for the url argument ensures that the swagger UI does not run into undefined errors.
+- 0c0d8a47e7: Bump @asyncapi/react-component for CVE
+
+  [CVE-2022-21680](https://github.com/advisories/GHSA-rrrm-qjm4-v8hf) and [CVE-2022-21681](https://github.com/advisories/GHSA-5v2h-r2cx-5xgj)
+
+  See https://github.com/asyncapi/asyncapi-react/pull/522
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog@0.7.9
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/catalog-model@0.9.10
+
+## 0.6.23-next.0
+
+### Patch Changes
+
+- 306d879536: chore(deps): bump `react-syntax-highligher` and `swagger-ui-react`
+- c007bea546: Export `GraphQlDefinitionWidget` to be reused.
+- cd4e3c4d4e: Using an explicitly empty string for the url argument ensures that the swagger UI does not run into undefined errors.
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/plugin-catalog@0.7.9-next.0
+  - @backstage/plugin-catalog-react@0.6.12-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+
+## 0.6.22
+
+### Patch Changes
+
+- faf844e269: Update @asyncapi/react-component to 1.0.0-next.26, which will fix the
+  `ResizeObserver loop limit exceeded` errors which we encountered in several E2E
+  tests.
+
+  For more details check the following links:
+
+  - https://github.com/backstage/backstage/pull/8088#issuecomment-991183968
+  - https://github.com/asyncapi/asyncapi-react/issues/498
+
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/catalog-model@0.9.9
+  - @backstage/plugin-catalog@0.7.8
+
 ## 0.6.21
 
 ### Patch Changes

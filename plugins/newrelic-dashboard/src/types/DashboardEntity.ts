@@ -27,6 +27,7 @@ export type DashboardEntity = {
 };
 
 export type ResultEntity = {
+  dashboardParentGuid: string;
   guid: string;
   permalink: string;
   name: string;

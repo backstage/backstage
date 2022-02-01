@@ -230,14 +230,18 @@ function parseUrl(urlString: string): {
   catalogPath: string;
 } {
   const url = new URL(urlString);
-  const path = url.pathname.substr(1).split('/');
+  const indexOfProjectSegment =
+    url.pathname.toLowerCase().indexOf('/projects/') + 1;
+  const path = url.pathname.substr(indexOfProjectSegment).split('/');
 
   // /projects/backstage/repos/techdocs-*/catalog-info.yaml
   if (path.length > 3 && path[1].length && path[3].length) {
     return {
       projectSearchPath: escapeRegExp(decodeURIComponent(path[1])),
       repoSearchPath: escapeRegExp(decodeURIComponent(path[3])),
-      catalogPath: `/${decodeURIComponent(path.slice(4).join('/'))}`,
+      catalogPath: `/${decodeURIComponent(
+        path.slice(4).join('/') + url.search,
+      )}`,
     };
   }
 

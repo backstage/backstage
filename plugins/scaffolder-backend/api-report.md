@@ -14,12 +14,13 @@ import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-back
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
+import { GithubCredentialsProvider } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
-import { Octokit } from '@octokit/rest';
+import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -42,6 +43,7 @@ export type ActionContext<Input extends InputBase> = {
   logger: Logger_2;
   logStream: Writable;
   token?: string | undefined;
+  secrets?: TaskSecrets;
   workspacePath: string;
   input: Input;
   output(name: string, value: JsonValue): void;
@@ -74,6 +76,7 @@ export const createBuiltinActions: (options: {
   catalogClient: CatalogApi;
   containerRunner?: ContainerRunner;
   config: Config;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }) => TemplateAction<any>[];
 
 // Warning: (ae-missing-release-tag) "createCatalogRegisterAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -110,6 +113,7 @@ export function createFetchPlainAction(options: {
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }): TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createFilesystemDeleteAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -126,7 +130,8 @@ export const createFilesystemRenameAction: () => TemplateAction<any>;
 //
 // @public (undocumented)
 export function createGithubActionsDispatchAction(options: {
-  integrations: ScmIntegrationRegistry;
+  integrations: ScmIntegrations;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createGithubWebhookAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -135,6 +140,7 @@ export function createGithubActionsDispatchAction(options: {
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<any>;
 
 // Warning: (ae-missing-release-tag) "createPublishAzureAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -164,6 +170,7 @@ export function createPublishFileAction(): TemplateAction<any>;
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<any>;
 
 // Warning: (ae-forgotten-export) The symbol "CreateGithubPullRequestActionOptions" needs to be exported by the entry point index.d.ts
@@ -172,6 +179,7 @@ export function createPublishGithubAction(options: {
 // @public (undocumented)
 export const createPublishGithubPullRequestAction: ({
   integrations,
+  githubCredentialsProvider,
   clientFactory,
 }: CreateGithubPullRequestActionOptions) => TemplateAction<any>;
 
@@ -213,6 +221,7 @@ export type CreateWorkerOptions = {
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger_2;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 };
 
 // @public
@@ -285,8 +294,10 @@ export function fetchContents({
 //
 // @public
 export class OctokitProvider {
-  constructor(integrations: ScmIntegrationRegistry);
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+  constructor(
+    integrations: ScmIntegrationRegistry,
+    githubCredentialsProvider?: GithubCredentialsProvider,
+  );
   // Warning: (ae-forgotten-export) The symbol "OctokitIntegration" needs to be exported by the entry point index.d.ts
   getOctokit(repoUrl: string): Promise<OctokitIntegration>;
 }
@@ -295,6 +306,8 @@ export class OctokitProvider {
 export interface RouterOptions {
   // (undocumented)
   actions?: TemplateAction<any>[];
+  // (undocumented)
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
   // (undocumented)
   catalogClient: CatalogApi;
   // (undocumented)
@@ -432,8 +445,9 @@ export class TaskManager implements TaskContext {
 }
 
 // @public
-export type TaskSecrets = {
-  token: string | undefined;
+export type TaskSecrets = Record<string, string> & {
+  token?: string;
+  backstageToken?: string;
 };
 
 export { TaskSpec };
@@ -535,6 +549,11 @@ export class TemplateActionRegistry {
     action: TemplateAction<Parameters>,
   ): void;
 }
+
+// Warning: (ae-missing-release-tag) "TemplateFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 
 export { TemplateMetadata };
 ```

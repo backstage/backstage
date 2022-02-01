@@ -1,5 +1,68 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.22
+
+### Patch Changes
+
+- b09dd8f43b: chore(deps): bump `@gitbeaker/node` from 34.6.0 to 35.1.0
+- ac2f1eeec0: This change is for adding the option of inputs on the `github:actions:dispatch` Backstage Action. This will allow users to pass data from Backstage to the GitHub Action.
+- 0d5e846a78: Expose a new option to provide additional template filters via `@backstage/scaffolder-backend`'s `createRouter()` function.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.1
+  - @backstage/backend-common@0.10.5
+
+## 0.15.21
+
+### Patch Changes
+
+- b05d303226: Added the ability to support supplying secrets when creating tasks in the `scaffolder-backend`.
+
+  **deprecation**: Deprecated `ctx.token` from actions in the `scaffolder-backend`. Please move to using `ctx.secrets.backstageToken` instead.
+
+  **deprecation**: Deprecated `task.token` in `TaskSpec` in the `scaffolder-backend`. Please move to using `task.secrets.backstageToken` instead.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.0
+  - @backstage/integration@0.7.2
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.9
+  - @backstage/plugin-scaffolder-common@0.1.3
+
+## 0.15.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.0-next.0
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/catalog-client@0.5.5-next.0
+  - @backstage/integration@0.7.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.9-next.0
+  - @backstage/plugin-scaffolder-common@0.1.3-next.0
+
+## 0.15.20
+
+### Patch Changes
+
+- 9fbd3b90ae: fix: Register plugin to prioritise Component kind for entityRef
+- 451ef0aa07: Fix token pass-through for software templates using beta 3 version
+- 5333451def: Cleaned up API exports
+- 3b4d8caff6: Allow a GitHubCredentialsProvider to be passed to the GitHub scaffolder tasks actions.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/backend-common@0.10.3
+  - @backstage/plugin-catalog-backend@0.20.0
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.8
+
 ## 0.15.19
 
 ### Patch Changes

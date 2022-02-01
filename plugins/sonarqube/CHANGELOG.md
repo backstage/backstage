@@ -1,5 +1,46 @@
 # @backstage/plugin-sonarqube
 
+## 0.2.14
+
+### Patch Changes
+
+- 7346b5fb96: chore(deps): bump `rc-progress` from 3.1.4 to 3.2.4
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+
+## 0.2.13
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/catalog-model@0.9.10
+
+## 0.2.13-next.0
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/plugin-catalog-react@0.6.12-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+
+## 0.2.12
+
+### Patch Changes
+
+- 3423b3b24d: Enhance token description by highlighting that the trailing colon is required.
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/catalog-model@0.9.9
+
 ## 0.2.11
 
 ### Patch Changes

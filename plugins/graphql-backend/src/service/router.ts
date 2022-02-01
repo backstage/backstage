@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-import { errorHandler, resolvePackagePath } from '@backstage/backend-common';
+import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import fs from 'fs';
-import { GraphQLModule } from '@graphql-modules/core';
+import { createApplication } from 'graphql-modules';
 import { ApolloServer } from 'apollo-server-express';
 import { createModule as createCatalogModule } from '@backstage/plugin-catalog-graphql';
 import { Config } from '@backstage/config';
 import helmet from 'helmet';
-
-const schemaPath = resolvePackagePath(
-  '@backstage/plugin-graphql-backend',
-  'schema.gql',
-);
+import { makeExecutableSchema } from '@graphql-tools/schema';
 
 export interface RouterOptions {
   logger: Logger;
@@ -38,21 +33,25 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const typeDefs = await fs.promises.readFile(schemaPath, 'utf-8');
-
   const catalogModule = await createCatalogModule(options);
 
-  const { schema } = new GraphQLModule({
-    imports: [catalogModule],
-    typeDefs,
+  const { createSchemaForApollo } = createApplication({
+    modules: [catalogModule],
+    schemaBuilder(input) {
+      return makeExecutableSchema({
+        ...input,
+        inheritResolversFromInterfaces: true,
+      });
+    },
   });
 
   const server = new ApolloServer({
-    schema,
+    schema: createSchemaForApollo(),
     logger: options.logger,
     introspection: true,
-    playground: process.env.NODE_ENV === 'development',
   });
+
+  await server.start();
 
   const router = Router();
 
@@ -72,7 +71,6 @@ export async function createRouter(
     );
 
   router.use(apolloMiddleware);
-
   router.use(errorHandler());
 
   return router;

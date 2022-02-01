@@ -29,8 +29,10 @@ import {
 } from './lib';
 import fetch from 'node-fetch';
 
+/** @public */
 export type ConfigTarget = { path: string } | { url: string };
 
+/** @public */
 export type LoadConfigOptionsWatch = {
   /**
    * A listener that is called when a config file is changed.
@@ -43,6 +45,7 @@ export type LoadConfigOptionsWatch = {
   stopSignal?: Promise<void>;
 };
 
+/** @public */
 export type LoadConfigOptionsRemote = {
   /**
    * A remote config reloading period, in seconds

@@ -19,8 +19,8 @@ import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
 import { auth0AuthApiRef } from '@backstage/core-plugin-api';
 import { AuthProviderInfo } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
-import { BackstageIdentity } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
+import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
@@ -280,7 +280,7 @@ export type BitbucketSession = {
     expiresAt?: Date;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
 // @public
@@ -359,6 +359,7 @@ export class FetchMiddlewares {
     identityApi: IdentityApi;
     config?: Config;
     urlPrefixAllowlist?: string[];
+    allowUrl?: (url: string) => boolean;
     header?: {
       name: string;
       value: (backstageToken: string) => string;
@@ -386,7 +387,7 @@ export class GithubAuth implements OAuthApi, SessionApi {
   // (undocumented)
   getBackstageIdentity(
     options?: AuthRequestOptions,
-  ): Promise<BackstageIdentity | undefined>;
+  ): Promise<BackstageIdentityResponse | undefined>;
   // (undocumented)
   getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
   // (undocumented)
@@ -399,7 +400,7 @@ export class GithubAuth implements OAuthApi, SessionApi {
   signOut(): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export type GithubSession = {
   providerInfo: {
     accessToken: string;
@@ -407,7 +408,7 @@ export type GithubSession = {
     expiresAt?: Date;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
 // @public
@@ -465,7 +466,7 @@ export class OAuth2
   // (undocumented)
   getBackstageIdentity(
     options?: AuthRequestOptions,
-  ): Promise<BackstageIdentity | undefined>;
+  ): Promise<BackstageIdentityResponse | undefined>;
   // (undocumented)
   getIdToken(options?: AuthRequestOptions): Promise<string>;
   // (undocumented)
@@ -492,7 +493,7 @@ export type OAuth2Session = {
     expiresAt: Date;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
 // @public
@@ -540,7 +541,7 @@ export class SamlAuth
   // (undocumented)
   getBackstageIdentity(
     options?: AuthRequestOptions,
-  ): Promise<BackstageIdentity | undefined>;
+  ): Promise<BackstageIdentityResponse | undefined>;
   // (undocumented)
   getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
   // (undocumented)
@@ -551,24 +552,16 @@ export class SamlAuth
   signOut(): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export type SamlSession = {
   userId: string;
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
 // @public
 export type SignInPageProps = {
   onSignInSuccess(identityApi: IdentityApi): void;
-};
-
-// @public @deprecated
-export type SignInResult = {
-  userId: string;
-  profile: ProfileInfo;
-  getIdToken?: () => Promise<string>;
-  signOut?: () => Promise<void>;
 };
 
 // @public

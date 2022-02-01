@@ -13,20 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  DefaultGithubCredentialsProvider,
+  GithubCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
 import { OctokitProvider } from './OctokitProvider';
 
 export function createGithubActionsDispatchAction(options: {
-  integrations: ScmIntegrationRegistry;
+  integrations: ScmIntegrations;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
-  const { integrations } = options;
-  const octokitProvider = new OctokitProvider(integrations);
+  const { integrations, githubCredentialsProvider } = options;
+  const octokitProvider = new OctokitProvider(
+    integrations,
+    githubCredentialsProvider ||
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations),
+  );
 
   return createTemplateAction<{
     repoUrl: string;
     workflowId: string;
     branchOrTagName: string;
+    workflowInputs?: { [key: string]: string };
   }>({
     id: 'github:actions:dispatch',
     description:
@@ -52,11 +62,18 @@ export function createGithubActionsDispatchAction(options: {
               'The git branch or tag name used to dispatch the workflow',
             type: 'string',
           },
+          workflowInputs: {
+            title: 'Workflow Inputs',
+            description:
+              'Inputs keys and values to send to GitHub Action configured on the workflow file. The maximum number of properties is 10. ',
+            type: 'object',
+          },
         },
       },
     },
     async handler(ctx) {
-      const { repoUrl, workflowId, branchOrTagName } = ctx.input;
+      const { repoUrl, workflowId, branchOrTagName, workflowInputs } =
+        ctx.input;
 
       ctx.logger.info(
         `Dispatching workflow ${workflowId} for repo ${repoUrl} on ${branchOrTagName}`,
@@ -69,6 +86,7 @@ export function createGithubActionsDispatchAction(options: {
         repo,
         workflow_id: workflowId,
         ref: branchOrTagName,
+        inputs: workflowInputs,
       });
 
       ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);

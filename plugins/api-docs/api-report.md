@@ -47,7 +47,7 @@ const apiDocsPlugin: BackstagePlugin<
     root: RouteRef<undefined>;
   },
   {
-    createComponent: ExternalRouteRef<undefined, true>;
+    registerApi: ExternalRouteRef<undefined, true>;
   }
 >;
 export { apiDocsPlugin };
@@ -174,6 +174,20 @@ export const EntityProvidingComponentsCard: ({
   entity?: Entity | undefined;
   variant?: 'gridItem' | undefined;
 }) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "GraphQlDefinitionWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const GraphQlDefinitionWidget: (
+  props: GraphQlDefinitionWidgetProps,
+) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "GraphQlDefinitionWidgetProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type GraphQlDefinitionWidgetProps = {
+  definition: string;
+};
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "HasApisCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

@@ -1,5 +1,33 @@
 # @backstage/plugin-graphql-backend
 
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/plugin-catalog-graphql@0.3.1
+
+## 0.1.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/plugin-catalog-graphql@0.3.1-next.0
+
+## 0.1.11
+
+### Patch Changes
+
+- 0fb17da164: chore: bumping dependencies in the GraphQL modules and bringing them up to date with the latest `graphql-modules` library
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/backend-common@0.10.3
+  - @backstage/plugin-catalog-graphql@0.3.0
+
 ## 0.1.10
 
 ### Patch Changes

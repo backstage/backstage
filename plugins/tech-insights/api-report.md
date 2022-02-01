@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { BulkCheckResponse } from '@backstage/plugin-tech-insights-common';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { EntityName } from '@backstage/catalog-model';
 import { default as React_2 } from 'react';
@@ -30,7 +31,13 @@ export type CheckResultRenderer = {
 };
 
 // @public (undocumented)
-export const EntityTechInsightsScorecardContent: () => JSX.Element;
+export const EntityTechInsightsScorecardContent: ({
+  title,
+  description,
+}: {
+  title?: string | undefined;
+  description?: string | undefined;
+}) => JSX.Element;
 
 // @public
 export interface TechInsightsApi {
@@ -40,7 +47,14 @@ export interface TechInsightsApi {
   getScorecardsDefinition: (
     type: string,
     value: CheckResult[],
+    title?: string,
+    description?: string,
   ) => CheckResultRenderer | undefined;
+  // (undocumented)
+  runBulkChecks(
+    entities: EntityName[],
+    checks?: Check[],
+  ): Promise<BulkCheckResponse>;
   // (undocumented)
   runChecks(entityParams: EntityName, checks?: Check[]): Promise<CheckResult[]>;
 }

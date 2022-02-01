@@ -16,7 +16,7 @@
 
 import {
   AuthRequestOptions,
-  BackstageIdentity,
+  BackstageIdentityResponse,
   OAuthApi,
   ProfileInfo,
   SessionApi,
@@ -41,7 +41,7 @@ export type GithubAuthResponse = {
     expiresInSeconds?: number;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
 const DEFAULT_PROVIDER = {
@@ -145,7 +145,7 @@ export default class GithubAuth implements OAuthApi, SessionApi {
 
   async getBackstageIdentity(
     options: AuthRequestOptions = {},
-  ): Promise<BackstageIdentity | undefined> {
+  ): Promise<BackstageIdentityResponse | undefined> {
     const session = await this.sessionManager.getSession(options);
     return session?.backstageIdentity;
   }

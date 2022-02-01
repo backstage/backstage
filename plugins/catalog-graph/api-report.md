@@ -49,7 +49,7 @@ export const catalogGraphPlugin: BackstagePlugin<
         kind: string;
         namespace: string;
       },
-      false
+      true
     >;
   }
 >;

@@ -1,5 +1,56 @@
 # @backstage/core-app-api
 
+## 0.5.1
+
+### Patch Changes
+
+- f959c22787: Asynchronous methods on the identity API can now reliably be called at any time, including early in the bootstrap process or prior to successful sign-in.
+
+  Previously in such situations, a `Tried to access IdentityApi before app was loaded` error would be thrown. Now, those methods will wait and resolve eventually (as soon as a concrete identity API is provided).
+
+## 0.5.0
+
+### Minor Changes
+
+- ceebe25391: Removed deprecated `SignInResult` type, which was replaced with the new `onSignInSuccess` callback.
+
+### Patch Changes
+
+- fb565073ec: Add an `allowUrl` callback option to `FetchMiddlewares.injectIdentityAuth`
+- f050eec2c0: Added validation during the application startup that detects if there are any plugins present that have not had their required external routes bound. Failing the validation will cause a hard crash as it is a programmer error. It lets you detect early on that there are dangling routes, rather than having them cause an error later on.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/config@0.1.13
+
+## 0.5.0-next.0
+
+### Minor Changes
+
+- ceebe25391: Removed deprecated `SignInResult` type, which was replaced with the new `onSignInSuccess` callback.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/config@0.1.13-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- e2eb92c109: Removed previously deprecated `ApiRegistry` export.
+
+### Patch Changes
+
+- 34442cd5cf: Fixed an issue where valid SAML and GitHub sessions would be considered invalid and not be stored.
+
+  Deprecated the `SamlSession` and `GithubSession` types.
+
+- 784d8078ab: Removed direct and transitive MUI dependencies.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/core-plugin-api@0.5.0
+
 ## 0.3.1
 
 ### Patch Changes

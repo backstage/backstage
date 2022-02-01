@@ -30,10 +30,6 @@ export function registerCommands(program: CommanderStatic) {
     .command('app:build')
     .description('Build an app for a production release')
     .option('--stats', 'Write bundle stats to output directory')
-    .option(
-      '--lax',
-      '[DEPRECATED] - Do not require environment variables to be set',
-    )
     .option(...configOption)
     .action(lazy(() => import('./app/build').then(m => m.default)));
 
@@ -48,6 +44,7 @@ export function registerCommands(program: CommanderStatic) {
     .command('backend:build')
     .description('Build a backend plugin')
     .option('--minify', 'Minify the generated code')
+    .option('--experimental-type-build', 'Enable experimental type build')
     .action(lazy(() => import('./backend/build').then(m => m.default)));
 
   program
@@ -108,16 +105,10 @@ export function registerCommands(program: CommanderStatic) {
     );
 
   program
-    .command('remove-plugin')
-    .description('[DEPRECATED] - Removes plugin in the current repository')
-    .action(
-      lazy(() => import('./remove-plugin/removePlugin').then(m => m.default)),
-    );
-
-  program
     .command('plugin:build')
     .description('Build a plugin')
     .option('--minify', 'Minify the generated code')
+    .option('--experimental-type-build', 'Enable experimental type build')
     .action(lazy(() => import('./plugin/build').then(m => m.default)));
 
   program
@@ -139,6 +130,7 @@ export function registerCommands(program: CommanderStatic) {
     .description('Build a package for publishing')
     .option('--outputs <formats>', 'List of formats to output [types,cjs,esm]')
     .option('--minify', 'Minify the generated code')
+    .option('--experimental-type-build', 'Enable experimental type build')
     .action(lazy(() => import('./build').then(m => m.default)));
 
   program
@@ -193,6 +185,7 @@ export function registerCommands(program: CommanderStatic) {
     )
     .option('--lax', 'Do not require environment variables to be set')
     .option('--frontend', 'Only validate the frontend configuration')
+    .option('--deprecated', 'Output deprecated configuration settings')
     .option(...configOption)
     .description(
       'Validate that the given configuration loads and matches schema',

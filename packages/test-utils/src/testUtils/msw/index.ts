@@ -14,17 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Sets up handlers for request mocking
- * @public
- * @param worker - service worker
- */
-export function setupRequestMockHandlers(worker: {
-  listen: (t: any) => void;
-  close: () => void;
-  resetHandlers: () => void;
-}) {
-  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => worker.close());
-  afterEach(() => worker.resetHandlers());
-}
+export { setupRequestMockHandlers } from './setupRequestMockHandlers';

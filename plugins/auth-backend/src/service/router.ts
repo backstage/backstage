@@ -25,6 +25,7 @@ import {
 import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
+  TokenManager,
 } from '@backstage/backend-common';
 import { assertError, NotFoundError } from '@backstage/errors';
 import { CatalogClient } from '@backstage/catalog-client';
@@ -41,13 +42,21 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   config: Config;
   discovery: PluginEndpointDiscovery;
+  tokenManager: TokenManager;
   providerFactories?: ProviderFactories;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config, discovery, database, providerFactories } = options;
+  const {
+    logger,
+    config,
+    discovery,
+    database,
+    tokenManager,
+    providerFactories,
+  } = options;
   const router = Router();
 
   const appUrl = config.getString('app.baseUrl');
@@ -74,7 +83,7 @@ export async function createRouter(
         secret,
         saveUninitialized: false,
         resave: false,
-        cookie: { secure: enforceCookieSSL },
+        cookie: { secure: enforceCookieSSL ? 'auto' : false },
       }),
     );
     router.use(passport.initialize());
@@ -105,6 +114,7 @@ export async function createRouter(
           globalConfig: { baseUrl: authUrl, appUrl, isOriginAllowed },
           config: providersConfig.getConfig(providerId),
           logger,
+          tokenManager,
           tokenIssuer,
           discovery,
           catalogApi,

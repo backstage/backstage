@@ -110,7 +110,9 @@ export function createCatalogRegisterAction(options: {
           type: 'url',
           target: catalogInfoUrl,
         },
-        ctx.token ? { token: ctx.token } : {},
+        ctx.secrets?.backstageToken
+          ? { token: ctx.secrets.backstageToken }
+          : {},
       );
 
       try {
@@ -120,7 +122,9 @@ export function createCatalogRegisterAction(options: {
             type: 'url',
             target: catalogInfoUrl,
           },
-          ctx.token ? { token: ctx.token } : {},
+          ctx.secrets?.backstageToken
+            ? { token: ctx.secrets.backstageToken }
+            : {},
         );
 
         if (result.entities.length > 0) {

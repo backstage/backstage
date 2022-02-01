@@ -19,7 +19,6 @@ import mockFs from 'mock-fs';
 import { Command } from 'commander';
 import { resolve as resolvePath } from 'path';
 import { paths } from '../../lib/paths';
-import { mapDependencies } from '../../lib/versioning';
 import * as runObj from '../../lib/run';
 import bump, { bumpBackstageJsonVersion } from './bump';
 import { withLogCollector } from '@backstage/test-utils';
@@ -85,13 +84,12 @@ describe('bump', () => {
   });
 
   it('should bump backstage dependencies', async () => {
-    // Make sure all modules involved in package discovery are in the module cache before we mock fs
-    await mapDependencies(paths.targetDir, '@backstage/*');
-
     mockFs({
       '/yarn.lock': lockfileMock,
-      '/lerna.json': JSON.stringify({
-        packages: ['packages/*'],
+      '/package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
       }),
       '/packages/a/package.json': JSON.stringify({
         name: 'a',
@@ -108,7 +106,6 @@ describe('bump', () => {
       }),
     });
 
-    paths.targetDir = '/';
     jest
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));
@@ -183,8 +180,6 @@ describe('bump', () => {
   });
 
   it('should bump backstage dependencies and dependencies matching pattern glob', async () => {
-    // Make sure all modules involved in package discovery are in the module cache before we mock fs
-    await mapDependencies(paths.targetDir, '@backstage/*');
     const customLockfileMock = `${lockfileMock}
 "@backstage-extra/custom@^1.1.0":
   version "1.1.0"
@@ -212,8 +207,10 @@ describe('bump', () => {
 `;
     mockFs({
       '/yarn.lock': customLockfileMock,
-      '/lerna.json': JSON.stringify({
-        packages: ['packages/*'],
+      '/package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
       }),
       '/packages/a/package.json': JSON.stringify({
         name: 'a',
@@ -234,7 +231,6 @@ describe('bump', () => {
       }),
     });
 
-    paths.targetDir = '/';
     jest
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));
@@ -319,12 +315,12 @@ describe('bump', () => {
   });
 
   it('should ignore not found packages', async () => {
-    // Make sure all modules involved in package discovery are in the module cache before we mock fs
-    await mapDependencies(paths.targetDir, '@backstage/*');
     mockFs({
       '/yarn.lock': lockfileMockResult,
-      '/lerna.json': JSON.stringify({
-        packages: ['packages/*'],
+      '/package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
       }),
       '/packages/a/package.json': JSON.stringify({
         name: 'a',
@@ -341,7 +337,6 @@ describe('bump', () => {
       }),
     });
 
-    paths.targetDir = '/';
     jest
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));

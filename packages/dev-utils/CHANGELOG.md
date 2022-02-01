@@ -1,5 +1,56 @@
 # @backstage/dev-utils
 
+## 0.2.19
+
+### Patch Changes
+
+- 10086f5873: Bumped `react-hot-loader` from `^4.12.21` to `^4.13.0`.
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+  - @backstage/core-app-api@0.5.1
+
+## 0.2.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/test-utils@0.2.3
+  - @backstage/core-app-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/catalog-model@0.9.10
+  - @backstage/app-defaults@0.1.5
+  - @backstage/integration-react@0.1.19
+
+## 0.2.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/core-app-api@0.5.0-next.0
+  - @backstage/plugin-catalog-react@0.6.12-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/app-defaults@0.1.5-next.0
+  - @backstage/integration-react@0.1.19-next.0
+  - @backstage/test-utils@0.2.3-next.0
+
+## 0.2.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/test-utils@0.2.2
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/core-app-api@0.4.0
+  - @backstage/app-defaults@0.1.4
+  - @backstage/catalog-model@0.9.9
+  - @backstage/integration-react@0.1.18
+
 ## 0.2.16
 
 ### Patch Changes

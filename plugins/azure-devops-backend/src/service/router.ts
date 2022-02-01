@@ -24,6 +24,7 @@ import { WebApi, getPersonalAccessTokenHandler } from 'azure-devops-node-api';
 import { AzureDevOpsApi } from '../api';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
+import { PullRequestsDashboardProvider } from '../api/PullRequestsDashboardProvider';
 import Router from 'express-promise-router';
 import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
@@ -51,6 +52,9 @@ export async function createRouter(
 
   const azureDevOpsApi =
     options.azureDevOpsApi || new AzureDevOpsApi(logger, webApi);
+
+  const pullRequestsDashboardProvider =
+    await PullRequestsDashboardProvider.create(logger, azureDevOpsApi);
 
   const router = Router();
   router.use(express.json());
@@ -131,7 +135,7 @@ export async function createRouter(
     };
 
     const pullRequests: DashboardPullRequest[] =
-      await azureDevOpsApi.getDashboardPullRequests(
+      await pullRequestsDashboardProvider.getDashboardPullRequests(
         projectName,
         pullRequestOptions,
       );
@@ -140,7 +144,7 @@ export async function createRouter(
   });
 
   router.get('/all-teams', async (_req, res) => {
-    const allTeams = await azureDevOpsApi.getAllTeams();
+    const allTeams = await pullRequestsDashboardProvider.getAllTeams();
     res.status(200).json(allTeams);
   });
 
@@ -168,6 +172,12 @@ export async function createRouter(
       definitionName,
     );
     res.status(200).json(builds);
+  });
+
+  router.get('/users/:userId/team-ids', async (req, res) => {
+    const { userId } = req.params;
+    const teamIds = await pullRequestsDashboardProvider.getUserTeamIds(userId);
+    res.status(200).json(teamIds);
   });
 
   router.use(errorHandler());

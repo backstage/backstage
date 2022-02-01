@@ -20,6 +20,19 @@
  * @packageDocumentation
  */
 
-export { createRouter } from './service/router';
-export * from './search';
+export { createRouter } from './service';
+export type {
+  RouterOptions,
+  RecommendedDeploymentOptions,
+  OutOfTheBoxDeploymentOptions,
+} from './service';
+
+export { DefaultTechDocsCollator } from './search';
+export type { TechDocsCollatorOptions } from './search';
+
+/**
+ * @deprecated Use directly from @backstage/techdocs-common
+ */
+export type { TechDocsDocument } from '@backstage/techdocs-common';
+
 export * from '@backstage/techdocs-common';

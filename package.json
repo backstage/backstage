@@ -26,13 +26,13 @@
     "backstage-create": "backstage-cli create --scope backstage --no-private",
     "create-plugin": "yarn backstage-create --select plugin",
     "remove-plugin": "backstage-cli remove-plugin",
-    "release": "changeset version && yarn diff --yes && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' && yarn install",
+    "release": "node scripts/prepare-release.js && changeset version && yarn diff --yes && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' && yarn install",
     "prettier:check": "prettier --check .",
     "lerna": "lerna",
-    "storybook": "yarn workspace storybook start",
+    "storybook": "yarn --cwd storybook start",
     "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
     "snyk:test:package": "yarn snyk:test --include",
-    "build-storybook": "yarn workspace storybook build-storybook",
+    "build-storybook": "yarn --cwd storybook build-storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
     "prepare": "husky install",
@@ -42,10 +42,6 @@
     "packages": [
       "packages/*",
       "plugins/*"
-    ],
-    "nohoist": [
-      "**/@storybook/**",
-      "**/@storybook"
     ]
   },
   "resolutions": {
@@ -53,11 +49,12 @@
     "**/@roadiehq/**/@backstage/plugin-catalog": "*",
     "**/@roadiehq/**/@backstage/catalog-model": "*"
   },
-  "version": "1.0.0",
+  "version": "0.65.0",
   "dependencies": {
-    "@microsoft/api-documenter": "^7.13.77",
-    "@microsoft/api-extractor": "^7.19.2",
-    "@microsoft/api-extractor-model": "^7.15.1",
+    "@manypkg/get-packages": "^1.1.3",
+    "@microsoft/api-documenter": "^7.15.0",
+    "@microsoft/api-extractor": "^7.19.4",
+    "@microsoft/api-extractor-model": "^7.15.3",
     "@microsoft/tsdoc": "^0.13.2"
   },
   "devDependencies": {
@@ -73,12 +70,13 @@
     "fs-extra": "9.1.0",
     "husky": "^6.0.0",
     "lerna": "^4.0.0",
-    "lint-staged": "^11.1.2",
+    "lint-staged": "^12.2.0",
     "minimist": "^1.2.5",
     "prettier": "^2.2.1",
+    "semver": "^7.3.2",
     "shx": "^0.3.2",
     "ts-node": "^10.4.0",
-    "typescript": "~4.3.5",
+    "typescript": "~4.5.4",
     "yarn-lock-check": "^1.0.5"
   },
   "prettier": "@spotify/prettier-config",

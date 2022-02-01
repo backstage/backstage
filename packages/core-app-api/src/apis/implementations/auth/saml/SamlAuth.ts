@@ -16,12 +16,12 @@
 
 import {
   AuthRequestOptions,
-  BackstageIdentity,
   BackstageIdentityApi,
   ProfileInfo,
   ProfileInfoApi,
   SessionApi,
   SessionState,
+  BackstageIdentityResponse,
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { DirectAuthConnector } from '../../../../lib/AuthConnector';
@@ -35,7 +35,7 @@ import { SamlSession, samlSessionSchema } from './types';
 
 export type SamlAuthResponse = {
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
 const DEFAULT_PROVIDER = {
@@ -95,7 +95,7 @@ export default class SamlAuth
 
   async getBackstageIdentity(
     options: AuthRequestOptions = {},
-  ): Promise<BackstageIdentity | undefined> {
+  ): Promise<BackstageIdentityResponse | undefined> {
     const session = await this.sessionManager.getSession(options);
     return session?.backstageIdentity;
   }

@@ -22,12 +22,15 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { paths } from './paths';
 import { isValidUrl } from './urls';
+import { getPackages } from '@manypkg/get-packages';
+import { PackageGraph } from './monorepo';
 
 type Options = {
   args: string[];
   fromPackage?: string;
   mockEnv?: boolean;
   withFilteredKeys?: boolean;
+  withDeprecatedKeys?: boolean;
   fullVisibility?: boolean;
 };
 
@@ -40,20 +43,27 @@ export async function loadCliConfig(options: Options) {
   });
 
   // Consider all packages in the monorepo when loading in config
-  const { Project } = require('@lerna/project');
-  const project = new Project(paths.targetDir);
-  const packages = await project.getPackages();
+  const { packages } = await getPackages(paths.targetDir);
 
   let localPackageNames;
   if (options.fromPackage) {
     if (packages.length) {
-      localPackageNames = findPackages(packages, options.fromPackage);
+      const graph = PackageGraph.fromPackages(packages);
+      localPackageNames = Array.from(
+        graph.collectPackageNames([options.fromPackage], node => {
+          // Workaround for Backstage main repo only, since the CLI has some artificial devDependencies
+          if (node.name === '@backstage/cli') {
+            return undefined;
+          }
+          return node.localDependencies.keys();
+        }),
+      );
     } else {
       // No packages: it means that it's not a monorepo (e.g. standalone plugin)
       localPackageNames = [options.fromPackage];
     }
   } else {
-    localPackageNames = packages.map((p: any) => p.name);
+    localPackageNames = packages.map(p => p.packageJson.name);
   }
 
   const schema = await loadConfigSchema({
@@ -82,6 +92,7 @@ export async function loadCliConfig(options: Options) {
         ? ['frontend', 'backend', 'secret']
         : ['frontend'],
       withFilteredKeys: options.withFilteredKeys,
+      withDeprecatedKeys: options.withDeprecatedKeys,
     });
     const frontendConfig = ConfigReader.fromConfigs(frontendAppConfigs);
 
@@ -99,35 +110,4 @@ export async function loadCliConfig(options: Options) {
     }
     throw error;
   }
-}
-
-function findPackages(packages: any[], fromPackage: string): string[] {
-  const { PackageGraph } = require('@lerna/package-graph');
-
-  const graph = new PackageGraph(packages);
-
-  const targets = new Set<string>();
-  const searchNames = [fromPackage];
-
-  while (searchNames.length) {
-    const name = searchNames.pop()!;
-
-    if (targets.has(name)) {
-      continue;
-    }
-
-    const node = graph.get(name);
-    if (!node) {
-      throw new Error(`Package '${name}' not found`);
-    }
-
-    targets.add(name);
-
-    // Workaround for Backstage main repo only, since the CLI has some artificial devDependencies
-    if (name !== '@backstage/cli') {
-      searchNames.push(...node.localDependencies.keys());
-    }
-  }
-
-  return Array.from(targets);
 }

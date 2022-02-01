@@ -30,10 +30,17 @@ export function filterByVisibility(
   data: JsonObject,
   includeVisibilities: ConfigVisibility[],
   visibilityByDataPath: Map<string, ConfigVisibility>,
+  deprecationByDataPath: Map<string, string>,
   transformFunc?: TransformFunc<number | string | boolean>,
   withFilteredKeys?: boolean,
-): { data: JsonObject; filteredKeys?: string[] } {
+  withDeprecatedKeys?: boolean,
+): {
+  data: JsonObject;
+  filteredKeys?: string[];
+  deprecatedKeys?: { key: string; description: string }[];
+} {
   const filteredKeys = new Array<string>();
+  const deprecatedKeys = new Array<{ key: string; description: string }>();
 
   function transform(
     jsonVal: JsonValue,
@@ -43,6 +50,12 @@ export function filterByVisibility(
     const visibility =
       visibilityByDataPath.get(visibilityPath) ?? DEFAULT_CONFIG_VISIBILITY;
     const isVisible = includeVisibilities.includes(visibility);
+
+    // deprecated keys are added regardless of visibility indicator
+    const deprecation = deprecationByDataPath.get(visibilityPath);
+    if (deprecation) {
+      deprecatedKeys.push({ key: filterPath, description: deprecation });
+    }
 
     if (typeof jsonVal !== 'object') {
       if (isVisible) {
@@ -109,6 +122,7 @@ export function filterByVisibility(
 
   return {
     filteredKeys: withFilteredKeys ? filteredKeys : undefined,
+    deprecatedKeys: withDeprecatedKeys ? deprecatedKeys : undefined,
     data: (transform(data, '', '') as JsonObject) ?? {},
   };
 }

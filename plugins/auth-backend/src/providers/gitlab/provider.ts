@@ -72,7 +72,7 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
   }
 
   const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: id, ent: [`user:default/${id}`] },
+    claims: { sub: `user:default/${id}`, ent: [`user:default/${id}`] },
   });
 
   return { id, token };
@@ -167,7 +167,12 @@ export class GitlabAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult): Promise<OAuthResponse> {
-    const { profile } = await this.authHandler(result);
+    const context = {
+      logger: this.logger,
+      catalogIdentityClient: this.catalogIdentityClient,
+      tokenIssuer: this.tokenIssuer,
+    };
+    const { profile } = await this.authHandler(result, context);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -185,11 +190,7 @@ export class GitlabAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        {
-          tokenIssuer: this.tokenIssuer,
-          catalogIdentityClient: this.catalogIdentityClient,
-          logger: this.logger,
-        },
+        context,
       );
     }
 
@@ -226,6 +227,7 @@ export const createGitlabProvider = (
     globalConfig,
     config,
     tokenIssuer,
+    tokenManager,
     catalogApi,
     logger,
   }) =>
@@ -238,7 +240,7 @@ export const createGitlabProvider = (
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
-        tokenIssuer,
+        tokenManager,
       });
 
       const authHandler: AuthHandler<OAuthResult> =

@@ -15,6 +15,7 @@ import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Profile } from 'passport';
+import { TokenManager } from '@backstage/backend-common';
 import { TokenSet } from 'openid-client';
 import { UserEntity } from '@backstage/catalog-model';
 import { UserinfoResponse } from 'openid-client';
@@ -62,6 +63,7 @@ export type Auth0ProviderOptions = {
 // @public
 export type AuthHandler<TAuthResult> = (
   input: TAuthResult,
+  context: AuthResolverContext,
 ) => Promise<AuthHandlerResult>;
 
 // @public
@@ -84,40 +86,28 @@ export type AuthProviderFactoryOptions = {
   globalConfig: AuthProviderConfig;
   config: Config;
   logger: Logger_2;
+  tokenManager: TokenManager;
   tokenIssuer: TokenIssuer;
   discovery: PluginEndpointDiscovery;
   catalogApi: CatalogApi;
 };
 
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 // Warning: (ae-missing-release-tag) "AuthProviderRouteHandlers" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export interface AuthProviderRouteHandlers {
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   frameHandler(req: express.Request, res: express.Response): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   logout?(req: express.Request, res: express.Response): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   refresh?(req: express.Request, res: express.Response): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   start(req: express.Request, res: express.Response): Promise<void>;
 }
+
+// @public
+export type AuthResolverContext = {
+  tokenIssuer: TokenIssuer;
+  catalogIdentityClient: CatalogIdentityClient;
+  logger: Logger_2;
+};
 
 // Warning: (ae-missing-release-tag) "AuthResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -217,7 +207,7 @@ export const bitbucketUsernameSignInResolver: SignInResolver<BitbucketOAuthResul
 //
 // @public
 export class CatalogIdentityClient {
-  constructor(options: { catalogApi: CatalogApi; tokenIssuer: TokenIssuer });
+  constructor(options: { catalogApi: CatalogApi; tokenManager: TokenManager });
   // Warning: (ae-forgotten-export) The symbol "UserQuery" needs to be exported by the entry point index.d.ts
   findUser(query: UserQuery): Promise<UserEntity>;
   // Warning: (ae-forgotten-export) The symbol "MemberClaimQuery" needs to be exported by the entry point index.d.ts
@@ -288,6 +278,11 @@ export const createMicrosoftProvider: (
 // @public (undocumented)
 export const createOAuth2Provider: (
   options?: OAuth2ProviderOptions | undefined,
+) => AuthProviderFactory;
+
+// @public
+export const createOauth2ProxyProvider: <JWTPayload>(
+  options: Oauth2ProxyProviderOptions<JWTPayload>,
 ) => AuthProviderFactory;
 
 // Warning: (ae-missing-release-tag) "createOidcProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -456,6 +451,20 @@ export type OAuth2ProviderOptions = {
   };
 };
 
+// @public
+export type Oauth2ProxyProviderOptions<JWTPayload> = {
+  authHandler: AuthHandler<OAuth2ProxyResult<JWTPayload>>;
+  signIn: {
+    resolver: SignInResolver<OAuth2ProxyResult<JWTPayload>>;
+  };
+};
+
+// @public
+export type OAuth2ProxyResult<JWTPayload> = {
+  fullProfile: JWTPayload;
+  accessToken: string;
+};
+
 // Warning: (ae-missing-release-tag) "OAuthAdapter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -471,7 +480,11 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     handlers: OAuthHandlers,
     options: Pick<
       Options,
-      'providerId' | 'persistScopes' | 'disableRefresh' | 'tokenIssuer'
+      | 'providerId'
+      | 'persistScopes'
+      | 'disableRefresh'
+      | 'tokenIssuer'
+      | 'callbackUrl'
     >,
   ): OAuthAdapter;
   // (undocumented)
@@ -502,28 +515,17 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
   start(req: express.Request, res: express.Response): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "OAuthHandlers" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface OAuthHandlers {
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   handler(req: express.Request): Promise<{
     response: OAuthResponse;
     refreshToken?: string;
   }>;
   logout?(): Promise<void>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
   refresh?(req: OAuthRefreshRequest): Promise<{
     response: OAuthResponse;
     refreshToken?: string;
   }>;
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-  // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-  // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
   start(req: OAuthStartRequest): Promise<RedirectInfo>;
 }
 
@@ -671,6 +673,8 @@ export interface RouterOptions {
   //
   // (undocumented)
   providerFactories?: ProviderFactories;
+  // (undocumented)
+  tokenManager: TokenManager;
 }
 
 // @public (undocumented)
@@ -695,11 +699,7 @@ export type SignInInfo<TAuthResult> = {
 // @public
 export type SignInResolver<TAuthResult> = (
   info: SignInInfo<TAuthResult>,
-  context: {
-    tokenIssuer: TokenIssuer;
-    catalogIdentityClient: CatalogIdentityClient;
-    logger: Logger_2;
-  },
+  context: AuthResolverContext,
 ) => Promise<BackstageSignInResult>;
 
 // Warning: (ae-missing-release-tag) "TokenIssuer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -734,11 +734,6 @@ export type WebMessageResponse =
 //
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
 // src/providers/aws-alb/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "AwsAlbResult" needs to be exported by the entry point index.d.ts
-// src/providers/github/provider.d.ts:74:58 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// src/providers/github/provider.d.ts:74:90 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// src/providers/github/provider.d.ts:74:89 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/providers/github/provider.d.ts:74:67 - (tsdoc-malformed-html-name) Invalid HTML element: Expecting an HTML name
-// src/providers/github/provider.d.ts:74:68 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // src/providers/github/provider.d.ts:81:5 - (ae-forgotten-export) The symbol "StateEncoder" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:100:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
+// src/providers/types.d.ts:98:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
 ```

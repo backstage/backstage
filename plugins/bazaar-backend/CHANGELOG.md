@@ -1,5 +1,33 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/backend-test-utils@0.1.14
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/backend-test-utils@0.1.14-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- 6eb6e2dc31: Add Bazaar plugin to marketplace and some minor refactoring
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/backend-common@0.10.3
+  - @backstage/backend-test-utils@0.1.13
+
 ## 0.1.5
 
 ### Patch Changes

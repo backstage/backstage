@@ -22,32 +22,57 @@ import { serveBundle } from '../../lib/bundler';
 import { loadCliConfig } from '../../lib/config';
 import { paths } from '../../lib/paths';
 import { Lockfile } from '../../lib/versioning';
-import { includedFilter } from '../versions/lint';
+import { forbiddenDuplicatesFilter, includedFilter } from '../versions/lint';
 
 export default async (cmd: Command) => {
-  const lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
-  const result = lockfile.analyze({
-    filter: includedFilter,
-  });
-  const problemPackages = [...result.newVersions, ...result.newRanges].map(
-    ({ name }) => name,
-  );
+  const lockFilePath = paths.resolveTargetRoot('yarn.lock');
+  if (fs.existsSync(lockFilePath)) {
+    try {
+      const lockfile = await Lockfile.load(lockFilePath);
+      const result = lockfile.analyze({
+        filter: includedFilter,
+      });
+      const problemPackages = [...result.newVersions, ...result.newRanges]
+        .map(({ name }) => name)
+        .filter(name => forbiddenDuplicatesFilter(name));
 
-  if (problemPackages.length > 1) {
+      if (problemPackages.length > 0) {
+        console.log(
+          chalk.yellow(
+            `⚠️ Some of the following packages may be outdated or have duplicate installations:
+
+              ${uniq(problemPackages).join(', ')}
+            `,
+          ),
+        );
+        console.log(
+          chalk.yellow(
+            `⚠️ The following command may fix the issue, but it could also be an issue within one of your dependencies:
+
+              yarn backstage-cli versions:check --fix
+            `,
+          ),
+        );
+      }
+    } catch (error) {
+      console.log(
+        chalk.yellow(
+          `⚠️ Unable to parse yarn.lock file properly:
+
+            ${error}
+
+            skipping analyzer for outdated or duplicate installations
+          `,
+        ),
+      );
+    }
+  } else {
     console.log(
       chalk.yellow(
-        `⚠️ Some of the following packages may be outdated or have duplicate installations:
+        `⚠️ Unable to find yarn.lock file:
 
-          ${uniq(problemPackages).join(', ')}
+          skipping analyzer for outdated or duplicate installations
         `,
-      ),
-    );
-    console.log(
-      chalk.yellow(
-        `⚠️ This can be resolved using the following command:
-
-          yarn backstage-cli versions:check --fix
-      `,
       ),
     );
   }

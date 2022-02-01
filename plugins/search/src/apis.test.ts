@@ -27,16 +27,13 @@ describe('apis', () => {
   const getBaseUrl = jest.fn().mockResolvedValue(baseUrl);
 
   const token = 'AUTHTOKEN';
-  const withToken = jest.fn().mockResolvedValue(token);
-  const withoutToken = jest.fn().mockResolvedValue(undefined);
-  const createIdentityApiMock = (getIdToken: any) => ({
-    getIdToken,
-    getUserId: jest.fn(),
-    getProfile: jest.fn(),
+  const withToken = jest.fn().mockResolvedValue({ token });
+  const withoutToken = jest.fn().mockResolvedValue({ token: undefined });
+  const createIdentityApiMock = (getCredentials: any) => ({
     signOut: jest.fn(),
     getProfileInfo: jest.fn(),
     getBackstageIdentity: jest.fn(),
-    getCredentials: jest.fn(),
+    getCredentials,
   });
 
   const client = new SearchClient({

@@ -23,7 +23,11 @@ export const exploreRouteRef = createRouteRef({
   id: 'explore',
 });
 
+/**
+ * @deprecated This route is no longer used and can be removed
+ */
 export const catalogEntityRouteRef = createExternalRouteRef({
   id: 'catalog-entity',
   params: ['namespace', 'kind', 'name'],
+  optional: true,
 });

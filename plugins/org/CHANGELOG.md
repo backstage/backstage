@@ -1,5 +1,77 @@
 # @backstage/plugin-org
 
+## 0.4.0
+
+### Minor Changes
+
+- 1285c2fe60: **BREAKING**: Added a new and required `catalogIndex` external route. It should typically be linked to the `catalogIndex` route of the Catalog plugin:
+
+  ```ts
+  bind(orgPlugin.externalRoutes, {
+    catalogIndex: catalogPlugin.routes.catalogIndex,
+  });
+  ```
+
+### Patch Changes
+
+- f006fe2529: For the component `EntityMembersListCard` you can now specify the pageSize. For example:
+
+  ```tsx
+  <Grid item xs={12}>
+    <EntityMembersListCard pageSize={100} />
+  </Grid>
+  ```
+
+  If left empty it will by default use 50.
+
+- 2908a41b9b: Fixed typo in `MembersListCard` component
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/catalog-model@0.9.10
+
+## 0.3.35-next.0
+
+### Patch Changes
+
+- f006fe2529: For the component `EntityMembersListCard` you can now specify the pageSize. For example:
+
+  ```tsx
+  <Grid item xs={12}>
+    <EntityMembersListCard pageSize={100} />
+  </Grid>
+  ```
+
+  If left empty it will by default use 50.
+
+- 2908a41b9b: Fixed typo in `MembersListCard` component
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/plugin-catalog-react@0.6.12-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+
+## 0.3.34
+
+### Patch Changes
+
+- 3f08dcd696: For the component `EntityMembersListCard` you can now specify the type of members you have in a group. For example:
+
+  ```tsx
+  <Grid item xs={12}>
+    <EntityMembersListCard memberDisplayTitle="Ninja's" />
+  </Grid>
+  ```
+
+  If left empty it will by default use 'Members'.
+
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/catalog-model@0.9.9
+
 ## 0.3.33
 
 ### Patch Changes

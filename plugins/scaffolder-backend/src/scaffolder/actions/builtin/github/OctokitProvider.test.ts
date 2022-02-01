@@ -15,7 +15,10 @@
  */
 
 import { OctokitProvider } from './OctokitProvider';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrations,
+  DefaultGithubCredentialsProvider,
+} from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 
 describe('getOctokit', () => {
@@ -29,7 +32,12 @@ describe('getOctokit', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  const octokitProvider = new OctokitProvider(integrations);
+  const githubCredentialsProvider =
+    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+  const octokitProvider = new OctokitProvider(
+    integrations,
+    githubCredentialsProvider,
+  );
 
   beforeEach(() => {
     jest.resetAllMocks();

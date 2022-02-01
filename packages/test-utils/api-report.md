@@ -7,16 +7,24 @@ import { AnalyticsApi } from '@backstage/core-plugin-api';
 import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
+import { AuthorizeDecision } from '@backstage/plugin-permission-common';
+import { AuthorizeQuery } from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
+import crossFetch from 'cross-fetch';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
+import { PermissionApi } from '@backstage/plugin-permission-react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RenderResult } from '@testing-library/react';
@@ -112,6 +120,42 @@ export class MockErrorApi implements ErrorApi {
 export type MockErrorApiOptions = {
   collect?: boolean;
 };
+
+// @public
+export class MockFetchApi implements FetchApi {
+  constructor(options?: MockFetchApiOptions);
+  // (undocumented)
+  get fetch(): typeof crossFetch;
+}
+
+// @public
+export interface MockFetchApiOptions {
+  baseImplementation?: undefined | 'none' | typeof crossFetch;
+  injectIdentityAuth?:
+    | undefined
+    | {
+        token: string;
+      }
+    | {
+        identityApi: Pick<IdentityApi, 'getCredentials'>;
+      };
+  resolvePluginProtocol?:
+    | undefined
+    | {
+        discoveryApi: Pick<DiscoveryApi, 'getBaseUrl'>;
+      };
+}
+
+// @public
+export class MockPermissionApi implements PermissionApi {
+  constructor(
+    requestHandler?: (
+      request: AuthorizeQuery,
+    ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY,
+  );
+  // (undocumented)
+  authorize(request: AuthorizeQuery): Promise<AuthorizeDecision>;
+}
 
 // @public
 export class MockStorageApi implements StorageApi {

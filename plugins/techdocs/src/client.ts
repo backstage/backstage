@@ -16,34 +16,34 @@
 
 import { EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import {
+  DiscoveryApi,
+  FetchApi,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
 import { NotFoundError, ResponseError } from '@backstage/errors';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 
 /**
- * API to talk to techdocs-backend.
+ * API to talk to `techdocs-backend`.
  *
- * @property {string} apiOrigin Set to techdocs.requestUrl as the URL for techdocs-backend API
+ * @public
  */
 export class TechDocsClient implements TechDocsApi {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
-  public identityApi: IdentityApi;
+  private fetchApi: FetchApi;
 
-  constructor({
-    configApi,
-    discoveryApi,
-    identityApi,
-  }: {
+  constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
+    fetchApi: FetchApi;
   }) {
-    this.configApi = configApi;
-    this.discoveryApi = discoveryApi;
-    this.identityApi = identityApi;
+    this.configApi = options.configApi;
+    this.discoveryApi = options.discoveryApi;
+    this.fetchApi = options.fetchApi;
   }
 
   async getApiOrigin(): Promise<string> {
@@ -60,19 +60,14 @@ export class TechDocsClient implements TechDocsApi {
    * static files. It includes necessary data about the docs site. This method requests techdocs-backend
    * which retrieves the TechDocs metadata.
    *
-   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
+   * @param entityId - Object containing entity data like name, namespace, etc.
    */
   async getTechDocsMetadata(entityId: EntityName): Promise<TechDocsMetadata> {
     const { kind, namespace, name } = entityId;
 
     const apiOrigin = await this.getApiOrigin();
     const requestUrl = `${apiOrigin}/metadata/techdocs/${namespace}/${kind}/${name}`;
-    const token = await this.identityApi.getIdToken();
-
-    const request = await fetch(`${requestUrl}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-
+    const request = await this.fetchApi.fetch(`${requestUrl}`);
     if (!request.ok) {
       throw await ResponseError.fromResponse(request);
     }
@@ -86,7 +81,7 @@ export class TechDocsClient implements TechDocsApi {
    * This method requests techdocs-backend which uses the catalog APIs to respond with filtered
    * information required here.
    *
-   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
+   * @param entityId - Object containing entity data like name, namespace, etc.
    */
   async getEntityMetadata(
     entityId: EntityName,
@@ -95,12 +90,8 @@ export class TechDocsClient implements TechDocsApi {
 
     const apiOrigin = await this.getApiOrigin();
     const requestUrl = `${apiOrigin}/metadata/entity/${namespace}/${kind}/${name}`;
-    const token = await this.identityApi.getIdToken();
 
-    const request = await fetch(`${requestUrl}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-
+    const request = await this.fetchApi.fetch(`${requestUrl}`);
     if (!request.ok) {
       throw await ResponseError.fromResponse(request);
     }
@@ -112,25 +103,24 @@ export class TechDocsClient implements TechDocsApi {
 /**
  * API which talks to TechDocs storage to fetch files to render.
  *
- * @property {string} apiOrigin Set to techdocs.requestUrl as the URL for techdocs-backend API
+ * @public
  */
 export class TechDocsStorageClient implements TechDocsStorageApi {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
   public identityApi: IdentityApi;
+  private fetchApi: FetchApi;
 
-  constructor({
-    configApi,
-    discoveryApi,
-    identityApi,
-  }: {
+  constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    fetchApi: FetchApi;
   }) {
-    this.configApi = configApi;
-    this.discoveryApi = discoveryApi;
-    this.identityApi = identityApi;
+    this.configApi = options.configApi;
+    this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
   }
 
   async getApiOrigin(): Promise<string> {
@@ -154,23 +144,19 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   /**
    * Fetch HTML content as text for an individual docs page in an entity's docs site.
    *
-   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
-   * @param {string} path The unique path to an individual docs page e.g. overview/what-is-new
-   * @returns {string} HTML content of the docs page as string
-   * @throws {Error} Throws error when the page is not found.
+   * @param entityId - Object containing entity data like name, namespace, etc.
+   * @param path - The unique path to an individual docs page e.g. overview/what-is-new
+   * @returns HTML content of the docs page as string
+   * @throws Throws error when the page is not found.
    */
   async getEntityDocs(entityId: EntityName, path: string): Promise<string> {
     const { kind, namespace, name } = entityId;
 
     const storageUrl = await this.getStorageUrl();
     const url = `${storageUrl}/${namespace}/${kind}/${name}/${path}`;
-    const token = await this.identityApi.getIdToken();
 
-    const request = await fetch(
+    const request = await this.fetchApi.fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
-      {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      },
     );
 
     let errorMessage = '';
@@ -198,10 +184,10 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   /**
    * Check if docs are on the latest version and trigger rebuild if not
    *
-   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
-   * @param {Function} logHandler Callback to receive log messages from the build process
-   * @returns {SyncResult} Whether documents are currently synchronized to newest version
-   * @throws {Error} Throws error on error from sync endpoint in Techdocs Backend
+   * @param entityId - Object containing entity data like name, namespace, etc.
+   * @param logHandler - Callback to receive log messages from the build process
+   * @returns Whether documents are currently synchronized to newest version
+   * @throws Throws error on error from sync endpoint in Techdocs Backend
    */
   async syncEntityDocs(
     entityId: EntityName,
@@ -211,7 +197,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 
     const apiOrigin = await this.getApiOrigin();
     const url = `${apiOrigin}/sync/${namespace}/${kind}/${name}`;
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
 
     return new Promise((resolve, reject) => {
       // Polyfill is used to add support for custom headers and auth

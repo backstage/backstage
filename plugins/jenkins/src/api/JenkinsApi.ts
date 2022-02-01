@@ -77,12 +77,11 @@ export interface JenkinsApi {
    * and by the _Software Engineer_ using annotations agreed with the _Integrator_.
    *
    * Typically, a folder job will be identified and the backend plugin will recursively look for projects (jobs with builds) within that folder.
-   *
-   * @param options.entity the entity whose jobs should be retrieved.
-   * @param options.filter a filter on jobs. Currently this just takes a branch (and assumes certain structures in jenkins)
    */
   getProjects(options: {
+    /** the entity whose jobs should be retrieved. */
     entity: EntityRef;
+    /** a filter on jobs. Currently this just takes a branch (and assumes certain structures in jenkins) */
     filter: { branch?: string };
   }): Promise<Project[]>;
 
@@ -92,9 +91,6 @@ export interface JenkinsApi {
    * This takes an entity to support selecting between multiple jenkins instances.
    *
    * TODO: abstract jobFullName (so we could support differentiating between the same named job on multiple instances).
-   * @param options.entity
-   * @param options.jobFullName
-   * @param options.buildNumber
    */
   getBuild(options: {
     entity: EntityName;

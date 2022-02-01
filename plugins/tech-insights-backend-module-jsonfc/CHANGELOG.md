@@ -1,5 +1,34 @@
 # @backstage/plugin-tech-insights-backend-module-jsonfc
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/plugin-tech-insights-node@0.2.0
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/plugin-tech-insights-node@0.2.0-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- a60eb0f0dd: adding new operation to run checks for multiple entities in one request
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/backend-common@0.10.3
+  - @backstage/plugin-tech-insights-common@0.2.1
+  - @backstage/errors@0.2.0
+
 ## 0.1.4
 
 ### Patch Changes

@@ -15,6 +15,8 @@
  */
 
 import {
+  BuildRun,
+  BuildRunOptions,
   DashboardPullRequest,
   PullRequest,
   PullRequestOptions,
@@ -88,11 +90,38 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     return this.get<Team[]>('all-teams');
   }
 
+  public getUserTeamIds(userId: string): Promise<string[]> {
+    return this.get<string[]>(`users/${userId}/team-ids`);
+  }
+
+  public async getBuildRuns(
+    projectName: string,
+    repoName?: string,
+    definitionName?: string,
+    options?: BuildRunOptions,
+  ): Promise<{ items: BuildRun[] }> {
+    const queryString = new URLSearchParams();
+    if (repoName) {
+      queryString.append('repoName', repoName);
+    }
+    if (definitionName) {
+      queryString.append('definitionName', definitionName);
+    }
+    if (options?.top) {
+      queryString.append('top', options.top.toString());
+    }
+    const urlSegment = `builds/${encodeURIComponent(
+      projectName,
+    )}?${queryString}`;
+    const items = await this.get<BuildRun[]>(urlSegment);
+    return { items };
+  }
+
   private async get<T>(path: string): Promise<T> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('azure-devops')}/`;
     const url = new URL(path, baseUrl);
 
-    const idToken = await this.identityApi.getIdToken();
+    const { token: idToken } = await this.identityApi.getCredentials();
     const response = await fetch(url.toString(), {
       headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
     });

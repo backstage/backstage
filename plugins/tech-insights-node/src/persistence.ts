@@ -18,6 +18,7 @@ import {
   TechInsightFact,
   FlatTechInsightFact,
   FactSchemaDefinition,
+  FactLifecycle,
 } from './facts';
 import { DateTime } from 'luxon';
 
@@ -35,8 +36,17 @@ export interface TechInsightsStore {
    *
    * @param id - Unique identifier of the fact retriever these facts relate to
    * @param facts - A collection of TechInsightFacts
+   * @param lifecycle - (Optional) Fact lifecycle object indicating the expiration logic for these items
    */
-  insertFacts(id: string, facts: TechInsightFact[]): Promise<void>;
+  insertFacts({
+    id,
+    facts,
+    lifecycle,
+  }: {
+    id: string;
+    facts: TechInsightFact[];
+    lifecycle?: FactLifecycle;
+  }): Promise<void>;
 
   /**
    * @param ids - A collection of fact row identifiers

@@ -1,5 +1,63 @@
 # @backstage/catalog-model
 
+## 0.9.10
+
+### Patch Changes
+
+- 8b5a7763d5: Added `alpha` release stage type declarations, accessible via `@backstage/catalog-model/alpha`.
+
+  **BREAKING**: The experimental entity `status` field was removed from the base `Entity` type and is now only available on the `AlphaEntity` type from the alpha release stage, along with all accompanying types that were previously marked as `UNSTABLE_`.
+
+  For example, the following import:
+
+  ```ts
+  import { UNSTABLE_EntityStatusItem } from '@backstage/catalog-model';
+  ```
+
+  Becomes this:
+
+  ```ts
+  import { EntityStatusItem } from '@backstage/catalog-model/alpha';
+  ```
+
+  Note that exports that are only available from the alpha release stage are considered unstable and do not adhere to the semantic versioning of the package.
+
+- Updated dependencies
+  - @backstage/config@0.1.13
+
+## 0.9.10-next.0
+
+### Patch Changes
+
+- 8b5a7763d5: Added `alpha` release stage type declarations, accessible via `@backstage/catalog-model/alpha`.
+
+  **BREAKING**: The experimental entity `status` field was removed from the base `Entity` type and is now only available on the `AlphaEntity` type from the alpha release stage, along with all accompanying types that were previously marked as `UNSTABLE_`.
+
+  For example, the following import:
+
+  ```ts
+  import { UNSTABLE_EntityStatusItem } from '@backstage/catalog-model';
+  ```
+
+  Becomes this:
+
+  ```ts
+  import { EntityStatusItem } from '@backstage/catalog-model/alpha';
+  ```
+
+  Note that exports that are only available from the alpha release stage are considered unstable and do not adhere to the semantic versioning of the package.
+
+- Updated dependencies
+  - @backstage/config@0.1.13-next.0
+
+## 0.9.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/errors@0.2.0
+
 ## 0.9.8
 
 ### Patch Changes

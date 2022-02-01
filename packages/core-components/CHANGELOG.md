@@ -1,5 +1,68 @@
 # @backstage/core-components
 
+## 0.8.6
+
+### Patch Changes
+
+- b97a2460d5: Remove the `ignoreChildEvent` utility from the sidebar component to avoid conflicts with popovers
+- bdc53553eb: chore(deps): bump `react-text-truncate` from 0.16.0 to 0.17.0
+- 05f0f44180: chore(deps): bump `remark-gfm` from 2.0.0 to 3.0.1
+- 15bac1d738: chore(deps): bump `react-markdown` from 7.1.2 to 8.0.0
+- 7346b5fb96: chore(deps): bump `rc-progress` from 3.1.4 to 3.2.4
+- 9abb28bb22: Fix issue where component types are not recognized causing the `MobileSidebar` to not render as intended.
+- 1787694435: Updates styling of Header component by removing flex wrap and add max width of characters for subtitle
+
+## 0.8.5
+
+### Patch Changes
+
+- 306d879536: chore(deps): bump `react-syntax-highligher` and `swagger-ui-react`
+- 6b05ad1265: Updated the `SignInPage`, `ProxiedSignInPage` and `UserIdentity` implementations to match the removals of the deprecated `IdentityApi` methods and types.
+- 8bb0f4bc8a: - Add `useContent` hook to have a reference to the current main content element
+  - Sets the main content reference on `Content` component
+- 7ba416be78: The `Bar` component will now render a `MobileSidebar` instead of the current sidebar on smaller screens. The state of the `MobileSidebar` will be treated as always open.
+
+  ***
+
+  **Add MobileSidebar:** A navigation component, which sticks to the bottom. If there is no content in the Sidebar, it won't be rendered. If there are `children` in the `Sidebar`, but no `SidebarGroup`s as `children`, it will render all `children` into a default overlay menu, which can be displayed by clicking a menu item. If `SidebarGroup`s are provided, it will render them in the bottom navigation. Additionally, a `MobileSidebarContext`, which wraps the component, will save the selected menu item.
+
+  **Add SidebarGroup:** Groups items of the `Sidebar` together. On bigger screens, this won't have any effect at the moment. On smaller screens, it will render a given icon into the `MobileSidebar`. If a route is provided, clicking the `SidebarGroup` in the `MobileSidebar` will route to the page. If no route is provided, it will add a provided icon to the `MobileSidebar` as a menu item & will render the children into an overlay menu, which will be displayed when the menu item is clicked.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/config@0.1.13
+
+## 0.8.5-next.0
+
+### Patch Changes
+
+- 306d879536: chore(deps): bump `react-syntax-highligher` and `swagger-ui-react`
+- 6b05ad1265: Updated the `SignInPage`, `ProxiedSignInPage` and `UserIdentity` implementations to match the removals of the deprecated `IdentityApi` methods and types.
+- 7ba416be78: The `Bar` component will now render a `MobileSidebar` instead of the current sidebar on smaller screens. The state of the `MobileSidebar` will be treated as always open.
+
+  ***
+
+  **Add MobileSidebar:** A navigation component, which sticks to the bottom. If there is no content in the Sidebar, it won't be rendered. If there are `children` in the `Sidebar`, but no `SidebarGroup`s as `children`, it will render all `children` into a default overlay menu, which can be displayed by clicking a menu item. If `SidebarGroup`s are provided, it will render them in the bottom navigation. Additionally, a `MobileSidebarContext`, which wraps the component, will save the selected menu item.
+
+  **Add SidebarGroup:** Groups items of the `Sidebar` together. On bigger screens, this won't have any effect at the moment. On smaller screens, it will render a given icon into the `MobileSidebar`. If a route is provided, clicking the `SidebarGroup` in the `MobileSidebar` will route to the page. If no route is provided, it will add a provided icon to the `MobileSidebar` as a menu item & will render the children into an overlay menu, which will be displayed when the menu item is clicked.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/config@0.1.13-next.0
+
+## 0.8.4
+
+### Patch Changes
+
+- 6415189d99: Add a `ProxiedSignInPage` that can be used e.g. for GCP IAP and AWS ALB
+- de2396da24: Create a short delay when `<SidebarSubmenu/>` is opened
+- 5333451def: Cleaned up API exports
+- e2eb92c109: Updated `ResponseErrorPanel` to not use the deprecated `data` property of `ResponseError`.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/errors@0.2.0
+
 ## 0.8.3
 
 ### Patch Changes

@@ -16,8 +16,8 @@
 import {
   ENTITY_DEFAULT_NAMESPACE,
   GroupEntity,
-  RELATION_MEMBER_OF,
   UserEntity,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -111,8 +111,11 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
 export const MembersListCard = (_props: {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: GroupEntity;
+  memberDisplayTitle?: string;
+  pageSize?: number;
 }) => {
   const { entity: groupEntity } = useEntity<GroupEntity>();
+  let { memberDisplayTitle, pageSize } = _props;
   const {
     metadata: { name: groupName, namespace: grpNamespace },
     spec: { profile },
@@ -127,7 +130,8 @@ export const MembersListCard = (_props: {
   const pageChange = (_: React.ChangeEvent<unknown>, pageIndex: number) => {
     setPage(pageIndex);
   };
-  const pageSize = 50;
+  pageSize = pageSize ? pageSize : 50;
+  memberDisplayTitle = memberDisplayTitle ? memberDisplayTitle : 'Members';
 
   const {
     loading,
@@ -135,20 +139,19 @@ export const MembersListCard = (_props: {
     value: members,
   } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
-      filter: { kind: 'User' },
+      filter: {
+        kind: 'User',
+        'relations.memberof': [
+          stringifyEntityRef({
+            kind: 'group',
+            namespace: groupNamespace.toLocaleLowerCase('en-US'),
+            name: groupName.toLocaleLowerCase('en-US'),
+          }),
+        ],
+      },
     });
-    const groupMembersList = (membersList.items as UserEntity[]).filter(
-      member =>
-        member?.relations?.some(
-          r =>
-            r.type === RELATION_MEMBER_OF &&
-            r.target.name.toLocaleLowerCase('en-US') ===
-              groupName.toLocaleLowerCase('en-US') &&
-            r.target.namespace.toLocaleLowerCase('en-US') ===
-              groupNamespace.toLocaleLowerCase('en-US'),
-        ),
-    );
-    return groupMembersList;
+
+    return membersList.items as UserEntity[];
   }, [catalogApi, groupEntity]);
 
   if (loading) {
@@ -173,7 +176,9 @@ export const MembersListCard = (_props: {
   return (
     <Grid item>
       <InfoCard
-        title={`Members (${members?.length || 0}${paginationLabel})`}
+        title={`${memberDisplayTitle} (${
+          members?.length || 0
+        }${paginationLabel})`}
         subheader={`of ${displayName}`}
         {...(nbPages <= 1 ? {} : { actions: pagination })}
       >
@@ -186,7 +191,9 @@ export const MembersListCard = (_props: {
               ))
           ) : (
             <Box p={2}>
-              <Typography>This group has no members.</Typography>
+              <Typography>
+                This group has no {memberDisplayTitle.toLocaleLowerCase()}.
+              </Typography>
             </Box>
           )}
         </Grid>

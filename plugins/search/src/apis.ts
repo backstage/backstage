@@ -44,7 +44,7 @@ export class SearchClient implements SearchApi {
   }
 
   async query(query: SearchQuery): Promise<SearchResultSet> {
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const queryString = qs.stringify(query);
     const url = `${await this.discoveryApi.getBaseUrl(
       'search/query',

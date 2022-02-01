@@ -94,13 +94,12 @@ describe('StorageTaskBroker', () => {
     expect(taskRow.status).toBe('completed');
   }, 10000);
 
-  it('should remove secrets after completing a task', async () => {
+  it('should remove secrets after picking up a task', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const dispatchResult = await broker.dispatch({} as TaskSpec, fakeSecrets);
-    const task = await broker.claim();
-    await task.complete('completed');
+    await broker.claim();
+
     const taskRow = await storage.getTask(dispatchResult.taskId);
-    expect(taskRow.status).toBe('completed');
     expect(taskRow.secrets).toBeUndefined();
   }, 10000);
 
@@ -111,16 +110,6 @@ describe('StorageTaskBroker', () => {
     await task.complete('failed');
     const taskRow = await storage.getTask(dispatchResult.taskId);
     expect(taskRow.status).toBe('failed');
-  });
-
-  it('should remove secrets after failing a task', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
-    const dispatchResult = await broker.dispatch({} as TaskSpec, fakeSecrets);
-    const task = await broker.claim();
-    await task.complete('failed');
-    const taskRow = await storage.getTask(dispatchResult.taskId);
-    expect(taskRow.status).toBe('failed');
-    expect(taskRow.secrets).toBeUndefined();
   });
 
   it('multiple brokers should be able to observe a single task', async () => {

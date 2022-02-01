@@ -20,8 +20,8 @@ import { createEvent, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import HomeIcon from '@material-ui/icons/Home';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import { Sidebar, SidebarExpandButton } from './Bar';
-import { SidebarItem, SidebarSearchField } from './Items';
+import { Sidebar } from './Bar';
+import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
 import { renderHook } from '@testing-library/react-hooks';
 import { hexToRgb, makeStyles } from '@material-ui/core/styles';
 

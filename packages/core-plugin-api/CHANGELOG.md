@@ -1,5 +1,96 @@
 # @backstage/core-plugin-api
 
+## 0.6.0
+
+### Minor Changes
+
+- ceebe25391: Removed deprecated `IdentityApi` methods: `getUserId`, `getIdToken`, and `getProfile`.
+
+  Existing usage of `getUserId` can be replaced by `getBackstageIdentity`, more precisely the equivalent of the previous `userId` can be retrieved like this:
+
+  ```ts
+  import { parseEntityRef } from '@backstage/catalog-model';
+
+  const identity = await identityApi.getBackstageIdentity();
+  const { name: userId } = parseEntityRef(identity.userEntityRef);
+  ```
+
+  Note that it is recommended to consume the entire `userEntityRef` rather than parsing out just the name, in order to support namespaces.
+
+  Existing usage of `getIdToken` can be replaced by `getCredentials`, like this:
+
+  ```ts
+  const { token } = await identityApi.getCredentials();
+  ```
+
+  And existing usage of `getProfile` is replaced by `getProfileInfo`, which returns the same profile object, but is now async.
+
+- ceebe25391: Removed deprecated `SignInResult` type, which was replaced with the new `onSignInSuccess` callback.
+- d879072b0c: Removed the deprecated `id` field of `BackstageIdentityResponse`.
+
+  Existing usage can be replaced by parsing the `name` of the `identity.userEntityRef` with `parseEntityRef` from `@backstage/catalog-model`, although note that it is recommended to consume the entire `userEntityRef` in order to support namespaces.
+
+- 94c02b4246: Removed deprecated `BackstageIdentity` type, which was replaced by `BackstageIdentityResponse`.
+- 234a36405b: Removed deprecated `OAuthRequestApi` types: `AuthProvider`, `AuthRequesterOptions`, `AuthRequester`, and `PendingAuthRequest`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@0.1.13
+
+## 0.6.0-next.0
+
+### Minor Changes
+
+- ceebe25391: Removed deprecated `IdentityApi` methods: `getUserId`, `getIdToken`, and `getProfile`.
+
+  Existing usage of `getUserId` can be replaced by `getBackstageIdentity`, more precisely the equivalent of the previous `userId` can be retrieved like this:
+
+  ```ts
+  import { parseEntityRef } from '@backstage/catalog-model';
+
+  const identity = await identityApi.getBackstageIdentity();
+  const { name: userId } = parseEntityRef(identity.userEntityRef);
+  ```
+
+  Note that it is recommended to consume the entire `userEntityRef` rather than parsing out just the name, in order to support namespaces.
+
+  Existing usage of `getIdToken` can be replaced by `getCredentials`, like this:
+
+  ```ts
+  const { token } = await identityApi.getCredentials();
+  ```
+
+  And existing usage of `getProfile` is replaced by `getProfileInfo`, which returns the same profile object, but is now async.
+
+- ceebe25391: Removed deprecated `SignInResult` type, which was replaced with the new `onSignInSuccess` callback.
+- d879072b0c: Removed the deprecated `id` field of `BackstageIdentityResponse`.
+
+  Existing usage can be replaced by parsing the `name` of the `identity.userEntityRef` with `parseEntityRef` from `@backstage/catalog-model`, although note that it is recommended to consume the entire `userEntityRef` in order to support namespaces.
+
+- 94c02b4246: Removed deprecated `BackstageIdentity` type, which was replaced by `BackstageIdentityResponse`.
+- 234a36405b: Removed deprecated `OAuthRequestApi` types: `AuthProvider`, `AuthRequesterOptions`, `AuthRequester`, and `PendingAuthRequest`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@0.1.13-next.0
+
+## 0.5.0
+
+### Minor Changes
+
+- 784d8078ab: Removed the deprecated `OldIconComponent` type.
+- e2eb92c109: Removed previously deprecated exports: `PluginHooks`, `PluginOutput`, and `FeatureFlagOutput`.
+
+  The deprecated `register` method of `PluginConfig` has been removed, as well as the deprecated `output` method of `BackstagePlugin`.
+
+### Patch Changes
+
+- 784d8078ab: Removed direct and transitive MUI dependencies.
+- Updated dependencies
+  - @backstage/config@0.1.12
+
 ## 0.4.1
 
 ### Patch Changes

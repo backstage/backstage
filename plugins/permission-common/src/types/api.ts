@@ -43,12 +43,20 @@ export enum AuthorizeResult {
 }
 
 /**
- * An authorization request for {@link PermissionClient#authorize}.
+ * An individual authorization request for {@link PermissionClient#authorize}.
+ * @public
+ */
+export type AuthorizeQuery = {
+  permission: Permission;
+  resourceRef?: string;
+};
+
+/**
+ * A batch of authorization requests from {@link PermissionClient#authorize}.
  * @public
  */
 export type AuthorizeRequest = {
-  permission: Permission;
-  resourceRef?: string;
+  items: Identified<AuthorizeQuery>[];
 };
 
 /**
@@ -75,12 +83,20 @@ export type PermissionCriteria<TQuery> =
   | TQuery;
 
 /**
- * An authorization response from {@link PermissionClient#authorize}.
+ * An individual authorization response from {@link PermissionClient#authorize}.
  * @public
  */
-export type AuthorizeResponse =
+export type AuthorizeDecision =
   | { result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }
   | {
       result: AuthorizeResult.CONDITIONAL;
       conditions: PermissionCriteria<PermissionCondition>;
     };
+
+/**
+ * A batch of authorization responses from {@link PermissionClient#authorize}.
+ * @public
+ */
+export type AuthorizeResponse = {
+  items: Identified<AuthorizeDecision>[];
+};

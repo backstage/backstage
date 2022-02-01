@@ -16,6 +16,7 @@
 
 import { ForwardedError } from '@backstage/errors';
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
+import { cloneDeep } from 'lodash';
 import { Logger } from 'winston';
 import { BindConfig } from './config';
 import { errorString } from './util';
@@ -85,7 +86,9 @@ export class LdapClient {
       }, 5000);
 
       const search = new Promise<SearchEntry[]>((resolve, reject) => {
-        this.client.search(dn, options, (err, res) => {
+        // Note that we clone the (frozen) options, since ldapjs rudely tries to
+        // overwrite parts of them
+        this.client.search(dn, cloneDeep(options), (err, res) => {
           if (err) {
             reject(new Error(errorString(err)));
             return;
@@ -137,7 +140,9 @@ export class LdapClient {
   ): Promise<void> {
     try {
       return await new Promise<void>((resolve, reject) => {
-        this.client.search(dn, options, (err, res) => {
+        // Note that we clone the (frozen) options, since ldapjs rudely tries to
+        // overwrite parts of them
+        this.client.search(dn, cloneDeep(options), (err, res) => {
           if (err) {
             reject(new Error(errorString(err)));
           }

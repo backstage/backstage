@@ -1,5 +1,45 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.4.5
+
+### Patch Changes
+
+- 8fc0d122e8: If serviceAccountToken not provided, use default config file from cluster
+- Updated dependencies
+  - @backstage/backend-common@0.10.5
+
+## 0.4.4
+
+### Patch Changes
+
+- edbd626d0a: add a new auth provider to support use GOOGLE_APPLICATION_CREDENTIALS
+- Updated dependencies
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+  - @backstage/plugin-kubernetes-common@0.2.2
+
+## 0.4.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/plugin-kubernetes-common@0.2.2-next.0
+
+## 0.4.3
+
+### Patch Changes
+
+- a67ec8527f: Exclude the AWS session token from credential validation, because it's not necessary in this context.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/backend-common@0.10.3
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-model@0.9.9
+
 ## 0.4.2
 
 ### Patch Changes

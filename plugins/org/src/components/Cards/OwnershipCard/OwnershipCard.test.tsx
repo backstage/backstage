@@ -23,11 +23,11 @@ import {
   CatalogApi,
   catalogApiRef,
   EntityProvider,
-  catalogRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { queryByText } from '@testing-library/react';
 import React from 'react';
+import { catalogIndexRouteRef } from '../../../routes';
 import { OwnershipCard } from './OwnershipCard';
 
 const items = [
@@ -159,7 +159,7 @@ describe('OwnershipCard', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/create': catalogRouteRef,
+          '/create': catalogIndexRouteRef,
         },
       },
     );
@@ -205,7 +205,7 @@ describe('OwnershipCard', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/create': catalogRouteRef,
+          '/create': catalogIndexRouteRef,
         },
       },
     );
@@ -236,7 +236,7 @@ describe('OwnershipCard', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/create': catalogRouteRef,
+          '/create': catalogIndexRouteRef,
         },
       },
     );
@@ -282,7 +282,7 @@ describe('OwnershipCard', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/create': catalogRouteRef,
+          '/create': catalogIndexRouteRef,
         },
       },
     );

@@ -198,6 +198,44 @@ const SKIPPED_PACKAGES = [
   join('packages', 'techdocs-cli'),
 ];
 
+const NO_WARNING_PACKAGES = [
+  'packages/app-defaults',
+  'packages/backend-common',
+  'packages/backend-tasks',
+  'packages/backend-test-utils',
+  'packages/catalog-client',
+  'packages/cli-common',
+  'packages/config',
+  'packages/config-loader',
+  'packages/core-app-api',
+  'packages/core-plugin-api',
+  'packages/dev-utils',
+  'packages/errors',
+  'packages/integration',
+  'packages/integration-react',
+  'packages/test-utils',
+  'packages/theme',
+  'packages/types',
+  'packages/version-bridge',
+  'plugins/catalog-backend-module-ldap',
+  'plugins/catalog-common',
+  'plugins/permission-backend',
+  'plugins/permission-common',
+  'plugins/permission-node',
+  'plugins/permission-react',
+  'plugins/scaffolder-backend-module-cookiecutter',
+  'plugins/scaffolder-backend-module-rails',
+  'plugins/scaffolder-backend-module-yeoman',
+  'plugins/scaffolder-common',
+  'plugins/tech-insights',
+  'plugins/tech-insights-backend',
+  'plugins/tech-insights-backend-module-jsonfc',
+  'plugins/tech-insights-common',
+  'plugins/tech-insights-node',
+  'plugins/todo',
+  'plugins/todo-backend',
+];
+
 async function resolvePackagePath(
   packagePath: string,
 ): Promise<string | undefined> {
@@ -281,6 +319,35 @@ async function createTemporaryTsConfig(includedPackageDirs: string[]) {
   return path;
 }
 
+async function countApiReportWarnings(projectFolder: string) {
+  const path = resolvePath(projectFolder, 'api-report.md');
+  try {
+    const content = await fs.readFile(path, 'utf8');
+    const lines = content.split('\n');
+
+    const lineWarnings = lines.filter(line =>
+      line.includes('// Warning:'),
+    ).length;
+
+    const trailerStart = lines.findIndex(
+      line => line === '// Warnings were encountered during analysis:',
+    );
+    const trailerWarnings =
+      trailerStart === -1
+        ? 0
+        : lines.length -
+          trailerStart -
+          4; /* 4 lines at the trailer and after are not warnings */
+
+    return lineWarnings + trailerWarnings;
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return 0;
+    }
+    throw error;
+  }
+}
+
 async function getTsDocConfig() {
   const tsdocConfigFile = await TSDocConfigFile.loadFile(
     require.resolve('@microsoft/api-extractor/extends/tsdoc-base.json'),
@@ -331,10 +398,14 @@ async function runApiExtraction({
 
   let compilerState: CompilerState | undefined = undefined;
 
+  const warnings = new Array<string>();
+
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
     const projectFolder = resolvePath(__dirname, '..', packageDir);
     const packageFolder = resolvePath(__dirname, '../dist-types', packageDir);
+
+    const warningCountBefore = await countApiReportWarnings(projectFolder);
 
     const extractorConfig = ExtractorConfig.prepare({
       configObject: {
@@ -470,6 +541,27 @@ async function runApiExtraction({
           ` and ${extractorResult.warningCount} warnings`,
       );
     }
+
+    const warningCountAfter = await countApiReportWarnings(projectFolder);
+    if (NO_WARNING_PACKAGES.includes(packageDir) && warningCountAfter > 0) {
+      throw new Error(
+        `The API Report for ${packageDir} is not allowed to have warnings`,
+      );
+    }
+    if (warningCountAfter > warningCountBefore) {
+      warnings.push(
+        `The API Report for ${packageDir} introduces new warnings. ` +
+          'Please fix these warnings in order to keep the API Reports tidy.',
+      );
+    }
+  }
+
+  if (warnings.length > 0) {
+    console.warn();
+    for (const warning of warnings) {
+      console.warn(warning);
+    }
+    console.warn();
   }
 }
 
@@ -752,7 +844,7 @@ async function main() {
 
   if (runTsc) {
     await fs.remove(resolvePath(projectRoot, 'dist-types'));
-    spawnSync(
+    const { status } = spawnSync(
       'yarn',
       [
         'tsc',
@@ -766,6 +858,9 @@ async function main() {
         cwd: projectRoot,
       },
     );
+    if (status !== 0) {
+      process.exit(status);
+    }
   }
 
   const packageDirs = selectedPackageDirs ?? (await findPackageDirs());

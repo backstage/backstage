@@ -182,7 +182,12 @@ export class OidcAuthProvider implements OAuthHandlers {
   // Use this function to grab the user profile info from the token
   // Then populate the profile with it
   private async handleResult(result: OidcAuthResult): Promise<OAuthResponse> {
-    const { profile } = await this.authHandler(result);
+    const context = {
+      logger: this.logger,
+      catalogIdentityClient: this.catalogIdentityClient,
+      tokenIssuer: this.tokenIssuer,
+    };
+    const { profile } = await this.authHandler(result, context);
     const response: OAuthResponse = {
       providerInfo: {
         idToken: result.tokenset.id_token,
@@ -198,11 +203,7 @@ export class OidcAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        {
-          tokenIssuer: this.tokenIssuer,
-          catalogIdentityClient: this.catalogIdentityClient,
-          logger: this.logger,
-        },
+        context,
       );
     }
 
@@ -210,19 +211,23 @@ export class OidcAuthProvider implements OAuthHandlers {
   }
 }
 
-export const oAuth2DefaultSignInResolver: SignInResolver<OidcAuthResult> =
-  async (info, ctx) => {
-    const { profile } = info;
+export const oAuth2DefaultSignInResolver: SignInResolver<
+  OidcAuthResult
+> = async (info, ctx) => {
+  const { profile } = info;
 
-    if (!profile.email) {
-      throw new Error('Profile contained no email');
-    }
-    const userId = profile.email.split('@')[0];
-    const token = await ctx.tokenIssuer.issueToken({
-      claims: { sub: userId, ent: [`user:default/${userId}`] },
-    });
-    return { id: userId, token };
-  };
+  if (!profile.email) {
+    throw new Error('Profile contained no email');
+  }
+  const userId = profile.email.split('@')[0];
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: {
+      sub: `user:default/${userId}`,
+      ent: [`user:default/${userId}`],
+    },
+  });
+  return { id: userId, token };
+};
 
 /**
  * OIDC provider callback options. An auth handler and a sign in resolver
@@ -252,6 +257,7 @@ export const createOidcProvider = (
     globalConfig,
     config,
     tokenIssuer,
+    tokenManager,
     catalogApi,
     logger,
   }) =>
@@ -267,7 +273,7 @@ export const createOidcProvider = (
       const prompt = envConfig.getOptionalString('prompt');
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
-        tokenIssuer,
+        tokenManager,
       });
 
       const authHandler: AuthHandler<OidcAuthResult> = options?.authHandler

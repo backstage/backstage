@@ -23,10 +23,15 @@ import { ChecksOverview } from './ChecksOverview';
 import Alert from '@material-ui/lab/Alert';
 import { techInsightsApiRef } from '../../api/TechInsightsApi';
 
-export const ScorecardsOverview = () => {
+export const ScorecardsOverview = ({
+  title,
+  description,
+}: {
+  title?: string;
+  description?: string;
+}) => {
   const api = useApi(techInsightsApiRef);
   const { namespace, kind, name } = useParams();
-
   const { value, loading, error } = useAsync(
     async () => await api.runChecks({ namespace, kind, name }),
   );
@@ -37,5 +42,11 @@ export const ScorecardsOverview = () => {
     return <Alert severity="error">{error.message}</Alert>;
   }
 
-  return <ChecksOverview checks={value || []} />;
+  return (
+    <ChecksOverview
+      title={title}
+      description={description}
+      checks={value || []}
+    />
+  );
 };

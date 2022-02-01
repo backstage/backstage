@@ -14,41 +14,58 @@
  * limitations under the License.
  */
 
-const metadataFields = /* GraphQL */ `
-  name: String!
-  annotations: JSONObject!
-  annotation(name: String!): JSON
-  labels: JSONObject!
-  label(name: String!): JSON
-  uid: String!
-  etag: String!
-  generation: Int!
-`;
-
 const schema = /* GraphQL */ `
   scalar JSON
   scalar JSONObject
-  
+
   interface EntityMetadata {
-    ${metadataFields}
+    name: String!
+    annotations: JSONObject!
+    annotation(name: String!): JSON
+    labels: JSONObject!
+    label(name: String!): JSON
+    uid: String!
+    etag: String!
+    generation: Int!
   }
 
   type DefaultEntityMetadata implements EntityMetadata {
-    ${metadataFields}
+    name: String!
+    annotations: JSONObject!
+    annotation(name: String!): JSON
+    labels: JSONObject!
+    label(name: String!): JSON
+    uid: String!
+    etag: String!
+    generation: Int!
   }
 
   type ComponentMetadata implements EntityMetadata {
-    ${metadataFields}
+    name: String!
+    annotations: JSONObject!
+    annotation(name: String!): JSON
+    labels: JSONObject!
+    label(name: String!): JSON
+    uid: String!
+    etag: String!
+    generation: Int!
     # mock field to prove extensions working
     relationships: String
   }
 
   type TemplateMetadata implements EntityMetadata {
-    ${metadataFields}
+    name: String!
+    annotations: JSONObject!
+    annotation(name: String!): JSON
+    labels: JSONObject!
+    label(name: String!): JSON
+    uid: String!
+    etag: String!
+    generation: Int!
     # mock field to prove extensions working
     updatedBy: String
   }
- 
+
   # TODO: move this definition into plugin-scaffolder-graphql
   type TemplateEntitySpec {
     type: String!
@@ -67,8 +84,11 @@ const schema = /* GraphQL */ `
     raw: JSONObject
   }
 
-  union EntitySpec = DefaultEntitySpec | TemplateEntitySpec | ComponentEntitySpec
-  
+  union EntitySpec =
+      DefaultEntitySpec
+    | TemplateEntitySpec
+    | ComponentEntitySpec
+
   type CatalogEntity {
     apiVersion: String!
     kind: String!

@@ -25,7 +25,6 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
-  catalogRouteRef,
   formatEntityRefTitle,
   isOwnerOf,
   useEntity,
@@ -42,6 +41,7 @@ import qs from 'qs';
 import React from 'react';
 import pluralize from 'pluralize';
 import useAsync from 'react-use/lib/useAsync';
+import { catalogIndexRouteRef } from '../../../routes';
 
 type EntityTypeProps = {
   kind: string;
@@ -138,7 +138,7 @@ export const OwnershipCard = ({
 }) => {
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
-  const catalogLink = useRouteRef(catalogRouteRef);
+  const catalogLink = useRouteRef(catalogIndexRouteRef);
 
   const {
     loading,

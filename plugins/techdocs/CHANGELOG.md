@@ -1,5 +1,143 @@
 # @backstage/plugin-techdocs
 
+## 0.13.1
+
+### Patch Changes
+
+- bdc53553eb: chore(deps): bump `react-text-truncate` from 0.16.0 to 0.17.0
+- a64f99f734: Code snippets now include a "copy to clipboard" button.
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+  - @backstage/plugin-search@0.6.0
+  - @backstage/plugin-catalog@0.7.10
+
+## 0.13.0
+
+### Minor Changes
+
+- aecfe4f403: Make `TechDocsClient` and `TechDocsStorageClient` use the `FetchApi`. You now
+  need to pass in an instance of that API when constructing the client, if you
+  create a custom instance in your app.
+
+  If you are replacing the factory:
+
+  ```diff
+  +import { fetchApiRef } from '@backstage/core-plugin-api';
+
+   createApiFactory({
+     api: techdocsStorageApiRef,
+     deps: {
+       configApi: configApiRef,
+       discoveryApi: discoveryApiRef,
+       identityApi: identityApiRef,
+  +    fetchApi: fetchApiRef,
+     },
+     factory: ({
+       configApi,
+       discoveryApi,
+       identityApi,
+  +    fetchApi,
+     }) =>
+       new TechDocsStorageClient({
+         configApi,
+         discoveryApi,
+         identityApi,
+  +      fetchApi,
+       }),
+   }),
+   createApiFactory({
+     api: techdocsApiRef,
+     deps: {
+       configApi: configApiRef,
+       discoveryApi: discoveryApiRef,
+  -    identityApi: identityApiRef,
+  +    fetchApi: fetchApiRef,
+     },
+     factory: ({
+       configApi,
+       discoveryApi,
+  -    identityApi,
+  +    fetchApi,
+     }) =>
+       new TechDocsClient({
+         configApi,
+         discoveryApi,
+  -      identityApi,
+  +      fetchApi,
+       }),
+   }),
+  ```
+
+  If instantiating directly:
+
+  ```diff
+  +import { fetchApiRef } from '@backstage/core-plugin-api';
+
+  +const fetchApi = useApi(fetchApiRef);
+   const storageClient = new TechDocsStorageClient({
+     configApi,
+     discoveryApi,
+     identityApi,
+  +  fetchApi,
+   });
+   const techdocsClient = new TechDocsClient({
+     configApi,
+     discoveryApi,
+  -  identityApi,
+  +  fetchApi,
+   }),
+  ```
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- 29710c91c2: use lighter color for block quotes and horizontal rulers
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/integration@0.7.2
+  - @backstage/plugin-search@0.5.6
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog@0.7.9
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+  - @backstage/integration-react@0.1.19
+
+## 0.12.15-next.0
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- 29710c91c2: use lighter color for block quotes and horizontal rulers
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/plugin-catalog@0.7.9-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/plugin-catalog-react@0.6.12-next.0
+  - @backstage/plugin-search@0.5.6-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/integration-react@0.1.19-next.0
+  - @backstage/integration@0.7.2-next.0
+
+## 0.12.14
+
+### Patch Changes
+
+- 5333451def: Cleaned up API exports
+- 1628ca3f49: Fix an issue where the TechDocs sidebar is hidden when the Backstage sidebar is pinned at smaller screen sizes
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-model@0.9.9
+  - @backstage/integration-react@0.1.18
+  - @backstage/plugin-catalog@0.7.8
+  - @backstage/plugin-search@0.5.5
+
 ## 0.12.13
 
 ### Patch Changes

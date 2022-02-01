@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { notFoundHandler, resolvePackagePath } from '@backstage/backend-common';
+import {
+  notFoundHandler,
+  PluginDatabaseManager,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import helmet from 'helmet';
 import express from 'express';
@@ -23,6 +27,15 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { Logger } from 'winston';
 import { injectConfig, readConfigs } from '../lib/config';
+import {
+  StaticAssetsStore,
+  findStaticAssets,
+  createStaticAssetMiddleware,
+} from '../lib/assets';
+import {
+  CACHE_CONTROL_MAX_CACHE,
+  CACHE_CONTROL_NO_CACHE,
+} from '../lib/headers';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
@@ -30,6 +43,13 @@ type Mime = { lookup(arg0: string): string };
 export interface RouterOptions {
   config: Config;
   logger: Logger;
+
+  /**
+   * If a database is provided it will be used to cache previously deployed static assets.
+   *
+   * This is a built-in alternative to using a `staticFallbackHandler`.
+   */
+  database?: PluginDatabaseManager;
 
   /**
    * The name of the app package that content should be served from. The same app package should be
@@ -45,6 +65,11 @@ export interface RouterOptions {
    * This can be used to avoid issues with clients on older deployment versions trying to access lazy
    * loaded content that is no longer present. Typically the requests would fall back to a long-term
    * object store where all recently deployed versions of the app are present.
+   *
+   * Another option is to provide a `database` that will take care of storing the static assets instead.
+   *
+   * If both `database` and `staticFallbackHandler` are provided, the `database` will attempt to serve
+   * static assets first, and if they are not found, the `staticFallbackHandler` will be called.
    */
   staticFallbackHandler?: express.Handler;
 
@@ -94,7 +119,28 @@ export async function createRouter(
 
   // Use a separate router for static content so that a fallback can be provided by backend
   const staticRouter = Router();
-  staticRouter.use(express.static(resolvePath(appDistDir, 'static')));
+  staticRouter.use(
+    express.static(resolvePath(appDistDir, 'static'), {
+      setHeaders: res => {
+        res.setHeader('Cache-Control', CACHE_CONTROL_MAX_CACHE);
+      },
+    }),
+  );
+
+  if (options.database) {
+    const store = await StaticAssetsStore.create({
+      logger,
+      database: await options.database.getClient(),
+    });
+
+    const assets = await findStaticAssets(staticDir);
+    await store.storeAssets(assets);
+    // Remove any assets that are older than 7 days
+    await store.trimAssets({ maxAgeSeconds: 60 * 60 * 24 * 7 });
+
+    staticRouter.use(createStaticAssetMiddleware(store));
+  }
+
   if (staticFallbackHandler) {
     staticRouter.use(staticFallbackHandler);
   }
@@ -109,7 +155,7 @@ export async function createRouter(
         if (
           (express.static.mime as unknown as Mime).lookup(path) === 'text/html'
         ) {
-          res.setHeader('Cache-Control', 'no-store, max-age=0');
+          res.setHeader('Cache-Control', CACHE_CONTROL_NO_CACHE);
         }
       },
     }),
@@ -119,7 +165,7 @@ export async function createRouter(
       headers: {
         // The Cache-Control header instructs the browser to not cache the index.html since it might
         // link to static assets from recently deployed versions.
-        'cache-control': 'no-store, max-age=0',
+        'cache-control': CACHE_CONTROL_NO_CACHE,
       },
     });
   });

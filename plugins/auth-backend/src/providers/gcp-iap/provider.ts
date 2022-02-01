@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,16 +71,17 @@ export class GcpIapProvider implements AuthProviderRouteHandlers {
       req.header(IAP_JWT_HEADER),
       this.tokenValidator,
     );
+    const context = {
+      logger: this.logger,
+      catalogIdentityClient: this.catalogIdentityClient,
+      tokenIssuer: this.tokenIssuer,
+    };
 
-    const { profile } = await this.authHandler(result);
+    const { profile } = await this.authHandler(result, context);
 
     const backstageIdentity = await this.signInResolver(
       { profile, result },
-      {
-        tokenIssuer: this.tokenIssuer,
-        catalogIdentityClient: this.catalogIdentityClient,
-        logger: this.logger,
-      },
+      context,
     );
 
     const response: GcpIapResponse = {
@@ -101,7 +102,7 @@ export class GcpIapProvider implements AuthProviderRouteHandlers {
 export function createGcpIapProvider(
   options: GcpIapProviderOptions,
 ): AuthProviderFactory {
-  return ({ config, tokenIssuer, catalogApi, logger }) => {
+  return ({ config, tokenIssuer, catalogApi, logger, tokenManager }) => {
     const audience = config.getString('audience');
 
     const authHandler = options.authHandler ?? defaultAuthHandler;
@@ -110,7 +111,7 @@ export function createGcpIapProvider(
 
     const catalogIdentityClient = new CatalogIdentityClient({
       catalogApi,
-      tokenIssuer,
+      tokenManager,
     });
 
     return new GcpIapProvider({

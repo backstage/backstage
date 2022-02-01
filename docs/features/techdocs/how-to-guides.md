@@ -406,7 +406,7 @@ plugins:
 
 The `docs/index.md` can for example have the following content:
 
-```md
+```
 # ${{ values.component_id }}
 
 ${{ values.description }}
@@ -441,4 +441,100 @@ techdocs:
 ```
 
 This way, all iframes where the host of src attribute is in the
-`sanitizer.allowedIframeHosts` list will be displayed
+`sanitizer.allowedIframeHosts` list will be displayed.
+
+## How to add Mermaid support in TechDocs
+
+To add `Mermaid` support in Techdocs, you can use [`kroki`](https://kroki.io)
+that creates diagrams from Textual descriptions. It is a single rendering
+gateway for all popular diagrams-as-a-code tools. It supports an enormous number
+of diagram types.
+
+1. **Create and Publish docker image:** Create the docker image from the
+   following Dockerfile and publish it to DockerHub.
+
+```docker
+FROM python:3.8-alpine
+
+RUN apk update && apk --no-cache add gcc musl-dev openjdk11-jdk curl graphviz ttf-dejavu fontconfig
+
+RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==0.2.1
+
+RUN pip install mkdocs-kroki-plugin
+
+ENTRYPOINT [ "mkdocs" ]
+```
+
+Create a repository in your DockerHub and run the below command in the same
+folder where your Dockerfile is present:
+
+```shell
+docker build . -t dockerHub_Username/repositoryName:tagName
+```
+
+Once the docker image is ready, push it to DockerHub.
+
+2. **Update app-config.yaml:** So that when your app generates techdocs, it will
+   pull your docker image from DockerHub.
+
+```python
+techdocs:
+  builder: 'local' # Alternatives - 'external'
+  generator:
+    runIn: 'docker' # Alternatives - 'local'
+    dockerImage: dockerHub_Username/repositoryName:tagName
+    pullImage: true
+  publisher:
+    type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
+```
+
+3. **Add the `kroki` plugin in mkdocs.yml:**
+
+```yml
+plugins:
+  - techdocs-core
+  - kroki
+```
+
+> Note: you will very likely want to set a `kroki` `ServerURL` configuration in your
+> `mkdocs.yml` as well. The default value is the publicly hosted `kroki.io`. If
+> you have sensitive information in your organization's diagrams, you should set
+> up a [server of your own](https://docs.kroki.io/kroki/setup/install/) and use it
+> instead. Check out [mkdocs-kroki-plugin config](https://github.com/AVATEAM-IT-SYSTEMHAUS/mkdocs-kroki-plugin#config)
+> for more plugin configuration details.
+
+4. **Add mermaid code into techdocs:**
+
+````md
+```kroki-mermaid
+sequenceDiagram
+GitLab->>Kroki: Request rendering
+Kroki->>Mermaid: Request rendering
+Mermaid-->>Kroki: Image
+Kroki-->>GitLab: Image
+```
+````
+
+Done! Now you have a support of the following diagrams along with mermaid:
+
+- `PlantUML`
+- `BlockDiag`
+- `BPMN`
+- `ByteField`
+- `SeqDiag`
+- `ActDiag`
+- `NwDiag`
+- `PacketDiag`
+- `RackDiag`
+- `C4 with PlantUML`
+- `Ditaa`
+- `Erd`
+- `Excalidraw`
+- `GraphViz`
+- `Nomnoml`
+- `Pikchr`
+- `Svgbob`
+- `UMlet`
+- `Vega`
+- `Vega-Lite`
+- `WaveDrom`

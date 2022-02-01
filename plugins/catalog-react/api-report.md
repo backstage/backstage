@@ -20,6 +20,7 @@ import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
+import { Permission } from '@backstage/plugin-permission-common';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
@@ -101,7 +102,7 @@ export type CatalogReactUserListPickerClassKey =
 
 // Warning: (ae-missing-release-tag) "catalogRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const catalogRouteRef: RouteRef<undefined>;
 
 // Warning: (ae-missing-release-tag) "createDomainColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -296,34 +297,40 @@ export const EntityRefLink: React_2.ForwardRefExoticComponent<
   Pick<
     EntityRefLinkProps,
     | 'replace'
+    | 'type'
+    | 'key'
+    | 'id'
     | 'media'
+    | 'state'
+    | 'color'
+    | 'display'
+    | 'translate'
     | 'hidden'
     | 'dir'
     | 'slot'
     | 'style'
     | 'title'
-    | 'color'
-    | 'underline'
-    | 'display'
-    | 'translate'
+    | 'target'
+    | 'accessKey'
+    | 'draggable'
+    | 'lang'
+    | 'className'
     | 'prefix'
     | 'children'
-    | 'key'
-    | 'id'
-    | 'classes'
+    | 'contentEditable'
+    | 'inputMode'
+    | 'tabIndex'
+    | 'underline'
+    | 'download'
+    | 'href'
+    | 'hrefLang'
     | 'defaultChecked'
     | 'defaultValue'
     | 'suppressContentEditableWarning'
     | 'suppressHydrationWarning'
-    | 'accessKey'
-    | 'className'
-    | 'contentEditable'
     | 'contextMenu'
-    | 'draggable'
-    | 'lang'
     | 'placeholder'
     | 'spellCheck'
-    | 'tabIndex'
     | 'radioGroup'
     | 'role'
     | 'about'
@@ -344,7 +351,6 @@ export const EntityRefLink: React_2.ForwardRefExoticComponent<
     | 'results'
     | 'security'
     | 'unselectable'
-    | 'inputMode'
     | 'is'
     | 'aria-activedescendant'
     | 'aria-atomic'
@@ -394,6 +400,7 @@ export const EntityRefLink: React_2.ForwardRefExoticComponent<
     | 'aria-valuemin'
     | 'aria-valuenow'
     | 'aria-valuetext'
+    | 'rel'
     | 'dangerouslySetInnerHTML'
     | 'onCopy'
     | 'onCopyCapture'
@@ -555,23 +562,17 @@ export const EntityRefLink: React_2.ForwardRefExoticComponent<
     | 'onAnimationIterationCapture'
     | 'onTransitionEnd'
     | 'onTransitionEndCapture'
-    | 'component'
-    | 'variant'
-    | 'innerRef'
-    | 'download'
-    | 'href'
-    | 'hrefLang'
     | 'ping'
-    | 'rel'
-    | 'target'
-    | 'type'
     | 'referrerPolicy'
+    | 'align'
+    | 'variant'
+    | 'component'
+    | 'classes'
+    | 'innerRef'
     | 'noWrap'
     | 'gutterBottom'
     | 'paragraph'
-    | 'align'
     | 'variantMapping'
-    | 'state'
     | 'TypographyClasses'
     | 'entityRef'
     | 'defaultKind'
@@ -591,7 +592,7 @@ export const EntityRefLinks: ({
 
 // Warning: (ae-missing-release-tag) "entityRoute" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const entityRoute: RouteRef<{
   name: string;
   kind: string;
@@ -609,7 +610,7 @@ export function entityRouteParams(entity: Entity): {
 
 // Warning: (ae-missing-release-tag) "entityRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export const entityRouteRef: RouteRef<{
   name: string;
   kind: string;
@@ -713,7 +714,6 @@ export const EntityTypePicker: (
   props: EntityTypeFilterProps,
 ) => JSX.Element | null;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "FavoriteEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -782,7 +782,7 @@ export function loadCatalogOwnerRefs(
   identityOwnerRefs: string[],
 ): Promise<string[]>;
 
-// @public
+// @public @deprecated
 export function loadIdentityOwnerRefs(
   identityApi: IdentityApi,
 ): Promise<string[]>;
@@ -813,7 +813,7 @@ export function reduceEntityFilters(
 
 // Warning: (ae-missing-release-tag) "rootRoute" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const rootRoute: RouteRef<undefined>;
 
 // @public
@@ -878,6 +878,13 @@ export function useEntityListProvider<
 export function useEntityOwnership(): {
   loading: boolean;
   isOwnedEntity: (entity: Entity | EntityName) => boolean;
+};
+
+// @public
+export function useEntityPermission(permission: Permission): {
+  loading: boolean;
+  allowed: boolean;
+  error?: Error;
 };
 
 // Warning: (ae-forgotten-export) The symbol "EntityTypeReturn" needs to be exported by the entry point index.d.ts
@@ -966,15 +973,4 @@ export function useStarredEntity(entityOrRef: Entity | EntityName | string): {
   toggleStarredEntity: () => void;
   isStarredEntity: boolean;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/types.d.ts:6:49 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/types.d.ts:6:10 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// src/types.d.ts:7:75 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/types.d.ts:7:10 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// src/types.d.ts:15:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.d.ts:16:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.d.ts:22:68 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// src/types.d.ts:22:88 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 ```

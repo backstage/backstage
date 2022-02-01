@@ -152,7 +152,12 @@ export class GithubAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: GithubOAuthResult) {
-    const { profile } = await this.authHandler(result);
+    const context = {
+      logger: this.logger,
+      catalogIdentityClient: this.catalogIdentityClient,
+      tokenIssuer: this.tokenIssuer,
+    };
+    const { profile } = await this.authHandler(result, context);
 
     const expiresInStr = result.params.expires_in;
     const response: OAuthResponse = {
@@ -171,11 +176,7 @@ export class GithubAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        {
-          tokenIssuer: this.tokenIssuer,
-          catalogIdentityClient: this.catalogIdentityClient,
-          logger: this.logger,
-        },
+        context,
       );
     }
 
@@ -183,18 +184,22 @@ export class GithubAuthProvider implements OAuthHandlers {
   }
 }
 
-export const githubDefaultSignInResolver: SignInResolver<GithubOAuthResult> =
-  async (info, ctx) => {
-    const { fullProfile } = info.result;
+export const githubDefaultSignInResolver: SignInResolver<
+  GithubOAuthResult
+> = async (info, ctx) => {
+  const { fullProfile } = info.result;
 
-    const userId = fullProfile.username || fullProfile.id;
+  const userId = fullProfile.username || fullProfile.id;
 
-    const token = await ctx.tokenIssuer.issueToken({
-      claims: { sub: userId, ent: [`user:default/${userId}`] },
-    });
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: {
+      sub: `user:default/${userId}`,
+      ent: [`user:default/${userId}`],
+    },
+  });
 
-    return { id: userId, token };
-  };
+  return { id: userId, token };
+};
 
 export type GithubProviderOptions = {
   /**
@@ -222,7 +227,7 @@ export type GithubProviderOptions = {
    * Providing your own stateEncoder will allow you to add addition parameters to the state field.
    *
    * It is typed as follows:
-   *   export type StateEncoder = (input: OAuthState) => Promise<{encodedState: string}>;
+   *   `export type StateEncoder = (input: OAuthState) => Promise<{encodedState: string}>;`
    *
    * Note: the stateEncoder must encode a 'nonce' value and an 'env' value. Without this, the OAuth flow will fail
    * (These two values will be set by the req.state by default)
@@ -240,6 +245,7 @@ export const createGithubProvider = (
     globalConfig,
     config,
     tokenIssuer,
+    tokenManager,
     catalogApi,
     logger,
   }) =>
@@ -265,7 +271,7 @@ export const createGithubProvider = (
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
-        tokenIssuer,
+        tokenManager,
       });
 
       const authHandler: AuthHandler<GithubOAuthResult> = options?.authHandler
@@ -309,6 +315,7 @@ export const createGithubProvider = (
         persistScopes: true,
         providerId,
         tokenIssuer,
+        callbackUrl,
       });
     });
 };

@@ -32,6 +32,7 @@ import { PartialEntity } from '../types';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
 import { trimEnd } from 'lodash';
+import { getBranchName, getCatalogFilename } from '../components/helpers';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -87,13 +88,15 @@ export class CatalogImportClient implements CatalogImportApi {
     const ghConfig = getGithubIntegrationConfig(this.scmIntegrationsApi, url);
     if (!ghConfig) {
       const other = this.scmIntegrationsApi.byUrl(url);
+      const catalogFilename = getCatalogFilename(this.configApi);
+
       if (other) {
         throw new Error(
-          `The ${other.title} integration only supports full URLs to catalog-info.yaml files. Did you try to pass in the URL of a directory instead?`,
+          `The ${other.title} integration only supports full URLs to ${catalogFilename} files. Did you try to pass in the URL of a directory instead?`,
         );
       }
       throw new Error(
-        'This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a catalog-info.yaml file instead.',
+        `This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a ${catalogFilename} file instead.`,
       );
     }
 
@@ -127,9 +130,10 @@ export class CatalogImportClient implements CatalogImportApi {
     const appTitle =
       this.configApi.getOptionalString('app.title') ?? 'Backstage';
     const appBaseUrl = this.configApi.getString('app.baseUrl');
+    const catalogFilename = getCatalogFilename(this.configApi);
 
     return {
-      title: 'Add catalog-info.yaml config file',
+      title: `Add ${catalogFilename} config file`,
       body: `This pull request adds a **Backstage entity metadata file** \
 to this repository so that the component can be added to the \
 [${appTitle} software catalog](${appBaseUrl}).\n\nAfter this pull request is merged, \
@@ -173,13 +177,13 @@ the component will become available.\n\nFor more information, read an \
   }: {
     repo: string;
   }): Promise<PartialEntity[]> {
-    const idToken = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
       {
         headers: {
           'Content-Type': 'application/json',
-          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
         method: 'POST',
         body: JSON.stringify({
@@ -221,8 +225,8 @@ the component will become available.\n\nFor more information, read an \
       auth: token,
       baseUrl: githubIntegrationConfig.apiBaseUrl,
     });
-    const catalogFileName = 'catalog-info.yaml';
-    const query = `repo:${owner}/${repo}+filename:${catalogFileName}`;
+    const catalogFilename = getCatalogFilename(this.configApi);
+    const query = `repo:${owner}/${repo}+filename:${catalogFilename}`;
 
     const searchResult = await octo.search.code({ q: query }).catch(e => {
       throw new Error(
@@ -294,8 +298,8 @@ the component will become available.\n\nFor more information, read an \
       baseUrl: githubIntegrationConfig.apiBaseUrl,
     });
 
-    const branchName = 'backstage-integration';
-    const fileName = 'catalog-info.yaml';
+    const branchName = getBranchName(this.configApi);
+    const fileName = getCatalogFilename(this.configApi);
 
     const repoData = await octo.repos
       .get({

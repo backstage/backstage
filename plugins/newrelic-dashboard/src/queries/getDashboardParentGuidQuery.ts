@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 export const getDashboardParentGuidQuery =
-  'query ($query: String) {\n  actor {\n    entitySearch(query: $query) {\n      results {\n        entities {\n          name\n          ... on DashboardEntityOutline {\n            name\n            guid\n          }\n          permalink\n        }\n      }\n    }\n  }\n}\n';
+  'query ($query: String) {\n  actor {\n    entitySearch(query: $query) {\n      results {\n        entities {\n          name\n          ... on DashboardEntityOutline {\n            name\n            dashboardParentGuid\n          guid\n          }\n          permalink\n        }\n      }\n    }\n  }\n}\n';

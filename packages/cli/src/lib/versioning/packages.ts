@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import minimatch from 'minimatch';
+import { getPackages } from '@manypkg/get-packages';
 import { runPlain } from '../../lib/run';
 import { NotFoundError } from '../errors';
 
@@ -22,7 +23,7 @@ const DEP_TYPES = [
   'devDependencies',
   'peerDependencies',
   'optionalDependencies',
-];
+] as const;
 
 // Package data as returned by `yarn info`
 export type YarnInfoInspectData = {
@@ -66,14 +67,12 @@ export async function mapDependencies(
   targetDir: string,
   pattern: string,
 ): Promise<Map<string, PkgVersionInfo[]>> {
-  const { Project } = require('@lerna/project');
-  const project = new Project(targetDir);
-  const packages = await project.getPackages();
+  const { packages } = await getPackages(targetDir);
 
   const dependencyMap = new Map<string, PkgVersionInfo[]>();
   for (const pkg of packages) {
     const deps = DEP_TYPES.flatMap(
-      t => Object.entries(pkg.get(t) ?? {}) as [string, string][],
+      t => Object.entries(pkg.packageJson[t] ?? {}) as [string, string][],
     );
 
     for (const [name, range] of deps) {
@@ -82,8 +81,8 @@ export async function mapDependencies(
           name,
           (dependencyMap.get(name) ?? []).concat({
             range,
-            name: pkg.name,
-            location: pkg.location,
+            name: pkg.packageJson.name,
+            location: pkg.dir,
           }),
         );
       }

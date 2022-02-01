@@ -21,10 +21,9 @@ export type ConfigSchemaProcessingOptions = {
   visibility?: ConfigVisibility[];
   valueTransform?: TransformFunc<any>;
   withFilteredKeys?: boolean;
+  withDeprecatedKeys?: boolean;
 };
 
-// Warning: (ae-missing-release-tag) "ConfigTarget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ConfigTarget =
   | {
@@ -51,15 +50,11 @@ export type LoadConfigOptions = {
   watch?: LoadConfigOptionsWatch;
 };
 
-// Warning: (ae-missing-release-tag) "LoadConfigOptionsRemote" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type LoadConfigOptionsRemote = {
   reloadIntervalSeconds: number;
 };
 
-// Warning: (ae-missing-release-tag) "LoadConfigOptionsWatch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type LoadConfigOptionsWatch = {
   onChange: (configs: AppConfig[]) => void;

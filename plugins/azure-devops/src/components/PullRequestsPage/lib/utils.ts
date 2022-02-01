@@ -28,7 +28,7 @@ import {
 
 /**
  * Filters a reviewer based on vote status and if the reviewer is required.
- * @param reviewer a reviewer to filter.
+ * @param reviewer - a reviewer to filter.
  * @returns whether or not to filter the `reviewer`.
  */
 export function reviewerFilter(reviewer: Reviewer): boolean {
@@ -39,8 +39,8 @@ export function reviewerFilter(reviewer: Reviewer): boolean {
 
 /**
  * Removes values from the provided array and returns them.
- * @param arr the array to extract values from.
- * @param filter a filter used to extract values from the provided array.
+ * @param arr - the array to extract values from.
+ * @param filter - a filter used to extract values from the provided array.
  * @returns the values that were extracted from the array.
  *
  * @example
@@ -80,8 +80,8 @@ export function arrayExtract<T>(arr: T[], filter: (value: T) => unknown): T[] {
 
 /**
  * Creates groups of pull requests based on a list of `PullRequestGroupConfig`.
- * @param pullRequests all pull requests to be split up into groups.
- * @param configs the config used for splitting up the pull request groups.
+ * @param pullRequests - all pull requests to be split up into groups.
+ * @param configs - the config used for splitting up the pull request groups.
  * @returns a list of pull request groups.
  */
 export function getPullRequestGroups(

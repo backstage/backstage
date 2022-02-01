@@ -26,22 +26,50 @@ function mkError(thing: string) {
   );
 }
 
+function logDeprecation(thing: string) {
+  // eslint-disable-next-line no-console
+  console.warn(
+    `WARNING: Call to ${thing} is deprecated and will break in the future`,
+  );
+}
+
+// We use this for a period of backwards compatibility. It is a hidden
+// compatibility that will allow old plugins to continue working for a limited time.
+type CompatibilityIdentityApi = IdentityApi & {
+  getUserId?(): string;
+  getIdToken?(): Promise<string | undefined>;
+  getProfile?(): ProfileInfo;
+};
+
 /**
  * Implementation of the connection between the App-wide IdentityApi
  * and sign-in page.
  */
 export class AppIdentityProxy implements IdentityApi {
-  private target?: IdentityApi;
+  private target?: CompatibilityIdentityApi;
+  private waitForTarget: Promise<CompatibilityIdentityApi>;
+  private resolveTarget: (api: CompatibilityIdentityApi) => void = () => {};
+
+  constructor() {
+    this.waitForTarget = new Promise<CompatibilityIdentityApi>(resolve => {
+      this.resolveTarget = resolve;
+    });
+  }
 
   // This is called by the app manager once the sign-in page provides us with an implementation
-  setTarget(identityApi: IdentityApi) {
+  setTarget(identityApi: CompatibilityIdentityApi) {
     this.target = identityApi;
+    this.resolveTarget(identityApi);
   }
 
   getUserId(): string {
     if (!this.target) {
       throw mkError('getUserId');
     }
+    if (!this.target.getUserId) {
+      throw new Error('IdentityApi does not implement getUserId');
+    }
+    logDeprecation('getUserId');
     return this.target.getUserId();
   }
 
@@ -49,42 +77,48 @@ export class AppIdentityProxy implements IdentityApi {
     if (!this.target) {
       throw mkError('getProfile');
     }
+    if (!this.target.getProfile) {
+      throw new Error('IdentityApi does not implement getProfile');
+    }
+    logDeprecation('getProfile');
     return this.target.getProfile();
   }
 
   async getProfileInfo(): Promise<ProfileInfo> {
-    if (!this.target) {
-      throw mkError('getProfileInfo');
-    }
-    return this.target.getProfileInfo();
+    return this.waitForTarget.then(target => target.getProfileInfo());
   }
 
   async getBackstageIdentity(): Promise<BackstageUserIdentity> {
-    if (!this.target) {
-      throw mkError('getBackstageIdentity');
+    const identity = await this.waitForTarget.then(target =>
+      target.getBackstageIdentity(),
+    );
+    if (!identity.userEntityRef.match(/^.*:.*\/.*$/)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `WARNING: The App IdentityApi provided an invalid userEntityRef, '${identity.userEntityRef}'. ` +
+          `It must be a full Entity Reference of the form '<kind>:<namespace>/<name>'.`,
+      );
     }
-    return this.target.getBackstageIdentity();
+
+    return identity;
   }
 
   async getCredentials(): Promise<{ token?: string | undefined }> {
-    if (!this.target) {
-      throw mkError('getCredentials');
-    }
-    return this.target.getCredentials();
+    return this.waitForTarget.then(target => target.getCredentials());
   }
 
   async getIdToken(): Promise<string | undefined> {
-    if (!this.target) {
-      throw mkError('getIdToken');
-    }
-    return this.target.getIdToken();
+    return this.waitForTarget.then(target => {
+      if (!target.getIdToken) {
+        throw new Error('IdentityApi does not implement getIdToken');
+      }
+      logDeprecation('getIdToken');
+      return target.getIdToken();
+    });
   }
 
   async signOut(): Promise<void> {
-    if (!this.target) {
-      throw mkError('signOut');
-    }
-    await this.target.signOut();
+    await this.waitForTarget.then(target => target.signOut());
     location.reload();
   }
 }

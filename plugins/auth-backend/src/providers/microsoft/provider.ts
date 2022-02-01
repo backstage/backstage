@@ -143,7 +143,12 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
     const photo = await this.getUserPhoto(result.accessToken);
     result.fullProfile.photos = photo ? [{ value: photo }] : undefined;
 
-    const { profile } = await this.authHandler(result);
+    const context = {
+      logger: this.logger,
+      catalogIdentityClient: this.catalogIdentityClient,
+      tokenIssuer: this.tokenIssuer,
+    };
+    const { profile } = await this.authHandler(result, context);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -161,11 +166,7 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        {
-          tokenIssuer: this.tokenIssuer,
-          catalogIdentityClient: this.catalogIdentityClient,
-          logger: this.logger,
-        },
+        context,
       );
     }
 
@@ -219,22 +220,26 @@ export const microsoftEmailSignInResolver: SignInResolver<OAuthResult> = async (
   return { id: entity.metadata.name, entity, token };
 };
 
-export const microsoftDefaultSignInResolver: SignInResolver<OAuthResult> =
-  async (info, ctx) => {
-    const { profile } = info;
+export const microsoftDefaultSignInResolver: SignInResolver<
+  OAuthResult
+> = async (info, ctx) => {
+  const { profile } = info;
 
-    if (!profile.email) {
-      throw new Error('Profile contained no email');
-    }
+  if (!profile.email) {
+    throw new Error('Profile contained no email');
+  }
 
-    const userId = profile.email.split('@')[0];
+  const userId = profile.email.split('@')[0];
 
-    const token = await ctx.tokenIssuer.issueToken({
-      claims: { sub: userId, ent: [`user:default/${userId}`] },
-    });
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: {
+      sub: `user:default/${userId}`,
+      ent: [`user:default/${userId}`],
+    },
+  });
 
-    return { id: userId, token };
-  };
+  return { id: userId, token };
+};
 
 export type MicrosoftProviderOptions = {
   /**
@@ -262,6 +267,7 @@ export const createMicrosoftProvider = (
     globalConfig,
     config,
     tokenIssuer,
+    tokenManager,
     catalogApi,
     logger,
   }) =>
@@ -276,7 +282,7 @@ export const createMicrosoftProvider = (
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
-        tokenIssuer,
+        tokenManager,
       });
 
       const authHandler: AuthHandler<OAuthResult> = options?.authHandler

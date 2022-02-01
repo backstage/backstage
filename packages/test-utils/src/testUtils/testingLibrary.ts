@@ -36,6 +36,5 @@ export async function renderWithEffects(
   await act(async () => {
     value = render(nodes);
   });
-  // @ts-ignore
-  return value;
+  return value!;
 }

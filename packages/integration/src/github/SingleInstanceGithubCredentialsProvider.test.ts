@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { GithubCredentialsProvider } from './types';
+
 const octokit = {
   paginate: async (fn: any) => (await fn()).data,
   apps: {
@@ -35,23 +37,24 @@ import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubC
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
 
-const github = SingleInstanceGithubCredentialsProvider.create({
-  host: 'github.com',
-  apps: [
-    {
-      appId: 1,
-      privateKey: 'privateKey',
-      webhookSecret: '123',
-      clientId: 'CLIENT_ID',
-      clientSecret: 'CLIENT_SECRET',
-    },
-  ],
-  token: 'hardcoded_token',
-});
+describe('SingleInstanceGithubCredentialsProvider tests', () => {
+  let github: GithubCredentialsProvider;
 
-describe('DefaultGithubCredentialsProvider tests', () => {
   beforeEach(() => {
     jest.resetAllMocks();
+    github = SingleInstanceGithubCredentialsProvider.create({
+      host: 'github.com',
+      apps: [
+        {
+          appId: 1,
+          privateKey: 'privateKey',
+          webhookSecret: '123',
+          clientId: 'CLIENT_ID',
+          clientSecret: 'CLIENT_SECRET',
+        },
+      ],
+      token: 'hardcoded_token',
+    });
   });
   it('create repository specific tokens', async () => {
     octokit.apps.listInstallations.mockResolvedValue({
@@ -131,6 +134,44 @@ describe('DefaultGithubCredentialsProvider tests', () => {
 
     expect(headers).toEqual({ Authorization: 'Bearer secret_token' });
     expect(token).toEqual('secret_token');
+  });
+
+  it('does not return a token where the organisation is not in the allowedInstallationsList', async () => {
+    github = SingleInstanceGithubCredentialsProvider.create({
+      host: 'github.com',
+      apps: [
+        {
+          appId: 1,
+          privateKey: 'privateKey',
+          webhookSecret: '123',
+          clientId: 'CLIENT_ID',
+          clientSecret: 'CLIENT_SECRET',
+          allowedInstallationOwners: ['backstage'],
+        },
+      ],
+    });
+
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: {
+        etag: '123',
+      },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'all',
+          account: {
+            login: 'backstage',
+          },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    const { token, headers } = await github.getCredentials({
+      url: 'https://github.com/RoadiehHQ',
+    });
+
+    expect(headers).toEqual(undefined);
+    expect(token).toEqual(undefined);
   });
 
   it('should not fail to issue tokens for an organization when the app is installed for a single repo', async () => {

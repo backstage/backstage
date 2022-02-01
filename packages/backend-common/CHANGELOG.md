@@ -1,5 +1,77 @@
 # @backstage/backend-common
 
+## 0.10.5
+
+### Patch Changes
+
+- de9d7eba63: Fixed configuration schema incorrectly declaring `backend.listen.address` to exist, rather than `backend.listen.host`, which is the correct key.
+
+## 0.10.4
+
+### Patch Changes
+
+- f685e1398f: Loading of app configurations now reference the `@deprecated` construct from
+  JSDoc to determine if a property in-use has been deprecated. Users are notified
+  of deprecated keys in the format:
+
+  ```txt
+  The configuration key 'catalog.processors.githubOrg' of app-config.yaml is deprecated and may be removed soon. Configure a GitHub integration instead.
+  ```
+
+  When the `withDeprecatedKeys` option is set to `true` in the `process` method
+  of `loadConfigSchema`, the user will be notified that deprecated keys have been
+  identified in their app configuration.
+
+  The `backend-common` and `plugin-app-backend` packages have been updated to set
+  `withDeprecatedKeys` to true so that users are notified of deprecated settings
+  by default.
+
+- Updated dependencies
+  - @backstage/integration@0.7.2
+  - @backstage/config@0.1.13
+  - @backstage/config-loader@0.9.3
+
+## 0.10.4-next.0
+
+### Patch Changes
+
+- f685e1398f: Loading of app configurations now reference the `@deprecated` construct from
+  JSDoc to determine if a property in-use has been deprecated. Users are notified
+  of deprecated keys in the format:
+
+  ```txt
+  The configuration key 'catalog.processors.githubOrg' of app-config.yaml is deprecated and may be removed soon. Configure a GitHub integration instead.
+  ```
+
+  When the `withDeprecatedKeys` option is set to `true` in the `process` method
+  of `loadConfigSchema`, the user will be notified that deprecated keys have been
+  identified in their app configuration.
+
+  The `backend-common` and `plugin-app-backend` packages have been updated to set
+  `withDeprecatedKeys` to true so that users are notified of deprecated settings
+  by default.
+
+- Updated dependencies
+  - @backstage/config@0.1.13-next.0
+  - @backstage/config-loader@0.9.3-next.0
+  - @backstage/integration@0.7.2-next.0
+
+## 0.10.3
+
+### Patch Changes
+
+- 5b406daabe: build(deps-dev): bump `http-errors` from 1.8.0 to 2.0.0
+- 5333451def: Cleaned up API exports
+- db5310e25e: bump `logform` to use fixed version of `color` dependency
+- 7946418729: Switched to using `@manypkg/get-packages` to list monorepo packages, which provides better support for different kind of monorepo setups.
+- 3b4d8caff6: The GithubUrlReader is switched to use the DefaultGithubCredentialsProvider
+- f77bd5c8ff: Clean up API reports
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/errors@0.2.0
+  - @backstage/config-loader@0.9.2
+
 ## 0.10.2
 
 ### Patch Changes

@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import {
+  FactLifecycle,
   FactRetriever,
   FactRetrieverContext,
+  TechInsightFact,
   TechInsightsStore,
 } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistry } from './FactRetrieverRegistry';
@@ -75,7 +77,7 @@ export class FactRetrieverEngine {
     const registrations = this.factRetrieverRegistry.listRegistrations();
     const newRegs: string[] = [];
     registrations.forEach(registration => {
-      const { factRetriever, cadence } = registration;
+      const { factRetriever, cadence, lifecycle } = registration;
       if (!this.scheduledJobs.has(factRetriever.id)) {
         const cronExpression =
           cadence || this.defaultCadence || randomDailyCron();
@@ -87,7 +89,7 @@ export class FactRetrieverEngine {
         }
         const job = schedule(
           cronExpression,
-          this.createFactRetrieverHandler(factRetriever),
+          this.createFactRetrieverHandler(factRetriever, lifecycle),
         );
         this.scheduledJobs.set(factRetriever.id, job);
         newRegs.push(factRetriever.id);
@@ -102,26 +104,40 @@ export class FactRetrieverEngine {
     return this.scheduledJobs.get(ref);
   }
 
-  private createFactRetrieverHandler(factRetriever: FactRetriever) {
+  private createFactRetrieverHandler(
+    factRetriever: FactRetriever,
+    lifecycle?: FactLifecycle,
+  ) {
     return async () => {
       const startTimestamp = process.hrtime();
       this.logger.info(
         `Retrieving facts for fact retriever ${factRetriever.id}`,
       );
-      const facts = await factRetriever.handler({
-        ...this.factRetrieverContext,
-        entityFilter: factRetriever.entityFilter,
-      });
-      if (this.logger.isDebugEnabled()) {
+
+      let facts: TechInsightFact[] = [];
+      try {
+        facts = await factRetriever.handler({
+          ...this.factRetrieverContext,
+          entityFilter: factRetriever.entityFilter,
+        });
         this.logger.debug(
           `Retrieved ${facts.length} facts for fact retriever ${
             factRetriever.id
           } in ${duration(startTimestamp)}`,
         );
+      } catch (e) {
+        this.logger.error(
+          `Failed to retrieve facts for retriever ${factRetriever.id}`,
+          e,
+        );
       }
 
       try {
-        await this.repository.insertFacts(factRetriever.id, facts);
+        await this.repository.insertFacts({
+          id: factRetriever.id,
+          facts,
+          lifecycle,
+        });
         this.logger.info(
           `Stored ${facts.length} facts for fact retriever ${
             factRetriever.id

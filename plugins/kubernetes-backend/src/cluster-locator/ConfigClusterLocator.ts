@@ -64,6 +64,9 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           case 'serviceAccount': {
             return clusterDetails;
           }
+          case 'googleServiceAccount': {
+            return clusterDetails;
+          }
           default: {
             throw new Error(
               `authProvider "${authProvider}" has no config associated with it`,

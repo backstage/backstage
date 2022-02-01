@@ -18,12 +18,13 @@ import fs from 'fs-extra';
 import { parseRepoUrl, isExecutable } from './util';
 
 import {
-  SingleInstanceGithubCredentialsProvider,
+  GithubCredentialsProvider,
   ScmIntegrationRegistry,
+  SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
 import { zipObject } from 'lodash';
 import { createTemplateAction } from '../../createTemplateAction';
-import { Octokit } from '@octokit/rest';
+import { Octokit } from 'octokit';
 import { InputError, CustomErrorBase } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import globby from 'globby';
@@ -58,6 +59,7 @@ export type GithubPullRequestActionInput = {
 
 export type ClientFactoryInput = {
   integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
   host: string;
   owner: string;
   repo: string;
@@ -65,6 +67,7 @@ export type ClientFactoryInput = {
 
 export const defaultClientFactory = async ({
   integrations,
+  githubCredentialsProvider,
   owner,
   repo,
   host = 'github.com',
@@ -76,13 +79,8 @@ export const defaultClientFactory = async ({
   }
 
   const credentialsProvider =
+    githubCredentialsProvider ||
     SingleInstanceGithubCredentialsProvider.create(integrationConfig);
-
-  if (!credentialsProvider) {
-    throw new InputError(
-      `No matching credentials for host ${host}, please check your integrations config`,
-    );
-  }
 
   const { token } = await credentialsProvider.getCredentials({
     url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
@@ -106,11 +104,13 @@ export const defaultClientFactory = async ({
 
 interface CreateGithubPullRequestActionOptions {
   integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
   clientFactory?: (input: ClientFactoryInput) => Promise<PullRequestCreator>;
 }
 
 export const createPublishGithubPullRequestAction = ({
   integrations,
+  githubCredentialsProvider,
   clientFactory = defaultClientFactory,
 }: CreateGithubPullRequestActionOptions) => {
   return createTemplateAction<GithubPullRequestActionInput>({
@@ -183,7 +183,13 @@ export const createPublishGithubPullRequestAction = ({
         );
       }
 
-      const client = await clientFactory({ integrations, host, owner, repo });
+      const client = await clientFactory({
+        integrations,
+        githubCredentialsProvider,
+        host,
+        owner,
+        repo,
+      });
       const fileRoot = sourcePath
         ? resolveSafeChildPath(ctx.workspacePath, sourcePath)
         : ctx.workspacePath;

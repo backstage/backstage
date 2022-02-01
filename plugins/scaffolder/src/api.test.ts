@@ -16,7 +16,7 @@
 
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ScaffolderClient } from './api';
@@ -32,7 +32,7 @@ describe('api', () => {
   const mockBaseUrl = 'http://backstage/api';
 
   const discoveryApi = { getBaseUrl: async () => mockBaseUrl };
-  const identityApi = {} as any;
+  const fetchApi = new MockFetchApi();
   const scmIntegrationsApi = ScmIntegrations.fromConfig(
     new ConfigReader({
       integrations: {
@@ -50,7 +50,7 @@ describe('api', () => {
     apiClient = new ScaffolderClient({
       scmIntegrationsApi,
       discoveryApi,
-      identityApi,
+      fetchApi,
     });
   });
 
@@ -126,7 +126,7 @@ describe('api', () => {
         apiClient = new ScaffolderClient({
           scmIntegrationsApi,
           discoveryApi,
-          identityApi,
+          fetchApi,
           useLongPollingLogs: true,
         });
       });

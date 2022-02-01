@@ -34,7 +34,11 @@
       {
         "type": "subcategory",
         "label": "CLI",
-        "ids": ["local-dev/cli-overview", "local-dev/cli-commands"]
+        "ids": [
+          "local-dev/cli-overview",
+          "local-dev/cli-build-system",
+          "local-dev/cli-commands"
+        ]
       },
       "local-dev/linking-local-packages"
     ],
@@ -202,7 +206,6 @@
         "type": "subcategory",
         "label": "Publishing",
         "ids": [
-          "plugins/publishing",
           "plugins/publish-private",
           "plugins/add-to-marketplace",
           "plugins/observability"
@@ -229,7 +232,8 @@
           "auth/gitlab/provider",
           "auth/google/provider",
           "auth/okta/provider",
-          "auth/onelogin/provider"
+          "auth/onelogin/provider",
+          "auth/oauth2-proxy/provider"
         ]
       },
       "auth/add-auth-provider",

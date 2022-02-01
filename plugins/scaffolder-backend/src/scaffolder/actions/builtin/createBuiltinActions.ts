@@ -16,7 +16,11 @@
 
 import { ContainerRunner, UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrations,
+  DefaultGithubCredentialsProvider,
+} from '@backstage/integration';
 import { Config } from '@backstage/config';
 import {
   createCatalogWriteAction,
@@ -42,6 +46,7 @@ import {
   createGithubActionsDispatchAction,
   createGithubWebhookAction,
 } from './github';
+import { TemplateFilter } from '../../../lib';
 
 export const createBuiltinActions = (options: {
   reader: UrlReader;
@@ -49,9 +54,18 @@ export const createBuiltinActions = (options: {
   catalogClient: CatalogApi;
   containerRunner?: ContainerRunner;
   config: Config;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }) => {
-  const { reader, integrations, containerRunner, catalogClient, config } =
-    options;
+  const {
+    reader,
+    integrations,
+    containerRunner,
+    catalogClient,
+    config,
+    additionalTemplateFilters,
+  } = options;
+  const githubCredentialsProvider: GithubCredentialsProvider =
+    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
   const actions = [
     createFetchPlainAction({
@@ -61,13 +75,16 @@ export const createBuiltinActions = (options: {
     createFetchTemplateAction({
       integrations,
       reader,
+      additionalTemplateFilters,
     }),
     createPublishGithubAction({
       integrations,
       config,
+      githubCredentialsProvider,
     }),
     createPublishGithubPullRequestAction({
       integrations,
+      githubCredentialsProvider,
     }),
     createPublishGitlabAction({
       integrations,
@@ -91,9 +108,11 @@ export const createBuiltinActions = (options: {
     createFilesystemRenameAction(),
     createGithubActionsDispatchAction({
       integrations,
+      githubCredentialsProvider,
     }),
     createGithubWebhookAction({
       integrations,
+      githubCredentialsProvider,
     }),
   ];
 

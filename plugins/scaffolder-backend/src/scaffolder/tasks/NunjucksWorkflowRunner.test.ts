@@ -22,7 +22,7 @@ import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { TaskContext, TaskSpec } from './types';
+import { TaskContext, TaskSpec, TaskSecrets } from './types';
 
 const realFiles = Object.fromEntries(
   [
@@ -49,8 +49,12 @@ describe('DefaultWorkflowRunner', () => {
     }),
   );
 
-  const createMockTaskWithSpec = (spec: TaskSpec): TaskContext => ({
+  const createMockTaskWithSpec = (
+    spec: TaskSpec,
+    secrets?: TaskSecrets,
+  ): TaskContext => ({
     spec,
+    secrets,
     complete: async () => {},
     done: false,
     emitLog: async () => {},
@@ -181,6 +185,32 @@ describe('DefaultWorkflowRunner', () => {
       expect(fakeActionHandler.mock.calls[0][0].metadata).toEqual({
         name: templateName,
       });
+    });
+
+    it('should pass token through', async () => {
+      const fakeToken = 'secret';
+      const task = createMockTaskWithSpec(
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          parameters: {},
+          output: {},
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-validated-action',
+              input: { foo: 1 },
+            },
+          ],
+        },
+        {
+          token: fakeToken,
+        },
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler.mock.calls[0][0].token).toEqual(fakeToken);
     });
   });
 
@@ -439,6 +469,33 @@ describe('DefaultWorkflowRunner', () => {
       const { output } = await runner.execute(task);
 
       expect(output.foo).toEqual('BACKSTAGE');
+    });
+  });
+
+  describe('secrets', () => {
+    it('should pass through the secrets to the context', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-mock-action',
+              input: {},
+            },
+          ],
+          output: {},
+          parameters: {},
+        },
+        { foo: 'bar' },
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ secrets: { foo: 'bar' } }),
+      );
     });
   });
 

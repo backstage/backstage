@@ -23,7 +23,7 @@ import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 
 describe('<CostInsightsHeader/>', () => {
   const identityApi: Partial<IdentityApi> = {
-    getProfile: () => ({
+    getProfileInfo: async () => ({
       email: 'test-email@example.com',
       displayName: 'User 1',
     }),

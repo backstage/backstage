@@ -23,7 +23,10 @@ import { createTemplateAction } from '../../createTemplateAction';
 import globby from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
-import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
+import {
+  TemplateFilter,
+  SecureTemplater,
+} from '../../../../lib/templating/SecureTemplater';
 
 type CookieCompatInput = {
   copyWithoutRender?: string[];
@@ -44,8 +47,9 @@ export type FetchTemplateInput = {
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }) {
-  const { reader, integrations } = options;
+  const { reader, integrations, additionalTemplateFilters } = options;
 
   return createTemplateAction<FetchTemplateInput>({
     id: 'fetch:template',
@@ -182,6 +186,7 @@ export function createFetchTemplateAction(options: {
 
       const renderTemplate = await SecureTemplater.loadRenderer({
         cookiecutterCompat: ctx.input.cookiecutterCompat,
+        additionalTemplateFilters,
       });
 
       for (const location of allEntriesInTemplate) {

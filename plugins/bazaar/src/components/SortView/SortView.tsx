@@ -33,7 +33,7 @@ import { fetchCatalogItems } from '../../util/fetchMethods';
 import { parseBazaarProject } from '../../util/parseMethods';
 
 const useStyles = makeStyles({
-  button: { width: '12rem' },
+  button: { minWidth: '11rem' },
   container: {
     marginTop: '2rem',
   },
@@ -141,7 +141,9 @@ export const SortView = () => {
     }
   }, [bazaarProjects, catalogEntities]);
 
-  const handleSortMethodChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleSortMethodChange = (
+    event: ChangeEvent<{ name?: string | undefined; value: unknown }>,
+  ) => {
     setSortMethodNbr(
       typeof event.target.value === 'number' ? event.target.value : 0,
     );

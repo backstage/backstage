@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, ChangeEvent, useEffect } from 'react';
+import React, { ReactElement, ChangeEvent } from 'react';
 import {
   makeStyles,
   FormControl,
@@ -26,7 +26,12 @@ import {
   FormLabel,
 } from '@material-ui/core';
 
+import {
+  AutocompleteFilter,
+  SearchAutocompleteFilterProps,
+} from './SearchFilter.Autocomplete';
 import { useSearch } from '../SearchContext';
+import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
 
 const useStyles = makeStyles({
   label: {
@@ -34,36 +39,58 @@ const useStyles = makeStyles({
   },
 });
 
-export type Component = {
+/**
+ * @public
+ */
+export type SearchFilterComponentProps = {
   className?: string;
   name: string;
-  values?: string[];
+  label?: string;
+  /**
+   * Either an array of values directly, or an async function to return a list
+   * of values to be used in the filter. In the autocomplete filter, the last
+   * input value is provided as an input to allow values to be filtered. This
+   * function is debounced and values cached.
+   */
+  values?: string[] | ((partial: string) => Promise<string[]>);
   defaultValue?: string[] | string | null;
+  /**
+   * Debounce time in milliseconds, used when values is an async callback.
+   * Defaults to 250ms.
+   */
+  valuesDebounceMs?: number;
 };
 
-export type Props = Component & {
-  component: (props: Component) => ReactElement;
+/**
+ * @public
+ */
+export type SearchFilterWrapperProps = SearchFilterComponentProps & {
+  component: (props: SearchFilterComponentProps) => ReactElement;
   debug?: boolean;
 };
 
-const CheckboxFilter = ({
-  className,
-  name,
-  defaultValue,
-  values = [],
-}: Component) => {
+const CheckboxFilter = (props: SearchFilterComponentProps) => {
+  const {
+    className,
+    defaultValue,
+    label,
+    name,
+    values: givenValues = [],
+    valuesDebounceMs,
+  } = props;
   const classes = useStyles();
   const { filters, setFilters } = useSearch();
-
-  useEffect(() => {
-    if (Array.isArray(defaultValue)) {
-      setFilters(prevFilters => ({
-        ...prevFilters,
-        [name]: defaultValue,
-      }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useDefaultFilterValue(name, defaultValue);
+  const asyncValues =
+    typeof givenValues === 'function' ? givenValues : undefined;
+  const defaultValues =
+    typeof givenValues === 'function' ? undefined : givenValues;
+  const { value: values = [], loading } = useAsyncFilterValues(
+    asyncValues,
+    '',
+    defaultValues,
+    valuesDebounceMs,
+  );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const {
@@ -81,10 +108,11 @@ const CheckboxFilter = ({
   return (
     <FormControl
       className={className}
+      disabled={loading}
       fullWidth
       data-testid="search-checkboxfilter-next"
     >
-      <FormLabel className={classes.label}>{name}</FormLabel>
+      {label ? <FormLabel className={classes.label}>{label}</FormLabel> : null}
       {values.map((value: string) => (
         <FormControlLabel
           key={value}
@@ -106,24 +134,28 @@ const CheckboxFilter = ({
   );
 };
 
-const SelectFilter = ({
-  className,
-  name,
-  defaultValue,
-  values = [],
-}: Component) => {
+const SelectFilter = (props: SearchFilterComponentProps) => {
+  const {
+    className,
+    defaultValue,
+    label,
+    name,
+    values: givenValues,
+    valuesDebounceMs,
+  } = props;
   const classes = useStyles();
+  useDefaultFilterValue(name, defaultValue);
+  const asyncValues =
+    typeof givenValues === 'function' ? givenValues : undefined;
+  const defaultValues =
+    typeof givenValues === 'function' ? undefined : givenValues;
+  const { value: values = [], loading } = useAsyncFilterValues(
+    asyncValues,
+    '',
+    defaultValues,
+    valuesDebounceMs,
+  );
   const { filters, setFilters } = useSearch();
-
-  useEffect(() => {
-    if (typeof defaultValue === 'string') {
-      setFilters(prevFilters => ({
-        ...prevFilters,
-        [name]: defaultValue,
-      }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleChange = (e: ChangeEvent<{ value: unknown }>) => {
     const {
@@ -138,14 +170,17 @@ const SelectFilter = ({
 
   return (
     <FormControl
+      disabled={loading}
       className={className}
       variant="filled"
       fullWidth
       data-testid="search-selectfilter-next"
     >
-      <InputLabel className={classes.label} margin="dense">
-        {name}
-      </InputLabel>
+      {label ? (
+        <InputLabel className={classes.label} margin="dense">
+          {label}
+        </InputLabel>
+      ) : null}
       <Select
         variant="outlined"
         value={filters[name] || ''}
@@ -164,16 +199,29 @@ const SelectFilter = ({
   );
 };
 
-const SearchFilter = ({ component: Element, ...props }: Props) => (
-  <Element {...props} />
-);
+const SearchFilter = ({
+  component: Element,
+  ...props
+}: SearchFilterWrapperProps) => <Element {...props} />;
 
-SearchFilter.Checkbox = (props: Omit<Props, 'component'> & Component) => (
-  <SearchFilter {...props} component={CheckboxFilter} />
-);
+SearchFilter.Checkbox = (
+  props: Omit<SearchFilterWrapperProps, 'component'> &
+    SearchFilterComponentProps,
+) => <SearchFilter {...props} component={CheckboxFilter} />;
 
-SearchFilter.Select = (props: Omit<Props, 'component'> & Component) => (
-  <SearchFilter {...props} component={SelectFilter} />
+SearchFilter.Select = (
+  props: Omit<SearchFilterWrapperProps, 'component'> &
+    SearchFilterComponentProps,
+) => <SearchFilter {...props} component={SelectFilter} />;
+
+/**
+ * A control surface for a given filter field name, rendered as an autocomplete
+ * textfield. A hard-coded list of values may be provided, or an async function
+ * which returns values may be provided instead.
+ * @public
+ */
+SearchFilter.Autocomplete = (props: SearchAutocompleteFilterProps) => (
+  <SearchFilter {...props} component={AutocompleteFilter} />
 );
 
 /**

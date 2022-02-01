@@ -44,7 +44,7 @@ export class TechdocsGenerator implements GeneratorBase {
    * The default docker image (and version) used to generate content. Public
    * and static so that techdocs-common consumers can use the same version.
    */
-  public static readonly defaultDockerImage = 'spotify/techdocs:v0.3.5';
+  public static readonly defaultDockerImage = 'spotify/techdocs:v0.3.6';
   private readonly logger: Logger;
   private readonly containerRunner: ContainerRunner;
   private readonly options: GeneratorConfig;
@@ -150,7 +150,7 @@ export class TechdocsGenerator implements GeneratorBase {
         `Failed to generate docs from ${inputDir} into ${outputDir}`,
       );
       throw new ForwardedError(
-        'Failed to generate docs from ${inputDir} into ${outputDir}',
+        `Failed to generate docs from ${inputDir} into ${outputDir}`,
         error,
       );
     }

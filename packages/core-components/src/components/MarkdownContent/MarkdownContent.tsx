@@ -67,6 +67,7 @@ const useStyles = makeStyles<BackstageTheme>(
 type Props = {
   content: string;
   dialect?: 'gfm' | 'common-mark';
+  linkTarget?: Options['linkTarget'];
 };
 
 const components: Options['components'] = {
@@ -90,7 +91,7 @@ const components: Options['components'] = {
  * If you just want to render to plain [CommonMark](https://commonmark.org/), set the dialect to `'common-mark'`
  */
 export function MarkdownContent(props: Props) {
-  const { content, dialect = 'gfm' } = props;
+  const { content, dialect = 'gfm', linkTarget } = props;
   const classes = useStyles();
   return (
     <ReactMarkdown
@@ -98,6 +99,7 @@ export function MarkdownContent(props: Props) {
       className={classes.markdown}
       children={content}
       components={components}
+      linkTarget={linkTarget}
     />
   );
 }

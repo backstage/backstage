@@ -27,6 +27,7 @@ import {
 } from '@backstage/config-loader';
 import { AppConfig, Config, ConfigReader } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
+import { getPackages } from '@manypkg/get-packages';
 
 import { isValidUrl } from './urls';
 
@@ -38,7 +39,10 @@ const updateRedactionList = (
   configs: AppConfig[],
   logger: Logger,
 ) => {
-  const secretAppConfigs = schema.process(configs, { visibility: ['secret'] });
+  const secretAppConfigs = schema.process(configs, {
+    visibility: ['secret'],
+    withDeprecatedKeys: true,
+  });
   const secretConfig = ConfigReader.fromConfigs(secretAppConfigs);
   const values = new Set<string>();
   const data = secretConfig.get();
@@ -194,11 +198,9 @@ export async function loadBackendConfig(options: {
   // TODO(hhogg): This is fetching _all_ of the packages of the monorepo
   // in order to find the secrets for redactions, however we only care about
   // the backend ones, we need to find a way to exclude the frontend packages.
-  const { Project } = require('@lerna/project');
-  const project = new Project(paths.targetDir);
-  const packages = await project.getPackages();
+  const { packages } = await getPackages(paths.targetDir);
   const schema = await loadConfigSchema({
-    dependencies: packages.map((p: any) => p.name),
+    dependencies: packages.map(p => p.packageJson.name),
   });
 
   const config = new ObservableConfigProxy(options.logger);

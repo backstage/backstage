@@ -17,6 +17,7 @@
 import {
   DocumentCollator,
   DocumentDecorator,
+  DocumentTypeInfo,
   IndexableDocument,
   SearchEngine,
 } from '@backstage/search-common';
@@ -40,18 +41,24 @@ type IndexBuilderOptions = {
 export class IndexBuilder {
   private collators: Record<string, CollatorEnvelope>;
   private decorators: Record<string, DocumentDecorator[]>;
+  private documentTypes: Record<string, DocumentTypeInfo>;
   private searchEngine: SearchEngine;
   private logger: Logger;
 
   constructor({ logger, searchEngine }: IndexBuilderOptions) {
     this.collators = {};
     this.decorators = {};
+    this.documentTypes = {};
     this.logger = logger;
     this.searchEngine = searchEngine;
   }
 
   getSearchEngine(): SearchEngine {
     return this.searchEngine;
+  }
+
+  getDocumentTypes(): Record<string, DocumentTypeInfo> {
+    return this.documentTypes;
   }
 
   /**
@@ -68,6 +75,9 @@ export class IndexBuilder {
     this.collators[collator.type] = {
       refreshInterval: defaultRefreshIntervalSeconds,
       collate: collator,
+    };
+    this.documentTypes[collator.type] = {
+      visibilityPermission: collator.visibilityPermission,
     };
   }
 

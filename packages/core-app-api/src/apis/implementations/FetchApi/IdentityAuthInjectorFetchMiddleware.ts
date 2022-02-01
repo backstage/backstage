@@ -27,24 +27,19 @@ export class IdentityAuthInjectorFetchMiddleware implements FetchMiddleware {
     identityApi: IdentityApi;
     config?: Config;
     urlPrefixAllowlist?: string[];
+    allowUrl?: (url: string) => boolean;
     header?: {
       name: string;
       value: (backstageToken: string) => string;
     };
   }): IdentityAuthInjectorFetchMiddleware {
-    const allowlist: string[] = [];
-    if (options.urlPrefixAllowlist) {
-      allowlist.push(...options.urlPrefixAllowlist);
-    } else if (options.config) {
-      allowlist.push(options.config.getString('backend.baseUrl'));
-    }
-
+    const matcher = buildMatcher(options);
     const headerName = options.header?.name || 'authorization';
     const headerValue = options.header?.value || (token => `Bearer ${token}`);
 
     return new IdentityAuthInjectorFetchMiddleware(
       options.identityApi,
-      allowlist.map(prefix => prefix.replace(/\/$/, '')),
+      matcher,
       headerName,
       headerValue,
     );
@@ -52,7 +47,7 @@ export class IdentityAuthInjectorFetchMiddleware implements FetchMiddleware {
 
   constructor(
     public readonly identityApi: IdentityApi,
-    public readonly urlPrefixAllowlist: string[],
+    public readonly allowUrl: (url: string) => boolean,
     public readonly headerName: string,
     public readonly headerValue: (pluginId: string) => string,
   ) {}
@@ -65,12 +60,9 @@ export class IdentityAuthInjectorFetchMiddleware implements FetchMiddleware {
       const { token } = await this.identityApi.getCredentials();
       if (
         request.headers.get(this.headerName) ||
-        !this.urlPrefixAllowlist.some(
-          prefix =>
-            request.url === prefix || request.url.startsWith(`${prefix}/`),
-        ) ||
         typeof token !== 'string' ||
-        !token
+        !token ||
+        !this.allowUrl(request.url)
       ) {
         return next(input, init);
       }
@@ -79,4 +71,27 @@ export class IdentityAuthInjectorFetchMiddleware implements FetchMiddleware {
       return next(request);
     };
   }
+}
+
+function buildMatcher(options: {
+  config?: Config;
+  urlPrefixAllowlist?: string[];
+  allowUrl?: (url: string) => boolean;
+}): (url: string) => boolean {
+  if (options.allowUrl) {
+    return options.allowUrl;
+  } else if (options.urlPrefixAllowlist) {
+    return buildPrefixMatcher(options.urlPrefixAllowlist);
+  } else if (options.config) {
+    return buildPrefixMatcher([options.config.getString('backend.baseUrl')]);
+  }
+  return () => false;
+}
+
+function buildPrefixMatcher(prefixes: string[]): (url: string) => boolean {
+  const trimmedPrefixes = prefixes.map(prefix => prefix.replace(/\/$/, ''));
+  return url =>
+    trimmedPrefixes.some(
+      prefix => url === prefix || url.startsWith(`${prefix}/`),
+    );
 }

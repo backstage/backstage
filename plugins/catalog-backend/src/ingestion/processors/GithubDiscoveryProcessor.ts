@@ -17,7 +17,8 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
-  SingleInstanceGithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
+  GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -43,8 +44,15 @@ import { CatalogProcessor, CatalogProcessorEmit } from './types';
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
+  private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
-  static fromConfig(config: Config, options: { logger: Logger }) {
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger;
+      githubCredentialsProvider?: GithubCredentialsProvider;
+    },
+  ) {
     const integrations = ScmIntegrations.fromConfig(config);
 
     return new GithubDiscoveryProcessor({
@@ -53,9 +61,16 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     });
   }
 
-  constructor(options: { integrations: ScmIntegrations; logger: Logger }) {
+  constructor(options: {
+    integrations: ScmIntegrations;
+    logger: Logger;
+    githubCredentialsProvider?: GithubCredentialsProvider;
+  }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
+    this.githubCredentialsProvider =
+      options.githubCredentialsProvider ||
+      DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
   }
 
   async readLocation(
@@ -84,9 +99,9 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     // about how to handle the wild card which is special for this processor.
     const orgUrl = `https://${host}/${org}`;
 
-    const { headers } = await SingleInstanceGithubCredentialsProvider.create(
-      gitHubConfig,
-    ).getCredentials({ url: orgUrl });
+    const { headers } = await this.githubCredentialsProvider.getCredentials({
+      url: orgUrl,
+    });
 
     const client = graphql.defaults({
       baseUrl: gitHubConfig.apiBaseUrl,

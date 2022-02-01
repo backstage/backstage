@@ -1,5 +1,24 @@
 # @techdocs/cli
 
+## 0.8.11
+
+### Patch Changes
+
+- 10086f5873: Bumped `react-dev-utils` from `^12.0.0-next.47` to `^12.0.0-next.60`.
+- Updated dependencies
+  - @backstage/techdocs-common@0.11.5
+  - @backstage/backend-common@0.10.5
+
+## 0.8.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/techdocs-common@0.11.4-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+
 ## 0.8.10
 
 ### Patch Changes

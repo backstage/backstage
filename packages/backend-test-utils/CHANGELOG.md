@@ -1,5 +1,41 @@
 # @backstage/backend-test-utils
 
+## 0.1.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.13.0
+  - @backstage/backend-common@0.10.5
+
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.12.0
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+
+## 0.1.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.12.0-next.0
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+
+## 0.1.13
+
+### Patch Changes
+
+- b1bc55405e: Bump `testcontainers` dependency to version `8.1.2`
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/backend-common@0.10.3
+  - @backstage/cli@0.11.0
+
 ## 0.1.12
 
 ### Patch Changes

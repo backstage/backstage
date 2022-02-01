@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Config } from '@backstage/config';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
 /**
@@ -30,4 +31,18 @@ export function asInputRef(renderResult: UseFormRegisterReturn) {
     inputRef: ref,
     ...rest,
   };
+}
+
+export function getCatalogFilename(config: Config): string {
+  return (
+    config.getOptionalString('catalog.import.entityFilename') ??
+    'catalog-info.yaml'
+  );
+}
+
+export function getBranchName(config: Config): string {
+  return (
+    config.getOptionalString('catalog.import.pullRequestBranchName') ??
+    'backstage-integration'
+  );
 }

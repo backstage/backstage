@@ -169,7 +169,12 @@ export class OktaAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult) {
-    const { profile } = await this._authHandler(result);
+    const context = {
+      logger: this._logger,
+      catalogIdentityClient: this._catalogIdentityClient,
+      tokenIssuer: this._tokenIssuer,
+    };
+    const { profile } = await this._authHandler(result, context);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -187,11 +192,7 @@ export class OktaAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        {
-          tokenIssuer: this._tokenIssuer,
-          catalogIdentityClient: this._catalogIdentityClient,
-          logger: this._logger,
-        },
+        context,
       );
     }
 
@@ -235,7 +236,7 @@ export const oktaDefaultSignInResolver: SignInResolver<OAuthResult> = async (
   const userId = profile.email.split('@')[0];
 
   const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: userId, ent: [`user:default/${userId}`] },
+    claims: { sub: `user:default/${userId}`, ent: [`user:default/${userId}`] },
   });
 
   return { id: userId, token };
@@ -267,6 +268,7 @@ export const createOktaProvider = (
     globalConfig,
     config,
     tokenIssuer,
+    tokenManager,
     catalogApi,
     logger,
   }) =>
@@ -285,7 +287,7 @@ export const createOktaProvider = (
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
-        tokenIssuer,
+        tokenManager,
       });
 
       const authHandler: AuthHandler<OAuthResult> = _options?.authHandler

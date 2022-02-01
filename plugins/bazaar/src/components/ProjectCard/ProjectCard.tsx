@@ -41,12 +41,19 @@ const useStyles = makeStyles({
     WebkitLineClamp: 7,
     WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
-    backgroundColor: '',
+    textAlign: 'justify',
   },
   memberCount: {
     float: 'right',
   },
-  content: { height: '13rem', marginBottom: '-0.5rem' },
+  content: {
+    height: '13rem',
+  },
+  header: {
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 });
 
 type Props = {
@@ -82,7 +89,12 @@ export const ProjectCard = ({
       <Card key={id}>
         <CardActionArea onClick={() => setOpenCard(true)}>
           <ItemCardHeader
-            title={name}
+            classes={{ root: classes.header }}
+            title={
+              <Typography noWrap variant="h6" component="h4">
+                {name}
+              </Typography>
+            }
             subtitle={`updated ${DateTime.fromISO(
               new Date(updatedAt!).toISOString(),
             ).toRelative({

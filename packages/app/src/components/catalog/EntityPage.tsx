@@ -37,6 +37,7 @@ import {
   EntityAzurePipelinesContent,
   EntityAzurePullRequestsContent,
   isAzureDevOpsAvailable,
+  isAzurePipelinesAvailable,
 } from '@backstage/plugin-azure-devops';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
@@ -125,10 +126,15 @@ import {
   isTravisciAvailable,
 } from '@roadiehq/backstage-plugin-travis-ci';
 import {
+  EntityBuildkiteContent,
+  isBuildkiteAvailable,
+} from '@roadiehq/backstage-plugin-buildkite';
+import {
   isNewRelicDashboardAvailable,
   EntityNewRelicDashboardContent,
   EntityNewRelicDashboardCard,
 } from '@backstage/plugin-newrelic-dashboard';
+import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
 
 import React, { ReactNode, useMemo, useState } from 'react';
 
@@ -173,6 +179,10 @@ export const cicdContent = (
       <EntityJenkinsContent />
     </EntitySwitch.Case>
 
+    <EntitySwitch.Case if={isBuildkiteAvailable}>
+      <EntityBuildkiteContent />
+    </EntitySwitch.Case>
+
     <EntitySwitch.Case if={isCircleCIAvailable}>
       <EntityCircleCIContent />
     </EntitySwitch.Case>
@@ -185,11 +195,15 @@ export const cicdContent = (
       <EntityTravisCIContent />
     </EntitySwitch.Case>
 
+    <EntitySwitch.Case if={isGoCdAvailable}>
+      <EntityGoCdContent />
+    </EntitySwitch.Case>
+
     <EntitySwitch.Case if={isGithubActionsAvailable}>
       <EntityGithubActionsContent />
     </EntitySwitch.Case>
 
-    <EntitySwitch.Case if={isAzureDevOpsAvailable}>
+    <EntitySwitch.Case if={isAzurePipelinesAvailable}>
       <EntityAzurePipelinesContent defaultLimit={25} />
     </EntitySwitch.Case>
 

@@ -18,7 +18,7 @@
  * Returns a string with the elapsed time since the start of an operation,
  * with some human friendly precision, e.g. "133ms" or "14.5s".
  *
- * @param startTimestamp The timestamp (from process.hrtime()) at the start ot
+ * @param startTimestamp - The timestamp (from process.hrtime()) at the start ot
  *                       the operation
  */
 export function durationText(startTimestamp: [number, number]): string {

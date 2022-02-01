@@ -1,5 +1,174 @@
 # example-app
 
+## 0.2.62
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+  - @backstage/plugin-catalog-graph@0.2.8
+  - @backstage/cli@0.13.0
+  - @backstage/plugin-techdocs@0.13.1
+  - @backstage/plugin-search@0.6.0
+  - @backstage/plugin-explore@0.3.27
+  - @backstage/search-common@0.2.2
+  - @backstage/plugin-azure-devops@0.1.12
+  - @backstage/plugin-catalog@0.7.10
+  - @backstage/plugin-github-actions@0.4.33
+  - @backstage/plugin-gcp-projects@0.3.15
+  - @backstage/core-app-api@0.5.1
+  - @backstage/plugin-home@0.4.12
+
+## 0.2.61
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-tech-radar@0.5.3
+  - @backstage/core-components@0.8.5
+  - @backstage/plugin-api-docs@0.7.0
+  - @backstage/plugin-kubernetes@0.5.5
+  - @backstage/cli@0.12.0
+  - @backstage/plugin-search@0.5.6
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-org@0.4.0
+  - @backstage/plugin-catalog@0.7.9
+  - @backstage/plugin-cost-insights@0.11.18
+  - @backstage/plugin-shortcuts@0.1.20
+  - @backstage/plugin-user-settings@0.3.17
+  - @backstage/core-app-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/plugin-scaffolder@0.12.0
+  - @backstage/plugin-azure-devops@0.1.11
+  - @backstage/plugin-badges@0.2.20
+  - @backstage/plugin-catalog-import@0.7.10
+  - @backstage/plugin-kafka@0.2.26
+  - @backstage/plugin-pagerduty@0.3.23
+  - @backstage/plugin-rollbar@0.3.24
+  - @backstage/plugin-sentry@0.3.34
+  - @backstage/plugin-tech-insights@0.1.6
+  - @backstage/plugin-techdocs@0.13.0
+  - @backstage/plugin-todo@0.1.20
+  - @backstage/plugin-newrelic-dashboard@0.1.4
+  - @backstage/catalog-model@0.9.10
+  - @backstage/app-defaults@0.1.5
+  - @backstage/integration-react@0.1.19
+  - @backstage/plugin-airbrake@0.1.1
+  - @backstage/plugin-apache-airflow@0.1.4
+  - @backstage/plugin-catalog-graph@0.2.7
+  - @backstage/plugin-circleci@0.2.35
+  - @backstage/plugin-cloudbuild@0.2.33
+  - @backstage/plugin-code-coverage@0.1.23
+  - @backstage/plugin-explore@0.3.26
+  - @backstage/plugin-gcp-projects@0.3.14
+  - @backstage/plugin-github-actions@0.4.32
+  - @backstage/plugin-gocd@0.1.2
+  - @backstage/plugin-graphiql@0.2.28
+  - @backstage/plugin-home@0.4.11
+  - @backstage/plugin-jenkins@0.5.18
+  - @backstage/plugin-lighthouse@0.2.35
+  - @backstage/plugin-newrelic@0.3.14
+
+## 0.2.61-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-tech-radar@0.5.3-next.0
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/plugin-api-docs@0.6.23-next.0
+  - @backstage/cli@0.12.0-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/plugin-org@0.3.35-next.0
+  - @backstage/plugin-catalog@0.7.9-next.0
+  - @backstage/plugin-cost-insights@0.11.18-next.0
+  - @backstage/plugin-shortcuts@0.1.20-next.0
+  - @backstage/plugin-user-settings@0.3.17-next.0
+  - @backstage/core-app-api@0.5.0-next.0
+  - @backstage/plugin-catalog-react@0.6.12-next.0
+  - @backstage/plugin-azure-devops@0.1.11-next.0
+  - @backstage/plugin-badges@0.2.20-next.0
+  - @backstage/plugin-catalog-import@0.7.10-next.0
+  - @backstage/plugin-kafka@0.2.26-next.0
+  - @backstage/plugin-kubernetes@0.5.5-next.0
+  - @backstage/plugin-pagerduty@0.3.23-next.0
+  - @backstage/plugin-rollbar@0.3.24-next.0
+  - @backstage/plugin-scaffolder@0.11.19-next.0
+  - @backstage/plugin-search@0.5.6-next.0
+  - @backstage/plugin-sentry@0.3.34-next.0
+  - @backstage/plugin-tech-insights@0.1.6-next.0
+  - @backstage/plugin-techdocs@0.12.15-next.0
+  - @backstage/plugin-todo@0.1.19-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/app-defaults@0.1.5-next.0
+  - @backstage/integration-react@0.1.19-next.0
+  - @backstage/plugin-airbrake@0.1.1-next.0
+  - @backstage/plugin-apache-airflow@0.1.4-next.0
+  - @backstage/plugin-catalog-graph@0.2.7-next.0
+  - @backstage/plugin-circleci@0.2.35-next.0
+  - @backstage/plugin-cloudbuild@0.2.33-next.0
+  - @backstage/plugin-code-coverage@0.1.23-next.0
+  - @backstage/plugin-explore@0.3.26-next.0
+  - @backstage/plugin-gcp-projects@0.3.14-next.0
+  - @backstage/plugin-github-actions@0.4.32-next.0
+  - @backstage/plugin-gocd@0.1.2-next.0
+  - @backstage/plugin-graphiql@0.2.28-next.0
+  - @backstage/plugin-home@0.4.11-next.0
+  - @backstage/plugin-jenkins@0.5.18-next.0
+  - @backstage/plugin-lighthouse@0.2.35-next.0
+  - @backstage/plugin-newrelic@0.3.14-next.0
+  - @backstage/plugin-newrelic-dashboard@0.1.4-next.0
+
+## 0.2.60
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/cli@0.11.0
+  - @backstage/plugin-tech-insights@0.1.5
+  - @backstage/plugin-gocd@0.1.1
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-org@0.3.34
+  - @backstage/plugin-home@0.4.10
+  - @backstage/plugin-azure-devops@0.1.10
+  - @backstage/plugin-apache-airflow@0.1.3
+  - @backstage/plugin-catalog-import@0.7.9
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/plugin-code-coverage@0.1.22
+  - @backstage/plugin-cost-insights@0.11.17
+  - @backstage/plugin-jenkins@0.5.17
+  - @backstage/plugin-scaffolder@0.11.18
+  - @backstage/plugin-techdocs@0.12.14
+  - @backstage/plugin-kubernetes@0.5.4
+  - @backstage/plugin-pagerduty@0.3.22
+  - @backstage/plugin-api-docs@0.6.22
+  - @backstage/core-app-api@0.4.0
+  - @backstage/plugin-airbrake@0.1.0
+  - @backstage/app-defaults@0.1.4
+  - @backstage/catalog-model@0.9.9
+  - @backstage/integration-react@0.1.18
+  - @backstage/plugin-badges@0.2.19
+  - @backstage/plugin-catalog@0.7.8
+  - @backstage/plugin-catalog-graph@0.2.6
+  - @backstage/plugin-circleci@0.2.34
+  - @backstage/plugin-cloudbuild@0.2.32
+  - @backstage/plugin-explore@0.3.25
+  - @backstage/plugin-gcp-projects@0.3.13
+  - @backstage/plugin-github-actions@0.4.31
+  - @backstage/plugin-graphiql@0.2.27
+  - @backstage/plugin-kafka@0.2.25
+  - @backstage/plugin-lighthouse@0.2.34
+  - @backstage/plugin-newrelic@0.3.13
+  - @backstage/plugin-newrelic-dashboard@0.1.3
+  - @backstage/plugin-rollbar@0.3.23
+  - @backstage/plugin-search@0.5.5
+  - @backstage/plugin-sentry@0.3.33
+  - @backstage/plugin-shortcuts@0.1.19
+  - @backstage/plugin-tech-radar@0.5.2
+  - @backstage/plugin-todo@0.1.18
+  - @backstage/plugin-user-settings@0.3.16
+
 ## 0.2.59
 
 ### Patch Changes

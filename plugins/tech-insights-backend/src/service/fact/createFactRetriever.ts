@@ -14,9 +14,24 @@
  * limitations under the License.
  */
 import {
+  FactLifecycle,
   FactRetriever,
   FactRetrieverRegistration,
 } from '@backstage/plugin-tech-insights-node';
+
+/**
+ * @public
+ *
+ * @param cadence - cron expression to indicate when the fact retriever should be triggered
+ * @param factRetriever - Implementation of fact retriever consisting of at least id, version, schema and handler
+ * @param lifecycle - Optional lifecycle definition indicating the cleanup logic of facts when this retriever is run
+ *
+ */
+export type FactRetrieverRegistrationOptions = {
+  cadence: string;
+  factRetriever: FactRetriever;
+  lifecycle?: FactLifecycle;
+};
 
 /**
  * @public
@@ -25,6 +40,7 @@ import {
  *
  * @param cadence - cron expression to indicate when the fact retriever should be triggered
  * @param factRetriever - Implementation of fact retriever consisting of at least id, version, schema and handler
+ * @param lifecycle - Optional lifecycle definition indicating the cleanup logic of facts when this retriever is run
  *
  *
  * @remarks
@@ -40,13 +56,19 @@ import {
  # │ │ │ │ │ │
  # * * * * * *
  *
+ * Valid lifecycle values:
+ * \{ ttl: \{ weeks: 2 \} \} -- This fact retriever will remove items that are older than 2 weeks when it is run
+ * \{ maxItems: 7 \} -- This fact retriever will leave 7 newest items in the database when it is run
+ *
  */
-export function createFactRetrieverRegistration(
-  cadence: string,
-  factRetriever: FactRetriever,
-): FactRetrieverRegistration {
+export function createFactRetrieverRegistration({
+  cadence,
+  factRetriever,
+  lifecycle,
+}: FactRetrieverRegistrationOptions): FactRetrieverRegistration {
   return {
     cadence,
     factRetriever,
+    lifecycle,
   };
 }

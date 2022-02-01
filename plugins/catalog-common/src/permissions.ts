@@ -23,12 +23,6 @@ import { Permission } from '@backstage/plugin-permission-common';
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
 
 /**
- * {@link https://backstage.io/docs/features/software-catalog/descriptor-format#kind-location}
- * @public
- */
-export const RESOURCE_TYPE_CATALOG_LOCATION = 'catalog-location';
-
-/**
  * This permission is used to authorize actions that involve reading one or more
  * entities from the catalog.
  *
@@ -83,7 +77,6 @@ export const catalogLocationReadPermission: Permission = {
   attributes: {
     action: 'read',
   },
-  resourceType: RESOURCE_TYPE_CATALOG_LOCATION,
 };
 
 /**
@@ -96,7 +89,6 @@ export const catalogLocationCreatePermission: Permission = {
   attributes: {
     action: 'create',
   },
-  resourceType: RESOURCE_TYPE_CATALOG_LOCATION,
 };
 
 /**
@@ -109,5 +101,4 @@ export const catalogLocationDeletePermission: Permission = {
   attributes: {
     action: 'delete',
   },
-  resourceType: RESOURCE_TYPE_CATALOG_LOCATION,
 };

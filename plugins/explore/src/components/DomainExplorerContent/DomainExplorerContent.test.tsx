@@ -15,11 +15,10 @@
  */
 
 import { DomainEntity } from '@backstage/catalog-model';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
-import { catalogEntityRouteRef } from '../../routes';
 import { DomainExplorerContent } from './DomainExplorerContent';
 
 describe('<DomainExplorerContent />', () => {
@@ -44,7 +43,7 @@ describe('<DomainExplorerContent />', () => {
 
   const mountedRoutes = {
     mountedRoutes: {
-      '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
+      '/catalog/:namespace/:kind/:name': entityRouteRef,
     },
   };
 

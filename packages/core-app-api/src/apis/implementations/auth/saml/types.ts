@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-import { BackstageIdentity, ProfileInfo } from '@backstage/core-plugin-api';
+import {
+  BackstageIdentityResponse,
+  ProfileInfo,
+} from '@backstage/core-plugin-api';
 import { z } from 'zod';
 
 /**
  * Session information for SAML auth.
  *
  * @public
+ * @deprecated This type is internal and will be removed
  */
-export type SamlSession = {
+export type ExportedSamlSession = {
   userId: string;
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
 
+/** @internal */
+export type SamlSession = {
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentityResponse;
+};
+
+/** @internal */
 export const samlSessionSchema: z.ZodSchema<SamlSession> = z.object({
-  userId: z.string(),
   profile: z.object({
     email: z.string().optional(),
     displayName: z.string().optional(),

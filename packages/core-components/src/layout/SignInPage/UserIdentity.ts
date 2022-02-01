@@ -21,11 +21,16 @@ import {
   BackstageUserIdentity,
   BackstageIdentityApi,
   SessionApi,
-  SignInResult,
 } from '@backstage/core-plugin-api';
 
 import { GuestUserIdentity } from './GuestUserIdentity';
 import { LegacyUserIdentity } from './LegacyUserIdentity';
+
+// TODO(Rugvip): This and the other IdentityApi implementations still implement
+//               the old removed methods. This is to allow for backwards compatibility
+//               with old plugins that still consume this API. We will leave these in
+//               place as a hidden compatibility for a couple of months.
+//               The AppIdentityProxy warns in case any of these methods are called.
 
 /**
  * An implementation of the IdentityApi that is constructed using
@@ -49,7 +54,24 @@ export class UserIdentity implements IdentityApi {
    *
    * @public
    */
-  static fromLegacy(result: SignInResult): IdentityApi {
+  static fromLegacy(result: {
+    /**
+     * User ID that will be returned by the IdentityApi
+     */
+    userId: string;
+
+    profile: ProfileInfo;
+
+    /**
+     * Function used to retrieve an ID token for the signed in user.
+     */
+    getIdToken?: () => Promise<string>;
+
+    /**
+     * Sign out handler that will be called if the user requests to sign out.
+     */
+    signOut?: () => Promise<void>;
+  }): IdentityApi {
     return LegacyUserIdentity.fromResult(result);
   }
 

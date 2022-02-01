@@ -20,6 +20,7 @@ import React from 'react';
 import YAML from 'yaml';
 import { CodeSnippet } from '@backstage/core-components';
 import { trimEnd } from 'lodash';
+import { useCatalogFilename } from '../../hooks';
 
 type Props = {
   repositoryUrl: string;
@@ -32,11 +33,13 @@ export const PreviewCatalogInfoComponent = ({
   entities,
   classes,
 }: Props) => {
+  const catalogFilename = useCatalogFilename();
+
   return (
     <Card variant="outlined" className={classes?.card}>
       <CardHeader
         title={
-          <code>{`${trimEnd(repositoryUrl, '/')}/catalog-info.yaml`}</code>
+          <code>{`${trimEnd(repositoryUrl, '/')}/${catalogFilename}`}</code>
         }
       />
 

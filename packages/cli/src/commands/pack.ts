@@ -16,11 +16,29 @@
 
 import fs from 'fs-extra';
 import { paths } from '../lib/paths';
+import { join as joinPath } from 'path';
 
-const SKIPPED_KEYS = ['access', 'registry', 'tag'];
+const SKIPPED_KEYS = ['access', 'registry', 'tag', 'alphaTypes', 'betaTypes'];
 
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
+
+// Writes e.g. alpha/package.json
+async function writeReleaseStageEntrypoint(pkg: any, stage: 'alpha' | 'beta') {
+  await fs.ensureDir(paths.resolveTarget(stage));
+  await fs.writeJson(
+    paths.resolveTarget(stage, PKG_PATH),
+    {
+      name: pkg.name,
+      version: pkg.version,
+      main: (pkg.publishConfig.main || pkg.main) && '..',
+      module: (pkg.publishConfig.module || pkg.module) && '..',
+      browser: (pkg.publishConfig.browser || pkg.browser) && '..',
+      types: joinPath('..', pkg.publishConfig[`${stage}Types`]),
+    },
+    { encoding: 'utf8', spaces: 2 },
+  );
+}
 
 export const pre = async () => {
   const pkgPath = paths.resolveTarget(PKG_PATH);
@@ -29,18 +47,35 @@ export const pre = async () => {
   const pkg = JSON.parse(pkgContent);
   await fs.writeFile(PKG_BACKUP_PATH, pkgContent);
 
-  for (const key of Object.keys(pkg.publishConfig ?? {})) {
+  const publishConfig = pkg.publishConfig ?? {};
+  for (const key of Object.keys(publishConfig)) {
     if (!SKIPPED_KEYS.includes(key)) {
-      pkg[key] = pkg.publishConfig[key];
+      pkg[key] = publishConfig[key];
     }
   }
   await fs.writeJson(pkgPath, pkg, { encoding: 'utf8', spaces: 2 });
+
+  if (publishConfig.alphaTypes) {
+    await writeReleaseStageEntrypoint(pkg, 'alpha');
+  }
+  if (publishConfig.betaTypes) {
+    await writeReleaseStageEntrypoint(pkg, 'beta');
+  }
 };
 
 export const post = async () => {
   // postpack isn't called by yarn right now, so it needs to be called manually
   try {
     await fs.move(PKG_BACKUP_PATH, PKG_PATH, { overwrite: true });
+
+    // Check if we're shipping types for other release stages, clean up in that case
+    const pkg = await fs.readJson(PKG_PATH);
+    if (pkg.publishConfig?.alphaTypes) {
+      await fs.remove(paths.resolveTarget('alpha'));
+    }
+    if (pkg.publishConfig?.betaTypes) {
+      await fs.remove(paths.resolveTarget('beta'));
+    }
   } catch (error) {
     console.warn(
       `Failed to restore package.json during postpack, ${error}. ` +

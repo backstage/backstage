@@ -16,11 +16,11 @@
 
 import { InputError } from '@backstage/errors';
 import {
-  SingleInstanceGithubCredentialsProvider,
+  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { Octokit } from '@octokit/rest';
+import { Octokit } from 'octokit';
 import { parseRepoUrl } from '../publish/util';
 
 export type OctokitIntegration = {
@@ -35,24 +35,22 @@ export type OctokitIntegration = {
  */
 export class OctokitProvider {
   private readonly integrations: ScmIntegrationRegistry;
-  private readonly credentialsProviders: Map<string, GithubCredentialsProvider>;
+  private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
-  constructor(integrations: ScmIntegrationRegistry) {
+  constructor(
+    integrations: ScmIntegrationRegistry,
+    githubCredentialsProvider?: GithubCredentialsProvider,
+  ) {
     this.integrations = integrations;
-    this.credentialsProviders = new Map(
-      integrations.github.list().map(integration => {
-        const provider = SingleInstanceGithubCredentialsProvider.create(
-          integration.config,
-        );
-        return [integration.config.host, provider];
-      }),
-    );
+    this.githubCredentialsProvider =
+      githubCredentialsProvider ||
+      DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
   }
 
   /**
    * gets standard Octokit client based on repository URL.
    *
-   * @param repoUrl Repository URL
+   * @param repoUrl - Repository URL
    */
   async getOctokit(repoUrl: string): Promise<OctokitIntegration> {
     const { owner, repo, host } = parseRepoUrl(repoUrl, this.integrations);
@@ -67,17 +65,9 @@ export class OctokitProvider {
       throw new InputError(`No integration for host ${host}`);
     }
 
-    const credentialsProvider = this.credentialsProviders.get(host);
-
-    if (!credentialsProvider) {
-      throw new InputError(
-        `No matching credentials for host ${host}, please check your integrations config`,
-      );
-    }
-
     // TODO(blam): Consider changing this API to have owner, repo interface instead of URL as the it's
     // needless to create URL and then parse again the other side.
-    const { token } = await credentialsProvider.getCredentials({
+    const { token } = await this.githubCredentialsProvider.getCredentials({
       url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
         repo,
       )}`,

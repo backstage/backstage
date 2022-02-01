@@ -36,6 +36,11 @@ const useStyles = makeStyles({
     marginLeft: '0',
     marginRight: 'auto',
   },
+  wordBreak: {
+    wordBreak: 'break-all',
+    whiteSpace: 'normal',
+    margin: '-0.25rem 0',
+  },
 });
 
 export const EditProjectDialog = ({
@@ -76,9 +81,9 @@ export const EditProjectDialog = ({
     });
   }, [bazaarProject]);
 
-  const handleEditSubmit: any = async (
+  const handleEditSubmit: (
     getValues: UseFormGetValues<FormValues>,
-  ) => {
+  ) => Promise<void> = async (getValues: UseFormGetValues<FormValues>) => {
     const formValues = getValues();
 
     const updateResponse = await bazaarApi.updateProject({
@@ -101,7 +106,9 @@ export const EditProjectDialog = ({
         handleClose={handleDeleteClose}
         message={[
           'Are you sure you want to delete ',
-          <b>{bazaarProject.name}</b>,
+          <b key={bazaarProject.name} className={classes.wordBreak}>
+            {bazaarProject.name}
+          </b>,
           ' from the Bazaar?',
         ]}
         type="delete"

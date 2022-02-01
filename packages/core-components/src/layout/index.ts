@@ -26,6 +26,7 @@ export * from './HomepageTimer';
 export * from './InfoCard';
 export * from './ItemCard';
 export * from './Page';
+export * from './ProxiedSignInPage';
 export * from './Sidebar';
 export * from './SignInPage';
 export * from './TabbedCard';

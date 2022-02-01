@@ -45,12 +45,17 @@ export class KubernetesClientProvider {
     };
 
     const kc = new KubeConfig();
-    kc.loadFromOptions({
-      clusters: [cluster],
-      users: [user],
-      contexts: [context],
-      currentContext: context.name,
-    });
+    if (clusterDetails.serviceAccountToken) {
+      kc.loadFromOptions({
+        clusters: [cluster],
+        users: [user],
+        contexts: [context],
+        currentContext: context.name,
+      });
+    } else {
+      kc.loadFromDefault();
+    }
+
     return kc;
   }
 

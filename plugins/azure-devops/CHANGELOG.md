@@ -1,5 +1,51 @@
 # @backstage/plugin-azure-devops
 
+## 0.1.12
+
+### Patch Changes
+
+- 0f104ecc4d: Updated to support cases where only Azure Pipelines to see Builds. You can use this new feature by adding the `dev.azure.com/project` and `dev.azure.com/build-definition` annotations to your `catalog-info.yaml` files. The Azure DevOps plugin [README has more detailed instructions](https://github.com/backstage/backstage/tree/master/plugins/azure-devops#setup).
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+
+## 0.1.11
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/catalog-model@0.9.10
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/plugin-catalog-react@0.6.12-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+
+## 0.1.10
+
+### Patch Changes
+
+- a2ed2c2d69: - feat: Created PullRequestsDashboardProvider for resolving team and team member relations
+  - feat: Created useUserTeamIds hook.
+  - feat: Updated useFilterProcessor to provide teamIds for `AssignedToCurrentUsersTeams` and `CreatedByCurrentUsersTeams` filters.
+- 5333451def: Cleaned up API exports
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-azure-devops-common@0.2.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-model@0.9.9
+
 ## 0.1.9
 
 ### Patch Changes

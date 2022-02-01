@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ChangeEvent, ReactNode } from 'react';
 import { FormControl, MenuItem, Select, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
@@ -27,7 +27,12 @@ const useStyles = makeStyles({
 
 type Props = {
   sortMethodNbr: number;
-  handleSortMethodChange: any;
+  handleSortMethodChange:
+    | ((
+        event: ChangeEvent<{ name?: string | undefined; value: unknown }>,
+        child: ReactNode,
+      ) => void)
+    | undefined;
 };
 
 export const SortMethodSelector = ({

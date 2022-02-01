@@ -6,6 +6,7 @@
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Config } from '@backstage/config';
 import { DateTime } from 'luxon';
+import { DurationLike } from 'luxon';
 import { Logger as Logger_2 } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
@@ -38,6 +39,9 @@ export interface FactCheckerFactory<
 }
 
 // @public
+export type FactLifecycle = TTL | MaxItems;
+
+// @public
 export interface FactRetriever {
   entityFilter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
@@ -62,6 +66,7 @@ export type FactRetrieverContext = {
 export type FactRetrieverRegistration = {
   factRetriever: FactRetriever;
   cadence?: string;
+  lifecycle?: FactLifecycle;
 };
 
 // @public
@@ -80,6 +85,11 @@ export type FactSchemaDefinition = Omit<FactRetriever, 'handler'>;
 // @public
 export type FlatTechInsightFact = TechInsightFact & {
   id: string;
+};
+
+// @public
+export type MaxItems = {
+  maxItems: number;
 };
 
 // @public
@@ -144,9 +154,22 @@ export interface TechInsightsStore {
     [factRef: string]: FlatTechInsightFact;
   }>;
   getLatestSchemas(ids?: string[]): Promise<FactSchema[]>;
-  insertFacts(id: string, facts: TechInsightFact[]): Promise<void>;
+  insertFacts({
+    id,
+    facts,
+    lifecycle,
+  }: {
+    id: string;
+    facts: TechInsightFact[];
+    lifecycle?: FactLifecycle;
+  }): Promise<void>;
   insertFactSchema(schemaDefinition: FactSchemaDefinition): Promise<void>;
 }
+
+// @public
+export type TTL = {
+  timeToLive: DurationLike;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

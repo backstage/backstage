@@ -21,6 +21,7 @@ import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { assertError } from '@backstage/errors';
+import { TemplateFilter } from '../../lib/templating/SecureTemplater';
 
 /**
  * TaskWorkerOptions
@@ -46,6 +47,7 @@ export type CreateWorkerOptions = {
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 };
 
 /**
@@ -63,6 +65,7 @@ export class TaskWorker {
       actionRegistry,
       integrations,
       workingDirectory,
+      additionalTemplateFilters,
     } = options;
 
     const legacyWorkflowRunner = new HandlebarsWorkflowRunner({
@@ -77,6 +80,7 @@ export class TaskWorker {
       integrations,
       logger,
       workingDirectory,
+      additionalTemplateFilters,
     });
 
     return new TaskWorker({

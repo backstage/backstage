@@ -1,5 +1,42 @@
 # @backstage/plugin-permission-react
 
+## 0.3.0
+
+### Minor Changes
+
+- 0ae4f4cc82: **BREAKING**: Update to use renamed request and response types from @backstage/plugin-permission-common.
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.4.0
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/config@0.1.13
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 0ae4f4cc82: **BREAKING**: Update to use renamed request and response types from @backstage/plugin-permission-common.
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.4.0-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/config@0.1.13-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-permission-common@0.3.1
+
 ## 0.2.1
 
 ### Patch Changes

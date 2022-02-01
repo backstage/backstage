@@ -5,6 +5,7 @@
 ```ts
 import { DocumentCollator } from '@backstage/search-common';
 import { DocumentDecorator } from '@backstage/search-common';
+import { DocumentTypeInfo } from '@backstage/search-common';
 import { IndexableDocument } from '@backstage/search-common';
 import { Logger as Logger_2 } from 'winston';
 import { default as lunr_2 } from 'lunr';
@@ -29,6 +30,8 @@ export class IndexBuilder {
   build(): Promise<{
     scheduler: Scheduler;
   }>;
+  // (undocumented)
+  getDocumentTypes(): Record<string, DocumentTypeInfo>;
   // (undocumented)
   getSearchEngine(): SearchEngine;
 }

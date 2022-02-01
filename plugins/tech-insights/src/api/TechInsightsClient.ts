@@ -15,7 +15,10 @@
  */
 
 import { TechInsightsApi } from './TechInsightsApi';
-import { CheckResult } from '@backstage/plugin-tech-insights-common';
+import {
+  BulkCheckResponse,
+  CheckResult,
+} from '@backstage/plugin-tech-insights-common';
 import { Check } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
@@ -43,14 +46,20 @@ export class TechInsightsClient implements TechInsightsApi {
   getScorecardsDefinition(
     type: string,
     value: CheckResult[],
+    title?: string,
+    description?: string,
   ): CheckResultRenderer | undefined {
-    const resultRenderers = defaultCheckResultRenderers(value);
+    const resultRenderers = defaultCheckResultRenderers(
+      value,
+      title,
+      description,
+    );
     return resultRenderers.find(d => d.type === type);
   }
 
   async getAllChecks(): Promise<Check[]> {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const response = await fetch(`${url}/checks`, {
       headers: token
         ? {
@@ -69,7 +78,7 @@ export class TechInsightsClient implements TechInsightsApi {
     checks?: Check[],
   ): Promise<CheckResult[]> {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
     const { namespace, kind, name } = entityParams;
     const checkIds = checks ? checks.map(check => check.id) : [];
     const requestBody = { checks: checkIds.length > 0 ? checkIds : undefined };
@@ -86,6 +95,31 @@ export class TechInsightsClient implements TechInsightsApi {
         },
       },
     );
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+    return await response.json();
+  }
+
+  async runBulkChecks(
+    entities: EntityName[],
+    checks?: Check[],
+  ): Promise<BulkCheckResponse> {
+    const url = await this.discoveryApi.getBaseUrl('tech-insights');
+    const { token } = await this.identityApi.getCredentials();
+    const checkIds = checks ? checks.map(check => check.id) : [];
+    const requestBody = {
+      entities,
+      checks: checkIds.length > 0 ? checkIds : undefined,
+    };
+    const response = await fetch(`${url}/checks/run`, {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }

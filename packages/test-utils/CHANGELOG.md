@@ -1,5 +1,37 @@
 # @backstage/test-utils
 
+## 0.2.3
+
+### Patch Changes
+
+- c54c0d9d10: Add MockPermissionApi
+- 6bf7826258: Added a `MockFetchApi`
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.3.0
+  - @backstage/plugin-permission-common@0.4.0
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/core-app-api@0.5.0
+  - @backstage/config@0.1.13
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/core-app-api@0.5.0-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- 2d3fd91e33: Add new `MockConfigApi` as a more discoverable and leaner method for mocking configuration.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/core-app-api@0.4.0
+
 ## 0.2.1
 
 ### Patch Changes

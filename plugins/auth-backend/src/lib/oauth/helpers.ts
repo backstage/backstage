@@ -57,3 +57,21 @@ export const verifyNonce = (req: express.Request, providerId: string) => {
     throw new Error('Invalid nonce');
   }
 };
+
+export const getCookieConfig = (authUrl: URL, providerId: string) => {
+  const { hostname: cookieDomain, pathname, protocol } = authUrl;
+  const secure = protocol === 'https:';
+
+  // If the provider supports callbackUrls, the pathname will
+  // contain the complete path to the frame handler so we need
+  // to slice off the trailing part of the path.
+  const cookiePath = pathname.endsWith(`${providerId}/handler/frame`)
+    ? pathname.slice(0, -'/handler/frame'.length)
+    : `${pathname}/${providerId}`;
+
+  return {
+    cookieDomain,
+    cookiePath,
+    secure,
+  };
+};

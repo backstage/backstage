@@ -30,8 +30,8 @@ yarn add @backstage/plugin-catalog-backend-module-ldap
 ```typescript
 // packages/backend/src/plugins/catalog.ts
 builder.addProcessor(
-  LdapOrgReaderProcessor.fromConfig(config, {
-    logger,
+  LdapOrgReaderProcessor.fromConfig(env.config, {
+    logger: env.logger,
   }),
 );
 ```
@@ -313,4 +313,64 @@ builder.addProcessor(
     groupTransformer: myGroupTransformer,
   }),
 );
+```
+
+## Using a Provider instead of a Processor
+
+An alternative to using the Processor for ingesting LDAP entries is to use a
+Provider. Doing this can give you a little bit more freedom to handle the LDAP
+ingestion more independently from the rest of the catalog ingestion.
+
+This can be useful if you have a lot of Users and Groups and hitting your LDAP
+server is resource intensive but you still want your other catalog entries to be
+updated frequently.
+
+> Note: When configuring to use a Provider instead of a Processor you do not
+> need to add a _location_ pointing to your LDAP server
+
+```ts
+// packages/backend/src/plugins/catalog.ts
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+import { PluginEnvironment } from '../types';
+
+import { Router } from 'express';
+import { LdapOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-ldap';
+
+import { Duration } from 'luxon';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const ldapEntityProvider = LdapOrgEntityProvider.fromConfig(env.config, {
+    id: 'custom-ldap',
+    // target needs to match the catalog.processors.ldapOrg.providers.target specified in app-config
+    target: 'ldaps://ds.example.net',
+    logger: env.logger,
+  });
+
+  const builder = await CatalogBuilder.create(env);
+  builder.addEntityProvider(ldapEntityProvider);
+
+  // You can change the refresh interval for the other catalog entries independently, or just leave the line below out to use the default refresh interval
+  builder.setRefreshIntervalSeconds(100);
+
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+
+  await env.scheduler.scheduleTask({
+    id: 'refresh_ldap',
+    // frequency sets how often you want to ingest users and groups from LDAP, in this case every 60 minutes
+    frequency: Duration.fromObject({ minutes: 60 }),
+    timeout: Duration.fromObject({ minutes: 15 }),
+    fn: async () => {
+      try {
+        await ldapEntityProvider.read();
+      } catch (error) {
+        env.logger.error(error);
+      }
+    },
+  });
+
+  return router;
+}
 ```

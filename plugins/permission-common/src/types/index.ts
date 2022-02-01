@@ -16,7 +16,9 @@
 
 export { AuthorizeResult } from './api';
 export type {
+  AuthorizeQuery,
   AuthorizeRequest,
+  AuthorizeDecision,
   AuthorizeResponse,
   Identified,
   PermissionCondition,

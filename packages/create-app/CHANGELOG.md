@@ -1,5 +1,607 @@
 # @backstage/create-app
 
+## 0.4.16
+
+### Patch Changes
+
+- c945cd9f7e: Adds missing `/catalog-graph` route to `<CatalogGraphPage/>`.
+
+  To fix this problem for a recently created app please update your `app/src/App.tsx`
+
+  ```diff
+  + import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
+
+   ... omitted ...
+
+    </Route>
+      <Route path="/settings" element={<UserSettingsPage />} />
+  +   <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    </FlatRoutes>
+  ```
+
+## 0.4.15
+
+### Patch Changes
+
+- 01b27d547c: Added three additional required properties to the search-backend `createRouter` function to support filtering search results based on permissions. To make this change to an existing app, add the required parameters to the `createRouter` call in `packages/backend/src/plugins/search.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+  +  permissions,
+    discovery,
+    config,
+    tokenManager,
+  }: PluginEnvironment) {
+    /* ... */
+
+    return await createRouter({
+      engine: indexBuilder.getSearchEngine(),
+  +    types: indexBuilder.getDocumentTypes(),
+  +    permissions,
+  +    config,
+      logger,
+    });
+  }
+  ```
+
+- a0d446c8ec: Replaced EntitySystemDiagramCard with EntityCatalogGraphCard
+
+  To make this change to an existing app:
+
+  Add `@backstage/catalog-graph-plugin` as a `dependency` in `packages/app/package.json`
+
+  Apply the following changes to the `packages/app/src/components/catalog/EntityPage.tsx` file:
+
+  ```diff
+  + import {
+  +  Direction,
+  +  EntityCatalogGraphCard,
+  + } from '@backstage/plugin-catalog-graph';
+  + import {
+  +  RELATION_API_CONSUMED_BY,
+  +  RELATION_API_PROVIDED_BY,
+  +  RELATION_CONSUMES_API,
+  +  RELATION_DEPENDENCY_OF,
+  +  RELATION_DEPENDS_ON,
+  +  RELATION_HAS_PART,
+  +  RELATION_PART_OF,
+  +  RELATION_PROVIDES_API,
+  + } from '@backstage/catalog-model';
+  ```
+
+  ```diff
+      <EntityLayout.Route path="/diagram" title="Diagram">
+  -      <EntitySystemDiagramCard />
+  +      <EntityCatalogGraphCard
+  +        variant="gridItem"
+  +        direction={Direction.TOP_BOTTOM}
+  +        title="System Diagram"
+  +        height={700}
+  +        relations={[
+  +          RELATION_PART_OF,
+  +          RELATION_HAS_PART,
+  +          RELATION_API_CONSUMED_BY,
+  +          RELATION_API_PROVIDED_BY,
+  +          RELATION_CONSUMES_API,
+  +          RELATION_PROVIDES_API,
+  +          RELATION_DEPENDENCY_OF,
+  +          RELATION_DEPENDS_ON,
+  +        ]}
+  +        unidirectional={false}
+  +      />
+      </EntityLayout.Route>
+  ```
+
+  ```diff
+  const cicdContent = (
+      <Grid item md={6}>
+        <EntityAboutCard variant="gridItem" />
+      </Grid>
+  +    <Grid item md={6} xs={12}>
+  +      <EntityCatalogGraphCard variant="gridItem" height={400} />
+  +    </Grid>
+  ```
+
+  Add the above component in `overviewContent`, `apiPage` , `systemPage` and domainPage` as well.
+
+- 4aca2a5307: An example instance of a `<SearchFilter.Select />` with asynchronously loaded values was added to the composed `SearchPage.tsx`, allowing searches bound to the `techdocs` type to be filtered by entity name.
+
+  This is an entirely optional change; if you wish to adopt it, you can make the following (or similar) changes to your search page layout:
+
+  ```diff
+  --- a/packages/app/src/components/search/SearchPage.tsx
+  +++ b/packages/app/src/components/search/SearchPage.tsx
+  @@ -2,6 +2,10 @@ import React from 'react';
+   import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
+
+   import { CatalogResultListItem } from '@backstage/plugin-catalog';
+  +import {
+  +  catalogApiRef,
+  +  CATALOG_FILTER_EXISTS,
+  +} from '@backstage/plugin-catalog-react';
+   import { DocsResultListItem } from '@backstage/plugin-techdocs';
+
+   import {
+  @@ -10,6 +14,7 @@ import {
+     SearchResult,
+     SearchType,
+     DefaultResultListItem,
+  +  useSearch,
+   } from '@backstage/plugin-search';
+   import {
+     CatalogIcon,
+  @@ -18,6 +23,7 @@ import {
+     Header,
+     Page,
+   } from '@backstage/core-components';
+  +import { useApi } from '@backstage/core-plugin-api';
+
+   const useStyles = makeStyles((theme: Theme) => ({
+     bar: {
+  @@ -36,6 +42,8 @@ const useStyles = makeStyles((theme: Theme) => ({
+
+   const SearchPage = () => {
+     const classes = useStyles();
+  +  const { types } = useSearch();
+  +  const catalogApi = useApi(catalogApiRef);
+
+     return (
+       <Page themeId="home">
+  @@ -65,6 +73,27 @@ const SearchPage = () => {
+                 ]}
+               />
+               <Paper className={classes.filters}>
+  +              {types.includes('techdocs') && (
+  +                <SearchFilter.Select
+  +                  className={classes.filter}
+  +                  label="Entity"
+  +                  name="name"
+  +                  values={async () => {
+  +                    // Return a list of entities which are documented.
+  +                    const { items } = await catalogApi.getEntities({
+  +                      fields: ['metadata.name'],
+  +                      filter: {
+  +                        'metadata.annotations.backstage.io/techdocs-ref':
+  +                          CATALOG_FILTER_EXISTS,
+  +                      },
+  +                    });
+  +
+  +                    const names = items.map(entity => entity.metadata.name);
+  +                    names.sort();
+  +                    return names;
+  +                  }}
+  +                />
+  +              )}
+                 <SearchFilter.Select
+                   className={classes.filter}
+                   name="kind"
+  ```
+
+- 1dbe63ec39: A `label` prop was added to `<SearchFilter.* />` components in order to allow
+  user-friendly label strings (as well as the option to omit a label). In order
+  to maintain labels on your existing filters, add a `label` prop to them in your
+  `SearchPage.tsx`.
+
+  ```diff
+  --- a/packages/app/src/components/search/SearchPage.tsx
+  +++ b/packages/app/src/components/search/SearchPage.tsx
+  @@ -96,11 +96,13 @@ const SearchPage = () => {
+                 )}
+                 <SearchFilter.Select
+                   className={classes.filter}
+  +                label="Kind"
+                   name="kind"
+                   values={['Component', 'Template']}
+                 />
+                 <SearchFilter.Checkbox
+                   className={classes.filter}
+  +                label="Lifecycle"
+                   name="lifecycle"
+                   values={['experimental', 'production']}
+                 />
+  ```
+
+## 0.4.14
+
+### Patch Changes
+
+- d4941024bc: Rebind external route for catalog import plugin from `scaffolderPlugin.routes.root` to `catalogImportPlugin.routes.importPage`.
+
+  To make this change to an existing app, make the following change to `packages/app/src/App.tsx`
+
+  ```diff
+  const App = createApp({
+    ...
+    bindRoutes({ bind }) {
+      ...
+      bind(apiDocsPlugin.externalRoutes, {
+  -     createComponent: scaffolderPlugin.routes.root,
+  +     registerApi: catalogImportPlugin.routes.importPage,
+      });
+      ...
+    },
+  });
+  ```
+
+- b5402d6d72: Migrated the app template to React 17.
+
+  To apply this change to an existing app, make sure you have updated to the latest version of `@backstage/cli`, and make the following change to `packages/app/package.json`:
+
+  ```diff
+       "history": "^5.0.0",
+  -    "react": "^16.13.1",
+  -    "react-dom": "^16.13.1",
+  +    "react": "^17.0.2",
+  +    "react-dom": "^17.0.2",
+       "react-router": "6.0.0-beta.0",
+  ```
+
+  Since we have recently moved over all `react` and `react-dom` dependencies to `peerDependencies` of all packages, and included React 17 in the version range, this should be all you need to do. If you end up with duplicate React installations, first make sure that all of your plugins are up-to-date, including ones for example from `@roadiehq`. If that doesn't work, you may need to fall back to adding [Yarn resolutions](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/) in the `package.json` of your project root:
+
+  ```diff
+  +  "resolutions": {
+  +    "react": "^17.0.2",
+  +    "react-dom": "^17.0.2"
+  +  },
+  ```
+
+- 5e8d278f8e: Added an external route binding from the `org` plugin to the catalog index page.
+
+  This change is needed because `@backstage/plugin-org` now has a required external route that needs to be bound for the app to start.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+   import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
+  +import { orgPlugin } from '@backstage/plugin-org';
+   import { SearchPage } from '@backstage/plugin-search';
+  ```
+
+  And further down within the `createApp` call:
+
+  ```diff
+       bind(scaffolderPlugin.externalRoutes, {
+         registerComponent: catalogImportPlugin.routes.importPage,
+       });
+  +    bind(orgPlugin.externalRoutes, {
+  +      catalogIndex: catalogPlugin.routes.catalogIndex,
+  +    });
+     },
+  ```
+
+- fb08e2f285: Updated the configuration of the `app-backend` plugin to enable the static asset store by passing on `database` from the plugin environment to `createRouter`.
+
+  To apply this change to an existing app, make the following change to `packages/backend/src/plugins/app.ts`:
+
+  ```diff
+   export default async function createPlugin({
+     logger,
+     config,
+  +  database,
+   }: PluginEnvironment): Promise<Router> {
+     return await createRouter({
+       logger,
+       config,
+  +    database,
+       appPackageName: 'app',
+     });
+   }
+  ```
+
+- 7ba416be78: You can now add `SidebarGroup`s to the current `Sidebar`. This will not affect how the current sidebar is displayed, but allows a customization on how the `MobileSidebar` on smaller screens will look like. A `SidebarGroup` will be displayed with the given icon in the `MobileSidebar`.
+
+  A `SidebarGroup` can either link to an existing page (e.g. `/search` or `/settings`) or wrap components, which will be displayed in a full-screen overlay menu (e.g. `Menu`).
+
+  ```diff
+  <Sidebar>
+      <SidebarLogo />
+  +   <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+          <SidebarSearchModal />
+  +   </SidebarGroup>
+      <SidebarDivider />
+  +   <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+          <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+          <SidebarDivider />
+          <SidebarScrollWrapper>
+              <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+          </SidebarScrollWrapper>
+  +   </SidebarGroup>
+      <SidebarSpace />
+      <SidebarDivider />
+  +   <SidebarGroup
+  +       label="Settings"
+  +       icon={<UserSettingsSignInAvatar />}
+  +       to="/settings"
+  +   >
+          <SidebarSettings />
+  +   </SidebarGroup>
+  </Sidebar>
+  ```
+
+  Additionally, you can order the groups differently in the `MobileSidebar` than in the usual `Sidebar` simply by giving a group a priority. The groups will be displayed in descending order from left to right.
+
+  ```diff
+  <SidebarGroup
+      label="Settings"
+      icon={<UserSettingsSignInAvatar />}
+      to="/settings"
+  +   priority={1}
+  >
+      <SidebarSettings />
+  </SidebarGroup>
+  ```
+
+  If you decide against adding `SidebarGroup`s to your `Sidebar` the `MobileSidebar` will contain one default menu item, which will open a full-screen overlay menu displaying all the content of the current `Sidebar`.
+
+  More information on the `SidebarGroup` & the `MobileSidebar` component can be found in the changeset for the `core-components`.
+
+- 08fa6a604a: The app template has been updated to add an explicit dependency on `typescript` in the root `package.json`. This is because it was removed as a dependency of `@backstage/cli` in order to decouple the TypeScript versioning in Backstage projects.
+
+  To apply this change in an existing app, add a `typescript` dependency to your `package.json` in the project root:
+
+  ```json
+    "dependencies": {
+      ...
+      "typescript": "~4.5.4",
+    }
+  ```
+
+  We recommend using a `~` version range since TypeScript releases do not adhere to semver.
+
+  It may be the case that you end up with errors if you upgrade the TypeScript version. This is because there was a change to TypeScript not long ago that defaulted the type of errors caught in `catch` blocks to `unknown`. You can work around this by adding `"useUnknownInCatchVariables": false` to the `"compilerOptions"` in your `tsconfig.json`:
+
+  ```json
+    "compilerOptions": {
+      ...
+      "useUnknownInCatchVariables": false
+    }
+  ```
+
+  Another option is to use the utilities from `@backstage/errors` to assert the type of errors caught in `catch` blocks:
+
+  ```ts
+  import { assertError, isError } from '@backstage/errors';
+
+  try {
+    ...
+  } catch (error) {
+    assertError(error);
+    ...
+    // OR
+    if (isError(error)) {
+      ...
+    }
+  }
+  ```
+
+  Yet another issue you might run into when upgrading TypeScript is incompatibilities in the types from `react-use`. The error you would run into looks something like this:
+
+  ```plain
+  node_modules/react-use/lib/usePermission.d.ts:1:54 - error TS2304: Cannot find name 'DevicePermissionDescriptor'.
+
+  1 declare type PermissionDesc = PermissionDescriptor | DevicePermissionDescriptor | MidiPermissionDescriptor | PushPermissionDescriptor;
+  ```
+
+  If you encounter this error, the simplest fix is to replace full imports of `react-use` with more specific ones. For example, the following:
+
+  ```ts
+  import { useAsync } from 'react-use';
+  ```
+
+  Would be converted into this:
+
+  ```ts
+  import useAsync from 'react-use/lib/useAsync';
+  ```
+
+## 0.4.13
+
+### Patch Changes
+
+- fb08e2f285: Updated the configuration of the `app-backend` plugin to enable the static asset store by passing on `database` from the plugin environment to `createRouter`.
+
+  To apply this change to an existing app, make the following change to `packages/backend/src/plugins/app.ts`:
+
+  ```diff
+   export default async function createPlugin({
+     logger,
+     config,
+  +  database,
+   }: PluginEnvironment): Promise<Router> {
+     return await createRouter({
+       logger,
+       config,
+  +    database,
+       appPackageName: 'app',
+     });
+   }
+  ```
+
+- 7ba416be78: You can now add `SidebarGroup`s to the current `Sidebar`. This will not affect how the current sidebar is displayed, but allows a customization on how the `MobileSidebar` on smaller screens will look like. A `SidebarGroup` will be displayed with the given icon in the `MobileSidebar`.
+
+  A `SidebarGroup` can either link to an existing page (e.g. `/search` or `/settings`) or wrap components, which will be displayed in a full-screen overlay menu (e.g. `Menu`).
+
+  ```diff
+  <Sidebar>
+      <SidebarLogo />
+  +   <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+          <SidebarSearchModal />
+  +   </SidebarGroup>
+      <SidebarDivider />
+  +   <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+          <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+          <SidebarDivider />
+          <SidebarScrollWrapper>
+              <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+          </SidebarScrollWrapper>
+  +   </SidebarGroup>
+      <SidebarSpace />
+      <SidebarDivider />
+  +   <SidebarGroup
+  +       label="Settings"
+  +       icon={<UserSettingsSignInAvatar />}
+  +       to="/settings"
+  +   >
+          <SidebarSettings />
+  +   </SidebarGroup>
+  </Sidebar>
+  ```
+
+  Additionally, you can order the groups differently in the `MobileSidebar` than in the usual `Sidebar` simply by giving a group a priority. The groups will be displayed in descending order from left to right.
+
+  ```diff
+  <SidebarGroup
+      label="Settings"
+      icon={<UserSettingsSignInAvatar />}
+      to="/settings"
+  +   priority={1}
+  >
+      <SidebarSettings />
+  </SidebarGroup>
+  ```
+
+  If you decide against adding `SidebarGroup`s to your `Sidebar` the `MobileSidebar` will contain one default menu item, which will open a full-screen overlay menu displaying all the content of the current `Sidebar`.
+
+  More information on the `SidebarGroup` & the `MobileSidebar` component can be found in the changeset for the `core-components`.
+
+- 08fa6a604a: The app template has been updated to add an explicit dependency on `typescript` in the root `package.json`. This is because it was removed as a dependency of `@backstage/cli` in order to decouple the TypeScript versioning in Backstage projects.
+
+  To apply this change in an existing app, add a `typescript` dependency to your `package.json` in the project root:
+
+  ```json
+    "dependencies": {
+      ...
+      "typescript": "~4.5.4",
+    }
+  ```
+
+  We recommend using a `~` version range since TypeScript releases do not adhere to semver.
+
+  It may be the case that you end up with errors if you upgrade the TypeScript version. This is because there was a change to TypeScript not long ago that defaulted the type of errors caught in `catch` blocks to `unknown`. You can work around this by adding `"useUnknownInCatchVariables": false` to the `"compilerOptions"` in your `tsconfig.json`:
+
+  ```json
+    "compilerOptions": {
+      ...
+      "useUnknownInCatchVariables": false
+    }
+  ```
+
+  Another option is to use the utilities from `@backstage/errors` to assert the type of errors caught in `catch` blocks:
+
+  ```ts
+  import { assertError, isError } from '@backstage/errors';
+
+  try {
+    ...
+  } catch (error) {
+    assertError(error);
+    ...
+    // OR
+    if (isError(error)) {
+      ...
+    }
+  }
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-tech-radar@0.5.3-next.0
+  - @backstage/plugin-auth-backend@0.7.0-next.0
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/plugin-api-docs@0.6.23-next.0
+  - @backstage/plugin-catalog-backend@0.21.0-next.0
+  - @backstage/plugin-permission-common@0.4.0-next.0
+  - @backstage/cli@0.12.0-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/plugin-catalog@0.7.9-next.0
+  - @backstage/plugin-user-settings@0.3.17-next.0
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/plugin-app-backend@0.3.22-next.0
+  - @backstage/core-app-api@0.5.0-next.0
+  - @backstage/plugin-catalog-import@0.7.10-next.0
+  - @backstage/plugin-scaffolder@0.11.19-next.0
+  - @backstage/plugin-search@0.5.6-next.0
+  - @backstage/plugin-techdocs@0.12.15-next.0
+  - @backstage/plugin-permission-node@0.4.0-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/integration-react@0.1.19-next.0
+  - @backstage/plugin-explore@0.3.26-next.0
+  - @backstage/plugin-github-actions@0.4.32-next.0
+  - @backstage/plugin-lighthouse@0.2.35-next.0
+  - @backstage/plugin-scaffolder-backend@0.15.21-next.0
+  - @backstage/backend-tasks@0.1.4-next.0
+  - @backstage/catalog-client@0.5.5-next.0
+  - @backstage/test-utils@0.2.3-next.0
+  - @backstage/plugin-proxy-backend@0.2.16-next.0
+  - @backstage/plugin-rollbar-backend@0.1.19-next.0
+  - @backstage/plugin-search-backend@0.3.1-next.0
+  - @backstage/plugin-techdocs-backend@0.12.4-next.0
+
+## 0.4.12
+
+### Patch Changes
+
+- 5333451def: Cleaned up API exports
+- cd529c4094: Add permissions to create-app's PluginEnvironment
+
+  `CatalogEnvironment` now has a `permissions` field, which means that a permission client must now be provided as part of `PluginEnvironment`. To apply these changes to an existing app, add the following to the `makeCreateEnv` function in `packages/backend/src/index.ts`:
+
+  ```diff
+    // packages/backend/src/index.ts
+
+  + import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+
+    function makeCreateEnv(config: Config) {
+      ...
+  +   const permissions = ServerPermissionClient.fromConfig(config, {
+  +     discovery,
+  +     tokenManager,
+  +   });
+
+      root.info(`Created UrlReader ${reader}`);
+
+      return (plugin: string): PluginEnvironment => {
+        ...
+        return {
+          logger,
+          cache,
+          database,
+          config,
+          reader,
+          discovery,
+          tokenManager,
+          scheduler,
+  +       permissions,
+        };
+      }
+    }
+  ```
+
+  And add a permissions field to the `PluginEnvironment` type in `packages/backend/src/types.ts`:
+
+  ```diff
+    // packages/backend/src/types.ts
+
+  + import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+
+    export type PluginEnvironment = {
+      ...
+  +   permissions: PermissionAuthorizer;
+    };
+  ```
+
+  [`@backstage/plugin-permission-common`](https://www.npmjs.com/package/@backstage/plugin-permission-common) and [`@backstage/plugin-permission-node`](https://www.npmjs.com/package/@backstage/plugin-permission-node) will need to be installed as dependencies:
+
+  ```diff
+    // packages/backend/package.json
+
+  +   "@backstage/plugin-permission-common": "...",
+  +   "@backstage/plugin-permission-node": "...",
+  ```
+
 ## 0.4.11
 
 ## 0.4.10

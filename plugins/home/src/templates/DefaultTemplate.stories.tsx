@@ -47,14 +47,12 @@ export default {
 };
 
 const useStyles = makeStyles(theme => ({
-  search: {
+  searchBar: {
+    display: 'flex',
+    maxWidth: '60vw',
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[1],
-    maxWidth: '60vw',
-    display: 'flex',
-    justifyContent: 'space-between',
     padding: '8px 0',
-    borderColor: 'transparent',
     borderRadius: '50px',
     margin: 'auto',
   },
@@ -74,7 +72,7 @@ const useLogoStyles = makeStyles(theme => ({
 }));
 
 export const DefaultTemplate = () => {
-  const { search } = useStyles();
+  const classes = useStyles();
   const { svg, path, container } = useLogoStyles();
 
   return (
@@ -88,7 +86,7 @@ export const DefaultTemplate = () => {
             />
             <Grid container item xs={12} alignItems="center" direction="row">
               <HomePageSearchBar
-                className={search}
+                classes={{root: classes.searchBar}}
                 placeholder="Search"
               />
             </Grid>

@@ -58,7 +58,7 @@ export class RollbarClient implements RollbarApi {
 
   private async get(path: string): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('rollbar')}${path}`;
-    const idToken = await this.identityApi.getIdToken();
+    const { token: idToken } = await this.identityApi.getCredentials();
     const response = await fetch(url, {
       headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
     });

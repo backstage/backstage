@@ -174,7 +174,12 @@ export class BitbucketAuthProvider implements OAuthHandlers {
   private async handleResult(result: BitbucketOAuthResult) {
     result.fullProfile.avatarUrl =
       result.fullProfile._json!.links!.avatar!.href;
-    const { profile } = await this.authHandler(result);
+    const context = {
+      logger: this.logger,
+      catalogIdentityClient: this.catalogIdentityClient,
+      tokenIssuer: this.tokenIssuer,
+    };
+    const { profile } = await this.authHandler(result, context);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -192,11 +197,7 @@ export class BitbucketAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        {
-          tokenIssuer: this.tokenIssuer,
-          catalogIdentityClient: this.catalogIdentityClient,
-          logger: this.logger,
-        },
+        context,
       );
     }
 
@@ -204,45 +205,47 @@ export class BitbucketAuthProvider implements OAuthHandlers {
   }
 }
 
-export const bitbucketUsernameSignInResolver: SignInResolver<BitbucketOAuthResult> =
-  async (info, ctx) => {
-    const { result } = info;
+export const bitbucketUsernameSignInResolver: SignInResolver<
+  BitbucketOAuthResult
+> = async (info, ctx) => {
+  const { result } = info;
 
-    if (!result.fullProfile.username) {
-      throw new Error('Bitbucket profile contained no Username');
-    }
+  if (!result.fullProfile.username) {
+    throw new Error('Bitbucket profile contained no Username');
+  }
 
-    const entity = await ctx.catalogIdentityClient.findUser({
-      annotations: {
-        'bitbucket.org/username': result.fullProfile.username,
-      },
-    });
+  const entity = await ctx.catalogIdentityClient.findUser({
+    annotations: {
+      'bitbucket.org/username': result.fullProfile.username,
+    },
+  });
 
-    const claims = getEntityClaims(entity);
-    const token = await ctx.tokenIssuer.issueToken({ claims });
+  const claims = getEntityClaims(entity);
+  const token = await ctx.tokenIssuer.issueToken({ claims });
 
-    return { id: entity.metadata.name, entity, token };
-  };
+  return { id: entity.metadata.name, entity, token };
+};
 
-export const bitbucketUserIdSignInResolver: SignInResolver<BitbucketOAuthResult> =
-  async (info, ctx) => {
-    const { result } = info;
+export const bitbucketUserIdSignInResolver: SignInResolver<
+  BitbucketOAuthResult
+> = async (info, ctx) => {
+  const { result } = info;
 
-    if (!result.fullProfile.id) {
-      throw new Error('Bitbucket profile contained no User ID');
-    }
+  if (!result.fullProfile.id) {
+    throw new Error('Bitbucket profile contained no User ID');
+  }
 
-    const entity = await ctx.catalogIdentityClient.findUser({
-      annotations: {
-        'bitbucket.org/user-id': result.fullProfile.id,
-      },
-    });
+  const entity = await ctx.catalogIdentityClient.findUser({
+    annotations: {
+      'bitbucket.org/user-id': result.fullProfile.id,
+    },
+  });
 
-    const claims = getEntityClaims(entity);
-    const token = await ctx.tokenIssuer.issueToken({ claims });
+  const claims = getEntityClaims(entity);
+  const token = await ctx.tokenIssuer.issueToken({ claims });
 
-    return { id: entity.metadata.name, entity, token };
-  };
+  return { id: entity.metadata.name, entity, token };
+};
 
 export type BitbucketProviderOptions = {
   /**
@@ -270,6 +273,7 @@ export const createBitbucketProvider = (
     globalConfig,
     config,
     tokenIssuer,
+    tokenManager,
     catalogApi,
     logger,
   }) =>
@@ -280,7 +284,7 @@ export const createBitbucketProvider = (
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
-        tokenIssuer,
+        tokenManager,
       });
 
       const authHandler: AuthHandler<BitbucketOAuthResult> =

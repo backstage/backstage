@@ -115,6 +115,8 @@ export const mockTagParts = {
   patch: 1,
 } as CalverTagParts;
 
+export const mockCtaMessage = 'Patch Release Candidate';
+
 export const mockBumpedTag = 'rc-2020.01.01_1337';
 
 /**

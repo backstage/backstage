@@ -17,7 +17,6 @@
 import React from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-// @ts-ignore
 import { Line } from 'rc-progress';
 import { BackstageTheme } from '@backstage/theme';
 import { getProgressColor, GaugePropsGetColor } from './Gauge';

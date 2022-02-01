@@ -1,5 +1,7 @@
 abc
 accessors
+addon
+addons
 Airbrake
 Anddddd
 Apdex
@@ -16,6 +18,8 @@ Autoscaling
 autoselect
 Avro
 backrub
+backported
+backporting
 Bigtable
 Billett
 Bitbucket
@@ -68,6 +72,7 @@ deduplicated
 deps
 dependabot
 destructured
+destructuring
 dev
 devops
 devs
@@ -118,6 +123,7 @@ https
 Iain
 img
 incentivised
+Indal
 inlined
 inlinehilite
 interop
@@ -202,6 +208,7 @@ pageview
 parallelization
 Patrik
 Peloton
+performant
 plantuml
 Platformize
 Podman
@@ -216,6 +223,8 @@ productional
 Protobuf
 proxying
 Proxying
+pseudonymized
+pubsub
 pygments
 pymdownx
 rankdir
@@ -297,6 +306,8 @@ tooltips
 touchpoints
 transpilation
 transpiled
+transpiler
+transpilers
 truthy
 typeahead
 ui
@@ -306,6 +317,7 @@ unmanaged
 unregister
 unregistration
 untracked
+upsert
 upvote
 url
 URLs
@@ -326,3 +338,4 @@ Zalando
 Zhou
 zoomable
 zsh
+Alef

@@ -1,5 +1,64 @@
 # @backstage/plugin-permission-node
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.8.0
+  - @backstage/backend-common@0.10.5
+
+## 0.4.0
+
+### Minor Changes
+
+- 0ae4f4cc82: **BREAKING**: `PolicyAuthorizeRequest` type has been renamed to `PolicyAuthorizeQuery`.
+  **BREAKING**: Update to use renamed request and response types from @backstage/plugin-permission-common.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.7.0
+  - @backstage/plugin-permission-common@0.4.0
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 0ae4f4cc82: **BREAKING**: `PolicyAuthorizeRequest` type has been renamed to `PolicyAuthorizeQuery`.
+  **BREAKING**: Update to use renamed request and response types from @backstage/plugin-permission-common.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.7.0-next.0
+  - @backstage/plugin-permission-common@0.4.0-next.0
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 419ca637c0: Optimizations to the integration between the permission backend and plugin-backends using createPermissionIntegrationRouter:
+
+  - The permission backend already supported batched requests to authorize, but would make calls to plugin backend to apply conditions serially. Now, after applying the policy for each authorization request, the permission backend makes a single batched /apply-conditions request to each plugin backend referenced in policy decisions.
+  - The `getResource` method accepted by `createPermissionIntegrationRouter` has been replaced with `getResources`, to allow consumers to make batch requests to upstream data stores. When /apply-conditions is called with a batch of requests, all required resources are requested in a single invocation of `getResources`.
+
+  Plugin owners consuming `createPermissionIntegrationRouter` should replace the `getResource` method in the options with a `getResources` method, accepting an array of resourceRefs, and returning an array of the corresponding resources.
+
+### Patch Changes
+
+- 9db1b86f32: Add helpers for creating PermissionRules with inferred types
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/backend-common@0.10.3
+  - @backstage/plugin-auth-backend@0.6.2
+  - @backstage/errors@0.2.0
+  - @backstage/plugin-permission-common@0.3.1
+
 ## 0.2.3
 
 ### Patch Changes

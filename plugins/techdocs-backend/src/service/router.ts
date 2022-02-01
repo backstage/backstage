@@ -18,7 +18,7 @@ import {
   PluginCacheManager,
 } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
@@ -27,7 +27,6 @@ import {
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/techdocs-common';
-import fetch from 'node-fetch';
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { Knex } from 'knex';
@@ -35,12 +34,13 @@ import { Logger } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createCacheMiddleware, TechDocsCache } from '../cache';
+import { CachedEntityLoader } from './CachedEntityLoader';
 
 /**
  * All of the required dependencies for running TechDocs in the "out-of-the-box"
  * deployment configuration (prepare/generate/publish all in the Backend).
  */
-type OutOfTheBoxDeploymentOptions = {
+export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
   publisher: PublisherBase;
@@ -48,25 +48,25 @@ type OutOfTheBoxDeploymentOptions = {
   discovery: PluginEndpointDiscovery;
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
-  cache?: PluginCacheManager;
+  cache: PluginCacheManager;
 };
 
 /**
  * Required dependencies for running TechDocs in the "recommended" deployment
  * configuration (prepare/generate handled externally in CI/CD).
  */
-type RecommendedDeploymentOptions = {
+export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
   logger: Logger;
   discovery: PluginEndpointDiscovery;
   config: Config;
-  cache?: PluginCacheManager;
+  cache: PluginCacheManager;
 };
 
 /**
  * One of the two deployment configurations must be provided.
  */
-type RouterOptions =
+export type RouterOptions =
   | RecommendedDeploymentOptions
   | OutOfTheBoxDeploymentOptions;
 
@@ -87,10 +87,17 @@ export async function createRouter(
   const { publisher, config, logger, discovery } = options;
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
 
+  // Entities are cached to optimize the /static/docs request path, which can be called many times
+  // when loading a single techdocs page.
+  const entityLoader = new CachedEntityLoader({
+    catalog: catalogClient,
+    cache: options.cache.getClient(),
+  });
+
   // Set up a cache client if configured.
   let cache: TechDocsCache | undefined;
   const defaultTtl = config.getOptionalNumber('techdocs.cache.ttl');
-  if (options.cache && defaultTtl) {
+  if (defaultTtl) {
     const cacheClient = options.cache.getClient({ defaultTtl });
     cache = TechDocsCache.fromConfig(config, { cache: cacheClient, logger });
   }
@@ -107,6 +114,16 @@ export async function createRouter(
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
+    const token = getBearerToken(req.headers.authorization);
+
+    // Verify that the related entity exists and the current user has permission to view it.
+    const entity = await entityLoader.load(entityName, token);
+
+    if (!entity) {
+      throw new NotFoundError(
+        `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
+      );
+    }
 
     try {
       const techdocsMetadata = await publisher.fetchTechDocsMetadata(
@@ -128,23 +145,19 @@ export async function createRouter(
   });
 
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
-    const catalogUrl = await discovery.getBaseUrl('catalog');
-
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
+    const token = getBearerToken(req.headers.authorization);
+
+    const entity = await entityLoader.load(entityName, token);
+
+    if (!entity) {
+      throw new NotFoundError(
+        `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
+      );
+    }
 
     try {
-      const token = getBearerToken(req.headers.authorization);
-      // TODO: Consider using the catalog client here
-      const entity = (await (
-        await fetch(
-          `${catalogUrl}/entities/by-name/${kind}/${namespace}/${name}`,
-          {
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          },
-        )
-      ).json()) as Entity;
-
       const locationMetadata = getLocationForEntity(entity, scmIntegrations);
       res.json({ ...entity, locationMetadata });
     } catch (err) {
@@ -168,10 +181,7 @@ export async function createRouter(
     const { kind, namespace, name } = req.params;
     const token = getBearerToken(req.headers.authorization);
 
-    const entity = await catalogClient.getEntityByName(
-      { kind, namespace, name },
-      { token },
-    );
+    const entity = await entityLoader.load({ kind, namespace, name }, token);
 
     if (!entity?.metadata?.uid) {
       throw new NotFoundError('Entity metadata UID missing');
@@ -226,6 +236,28 @@ export async function createRouter(
     );
   });
 
+  // Ensures that the related entity exists and the current user has permission to view it.
+  if (config.getOptionalBoolean('permission.enabled')) {
+    router.use(
+      '/static/docs/:namespace/:kind/:name',
+      async (req, _res, next) => {
+        const { kind, namespace, name } = req.params;
+        const entityName = { kind, namespace, name };
+        const token = getBearerToken(req.headers.authorization);
+
+        const entity = await entityLoader.load(entityName, token);
+
+        if (!entity) {
+          throw new NotFoundError(
+            `Entity not found for ${stringifyEntityRef(entityName)}`,
+          );
+        }
+
+        next();
+      },
+    );
+  }
+
   // If a cache manager was provided, attach the cache middleware.
   if (cache) {
     router.use(createCacheMiddleware({ logger, cache }));
@@ -244,7 +276,7 @@ function getBearerToken(header?: string): string | undefined {
 /**
  * Create an event-stream response that emits the events 'log', 'error', and 'finish'.
  *
- * @param res the response to write the event-stream to
+ * @param res - the response to write the event-stream to
  * @returns A tuple of <log, error, finish> callbacks to emit messages. A call to 'error' or 'finish'
  *          will close the event-stream.
  */
@@ -293,7 +325,7 @@ export function createEventStream(
 /**
  * Create a HTTP response. This is used for the legacy non-event-stream implementation of the sync endpoint.
  *
- * @param res the response to write the event-stream to
+ * @param res - the response to write the event-stream to
  * @returns A tuple of <log, error, finish> callbacks to emit messages. A call to 'error' or 'finish'
  *          will close the event-stream.
  */

@@ -23,31 +23,6 @@ import { BackstageUserIdentity, ProfileInfo } from './auth';
  */
 export type IdentityApi = {
   /**
-   * The ID of the signed in user. This ID is not meant to be presented to the user, but used
-   * as an opaque string to pass on to backends or use in frontend logic.
-   *
-   * @deprecated use {@link IdentityApi.getBackstageIdentity} instead.
-   */
-  getUserId(): string;
-
-  /**
-   * An OpenID Connect ID Token which proves the identity of the signed in user.
-   *
-   * The ID token will be undefined if the signed in user does not have a verified
-   * identity, such as a demo user or mocked user for e2e tests.
-   *
-   * @deprecated use {@link IdentityApi.getCredentials} instead.
-   */
-  getIdToken(): Promise<string | undefined>;
-
-  /**
-   * The profile of the signed in user.
-   *
-   * @deprecated use {@link IdentityApi.getProfileInfo} instead.
-   */
-  getProfile(): ProfileInfo;
-
-  /**
    * The profile of the signed in user.
    */
   getProfileInfo(): Promise<ProfileInfo>;

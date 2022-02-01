@@ -85,13 +85,21 @@ const myFactRetriever = {
    */
 };
 
-const myFactRetrieverRegistration = createFactRetrieverRegistration(
-  '1 * 3 * * ', // On the first minute of the third day of the month
-  myFactRetriever,
-);
+const myFactRetrieverRegistration = createFactRetrieverRegistration({
+  cadence: '1 * 2 * * ', // On the first minute of the second day of the month
+  factRetriever: myFactRetriever,
+});
 ```
 
-Then you can modify the example `techInsights.ts` file shown above like this:
+FactRetrieverRegistration also accepts an optional `lifecycle` configuration value. This can be either MaxItems or TTL (time to live). Valid options for this value are either a number for MaxItems or a Luxon duration like object for TTL. For example:
+
+```ts
+const maxItems = { maxItems: 7 }; // Deletes all but 7 latest facts for each id/entity pair
+const ttl = { ttl: 1209600000 }; // (2 weeks) Deletes items older than 2 weeks
+const ttlWithAHumanReadableValue = { ttl: { weeks: 2 } }; // Deletes items older than 2 weeks
+```
+
+To register these fact retrievers to your application you can modify the example `techInsights.ts` file shown above like this:
 
 ```diff
 const builder = new DefaultTechInsightsBuilder({

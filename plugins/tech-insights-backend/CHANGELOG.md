@@ -1,5 +1,132 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.2.2
+
+### Patch Changes
+
+- bbb6622752: Update README to match config options.
+- Updated dependencies
+  - @backstage/backend-common@0.10.5
+
+## 0.2.1
+
+### Patch Changes
+
+- ad0a7eb088: Fixed invalid access that caused an immediate crash with a `TypeError` when loading the package.
+
+## 0.2.0
+
+### Minor Changes
+
+- dfd5e81721: BREAKING CHANGES:
+
+  - The helper function to create a fact retriever registration is now expecting an object of configuration items instead of individual arguments.
+    Modify your `techInsights.ts` plugin configuration in `packages/backend/src/plugins/techInsights.ts` (or equivalent) the following way:
+
+  ```diff
+  -createFactRetrieverRegistration(
+  -  '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
+  -  entityOwnershipFactRetriever,
+  -),
+  +createFactRetrieverRegistration({
+  +  cadence: '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
+  +  factRetriever: entityOwnershipFactRetriever,
+  +}),
+
+  ```
+
+  - `TechInsightsStore` interface has changed its signature of `insertFacts` method. If you have created your own implementation of either `TechInsightsDatabase` or `FactRetrieverEngine` you need to modify the implementation/call to this method to accept/pass-in an object instead if individual arguments. The interface now accepts an additional `lifecycle` argument which is optional (defined below). An example modification to fact retriever engine:
+
+  ```diff
+  -await this.repository.insertFacts(factRetriever.id, facts);
+  +await this.repository.insertFacts({
+  + id: factRetriever.id,
+  + facts,
+  + lifecycle,
+  +});
+  ```
+
+  Adds a configuration option to fact retrievers to define lifecycle for facts the retriever persists. Possible values are either 'max items' or 'time-to-live'. The former will keep only n number of items in the database for each fact per entity. The latter will remove all facts that are older than the TTL value.
+
+  Possible values:
+
+  - `{ maxItems: 5 }` // Deletes all facts for the retriever/entity pair, apart from the last five
+  - `{ ttl: 1209600000 }` // (2 weeks) Deletes all facts older than 2 weeks for the retriever/entity pair
+  - `{ ttl: { weeks: 2 } }` // Deletes all facts older than 2 weeks for the retriever/entity pair
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/plugin-tech-insights-node@0.2.0
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+
+## 0.2.0-next.0
+
+### Minor Changes
+
+- dfd5e81721: BREAKING CHANGES:
+
+  - The helper function to create a fact retriever registration is now expecting an object of configuration items instead of individual arguments.
+    Modify your `techInsights.ts` plugin configuration in `packages/backend/src/plugins/techInsights.ts` (or equivalent) the following way:
+
+  ```diff
+  -createFactRetrieverRegistration(
+  -  '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
+  -  entityOwnershipFactRetriever,
+  -),
+  +createFactRetrieverRegistration({
+  +  cadence: '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
+  +  factRetriever: entityOwnershipFactRetriever,
+  +}),
+
+  ```
+
+  - `TechInsightsStore` interface has changed its signature of `insertFacts` method. If you have created your own implementation of either `TechInsightsDatabase` or `FactRetrieverEngine` you need to modify the implementation/call to this method to accept/pass-in an object instead if individual arguments. The interface now accepts an additional `lifecycle` argument which is optional (defined below). An example modification to fact retriever engine:
+
+  ```diff
+  -await this.repository.insertFacts(factRetriever.id, facts);
+  +await this.repository.insertFacts({
+  + id: factRetriever.id,
+  + facts,
+  + lifecycle,
+  +});
+  ```
+
+  Adds a configuration option to fact retrievers to define lifecycle for facts the retriever persists. Possible values are either 'max items' or 'time-to-live'. The former will keep only n number of items in the database for each fact per entity. The latter will remove all facts that are older than the TTL value.
+
+  Possible values:
+
+  - `{ maxItems: 5 }` // Deletes all facts for the retriever/entity pair, apart from the last five
+  - `{ ttl: 1209600000 }` // (2 weeks) Deletes all facts older than 2 weeks for the retriever/entity pair
+  - `{ ttl: { weeks: 2 } }` // Deletes all facts older than 2 weeks for the retriever/entity pair
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/plugin-tech-insights-node@0.2.0-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/catalog-client@0.5.5-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- 19f0f93504: Catch errors from a fact retriever and log them.
+- 10f26e8883: Modify queries to perform better by filtering on sub-queries as well
+- a60eb0f0dd: adding new operation to run checks for multiple entities in one request
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/backend-common@0.10.3
+  - @backstage/plugin-tech-insights-common@0.2.1
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+
 ## 0.1.4
 
 ### Patch Changes

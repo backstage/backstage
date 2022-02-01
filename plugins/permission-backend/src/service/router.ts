@@ -22,39 +22,50 @@ import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import {
   BackstageIdentityResponse,
   IdentityClient,
 } from '@backstage/plugin-auth-backend';
 import {
   AuthorizeResult,
-  AuthorizeResponse,
-  AuthorizeRequest,
+  AuthorizeDecision,
+  AuthorizeQuery,
   Identified,
+  AuthorizeRequest,
+  AuthorizeResponse,
 } from '@backstage/plugin-permission-common';
-import { PermissionPolicy } from '@backstage/plugin-permission-node';
+import {
+  ApplyConditionsRequestEntry,
+  ApplyConditionsResponseEntry,
+  PermissionPolicy,
+} from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
+import { memoize } from 'lodash';
+import DataLoader from 'dataloader';
 
-const requestSchema: z.ZodSchema<Identified<AuthorizeRequest>[]> = z.array(
-  z.object({
-    id: z.string(),
-    resourceRef: z.string().optional(),
-    permission: z.object({
-      name: z.string(),
-      resourceType: z.string().optional(),
-      attributes: z.object({
-        action: z
-          .union([
-            z.literal('create'),
-            z.literal('read'),
-            z.literal('update'),
-            z.literal('delete'),
-          ])
-          .optional(),
-      }),
+const querySchema: z.ZodSchema<Identified<AuthorizeQuery>> = z.object({
+  id: z.string(),
+  resourceRef: z.string().optional(),
+  permission: z.object({
+    name: z.string(),
+    resourceType: z.string().optional(),
+    attributes: z.object({
+      action: z
+        .union([
+          z.literal('create'),
+          z.literal('read'),
+          z.literal('update'),
+          z.literal('delete'),
+        ])
+        .optional(),
     }),
   }),
-);
+});
+
+const requestSchema: z.ZodSchema<AuthorizeRequest> = z.object({
+  items: z.array(querySchema),
+});
 
 /**
  * Options required when constructing a new {@link express#Router} using
@@ -70,45 +81,52 @@ export interface RouterOptions {
 }
 
 const handleRequest = async (
-  { id, resourceRef, ...request }: Identified<AuthorizeRequest>,
+  requests: Identified<AuthorizeQuery>[],
   user: BackstageIdentityResponse | undefined,
   policy: PermissionPolicy,
   permissionIntegrationClient: PermissionIntegrationClient,
   authHeader?: string,
-): Promise<Identified<AuthorizeResponse>> => {
-  const response = await policy.handle(request, user);
+): Promise<Identified<AuthorizeDecision>[]> => {
+  const applyConditionsLoaderFor = memoize((pluginId: string) => {
+    return new DataLoader<
+      ApplyConditionsRequestEntry,
+      ApplyConditionsResponseEntry
+    >(batch =>
+      permissionIntegrationClient.applyConditions(pluginId, batch, authHeader),
+    );
+  });
 
-  if (response.result === AuthorizeResult.CONDITIONAL) {
-    // Sanity check that any resource provided matches the one expected by the permission
-    if (request.permission.resourceType !== response.resourceType) {
-      throw new Error(
-        `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
-      );
-    }
+  return Promise.all(
+    requests.map(({ id, resourceRef, ...request }) =>
+      policy.handle(request, user).then(decision => {
+        if (decision.result !== AuthorizeResult.CONDITIONAL) {
+          return {
+            id,
+            ...decision,
+          };
+        }
 
-    if (resourceRef) {
-      return {
-        id,
-        ...(await permissionIntegrationClient.applyConditions(
-          {
-            resourceRef,
-            pluginId: response.pluginId,
-            resourceType: response.resourceType,
-            conditions: response.conditions,
-          },
-          authHeader,
-        )),
-      };
-    }
+        if (decision.resourceType !== request.permission.resourceType) {
+          throw new Error(
+            `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
+          );
+        }
 
-    return {
-      id,
-      result: AuthorizeResult.CONDITIONAL,
-      conditions: response.conditions,
-    };
-  }
+        if (!resourceRef) {
+          return {
+            id,
+            ...decision,
+          };
+        }
 
-  return { id, ...response };
+        return applyConditionsLoaderFor(decision.pluginId).load({
+          id,
+          resourceRef,
+          ...decision,
+        });
+      }),
+    ),
+  );
 };
 
 /**
@@ -136,30 +154,33 @@ export async function createRouter(
   router.post(
     '/authorize',
     async (
-      req: Request<Identified<AuthorizeRequest>[]>,
-      res: Response<Identified<AuthorizeResponse>[]>,
+      req: Request<AuthorizeRequest>,
+      res: Response<AuthorizeResponse>,
     ) => {
       const token = IdentityClient.getBearerToken(req.header('authorization'));
       const user = token ? await identity.authenticate(token) : undefined;
 
-      const body = requestSchema.parse(req.body);
+      const parseResult = requestSchema.safeParse(req.body);
 
-      res.json(
-        await Promise.all(
-          body.map(request =>
-            handleRequest(
-              request,
-              user,
-              policy,
-              permissionIntegrationClient,
-              req.header('authorization'),
-            ),
-          ),
+      if (!parseResult.success) {
+        throw new InputError(parseResult.error.toString());
+      }
+
+      const body = parseResult.data;
+
+      res.json({
+        items: await handleRequest(
+          body.items,
+          user,
+          policy,
+          permissionIntegrationClient,
+          req.header('authorization'),
         ),
-      );
+      });
     },
   );
 
   router.use(errorHandler());
+
   return router;
 }

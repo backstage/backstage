@@ -7,7 +7,8 @@ organization:
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
-  # See backend-to-backend-auth.md in the docs for information on the format
+  # See https://backstage.io/docs/tutorials/backend-to-backend-auth for
+  # information on the format
   # auth:
   #   keys:
   #     - secret: ${BACKEND_SECRET}
@@ -80,6 +81,9 @@ scaffolder:
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
 
 catalog:
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
   rules:
     - allow: [Component, System, API, Group, User, Resource, Location]
   locations:

@@ -1,5 +1,31 @@
 # @backstage/plugin-tech-radar
 
+## 0.5.3
+
+### Patch Changes
+
+- 021bba18c4: Update readme
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- 021bba18c4: Update readme
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+
 ## 0.5.1
 
 ### Patch Changes

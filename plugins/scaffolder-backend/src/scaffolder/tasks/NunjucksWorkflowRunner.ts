@@ -35,6 +35,7 @@ import { validate as validateJsonSchema } from 'jsonschema';
 import { parseRepoUrl } from '../actions/builtin/publish/util';
 import { TemplateActionRegistry } from '../actions';
 import {
+  TemplateFilter,
   SecureTemplater,
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
@@ -44,6 +45,7 @@ type NunjucksWorkflowRunnerOptions = {
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   logger: winston.Logger;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 };
 
 type TemplateContext = {
@@ -190,6 +192,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       parseRepoUrl(url: string) {
         return parseRepoUrl(url, integrations);
       },
+      additionalTemplateFilters: this.options.additionalTemplateFilters,
     });
 
     try {
@@ -257,6 +260,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           await action.handler({
             baseUrl: task.spec.baseUrl,
             input,
+            // this token is deprecated, and will be removed in favour of secrets.backstageToken instead.
+            token: task.secrets?.token,
+            secrets: task.secrets ?? {},
             logger: taskLogger,
             logStream: streamLogger,
             workspacePath,

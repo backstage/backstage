@@ -26,6 +26,10 @@ import { MapLoadingToProps, useLoading } from './useLoading';
 import { Group, Maybe } from '../types';
 import { DefaultLoadingAction } from '../utils/loading';
 import { useApi, identityApiRef } from '@backstage/core-plugin-api';
+import {
+  ENTITY_DEFAULT_NAMESPACE,
+  parseEntityRef,
+} from '@backstage/catalog-model';
 
 type GroupsProviderLoadingProps = {
   dispatchLoadingGroups: (isLoading: boolean) => void;
@@ -47,7 +51,7 @@ export const GroupsContext = React.createContext<
 >(undefined);
 
 export const GroupsProvider = ({ children }: PropsWithChildren<{}>) => {
-  const userId = useApi(identityApiRef).getUserId();
+  const identityApi = useApi(identityApiRef);
   const client = useApi(costInsightsApiRef);
   const [error, setError] = useState<Maybe<Error>>(null);
   const { dispatchLoadingGroups } = useLoading(mapLoadingToProps);
@@ -59,6 +63,11 @@ export const GroupsProvider = ({ children }: PropsWithChildren<{}>) => {
 
     async function getUserGroups() {
       try {
+        const { userEntityRef } = await identityApi.getBackstageIdentity();
+        const { name: userId } = parseEntityRef(userEntityRef, {
+          defaultKind: 'User',
+          defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+        });
         const g = await client.getUserGroups(userId);
         setGroups(g);
       } catch (e) {
@@ -69,7 +78,7 @@ export const GroupsProvider = ({ children }: PropsWithChildren<{}>) => {
     }
 
     getUserGroups();
-  }, [userId, client]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [client]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (error) {
     return <Alert severity="error">{error.message}</Alert>;
