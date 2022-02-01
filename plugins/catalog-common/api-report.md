@@ -6,6 +6,9 @@
 import { Permission } from '@backstage/plugin-permission-common';
 
 // @public
+export const catalogEntityCreatePermission: Permission;
+
+// @public
 export const catalogEntityDeletePermission: Permission;
 
 // @public
