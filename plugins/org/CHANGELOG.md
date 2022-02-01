@@ -1,5 +1,14 @@
 # @backstage/plugin-org
 
+## 0.4.1-next.0
+
+### Patch Changes
+
+- ef86143c16: Added `relations.memberof` filter to the catalog api call in `MemberListCard` to avoid fetching all the User entity kinds from catalog-backend.
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
 ## 0.4.0
 
 ### Minor Changes
