@@ -88,6 +88,12 @@ Weather: :sunny: :umbrella: :cloud: :snowflake:
 
 Animals: :tiger: :horse: :turtle: :wolf: :frog:
 
+### Attributes
+
+[A Download Link](./images/backstage-logo-cncf.svg){: download }
+
+![A Scaled Image](./images/backstage-logo-cncf.svg){: style="width: 100px" }
+
 ### MDX truly sane lists
 
 - attributes
