@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder
 
+## 0.12.1-next.0
+
+### Patch Changes
+
+- a681cb9c2f: Make linkTarget configurable for MarkdownContent component
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/integration-react@0.1.20-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
 ## 0.12.0
 
 ### Minor Changes

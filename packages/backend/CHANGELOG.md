@@ -1,5 +1,21 @@
 # example-backend
 
+## 0.2.63-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.9.0-next.0
+  - @backstage/plugin-rollbar-backend@0.1.20-next.0
+  - @backstage/plugin-catalog-backend@0.21.2-next.0
+  - @backstage/plugin-scaffolder-backend@0.15.23-next.0
+  - @backstage/plugin-proxy-backend@0.2.17-next.0
+  - @backstage/plugin-permission-backend@0.4.2-next.0
+  - @backstage/plugin-permission-node@0.4.2-next.0
+  - @backstage/plugin-search-backend@0.4.1-next.0
+  - example-app@0.2.63-next.0
+  - @backstage/plugin-scaffolder-backend-module-rails@0.2.5-next.0
+
 ## 0.2.62
 
 ### Patch Changes

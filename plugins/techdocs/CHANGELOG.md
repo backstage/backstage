@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs
 
+## 0.13.2-next.0
+
+### Patch Changes
+
+- 359c31e31d: Added support for documentation using the raw `<source>` tag to point to relative resources like audio or video files.
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/integration-react@0.1.20-next.0
+  - @backstage/plugin-catalog@0.7.11-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+  - @backstage/plugin-search@0.6.1-next.0
+
 ## 0.13.1
 
 ### Patch Changes

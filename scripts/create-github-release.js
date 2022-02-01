@@ -142,7 +142,8 @@ async function getReleaseDescriptionFromCommitMessage(commitMessage) {
   // Use the PR description to prepare for the release description
   const isChangesetRelease = commitMessage.includes(CHANGESET_RELEASE_BRANCH);
   if (isChangesetRelease) {
-    return data.body.split('\n').slice(3).join('\n');
+    const lines = data.body.split('\n');
+    return lines.slice(lines.indexOf('# Releases') + 1).join('\n');
   }
 
   return data.body;
@@ -182,7 +183,6 @@ async function main() {
   const releaseDescription = await getReleaseDescriptionFromCommitMessage(
     commitMessage,
   );
-
   await createRelease(releaseDescription);
 }
 

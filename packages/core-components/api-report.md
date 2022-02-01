@@ -599,6 +599,7 @@ export function Link(props: LinkProps): JSX.Element;
 export type LinkProps = LinkProps_2 &
   LinkProps_3 & {
     component?: ElementType<any>;
+    noTrack?: boolean;
   };
 
 // Warning: (ae-missing-release-tag) "LoginRequestListItemClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
