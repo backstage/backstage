@@ -218,10 +218,22 @@ export const TaskStatusStepper = memo(
 const hasLinks = ({ entityRef, remoteUrl, links = [] }: TaskOutput): boolean =>
   !!(entityRef || remoteUrl || links.length > 0);
 
-type TaskPageProps = {
+/**
+ * TaskPageProps for constructing a TaskPage
+ * @param loadingText - Optional loading text shown before a task begins executing.
+ *
+ * @public
+ */
+export type TaskPageProps = {
   loadingText?: string;
 };
 
+/**
+ * TaskPage for showing the status of the taskId provided as a param
+ * @param loadingText - Optional loading text shown before a task begins executing.
+ *
+ * @public
+ */
 export const TaskPage = ({ loadingText }: TaskPageProps) => {
   const classes = useStyles();
   const navigate = useNavigate();

@@ -277,11 +277,13 @@ const scaffolderPlugin: BackstagePlugin<
 export { scaffolderPlugin as plugin };
 export { scaffolderPlugin };
 
-// Warning: (ae-forgotten-export) The symbol "TaskPageProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "TaskPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
+
+// @public
+export type TaskPageProps = {
+  loadingText?: string;
+};
 
 // Warning: (ae-missing-release-tag) "TemplateList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
