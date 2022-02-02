@@ -26,7 +26,7 @@ export type CustomFieldValidator<T, UiOptions extends {} = {}> =
   | ((
       data: T,
       field: FieldValidation,
-      context: { apiHolder: ApiHolder; uiOptions: UiOptions },
+      context: { apiHolder: ApiHolder; uiOptions?: UiOptions },
     ) => void);
 
 /**
