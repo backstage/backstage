@@ -37,13 +37,14 @@ export function createScaffolderFieldExtension<T = any>(
 ): Extension<() => null>;
 
 // @public
-export type CustomFieldValidator<T> =
+export type CustomFieldValidator<T, UiOptions extends {} = {}> =
   | ((data: T, field: FieldValidation) => void)
   | ((
       data: T,
       field: FieldValidation,
       context: {
         apiHolder: ApiHolder;
+        uiOptions?: UiOptions;
       },
     ) => void);
 
