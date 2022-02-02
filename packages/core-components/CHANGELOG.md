@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.8.7-next.1
+
+### Patch Changes
+
+- f7257dff6f: The `<Link />` component now accepts a `noTrack` prop, which prevents the `click` event from being captured by the Analytics API. This can be used if tracking is explicitly not warranted, or in order to use custom link tracking in specific situations.
+
 ## 0.8.7-next.0
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder
 
+## 0.12.1-next.1
+
+### Patch Changes
+
+- ba59832aed: Permission the Register Existing Component button
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.1
+  - @backstage/plugin-catalog-react@0.6.13-next.1
+  - @backstage/plugin-catalog-common@0.1.2-next.0
+
 ## 0.12.1-next.0
 
 ### Patch Changes

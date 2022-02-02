@@ -1,5 +1,32 @@
 # @backstage/create-app
 
+## 0.4.18-next.1
+
+### Patch Changes
+
+- 5bd0ce9e62: chore(deps): bump `inquirer` from 7.3.3 to 8.2.0
+- ba59832aed: Permission the `catalog-import` route
+
+  The following changes are **required** if you intend to add permissions to your existing app.
+
+  Use the `PermissionedRoute` for `CatalogImportPage` instead of the normal `Route`:
+
+  ```diff
+  // packages/app/src/App.tsx
+  ...
+  + import { PermissionedRoute } from '@backstage/plugin-permission-react';
+  + import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+
+  ...
+
+  - <Route path="/catalog-import" element={<CatalogImportPage />} />
+  + <PermissionedRoute
+  +   path="/catalog-import"
+  +   permission={catalogEntityCreatePermission}
+  +   element={<CatalogImportPage />}
+  + />
+  ```
+
 ## 0.4.18-next.0
 
 ### Patch Changes

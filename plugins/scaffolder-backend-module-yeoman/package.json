@@ -21,13 +21,13 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.13",
-    "@backstage/plugin-scaffolder-backend": "^0.15.23-next.0",
+    "@backstage/plugin-scaffolder-backend": "^0.15.23-next.1",
     "@backstage/types": "^0.1.1",
     "winston": "^3.2.1",
     "yeoman-environment": "^3.6.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.10.4",
+    "@backstage/backend-common": "^0.10.6-next.0",
     "@types/jest": "^26.0.7"
   },
   "files": [
