@@ -35,7 +35,7 @@
     "commander": "^6.1.0",
     "fs-extra": "9.1.0",
     "handlebars": "^4.7.3",
-    "inquirer": "^7.0.4",
+    "inquirer": "^8.2.0",
     "ora": "^5.3.0",
     "recursive-readdir": "^2.2.2"
   },

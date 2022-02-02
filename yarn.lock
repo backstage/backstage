@@ -13861,7 +13861,7 @@ inline-style-prefixer@^6.0.0:
   dependencies:
     css-in-js-utils "^2.0.0"
 
-inquirer@^7.0.4, inquirer@^7.3.3:
+inquirer@^7.3.3:
   version "7.3.3"
   resolved "https://registry.npmjs.org/inquirer/-/inquirer-7.3.3.tgz#04d176b2af04afc157a83fd7c100e98ee0aad003"
   integrity sha512-JG3eIAj5V9CwcGvuOmoo6LB9kbAYT8HXffUl6memuszlwDC/qvFAJw49XJ5NROSFNPxp3iQg1GqkFhaY/CR0IA==
@@ -13880,27 +13880,7 @@ inquirer@^7.0.4, inquirer@^7.3.3:
     strip-ansi "^6.0.0"
     through "^2.3.6"
 
-inquirer@^8.0.0:
-  version "8.1.5"
-  resolved "https://registry.npmjs.org/inquirer/-/inquirer-8.1.5.tgz#2dc5159203c826d654915b5fe6990fd17f54a150"
-  integrity sha512-G6/9xUqmt/r+UvufSyrPpt84NYwhKZ9jLsgMbQzlx804XErNupor8WQdBnBRrXmBfTPpuwf1sV+ss2ovjgdXIg==
-  dependencies:
-    ansi-escapes "^4.2.1"
-    chalk "^4.1.1"
-    cli-cursor "^3.1.0"
-    cli-width "^3.0.0"
-    external-editor "^3.0.3"
-    figures "^3.0.0"
-    lodash "^4.17.21"
-    mute-stream "0.0.8"
-    ora "^5.4.1"
-    run-async "^2.4.0"
-    rxjs "^7.2.0"
-    string-width "^4.1.0"
-    strip-ansi "^6.0.0"
-    through "^2.3.6"
-
-inquirer@^8.1.1, inquirer@^8.2.0:
+inquirer@^8.0.0, inquirer@^8.1.1, inquirer@^8.2.0:
   version "8.2.0"
   resolved "https://registry.npmjs.org/inquirer/-/inquirer-8.2.0.tgz#f44f008dd344bbfc4b30031f45d984e034a3ac3a"
   integrity sha512-0crLweprevJ02tTuA6ThpoAERAGyVILC4sS74uib58Xf/zSr1/ZWtmm7D5CI+bSQEaA04f0K7idaHpQbSWgiVQ==
@@ -21500,14 +21480,7 @@ rxjs@^6.3.3, rxjs@^6.4.0, rxjs@^6.6.0, rxjs@^6.6.3:
   dependencies:
     tslib "^1.9.0"
 
-rxjs@^7.1.0, rxjs@^7.2.0:
-  version "7.3.0"
-  resolved "https://registry.npmjs.org/rxjs/-/rxjs-7.3.0.tgz#39fe4f3461dc1e50be1475b2b85a0a88c1e938c6"
-  integrity sha512-p2yuGIg9S1epc3vrjKf6iVb3RCaAYjYskkO+jHIaV0IjOPlJop4UnodOoFb2xeNwlguqLYvGw1b1McillYb5Gw==
-  dependencies:
-    tslib "~2.1.0"
-
-rxjs@^7.5.1:
+rxjs@^7.1.0, rxjs@^7.2.0, rxjs@^7.5.1:
   version "7.5.2"
   resolved "https://registry.npmjs.org/rxjs/-/rxjs-7.5.2.tgz#11e4a3a1dfad85dbf7fb6e33cbba17668497490b"
   integrity sha512-PwDt186XaL3QN5qXj/H9DGyHhP3/RYYgZZwqBv9Tv8rsAaiwFH1IsJJlcgD37J7UW5a6O67qX0KWKS3/pu0m4w==
@@ -22592,16 +22565,7 @@ string-width@^3.0.0:
     is-fullwidth-code-point "^2.0.0"
     strip-ansi "^5.1.0"
 
-string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.0.tgz#952182c46cc7b2c313d1596e623992bd163b72b5"
-  integrity sha512-zUz5JD+tgqtuDjMhwIg5uFVV3dtqZ9yQJlZVfq4I01/K5Paj5UHj7VyrQOJvzawSVlKpObApbfD0Ed6yJc+1eg==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.0"
-
-string-width@^4.2.3:
+string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
