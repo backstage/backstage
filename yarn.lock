@@ -4532,13 +4532,13 @@
     react-use "^17.2.4"
 
 "@roadiehq/backstage-plugin-travis-ci@^1.3.2":
-  version "1.3.3"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-1.3.3.tgz#317c9280d8dd404794ad5aa057ce457bfd459706"
-  integrity sha512-f5RhuG681iwiRa9/WvwhV4pI0KHv6oAHlgOXG3/pbOcONN9w9RaQIITgTyc6hpm9MzAkFQWV8qc3yPFcojza+A==
+  version "1.3.6"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-1.3.6.tgz#6f45a42bdf39aa6baab56f0c4400990238df1625"
+  integrity sha512-th+2GaOjkPArDUbTBuhhCz/6WL4gcrVRVAsDHzuSrrJqNtsz6kXdBIHhR/58En16BZ2bnHhRzY87uiUDLjAntA==
   dependencies:
     "@backstage/catalog-model" "^0.9.7"
     "@backstage/core-components" "^0.8.0"
-    "@backstage/core-plugin-api" "^0.4.0"
+    "@backstage/core-plugin-api" "^0.6.0"
     "@backstage/plugin-catalog-react" "^0.6.5"
     "@backstage/theme" "^0.2.9"
     "@material-ui/core" "^4.11.3"
