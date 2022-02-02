@@ -45,6 +45,11 @@
         "lines": 100,
         "statements": 100
       }
-    }
+    },
+    "coveragePathIgnorePatterns": [
+      "standaloneServer.ts",
+      "index.ts",
+      "run.ts"
+    ]
   }
 }
