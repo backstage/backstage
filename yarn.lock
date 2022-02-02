@@ -5184,15 +5184,7 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
-"@types/body-parser@*", "@types/body-parser@^1.19.0":
-  version "1.19.1"
-  resolved "https://registry.npmjs.org/@types/body-parser/-/body-parser-1.19.1.tgz#0c0174c42a7d017b818303d4b5d969cb0b75929c"
-  integrity sha512-a6bTJ21vFOGIkwM0kzh9Yr89ziVxq4vYH2fQ6N8AeipEzai/cFK6aGMArIkUeIdRIgpwQa+2bXiLuUJCpSf2Cg==
-  dependencies:
-    "@types/connect" "*"
-    "@types/node" "*"
-
-"@types/body-parser@1.19.2":
+"@types/body-parser@*", "@types/body-parser@1.19.2", "@types/body-parser@^1.19.0":
   version "1.19.2"
   resolved "https://registry.npmjs.org/@types/body-parser/-/body-parser-1.19.2.tgz#aea2059e28b7658639081347ac4fab3de166e6f0"
   integrity sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g==
@@ -11649,6 +11641,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-azure-devops" "^0.1.13-next.0"
     "@backstage/plugin-badges" "^0.2.21-next.0"
     "@backstage/plugin-catalog" "^0.7.11-next.0"
+    "@backstage/plugin-catalog-common" "^0.1.1"
     "@backstage/plugin-catalog-graph" "^0.2.9-next.0"
     "@backstage/plugin-catalog-import" "^0.8.0-next.0"
     "@backstage/plugin-catalog-react" "^0.6.13-next.0"
@@ -11670,6 +11663,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-newrelic-dashboard" "^0.1.5-next.0"
     "@backstage/plugin-org" "^0.4.1-next.0"
     "@backstage/plugin-pagerduty" "0.3.24-next.0"
+    "@backstage/plugin-permission-react" "^0.3.0"
     "@backstage/plugin-rollbar" "^0.3.25-next.0"
     "@backstage/plugin-scaffolder" "^0.12.1-next.0"
     "@backstage/plugin-search" "^0.6.1-next.0"
