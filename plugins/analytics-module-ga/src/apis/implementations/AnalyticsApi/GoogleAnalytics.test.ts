@@ -272,7 +272,6 @@ describe('GoogleAnalytics', () => {
 
     it('set custom-hashed userId when userIdTransform is provided', async () => {
       const userIdTransform = jest.fn().mockResolvedValue('s0m3hash3dvalu3');
-
       const optionalConfig = new ConfigReader({
         app: {
           analytics: {
