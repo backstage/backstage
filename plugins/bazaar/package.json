@@ -47,9 +47,6 @@
     "@backstage/cli": "^0.13.0",
     "@backstage/dev-utils": "^0.2.19",
     "@testing-library/jest-dom": "^5.10.1",
-    "@testing-library/react": "^11.2.5",
-    "@backstage/test-utils": "^0.2.3",
-    "@testing-library/react-hooks": "^7.0.2",
     "cross-fetch": "^3.0.6"
   },
   "files": [
