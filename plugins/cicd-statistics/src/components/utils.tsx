@@ -42,9 +42,17 @@ export function pickElements<T>(arr: ReadonlyArray<T>, num: number): Array<T> {
 }
 
 function formatDateShort(milliseconds: number) {
+  if ((milliseconds as any) === 'auto') {
+    // When recharts gets confused (empty data)
+    return '';
+  }
   return DateTime.fromMillis(milliseconds).toLocaleString(DateTime.DATE_SHORT);
 }
 function formatDateTimeShort(milliseconds: number) {
+  if ((milliseconds as any) === 'auto') {
+    // When recharts gets confused (empty data)
+    return '';
+  }
   return DateTime.fromMillis(milliseconds).toLocaleString(
     DateTime.DATETIME_SHORT,
   );

@@ -37,6 +37,7 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { capitalize } from 'lodash';
 
+import { useZoom, useZoomArea } from './zoom';
 import { FilterStatusType, TriggerReason } from '../apis/types';
 import { labelFormatterWithoutTime, tickFormatterX } from '../components/utils';
 import { statusColorMap, triggerColorMap } from './colors';
@@ -48,6 +49,9 @@ export interface StatusChartProps {
 
 export function StatusChart(props: StatusChartProps) {
   const { analysis } = props;
+
+  const { zoomFilterValues } = useZoom();
+  const { zoomProps, getZoomArea } = useZoomArea();
 
   const values = useMemo(() => {
     return analysis.daily.values.map(value => {
@@ -122,6 +126,11 @@ export function StatusChart(props: StatusChartProps) {
     };
   }, [analysis.daily.triggerReasons]);
 
+  const zoomFilteredValues = useMemo(
+    () => zoomFilterValues(values),
+    [values, zoomFilterValues],
+  );
+
   const barSize = getBarSize(analysis.daily.values.length);
 
   return (
@@ -136,7 +145,7 @@ export function StatusChart(props: StatusChartProps) {
           <Alert severity="info">No data</Alert>
         ) : (
           <ResponsiveContainer width="100%" height={140}>
-            <ComposedChart data={values}>
+            <ComposedChart data={zoomFilteredValues} {...zoomProps}>
               <Legend payload={legendPayload} />
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
@@ -153,6 +162,7 @@ export function StatusChart(props: StatusChartProps) {
               {triggerReasonLegendPayload.map(reason => (
                 <Fragment key={reason.id}>
                   <Area
+                    isAnimationActive={false}
                     type="monotone"
                     dataKey={reason.id!}
                     stackId="triggers"
@@ -166,6 +176,7 @@ export function StatusChart(props: StatusChartProps) {
               {[...analysis.daily.statuses].reverse().map(status => (
                 <Fragment key={status}>
                   <Bar
+                    isAnimationActive={false}
                     type="monotone"
                     barSize={barSize}
                     dataKey={status}
@@ -177,6 +188,7 @@ export function StatusChart(props: StatusChartProps) {
                   />
                 </Fragment>
               ))}
+              {getZoomArea({ yAxisId: 1 })}
             </ComposedChart>
           </ResponsiveContainer>
         )}

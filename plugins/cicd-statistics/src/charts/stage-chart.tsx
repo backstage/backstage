@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useMemo } from 'react';
+import React, { CSSProperties, Fragment, useMemo } from 'react';
 import {
   Area,
   Bar,
@@ -40,6 +40,7 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { capitalize } from 'lodash';
 
+import { useZoom, useZoomArea } from './zoom';
 import { CicdDefaults, statusTypes } from '../apis/types';
 import { ChartableStage } from './types';
 import {
@@ -57,9 +58,8 @@ import {
   colorStrokeAvg,
 } from './colors';
 
-const fullWidth = {
-  width: '100%',
-};
+const fullWidth: CSSProperties = { width: '100%' };
+const noUserSelect: CSSProperties = { userSelect: 'none' };
 
 const transitionProps = { unmountOnExit: true };
 
@@ -80,6 +80,9 @@ export function StageChart(props: StageChartProps) {
     defaultHidden = 0,
     zeroYAxis = false,
   } = chartOptions;
+
+  const { zoomFilterValues } = useZoom();
+  const { zoomProps, getZoomArea } = useZoomArea();
 
   const ticks = useMemo(
     () => pickElements(stage.values, 8).map(val => val.__epoch),
@@ -114,6 +117,11 @@ export function StageChart(props: StageChartProps) {
     [stage.stages, defaultHidden],
   );
 
+  const zoomFilteredValues = useMemo(
+    () => zoomFilterValues(stage.values),
+    [stage.values, zoomFilterValues],
+  );
+
   return stage.combinedAnalysis.max < defaultHidden ? null : (
     <Accordion
       defaultExpanded={stage.combinedAnalysis.max > defaultCollapsed}
@@ -130,9 +138,9 @@ export function StageChart(props: StageChartProps) {
           <Alert severity="info">No data</Alert>
         ) : (
           <Grid container direction="column">
-            <Grid item>
+            <Grid item style={noUserSelect}>
               <ResponsiveContainer width="100%" height={140}>
-                <ComposedChart data={stage.values}>
+                <ComposedChart data={zoomFilteredValues} {...zoomProps}>
                   <defs>
                     <linearGradient id="colorDur" x1="0" y1="0" x2="0" y2="1">
                       {fireColors.map(([percent, color]) => (
@@ -175,8 +183,9 @@ export function StageChart(props: StageChartProps) {
                   {statuses.reverse().map(status => (
                     <Fragment key={status}>
                       {!chartTypes[status].includes('duration') ? null : (
-                        <Fragment key={status}>
+                        <>
                           <Area
+                            isAnimationActive={false}
                             yAxisId={1}
                             type="monotone"
                             dataKey={status}
@@ -195,6 +204,7 @@ export function StageChart(props: StageChartProps) {
                             connectNulls
                           />
                           <Line
+                            isAnimationActive={false}
                             yAxisId={1}
                             type="monotone"
                             dataKey={`${status} avg`}
@@ -208,10 +218,11 @@ export function StageChart(props: StageChartProps) {
                             dot={false}
                             connectNulls
                           />
-                        </Fragment>
+                        </>
                       )}
                       {!chartTypes[status].includes('count') ? null : (
                         <Bar
+                          isAnimationActive={false}
                           yAxisId={2}
                           type="monotone"
                           dataKey={`${status} count`}
@@ -223,6 +234,7 @@ export function StageChart(props: StageChartProps) {
                       )}
                     </Fragment>
                   ))}
+                  {getZoomArea({ yAxisId: 1 })}
                 </ComposedChart>
               </ResponsiveContainer>
             </Grid>

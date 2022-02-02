@@ -26,6 +26,7 @@ import {
 } from './hooks/use-cicd-statistics';
 import { useCicdConfiguration } from './hooks/use-cicd-configuration';
 import { buildsToChartableStages } from './charts/logic/conversions';
+import { ZoomProvider, useZoom } from './charts/zoom';
 import { StageChart } from './charts/stage-chart';
 import { StatusChart } from './charts/status-chart';
 import {
@@ -48,7 +49,9 @@ export function EntityPageCicdCharts() {
   const state = useCicdConfiguration();
 
   return renderFallbacks(state, value => (
-    <CicdCharts cicdConfiguration={value} />
+    <ZoomProvider>
+      <CicdCharts cicdConfiguration={value} />
+    </ZoomProvider>
   ));
 }
 
@@ -87,6 +90,8 @@ function CicdCharts(props: CicdChartsProps) {
   const { entity } = useEntity();
 
   const classes = useStyles();
+
+  const { resetZoom } = useZoom();
 
   const [chartFilter, setChartFilter] = useState(
     getDefaultChartFilter(cicdConfiguration),
@@ -134,6 +139,10 @@ function CicdCharts(props: CicdChartsProps) {
       ),
     [statisticsState, cicdConfiguration, viewOptions],
   );
+
+  useEffect(() => {
+    resetZoom();
+  }, [resetZoom, statisticsState.value]);
 
   const onFilterChange = useCallback((filter: ChartFilter) => {
     setChartFilter(cleanChartFilter(filter));
