@@ -93,11 +93,10 @@ export const createValidator = (
         const fieldName =
           isObject(propSchema) && (propSchema['ui:field'] as string);
         if (fieldName && typeof validators[fieldName] === 'function') {
-          validators[fieldName]!(
-            propData as JsonValue,
-            propValidation,
-            context,
-          );
+          validators[fieldName]!(propData as JsonValue, propValidation, {
+            ...context,
+            uiOptions: propSchema['ui:options'] ?? {},
+          });
         }
       }
     }

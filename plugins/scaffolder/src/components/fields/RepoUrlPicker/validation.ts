@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { FieldValidation } from '@rjsf/core';
-import { ApiHolder } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import { RepoUrlPickerUiOptions } from './RepoUrlPicker';
+import { CustomFieldValidator } from '../../../extensions/types';
 
-export const repoPickerValidation = (
-  value: string,
-  validation: FieldValidation,
-  context: { apiHolder: ApiHolder },
-) => {
+export const repoPickerValidation: CustomFieldValidator<
+  string,
+  RepoUrlPickerUiOptions
+> = (value, validation, context) => {
   try {
     const { host, searchParams } = new URL(`https://${value}`);
 

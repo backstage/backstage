@@ -21,12 +21,12 @@ import { FieldValidation, FieldProps } from '@rjsf/core';
  *
  * @public
  */
-export type CustomFieldValidator<T> =
+export type CustomFieldValidator<T, UiOptions extends {} = {}> =
   | ((data: T, field: FieldValidation) => void)
   | ((
       data: T,
       field: FieldValidation,
-      context: { apiHolder: ApiHolder },
+      context: { apiHolder: ApiHolder; uiOptions: UiOptions },
     ) => void);
 
 /**
