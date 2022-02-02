@@ -205,7 +205,7 @@ jobs:
       # Grabs the version in the root package.json and creates a tag on GitHub
       - name: Create a release tag
         id: create_tag
-        run: node scripts/create-release-tag.js
+        run: node scripts/create-release-tag.js --dispatch-workflows
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
