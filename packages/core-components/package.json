@@ -39,7 +39,7 @@
     "@material-ui/lab": "4.0.0-alpha.57",
     "@types/react-sparklines": "^1.7.0",
     "@types/react-text-truncate": "^0.14.0",
-    "ansi-regex": "^5.0.1",
+    "ansi-regex": "^6.0.1",
     "classnames": "^2.2.6",
     "d3-selection": "^3.0.0",
     "d3-shape": "^3.0.0",
