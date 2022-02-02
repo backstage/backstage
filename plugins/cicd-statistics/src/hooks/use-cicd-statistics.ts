@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { debounce } from 'lodash';
+import { throttle } from 'lodash';
 import { Entity } from '@backstage/catalog-model';
 
 import {
@@ -62,7 +62,7 @@ export function useCicdStatistics(
     let mounted = true;
     let completed = false; // successfully or failed
 
-    const updateProgress = debounce((count, total, started = 0) => {
+    const updateProgress = throttle((count, total, started = 0) => {
       if (mounted && !completed) {
         setState({
           loading: true,
