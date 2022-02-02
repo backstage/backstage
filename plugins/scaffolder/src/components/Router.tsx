@@ -34,7 +34,7 @@ type RouterProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
-  TaskPageComponent?: ComponentType<{}> | undefined;
+  TaskPageComponent?: ComponentType<{}>;
   groups?: Array<{
     title?: string;
     titleComponent?: React.ReactNode;
