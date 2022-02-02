@@ -270,20 +270,9 @@ describe('GoogleAnalytics', () => {
       });
     });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     it('set custom-hashed userId when userIdTransform is provided', async () => {
       const userIdTransform = jest.fn().mockResolvedValue('s0m3hash3dvalu3');
-=======
-    it('sets pre-hashed userId when PrivateUser entity ref is provided', async () => {
-      (identityApi.getBackstageIdentity as jest.Mock).mockResolvedValueOnce({
-        userEntityRef: 'PrivateUser:hashed/s0m3hash3dvalu3',
-      });
->>>>>>> b40a0ccc4d (Initial identity-awareness implementation for GA.)
-=======
-    it('set custom-hashed userId when userIdTransform is provided', async () => {
-      const userIdTransform = jest.fn().mockResolvedValue('s0m3hash3dvalu3');
->>>>>>> 919a77845d (Less magical custom hash mechanism.)
+
       const optionalConfig = new ConfigReader({
         app: {
           analytics: {

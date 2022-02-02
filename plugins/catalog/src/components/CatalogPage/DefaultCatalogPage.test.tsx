@@ -263,10 +263,12 @@ describe('DefaultCatalogPage', () => {
     const { getByTestId } = await renderWrapped(<DefaultCatalogPage />);
     fireEvent.click(getByTestId('user-picker-owned'));
     await expect(screen.findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
-    fireEvent.click(screen.getByTestId('user-picker-starred'));
-    await expect(
-      screen.findByText(/Starred \(0\)/),
-    ).resolves.toBeInTheDocument();
+    // The "Starred" menu option should initially be disabled, since there
+    // aren't any starred entities.
+    await expect(screen.getByTestId('user-picker-starred')).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
     fireEvent.click(screen.getByTestId('user-picker-all'));
     await expect(screen.findByText(/All \(2\)/)).resolves.toBeInTheDocument();
 
@@ -274,6 +276,12 @@ describe('DefaultCatalogPage', () => {
     fireEvent.click(starredIcons[0]);
     await expect(screen.findByText(/All \(2\)/)).resolves.toBeInTheDocument();
 
+    // Now that we've starred an entity, the "Starred" menu option should be
+    // enabled.
+    await expect(screen.getByTestId('user-picker-starred')).not.toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
     fireEvent.click(screen.getByTestId('user-picker-starred'));
     await expect(
       screen.findByText(/Starred \(1\)/),

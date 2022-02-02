@@ -1,5 +1,13 @@
 # @backstage/core-components
 
+## 0.8.7-next.0
+
+### Patch Changes
+
+- 4c773ed25c: Change subtitle of Header style to use palette.bursts.fontColor
+- f465b63b7f: Fix an issue where changes related to the `MobileSidebar` prevented scrolling pages. Additionally improve the menu of the `MobileSidebar` to not overlay the `BottomNavigation`.
+- a681cb9c2f: Make linkTarget configurable for MarkdownContent component
+
 ## 0.8.6
 
 ### Patch Changes

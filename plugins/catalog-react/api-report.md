@@ -573,6 +573,7 @@ export const EntityRefLink: React_2.ForwardRefExoticComponent<
     | 'gutterBottom'
     | 'paragraph'
     | 'variantMapping'
+    | 'noTrack'
     | 'TypographyClasses'
     | 'entityRef'
     | 'defaultKind'

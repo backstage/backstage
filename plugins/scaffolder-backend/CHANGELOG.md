@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.23-next.0
+
+### Patch Changes
+
+- 2e0dbb0e50: Migrate from deprecated package @octokit/rest to octokit
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.10-next.0
+
 ## 0.15.22
 
 ### Patch Changes

@@ -17,7 +17,7 @@
 import express from 'express';
 import { THOUSAND_DAYS_MS, TEN_MINUTES_MS, OAuthAdapter } from './OAuthAdapter';
 import { encodeState } from './helpers';
-import { OAuthHandlers, OAuthResponse } from './types';
+import { OAuthHandlers, OAuthResponse, OAuthState } from './types';
 
 const mockResponseData = {
   providerInfo: {
@@ -144,6 +144,102 @@ describe('OAuthAdapter', () => {
       expect.objectContaining({
         path: '/auth/test-provider',
         maxAge: THOUSAND_DAYS_MS,
+      }),
+    );
+  });
+
+  it('persists scope through cookie if enabled', async () => {
+    const handlers = {
+      start: jest.fn(async (_req: { state: OAuthState }) => ({
+        url: '/url',
+        status: 301,
+      })),
+      handler: jest.fn(async () => ({ response: mockResponseData })),
+      refresh: jest.fn(async () => ({ response: mockResponseData })),
+    };
+    const oauthProvider = new OAuthAdapter(handlers, {
+      ...oAuthProviderOptions,
+      disableRefresh: false,
+      persistScopes: true,
+    });
+
+    // First we test the /start request, making sure state is set
+    const mockStartReq = {
+      query: {
+        scope: 'user',
+        env: 'development',
+      },
+    } as unknown as express.Request;
+    const mockStartRes = {
+      cookie: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
+      setHeader: jest.fn().mockReturnThis(),
+      statusCode: jest.fn().mockReturnThis(),
+    } as unknown as express.Response;
+
+    await oauthProvider.start(mockStartReq, mockStartRes);
+
+    expect(handlers.start).toHaveBeenCalledTimes(1);
+    expect(handlers.start).toHaveBeenCalledWith({
+      query: {
+        scope: 'user',
+        env: 'development',
+      },
+      scope: 'user',
+      state: {
+        nonce: expect.any(String),
+        env: 'development',
+        origin: undefined,
+        scope: 'user',
+      },
+    });
+
+    // Then test the /handler, making sure the granted scope cookie is set
+    const providedState = handlers.start.mock.calls[0][0].state;
+    const mockHandleReq = {
+      cookies: {
+        'test-provider-nonce': providedState.nonce,
+      },
+      query: {
+        state: encodeState(providedState),
+      },
+    } as unknown as express.Request;
+    const mockHandleRes = {
+      cookie: jest.fn().mockReturnThis(),
+      setHeader: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
+    } as unknown as express.Response;
+
+    await oauthProvider.frameHandler(mockHandleReq, mockHandleRes);
+    expect(mockHandleRes.cookie).toHaveBeenCalledTimes(1);
+    expect(mockHandleRes.cookie).toHaveBeenCalledWith(
+      'test-provider-granted-scope',
+      'user',
+      expect.objectContaining({
+        path: '/auth/test-provider',
+        maxAge: THOUSAND_DAYS_MS,
+      }),
+    );
+
+    // Them make sure scopes are forwarded correctly during refresh
+    const mockRefreshReq = {
+      query: { scope: 'ignore-me' },
+      cookies: {
+        'test-provider-granted-scope': 'user',
+        'test-provider-refresh-token': 'refresh-token',
+      },
+      header: jest.fn().mockReturnValue('XMLHttpRequest'),
+    } as unknown as express.Request;
+    const mockRefreshRes = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
+    } as unknown as express.Response;
+    await oauthProvider.refresh(mockRefreshReq, mockRefreshRes);
+    expect(handlers.refresh).toHaveBeenCalledTimes(1);
+    expect(handlers.refresh).toHaveBeenCalledWith(
+      expect.objectContaining({
+        scope: 'user',
+        refreshToken: 'refresh-token',
       }),
     );
   });

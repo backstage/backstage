@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { groupByPath, buildFileStructure } from './FileExplorer';
+import {
+  groupByPath,
+  buildFileStructure,
+  getObjectsAtPath,
+} from './FileExplorer';
 
 const dummyFiles = [
   {
@@ -207,6 +211,28 @@ const coverageTableRowResults = {
   path: '',
 };
 
+const pathTestLeaf = {
+  files: [],
+  coverage: 1,
+  missing: 3,
+  tracked: 2,
+  path: 'file5',
+};
+
+const dummyFilesPathTest = {
+  files: [
+    ...dummyFiles,
+    {
+      ...pathTestLeaf,
+      filename: 'dir3/dir7/file5',
+    },
+  ],
+  coverage: 1,
+  missing: 1,
+  tracked: 1,
+  path: '',
+};
+
 describe('groupByPath function', () => {
   it('should group files by their root directory,as per their filename', () => {
     expect(groupByPath(dummyFiles)).toStrictEqual(dummyDataGroupedByPath);
@@ -218,5 +244,21 @@ describe('buildFileStructure function', () => {
     expect(buildFileStructure(coverageTableRow)).toStrictEqual(
       coverageTableRowResults,
     );
+  });
+});
+
+describe('getObjectsAtPath function', () => {
+  const structure = buildFileStructure(dummyFilesPathTest);
+
+  it('should return the the dirs/files at the given path', () => {
+    expect(getObjectsAtPath(structure, ['dir3', 'dir7'])).toStrictEqual([
+      pathTestLeaf,
+    ]);
+  });
+
+  it('should return undefined for a nonexistent path', () => {
+    expect(
+      getObjectsAtPath(structure, ['dir3', 'doesnt-exist']),
+    ).toBeUndefined();
   });
 });

@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.13.1-next.0
+
+### Patch Changes
+
+- 80f510caee: Log warning if unable to parse yarn.lock
+
 ## 0.13.0
 
 ### Minor Changes

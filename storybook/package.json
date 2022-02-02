@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^6.4.17",
-    "@storybook/addon-actions": "^6.4.14",
+    "@storybook/addon-actions": "^6.4.17",
     "@storybook/addon-links": "^6.4.17",
     "@storybook/addon-storysource": "^6.4.17",
     "@storybook/addons": "^6.4.14",

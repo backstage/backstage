@@ -1,5 +1,14 @@
 # @backstage/plugin-analytics-module-ga
 
+## 0.1.8-next.0
+
+### Patch Changes
+
+- b40a0ccc4d: Added the ability to capture and set user IDs from Backstage's `identityApi`. For full instructions on how to
+  set this up, see [the User ID section of its README](https://github.com/backstage/backstage/tree/master/plugins/analytics-module-ga#user-ids)
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+
 ## 0.1.7
 
 ### Patch Changes

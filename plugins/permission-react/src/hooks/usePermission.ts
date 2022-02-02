@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { permissionApiRef } from '../apis';
 import {
   AuthorizeResult,
   Permission,
 } from '@backstage/plugin-permission-common';
+import useSWR from 'swr';
 
 /** @public */
 export type AsyncPermissionResult = {
@@ -30,9 +30,16 @@ export type AsyncPermissionResult = {
 };
 
 /**
- * React hook utlity for authorization. Given a {@link @backstage/plugin-permission-common#Permission} and an optional
- * resourceRef, it will return whether or not access is allowed (for the given resource, if resourceRef is provided). See
- * {@link @backstage/plugin-permission-common/PermissionClient#authorize} for more details.
+ * React hook utility for authorization. Given a
+ * {@link @backstage/plugin-permission-common#Permission} and an optional
+ * resourceRef, it will return whether or not access is allowed (for the given
+ * resource, if resourceRef is provided). See
+ * {@link @backstage/plugin-permission-common/PermissionClient#authorize} for
+ * more details.
+ *
+ * Note: This hook uses stale-while-revalidate to help avoid flicker in UI
+ * elements that would be conditionally rendered based on the `allowed` result
+ * of this hook.
  * @public
  */
 export const usePermission = (
@@ -40,21 +47,16 @@ export const usePermission = (
   resourceRef?: string,
 ): AsyncPermissionResult => {
   const permissionApi = useApi(permissionApiRef);
-
-  const { loading, error, value } = useAsync(async () => {
-    const { result } = await permissionApi.authorize({
-      permission,
-      resourceRef,
-    });
-
+  const { data, error } = useSWR({ permission, resourceRef }, async args => {
+    const { result } = await permissionApi.authorize(args);
     return result;
-  }, [permissionApi, permission, resourceRef]);
+  });
 
-  if (loading) {
-    return { loading: true, allowed: false };
-  }
   if (error) {
     return { error, loading: false, allowed: false };
   }
-  return { loading: false, allowed: value === AuthorizeResult.ALLOW };
+  if (data === undefined) {
+    return { loading: true, allowed: false };
+  }
+  return { loading: false, allowed: data === AuthorizeResult.ALLOW };
 };
