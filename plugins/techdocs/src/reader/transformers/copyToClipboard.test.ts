@@ -32,7 +32,7 @@ describe('copyToClipboard', () => {
       <!DOCTYPE html>
       <html>
         <body>
-          <code><span>${expectedClipboard}</span></code>
+          <pre><code><span>${expectedClipboard}</span></code></pre>
         </body>
       </html>
     `,
@@ -45,5 +45,26 @@ describe('copyToClipboard', () => {
     shadowDom.querySelector('button')?.click();
 
     expect(clipboardSpy).toHaveBeenCalledWith(expectedClipboard);
+  });
+
+  it('only gets applied to code blocks', async () => {
+    const expectedClipboard = 'function foo() {return "bar";}';
+    const shadowDom = await createTestShadowDom(
+      `
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <code><span>${expectedClipboard}</span></code>
+        </body>
+      </html>
+    `,
+      {
+        preTransformers: [],
+        postTransformers: [copyToClipboard()],
+      },
+    );
+
+    const copyButton = shadowDom.querySelector('button');
+    expect(copyButton).toBe(null);
   });
 });
