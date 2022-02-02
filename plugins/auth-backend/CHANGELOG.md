@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend
 
+## 0.9.0-next.1
+
+### Patch Changes
+
+- 9d75a939b6: Fixed a bug where providers that tracked the granted scopes through a cookie would not take failed authentication attempts into account.
+- 648606b3ac: Added support for storing static GitHub access tokens in cookies and using them to refresh the Backstage session.
+- Updated dependencies
+  - @backstage/backend-common@0.10.6-next.0
+
 ## 0.9.0-next.0
 
 ### Minor Changes

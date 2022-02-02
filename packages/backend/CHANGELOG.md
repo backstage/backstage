@@ -1,5 +1,37 @@
 # example-backend
 
+## 0.2.63-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.9.0-next.1
+  - @backstage/backend-common@0.10.6-next.0
+  - example-app@0.2.63-next.1
+  - @backstage/plugin-catalog-backend@0.21.2-next.1
+  - @backstage/plugin-techdocs-backend@0.13.2-next.0
+  - @backstage/backend-tasks@0.1.5-next.0
+  - @backstage/plugin-app-backend@0.3.23-next.0
+  - @backstage/plugin-azure-devops-backend@0.3.2-next.0
+  - @backstage/plugin-badges-backend@0.1.17-next.0
+  - @backstage/plugin-code-coverage-backend@0.1.21-next.0
+  - @backstage/plugin-graphql-backend@0.1.13-next.0
+  - @backstage/plugin-jenkins-backend@0.1.12-next.0
+  - @backstage/plugin-kafka-backend@0.2.16-next.0
+  - @backstage/plugin-kubernetes-backend@0.4.6-next.0
+  - @backstage/plugin-permission-backend@0.4.2-next.1
+  - @backstage/plugin-permission-node@0.4.2-next.1
+  - @backstage/plugin-proxy-backend@0.2.17-next.1
+  - @backstage/plugin-rollbar-backend@0.1.20-next.1
+  - @backstage/plugin-scaffolder-backend@0.15.23-next.1
+  - @backstage/plugin-scaffolder-backend-module-rails@0.2.5-next.1
+  - @backstage/plugin-search-backend@0.4.1-next.1
+  - @backstage/plugin-search-backend-module-pg@0.2.5-next.0
+  - @backstage/plugin-tech-insights-backend@0.2.3-next.0
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.7-next.0
+  - @backstage/plugin-tech-insights-node@0.2.1-next.0
+  - @backstage/plugin-todo-backend@0.1.20-next.0
+
 ## 0.2.63-next.0
 
 ### Patch Changes

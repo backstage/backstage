@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.13.1-next.1
+
+### Patch Changes
+
+- 5bd0ce9e62: chore(deps): bump `inquirer` from 7.3.3 to 8.2.0
+
 ## 0.13.1-next.0
 
 ### Patch Changes

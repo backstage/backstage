@@ -1366,6 +1366,22 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
+"@backstage/core-app-api@*":
+  version "0.5.1"
+  resolved "https://registry.npmjs.org/@backstage/core-app-api/-/core-app-api-0.5.1.tgz#b58474add43d3f2ed7f941287170c1147da48fb1"
+  integrity sha512-2t0T2uPLf2rFrQ0l4DkuRVrz1EKKswTC5yBo/O+uyvmbJC1aMSh6oqUZOFLZ/BuLKVctIKA88Rnuy+QbxnZPvQ==
+  dependencies:
+    "@backstage/config" "^0.1.13"
+    "@backstage/core-plugin-api" "^0.6.0"
+    "@backstage/types" "^0.1.1"
+    "@backstage/version-bridge" "^0.1.1"
+    "@types/prop-types" "^15.7.3"
+    prop-types "^15.7.2"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+    zen-observable "^0.8.15"
+    zod "^3.11.6"
+
 "@backstage/core-components@*", "@backstage/core-components@^0.8.0", "@backstage/core-components@^0.8.5", "@backstage/core-components@^0.8.6":
   version "0.8.6"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.8.6.tgz#ad365c2d8ee99ec1280c1212b7de14a922dd6f34"
@@ -1439,6 +1455,13 @@
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.57"
     react-use "^17.2.4"
+
+"@backstage/plugin-catalog-common@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-common/-/plugin-catalog-common-0.1.1.tgz#ca9ae389f0c131abfe85fb036917088afab38399"
+  integrity sha512-GYGKMD7ZJuCmxpqhrIS3zZSQGg7rLbza21v2UQF1dvoTdc+cCPFPiOYly0WgCArmaj771X0qB4Yb5Z05kU1DMg==
+  dependencies:
+    "@backstage/plugin-permission-common" "^0.4.0"
 
 "@backstage/plugin-catalog-react@^0.6.12", "@backstage/plugin-catalog-react@^0.6.5":
   version "0.6.12"
@@ -10788,19 +10811,19 @@ elliptic@^6.0.0:
     minimalistic-crypto-utils "^1.0.1"
 
 "embedded-techdocs-app@file:packages/embedded-techdocs-app":
-  version "0.2.62-next.0"
+  version "0.2.62-next.1"
   dependencies:
-    "@backstage/app-defaults" "^0.1.6-next.0"
+    "@backstage/app-defaults" "^0.1.6-next.1"
     "@backstage/catalog-model" "^0.9.10"
-    "@backstage/cli" "^0.13.1-next.0"
+    "@backstage/cli" "^0.13.1-next.1"
     "@backstage/config" "^0.1.13"
-    "@backstage/core-app-api" "^0.5.1"
-    "@backstage/core-components" "^0.8.7-next.0"
+    "@backstage/core-app-api" "^0.5.2-next.0"
+    "@backstage/core-components" "^0.8.7-next.1"
     "@backstage/core-plugin-api" "^0.6.0"
     "@backstage/integration-react" "^0.1.20-next.0"
-    "@backstage/plugin-catalog" "^0.7.11-next.0"
-    "@backstage/plugin-techdocs" "^0.13.2-next.0"
-    "@backstage/test-utils" "^0.2.3"
+    "@backstage/plugin-catalog" "^0.7.11-next.1"
+    "@backstage/plugin-techdocs" "^0.13.2-next.1"
+    "@backstage/test-utils" "^0.2.4-next.0"
     "@backstage/theme" "^0.2.14"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -11585,13 +11608,13 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     safe-buffer "^5.1.1"
 
 "example-app@file:packages/app":
-  version "0.2.63-next.0"
+  version "0.2.63-next.1"
   dependencies:
-    "@backstage/app-defaults" "^0.1.6-next.0"
+    "@backstage/app-defaults" "^0.1.6-next.1"
     "@backstage/catalog-model" "^0.9.10"
-    "@backstage/cli" "^0.13.1-next.0"
-    "@backstage/core-app-api" "^0.5.1"
-    "@backstage/core-components" "^0.8.7-next.0"
+    "@backstage/cli" "^0.13.1-next.1"
+    "@backstage/core-app-api" "^0.5.2-next.0"
+    "@backstage/core-components" "^0.8.7-next.1"
     "@backstage/core-plugin-api" "^0.6.0"
     "@backstage/integration-react" "^0.1.20-next.0"
     "@backstage/plugin-airbrake" "^0.1.2-next.0"
@@ -11599,14 +11622,14 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-api-docs" "^0.7.1-next.0"
     "@backstage/plugin-azure-devops" "^0.1.13-next.0"
     "@backstage/plugin-badges" "^0.2.21-next.0"
-    "@backstage/plugin-catalog" "^0.7.11-next.0"
-    "@backstage/plugin-catalog-common" "^0.1.1"
+    "@backstage/plugin-catalog" "^0.7.11-next.1"
+    "@backstage/plugin-catalog-common" "^0.1.2-next.0"
     "@backstage/plugin-catalog-graph" "^0.2.9-next.0"
     "@backstage/plugin-catalog-import" "^0.8.0-next.0"
-    "@backstage/plugin-catalog-react" "^0.6.13-next.0"
+    "@backstage/plugin-catalog-react" "^0.6.13-next.1"
     "@backstage/plugin-circleci" "^0.2.36-next.0"
     "@backstage/plugin-cloudbuild" "^0.2.34-next.0"
-    "@backstage/plugin-code-coverage" "^0.1.24-next.0"
+    "@backstage/plugin-code-coverage" "^0.1.24-next.1"
     "@backstage/plugin-cost-insights" "^0.11.19-next.0"
     "@backstage/plugin-explore" "^0.3.28-next.0"
     "@backstage/plugin-gcp-projects" "^0.3.16-next.0"
@@ -11624,13 +11647,13 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-pagerduty" "0.3.24-next.0"
     "@backstage/plugin-permission-react" "^0.3.0"
     "@backstage/plugin-rollbar" "^0.3.25-next.0"
-    "@backstage/plugin-scaffolder" "^0.12.1-next.0"
+    "@backstage/plugin-scaffolder" "^0.12.1-next.1"
     "@backstage/plugin-search" "^0.6.1-next.0"
     "@backstage/plugin-sentry" "^0.3.35-next.0"
     "@backstage/plugin-shortcuts" "^0.1.21-next.0"
     "@backstage/plugin-tech-insights" "^0.1.7-next.0"
     "@backstage/plugin-tech-radar" "^0.5.4-next.0"
-    "@backstage/plugin-techdocs" "^0.13.2-next.0"
+    "@backstage/plugin-techdocs" "^0.13.2-next.1"
     "@backstage/plugin-todo" "^0.1.21-next.0"
     "@backstage/plugin-user-settings" "^0.3.18-next.0"
     "@backstage/search-common" "^0.2.2"
