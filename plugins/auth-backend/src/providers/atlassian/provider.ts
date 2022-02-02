@@ -205,7 +205,10 @@ export const createAtlassianProvider = (
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
       const scopes = envConfig.getString('scopes');
-      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+      const callbackUrl =
+        customCallbackUrl ||
+        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
@@ -231,6 +234,7 @@ export const createAtlassianProvider = (
         disableRefresh: true,
         providerId,
         tokenIssuer,
+        callbackUrl,
       });
     });
 };
