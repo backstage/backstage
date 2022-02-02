@@ -38,6 +38,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { capitalize } from 'lodash';
 
 import { CicdDefaults, statusTypes } from '../apis/types';
 import { ChartableStage } from './types';
@@ -95,7 +96,7 @@ export function StageChart(props: StageChartProps) {
   const legendPayload = useMemo(
     (): LegendProps['payload'] =>
       statuses.map(status => ({
-        value: status,
+        value: capitalize(status),
         type: 'line',
         id: status,
         color: statusColorMap[status],
@@ -172,7 +173,7 @@ export function StageChart(props: StageChartProps) {
                     labelFormatter={labelFormatter}
                   />
                   {statuses.reverse().map(status => (
-                    <>
+                    <Fragment key={status}>
                       {!chartTypes[status].includes('duration') ? null : (
                         <Fragment key={status}>
                           <Area
@@ -220,7 +221,7 @@ export function StageChart(props: StageChartProps) {
                           fill={statusColorMap[status] ?? ''}
                         />
                       )}
-                    </>
+                    </Fragment>
                   ))}
                 </ComposedChart>
               </ResponsiveContainer>

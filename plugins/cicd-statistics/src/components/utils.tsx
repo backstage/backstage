@@ -16,6 +16,7 @@
 
 import React, { CSSProperties } from 'react';
 import { DateTime, Duration } from 'luxon';
+import { capitalize } from 'lodash';
 
 const infoText: CSSProperties = { color: 'InfoText' };
 
@@ -79,7 +80,7 @@ export function tickFormatterY(duration: number) {
 export function tooltipValueFormatter(durationOrCount: number, name: string) {
   return [
     <span style={infoText}>
-      {name}:{' '}
+      {capitalize(name)}:{' '}
       {name.endsWith(' count')
         ? durationOrCount
         : formatDuration(durationOrCount)}

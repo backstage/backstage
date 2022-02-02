@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FilterStatusType } from '../apis/types';
+import { FilterStatusType, TriggerReason } from '../apis/types';
 
 export const statusColorMap: Record<FilterStatusType, string> = {
   unknown: '#3d01a4',
@@ -26,6 +26,13 @@ export const statusColorMap: Record<FilterStatusType, string> = {
   failed: '#fe2712',
   stalled: '#fb9904',
   expired: '#a7194b',
+};
+
+export const triggerColorMap: Record<TriggerReason, string> = {
+  scm: '#0391ce',
+  manual: '#a7194b',
+  internal: '#82ca9d',
+  other: '#f3f318',
 };
 
 export const fireColors: Array<[percent: string, color: string]> = [

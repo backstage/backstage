@@ -48,6 +48,7 @@ import {
   FilterStatusType,
   statusTypes,
 } from '../apis/types';
+import { ChartableStagesAnalysis } from '../charts/types';
 import { ButtonSwitch, SwitchValue } from './button-switch';
 import { Toggle } from './toggle';
 import { DurationSlider } from './duration-slider';
@@ -93,8 +94,8 @@ export type StatusSelection = FilterStatusType;
 export interface ChartFilter {
   fromDate: Date;
   toDate: Date;
-  branch: BranchSelection;
-  status: Array<StatusSelection>;
+  branch: string;
+  status: Array<string>;
 }
 
 export function getDefaultChartFilter(
@@ -175,6 +176,8 @@ const chartTypeValues: Array<SwitchValue<ChartType>> = [
 ];
 
 export interface ChartFiltersProps {
+  analysis?: ChartableStagesAnalysis;
+
   cicdConfiguration: CicdConfiguration;
   initialFetchFilter: ChartFilter;
   currentFetchFilter?: ChartFilter;
@@ -191,6 +194,7 @@ interface InternalRef {
 
 export function ChartFilters(props: ChartFiltersProps) {
   const {
+    analysis,
     cicdConfiguration,
     initialFetchFilter,
     currentFetchFilter,
@@ -325,6 +329,8 @@ export function ChartFilters(props: ChartFiltersProps) {
     });
   }, [toDate, fromDate, branch, selectedStatus, updateFetchFilter]);
 
+  const inrefferedStatuses = analysis?.statuses ?? selectedStatus;
+
   return (
     <MuiPickersUtilsProvider utils={LuxonUtils}>
       <Card className={classes.rootCard}>
@@ -395,7 +401,7 @@ export function ChartFilters(props: ChartFiltersProps) {
           >
             Branch
           </Typography>
-          <ButtonSwitch<BranchSelection>
+          <ButtonSwitch<string>
             values={branchValues}
             selection={branch}
             onChange={setBranch}
@@ -406,7 +412,7 @@ export function ChartFilters(props: ChartFiltersProps) {
           >
             Status
           </Typography>
-          <ButtonSwitch<StatusSelection>
+          <ButtonSwitch<string>
             values={statusValues}
             multi
             vertical
@@ -469,12 +475,12 @@ export function ChartFilters(props: ChartFiltersProps) {
           >
             Chart styles
           </Typography>
-          {currentFetchFilter?.status.map(status => (
-            <Grid container spacing={0}>
+          {inrefferedStatuses.map(status => (
+            <Grid key={status} container spacing={0}>
               <Grid item>
                 <ButtonSwitch<ChartType>
                   values={chartTypeValues}
-                  selection={viewOptions.chartTypes[status]}
+                  selection={viewOptions.chartTypes[status as FilterStatusType]}
                   onChange={setChartTypeSpecific[status]}
                   multi
                 />

@@ -16,6 +16,7 @@
 
 import React, { Fragment, useMemo } from 'react';
 import {
+  Area,
   Bar,
   ComposedChart,
   XAxis,
@@ -34,66 +35,101 @@ import {
   Typography,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { countBy } from 'lodash';
-import { DateTime } from 'luxon';
+import { capitalize } from 'lodash';
 
-import { Build, FilterStatusType, statusTypes } from '../apis/types';
+import { FilterStatusType, TriggerReason } from '../apis/types';
 import { labelFormatterWithoutTime, tickFormatterX } from '../components/utils';
-import { statusColorMap } from './colors';
+import { statusColorMap, triggerColorMap } from './colors';
+import { ChartableStagesAnalysis } from './types';
 
 export interface StatusChartProps {
-  builds: ReadonlyArray<Build>;
+  analysis: ChartableStagesAnalysis;
 }
 
 export function StatusChart(props: StatusChartProps) {
-  const { builds } = props;
+  const { analysis } = props;
 
-  const { statuses, values } = useMemo(() => {
-    const buildsByDay = new Map<string, Array<Build>>();
+  const values = useMemo(() => {
+    return analysis.daily.values.map(value => {
+      const totTriggers = analysis.daily.triggerReasons.reduce(
+        (prev, cur) => prev + (value[cur as TriggerReason] ?? 0),
+        0,
+      );
 
-    const foundStatuses = new Set<string>();
-
-    builds.forEach(build => {
-      foundStatuses.add(build.status);
-
-      const dayString = DateTime.fromJSDate(build.requestedAt).toISODate();
-      const dayList = buildsByDay.get(dayString);
-      if (dayList) {
-        dayList.push(build);
-      } else {
-        buildsByDay.set(dayString, [build]);
+      if (!totTriggers) {
+        return value;
       }
-    });
 
-    return {
-      statuses: [
-        ...statusTypes.filter(status => foundStatuses.has(status)),
-        ...[...foundStatuses].filter(
-          status => !(statusTypes as Array<string>).includes(status),
+      return {
+        ...value,
+        ...Object.fromEntries(
+          analysis.daily.triggerReasons.map(reason => [
+            reason,
+            (value[reason as TriggerReason] ?? 0) / totTriggers,
+          ]),
         ),
-      ],
-      values: [...buildsByDay.entries()].map(([dayString, buildThisDay]) => ({
-        __epoch: DateTime.fromISO(dayString).toMillis(),
-        ...countBy(buildThisDay, 'status'),
-      })),
-    };
-  }, [builds]);
+      };
+    });
+  }, [analysis.daily]);
 
-  const legendPayload = useMemo(
-    (): LegendProps['payload'] =>
-      statuses.map(status => ({
-        value: status,
+  const triggerReasonLegendPayload = useMemo(
+    (): NonNullable<LegendProps['payload']> =>
+      analysis.daily.triggerReasons.map(reason => ({
+        value: humanTriggerReason(reason),
+        type: 'line',
+        id: reason,
+        color: triggerColorMap[reason as TriggerReason] ?? '',
+      })),
+    [analysis.daily.triggerReasons],
+  );
+
+  const statusesLegendPayload = useMemo(
+    (): NonNullable<LegendProps['payload']> =>
+      analysis.daily.statuses.map(status => ({
+        value: capitalize(status),
         type: 'line',
         id: status,
         color: statusColorMap[status as FilterStatusType] ?? '',
       })),
-    [statuses],
+    [analysis.daily.statuses],
   );
 
+  const legendPayload = useMemo(
+    (): NonNullable<LegendProps['payload']> => [
+      ...triggerReasonLegendPayload,
+      ...statusesLegendPayload,
+    ],
+    [statusesLegendPayload, triggerReasonLegendPayload],
+  );
+
+  const tooltipFormatter = useMemo(() => {
+    const reasonSet = new Set(analysis.daily.triggerReasons);
+
+    return (percentOrCount: number, name: string) => {
+      const label = reasonSet.has(name)
+        ? humanTriggerReason(name)
+        : capitalize(name);
+      const valueText = reasonSet.has(name)
+        ? `${(percentOrCount * 100).toFixed(0)}%`
+        : percentOrCount;
+
+      return [
+        <span>
+          {label}: {valueText}
+        </span>,
+        null,
+      ];
+    };
+  }, [analysis.daily.triggerReasons]);
+
+  const barSize = getBarSize(analysis.daily.values.length);
+
   return (
-    <Accordion defaultExpanded={statuses.length > 1}>
+    <Accordion defaultExpanded={analysis.daily.statuses.length > 1}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography>Build count per status</Typography>
+        <Typography>
+          Build count per status over build trigger reason
+        </Typography>
       </AccordionSummary>
       <AccordionDetails>
         {values.length === 0 ? (
@@ -108,14 +144,33 @@ export function StatusChart(props: StatusChartProps) {
                 type="category"
                 tickFormatter={tickFormatterX}
               />
-              <YAxis type="number" tickCount={5} name="Count" />
-              <Tooltip labelFormatter={labelFormatterWithoutTime} />
-              {statuses.map(status => (
+              <YAxis yAxisId={1} type="number" tickCount={5} name="Count" />
+              <YAxis yAxisId={2} type="number" name="Triggers" hide />
+              <Tooltip
+                labelFormatter={labelFormatterWithoutTime}
+                formatter={tooltipFormatter}
+              />
+              {triggerReasonLegendPayload.map(reason => (
+                <Fragment key={reason.id}>
+                  <Area
+                    type="monotone"
+                    dataKey={reason.id!}
+                    stackId="triggers"
+                    yAxisId={2}
+                    stroke={triggerColorMap[reason.id as TriggerReason] ?? ''}
+                    fillOpacity={0.5}
+                    fill={triggerColorMap[reason.id as TriggerReason] ?? ''}
+                  />
+                </Fragment>
+              ))}
+              {[...analysis.daily.statuses].reverse().map(status => (
                 <Fragment key={status}>
                   <Bar
                     type="monotone"
+                    barSize={barSize}
                     dataKey={status}
-                    stackId="1"
+                    stackId="statuses"
+                    yAxisId={1}
                     stroke={statusColorMap[status as FilterStatusType] ?? ''}
                     fillOpacity={0.8}
                     fill={statusColorMap[status as FilterStatusType] ?? ''}
@@ -128,4 +183,26 @@ export function StatusChart(props: StatusChartProps) {
       </AccordionDetails>
     </Accordion>
   );
+}
+
+function humanTriggerReason(reason: string): string {
+  if ((reason as TriggerReason) === 'manual') {
+    return 'Triggered manually';
+  } else if ((reason as TriggerReason) === 'scm') {
+    return 'Triggered by SCM';
+  } else if ((reason as TriggerReason) === 'internal') {
+    return 'Triggered internally';
+  } else if ((reason as TriggerReason) === 'other') {
+    return 'Triggered by another reason';
+  }
+  return `Triggered by ${reason}`;
+}
+
+function getBarSize(count: number): number {
+  if (count < 20) {
+    return 10;
+  } else if (count < 40) {
+    return 8;
+  }
+  return 5;
 }

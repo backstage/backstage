@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { FilterStatusType } from '../apis/types';
+import { FilterStatusType, TriggerReason } from '../apis/types';
 
 export type Averagify<T extends string> = `${T} avg`;
 export type Countify<T extends string> = `${T} count`;
 
-export type ChartableStageDatapoints = {
-  __epoch: number;
-} & {
+export type Epoch = { __epoch: number };
+
+export type ChartableStageDatapoints = Epoch & {
   [status in FilterStatusType]?: number;
 } & {
   [status in Averagify<FilterStatusType>]?: number;
@@ -50,7 +50,48 @@ export interface ChartableStage {
   stages: Map<string, ChartableStage>;
 }
 
+export type TriggerReasonsDatapoint = {
+  [K in TriggerReason]?: number;
+};
+export type StatusesDatapoint = { [status in FilterStatusType]?: number };
+
+export type ChartableDailyDatapoint = Epoch &
+  TriggerReasonsDatapoint &
+  StatusesDatapoint;
+
+export interface ChartableDaily {
+  values: Array<ChartableDailyDatapoint>;
+
+  /**
+   * The build trigger reasons
+   */
+  triggerReasons: Array<string>;
+
+  /**
+   * The top-level (build) statuses
+   */
+  statuses: Array<string>;
+}
+
 export interface ChartableStagesAnalysis {
+  /**
+   * Summary of statuses and trigger reasons per day
+   */
+  daily: ChartableDaily;
+
+  /**
+   * Total aggregates of sub stages
+   */
   total: ChartableStage;
+
+  /**
+   * Top-level stages {name -> stage}
+   */
   stages: Map<string, ChartableStage>;
+
+  /**
+   * All statuses found deeper in the stage tree. A stage might have been
+   * _aborted_ although the build actually _failed_, e.g.
+   */
+  statuses: Array<string>;
 }

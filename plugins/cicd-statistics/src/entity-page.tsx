@@ -35,7 +35,11 @@ import {
   getDefaultViewOptions,
   ViewOptions,
 } from './components/chart-filters';
-import { CicdConfiguration } from './apis';
+import {
+  CicdConfiguration,
+  FilterStatusType,
+  FilterBranchType,
+} from './apis/types';
 import { cleanupBuildTree } from './utils/stage-names';
 import { renderFallbacks, useAsyncChain } from './components/progress';
 import { sortFilterStatusType } from './utils/api';
@@ -68,7 +72,7 @@ function endOfDay(date: Date) {
 function cleanChartFilter(filter: ChartFilter): ChartFilter {
   return {
     ...filter,
-    status: sortFilterStatusType(filter.status),
+    status: sortFilterStatusType(filter.status as FilterStatusType[]),
   };
 }
 
@@ -104,8 +108,8 @@ function CicdCharts(props: CicdChartsProps) {
       entity,
       timeFrom: startOfDay(fetchedChartData.chartFilter.fromDate),
       timeTo: endOfDay(fetchedChartData.chartFilter.toDate),
-      filterStatus: fetchedChartData.chartFilter.status,
-      filterType: fetchedChartData.chartFilter.branch,
+      filterStatus: fetchedChartData.chartFilter.status as FilterStatusType[],
+      filterType: fetchedChartData.chartFilter.branch as FilterBranchType,
     };
   }, [entity, fetchedChartData]);
 
@@ -156,6 +160,7 @@ function CicdCharts(props: CicdChartsProps) {
     <Grid container>
       <Grid item lg={2} className={classes.pane}>
         <ChartFilters
+          analysis={chartableStagesState.value}
           cicdConfiguration={cicdConfiguration}
           initialFetchFilter={chartFilter}
           currentFetchFilter={fetchedChartData.chartFilter}
@@ -168,8 +173,9 @@ function CicdCharts(props: CicdChartsProps) {
       <Grid item xs={12} lg={10} className={classes.pane}>
         {renderFallbacks(chartableStagesState, chartableStages => (
           <>
-            {!statisticsState.value?.builds.length ? null : (
-              <StatusChart builds={statisticsState.value?.builds} />
+            {!statisticsState.value?.builds?.length ||
+            !chartableStagesState.value?.daily?.values?.length ? null : (
+              <StatusChart analysis={chartableStagesState.value} />
             )}
             <StageChart
               stage={chartableStages.total}

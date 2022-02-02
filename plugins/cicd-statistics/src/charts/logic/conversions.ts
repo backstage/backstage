@@ -16,10 +16,11 @@
 
 import { map } from 'already';
 
-import { Build, Stage } from '../../apis/types';
+import { Build, Stage, FilterStatusType } from '../../apis/types';
 import { ChartableStage, ChartableStagesAnalysis } from '../types';
-import { getOrSetStage, makeStage } from './utils';
+import { getOrSetStage, makeStage, sortStatuses } from './utils';
 import { finalizeStage } from './finalize-stage';
+import { dailySummary } from './daily-summary';
 
 export interface ChartableStagesOptions {
   normalizeTimeRange: boolean;
@@ -86,5 +87,34 @@ export async function buildsToChartableStages(
   );
   finalizeStage(total, { allEpochs, averageWidth: 10 });
 
-  return { total, stages };
+  const daily = dailySummary(builds);
+
+  const statuses = findStatuses(total, [...stages.values()]);
+
+  return { daily, total, stages, statuses };
+}
+
+function findStatuses(
+  total: ChartableStage,
+  stages: Array<ChartableStage>,
+): Array<string> {
+  const statuses = new Set<string>();
+
+  const addStatuses = (set: Set<FilterStatusType>) => {
+    set.forEach(status => {
+      statuses.add(status);
+    });
+  };
+
+  addStatuses(total.statusSet);
+
+  const recurse = (subStages: Array<ChartableStage>) => {
+    subStages.forEach(stage => {
+      addStatuses(stage.statusSet);
+      recurse([...stage.stages.values()]);
+    });
+  };
+  recurse(stages);
+
+  return sortStatuses([...statuses]);
 }

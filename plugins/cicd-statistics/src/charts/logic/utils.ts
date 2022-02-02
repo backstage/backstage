@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { FilterStatusType } from '../../apis/types';
+import { DateTime } from 'luxon';
+
+import { FilterStatusType, statusTypes } from '../../apis/types';
 import { ChartableStage } from '../types';
 
 export function average(values: number[]): number {
@@ -54,4 +56,32 @@ export function makeStage(name: string): ChartableStage {
     values: [],
     stages: new Map(),
   };
+}
+
+export function startOfDay(date: number | Date) {
+  if (typeof date === 'number') {
+    return DateTime.fromMillis(date).startOf('day').toMillis();
+  }
+  return DateTime.fromJSDate(date).startOf('day').toMillis();
+}
+
+export function sortTriggerReasons(reasons: Array<string>): Array<string> {
+  return reasons.sort((a, b) => {
+    if (a === 'manual') return -1;
+    else if (b === 'manual') return 1;
+    else if (a === 'scm') return -1;
+    else if (b === 'scm') return 1;
+    else if (a === 'other') return -1;
+    else if (b === 'other') return 1;
+    return a.localeCompare(b);
+  });
+}
+
+export function sortStatuses(statuses: Array<string>): Array<string> {
+  return [
+    ...statusTypes.filter(status => statuses.includes(status)),
+    ...statuses
+      .filter(status => !(statusTypes as Array<string>).includes(status))
+      .sort((a, b) => a.localeCompare(b)),
+  ];
 }

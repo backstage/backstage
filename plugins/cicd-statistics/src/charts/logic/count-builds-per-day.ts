@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-import { DateTime } from 'luxon';
 import { groupBy } from 'lodash';
 
 import { FilterStatusType, statusTypes } from '../../apis/types';
 import { Countify, ChartableStageDatapoints } from '../types';
-
-function startOfDayEpoch(epoch: number) {
-  return DateTime.fromMillis(epoch).startOf('day').toMillis();
-}
+import { startOfDay } from './utils';
 
 export function countBuildsPerDay(
   values: ReadonlyArray<ChartableStageDatapoints>,
 ) {
-  const days = groupBy(values, value => startOfDayEpoch(value.__epoch));
+  const days = groupBy(values, value => startOfDay(value.__epoch));
   Object.entries(days).forEach(([_startOfDay, valuesThisDay]) => {
     const counts = Object.fromEntries(
       statusTypes
@@ -35,7 +31,7 @@ export function countBuildsPerDay(
           type =>
             [
               type,
-              valuesThisDay.map(value => value[type] !== undefined).length,
+              valuesThisDay.filter(value => value[type] !== undefined).length,
             ] as const,
         )
         .filter(([_type, count]) => count > 0)

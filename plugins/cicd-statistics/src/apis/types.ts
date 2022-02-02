@@ -53,6 +53,23 @@ export const statusTypes: Array<FilterStatusType> = [
  */
 export type FilterBranchType = 'master' | 'branch';
 
+export type TriggerReason =
+  /** Triggered by source code management, e.g. a Github hook */
+  | 'scm'
+  /** Triggered manually */
+  | 'manual'
+  /** Triggered internally (non-scm, or perhaps after being delayed/enqueued) */
+  | 'internal'
+  /** Triggered for some other reason */
+  | 'other';
+
+export const triggerReasons: Array<TriggerReason> = [
+  'scm',
+  'manual',
+  'internal',
+  'other',
+];
+
 /**
  * A Stage is a part of either a Build or a parent Stage.
  *
@@ -83,6 +100,9 @@ export interface Build {
 
   /** Build id */
   id: string;
+
+  /** The reason this build was started */
+  triggeredBy?: TriggerReason;
 
   /** The status of the build */
   status: FilterStatusType;
