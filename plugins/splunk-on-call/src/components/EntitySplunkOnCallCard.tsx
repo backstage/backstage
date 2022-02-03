@@ -152,6 +152,14 @@ export const EntitySplunkOnCallCard = () => {
     return { usersHashMap, foundTeams };
   });
 
+  if (!teamAnnotation && !routingKeyAnnotation) {
+    return <MissingAnnotation />;
+  }
+
+  if (!eventsRestEndpoint) {
+    return <MissingEventsRestEndpoint />;
+  }
+
   if (error instanceof UnauthorizedError) {
     return <MissingApiKeyOrApiIdError />;
   }
@@ -175,20 +183,12 @@ export const EntitySplunkOnCallCard = () => {
     team: Team | undefined;
     usersHashMap: any | undefined;
   }) => {
-    if (!teamAnnotation && !routingKeyAnnotation) {
-      return <MissingAnnotation />;
-    }
-
     if (!team) {
       return (
         <InvalidTeamAnnotation
           teamName={teamAnnotation || routingKeyAnnotation || ''}
         />
       );
-    }
-
-    if (!eventsRestEndpoint) {
-      return <MissingEventsRestEndpoint />;
     }
 
     const teamName = team.name || '';
