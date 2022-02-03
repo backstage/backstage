@@ -27,6 +27,11 @@ import React from 'react';
 import { ImportInfoCard } from '../ImportInfoCard';
 import { ImportStepper } from '../ImportStepper';
 
+/**
+ * The default catalog import page.
+ *
+ * @public
+ */
 export const DefaultImportPage = () => {
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptional('app.title') || 'Backstage';

@@ -22,12 +22,18 @@ import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { Select } from '@backstage/core-components';
 
-export type EntityTypeFilterProps = {
+/**
+ * Props for {@link EntityTypePicker}.
+ *
+ * @public
+ */
+export interface EntityTypePickerProps {
   initialFilter?: string;
   hidden?: boolean;
-};
+}
 
-export const EntityTypePicker = (props: EntityTypeFilterProps) => {
+/** @public */
+export const EntityTypePicker = (props: EntityTypePickerProps) => {
   const { hidden, initialFilter } = props;
   const alertApi = useApi(alertApiRef);
   const { error, availableTypes, selectedTypes, setSelectedTypes } =

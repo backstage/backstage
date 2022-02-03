@@ -46,6 +46,7 @@ const useStyles = makeStyles(
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+/** @public */
 export const EntityTagPicker = () => {
   const classes = useStyles();
   const { updateFilters, backendEntities, filters, queryParameters } =

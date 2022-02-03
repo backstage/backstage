@@ -42,7 +42,12 @@ export type StepConfiguration = {
   content: React.ReactElement;
 };
 
-export type StepperProvider = {
+/**
+ * Defines the details of the stepper.
+ *
+ * @public
+ */
+export interface StepperProvider {
   analyze: (
     s: Extract<ImportState, { activeState: 'analyze' }>,
     opts: { apis: StepperApis },
@@ -59,7 +64,7 @@ export type StepperProvider = {
     s: Extract<ImportState, { activeState: 'finish' }>,
     opts: { apis: StepperApis },
   ) => StepConfiguration;
-};
+}
 
 /**
  * The default stepper generation function.
@@ -69,6 +74,7 @@ export type StepperProvider = {
  *
  * @param flow - the name of the active flow
  * @param defaults - the default steps
+ * @public
  */
 export function defaultGenerateStepper(
   flow: ImportFlows,
