@@ -1,4 +1,4 @@
-# embedded-techdocs-app
+# techdocs-cli-embedded-app
 
 ## 0.2.62
 

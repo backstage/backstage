@@ -1,5 +1,5 @@
 {
-  "name": "embedded-techdocs-app",
+  "name": "techdocs-cli-embedded-app",
   "version": "0.2.62",
   "private": true,
   "bundled": true,

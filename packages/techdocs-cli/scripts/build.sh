@@ -18,7 +18,7 @@ set -e
 
 SCRIPT_DIR=$(dirname $0)
 TECHDOCS_CLI_DIR="$SCRIPT_DIR"/..
-TECHDOCS_CLI_EMBEDDED_APP_DIR="$TECHDOCS_CLI_DIR"/../embedded-techdocs-app
+TECHDOCS_CLI_EMBEDDED_APP_DIR="$TECHDOCS_CLI_DIR"/../techdocs-cli-embedded-app
 
 compile_and_build_cli() {
   echo "📄 Compiling..."
@@ -32,9 +32,9 @@ compile_and_build_cli() {
 build_and_embed_app() {
   echo "🚚 Embedding app..."
   if [ "$TECHDOCS_CLI_DEV_MODE" = "true" ] ; then
-    yarn workspace embedded-techdocs-app build:dev > /dev/null
+    yarn workspace techdocs-cli-embedded-app build:dev > /dev/null
   else
-    yarn workspace embedded-techdocs-app build > /dev/null
+    yarn workspace techdocs-cli-embedded-app build > /dev/null
   fi
   cp -r "$TECHDOCS_CLI_EMBEDDED_APP_DIR"/dist "$TECHDOCS_CLI_DIR"/dist/techdocs-preview-bundle > /dev/null
 }
