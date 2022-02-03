@@ -193,6 +193,8 @@ integrations:
     - host: amazonaws.com
       accessKeyId: ${AWS_ACCESS_KEY_ID}
       secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+  airbrake:
+    apiKey: ${AIRBRAKE_API_KEY}
 
 catalog:
   import:
