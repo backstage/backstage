@@ -45,9 +45,18 @@ import {
 } from '@backstage/core-components';
 
 export const SPLUNK_ON_CALL_TEAM = 'splunk.com/on-call-team';
+export const SPLUNK_ON_CALL_ROUTING_KEY = 'splunk.com/on-call-routing-key';
 
-export const MissingTeamAnnotation = () => (
-  <MissingAnnotationEmptyState annotation={SPLUNK_ON_CALL_TEAM} />
+export const MissingAnnotation = () => (
+  <div>
+    <Typography>
+      The Splunk On Call plugin requires setting either the{' '}
+      <code>{SPLUNK_ON_CALL_TEAM}</code> or the{' '}
+      <code>{SPLUNK_ON_CALL_ROUTING_KEY}</code> annotation.
+    </Typography>
+    <MissingAnnotationEmptyState annotation={SPLUNK_ON_CALL_TEAM} />
+    <MissingAnnotationEmptyState annotation={SPLUNK_ON_CALL_ROUTING_KEY} />
+  </div>
 );
 
 export const InvalidTeamAnnotation = ({ teamName }: { teamName: string }) => (
@@ -71,7 +80,8 @@ export const MissingEventsRestEndpoint = () => (
 );
 
 export const isSplunkOnCallAvailable = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_TEAM]);
+  Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_TEAM]) ||
+  Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_ROUTING_KEY]);
 
 export const EntitySplunkOnCallCard = () => {
   const config = useApi(configApiRef);
@@ -79,7 +89,12 @@ export const EntitySplunkOnCallCard = () => {
   const { entity } = useEntity();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
-  const team = entity.metadata.annotations![SPLUNK_ON_CALL_TEAM];
+  const teamAnnotation = entity
+    ? entity.metadata.annotations![SPLUNK_ON_CALL_TEAM]
+    : undefined;
+  const routingKeyAnnotation = entity
+    ? entity.metadata.annotations![SPLUNK_ON_CALL_ROUTING_KEY]
+    : undefined;
 
   const eventsRestEndpoint =
     config.getOptionalString('splunkOnCall.eventsRestEndpoint') || null;
@@ -108,7 +123,20 @@ export const EntitySplunkOnCallCard = () => {
       {},
     );
     const teams = await api.getTeams();
-    const foundTeam = teams.find(teamValue => teamValue.name === team);
+    let foundTeam = teams.find(teamValue => teamValue.name === teamAnnotation);
+
+    if (!foundTeam && routingKeyAnnotation) {
+      const routingKeys = await api.getRoutingKeys();
+      const foundRoutingKey = routingKeys.find(
+        key => key.routingKey === routingKeyAnnotation,
+      );
+      const teamUrlParts = foundRoutingKey
+        ? foundRoutingKey.targets[0]._teamUrl.split('/')
+        : [];
+      const teamSlug = teamUrlParts[teamUrlParts.length - 1];
+      foundTeam = teams.find(teamValue => teamValue.slug === teamSlug);
+    }
+
     return { usersHashMap, foundTeam };
   });
 
@@ -128,13 +156,22 @@ export const EntitySplunkOnCallCard = () => {
     return <Progress />;
   }
 
+  const team =
+    usersAndTeam?.foundTeam && usersAndTeam?.foundTeam.name
+      ? usersAndTeam?.foundTeam.name
+      : '';
+
   const Content = () => {
-    if (!team) {
-      return <MissingTeamAnnotation />;
+    if (!teamAnnotation && !routingKeyAnnotation) {
+      return <MissingAnnotation />;
     }
 
     if (!usersAndTeam?.foundTeam) {
-      return <InvalidTeamAnnotation teamName={team} />;
+      return (
+        <InvalidTeamAnnotation
+          teamName={teamAnnotation || routingKeyAnnotation || ''}
+        />
+      );
     }
 
     if (!eventsRestEndpoint) {
