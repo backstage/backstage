@@ -18,9 +18,12 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import { AirbrakeConfig } from '../config';
 
 export interface RouterOptions {
   logger: Logger;
+  airbrakeConfig: AirbrakeConfig;
 }
 
 export async function createRouter(
@@ -35,6 +38,26 @@ export async function createRouter(
     logger.info('PONG!');
     response.send({ status: 'ok' });
   });
+
+  router.use(
+    '/api',
+    createProxyMiddleware({
+      target: 'https://api.airbrake.io/api',
+      changeOrigin: true,
+      pathRewrite: path => {
+        const apiKey = options.airbrakeConfig.apiKey;
+
+        let newPath = path.replace(/.+?(\/api)/, '');
+        if (newPath.includes('?')) {
+          newPath += `&key=${apiKey}`;
+        } else {
+          newPath += `?key=${apiKey}`;
+        }
+        return newPath;
+      },
+    }),
+  );
+
   router.use(errorHandler());
   return router;
 }

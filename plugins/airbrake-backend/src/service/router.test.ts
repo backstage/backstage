@@ -17,15 +17,26 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
-
+import { ConfigReader } from '@backstage/config';
 import { createRouter } from './router';
+import { extractAirbrakeConfig } from '../config';
 
 describe('createRouter', () => {
   let app: express.Express;
 
   beforeAll(async () => {
+    const config = new ConfigReader({
+      integrations: {
+        airbrake: {
+          apiKey: 'fakeApiKey',
+        },
+      },
+    });
+    const airbrakeConfig = extractAirbrakeConfig(config);
+
     const router = await createRouter({
       logger: getVoidLogger(),
+      airbrakeConfig,
     });
     app = express().use(router);
   });

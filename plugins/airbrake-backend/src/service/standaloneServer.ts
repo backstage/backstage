@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  loadBackendConfig,
+} from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
+import { extractAirbrakeConfig } from '../config';
 
 export interface ServerOptions {
   port: number;
@@ -29,9 +33,12 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'airbrake-backend-backend' });
+  const config = await loadBackendConfig({ logger, argv: process.argv });
+  const airbrakeConfig = extractAirbrakeConfig(config);
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
+    airbrakeConfig,
   });
 
   let service = createServiceBuilder(module)

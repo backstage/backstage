@@ -25,12 +25,14 @@
     "@types/express": "*",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "http-proxy-middleware": "^2.0.0",
     "winston": "^3.2.1",
     "cross-fetch": "^3.0.6",
     "yn": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.13.1-next.0",
+    "@types/http-proxy-middleware": "^0.19.3",
     "@types/supertest": "^2.0.8",
     "supertest": "^4.0.2",
     "msw": "^0.35.0"
