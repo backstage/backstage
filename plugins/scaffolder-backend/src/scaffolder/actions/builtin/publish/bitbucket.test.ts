@@ -194,6 +194,45 @@ describe('publish:bitbucket', () => {
     });
   });
 
+  it('should work if the token is provided through ctx.input', async () => {
+    expect.assertions(2);
+    server.use(
+      rest.post(
+        'https://notoken.bitbucket.com/rest/api/1.0/projects/project/repos',
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Bearer lols');
+          expect(req.body).toEqual({ public: false, name: 'repo' });
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                self: [
+                  {
+                    href: 'https://bitbucket.mycompany.com/projects/project/repos/repo',
+                  },
+                ],
+                clone: [
+                  {
+                    name: 'http',
+                    href: 'https://bitbucket.mycompany.com/scm/project/repo',
+                  },
+                ],
+              },
+            }),
+          );
+        },
+      ),
+    );
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'notoken.bitbucket.com?project=project&repo=repo',
+        token: 'lols',
+      },
+    });
+  });
+
   describe('LFS for hosted bitbucket', () => {
     const repoCreationResponse = {
       links: {
