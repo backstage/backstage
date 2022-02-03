@@ -20,12 +20,12 @@ import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
 import { loadCliConfig } from '../../lib/config';
 import { paths } from '../../lib/paths';
 
-interface BundleAppOptions {
+interface BuildAppOptions {
   writeStats: boolean;
   configPaths: string[];
 }
 
-export async function bundleApp(options: BundleAppOptions) {
+export async function buildApp(options: BuildAppOptions) {
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
   await buildBundle({
     entry: 'src/index',

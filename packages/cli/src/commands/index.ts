@@ -45,25 +45,30 @@ export function registerScriptCommand(program: CommanderStatic) {
 
   command
     .command('build')
-    .description('Build a package for publishing')
-    .option('--minify', 'Minify the generated code')
-    .option('--experimental-type-build', 'Enable experimental type build')
-    .action(lazy(() => import('./build').then(m => m.command)));
-
-  command
-    .command('bundle')
-    .description('Bundle a package for deployment')
-    .option(...configOption)
-    .option('--role <name>', 'Run the command with an explicit package role')
+    .description('Build a package for production deployment or publishing')
+    .option(
+      '--minify',
+      'Minify the generated code. Does not apply to app or backend packages.',
+    )
+    .option(
+      '--experimental-type-build',
+      'Enable experimental type build. Does not apply to app or backend packages.',
+    )
     .option(
       '--skip-build-dependencies',
-      'Skip the automatic building of local dependencies',
+      'Skip the automatic building of local dependencies. Applies to backend packages only.',
     )
     .option(
       '--stats',
-      'If bundle stats are available, write them to the output directory',
+      'If bundle stats are available, write them to the output directory. Applies to app packages only.',
     )
-    .action(lazy(() => import('./bundle').then(m => m.command)));
+    .option(
+      '--config <path>',
+      'Config files to load instead of app-config.yaml. Applies to app packages only.',
+      (opt: string, opts: string[]) => [...opts, opt],
+      Array<string>(),
+    )
+    .action(lazy(() => import('./build').then(m => m.command)));
 
   program
     .command('lint')

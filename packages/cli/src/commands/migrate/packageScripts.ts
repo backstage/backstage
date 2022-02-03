@@ -37,9 +37,7 @@ export async function command() {
 
       const expectedScripts = {
         ...(hasStart && { start: 'backstage-cli script start' }),
-        ...(isBundled
-          ? { bundle: 'backstage-cli script bundle', build: undefined }
-          : { build: 'backstage-cli script build', bundle: undefined }),
+        build: 'backstage-cli script build',
         lint: 'backstage-cli script lint',
         test: 'backstage-cli script test',
         clean: 'backstage-cli script clean',

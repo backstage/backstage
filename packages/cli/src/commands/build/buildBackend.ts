@@ -26,11 +26,11 @@ import { buildPackage, Output } from '../../lib/builder';
 const BUNDLE_FILE = 'bundle.tar.gz';
 const SKELETON_FILE = 'skeleton.tar.gz';
 
-interface BundleBackendOptions {
+interface BuildBackendOptions {
   skipBuildDependencies: boolean;
 }
 
-export async function bundleBackend(options: BundleBackendOptions) {
+export async function buildBackend(options: BuildBackendOptions) {
   const targetDir = paths.resolveTarget('dist');
   const pkg = await fs.readJson(paths.resolveTarget('package.json'));
 
