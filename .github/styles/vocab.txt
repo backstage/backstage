@@ -28,6 +28,7 @@ Blackbox
 bool
 boolean
 builtins
+callout
 Chai
 changeset
 changesets
@@ -315,6 +316,7 @@ unbreak
 Unconference
 unmanaged
 unregister
+unregistering
 unregistration
 untracked
 upsert
