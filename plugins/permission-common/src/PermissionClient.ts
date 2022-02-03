@@ -18,14 +18,11 @@ import { Config } from '@backstage/config';
 import { ResponseError } from '@backstage/errors';
 import fetch from 'cross-fetch';
 import * as uuid from 'uuid';
-import { z } from 'zod';
 import {
   AuthorizeResult,
   AuthorizeQuery,
   AuthorizeDecision,
   Identified,
-  PermissionCriteria,
-  PermissionCondition,
   AuthorizeResponse,
   AuthorizeRequest,
 } from './types/api';
@@ -34,38 +31,7 @@ import {
   PermissionAuthorizer,
   AuthorizeRequestOptions,
 } from './types/permission';
-
-const permissionCriteriaSchema: z.ZodSchema<
-  PermissionCriteria<PermissionCondition>
-> = z.lazy(() =>
-  z
-    .object({
-      rule: z.string(),
-      params: z.array(z.unknown()),
-    })
-    .or(z.object({ anyOf: z.array(permissionCriteriaSchema) }))
-    .or(z.object({ allOf: z.array(permissionCriteriaSchema) }))
-    .or(z.object({ not: permissionCriteriaSchema })),
-);
-
-const responseSchema = z.object({
-  items: z.array(
-    z
-      .object({
-        id: z.string(),
-        result: z
-          .literal(AuthorizeResult.ALLOW)
-          .or(z.literal(AuthorizeResult.DENY)),
-      })
-      .or(
-        z.object({
-          id: z.string(),
-          result: z.literal(AuthorizeResult.CONDITIONAL),
-          conditions: permissionCriteriaSchema,
-        }),
-      ),
-  ),
-});
+import { validateAuthorizeResponse } from './validation';
 
 /**
  * An isomorphic client for requesting authorization for Backstage permissions.
@@ -130,10 +96,11 @@ export class PermissionClient implements PermissionAuthorizer {
       throw await ResponseError.fromResponse(response);
     }
 
-    const responseBody = await response.json();
-    this.assertValidResponse(request, responseBody);
+    const authorizeResponse = validateAuthorizeResponse(await response.json());
 
-    const responsesById = responseBody.items.reduce((acc, r) => {
+    this.assertMatchingRequestIds(request, authorizeResponse);
+
+    const responsesById = authorizeResponse.items.reduce((acc, r) => {
       acc[r.id] = r;
       return acc;
     }, {} as Record<string, Identified<AuthorizeDecision>>);
@@ -145,15 +112,15 @@ export class PermissionClient implements PermissionAuthorizer {
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
-  private assertValidResponse(
+  private assertMatchingRequestIds(
     request: AuthorizeRequest,
-    json: any,
-  ): asserts json is AuthorizeResponse {
-    const authorizedResponses = responseSchema.parse(json);
-    const responseIds = authorizedResponses.items.map(r => r.id);
+    response: AuthorizeResponse,
+  ): void {
+    const responseIds = response.items.map(r => r.id);
     const hasAllRequestIds = request.items.every(r =>
       responseIds.includes(r.id),
     );
+
     if (!hasAllRequestIds) {
       throw new Error(
         'Unexpected authorization response from permission-backend',

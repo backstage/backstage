@@ -34,6 +34,7 @@ import {
   Identified,
   AuthorizeRequest,
   AuthorizeResponse,
+  validatePermissionCriteria,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -111,6 +112,8 @@ const handleRequest = async (
             `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
           );
         }
+
+        validatePermissionCriteria(decision.conditions);
 
         if (!resourceRef) {
           return {

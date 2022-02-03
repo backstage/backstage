@@ -20,6 +20,8 @@ export type {
   AuthorizeRequest,
   AuthorizeDecision,
   AuthorizeResponse,
+  ConditionalAuthorizeResponse,
+  DefinitiveAuthorizeResponse,
   Identified,
   PermissionCondition,
   PermissionCriteria,

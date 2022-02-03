@@ -22,3 +22,9 @@
 export * from './types';
 export * from './permissions';
 export * from './PermissionClient';
+export {
+  validateAuthorizeResponse,
+  validatePermissionCriteria,
+  isDefinitiveAuthorizeResponse,
+  isConditionalAuthorizeResponse,
+} from './validation';

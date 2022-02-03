@@ -82,16 +82,30 @@ export type PermissionCriteria<TQuery> =
   | { not: PermissionCriteria<TQuery> }
   | TQuery;
 
+export type DefinitiveAuthorizeDecision = {
+  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+};
+
+export type ConditionalAuthorizeDecision = {
+  result: AuthorizeResult.CONDITIONAL;
+  conditions: PermissionCriteria<PermissionCondition>;
+};
+
 /**
  * An individual authorization response from {@link PermissionClient#authorize}.
  * @public
  */
 export type AuthorizeDecision =
-  | { result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }
-  | {
-      result: AuthorizeResult.CONDITIONAL;
-      conditions: PermissionCriteria<PermissionCondition>;
-    };
+  | DefinitiveAuthorizeDecision
+  | ConditionalAuthorizeDecision;
+
+export type DefinitiveAuthorizeResponse = {
+  items: Identified<DefinitiveAuthorizeDecision>[];
+};
+
+export type ConditionalAuthorizeResponse = {
+  items: Identified<ConditionalAuthorizeDecision>[];
+};
 
 /**
  * A batch of authorization responses from {@link PermissionClient#authorize}.

@@ -15,25 +15,16 @@
  */
 
 import fetch from 'node-fetch';
-import { z } from 'zod';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  isDefinitiveAuthorizeResponse,
+  validateAuthorizeResponse,
+} from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
   ApplyConditionsResponseEntry,
   ConditionalPolicyDecision,
 } from '@backstage/plugin-permission-node';
-
-const responseSchema = z.object({
-  items: z.array(
-    z.object({
-      id: z.string(),
-      result: z
-        .literal(AuthorizeResult.ALLOW)
-        .or(z.literal(AuthorizeResult.DENY)),
-    }),
-  ),
-});
 
 export type ResourcePolicyDecision = ConditionalPolicyDecision & {
   resourceRef: string;
@@ -79,8 +70,14 @@ export class PermissionIntegrationClient {
       );
     }
 
-    const result = responseSchema.parse(await response.json());
+    const authorizeResponse = validateAuthorizeResponse(await response.json());
 
-    return result.items;
+    if (!isDefinitiveAuthorizeResponse(authorizeResponse)) {
+      throw new Error(
+        'Unexpected response from plugin upstream when applying conditions.',
+      );
+    }
+
+    return authorizeResponse.items;
   }
 }
