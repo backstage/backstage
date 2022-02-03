@@ -10671,7 +10671,7 @@ elliptic@^6.0.0:
     minimalistic-assert "^1.0.1"
     minimalistic-crypto-utils "^1.0.1"
 
-"embedded-techdocs-app@file:packages/embedded-techdocs-app":
+"techdocs-cli-embedded-app@file:packages/techdocs-cli-embedded-app":
   version "0.2.62"
   dependencies:
     "@backstage/app-defaults" "^0.1.6"
