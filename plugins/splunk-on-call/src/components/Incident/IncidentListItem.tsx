@@ -106,7 +106,7 @@ const IncidentAction = ({
   switch (currentPhase) {
     case 'UNACKED':
       return (
-        <Tooltip title="Aknowledge" placement="top">
+        <Tooltip title="Acknowledge" placement="top">
           <IconButton
             onClick={() =>
               acknowledgeAction({ incidentId, incidentType: 'ACKNOWLEDGEMENT' })
