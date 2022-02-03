@@ -22,6 +22,7 @@ import {
   CardContent,
   CardHeader,
   Divider,
+  makeStyles,
   Typography,
 } from '@material-ui/core';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
@@ -82,7 +83,14 @@ export const isSplunkOnCallAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_TEAM]) ||
   Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_ROUTING_KEY]);
 
+const useStyles = makeStyles({
+  onCallCard: {
+    marginBottom: '1em',
+  },
+});
+
 export const EntitySplunkOnCallCard = () => {
+  const classes = useStyles();
   const config = useApi(configApiRef);
   const api = useApi(splunkOnCallApiRef);
   const { entity } = useEntity();
@@ -219,7 +227,7 @@ export const EntitySplunkOnCallCard = () => {
   return (
     <>
       {teams.map((team, i) => (
-        <Card key={i}>
+        <Card key={i} className={classes.onCallCard}>
           <CardHeader
             title="Splunk On-Call"
             subheader={[
