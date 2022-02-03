@@ -170,7 +170,9 @@ describe('SplunkOnCallCard', () => {
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(
-      getByText('Could not find team named "test" in the Splunk On-Call API'),
+      getByText(
+        'Splunk On-Call API returned no record of teams associated with the "test" team name',
+      ),
     ).toBeInTheDocument();
   });
 
