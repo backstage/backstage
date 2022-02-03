@@ -25,17 +25,31 @@ import {
   isOrCriteria,
 } from './util';
 
+const nonEmpty = <T>(list: T[]): [T, ...T[]] => {
+  if (list.length === 0) {
+    throw new Error(
+      'Invalid conditions provided. Expected at least one item for `allOf`/`anyOf` criteria but received none.',
+    );
+  }
+
+  return list as [T, ...T[]];
+};
+
 const mapConditions = <TQuery>(
   criteria: PermissionCriteria<PermissionCondition>,
   getRule: (name: string) => PermissionRule<unknown, TQuery>,
 ): PermissionCriteria<TQuery> => {
   if (isAndCriteria(criteria)) {
     return {
-      allOf: criteria.allOf.map(child => mapConditions(child, getRule)),
+      allOf: nonEmpty(
+        criteria.allOf.map(child => mapConditions(child, getRule)),
+      ),
     };
   } else if (isOrCriteria(criteria)) {
     return {
-      anyOf: criteria.anyOf.map(child => mapConditions(child, getRule)),
+      anyOf: nonEmpty(
+        criteria.anyOf.map(child => mapConditions(child, getRule)),
+      ),
     };
   } else if (isNotCriteria(criteria)) {
     return {

@@ -43,8 +43,8 @@ const permissionCriteriaSchema: z.ZodSchema<
       rule: z.string(),
       params: z.array(z.unknown()),
     })
-    .or(z.object({ anyOf: z.array(permissionCriteriaSchema) }))
-    .or(z.object({ allOf: z.array(permissionCriteriaSchema) }))
+    .or(z.object({ anyOf: z.array(permissionCriteriaSchema).nonempty() }))
+    .or(z.object({ allOf: z.array(permissionCriteriaSchema).nonempty() }))
     .or(z.object({ not: permissionCriteriaSchema })),
 );
 

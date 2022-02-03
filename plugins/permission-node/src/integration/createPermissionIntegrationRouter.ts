@@ -38,8 +38,8 @@ const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
 > = z.lazy(() =>
   z.union([
-    z.object({ anyOf: z.array(permissionCriteriaSchema) }),
-    z.object({ allOf: z.array(permissionCriteriaSchema) }),
+    z.object({ anyOf: z.array(permissionCriteriaSchema).nonempty() }),
+    z.object({ allOf: z.array(permissionCriteriaSchema).nonempty() }),
     z.object({ not: permissionCriteriaSchema }),
     z.object({
       rule: z.string(),
