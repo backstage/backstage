@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, PropsWithChildren, Suspense } from 'react';
 import { AnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin/types';
 import { PluginErrorBoundary } from './PluginErrorBoundary';
+import { Permission } from '@backstage/plugin-permission-common';
+import { RouteRefImpl } from '../routing/RouteRef';
 
 /**
  * Lazy or synchronous retrieving of extension components.
@@ -235,6 +237,8 @@ export function createReactExtension<
           | { id?: string }
           | undefined;
 
+        const permissionId = permissionFactory(plugin, mountPoint?.id ?? '');
+
         return (
           <Suspense fallback={<Progress />}>
             <PluginErrorBoundary app={app} plugin={plugin}>
@@ -245,7 +249,9 @@ export function createReactExtension<
                   ...(mountPoint && { routeRef: mountPoint.id }),
                 }}
               >
-                <Component {...props} />
+                <PermissionContext>
+                  <Component {...props} />
+                </PermissionContext>
               </AnalyticsContext>
             </PluginErrorBoundary>
           </Suspense>
@@ -261,4 +267,15 @@ export function createReactExtension<
       return Result;
     },
   };
+}
+
+function PermissionContext({}: PropsWithChildren<{}>) {
+  return null;
+}
+
+function permissionFactory(
+  plugin: BackstagePlugin<any, any>,
+  routeId: string,
+): Permission {
+  return { name: `${plugin.getId()}.route.${routeId}`, attributes: {} };
 }
