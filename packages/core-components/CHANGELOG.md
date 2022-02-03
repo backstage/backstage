@@ -1,5 +1,15 @@
 # @backstage/core-components
 
+## 0.8.7
+
+### Patch Changes
+
+- f7257dff6f: The `<Link />` component now accepts a `noTrack` prop, which prevents the `click` event from being captured by the Analytics API. This can be used if tracking is explicitly not warranted, or in order to use custom link tracking in specific situations.
+- 4c773ed25c: Change subtitle of Header style to use palette.bursts.fontColor
+- f465b63b7f: Fix an issue where changes related to the `MobileSidebar` prevented scrolling pages. Additionally improve the menu of the `MobileSidebar` to not overlay the `BottomNavigation`.
+- 064e750a50: Adding hover message to the Gauge and an info icon to the GaugeCard.
+- a681cb9c2f: Make linkTarget configurable for MarkdownContent component
+
 ## 0.8.7-next.1
 
 ### Patch Changes

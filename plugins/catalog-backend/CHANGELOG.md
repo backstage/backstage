@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend
 
+## 0.21.2
+
+### Patch Changes
+
+- fac5f112b4: chore(deps): bump `prom-client` from 13.2.0 to 14.0.1
+- 5bbffa60be: Pass authorization token to location service inside location api routes
+- Updated dependencies
+  - @backstage/plugin-catalog-common@0.1.2
+  - @backstage/backend-common@0.10.6
+  - @backstage/plugin-permission-node@0.4.2
+
 ## 0.21.2-next.1
 
 ### Patch Changes

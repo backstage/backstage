@@ -1,5 +1,14 @@
 # @backstage/plugin-code-coverage
 
+## 0.1.24
+
+### Patch Changes
+
+- 2ce5e4e0a7: Fixed a bug in the FileExplorer component which made it impossible to navigate upwards to a containing folder by clicking on the folder breadcrumb.
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+
 ## 0.1.24-next.1
 
 ### Patch Changes
