@@ -1,5 +1,13 @@
 # @backstage/plugin-cloudbuild
 
+## 0.2.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+
 ## 0.2.34-next.0
 
 ### Patch Changes

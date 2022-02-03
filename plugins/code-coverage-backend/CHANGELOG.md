@@ -1,5 +1,12 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6
+
 ## 0.1.21-next.0
 
 ### Patch Changes

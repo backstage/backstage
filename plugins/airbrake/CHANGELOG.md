@@ -1,5 +1,12 @@
 # @backstage/plugin-airbrake
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+
 ## 0.1.2-next.0
 
 ### Patch Changes

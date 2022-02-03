@@ -1,5 +1,17 @@
 # @backstage/backend-common
 
+## 0.10.6
+
+### Patch Changes
+
+- 50d039577a: Added a `Context` type for the backend, that can propagate an abort signal, a
+  deadline, and contextual values through the call stack. The main entrypoint is
+  the `Contexts` utility class that provides a root context creator and commonly
+  used decorators.
+
+  These are marked as `@alpha` for now, and are therefore only accessible via
+  `@backstage/backend-common/alpha`.
+
 ## 0.10.6-next.0
 
 ### Patch Changes

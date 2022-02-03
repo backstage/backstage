@@ -1,5 +1,13 @@
 # @backstage/codemods
 
+## 0.1.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/core-app-api@0.5.2
+
 ## 0.1.32-next.1
 
 ### Patch Changes

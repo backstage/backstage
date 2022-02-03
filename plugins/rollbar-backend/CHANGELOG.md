@@ -1,5 +1,13 @@
 # @backstage/plugin-rollbar-backend
 
+## 0.1.20
+
+### Patch Changes
+
+- 91faf87aaf: chore(deps): bump `camelcase-keys` from 6.2.2 to 7.0.1
+- Updated dependencies
+  - @backstage/backend-common@0.10.6
+
 ## 0.1.20-next.1
 
 ### Patch Changes
