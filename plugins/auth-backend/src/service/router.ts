@@ -34,6 +34,7 @@ import { createOidcRouter, TokenFactory, KeyStores } from '../identity';
 import session from 'express-session';
 import passport from 'passport';
 import { Minimatch } from 'minimatch';
+import { CookieConfigurer } from '../providers/types';
 
 type ProviderFactories = { [s: string]: AuthProviderFactory };
 
@@ -44,6 +45,7 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
   providerFactories?: ProviderFactories;
+  cookieConfigurer?: CookieConfigurer;
 }
 
 export async function createRouter(
@@ -56,6 +58,7 @@ export async function createRouter(
     database,
     tokenManager,
     providerFactories,
+    cookieConfigurer,
   } = options;
   const router = Router();
 
@@ -111,7 +114,12 @@ export async function createRouter(
       try {
         const provider = providerFactory({
           providerId,
-          globalConfig: { baseUrl: authUrl, appUrl, isOriginAllowed },
+          globalConfig: {
+            baseUrl: authUrl,
+            appUrl,
+            isOriginAllowed,
+            cookieConfigurer,
+          },
           config: providersConfig.getConfig(providerId),
           logger,
           tokenManager,

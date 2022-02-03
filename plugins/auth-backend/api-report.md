@@ -214,6 +214,17 @@ export class CatalogIdentityClient {
   resolveCatalogMembership(query: MemberClaimQuery): Promise<string[]>;
 }
 
+// @public
+export type CookieConfigurer = (ctx: {
+  providerId: string;
+  baseUrl: string;
+  callbackUrl: string;
+}) => {
+  domain: string;
+  path: string;
+  secure: boolean;
+};
+
 // Warning: (ae-missing-release-tag) "createAtlassianProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -665,6 +676,8 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
+  cookieConfigurer?: CookieConfigurer;
+  // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
   discovery: PluginEndpointDiscovery;
@@ -736,5 +749,5 @@ export type WebMessageResponse =
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
 // src/providers/aws-alb/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "AwsAlbResult" needs to be exported by the entry point index.d.ts
 // src/providers/github/provider.d.ts:97:5 - (ae-forgotten-export) The symbol "StateEncoder" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:98:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
+// src/providers/types.d.ts:118:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
 ```
