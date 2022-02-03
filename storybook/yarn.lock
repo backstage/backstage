@@ -1332,17 +1332,17 @@
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
 
-"@storybook/addon-actions@^6.4.17":
-  version "6.4.17"
-  resolved "https://registry.npmjs.org/@storybook/addon-actions/-/addon-actions-6.4.17.tgz#93a8190b07f776ba4670cb7021adc81ff7a094ad"
-  integrity sha512-8TYdgzJMMKvfHvSp8N3Bsj78xGw9lNHTYkh0IE0TGGwRVOEU6xNBkao6ktXzM3gTB+6U6OZn8Y//NCzLsoTUHg==
+"@storybook/addon-actions@^6.4.18":
+  version "6.4.18"
+  resolved "https://registry.npmjs.org/@storybook/addon-actions/-/addon-actions-6.4.18.tgz#e997060e1b0af62f9f831301a56a3addfc1f1365"
+  integrity sha512-qPw5qfbWPmyOdaXxAVAbdVLVVE31gRrkH0ESUps+FXVNypRz1/0lJ6M2VrtOHMrFbGBl94SALdqsHOx6OYZKwg==
   dependencies:
-    "@storybook/addons" "6.4.17"
-    "@storybook/api" "6.4.17"
-    "@storybook/components" "6.4.17"
-    "@storybook/core-events" "6.4.17"
+    "@storybook/addons" "6.4.18"
+    "@storybook/api" "6.4.18"
+    "@storybook/components" "6.4.18"
+    "@storybook/core-events" "6.4.18"
     "@storybook/csf" "0.0.2--canary.87bc651.0"
-    "@storybook/theming" "6.4.17"
+    "@storybook/theming" "6.4.18"
     core-js "^3.8.2"
     fast-deep-equal "^3.1.3"
     global "^4.4.0"
