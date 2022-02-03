@@ -30,24 +30,23 @@ You _might_ also need to set your Heroku app's stack to `container`:
 $ heroku stack:set container -a <your-app>
 ```
 
-Configuring your app-config.yaml:
+Configuring your `app-config.yaml`:
 
 ```yaml
 app:
   # Should be the same as backend.baseUrl when using the `app-backend` plugin
   baseUrl: https://<your-app>.herokuapp.com
 
-
 backend:
   baseUrl: https://<your-app>.herokuapp.com
   listen:
-    port: 
-      $env: PORT 
+    port:
+      $env: PORT
       # The $PORT environment variable is a feature of Heroku
       # https://devcenter.heroku.com/articles/dynos#web-dynos
 ```
 
-> Make sure your file is being copied into your container in the Dockerfile.
+> Make sure your file is being copied into your container in the `Dockerfile`.
 
 Before building the Docker image, run the [backstage host build commands](https://backstage.io/docs/deployment/docker#host-build). They must be run whenever you are going to publish a new image.
 
