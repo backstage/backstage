@@ -21,7 +21,7 @@ section below is `/entities`, and the catalog is located at
 `http://localhost:7007/api/catalog` during local development, the full URL would
 be `http://localhost:7007/api/catalog/entities`. The actual URL may vary from
 one organization to the other, especially in production, but is commonly your
-`backend.baseUrl` in your app config, plus `/catalog` at the end.
+`backend.baseUrl` in your app config, plus `/api/catalog` at the end.
 
 Some or all of the endpoints may accept or require an `Authorization` header
 with a `Bearer` token, which should then be the Backstage token returned by the

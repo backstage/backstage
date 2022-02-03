@@ -55,6 +55,9 @@ const useStyles = makeStyles(
     headerAvatar: {},
     headerAction: {},
     headerContent: {},
+    subheader: {
+      display: 'flex',
+    },
   }),
   { name: 'BackstageInfoCard' },
 );
@@ -134,6 +137,7 @@ type Props = {
   children?: ReactNode;
   headerStyle?: object;
   headerProps?: CardHeaderProps;
+  icon?: ReactNode;
   action?: ReactNode;
   actionsClassName?: string;
   actions?: ReactNode;
@@ -162,6 +166,7 @@ export function InfoCard(props: Props): JSX.Element {
     children,
     headerStyle,
     headerProps,
+    icon,
     action,
     actionsClassName,
     actions,
@@ -194,6 +199,15 @@ export function InfoCard(props: Props): JSX.Element {
     });
   }
 
+  const cardSubTitle = () => {
+    return (
+      <div className={classes.headerSubheader}>
+        {subheader && <div className={classes.subheader}>{subheader}</div>}
+        {icon}
+      </div>
+    );
+  };
+
   const errProps: ErrorBoundaryProps =
     errorBoundaryProps || (slackChannel ? { slackChannel } : {});
 
@@ -211,7 +225,7 @@ export function InfoCard(props: Props): JSX.Element {
               content: classes.headerContent,
             }}
             title={title}
-            subheader={subheader}
+            subheader={cardSubTitle()}
             action={action}
             style={{ ...headerStyle }}
             titleTypographyProps={titleTypographyProps}

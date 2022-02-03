@@ -1,5 +1,28 @@
 # @techdocs/cli
 
+## 0.8.12
+
+### Patch Changes
+
+- 14472509a3: Use a local file dependency for techdocs-cli-embedded-app, to ensure that it's always pulled out of the workspace
+- Updated dependencies
+  - @backstage/backend-common@0.10.6
+  - @backstage/techdocs-common@0.11.6
+
+## 0.8.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6-next.0
+  - @backstage/techdocs-common@0.11.6-next.0
+
+## 0.8.12-next.0
+
+### Patch Changes
+
+- 14472509a3: Use a local file dependency for techdocs-cli-embedded-app, to ensure that it's always pulled out of the workspace
+
 ## 0.8.11
 
 ### Patch Changes
@@ -138,10 +161,10 @@
 
   #### :house: Internal
 
-  - `embedded-techdocs-app`
-    - [#122](https://github.com/backstage/techdocs-cli/pull/122) chore(deps-dev): bump @types/node from 12.20.20 to 16.7.1 in /packages/embedded-techdocs-app ([@dependabot[bot]](https://github.com/apps/dependabot))
-    - [#120](https://github.com/backstage/techdocs-cli/pull/120) chore(deps-dev): bump @types/react-dom from 16.9.14 to 17.0.9 in /packages/embedded-techdocs-app ([@dependabot[bot]](https://github.com/apps/dependabot))
-    - [#119](https://github.com/backstage/techdocs-cli/pull/119) chore(deps-dev): bump @testing-library/user-event from 12.8.3 to 13.2.1 in /packages/embedded-techdocs-app ([@dependabot[bot]](https://github.com/apps/dependabot))
+  - `techdocs-cli-embedded-app`
+    - [#122](https://github.com/backstage/techdocs-cli/pull/122) chore(deps-dev): bump @types/node from 12.20.20 to 16.7.1 in /packages/techdocs-cli-embedded-app ([@dependabot[bot]](https://github.com/apps/dependabot))
+    - [#120](https://github.com/backstage/techdocs-cli/pull/120) chore(deps-dev): bump @types/react-dom from 16.9.14 to 17.0.9 in /packages/techdocs-cli-embedded-app ([@dependabot[bot]](https://github.com/apps/dependabot))
+    - [#119](https://github.com/backstage/techdocs-cli/pull/119) chore(deps-dev): bump @testing-library/user-event from 12.8.3 to 13.2.1 in /packages/techdocs-cli-embedded-app ([@dependabot[bot]](https://github.com/apps/dependabot))
     - [#118](https://github.com/backstage/techdocs-cli/pull/118) chore(deps-dev): bump @testing-library/react from 10.4.9 to 12.0.0 ([@dependabot[bot]](https://github.com/apps/dependabot))
   - Other
     - [#117](https://github.com/backstage/techdocs-cli/pull/117) chore(deps): bump @backstage/plugin-catalog from 0.6.11 to 0.6.12 ([@dependabot[bot]](https://github.com/apps/dependabot))

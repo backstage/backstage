@@ -384,7 +384,12 @@ export function GaugeCard(props: Props_10): JSX.Element;
 export type GaugeCardClassKey = 'root';
 
 // @public (undocumented)
-export type GaugeClassKey = 'root' | 'overlay' | 'circle' | 'colorUnknown';
+export type GaugeClassKey =
+  | 'root'
+  | 'overlay'
+  | 'description'
+  | 'circle'
+  | 'colorUnknown';
 
 // @public (undocumented)
 export type GaugeProps = {
@@ -393,6 +398,7 @@ export type GaugeProps = {
   inverse?: boolean;
   unit?: string;
   max?: number;
+  description?: ReactNode;
   getColor?: GaugePropsGetColor;
 };
 
@@ -599,6 +605,7 @@ export function Link(props: LinkProps): JSX.Element;
 export type LinkProps = LinkProps_2 &
   LinkProps_3 & {
     component?: ElementType<any>;
+    noTrack?: boolean;
   };
 
 // Warning: (ae-missing-release-tag) "LoginRequestListItemClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

@@ -40,6 +40,7 @@ const defaultEntity: UserEntity = {
   kind: 'User',
   metadata: {
     name: 'guest',
+    description: 'Description for guest',
   },
   spec: {
     profile: {
@@ -70,6 +71,7 @@ const noImageEntity: UserEntity = {
   kind: 'User',
   metadata: {
     name: 'guest',
+    description: 'Description for guest',
   },
   spec: {
     profile: {

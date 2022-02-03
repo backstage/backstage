@@ -17,6 +17,8 @@
  */
 
 const { Octokit } = require('@octokit/rest');
+const path = require('path');
+const fs = require('fs-extra');
 
 const baseOptions = {
   owner: 'backstage',

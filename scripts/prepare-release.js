@@ -62,14 +62,22 @@ async function updatePatchVersions() {
       throw new Error(`Invalid base version ${version} for package ${name}`);
     }
 
-    const currentVersion = semver.parse(pkg.packageJson.version);
-    const targetVersion = semver.parse(version).inc('patch');
-    targetVersion.prerelease = currentVersion.prerelease;
+    let targetVersion = version;
 
-    const targetVersionString = targetVersion.format();
+    // If we're currently in a pre-release we need to manually execute the
+    // patch bump up to the next version. And we also need to make sure we
+    // resume the releases at the same pre-release tag.
+    const currentPrerelease = semver.prerelease(pkg.packageJson.version);
+    if (currentPrerelease) {
+      const parsed = targetVersion.parse(version);
+      parsed.inc('patch');
+      parsed.prerelease = currentPrerelease;
+      targetVersion = parsed.format();
+    }
+
     pendingVersionBumps.set(name, {
-      targetVersion: targetVersionString,
-      targetRange: `^${targetVersionString}`,
+      targetVersion,
+      targetRange: `^${targetVersion}`,
     });
   }
 

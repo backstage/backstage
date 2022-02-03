@@ -43,8 +43,8 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.0",
-    "@backstage/test-utils": "^0.2.3",
+    "@backstage/cli": "^0.13.1-next.1",
+    "@backstage/test-utils": "^0.2.4-next.0",
     "@graphql-codegen/cli": "^2.3.1",
     "@graphql-codegen/typescript": "^2.4.2",
     "@graphql-codegen/typescript-resolvers": "^2.4.3",

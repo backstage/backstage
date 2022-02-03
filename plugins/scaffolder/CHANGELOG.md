@@ -1,5 +1,38 @@
 # @backstage/plugin-scaffolder
 
+## 0.12.1
+
+### Patch Changes
+
+- ba59832aed: Permission the Register Existing Component button
+- cee44ad289: Added the ability to collect users `oauth` token from the `RepoUrlPicker` for use in the template manifest
+- a681cb9c2f: Make linkTarget configurable for MarkdownContent component
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+  - @backstage/plugin-catalog-common@0.1.2
+  - @backstage/integration-react@0.1.20
+
+## 0.12.1-next.1
+
+### Patch Changes
+
+- ba59832aed: Permission the Register Existing Component button
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.1
+  - @backstage/plugin-catalog-react@0.6.13-next.1
+  - @backstage/plugin-catalog-common@0.1.2-next.0
+
+## 0.12.1-next.0
+
+### Patch Changes
+
+- a681cb9c2f: Make linkTarget configurable for MarkdownContent component
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/integration-react@0.1.20-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
 ## 0.12.0
 
 ### Minor Changes

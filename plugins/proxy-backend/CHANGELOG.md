@@ -1,5 +1,69 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.17
+
+### Patch Changes
+
+- 332d3decb2: Adds a new option `skipInvalidTargets` for the proxy `createRouter` which allows the proxy backend to be started with an invalid proxy configuration. If configured, it will simply skip the failed proxy and mount the other valid proxies.
+
+  To configure it to pass by failing proxies:
+
+  ```
+  const router = await createRouter({
+    config,
+    logger,
+    discovery,
+    skipInvalidProxies: true,
+  });
+  ```
+
+  If you would like it to fail if a proxy is configured badly:
+
+  ```
+  const router = await createRouter({
+    config,
+    logger,
+    discovery,
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6
+
+## 0.2.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6-next.0
+
+## 0.2.17-next.0
+
+### Patch Changes
+
+- 332d3decb2: Adds a new option `skipInvalidTargets` for the proxy `createRouter` which allows the proxy backend to be started with an invalid proxy configuration. If configured, it will simply skip the failed proxy and mount the other valid proxies.
+
+  To configure it to pass by failing proxies:
+
+  ```
+  const router = await createRouter({
+    config,
+    logger,
+    discovery,
+    skipInvalidProxies: true,
+  });
+  ```
+
+  If you would like it to fail if a proxy is configured badly:
+
+  ```
+  const router = await createRouter({
+    config,
+    logger,
+    discovery,
+  });
+  ```
+
 ## 0.2.16
 
 ### Patch Changes

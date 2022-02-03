@@ -74,4 +74,15 @@ describe('getOctokit', () => {
     expect(owner).toBe('owner');
     expect(repo).toBe('bob');
   });
+
+  it('should return an octokit client with the passed in token if it is provided', async () => {
+    const { client, token, owner, repo } = await octokitProvider.getOctokit(
+      'github.com?repo=bob&owner=owner',
+      { token: 'tokenlols2' },
+    );
+    expect(client).toBeDefined();
+    expect(token).toBe('tokenlols2');
+    expect(owner).toBe('owner');
+    expect(repo).toBe('bob');
+  });
 });

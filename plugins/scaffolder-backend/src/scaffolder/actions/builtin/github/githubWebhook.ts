@@ -47,6 +47,7 @@ export function createGithubWebhookAction(options: {
     active?: boolean;
     contentType?: ContentType;
     insecureSsl?: boolean;
+    token?: string;
   }>({
     id: 'github:webhook',
     description: 'Creates webhook for a repository on GitHub.',
@@ -107,6 +108,11 @@ export function createGithubWebhookAction(options: {
             type: 'boolean',
             description: `Determines whether the SSL certificate of the host for url will be verified when delivering payloads. Default 'false'`,
           },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description: 'The GITHUB_TOKEN to use for authorization to GitHub',
+          },
         },
       },
     },
@@ -119,11 +125,15 @@ export function createGithubWebhookAction(options: {
         active = true,
         contentType = 'form',
         insecureSsl = false,
+        token: providedToken,
       } = ctx.input;
 
       ctx.logger.info(`Creating webhook ${webhookUrl} for repo ${repoUrl}`);
 
-      const { client, owner, repo } = await octokitProvider.getOctokit(repoUrl);
+      const { client, owner, repo } = await octokitProvider.getOctokit(
+        repoUrl,
+        { token: providedToken },
+      );
 
       try {
         const insecure_ssl = insecureSsl ? '1' : '0';

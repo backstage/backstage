@@ -1,5 +1,89 @@
 # @backstage/plugin-catalog-import
 
+## 0.8.0
+
+### Minor Changes
+
+- 2e8764b95f: Make filename, branch name and examples URLs used in catalog import customizable.
+
+  Catalog backend ingestion loop can be already configured to fetch targets with custom catalog filename (other than `catalog-info.yaml`). It's now possible to customize said filename and branch name used in pull requests created by catalog import flow too. This allows organizations to further customize Backstage experience and to better reflect their branding.
+
+  Filename (default: `catalog-info.yaml`) and branch name (default: `backstage-integration`) used in pull requests can be configured in `app-config.yaml` as follows:
+
+  ```yaml
+  // app-config.yaml
+
+  catalog:
+    import:
+      entityFilename: anvil.yaml
+      pullRequestBranchName: anvil-integration
+  ```
+
+  Following React components have also been updated to accept optional props for providing example entity and repository paths:
+
+  ```tsx
+  <StepInitAnalyzeUrl
+    ...
+    exampleLocationUrl="https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml"
+  />
+  ```
+
+  ```tsx
+  <ImportInfoCard
+    exampleLocationUrl="https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml"
+    exampleRepositoryUrl="https://github.com/acme-corp/our-awesome-api"
+  />
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+  - @backstage/integration-react@0.1.20
+
+## 0.8.0-next.0
+
+### Minor Changes
+
+- 2e8764b95f: Make filename, branch name and examples URLs used in catalog import customizable.
+
+  Catalog backend ingestion loop can be already configured to fetch targets with custom catalog filename (other than `catalog-info.yaml`). It's now possible to customize said filename and branch name used in pull requests created by catalog import flow too. This allows organizations to further customize Backstage experience and to better reflect their branding.
+
+  Filename (default: `catalog-info.yaml`) and branch name (default: `backstage-integration`) used in pull requests can be configured in `app-config.yaml` as follows:
+
+  ```yaml
+  // app-config.yaml
+
+  catalog:
+    import:
+      entityFilename: anvil.yaml
+      pullRequestBranchName: anvil-integration
+  ```
+
+  Following React components have also been updated to accept optional props for providing example entity and repository paths:
+
+  ```tsx
+  <StepInitAnalyzeUrl
+    ...
+    exampleLocationUrl="https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml"
+  />
+  ```
+
+  ```tsx
+  <ImportInfoCard
+    exampleLocationUrl="https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml"
+    exampleRepositoryUrl="https://github.com/acme-corp/our-awesome-api"
+  />
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/integration-react@0.1.20-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
 ## 0.7.10
 
 ### Patch Changes

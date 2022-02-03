@@ -7,18 +7,23 @@ import { AnalyticsApi } from '@backstage/core-plugin-api';
 import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
+import { IdentityApi } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "analyticsModuleGA" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const analyticsModuleGA: BackstagePlugin<{}, {}>;
 
-// Warning: (ae-missing-release-tag) "GoogleAnalytics" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class GoogleAnalytics implements AnalyticsApi {
   captureEvent(event: AnalyticsEvent): void;
-  static fromConfig(config: Config): GoogleAnalytics;
+  static fromConfig(
+    config: Config,
+    options?: {
+      identityApi?: IdentityApi;
+      userIdTransform?:
+        | 'sha-256'
+        | ((userEntityRef: string) => Promise<string>);
+    },
+  ): GoogleAnalytics;
 }
 
 // (No @packageDocumentation comment for this package)

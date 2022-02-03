@@ -1,5 +1,161 @@
 # @backstage/create-app
 
+## 0.4.18
+
+### Patch Changes
+
+- 5bd0ce9e62: chore(deps): bump `inquirer` from 7.3.3 to 8.2.0
+- f27f5197e2: Apply the fix from `0.4.16`, which is part of the `v0.65.1` release of Backstage.
+- 2687029a67: Update backend-to-backend auth link in configuration file comment
+- 24ef62048c: Adds missing `/catalog-graph` route to `<CatalogGraphPage/>`.
+
+  To fix this problem for a recently created app please update your `app/src/App.tsx`
+
+  ```diff
+  + import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
+
+   ... omitted ...
+
+    </Route>
+      <Route path="/settings" element={<UserSettingsPage />} />
+  +   <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    </FlatRoutes>
+  ```
+
+- ba59832aed: Permission the `catalog-import` route
+
+  The following changes are **required** if you intend to add permissions to your existing app.
+
+  Use the `PermissionedRoute` for `CatalogImportPage` instead of the normal `Route`:
+
+  ```diff
+  // packages/app/src/App.tsx
+  ...
+  + import { PermissionedRoute } from '@backstage/plugin-permission-react';
+  + import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+
+  ...
+
+  - <Route path="/catalog-import" element={<CatalogImportPage />} />
+  + <PermissionedRoute
+  +   path="/catalog-import"
+  +   permission={catalogEntityCreatePermission}
+  +   element={<CatalogImportPage />}
+  + />
+  ```
+
+- cef64b1561: Added `tokenManager` as a required property for the auth-backend `createRouter` function. This dependency is used to issue server tokens that are used by the `CatalogIdentityClient` when looking up users and their group membership during authentication.
+
+  These changes are **required** to `packages/backend/src/plugins/auth.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+    database,
+    config,
+    discovery,
+  + tokenManager,
+  }: PluginEnvironment): Promise<Router> {
+    return await createRouter({
+      logger,
+      config,
+      database,
+      discovery,
+  +   tokenManager,
+    });
+  }
+  ```
+
+- e39d88bd84: Switched the `app` dependency in the backend to use a file target rather than version.
+
+  To apply this change to an existing app, make the following change to `packages/backend/package.json`:
+
+  ```diff
+     "dependencies": {
+  -    "app": "0.0.0",
+  +    "app": "file:../app",
+  ```
+
+## 0.4.18-next.1
+
+### Patch Changes
+
+- 5bd0ce9e62: chore(deps): bump `inquirer` from 7.3.3 to 8.2.0
+- ba59832aed: Permission the `catalog-import` route
+
+  The following changes are **required** if you intend to add permissions to your existing app.
+
+  Use the `PermissionedRoute` for `CatalogImportPage` instead of the normal `Route`:
+
+  ```diff
+  // packages/app/src/App.tsx
+  ...
+  + import { PermissionedRoute } from '@backstage/plugin-permission-react';
+  + import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+
+  ...
+
+  - <Route path="/catalog-import" element={<CatalogImportPage />} />
+  + <PermissionedRoute
+  +   path="/catalog-import"
+  +   permission={catalogEntityCreatePermission}
+  +   element={<CatalogImportPage />}
+  + />
+  ```
+
+## 0.4.18-next.0
+
+### Patch Changes
+
+- f27f5197e2: Apply the fix from `0.4.16`, which is part of the `v0.65.1` release of Backstage.
+- 2687029a67: Update backend-to-backend auth link in configuration file comment
+- 24ef62048c: Adds missing `/catalog-graph` route to `<CatalogGraphPage/>`.
+
+  To fix this problem for a recently created app please update your `app/src/App.tsx`
+
+  ```diff
+  + import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
+
+   ... omitted ...
+
+    </Route>
+      <Route path="/settings" element={<UserSettingsPage />} />
+  +   <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    </FlatRoutes>
+  ```
+
+- cef64b1561: Added `tokenManager` as a required property for the auth-backend `createRouter` function. This dependency is used to issue server tokens that are used by the `CatalogIdentityClient` when looking up users and their group membership during authentication.
+
+  These changes are **required** to `packages/backend/src/plugins/auth.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+    database,
+    config,
+    discovery,
+  + tokenManager,
+  }: PluginEnvironment): Promise<Router> {
+    return await createRouter({
+      logger,
+      config,
+      database,
+      discovery,
+  +   tokenManager,
+    });
+  }
+  ```
+
+- e39d88bd84: Switched the `app` dependency in the backend to use a file target rather than version.
+
+  To apply this change to an existing app, make the following change to `packages/backend/package.json`:
+
+  ```diff
+     "dependencies": {
+  -    "app": "0.0.0",
+  +    "app": "file:../app",
+  ```
+
 ## 0.4.16
 
 ### Patch Changes
@@ -49,7 +205,7 @@
 
   To make this change to an existing app:
 
-  Add `@backstage/catalog-graph-plugin` as a `dependency` in `packages/app/package.json`
+  Add `@backstage/plugin-catalog-graph` as a `dependency` in `packages/app/package.json`
 
   Apply the following changes to the `packages/app/src/components/catalog/EntityPage.tsx` file:
 

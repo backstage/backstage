@@ -21,6 +21,7 @@ import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
+import { SecretsContextProvider } from './secrets/SecretsContext';
 
 import {
   FieldExtensionOptions,
@@ -83,7 +84,11 @@ export const Router = ({
       />
       <Route
         path="/templates/:templateName"
-        element={<TemplatePage customFieldExtensions={fieldExtensions} />}
+        element={
+          <SecretsContextProvider>
+            <TemplatePage customFieldExtensions={fieldExtensions} />
+          </SecretsContextProvider>
+        }
       />
       <Route path="/tasks/:taskId" element={<TaskPageElement />} />
       <Route path="/actions" element={<ActionsPage />} />
