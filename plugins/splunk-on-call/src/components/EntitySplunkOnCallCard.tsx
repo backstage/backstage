@@ -59,15 +59,36 @@ export const MissingAnnotation = () => (
   </div>
 );
 
-export const InvalidTeamAnnotation = ({ teamName }: { teamName: string }) => (
-  <CardContent>
-    <EmptyState
-      title={`Could not find team named "${teamName}" in the Splunk On-Call API`}
-      missing="info"
-      description={`Escalation Policy and incident information unavailable. Please verify that the team you added "${teamName}" is valid if you want to enable Splunk On-Call.`}
-    />
-  </CardContent>
-);
+export const InvalidAnnotation = ({
+  teamName,
+  routingKey,
+}: {
+  teamName: string | undefined;
+  routingKey: string | undefined;
+}) => {
+  let titleSuffix = 'provided annotation';
+
+  if (teamName) {
+    titleSuffix = `"${teamName}" team name`;
+  }
+
+  if (routingKey) {
+    titleSuffix = `"${routingKey}" routing key`;
+  }
+
+  return (
+    <Card>
+      <CardHeader title="Splunk On-Call" />
+      <CardContent>
+        <EmptyState
+          title={`Splunk On-Call API returned no record of teams associated with the ${titleSuffix}`}
+          missing="info"
+          description="Escalation Policy and incident information unavailable. Splunk On-Call requires a valid team name or routing key."
+        />
+      </CardContent>
+    </Card>
+  );
+};
 
 export const MissingEventsRestEndpoint = () => (
   <CardContent>
@@ -181,17 +202,9 @@ export const EntitySplunkOnCallCard = () => {
     usersHashMap,
   }: {
     team: Team | undefined;
-    usersHashMap: any | undefined;
+    usersHashMap: any;
   }) => {
-    if (!team) {
-      return (
-        <InvalidTeamAnnotation
-          teamName={teamAnnotation || routingKeyAnnotation || ''}
-        />
-      );
-    }
-
-    const teamName = team.name || '';
+    const teamName = team && team.name ? team.name : '';
 
     return (
       <>
@@ -223,6 +236,15 @@ export const EntitySplunkOnCallCard = () => {
   };
 
   const teams = usersAndTeams?.foundTeams || [];
+
+  if (!teams.length) {
+    return (
+      <InvalidAnnotation
+        teamName={teamAnnotation}
+        routingKey={routingKeyAnnotation}
+      />
+    );
+  }
 
   return (
     <>
