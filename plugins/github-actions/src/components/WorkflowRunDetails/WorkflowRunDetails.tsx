@@ -175,14 +175,17 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
   const jobs = useWorkflowRunJobs({ hostname, owner, repo });
 
   const error = projectName.error || (projectName.value && details.error);
+  const loading = projectName.loading || details.loading || !details.value;
+
   const classes = useStyles();
-  if (error) {
+
+  if (error && error.message) {
     return (
       <Typography variant="h6" color="error">
         Failed to load build, {error.message}
       </Typography>
     );
-  } else if (projectName.loading || details.loading) {
+  } else if (loading) {
     return <LinearProgress />;
   }
   return (
