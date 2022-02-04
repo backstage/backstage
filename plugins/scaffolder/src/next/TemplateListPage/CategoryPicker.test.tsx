@@ -127,4 +127,26 @@ describe('CategoryPicker', () => {
 
     expect(mockSetSelectedTypes).toHaveBeenCalledWith(['foo', 'bar']);
   });
+
+  it('should render the selectedTypes already in the document', async () => {
+    const mockAvailableTypes = ['foo', 'bar'];
+    const mockSelectedTypes = ['foo'];
+
+    (useEntityTypeFilter as jest.Mock).mockReturnValue({
+      availableTypes: mockAvailableTypes,
+      selectedTypes: mockSelectedTypes,
+    });
+
+    const { getByRole } = await renderInTestApp(
+      <TestApiProvider apis={[[alertApiRef, mockAlertApi]]}>
+        <CategoryPicker />
+      </TestApiProvider>,
+    );
+
+    const openButton = getByRole('button', { name: 'Open' });
+    await fireEvent(openButton, new MouseEvent('click', { bubbles: true }));
+
+    const fooCheckbox = getByRole('checkbox', { name: 'Foo' });
+    expect(fooCheckbox).toBeChecked();
+  });
 });
