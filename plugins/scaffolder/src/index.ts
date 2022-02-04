@@ -57,3 +57,5 @@ export { TemplateList } from './components/TemplateList';
 export type { TemplateListProps } from './components/TemplateList';
 export { TemplateTypePicker } from './components/TemplateTypePicker';
 export * from './components/secrets';
+export { TaskPage } from './components/TaskPage';
+export type { TaskPageProps } from './components/TaskPage';

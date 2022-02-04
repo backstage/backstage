@@ -255,6 +255,7 @@ export const ScaffolderFieldExtensions: React_2.ComponentType;
 // @public (undocumented)
 export const ScaffolderPage: ({
   TemplateCardComponent,
+  TaskPageComponent,
   groups,
 }: {
   TemplateCardComponent?:
@@ -262,6 +263,7 @@ export const ScaffolderPage: ({
         template: TemplateEntityV1beta2;
       }>
     | undefined;
+  TaskPageComponent?: ComponentType<{}> | undefined;
   groups?:
     | {
         title?: string | undefined;
@@ -284,6 +286,14 @@ const scaffolderPlugin: BackstagePlugin<
 >;
 export { scaffolderPlugin as plugin };
 export { scaffolderPlugin };
+
+// @public
+export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
+
+// @public
+export type TaskPageProps = {
+  loadingText?: string;
+};
 
 // Warning: (ae-missing-release-tag) "TemplateList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
