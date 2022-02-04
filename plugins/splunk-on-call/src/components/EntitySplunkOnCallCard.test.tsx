@@ -154,8 +154,7 @@ describe('SplunkOnCallCard', () => {
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText(`Team: ${MOCK_TEAM.name}`)).toBeInTheDocument();
     await waitFor(
-      () =>
-        expect(getByText(MOCK_INCIDENT.entityDisplayName)).toBeInTheDocument(),
+      () => expect(getByText('test-incident')).toBeInTheDocument(),
       { timeout: 2000 },
     );
   });
