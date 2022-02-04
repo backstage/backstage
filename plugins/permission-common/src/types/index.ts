@@ -26,6 +26,7 @@ export type {
   AllOfCriteria,
   AnyOfCriteria,
   NotCriteria,
+  NonEmptyArray,
 } from './api';
 export type { DiscoveryApi } from './discovery';
 export type {
