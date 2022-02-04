@@ -20,11 +20,28 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { AirbrakeConfig } from '../config';
+import { Options } from 'http-proxy-middleware/dist/types';
 
 export interface RouterOptions {
   logger: Logger;
   airbrakeConfig: AirbrakeConfig;
 }
+
+export const generateAirbrakePathRewrite = (
+  options: RouterOptions,
+): Options['pathRewrite'] => {
+  const apiKey = options.airbrakeConfig.apiKey;
+
+  return path => {
+    let newPath = path.replace(/.+?(\/api)/, '');
+    if (newPath.includes('?')) {
+      newPath += `&key=${apiKey}`;
+    } else {
+      newPath += `?key=${apiKey}`;
+    }
+    return newPath;
+  };
+};
 
 export async function createRouter(
   options: RouterOptions,
@@ -44,17 +61,7 @@ export async function createRouter(
     createProxyMiddleware({
       target: 'https://api.airbrake.io/api',
       changeOrigin: true,
-      pathRewrite: path => {
-        const apiKey = options.airbrakeConfig.apiKey;
-
-        let newPath = path.replace(/.+?(\/api)/, '');
-        if (newPath.includes('?')) {
-          newPath += `&key=${apiKey}`;
-        } else {
-          newPath += `?key=${apiKey}`;
-        }
-        return newPath;
-      },
+      pathRewrite: generateAirbrakePathRewrite(options),
     }),
   );
 

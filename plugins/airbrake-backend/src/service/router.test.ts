@@ -18,13 +18,20 @@ import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 import { ConfigReader } from '@backstage/config';
-import { createRouter } from './router';
-import { extractAirbrakeConfig } from '../config';
+import {
+  createRouter,
+  generateAirbrakePathRewrite,
+  RouterOptions,
+} from './router';
+import { AirbrakeConfig, extractAirbrakeConfig } from '../config';
 
 describe('createRouter', () => {
   let app: express.Express;
+  let airbrakeConfig: AirbrakeConfig;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
     const config = new ConfigReader({
       integrations: {
         airbrake: {
@@ -32,7 +39,7 @@ describe('createRouter', () => {
         },
       },
     });
-    const airbrakeConfig = extractAirbrakeConfig(config);
+    airbrakeConfig = extractAirbrakeConfig(config);
 
     const router = await createRouter({
       logger: getVoidLogger(),
@@ -41,16 +48,28 @@ describe('createRouter', () => {
     app = express().use(router);
   });
 
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
-
   describe('GET /health', () => {
     it('returns ok', async () => {
       const response = await request(app).get('/health');
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
+    });
+  });
+
+  describe('GET /api', () => {
+    it('appends the API Key properly', () => {
+      const options: RouterOptions = {
+        logger: getVoidLogger(),
+        airbrakeConfig,
+      };
+      const pathRewrite = generateAirbrakePathRewrite(options) as (
+        path: string,
+      ) => string;
+
+      expect(pathRewrite('/airbrake-backend/api/random/endpoint')).toBe(
+        '/random/endpoint?key=fakeApiKey',
+      );
     });
   });
 });
