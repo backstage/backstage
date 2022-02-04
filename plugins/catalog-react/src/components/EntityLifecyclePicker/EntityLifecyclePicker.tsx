@@ -51,18 +51,24 @@ export const EntityLifecyclePicker = () => {
   const { updateFilters, backendEntities, filters, queryParameters } =
     useEntityListProvider();
 
+  const queryParamLifecycles = useMemo(
+    () => [queryParameters.lifecycles].flat().filter(Boolean) as string[],
+    [queryParameters],
+  );
+
   const [selectedLifecycles, setSelectedLifecycles] = useState(
-    filters.lifecycles?.values ?? [],
+    queryParamLifecycles.length
+      ? queryParamLifecycles
+      : filters.lifecycles?.values ?? [],
   );
 
   // Set selected lifecycles on query parameter updates; this happens at initial page load and from
   // external updates to the page location.
   useEffect(() => {
-    const queryParamLifecycles = [queryParameters.lifecycles]
-      .flat()
-      .filter(Boolean) as string[];
-    setSelectedLifecycles(queryParamLifecycles);
-  }, [queryParameters]);
+    if (queryParamLifecycles.length) {
+      setSelectedLifecycles(queryParamLifecycles);
+    }
+  }, [queryParamLifecycles]);
 
   useEffect(() => {
     updateFilters({
