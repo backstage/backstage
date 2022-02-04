@@ -20,6 +20,11 @@ import { renderInTestApp } from '@backstage/test-utils';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import { DefaultResultListItem } from './DefaultResultListItem';
 
+// Using canvas to render text..
+jest.mock('react-text-truncate', () => {
+  return ({ text }: { text: string }) => <span>{text}</span>;
+});
+
 describe('DefaultResultListItem', () => {
   const result = {
     title: 'title',
@@ -44,10 +49,10 @@ describe('DefaultResultListItem', () => {
     await renderInTestApp(
       <DefaultResultListItem
         result={result}
-        icon={<FindInPageIcon title="icon" />}
+        icon={<FindInPageIcon aria-label="icon" />}
       />,
     );
-    expect(screen.getByTitle('icon')).toBeInTheDocument();
+    expect(screen.getByLabelText('icon')).toBeInTheDocument();
   });
 
   it('should render secondary action if prop is specified', async () => {
