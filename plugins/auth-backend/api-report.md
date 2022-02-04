@@ -676,8 +676,6 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  cookieConfigurer?: CookieConfigurer;
-  // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
   discovery: PluginEndpointDiscovery;
