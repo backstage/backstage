@@ -28,6 +28,7 @@ interface IErrorPageProps {
   status: string;
   statusMessage: string;
   additionalInfo?: string | JSX.Element;
+  supportUrl?: string;
 }
 
 /** @public */
@@ -62,7 +63,7 @@ const useStyles = makeStyles<BackstageTheme>(
  *
  */
 export function ErrorPage(props: IErrorPageProps) {
-  const { status, statusMessage, additionalInfo } = props;
+  const { status, statusMessage, additionalInfo, supportUrl } = props;
   const classes = useStyles();
   const navigate = useNavigate();
   const support = useSupportConfig();
@@ -88,7 +89,7 @@ export function ErrorPage(props: IErrorPageProps) {
           <Link to="#" data-testid="go-back-link" onClick={() => navigate(-1)}>
             Go back
           </Link>
-          ... or please <Link to={support.url}>contact support</Link> if you
+          ... or please <Link to={supportUrl || support.url}>contact support</Link> if you
           think this is a bug.
         </Typography>
       </Grid>
