@@ -21,6 +21,7 @@ import {
   Lifecycle,
   Page,
   LogViewer,
+  Progress,
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
@@ -294,56 +295,59 @@ export const TaskPage = () => {
   };
 
   return (
-    <Page themeId="home">
-      <Header
-        pageTitleOverride={`Task ${taskId}`}
-        title={
-          <>
-            Task Activity <Lifecycle alpha shorthand />
-          </>
-        }
-        subtitle={`Activity for task: ${taskId}`}
-      />
-      <Content>
-        {taskNotFound ? (
-          <ErrorPage
-            status="404"
-            statusMessage="Task not found"
-            additionalInfo="No task found with this ID"
-          />
-        ) : (
-          <div>
-            <Grid container>
-              <Grid item xs={3}>
-                <Paper>
-                  <TaskStatusStepper
-                    steps={steps}
-                    currentStepId={currentStepId}
-                    onUserStepChange={setUserSelectedStepId}
-                  />
-                  {output && hasLinks(output) && (
-                    <TaskPageLinks output={output} />
-                  )}
-                  <Button
-                    className={classes.button}
-                    onClick={handleStartOver}
-                    disabled={!completed}
-                    variant="contained"
-                    color="primary"
-                  >
-                    Start Over
-                  </Button>
-                </Paper>
+    <>
+      <Progress style={{ display: !!currentStepId ? 'none' : undefined }} />
+      <Page themeId="home">
+        <Header
+          pageTitleOverride={`Task ${taskId}`}
+          title={
+            <>
+              Task Activity <Lifecycle alpha shorthand />
+            </>
+          }
+          subtitle={`Activity for task: ${taskId}`}
+        />
+        <Content>
+          {taskNotFound ? (
+            <ErrorPage
+              status="404"
+              statusMessage="Task not found"
+              additionalInfo="No task found with this ID"
+            />
+          ) : (
+            <div>
+              <Grid container>
+                <Grid item xs={3}>
+                  <Paper>
+                    <TaskStatusStepper
+                      steps={steps}
+                      currentStepId={currentStepId}
+                      onUserStepChange={setUserSelectedStepId}
+                    />
+                    {output && hasLinks(output) && (
+                      <TaskPageLinks output={output} />
+                    )}
+                    <Button
+                      className={classes.button}
+                      onClick={handleStartOver}
+                      disabled={!completed}
+                      variant="contained"
+                      color="primary"
+                    >
+                      Start Over
+                    </Button>
+                  </Paper>
+                </Grid>
+                <Grid item xs={9}>
+                  <div style={{ height: '80vh' }}>
+                    <LogViewer text={logAsString} />
+                  </div>
+                </Grid>
               </Grid>
-              <Grid item xs={9}>
-                <div style={{ height: '80vh' }}>
-                  <LogViewer text={logAsString} />
-                </div>
-              </Grid>
-            </Grid>
-          </div>
-        )}
-      </Content>
-    </Page>
+            </div>
+          )}
+        </Content>
+      </Page>
+    </>
   );
 };
