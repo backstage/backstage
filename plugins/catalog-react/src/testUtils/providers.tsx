@@ -74,6 +74,7 @@ export const MockEntityListContextProvider = ({
       filters,
       loading: value?.loading ?? false,
       queryParameters: value?.queryParameters ?? defaultValues.queryParameters,
+      error: value?.error,
     }),
     [value, defaultValues, filters, updateFilters],
   );
