@@ -161,12 +161,14 @@ export const EntitySplunkOnCallCard = () => {
         key => key.routingKey === routingKeyAnnotation,
       );
       foundTeams = foundRoutingKey
-        ? foundRoutingKey.targets.map(target => {
-            const teamUrlParts = target._teamUrl.split('/');
-            const teamSlug = teamUrlParts[teamUrlParts.length - 1];
+        ? foundRoutingKey.targets
+            .map(target => {
+              const teamUrlParts = target._teamUrl.split('/');
+              const teamSlug = teamUrlParts[teamUrlParts.length - 1];
 
-            return teams.find(teamValue => teamValue.slug === teamSlug);
-          })
+              return teams.find(teamValue => teamValue.slug === teamSlug);
+            })
+            .filter(team => team !== undefined)
         : [];
     }
 
@@ -195,6 +197,15 @@ export const EntitySplunkOnCallCard = () => {
 
   if (loading) {
     return <Progress />;
+  }
+
+  if (!usersAndTeams?.foundTeams || !usersAndTeams?.foundTeams.length) {
+    return (
+      <InvalidAnnotation
+        teamName={teamAnnotation}
+        routingKey={routingKeyAnnotation}
+      />
+    );
   }
 
   const Content = ({
@@ -236,15 +247,6 @@ export const EntitySplunkOnCallCard = () => {
   };
 
   const teams = usersAndTeams?.foundTeams || [];
-
-  if (!teams.length) {
-    return (
-      <InvalidAnnotation
-        teamName={teamAnnotation}
-        routingKey={routingKeyAnnotation}
-      />
-    );
-  }
 
   return (
     <>

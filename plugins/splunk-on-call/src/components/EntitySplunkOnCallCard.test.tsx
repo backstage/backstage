@@ -28,6 +28,7 @@ import {
   MOCKED_ON_CALL,
   MOCKED_USER,
   MOCK_INCIDENT,
+  MOCK_ROUTING_KEY,
   MOCK_TEAM,
   MOCK_TEAM_NO_INCIDENTS,
 } from '../api/mocks';
@@ -45,6 +46,7 @@ const mockSplunkOnCallApi: Partial<SplunkOnCallClient> = {
   getIncidents: async () => [MOCK_INCIDENT],
   getOnCallUsers: async () => MOCKED_ON_CALL,
   getTeams: async () => [MOCK_TEAM],
+  getRoutingKeys: async () => [MOCK_ROUTING_KEY],
   getEscalationPolicies: async () => ESCALATION_POLICIES,
 };
 
@@ -67,6 +69,17 @@ const mockEntity = {
     name: 'splunkoncall-test',
     annotations: {
       'splunk.com/on-call-team': 'test',
+    },
+  },
+} as Entity;
+
+const mockEntityWithRoutingKeyAnnotation = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'splunkoncall-test',
+    annotations: {
+      'splunk.com/on-call-routing-key': MOCK_ROUTING_KEY.routingKey,
     },
   },
 } as Entity;
@@ -172,6 +185,34 @@ describe('SplunkOnCallCard', () => {
     expect(
       getByText(
         'Splunk On-Call API returned no record of teams associated with the "test" team name',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('handles warning for incorrect routing key annotation', async () => {
+    mockSplunkOnCallApi.getUsers = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCKED_USER]);
+    mockSplunkOnCallApi.getRoutingKeys = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCK_ROUTING_KEY]);
+    mockSplunkOnCallApi.getTeams = jest
+      .fn()
+      .mockImplementationOnce(async () => []);
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={mockEntityWithRoutingKeyAnnotation}>
+            <EntitySplunkOnCallCard />
+          </EntityProvider>
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    expect(
+      getByText(
+        `Splunk On-Call API returned no record of teams associated with the "${MOCK_ROUTING_KEY.routingKey}" routing key`,
       ),
     ).toBeInTheDocument();
   });
