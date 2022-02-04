@@ -6,6 +6,16 @@
 import { Config } from '@backstage/config';
 
 // @public
+export type AllOfCriteria<TQuery> = {
+  allOf: NonEmptyArray<PermissionCriteria<TQuery>>;
+};
+
+// @public
+export type AnyOfCriteria<TQuery> = {
+  anyOf: NonEmptyArray<PermissionCriteria<TQuery>>;
+};
+
+// @public
 export type AuthorizeDecision =
   | {
       result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
@@ -66,6 +76,14 @@ export function isReadPermission(permission: Permission): boolean;
 export function isUpdatePermission(permission: Permission): boolean;
 
 // @public
+export type NonEmptyArray<T> = [T, ...T[]];
+
+// @public
+export type NotCriteria<TQuery> = {
+  not: PermissionCriteria<TQuery>;
+};
+
+// @public
 export type Permission = {
   name: string;
   attributes: PermissionAttributes;
@@ -103,14 +121,8 @@ export type PermissionCondition<TParams extends unknown[] = unknown[]> = {
 
 // @public
 export type PermissionCriteria<TQuery> =
-  | {
-      allOf: PermissionCriteria<TQuery>[];
-    }
-  | {
-      anyOf: PermissionCriteria<TQuery>[];
-    }
-  | {
-      not: PermissionCriteria<TQuery>;
-    }
+  | AllOfCriteria<TQuery>
+  | AnyOfCriteria<TQuery>
+  | NotCriteria<TQuery>
   | TQuery;
 ```
