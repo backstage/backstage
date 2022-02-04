@@ -766,6 +766,13 @@ export function getEntitySourceLocation(
   scmIntegrationsApi: ScmIntegrationRegistry,
 ): EntitySourceLocation | undefined;
 
+// @public
+export function InspectEntityDialog(props: {
+  open: boolean;
+  entity: Entity;
+  onClose: () => void;
+}): JSX.Element | null;
+
 // Warning: (ae-missing-release-tag) "isOwnerOf" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public

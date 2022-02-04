@@ -43,13 +43,39 @@ describe('ComponentContextMenu', () => {
   it('should call onUnregisterEntity on button click', async () => {
     const mockCallback = jest.fn();
 
-    await render(<EntityContextMenu onUnregisterEntity={mockCallback} />);
+    await render(
+      <EntityContextMenu
+        onUnregisterEntity={mockCallback}
+        onInspectEntity={() => {}}
+      />,
+    );
 
     const button = await screen.findByTestId('menu-button');
     expect(button).toBeInTheDocument();
     fireEvent.click(button);
 
     const unregister = await screen.findByText('Unregister entity');
+    expect(unregister).toBeInTheDocument();
+    fireEvent.click(unregister);
+
+    expect(mockCallback).toBeCalled();
+  });
+
+  it('should call onInspectEntity on button click', async () => {
+    const mockCallback = jest.fn();
+
+    await render(
+      <EntityContextMenu
+        onUnregisterEntity={() => {}}
+        onInspectEntity={mockCallback}
+      />,
+    );
+
+    const button = await screen.findByTestId('menu-button');
+    expect(button).toBeInTheDocument();
+    fireEvent.click(button);
+
+    const unregister = await screen.findByText('Inspect entity');
     expect(unregister).toBeInTheDocument();
     fireEvent.click(unregister);
 
@@ -66,6 +92,7 @@ describe('ComponentContextMenu', () => {
     await render(
       <EntityContextMenu
         onUnregisterEntity={jest.fn()}
+        onInspectEntity={jest.fn()}
         UNSTABLE_extraContextMenuItems={[extra]}
       />,
     );
