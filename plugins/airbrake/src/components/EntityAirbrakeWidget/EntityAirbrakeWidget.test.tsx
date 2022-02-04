@@ -35,4 +35,16 @@ describe('EntityAirbrakeContent', () => {
       ).toBeInTheDocument();
     }
   });
+
+  it('states that the annotation is missing if no annotation is provided', async () => {
+    const table = await renderInTestApp(
+      <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi()]]}>
+        <EntityAirbrakeWidget entity={createEntity()} />
+      </TestApiProvider>,
+    );
+    expect(exampleData.groups.length).toBeGreaterThan(0);
+    await expect(
+      table.findByText('Missing Annotation'),
+    ).resolves.toBeInTheDocument();
+  });
 });
