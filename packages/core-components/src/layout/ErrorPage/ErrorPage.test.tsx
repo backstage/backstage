@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { ErrorPage } from './ErrorPage';
+import { Link } from '../../components/Link';
 import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<ErrorPage/>', () => {
@@ -29,5 +30,16 @@ describe('<ErrorPage/>', () => {
       getByText(/looks like someone dropped the mic!/i),
     ).toBeInTheDocument();
     expect(getByTestId('go-back-link')).toBeInTheDocument();
+  });
+
+  it('should render with additional information including link', async () => {
+    const { getByText } = await renderInTestApp(
+      <ErrorPage status="404" statusMessage="PAGE NOT FOUND" additionalInfo={<>This is some additional information including <Link to="/test">a link</Link></>} />,
+    );
+    expect(
+      getByText(/looks like someone dropped the mic!/i),
+    ).toBeInTheDocument();
+    expect(getByText(/a link/i)).toBeInTheDocument();
+    expect(getByText(/a link/i)).toHaveAttribute('href', '/test');
   });
 });

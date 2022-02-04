@@ -27,7 +27,7 @@ import { MicDrop } from './MicDrop';
 interface IErrorPageProps {
   status: string;
   statusMessage: string;
-  additionalInfo?: string;
+  additionalInfo?: string | JSX.Element;
 }
 
 /** @public */
