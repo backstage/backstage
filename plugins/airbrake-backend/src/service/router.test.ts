@@ -58,7 +58,7 @@ describe('createRouter', () => {
   });
 
   describe('GET /api', () => {
-    it('appends the API Key properly', () => {
+    it('appends the API Key properly with no other url parameters', () => {
       const options: RouterOptions = {
         logger: getVoidLogger(),
         airbrakeConfig,
@@ -70,6 +70,22 @@ describe('createRouter', () => {
       expect(pathRewrite('/airbrake-backend/api/random/endpoint')).toBe(
         '/random/endpoint?key=fakeApiKey',
       );
+    });
+
+    it('appends the API Key properly despite there being other URL parameters', () => {
+      const options: RouterOptions = {
+        logger: getVoidLogger(),
+        airbrakeConfig,
+      };
+      const pathRewrite = generateAirbrakePathRewrite(options) as (
+        path: string,
+      ) => string;
+
+      expect(
+        pathRewrite(
+          '/airbrake-backend/api/random/endpoint?param1=123&param2=abc',
+        ),
+      ).toBe('/random/endpoint?param1=123&param2=abc&key=fakeApiKey');
     });
   });
 });
