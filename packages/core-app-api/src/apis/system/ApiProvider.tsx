@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useContext, ReactNode, PropsWithChildren } from 'react';
+import React, {
+  useContext,
+  ReactNode,
+  PropsWithChildren,
+  useEffect,
+} from 'react';
 import PropTypes from 'prop-types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiAggregator } from './ApiAggregator';
