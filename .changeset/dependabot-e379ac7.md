@@ -14,3 +14,5 @@
 ---
 
 chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7

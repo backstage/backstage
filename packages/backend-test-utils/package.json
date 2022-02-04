@@ -33,10 +33,10 @@
     "@backstage/backend-common": "^0.10.6",
     "@backstage/cli": "^0.13.1",
     "@backstage/config": "^0.1.13",
+    "@vscode/sqlite3": "^5.0.7",
     "knex": "^1.0.2",
     "mysql2": "^2.2.5",
     "pg": "^8.3.0",
-    "sqlite3": "^5.0.1",
     "testcontainers": "^8.1.2",
     "uuid": "^8.0.0"
   },

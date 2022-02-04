@@ -28,7 +28,7 @@ exports.up = async function up(knex) {
         .notNullable()
         .defaultTo(knex.fn.now())
         .comment('The creation time of the key')
-        .alter();
+        .alter({ alterType: true });
     });
   }
 };
@@ -45,7 +45,7 @@ exports.down = async function down(knex) {
         .notNullable()
         .defaultTo(knex.fn.now())
         .comment('The creation time of the key')
-        .alter();
+        .alter({ alterType: true });
     });
   }
 };

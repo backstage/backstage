@@ -58,6 +58,7 @@
     "@backstage/plugin-todo-backend": "^0.1.20",
     "@gitbeaker/node": "^35.1.0",
     "@octokit/rest": "^18.5.3",
+    "@vscode/sqlite3": "^5.0.7",
     "azure-devops-node-api": "^11.0.1",
     "dockerode": "^3.3.1",
     "example-app": "link:../app",
@@ -68,7 +69,6 @@
     "pg": "^8.3.0",
     "pg-connection-string": "^2.3.0",
     "prom-client": "^14.0.1",
-    "sqlite3": "^5.0.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {
