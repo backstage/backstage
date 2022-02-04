@@ -141,6 +141,58 @@ describe('ScmAuth', () => {
     });
   });
 
+  it('should support additional provided scopes from the caller', async () => {
+    const mockAuthApi = {
+      getAccessToken: async (scopes: string[]) => {
+        return scopes.join(' ');
+      },
+    };
+
+    const githubAuth = ScmAuth.forGithub(mockAuthApi);
+    await expect(
+      githubAuth.getCredentials({
+        url: 'http://example.com',
+        additionalScope: {
+          customScopes: { github: ['org:read', 'workflow:write'] },
+        },
+      }),
+    ).resolves.toMatchObject({
+      token: 'repo read:org read:user org:read workflow:write',
+    });
+
+    const gitlabAuth = ScmAuth.forGitlab(mockAuthApi);
+    await expect(
+      gitlabAuth.getCredentials({
+        url: 'http://example.com',
+        additionalScope: { customScopes: { gitlab: ['write_repository'] } },
+      }),
+    ).resolves.toMatchObject({
+      token: 'read_user read_api read_repository write_repository',
+    });
+
+    const azureAuth = ScmAuth.forAzure(mockAuthApi);
+    await expect(
+      azureAuth.getCredentials({
+        url: 'http://example.com',
+        additionalScope: { customScopes: { azure: ['vso.org'] } },
+      }),
+    ).resolves.toMatchObject({
+      token: 'vso.build vso.code vso.graph vso.project vso.profile vso.org',
+    });
+
+    const bitbucketAuth = ScmAuth.forBitbucket(mockAuthApi);
+    await expect(
+      bitbucketAuth.getCredentials({
+        url: 'http://example.com',
+        additionalScope: {
+          customScopes: { bitbucket: ['snippet:write', 'issue:write'] },
+        },
+      }),
+    ).resolves.toMatchObject({
+      token: 'account team pullrequest snippet issue snippet:write issue:write',
+    });
+  });
+
   it('should handle host option', () => {
     const mockAuthApi = {
       getAccessToken: jest.fn(),

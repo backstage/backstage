@@ -34,9 +34,9 @@
 /tech-insights-backend-module-jsonfc        @backstage/reviewers @xantier @iain-b
 /tech-insights-tech-insights-common         @backstage/reviewers @xantier @iain-b
 /tech-insights-tech-insights-node           @backstage/reviewers @xantier @iain-b
-/packages/embedded-techdocs-app             @backstage/techdocs-core
 /packages/search-common                     @backstage/techdocs-core
 /packages/techdocs-cli                      @backstage/techdocs-core
+/packages/techdocs-cli-embedded-app         @backstage/techdocs-core
 /packages/techdocs-common                   @backstage/techdocs-core
 /.changeset/cost-insights-*                 @backstage/reviewers @backstage/silver-lining
 /.changeset/search-*                        @backstage/techdocs-core

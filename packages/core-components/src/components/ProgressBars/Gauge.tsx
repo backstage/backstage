@@ -17,10 +17,15 @@
 import { BackstagePalette, BackstageTheme } from '@backstage/theme';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Circle } from 'rc-progress';
-import React from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 
 /** @public */
-export type GaugeClassKey = 'root' | 'overlay' | 'circle' | 'colorUnknown';
+export type GaugeClassKey =
+  | 'root'
+  | 'overlay'
+  | 'description'
+  | 'circle'
+  | 'colorUnknown';
 
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
@@ -36,6 +41,15 @@ const useStyles = makeStyles<BackstageTheme>(
       fontSize: 45,
       fontWeight: 'bold',
       color: theme.palette.textContrast,
+    },
+    description: {
+      fontSize: '100%',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      position: 'absolute',
+      wordBreak: 'break-all',
+      display: 'inline-block',
     },
     circle: {
       width: '80%',
@@ -53,6 +67,7 @@ export type GaugeProps = {
   inverse?: boolean;
   unit?: string;
   max?: number;
+  description?: ReactNode;
   getColor?: GaugePropsGetColor;
 };
 
@@ -104,10 +119,11 @@ export const getProgressColor: GaugePropsGetColor = ({
  */
 
 export function Gauge(props: GaugeProps) {
+  const [hoverRef, setHoverRef] = useState<HTMLDivElement | null>(null);
   const { getColor = getProgressColor } = props;
   const classes = useStyles(props);
   const { palette } = useTheme<BackstageTheme>();
-  const { value, fractional, inverse, unit, max } = {
+  const { value, fractional, inverse, unit, max, description } = {
     ...defaultGaugeProps,
     ...props,
   };
@@ -115,8 +131,28 @@ export function Gauge(props: GaugeProps) {
   const asPercentage = fractional ? Math.round(value * max) : value;
   const asActual = max !== 100 ? Math.round(value) : asPercentage;
 
+  const [isHovering, setIsHovering] = useState(false);
+
+  useEffect(() => {
+    const node = hoverRef;
+    const handleMouseOver = () => setIsHovering(true);
+    const handleMouseOut = () => setIsHovering(false);
+    if (node && description) {
+      node.addEventListener('mouseenter', handleMouseOver);
+      node.addEventListener('mouseleave', handleMouseOut);
+
+      return () => {
+        node.removeEventListener('mouseenter', handleMouseOver);
+        node.removeEventListener('mouseleave', handleMouseOut);
+      };
+    }
+    return () => {
+      setIsHovering(false);
+    };
+  }, [description, hoverRef]);
+
   return (
-    <div className={classes.root}>
+    <div ref={setHoverRef} className={classes.root}>
       <Circle
         strokeLinecap="butt"
         percent={asPercentage}
@@ -125,9 +161,13 @@ export function Gauge(props: GaugeProps) {
         strokeColor={getColor({ palette, value: asActual, inverse, max })}
         className={classes.circle}
       />
-      <div className={classes.overlay}>
-        {isNaN(value) ? 'N/A' : `${asActual}${unit}`}
-      </div>
+      {description && isHovering ? (
+        <div className={classes.description}>{description}</div>
+      ) : (
+        <div className={classes.overlay}>
+          {isNaN(value) ? 'N/A' : `${asActual}${unit}`}
+        </div>
+      )}
     </div>
   );
 }

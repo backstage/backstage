@@ -299,7 +299,12 @@ export class OctokitProvider {
     githubCredentialsProvider?: GithubCredentialsProvider,
   );
   // Warning: (ae-forgotten-export) The symbol "OctokitIntegration" needs to be exported by the entry point index.d.ts
-  getOctokit(repoUrl: string): Promise<OctokitIntegration>;
+  getOctokit(
+    repoUrl: string,
+    options?: {
+      token?: string;
+    },
+  ): Promise<OctokitIntegration>;
 }
 
 // @public

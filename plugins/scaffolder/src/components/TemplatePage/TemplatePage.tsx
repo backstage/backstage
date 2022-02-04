@@ -17,12 +17,13 @@ import { JsonObject, JsonValue } from '@backstage/types';
 import { LinearProgress } from '@material-ui/core';
 import { FormValidation, IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { generatePath, Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';
 import { CustomFieldValidator, FieldExtensionOptions } from '../../extensions';
+import { SecretsContext } from '../secrets/SecretsContext';
 import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 
@@ -115,6 +116,7 @@ export const TemplatePage = ({
   customFieldExtensions?: FieldExtensionOptions[];
 }) => {
   const apiHolder = useApiHolder();
+  const secretsContext = useContext(SecretsContext);
   const errorApi = useApi(errorApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
@@ -135,7 +137,11 @@ export const TemplatePage = ({
   );
 
   const handleCreate = async () => {
-    const id = await scaffolderApi.scaffold(templateName, formState);
+    const id = await scaffolderApi.scaffold(
+      templateName,
+      formState,
+      secretsContext?.secrets,
+    );
 
     const formParams = qs.stringify(
       { formData: formState },
