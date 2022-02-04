@@ -67,8 +67,8 @@ describe('createRouter', () => {
         path: string,
       ) => string;
 
-      expect(pathRewrite('/airbrake-backend/api/random/endpoint')).toBe(
-        '/random/endpoint?key=fakeApiKey',
+      expect(pathRewrite('/airbrake-backend/api/v4/random/endpoint')).toBe(
+        '/v4/random/endpoint?key=fakeApiKey',
       );
     });
 
@@ -83,9 +83,9 @@ describe('createRouter', () => {
 
       expect(
         pathRewrite(
-          '/airbrake-backend/api/random/endpoint?param1=123&param2=abc',
+          '/airbrake-backend/api/v4/random/endpoint?param1=123&param2=abc',
         ),
-      ).toBe('/random/endpoint?param1=123&param2=abc&key=fakeApiKey');
+      ).toBe('/v4/random/endpoint?param1=123&param2=abc&key=fakeApiKey');
     });
   });
 });
