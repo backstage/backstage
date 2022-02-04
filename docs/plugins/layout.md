@@ -567,7 +567,7 @@ Some utilities...
 
 #### Implementation
 
-[Off we go!](../../plugins/welcome/src/components/Experiment/Experiment6.tsx)
+[Off we go!](../../plugins/config-schema/src/components/Experiment/Experiment6.tsx)
 
 #### Learnings
 
@@ -672,7 +672,7 @@ completely different.
 
 #### Implementation
 
-[Off we go!](../../plugins/welcome/src/components/Experiment/Experiment7.tsx)
+[Off we go!](../../plugins/config-schema/src/components/Experiment/Experiment7.tsx)
 
 #### Learnings
 
@@ -858,7 +858,7 @@ function EntityLayout(props) {
 
 #### Implementation
 
-[Off we go!](../../plugins/welcome/src/components/Experiment/Experiment8.tsx)
+[Off we go!](../../plugins/config-schema/src/components/Experiment/Experiment8.tsx)
 
 ### Experiment 9
 
@@ -1029,7 +1029,7 @@ Will try out an implementation of the first idea...
 
 #### Implementation
 
-[Off we go!](../../plugins/welcome/src/components/Experiment/Experiment10.tsx)
+[Off we go!](../../plugins/config-schema/src/components/Experiment/Experiment10.tsx)
 
 #### Followup thoughts
 
@@ -1072,7 +1072,7 @@ implementation into a single context.
 Straight into implementation, getting rid of `mapContentProps` and trying out a
 single context.
 
-[Off we go!](../../plugins/welcome/src/components/Experiment/Experiment11.tsx)
+[Off we go!](../../plugins/config-schema/src/components/Experiment/Experiment11.tsx)
 
 #### Followup thoughts
 
