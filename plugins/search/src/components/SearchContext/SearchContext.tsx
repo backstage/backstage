@@ -31,43 +31,34 @@ import { searchApiRef } from '../../apis';
 
 type SearchContextValue = {
   result: AsyncState<SearchResultSet>;
-  term: string;
   setTerm: React.Dispatch<React.SetStateAction<string>>;
-  types: string[];
   setTypes: React.Dispatch<React.SetStateAction<string[]>>;
-  filters: JsonObject;
   setFilters: React.Dispatch<React.SetStateAction<JsonObject>>;
-  open?: boolean;
-  toggleModal: () => void;
-  pageCursor?: string;
   setPageCursor: React.Dispatch<React.SetStateAction<string | undefined>>;
   fetchNextPage?: React.DispatchWithoutAction;
   fetchPreviousPage?: React.DispatchWithoutAction;
-};
+} & SettableSearchContext;
 
-type SettableSearchContext = Omit<
-  SearchContextValue,
-  | 'result'
-  | 'setTerm'
-  | 'setTypes'
-  | 'setFilters'
-  | 'toggleModal'
-  | 'setPageCursor'
-  | 'fetchNextPage'
-  | 'fetchPreviousPage'
->;
+type SettableSearchContext = {
+  term: string;
+  types: string[];
+  filters: JsonObject;
+  pageCursor?: string;
+};
 
 export const SearchContext = createContext<SearchContextValue | undefined>(
   undefined,
 );
 
+const searchInitialState: SettableSearchContext = {
+  term: '',
+  pageCursor: undefined,
+  filters: {},
+  types: [],
+};
+
 export const SearchContextProvider = ({
-  initialState = {
-    term: '',
-    pageCursor: undefined,
-    filters: {},
-    types: [],
-  },
+  initialState = searchInitialState,
   children,
 }: PropsWithChildren<{ initialState?: SettableSearchContext }>) => {
   const searchApi = useApi(searchApiRef);
@@ -77,11 +68,6 @@ export const SearchContextProvider = ({
   const [filters, setFilters] = useState<JsonObject>(initialState.filters);
   const [term, setTerm] = useState<string>(initialState.term);
   const [types, setTypes] = useState<string[]>(initialState.types);
-  const [open, setOpen] = useState<boolean>(false);
-  const toggleModal = useCallback(
-    (): void => setOpen(prevState => !prevState),
-    [],
-  );
 
   const prevTerm = usePrevious(term);
 
@@ -90,7 +76,7 @@ export const SearchContextProvider = ({
       searchApi.query({
         term,
         filters,
-        pageCursor: pageCursor,
+        pageCursor,
         types,
       }),
     [term, filters, types, pageCursor],
@@ -118,8 +104,6 @@ export const SearchContextProvider = ({
     result,
     filters,
     setFilters,
-    open,
-    toggleModal,
     term,
     setTerm,
     types,
