@@ -33,7 +33,7 @@
     "@backstage/backend-common": "^0.10.6",
     "@backstage/cli": "^0.13.1",
     "@backstage/config": "^0.1.13",
-    "knex": "^0.95.1",
+    "knex": "^1.0.2",
     "mysql2": "^2.2.5",
     "pg": "^8.3.0",
     "sqlite3": "^5.0.1",

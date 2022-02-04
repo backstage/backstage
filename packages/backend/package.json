@@ -64,7 +64,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "express-prom-bundle": "^6.3.6",
-    "knex": "^0.95.1",
+    "knex": "^1.0.2",
     "pg": "^8.3.0",
     "pg-connection-string": "^2.3.0",
     "prom-client": "^14.0.1",
