@@ -4,14 +4,14 @@
 
 This plugin displays Splunk On-Call (formerly VictorOps) information associated with an entity.
 
-It also provides the ability to trigger new incidents directly to specific users or/and specific teams from within Backstage.
+It also provides the ability to trigger new incidents to specific users and/or specific teams from within Backstage.
 
 This plugin requires that entities feature either a `splunk.com/on-call-team` or a `splunk.com/on-call-routing-key` annotation. See below for further details.
 
 This plugin provides:
 
 - A list of incidents
-- A way to trigger a new incident to specific users or/and teams
+- A way to trigger a new incident to specific users and/or teams
 - A way to acknowledge/resolve an incident
 - Information details about the persons on-call
 
@@ -47,7 +47,7 @@ const overviewContent = (
 
 ## Client configuration
 
-In order to be able to perform certain action (create-acknowledge-resolve an action), you need to provide a REST Endpoint.
+In order to be able to perform certain actions (create-acknowledge-resolve an action), you need to provide a REST Endpoint.
 
 To enable the REST Endpoint integration you can go on https://portal.victorops.com/ inside Integrations > 3rd Party Integrations > REST – Generic.
 You can now copy the URL to notify: `<SPLUNK_ON_CALL_REST_ENDPOINT>/$routing_key`
