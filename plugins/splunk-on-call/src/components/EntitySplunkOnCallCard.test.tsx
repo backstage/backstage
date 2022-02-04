@@ -131,6 +131,35 @@ describe('SplunkOnCallCard', () => {
     expect(getByText('Empty escalation policy')).toBeInTheDocument();
   });
 
+  it('handles a "splunk.com/on-call-routing-key" annotation', async () => {
+    mockSplunkOnCallApi.getUsers = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCKED_USER]);
+    mockSplunkOnCallApi.getRoutingKeys = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCK_ROUTING_KEY]);
+    mockSplunkOnCallApi.getTeams = jest
+      .fn()
+      .mockImplementation(async () => [MOCK_TEAM]);
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={mockEntityWithRoutingKeyAnnotation}>
+            <EntitySplunkOnCallCard />
+          </EntityProvider>
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    expect(getByText(`Team: ${MOCK_TEAM.name}`)).toBeInTheDocument();
+    await waitFor(
+      () =>
+        expect(getByText(MOCK_INCIDENT.entityDisplayName)).toBeInTheDocument(),
+      { timeout: 2000 },
+    );
+  });
+
   it('Handles custom error for missing token', async () => {
     mockSplunkOnCallApi.getUsers = jest
       .fn()
