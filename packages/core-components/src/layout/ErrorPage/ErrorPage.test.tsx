@@ -34,7 +34,16 @@ describe('<ErrorPage/>', () => {
 
   it('should render with additional information including link', async () => {
     const { getByText } = await renderInTestApp(
-      <ErrorPage status="404" statusMessage="PAGE NOT FOUND" additionalInfo={<>This is some additional information including <Link to="/test">a link</Link></>} />,
+      <ErrorPage
+        status="404"
+        statusMessage="PAGE NOT FOUND"
+        additionalInfo={
+          <>
+            This is some additional information including{' '}
+            <Link to="/test">a link</Link>
+          </>
+        }
+      />,
     );
     expect(
       getByText(/looks like someone dropped the mic!/i),
@@ -45,23 +54,33 @@ describe('<ErrorPage/>', () => {
 
   it('should render with default support url if supportUrl is not provided', async () => {
     const { getByText } = await renderInTestApp(
-      <ErrorPage status="404" statusMessage="PAGE NOT FOUND"  />,
+      <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />,
     );
     expect(
       getByText(/looks like someone dropped the mic!/i),
     ).toBeInTheDocument();
     expect(getByText(/contact support/i)).toBeInTheDocument();
-    expect(getByText(/contact support/i)).toHaveAttribute('href', 'https://github.com/backstage/backstage/issues');
+    expect(getByText(/contact support/i)).toHaveAttribute(
+      'href',
+      'https://github.com/backstage/backstage/issues',
+    );
   });
 
   it('should override support url if supportUrl property is provided', async () => {
     const { getByText } = await renderInTestApp(
-      <ErrorPage status="404" statusMessage="PAGE NOT FOUND" supportUrl='https://error-page-test-support-url.com' />,
+      <ErrorPage
+        status="404"
+        statusMessage="PAGE NOT FOUND"
+        supportUrl="https://error-page-test-support-url.com"
+      />,
     );
     expect(
       getByText(/looks like someone dropped the mic!/i),
     ).toBeInTheDocument();
     expect(getByText(/contact support/i)).toBeInTheDocument();
-    expect(getByText(/contact support/i)).toHaveAttribute('href', 'https://error-page-test-support-url.com');
+    expect(getByText(/contact support/i)).toHaveAttribute(
+      'href',
+      'https://error-page-test-support-url.com',
+    );
   });
 });

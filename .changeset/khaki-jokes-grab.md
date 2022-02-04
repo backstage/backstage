@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Accept JSX Element as additionalInfo property of ErrorPage component
+Adjust ErrorPage to accept optional supportUrl property to override app config and JSX Element as additionalInfo property.

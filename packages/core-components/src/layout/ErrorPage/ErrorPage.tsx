@@ -89,7 +89,8 @@ export function ErrorPage(props: IErrorPageProps) {
           <Link to="#" data-testid="go-back-link" onClick={() => navigate(-1)}>
             Go back
           </Link>
-          ... or please <Link to={supportUrl || support.url}>contact support</Link> if you
+          ... or please{' '}
+          <Link to={supportUrl || support.url}>contact support</Link> if you
           think this is a bug.
         </Typography>
       </Grid>
