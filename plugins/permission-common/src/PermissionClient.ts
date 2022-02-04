@@ -43,9 +43,18 @@ const permissionCriteriaSchema: z.ZodSchema<
       rule: z.string(),
       params: z.array(z.unknown()),
     })
-    .or(z.object({ anyOf: z.array(permissionCriteriaSchema).nonempty() }))
-    .or(z.object({ allOf: z.array(permissionCriteriaSchema).nonempty() }))
-    .or(z.object({ not: permissionCriteriaSchema })),
+    .strict()
+    .or(
+      z
+        .object({ anyOf: z.array(permissionCriteriaSchema).nonempty() })
+        .strict(),
+    )
+    .or(
+      z
+        .object({ allOf: z.array(permissionCriteriaSchema).nonempty() })
+        .strict(),
+    )
+    .or(z.object({ not: permissionCriteriaSchema }).strict()),
 );
 
 const responseSchema = z.object({
