@@ -15,23 +15,23 @@
  */
 import React from 'react';
 import { EntityAirbrakeContent } from './extensions';
+import { Route } from 'react-router';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { airbrakeApiRef, MockAirbrakeApi } from './api';
-import { rootRouteRef } from './routes';
+import { createEntity } from './api/mock/mock-entity';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 
 describe('The Airbrake entity', () => {
   it('should render the content properly', async () => {
     const rendered = await renderInTestApp(
       <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi()]]}>
-        <EntityAirbrakeContent />
+        <EntityProvider entity={createEntity(123)}>
+          <Route path="/" element={<EntityAirbrakeContent />} />
+        </EntityProvider>
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/': rootRouteRef,
-        },
-        routeEntries: ['/'],
-      },
     );
-    expect(rendered.getByText('ChunkLoadError')).toBeInTheDocument();
+    await expect(
+      rendered.findByText('ChunkLoadError'),
+    ).resolves.toBeInTheDocument();
   });
 });

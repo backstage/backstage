@@ -37,7 +37,7 @@ createDevApp()
       <Page themeId="tool">
         <Header title="Airbrake demo application" subtitle="Mock API" />
         <Content>
-          <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi()]]}>
+          <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi(800)]]}>
             <EntityProvider entity={createEntity(1234)}>
               <EntityAirbrakeContent />
             </EntityProvider>

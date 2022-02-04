@@ -19,9 +19,15 @@ import { AirbrakeApi } from '../airbrake-api';
 import mockGroupsData from './airbrake-groups-api-mock.json';
 
 export class MockAirbrakeApi implements AirbrakeApi {
+  waitTimeInMillis: number;
+
+  constructor(waitTimeInMillis = 10) {
+    this.waitTimeInMillis = waitTimeInMillis;
+  }
+
   fetchGroups(): Promise<Groups> {
     return new Promise(resolve => {
-      setTimeout(() => resolve(mockGroupsData), 800);
+      setTimeout(() => resolve(mockGroupsData), this.waitTimeInMillis);
     });
   }
 }
