@@ -6346,9 +6346,9 @@
   integrity sha512-qRyuv+P/1t1JK1rA+elmK1MmCL1BapEzKKfbEhDBV/LMMse4lmhZ/XbgETI39JveDJRpLjmToOI6uFtMW/WR2g==
 
 "@types/zen-observable@^0.8.0", "@types/zen-observable@^0.8.2":
-  version "0.8.2"
-  resolved "https://registry.npmjs.org/@types/zen-observable/-/zen-observable-0.8.2.tgz#808c9fa7e4517274ed555fa158f2de4b4f468e71"
-  integrity sha512-HrCIVMLjE1MOozVoD86622S7aunluLb2PJdPfb3nYiEtohm8mIB/vyv0Fd37AdeMFrTUQXEunw78YloMA3Qilg==
+  version "0.8.3"
+  resolved "https://registry.npmjs.org/@types/zen-observable/-/zen-observable-0.8.3.tgz#781d360c282436494b32fe7d9f7f8e64b3118aa3"
+  integrity sha512-fbF6oTd4sGGy0xjHPKAt+eS2CrxJ3+6gQ3FGcBoIJR2TLAyCkCyI8JqZNy+FeON0AhVgNJoUumVoZQjBFUqHkw==
 
 "@typescript-eslint/eslint-plugin@^5.9.0":
   version "5.9.0"
@@ -10670,30 +10670,6 @@ elliptic@^6.0.0:
     inherits "^2.0.4"
     minimalistic-assert "^1.0.1"
     minimalistic-crypto-utils "^1.0.1"
-
-"techdocs-cli-embedded-app@file:packages/techdocs-cli-embedded-app":
-  version "0.2.62"
-  dependencies:
-    "@backstage/app-defaults" "^0.1.6"
-    "@backstage/catalog-model" "^0.9.10"
-    "@backstage/cli" "^0.13.1"
-    "@backstage/config" "^0.1.13"
-    "@backstage/core-app-api" "^0.5.2"
-    "@backstage/core-components" "^0.8.7"
-    "@backstage/core-plugin-api" "^0.6.0"
-    "@backstage/integration-react" "^0.1.20"
-    "@backstage/plugin-catalog" "^0.7.11"
-    "@backstage/plugin-techdocs" "^0.13.2"
-    "@backstage/test-utils" "^0.2.4"
-    "@backstage/theme" "^0.2.14"
-    "@material-ui/core" "^4.11.0"
-    "@material-ui/icons" "^4.9.1"
-    history "^5.0.0"
-    react "^17.0.2"
-    react-dom "^17.0.2"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^17.2.4"
 
 emittery@^0.7.1:
   version "0.7.1"
@@ -22992,6 +22968,30 @@ tdigest@^0.1.1:
   integrity sha1-Ljyyw56kSeVdHmzZEReszKRYgCE=
   dependencies:
     bintrees "1.0.1"
+
+"techdocs-cli-embedded-app@file:packages/techdocs-cli-embedded-app":
+  version "0.2.62"
+  dependencies:
+    "@backstage/app-defaults" "^0.1.6"
+    "@backstage/catalog-model" "^0.9.10"
+    "@backstage/cli" "^0.13.1"
+    "@backstage/config" "^0.1.13"
+    "@backstage/core-app-api" "^0.5.2"
+    "@backstage/core-components" "^0.8.7"
+    "@backstage/core-plugin-api" "^0.6.0"
+    "@backstage/integration-react" "^0.1.20"
+    "@backstage/plugin-catalog" "^0.7.11"
+    "@backstage/plugin-techdocs" "^0.13.2"
+    "@backstage/test-utils" "^0.2.4"
+    "@backstage/theme" "^0.2.14"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    history "^5.0.0"
+    react "^17.0.2"
+    react-dom "^17.0.2"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
 
 teeny-request@^7.0.0:
   version "7.0.1"
