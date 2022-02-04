@@ -39,6 +39,7 @@ import { rootRouteRef } from '../../plugin';
 
 export interface SearchModalProps {
   open?: boolean;
+  hidden?: boolean;
   toggleModal: () => void;
 }
 
@@ -57,7 +58,7 @@ const useStyles = makeStyles(theme => ({
   viewResultsLink: { verticalAlign: '0.5em' },
 }));
 
-export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
+export const Modal = ({ toggleModal }: SearchModalProps) => {
   const getSearchLink = useRouteRef(rootRouteRef);
   const classes = useStyles();
 
@@ -75,16 +76,7 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
   };
 
   return (
-    <Dialog
-      classes={{
-        paperFullWidth: classes.paperFullWidth,
-      }}
-      onClose={toggleModal}
-      aria-labelledby="search-modal-title"
-      open={open}
-      fullWidth
-      maxWidth="lg"
-    >
+    <>
       <DialogTitle>
         <Paper className={classes.container}>
           <SearchBar className={classes.input} />
@@ -139,14 +131,34 @@ export const Modal = ({ open = true, toggleModal }: SearchModalProps) => {
           </Grid>
         </Grid>
       </DialogActions>
-    </Dialog>
+    </>
   );
 };
 
-export const SearchModal = ({ open = true, toggleModal }: SearchModalProps) => {
+export const SearchModal = ({
+  open = true,
+  hidden,
+  toggleModal,
+}: SearchModalProps) => {
+  const classes = useStyles();
+
   return (
-    <SearchContextProvider>
-      <Modal open={open} toggleModal={toggleModal} />
-    </SearchContextProvider>
+    <Dialog
+      classes={{
+        paperFullWidth: classes.paperFullWidth,
+      }}
+      onClose={toggleModal}
+      aria-labelledby="search-modal-title"
+      fullWidth
+      maxWidth="lg"
+      open={open}
+      hidden={hidden}
+    >
+      {open && (
+        <SearchContextProvider>
+          <Modal toggleModal={toggleModal} />
+        </SearchContextProvider>
+      )}
+    </Dialog>
   );
 };
