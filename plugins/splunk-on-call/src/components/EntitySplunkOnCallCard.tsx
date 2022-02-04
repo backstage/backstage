@@ -68,12 +68,12 @@ export const InvalidAnnotation = ({
 }) => {
   let titleSuffix = 'provided annotation';
 
-  if (teamName) {
-    titleSuffix = `"${teamName}" team name`;
-  }
-
   if (routingKey) {
     titleSuffix = `"${routingKey}" routing key`;
+  }
+
+  if (teamName) {
+    titleSuffix = `"${teamName}" team name`;
   }
 
   return (
