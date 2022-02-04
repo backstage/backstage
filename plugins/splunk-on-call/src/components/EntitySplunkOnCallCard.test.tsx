@@ -84,6 +84,15 @@ const mockEntityWithRoutingKeyAnnotation = {
   },
 } as Entity;
 
+const mockEntityNoAnnotation = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'splunkoncall-test',
+    annotations: {},
+  },
+} as Entity;
+
 const mockEntityNoIncidents = {
   apiVersion: 'backstage.io/v1alpha1',
   kind: 'Component',
@@ -162,6 +171,20 @@ describe('SplunkOnCallCard', () => {
         'Error encountered while fetching information. An error occurred',
       ),
     ).toBeInTheDocument();
+  });
+
+  it('handles warning for missing required annotations', async () => {
+    const { getAllByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={mockEntityNoAnnotation}>
+            <EntitySplunkOnCallCard />
+          </EntityProvider>
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    expect(getAllByText('Missing Annotation').length).toEqual(2);
   });
 
   it('handles warning for incorrect team annotation', async () => {
