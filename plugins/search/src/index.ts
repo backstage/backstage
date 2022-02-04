@@ -32,6 +32,7 @@ export type {
   SearchBarProps,
 } from './components/SearchBar';
 export { SearchContextProvider, useSearch } from './components/SearchContext';
+export type { SearchContextState } from './components/SearchContext';
 export { SearchFilter, SearchFilterNext } from './components/SearchFilter';
 export type {
   SearchAutocompleteFilterProps,

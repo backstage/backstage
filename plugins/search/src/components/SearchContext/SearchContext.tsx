@@ -37,9 +37,14 @@ type SearchContextValue = {
   setPageCursor: React.Dispatch<React.SetStateAction<string | undefined>>;
   fetchNextPage?: React.DispatchWithoutAction;
   fetchPreviousPage?: React.DispatchWithoutAction;
-} & SettableSearchContext;
+} & SearchContextState;
 
-type SettableSearchContext = {
+/**
+ * The initial state of `SearchContextProvider`.
+ *
+ * @public
+ */
+export type SearchContextState = {
   term: string;
   types: string[];
   filters: JsonObject;
@@ -50,7 +55,7 @@ export const SearchContext = createContext<SearchContextValue | undefined>(
   undefined,
 );
 
-const searchInitialState: SettableSearchContext = {
+const searchInitialState: SearchContextState = {
   term: '',
   pageCursor: undefined,
   filters: {},
@@ -60,7 +65,7 @@ const searchInitialState: SettableSearchContext = {
 export const SearchContextProvider = ({
   initialState = searchInitialState,
   children,
-}: PropsWithChildren<{ initialState?: SettableSearchContext }>) => {
+}: PropsWithChildren<{ initialState?: SearchContextState }>) => {
   const searchApi = useApi(searchApiRef);
   const [pageCursor, setPageCursor] = useState<string | undefined>(
     initialState.pageCursor,

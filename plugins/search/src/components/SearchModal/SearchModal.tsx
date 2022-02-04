@@ -38,8 +38,21 @@ import { Link, useContent } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
 
 export interface SearchModalProps {
+  /**
+   * If true, it renders the modal.
+   */
   open?: boolean;
+  /**
+   * This is supposed to be used together with the open prop.
+   * If `hidden` is true, it hides the modal.
+   * If `open` is false, the value of `hidden` has no effect on the modal.
+   * Use `open` for controlling whether the modal should be rendered or not.
+   */
   hidden?: boolean;
+  /**
+   * a function invoked when a search item is pressed or when the dialog
+   * should be closed.
+   */
   toggleModal: () => void;
 }
 
