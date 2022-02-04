@@ -264,7 +264,10 @@ export const createOidcProvider = (
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
-      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+      const callbackUrl =
+        customCallbackUrl ||
+        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
       const metadataUrl = envConfig.getString('metadataUrl');
       const tokenSignedResponseAlg = envConfig.getOptionalString(
         'tokenSignedResponseAlg',
@@ -313,6 +316,7 @@ export const createOidcProvider = (
         disableRefresh: false,
         providerId,
         tokenIssuer,
+        callbackUrl,
       });
     });
 };

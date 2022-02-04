@@ -34,6 +34,7 @@ export function createPublishAzureAction(options: {
     description?: string;
     defaultBranch?: string;
     sourcePath?: string;
+    token?: string;
   }>({
     id: 'publish:azure',
     description:
@@ -57,9 +58,15 @@ export function createPublishAzureAction(options: {
             description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
-            title:
+            title: 'Source Path',
+            description:
               'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
             type: 'string',
+          },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description: 'The token to use for authorization to Azure',
           },
         },
       },
@@ -98,12 +105,13 @@ export function createPublishAzureAction(options: {
           `No matching integration configuration for host ${host}, please check your integrations config`,
         );
       }
-      if (!integrationConfig.config.token) {
+
+      if (!integrationConfig.config.token && !ctx.input.token) {
         throw new InputError(`No token provided for Azure Integration ${host}`);
       }
-      const authHandler = getPersonalAccessTokenHandler(
-        integrationConfig.config.token,
-      );
+
+      const token = ctx.input.token ?? integrationConfig.config.token!;
+      const authHandler = getPersonalAccessTokenHandler(token);
 
       const webApi = new WebApi(`https://${host}/${organization}`, authHandler);
       const client = await webApi.getGitApi();
@@ -139,7 +147,7 @@ export function createPublishAzureAction(options: {
         defaultBranch,
         auth: {
           username: 'notempty',
-          password: integrationConfig.config.token,
+          password: token,
         },
         logger: ctx.logger,
         commitMessage: config.getOptionalString(

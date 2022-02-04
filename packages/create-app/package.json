@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.4.18-next.0",
+  "version": "0.4.18",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -35,7 +35,7 @@
     "commander": "^6.1.0",
     "fs-extra": "9.1.0",
     "handlebars": "^4.7.3",
-    "inquirer": "^7.0.4",
+    "inquirer": "^8.2.0",
     "ora": "^5.3.0",
     "recursive-readdir": "^2.2.2"
   },

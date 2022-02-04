@@ -61,7 +61,7 @@ export const UserProfileCard = ({
   }
 
   const {
-    metadata: { name: metaName },
+    metadata: { name: metaName, description },
     spec: { profile },
   } = user;
   const displayName = profile?.displayName ?? metaName;
@@ -71,7 +71,11 @@ export const UserProfileCard = ({
   });
 
   return (
-    <InfoCard title={<CardTitle title={displayName} />} variant={variant}>
+    <InfoCard
+      title={<CardTitle title={displayName} />}
+      subheader={description}
+      variant={variant}
+    >
       <Grid container spacing={3} alignItems="flex-start">
         <Grid item xs={12} sm={2} xl={1}>
           <Avatar displayName={displayName} picture={profile?.picture} />

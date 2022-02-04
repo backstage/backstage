@@ -1,5 +1,29 @@
 # @backstage/plugin-techdocs
 
+## 0.13.2
+
+### Patch Changes
+
+- 742434a6ba: Fixed a bug where links to files within a TechDocs site that use the `download` attribute would result in a 404 in cases where the TechDocs backend and Backstage frontend application are on the same host.
+- 359c31e31d: Added support for documentation using the raw `<source>` tag to point to relative resources like audio or video files.
+- 18317a08db: Fixed a bug where copy-to-clipboard buttons were appended to unintended elements.
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+  - @backstage/integration-react@0.1.20
+  - @backstage/plugin-catalog@0.7.11
+  - @backstage/plugin-search@0.6.1
+
+## 0.13.2-next.1
+
+### Patch Changes
+
+- 742434a6ba: Fixed a bug where links to files within a TechDocs site that use the `download` attribute would result in a 404 in cases where the TechDocs backend and Backstage frontend application are on the same host.
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.1
+  - @backstage/plugin-catalog-react@0.6.13-next.1
+  - @backstage/plugin-catalog@0.7.11-next.1
+
 ## 0.13.2-next.0
 
 ### Patch Changes

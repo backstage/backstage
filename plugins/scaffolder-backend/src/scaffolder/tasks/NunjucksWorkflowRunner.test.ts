@@ -497,6 +497,60 @@ describe('DefaultWorkflowRunner', () => {
         expect.objectContaining({ secrets: { foo: 'bar' } }),
       );
     });
+
+    it('should be able to template secrets into the input of an action', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-mock-action',
+              input: {
+                b: '${{ secrets.foo }}',
+              },
+            },
+          ],
+          output: {},
+          parameters: {},
+        },
+        { foo: 'bar' },
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ input: { b: 'bar' } }),
+      );
+    });
+
+    it('does not allow templating of secrets as an output', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-mock-action',
+              input: {
+                b: '${{ secrets.foo }}',
+              },
+            },
+          ],
+          output: {
+            b: '${{ secrets.foo }}',
+          },
+          parameters: {},
+        },
+        { foo: 'bar' },
+      );
+
+      const executedTask = await runner.execute(task);
+
+      expect(executedTask.output.b).toBeUndefined();
+    });
   });
 
   describe('filters', () => {

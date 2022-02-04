@@ -52,6 +52,7 @@ export function createPublishGithubAction(options: {
     requireCodeOwnerReviews?: boolean;
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
+    token?: string;
     topics?: string[];
   }>({
     id: 'publish:github',
@@ -77,7 +78,8 @@ export function createPublishGithubAction(options: {
             type: 'string',
           },
           requireCodeOwnerReviews: {
-            title:
+            title: 'Require CODEOWNER Reviews?',
+            description:
               'Require an approved review in PR including files with a designated Code Owner',
             type: 'boolean',
           },
@@ -92,7 +94,8 @@ export function createPublishGithubAction(options: {
             description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
-            title:
+            title: 'Source Path',
+            description:
               'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
             type: 'string',
           },
@@ -115,6 +118,11 @@ export function createPublishGithubAction(options: {
                 },
               },
             },
+          },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description: 'The token to use for authorization to GitHub',
           },
           topics: {
             title: 'Topics',
@@ -149,10 +157,12 @@ export function createPublishGithubAction(options: {
         defaultBranch = 'master',
         collaborators,
         topics,
+        token: providedToken,
       } = ctx.input;
 
       const { client, token, owner, repo } = await octokitProvider.getOctokit(
         repoUrl,
+        { token: providedToken },
       );
 
       const user = await client.rest.users.getByUsername({

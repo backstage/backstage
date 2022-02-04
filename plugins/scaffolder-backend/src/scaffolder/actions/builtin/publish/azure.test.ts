@@ -119,6 +119,32 @@ describe('publish:azure', () => {
     ).rejects.toThrow(/Unable to create the repository/);
   });
 
+  it('should not throw if there is a token provided through ctx.input', async () => {
+    mockGitClient.createRepository.mockImplementation(() => ({
+      remoteUrl: 'http://google.com',
+    }));
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'myazurehostnotoken.com?repo=bob&owner=owner&organization=org',
+        token: 'lols',
+      },
+    });
+
+    expect(WebApi).toHaveBeenCalledWith(
+      'https://myazurehostnotoken.com/org',
+      expect.any(Function),
+    );
+
+    expect(mockGitClient.createRepository).toHaveBeenCalledWith(
+      {
+        name: 'bob',
+      },
+      'owner',
+    );
+  });
+
   it('should throw if there is no remoteUrl returned', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: null,

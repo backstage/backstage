@@ -41,10 +41,14 @@ import {
   OAuthStartRequest,
   encodeState,
   OAuthRefreshRequest,
-  OAuthResponse,
 } from '../../lib/oauth';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { TokenIssuer } from '../../identity';
+
+const ACCESS_TOKEN_PREFIX = 'access-token.';
+
+// TODO(Rugvip): Auth providers need a way to access this in a less hardcoded way
+const BACKSTAGE_SESSION_EXPIRATION = 3600;
 
 type PrivateInfo = {
   refreshToken?: string;
@@ -123,31 +127,69 @@ export class GithubAuthProvider implements OAuthHandlers {
       PrivateInfo
     >(req, this._strategy);
 
+    let refreshToken = privateInfo.refreshToken;
+
+    // If we do not have a real refresh token and we have a non-expiring
+    // access token, then we use that as our refresh token.
+    if (!refreshToken && !result.params.expires_in) {
+      refreshToken = ACCESS_TOKEN_PREFIX + result.accessToken;
+    }
+
     return {
       response: await this.handleResult(result),
-      refreshToken: privateInfo.refreshToken,
+      refreshToken,
     };
   }
 
   async refresh(req: OAuthRefreshRequest) {
-    const { accessToken, refreshToken, params } =
-      await executeRefreshTokenStrategy(
-        this._strategy,
-        req.refreshToken,
-        req.scope,
-      );
-    const fullProfile = await executeFetchUserProfileStrategy(
-      this._strategy,
-      accessToken,
-    );
+    // We've enable persisting scope in the OAuth provider, so scope here will
+    // be whatever was stored in the cookie
+    const { scope, refreshToken } = req;
 
+    // This is the OAuth App flow. A non-expiring access token is stored in the
+    // refresh token cookie. We use that token to fetch the user profile and
+    // refresh the Backstage session when needed.
+    if (refreshToken?.startsWith(ACCESS_TOKEN_PREFIX)) {
+      const accessToken = refreshToken.slice(ACCESS_TOKEN_PREFIX.length);
+
+      const fullProfile = await executeFetchUserProfileStrategy(
+        this._strategy,
+        accessToken,
+      ).catch(error => {
+        if (error.oauthError?.statusCode === 401) {
+          throw new Error('Invalid access token');
+        }
+        throw error;
+      });
+
+      return {
+        response: await this.handleResult({
+          fullProfile,
+          params: { scope },
+          accessToken,
+        }),
+        refreshToken,
+      };
+    }
+
+    // This is the App flow, which is close to a standard OAuth refresh flow. It has a
+    // pretty long session expiration, and it also ignores the requested scope, instead
+    // just allowing access to whatever is configured as part of the app installation.
+    const result = await executeRefreshTokenStrategy(
+      this._strategy,
+      refreshToken,
+      scope,
+    );
     return {
       response: await this.handleResult({
-        fullProfile,
-        params,
-        accessToken,
+        fullProfile: await executeFetchUserProfileStrategy(
+          this._strategy,
+          result.accessToken,
+        ),
+        params: { ...result.params, scope },
+        accessToken: result.accessToken,
       }),
-      refreshToken,
+      refreshToken: result.refreshToken,
     };
   }
 
@@ -160,27 +202,41 @@ export class GithubAuthProvider implements OAuthHandlers {
     const { profile } = await this.authHandler(result, context);
 
     const expiresInStr = result.params.expires_in;
-    const response: OAuthResponse = {
-      providerInfo: {
-        accessToken: result.accessToken,
-        scope: result.params.scope,
-        expiresInSeconds:
-          expiresInStr === undefined ? undefined : Number(expiresInStr),
-      },
-      profile,
-    };
+    let expiresInSeconds =
+      expiresInStr === undefined ? undefined : Number(expiresInStr);
+
+    let backstageIdentity = undefined;
 
     if (this.signInResolver) {
-      response.backstageIdentity = await this.signInResolver(
+      backstageIdentity = await this.signInResolver(
         {
           result,
           profile,
         },
         context,
       );
+
+      // GitHub sessions last longer than Backstage sessions, so if we're using
+      // GitHub for sign-in, then we need to expire the sessions earlier
+      if (expiresInSeconds) {
+        expiresInSeconds = Math.min(
+          expiresInSeconds,
+          BACKSTAGE_SESSION_EXPIRATION,
+        );
+      } else {
+        expiresInSeconds = BACKSTAGE_SESSION_EXPIRATION;
+      }
     }
 
-    return response;
+    return {
+      backstageIdentity,
+      providerInfo: {
+        accessToken: result.accessToken,
+        scope: result.params.scope,
+        expiresInSeconds,
+      },
+      profile,
+    };
   }
 }
 

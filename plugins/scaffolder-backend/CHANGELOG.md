@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.23
+
+### Patch Changes
+
+- 2e0dbb0e50: Migrate from deprecated package @octokit/rest to octokit
+- c95df1631e: Added support for templating secrets into actions input, and also added an extra `token` input argument to all publishers to provide a token that would override the `integrations.config`.
+  You can find more information over at [Writing Templates](https://backstage.io/docs/features/software-templates/writing-templates#using-the-users-oauth-token)
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.2
+  - @backstage/backend-common@0.10.6
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.10
+
+## 0.15.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6-next.0
+  - @backstage/plugin-catalog-backend@0.21.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.10-next.1
+
 ## 0.15.23-next.0
 
 ### Patch Changes

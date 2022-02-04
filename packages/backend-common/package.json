@@ -1,14 +1,15 @@
 {
   "name": "@backstage/backend-common",
   "description": "Common functionality library for Backstage backends",
-  "version": "0.10.5",
+  "version": "0.10.6",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "types": "dist/index.d.ts",
+    "alphaTypes": "dist/index.alpha.d.ts"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -21,7 +22,7 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "build": "backstage-cli build --outputs cjs,types",
+    "build": "backstage-cli build --experimental-type-build --outputs cjs,types",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
@@ -41,6 +42,7 @@
     "@types/cors": "^2.8.6",
     "@types/dockerode": "^3.3.0",
     "@types/express": "^4.17.6",
+    "@types/luxon": "^2.0.4",
     "archiver": "^5.0.2",
     "aws-sdk": "^2.840.0",
     "compression": "^1.7.4",
@@ -59,6 +61,7 @@
     "knex": "^0.95.1",
     "lodash": "^4.17.21",
     "logform": "^2.3.2",
+    "luxon": "^2.0.2",
     "minimatch": "^3.0.4",
     "minimist": "^1.2.5",
     "morgan": "^1.10.0",
@@ -81,8 +84,8 @@
     }
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.1-next.0",
-    "@backstage/test-utils": "^0.2.3",
+    "@backstage/cli": "^0.13.1",
+    "@backstage/test-utils": "^0.2.4",
     "@types/archiver": "^5.1.0",
     "@types/compression": "^1.7.0",
     "@types/concat-stream": "^1.6.0",
@@ -109,7 +112,8 @@
   },
   "files": [
     "dist",
-    "config.d.ts"
+    "config.d.ts",
+    "alpha"
   ],
   "configSchema": "config.d.ts"
 }
