@@ -15,13 +15,65 @@
  */
 
 import chalk from 'chalk';
+import { Command } from 'commander';
 import { relative as relativePath } from 'path';
 import { buildPackages, getOutputsForRole } from '../../lib/builder';
 import { PackageGraph } from '../../lib/monorepo';
+import { ExtendedPackage } from '../../lib/monorepo/PackageGraph';
 import { paths } from '../../lib/paths';
+import { getRoleInfo } from '../../lib/role';
+import { buildApp } from '../build/buildApp';
+import { buildBackend } from '../build/buildBackend';
 
-export async function command(): Promise<void> {
+function parseScriptOptions(
+  cmd: Command,
+  scriptCommandName: string,
+  args: string[],
+) {
+  let rootCommand = cmd;
+  while (rootCommand.parent) {
+    rootCommand = rootCommand.parent;
+  }
+  const scriptCommand = rootCommand.commands.find(c => c.name() === 'script')!;
+  const targetCommand = scriptCommand.commands.find(
+    c => c.name() === scriptCommandName,
+  );
+  if (!targetCommand) {
+    throw new Error(`Could not find script command '${scriptCommandName}'`);
+  }
+
+  const currentOpts = targetCommand._optionValues;
+  const currentStore = targetCommand._storeOptionsAsProperties;
+
+  const result: Record<string, any> = {};
+  targetCommand._storeOptionsAsProperties = false;
+  targetCommand._optionValues = result;
+
+  targetCommand.parseOptions(args);
+
+  targetCommand._storeOptionsAsProperties = currentOpts;
+  targetCommand._optionValues = currentStore;
+
+  return result;
+}
+
+function parseBackstageScript(
+  cmd: Command,
+  expectedScript: string,
+  scriptStr?: string,
+) {
+  const expectedPrefix = `backstage-cli script ${expectedScript}`;
+  if (!scriptStr || !scriptStr.startsWith(expectedPrefix)) {
+    return undefined;
+  }
+
+  const argsStr = scriptStr.slice(expectedPrefix.length).trim();
+  return parseScriptOptions(cmd, expectedScript, argsStr.split(' '));
+}
+
+export async function command(cmd: Command): Promise<void> {
   const packages = await PackageGraph.listTargetPackages();
+  const bundledPackages = new Array<ExtendedPackage>();
 
   const options = packages.flatMap(pkg => {
     const role = pkg.packageJson.backstage?.role;
@@ -32,7 +84,13 @@ export async function command(): Promise<void> {
 
     const outputs = getOutputsForRole(role);
     if (outputs.size === 0) {
-      console.warn(`Ignored ${pkg.packageJson.name} because it has no output`);
+      if (getRoleInfo(role).output.includes('bundle')) {
+        bundledPackages.push(pkg);
+      } else {
+        console.warn(
+          `Ignored ${pkg.packageJson.name} because it has no output`,
+        );
+      }
       return [];
     }
 
@@ -43,7 +101,9 @@ export async function command(): Promise<void> {
       );
       return [];
     }
-    if (!buildScript.startsWith('backstage-cli script build')) {
+
+    const buildOptions = parseBackstageScript(cmd, 'build', buildScript);
+    if (!buildOptions) {
       console.warn(
         `Ignored ${pkg.packageJson.name} because it has a custom build script, '${buildScript}'`,
       );
@@ -54,11 +114,46 @@ export async function command(): Promise<void> {
       targetDir: pkg.dir,
       outputs,
       logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
-      // TODO(Rugvip): Use commander to parse the script and grab these instead
-      minify: buildScript.includes('--minify'),
-      useApiExtractor: buildScript.includes('--experimental-type-build'),
+      minify: buildOptions.minify,
+      useApiExtractor: buildOptions.experimentalTypeBuild,
     };
   });
 
+  console.log('Building packages');
   await buildPackages(options);
+
+  if (cmd.all) {
+    const apps = bundledPackages.filter(
+      pkg => pkg.packageJson.backstage?.role === 'app',
+    );
+
+    console.log('Building apps');
+    await Promise.all(
+      apps.map(async pkg => {
+        const buildOptions = parseBackstageScript(
+          cmd,
+          'build',
+          pkg.packageJson.scripts?.build,
+        );
+        await buildApp({
+          targetDir: pkg.dir,
+          configPaths: (buildOptions?.config as string[]) ?? [],
+          writeStats: Boolean(buildOptions?.stats),
+        });
+      }),
+    );
+
+    console.log('Building backends');
+    const backends = bundledPackages.filter(
+      pkg => pkg.packageJson.backstage?.role === 'backend',
+    );
+    await Promise.all(
+      backends.map(async pkg => {
+        await buildBackend({
+          targetDir: pkg.dir,
+          skipBuildDependencies: true,
+        });
+      }),
+    );
+  }
 }

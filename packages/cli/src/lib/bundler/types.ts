@@ -35,6 +35,8 @@ export type ServeOptions = BundlingPathsOptions & {
 };
 
 export type BuildOptions = BundlingPathsOptions & {
+  // Target directory, defaulting to paths.targetDir
+  targetDir?: string;
   statsJsonEnabled: boolean;
   parallel?: ParallelOption;
   schema?: ConfigSchema;

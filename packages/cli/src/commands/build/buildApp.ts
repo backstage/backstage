@@ -15,24 +15,27 @@
  */
 
 import fs from 'fs-extra';
+import { resolve as resolvePath } from 'path';
 import { buildBundle } from '../../lib/bundler';
 import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
 import { loadCliConfig } from '../../lib/config';
-import { paths } from '../../lib/paths';
 
 interface BuildAppOptions {
+  targetDir: string;
   writeStats: boolean;
   configPaths: string[];
 }
 
 export async function buildApp(options: BuildAppOptions) {
-  const { name } = await fs.readJson(paths.resolveTarget('package.json'));
+  const { targetDir, writeStats, configPaths } = options;
+  const { name } = await fs.readJson(resolvePath(targetDir, 'package.json'));
   await buildBundle({
+    targetDir,
     entry: 'src/index',
     parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
-    statsJsonEnabled: options.writeStats,
+    statsJsonEnabled: writeStats,
     ...(await loadCliConfig({
-      args: options.configPaths,
+      args: configPaths,
       fromPackage: name,
     })),
   });

@@ -35,7 +35,11 @@ export function registerRepoCommand(program: CommanderStatic) {
   command
     .command('build')
     .description(
-      'Build all packages in the project that use the standard backstage build script',
+      'Build packages in the project, excluding bundled app and backend packages.',
+    )
+    .option(
+      '--all',
+      'Build all packages, including bundled app and backend packages.',
     )
     .action(lazy(() => import('./repo/build').then(m => m.command)));
 }
