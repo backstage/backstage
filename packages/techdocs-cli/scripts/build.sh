@@ -31,11 +31,7 @@ compile_and_build_cli() {
 
 build_and_embed_app() {
   echo "🚚 Embedding app..."
-  if [ "$TECHDOCS_CLI_DEV_MODE" = "true" ] ; then
-    yarn workspace techdocs-cli-embedded-app build:dev > /dev/null
-  else
-    yarn workspace techdocs-cli-embedded-app build > /dev/null
-  fi
+  yarn workspace techdocs-cli-embedded-app build > /dev/null
   cp -r "$TECHDOCS_CLI_EMBEDDED_APP_DIR"/dist "$TECHDOCS_CLI_DIR"/dist/techdocs-preview-bundle > /dev/null
 }
 
