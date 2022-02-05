@@ -20,21 +20,7 @@ SCRIPT_DIR=$(dirname $0)
 TECHDOCS_CLI_DIR="$SCRIPT_DIR"/..
 TECHDOCS_CLI_EMBEDDED_APP_DIR="$TECHDOCS_CLI_DIR"/../techdocs-cli-embedded-app
 
-compile_and_build_cli() {
-  echo "📄 Compiling..."
-  yarn workspace @techdocs/cli tsc > /dev/null
-  echo "📦️ Building..."
-  pushd $TECHDOCS_CLI_DIR > /dev/null
-  npx backstage-cli build --outputs cjs > /dev/null
-  popd > /dev/null
-}
-
-build_and_embed_app() {
-  echo "🚚 Embedding app..."
-  yarn workspace techdocs-cli-embedded-app build > /dev/null
-  cp -r "$TECHDOCS_CLI_EMBEDDED_APP_DIR"/dist "$TECHDOCS_CLI_DIR"/dist/techdocs-preview-bundle > /dev/null
-}
-
-compile_and_build_cli
-build_and_embed_app
+echo "🚚 Copying embedded app into dist/embedded-app"
+rm -r "$TECHDOCS_CLI_DIR"/dist/embedded-app
+cp -r "$TECHDOCS_CLI_EMBEDDED_APP_DIR"/dist "$TECHDOCS_CLI_DIR"/dist/embedded-app
 echo "🏁 Ready!"
