@@ -25,55 +25,60 @@ import { getRoleInfo } from '../../lib/role';
 import { buildApp } from '../build/buildApp';
 import { buildBackend } from '../build/buildBackend';
 
-function parseScriptOptions(
-  cmd: Command,
-  scriptCommandName: string,
-  args: string[],
-) {
-  let rootCommand = cmd;
-  while (rootCommand.parent) {
-    rootCommand = rootCommand.parent;
-  }
-  const scriptCommand = rootCommand.commands.find(c => c.name() === 'script')!;
-  const targetCommand = scriptCommand.commands.find(
-    c => c.name() === scriptCommandName,
-  );
-  if (!targetCommand) {
-    throw new Error(`Could not find script command '${scriptCommandName}'`);
+function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
+  // Regardless of what command instance is passed in we want to find
+  // the root command and resolve the path from there
+  let rootCmd = anyCmd;
+  while (rootCmd.parent) {
+    rootCmd = rootCmd.parent;
   }
 
-  const currentOpts = targetCommand._optionValues;
-  const currentStore = targetCommand._storeOptionsAsProperties;
-
-  const result: Record<string, any> = {};
-  targetCommand._storeOptionsAsProperties = false;
-  targetCommand._optionValues = result;
-
-  targetCommand.parseOptions(args);
-
-  targetCommand._storeOptionsAsProperties = currentOpts;
-  targetCommand._optionValues = currentStore;
-
-  return result;
-}
-
-function parseBackstageScript(
-  cmd: Command,
-  expectedScript: string,
-  scriptStr?: string,
-) {
-  const expectedPrefix = `backstage-cli script ${expectedScript}`;
-  if (!scriptStr || !scriptStr.startsWith(expectedPrefix)) {
-    return undefined;
+  // Now find the command that was requested
+  let targetCmd = rootCmd as Command | undefined;
+  for (const name of commandPath) {
+    targetCmd = targetCmd?.commands.find(c => c.name() === name) as
+      | Command
+      | undefined;
   }
 
-  const argsStr = scriptStr.slice(expectedPrefix.length).trim();
-  return parseScriptOptions(cmd, expectedScript, argsStr.split(' '));
+  if (!targetCmd) {
+    throw new Error(`Could not find script command '${commandPath.join(' ')}'`);
+  }
+  const cmd = targetCmd;
+
+  const expectedScript = `backstage-cli ${commandPath.join(' ')}`;
+
+  return (scriptStr?: string) => {
+    if (!scriptStr || !scriptStr.startsWith(expectedScript)) {
+      return undefined;
+    }
+
+    const argsStr = scriptStr.slice(expectedScript.length).trim();
+
+    // Can't clone or copy or even use commands as prototype, so we mutate
+    // the necessary members instead, and then reset them once we're done
+    const currentOpts = cmd._optionValues;
+    const currentStore = cmd._storeOptionsAsProperties;
+
+    const result: Record<string, any> = {};
+    cmd._storeOptionsAsProperties = false;
+    cmd._optionValues = result;
+
+    // Triggers the writing of options to the result object
+    cmd.parseOptions(argsStr.split(' '));
+
+    cmd._storeOptionsAsProperties = currentOpts;
+    cmd._optionValues = currentStore;
+
+    return result;
+  };
 }
 
 export async function command(cmd: Command): Promise<void> {
   const packages = await PackageGraph.listTargetPackages();
   const bundledPackages = new Array<ExtendedPackage>();
+
+  const parseBuildScript = createScriptOptionsParser(cmd, ['script', 'build']);
 
   const options = packages.flatMap(pkg => {
     const role = pkg.packageJson.backstage?.role;
@@ -94,18 +99,10 @@ export async function command(cmd: Command): Promise<void> {
       return [];
     }
 
-    const buildScript = pkg.packageJson.scripts?.build;
-    if (!buildScript) {
-      console.warn(
-        `Ignored ${pkg.packageJson.name} because it has no build script`,
-      );
-      return [];
-    }
-
-    const buildOptions = parseBackstageScript(cmd, 'build', buildScript);
+    const buildOptions = parseBuildScript(pkg.packageJson.scripts?.build);
     if (!buildOptions) {
       console.warn(
-        `Ignored ${pkg.packageJson.name} because it has a custom build script, '${buildScript}'`,
+        `Ignored ${pkg.packageJson.name} because it does not have a matching build script`,
       );
       return [];
     }
@@ -130,15 +127,17 @@ export async function command(cmd: Command): Promise<void> {
     console.log('Building apps');
     await Promise.all(
       apps.map(async pkg => {
-        const buildOptions = parseBackstageScript(
-          cmd,
-          'build',
-          pkg.packageJson.scripts?.build,
-        );
+        const buildOptions = parseBuildScript(pkg.packageJson.scripts?.build);
+        if (!buildOptions) {
+          console.warn(
+            `Ignored ${pkg.packageJson.name} because it does not have a matching build script`,
+          );
+          return;
+        }
         await buildApp({
           targetDir: pkg.dir,
-          configPaths: (buildOptions?.config as string[]) ?? [],
-          writeStats: Boolean(buildOptions?.stats),
+          configPaths: (buildOptions.config as string[]) ?? [],
+          writeStats: Boolean(buildOptions.stats),
         });
       }),
     );
@@ -149,6 +148,13 @@ export async function command(cmd: Command): Promise<void> {
     );
     await Promise.all(
       backends.map(async pkg => {
+        const buildOptions = parseBuildScript(pkg.packageJson.scripts?.build);
+        if (!buildOptions) {
+          console.warn(
+            `Ignored ${pkg.packageJson.name} because it does not have a matching build script`,
+          );
+          return;
+        }
         await buildBackend({
           targetDir: pkg.dir,
           skipBuildDependencies: true,
