@@ -14,34 +14,77 @@
  * limitations under the License.
  */
 
+export const DEFAULT_PARALLELISM = 4;
+
 export const PARALLEL_ENV_VAR = 'BACKSTAGE_CLI_BUILD_PARALLEL';
 
-export type ParallelOption = boolean | number | undefined;
+export type ParallelismOption = boolean | string | number | null | undefined;
 
-export function isParallelDefault(parallel: ParallelOption) {
-  return parallel === undefined || parallel === true;
-}
-
-export function parseParallel(
-  parallel: boolean | string | number | undefined,
-): ParallelOption {
+export function parseParallelismOption(parallel: ParallelismOption): number {
   if (parallel === undefined || parallel === null) {
-    return true;
+    return DEFAULT_PARALLELISM;
   } else if (typeof parallel === 'boolean') {
-    return parallel;
+    return parallel ? DEFAULT_PARALLELISM : 1;
   } else if (typeof parallel === 'number' && Number.isInteger(parallel)) {
+    if (parallel < 1) {
+      return 1;
+    }
     return parallel;
   } else if (typeof parallel === 'string') {
     if (parallel === 'true') {
-      return true;
+      return parseParallelismOption(true);
     } else if (parallel === 'false') {
-      return false;
-    } else if (Number.isInteger(parseFloat(parallel.toString()))) {
-      return Number(parallel);
+      return parseParallelismOption(false);
+    }
+    const parsed = Number(parallel);
+    if (Number.isInteger(parsed)) {
+      return parseParallelismOption(parsed);
     }
   }
 
   throw Error(
     `Parallel option value '${parallel}' is not a boolean or integer`,
+  );
+}
+
+export function getEnvironmentParallelism() {
+  return parseParallelismOption(process.env[PARALLEL_ENV_VAR]);
+}
+
+type ParallelWorkerOptions<TItem> = {
+  /**
+   * Decides the number of parallel workers by multiplying
+   * this with the configured parallelism, which defaults to 4
+   */
+  parallelismFactor: number;
+  parallelismSetting?: ParallelismOption;
+  items: Iterable<TItem>;
+  worker: (item: TItem) => Promise<void>;
+};
+
+export async function runParallelWorkers<TItem>(
+  options: ParallelWorkerOptions<TItem>,
+) {
+  const { parallelismFactor, parallelismSetting, items, worker } = options;
+  const parallelism = parallelismSetting
+    ? parseParallelismOption(parallelismSetting)
+    : getEnvironmentParallelism();
+
+  const iterator = items[Symbol.iterator]();
+
+  async function pop() {
+    const el = iterator.next();
+    if (el.done) {
+      return;
+    }
+
+    await worker(el.value);
+    await pop();
+  }
+
+  return Promise.all(
+    Array(Math.max(Math.floor(parallelismFactor * parallelism), 1))
+      .fill(0)
+      .map(() => pop()),
   );
 }

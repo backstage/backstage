@@ -30,6 +30,7 @@ import {
 } from '../../lib/versioning';
 import { forbiddenDuplicatesFilter } from './lint';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
+import { runParallelWorkers } from '../../lib/parallel';
 
 const DEP_TYPES = [
   'dependencies',
@@ -68,67 +69,76 @@ export default async (cmd: Command) => {
   const versionBumps = new Map<string, PkgVersionInfo[]>();
   // Track package versions that we want to remove from yarn.lock in order to trigger a bump
   const unlocked = Array<{ name: string; range: string; target: string }>();
-  await workerThreads(16, dependencyMap.entries(), async ([name, pkgs]) => {
-    let target: string;
-    try {
-      target = await findTargetVersion(name);
-    } catch (error) {
-      if (isError(error) && error.name === 'NotFoundError') {
-        console.log(`Package info not found, ignoring package ${name}`);
-        return;
-      }
-      throw error;
-    }
 
-    for (const pkg of pkgs) {
-      if (semver.satisfies(target, pkg.range)) {
-        if (semver.minVersion(pkg.range)?.version !== target) {
-          unlocked.push({ name, range: pkg.range, target });
+  await runParallelWorkers({
+    parallelismFactor: 4,
+    items: dependencyMap.entries(),
+    async worker([name, pkgs]) {
+      let target: string;
+      try {
+        target = await findTargetVersion(name);
+      } catch (error) {
+        if (isError(error) && error.name === 'NotFoundError') {
+          console.log(`Package info not found, ignoring package ${name}`);
+          return;
         }
-
-        continue;
+        throw error;
       }
-      versionBumps.set(
-        pkg.name,
-        (versionBumps.get(pkg.name) ?? []).concat({
-          name,
-          location: pkg.location,
-          range: `^${target}`, // TODO(Rugvip): Option to use something else than ^?
-          target,
-        }),
-      );
-    }
+
+      for (const pkg of pkgs) {
+        if (semver.satisfies(target, pkg.range)) {
+          if (semver.minVersion(pkg.range)?.version !== target) {
+            unlocked.push({ name, range: pkg.range, target });
+          }
+
+          continue;
+        }
+        versionBumps.set(
+          pkg.name,
+          (versionBumps.get(pkg.name) ?? []).concat({
+            name,
+            location: pkg.location,
+            range: `^${target}`, // TODO(Rugvip): Option to use something else than ^?
+            target,
+          }),
+        );
+      }
+    },
   });
 
   const filter = (name: string) => minimatch(name, pattern);
 
   // Check for updates of transitive backstage dependencies
-  await workerThreads(16, lockfile.keys(), async name => {
-    // Only check @backstage packages and friends, we don't want this to do a full update of all deps
-    if (!filter(name)) {
-      return;
-    }
-
-    let target: string;
-    try {
-      target = await findTargetVersion(name);
-    } catch (error) {
-      if (isError(error) && error.name === 'NotFoundError') {
-        console.log(`Package info not found, ignoring package ${name}`);
+  await runParallelWorkers({
+    parallelismFactor: 4,
+    items: lockfile.keys(),
+    async worker(name) {
+      // Only check @backstage packages and friends, we don't want this to do a full update of all deps
+      if (!filter(name)) {
         return;
       }
-      throw error;
-    }
 
-    for (const entry of lockfile.get(name) ?? []) {
-      // Ignore lockfile entries that don't satisfy the version range, since
-      // these can't cause the package to be locked to an older version
-      if (!semver.satisfies(target, entry.range)) {
-        continue;
+      let target: string;
+      try {
+        target = await findTargetVersion(name);
+      } catch (error) {
+        if (isError(error) && error.name === 'NotFoundError') {
+          console.log(`Package info not found, ignoring package ${name}`);
+          return;
+        }
+        throw error;
       }
-      // Unlock all entries that are within range but on the old version
-      unlocked.push({ name, range: entry.range, target });
-    }
+
+      for (const entry of lockfile.get(name) ?? []) {
+        // Ignore lockfile entries that don't satisfy the version range, since
+        // these can't cause the package to be locked to an older version
+        if (!semver.satisfies(target, entry.range)) {
+          continue;
+        }
+        // Unlock all entries that are within range but on the old version
+        unlocked.push({ name, range: entry.range, target });
+      }
+    },
   });
 
   console.log();
@@ -163,38 +173,42 @@ export default async (cmd: Command) => {
     }
 
     const breakingUpdates = new Map<string, { from: string; to: string }>();
-    await workerThreads(16, versionBumps.entries(), async ([name, deps]) => {
-      const pkgPath = resolvePath(deps[0].location, 'package.json');
-      const pkgJson = await fs.readJson(pkgPath);
+    await runParallelWorkers({
+      parallelismFactor: 4,
+      items: versionBumps.entries(),
+      async worker([name, deps]) {
+        const pkgPath = resolvePath(deps[0].location, 'package.json');
+        const pkgJson = await fs.readJson(pkgPath);
 
-      for (const dep of deps) {
-        console.log(
-          `${chalk.cyan('bumping')} ${dep.name} in ${chalk.cyan(
-            name,
-          )} to ${chalk.yellow(dep.range)}`,
-        );
+        for (const dep of deps) {
+          console.log(
+            `${chalk.cyan('bumping')} ${dep.name} in ${chalk.cyan(
+              name,
+            )} to ${chalk.yellow(dep.range)}`,
+          );
 
-        for (const depType of DEP_TYPES) {
-          if (depType in pkgJson && dep.name in pkgJson[depType]) {
-            const oldRange = pkgJson[depType][dep.name];
-            pkgJson[depType][dep.name] = dep.range;
+          for (const depType of DEP_TYPES) {
+            if (depType in pkgJson && dep.name in pkgJson[depType]) {
+              const oldRange = pkgJson[depType][dep.name];
+              pkgJson[depType][dep.name] = dep.range;
 
-            // Check if the update was at least a pre-v1 minor or post-v1 major release
-            const lockfileEntry = lockfile
-              .get(dep.name)
-              ?.find(entry => entry.range === oldRange);
-            if (lockfileEntry) {
-              const from = lockfileEntry.version;
-              const to = dep.target;
-              if (!semver.satisfies(to, `^${from}`)) {
-                breakingUpdates.set(dep.name, { from, to });
+              // Check if the update was at least a pre-v1 minor or post-v1 major release
+              const lockfileEntry = lockfile
+                .get(dep.name)
+                ?.find(entry => entry.range === oldRange);
+              if (lockfileEntry) {
+                const from = lockfileEntry.version;
+                const to = dep.target;
+                if (!semver.satisfies(to, `^${from}`)) {
+                  breakingUpdates.set(dep.name, { from, to });
+                }
               }
             }
           }
         }
-      }
 
-      await fs.writeJson(pkgPath, pkgJson, { spaces: 2 });
+        await fs.writeJson(pkgPath, pkgJson, { spaces: 2 });
+      },
     });
 
     console.log();
@@ -322,29 +336,5 @@ export async function bumpBackstageJsonVersion() {
       spaces: 2,
       encoding: 'utf8',
     },
-  );
-}
-
-async function workerThreads<T>(
-  count: number,
-  items: IterableIterator<T>,
-  fn: (item: T) => Promise<void>,
-) {
-  const queue = Array.from(items);
-
-  async function pop() {
-    const item = queue.pop();
-    if (!item) {
-      return;
-    }
-
-    await fn(item);
-    await pop();
-  }
-
-  return Promise.all(
-    Array(count)
-      .fill(0)
-      .map(() => pop()),
   );
 }
