@@ -35,6 +35,9 @@ import {
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import { CategoryPicker } from './CategoryPicker';
+import { RegisterExistingButton } from './RegisterExistingButton';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { registerComponentRouteRef } from '../../routes';
 
 export type TemplateListGroup = {
   title?: string;
@@ -60,6 +63,8 @@ const useStyles = makeStyles(theme => ({
 
 export const TemplateListPage = (props: TemplateListPageProps) => {
   const styles = useStyles();
+  const registerComponentLink = useRouteRef(registerComponentRouteRef);
+
   return (
     <EntityListProvider>
       <Page themeId="home">
@@ -74,12 +79,10 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
         />
         <Content>
           <ContentHeader title="Available Templates">
-            {/* {allowed && (
-              <CreateButton
-                title="Register Existing Component"
-                to={registerComponentLink && registerComponentLink()}
-              />
-            )} */}
+            <RegisterExistingButton
+              title="Register Existing Component"
+              to={registerComponentLink && registerComponentLink()}
+            />
             <SupportButton>
               Create new software components using standard templates. Different
               templates create different kinds of components (services,
