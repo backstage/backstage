@@ -11437,7 +11437,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     md5.js "^1.3.4"
     safe-buffer "^5.1.1"
 
-"example-app@file:packages/app":
+"example-app@link:packages/app":
   version "0.2.63"
   dependencies:
     "@backstage/app-defaults" "^0.1.6"
@@ -22962,7 +22962,7 @@ tdigest@^0.1.1:
   dependencies:
     bintrees "1.0.1"
 
-"techdocs-cli-embedded-app@file:packages/techdocs-cli-embedded-app":
+"techdocs-cli-embedded-app@link:packages/techdocs-cli-embedded-app":
   version "0.2.62"
   dependencies:
     "@backstage/app-defaults" "^0.1.6"
