@@ -28,12 +28,13 @@ import {
   IconButton,
   ListItemText,
   Tooltip,
+  Typography,
 } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
 import React from 'react';
 
 /**
- * A component to display a list of tools for the user.
+ * A component to display a list of starred entities for the user.
  *
  * @public
  */
@@ -42,7 +43,12 @@ export const Content = () => {
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
 
-  if (starredEntities.size === 0) return null;
+  if (starredEntities.size === 0)
+    return (
+      <Typography variant="body1">
+        You do not have any starred entities yet!
+      </Typography>
+    );
 
   return (
     <List>
