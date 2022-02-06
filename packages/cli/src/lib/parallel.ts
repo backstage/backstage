@@ -54,9 +54,11 @@ export function getEnvironmentParallelism() {
 type ParallelWorkerOptions<TItem> = {
   /**
    * Decides the number of parallel workers by multiplying
-   * this with the configured parallelism, which defaults to 4
+   * this with the configured parallelism, which defaults to 4.
+   *
+   * Defaults to 1.
    */
-  parallelismFactor: number;
+  parallelismFactor?: number;
   parallelismSetting?: ParallelismOption;
   items: Iterable<TItem>;
   worker: (item: TItem) => Promise<void>;
@@ -65,7 +67,7 @@ type ParallelWorkerOptions<TItem> = {
 export async function runParallelWorkers<TItem>(
   options: ParallelWorkerOptions<TItem>,
 ) {
-  const { parallelismFactor, parallelismSetting, items, worker } = options;
+  const { parallelismFactor = 1, parallelismSetting, items, worker } = options;
   const parallelism = parallelismSetting
     ? parseParallelismOption(parallelismSetting)
     : getEnvironmentParallelism();

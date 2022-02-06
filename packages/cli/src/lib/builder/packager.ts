@@ -23,6 +23,7 @@ import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
 import { buildTypeDefinitions } from './buildTypeDefinitions';
 import { getRoleInfo } from '../role';
+import { runParallelWorkers } from '../parallel';
 
 export function formatErrorMessage(error: any) {
   let msg = '';
@@ -128,7 +129,7 @@ export const buildPackages = async (options: BuildOptions[]) => {
     options.map(({ targetDir }) => fs.remove(resolvePath(targetDir!, 'dist'))),
   );
 
-  const buildTasks = rollupConfigs.flat().map(rollupBuild);
+  const buildTasks = rollupConfigs.flat().map(opts => () => rollupBuild(opts));
 
   const typeDefinitionTargetDirs = options
     .filter(
@@ -138,10 +139,14 @@ export const buildPackages = async (options: BuildOptions[]) => {
     .map(_ => _.targetDir!);
 
   if (typeDefinitionTargetDirs.length > 0) {
-    buildTasks.push(buildTypeDefinitions(typeDefinitionTargetDirs));
+    // Make sure this one is started first
+    buildTasks.unshift(() => buildTypeDefinitions(typeDefinitionTargetDirs));
   }
 
-  await Promise.all(buildTasks);
+  await runParallelWorkers({
+    items: buildTasks,
+    worker: async task => task(),
+  });
 };
 
 export function getOutputsForRole(role: string): Set<Output> {
