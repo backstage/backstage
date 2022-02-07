@@ -68,18 +68,6 @@ async function dispatchReleaseWorkflows(octokit, releaseVersion) {
       version: releaseVersion,
     },
   });
-
-  console.log('Dispatching upgrade helper sync');
-  await octokit.actions.createWorkflowDispatch({
-    owner: 'backstage',
-    repo: 'upgrade-helper-diff',
-    workflow_id: 'release.yml',
-    ref: 'master',
-    inputs: {
-      // TODO(Rugvip): Switch this over to use the release version once it's ready
-      version: require('../packages/create-app/package.json').version,
-    },
-  });
 }
 
 async function main() {
