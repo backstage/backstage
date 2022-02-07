@@ -18,17 +18,26 @@ import { Card, CardContent, CardHeader } from '@material-ui/core';
 import React from 'react';
 import { MarkdownContent } from '@backstage/core-components';
 
-type Props = {
+/**
+ * Props for {@link PreviewPullRequestComponent}.
+ *
+ * @public
+ */
+export interface PreviewPullRequestComponentProps {
   title: string;
   description: string;
   classes?: { card?: string; cardContent?: string };
-};
+}
 
-export const PreviewPullRequestComponent = ({
-  title,
-  description,
-  classes,
-}: Props) => {
+/**
+ * Previews a pull request.
+ *
+ * @public
+ */
+export const PreviewPullRequestComponent = (
+  props: PreviewPullRequestComponentProps,
+) => {
+  const { title, description, classes } = props;
   return (
     <Card variant="outlined" className={classes?.card}>
       <CardHeader title={title} subheader="Create a new Pull Request" />
