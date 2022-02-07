@@ -51,29 +51,40 @@ describe('<DomainExplorerContent />', () => {
     jest.resetAllMocks();
   });
 
+  const entities: DomainEntity[] = [
+    {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Domain',
+      metadata: {
+        name: 'playback',
+      },
+      spec: {
+        owner: 'guest',
+      },
+    },
+    {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Domain',
+      metadata: {
+        name: 'artists',
+      },
+      spec: {
+        owner: 'guest',
+      },
+    },
+    {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Domain',
+      metadata: {
+        name: 'customFilterDomain',
+      },
+      spec: {
+        owner: 'boss',
+      },
+    },
+  ];
+
   it('renders a grid of domains', async () => {
-    const entities: DomainEntity[] = [
-      {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Domain',
-        metadata: {
-          name: 'playback',
-        },
-        spec: {
-          owner: 'guest',
-        },
-      },
-      {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Domain',
-        metadata: {
-          name: 'artists',
-        },
-        spec: {
-          owner: 'guest',
-        },
-      },
-    ];
     catalogApi.getEntities.mockResolvedValue({ items: entities });
 
     const { getByText } = await renderInTestApp(
@@ -131,5 +142,24 @@ describe('<DomainExplorerContent />', () => {
     await waitFor(() =>
       expect(getByText(/Could not load domains/)).toBeInTheDocument(),
     );
+  });
+
+  it('renders domains with a custom filter', async () => {
+    const customFilter = { kind: 'Domain', 'spec.owner': 'boss' };
+    catalogApi.getEntities.mockResolvedValue({ items: entities });
+
+    await renderInTestApp(
+      <Wrapper>
+        <DomainExplorerContent filter={customFilter} />
+      </Wrapper>,
+      mountedRoutes,
+    );
+
+    expect(catalogApi.getEntities).toHaveBeenCalledWith({
+      filter: {
+        kind: 'Domain',
+        'spec.owner': 'boss',
+      },
+    });
   });
 });

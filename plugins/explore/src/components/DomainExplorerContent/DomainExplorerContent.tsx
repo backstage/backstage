@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React, { PropsWithChildren } from 'react';
 import { DomainEntity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button } from '@material-ui/core';
-import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { DomainCard } from '../DomainCard';
 
@@ -32,7 +32,11 @@ import {
 
 import { useApi } from '@backstage/core-plugin-api';
 
-const Body = () => {
+type BodyProps = PropsWithChildren<{
+  filter: Record<string, string | symbol | (string | symbol)[]>;
+}>;
+const Body = (props: BodyProps) => {
+  const { filter } = props;
   const catalogApi = useApi(catalogApiRef);
   const {
     value: entities,
@@ -40,7 +44,7 @@ const Body = () => {
     error,
   } = useAsync(async () => {
     const response = await catalogApi.getEntities({
-      filter: { kind: 'domain' },
+      filter: filter,
     });
     return response.items as DomainEntity[];
   }, [catalogApi]);
@@ -87,17 +91,23 @@ const Body = () => {
 
 type DomainExplorerContentProps = {
   title?: string;
+  filter?: Record<string, string | symbol | (string | symbol)[]>;
 };
 
 export const DomainExplorerContent = ({
   title,
+  filter,
 }: DomainExplorerContentProps) => {
+  const defaultFilter = filter ? filter : { kind: 'Domain' };
   return (
     <Content noPadding>
       <ContentHeader title={title ?? 'Domains'}>
-        <SupportButton>Discover the domains in your ecosystem.</SupportButton>
+        <SupportButton>
+          Discover the {title?.toLocaleLowerCase('en-US') ?? 'domains'} in your
+          ecosystem.
+        </SupportButton>
       </ContentHeader>
-      <Body />
+      <Body filter={defaultFilter} />
     </Content>
   );
 };
