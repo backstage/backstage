@@ -19,7 +19,6 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import tar, { CreateOptions } from 'tar';
 import { createDistWorkspace } from '../../lib/packager';
-import { paths } from '../../lib/paths';
 import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
 import { buildPackage, Output } from '../../lib/builder';
 
@@ -27,12 +26,13 @@ const BUNDLE_FILE = 'bundle.tar.gz';
 const SKELETON_FILE = 'skeleton.tar.gz';
 
 interface BuildBackendOptions {
+  targetDir: string;
   skipBuildDependencies: boolean;
 }
 
 export async function buildBackend(options: BuildBackendOptions) {
-  const targetDir = paths.resolveTarget('dist');
-  const pkg = await fs.readJson(paths.resolveTarget('package.json'));
+  const { targetDir, skipBuildDependencies } = options;
+  const pkg = await fs.readJson(resolvePath(targetDir, 'package.json'));
 
   // We build the target package without generating type declarations.
   await buildPackage({ outputs: new Set([Output.cjs]) });
@@ -41,7 +41,7 @@ export async function buildBackend(options: BuildBackendOptions) {
   try {
     await createDistWorkspace([pkg.name], {
       targetDir: tmpDir,
-      buildDependencies: !options.skipBuildDependencies,
+      buildDependencies: !skipBuildDependencies,
       buildExcludes: [pkg.name],
       parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
       skeleton: SKELETON_FILE,

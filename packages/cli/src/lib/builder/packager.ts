@@ -17,11 +17,12 @@
 import fs from 'fs-extra';
 import { rollup, RollupOptions } from 'rollup';
 import chalk from 'chalk';
-import { relative as relativePath } from 'path';
+import { relative as relativePath, resolve as resolvePath } from 'path';
 import { paths } from '../paths';
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
 import { buildTypeDefinitions } from './buildTypeDefinitions';
+import { getRoleInfo } from '../role';
 
 export function formatErrorMessage(error: any) {
   let msg = '';
@@ -116,3 +117,47 @@ export const buildPackage = async (options: BuildOptions) => {
 
   await Promise.all(buildTasks);
 };
+
+export const buildPackages = async (options: BuildOptions[]) => {
+  if (options.some(opt => !opt.targetDir)) {
+    throw new Error('targetDir must be set for all build options');
+  }
+  const rollupConfigs = await Promise.all(options.map(makeRollupConfigs));
+
+  await Promise.all(
+    options.map(({ targetDir }) => fs.remove(resolvePath(targetDir!, 'dist'))),
+  );
+
+  const buildTasks = rollupConfigs.flat().map(rollupBuild);
+
+  const typeDefinitionTargetDirs = options
+    .filter(
+      ({ outputs, useApiExtractor }) =>
+        outputs.has(Output.types) && useApiExtractor,
+    )
+    .map(_ => _.targetDir!);
+
+  if (typeDefinitionTargetDirs.length > 0) {
+    buildTasks.push(buildTypeDefinitions(typeDefinitionTargetDirs));
+  }
+
+  await Promise.all(buildTasks);
+};
+
+export function getOutputsForRole(role: string): Set<Output> {
+  const outputs = new Set<Output>();
+
+  for (const output of getRoleInfo(role).output) {
+    if (output === 'cjs') {
+      outputs.add(Output.cjs);
+    }
+    if (output === 'esm') {
+      outputs.add(Output.esm);
+    }
+    if (output === 'types') {
+      outputs.add(Output.types);
+    }
+  }
+
+  return outputs;
+}
