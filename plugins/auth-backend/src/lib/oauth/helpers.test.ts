@@ -19,7 +19,7 @@ import {
   verifyNonce,
   encodeState,
   readState,
-  getCookieConfig,
+  defaultCookieConfigurer,
 } from './helpers';
 
 describe('OAuthProvider Utils', () => {
@@ -110,30 +110,43 @@ describe('OAuthProvider Utils', () => {
     });
   });
 
-  describe('getCookieConfig', () => {
+  describe('defaultCookieConfigurer', () => {
     it('should set the correct domain and path for a base url', () => {
-      const mockAuthUrl = new URL('http://domain.org/auth');
-      expect(getCookieConfig(mockAuthUrl, 'test-provider')).toMatchObject({
-        cookieDomain: 'domain.org',
-        cookiePath: '/auth/test-provider',
+      expect(
+        defaultCookieConfigurer({
+          baseUrl: '',
+          providerId: 'test-provider',
+          callbackUrl: 'http://domain.org/auth',
+        }),
+      ).toMatchObject({
+        domain: 'domain.org',
+        path: '/auth/test-provider',
         secure: false,
       });
     });
 
     it('should set the correct domain and path for a url containing a frame handler', () => {
-      const mockAuthUrl = new URL(
-        'http://domain.org/auth/test-provider/handler/frame',
-      );
-      expect(getCookieConfig(mockAuthUrl, 'test-provider')).toMatchObject({
-        cookieDomain: 'domain.org',
-        cookiePath: '/auth/test-provider',
+      expect(
+        defaultCookieConfigurer({
+          baseUrl: '',
+          providerId: 'test-provider',
+          callbackUrl: 'http://domain.org/auth/test-provider/handler/frame',
+        }),
+      ).toMatchObject({
+        domain: 'domain.org',
+        path: '/auth/test-provider',
         secure: false,
       });
     });
 
     it('should set the secure flag if url is using https', () => {
-      const mockAuthUrl = new URL('https://domain.org/auth');
-      expect(getCookieConfig(mockAuthUrl, 'test-provider')).toMatchObject({
+      expect(
+        defaultCookieConfigurer({
+          baseUrl: '',
+          providerId: 'test-provider',
+          callbackUrl: 'https://domain.org/auth',
+        }),
+      ).toMatchObject({
         secure: true,
       });
     });
