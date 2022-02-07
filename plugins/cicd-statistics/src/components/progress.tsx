@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-import React, { DependencyList } from 'react';
+import React, { CSSProperties, DependencyList } from 'react';
 import { useAsync } from 'react-use';
 import { Box, LinearProgress } from '@material-ui/core';
+import Timeline from '@material-ui/lab/Timeline';
+import TimelineItem from '@material-ui/lab/TimelineItem';
+import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
+import TimelineConnector from '@material-ui/lab/TimelineConnector';
+import TimelineContent from '@material-ui/lab/TimelineContent';
+import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
+import TimelineDot, { TimelineDotProps } from '@material-ui/lab/TimelineDot';
 import Alert from '@material-ui/lab/Alert';
 import { useApp } from '@backstage/core-plugin-api';
+
+const stepProgressStyle: CSSProperties = {
+  marginTop: 6,
+};
 
 // Matching react-use, only has loading/error/value
 type AsyncState<T> =
@@ -43,24 +54,33 @@ type AsyncState<T> =
       value: T;
     };
 
-export type ProgressAsLoading = {
+export interface ProgressStep extends ProgessAsSingle {
+  title: string;
+}
+export interface ProgessAsSteps {
+  steps: Array<ProgressStep>;
+}
+export interface ProgessAsSingle<T = number> {
+  progress?: T;
+  progressBuffer?: T;
+}
+
+export type ProgessState<T = number> =
+  | ProgessAsSingle<T>
+  | (T extends number ? ProgessAsSteps : { steps?: undefined });
+
+export type ProgressAsLoading = ProgessState & {
   loading: true;
-  progress?: number;
-  progressBuffer?: number;
   error?: undefined;
   value?: undefined;
 };
-export type ProgressAsError = {
+export type ProgressAsError = ProgessState<undefined> & {
   loading?: false | undefined;
-  progress?: undefined;
-  progressBuffer?: undefined;
   error: Error;
   value?: undefined;
 };
-export type ProgressAsValue<T> = {
+export type ProgressAsValue<T> = ProgessState<undefined> & {
   loading?: false | undefined;
-  progress?: undefined;
-  progressBuffer?: undefined;
   error?: undefined;
   value: T;
 };
@@ -69,7 +89,7 @@ export type ProgressAsValue<T> = {
  * An AsyncState but with the addition of progress (decimal 0-1) to allow
  * rendering a progress bar while waiting.
  */
-export type Progress<T> =
+export type ProgressType<T> =
   | ProgressAsLoading
   | ProgressAsError
   | ProgressAsValue<T>;
@@ -79,8 +99,8 @@ const sentry = Symbol();
 /**
  * Casts an AsyncState or Progress into its non-succeeded sub types
  */
-type Unsuccessful<S extends Progress<any> | AsyncState<any>> =
-  S extends Progress<any>
+type Unsuccessful<S extends ProgressType<any> | AsyncState<any>> =
+  S extends ProgressType<any>
     ? ProgressAsLoading | ProgressAsError
     : Omit<AsyncState<any>, 'value'>;
 
@@ -92,7 +112,7 @@ type Unsuccessful<S extends Progress<any> | AsyncState<any>> =
  * invoked for a new layer of async state with the dependent (upstream) success
  * result as argument.
  */
-export function useAsyncChain<S extends Progress<any> | AsyncState<any>, R>(
+export function useAsyncChain<S extends ProgressType<any> | AsyncState<any>, R>(
   parentState: S,
   fn: (value: NonNullable<S['value']>) => Promise<R>,
   deps: DependencyList,
@@ -111,7 +131,7 @@ export function useAsyncChain<S extends Progress<any> | AsyncState<any>, R>(
 }
 
 export function renderFallbacks<T>(
-  state: Progress<T> | AsyncState<T>,
+  state: ProgressType<T> | AsyncState<T>,
   success: (value: T) => JSX.Element,
 ): JSX.Element {
   if (state.loading) {
@@ -130,18 +150,67 @@ export function ViewProgress({
 }) {
   const { Progress } = useApp().getComponents();
 
-  const stateAsProgress = state as ProgressAsLoading;
+  const stateAsSingleProgress = state as ProgessAsSingle;
+  const stateAsStepProgress = state as ProgessAsSteps;
 
-  if (!stateAsProgress.progress && !stateAsProgress.progressBuffer) {
+  if (
+    !stateAsSingleProgress.progress &&
+    !stateAsSingleProgress.progressBuffer &&
+    !stateAsStepProgress.steps
+  ) {
+    // Simple spinner
     return <Progress />;
+  } else if (stateAsSingleProgress.progress !== undefined) {
+    // Simple _single_ progress
+    return (
+      <Box sx={{ width: '100%' }}>
+        <LinearProgress
+          variant="buffer"
+          value={(stateAsSingleProgress.progress ?? 0) * 100}
+          valueBuffer={(stateAsSingleProgress.progressBuffer ?? 0) * 100}
+        />
+      </Box>
+    );
   }
+
+  // Multi-step progresses
+
   return (
     <Box sx={{ width: '100%' }}>
-      <LinearProgress
-        variant="buffer"
-        value={(stateAsProgress.progress ?? 0) * 100}
-        valueBuffer={(stateAsProgress.progressBuffer ?? 0) * 100}
-      />
+      <Timeline>
+        {stateAsStepProgress.steps.map((step, index) => (
+          <TimelineItem key={index}>
+            <TimelineOppositeContent>{step.title}</TimelineOppositeContent>
+            <TimelineSeparator>
+              <TimelineDot color={getDotColor(step)} />
+              {index < stateAsStepProgress.steps.length - 1 ? (
+                <TimelineConnector />
+              ) : null}
+            </TimelineSeparator>
+            <TimelineContent>
+              {!step.progress && !step.progressBuffer ? null : (
+                <LinearProgress
+                  style={stepProgressStyle}
+                  variant="buffer"
+                  value={(step.progress ?? 0) * 100}
+                  valueBuffer={(step.progressBuffer ?? 0) * 100}
+                />
+              )}
+            </TimelineContent>
+          </TimelineItem>
+        ))}
+      </Timeline>
     </Box>
   );
+}
+
+function getDotColor(step: ProgressStep): TimelineDotProps['color'] {
+  const progress = step.progress ?? 0;
+
+  if (progress >= 1) {
+    return 'primary';
+  } else if (progress > 0) {
+    return 'secondary';
+  }
+  return 'grey';
 }

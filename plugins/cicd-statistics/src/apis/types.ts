@@ -220,12 +220,20 @@ export interface CicdState {
  *
  * This can be called at any rate. Rate limiting (debouncing) is implemented in
  * the UI.
+ *
+ * Optionally this can signal multiple progresses in several steps
  */
-export type UpdateProgress = (
-  completed: number,
-  total: number,
-  started?: number,
-) => void;
+export interface UpdateProgress {
+  (completed: number, total: number, started?: number): void;
+  (
+    steps: Array<{
+      title: string;
+      completed: number;
+      total: number;
+      started?: number;
+    }>,
+  ): void;
+}
 
 /**
  * When reading configuration, the Api can return a custom settings depending on

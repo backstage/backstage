@@ -24,8 +24,9 @@ import {
   AbortError,
   FilterStatusType,
   FilterBranchType,
+  UpdateProgress,
 } from '../apis';
-import { Progress } from '../components/progress';
+import { ProgressType } from '../components/progress';
 import { useCicdStatisticsApi } from './use-cicd-statistics-api';
 
 export interface UseCicdStatisticsOptions {
@@ -39,7 +40,7 @@ export interface UseCicdStatisticsOptions {
 
 export function useCicdStatistics(
   options: UseCicdStatisticsOptions,
-): Progress<CicdState> {
+): ProgressType<CicdState> {
   const {
     entity,
     abortController,
@@ -49,7 +50,9 @@ export function useCicdStatistics(
     filterType,
   } = options;
 
-  const [state, setState] = useState<Progress<CicdState>>({ loading: true });
+  const [state, setState] = useState<ProgressType<CicdState>>({
+    loading: true,
+  });
 
   const cicdStatisticsApi = useCicdStatisticsApi();
 
@@ -62,15 +65,39 @@ export function useCicdStatistics(
     let mounted = true;
     let completed = false; // successfully or failed
 
-    const updateProgress = throttle((count, total, started = 0) => {
-      if (mounted && !completed) {
+    const updateProgressImpl: UpdateProgress = (_count, _total?, _started?) => {
+      if (!mounted || completed) {
+        return;
+      }
+
+      if (Array.isArray(_count)) {
+        // Multi-progress
+        setState({
+          loading: true,
+          steps: _count.map(step => ({
+            title: step.title,
+            progress: !step.total ? 0 : step.completed / step.total,
+            progressBuffer: !step.total ? 0 : (step.started ?? 0) / step.total,
+          })),
+        });
+      } else {
+        // Single-progress
+        const count = _count;
+        const total = _total as number;
+        const started = (_started as number) ?? 0;
         setState({
           loading: true,
           progress: !total ? 0 : count / total,
           progressBuffer: !total ? 0 : started / total,
         });
       }
-    }, 200);
+    };
+
+    const updateProgress = throttle(
+      updateProgressImpl,
+      200,
+      // throttle doesn't handle types of multi-signature functions
+    ) as any as UpdateProgress;
 
     const fetchOptions: FetchBuildsOptions = {
       entity,

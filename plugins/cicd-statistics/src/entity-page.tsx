@@ -16,6 +16,7 @@
 
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { Grid, makeStyles, Theme } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 import { DateTime } from 'luxon';
@@ -182,6 +183,9 @@ function CicdCharts(props: CicdChartsProps) {
       <Grid item xs={12} lg={10} className={classes.pane}>
         {renderFallbacks(chartableStagesState, chartableStages => (
           <>
+            {chartableStages.stages.size > 0 ? null : (
+              <Alert severity="info">No data</Alert>
+            )}
             {!statisticsState.value?.builds?.length ||
             !chartableStagesState.value?.daily?.values?.length ? null : (
               <StatusChart analysis={chartableStagesState.value} />
