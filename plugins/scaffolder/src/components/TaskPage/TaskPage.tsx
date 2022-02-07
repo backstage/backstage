@@ -21,6 +21,7 @@ import {
   Lifecycle,
   Page,
   LogViewer,
+  Progress,
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
@@ -352,6 +353,8 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
                 </Paper>
               </Grid>
               <Grid item xs={9}>
+                {!currentStepId && <Progress />}
+
                 <div style={{ height: '80vh' }}>
                   <LogViewer text={logAsString} />
                 </div>
