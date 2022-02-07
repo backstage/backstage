@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { sortTriggerReasons } from './daily-summary';
+import { sortTriggerReasons } from './utils';
 
 describe('daily-summary', () => {
   it('sortTriggerReasons', () => {
