@@ -32,6 +32,11 @@ export default async (cmd: Command) => {
   }
 
   const formatter = await eslint.loadFormatter(cmd.format);
+
+  // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
+  if (cmd.format === 'eslint-formatter-friendly') {
+    process.chdir(paths.targetRoot);
+  }
   const resultText = formatter.format(results);
 
   // If there is any feedback at all, we treat it as a lint failure. This should be
