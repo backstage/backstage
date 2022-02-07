@@ -25,6 +25,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useLocation } from 'react-router';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
 import useMountedState from 'react-use/lib/useMountedState';
@@ -98,7 +99,6 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   appliedFilters: EntityFilters;
   entities: Entity[];
   backendEntities: Entity[];
-  queryParameters: Record<string, string | string[]>;
 };
 
 export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
@@ -109,19 +109,26 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   const [requestedFilters, setRequestedFilters] = useState<EntityFilters>(
     {} as EntityFilters,
   );
+
+  // We use react-router's useLocation hook so updates from external sources trigger an update to
+  // the queryParameters in outputState. Updates from this hook use replaceState below and won't
+  // trigger a useLocation change; this would instead come from an external source, such as a manual
+  // update of the URL or two catalog sidebar links with different catalog filters.
+  const location = useLocation();
+  const queryParameters = useMemo(
+    () =>
+      (qs.parse(location.search, {
+        ignoreQueryPrefix: true,
+      }).filters ?? {}) as Record<string, string | string[]>,
+    [location],
+  );
+
   const [outputState, setOutputState] = useState<OutputState<EntityFilters>>(
     () => {
-      const query = qs.parse(window.location.search, {
-        ignoreQueryPrefix: true,
-      });
       return {
         appliedFilters: {} as EntityFilters,
         entities: [],
         backendEntities: [],
-        queryParameters: (query.filters ?? {}) as Record<
-          string,
-          string | string[]
-        >,
       };
     },
   );
@@ -163,19 +170,17 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
           appliedFilters: requestedFilters,
           backendEntities: response.items,
           entities: response.items.filter(entityFilter),
-          queryParameters: queryParams,
         });
       } else {
         setOutputState({
           appliedFilters: requestedFilters,
           backendEntities: outputState.backendEntities,
           entities: outputState.backendEntities.filter(entityFilter),
-          queryParameters: queryParams,
         });
       }
 
       if (isMounted()) {
-        const oldParams = qs.parse(window.location.search, {
+        const oldParams = qs.parse(location.search, {
           ignoreQueryPrefix: true,
         });
         const newParams = qs.stringify(
@@ -191,7 +196,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
         window.history?.replaceState(null, document.title, newUrl);
       }
     },
-    [catalogApi, requestedFilters, outputState],
+    [catalogApi, queryParameters, requestedFilters, outputState],
     { loading: true },
   );
 
@@ -220,11 +225,11 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
       entities: outputState.entities,
       backendEntities: outputState.backendEntities,
       updateFilters,
-      queryParameters: outputState.queryParameters,
+      queryParameters,
       loading,
       error,
     }),
-    [outputState, updateFilters, loading, error],
+    [outputState, updateFilters, queryParameters, loading, error],
   );
 
   return (

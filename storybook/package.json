@@ -24,9 +24,9 @@
     "storybook-dark-mode": "^1.0.8"
   },
   "peerDependencies": {
-    "@backstage/theme": "file:../packages/theme",
-    "@backstage/test-utils": "file:../packages/test-utils",
-    "@backstage/core-app-api": "file:../packages/core-app-api",
-    "@backstage/core-plugin-api": "file:../packages/core-plugin-api"
+    "@backstage/theme": "link:../packages/theme",
+    "@backstage/test-utils": "link:../packages/test-utils",
+    "@backstage/core-app-api": "link:../packages/core-app-api",
+    "@backstage/core-plugin-api": "link:../packages/core-plugin-api"
   }
 }

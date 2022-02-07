@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   Entity,
   EntityName,
@@ -25,6 +26,11 @@ import { Link, LinkProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Tooltip } from '@material-ui/core';
 
+/**
+ * Props for {@link EntityRefLink}.
+ *
+ * @public
+ */
 export type EntityRefLinkProps = {
   entityRef: Entity | EntityName;
   defaultKind?: string;
@@ -32,6 +38,11 @@ export type EntityRefLinkProps = {
   children?: React.ReactNode;
 } & Omit<LinkProps, 'to'>;
 
+/**
+ * Shows a clickable link to an entity.
+ *
+ * @public
+ */
 export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
   (props, ref) => {
     const { entityRef, defaultKind, title, children, ...linkProps } = props;

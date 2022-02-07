@@ -112,10 +112,11 @@ export function createPublishGitlabAction(options: {
       }
 
       const token = ctx.input.token || integrationConfig.config.token!;
+      const tokenType = ctx.input.token ? 'oauthToken' : 'token';
 
       const client = new Gitlab({
         host: integrationConfig.config.baseUrl,
-        token,
+        [tokenType]: token,
       });
 
       let { id: targetNamespace } = (await client.Namespaces.show(owner)) as {

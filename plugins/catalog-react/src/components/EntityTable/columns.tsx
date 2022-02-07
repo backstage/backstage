@@ -29,11 +29,11 @@ import {
   formatEntityRefTitle,
 } from '../EntityRefLink';
 
-export function createEntityRefColumn<T extends Entity>({
-  defaultKind,
-}: {
+/** @public */
+export function createEntityRefColumn<T extends Entity>(options: {
   defaultKind?: string;
 }): TableColumn<T> {
+  const { defaultKind } = options;
   function formatContent(entity: T): string {
     return (
       entity.metadata?.title ||
@@ -49,7 +49,7 @@ export function createEntityRefColumn<T extends Entity>({
     customFilterAndSearch(filter, entity) {
       // TODO: We could implement this more efficiently, like searching over
       // each field that is displayed individually (kind, namespace, name).
-      // but that migth confuse the user as it will behave different than a
+      // but that might confuse the user as it will behave different than a
       // simple text search.
       // Another alternative would be to cache the values. But writing them
       // into the entity feels bad too.
@@ -70,6 +70,7 @@ export function createEntityRefColumn<T extends Entity>({
   };
 }
 
+/** @public */
 export function createEntityRelationColumn<T extends Entity>({
   title,
   relation,
@@ -110,6 +111,7 @@ export function createEntityRelationColumn<T extends Entity>({
   };
 }
 
+/** @public */
 export function createOwnerColumn<T extends Entity>(): TableColumn<T> {
   return createEntityRelationColumn({
     title: 'Owner',
@@ -118,6 +120,7 @@ export function createOwnerColumn<T extends Entity>(): TableColumn<T> {
   });
 }
 
+/** @public */
 export function createDomainColumn<T extends Entity>(): TableColumn<T> {
   return createEntityRelationColumn({
     title: 'Domain',
@@ -129,6 +132,7 @@ export function createDomainColumn<T extends Entity>(): TableColumn<T> {
   });
 }
 
+/** @public */
 export function createSystemColumn<T extends Entity>(): TableColumn<T> {
   return createEntityRelationColumn({
     title: 'System',
@@ -140,6 +144,7 @@ export function createSystemColumn<T extends Entity>(): TableColumn<T> {
   });
 }
 
+/** @public */
 export function createMetadataDescriptionColumn<
   T extends Entity,
 >(): TableColumn<T> {
@@ -157,6 +162,7 @@ export function createMetadataDescriptionColumn<
   };
 }
 
+/** @public */
 export function createSpecLifecycleColumn<T extends Entity>(): TableColumn<T> {
   return {
     title: 'Lifecycle',
@@ -164,6 +170,7 @@ export function createSpecLifecycleColumn<T extends Entity>(): TableColumn<T> {
   };
 }
 
+/** @public */
 export function createSpecTypeColumn<T extends Entity>(): TableColumn<T> {
   return {
     title: 'Type',

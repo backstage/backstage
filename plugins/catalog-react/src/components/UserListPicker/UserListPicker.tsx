@@ -161,8 +161,13 @@ export const UserListPicker = ({
     [isOwnedEntity, isStarredEntity],
   );
 
+  const queryParamUserFilter = useMemo(
+    () => [queryParameters.user].flat()[0],
+    [queryParameters],
+  );
+
   const [selectedUserFilter, setSelectedUserFilter] = useState(
-    [queryParameters.user].flat()[0] ?? initialFilter,
+    queryParamUserFilter ?? initialFilter,
   );
 
   // To show proper counts for each section, apply all other frontend filters _except_ the user
@@ -189,6 +194,14 @@ export const UserListPicker = ({
     }),
     [entitiesWithoutUserFilter, starredFilter, ownedFilter],
   );
+
+  // Set selected user filter on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    if (queryParamUserFilter) {
+      setSelectedUserFilter(queryParamUserFilter as UserListFilterKind);
+    }
+  }, [queryParamUserFilter]);
 
   useEffect(() => {
     if (

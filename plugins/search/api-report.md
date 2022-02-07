@@ -27,10 +27,12 @@ export const DefaultResultListItem: ({
   result,
   icon,
   secondaryAction,
+  lineClamp,
 }: {
   icon?: ReactNode;
   secondaryAction?: ReactNode;
   result: IndexableDocument;
+  lineClamp?: number | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "FiltersProps" needs to be exported by the entry point index.d.ts

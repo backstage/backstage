@@ -24,10 +24,14 @@ import {
   UseFormReturn,
 } from 'react-hook-form';
 
-type Props<TFieldValues extends Record<string, any>> = Pick<
-  UseFormProps<TFieldValues>,
-  'defaultValues'
-> & {
+/**
+ * Props for {@link PreparePullRequestForm}.
+ *
+ * @public
+ */
+export type PreparePullRequestFormProps<
+  TFieldValues extends Record<string, any>,
+> = Pick<UseFormProps<TFieldValues>, 'defaultValues'> & {
   onSubmit: SubmitHandler<TFieldValues>;
 
   render: (
@@ -48,14 +52,15 @@ type Props<TFieldValues extends Record<string, any>> = Pick<
  * @param onSubmit - a callback that is executed when the form is submitted
  *   (initiated by a button of type="submit")
  * @param render - render the form elements
+ * @public
  */
 export const PreparePullRequestForm = <
   TFieldValues extends Record<string, any>,
->({
-  defaultValues,
-  onSubmit,
-  render,
-}: Props<TFieldValues>) => {
+>(
+  props: PreparePullRequestFormProps<TFieldValues>,
+) => {
+  const { defaultValues, onSubmit, render } = props;
+
   const methods = useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
   const { handleSubmit, watch, control, register, formState, setValue } =
     methods;

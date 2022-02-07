@@ -27,6 +27,7 @@ import { MockStorageApi, TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook } from '@testing-library/react-hooks';
 import qs from 'qs';
 import React, { PropsWithChildren } from 'react';
+import { MemoryRouter } from 'react-router';
 import { catalogApiRef } from '../api';
 import { DefaultStarredEntitiesApi, starredEntitiesApiRef } from '../apis';
 import { EntityKindPicker, UserListPicker } from '../components';
@@ -82,31 +83,35 @@ const mockCatalogApi: Partial<CatalogApi> = {
 
 const wrapper = ({
   userFilter,
+  location,
   children,
 }: PropsWithChildren<{
   userFilter?: UserListFilterKind;
+  location?: string;
 }>) => {
   return (
-    <TestApiProvider
-      apis={[
-        [configApiRef, mockConfigApi],
-        [catalogApiRef, mockCatalogApi],
-        [identityApiRef, mockIdentityApi],
-        [storageApiRef, MockStorageApi.create()],
-        [
-          starredEntitiesApiRef,
-          new DefaultStarredEntitiesApi({
-            storageApi: MockStorageApi.create(),
-          }),
-        ],
-      ]}
-    >
-      <EntityListProvider>
-        <EntityKindPicker initialFilter="component" hidden />
-        <UserListPicker initialFilter={userFilter} />
-        {children}
-      </EntityListProvider>
-    </TestApiProvider>
+    <MemoryRouter initialEntries={[location ?? '']}>
+      <TestApiProvider
+        apis={[
+          [configApiRef, mockConfigApi],
+          [catalogApiRef, mockCatalogApi],
+          [identityApiRef, mockIdentityApi],
+          [storageApiRef, MockStorageApi.create()],
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+        ]}
+      >
+        <EntityListProvider>
+          <EntityKindPicker initialFilter="component" hidden />
+          <UserListPicker initialFilter={userFilter} />
+          {children}
+        </EntityListProvider>
+      </TestApiProvider>
+    </MemoryRouter>
   );
 };
 
@@ -168,10 +173,11 @@ describe('<EntityListProvider />', () => {
     const query = qs.stringify({
       filters: { kind: 'component', type: 'service' },
     });
-    delete (window as any).location;
-    (window as any).location = new URL(`http://localhost/catalog?${query}`);
     const { result, waitFor } = renderHook(() => useEntityListProvider(), {
       wrapper,
+      initialProps: {
+        location: `/catalog?${query}`,
+      },
     });
     await waitFor(() => !!result.current.queryParameters);
     expect(result.current.queryParameters).toEqual({

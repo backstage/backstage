@@ -35,6 +35,7 @@ type RouterProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
+  TaskPageComponent?: ComponentType<{}>;
   groups?: Array<{
     title?: string;
     titleComponent?: React.ReactNode;
@@ -42,8 +43,13 @@ type RouterProps = {
   }>;
 };
 
-export const Router = ({ TemplateCardComponent, groups }: RouterProps) => {
+export const Router = ({
+  TemplateCardComponent,
+  TaskPageComponent,
+  groups,
+}: RouterProps) => {
   const outlet = useOutlet();
+  const TaskPageElement = TaskPageComponent || TaskPage;
 
   const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
@@ -84,7 +90,7 @@ export const Router = ({ TemplateCardComponent, groups }: RouterProps) => {
           </SecretsContextProvider>
         }
       />
-      <Route path="/tasks/:taskId" element={<TaskPage />} />
+      <Route path="/tasks/:taskId" element={<TaskPageElement />} />
       <Route path="/actions" element={<ActionsPage />} />
     </Routes>
   );

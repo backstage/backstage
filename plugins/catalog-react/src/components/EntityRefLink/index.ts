@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export { EntityRefLink } from './EntityRefLink';
+export type { EntityRefLinkProps } from './EntityRefLink';
 export { EntityRefLinks } from './EntityRefLinks';
+export type { EntityRefLinksProps } from './EntityRefLinks';
 export { formatEntityRefTitle } from './format';

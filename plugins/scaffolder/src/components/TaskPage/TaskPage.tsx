@@ -21,6 +21,7 @@ import {
   Lifecycle,
   Page,
   LogViewer,
+  Progress,
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
@@ -218,7 +219,23 @@ export const TaskStatusStepper = memo(
 const hasLinks = ({ entityRef, remoteUrl, links = [] }: TaskOutput): boolean =>
   !!(entityRef || remoteUrl || links.length > 0);
 
-export const TaskPage = () => {
+/**
+ * TaskPageProps for constructing a TaskPage
+ * @param loadingText - Optional loading text shown before a task begins executing.
+ *
+ * @public
+ */
+export type TaskPageProps = {
+  loadingText?: string;
+};
+
+/**
+ * TaskPage for showing the status of the taskId provided as a param
+ * @param loadingText - Optional loading text shown before a task begins executing.
+ *
+ * @public
+ */
+export const TaskPage = ({ loadingText }: TaskPageProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const rootLink = useRouteRef(rootRouteRef);
@@ -256,7 +273,7 @@ export const TaskPage = () => {
 
   const logAsString = useMemo(() => {
     if (!currentStepId) {
-      return 'Loading...';
+      return loadingText ? loadingText : 'Loading...';
     }
     const log = taskStream.stepLogs[currentStepId];
 
@@ -264,7 +281,7 @@ export const TaskPage = () => {
       return 'Waiting for logs...';
     }
     return log.join('\n');
-  }, [taskStream.stepLogs, currentStepId]);
+  }, [taskStream.stepLogs, currentStepId, loadingText]);
 
   const taskNotFound =
     taskStream.completed === true &&
@@ -336,6 +353,8 @@ export const TaskPage = () => {
                 </Paper>
               </Grid>
               <Grid item xs={9}>
+                {!currentStepId && <Progress />}
+
                 <div style={{ height: '80vh' }}>
                   <LogViewer text={logAsString} />
                 </div>
