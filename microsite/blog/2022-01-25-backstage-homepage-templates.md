@@ -33,7 +33,7 @@ _Example of the default homepage template in Backstage Storybook_
 
 ## How to get started
 
-To get started, you first need to set up your homepage plugin in the app if you have not already, then you can move on to composing your homepage. You can find our step-by-step documentation of how to do this under the [App Configuration - Customize the look-and-feel of your App documentation](https://backstage.io/docs/getting-started/app-custom-theme#custom-homepage). You can also access the [Backstage UI Kit in Figma](https://www.figma.com/file/nUaAw56hTgC0RIOYkuLSrB/Backstage-Design-System?node-id=2185%3A2978) to duplicate your own version and play around with a fitting homepage for your own organization.
+To get started, you first need to set up your homepage plugin in the app if you have not already, then you can move on to composing your homepage. You can find our step-by-step documentation of how to do this under the [App Configuration - Customize the look-and-feel of your App documentation](https://backstage.io/docs/getting-started/homepage). You can also access the [Backstage UI Kit in Figma](https://www.figma.com/file/nUaAw56hTgC0RIOYkuLSrB/Backstage-Design-System?node-id=2185%3A2978) to duplicate your own version and play around with a fitting homepage for your own organization.
 
 ![Example of homepage components in the Backstage UI Kit in Figma](assets/22-01-25/homepage-components-figma.png)
 _Example of the homepage components in the Backstage UI Kit in Figma_
