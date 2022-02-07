@@ -215,7 +215,7 @@ export const EntitySplunkOnCallCard = () => {
     team: Team | undefined;
     usersHashMap: any;
   }) => {
-    const teamName = team && team.name ? team.name : '';
+    const teamName = team?.name ?? '';
 
     return (
       <>
