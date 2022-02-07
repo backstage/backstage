@@ -79,7 +79,7 @@ describe('<DomainExplorerContent />', () => {
         name: 'customFilterDomain',
       },
       spec: {
-        owner: 'boss',
+        owner: 'team-a',
       },
     },
   ];
@@ -145,7 +145,7 @@ describe('<DomainExplorerContent />', () => {
   });
 
   it('renders domains with a custom filter', async () => {
-    const customFilter = { kind: 'Domain', 'spec.owner': 'boss' };
+    const customFilter = { kind: 'Domain', 'spec.owner': 'team-a' };
     catalogApi.getEntities.mockResolvedValue({ items: entities });
 
     await renderInTestApp(
@@ -158,7 +158,7 @@ describe('<DomainExplorerContent />', () => {
     expect(catalogApi.getEntities).toHaveBeenCalledWith({
       filter: {
         kind: 'Domain',
-        'spec.owner': 'boss',
+        'spec.owner': 'team-a',
       },
     });
   });
