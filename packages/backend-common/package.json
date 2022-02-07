@@ -88,7 +88,7 @@
     "@backstage/test-utils": "^0.2.4",
     "@types/archiver": "^5.1.0",
     "@types/compression": "^1.7.0",
-    "@types/concat-stream": "^1.6.0",
+    "@types/concat-stream": "^2.0.0",
     "@types/fs-extra": "^9.0.3",
     "@types/http-errors": "^1.6.3",
     "@types/minimist": "^1.2.0",

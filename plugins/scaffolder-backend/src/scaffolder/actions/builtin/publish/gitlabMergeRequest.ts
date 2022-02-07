@@ -118,10 +118,11 @@ export const createPublishGitlabMergeRequestAction = (options: {
       }
 
       const token = ctx.input.token ?? integrationConfig.config.token!;
+      const tokenType = ctx.input.token ? 'oauthToken' : 'token';
 
       const api = new Gitlab({
         host: integrationConfig.config.baseUrl,
-        token,
+        [tokenType]: token,
       });
 
       const fileRoot = ctx.workspacePath;
