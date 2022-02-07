@@ -150,3 +150,11 @@ export const EntityTagsPickerFieldExtension = scaffolderPlugin.provide(
     name: 'EntityTagsPicker',
   }),
 );
+
+export const NextScaffolderPage = scaffolderPlugin.provide(
+  createRoutableExtension({
+    name: 'NextScaffolderPage',
+    component: () => import('./next/Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
+  }),
+);

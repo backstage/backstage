@@ -70,4 +70,25 @@ describe('TemplateListPage', () => {
     expect(getByRole('menuitem', { name: 'All' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Starred' })).toBeInTheDocument();
   });
+
+  it('should render the category picker', () => {
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, {}],
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+          [permissionApiRef, {}],
+        ]}
+      >
+        <TemplateListPage />
+      </TestApiProvider>,
+    );
+
+    expect(getByText('Categories')).toBeInTheDocument();
+  });
 });
