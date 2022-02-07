@@ -27,7 +27,7 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { DialogContentText, makeStyles } from '@material-ui/core';
+import { Box, DialogContentText, makeStyles } from '@material-ui/core';
 import classNames from 'classnames';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -148,7 +148,6 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
       }),
     );
   };
-  const focused = false;
 
   return (
     <g onClick={onClick} className={classes.clickable}>
@@ -169,7 +168,6 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
         height={iconSize}
         className={classNames(
           classes.text,
-          focused && 'focused',
           node.root ? 'secondary' : 'primary',
         )}
       />
@@ -177,7 +175,6 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
         ref={idRef}
         className={classNames(
           classes.text,
-          focused && 'focused',
           node.root ? 'secondary' : 'primary',
         )}
         y={paddedHeight / 2}
@@ -211,13 +208,15 @@ export function AncestryPage(props: { entity: Entity }) {
         child entities that ultimately led to the current one existing. Note
         that this is a completely different mechanism from relations.
       </DialogContentText>
-      <DependencyGraph
-        nodes={nodes}
-        edges={edges}
-        renderNode={CustomNode}
-        direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
-        zoom="enable-on-click"
-      />
+      <Box mt={4}>
+        <DependencyGraph
+          nodes={nodes}
+          edges={edges}
+          renderNode={CustomNode}
+          direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
+          zoom="enable-on-click"
+        />
+      </Box>
     </>
   );
 }

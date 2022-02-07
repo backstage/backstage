@@ -28,7 +28,7 @@ export function JsonPage(props: { entity: Entity }) {
         This is the raw entity data as received from the catalog, on JSON form.
       </DialogContentText>
       <DialogContentText>
-        <div style={{ fontSize: '75%' }}>
+        <div style={{ fontSize: '75%' }} data-testid="code-snippet">
           <CodeSnippet
             text={JSON.stringify(sortKeys(props.entity), undefined, 2)}
             language="json"
