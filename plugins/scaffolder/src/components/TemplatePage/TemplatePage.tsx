@@ -127,7 +127,12 @@ export const TemplatePage = ({
     const query = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
     });
-
+    const obj = query?.formData;
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        obj[key] = obj[key] === 'true';
+      }
+    }
     return query.formData ?? {};
   });
   const handleFormReset = () => setFormState({});
