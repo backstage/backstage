@@ -33,7 +33,7 @@ export const generateAirbrakePathRewrite = (
   const apiKey = options.airbrakeConfig.apiKey;
 
   return path => {
-    let newPath = path.replace(/.+?(\/api)/, '');
+    let newPath = path.replace(/.+?(\/api)/g, '');
     if (newPath.includes('?')) {
       newPath += `&key=${apiKey}`;
     } else {
