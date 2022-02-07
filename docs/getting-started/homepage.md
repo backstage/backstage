@@ -112,9 +112,13 @@ That's it! You should now have _(although slightly boring)_ a home page!
 
 <img data-zoomable src="../assets/getting-started/simple-homepage.png" alt="Screenshot of a blank homepage" />
 
-In the next steps, we will make it interesting and useful! There is a default home page template ([storybook link](https://backstage.io/storybook/?path=/story/plugins-home-templates--default-template)) which we will use to set up our home page.
+In the next steps, we will make it interesting and useful!
 
-#### 2. Use the default template
+### Use the default template
+
+There is a default home page template ([storybook link](https://backstage.io/storybook/?path=/story/plugins-home-templates--default-template)) which we will use to set up our home page. Checkout the [blog post announcement](https://backstage.io/blog/2022/01/25/backstage-homepage-templates) about the Backstage home page templates for more information.
+
+<!-- TODO detailed instructions of using one of these templates. -->
 
 ### Composing your Home Page
 
