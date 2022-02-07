@@ -16,7 +16,6 @@
 
 import { AppConfig, Config } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
-import { ParallelOption } from '../parallel';
 import { ConfigSchema } from '@backstage/config-loader';
 
 export type BundlingOptions = {
@@ -25,7 +24,7 @@ export type BundlingOptions = {
   frontendConfig: Config;
   frontendAppConfigs: AppConfig[];
   baseUrl: URL;
-  parallel?: ParallelOption;
+  parallelism?: number;
 };
 
 export type ServeOptions = BundlingPathsOptions & {
@@ -38,7 +37,7 @@ export type BuildOptions = BundlingPathsOptions & {
   // Target directory, defaulting to paths.targetDir
   targetDir?: string;
   statsJsonEnabled: boolean;
-  parallel?: ParallelOption;
+  parallelism?: number;
   schema?: ConfigSchema;
   frontendConfig: Config;
   frontendAppConfigs: AppConfig[];
@@ -47,7 +46,7 @@ export type BuildOptions = BundlingPathsOptions & {
 export type BackendBundlingOptions = {
   checksEnabled: boolean;
   isDev: boolean;
-  parallel?: ParallelOption;
+  parallelism?: number;
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
 };

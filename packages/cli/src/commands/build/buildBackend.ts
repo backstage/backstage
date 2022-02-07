@@ -19,7 +19,7 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import tar, { CreateOptions } from 'tar';
 import { createDistWorkspace } from '../../lib/packager';
-import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
+import { getEnvironmentParallelism } from '../../lib/parallel';
 import { buildPackage, Output } from '../../lib/builder';
 
 const BUNDLE_FILE = 'bundle.tar.gz';
@@ -43,7 +43,7 @@ export async function buildBackend(options: BuildBackendOptions) {
       targetDir: tmpDir,
       buildDependencies: !skipBuildDependencies,
       buildExcludes: [pkg.name],
-      parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
+      parallelism: getEnvironmentParallelism(),
       skeleton: SKELETON_FILE,
     });
 

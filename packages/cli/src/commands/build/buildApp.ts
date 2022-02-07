@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { buildBundle } from '../../lib/bundler';
-import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
+import { getEnvironmentParallelism } from '../../lib/parallel';
 import { loadCliConfig } from '../../lib/config';
 
 interface BuildAppOptions {
@@ -32,7 +32,7 @@ export async function buildApp(options: BuildAppOptions) {
   await buildBundle({
     targetDir,
     entry: 'src/index',
-    parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
+    parallelism: getEnvironmentParallelism(),
     statsJsonEnabled: writeStats,
     ...(await loadCliConfig({
       args: configPaths,

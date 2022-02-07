@@ -14,46 +14,131 @@
  * limitations under the License.
  */
 
-import { isParallelDefault, parseParallel } from './parallel';
+import {
+  parseParallelismOption,
+  getEnvironmentParallelism,
+  runParallelWorkers,
+} from './parallel';
 
-describe('parallel', () => {
-  describe('parseParallel', () => {
-    it('coerces "false" string to boolean', () => {
-      expect(parseParallel('false')).toBeFalsy();
-    });
-
-    it('coerces "true" to boolean', () => {
-      expect(parseParallel('true')).toBeTruthy();
-    });
-
-    it('coerces number string to number', () => {
-      expect(parseParallel('2')).toBe(2);
-    });
-    it.each([[true], [false], [2]])('returns itself for %p', value => {
-      expect(parseParallel(value as any)).toEqual(value);
-    });
-
-    it.each([[undefined], [null]])('returns true for %p', value => {
-      expect(parseParallel(value as any)).toBe(true);
-    });
-
-    it.each([['on'], [2.5], ['2.5']])('throws error for %p', value => {
-      expect(() => parseParallel(value as any)).toThrowError(
-        `Parallel option value '${value}' is not a boolean or integer`,
-      );
-    });
+describe('parseParallelismOption', () => {
+  it('coerces false no parallelism', () => {
+    expect(parseParallelismOption(false)).toBe(1);
+    expect(parseParallelismOption('false')).toBe(1);
   });
 
-  describe('isParallelDefault', () => {
-    it('returns true if default value', () => {
-      expect(isParallelDefault(undefined)).toBeTruthy();
-      expect(isParallelDefault(true)).toBeTruthy();
+  it('coerces true or undefined to default parallelism', () => {
+    expect(parseParallelismOption(true)).toBe(4);
+    expect(parseParallelismOption('true')).toBe(4);
+    expect(parseParallelismOption(undefined)).toBe(4);
+    expect(parseParallelismOption(null)).toBe(4);
+  });
+
+  it('coerces number string to number', () => {
+    expect(parseParallelismOption('2')).toBe(2);
+  });
+
+  it.each([['on'], [2.5], ['2.5']])('throws error for %p', value => {
+    expect(() => parseParallelismOption(value as any)).toThrowError(
+      `Parallel option value '${value}' is not a boolean or integer`,
+    );
+  });
+});
+
+describe('getEnvironmentParallelism', () => {
+  it('reads the parallelism setting from the environment', () => {
+    process.env.BACKSTAGE_CLI_BUILD_PARALLEL = '2';
+    expect(getEnvironmentParallelism()).toBe(2);
+
+    process.env.BACKSTAGE_CLI_BUILD_PARALLEL = 'true';
+    expect(getEnvironmentParallelism()).toBe(4);
+
+    process.env.BACKSTAGE_CLI_BUILD_PARALLEL = 'false';
+    expect(getEnvironmentParallelism()).toBe(1);
+
+    delete process.env.BACKSTAGE_CLI_BUILD_PARALLEL;
+    expect(getEnvironmentParallelism()).toBe(4);
+  });
+});
+
+describe('runParallelWorkers', () => {
+  it('executes work in parallel', async () => {
+    const started = new Array<number>();
+    const done = new Array<number>();
+    const waiting = new Array<() => void>();
+
+    const work = runParallelWorkers({
+      items: [0, 1, 2, 3, 4],
+      parallelismFactor: 0.5, // 2 at a time
+      worker: async item => {
+        started.push(item);
+        await new Promise<void>(resolve => {
+          waiting[item] = resolve;
+        });
+        done.push(item);
+      },
     });
 
-    it('returns false if not default value', () => {
-      expect(isParallelDefault(false)).toBeFalsy();
-      expect(isParallelDefault(2)).toBeFalsy();
-      expect(isParallelDefault('true' as any)).toBeFalsy();
+    await new Promise(resolve => setTimeout(resolve));
+    expect(started).toEqual([0, 1]);
+    expect(done).toEqual([]);
+    waiting[0]();
+
+    await new Promise(resolve => setTimeout(resolve));
+    expect(started).toEqual([0, 1, 2]);
+    expect(done).toEqual([0]);
+    waiting[1]();
+    waiting[2]();
+
+    await new Promise(resolve => setTimeout(resolve));
+    expect(started).toEqual([0, 1, 2, 3, 4]);
+    expect(done).toEqual([0, 1, 2]);
+    waiting[3]();
+    waiting[4]();
+
+    await work;
+    expect(done).toEqual([0, 1, 2, 3, 4]);
+  });
+
+  it('executes work sequentially', async () => {
+    const started = new Array<number>();
+    const done = new Array<number>();
+    const waiting = new Array<() => void>();
+
+    const work = runParallelWorkers({
+      items: [0, 1, 2, 3, 4],
+      parallelismFactor: 0, // 1 at a time
+      worker: async item => {
+        started.push(item);
+        await new Promise<void>(resolve => {
+          waiting[item] = resolve;
+        });
+        done.push(item);
+      },
     });
+
+    await new Promise(resolve => setTimeout(resolve));
+    expect(started).toEqual([0]);
+    expect(done).toEqual([]);
+    waiting[0]();
+
+    await new Promise(resolve => setTimeout(resolve));
+    expect(started).toEqual([0, 1]);
+    expect(done).toEqual([0]);
+    waiting[1]();
+
+    await new Promise(resolve => setTimeout(resolve));
+    expect(started).toEqual([0, 1, 2]);
+    waiting[2]();
+
+    await new Promise(resolve => setTimeout(resolve));
+    expect(started).toEqual([0, 1, 2, 3]);
+    waiting[3]();
+
+    await new Promise(resolve => setTimeout(resolve));
+    expect(started).toEqual([0, 1, 2, 3, 4]);
+    waiting[4]();
+
+    await work;
+    expect(done).toEqual([0, 1, 2, 3, 4]);
   });
 });

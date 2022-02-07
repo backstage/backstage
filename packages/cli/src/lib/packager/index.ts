@@ -24,7 +24,6 @@ import { tmpdir } from 'os';
 import tar, { CreateOptions } from 'tar';
 import { paths } from '../paths';
 import { run } from '../run';
-import { ParallelOption } from '../parallel';
 import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
@@ -69,9 +68,9 @@ type Options = {
   buildExcludes?: string[];
 
   /**
-   * Enable (true/false) or control amount of (number) parallelism in some build steps.
+   * Controls amount of parallelism in some build steps.
    */
-  parallel?: ParallelOption;
+  parallelism?: number;
 
   /**
    * If set, creates a skeleton tarball that contains all package.json files
@@ -115,8 +114,8 @@ export async function createDistWorkspace(
     if (toBuild.length > 0) {
       const scopeArgs = toBuild.flatMap(target => ['--scope', target.name]);
       const lernaArgs =
-        options.parallel && Number.isInteger(options.parallel)
-          ? ['--concurrency', options.parallel.toString()]
+        options.parallelism && Number.isInteger(options.parallelism)
+          ? ['--concurrency', options.parallelism.toString()]
           : [];
 
       await run('yarn', ['lerna', ...lernaArgs, 'run', ...scopeArgs, 'build'], {

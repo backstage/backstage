@@ -20,8 +20,9 @@ import { relative as relativePath } from 'path';
 import { buildPackages, getOutputsForRole } from '../../lib/builder';
 import { PackageGraph } from '../../lib/monorepo';
 import { ExtendedPackage } from '../../lib/monorepo/PackageGraph';
+import { runParallelWorkers } from '../../lib/parallel';
 import { paths } from '../../lib/paths';
-import { getRoleInfo } from '../../lib/role';
+import { detectRoleFromPackage } from '../../lib/role';
 import { buildApp } from '../build/buildApp';
 import { buildBackend } from '../build/buildBackend';
 
@@ -76,26 +77,30 @@ function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
 
 export async function command(cmd: Command): Promise<void> {
   const packages = await PackageGraph.listTargetPackages();
-  const bundledPackages = new Array<ExtendedPackage>();
+  const apps = new Array<ExtendedPackage>();
+  const backends = new Array<ExtendedPackage>();
 
   const parseBuildScript = createScriptOptionsParser(cmd, ['script', 'build']);
 
   const options = packages.flatMap(pkg => {
-    const role = pkg.packageJson.backstage?.role;
+    const role =
+      pkg.packageJson.backstage?.role ?? detectRoleFromPackage(pkg.packageJson);
     if (!role) {
       console.warn(`Ignored ${pkg.packageJson.name} because it has no role`);
       return [];
     }
 
+    if (role === 'app') {
+      apps.push(pkg);
+      return [];
+    } else if (role === 'backend') {
+      backends.push(pkg);
+      return [];
+    }
+
     const outputs = getOutputsForRole(role);
     if (outputs.size === 0) {
-      if (getRoleInfo(role).output.includes('bundle')) {
-        bundledPackages.push(pkg);
-      } else {
-        console.warn(
-          `Ignored ${pkg.packageJson.name} because it has no output`,
-        );
-      }
+      console.warn(`Ignored ${pkg.packageJson.name} because it has no output`);
       return [];
     }
 
@@ -120,13 +125,11 @@ export async function command(cmd: Command): Promise<void> {
   await buildPackages(options);
 
   if (cmd.all) {
-    const apps = bundledPackages.filter(
-      pkg => pkg.packageJson.backstage?.role === 'app',
-    );
-
     console.log('Building apps');
-    await Promise.all(
-      apps.map(async pkg => {
+    await runParallelWorkers({
+      items: apps,
+      parallelismFactor: 1 / 2,
+      worker: async pkg => {
         const buildOptions = parseBuildScript(pkg.packageJson.scripts?.build);
         if (!buildOptions) {
           console.warn(
@@ -139,15 +142,14 @@ export async function command(cmd: Command): Promise<void> {
           configPaths: (buildOptions.config as string[]) ?? [],
           writeStats: Boolean(buildOptions.stats),
         });
-      }),
-    );
+      },
+    });
 
     console.log('Building backends');
-    const backends = bundledPackages.filter(
-      pkg => pkg.packageJson.backstage?.role === 'backend',
-    );
-    await Promise.all(
-      backends.map(async pkg => {
+    await runParallelWorkers({
+      items: backends,
+      parallelismFactor: 1 / 2,
+      worker: async pkg => {
         const buildOptions = parseBuildScript(pkg.packageJson.scripts?.build);
         if (!buildOptions) {
           console.warn(
@@ -159,7 +161,7 @@ export async function command(cmd: Command): Promise<void> {
           targetDir: pkg.dir,
           skipBuildDependencies: true,
         });
-      }),
-    );
+      },
+    });
   }
 }
