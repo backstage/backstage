@@ -32,6 +32,22 @@ describe('<ErrorPage/>', () => {
     expect(getByTestId('go-back-link')).toBeInTheDocument();
   });
 
+  it('should render with additional information of type string', async () => {
+    const { getByText } = await renderInTestApp(
+      <ErrorPage
+        status="404"
+        statusMessage="PAGE NOT FOUND"
+        additionalInfo="This is a string based additional information"
+      />,
+    );
+    expect(
+      getByText(/looks like someone dropped the mic!/i),
+    ).toBeInTheDocument();
+    expect(
+      getByText(/This is a string based additional information/i),
+    ).toBeInTheDocument();
+  });
+
   it('should render with additional information including link', async () => {
     const { getByText } = await renderInTestApp(
       <ErrorPage
