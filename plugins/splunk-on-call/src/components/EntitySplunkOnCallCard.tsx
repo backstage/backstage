@@ -55,7 +55,6 @@ export const MissingAnnotation = () => (
       <code>{SPLUNK_ON_CALL_ROUTING_KEY}</code> annotation.
     </Typography>
     <MissingAnnotationEmptyState annotation={SPLUNK_ON_CALL_TEAM} />
-    <MissingAnnotationEmptyState annotation={SPLUNK_ON_CALL_ROUTING_KEY} />
   </div>
 );
 
