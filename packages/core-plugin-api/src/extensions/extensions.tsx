@@ -75,81 +75,79 @@ export function createRoutableExtension<
    * variable for this extension.
    */
   name?: string;
-  /**
-   * TODO(vinzscam)
-   */
-  permission?: Permission;
 }): Extension<T> {
-  const { component, mountPoint, name, permission } = options;
+  const { component, mountPoint, name } = options;
 
-  return createReactExtension({
-    component: {
-      lazy: () =>
-        component().then(
-          InnerComponent => {
-            const RoutableExtensionWrapper: any = (props: any) => {
-              const app = useApp();
-              const { NotFoundErrorPage } = app.getComponents();
+  return {
+    expose: plugin => {
+      return createReactExtension({
+        component: {
+          lazy: () =>
+            component().then(
+              InnerComponent => {
+                const permission = createPermission(plugin, name);
+                const RoutableExtensionWrapper: any = (props: any) => {
+                  const app = useApp();
+                  const { NotFoundErrorPage } = app.getComponents();
 
-              // Validate that the routing is wired up correctly in the App.tsx
-              try {
-                useRouteRef(mountPoint);
-              } catch (error) {
-                if (typeof error === 'object' && error !== null) {
-                  const { message } = error as { message?: unknown };
-                  if (
-                    typeof message === 'string' &&
-                    message.startsWith('No path for ')
-                  ) {
-                    throw new Error(
-                      `Routable extension component with mount point ${mountPoint} was not discovered in the app element tree. ` +
-                        'Routable extension components may not be rendered by other components and must be ' +
-                        'directly available as an element within the App provider component.',
-                    );
+                  // Validate that the routing is wired up correctly in the App.tsx
+                  try {
+                    useRouteRef(mountPoint);
+                  } catch (error) {
+                    if (typeof error === 'object' && error !== null) {
+                      const { message } = error as { message?: unknown };
+                      if (
+                        typeof message === 'string' &&
+                        message.startsWith('No path for ')
+                      ) {
+                        throw new Error(
+                          `Routable extension component with mount point ${mountPoint} was not discovered in the app element tree. ` +
+                            'Routable extension components may not be rendered by other components and must be ' +
+                            'directly available as an element within the App provider component.',
+                        );
+                      }
+                    }
+                    throw error;
                   }
-                }
-                throw error;
-              }
 
-              if (permission) {
-                return (
-                  <Permissioned
-                    permission={permission}
-                    fallback={<NotFoundErrorPage />}
-                  >
-                    <InnerComponent {...props} />
-                  </Permissioned>
-                );
-              }
-              return <InnerComponent {...props} />;
-            };
+                  return (
+                    <Permissioned
+                      permission={permission}
+                      fallback={<NotFoundErrorPage />}
+                    >
+                      <InnerComponent {...props} />
+                    </Permissioned>
+                  );
+                };
 
-            const componentName =
-              name ||
-              (InnerComponent as { displayName?: string }).displayName ||
-              InnerComponent.name ||
-              'LazyComponent';
+                const componentName =
+                  name ||
+                  (InnerComponent as { displayName?: string }).displayName ||
+                  InnerComponent.name ||
+                  'LazyComponent';
 
-            RoutableExtensionWrapper.displayName = `RoutableExtension(${componentName})`;
+                RoutableExtensionWrapper.displayName = `RoutableExtension(${componentName})`;
 
-            return RoutableExtensionWrapper as T;
-          },
-          error => {
-            const RoutableExtensionWrapper: any = (_: any) => {
-              const app = useApp();
-              const { BootErrorPage } = app.getComponents();
+                return RoutableExtensionWrapper as T;
+              },
+              error => {
+                const RoutableExtensionWrapper: any = (_: any) => {
+                  const app = useApp();
+                  const { BootErrorPage } = app.getComponents();
 
-              return <BootErrorPage step="load-chunk" error={error} />;
-            };
-            return RoutableExtensionWrapper;
-          },
-        ),
+                  return <BootErrorPage step="load-chunk" error={error} />;
+                };
+                return RoutableExtensionWrapper;
+              },
+            ),
+        },
+        data: {
+          'core.mountPoint': mountPoint,
+        },
+        name,
+      }).expose(plugin);
     },
-    data: {
-      'core.mountPoint': mountPoint,
-    },
-    name,
-  });
+  };
 }
 
 /**
@@ -181,28 +179,22 @@ export function createComponentExtension<
    * variable for this extension.
    */
   name?: string;
-  /**
-   * TODO(vinzscam)
-   */
-  permission?: Permission;
 }): Extension<T> {
-  const { component, name, permission } = options;
+  const { component, name } = options;
   const ExtensionInstance = createReactExtension({ component, name });
 
-  if (permission) {
-    return {
-      expose(plugin: BackstagePlugin<any, any>) {
-        const Wrapper: FC<{}> = props => (
-          <Permissioned permission={permission}>
-            {ExtensionInstance.expose(plugin)(props)}
-          </Permissioned>
-        );
-        Wrapper.displayName = `ExtensionWrapper(${name})`;
-        return Wrapper as T;
-      },
-    };
-  }
-  return ExtensionInstance;
+  return {
+    expose(plugin: BackstagePlugin<any, any>) {
+      const permission = createPermission(plugin, name);
+      const Wrapper: FC<{}> = props => (
+        <Permissioned permission={permission}>
+          {ExtensionInstance.expose(plugin)(props)}
+        </Permissioned>
+      );
+      Wrapper.displayName = `ExtensionWrapper(${name})`;
+      return Wrapper as T;
+    },
+  };
 }
 
 /**
@@ -300,5 +292,15 @@ export function createReactExtension<
       Result.displayName = `Extension(${componentName})`;
       return Result;
     },
+  };
+}
+
+function createPermission(
+  plugin: BackstagePlugin<any, any>,
+  name?: string,
+): Permission {
+  return {
+    name: [plugin.getId(), name || 'default'].join('.'),
+    attributes: {},
   };
 }
