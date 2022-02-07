@@ -60,3 +60,15 @@ export const EntityNewRelicDashboardCard = newRelicDashboardPlugin.provide(
     },
   }),
 );
+
+export const DashboardSnapshotComponent = newRelicDashboardPlugin.provide(
+  createComponentExtension({
+    name: 'DashboardSnapshotComponent',
+    component: {
+      lazy: () =>
+        import(
+          './components/NewRelicDashboard/DashboardSnapshotList/DashboardSnapshot'
+        ).then(m => m.DashboardSnapshot),
+    },
+  }),
+);
