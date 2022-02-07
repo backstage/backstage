@@ -49,7 +49,6 @@ module.exports = {
     '@typescript-eslint/no-redeclare': 'error',
     'no-undef': 'off',
     'import/newline-after-import': 'error',
-    'import/no-duplicates': 'warn',
     'import/no-extraneous-dependencies': [
       'error',
       {
