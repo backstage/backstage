@@ -55,8 +55,8 @@ const useStyles = makeStyles(theme => ({
 
 function TabPanel(props: {
   children?: React.ReactNode;
-  index: any;
-  value: any;
+  index: number;
+  value: number;
 }) {
   const { children, value, index, ...other } = props;
   const classes = useStyles();
