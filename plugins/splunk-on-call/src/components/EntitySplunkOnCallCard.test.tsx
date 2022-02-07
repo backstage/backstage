@@ -212,7 +212,7 @@ describe('SplunkOnCallCard', () => {
       ),
     );
     await waitFor(() => !queryByTestId('progress'));
-    expect(getAllByText('Missing Annotation').length).toEqual(2);
+    expect(getAllByText('Missing Annotation').length).toEqual(1);
   });
 
   it('handles warning for incorrect team annotation', async () => {
