@@ -10,6 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
 export const EntityTodoContent: () => JSX.Element;
@@ -79,5 +80,10 @@ export type TodoListResult = {
 };
 
 // @public
-export const todoPlugin: BackstagePlugin<{}, {}>;
+export const todoPlugin: BackstagePlugin<
+  {
+    entityContent: RouteRef<undefined>;
+  },
+  {}
+>;
 ```
