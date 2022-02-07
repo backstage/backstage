@@ -127,8 +127,8 @@ describe('bump', () => {
     });
     expect(logs.filter(Boolean)).toEqual([
       'Using default pattern glob @backstage/*',
-      'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/core',
+      'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/core-api',
       'Some packages are outdated, updating',
       'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
@@ -252,19 +252,19 @@ describe('bump', () => {
     });
     expect(logs.filter(Boolean)).toEqual([
       'Using custom pattern glob @{backstage,backstage-extra}/*',
-      'Checking for updates of @backstage/theme',
-      'Checking for updates of @backstage-extra/custom-two',
-      'Checking for updates of @backstage-extra/custom',
       'Checking for updates of @backstage/core',
+      'Checking for updates of @backstage-extra/custom',
+      'Checking for updates of @backstage-extra/custom-two',
+      'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/core-api',
       'Some packages are outdated, updating',
-      'unlocking @backstage-extra/custom@^1.0.1 ~> 1.1.0',
       'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
+      'unlocking @backstage-extra/custom@^1.0.1 ~> 1.1.0',
       'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
       'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage-extra/custom-two in a to ^2.0.0',
-      'bumping @backstage/theme in b to ^2.0.0',
       'bumping @backstage-extra/custom-two in b to ^2.0.0',
+      'bumping @backstage/theme in b to ^2.0.0',
       'Running yarn install to install new versions',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage-extra/custom-two : 1.0.0 ~> 2.0.0',
@@ -348,14 +348,14 @@ describe('bump', () => {
     });
     expect(logs.filter(Boolean)).toEqual([
       'Using default pattern glob @backstage/*',
-      'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/core',
-      'Package info not found, ignoring package @backstage/theme',
-      'Package info not found, ignoring package @backstage/core',
       'Checking for updates of @backstage/theme',
-      'Checking for updates of @backstage/core',
-      'Package info not found, ignoring package @backstage/theme',
       'Package info not found, ignoring package @backstage/core',
+      'Package info not found, ignoring package @backstage/theme',
+      'Checking for updates of @backstage/core',
+      'Checking for updates of @backstage/theme',
+      'Package info not found, ignoring package @backstage/core',
+      'Package info not found, ignoring package @backstage/theme',
       'All Backstage packages are up to date!',
     ]);
 

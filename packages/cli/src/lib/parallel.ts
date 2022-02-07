@@ -72,21 +72,19 @@ export async function runParallelWorkers<TItem>(
     ? parseParallelismOption(parallelismSetting)
     : getEnvironmentParallelism();
 
-  const iterator = items[Symbol.iterator]();
+  const sharedIterator = items[Symbol.iterator]();
+  const sharedIterable = {
+    [Symbol.iterator]: () => sharedIterator,
+  };
 
-  async function pop() {
-    const el = iterator.next();
-    if (el.done) {
-      return;
-    }
-
-    await worker(el.value);
-    await pop();
-  }
-
+  const workerCount = Math.max(Math.floor(parallelismFactor * parallelism), 1);
   return Promise.all(
-    Array(Math.max(Math.floor(parallelismFactor * parallelism), 1))
+    Array(workerCount)
       .fill(0)
-      .map(() => pop()),
+      .map(async () => {
+        for (const value of sharedIterable) {
+          await worker(value);
+        }
+      }),
   );
 }
