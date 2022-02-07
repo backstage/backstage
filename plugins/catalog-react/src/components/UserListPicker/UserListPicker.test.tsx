@@ -253,6 +253,42 @@ describe('<UserListPicker />', () => {
     });
   });
 
+  it('responds to external queryParameters changes', () => {
+    const updateFilters = jest.fn();
+    const rendered = render(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            backendEntities,
+            updateFilters,
+            queryParameters: { user: ['all'] },
+          }}
+        >
+          <UserListPicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      user: new UserListFilter('all', mockIsOwnedEntity, mockIsStarredEntity),
+    });
+    rendered.rerender(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            backendEntities,
+            updateFilters,
+            queryParameters: { user: ['owned'] },
+          }}
+        >
+          <UserListPicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      user: new UserListFilter('owned', mockIsOwnedEntity, mockIsStarredEntity),
+    });
+  });
+
   describe.each`
     type         | filterFn
     ${'owned'}   | ${mockIsOwnedEntity}

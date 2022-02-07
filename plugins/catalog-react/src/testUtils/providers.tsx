@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren, useCallback, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 import {
   DefaultEntityFilters,
   EntityListContext,
@@ -32,6 +37,7 @@ export const MockEntityListContextProvider = ({
   const [filters, setFilters] = useState<DefaultEntityFilters>(
     value?.filters ?? {},
   );
+
   const updateFilters = useCallback(
     (
       update:
@@ -49,23 +55,32 @@ export const MockEntityListContextProvider = ({
     [],
   );
 
-  const defaultContext: EntityListContextProps = {
-    entities: [],
-    backendEntities: [],
-    updateFilters,
-    filters,
-    loading: false,
-    queryParameters: {},
-  };
+  // Memoize the default values since pickers have useEffect triggers on these; naively defaulting
+  // below with `?? <X>` breaks referential equality on subsequent updates.
+  const defaultValues = useMemo(
+    () => ({
+      entities: [],
+      backendEntities: [],
+      queryParameters: {},
+    }),
+    [],
+  );
 
-  // Extract value.filters to avoid overwriting it; some tests exercise filter updates. The value
-  // provided is used as the initial seed in useState above.
-  const { filters: _, ...otherContextFields } = value ?? {};
+  const resolvedValue: EntityListContextProps = useMemo(
+    () => ({
+      entities: value?.entities ?? defaultValues.entities,
+      backendEntities: value?.backendEntities ?? defaultValues.backendEntities,
+      updateFilters: value?.updateFilters ?? updateFilters,
+      filters,
+      loading: value?.loading ?? false,
+      queryParameters: value?.queryParameters ?? defaultValues.queryParameters,
+      error: value?.error,
+    }),
+    [value, defaultValues, filters, updateFilters],
+  );
 
   return (
-    <EntityListContext.Provider
-      value={{ ...defaultContext, ...otherContextFields }}
-    >
+    <EntityListContext.Provider value={resolvedValue}>
       {children}
     </EntityListContext.Provider>
   );

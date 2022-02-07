@@ -191,4 +191,34 @@ describe('<EntityOwnerPicker/>', () => {
       owner: undefined,
     });
   });
+
+  it('responds to external queryParameters changes', () => {
+    const updateFilters = jest.fn();
+    const rendered = render(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { owners: ['team-a'] },
+        }}
+      >
+        <EntityOwnerPicker />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['team-a']),
+    });
+    rendered.rerender(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { owners: ['team-b'] },
+        }}
+      >
+        <EntityOwnerPicker />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['team-b']),
+    });
+  });
 });
