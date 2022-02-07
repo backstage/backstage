@@ -1,7 +1,7 @@
 name: Verify DCO
 on:
   schedule:
-    - cron:  '*/15 * * * *'
+    - cron: '*/15 * * * *'
 
 jobs:
   dco-helper:
