@@ -40,7 +40,7 @@ describe('The production Airbrake API', () => {
   it('throws if fetching groups was unsuccessful', async () => {
     const scope = nock('https://api.airbrake.io')
       .get('/api/v4/projects/123456/groups?key=fakeApiKey')
-      .reply(500, mockGroupsData);
+      .reply(500);
     expect(scope.isDone()).toBe(false);
 
     await expect(productionApi.fetchGroups('123456')).rejects.toThrow();
