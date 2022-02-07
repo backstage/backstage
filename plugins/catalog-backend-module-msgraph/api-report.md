@@ -149,6 +149,7 @@ export type MicrosoftGraphProviderConfig = {
   clientId: string;
   clientSecret: string;
   userFilter?: string;
+  userExpand?: string[];
   userGroupMemberFilter?: string;
   groupFilter?: string;
 };
@@ -178,6 +179,7 @@ export function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
   tenantId: string,
   options: {
+    userExpand?: string[];
     userFilter?: string;
     userGroupMemberFilter?: string;
     groupFilter?: string;

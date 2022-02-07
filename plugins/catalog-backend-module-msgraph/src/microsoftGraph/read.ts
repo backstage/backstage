@@ -85,6 +85,7 @@ export async function readMicrosoftGraphUsers(
   client: MicrosoftGraphClient,
   options: {
     userFilter?: string;
+    userExpand?: string[];
     transformer?: UserTransformer;
     logger: Logger;
   },
@@ -99,6 +100,7 @@ export async function readMicrosoftGraphUsers(
 
   for await (const user of client.getUsers({
     filter: options.userFilter,
+    expand: options.userExpand,
   })) {
     // Process all users in parallel, otherwise it can take quite some time
     promises.push(
@@ -500,6 +502,7 @@ export async function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
   tenantId: string,
   options: {
+    userExpand?: string[];
     userFilter?: string;
     userGroupMemberFilter?: string;
     groupFilter?: string;
@@ -524,6 +527,7 @@ export async function readMicrosoftGraphOrg(
   } else {
     const { users: usersWithFilter } = await readMicrosoftGraphUsers(client, {
       userFilter: options.userFilter,
+      userExpand: options.userExpand,
       transformer: options.userTransformer,
       logger: options.logger,
     });
