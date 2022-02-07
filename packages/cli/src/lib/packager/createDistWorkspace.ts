@@ -92,7 +92,7 @@ type Options = {
  * The target workspace will end up containing dist version of each package and
  * will be suitable for packaging e.g. into a docker image.
  *
- * This creates a structure that is functionally similar to if the packages where
+ * This creates a structure that is functionally similar to if the packages were
  * installed from npm, but uses Yarn workspaces to link to them at runtime.
  */
 export async function createDistWorkspace(
