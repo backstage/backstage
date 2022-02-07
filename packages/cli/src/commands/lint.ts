@@ -18,14 +18,14 @@ import { Command } from 'commander';
 import { paths } from '../lib/paths';
 import { ESLint } from 'eslint';
 
-export default async (cmd: Command) => {
+export default async (cmd: Command, cmdArgs: string[]) => {
   const eslint = new ESLint({
     cwd: paths.targetDir,
     fix: cmd.fix,
     extensions: ['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs'],
   });
 
-  const results = await eslint.lintFiles(['.']);
+  const results = await eslint.lintFiles(cmdArgs ?? ['.']);
 
   if (cmd.fix) {
     await ESLint.outputFixes(results);
