@@ -35,8 +35,10 @@ export const DomainCard: ({ entity }: DomainCardProps) => JSX.Element;
 // @public (undocumented)
 export const DomainExplorerContent: ({
   title,
+  filter,
 }: {
   title?: string | undefined;
+  filter?: Record<string, string | symbol | (string | symbol)[]> | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "ExploreLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
