@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage plugin that helps you build a home page
- *
- * @packageDocumentation
- */
-
-export {
-  homePlugin,
-  HomepageCompositionRoot,
-  HomePageRandomJoke,
-  HomePageToolkit,
-  HomePageCompanyLogo,
-  HomePageStarredEntities,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
-  WelcomeTitle,
-} from './plugin';
-export { SettingsModal, HeaderWorldClock } from './components';
-export type { ClockConfig } from './components';
-export { createCardExtension } from './extensions';
+export { Content } from './Content';

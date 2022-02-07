@@ -115,3 +115,16 @@ export const HomePageToolkit = homePlugin.provide(
     components: () => import('./homePageComponents/Toolkit'),
   }),
 );
+
+/**
+ * A component to display a list of starred entities for the user.
+ *
+ * @public
+ */
+export const HomePageStarredEntities = homePlugin.provide(
+  createCardExtension({
+    name: 'HomePageStarredEntities',
+    title: 'Your Starred Entities',
+    components: () => import('./homePageComponents/StarredEntities'),
+  }),
+);
