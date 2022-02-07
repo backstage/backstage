@@ -53,7 +53,12 @@ module.exports = {
     'import/no-extraneous-dependencies': [
       'error',
       {
-        devDependencies: false,
+        devDependencies: [
+          '**/*.test.*',
+          '**/*.stories.*',
+          'src/setupTests.*',
+          'dev/**',
+        ],
         optionalDependencies: true,
         peerDependencies: true,
         bundledDependencies: true,
@@ -99,21 +104,6 @@ module.exports = {
         'react/prop-types': 0,
         '@typescript-eslint/no-unused-vars': 'off',
         'no-undef': 'off',
-      },
-    },
-    {
-      files: ['*.test.*', '*.stories.*', 'src/setupTests.*', 'dev/**'],
-      rules: {
-        // Tests are allowed to import dev dependencies
-        'import/no-extraneous-dependencies': [
-          'error',
-          {
-            devDependencies: true,
-            optionalDependencies: true,
-            peerDependencies: true,
-            bundledDependencies: true,
-          },
-        ],
       },
     },
   ],

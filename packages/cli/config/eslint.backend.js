@@ -58,7 +58,7 @@ module.exports = {
     'import/no-extraneous-dependencies': [
       'error',
       {
-        devDependencies: false,
+        devDependencies: ['**/*.test.*', 'src/setupTests.*', 'dev/**'],
         optionalDependencies: true,
         peerDependencies: true,
         bundledDependencies: true,
@@ -97,16 +97,6 @@ module.exports = {
     {
       files: ['*.test.*', 'src/setupTests.*', 'dev/**'],
       rules: {
-        // Tests are allowed to import dev dependencies
-        'import/no-extraneous-dependencies': [
-          'error',
-          {
-            devDependencies: true,
-            optionalDependencies: true,
-            peerDependencies: true,
-            bundledDependencies: true,
-          },
-        ],
         'no-restricted-syntax': ['error', ...globalRestrictedSyntax],
       },
     },
