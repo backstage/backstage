@@ -15,33 +15,28 @@
  */
 
 import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Avatar from '@material-ui/core/Avatar';
 
 type Props = {
   text: string;
   color: string;
 };
 
-export const ShortcutIcon = ({ text, color }: Props) => {
-  const size = 28;
-  return (
-    <svg
-      viewBox={`0 0 ${size} ${size}`}
-      height={size}
-      width={size}
-      style={{ filter: 'contrast(150%) brightness(1.4)' }}
-    >
-      <circle r={size / 2} cx={size / 2} cy={size / 2} fill={color} />
-      <text
-        dy={2 + size / 2}
-        dx={size / 2}
-        fontWeight="bold"
-        fontSize="13"
-        textAnchor="middle"
-        alignmentBaseline="middle"
-        fill="black"
-      >
-        {text}
-      </text>
-    </svg>
-  );
+const useStyles = makeStyles(theme => ({
+  avatar: (props: Props) => ({
+    color: theme.palette.getContrastText(props.color),
+    backgroundColor: props.color,
+    width: 28,
+    height: 28,
+    fontWeight: 'bold',
+    fontSize: 13,
+    filter: 'contrast(150%) brightness(1.4)',
+  }),
+}));
+
+export const ShortcutIcon = (props: Props) => {
+  const classes = useStyles(props);
+
+  return <Avatar className={classes.avatar}>{props.text}</Avatar>;
 };
