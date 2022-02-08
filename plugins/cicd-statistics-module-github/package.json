@@ -1,0 +1,39 @@
+{
+  "name": "@backstage/plugin-cicd-statistics-module-github",
+  "description": "CI/CD Statistics plugin module; GitHub Actions",
+  "version": "0.0.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "private": true,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/cicd-statistics-module-github"
+  },
+  "scripts": {
+    "lint": "backstage-lint",
+    "diff": "internal-backstage-cli plugin:diff",
+    "start": "internal-backstage-cli plugin:serve"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "^0.9.10",
+    "@backstage/plugin-cicd-statistics": "^0.1.0",
+    "@backstage/plugin-github-octokit": "^0.0.0",
+    "already": "^3.2.0",
+    "lodash": "^4.17.21",
+    "luxon": "^2.0.2"
+  },
+  "peerDependencies": {
+    "@octokit/graphql": "^4.8.0",
+    "@octokit/rest": "^18.12.0",
+    "react": "^16.13.1 || ^17.0.0"
+  },
+  "files": [
+    "dist"
+  ]
+}

@@ -4047,15 +4047,6 @@
     "@octokit/types" "^6.0.3"
     universal-user-agent "^6.0.0"
 
-"@octokit/graphql@^4.8.0":
-  version "4.8.0"
-  resolved "https://registry.npmjs.org/@octokit/graphql/-/graphql-4.8.0.tgz#664d9b11c0e12112cbf78e10f49a05959aa22cc3"
-  integrity sha512-0gv+qLSBLKF0z8TKaSKTsS39scVKF9dbMxJpj3U0vC7wjNWFuIpL/z76Qe2fiuCbDRcJSavkXsVtMS6/dtQQsg==
-  dependencies:
-    "@octokit/request" "^5.6.0"
-    "@octokit/types" "^6.0.3"
-    universal-user-agent "^6.0.0"
-
 "@octokit/oauth-app@^3.3.2", "@octokit/oauth-app@^3.5.1":
   version "3.6.0"
   resolved "https://registry.npmjs.org/@octokit/oauth-app/-/oauth-app-3.6.0.tgz#36f660c7eb6b5a5cd23f6207a8d95e74b6834db0"
@@ -18206,8 +18197,8 @@ octokit-plugin-create-pull-request@^3.10.0:
 
 octokit@^1.7.1:
   version "1.7.1"
-  resolved "https://registry.npmjs.org/octokit/-/octokit-1.7.1.tgz#d86e51c8e0cec65cb64822ca2c9ff1b052593799"
-  integrity sha512-1b7eRgU8uWetHOWr8f9ptnVo2EKbrkOfocMeQdpgCt7tl/LK67HptFsy2Xg4fMjsJ/+onoBJW0hy/fO0In3/uA==
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/octokit/-/octokit-1.7.1.tgz#d86e51c8e0cec65cb64822ca2c9ff1b052593799"
+  integrity sha1-2G5RyODOxly2SCLKLJ/xsFJZN5k=
   dependencies:
     "@octokit/app" "^12.0.4"
     "@octokit/core" "^3.5.1"
