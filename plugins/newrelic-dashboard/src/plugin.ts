@@ -60,7 +60,14 @@ export const EntityNewRelicDashboardCard = newRelicDashboardPlugin.provide(
     },
   }),
 );
-
+/**
+ * Render dashboard snapshots from Newrelic in backstage. Use dashboards which have the tag `isDashboardPage: true`
+ *
+ * @remarks
+ * This can be helpful for rendering dashboards outside of Entity Catalog.
+ *
+ * @public
+ */
 export const DashboardSnapshotComponent = newRelicDashboardPlugin.provide(
   createComponentExtension({
     name: 'DashboardSnapshotComponent',
