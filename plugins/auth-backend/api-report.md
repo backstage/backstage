@@ -428,9 +428,6 @@ export type GoogleProviderOptions = {
 export class IdentityClient {
   constructor(options: { discovery: PluginEndpointDiscovery; issuer: string });
   authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
-  static getBearerToken(
-    authorizationHeader: string | undefined,
-  ): string | undefined;
 }
 
 // Warning: (ae-missing-release-tag) "microsoftEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

@@ -199,38 +199,6 @@ describe('IdentityClient', () => {
     });
   });
 
-  describe('getBearerToken', () => {
-    it('should return undefined on undefined input', async () => {
-      const token = IdentityClient.getBearerToken(undefined);
-      expect(token).toBeUndefined();
-    });
-
-    it('should return undefined on malformed input', async () => {
-      const token = IdentityClient.getBearerToken('malformed');
-      expect(token).toBeUndefined();
-    });
-
-    it('should return undefined on unexpected scheme', async () => {
-      const token = IdentityClient.getBearerToken('Basic token');
-      expect(token).toBeUndefined();
-    });
-
-    it('should return Bearer token', async () => {
-      const token = IdentityClient.getBearerToken('Bearer token');
-      expect(token).toEqual('token');
-    });
-
-    it('should return Bearer token despite extra space', async () => {
-      const token = IdentityClient.getBearerToken('Bearer \n token ');
-      expect(token).toEqual('token');
-    });
-
-    it('should return Bearer token despite unconventionial case', async () => {
-      const token = IdentityClient.getBearerToken('bEARER token');
-      expect(token).toEqual('token');
-    });
-  });
-
   describe('listPublicKeys', () => {
     const defaultServiceResponse: {
       keys: JSONWebKey[];

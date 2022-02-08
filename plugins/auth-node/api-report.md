@@ -4,5 +4,7 @@
 
 ```ts
 // @public
-export const COMMON_CONSTANT = 1;
+export function getBearerTokenFromAuthorizationHeader(
+  authorizationHeader: unknown,
+): string | undefined;
 ```

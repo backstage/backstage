@@ -85,20 +85,6 @@ export class IdentityClient {
   }
 
   /**
-   * Parses the given authorization header and returns
-   * the bearer token, or null if no bearer token is given
-   */
-  static getBearerToken(
-    authorizationHeader: string | undefined,
-  ): string | undefined {
-    if (typeof authorizationHeader !== 'string') {
-      return undefined;
-    }
-    const matches = authorizationHeader.match(/Bearer\s+(\S+)/i);
-    return matches?.[1];
-  }
-
-  /**
    * Returns the public signing key matching the given jwt token,
    * or null if no matching key was found
    */

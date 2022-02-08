@@ -30,6 +30,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/plugin-auth-node": "^0.0.0",
     "@backstage/backend-common": "^0.10.7-next.0",
     "@backstage/catalog-client": "^0.5.5",
     "@backstage/catalog-model": "^0.9.10",

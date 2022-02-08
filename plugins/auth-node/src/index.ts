@@ -20,9 +20,4 @@
  * @packageDocumentation
  */
 
-/**
- * Dummy.
- *
- * @public
- */
-export const COMMON_CONSTANT = 1;
+export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
