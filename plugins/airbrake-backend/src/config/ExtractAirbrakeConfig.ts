@@ -15,12 +15,27 @@
  */
 import { Config } from '@backstage/config';
 
+/**
+ * The Airbrake config object
+ *
+ * @public
+ */
 export type AirbrakeConfig = {
+  /**
+   * The API Key
+   */
   apiKey: string;
 };
 
+/**
+ * Extract the Airbrake config from a config object
+ *
+ * @public
+ *
+ * @param config - The config object to extract from
+ */
 export function extractAirbrakeConfig(config: Config): AirbrakeConfig {
   return {
-    apiKey: config.getString('integrations.airbrake.apiKey'),
+    apiKey: config.getString('airbrake.apiKey'),
   };
 }

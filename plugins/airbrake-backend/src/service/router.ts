@@ -22,11 +22,30 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { AirbrakeConfig } from '../config';
 import { Options } from 'http-proxy-middleware/dist/types';
 
+/**
+ * The router options that are needed when creating a router.
+ *
+ * @public
+ */
 export interface RouterOptions {
+  /**
+   * A logger object
+   */
   logger: Logger;
+
+  /**
+   * The Airbrake config obtained from {@link extractAirbrakeConfig}
+   */
   airbrakeConfig: AirbrakeConfig;
 }
 
+/**
+ * Mainly used internally to generate the path.
+ *
+ * @internal
+ *
+ * @param options - Router options
+ */
 export const generateAirbrakePathRewrite = (
   options: RouterOptions,
 ): Options['pathRewrite'] => {
@@ -43,6 +62,13 @@ export const generateAirbrakePathRewrite = (
   };
 };
 
+/**
+ * Create the Airbrake Router, used for making API calls to the Airbrake API.
+ *
+ * @public
+ *
+ * @param options - Router options
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
