@@ -302,7 +302,9 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
 
     navigate(
       generatePath(
-        `${rootLink()}/templates/:templateName?${qs.stringify({ formData })}`,
+        `${rootLink()}/templates/:templateName?${qs.stringify({
+          formData: JSON.stringify(formData),
+        })}`,
         {
           templateName: taskStream.task!.spec.metadata!.name,
         },
