@@ -218,6 +218,7 @@ const NO_WARNING_PACKAGES = [
   'packages/types',
   'packages/release-manifests',
   'packages/version-bridge',
+  'plugins/auth-node',
   'plugins/catalog-backend-module-ldap',
   'plugins/catalog-backend-module-msgraph',
   'plugins/catalog-common',
