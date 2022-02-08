@@ -16,6 +16,7 @@
 
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
 import { AnyApiFactory } from '../apis/system';
+import { NotificationApi } from '../apis/definitions/NotificationApi';
 
 /**
  * Plugin extension type.
@@ -88,6 +89,12 @@ export type PluginConfig<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
+  notificationsSource?: [
+    {
+      id: string;
+      initialise?(notificationApi: NotificationApi): void;
+    },
+  ];
 };
 
 /**

@@ -292,6 +292,18 @@ export class AppManager implements BackstageApp {
         }
       }, [hasConfigApi, loadedConfig, featureFlags]);
 
+      useEffect(() => {
+        const notificationsApi = this.getApiHolder().get(notificationsApiRef);
+
+        for (const plugin of this.plugins.values()) {
+          if ('notificationsSources' in plugin) {
+            for (const source of plugin.getNotificationSources()) {
+              source.initialise(notificationsApi);
+            }
+          }
+        }
+      }, []);
+
       if ('node' in loadedConfig) {
         // Loading or error
         return loadedConfig.node;

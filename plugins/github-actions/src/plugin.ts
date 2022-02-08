@@ -24,6 +24,7 @@ import {
   createRoutableExtension,
   createComponentExtension,
 } from '@backstage/core-plugin-api';
+// import { NotificationApi } from '@backstage/core-plugin-api/src/apis/definitions/NotificationApi';
 
 export const githubActionsPlugin = createPlugin({
   id: 'github-actions',
@@ -38,6 +39,18 @@ export const githubActionsPlugin = createPlugin({
   routes: {
     entityContent: rootRouteRef,
   },
+  notificationsSource: [
+    {
+      id: 'github',
+      // initialise: (notificationApi: NotificationApi) => {
+      //   setInterval(() => {
+      //     // Poll backend for messages -  ?? keep track of messages timestamps + userId + team + pluginId ??
+      //     // Post message to api
+      //     notificationApi.post(message);
+      //   }, 100);
+      // },
+    },
+  ],
 });
 
 export const EntityGithubActionsContent = githubActionsPlugin.provide(
