@@ -67,16 +67,17 @@ export default async (cmd: Command) => {
   }
 
   let findTargetVersion: (name: string) => Promise<string>;
+  let releaseManifest: ReleaseManifest;
   if (semver.valid(cmd.release)) {
+    releaseManifest = await getByVersion({ version: cmd.release });
     findTargetVersion = createStrictVersionFinder({
-      releaseManifest: await getByVersion({ version: cmd.release }),
+      releaseManifest,
     });
   } else {
+    releaseManifest = await getByReleaseLine({ releaseLine: cmd.release });
     findTargetVersion = createVersionFinder({
       releaseLine: cmd.releaseLine,
-      releaseManifest: await getByReleaseLine({
-        releaseLine: cmd.release,
-      }),
+      releaseManifest,
     });
   }
 
@@ -233,8 +234,12 @@ export default async (cmd: Command) => {
 
     // Do not update backstage.json when upgrade patterns are used.
     if (pattern === DEFAULT_PATTERN_GLOB) {
-      await bumpBackstageJsonVersion(
-        await findTargetVersion('@backstage/create-app'),
+      await bumpBackstageJsonVersion(releaseManifest.releaseVersion);
+    } else {
+      console.log(
+        chalk.yellow(
+          `Skipping backstage.json update as custom pattern is used`,
+        ),
       );
     }
     console.log();
@@ -388,7 +393,7 @@ export function createVersionFinder(options: {
   };
 }
 
-export async function bumpBackstageJsonVersion(createAppVersion: string) {
+export async function bumpBackstageJsonVersion(version: string) {
   const backstageJsonPath = paths.resolveTargetRoot(BACKSTAGE_JSON);
   const backstageJson = await fs.readJSON(backstageJsonPath).catch(e => {
     if (e.code === 'ENOENT') {
@@ -398,7 +403,7 @@ export async function bumpBackstageJsonVersion(createAppVersion: string) {
     throw e;
   });
 
-  if (backstageJson?.version === createAppVersion) {
+  if (backstageJson?.version === version) {
     return;
   }
 
@@ -412,7 +417,7 @@ export async function bumpBackstageJsonVersion(createAppVersion: string) {
 
   await fs.writeJson(
     backstageJsonPath,
-    { ...backstageJson, version: createAppVersion },
+    { ...backstageJson, version },
     {
       spaces: 2,
       encoding: 'utf8',

@@ -155,8 +155,6 @@ describe('bump', () => {
       'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
       'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/theme in b to ^2.0.0',
-      'Checking for updates of @backstage/create-app',
-      'Creating backstage.json',
       'Running yarn install to install new versions',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 2.0.0',
@@ -164,7 +162,7 @@ describe('bump', () => {
       'Version bump complete!',
     ]);
 
-    expect(runObj.runPlain).toHaveBeenCalledTimes(4);
+    expect(runObj.runPlain).toHaveBeenCalledTimes(3);
     expect(runObj.runPlain).toHaveBeenCalledWith(
       'yarn',
       'info',
@@ -246,6 +244,7 @@ describe('bump', () => {
           res(
             ctx.status(200),
             ctx.json({
+              releaseVersion: '0.0.1',
               packages: [
                 {
                   name: '@backstage/theme',
@@ -274,7 +273,6 @@ describe('bump', () => {
       'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
       'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/theme in b to ^5.0.0',
-      'Checking for updates of @backstage/create-app',
       'Creating backstage.json',
       'Running yarn install to install new versions',
       '⚠️  The following packages may have breaking changes:',
@@ -365,10 +363,10 @@ describe('bump', () => {
           res(
             ctx.status(200),
             ctx.json({
+              releaseVersion: '2.0.0',
               packages: [
                 { name: '@backstage/core', version: '5.0.0' },
                 { name: '@backstage/core-api', version: '5.0.0' },
-                { name: '@backstage/create-app', version: '2.0.0' },
               ],
             }),
           ),
@@ -391,7 +389,6 @@ describe('bump', () => {
       'Some packages are outdated, updating',
       'bumping @backstage/core in a to ^5.0.0',
       'bumping @backstage/core in b to ^5.0.0',
-      'Checking for updates of @backstage/create-app',
       'Creating backstage.json',
       'Running yarn install to install new versions',
       '⚠️  The following packages may have breaking changes:',
@@ -521,6 +518,7 @@ describe('bump', () => {
       'bumping @backstage-extra/custom-two in a to ^2.0.0',
       'bumping @backstage-extra/custom-two in b to ^2.0.0',
       'bumping @backstage/theme in b to ^2.0.0',
+      'Skipping backstage.json update as custom pattern is used',
       'Running yarn install to install new versions',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage-extra/custom-two : 1.0.0 ~> 2.0.0',
