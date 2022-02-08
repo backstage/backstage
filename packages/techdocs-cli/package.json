@@ -21,12 +21,13 @@
   "types": "",
   "scripts": {
     "start": "nodemon --",
-    "build": "./scripts/build.sh",
+    "build": "backstage-cli build --outputs cjs",
     "clean": "backstage-cli clean",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test --testPathIgnorePatterns=src/e2e.test.ts",
     "test:e2e": "backstage-cli test src/e2e.test.ts",
-    "test:e2e:ci": "backstage-cli test --watchAll=false --ci src/e2e.test.ts"
+    "test:e2e:ci": "backstage-cli test --watchAll=false --ci src/e2e.test.ts",
+    "prepack": "./scripts/prepack.sh"
   },
   "bin": {
     "techdocs-cli": "bin/techdocs-cli"
@@ -40,7 +41,7 @@
     "@types/node": "^14.14.32",
     "@types/serve-handler": "^6.1.0",
     "@types/webpack-env": "^1.15.3",
-    "techdocs-cli-embedded-app": "file:../techdocs-cli-embedded-app",
+    "techdocs-cli-embedded-app": "link:../techdocs-cli-embedded-app",
     "find-process": "^1.4.5",
     "nodemon": "^2.0.2",
     "ts-node": "^10.0.0"
@@ -57,6 +58,7 @@
   "dependencies": {
     "@backstage/backend-common": "^0.10.6",
     "@backstage/catalog-model": "^0.9.10",
+    "@backstage/cli-common": "^0.1.6",
     "@backstage/config": "^0.1.13",
     "@backstage/techdocs-common": "^0.11.6",
     "@types/dockerode": "^3.3.0",

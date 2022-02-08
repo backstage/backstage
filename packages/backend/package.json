@@ -61,7 +61,7 @@
     "@octokit/rest": "^18.5.3",
     "azure-devops-node-api": "^11.0.1",
     "dockerode": "^3.3.1",
-    "example-app": "file:../app",
+    "example-app": "link:../app",
     "express": "^4.17.1",
     "express-prom-bundle": "^6.3.6",
     "express-promise-router": "^4.1.0",

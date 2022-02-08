@@ -35,7 +35,7 @@ import {
   NotAllowedError,
 } from '@backstage/errors';
 import { TokenIssuer } from '../../identity/types';
-import { getCookieConfig, readState, verifyNonce } from './helpers';
+import { defaultCookieConfigurer, readState, verifyNonce } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';
 import {
   OAuthHandlers,
@@ -58,7 +58,7 @@ export type Options = {
   appOrigin: string;
   tokenIssuer: TokenIssuer;
   isOriginAllowed: (origin: string) => boolean;
-  callbackUrl?: string;
+  callbackUrl: string;
 };
 export class OAuthAdapter implements AuthProviderRouteHandlers {
   static fromConfig(
@@ -74,18 +74,20 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     >,
   ): OAuthAdapter {
     const { origin: appOrigin } = new URL(config.appUrl);
-    const authUrl = new URL(options.callbackUrl ?? config.baseUrl);
-    const { cookieDomain, cookiePath, secure } = getCookieConfig(
-      authUrl,
-      options.providerId,
-    );
+
+    const cookieConfigurer = config.cookieConfigurer ?? defaultCookieConfigurer;
+    const cookieConfig = cookieConfigurer({
+      providerId: options.providerId,
+      baseUrl: config.baseUrl,
+      callbackUrl: options.callbackUrl,
+    });
 
     return new OAuthAdapter(handlers, {
       ...options,
       appOrigin,
-      cookieDomain,
-      cookiePath,
-      secure,
+      cookieDomain: cookieConfig.domain,
+      cookiePath: cookieConfig.path,
+      secure: cookieConfig.secure,
       isOriginAllowed: config.isOriginAllowed,
     });
   }

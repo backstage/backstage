@@ -15,55 +15,58 @@
  */
 
 import fs from 'fs-extra';
+import { resolve as resolvePath } from 'path';
 import { paths } from '../paths';
 
 export type BundlingPathsOptions = {
   // bundle entrypoint, e.g. 'src/index'
   entry: string;
+  // Target directory, defaulting to paths.targetDir
+  targetDir?: string;
 };
 
 export function resolveBundlingPaths(options: BundlingPathsOptions) {
-  const { entry } = options;
+  const { entry, targetDir = paths.targetDir } = options;
 
   const resolveTargetModule = (pathString: string) => {
     for (const ext of ['mjs', 'js', 'ts', 'tsx', 'jsx']) {
-      const filePath = paths.resolveTarget(`${pathString}.${ext}`);
+      const filePath = resolvePath(targetDir, `${pathString}.${ext}`);
       if (fs.pathExistsSync(filePath)) {
         return filePath;
       }
     }
-    return paths.resolveTarget(`${pathString}.js`);
+    return resolvePath(targetDir, `${pathString}.js`);
   };
 
   let targetPublic = undefined;
-  let targetHtml = paths.resolveTarget('public/index.html');
+  let targetHtml = resolvePath(targetDir, 'public/index.html');
 
   // Prefer public folder
   if (fs.pathExistsSync(targetHtml)) {
-    targetPublic = paths.resolveTarget('public');
+    targetPublic = resolvePath(targetDir, 'public');
   } else {
-    targetHtml = paths.resolveTarget(`${entry}.html`);
+    targetHtml = resolvePath(targetDir, `${entry}.html`);
     if (!fs.pathExistsSync(targetHtml)) {
       targetHtml = paths.resolveOwn('templates/serve_index.html');
     }
   }
 
   // Backend plugin dev run file
-  const targetRunFile = paths.resolveTarget('src/run.ts');
+  const targetRunFile = resolvePath(targetDir, 'src/run.ts');
   const runFileExists = fs.pathExistsSync(targetRunFile);
 
   return {
     targetHtml,
     targetPublic,
-    targetPath: paths.resolveTarget('.'),
+    targetPath: resolvePath(targetDir, '.'),
     targetRunFile: runFileExists ? targetRunFile : undefined,
-    targetDist: paths.resolveTarget('dist'),
-    targetAssets: paths.resolveTarget('assets'),
-    targetSrc: paths.resolveTarget('src'),
-    targetDev: paths.resolveTarget('dev'),
+    targetDist: resolvePath(targetDir, 'dist'),
+    targetAssets: resolvePath(targetDir, 'assets'),
+    targetSrc: resolvePath(targetDir, 'src'),
+    targetDev: resolvePath(targetDir, 'dev'),
     targetEntry: resolveTargetModule(entry),
     targetTsConfig: paths.resolveTargetRoot('tsconfig.json'),
-    targetPackageJson: paths.resolveTarget('package.json'),
+    targetPackageJson: resolvePath(targetDir, 'package.json'),
     rootNodeModules: paths.resolveTargetRoot('node_modules'),
     root: paths.targetRoot,
   };

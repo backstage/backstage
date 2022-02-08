@@ -53,6 +53,12 @@ export type MicrosoftGraphProviderConfig = {
    */
   userFilter?: string;
   /**
+   * The expand argument to apply to users.
+   *
+   * E.g. "manager"
+   */
+  userExpand?: string[];
+  /**
    * The filter to apply to extract users by groups memberships.
    *
    * E.g. "displayName eq 'Backstage Users'"
