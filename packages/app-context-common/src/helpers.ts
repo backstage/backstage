@@ -61,7 +61,7 @@ export function createDependencyModule<
 >(opts: {
   id: string;
   definitions: DepDefs;
-  requirements: DependencyConfig<unknown, { [k: symbol]: unknown }>[];
+  dependencies: DependencyConfig<unknown, { [k: symbol]: unknown }>[];
 }) {
   return opts;
 }

@@ -49,5 +49,5 @@ export const commonModule = createDependencyModule({
     cacheManager: cacheManagerDep,
     pluginEndpointDiscovery: pluginEndpointDiscoveryDep,
   },
-  requirements: [],
+  dependencies: [],
 });

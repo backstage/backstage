@@ -29,5 +29,5 @@ export const catalogModule = createDependencyModule({
   definitions: {
     catalogApi: catalogApiDep,
   },
-  requirements: [],
+  dependencies: [],
 });

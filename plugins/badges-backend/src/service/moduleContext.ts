@@ -38,7 +38,7 @@ export const badgesModule = createDependencyModule({
     badgeFactories: badgeFactoriesDependencyRef,
     badgeBuilder: badgeBuilderDependencyRef,
   },
-  requirements: [
+  dependencies: [
     createDependencyConfig({
       id: catalogModule.definitions.catalogApi,
       dependencies: {

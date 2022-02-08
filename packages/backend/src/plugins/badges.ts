@@ -32,7 +32,7 @@ export default async function createPlugin(environment: PluginEnvironment) {
         id: badgesModule.definitions.badgeFactories,
         factory: () => createDefaultBadgeFactories(),
       },
-      ...badgesModule.requirements,
+      ...badgesModule.dependencies,
     ],
     initialize: createRouter,
   });

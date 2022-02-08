@@ -49,7 +49,7 @@ export async function startStandaloneServer(
 
   const applicationContext = InversifyApplicationContext.fromConfig({
     logger,
-    dependencies: badgesModule.requirements,
+    dependencies: badgesModule.dependencies,
     container,
   });
 

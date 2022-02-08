@@ -29,5 +29,5 @@ export const permissionModule = createDependencyModule({
   definitions: {
     permissionAuthorizer: permissionAuthorizerDep,
   },
-  requirements: [],
+  dependencies: [],
 });

@@ -29,5 +29,5 @@ export const tasksModule = createDependencyModule({
   definitions: {
     taskScheduler: taskSchedulerDep,
   },
-  requirements: [],
+  dependencies: [],
 });

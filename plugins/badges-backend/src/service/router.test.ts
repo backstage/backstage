@@ -103,7 +103,7 @@ describe('createRouter', () => {
 
     applicationContext = InversifyApplicationContext.fromConfig({
       logger: getVoidLogger(),
-      dependencies: badgesModule.requirements,
+      dependencies: badgesModule.dependencies,
       container,
     });
 

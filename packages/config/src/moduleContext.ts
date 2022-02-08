@@ -29,5 +29,5 @@ export const configModule = createDependencyModule({
   definitions: {
     config: configDep,
   },
-  requirements: [],
+  dependencies: [],
 });
