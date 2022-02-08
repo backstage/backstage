@@ -33,7 +33,7 @@ import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('EntityAirbrakeContent', () => {
   it('renders all errors sent from Airbrake', async () => {
-    const table = await renderInTestApp(
+    const widget = await renderInTestApp(
       <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi()]]}>
         <EntityAirbrakeWidget entity={createEntity(123)} />
       </TestApiProvider>,
@@ -41,30 +41,30 @@ describe('EntityAirbrakeContent', () => {
     expect(exampleData.groups.length).toBeGreaterThan(0);
     for (const group of exampleData.groups) {
       expect(
-        await table.getByText(group.errors[0].message),
+        await widget.getByText(group.errors[0].message),
       ).toBeInTheDocument();
     }
   });
 
   it('states that the annotation is missing if no project ID annotation is provided', async () => {
-    const table = await renderInTestApp(
+    const widget = await renderInTestApp(
       <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi()]]}>
         <EntityAirbrakeWidget entity={createEntity()} />
       </TestApiProvider>,
     );
     await expect(
-      table.findByText('Missing Annotation'),
+      widget.findByText('Missing Annotation'),
     ).resolves.toBeInTheDocument();
   });
 
-  it('states that an error occurred if API call fails', async () => {
+  it('states that an error occurred if the API call fails', async () => {
     const scope = nock('https://api.airbrake.io')
       .get('/api/v4/projects/123/groups?key=fakeApiKey')
       .reply(500);
     expect(scope.isDone()).toBe(false);
     const mockErrorApi = new MockErrorApi({ collect: true });
 
-    const table = await renderInTestApp(
+    const widget = await renderInTestApp(
       <TestApiProvider
         apis={[
           [airbrakeApiRef, new ProductionAirbrakeApi('fakeApiKey')],
@@ -76,7 +76,7 @@ describe('EntityAirbrakeContent', () => {
     );
 
     await expect(
-      table.findByText(/.*there was an issue communicating with Airbrake.*/),
+      widget.findByText(/.*there was an issue communicating with Airbrake.*/),
     ).resolves.toBeInTheDocument();
     expect(mockErrorApi.getErrors().length).toBe(1);
     expect(mockErrorApi.getErrors()[0].error.message).toStrictEqual(
