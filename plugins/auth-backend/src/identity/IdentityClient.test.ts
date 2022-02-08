@@ -83,7 +83,7 @@ describe('IdentityClient', () => {
     it('should use the correct endpoint', async () => {
       await factory.issueToken({ claims: { sub: 'foo' } });
       const keys = await factory.listPublicKeys();
-      const response = await client.listPublicKeys();
+      const response = await (client as any).listPublicKeys();
       expect(response).toEqual(keys);
     });
 
@@ -257,7 +257,7 @@ describe('IdentityClient', () => {
     });
 
     it('should use the correct endpoint', async () => {
-      const response = await client.listPublicKeys();
+      const response = await (client as any).listPublicKeys();
       expect(response).toEqual(defaultServiceResponse);
     });
   });

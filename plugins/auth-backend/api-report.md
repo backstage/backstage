@@ -10,7 +10,6 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { JsonValue } from '@backstage/types';
-import { JSONWebKey } from 'jose';
 import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -432,9 +431,6 @@ export class IdentityClient {
   static getBearerToken(
     authorizationHeader: string | undefined,
   ): string | undefined;
-  listPublicKeys(): Promise<{
-    keys: JSONWebKey[];
-  }>;
 }
 
 // Warning: (ae-missing-release-tag) "microsoftEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

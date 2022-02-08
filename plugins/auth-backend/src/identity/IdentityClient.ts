@@ -125,7 +125,7 @@ export class IdentityClient {
   /**
    * Lists public part of keys used to sign Backstage Identity tokens
    */
-  async listPublicKeys(): Promise<{
+  private async listPublicKeys(): Promise<{
     keys: JSONWebKey[];
   }> {
     const url = `${await this.discovery.getBaseUrl(
