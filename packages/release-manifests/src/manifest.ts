@@ -28,7 +28,7 @@ export type ReleaseManifest = {
 };
 
 /**
- * Options for getByVersion.
+ * Options for {@link getManifestByVersion}.
  * @public
  */
 export type GetManifestByVersionOptions = {
@@ -58,7 +58,7 @@ export async function getManifestByVersion(
 }
 
 /**
- * Options for getByReleaseLine.
+ * Options for {@link getManifestByReleaseLine}.
  * @public
  */
 export type GetManifestByReleaseLineOptions = {
