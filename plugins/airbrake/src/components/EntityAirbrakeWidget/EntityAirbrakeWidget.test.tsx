@@ -17,7 +17,11 @@
 import React from 'react';
 import { EntityAirbrakeWidget } from './EntityAirbrakeWidget';
 import exampleData from '../../api/mock/airbrake-groups-api-mock.json';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import {
+  MockErrorApi,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import { createEntity } from '../../api/mock/mock-entity';
 import {
   airbrakeApiRef,
@@ -25,6 +29,7 @@ import {
   ProductionAirbrakeApi,
 } from '../../api';
 import nock from 'nock';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('EntityAirbrakeContent', () => {
   it('renders all errors sent from Airbrake', async () => {
@@ -57,18 +62,26 @@ describe('EntityAirbrakeContent', () => {
       .get('/api/v4/projects/123/groups?key=fakeApiKey')
       .reply(500);
     expect(scope.isDone()).toBe(false);
+    const mockErrorApi = new MockErrorApi({ collect: true });
 
     const table = await renderInTestApp(
       <TestApiProvider
-        apis={[[airbrakeApiRef, new ProductionAirbrakeApi('fakeApiKey')]]}
+        apis={[
+          [airbrakeApiRef, new ProductionAirbrakeApi('fakeApiKey')],
+          [errorApiRef, mockErrorApi],
+        ]}
       >
         <EntityAirbrakeWidget entity={createEntity(123)} />
       </TestApiProvider>,
     );
 
     await expect(
-      table.findByText('*there was an issue communicating with Airbrake*'),
+      table.findByText(/.*there was an issue communicating with Airbrake.*/),
     ).resolves.toBeInTheDocument();
+    expect(mockErrorApi.getErrors().length).toBe(1);
+    expect(mockErrorApi.getErrors()[0].error.message).toStrictEqual(
+      'Failed fetching Airbrake groups',
+    );
     expect(scope.isDone()).toBe(true);
   });
 });
