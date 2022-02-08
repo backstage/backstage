@@ -15,10 +15,9 @@
  */
 
 import { setupRequestMockHandlers } from '@backstage/test-utils';
-import { getByVersion } from './manifest';
+import { getByReleaseLine, getByVersion } from './manifest';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import { getByReleaseLine } from '.';
 
 describe('getByVersion', () => {
   const worker = setupServer();
