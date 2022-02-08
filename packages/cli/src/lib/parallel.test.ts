@@ -169,7 +169,9 @@ describe('runWorkerQueueThreads', () => {
     ]);
     expect(results).toEqual([20, 21, 22, 23, 24, 25, 26, 27, 28, 29]);
   });
+});
 
+describe('runWorkerThreads', () => {
   it('should run a single thread without items', async () => {
     const [result] = await runWorkerThreads({
       threadCount: 1,
@@ -187,5 +189,23 @@ describe('runWorkerQueueThreads', () => {
     });
 
     expect(results).toEqual(['foo', 'foo', 'foo', 'foo']);
+  });
+
+  it('should send messages', async () => {
+    const messages = new Array<string>();
+
+    await runWorkerThreads({
+      threadCount: 2,
+      worker: async (_data, sendMessage) => {
+        sendMessage('foo');
+        await new Promise(resolve => setTimeout(resolve, 50));
+        sendMessage('bar');
+        await new Promise(resolve => setTimeout(resolve, 50));
+        sendMessage('baz');
+      },
+      onMessage: (message: string) => messages.push(message),
+    });
+
+    expect(messages).toEqual(['foo', 'foo', 'bar', 'bar', 'baz', 'baz']);
   });
 });

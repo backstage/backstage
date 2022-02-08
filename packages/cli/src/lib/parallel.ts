@@ -112,54 +112,13 @@ type WorkerThreadMessage =
   | {
       type: 'error';
       error: ErrorLike;
+    }
+  | {
+      type: 'message';
+      message: unknown;
     };
 
-function workerQueueThread(
-  workerFuncFactory: (data: unknown) => (item: unknown) => Promise<unknown>,
-) {
-  const { parentPort, workerData } = require('worker_threads');
-  const workerFunc = workerFuncFactory(workerData);
-
-  parentPort.on('message', async (message: WorkerThreadMessage) => {
-    if (message.type === 'done') {
-      parentPort.close();
-      return;
-    }
-    if (message.type === 'item') {
-      try {
-        const result = await workerFunc(message.item);
-        parentPort.postMessage({
-          type: 'result',
-          index: message.index,
-          result,
-        });
-      } catch (error) {
-        parentPort.postMessage({ type: 'error', error });
-      }
-    }
-  });
-
-  parentPort.postMessage({ type: 'start' });
-}
-
-function workerThread(workerFunc: (data: unknown) => Promise<unknown>) {
-  const { parentPort, workerData } = require('worker_threads');
-
-  workerFunc(workerData).then(
-    result => {
-      parentPort.postMessage({
-        type: 'result',
-        index: 0,
-        result,
-      });
-    },
-    error => {
-      parentPort.postMessage({ type: 'error', error });
-    },
-  );
-}
-
-type WorkerQueueThreadsOptions<TItem, TResult, TData> = {
+export type WorkerQueueThreadsOptions<TItem, TResult, TData> = {
   /** The items to process */
   items: Iterable<TItem>;
   /**
@@ -203,13 +162,10 @@ export async function runWorkerQueueThreads<TItem, TResult, TData>(
     Array(threadCount)
       .fill(0)
       .map(async () => {
-        const thread = new Worker(
-          `(${workerQueueThread})((${workerFactory}))`,
-          {
-            eval: true,
-            workerData,
-          },
-        );
+        const thread = new Worker(`(${workerQueueThread})(${workerFactory})`, {
+          eval: true,
+          workerData,
+        });
 
         return new Promise<void>((resolve, reject) => {
           thread.on('message', (message: WorkerThreadMessage) => {
@@ -251,7 +207,35 @@ export async function runWorkerQueueThreads<TItem, TResult, TData>(
   return results;
 }
 
-type WorkerThreadsOptions<TResult, TData> = {
+function workerQueueThread(
+  workerFuncFactory: (data: unknown) => (item: unknown) => Promise<unknown>,
+) {
+  const { parentPort, workerData } = require('worker_threads');
+  const workerFunc = workerFuncFactory(workerData);
+
+  parentPort.on('message', async (message: WorkerThreadMessage) => {
+    if (message.type === 'done') {
+      parentPort.close();
+      return;
+    }
+    if (message.type === 'item') {
+      try {
+        const result = await workerFunc(message.item);
+        parentPort.postMessage({
+          type: 'result',
+          index: message.index,
+          result,
+        });
+      } catch (error) {
+        parentPort.postMessage({ type: 'error', error });
+      }
+    }
+  });
+
+  parentPort.postMessage({ type: 'start' });
+}
+
+export type WorkerThreadsOptions<TResult, TData, TMessage> = {
   /**
    * A function that is called by each worker thread to produce a result.
    *
@@ -264,26 +248,31 @@ type WorkerThreadsOptions<TResult, TData> = {
    * note that they are both copied by value into the worker thread, except for
    * types that are explicitly shareable across threads, such as `SharedArrayBuffer`.
    */
-  worker: (data: TData) => Promise<TResult>;
+  worker: (
+    data: TData,
+    sendMessage: (message: TMessage) => void,
+  ) => Promise<TResult>;
   /** Data supplied to each worker */
   workerData?: TData;
   /** Number of threads, defaults to 1 */
   threadCount?: number;
+  /** An optional handler for messages posted from the worker thread */
+  onMessage?: (message: TMessage) => void;
 };
 
 /**
  * Spawns one or more worker threads using the `worker_threads` module.
  */
-export async function runWorkerThreads<TResult, TData>(
-  options: WorkerThreadsOptions<TResult, TData>,
+export async function runWorkerThreads<TResult, TData, TMessage>(
+  options: WorkerThreadsOptions<TResult, TData, TMessage>,
 ): Promise<TResult[]> {
-  const { worker, workerData, threadCount = 1 } = options;
+  const { worker, workerData, threadCount = 1, onMessage } = options;
 
   return Promise.all(
     Array(threadCount)
       .fill(0)
       .map(async () => {
-        const thread = new Worker(`(${workerThread})((${worker}))`, {
+        const thread = new Worker(`(${workerThread})(${worker})`, {
           eval: true,
           workerData,
         });
@@ -294,6 +283,8 @@ export async function runWorkerThreads<TResult, TData>(
               resolve(message.result as TResult);
             } else if (message.type === 'error') {
               reject(message.error);
+            } else if (message.type === 'message') {
+              onMessage?.(message.message as TMessage);
             }
           });
 
@@ -305,5 +296,31 @@ export async function runWorkerThreads<TResult, TData>(
           });
         });
       }),
+  );
+}
+
+function workerThread(
+  workerFunc: (
+    data: unknown,
+    sendMessage: (message: unknown) => void,
+  ) => Promise<unknown>,
+) {
+  const { parentPort, workerData } = require('worker_threads');
+
+  const sendMessage = (message: unknown) => {
+    parentPort.postMessage({ type: 'message', message });
+  };
+
+  workerFunc(workerData, sendMessage).then(
+    result => {
+      parentPort.postMessage({
+        type: 'result',
+        index: 0,
+        result,
+      });
+    },
+    error => {
+      parentPort.postMessage({ type: 'error', error });
+    },
   );
 }
