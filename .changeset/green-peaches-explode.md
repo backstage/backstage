@@ -1,5 +1,5 @@
 ---
-'@backstage/release-manifest': patch
+'@backstage/release-manifests': patch
 ---
 
 Introduces a new release-manifest package with utilities for fetching release manifests.
