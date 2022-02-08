@@ -33,10 +33,8 @@ describe('createRouter', () => {
     jest.resetAllMocks();
 
     const config = new ConfigReader({
-      integrations: {
-        airbrake: {
-          apiKey: 'fakeApiKey',
-        },
+      airbrake: {
+        apiKey: 'fakeApiKey',
       },
     });
     airbrakeConfig = extractAirbrakeConfig(config);
