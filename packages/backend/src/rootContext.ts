@@ -19,27 +19,30 @@ import {
   ServerTokenManager,
   SingleHostDiscovery,
   UrlReaders,
-  commonModule,
+  commonModuleDefinitions,
 } from '@backstage/backend-common';
 import { createDependencyConfig } from '@backstage/app-context-common';
-import { Config, configModule } from '@backstage/config';
+import { Config, configModuleDefinitions } from '@backstage/config';
 import { Logger } from 'winston';
-import { permissionModule } from '@backstage/plugin-permission-common';
+import { permissionModuleDefinitions } from '@backstage/plugin-permission-common';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
-import { TaskScheduler, tasksModule } from '@backstage/backend-tasks';
+import {
+  TaskScheduler,
+  tasksModuleDefinitions,
+} from '@backstage/backend-tasks';
 
 export const rootDependencies = (config: Config, root: Logger) => {
   return [
     createDependencyConfig({
-      id: configModule.definitions.config,
+      id: configModuleDefinitions.definitions.config,
       factory({}) {
         return config;
       },
     }),
     createDependencyConfig({
-      id: commonModule.definitions.urlReader,
+      id: commonModuleDefinitions.definitions.urlReader,
       dependencies: {
-        config: configModule.definitions.config,
+        config: configModuleDefinitions.definitions.config,
       },
       factory: ({ config: conf }) => {
         const reader = UrlReaders.default({
@@ -51,26 +54,26 @@ export const rootDependencies = (config: Config, root: Logger) => {
       },
     }),
     createDependencyConfig({
-      id: commonModule.definitions.pluginEndpointDiscovery,
+      id: commonModuleDefinitions.definitions.pluginEndpointDiscovery,
       dependencies: {
-        config: configModule.definitions.config,
+        config: configModuleDefinitions.definitions.config,
       },
       factory: ({ config: conf }) => SingleHostDiscovery.fromConfig(conf),
     }),
     createDependencyConfig({
-      id: commonModule.definitions.tokenManager,
+      id: commonModuleDefinitions.definitions.tokenManager,
       dependencies: {
-        config: configModule.definitions.config,
+        config: configModuleDefinitions.definitions.config,
       },
       factory: ({ config: conf }) =>
         ServerTokenManager.fromConfig(conf, { logger: root }),
     }),
     createDependencyConfig({
-      id: permissionModule.definitions.permissionAuthorizer,
+      id: permissionModuleDefinitions.definitions.permissionAuthorizer,
       dependencies: {
-        config: configModule.definitions.config,
-        discovery: commonModule.definitions.pluginEndpointDiscovery,
-        tokenManager: commonModule.definitions.tokenManager,
+        config: configModuleDefinitions.definitions.config,
+        discovery: commonModuleDefinitions.definitions.pluginEndpointDiscovery,
+        tokenManager: commonModuleDefinitions.definitions.tokenManager,
       },
       factory: ({ config: conf, discovery, tokenManager }) =>
         ServerPermissionClient.fromConfig(conf, {
@@ -79,23 +82,23 @@ export const rootDependencies = (config: Config, root: Logger) => {
         }),
     }),
     createDependencyConfig({
-      id: commonModule.definitions.databaseManager,
+      id: commonModuleDefinitions.definitions.databaseManager,
       dependencies: {
-        config: configModule.definitions.config,
+        config: configModuleDefinitions.definitions.config,
       },
       factory: ({ config: conf }) => DatabaseManager.fromConfig(conf),
     }),
     createDependencyConfig({
-      id: commonModule.definitions.cacheManager,
+      id: commonModuleDefinitions.definitions.cacheManager,
       dependencies: {
-        config: configModule.definitions.config,
+        config: configModuleDefinitions.definitions.config,
       },
       factory: ({ config: conf }) => CacheManager.fromConfig(conf),
     }),
     createDependencyConfig({
-      id: tasksModule.definitions.taskScheduler,
+      id: tasksModuleDefinitions.definitions.taskScheduler,
       dependencies: {
-        config: configModule.definitions.config,
+        config: configModuleDefinitions.definitions.config,
       },
       factory: ({ config: conf }) => TaskScheduler.fromConfig(conf),
     }),

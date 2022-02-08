@@ -15,19 +15,16 @@
  */
 
 import {
-  createDependencyModule,
-  createDependencyRef,
+  createDependencyDefinition,
+  createDependencyDefinitions,
 } from '@backstage/app-context-common';
 import { PermissionAuthorizer } from './types';
 
-const permissionAuthorizerDep = createDependencyRef<PermissionAuthorizer>(
-  Symbol.for('@backstage/permission-common.PermissionAuthorizer'),
-);
-
-export const permissionModule = createDependencyModule({
+export const permissionModuleDefinitions = createDependencyDefinitions({
   id: '@backstage/permission-common',
   definitions: {
-    permissionAuthorizer: permissionAuthorizerDep,
+    permissionAuthorizer: createDependencyDefinition<PermissionAuthorizer>(
+      Symbol.for('@backstage/permission-common.PermissionAuthorizer'),
+    ),
   },
-  dependencies: [],
 });

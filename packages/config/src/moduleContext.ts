@@ -15,19 +15,16 @@
  */
 
 import {
-  createDependencyModule,
-  createDependencyRef,
+  createDependencyDefinition,
+  createDependencyDefinitions,
 } from '@backstage/app-context-common';
 import { Config } from './types';
 
-const configDep = createDependencyRef<Config>(
-  Symbol.for('@backstage/config.Config'),
-);
-
-export const configModule = createDependencyModule({
+export const configModuleDefinitions = createDependencyDefinitions({
   id: '@backstage/config',
   definitions: {
-    config: configDep,
+    config: createDependencyDefinition<Config>(
+      Symbol.for('@backstage/config.Config'),
+    ),
   },
-  dependencies: [],
 });

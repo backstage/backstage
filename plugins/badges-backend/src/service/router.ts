@@ -20,21 +20,25 @@ import {
   ApplicationContext,
   errorHandler,
   PluginEndpointDiscovery,
-  commonModule,
+  commonModuleDefinitions,
 } from '@backstage/backend-common';
-import { catalogModule } from '@backstage/catalog-client';
-import { configModule } from '@backstage/config';
+import { catalogModuleDefinitions } from '@backstage/catalog-client';
+import { configModuleDefinitions } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { BadgeContext } from '../types';
-import { badgesModule } from './moduleContext';
+import { badgesModuleDefinitions } from './moduleContext';
 
 export async function createRouter(
   ctx: ApplicationContext,
 ): Promise<express.Router> {
-  const catalog = ctx.get(catalogModule.definitions.catalogApi);
-  const badgeBuilder = ctx.get(badgesModule.definitions.badgeBuilder);
-  const discovery = ctx.get(commonModule.definitions.pluginEndpointDiscovery);
-  const config = ctx.get(configModule.definitions.config);
+  const catalog = ctx.get(catalogModuleDefinitions.definitions.catalogApi);
+  const badgeBuilder = ctx.get(
+    badgesModuleDefinitions.definitions.badgeBuilder,
+  );
+  const discovery = ctx.get(
+    commonModuleDefinitions.definitions.pluginEndpointDiscovery,
+  );
+  const config = ctx.get(configModuleDefinitions.definitions.config);
 
   const router = Router();
 

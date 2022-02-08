@@ -16,18 +16,20 @@
 
 import {
   createDependencyModule,
-  createDependencyRef,
+  createDependencyDefinition,
+  createDependencyDefinitions,
 } from '@backstage/app-context-common';
 import { TaskScheduler } from './tasks';
 
-const taskSchedulerDep = createDependencyRef<TaskScheduler>(
-  Symbol.for('@backstage/backend-tasks.TaskScheduler'),
-);
+export const tasksModuleDefinitions = createDependencyDefinitions({
+  id: '@backstage/backend-tasks',
+  definitions: {
+    taskScheduler: createDependencyDefinition<TaskScheduler>(
+      Symbol.for('@backstage/backend-tasks.TaskScheduler'),
+    ),
+  },
+});
 
 export const tasksModule = createDependencyModule({
   id: '@backstage/backend-tasks',
-  definitions: {
-    taskScheduler: taskSchedulerDep,
-  },
-  dependencies: [],
 });

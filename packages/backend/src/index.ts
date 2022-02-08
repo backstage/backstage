@@ -30,10 +30,10 @@ import {
   InversifyApplicationContext,
   loadBackendConfig,
   notFoundHandler,
-  commonModule,
+  commonModuleDefinitions,
   useHotMemoize,
 } from '@backstage/backend-common';
-import { tasksModule } from '@backstage/backend-tasks';
+import { tasksModuleDefinitions } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import { metricsHandler, metricsInit } from './metrics';
@@ -57,7 +57,7 @@ import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
 import { DependencyNotBoundError, PluginEnvironment } from './types';
 import { rootDependencies } from './rootContext';
-import { permissionModule } from '@backstage/plugin-permission-common';
+import { permissionModuleDefinitions } from '@backstage/plugin-permission-common';
 
 function makeCreateEnv(config: Config, applicationContext: ApplicationContext) {
   const root = getRootLogger();
@@ -65,29 +65,31 @@ function makeCreateEnv(config: Config, applicationContext: ApplicationContext) {
   return (plugin: string): PluginEnvironment => {
     const logger = root.child({ type: 'plugin', plugin });
     const databaseManager = applicationContext.get(
-      commonModule.definitions.databaseManager,
+      commonModuleDefinitions.definitions.databaseManager,
     );
     const database = databaseManager.forPlugin(plugin);
     const cache = applicationContext
-      .get(commonModule.definitions.cacheManager)
+      .get(commonModuleDefinitions.definitions.cacheManager)
       .forPlugin(plugin);
     const scheduler = applicationContext
-      .get(tasksModule.definitions.taskScheduler)
+      .get(tasksModuleDefinitions.definitions.taskScheduler)
       .forPlugin(plugin);
     return {
       logger,
       cache,
       database,
       config,
-      reader: applicationContext.get(commonModule.definitions.urlReader),
+      reader: applicationContext.get(
+        commonModuleDefinitions.definitions.urlReader,
+      ),
       discovery: applicationContext.get(
-        commonModule.definitions.pluginEndpointDiscovery,
+        commonModuleDefinitions.definitions.pluginEndpointDiscovery,
       ),
       tokenManager: applicationContext.get(
-        commonModule.definitions.tokenManager,
+        commonModuleDefinitions.definitions.tokenManager,
       ),
       permissions: applicationContext.get(
-        permissionModule.definitions.permissionAuthorizer,
+        permissionModuleDefinitions.definitions.permissionAuthorizer,
       ),
       scheduler,
       applicationContext,

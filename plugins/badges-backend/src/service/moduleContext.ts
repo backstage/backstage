@@ -14,35 +14,41 @@
  * limitations under the License.
  */
 
-import { catalogModule, CatalogClient } from '@backstage/catalog-client';
-import { commonModule } from '@backstage/backend-common';
+import {
+  catalogModuleDefinitions,
+  CatalogClient,
+} from '@backstage/catalog-client';
+import { commonModuleDefinitions } from '@backstage/backend-common';
 
 import {
   createDependencyConfig,
+  createDependencyDefinitions,
   createDependencyModule,
-  createDependencyRef,
+  createDependencyDefinition,
 } from '@backstage/app-context-common';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib';
 import { BadgeFactories } from '../types';
 
-const badgeFactoriesDependencyRef = createDependencyRef<BadgeFactories>(
-  Symbol.for('@backstage/plugin-badges-backend.BadgeFactories'),
-);
-const badgeBuilderDependencyRef = createDependencyRef<BadgeBuilder>(
-  Symbol.for('@backstage/plugin-badges-backend.BadgeBuilder'),
-);
+export const badgesModuleDefinitions = createDependencyDefinitions({
+  id: '@backstage/plugin-badges-backend',
+  definitions: {
+    badgeFactories: createDependencyDefinition<BadgeFactories>(
+      Symbol.for('@backstage/plugin-badges-backend.BadgeFactories'),
+    ),
+    badgeBuilder: createDependencyDefinition<BadgeBuilder>(
+      Symbol.for('@backstage/plugin-badges-backend.BadgeBuilder'),
+    ),
+  },
+});
 
 export const badgesModule = createDependencyModule({
   id: '@backstage/plugin-badges-backend',
-  definitions: {
-    badgeFactories: badgeFactoriesDependencyRef,
-    badgeBuilder: badgeBuilderDependencyRef,
-  },
   dependencies: [
     createDependencyConfig({
-      id: catalogModule.definitions.catalogApi,
+      id: catalogModuleDefinitions.definitions.catalogApi,
       dependencies: {
-        discoveryApi: commonModule.definitions.pluginEndpointDiscovery,
+        discoveryApi:
+          commonModuleDefinitions.definitions.pluginEndpointDiscovery,
       },
       factory: ({ discoveryApi }) =>
         new CatalogClient({
@@ -50,13 +56,13 @@ export const badgesModule = createDependencyModule({
         }),
     }),
     createDependencyConfig({
-      id: badgeFactoriesDependencyRef,
+      id: badgesModuleDefinitions.definitions.badgeFactories,
       factory: () => ({}),
     }),
     createDependencyConfig({
-      id: badgeBuilderDependencyRef,
+      id: badgesModuleDefinitions.definitions.badgeBuilder,
       dependencies: {
-        badgeFactories: badgeFactoriesDependencyRef,
+        badgeFactories: badgesModuleDefinitions.definitions.badgeFactories,
       },
       factory: ({ badgeFactories }) => new DefaultBadgeBuilder(badgeFactories),
     }),

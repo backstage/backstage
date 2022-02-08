@@ -52,16 +52,30 @@ class DependencyHolder<T> implements Dependency<T> {
   }
 }
 
-export function createDependencyRef<T>(id: symbol): Dependency<T> {
+export function createDependencyDefinition<T>(id: symbol): Dependency<T> {
   return new DependencyHolder<T>(id);
 }
 
-export function createDependencyModule<
-  DepDefs extends Record<string, Dependency<any>>,
->(opts: {
+export function createDependencyModule(opts: {
   id: string;
-  definitions: DepDefs;
+  dependencies?: DependencyConfig<unknown, { [k: symbol]: unknown }>[];
+}): {
+  id: string;
   dependencies: DependencyConfig<unknown, { [k: symbol]: unknown }>[];
-}) {
+} {
+  return opts.dependencies
+    ? { id: opts.id, dependencies: opts.dependencies }
+    : {
+        id: opts.id,
+        dependencies: [] as DependencyConfig<
+          unknown,
+          { [k: symbol]: unknown }
+        >[],
+      };
+}
+
+export function createDependencyDefinitions<
+  DepDefs extends Record<string, Dependency<any>>,
+>(opts: { id: string; definitions: DepDefs }) {
   return opts;
 }

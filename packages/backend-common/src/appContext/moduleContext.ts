@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import {
-  createDependencyModule,
-  createDependencyRef,
+  createDependencyDefinition,
+  createDependencyDefinitions,
 } from '@backstage/app-context-common';
 import { PluginEndpointDiscovery } from '../discovery';
 import { UrlReader } from '../reading';
@@ -23,31 +23,24 @@ import { TokenManager } from '../tokens';
 import { DatabaseManager } from '../database';
 import { CacheManager } from '../cache';
 
-const urlReaderDep = createDependencyRef<UrlReader>(
-  Symbol.for('@backstage/backend-common.UrlReader'),
-);
-const tokenManagerDep = createDependencyRef<TokenManager>(
-  Symbol.for('@backstage/backend-common.TokenManager'),
-);
-
-const databaseManagerDep = createDependencyRef<DatabaseManager>(
-  Symbol.for('@backstage/backend-common.DatabaseManager'),
-);
-const cacheManagerDep = createDependencyRef<CacheManager>(
-  Symbol.for('@backstage/backend-common.CacheManager'),
-);
-const pluginEndpointDiscoveryDep = createDependencyRef<PluginEndpointDiscovery>(
-  Symbol.for('@backstage/backend-common.PluginEndpointDiscovery'),
-);
-
-export const commonModule = createDependencyModule({
+export const commonModuleDefinitions = createDependencyDefinitions({
   id: '@backstage/backend-common',
   definitions: {
-    urlReader: urlReaderDep,
-    tokenManager: tokenManagerDep,
-    databaseManager: databaseManagerDep,
-    cacheManager: cacheManagerDep,
-    pluginEndpointDiscovery: pluginEndpointDiscoveryDep,
+    urlReader: createDependencyDefinition<UrlReader>(
+      Symbol.for('@backstage/backend-common.UrlReader'),
+    ),
+    tokenManager: createDependencyDefinition<TokenManager>(
+      Symbol.for('@backstage/backend-common.TokenManager'),
+    ),
+    databaseManager: createDependencyDefinition<DatabaseManager>(
+      Symbol.for('@backstage/backend-common.DatabaseManager'),
+    ),
+    cacheManager: createDependencyDefinition<CacheManager>(
+      Symbol.for('@backstage/backend-common.CacheManager'),
+    ),
+    pluginEndpointDiscovery:
+      createDependencyDefinition<PluginEndpointDiscovery>(
+        Symbol.for('@backstage/backend-common.PluginEndpointDiscovery'),
+      ),
   },
-  dependencies: [],
 });

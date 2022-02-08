@@ -15,19 +15,16 @@
  */
 
 import {
-  createDependencyModule,
-  createDependencyRef,
+  createDependencyDefinition,
+  createDependencyDefinitions,
 } from '@backstage/app-context-common';
 import { CatalogApi } from './types';
 
-const catalogApiDep = createDependencyRef<CatalogApi>(
-  Symbol.for('@backstage/catalog-client.CatalogApi'),
-);
-
-export const catalogModule = createDependencyModule({
+export const catalogModuleDefinitions = createDependencyDefinitions({
   id: '@backstage/catalog-client',
   definitions: {
-    catalogApi: catalogApiDep,
+    catalogApi: createDependencyDefinition<CatalogApi>(
+      Symbol.for('@backstage/catalog-client.CatalogApi'),
+    ),
   },
-  dependencies: [],
 });

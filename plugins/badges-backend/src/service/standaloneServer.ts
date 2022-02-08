@@ -20,13 +20,13 @@ import {
   createServiceBuilder,
   InversifyApplicationContext,
   loadBackendConfig,
-  commonModule,
+  commonModuleDefinitions,
   SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { createRouter } from './router';
 import { badgesModule } from './moduleContext';
 import { Container } from 'inversify';
-import { configModule } from '@backstage/config';
+import { configModuleDefinitions } from '@backstage/config';
 
 export interface ServerOptions {
   port: number;
@@ -42,9 +42,11 @@ export async function startStandaloneServer(
   const discovery = SingleHostDiscovery.fromConfig(config);
 
   const container = new Container();
-  container.bind(configModule.definitions.config.id).toConstantValue(config);
   container
-    .bind(commonModule.definitions.pluginEndpointDiscovery.id)
+    .bind(configModuleDefinitions.definitions.config.id)
+    .toConstantValue(config);
+  container
+    .bind(commonModuleDefinitions.definitions.pluginEndpointDiscovery.id)
     .toConstantValue(discovery);
 
   const applicationContext = InversifyApplicationContext.fromConfig({
