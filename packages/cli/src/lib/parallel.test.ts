@@ -18,6 +18,7 @@ import {
   parseParallelismOption,
   getEnvironmentParallelism,
   runParallelWorkers,
+  runWorkerQueueThreads,
   runWorkerThreads,
 } from './parallel';
 
@@ -144,16 +145,16 @@ describe('runParallelWorkers', () => {
   });
 });
 
-describe('runWorkerThreads', () => {
+describe('runWorkerQueueThreads', () => {
   it('should execute work in parallel', async () => {
     const sharedData = new SharedArrayBuffer(10);
     const sharedView = new Uint8Array(sharedData);
 
-    const results = await runWorkerThreads({
+    const results = await runWorkerQueueThreads({
       threadCount: 4,
       workerData: sharedData,
       items: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-      workerFactorySource: data => {
+      workerFactory: data => {
         const view = new Uint8Array(data);
 
         return async (i: number) => {
@@ -173,7 +174,7 @@ describe('runWorkerThreads', () => {
     const [result] = await runWorkerThreads({
       threadCount: 1,
       workerData: 'foo',
-      workerFactorySource: data => async () => `${data}bar`,
+      worker: async data => `${data}bar`,
     });
 
     expect(result).toBe('foobar');
@@ -182,7 +183,7 @@ describe('runWorkerThreads', () => {
   it('should run multiple threads without items', async () => {
     const results = await runWorkerThreads({
       threadCount: 4,
-      workerFactorySource: () => async () => 'foo',
+      worker: async () => 'foo',
     });
 
     expect(results).toEqual(['foo', 'foo', 'foo', 'foo']);
