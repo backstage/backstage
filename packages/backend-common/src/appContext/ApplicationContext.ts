@@ -44,41 +44,40 @@ export type InversifyAppContextOptions = {
   logger: Logger;
   dependencies: AnyDependencyConfig[];
   container?: interfaces.Container;
-  identifier?: string;
 };
 
 export class InversifyApplicationContext implements ApplicationContext {
   private readonly childContexts: Map<string, ApplicationContext>;
   private readonly container: interfaces.Container;
-  private readonly identifier: string;
   private readonly logger: Logger;
+  private readonly dependencies: AnyDependencyConfig[];
 
   static fromConfig(opts: InversifyAppContextOptions) {
-    const { logger, dependencies, container, identifier } = opts;
+    const { logger, dependencies, container } = opts;
     logger.info(
       `Constructing Inversify root container with dependencies ${[
         ...new Set(dependencies.map(it => it.id)),
       ].join(', ')}`,
     );
     const context = new InversifyApplicationContext({
-      identifier: identifier ?? 'root',
       container: container ?? new Container(),
       logger,
+      dependencies,
     });
     context.bindDependenciesIfNotBound(dependencies);
     return context;
   }
 
   private constructor(opts: {
-    identifier: string;
     container: interfaces.Container;
     childContexts?: Map<string, ApplicationContext>;
     logger: Logger;
+    dependencies: AnyDependencyConfig[];
   }) {
-    const { identifier, container, childContexts, logger } = opts;
-    this.identifier = identifier;
+    const { container, childContexts, logger, dependencies } = opts;
     this.container = container;
     this.logger = logger;
+    this.dependencies = dependencies;
     this.childContexts = childContexts ?? new Map<string, ApplicationContext>();
   }
 
@@ -104,27 +103,25 @@ export class InversifyApplicationContext implements ApplicationContext {
     initialize,
     dependencies,
   }: BoundPluginOptions<T>): BoundPlugin<T> {
-    const childContainer = this.container.createChild();
+    const ownAndRootDependencies = [...dependencies, ...this.dependencies];
     const childContext = new InversifyApplicationContext({
-      identifier: plugin,
-      container: childContainer,
+      container: new Container(),
       logger: this.logger.child({ type: 'plugin', plugin }),
+      dependencies: ownAndRootDependencies,
     });
     this.childContexts.set(plugin, childContext);
 
     this.logger.info(
-      `Creating application context for plugin '${plugin}' as a child of ${
-        this.identifier
-      }. Binding dependencies ${[
-        ...new Set(dependencies.map(it => it.id)),
+      `Creating application context for plugin '${plugin}'. Binding dependencies ${[
+        ...new Set(ownAndRootDependencies.map(it => it.id)),
       ].join(', ')}.`,
     );
-    childContext.bindDependenciesIfNotBound(dependencies);
+    childContext.bindDependenciesIfNotBound(ownAndRootDependencies);
     return {
       name: plugin,
       instance: initialize(childContext),
       getDependencies() {
-        return dependencies.map(it => it.id);
+        return ownAndRootDependencies.map(it => it.id);
       },
     };
   }

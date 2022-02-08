@@ -13,27 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createDependencyRef } from '@backstage/app-context-common';
+import {
+  createDependencyModule,
+  createDependencyRef,
+} from '@backstage/app-context-common';
 import { PluginEndpointDiscovery } from '../discovery';
 import { UrlReader } from '../reading';
 import { TokenManager } from '../tokens';
 import { DatabaseManager } from '../database';
 import { CacheManager } from '../cache';
 
-export const urlReaderDep = createDependencyRef<UrlReader>(
+const urlReaderDep = createDependencyRef<UrlReader>(
   Symbol.for('@backstage/backend-common.UrlReader'),
 );
-export const tokenManagerDep = createDependencyRef<TokenManager>(
+const tokenManagerDep = createDependencyRef<TokenManager>(
   Symbol.for('@backstage/backend-common.TokenManager'),
 );
 
-export const databaseManagerDep = createDependencyRef<DatabaseManager>(
+const databaseManagerDep = createDependencyRef<DatabaseManager>(
   Symbol.for('@backstage/backend-common.DatabaseManager'),
 );
-export const cacheManagerDep = createDependencyRef<CacheManager>(
+const cacheManagerDep = createDependencyRef<CacheManager>(
   Symbol.for('@backstage/backend-common.CacheManager'),
 );
-export const pluginEndpointDiscoveryDep =
-  createDependencyRef<PluginEndpointDiscovery>(
-    Symbol.for('@backstage/backend-common.PluginEndpointDiscovery'),
-  );
+const pluginEndpointDiscoveryDep = createDependencyRef<PluginEndpointDiscovery>(
+  Symbol.for('@backstage/backend-common.PluginEndpointDiscovery'),
+);
+
+export const commonModule = createDependencyModule({
+  id: '@backstage/backend-common',
+  definitions: {
+    urlReader: urlReaderDep,
+    tokenManager: tokenManagerDep,
+    databaseManager: databaseManagerDep,
+    cacheManager: cacheManagerDep,
+    pluginEndpointDiscovery: pluginEndpointDiscoveryDep,
+  },
+  requirements: [],
+});

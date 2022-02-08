@@ -41,21 +41,27 @@ export function createDependencyConfig<
 }
 
 class DependencyHolder<T> implements Dependency<T> {
-  constructor(private readonly identifier: symbol) {}
-
-  get id(): symbol {
-    return this.identifier;
-  }
+  constructor(readonly id: symbol) {}
 
   get T(): T {
     throw new Error(`tried to read DependencyHolder.T of ${this}`);
   }
 
   toString() {
-    return `Dep{${String(this.id)}}`;
+    return `${String(this.id.description)}`;
   }
 }
 
 export function createDependencyRef<T>(id: symbol): Dependency<T> {
   return new DependencyHolder<T>(id);
+}
+
+export function createDependencyModule<
+  DepDefs extends Record<string, Dependency<any>>,
+>(opts: {
+  id: string;
+  definitions: DepDefs;
+  requirements: DependencyConfig<unknown, { [k: symbol]: unknown }>[];
+}) {
+  return opts;
 }

@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-import { createDependencyRef } from '@backstage/app-context-common';
+import {
+  createDependencyModule,
+  createDependencyRef,
+} from '@backstage/app-context-common';
 import { Config } from './types';
 
-export const configDep = createDependencyRef<Config>(
+const configDep = createDependencyRef<Config>(
   Symbol.for('@backstage/config.Config'),
 );
+
+export const configModule = createDependencyModule({
+  id: '@backstage/config',
+  definitions: {
+    config: configDep,
+  },
+  requirements: [],
+});

@@ -20,20 +20,20 @@ import {
   getVoidLogger,
   InversifyApplicationContext,
   PluginEndpointDiscovery,
-  pluginEndpointDiscoveryDep,
+  commonModule,
   SingleHostDiscovery,
 } from '@backstage/backend-common';
 import {
   CatalogApi,
-  catalogApiDep,
+  catalogModule,
   CatalogClient,
 } from '@backstage/catalog-client';
 import type { Entity } from '@backstage/catalog-model';
-import { Config, configDep, ConfigReader } from '@backstage/config';
+import { Config, configModule, ConfigReader } from '@backstage/config';
 import { createRouter } from './router';
 import { BadgeBuilder } from '../lib';
 import { Container } from 'inversify';
-import { dependencies } from './moduleContext';
+import { badgesModule } from './moduleContext';
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -88,18 +88,22 @@ describe('createRouter', () => {
     });
     discovery = SingleHostDiscovery.fromConfig(config);
 
-    container.bind(configDep.id).toConstantValue(config);
-    container.bind(pluginEndpointDiscoveryDep.id).toConstantValue(discovery);
-    container.bind(catalogApiDep.id).toDynamicValue(
+    container.bind(configModule.definitions.config.id).toConstantValue(config);
+    container
+      .bind(commonModule.definitions.pluginEndpointDiscovery.id)
+      .toConstantValue(discovery);
+    container.bind(catalogModule.definitions.catalogApi.id).toDynamicValue(
       ({ container: c }) =>
         new CatalogClient({
-          discoveryApi: c.get(pluginEndpointDiscoveryDep.id),
+          discoveryApi: c.get(
+            commonModule.definitions.pluginEndpointDiscovery.id,
+          ),
         }),
     );
 
     applicationContext = InversifyApplicationContext.fromConfig({
       logger: getVoidLogger(),
-      dependencies,
+      dependencies: badgesModule.requirements,
       container,
     });
 

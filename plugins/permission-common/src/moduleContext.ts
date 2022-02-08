@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-import { createDependencyRef } from '@backstage/app-context-common';
+import {
+  createDependencyModule,
+  createDependencyRef,
+} from '@backstage/app-context-common';
 import { PermissionAuthorizer } from './types';
 
-export const permissionAuthorizerDep =
-  createDependencyRef<PermissionAuthorizer>(
-    Symbol.for('@backstage/permission-common.PermissionAuthorizer'),
-  );
+const permissionAuthorizerDep = createDependencyRef<PermissionAuthorizer>(
+  Symbol.for('@backstage/permission-common.PermissionAuthorizer'),
+);
+
+export const permissionModule = createDependencyModule({
+  id: '@backstage/permission-common',
+  definitions: {
+    permissionAuthorizer: permissionAuthorizerDep,
+  },
+  requirements: [],
+});

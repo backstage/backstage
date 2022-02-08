@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-import { createDependencyRef } from '@backstage/app-context-common';
+import {
+  createDependencyModule,
+  createDependencyRef,
+} from '@backstage/app-context-common';
 import { CatalogApi } from './types';
 
-export const catalogApiDep = createDependencyRef<CatalogApi>(
+const catalogApiDep = createDependencyRef<CatalogApi>(
   Symbol.for('@backstage/catalog-client.CatalogApi'),
 );
+
+export const catalogModule = createDependencyModule({
+  id: '@backstage/catalog-client',
+  definitions: {
+    catalogApi: catalogApiDep,
+  },
+  requirements: [],
+});

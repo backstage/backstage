@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-import { createDependencyRef } from '@backstage/app-context-common';
+import {
+  createDependencyModule,
+  createDependencyRef,
+} from '@backstage/app-context-common';
 import { TaskScheduler } from './tasks';
 
-export const taskSchedulerDep = createDependencyRef<TaskScheduler>(
+const taskSchedulerDep = createDependencyRef<TaskScheduler>(
   Symbol.for('@backstage/backend-tasks.TaskScheduler'),
 );
+
+export const tasksModule = createDependencyModule({
+  id: '@backstage/backend-tasks',
+  definitions: {
+    taskScheduler: taskSchedulerDep,
+  },
+  requirements: [],
+});

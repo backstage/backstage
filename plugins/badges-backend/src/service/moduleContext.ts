@@ -14,42 +14,51 @@
  * limitations under the License.
  */
 
-import { CatalogClient, catalogApiDep } from '@backstage/catalog-client';
-import { pluginEndpointDiscoveryDep } from '@backstage/backend-common';
+import { catalogModule, CatalogClient } from '@backstage/catalog-client';
+import { commonModule } from '@backstage/backend-common';
 
 import {
   createDependencyConfig,
+  createDependencyModule,
   createDependencyRef,
 } from '@backstage/app-context-common';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib';
 import { BadgeFactories } from '../types';
 
-export const badgeFactoriesDep = createDependencyRef<BadgeFactories>(
+const badgeFactoriesDependencyRef = createDependencyRef<BadgeFactories>(
   Symbol.for('@backstage/plugin-badges-backend.BadgeFactories'),
 );
-export const badgeBuilderDep = createDependencyRef<BadgeBuilder>(
+const badgeBuilderDependencyRef = createDependencyRef<BadgeBuilder>(
   Symbol.for('@backstage/plugin-badges-backend.BadgeBuilder'),
 );
-export const dependencies = [
-  createDependencyConfig({
-    id: catalogApiDep,
-    dependencies: {
-      discoveryApi: pluginEndpointDiscoveryDep,
-    },
-    factory: ({ discoveryApi }) =>
-      new CatalogClient({
-        discoveryApi: discoveryApi,
-      }),
-  }),
-  createDependencyConfig({
-    id: badgeFactoriesDep,
-    factory: () => ({}),
-  }),
-  createDependencyConfig({
-    id: badgeBuilderDep,
-    dependencies: {
-      badgeFactories: badgeFactoriesDep,
-    },
-    factory: ({ badgeFactories }) => new DefaultBadgeBuilder(badgeFactories),
-  }),
-];
+
+export const badgesModule = createDependencyModule({
+  id: '@backstage/plugin-badges-backend',
+  definitions: {
+    badgeFactories: badgeFactoriesDependencyRef,
+    badgeBuilder: badgeBuilderDependencyRef,
+  },
+  requirements: [
+    createDependencyConfig({
+      id: catalogModule.definitions.catalogApi,
+      dependencies: {
+        discoveryApi: commonModule.definitions.pluginEndpointDiscovery,
+      },
+      factory: ({ discoveryApi }) =>
+        new CatalogClient({
+          discoveryApi: discoveryApi,
+        }),
+    }),
+    createDependencyConfig({
+      id: badgeFactoriesDependencyRef,
+      factory: () => ({}),
+    }),
+    createDependencyConfig({
+      id: badgeBuilderDependencyRef,
+      dependencies: {
+        badgeFactories: badgeFactoriesDependencyRef,
+      },
+      factory: ({ badgeFactories }) => new DefaultBadgeBuilder(badgeFactories),
+    }),
+  ],
+});

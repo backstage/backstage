@@ -15,10 +15,9 @@
  */
 
 import {
-  badgeFactoriesDep,
   createDefaultBadgeFactories,
   createRouter,
-  dependencies,
+  badgesModule,
 } from '@backstage/plugin-badges-backend';
 import { PluginEnvironment } from '../types';
 
@@ -30,10 +29,10 @@ export default async function createPlugin(environment: PluginEnvironment) {
     plugin: pluginName,
     dependencies: [
       {
-        id: badgeFactoriesDep,
+        id: badgesModule.definitions.badgeFactories,
         factory: () => createDefaultBadgeFactories(),
       },
-      ...dependencies,
+      ...badgesModule.requirements,
     ],
     initialize: createRouter,
   });
