@@ -34,7 +34,7 @@
     "@backstage/errors": "^0.2.0",
     "@backstage/types": "^0.1.1",
     "@types/luxon": "^2.0.4",
-    "knex": "^0.95.1",
+    "knex": "^1.0.2",
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
     "node-abort-controller": "^3.0.1",

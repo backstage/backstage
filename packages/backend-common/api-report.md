@@ -177,7 +177,7 @@ export const createDatabase: typeof createDatabaseClient;
 export function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<Knex.Config>,
-): Knex<any, unknown[]>;
+): Knex<any, Record<string, any>[]>;
 
 // @public
 export function createRootLogger(

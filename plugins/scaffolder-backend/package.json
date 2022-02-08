@@ -59,7 +59,7 @@
     "isbinaryfile": "^4.0.8",
     "isomorphic-git": "^1.8.0",
     "jsonschema": "^1.2.6",
-    "knex": "^0.95.1",
+    "knex": "^1.0.2",
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
     "morgan": "^1.10.0",
