@@ -31,7 +31,7 @@ export type ReleaseManifest = {
  * Options for getByVersion.
  * @public
  */
-export type GetByVersionOptions = {
+export type GetManifestByVersionOptions = {
   version: string;
 };
 
@@ -39,8 +39,8 @@ export type GetByVersionOptions = {
  * Returns a release manifest based on supplied version.
  * @public
  */
-export async function getByVersion(
-  options: GetByVersionOptions,
+export async function getManifestByVersion(
+  options: GetManifestByVersionOptions,
 ): Promise<ReleaseManifest> {
   const url = `${VERSIONS_DOMAIN}/v1/releases/${encodeURIComponent(
     options.version,
@@ -61,7 +61,7 @@ export async function getByVersion(
  * Options for getByReleaseLine.
  * @public
  */
-export type GetByReleaseLineOptions = {
+export type GetManifestByReleaseLineOptions = {
   releaseLine: string;
 };
 
@@ -69,8 +69,8 @@ export type GetByReleaseLineOptions = {
  * Returns a release manifest based on supplied release line.
  * @public
  */
-export async function getByReleaseLine(
-  options: GetByReleaseLineOptions,
+export async function getManifestByReleaseLine(
+  options: GetManifestByReleaseLineOptions,
 ): Promise<ReleaseManifest> {
   const url = `${VERSIONS_DOMAIN}/v1/tags/${encodeURIComponent(
     options.releaseLine,

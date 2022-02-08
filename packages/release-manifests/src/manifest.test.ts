@@ -15,11 +15,11 @@
  */
 
 import { setupRequestMockHandlers } from '@backstage/test-utils';
-import { getByReleaseLine, getByVersion } from './manifest';
+import { getManifestByReleaseLine, getManifestByVersion } from './manifest';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 
-describe('getByVersion', () => {
+describe('getManifestByVersion', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
@@ -38,7 +38,7 @@ describe('getByVersion', () => {
       ),
     );
 
-    const pkgs = await getByVersion({ version: '0.0.0' });
+    const pkgs = await getManifestByVersion({ version: '0.0.0' });
     expect(pkgs.packages).toEqual([
       {
         name: '@backstage/core',
@@ -46,13 +46,13 @@ describe('getByVersion', () => {
       },
     ]);
 
-    await expect(getByVersion({ version: '999.0.1' })).rejects.toThrow(
+    await expect(getManifestByVersion({ version: '999.0.1' })).rejects.toThrow(
       'No release found for 999.0.1 version',
     );
   });
 });
 
-describe('getByReleaseLine', () => {
+describe('getManifestByReleaseLine', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
@@ -71,7 +71,7 @@ describe('getByReleaseLine', () => {
       ),
     );
 
-    const pkgs = await getByReleaseLine({ releaseLine: 'main' });
+    const pkgs = await getManifestByReleaseLine({ releaseLine: 'main' });
     expect(pkgs.packages).toEqual([
       {
         name: '@backstage/core',
@@ -79,8 +79,8 @@ describe('getByReleaseLine', () => {
       },
     ]);
 
-    await expect(getByReleaseLine({ releaseLine: 'foo' })).rejects.toThrow(
-      "No 'foo' release line found",
-    );
+    await expect(
+      getManifestByReleaseLine({ releaseLine: 'foo' }),
+    ).rejects.toThrow("No 'foo' release line found");
   });
 });

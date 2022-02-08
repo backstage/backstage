@@ -33,8 +33,8 @@ import { forbiddenDuplicatesFilter } from './lint';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
 import { runParallelWorkers } from '../../lib/parallel';
 import {
-  getByReleaseLine,
-  getByVersion,
+  getManifestByReleaseLine,
+  getManifestByVersion,
   ReleaseManifest,
 } from '@backstage/release-manifests';
 
@@ -69,12 +69,14 @@ export default async (cmd: Command) => {
   let findTargetVersion: (name: string) => Promise<string>;
   let releaseManifest: ReleaseManifest;
   if (semver.valid(cmd.release)) {
-    releaseManifest = await getByVersion({ version: cmd.release });
+    releaseManifest = await getManifestByVersion({ version: cmd.release });
     findTargetVersion = createStrictVersionFinder({
       releaseManifest,
     });
   } else {
-    releaseManifest = await getByReleaseLine({ releaseLine: cmd.release });
+    releaseManifest = await getManifestByReleaseLine({
+      releaseLine: cmd.release,
+    });
     findTargetVersion = createVersionFinder({
       releaseLine: cmd.releaseLine,
       releaseManifest,

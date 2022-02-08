@@ -4,22 +4,22 @@
 
 ```ts
 // @public
-export function getByReleaseLine(
-  options: GetByReleaseLineOptions,
+export function getManifestByReleaseLine(
+  options: GetManifestByReleaseLineOptions,
 ): Promise<ReleaseManifest>;
 
 // @public
-export type GetByReleaseLineOptions = {
+export type GetManifestByReleaseLineOptions = {
   releaseLine: string;
 };
 
 // @public
-export function getByVersion(
-  options: GetByVersionOptions,
+export function getManifestByVersion(
+  options: GetManifestByVersionOptions,
 ): Promise<ReleaseManifest>;
 
 // @public
-export type GetByVersionOptions = {
+export type GetManifestByVersionOptions = {
   version: string;
 };
 

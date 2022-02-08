@@ -20,9 +20,9 @@
  * @packageDocumentation
  */
 
-export { getByVersion, getByReleaseLine } from './manifest';
+export { getManifestByVersion, getManifestByReleaseLine } from './manifest';
 export type {
   ReleaseManifest,
-  GetByReleaseLineOptions,
-  GetByVersionOptions,
+  GetManifestByReleaseLineOptions,
+  GetManifestByVersionOptions,
 } from './manifest';
