@@ -216,6 +216,7 @@ const NO_WARNING_PACKAGES = [
   'packages/test-utils',
   'packages/theme',
   'packages/types',
+  'packages/release-manifests',
   'packages/version-bridge',
   'plugins/catalog-backend-module-ldap',
   'plugins/catalog-backend-module-msgraph',
