@@ -45,15 +45,14 @@ jobs:
               });
               if (comments.find((c) =>
                   c.user.login === "github-actions[bot]" &&
-                  c.body.includes("<dco-helper>")
+                  c.body.includes("<!-- dco -->")
                   )
               ) {
                 console.log(`already commented on PR #${pull.number}, skipping`);
                 continue;
               }
-
               console.log(`creating comment on PR #${pull.number}`);
-              const body = `Thanks for the contribution!\nAll commits need to be DCO signed before merging. Please refer to the the [DCO section in CONTRIBUTING.md](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin) or the [DCO](${checks.data.check_runs[0].html_url}) status for more info.<dco-helper>`;
+              const body = `Thanks for the contribution!\nAll commits need to be DCO signed before merging. Please refer to the the [DCO section in CONTRIBUTING.md](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin) or the [DCO](${checks.data.check_runs[0].html_url}) status for more info.<!-- dco -->`;
               await github.rest.issues.createComment({
                 repo,
                 owner,
