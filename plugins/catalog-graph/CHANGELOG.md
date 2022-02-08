@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.10-next.0
+
+### Patch Changes
+
+- 7bb1bde7f6: Minor API cleanups
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+
 ## 0.2.9
 
 ### Patch Changes

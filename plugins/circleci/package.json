@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-circleci",
   "description": "A Backstage plugin that integrates towards Circle CI",
-  "version": "0.2.36",
+  "version": "0.2.37-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -33,9 +33,9 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^0.9.10",
-    "@backstage/core-components": "^0.8.7",
+    "@backstage/core-components": "^0.8.8-next.0",
     "@backstage/core-plugin-api": "^0.6.0",
-    "@backstage/plugin-catalog-react": "^0.6.13",
+    "@backstage/plugin-catalog-react": "^0.6.14-next.0",
     "@backstage/theme": "^0.2.14",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -52,9 +52,9 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.1",
+    "@backstage/cli": "^0.13.2-next.0",
     "@backstage/core-app-api": "^0.5.2",
-    "@backstage/dev-utils": "^0.2.20",
+    "@backstage/dev-utils": "^0.2.21-next.0",
     "@backstage/test-utils": "^0.2.4",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",

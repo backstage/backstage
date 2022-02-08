@@ -1,5 +1,52 @@
 # example-app
 
+## 0.2.64-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.13.2-next.0
+  - @backstage/plugin-todo@0.2.0-next.0
+  - @backstage/plugin-newrelic-dashboard@0.1.6-next.0
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-scaffolder@0.12.2-next.0
+  - @backstage/plugin-search@0.6.2-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+  - @backstage/plugin-catalog-graph@0.2.10-next.0
+  - @backstage/plugin-catalog-import@0.8.1-next.0
+  - @backstage/plugin-home@0.4.14-next.0
+  - @backstage/app-defaults@0.1.7-next.0
+  - @backstage/integration-react@0.1.21-next.0
+  - @backstage/plugin-airbrake@0.1.3-next.0
+  - @backstage/plugin-apache-airflow@0.1.6-next.0
+  - @backstage/plugin-api-docs@0.7.2-next.0
+  - @backstage/plugin-azure-devops@0.1.14-next.0
+  - @backstage/plugin-badges@0.2.22-next.0
+  - @backstage/plugin-catalog@0.7.12-next.0
+  - @backstage/plugin-circleci@0.2.37-next.0
+  - @backstage/plugin-cloudbuild@0.2.35-next.0
+  - @backstage/plugin-code-coverage@0.1.25-next.0
+  - @backstage/plugin-cost-insights@0.11.20-next.0
+  - @backstage/plugin-explore@0.3.29-next.0
+  - @backstage/plugin-gcp-projects@0.3.17-next.0
+  - @backstage/plugin-github-actions@0.4.35-next.0
+  - @backstage/plugin-gocd@0.1.4-next.0
+  - @backstage/plugin-graphiql@0.2.30-next.0
+  - @backstage/plugin-jenkins@0.5.20-next.0
+  - @backstage/plugin-kafka@0.2.28-next.0
+  - @backstage/plugin-kubernetes@0.5.7-next.0
+  - @backstage/plugin-lighthouse@0.2.37-next.0
+  - @backstage/plugin-newrelic@0.3.16-next.0
+  - @backstage/plugin-org@0.4.2-next.0
+  - @backstage/plugin-pagerduty@0.3.25-next.0
+  - @backstage/plugin-rollbar@0.3.26-next.0
+  - @backstage/plugin-sentry@0.3.36-next.0
+  - @backstage/plugin-shortcuts@0.1.22-next.0
+  - @backstage/plugin-tech-insights@0.1.8-next.0
+  - @backstage/plugin-tech-radar@0.5.5-next.0
+  - @backstage/plugin-techdocs@0.13.3-next.0
+  - @backstage/plugin-user-settings@0.3.19-next.0
+
 ## 0.2.63
 
 ### Patch Changes
