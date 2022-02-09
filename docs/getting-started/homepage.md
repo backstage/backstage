@@ -17,7 +17,7 @@ Let's get started by installing the home plugin and creating a simple home page 
 #### 1. Install the plugin
 
 ```
-# From the Backstage repository root
+# From your Backstage application directory
 cd packages/app
 yarn add @backstage/plugin-home
 ```
