@@ -15,4 +15,4 @@
  */
 
 export { extractAirbrakeConfig } from './ExtractAirbrakeConfig';
-export type { AirbrakeConfig } from './ExtractAirbrakeConfig';
+export type { Config as AirbrakeConfig } from '../../config';
