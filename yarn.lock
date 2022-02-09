@@ -1440,7 +1440,7 @@
     "@material-ui/lab" "4.0.0-alpha.57"
     react-use "^17.2.4"
 
-"@backstage/plugin-catalog-react@^0.6.13", "@backstage/plugin-catalog-react@^0.6.5":
+"@backstage/plugin-catalog-react@^0.6.12", "@backstage/plugin-catalog-react@^0.6.13", "@backstage/plugin-catalog-react@^0.6.5":
   version "0.6.13"
   resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-0.6.13.tgz#b325eae501d3edeb8b7caef5d9615f2e632f5430"
   integrity sha512-XBwop7PwAZqfongx3KP6jAJar+MEscLSp8nLuHYX5XxA+suQNiBgi96uO3SEQmvtae+hvsRM7c0WHSxbYiXsDA==
