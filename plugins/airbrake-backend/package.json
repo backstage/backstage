@@ -20,7 +20,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.10.5",
+    "@backstage/backend-common": "^0.10.7-next.0",
     "@backstage/config": "^0.1.13",
     "@types/express": "*",
     "express": "^4.17.1",
