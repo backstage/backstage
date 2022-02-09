@@ -32,8 +32,6 @@ export type LinkProps = MaterialLinkProps &
     noTrack?: boolean;
   };
 
-declare function LinkType(props: LinkProps): JSX.Element;
-
 /**
  * Given a react node, try to retrieve its text content.
  */
@@ -62,7 +60,7 @@ const getNodeText = (node: React.ReactNode): string => {
  * - Makes the Link use react-router
  * - Captures Link clicks as analytics events.
  */
-const ActualLink = React.forwardRef<any, LinkProps>(
+export const Link = React.forwardRef<any, LinkProps>(
   ({ onClick, noTrack, ...props }, ref) => {
     const analytics = useAnalytics();
     const to = String(props.to);
@@ -96,11 +94,4 @@ const ActualLink = React.forwardRef<any, LinkProps>(
       />
     );
   },
-);
-
-// TODO(Rugvip): We use this as a workaround to make the exported type be a
-//               function, which makes our API reference docs much nicer.
-//               The first type to be exported gets priority, but it will
-//               be thrown away when compiling to JS.
-// @ts-ignore
-export { LinkType as Link, ActualLink as Link };
+) as (props: LinkProps) => JSX.Element;
