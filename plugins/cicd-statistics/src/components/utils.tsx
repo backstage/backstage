@@ -16,6 +16,7 @@
 
 import React, { CSSProperties } from 'react';
 import { DateTime, Duration } from 'luxon';
+import humanizeDuration from 'humanize-duration';
 import { capitalize } from 'lodash';
 
 const infoText: CSSProperties = { color: 'InfoText' };
@@ -124,7 +125,7 @@ export function formatDuration(millis: number) {
     ...(seconds && !days && !hours && { seconds }),
   });
 
-  return dur.toHuman({ unitDisplay: 'narrow' }).replace(/, /g, '');
+  return humanizeDuration(dur.toMillis(), { round: true });
 }
 
 export function formatDurationFromSeconds(seconds: number) {

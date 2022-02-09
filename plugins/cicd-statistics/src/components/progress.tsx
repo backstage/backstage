@@ -15,7 +15,7 @@
  */
 
 import React, { CSSProperties, DependencyList } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { Box, LinearProgress } from '@material-ui/core';
 import Timeline from '@material-ui/lab/Timeline';
 import TimelineItem from '@material-ui/lab/TimelineItem';
