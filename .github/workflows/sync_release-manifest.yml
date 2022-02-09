@@ -56,7 +56,7 @@ jobs:
           # TODO(Rugvip): Remove the create-app dispatch once we've been on the release version for a while
           script: |
             console.log('Dispatching upgrade helper sync - release version');
-            await github.actions.createWorkflowDispatch({
+            await github.rest.actions.createWorkflowDispatch({
               owner: 'backstage',
               repo: 'upgrade-helper-diff',
               workflow_id: 'release.yml',
@@ -67,7 +67,7 @@ jobs:
             });
 
             console.log('Dispatching upgrade helper sync - create-app version');
-            await github.actions.createWorkflowDispatch({
+            await github.rest.actions.createWorkflowDispatch({
               owner: 'backstage',
               repo: 'upgrade-helper-diff',
               workflow_id: 'release.yml',
