@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { InversifyApplicationContext } from './ApplicationContext';
-export * from './moduleContext';
-export { AppContextManager } from './AppContextManager';
-export * from './types';
+import { Logger } from 'winston';
+import { CustomErrorBase } from '@backstage/errors/dist';
+import { AnyDependencyConfig } from '@backstage/app-context-common';
+
+export type AppContextFactoryOptions = {
+  logger: Logger;
+  rootDependencies: AnyDependencyConfig[];
+};
+
+export class DependencyNotBoundError extends CustomErrorBase {}

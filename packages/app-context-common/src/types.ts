@@ -29,13 +29,8 @@ export interface BoundPlugin<T> {
 }
 
 export interface ApplicationContext {
-  getChildContext(identifier: string): ApplicationContext;
-
   getContainer(): interfaces.Container;
-
   get<T>(dep: Dependency<T>): T;
-
-  createBoundPlugin<T>(options: BoundPluginOptions<T>): BoundPlugin<T>;
 }
 
 export type TypesToIocDependencies<T> = {

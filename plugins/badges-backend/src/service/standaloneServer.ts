@@ -50,7 +50,6 @@ export async function startStandaloneServer(
     .toConstantValue(discovery);
 
   const applicationContext = InversifyApplicationContext.fromConfig({
-    logger,
     dependencies: badgesModule.dependencies,
     container,
   });

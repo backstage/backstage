@@ -17,7 +17,6 @@
 import express from 'express';
 import request from 'supertest';
 import {
-  getVoidLogger,
   InversifyApplicationContext,
   PluginEndpointDiscovery,
   commonModuleDefinitions,
@@ -110,7 +109,6 @@ describe('createRouter', () => {
       );
 
     applicationContext = InversifyApplicationContext.fromConfig({
-      logger: getVoidLogger(),
       dependencies: badgesModule.dependencies,
       container,
     });

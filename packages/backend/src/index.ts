@@ -24,12 +24,12 @@
 
 import Router from 'express-promise-router';
 import {
+  AppContextManager,
+  commonModuleDefinitions,
   createServiceBuilder,
   getRootLogger,
-  InversifyApplicationContext,
   loadBackendConfig,
   notFoundHandler,
-  commonModuleDefinitions,
   useHotMemoize,
 } from '@backstage/backend-common';
 import { tasksModuleDefinitions } from '@backstage/backend-tasks';
@@ -54,24 +54,25 @@ import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
-import { DependencyNotBoundError, PluginEnvironment } from './types';
+import { PluginEnvironment } from './types';
 import { rootDependencies } from './rootContext';
 import { permissionModuleDefinitions } from '@backstage/plugin-permission-common';
-import { ApplicationContext } from '@backstage/app-context-common';
 
-function makeCreateEnv(config: Config, applicationContext: ApplicationContext) {
+function makeCreateEnv(config: Config, appContextManager: AppContextManager) {
   const root = getRootLogger();
 
   return (plugin: string): PluginEnvironment => {
+    const rootApplicationContext = appContextManager.createRootContext();
+
     const logger = root.child({ type: 'plugin', plugin });
-    const databaseManager = applicationContext.get(
+    const databaseManager = rootApplicationContext.get(
       commonModuleDefinitions.definitions.databaseManager,
     );
     const database = databaseManager.forPlugin(plugin);
-    const cache = applicationContext
+    const cache = rootApplicationContext
       .get(commonModuleDefinitions.definitions.cacheManager)
       .forPlugin(plugin);
-    const scheduler = applicationContext
+    const scheduler = rootApplicationContext
       .get(tasksModuleDefinitions.definitions.taskScheduler)
       .forPlugin(plugin);
     return {
@@ -79,20 +80,20 @@ function makeCreateEnv(config: Config, applicationContext: ApplicationContext) {
       cache,
       database,
       config,
-      reader: applicationContext.get(
+      reader: rootApplicationContext.get(
         commonModuleDefinitions.definitions.urlReader,
       ),
-      discovery: applicationContext.get(
+      discovery: rootApplicationContext.get(
         commonModuleDefinitions.definitions.pluginEndpointDiscovery,
       ),
-      tokenManager: applicationContext.get(
+      tokenManager: rootApplicationContext.get(
         commonModuleDefinitions.definitions.tokenManager,
       ),
-      permissions: applicationContext.get(
+      permissions: rootApplicationContext.get(
         permissionModuleDefinitions.definitions.permissionAuthorizer,
       ),
       scheduler,
-      applicationContext,
+      appContextManager,
     };
   };
 }
@@ -111,15 +112,12 @@ async function main() {
     logger,
   });
 
-  const rootApplicationContext = InversifyApplicationContext.fromConfig({
-    dependencies: rootDependencies(config, logger),
+  const appContextManager = AppContextManager.fromConfig({
     logger,
+    rootDependencies: rootDependencies(config, logger),
   });
 
-  const createEnv: (plugin: string) => PluginEnvironment = makeCreateEnv(
-    config,
-    rootApplicationContext,
-  );
+  const createEnv = makeCreateEnv(config, appContextManager);
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
@@ -147,11 +145,6 @@ async function main() {
 
   const containerizedBadgesPlugin = await badges(badgesEnv);
 
-  // TODO: Maybe handle the construction of this temp container within ContainerManager. Used only for validation purposes.
-  const backendPlugins = useHotMemoize(module, () => [
-    containerizedBadgesPlugin,
-  ]);
-
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
@@ -178,21 +171,6 @@ async function main() {
     .addRouter('', metricsHandler())
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));
-  backendPlugins.map(containerizedPlugin => {
-    const container = rootApplicationContext.getChildContext(
-      containerizedPlugin.name,
-    );
-    containerizedPlugin.getDependencies().forEach(dependency => {
-      try {
-        container.get(dependency);
-      } catch (e) {
-        throw new DependencyNotBoundError(
-          `failed to retrieve injected dependency for ${dependency}`,
-          e,
-        );
-      }
-    });
-  });
 
   await service.start().catch(err => {
     logger.error(err);

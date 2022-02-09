@@ -17,6 +17,7 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import {
+  AppContextManager,
   PluginCacheManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
@@ -25,8 +26,6 @@ import {
 } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
-import { CustomErrorBase } from '@backstage/errors';
-import { ApplicationContext } from '@backstage/app-context-common';
 
 export type PluginEnvironment = {
   logger: Logger;
@@ -38,7 +37,5 @@ export type PluginEnvironment = {
   tokenManager: TokenManager;
   permissions: PermissionAuthorizer;
   scheduler: PluginTaskScheduler;
-  applicationContext: ApplicationContext;
+  appContextManager: AppContextManager;
 };
-
-export class DependencyNotBoundError extends CustomErrorBase {}
