@@ -10,7 +10,19 @@ Having a good Backstage home page can significantly improve the discoverability 
 
 For App Integrators, the system is designed to be composable to give total freedom in designing a Home Page that suits the needs of the organization. From the perspective of a Component Developer who wishes to contribute with building blocks to be included in Home Pages, there's a convenient interface for bundling the different parts and exporting them with both error boundary and lazy loading handled under the surface.
 
-Let's get started by installing the home plugin and creating a simple home page for your Backstage app.
+At the end of this tutorial, you can expect:
+
+- Your Backstage app to have a dedicated home page instead of Software Catalog.
+- Understand the composability of home page and how to start customizing it for your own organization.
+
+### Prerequisites
+
+Before we begin, make sure
+
+- You have created your own standalone Backstage app using [`@backstage/create-app`](index.md#create-your-backstage-app) and not using a fork of the [backstage](https://github.com/backstage/backstage) repository.
+- You do not have an existing home page, and by default you are redirected to Software Catalog when you open Backstage.
+
+Now, let's get started by installing the home plugin and creating a simple home page for your Backstage app.
 
 ### Setup home page
 
@@ -118,7 +130,7 @@ In the next steps, we will make it interesting and useful!
 
 There is a default home page template ([storybook link](https://backstage.io/storybook/?path=/story/plugins-home-templates--default-template)) which we will use to set up our home page. Checkout the [blog post announcement](https://backstage.io/blog/2022/01/25/backstage-homepage-templates) about the Backstage home page templates for more information.
 
-<!-- TODO detailed instructions of using one of these templates. -->
+<!-- TODO for later: detailed instructions for using one of these templates. -->
 
 ### Composing your Home Page
 
