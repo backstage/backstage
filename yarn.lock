@@ -4653,13 +4653,13 @@
     react-use "^17.2.4"
 
 "@roadiehq/backstage-plugin-github-pull-requests@^1.3.2":
-  version "1.3.4"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-1.3.4.tgz#3e6be41fe81909b28a3d517aadcc7ae6b70d7d7a"
-  integrity sha512-F1y3CmMZOiNiam3zt6TBaJ5+NqAhPwS3HkWbUsMvJq1PKAzYdSeDBPhoTBwhYOu3uV36EtKjfog4r4wVHOf7EA==
+  version "1.3.7"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-1.3.7.tgz#d3c884c9b85f88c5f851f383596a616598c56076"
+  integrity sha512-a3PBLQ6SRtEDGNIekcGT8v4Aaac3BoEww/UU9uaQuE7bCEVolx2MeOVbSxb1uCWr6C6uGeDF5Kw4S4hPJJcnNg==
   dependencies:
     "@backstage/catalog-model" "^0.9.7"
     "@backstage/core-components" "^0.8.0"
-    "@backstage/core-plugin-api" "^0.4.0"
+    "@backstage/core-plugin-api" "^0.6.0"
     "@backstage/plugin-catalog-react" "^0.6.5"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"

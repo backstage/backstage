@@ -62,7 +62,7 @@ jobs:
               workflow_id: 'release.yml',
               ref: 'master',
               inputs: {
-                version: require('./package.json').version,
+                version: require('./backstage/package.json').version,
               },
             });
 
@@ -73,6 +73,6 @@ jobs:
               workflow_id: 'release.yml',
               ref: 'master',
               inputs: {
-                version: require('./packages/create-app/package.json').version,
+                version: require('./backstage/packages/create-app/package.json').version,
               },
             });
