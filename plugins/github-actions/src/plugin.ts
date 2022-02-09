@@ -23,8 +23,8 @@ import {
   githubAuthApiRef,
   createRoutableExtension,
   createComponentExtension,
+  NotificationApi,
 } from '@backstage/core-plugin-api';
-// import { NotificationApi } from '@backstage/core-plugin-api/src/apis/definitions/NotificationApi';
 
 export const githubActionsPlugin = createPlugin({
   id: 'github-actions',
@@ -39,16 +39,26 @@ export const githubActionsPlugin = createPlugin({
   routes: {
     entityContent: rootRouteRef,
   },
-  notificationsSource: [
+  notificationSource: [
     {
-      id: 'github',
-      // initialise: (notificationApi: NotificationApi) => {
-      //   setInterval(() => {
-      //     // Poll backend for messages -  ?? keep track of messages timestamps + userId + team + pluginId ??
-      //     // Post message to api
-      //     notificationApi.post(message);
-      //   }, 100);
-      // },
+      id: 'github-actions-notification-source',
+      initialize: (notificationApi: NotificationApi) => {
+        setInterval(async () => {
+          // Poll some backend for messages; potentially using a timestamp in the request to only
+          // retrieve messages we haven't seen yet. May also pass the Backstage identity to filter
+          // messages to only those applicable (global + user/team).
+          const alerts = await Promise.resolve([
+            {
+              kind: 'alert',
+              metadata: {
+                message: 'sample notification',
+                severity: 'warning',
+              },
+            },
+          ]);
+          alerts.forEach(a => notificationApi.post(a));
+        }, 10 * 1000);
+      },
     },
   ],
 });

@@ -31,5 +31,6 @@ export * from './ErrorApi';
 export * from './FeatureFlagsApi';
 export * from './FetchApi';
 export * from './IdentityApi';
+export * from './NotificationApi';
 export * from './OAuthRequestApi';
 export * from './StorageApi';

@@ -16,33 +16,37 @@
 
 import { createApiRef, ApiRef } from '../system';
 import { Observable } from '@backstage/types';
+import { EntityRef } from '@backstage/catalog-model';
 
-/**
- * Message handled by the {@link NotificationApi}.
- *
- * @public
- */
 export type Notification = {
-  message: string;
+  kind: string;
   metadata?: {
-    severity?: 'success' | 'info' | 'warning' | 'error';
+    targetEntityRefs?: EntityRef[];
+    [key: string]: any;
   };
-  type: 'alert' | 'user' | string;
+};
+
+export type AlertNotification = Notification & {
+  kind: 'alert';
+  metadata: {
+    message: string;
+    severity: 'success' | 'info' | 'warning' | 'error';
+  };
 };
 
 /**
- * The alert API is used to report alerts to the app, and display them to the user.
+ * The notification API is used to report messages to the app, and display them to the user.
  *
  * @public
  */
 export type NotificationApi = {
   /**
-   * Post an alert for handling by the application.
+   * Post a notification for handling by the application.
    */
   post(notification: Notification): void;
 
   /**
-   * Observe alerts posted by other parts of the application.
+   * Observe notifications posted by other parts of the application.
    */
   notification$(): Observable<Notification>;
 };
@@ -52,6 +56,6 @@ export type NotificationApi = {
  *
  * @public
  */
-export const NotificationApiRef: ApiRef<NotificationApi> = createApiRef({
-  id: 'core.alert',
+export const notificationApiRef: ApiRef<NotificationApi> = createApiRef({
+  id: 'core.notification',
 });

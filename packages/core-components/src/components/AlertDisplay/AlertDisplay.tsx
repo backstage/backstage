@@ -19,7 +19,11 @@ import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
-import { AlertMessage, useApi, alertApiRef } from '@backstage/core-plugin-api';
+import {
+  useApi,
+  notificationApiRef,
+  AlertNotification,
+} from '@backstage/core-plugin-api';
 import pluralize from 'pluralize';
 
 /**
@@ -32,27 +36,31 @@ import pluralize from 'pluralize';
  */
 // TODO: improve on this and promote to a shared component for use by all apps.
 export function AlertDisplay(_props: {}) {
-  const [messages, setMessages] = useState<Array<AlertMessage>>([]);
-  const alertApi = useApi(alertApiRef);
+  const [alerts, setAlerts] = useState<Array<AlertNotification>>([]);
+  const notificationApi = useApi(notificationApiRef);
 
   useEffect(() => {
-    const subscription = alertApi
-      .alert$()
-      .subscribe(message => setMessages(msgs => msgs.concat(message)));
+    const subscription = notificationApi
+      .notification$()
+      .subscribe(notification => {
+        if (notification.kind === 'alert') {
+          setAlerts(a => a.concat(notification as AlertNotification));
+        }
+      });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [alertApi]);
+  }, [notificationApi]);
 
-  if (messages.length === 0) {
+  if (alerts.length === 0) {
     return null;
   }
 
-  const [firstMessage] = messages;
+  const [firstMessage] = alerts;
 
   const handleClose = () => {
-    setMessages(msgs => msgs.filter(msg => msg !== firstMessage));
+    setAlerts(a => a.filter(alert => alert !== firstMessage));
   };
 
   return (
@@ -68,14 +76,14 @@ export function AlertDisplay(_props: {}) {
             <CloseIcon />
           </IconButton>
         }
-        severity={firstMessage.severity}
+        severity={firstMessage.metadata.severity}
       >
         <span>
-          {firstMessage.message.toString()}
-          {messages.length > 1 && (
-            <em>{` (${messages.length - 1} older ${pluralize(
+          {firstMessage.metadata.message.toString()}
+          {alerts.length > 1 && (
+            <em>{` (${alerts.length - 1} older ${pluralize(
               'message',
-              messages.length - 1,
+              alerts.length - 1,
             )})`}</em>
           )}
         </span>

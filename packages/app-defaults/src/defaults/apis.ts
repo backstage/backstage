@@ -16,6 +16,7 @@
 
 import {
   AlertApiForwarder,
+  NotificationApiForwarder,
   NoOpAnalyticsApi,
   ErrorApiForwarder,
   ErrorAlerter,
@@ -54,6 +55,7 @@ import {
   gitlabAuthApiRef,
   auth0AuthApiRef,
   microsoftAuthApiRef,
+  notificationApiRef,
   storageApiRef,
   configApiRef,
   samlAuthApiRef,
@@ -80,6 +82,11 @@ export const apis = [
     api: alertApiRef,
     deps: {},
     factory: () => new AlertApiForwarder(),
+  }),
+  createApiFactory({
+    api: notificationApiRef,
+    deps: {},
+    factory: () => new NotificationApiForwarder(),
   }),
   createApiFactory({
     api: analyticsApiRef,

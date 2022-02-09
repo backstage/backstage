@@ -60,6 +60,7 @@ export type BackstagePlugin<
    * Returns all registered feature flags for this plugin.
    */
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
+  getNotificationSources(): Iterable<PluginNotificationSource>;
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
@@ -73,6 +74,11 @@ export type BackstagePlugin<
 export type PluginFeatureFlagConfig = {
   /** Feature flag name */
   name: string;
+};
+
+export type PluginNotificationSource = {
+  id: string;
+  initialize: (notificationApi: NotificationApi) => void;
 };
 
 /**
@@ -89,12 +95,7 @@ export type PluginConfig<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
-  notificationsSource?: [
-    {
-      id: string;
-      initialise?(notificationApi: NotificationApi): void;
-    },
-  ];
+  notificationSource?: PluginNotificationSource[];
 };
 
 /**

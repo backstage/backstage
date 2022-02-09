@@ -45,6 +45,8 @@ import {
   IdentityApi,
   identityApiRef,
   BackstagePlugin,
+  notificationApiRef,
+  PluginNotificationSource,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
@@ -158,6 +160,7 @@ export class AppManager implements BackstageApp {
   private configApi?: ConfigApi;
 
   private readonly apis: Iterable<AnyApiFactory>;
+  private readonly notificationSources: PluginNotificationSource[];
   private readonly icons: NonNullable<AppOptions['icons']>;
   private readonly plugins: Set<CompatiblePlugin>;
   private readonly components: AppComponents;
@@ -171,6 +174,7 @@ export class AppManager implements BackstageApp {
 
   constructor(options: AppOptions) {
     this.apis = options.apis ?? [];
+    this.notificationSources = [];
     this.icons = options.icons;
     this.plugins = new Set((options.plugins as CompatiblePlugin[]) ?? []);
     this.components = options.components;
@@ -293,12 +297,16 @@ export class AppManager implements BackstageApp {
       }, [hasConfigApi, loadedConfig, featureFlags]);
 
       useEffect(() => {
-        const notificationsApi = this.getApiHolder().get(notificationsApiRef);
+        const notificationApi = this.getApiHolder().get(notificationApiRef)!;
 
-        for (const plugin of this.plugins.values()) {
-          if ('notificationsSources' in plugin) {
+        for (const plugin of this.plugins) {
+          if ('getNotificationSources' in plugin) {
             for (const source of plugin.getNotificationSources()) {
-              source.initialise(notificationsApi);
+              // Multiple plugins can attempt to register the same notification source; first wins
+              if (!this.notificationSources.some(s => s.id === source.id)) {
+                source.initialize(notificationApi);
+                this.notificationSources.push(source);
+              }
             }
           }
         }
