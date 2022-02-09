@@ -176,9 +176,7 @@ const routes = (
   <FlatRoutes>
     <Navigate key="/" to="catalog" />
 -    <Route path="/catalog" element={<CatalogIndexPage />} />
-+    <Route path="/catalog" element={<CatalogIndexPage />}>
-+      <CustomCatalogPage />
-+    </Route>
++    <Route path="/catalog" element={<CustomCatalogPage />} />
 ```
 
 The same method can be used to customize the _default_ filters with a different
