@@ -19,6 +19,7 @@ import {
   OnCall,
   User,
   EscalationPolicyInfo,
+  RoutingKey,
   Team,
 } from '../components/types';
 import {
@@ -30,6 +31,7 @@ import {
   RequestOptions,
   ListUserResponse,
   EscalationPolicyResponse,
+  ListRoutingKeyResponse,
 } from './types';
 import {
   createApiRef,
@@ -80,6 +82,15 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     const teams = await this.getByUrl<Team[]>(url);
 
     return teams;
+  }
+
+  async getRoutingKeys(): Promise<RoutingKey[]> {
+    const url = `${await this.config.discoveryApi.getBaseUrl(
+      'proxy',
+    )}/splunk-on-call/v1/org/routing-keys`;
+    const { routingKeys } = await this.getByUrl<ListRoutingKeyResponse>(url);
+
+    return routingKeys;
   }
 
   async getUsers(): Promise<User[]> {

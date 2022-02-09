@@ -117,3 +117,15 @@ export type EscalationPolicyTeam = {
   name: string;
   slug: string;
 };
+
+export type RoutingKey = {
+  routingKey: string;
+  targets: RoutingKeyTarget[];
+  isDefault: boolean;
+};
+
+export type RoutingKeyTarget = {
+  policyName: string;
+  policySlug: string;
+  _teamUrl: string;
+};
