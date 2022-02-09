@@ -509,7 +509,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   }
 
   return <SidebarItemBase {...props} ref={ref} />;
-});
+}) as (props: SidebarItemProps) => JSX.Element;
 
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
