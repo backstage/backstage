@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.15-next.0
+
+### Patch Changes
+
+- 9b122a780c: Add userExpand option to allow users to expand fields retrieved from the Graph API - for use in custom transformers
+- 7bb1bde7f6: Minor API cleanups
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.3-next.0
+
 ## 0.2.14
 
 ### Patch Changes

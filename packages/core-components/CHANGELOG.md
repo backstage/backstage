@@ -1,5 +1,13 @@
 # @backstage/core-components
 
+## 0.8.8-next.0
+
+### Patch Changes
+
+- 8d785a0b1b: chore: bump `ansi-regex` from `5.0.1` to `6.0.1`
+- f2dfbd3fb0: Adjust ErrorPage to accept optional supportUrl property to override app support config. Update type of additionalInfo property to be ReactNode to accept both string and component.
+- d62bdb7a8e: The `ErrorPage` now falls back to using the default support configuration if the `ConfigApi` is not available.
+
 ## 0.8.7
 
 ### Patch Changes

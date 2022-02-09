@@ -19,7 +19,7 @@ import chalk from 'chalk';
 import semver from 'semver';
 import minimatch from 'minimatch';
 import { Command } from 'commander';
-import { isError } from '@backstage/errors';
+import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 import { run } from '../../lib/run';
 import { paths } from '../../lib/paths';
@@ -27,10 +27,16 @@ import {
   mapDependencies,
   fetchPackageInfo,
   Lockfile,
+  YarnInfoInspectData,
 } from '../../lib/versioning';
 import { forbiddenDuplicatesFilter } from './lint';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
 import { runParallelWorkers } from '../../lib/parallel';
+import {
+  getManifestByReleaseLine,
+  getManifestByVersion,
+  ReleaseManifest,
+} from '@backstage/release-manifests';
 
 const DEP_TYPES = [
   'dependencies',
@@ -60,7 +66,22 @@ export default async (cmd: Command) => {
     console.log(`Using custom pattern glob ${pattern}`);
   }
 
-  const findTargetVersion = createVersionFinder();
+  let findTargetVersion: (name: string) => Promise<string>;
+  let releaseManifest: ReleaseManifest;
+  if (semver.valid(cmd.release)) {
+    releaseManifest = await getManifestByVersion({ version: cmd.release });
+    findTargetVersion = createStrictVersionFinder({
+      releaseManifest,
+    });
+  } else {
+    releaseManifest = await getManifestByReleaseLine({
+      releaseLine: cmd.release,
+    });
+    findTargetVersion = createVersionFinder({
+      releaseLine: cmd.releaseLine,
+      releaseManifest,
+    });
+  }
 
   // First we discover all Backstage dependencies within our own repo
   const dependencyMap = await mapDependencies(paths.targetDir, pattern);
@@ -213,8 +234,16 @@ export default async (cmd: Command) => {
 
     console.log();
 
-    await bumpBackstageJsonVersion();
-
+    // Do not update backstage.json when upgrade patterns are used.
+    if (pattern === DEFAULT_PATTERN_GLOB) {
+      await bumpBackstageJsonVersion(releaseManifest.releaseVersion);
+    } else {
+      console.log(
+        chalk.yellow(
+          `Skipping backstage.json update as custom pattern is used`,
+        ),
+      );
+    }
     console.log();
     console.log(
       `Running ${chalk.blue('yarn install')} to install new versions`,
@@ -284,9 +313,38 @@ export default async (cmd: Command) => {
   }
 };
 
-function createVersionFinder() {
-  const found = new Map<string, string>();
+export function createStrictVersionFinder(options: {
+  releaseManifest: ReleaseManifest;
+}) {
+  const releasePackages = new Map(
+    options.releaseManifest.packages.map(p => [p.name, p.version]),
+  );
+  return async function findTargetVersion(name: string) {
+    console.log(`Checking for updates of ${name}`);
+    const manifestVersion = releasePackages.get(name);
+    if (manifestVersion) {
+      return manifestVersion;
+    }
+    throw new NotFoundError(`Package ${name} not found in release manifest`);
+  };
+}
 
+export function createVersionFinder(options: {
+  releaseLine?: string;
+  packageInfoFetcher?: () => Promise<YarnInfoInspectData>;
+  releaseManifest?: ReleaseManifest;
+}) {
+  const {
+    releaseLine = 'latest',
+    packageInfoFetcher = fetchPackageInfo,
+    releaseManifest,
+  } = options;
+  // The main release line is just an alias for latest
+  const distTag = releaseLine === 'main' ? 'latest' : releaseLine;
+  const found = new Map<string, string>();
+  const releasePackages = new Map(
+    releaseManifest?.packages.map(p => [p.name, p.version]),
+  );
   return async function findTargetVersion(name: string) {
     const existing = found.get(name);
     if (existing) {
@@ -294,17 +352,50 @@ function createVersionFinder() {
     }
 
     console.log(`Checking for updates of ${name}`);
-    const info = await fetchPackageInfo(name);
-    const latest = info['dist-tags'].latest;
-    if (!latest) {
-      throw new Error(`No latest version found for ${name}`);
+    const manifestVersion = releasePackages.get(name);
+    if (manifestVersion) {
+      return manifestVersion;
     }
-    found.set(name, latest);
-    return latest;
+
+    const info = await packageInfoFetcher(name);
+    const latestVersion = info['dist-tags'].latest;
+    if (!latestVersion) {
+      throw new Error(`No target 'latest' version found for ${name}`);
+    }
+
+    const taggedVersion = info['dist-tags'][distTag];
+    if (distTag === 'latest' || !taggedVersion) {
+      found.set(name, latestVersion);
+      return latestVersion;
+    }
+
+    const latestVersionDateStr = info.time[latestVersion];
+    const taggedVersionDateStr = info.time[taggedVersion];
+    if (!latestVersionDateStr) {
+      throw new Error(
+        `No time available for version '${latestVersion}' of ${name}`,
+      );
+    }
+    if (!taggedVersionDateStr) {
+      throw new Error(
+        `No time available for version '${taggedVersion}' of ${name}`,
+      );
+    }
+
+    const latestVersionRelease = new Date(latestVersionDateStr).getTime();
+    const taggedVersionRelease = new Date(taggedVersionDateStr).getTime();
+    if (latestVersionRelease > taggedVersionRelease) {
+      // Prefer latest version if it's newer.
+      found.set(name, latestVersion);
+      return latestVersion;
+    }
+
+    found.set(name, taggedVersion);
+    return taggedVersion;
   };
 }
 
-export async function bumpBackstageJsonVersion() {
+export async function bumpBackstageJsonVersion(version: string) {
   const backstageJsonPath = paths.resolveTargetRoot(BACKSTAGE_JSON);
   const backstageJson = await fs.readJSON(backstageJsonPath).catch(e => {
     if (e.code === 'ENOENT') {
@@ -314,10 +405,7 @@ export async function bumpBackstageJsonVersion() {
     throw e;
   });
 
-  const info = await fetchPackageInfo('@backstage/create-app');
-  const { latest } = info['dist-tags'];
-
-  if (backstageJson?.version === latest) {
+  if (backstageJson?.version === version) {
     return;
   }
 
@@ -331,7 +419,7 @@ export async function bumpBackstageJsonVersion() {
 
   await fs.writeJson(
     backstageJsonPath,
-    { ...backstageJson, version: latest },
+    { ...backstageJson, version },
     {
       spaces: 2,
       encoding: 'utf8',

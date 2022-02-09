@@ -4,50 +4,50 @@
 # The last matching pattern takes precedence.
 # https://help.github.com/articles/about-codeowners/
 
-*                                           @backstage/reviewers
-/.changeset/cost-insights-*                 @backstage/reviewers @backstage/silver-lining
-/.changeset/search-*                        @backstage/techdocs-core
-/.changeset/techdocs-*                      @backstage/techdocs-core
-/cypress/src/integration/plugins/techdocs.spec.ts   @backstage/techdocs-core
-/docs/assets/search                         @backstage/techdocs-core
-/docs/features/search                       @backstage/techdocs-core
-/docs/features/techdocs                     @backstage/techdocs-core
-/packages/search-common                     @backstage/techdocs-core
-/packages/techdocs-cli                      @backstage/techdocs-core
-/packages/techdocs-cli-embedded-app         @backstage/techdocs-core
-/packages/techdocs-common                   @backstage/techdocs-core
-/plugins/allure                             @backstage/reviewers @deepak-bhardwaj-ps
-/plugins/apache-airflow                     @backstage/reviewers @cmpadden
-/plugins/api-docs                           @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/azure-devops                       @backstage/reviewers @marleypowell @awanlin
-/plugins/azure-devops-backend               @backstage/reviewers @marleypowell @awanlin
-/plugins/azure-devops-common                @backstage/reviewers @marleypowell @awanlin
-/plugins/bitrise                            @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/catalog-graph                      @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/circleci                           @backstage/reviewers @adamdmharvey
-/plugins/cloudbuild                         @backstage/reviewers @trivago/ebarrios
-/plugins/code-coverage                      @backstage/reviewers @alde @nissayeva
-/plugins/code-coverage-backend              @backstage/reviewers @alde @nissayeva
-/plugins/cost-insights                      @backstage/silver-lining
-/plugins/explore                            @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/explore-react                      @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/fossa                              @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/git-release-manager                @backstage/reviewers @erikengervall
-/plugins/home                               @backstage/techdocs-core
-/plugins/ilert                              @backstage/reviewers @yacut
-/plugins/jenkins                            @backstage/reviewers @timja
-/plugins/jenkins-backend                    @backstage/reviewers @timja
-/plugins/kafka                              @backstage/reviewers @nirga
-/plugins/kafka-backend                      @backstage/reviewers @nirga
-/plugins/newrelic-dashboard                 @backstage/reviewers @mufaddal7
-/plugins/scaffolder-backend-module-rails    @backstage/reviewers @angeliski
-/plugins/scaffolder-backend-module-yeoman   @backstage/reviewers @pawelmitka
-/plugins/search                             @backstage/techdocs-core
-/plugins/search-*                           @backstage/techdocs-core
-/plugins/sonarqube                          @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/techdocs                           @backstage/techdocs-core
-/plugins/techdocs-backend                   @backstage/techdocs-core
-/tech-insights-backend                      @backstage/reviewers @xantier @iain-b
-/tech-insights-backend-module-jsonfc        @backstage/reviewers @xantier @iain-b
-/tech-insights-tech-insights-common         @backstage/reviewers @xantier @iain-b
-/tech-insights-tech-insights-node           @backstage/reviewers @xantier @iain-b
+*                                                   @backstage/reviewers
+/.changeset/cost-insights-*                         @backstage/reviewers @backstage/silver-lining
+/.changeset/search-*                                @backstage/reviewers @backstage/techdocs-core
+/.changeset/techdocs-*                              @backstage/reviewers @backstage/techdocs-core
+/cypress/src/integration/plugins/techdocs.spec.ts   @backstage/reviewers @backstage/techdocs-core
+/docs/assets/search                                 @backstage/reviewers @backstage/techdocs-core
+/docs/features/search                               @backstage/reviewers @backstage/techdocs-core
+/docs/features/techdocs                             @backstage/reviewers @backstage/techdocs-core
+/packages/search-common                             @backstage/reviewers @backstage/techdocs-core
+/packages/techdocs-cli                              @backstage/reviewers @backstage/techdocs-core
+/packages/techdocs-cli-embedded-app                 @backstage/reviewers @backstage/techdocs-core
+/packages/techdocs-common                           @backstage/reviewers @backstage/techdocs-core
+/plugins/allure                                     @backstage/reviewers @deepak-bhardwaj-ps
+/plugins/apache-airflow                             @backstage/reviewers @cmpadden
+/plugins/api-docs                                   @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/azure-devops                               @backstage/reviewers @marleypowell @awanlin
+/plugins/azure-devops-backend                       @backstage/reviewers @marleypowell @awanlin
+/plugins/azure-devops-common                        @backstage/reviewers @marleypowell @awanlin
+/plugins/bitrise                                    @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/catalog-graph                              @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/circleci                                   @backstage/reviewers @adamdmharvey
+/plugins/cloudbuild                                 @backstage/reviewers @trivago/ebarrios
+/plugins/code-coverage                              @backstage/reviewers @alde @nissayeva
+/plugins/code-coverage-backend                      @backstage/reviewers @alde @nissayeva
+/plugins/cost-insights                              @backstage/reviewers @backstage/silver-lining
+/plugins/explore                                    @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/explore-react                              @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/fossa                                      @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/git-release-manager                        @backstage/reviewers @erikengervall
+/plugins/home                                       @backstage/reviewers @backstage/techdocs-core
+/plugins/ilert                                      @backstage/reviewers @yacut
+/plugins/jenkins                                    @backstage/reviewers @timja
+/plugins/jenkins-backend                            @backstage/reviewers @timja
+/plugins/kafka                                      @backstage/reviewers @nirga
+/plugins/kafka-backend                              @backstage/reviewers @nirga
+/plugins/newrelic-dashboard                         @backstage/reviewers @mufaddal7
+/plugins/scaffolder-backend-module-rails            @backstage/reviewers @angeliski
+/plugins/scaffolder-backend-module-yeoman           @backstage/reviewers @pawelmitka
+/plugins/search                                     @backstage/reviewers @backstage/techdocs-core
+/plugins/search-*                                   @backstage/reviewers @backstage/techdocs-core
+/plugins/sonarqube                                  @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/techdocs                                   @backstage/reviewers @backstage/techdocs-core
+/plugins/techdocs-backend                           @backstage/reviewers @backstage/techdocs-core
+/tech-insights-backend                              @backstage/reviewers @xantier @iain-b
+/tech-insights-backend-module-jsonfc                @backstage/reviewers @xantier @iain-b
+/tech-insights-tech-insights-common                 @backstage/reviewers @xantier @iain-b
+/tech-insights-tech-insights-node                   @backstage/reviewers @xantier @iain-b

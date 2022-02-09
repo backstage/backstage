@@ -1,5 +1,14 @@
 # @techdocs/cli
 
+## 0.8.13-next.0
+
+### Patch Changes
+
+- b70c186194: Updated the HTTP server to allow for simplification of the development of the CLI itself.
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+  - @backstage/techdocs-common@0.11.7-next.0
+
 ## 0.8.12
 
 ### Patch Changes

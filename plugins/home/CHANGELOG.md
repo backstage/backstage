@@ -1,5 +1,15 @@
 # @backstage/plugin-home
 
+## 0.4.14-next.0
+
+### Patch Changes
+
+- a4a777441d: Adds new StarredEntities component responsible for rendering a list of starred entities on the home page
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-search@0.6.2-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+
 ## 0.4.13
 
 ### Patch Changes
