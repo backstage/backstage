@@ -27,6 +27,7 @@ export interface Build {
   requestedAt: Date;
   stages: Array<Stage>;
   status: FilterStatusType;
+  triggeredBy?: TriggerReason;
 }
 
 // Warning: (ae-missing-release-tag) "BuildWithRaw" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -35,6 +36,16 @@ export interface Build {
 export type BuildWithRaw<T = any> = Build & {
   raw: T;
 };
+
+// Warning: (ae-missing-release-tag) "ChartType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type ChartType = 'duration' | 'count';
+
+// Warning: (ae-missing-release-tag) "ChartTypes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ChartTypes = Array<ChartType>;
 
 // Warning: (ae-missing-release-tag) "CicdConfiguration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -49,11 +60,13 @@ export interface CicdConfiguration {
 //
 // @public
 export interface CicdDefaults {
+  chartTypes: Record<FilterStatusType, ChartTypes>;
   collapsedLimit: number;
   // (undocumented)
   filterStatus: Array<FilterStatusType>;
   // (undocumented)
   filterType: FilterBranchType | 'all';
+  hideLimit: number;
   lowercaseNames: boolean;
   normalizeTimeRange: boolean;
   // (undocumented)
@@ -162,6 +175,7 @@ export interface Stage {
   // (undocumented)
   name: string;
   stages?: Array<Stage>;
+  status: FilterStatusType;
 }
 
 // Warning: (ae-missing-release-tag) "statusTypes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -169,14 +183,40 @@ export interface Stage {
 // @public (undocumented)
 export const statusTypes: Array<FilterStatusType>;
 
+// Warning: (ae-missing-release-tag) "TriggerReason" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TriggerReason =
+  /** Triggered by source code management, e.g. a Github hook */
+  | 'scm'
+  /** Triggered manually */
+  | 'manual'
+  /** Triggered internally (non-scm, or perhaps after being delayed/enqueued) */
+  | 'internal'
+  /** Triggered for some other reason */
+  | 'other';
+
+// Warning: (ae-missing-release-tag) "triggerReasons" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const triggerReasons: Array<TriggerReason>;
+
 // Warning: (ae-missing-release-tag) "UpdateProgress" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export type UpdateProgress = (
-  completed: number,
-  total: number,
-  started?: number,
-) => void;
+export interface UpdateProgress {
+  // (undocumented)
+  (completed: number, total: number, started?: number): void;
+  // (undocumented)
+  (
+    steps: Array<{
+      title: string;
+      completed: number;
+      total: number;
+      started?: number;
+    }>,
+  ): void;
+}
 
 // (No @packageDocumentation comment for this package)
 ```
