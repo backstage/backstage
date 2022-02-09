@@ -253,3 +253,8 @@ const LogoFull = () => {
   return <img src={MyCustomLogoFull} />;
 };
 ```
+
+## Custom Home Page
+
+In addition to a custom theme, a custom logo, you can also customize the
+homepage of your app. Read the full guide on the [next page](homepage.md).
