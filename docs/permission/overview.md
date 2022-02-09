@@ -4,9 +4,9 @@ title: Permission Framework Overview
 description: A high level overview of the Backstage permission framework
 ---
 
-[The previous section](../auth/index.md) covered the various _authentication_ methods of Backstage, but Backstage can also _authorize_ specific data, APIs, or interface actions - meaning that Backstage has the ability to enforce rules about what actions are allowed for a given user of a system.
+[The previous section](../auth/index.md) covered the various _authentication_ methods of Backstage, but Backstage can also _authorize_ specific data, APIs, or interface actions - meaning that Backstage has the ability to enforce rules about what type of access is allowed for a given user of a system.
 
-By default, Backstage endpoints are not protected and all actions are available to anyone. However, configuring which users can access which resources and actions is a common need for many organizations. The permission framework allows integrators to achieve this through the use of granular permissioning for those resources and actions.
+By default, Backstage endpoints are not protected, and all actions are available to anyone. However, configuring which users can access which resources and actions is a common need for many organizations. The permission framework allows integrators to achieve this through the use of granular permissioning for those resources and actions.
 
 The permission framework was designed with a few key properties in mind:
 
@@ -38,4 +38,4 @@ The permission framework was designed with a few key properties in mind:
 
 If you are a Backstage integrator, see the permission framework [documentation for adopters](./adopters/index.md).
 
-If you are a plugin author, see the permission framework [docuemtnation for plugin authors](./plugin-authors/index.md).
+If you are a plugin author, see the permission framework [documentation for plugin authors](./plugin-authors/index.md).
