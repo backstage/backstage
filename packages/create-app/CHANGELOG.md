@@ -271,6 +271,13 @@
   }
   ```
 
+The `.fromConfig` of the `DefaultCatalogCollator` also now takes a `tokenManager` as a parameter.
+
+```diff
+-   collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
++   collator: DefaultCatalogCollator.fromConfig(config, { discovery, tokenManager }),
+```
+
 - a0d446c8ec: Replaced EntitySystemDiagramCard with EntityCatalogGraphCard
 
   To make this change to an existing app:
