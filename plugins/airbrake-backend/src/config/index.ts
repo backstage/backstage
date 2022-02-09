@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Config } from '../../config';
 
 export { extractAirbrakeConfig } from './ExtractAirbrakeConfig';
-export type { Config as AirbrakeConfig } from '../../config';
+export type AirbrakeConfig = Config['airbrake'];

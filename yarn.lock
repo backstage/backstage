@@ -1366,6 +1366,147 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
+"@backstage/backend-common@^0.10.5":
+  version "0.10.6"
+  resolved "https://registry.npmjs.org/@backstage/backend-common/-/backend-common-0.10.6.tgz#482c1355518a6421596a3b9678a693eaaa17e8de"
+  integrity sha512-4AdrR9SrG2C+W9BMawRNoRkUbhLD5tcQEhI6/bxOpV62WSHVu5OQjgZbjCrFG5p+Q0syOVNAxX3MtjcQhkvfwg==
+  dependencies:
+    "@backstage/cli-common" "^0.1.6"
+    "@backstage/config" "^0.1.13"
+    "@backstage/config-loader" "^0.9.3"
+    "@backstage/errors" "^0.2.0"
+    "@backstage/integration" "^0.7.2"
+    "@backstage/types" "^0.1.1"
+    "@google-cloud/storage" "^5.8.0"
+    "@manypkg/get-packages" "^1.1.3"
+    "@octokit/rest" "^18.5.3"
+    "@types/cors" "^2.8.6"
+    "@types/dockerode" "^3.3.0"
+    "@types/express" "^4.17.6"
+    "@types/luxon" "^2.0.4"
+    archiver "^5.0.2"
+    aws-sdk "^2.840.0"
+    compression "^1.7.4"
+    concat-stream "^2.0.0"
+    cors "^2.8.5"
+    dockerode "^3.3.1"
+    express "^4.17.1"
+    express-promise-router "^4.1.0"
+    fs-extra "9.1.0"
+    git-url-parse "^11.6.0"
+    helmet "^4.0.0"
+    isomorphic-git "^1.8.0"
+    jose "^1.27.1"
+    keyv "^4.0.3"
+    keyv-memcache "^1.2.5"
+    knex "^0.95.1"
+    lodash "^4.17.21"
+    logform "^2.3.2"
+    luxon "^2.0.2"
+    minimatch "^3.0.4"
+    minimist "^1.2.5"
+    morgan "^1.10.0"
+    node-abort-controller "^3.0.1"
+    node-fetch "^2.6.1"
+    raw-body "^2.4.1"
+    selfsigned "^1.10.7"
+    stoppable "^1.1.0"
+    tar "^6.1.2"
+    unzipper "^0.10.11"
+    winston "^3.2.1"
+    yn "^4.0.0"
+
+"@backstage/cli@^0.13.1-next.0":
+  version "0.13.1"
+  resolved "https://registry.npmjs.org/@backstage/cli/-/cli-0.13.1.tgz#67959eea81c6d0474aa3e3769c0c80b7b4665c05"
+  integrity sha512-Zc1kWvRCOoCl/E3/X6J3q0DKc1i14mkSnyA6gKUT0JmoG7H0Lf8ULQQLDr97/wm+dyiYpx/yl8ggkBB0OV9+bw==
+  dependencies:
+    "@backstage/cli-common" "^0.1.6"
+    "@backstage/config" "^0.1.13"
+    "@backstage/config-loader" "^0.9.3"
+    "@backstage/errors" "^0.2.0"
+    "@backstage/types" "^0.1.1"
+    "@hot-loader/react-dom" "^16.13.0"
+    "@manypkg/get-packages" "^1.1.3"
+    "@octokit/request" "^5.4.12"
+    "@rollup/plugin-commonjs" "^21.0.1"
+    "@rollup/plugin-json" "^4.1.0"
+    "@rollup/plugin-node-resolve" "^13.0.0"
+    "@rollup/plugin-yaml" "^3.1.0"
+    "@spotify/eslint-config-base" "^12.0.0"
+    "@spotify/eslint-config-react" "^12.0.0"
+    "@spotify/eslint-config-typescript" "^12.0.0"
+    "@sucrase/jest-plugin" "^2.1.1"
+    "@sucrase/webpack-loader" "^2.0.0"
+    "@svgr/plugin-jsx" "6.2.x"
+    "@svgr/plugin-svgo" "6.2.x"
+    "@svgr/rollup" "5.5.x"
+    "@svgr/webpack" "5.5.x"
+    "@types/webpack-env" "^1.15.2"
+    "@typescript-eslint/eslint-plugin" "^5.9.0"
+    "@typescript-eslint/parser" "^5.9.0"
+    "@yarnpkg/lockfile" "^1.1.0"
+    bfj "^7.0.2"
+    buffer "^6.0.3"
+    chalk "^4.0.0"
+    chokidar "^3.3.1"
+    commander "^6.1.0"
+    css-loader "^6.5.1"
+    diff "^5.0.0"
+    esbuild "^0.14.10"
+    esbuild-loader "^2.18.0"
+    eslint "^8.6.0"
+    eslint-config-prettier "^8.3.0"
+    eslint-formatter-friendly "^7.0.0"
+    eslint-plugin-import "^2.25.4"
+    eslint-plugin-jest "^25.3.4"
+    eslint-plugin-jsx-a11y "^6.5.1"
+    eslint-plugin-monorepo "^0.3.2"
+    eslint-plugin-react "^7.28.0"
+    eslint-plugin-react-hooks "^4.3.0"
+    eslint-webpack-plugin "^2.6.0"
+    express "^4.17.1"
+    fork-ts-checker-webpack-plugin "^7.0.0-alpha.8"
+    fs-extra "9.1.0"
+    glob "^7.1.7"
+    handlebars "^4.7.3"
+    html-webpack-plugin "^5.3.1"
+    inquirer "^8.2.0"
+    jest "^26.0.1"
+    jest-css-modules "^2.1.0"
+    jest-transform-yaml "^1.0.0"
+    json-schema "^0.4.0"
+    lodash "^4.17.21"
+    mini-css-extract-plugin "^2.4.2"
+    minimatch "3.0.4"
+    node-libs-browser "^2.2.1"
+    ora "^5.3.0"
+    postcss "^8.1.0"
+    process "^0.11.10"
+    react-dev-utils "^12.0.0-next.60"
+    react-hot-loader "^4.13.0"
+    recursive-readdir "^2.2.2"
+    replace-in-file "^6.0.0"
+    rollup "^2.60.2"
+    rollup-plugin-dts "^4.0.1"
+    rollup-plugin-esbuild "^4.7.2"
+    rollup-plugin-peer-deps-external "^2.2.2"
+    rollup-plugin-postcss "^4.0.0"
+    rollup-pluginutils "^2.8.2"
+    run-script-webpack-plugin "^0.0.11"
+    semver "^7.3.2"
+    style-loader "^3.3.1"
+    sucrase "^3.20.2"
+    tar "^6.1.2"
+    terser-webpack-plugin "^5.1.3"
+    util "^0.12.3"
+    webpack "^5.66.0"
+    webpack-dev-server "^4.7.3"
+    webpack-node-externals "^3.0.0"
+    yaml "^1.10.0"
+    yml-loader "^2.1.0"
+    yn "^4.0.0"
+
 "@backstage/core-components@*", "@backstage/core-components@^0.8.0", "@backstage/core-components@^0.8.7":
   version "0.8.7"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.8.7.tgz#c4bb9760d57971882065415e6e715eb750db2392"
@@ -8966,7 +9107,7 @@ commander@^6.1.0:
   resolved "https://registry.npmjs.org/commander/-/commander-6.2.1.tgz#0792eb682dfbc325999bb2b84fddddba110ac73c"
   integrity sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==
 
-commander@^7.2.0:
+commander@^7.1.0, commander@^7.2.0:
   version "7.2.0"
   resolved "https://registry.npmjs.org/commander/-/commander-7.2.0.tgz#a36cb57d0b501ce108e4d20559a150a391d97ab7"
   integrity sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==
@@ -12624,6 +12765,11 @@ get-value@^2.0.3, get-value@^2.0.6:
   resolved "https://registry.npmjs.org/get-value/-/get-value-2.0.6.tgz#dc15ca1c672387ca76bd37ac0a395ba2042a2c28"
   integrity sha1-3BXKHGcjh8p2vTesCjlbogQqLCg=
 
+getopts@2.2.5:
+  version "2.2.5"
+  resolved "https://registry.npmjs.org/getopts/-/getopts-2.2.5.tgz#67a0fe471cacb9c687d817cab6450b96dde8313b"
+  integrity sha512-9jb7AW5p3in+IiJWhQiZmmwkpLaR/ccTWdWQCtZM66HJcHHLegowh4q4tSD7gouUyeNvFWRavfK9GXosQHDpFA==
+
 getopts@2.3.0:
   version "2.3.0"
   resolved "https://registry.npmjs.org/getopts/-/getopts-2.3.0.tgz#71e5593284807e03e2427449d4f6712a268666f4"
@@ -14040,7 +14186,7 @@ is-core-module@^2.1.0, is-core-module@^2.2.0:
   dependencies:
     has "^1.0.3"
 
-is-core-module@^2.8.0:
+is-core-module@^2.8.0, is-core-module@^2.8.1:
   version "2.8.1"
   resolved "https://registry.npmjs.org/is-core-module/-/is-core-module-2.8.1.tgz#f59fdfca701d5879d0a6b100a40aa1560ce27211"
   integrity sha512-SdNCUs284hr40hFTFP6l0IfZ/RSrMXF3qgoRHd3/79unUTvrFO/JoXwkGm+5J/Oe3E/b5GsnG330uUNgRpu1PA==
@@ -15725,6 +15871,25 @@ kleur@^4.0.3:
   version "4.1.4"
   resolved "https://registry.npmjs.org/kleur/-/kleur-4.1.4.tgz#8c202987d7e577766d039a8cd461934c01cda04d"
   integrity sha512-8QADVssbrFjivHWQU7KkMgptGTl6WAcSdlbBPY4uNF+mWr6DGcKrvY2w4FQJoXch7+fKMjj0dRrL75vk3k23OA==
+
+knex@^0.95.1:
+  version "0.95.15"
+  resolved "https://registry.npmjs.org/knex/-/knex-0.95.15.tgz#39d7e7110a6e2ad7de5d673d2dea94143015e0e7"
+  integrity sha512-Loq6WgHaWlmL2bfZGWPsy4l8xw4pOE+tmLGkPG0auBppxpI0UcK+GYCycJcqz9W54f2LiGewkCVLBm3Wq4ur/w==
+  dependencies:
+    colorette "2.0.16"
+    commander "^7.1.0"
+    debug "4.3.2"
+    escalade "^3.1.1"
+    esm "^3.2.25"
+    getopts "2.2.5"
+    interpret "^2.2.0"
+    lodash "^4.17.21"
+    pg-connection-string "2.5.0"
+    rechoir "0.7.0"
+    resolve-from "^5.0.0"
+    tarn "^3.0.1"
+    tildify "2.0.0"
 
 knex@^1.0.2:
   version "1.0.2"
@@ -20669,6 +20834,13 @@ recharts@^1.8.5:
     recharts-scale "^0.4.2"
     reduce-css-calc "^1.3.0"
 
+rechoir@0.7.0:
+  version "0.7.0"
+  resolved "https://registry.npmjs.org/rechoir/-/rechoir-0.7.0.tgz#32650fd52c21ab252aa5d65b19310441c7e03aca"
+  integrity sha512-ADsDEH2bvbjltXEP+hTIAmeFekTFK0V2BTxMkok6qILyAJEXV0AFfoWcAq4yfll5VdIMd/RVXq0lR+wQi5ZU3Q==
+  dependencies:
+    resolve "^1.9.0"
+
 rechoir@^0.6.2:
   version "0.6.2"
   resolved "https://registry.npmjs.org/rechoir/-/rechoir-0.6.2.tgz#85204b54dba82d5742e28c96756ef43af50e3384"
@@ -21123,6 +21295,15 @@ resolve@^1.1.6, resolve@^1.10.0, resolve@^1.14.2, resolve@^1.17.0, resolve@^1.18
   integrity sha512-3wCbTpk5WJlyE4mSOtDLhqQmGFi0/TD9VPwmiolnk8U0wRgMEktqCXd3vy5buTO3tljvalNvKrjHEfrd2WpEKA==
   dependencies:
     is-core-module "^2.8.0"
+    path-parse "^1.0.7"
+    supports-preserve-symlinks-flag "^1.0.0"
+
+resolve@^1.9.0:
+  version "1.22.0"
+  resolved "https://registry.npmjs.org/resolve/-/resolve-1.22.0.tgz#5e0b8c67c15df57a89bdbabe603a002f21731198"
+  integrity sha512-Hhtrw0nLeSrFQ7phPp4OOcVjLPIeMnRlr5mcnVuMe7M/7eBn98A3hmFRLoFo3DLZkivSYwhRUJTyPyWAk56WLw==
+  dependencies:
+    is-core-module "^2.8.1"
     path-parse "^1.0.7"
     supports-preserve-symlinks-flag "^1.0.0"
 
@@ -22953,7 +23134,7 @@ tar@^6.0.2, tar@^6.1.0, tar@^6.1.2:
     mkdirp "^1.0.3"
     yallist "^4.0.0"
 
-tarn@^3.0.2:
+tarn@^3.0.1, tarn@^3.0.2:
   version "3.0.2"
   resolved "https://registry.npmjs.org/tarn/-/tarn-3.0.2.tgz#73b6140fbb881b71559c4f8bfde3d9a4b3d27693"
   integrity sha512-51LAVKUSZSVfI05vjPESNc5vwqqZpbXCsU+/+wxlOrUjk2SnFTt97v9ZgQrD4YmxYW1Px6w2KjaDitCfkvgxMQ==

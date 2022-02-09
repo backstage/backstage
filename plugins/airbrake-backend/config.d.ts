@@ -16,7 +16,7 @@
 
 export interface Config {
   /** Configuration options for the Airbrake plugin */
-  airbrake?: {
+  airbrake: {
     /**
      * The API Key to authenticate requests. More details on how to get this here: https://airbrake.io/docs/api/#authentication
      */

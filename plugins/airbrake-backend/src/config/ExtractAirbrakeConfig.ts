@@ -23,9 +23,7 @@ import { AirbrakeConfig } from '.';
  *
  * @param config - The config object to extract from
  */
-export function extractAirbrakeConfig(
-  config: Config,
-): AirbrakeConfig['airbrake'] {
+export function extractAirbrakeConfig(config: Config): AirbrakeConfig {
   return {
     apiKey: config.getString('airbrake.apiKey'),
   };
