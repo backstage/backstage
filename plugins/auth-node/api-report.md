@@ -4,6 +4,7 @@
 
 ```ts
 import { Entity } from '@backstage/catalog-model';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 // @public
 export interface BackstageIdentityResponse extends BackstageSignInResult {
@@ -30,4 +31,10 @@ export type BackstageUserIdentity = {
 export function getBearerTokenFromAuthorizationHeader(
   authorizationHeader: unknown,
 ): string | undefined;
+
+// @public
+export class IdentityClient {
+  constructor(options: { discovery: PluginEndpointDiscovery; issuer: string });
+  authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
+}
 ```

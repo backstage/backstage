@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
-import { JWK, JWT, JWKS, JSONWebKey } from 'jose';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthenticationError } from '@backstage/errors';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import { JSONWebKey, JWK, JWKS, JWT } from 'jose';
+import fetch from 'node-fetch';
+import { BackstageIdentityResponse } from './types';
 
 const CLOCK_MARGIN_S = 10;
 
 /**
- * A identity client to interact with auth-backend
- * and authenticate backstage identity tokens
+ * An identity client to interact with auth-backend and authenticate Backstage
+ * tokens
  *
  * @experimental This is not a stable API yet
+ * @public
  */
 export class IdentityClient {
   private readonly discovery: PluginEndpointDiscovery;

@@ -23,10 +23,10 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
-import { IdentityClient } from '@backstage/plugin-auth-backend';
 import {
   getBearerTokenFromAuthorizationHeader,
   BackstageIdentityResponse,
+  IdentityClient,
 } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,

@@ -14,19 +14,61 @@
  * limitations under the License.
  */
 
-import { JWT, JSONWebKey } from 'jose';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { JSONWebKey, JWK, JWS, JWT } from 'jose';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import {
-  getVoidLogger,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { v4 as uuid } from 'uuid';
 import { IdentityClient } from './IdentityClient';
-import { MemoryKeyStore } from './MemoryKeyStore';
-import { TokenFactory } from './TokenFactory';
-import { KeyStore } from './types';
 
-const logger = getVoidLogger();
+interface AnyJWK extends Record<string, string> {
+  use: 'sig';
+  alg: string;
+  kid: string;
+  kty: string;
+}
+
+// Simplified copy of TokenFactory in @backstage/plugin-auth-backend
+class FakeTokenFactory {
+  private readonly keys = new Array<AnyJWK>();
+
+  constructor(
+    private readonly options: {
+      issuer: string;
+      keyDurationSeconds: number;
+    },
+  ) {}
+
+  async issueToken(params: {
+    claims: {
+      sub: string;
+      ent?: string[];
+    };
+  }): Promise<string> {
+    const key = await JWK.generate('EC', 'P-256', {
+      use: 'sig',
+      kid: uuid(),
+      alg: 'ES256',
+    });
+    this.keys.push(key.toJWK(false) as unknown as AnyJWK);
+
+    const iss = this.options.issuer;
+    const sub = params.claims.sub;
+    const ent = params.claims.ent;
+    const aud = 'backstage';
+    const iat = Math.floor(Date.now() / 1000);
+    const exp = iat + this.options.keyDurationSeconds;
+
+    return JWS.sign({ iss, sub, aud, iat, exp, ent }, key, {
+      alg: key.alg,
+      kid: key.kid,
+    });
+  }
+
+  async listPublicKeys(): Promise<{ keys: AnyJWK[] }> {
+    return { keys: this.keys };
+  }
+}
 
 function jwtKid(jwt: string): string {
   const { header } = JWT.decode(jwt, { complete: true }) as {
@@ -48,8 +90,7 @@ const discovery: PluginEndpointDiscovery = {
 
 describe('IdentityClient', () => {
   let client: IdentityClient;
-  let factory: TokenFactory;
-  let keyStore: KeyStore;
+  let factory: FakeTokenFactory;
   const keyDurationSeconds = 5;
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -58,12 +99,9 @@ describe('IdentityClient', () => {
 
   beforeEach(() => {
     client = new IdentityClient({ discovery, issuer: mockBaseUrl });
-    keyStore = new MemoryKeyStore();
-    factory = new TokenFactory({
+    factory = new FakeTokenFactory({
       issuer: mockBaseUrl,
-      keyStore: keyStore,
       keyDurationSeconds,
-      logger,
     });
   });
 
@@ -108,11 +146,9 @@ describe('IdentityClient', () => {
     });
 
     it('should throw on incorrect issuer', async () => {
-      const hackerFactory = new TokenFactory({
+      const hackerFactory = new FakeTokenFactory({
         issuer: 'hacker',
-        keyStore,
         keyDurationSeconds,
-        logger,
       });
       return expect(async () => {
         const token = await hackerFactory.issueToken({
@@ -137,11 +173,9 @@ describe('IdentityClient', () => {
     });
 
     it('should throw on incorrect signing key', async () => {
-      const hackerFactory = new TokenFactory({
+      const hackerFactory = new FakeTokenFactory({
         issuer: mockBaseUrl,
-        keyStore: new MemoryKeyStore(),
         keyDurationSeconds,
-        logger,
       });
       return expect(async () => {
         const token = await hackerFactory.issueToken({

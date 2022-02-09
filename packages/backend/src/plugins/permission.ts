@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IdentityClient } from '@backstage/plugin-auth-backend';
+import { IdentityClient } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
