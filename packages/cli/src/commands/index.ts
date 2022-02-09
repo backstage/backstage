@@ -341,6 +341,11 @@ export function registerCommands(program: CommanderStatic) {
       '--pattern <glob>',
       'Override glob for matching packages to upgrade',
     )
+    .option(
+      '--release <version|next|main>',
+      'Bump to a specific Backstage release line or version',
+      'main',
+    )
     .description('Bump Backstage packages to the latest versions')
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
 

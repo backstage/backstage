@@ -32,6 +32,7 @@
     "@backstage/config": "^0.1.13",
     "@backstage/config-loader": "^0.9.3",
     "@backstage/errors": "^0.2.0",
+    "@backstage/release-manifests": "^0.0.0",
     "@backstage/types": "^0.1.1",
     "@hot-loader/react-dom": "^16.13.0",
     "@manypkg/get-packages": "^1.1.3",
@@ -143,7 +144,8 @@
     "del": "^6.0.0",
     "mock-fs": "^5.1.0",
     "nodemon": "^2.0.2",
-    "ts-node": "^10.0.0"
+    "ts-node": "^10.0.0",
+    "msw": "^0.35.0"
   },
   "peerDependencies": {
     "@microsoft/api-extractor": "^7.19.2"
