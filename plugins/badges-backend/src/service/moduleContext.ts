@@ -28,6 +28,7 @@ import {
 } from '@backstage/app-context-common';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib';
 import { BadgeFactories } from '../types';
+import { createRouter } from './router';
 
 export const badgesModuleDefinitions = createDependencyDefinitions({
   id: '@backstage/plugin-badges-backend',
@@ -43,6 +44,7 @@ export const badgesModuleDefinitions = createDependencyDefinitions({
 
 export const badgesModule = createDependencyModule({
   id: '@backstage/plugin-badges-backend',
+  initialize: createRouter,
   dependencies: [
     createDependencyConfig({
       id: catalogModuleDefinitions.definitions.catalogApi,

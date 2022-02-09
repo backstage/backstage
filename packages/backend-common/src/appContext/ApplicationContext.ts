@@ -16,29 +16,13 @@
 
 import { Logger } from 'winston';
 import { Container, interfaces } from 'inversify';
-import { AnyDependencyConfig, Dependency } from '@backstage/app-context-common';
-
-export interface ApplicationContext {
-  getChildContext(identifier: string): ApplicationContext;
-
-  getContainer(): interfaces.Container;
-
-  get<T>(dep: Dependency<T>): T;
-
-  createBoundPlugin<T>(options: BoundPluginOptions<T>): BoundPlugin<T>;
-}
-
-export type BoundPluginOptions<T> = {
-  plugin: string;
-  initialize: (ctx: ApplicationContext) => T;
-  dependencies: AnyDependencyConfig[];
-};
-
-export interface BoundPlugin<T> {
-  name: string;
-  instance: T;
-  getDependencies(): Dependency<unknown>[];
-}
+import {
+  AnyDependencyConfig,
+  ApplicationContext,
+  BoundPlugin,
+  BoundPluginOptions,
+  Dependency,
+} from '@backstage/app-context-common';
 
 export type InversifyAppContextOptions = {
   logger: Logger;
@@ -99,26 +83,26 @@ export class InversifyApplicationContext implements ApplicationContext {
   }
 
   createBoundPlugin<T>({
-    plugin,
+    id,
     initialize,
     dependencies,
   }: BoundPluginOptions<T>): BoundPlugin<T> {
     const ownAndRootDependencies = [...dependencies, ...this.dependencies];
     const childContext = new InversifyApplicationContext({
       container: new Container(),
-      logger: this.logger.child({ type: 'plugin', plugin }),
+      logger: this.logger.child({ type: 'plugin', id: id }),
       dependencies: ownAndRootDependencies,
     });
-    this.childContexts.set(plugin, childContext);
+    this.childContexts.set(id, childContext);
 
     this.logger.info(
-      `Creating application context for plugin '${plugin}'. Binding dependencies ${[
+      `Creating application context for plugin '${id}'. Binding dependencies ${[
         ...new Set(ownAndRootDependencies.map(it => it.id)),
       ].join(', ')}.`,
     );
     childContext.bindDependenciesIfNotBound(ownAndRootDependencies);
     return {
-      name: plugin,
+      name: id,
       instance: initialize(childContext),
       getDependencies() {
         return ownAndRootDependencies.map(it => it.id);

@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { Dependency, DependencyConfig, TypesToIocDependencies } from './types';
+import {
+  ApplicationContext,
+  Dependency,
+  DependencyConfig,
+  TypesToIocDependencies,
+} from './types';
 
 export function createDependencyConfig<
   Dep,
@@ -56,21 +61,29 @@ export function createDependencyDefinition<T>(id: symbol): Dependency<T> {
   return new DependencyHolder<T>(id);
 }
 
-export function createDependencyModule(opts: {
+export function createDependencyModule<T>(opts: {
   id: string;
   dependencies?: DependencyConfig<unknown, { [k: symbol]: unknown }>[];
+  initialize: (ctx: ApplicationContext) => T;
 }): {
   id: string;
   dependencies: DependencyConfig<unknown, { [k: symbol]: unknown }>[];
+  initialize: (ctx: ApplicationContext) => T;
 } {
-  return opts.dependencies
-    ? { id: opts.id, dependencies: opts.dependencies }
+  const { id, dependencies, initialize } = opts;
+  return dependencies
+    ? {
+        id,
+        dependencies,
+        initialize,
+      }
     : {
-        id: opts.id,
+        id,
         dependencies: [] as DependencyConfig<
           unknown,
           { [k: symbol]: unknown }
         >[],
+        initialize,
       };
 }
 

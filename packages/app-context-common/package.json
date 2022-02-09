@@ -28,6 +28,9 @@
     "postpack": "backstage-cli postpack",
     "clean": "backstage-cli clean"
   },
+  "dependencies": {
+    "inversify": "^6.0.1"
+  },
   "devDependencies": {
     "@backstage/test-utils": "^0.2.3",
     "jest": "^26.0.1"

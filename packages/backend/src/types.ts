@@ -17,7 +17,6 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import {
-  ApplicationContext,
   PluginCacheManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
@@ -27,6 +26,7 @@ import {
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { CustomErrorBase } from '@backstage/errors';
+import { ApplicationContext } from '@backstage/app-context-common';
 
 export type PluginEnvironment = {
   logger: Logger;

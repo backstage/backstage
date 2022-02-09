@@ -24,7 +24,6 @@
 
 import Router from 'express-promise-router';
 import {
-  ApplicationContext,
   createServiceBuilder,
   getRootLogger,
   InversifyApplicationContext,
@@ -58,6 +57,7 @@ import permission from './plugins/permission';
 import { DependencyNotBoundError, PluginEnvironment } from './types';
 import { rootDependencies } from './rootContext';
 import { permissionModuleDefinitions } from '@backstage/plugin-permission-common';
+import { ApplicationContext } from '@backstage/app-context-common';
 
 function makeCreateEnv(config: Config, applicationContext: ApplicationContext) {
   const root = getRootLogger();

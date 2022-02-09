@@ -15,7 +15,6 @@
  */
 
 import {
-  createDependencyModule,
   createDependencyDefinition,
   createDependencyDefinitions,
 } from '@backstage/app-context-common';
@@ -28,8 +27,4 @@ export const tasksModuleDefinitions = createDependencyDefinitions({
       Symbol.for('@backstage/backend-tasks.TaskScheduler'),
     ),
   },
-});
-
-export const tasksModule = createDependencyModule({
-  id: '@backstage/backend-tasks',
 });

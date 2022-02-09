@@ -15,4 +15,3 @@
  */
 export { InversifyApplicationContext } from './ApplicationContext';
 export * from './moduleContext';
-export type { ApplicationContext } from './ApplicationContext';

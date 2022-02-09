@@ -17,7 +17,6 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import {
-  ApplicationContext,
   errorHandler,
   PluginEndpointDiscovery,
   commonModuleDefinitions,
@@ -27,6 +26,7 @@ import { configModuleDefinitions } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { BadgeContext } from '../types';
 import { badgesModuleDefinitions } from './moduleContext';
+import { ApplicationContext } from '@backstage/app-context-common';
 
 export async function createRouter(
   ctx: ApplicationContext,

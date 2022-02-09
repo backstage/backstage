@@ -14,6 +14,30 @@
  * limitations under the License.
  */
 
+import { interfaces } from 'inversify';
+
+export type BoundPluginOptions<T> = {
+  id: string;
+  initialize: (ctx: ApplicationContext) => T;
+  dependencies: AnyDependencyConfig[];
+};
+
+export interface BoundPlugin<T> {
+  name: string;
+  instance: T;
+  getDependencies(): Dependency<unknown>[];
+}
+
+export interface ApplicationContext {
+  getChildContext(identifier: string): ApplicationContext;
+
+  getContainer(): interfaces.Container;
+
+  get<T>(dep: Dependency<T>): T;
+
+  createBoundPlugin<T>(options: BoundPluginOptions<T>): BoundPlugin<T>;
+}
+
 export type TypesToIocDependencies<T> = {
   [key in keyof T]: Dependency<T[key]>;
 };
