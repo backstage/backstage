@@ -21,13 +21,18 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Badge from '@material-ui/core/Badge';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
+import {
+  CreateCSSProperties,
+  StyledComponentProps,
+} from '@material-ui/core/styles/withStyles';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import classnames from 'classnames';
 import React, {
+  ComponentProps,
+  ComponentType,
   forwardRef,
   KeyboardEventHandler,
   ReactNode,
@@ -580,7 +585,7 @@ export const SidebarSpace = styled('div')(
     flex: 1,
   },
   { name: 'BackstageSidebarSpace' },
-);
+) as ComponentType<ComponentProps<'div'> & StyledComponentProps<'root'>>;
 
 export type SidebarSpacerClassKey = 'root';
 
@@ -589,7 +594,7 @@ export const SidebarSpacer = styled('div')(
     height: 8,
   },
   { name: 'BackstageSidebarSpacer' },
-);
+) as ComponentType<ComponentProps<'div'> & StyledComponentProps<'root'>>;
 
 export type SidebarDividerClassKey = 'root';
 
@@ -602,7 +607,7 @@ export const SidebarDivider = styled('hr')(
     margin: '12px 0px',
   },
   { name: 'BackstageSidebarDivider' },
-);
+) as ComponentType<ComponentProps<'hr'> & StyledComponentProps<'root'>>;
 
 const styledScrollbar = (theme: Theme): CreateCSSProperties => ({
   overflowY: 'auto',
@@ -631,7 +636,7 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
     '@media (hover: none)': scrollbarStyles,
     '&:hover': scrollbarStyles,
   };
-});
+}) as ComponentType<ComponentProps<'div'> & StyledComponentProps<'root'>>;
 
 /**
  * A button which allows you to expand the sidebar when clicked.
