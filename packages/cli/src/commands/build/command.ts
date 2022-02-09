@@ -17,6 +17,7 @@
 import { Command } from 'commander';
 import { buildPackage, Output } from '../../lib/builder';
 import { findRoleFromCommand, getRoleInfo } from '../../lib/role';
+import { paths } from '../../lib/paths';
 import { buildApp } from './buildApp';
 import { buildBackend } from './buildBackend';
 
@@ -25,12 +26,14 @@ export async function command(cmd: Command): Promise<void> {
 
   if (role === 'app') {
     return buildApp({
+      targetDir: paths.resolveTarget('dist'),
       configPaths: cmd.config as string[],
       writeStats: Boolean(cmd.stats),
     });
   }
   if (role === 'backend') {
     return buildBackend({
+      targetDir: paths.resolveTarget('dist'),
       skipBuildDependencies: Boolean(cmd.skipBuildDependencies),
     });
   }

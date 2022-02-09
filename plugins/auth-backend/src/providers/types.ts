@@ -38,6 +38,19 @@ export type AuthResolverContext = {
   logger: Logger;
 };
 
+/**
+ * The callback used to resolve the cookie configuration for auth providers that use cookies.
+ * @public
+ */
+export type CookieConfigurer = (ctx: {
+  /** ID of the auth provider that this configuration applies to */
+  providerId: string;
+  /** The externally reachable base URL of the auth-backend plugin */
+  baseUrl: string;
+  /** The configured callback URL of the auth provider */
+  callbackUrl: string;
+}) => { domain: string; path: string; secure: boolean };
+
 export type AuthProviderConfig = {
   /**
    * The protocol://domain[:port] where the app is hosted. This is used to construct the
@@ -54,6 +67,11 @@ export type AuthProviderConfig = {
    * A function that is called to check whether an origin is allowed to receive the authentication result.
    */
   isOriginAllowed: (origin: string) => boolean;
+
+  /**
+   * The function used to resolve cookie configuration based on the auth provider options.
+   */
+  cookieConfigurer?: CookieConfigurer;
 };
 
 export type RedirectInfo = {

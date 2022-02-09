@@ -25,6 +25,25 @@ const configOption = [
   Array<string>(),
 ] as const;
 
+export function registerRepoCommand(program: CommanderStatic) {
+  const command = program
+    .command('repo [command]', { hidden: true })
+    .description(
+      'Command that run across an entire Backstage project [EXPERIMENTAL]',
+    );
+
+  command
+    .command('build')
+    .description(
+      'Build packages in the project, excluding bundled app and backend packages.',
+    )
+    .option(
+      '--all',
+      'Build all packages, including bundled app and backend packages.',
+    )
+    .action(lazy(() => import('./repo/build').then(m => m.command)));
+}
+
 export function registerScriptCommand(program: CommanderStatic) {
   const command = program
     .command('script [command]', { hidden: true })
@@ -312,6 +331,7 @@ export function registerCommands(program: CommanderStatic) {
     .description('Print configuration schema')
     .action(lazy(() => import('./config/schema').then(m => m.default)));
 
+  registerRepoCommand(program);
   registerScriptCommand(program);
   registerMigrateCommand(program);
 
@@ -320,6 +340,11 @@ export function registerCommands(program: CommanderStatic) {
     .option(
       '--pattern <glob>',
       'Override glob for matching packages to upgrade',
+    )
+    .option(
+      '--release <version|next|main>',
+      'Bump to a specific Backstage release line or version',
+      'main',
     )
     .description('Bump Backstage packages to the latest versions')
     .action(lazy(() => import('./versions/bump').then(m => m.default)));

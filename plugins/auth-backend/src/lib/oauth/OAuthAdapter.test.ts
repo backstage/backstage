@@ -69,13 +69,14 @@ describe('OAuthAdapter', () => {
     secure: false,
     disableRefresh: true,
     appOrigin: 'http://localhost:3000',
-    cookieDomain: 'localhost',
+    cookieDomain: 'example.com',
     cookiePath: '/auth/test-provider',
     tokenIssuer: {
       issueToken: async () => 'my-id-token',
       listPublicKeys: async () => ({ keys: [] }),
     },
     isOriginAllowed: () => false,
+    callbackUrl: 'http://example.com:7007/auth/test-provider/frame/handler',
   };
 
   it('sets the correct headers in start', async () => {
@@ -442,47 +443,6 @@ describe('OAuthAdapter', () => {
         },
       },
     });
-  });
-
-  it('sets the correct cookie configuration using the base url', async () => {
-    const config = {
-      baseUrl: 'http://domain.org/auth',
-      appUrl: 'http://domain.org',
-      isOriginAllowed: () => false,
-    };
-
-    const oauthProvider = OAuthAdapter.fromConfig(
-      config,
-      providerInstance,
-      oAuthProviderOptions,
-    );
-
-    const mockRequest = {
-      query: {
-        scope: 'user',
-        env: 'development',
-      },
-    } as unknown as express.Request;
-
-    const mockResponse = {
-      cookie: jest.fn().mockReturnThis(),
-      end: jest.fn().mockReturnThis(),
-      setHeader: jest.fn().mockReturnThis(),
-      statusCode: jest.fn().mockReturnThis(),
-    } as unknown as express.Response;
-
-    await oauthProvider.start(mockRequest, mockResponse);
-
-    expect(mockResponse.cookie).toBeCalledTimes(1);
-    expect(mockResponse.cookie).toBeCalledWith(
-      `${oAuthProviderOptions.providerId}-nonce`,
-      expect.any(String),
-      expect.objectContaining({
-        domain: 'domain.org',
-        path: '/auth/test-provider/handler',
-        secure: false,
-      }),
-    );
   });
 
   it('sets the correct cookie configuration using a callbackUrl', async () => {

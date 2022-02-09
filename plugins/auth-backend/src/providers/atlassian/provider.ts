@@ -231,7 +231,6 @@ export const createAtlassianProvider = (
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: true,
         providerId,
         tokenIssuer,
         callbackUrl,

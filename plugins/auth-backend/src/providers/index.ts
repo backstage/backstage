@@ -43,6 +43,7 @@ export type {
   AuthHandlerResult,
   SignInResolver,
   SignInInfo,
+  CookieConfigurer,
 } from './types';
 
 // These types are needed for a postMessage from the login pop-up

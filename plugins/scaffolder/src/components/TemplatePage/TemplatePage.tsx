@@ -128,7 +128,11 @@ export const TemplatePage = ({
       ignoreQueryPrefix: true,
     });
 
-    return query.formData ?? {};
+    try {
+      return JSON.parse(query.formData as string);
+    } catch (e) {
+      return query.formData ?? {};
+    }
   });
   const handleFormReset = () => setFormState({});
   const handleChange = useCallback(

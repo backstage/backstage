@@ -19,7 +19,7 @@ import chalk from 'chalk';
 import semver from 'semver';
 import minimatch from 'minimatch';
 import { Command } from 'commander';
-import { isError } from '@backstage/errors';
+import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 import { run } from '../../lib/run';
 import { paths } from '../../lib/paths';
@@ -27,9 +27,16 @@ import {
   mapDependencies,
   fetchPackageInfo,
   Lockfile,
+  YarnInfoInspectData,
 } from '../../lib/versioning';
 import { forbiddenDuplicatesFilter } from './lint';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
+import { runParallelWorkers } from '../../lib/parallel';
+import {
+  getManifestByReleaseLine,
+  getManifestByVersion,
+  ReleaseManifest,
+} from '@backstage/release-manifests';
 
 const DEP_TYPES = [
   'dependencies',
@@ -59,7 +66,22 @@ export default async (cmd: Command) => {
     console.log(`Using custom pattern glob ${pattern}`);
   }
 
-  const findTargetVersion = createVersionFinder();
+  let findTargetVersion: (name: string) => Promise<string>;
+  let releaseManifest: ReleaseManifest;
+  if (semver.valid(cmd.release)) {
+    releaseManifest = await getManifestByVersion({ version: cmd.release });
+    findTargetVersion = createStrictVersionFinder({
+      releaseManifest,
+    });
+  } else {
+    releaseManifest = await getManifestByReleaseLine({
+      releaseLine: cmd.release,
+    });
+    findTargetVersion = createVersionFinder({
+      releaseLine: cmd.releaseLine,
+      releaseManifest,
+    });
+  }
 
   // First we discover all Backstage dependencies within our own repo
   const dependencyMap = await mapDependencies(paths.targetDir, pattern);
@@ -68,67 +90,76 @@ export default async (cmd: Command) => {
   const versionBumps = new Map<string, PkgVersionInfo[]>();
   // Track package versions that we want to remove from yarn.lock in order to trigger a bump
   const unlocked = Array<{ name: string; range: string; target: string }>();
-  await workerThreads(16, dependencyMap.entries(), async ([name, pkgs]) => {
-    let target: string;
-    try {
-      target = await findTargetVersion(name);
-    } catch (error) {
-      if (isError(error) && error.name === 'NotFoundError') {
-        console.log(`Package info not found, ignoring package ${name}`);
-        return;
-      }
-      throw error;
-    }
 
-    for (const pkg of pkgs) {
-      if (semver.satisfies(target, pkg.range)) {
-        if (semver.minVersion(pkg.range)?.version !== target) {
-          unlocked.push({ name, range: pkg.range, target });
+  await runParallelWorkers({
+    parallelismFactor: 4,
+    items: dependencyMap.entries(),
+    async worker([name, pkgs]) {
+      let target: string;
+      try {
+        target = await findTargetVersion(name);
+      } catch (error) {
+        if (isError(error) && error.name === 'NotFoundError') {
+          console.log(`Package info not found, ignoring package ${name}`);
+          return;
         }
-
-        continue;
+        throw error;
       }
-      versionBumps.set(
-        pkg.name,
-        (versionBumps.get(pkg.name) ?? []).concat({
-          name,
-          location: pkg.location,
-          range: `^${target}`, // TODO(Rugvip): Option to use something else than ^?
-          target,
-        }),
-      );
-    }
+
+      for (const pkg of pkgs) {
+        if (semver.satisfies(target, pkg.range)) {
+          if (semver.minVersion(pkg.range)?.version !== target) {
+            unlocked.push({ name, range: pkg.range, target });
+          }
+
+          continue;
+        }
+        versionBumps.set(
+          pkg.name,
+          (versionBumps.get(pkg.name) ?? []).concat({
+            name,
+            location: pkg.location,
+            range: `^${target}`, // TODO(Rugvip): Option to use something else than ^?
+            target,
+          }),
+        );
+      }
+    },
   });
 
   const filter = (name: string) => minimatch(name, pattern);
 
   // Check for updates of transitive backstage dependencies
-  await workerThreads(16, lockfile.keys(), async name => {
-    // Only check @backstage packages and friends, we don't want this to do a full update of all deps
-    if (!filter(name)) {
-      return;
-    }
-
-    let target: string;
-    try {
-      target = await findTargetVersion(name);
-    } catch (error) {
-      if (isError(error) && error.name === 'NotFoundError') {
-        console.log(`Package info not found, ignoring package ${name}`);
+  await runParallelWorkers({
+    parallelismFactor: 4,
+    items: lockfile.keys(),
+    async worker(name) {
+      // Only check @backstage packages and friends, we don't want this to do a full update of all deps
+      if (!filter(name)) {
         return;
       }
-      throw error;
-    }
 
-    for (const entry of lockfile.get(name) ?? []) {
-      // Ignore lockfile entries that don't satisfy the version range, since
-      // these can't cause the package to be locked to an older version
-      if (!semver.satisfies(target, entry.range)) {
-        continue;
+      let target: string;
+      try {
+        target = await findTargetVersion(name);
+      } catch (error) {
+        if (isError(error) && error.name === 'NotFoundError') {
+          console.log(`Package info not found, ignoring package ${name}`);
+          return;
+        }
+        throw error;
       }
-      // Unlock all entries that are within range but on the old version
-      unlocked.push({ name, range: entry.range, target });
-    }
+
+      for (const entry of lockfile.get(name) ?? []) {
+        // Ignore lockfile entries that don't satisfy the version range, since
+        // these can't cause the package to be locked to an older version
+        if (!semver.satisfies(target, entry.range)) {
+          continue;
+        }
+        // Unlock all entries that are within range but on the old version
+        unlocked.push({ name, range: entry.range, target });
+      }
+    },
   });
 
   console.log();
@@ -163,44 +194,56 @@ export default async (cmd: Command) => {
     }
 
     const breakingUpdates = new Map<string, { from: string; to: string }>();
-    await workerThreads(16, versionBumps.entries(), async ([name, deps]) => {
-      const pkgPath = resolvePath(deps[0].location, 'package.json');
-      const pkgJson = await fs.readJson(pkgPath);
+    await runParallelWorkers({
+      parallelismFactor: 4,
+      items: versionBumps.entries(),
+      async worker([name, deps]) {
+        const pkgPath = resolvePath(deps[0].location, 'package.json');
+        const pkgJson = await fs.readJson(pkgPath);
 
-      for (const dep of deps) {
-        console.log(
-          `${chalk.cyan('bumping')} ${dep.name} in ${chalk.cyan(
-            name,
-          )} to ${chalk.yellow(dep.range)}`,
-        );
+        for (const dep of deps) {
+          console.log(
+            `${chalk.cyan('bumping')} ${dep.name} in ${chalk.cyan(
+              name,
+            )} to ${chalk.yellow(dep.range)}`,
+          );
 
-        for (const depType of DEP_TYPES) {
-          if (depType in pkgJson && dep.name in pkgJson[depType]) {
-            const oldRange = pkgJson[depType][dep.name];
-            pkgJson[depType][dep.name] = dep.range;
+          for (const depType of DEP_TYPES) {
+            if (depType in pkgJson && dep.name in pkgJson[depType]) {
+              const oldRange = pkgJson[depType][dep.name];
+              pkgJson[depType][dep.name] = dep.range;
 
-            // Check if the update was at least a pre-v1 minor or post-v1 major release
-            const lockfileEntry = lockfile
-              .get(dep.name)
-              ?.find(entry => entry.range === oldRange);
-            if (lockfileEntry) {
-              const from = lockfileEntry.version;
-              const to = dep.target;
-              if (!semver.satisfies(to, `^${from}`)) {
-                breakingUpdates.set(dep.name, { from, to });
+              // Check if the update was at least a pre-v1 minor or post-v1 major release
+              const lockfileEntry = lockfile
+                .get(dep.name)
+                ?.find(entry => entry.range === oldRange);
+              if (lockfileEntry) {
+                const from = lockfileEntry.version;
+                const to = dep.target;
+                if (!semver.satisfies(to, `^${from}`)) {
+                  breakingUpdates.set(dep.name, { from, to });
+                }
               }
             }
           }
         }
-      }
 
-      await fs.writeJson(pkgPath, pkgJson, { spaces: 2 });
+        await fs.writeJson(pkgPath, pkgJson, { spaces: 2 });
+      },
     });
 
     console.log();
 
-    await bumpBackstageJsonVersion();
-
+    // Do not update backstage.json when upgrade patterns are used.
+    if (pattern === DEFAULT_PATTERN_GLOB) {
+      await bumpBackstageJsonVersion(releaseManifest.releaseVersion);
+    } else {
+      console.log(
+        chalk.yellow(
+          `Skipping backstage.json update as custom pattern is used`,
+        ),
+      );
+    }
     console.log();
     console.log(
       `Running ${chalk.blue('yarn install')} to install new versions`,
@@ -270,9 +313,38 @@ export default async (cmd: Command) => {
   }
 };
 
-function createVersionFinder() {
-  const found = new Map<string, string>();
+export function createStrictVersionFinder(options: {
+  releaseManifest: ReleaseManifest;
+}) {
+  const releasePackages = new Map(
+    options.releaseManifest.packages.map(p => [p.name, p.version]),
+  );
+  return async function findTargetVersion(name: string) {
+    console.log(`Checking for updates of ${name}`);
+    const manifestVersion = releasePackages.get(name);
+    if (manifestVersion) {
+      return manifestVersion;
+    }
+    throw new NotFoundError(`Package ${name} not found in release manifest`);
+  };
+}
 
+export function createVersionFinder(options: {
+  releaseLine?: string;
+  packageInfoFetcher?: () => Promise<YarnInfoInspectData>;
+  releaseManifest?: ReleaseManifest;
+}) {
+  const {
+    releaseLine = 'latest',
+    packageInfoFetcher = fetchPackageInfo,
+    releaseManifest,
+  } = options;
+  // The main release line is just an alias for latest
+  const distTag = releaseLine === 'main' ? 'latest' : releaseLine;
+  const found = new Map<string, string>();
+  const releasePackages = new Map(
+    releaseManifest?.packages.map(p => [p.name, p.version]),
+  );
   return async function findTargetVersion(name: string) {
     const existing = found.get(name);
     if (existing) {
@@ -280,17 +352,50 @@ function createVersionFinder() {
     }
 
     console.log(`Checking for updates of ${name}`);
-    const info = await fetchPackageInfo(name);
-    const latest = info['dist-tags'].latest;
-    if (!latest) {
-      throw new Error(`No latest version found for ${name}`);
+    const manifestVersion = releasePackages.get(name);
+    if (manifestVersion) {
+      return manifestVersion;
     }
-    found.set(name, latest);
-    return latest;
+
+    const info = await packageInfoFetcher(name);
+    const latestVersion = info['dist-tags'].latest;
+    if (!latestVersion) {
+      throw new Error(`No target 'latest' version found for ${name}`);
+    }
+
+    const taggedVersion = info['dist-tags'][distTag];
+    if (distTag === 'latest' || !taggedVersion) {
+      found.set(name, latestVersion);
+      return latestVersion;
+    }
+
+    const latestVersionDateStr = info.time[latestVersion];
+    const taggedVersionDateStr = info.time[taggedVersion];
+    if (!latestVersionDateStr) {
+      throw new Error(
+        `No time available for version '${latestVersion}' of ${name}`,
+      );
+    }
+    if (!taggedVersionDateStr) {
+      throw new Error(
+        `No time available for version '${taggedVersion}' of ${name}`,
+      );
+    }
+
+    const latestVersionRelease = new Date(latestVersionDateStr).getTime();
+    const taggedVersionRelease = new Date(taggedVersionDateStr).getTime();
+    if (latestVersionRelease > taggedVersionRelease) {
+      // Prefer latest version if it's newer.
+      found.set(name, latestVersion);
+      return latestVersion;
+    }
+
+    found.set(name, taggedVersion);
+    return taggedVersion;
   };
 }
 
-export async function bumpBackstageJsonVersion() {
+export async function bumpBackstageJsonVersion(version: string) {
   const backstageJsonPath = paths.resolveTargetRoot(BACKSTAGE_JSON);
   const backstageJson = await fs.readJSON(backstageJsonPath).catch(e => {
     if (e.code === 'ENOENT') {
@@ -300,10 +405,7 @@ export async function bumpBackstageJsonVersion() {
     throw e;
   });
 
-  const info = await fetchPackageInfo('@backstage/create-app');
-  const { latest } = info['dist-tags'];
-
-  if (backstageJson?.version === latest) {
+  if (backstageJson?.version === version) {
     return;
   }
 
@@ -317,34 +419,10 @@ export async function bumpBackstageJsonVersion() {
 
   await fs.writeJson(
     backstageJsonPath,
-    { ...backstageJson, version: latest },
+    { ...backstageJson, version },
     {
       spaces: 2,
       encoding: 'utf8',
     },
-  );
-}
-
-async function workerThreads<T>(
-  count: number,
-  items: IterableIterator<T>,
-  fn: (item: T) => Promise<void>,
-) {
-  const queue = Array.from(items);
-
-  async function pop() {
-    const item = queue.pop();
-    if (!item) {
-      return;
-    }
-
-    await fn(item);
-    await pop();
-  }
-
-  return Promise.all(
-    Array(count)
-      .fill(0)
-      .map(() => pop()),
   );
 }

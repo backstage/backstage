@@ -17,6 +17,7 @@
 import express from 'express';
 import { OAuthState } from './types';
 import pickBy from 'lodash/pickBy';
+import { CookieConfigurer } from '../../providers/types';
 
 export const readState = (stateString: string): OAuthState => {
   const state = Object.fromEntries(
@@ -58,20 +59,19 @@ export const verifyNonce = (req: express.Request, providerId: string) => {
   }
 };
 
-export const getCookieConfig = (authUrl: URL, providerId: string) => {
-  const { hostname: cookieDomain, pathname, protocol } = authUrl;
+export const defaultCookieConfigurer: CookieConfigurer = ({
+  callbackUrl,
+  providerId,
+}) => {
+  const { hostname: domain, pathname, protocol } = new URL(callbackUrl);
   const secure = protocol === 'https:';
 
   // If the provider supports callbackUrls, the pathname will
   // contain the complete path to the frame handler so we need
   // to slice off the trailing part of the path.
-  const cookiePath = pathname.endsWith(`${providerId}/handler/frame`)
+  const path = pathname.endsWith(`${providerId}/handler/frame`)
     ? pathname.slice(0, -'/handler/frame'.length)
     : `${pathname}/${providerId}`;
 
-  return {
-    cookieDomain,
-    cookiePath,
-    secure,
-  };
+  return { domain, path, secure };
 };

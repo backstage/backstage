@@ -29,9 +29,11 @@ import { apis } from './apis';
 import { Root } from './components/Root';
 import { techDocsPage } from './components/TechDocsPage';
 import * as plugins from './plugins';
+import { configLoader } from './config';
 
 const app = createApp({
   apis,
+  configLoader,
   plugins: Object.values(plugins),
 });
 

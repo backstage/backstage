@@ -1,5 +1,22 @@
 # @backstage/plugin-auth-backend
 
+## 0.10.0-next.0
+
+### Minor Changes
+
+- 08fcda13ef: The `callbackUrl` option of `OAuthAdapter` is now required.
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 3396bc5973: Enabled refresh for the Atlassian provider.
+- 08fcda13ef: Added a new `cookieConfigurer` option to `AuthProviderConfig` that makes it possible to override the default logic for configuring OAuth provider cookies.
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
 ## 0.9.0
 
 ### Minor Changes

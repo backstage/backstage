@@ -18,20 +18,25 @@ import { Command } from 'commander';
 import { paths } from '../lib/paths';
 import { ESLint } from 'eslint';
 
-export default async (cmd: Command) => {
+export default async (cmd: Command, cmdArgs: string[]) => {
   const eslint = new ESLint({
     cwd: paths.targetDir,
     fix: cmd.fix,
     extensions: ['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs'],
   });
 
-  const results = await eslint.lintFiles(['.']);
+  const results = await eslint.lintFiles(cmdArgs ?? ['.']);
 
   if (cmd.fix) {
     await ESLint.outputFixes(results);
   }
 
   const formatter = await eslint.loadFormatter(cmd.format);
+
+  // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
+  if (cmd.format === 'eslint-formatter-friendly') {
+    process.chdir(paths.targetRoot);
+  }
   const resultText = formatter.format(results);
 
   // If there is any feedback at all, we treat it as a lint failure. This should be
