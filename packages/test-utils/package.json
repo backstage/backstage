@@ -51,7 +51,7 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.1",
+    "@backstage/cli": "^0.13.2-next.0",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.14.32",
     "msw": "^0.35.0"
