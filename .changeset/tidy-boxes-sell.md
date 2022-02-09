@@ -1,5 +1,18 @@
 ---
-'@backstage/plugin-search': patch
+'@backstage/plugin-search': minor
 ---
 
-SearchModal invoke search only when visible
+**BREAKING**: `useSearch` doesn't return anymore `open` and `toggleModal`.
+The two properties have been moved to the `useSearchModal` hook.
+
+```
+import { SearchModal, useSearchModal } from '@backstage/plugin-search';
+
+const Foo = () => {
+  const { state, setOpen, toggleModal } = useSearchModal();
+
+  return (
+    <SearchModal {...state} toggleModal={toggleModal} />
+  );
+};
+```

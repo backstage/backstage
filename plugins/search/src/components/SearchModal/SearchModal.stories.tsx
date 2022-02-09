@@ -16,10 +16,11 @@
 
 import { wrapInTestApp } from '@backstage/test-utils';
 import { Button } from '@material-ui/core';
-import React, { ComponentType, useState } from 'react';
+import React, { ComponentType } from 'react';
 import { rootRouteRef } from '../../plugin';
 import { SearchApiProvider } from '../SearchContext/SearchContextForStorybook.stories';
 import { SearchModal } from './SearchModal';
+import { useSearchModal } from './useSearchModal';
 
 const mockResults = {
   results: [
@@ -65,23 +66,14 @@ export default {
 };
 
 export const Default = () => {
-  const [state, setState] = useState({ hidden: true, opened: false });
-  const handleToggleModal = () =>
-    setState(previousState => ({
-      opened: true,
-      hidden: !previousState.hidden,
-    }));
+  const { state, toggleModal } = useSearchModal();
 
   return (
     <>
-      <Button variant="contained" color="primary" onClick={handleToggleModal}>
+      <Button variant="contained" color="primary" onClick={toggleModal}>
         Toggle Search Modal
       </Button>
-      <SearchModal
-        open={state.opened}
-        hidden={state.hidden}
-        toggleModal={handleToggleModal}
-      />
+      <SearchModal {...state} toggleModal={toggleModal} />
     </>
   );
 };

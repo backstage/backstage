@@ -327,4 +327,14 @@ export type SidebarSearchProps = {
 //
 // @public (undocumented)
 export const useSearch: () => SearchContextValue;
+
+// @public
+export function useSearchModal(initialState?: boolean): {
+  state: {
+    hidden: boolean;
+    open: boolean;
+  };
+  toggleModal: () => void;
+  setOpen: (open: boolean) => void;
+};
 ```

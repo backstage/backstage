@@ -13,28 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import { SidebarItem } from '@backstage/core-components';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { SearchModal } from '../SearchModal';
+import { SearchModal, useSearchModal } from '../SearchModal';
 
 export type SidebarSearchModalProps = {
   icon?: IconComponent;
 };
 
 export const SidebarSearchModal = (props: SidebarSearchModalProps) => {
-  const [state, setState] = useState({ hidden: true, opened: false });
+  const { state, toggleModal } = useSearchModal();
   const Icon = props.icon ? props.icon : SearchIcon;
-
-  const handleToggleModal = useCallback(
-    () =>
-      setState(previousState => ({
-        opened: true,
-        hidden: !previousState.hidden,
-      })),
-    [],
-  );
 
   return (
     <>
@@ -42,13 +33,9 @@ export const SidebarSearchModal = (props: SidebarSearchModalProps) => {
         className="search-icon"
         icon={Icon}
         text="Search"
-        onClick={handleToggleModal}
+        onClick={toggleModal}
       />
-      <SearchModal
-        open={state.opened}
-        hidden={state.hidden}
-        toggleModal={handleToggleModal}
-      />
+      <SearchModal {...state} toggleModal={toggleModal} />
     </>
   );
 };
