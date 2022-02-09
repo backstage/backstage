@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-import { Groups } from './airbrake-groups';
-import { AirbrakeApi } from './airbrake-api';
+import { Groups } from '../airbrakeGroups';
+import { AirbrakeApi } from '../AirbrakeApi';
+import mockGroupsData from './airbrakeGroupsApiMock.json';
 
-export class ProductionAirbrakeApi implements AirbrakeApi {
-  constructor(private readonly apiKey?: string) {}
+export class MockAirbrakeApi implements AirbrakeApi {
+  waitTimeInMillis: number;
 
-  async fetchGroups(projectId: string): Promise<Groups> {
-    const apiUrl = `https://api.airbrake.io/api/v4/projects/${projectId}/groups?key=${this.apiKey}`;
+  constructor(waitTimeInMillis = 10) {
+    this.waitTimeInMillis = waitTimeInMillis;
+  }
 
-    const response = await fetch(apiUrl);
-
-    if (response.status >= 400 && response.status < 600) {
-      throw new Error('Failed fetching Airbrake groups');
-    }
-
-    return (await response.json()) as Groups;
+  fetchGroups(): Promise<Groups> {
+    return new Promise(resolve => {
+      setTimeout(() => resolve(mockGroupsData), this.waitTimeInMillis);
+    });
   }
 }

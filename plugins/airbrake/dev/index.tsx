@@ -25,7 +25,7 @@ import {
 import { ApiBar } from './components/ApiBar';
 import { Content, Header, Page } from '@backstage/core-components';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { createEntity } from '../src/api/mock/mock-entity';
+import { createEntity } from '../src/api/mock/MockEntity';
 import CloudOffIcon from '@material-ui/icons/CloudOff';
 import CloudIcon from '@material-ui/icons/Cloud';
 import { Context, ContextProvider } from './components/ContextProvider';

@@ -16,13 +16,13 @@
 
 import React from 'react';
 import { EntityAirbrakeWidget } from './EntityAirbrakeWidget';
-import exampleData from '../../api/mock/airbrake-groups-api-mock.json';
+import exampleData from '../../api/mock/airbrakeGroupsApiMock.json';
 import {
   MockErrorApi,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
-import { createEntity } from '../../api/mock/mock-entity';
+import { createEntity } from '../../api/mock/MockEntity';
 import {
   airbrakeApiRef,
   MockAirbrakeApi,

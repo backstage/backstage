@@ -15,7 +15,7 @@
  */
 
 export * from './mock';
-export type { AirbrakeApi } from './airbrake-api';
-export { airbrakeApiRef } from './airbrake-api';
-export type { Groups } from './airbrake-groups';
-export { ProductionAirbrakeApi } from './production-api';
+export type { AirbrakeApi } from './AirbrakeApi';
+export { airbrakeApiRef } from './AirbrakeApi';
+export type { Groups } from './airbrakeGroups';
+export { ProductionAirbrakeApi } from './ProductionApi';

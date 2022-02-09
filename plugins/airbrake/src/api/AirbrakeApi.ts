@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import { Groups } from '../airbrake-groups';
-import { AirbrakeApi } from '../airbrake-api';
-import mockGroupsData from './airbrake-groups-api-mock.json';
+import { Groups } from './airbrakeGroups';
+import { createApiRef } from '@backstage/core-plugin-api';
 
-export class MockAirbrakeApi implements AirbrakeApi {
-  waitTimeInMillis: number;
+export const airbrakeApiRef = createApiRef<AirbrakeApi>({
+  id: 'plugin.airbrake.service',
+});
 
-  constructor(waitTimeInMillis = 10) {
-    this.waitTimeInMillis = waitTimeInMillis;
-  }
-
-  fetchGroups(): Promise<Groups> {
-    return new Promise(resolve => {
-      setTimeout(() => resolve(mockGroupsData), this.waitTimeInMillis);
-    });
-  }
+export interface AirbrakeApi {
+  fetchGroups(projectId: string): Promise<Groups>;
 }

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { MockAirbrakeApi } from './mock-api';
+export { MockAirbrakeApi } from './MockApi';

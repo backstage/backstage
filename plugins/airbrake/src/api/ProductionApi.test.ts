@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ProductionAirbrakeApi } from './production-api';
+import { ProductionAirbrakeApi } from './ProductionApi';
 import nock from 'nock';
-import mockGroupsData from './mock/airbrake-groups-api-mock.json';
+import mockGroupsData from './mock/airbrakeGroupsApiMock.json';
 
 describe('The production Airbrake API', () => {
   let productionApi: ProductionAirbrakeApi;
