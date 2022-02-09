@@ -9,3 +9,6 @@
 
 Since the `IdentityClient` interface is marked as experimental, this is a
 breaking change without a deprecation period.
+
+- Moved `BackstageSignInResult`, `BackstageIdentityResponse`, and
+  `BackstageUserIdentity` to `@backstage/plugin-auth-node`.

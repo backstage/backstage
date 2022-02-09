@@ -5,9 +5,10 @@
 ```ts
 /// <reference types="node" />
 
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import { BackstageSignInResult } from '@backstage/plugin-auth-node';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { JsonValue } from '@backstage/types';
 import { Logger as Logger_2 } from 'winston';
@@ -129,27 +130,6 @@ export type AwsAlbProviderOptions = {
 
 // @public @deprecated
 export type BackstageIdentity = BackstageSignInResult;
-
-// @public
-export interface BackstageIdentityResponse extends BackstageSignInResult {
-  identity: BackstageUserIdentity;
-}
-
-// @public
-export interface BackstageSignInResult {
-  // @deprecated
-  entity?: Entity;
-  // @deprecated
-  id: string;
-  token: string;
-}
-
-// @public
-export type BackstageUserIdentity = {
-  type: 'user';
-  userEntityRef: string;
-  ownershipEntityRefs: string[];
-};
 
 // Warning: (ae-missing-release-tag) "BitbucketOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

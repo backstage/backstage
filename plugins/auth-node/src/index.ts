@@ -21,3 +21,8 @@
  */
 
 export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
+export type {
+  BackstageIdentityResponse,
+  BackstageSignInResult,
+  BackstageUserIdentity,
+} from './types';

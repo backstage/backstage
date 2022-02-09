@@ -18,7 +18,7 @@ import fetch from 'node-fetch';
 import { JWK, JWT, JWKS, JSONWebKey } from 'jose';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthenticationError } from '@backstage/errors';
-import { BackstageIdentityResponse } from '../providers/types';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 
 const CLOCK_MARGIN_S = 10;
 
