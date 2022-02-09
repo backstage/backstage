@@ -24,7 +24,7 @@ yarn add @backstage/plugin-home
 
 #### 2. Create a new HomePage component
 
-Inside your `packages/app`, create a new file where our new Home Page component is going to live. Create `packages/app/src/components/home/HomePage.tsx` with the following initial code
+Inside your `packages/app` directory, create a new file where our new Home Page component is going to live. Create `packages/app/src/components/home/HomePage.tsx` with the following initial code
 
 ```tsx
 import React from 'react';
