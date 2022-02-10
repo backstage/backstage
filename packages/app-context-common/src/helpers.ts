@@ -87,6 +87,13 @@ export function createDependencyModule<T>(opts: {
       };
 }
 
+/**
+ * A helper function to encapsulate types when creating dependency definitions.
+ *
+ * @param opts - id and a keyed collection of dependencies.
+ * @returns A collection of dependency definitions.
+ * @public
+ */
 export function createDependencyDefinitions<
   DepDefs extends Record<string, Dependency<any>>,
 >(opts: { id: string; definitions: DepDefs }) {

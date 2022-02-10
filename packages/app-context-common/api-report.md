@@ -5,9 +5,7 @@
 ```ts
 import { interfaces } from 'inversify';
 
-// Warning: (ae-missing-release-tag) "AnyDependencyConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type AnyDependencyConfig = DependencyConfig<
   unknown,
   {
@@ -15,31 +13,20 @@ export type AnyDependencyConfig = DependencyConfig<
   }
 >;
 
-// Warning: (ae-missing-release-tag) "ApplicationContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface ApplicationContext {
-  // (undocumented)
   get<T>(dep: Dependency<T>): T;
-  // (undocumented)
   getContainer(): interfaces.Container;
 }
 
-// Warning: (ae-missing-release-tag) "BoundPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface BoundPlugin<T> {
-  // (undocumented)
   getDependencies(): Dependency<unknown>[];
-  // (undocumented)
   instance: T;
-  // (undocumented)
   name: string;
 }
 
-// Warning: (ae-missing-release-tag) "BoundPluginOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type BoundPluginOptions<T> = {
   id: string;
   initialize: (ctx: ApplicationContext) => T;
@@ -69,9 +56,7 @@ export function createDependencyConfig<Dep>(
 // @public (undocumented)
 export function createDependencyDefinition<T>(id: symbol): Dependency<T>;
 
-// Warning: (ae-missing-release-tag) "createDependencyDefinitions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createDependencyDefinitions<
   DepDefs extends Record<string, Dependency<any>>,
 >(opts: {
@@ -105,17 +90,13 @@ export function createDependencyModule<T>(opts: {
   initialize: (ctx: ApplicationContext) => T;
 };
 
-// Warning: (ae-missing-release-tag) "Dependency" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type Dependency<T> = {
   id: symbol;
   T: T;
 };
 
-// Warning: (ae-missing-release-tag) "DependencyConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type DependencyConfig<
   Dep,
   Deps extends {
@@ -127,9 +108,7 @@ export type DependencyConfig<
   factory(deps: Deps): Dep;
 };
 
-// Warning: (ae-missing-release-tag) "TypesToIocDependencies" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type TypesToIocDependencies<T> = {
   [key in keyof T]: Dependency<T[key]>;
 };
