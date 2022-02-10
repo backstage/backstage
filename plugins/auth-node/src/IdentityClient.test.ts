@@ -98,7 +98,7 @@ describe('IdentityClient', () => {
   afterEach(() => server.resetHandlers());
 
   beforeEach(() => {
-    client = new IdentityClient({ discovery, issuer: mockBaseUrl });
+    client = IdentityClient.create({ discovery, issuer: mockBaseUrl });
     factory = new FakeTokenFactory({
       issuer: mockBaseUrl,
       keyDurationSeconds,

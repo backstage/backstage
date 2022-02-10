@@ -35,7 +35,20 @@ export class IdentityClient {
   private keyStore: JWKS.KeyStore;
   private keyStoreUpdated: number;
 
-  constructor(options: { discovery: PluginEndpointDiscovery; issuer: string }) {
+  /**
+   * Create a new {@link IdentityClient} instance.
+   */
+  static create(options: {
+    discovery: PluginEndpointDiscovery;
+    issuer: string;
+  }): IdentityClient {
+    return new IdentityClient(options);
+  }
+
+  private constructor(options: {
+    discovery: PluginEndpointDiscovery;
+    issuer: string;
+  }) {
     this.discovery = options.discovery;
     this.issuer = options.issuer;
     this.keyStore = new JWKS.KeyStore();

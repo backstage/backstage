@@ -40,7 +40,7 @@ export default async function createPlugin(
     logger,
     discovery,
     policy: new AllowAllPermissionPolicy(),
-    identity: new IdentityClient({
+    identity: IdentityClient.create({
       discovery,
       issuer: await discovery.getExternalBaseUrl('auth'),
     }),

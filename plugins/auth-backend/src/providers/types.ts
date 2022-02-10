@@ -165,14 +165,6 @@ export type AuthResponse<ProviderInfo> = {
 };
 
 /**
- * The old exported symbol for {@link @backstage/plugin-auth-node#BackstageSignInResult}.
- *
- * @public
- * @deprecated Use the {@link @backstage/plugin-auth-node#BackstageSignInResult} instead.
- */
-export type BackstageIdentity = BackstageSignInResult;
-
-/**
  * Used to display login information to user, i.e. sidebar popup.
  *
  * It is also temporarily used as the profile of the signed-in user's Backstage

@@ -128,9 +128,6 @@ export type AwsAlbProviderOptions = {
   };
 };
 
-// @public @deprecated
-export type BackstageIdentity = BackstageSignInResult;
-
 // Warning: (ae-missing-release-tag) "BitbucketOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
