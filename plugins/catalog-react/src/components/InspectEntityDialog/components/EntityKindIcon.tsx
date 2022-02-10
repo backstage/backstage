@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-export * from './EntityKindPicker';
-export * from './EntityLifecyclePicker';
-export * from './EntityOwnerPicker';
-export * from './EntityRefLink';
-export * from './EntitySearchBar';
-export * from './EntityTable';
-export * from './EntityTagPicker';
-export * from './EntityTypePicker';
-export * from './FavoriteEntity';
-export * from './InspectEntityDialog';
-export * from './UnregisterEntityDialog';
-export * from './UserListPicker';
+import { useApp } from '@backstage/core-plugin-api';
+import WorkIcon from '@material-ui/icons/Work';
+import React from 'react';
+
+export function EntityKindIcon(props: {
+  kind: string;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  className?: string;
+}) {
+  const app = useApp();
+
+  const { kind, ...otherProps } = props;
+  const Icon =
+    app.getSystemIcon(`kind:${kind.toLocaleLowerCase('en-US')}`) ?? WorkIcon;
+
+  return <Icon {...otherProps} />;
+}

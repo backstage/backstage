@@ -121,8 +121,8 @@ export type CatalogEntityAncestorsRequest = {
  * @public
  */
 export type CatalogEntityAncestorsResponse = {
-  root: EntityName;
-  items: { entity: Entity; parents: EntityName[] }[];
+  rootEntityRef: string;
+  items: { entity: Entity; parentEntityRefs: string[] }[];
 };
 
 /**
