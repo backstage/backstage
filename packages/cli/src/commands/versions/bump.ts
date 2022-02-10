@@ -264,7 +264,16 @@ export default async (cmd: Command) => {
       `Running ${chalk.blue('yarn install')} to install new versions`,
     );
     console.log();
-    await run('yarn', ['install']);
+    await run('yarn', ['install'], {
+      env: {
+        FORCE_COLOR: 'true',
+        ...Object.fromEntries(
+          Object.entries(process.env).map(([name, value]) =>
+            name.startsWith('npm_') ? [name, undefined] : [name, value],
+          ),
+        ),
+      },
+    });
 
     if (breakingUpdates.size > 0) {
       console.log();
