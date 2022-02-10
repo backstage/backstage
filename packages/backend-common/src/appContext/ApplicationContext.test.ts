@@ -72,4 +72,19 @@ describe('Application Context', () => {
     const ctxContainer = ctx.getContainer();
     expect(ctxContainer).toBe(container);
   });
+  it('should automatically bind dependencies and sub deps to container', () => {
+    const ctx = InversifyApplicationContext.fromConfig({
+      dependencies: [dependantDep, singularDep],
+    });
+    const dependantInstance = ctx.get(dependantDepDef);
+    expect(dependantInstance.internal().text()).toEqual('hello');
+  });
+  it('should throw if dep is missing when getting', () => {
+    const ctx = InversifyApplicationContext.fromConfig({
+      dependencies: [dependantDep],
+    });
+    expect(() => ctx.get(dependantDepDef)).toThrowError(
+      'No matching bindings found for serviceIdentifier: Symbol(@backstage/backend-common.test.TestInterface)',
+    );
+  });
 });
