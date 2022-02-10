@@ -20,6 +20,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
 import MapIcon from '@material-ui/icons/MyLocation';
+import NotificationsIcon from '@material-ui/icons/Notifications';
 import LayersIcon from '@material-ui/icons/Layers';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
@@ -50,6 +51,7 @@ import {
   SidebarScrollWrapper,
   SidebarSpace,
 } from '@backstage/core-components';
+import { SidebarNotifications } from '@backstage/plugin-user-notifications';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -118,6 +120,13 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       </SidebarGroup>
       <SidebarSpace />
       <SidebarDivider />
+      <SidebarGroup
+        label="Notifications"
+        icon={<NotificationsIcon />}
+        to="/notifications"
+      >
+        <SidebarNotifications />
+      </SidebarGroup>
       <SidebarGroup
         label="Settings"
         icon={<UserSettingsSignInAvatar />}

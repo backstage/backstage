@@ -60,6 +60,20 @@ export const githubActionsPlugin = createPlugin({
         }, 10 * 1000);
       },
     },
+    {
+      id: 'github-actions-user-notification-source',
+      initialize: (notificationApi: NotificationApi) => {
+        setInterval(async () => {
+          const notifications = await Promise.resolve([
+            {
+              kind: 'user',
+              metadata: {},
+            },
+          ]);
+          notifications.forEach(n => notificationApi.post(n));
+        }, 20 * 1000);
+      },
+    },
   ],
 });
 

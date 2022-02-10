@@ -55,8 +55,8 @@ module.exports = {
         devDependencies: [
           '**/*.test.*',
           '**/*.stories.*',
-          'src/setupTests.*',
-          'dev/**',
+          '**/src/setupTests.*',
+          '**/dev/**',
         ],
         optionalDependencies: true,
         peerDependencies: true,
