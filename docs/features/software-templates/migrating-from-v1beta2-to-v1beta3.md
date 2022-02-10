@@ -55,7 +55,6 @@ your templates to the new one.
 + apiVersion: scaffolder.backstage.io/v1beta3
 ```
 
-
 ## `${{ }}` instead of `"{{ }}"`
 
 One really big readability issue and cause for confusion was the fact that with
