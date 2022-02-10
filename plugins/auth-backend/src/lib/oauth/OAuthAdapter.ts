@@ -23,10 +23,12 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
-  AuthProviderRouteHandlers,
-  AuthProviderConfig,
   BackstageIdentityResponse,
   BackstageSignInResult,
+} from '@backstage/plugin-auth-node';
+import {
+  AuthProviderRouteHandlers,
+  AuthProviderConfig,
 } from '../../providers/types';
 import {
   AuthenticationError,

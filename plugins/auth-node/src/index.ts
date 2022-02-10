@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-export { createOidcRouter } from './router';
-export { TokenFactory } from './TokenFactory';
-export { DatabaseKeyStore } from './DatabaseKeyStore';
-export { MemoryKeyStore } from './MemoryKeyStore';
-export { FirestoreKeyStore } from './FirestoreKeyStore';
-export { KeyStores } from './KeyStores';
-export type { KeyStore, TokenIssuer, TokenParams } from './types';
+/**
+ * Common functionality and types for the Backstage auth plugin.
+ *
+ * @packageDocumentation
+ */
+
+export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
+export { IdentityClient } from './IdentityClient';
+export type {
+  BackstageIdentityResponse,
+  BackstageSignInResult,
+  BackstageUserIdentity,
+} from './types';

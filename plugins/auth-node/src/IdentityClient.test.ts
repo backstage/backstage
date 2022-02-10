@@ -14,19 +14,61 @@
  * limitations under the License.
  */
 
-import { JWT, JSONWebKey } from 'jose';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { JSONWebKey, JWK, JWS, JWT } from 'jose';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import {
-  getVoidLogger,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { v4 as uuid } from 'uuid';
 import { IdentityClient } from './IdentityClient';
-import { MemoryKeyStore } from './MemoryKeyStore';
-import { TokenFactory } from './TokenFactory';
-import { KeyStore } from './types';
 
-const logger = getVoidLogger();
+interface AnyJWK extends Record<string, string> {
+  use: 'sig';
+  alg: string;
+  kid: string;
+  kty: string;
+}
+
+// Simplified copy of TokenFactory in @backstage/plugin-auth-backend
+class FakeTokenFactory {
+  private readonly keys = new Array<AnyJWK>();
+
+  constructor(
+    private readonly options: {
+      issuer: string;
+      keyDurationSeconds: number;
+    },
+  ) {}
+
+  async issueToken(params: {
+    claims: {
+      sub: string;
+      ent?: string[];
+    };
+  }): Promise<string> {
+    const key = await JWK.generate('EC', 'P-256', {
+      use: 'sig',
+      kid: uuid(),
+      alg: 'ES256',
+    });
+    this.keys.push(key.toJWK(false) as unknown as AnyJWK);
+
+    const iss = this.options.issuer;
+    const sub = params.claims.sub;
+    const ent = params.claims.ent;
+    const aud = 'backstage';
+    const iat = Math.floor(Date.now() / 1000);
+    const exp = iat + this.options.keyDurationSeconds;
+
+    return JWS.sign({ iss, sub, aud, iat, exp, ent }, key, {
+      alg: key.alg,
+      kid: key.kid,
+    });
+  }
+
+  async listPublicKeys(): Promise<{ keys: AnyJWK[] }> {
+    return { keys: this.keys };
+  }
+}
 
 function jwtKid(jwt: string): string {
   const { header } = JWT.decode(jwt, { complete: true }) as {
@@ -48,8 +90,7 @@ const discovery: PluginEndpointDiscovery = {
 
 describe('IdentityClient', () => {
   let client: IdentityClient;
-  let factory: TokenFactory;
-  let keyStore: KeyStore;
+  let factory: FakeTokenFactory;
   const keyDurationSeconds = 5;
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -57,13 +98,10 @@ describe('IdentityClient', () => {
   afterEach(() => server.resetHandlers());
 
   beforeEach(() => {
-    client = new IdentityClient({ discovery, issuer: mockBaseUrl });
-    keyStore = new MemoryKeyStore();
-    factory = new TokenFactory({
+    client = IdentityClient.create({ discovery, issuer: mockBaseUrl });
+    factory = new FakeTokenFactory({
       issuer: mockBaseUrl,
-      keyStore: keyStore,
       keyDurationSeconds,
-      logger,
     });
   });
 
@@ -83,7 +121,7 @@ describe('IdentityClient', () => {
     it('should use the correct endpoint', async () => {
       await factory.issueToken({ claims: { sub: 'foo' } });
       const keys = await factory.listPublicKeys();
-      const response = await client.listPublicKeys();
+      const response = await (client as any).listPublicKeys();
       expect(response).toEqual(keys);
     });
 
@@ -108,11 +146,9 @@ describe('IdentityClient', () => {
     });
 
     it('should throw on incorrect issuer', async () => {
-      const hackerFactory = new TokenFactory({
+      const hackerFactory = new FakeTokenFactory({
         issuer: 'hacker',
-        keyStore,
         keyDurationSeconds,
-        logger,
       });
       return expect(async () => {
         const token = await hackerFactory.issueToken({
@@ -137,11 +173,9 @@ describe('IdentityClient', () => {
     });
 
     it('should throw on incorrect signing key', async () => {
-      const hackerFactory = new TokenFactory({
+      const hackerFactory = new FakeTokenFactory({
         issuer: mockBaseUrl,
-        keyStore: new MemoryKeyStore(),
         keyDurationSeconds,
-        logger,
       });
       return expect(async () => {
         const token = await hackerFactory.issueToken({
@@ -199,38 +233,6 @@ describe('IdentityClient', () => {
     });
   });
 
-  describe('getBearerToken', () => {
-    it('should return undefined on undefined input', async () => {
-      const token = IdentityClient.getBearerToken(undefined);
-      expect(token).toBeUndefined();
-    });
-
-    it('should return undefined on malformed input', async () => {
-      const token = IdentityClient.getBearerToken('malformed');
-      expect(token).toBeUndefined();
-    });
-
-    it('should return undefined on unexpected scheme', async () => {
-      const token = IdentityClient.getBearerToken('Basic token');
-      expect(token).toBeUndefined();
-    });
-
-    it('should return Bearer token', async () => {
-      const token = IdentityClient.getBearerToken('Bearer token');
-      expect(token).toEqual('token');
-    });
-
-    it('should return Bearer token despite extra space', async () => {
-      const token = IdentityClient.getBearerToken('Bearer \n token ');
-      expect(token).toEqual('token');
-    });
-
-    it('should return Bearer token despite unconventionial case', async () => {
-      const token = IdentityClient.getBearerToken('bEARER token');
-      expect(token).toEqual('token');
-    });
-  });
-
   describe('listPublicKeys', () => {
     const defaultServiceResponse: {
       keys: JSONWebKey[];
@@ -257,7 +259,7 @@ describe('IdentityClient', () => {
     });
 
     it('should use the correct endpoint', async () => {
-      const response = await client.listPublicKeys();
+      const response = await (client as any).listPublicKeys();
       expect(response).toEqual(defaultServiceResponse);
     });
   });
