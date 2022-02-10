@@ -34,7 +34,7 @@ The migration path is pretty simple, and we've removed some of the pain points
 from writing the `handlebars` templates too. Let's go through what's new and how
 to upgrade.
 
-## Add processor
+## Add the Processor to the `plugin-catalog-backend`
 
 An important change is to add the required processor to your `packages/backend/src/plugins/catalog.ts`
 
