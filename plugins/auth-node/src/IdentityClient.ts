@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
-import { JWK, JWT, JWKS, JSONWebKey } from 'jose';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthenticationError } from '@backstage/errors';
-import { BackstageIdentityResponse } from '../providers/types';
+import { JSONWebKey, JWK, JWKS, JWT } from 'jose';
+import fetch from 'node-fetch';
+import { BackstageIdentityResponse } from './types';
 
 const CLOCK_MARGIN_S = 10;
 
 /**
- * A identity client to interact with auth-backend
- * and authenticate backstage identity tokens
+ * An identity client to interact with auth-backend and authenticate Backstage
+ * tokens
  *
  * @experimental This is not a stable API yet
+ * @public
  */
 export class IdentityClient {
   private readonly discovery: PluginEndpointDiscovery;
@@ -34,7 +35,20 @@ export class IdentityClient {
   private keyStore: JWKS.KeyStore;
   private keyStoreUpdated: number;
 
-  constructor(options: { discovery: PluginEndpointDiscovery; issuer: string }) {
+  /**
+   * Create a new {@link IdentityClient} instance.
+   */
+  static create(options: {
+    discovery: PluginEndpointDiscovery;
+    issuer: string;
+  }): IdentityClient {
+    return new IdentityClient(options);
+  }
+
+  private constructor(options: {
+    discovery: PluginEndpointDiscovery;
+    issuer: string;
+  }) {
     this.discovery = options.discovery;
     this.issuer = options.issuer;
     this.keyStore = new JWKS.KeyStore();
@@ -85,20 +99,6 @@ export class IdentityClient {
   }
 
   /**
-   * Parses the given authorization header and returns
-   * the bearer token, or null if no bearer token is given
-   */
-  static getBearerToken(
-    authorizationHeader: string | undefined,
-  ): string | undefined {
-    if (typeof authorizationHeader !== 'string') {
-      return undefined;
-    }
-    const matches = authorizationHeader.match(/Bearer\s+(\S+)/i);
-    return matches?.[1];
-  }
-
-  /**
    * Returns the public signing key matching the given jwt token,
    * or null if no matching key was found
    */
@@ -125,7 +125,7 @@ export class IdentityClient {
   /**
    * Lists public part of keys used to sign Backstage Identity tokens
    */
-  async listPublicKeys(): Promise<{
+  private async listPublicKeys(): Promise<{
     keys: JSONWebKey[];
   }> {
     const url = `${await this.discovery.getBaseUrl(

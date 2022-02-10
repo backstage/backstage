@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-common",
   "description": "Common functionality library for Backstage backends",
-  "version": "0.10.7-next.0",
+  "version": "0.10.7",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": false,
@@ -68,7 +68,7 @@
     "node-abort-controller": "^3.0.1",
     "node-fetch": "^2.6.1",
     "raw-body": "^2.4.1",
-    "selfsigned": "^1.10.7",
+    "selfsigned": "^2.0.0",
     "stoppable": "^1.1.0",
     "tar": "^6.1.2",
     "unzipper": "^0.10.11",
@@ -84,7 +84,7 @@
     }
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.2-next.0",
+    "@backstage/cli": "^0.13.2",
     "@backstage/test-utils": "^0.2.4",
     "@types/archiver": "^5.1.0",
     "@types/compression": "^1.7.0",

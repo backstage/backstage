@@ -1366,49 +1366,6 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@backstage/core-components@*", "@backstage/core-components@^0.8.0", "@backstage/core-components@^0.8.7":
-  version "0.8.7"
-  resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.8.7.tgz#c4bb9760d57971882065415e6e715eb750db2392"
-  integrity sha512-77oIrnT5zV7vaE1MK+TTBzIt0GfqUifnNeieyBPm2uHctPt5Um0qG3+zR5UYGGcm1VWAZtNMzZIOBJUDgKPQjQ==
-  dependencies:
-    "@backstage/config" "^0.1.13"
-    "@backstage/core-plugin-api" "^0.6.0"
-    "@backstage/errors" "^0.2.0"
-    "@backstage/theme" "^0.2.14"
-    "@material-table/core" "^3.1.0"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    "@types/react-sparklines" "^1.7.0"
-    "@types/react-text-truncate" "^0.14.0"
-    ansi-regex "^5.0.1"
-    classnames "^2.2.6"
-    d3-selection "^3.0.0"
-    d3-shape "^3.0.0"
-    d3-zoom "^3.0.0"
-    dagre "^0.8.5"
-    history "^5.0.0"
-    immer "^9.0.1"
-    lodash "^4.17.21"
-    pluralize "^8.0.0"
-    prop-types "^15.7.2"
-    qs "^6.9.4"
-    rc-progress "3.2.4"
-    react-helmet "6.1.0"
-    react-hook-form "^7.12.2"
-    react-markdown "^8.0.0"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-sparklines "^1.7.0"
-    react-syntax-highlighter "^15.4.5"
-    react-text-truncate "^0.17.0"
-    react-use "^17.2.4"
-    react-virtualized-auto-sizer "^1.0.6"
-    react-window "^1.8.6"
-    remark-gfm "^3.0.1"
-    zen-observable "^0.8.15"
-    zod "^3.11.6"
-
 "@backstage/core-plugin-api@^0.4.0", "@backstage/core-plugin-api@^0.4.1":
   version "0.4.1"
   resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-0.4.1.tgz#c0a13504bdfa61ae3d0db96934cd6c32a7574446"
@@ -1424,69 +1381,6 @@
     react-router-dom "6.0.0-beta.0"
     react-use "^17.2.4"
     zen-observable "^0.8.15"
-
-"@backstage/integration-react@^0.1.10", "@backstage/integration-react@^0.1.20":
-  version "0.1.20"
-  resolved "https://registry.npmjs.org/@backstage/integration-react/-/integration-react-0.1.20.tgz#53610c718f963018d16496aa345926740b4eb131"
-  integrity sha512-vX65MB+Xd51wFcG5PbRbDlxN9Ti7pIlklbWWXZrxpeyR9h9FsXjKIioeP8kKqOYRTUgfvLutnU2FrTL2tulGGw==
-  dependencies:
-    "@backstage/config" "^0.1.13"
-    "@backstage/core-components" "^0.8.7"
-    "@backstage/core-plugin-api" "^0.6.0"
-    "@backstage/integration" "^0.7.2"
-    "@backstage/theme" "^0.2.14"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    react-use "^17.2.4"
-
-"@backstage/plugin-catalog-react@^0.6.12", "@backstage/plugin-catalog-react@^0.6.13", "@backstage/plugin-catalog-react@^0.6.5", "@backstage/plugin-catalog-react@^0.6.9":
-  version "0.6.13"
-  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-0.6.13.tgz#b325eae501d3edeb8b7caef5d9615f2e632f5430"
-  integrity sha512-XBwop7PwAZqfongx3KP6jAJar+MEscLSp8nLuHYX5XxA+suQNiBgi96uO3SEQmvtae+hvsRM7c0WHSxbYiXsDA==
-  dependencies:
-    "@backstage/catalog-client" "^0.5.5"
-    "@backstage/catalog-model" "^0.9.10"
-    "@backstage/core-components" "^0.8.7"
-    "@backstage/core-plugin-api" "^0.6.0"
-    "@backstage/errors" "^0.2.0"
-    "@backstage/integration" "^0.7.2"
-    "@backstage/plugin-permission-common" "^0.4.0"
-    "@backstage/plugin-permission-react" "^0.3.0"
-    "@backstage/types" "^0.1.1"
-    "@backstage/version-bridge" "^0.1.1"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    jwt-decode "^3.1.0"
-    lodash "^4.17.21"
-    qs "^6.9.4"
-    react-router "6.0.0-beta.0"
-    react-use "^17.2.4"
-    zen-observable "^0.8.15"
-
-"@backstage/plugin-catalog@*":
-  version "0.7.11"
-  resolved "https://registry.npmjs.org/@backstage/plugin-catalog/-/plugin-catalog-0.7.11.tgz#9cd1d5c272300e4678a3e3ad7675b5b36aa51002"
-  integrity sha512-D9QohgQJZfRSrQ7aTuI6fH4tXBloEpyAC+WnXKoCjPaLm9gVbFEdBoC2+M6MiCybahJxdRK+LsNAG+jZj3ZdIg==
-  dependencies:
-    "@backstage/catalog-client" "^0.5.5"
-    "@backstage/catalog-model" "^0.9.10"
-    "@backstage/core-components" "^0.8.7"
-    "@backstage/core-plugin-api" "^0.6.0"
-    "@backstage/errors" "^0.2.0"
-    "@backstage/integration-react" "^0.1.20"
-    "@backstage/plugin-catalog-common" "^0.1.2"
-    "@backstage/plugin-catalog-react" "^0.6.13"
-    "@backstage/theme" "^0.2.14"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    history "^5.0.0"
-    lodash "^4.17.21"
-    react-helmet "6.1.0"
-    react-router "6.0.0-beta.0"
-    react-use "^17.2.4"
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
@@ -6828,7 +6722,7 @@ acorn-walk@^7.1.1:
   resolved "https://registry.npmjs.org/acorn-walk/-/acorn-walk-7.1.1.tgz#345f0dffad5c735e7373d2fec9a1023e6a44b83e"
   integrity sha512-wdlPY2tm/9XBr7QkKlq0WQVgiuGTX6YWPyRyBviSoScBuLfTVQhvwg6wJ369GJ/1nPfTLMfnrFIfjqVg6d+jQQ==
 
-acorn-walk@^8.1.1:
+acorn-walk@^8.1.1, acorn-walk@^8.2.0:
   version "8.2.0"
   resolved "https://registry.npmjs.org/acorn-walk/-/acorn-walk-8.2.0.tgz#741210f2e2426454508853a2f44d0ab83b7f69c1"
   integrity sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA==
@@ -11634,54 +11528,54 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     safe-buffer "^5.1.1"
 
 "example-app@link:packages/app":
-  version "0.2.64-next.0"
+  version "0.2.64"
   dependencies:
-    "@backstage/app-defaults" "^0.1.7-next.0"
+    "@backstage/app-defaults" "^0.1.7"
     "@backstage/catalog-model" "^0.9.10"
-    "@backstage/cli" "^0.13.2-next.0"
+    "@backstage/cli" "^0.13.2"
     "@backstage/core-app-api" "^0.5.2"
-    "@backstage/core-components" "^0.8.8-next.0"
+    "@backstage/core-components" "^0.8.8"
     "@backstage/core-plugin-api" "^0.6.0"
-    "@backstage/integration-react" "^0.1.21-next.0"
-    "@backstage/plugin-airbrake" "^0.1.3-next.0"
-    "@backstage/plugin-apache-airflow" "^0.1.6-next.0"
-    "@backstage/plugin-api-docs" "^0.7.2-next.0"
-    "@backstage/plugin-azure-devops" "^0.1.14-next.0"
-    "@backstage/plugin-badges" "^0.2.22-next.0"
-    "@backstage/plugin-catalog" "^0.7.12-next.0"
+    "@backstage/integration-react" "^0.1.21"
+    "@backstage/plugin-airbrake" "^0.1.3"
+    "@backstage/plugin-apache-airflow" "^0.1.6"
+    "@backstage/plugin-api-docs" "^0.7.2"
+    "@backstage/plugin-azure-devops" "^0.1.14"
+    "@backstage/plugin-badges" "^0.2.22"
+    "@backstage/plugin-catalog" "^0.7.12"
     "@backstage/plugin-catalog-common" "^0.1.2"
-    "@backstage/plugin-catalog-graph" "^0.2.10-next.0"
-    "@backstage/plugin-catalog-import" "^0.8.1-next.0"
-    "@backstage/plugin-catalog-react" "^0.6.14-next.0"
-    "@backstage/plugin-circleci" "^0.2.37-next.0"
-    "@backstage/plugin-cloudbuild" "^0.2.35-next.0"
-    "@backstage/plugin-code-coverage" "^0.1.25-next.0"
-    "@backstage/plugin-cost-insights" "^0.11.20-next.0"
-    "@backstage/plugin-explore" "^0.3.29-next.0"
-    "@backstage/plugin-gcp-projects" "^0.3.17-next.0"
-    "@backstage/plugin-github-actions" "^0.4.35-next.0"
-    "@backstage/plugin-gocd" "^0.1.4-next.0"
-    "@backstage/plugin-graphiql" "^0.2.30-next.0"
-    "@backstage/plugin-home" "^0.4.14-next.0"
-    "@backstage/plugin-jenkins" "^0.5.20-next.0"
-    "@backstage/plugin-kafka" "^0.2.28-next.0"
-    "@backstage/plugin-kubernetes" "^0.5.7-next.0"
-    "@backstage/plugin-lighthouse" "^0.2.37-next.0"
-    "@backstage/plugin-newrelic" "^0.3.16-next.0"
-    "@backstage/plugin-newrelic-dashboard" "^0.1.6-next.0"
+    "@backstage/plugin-catalog-graph" "^0.2.10"
+    "@backstage/plugin-catalog-import" "^0.8.1"
+    "@backstage/plugin-catalog-react" "^0.6.14"
+    "@backstage/plugin-circleci" "^0.2.37"
+    "@backstage/plugin-cloudbuild" "^0.2.35"
+    "@backstage/plugin-code-coverage" "^0.1.25"
+    "@backstage/plugin-cost-insights" "^0.11.20"
+    "@backstage/plugin-explore" "^0.3.29"
+    "@backstage/plugin-gcp-projects" "^0.3.17"
+    "@backstage/plugin-github-actions" "^0.4.35"
+    "@backstage/plugin-gocd" "^0.1.4"
+    "@backstage/plugin-graphiql" "^0.2.30"
+    "@backstage/plugin-home" "^0.4.14"
+    "@backstage/plugin-jenkins" "^0.5.20"
+    "@backstage/plugin-kafka" "^0.2.28"
+    "@backstage/plugin-kubernetes" "^0.5.7"
+    "@backstage/plugin-lighthouse" "^0.2.37"
+    "@backstage/plugin-newrelic" "^0.3.16"
+    "@backstage/plugin-newrelic-dashboard" "^0.1.6"
     "@backstage/plugin-org" "^0.4.2-next.0"
-    "@backstage/plugin-pagerduty" "0.3.25-next.0"
+    "@backstage/plugin-pagerduty" "0.3.25"
     "@backstage/plugin-permission-react" "^0.3.0"
-    "@backstage/plugin-rollbar" "^0.3.26-next.0"
-    "@backstage/plugin-scaffolder" "^0.12.2-next.0"
-    "@backstage/plugin-search" "^0.6.2-next.0"
-    "@backstage/plugin-sentry" "^0.3.36-next.0"
-    "@backstage/plugin-shortcuts" "^0.1.22-next.0"
-    "@backstage/plugin-tech-insights" "^0.1.8-next.0"
-    "@backstage/plugin-tech-radar" "^0.5.5-next.0"
-    "@backstage/plugin-techdocs" "^0.13.3-next.0"
-    "@backstage/plugin-todo" "^0.2.0-next.0"
-    "@backstage/plugin-user-settings" "^0.3.19-next.0"
+    "@backstage/plugin-rollbar" "^0.3.26"
+    "@backstage/plugin-scaffolder" "^0.12.2"
+    "@backstage/plugin-search" "^0.6.2"
+    "@backstage/plugin-sentry" "^0.3.36"
+    "@backstage/plugin-shortcuts" "^0.1.22"
+    "@backstage/plugin-tech-insights" "^0.1.8"
+    "@backstage/plugin-tech-radar" "^0.5.5"
+    "@backstage/plugin-techdocs" "^0.13.3"
+    "@backstage/plugin-todo" "^0.2.0"
+    "@backstage/plugin-user-settings" "^0.3.19"
     "@backstage/search-common" "^0.2.2"
     "@backstage/theme" "^0.2.14"
     "@material-ui/core" "^4.12.2"
@@ -12323,9 +12217,9 @@ fn.name@1.x.x:
   integrity sha512-GRnmB5gPyJpAhTQdSZTSp9uaPSvl09KoYcMQtsB9rQoOmzs9dH6ffeccH+Z+cv6P68Hu5bC6JjRh4Ah/mHSNRw==
 
 follow-redirects@^1.0.0, follow-redirects@^1.14.0:
-  version "1.14.7"
-  resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.7.tgz#2004c02eb9436eee9a21446a6477debf17e81685"
-  integrity sha512-+hbxoLbFMbRKDwohX8GkTataGqO6Jb7jGwpAlwgy2bIz25XtRm7KEzJM76R1WiNT5SwZkX4Y75SwBolkpmE7iQ==
+  version "1.14.8"
+  resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.8.tgz#016996fb9a11a100566398b1c6839337d7bfa8fc"
+  integrity sha512-1x0S9UVJHsQprFcEC/qnNzBLcIxsjAV905f/UkQxbclCsoTWlacCNOpQa/anodLl2uaEKFhfWOvM2Qg77+15zA==
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -12963,11 +12857,11 @@ google-gax@^2.12.0, google-gax@^2.24.1:
     retry-request "^4.0.0"
 
 google-p12-pem@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.npmjs.org/google-p12-pem/-/google-p12-pem-3.0.3.tgz#673ac3a75d3903a87f05878f3c75e06fc151669e"
-  integrity sha512-wS0ek4ZtFx/ACKYF3JhyGe5kzH7pgiQ7J5otlumqR9psmWMYc+U9cErKlCYVYHoUaidXHdZ2xbo34kB+S+24hA==
+  version "3.1.3"
+  resolved "https://registry.npmjs.org/google-p12-pem/-/google-p12-pem-3.1.3.tgz#5497998798ee86c2fc1f4bb1f92b7729baf37537"
+  integrity sha512-MC0jISvzymxePDVembypNefkAQp+DRP7dBE+zNUPaIjEspIlYg0++OrsNr248V9tPbz6iqtZ7rX1hxWA5B8qBQ==
   dependencies:
-    node-forge "^0.10.0"
+    node-forge "^1.0.0"
 
 got@^11.8.0, got@^11.8.2:
   version "11.8.2"
@@ -14766,9 +14660,9 @@ istanbul-lib-source-maps@^4.0.0:
     source-map "^0.6.1"
 
 istanbul-reports@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.npmjs.org/istanbul-reports/-/istanbul-reports-3.0.2.tgz#d593210e5000683750cb09fc0644e4b6e27fd53b"
-  integrity sha512-9tZvz7AiR3PEDNGiV9vIouQ/EAcqMXFmkcA1CDFTwOB98OZVDL0PH9glHotf5Ugp6GCOTypfzGWI/OqjWNCRUw==
+  version "3.1.4"
+  resolved "https://registry.npmjs.org/istanbul-reports/-/istanbul-reports-3.1.4.tgz#1b6f068ecbc6c331040aab5741991273e609e40c"
+  integrity sha512-r1/DshN4KSE7xWEknZLLLLDn5CJybV3nw01VTkp6D5jzLuELlcbudfj/eSQFvrKsJuTVCGnePO7ho82Nw9zzfw==
   dependencies:
     html-escaper "^2.0.0"
     istanbul-lib-report "^3.0.0"
@@ -17900,12 +17794,7 @@ node-fetch@2.6.7, node-fetch@^2.3.0, node-fetch@^2.6.0, node-fetch@^2.6.1, node-
   dependencies:
     whatwg-url "^5.0.0"
 
-node-forge@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.npmjs.org/node-forge/-/node-forge-0.10.0.tgz#32dea2afb3e9926f02ee5ce8794902691a676bf3"
-  integrity sha512-PPmu8eEeG9saEUvI97fm4OYxXVB6bFvyNTyiUOBichBpFG8A1Ljw3bY62+5oOjDEMHRnd0Y7HQ+x7uzxOzC6JA==
-
-node-forge@^1.2.0:
+node-forge@^1.0.0, node-forge@^1.2.0:
   version "1.2.1"
   resolved "https://registry.npmjs.org/node-forge/-/node-forge-1.2.1.tgz#82794919071ef2eb5c509293325cec8afd0fd53c"
   integrity sha512-Fcvtbb+zBcZXbTTVwqGA5W+MKBj56UjVRevvchv5XrcyXbmNdesfZL37nlcWOfpgHhgmxApw3tQbTr4CqNmX4w==
@@ -19042,15 +18931,15 @@ passport-onelogin-oauth@^0.0.1:
     uid2 "0.0.3"
 
 passport-saml@^3.1.2:
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/passport-saml/-/passport-saml-3.2.0.tgz#72ec8203df6dd872a205b8d5f578859a4e723e42"
-  integrity sha512-EUzL+Wk8ZVdvOYhCBTkUrR1fwuMwF9za1FinFabP5Tl9qeJktsJWfoiBz7Fk6jQvpLwfnfryGdvwcOlGVct41A==
+  version "3.2.1"
+  resolved "https://registry.npmjs.org/passport-saml/-/passport-saml-3.2.1.tgz#c489a61a4c2dd93ddec1d53952a595b9f33e15e8"
+  integrity sha512-Y8aD94B6MTLht57BlBrDauEgvtWjuSeINKk7NadXlpT/OBmsoGGYPpb0FJeBtdyGX4GEbZARAkxvBEqsL8E7XQ==
   dependencies:
     "@xmldom/xmldom" "^0.7.5"
     debug "^4.3.2"
     passport-strategy "^1.0.0"
     xml-crypto "^2.1.3"
-    xml-encryption "^1.3.0"
+    xml-encryption "^2.0.0"
     xml2js "^0.4.23"
     xmlbuilder "^15.1.1"
 
@@ -21717,13 +21606,6 @@ select-hose@^2.0.0:
   resolved "https://registry.npmjs.org/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
   integrity sha1-Yl2GWPhlr0Psliv8N2o3NZpJlMo=
 
-selfsigned@^1.10.7:
-  version "1.10.11"
-  resolved "https://registry.npmjs.org/selfsigned/-/selfsigned-1.10.11.tgz#24929cd906fe0f44b6d01fb23999a739537acbe9"
-  integrity sha512-aVmbPOfViZqOZPgRBT0+3u4yZFHpmnIghLMlAcb5/xhp5ZtB/RVnKhz5vl2M32CLXAqR4kha9zfhNg0Lf/sxKA==
-  dependencies:
-    node-forge "^0.10.0"
-
 selfsigned@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/selfsigned/-/selfsigned-2.0.0.tgz#e927cd5377cbb0a1075302cff8df1042cc2bce5b"
@@ -23156,18 +23038,18 @@ tdigest@^0.1.1:
     bintrees "1.0.1"
 
 "techdocs-cli-embedded-app@link:packages/techdocs-cli-embedded-app":
-  version "0.2.63-next.0"
+  version "0.2.63"
   dependencies:
-    "@backstage/app-defaults" "^0.1.7-next.0"
+    "@backstage/app-defaults" "^0.1.7"
     "@backstage/catalog-model" "^0.9.10"
-    "@backstage/cli" "^0.13.2-next.0"
+    "@backstage/cli" "^0.13.2"
     "@backstage/config" "^0.1.13"
     "@backstage/core-app-api" "^0.5.2"
-    "@backstage/core-components" "^0.8.8-next.0"
+    "@backstage/core-components" "^0.8.8"
     "@backstage/core-plugin-api" "^0.6.0"
-    "@backstage/integration-react" "^0.1.21-next.0"
-    "@backstage/plugin-catalog" "^0.7.12-next.0"
-    "@backstage/plugin-techdocs" "^0.13.3-next.0"
+    "@backstage/integration-react" "^0.1.21"
+    "@backstage/plugin-catalog" "^0.7.12"
+    "@backstage/plugin-techdocs" "^0.13.3"
     "@backstage/test-utils" "^0.2.4"
     "@backstage/theme" "^0.2.14"
     "@material-ui/core" "^4.11.0"
@@ -24495,10 +24377,13 @@ vm-browserify@^1.0.1:
   resolved "https://registry.npmjs.org/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-vm2@^3.9.5:
-  version "3.9.5"
-  resolved "https://registry.npmjs.org/vm2/-/vm2-3.9.5.tgz#5288044860b4bbace443101fcd3bddb2a0aa2496"
-  integrity sha512-LuCAHZN75H9tdrAiLFf030oW7nJV5xwNMuk1ymOZwopmuK3d2H4L1Kv4+GFHgarKiLfXXLFU+7LDABHnwOkWng==
+vm2@^3.9.6:
+  version "3.9.6"
+  resolved "https://registry.npmjs.org/vm2/-/vm2-3.9.6.tgz#2f9b2fd0d82802dcd872e1011869ba8ae6b74778"
+  integrity sha512-BF7euUjgO+ezsz2UKex9kO9M/PtDNOf+KEpiqNepZsgf1MT7JYfJEIvG8BoYhZMLAVjqevFJ0UmXNuETe8m5dQ==
+  dependencies:
+    acorn "^8.7.0"
+    acorn-walk "^8.2.0"
 
 vscode-languageserver-types@^3.15.1:
   version "3.15.1"
@@ -25007,14 +24892,13 @@ xml-crypto@^2.1.3:
     "@xmldom/xmldom" "^0.7.0"
     xpath "0.0.32"
 
-xml-encryption@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.npmjs.org/xml-encryption/-/xml-encryption-1.3.0.tgz#4cad44a59bf8bdec76d7865ce0b89e13c09962f4"
-  integrity sha512-3P8C4egMMxSR1BmsRM+fG16a3WzOuUEQKS2U4c3AZ5v7OseIfdUeVkD8dwxIhuLryFZSRWUL5OP6oqkgU7hguA==
+xml-encryption@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/xml-encryption/-/xml-encryption-2.0.0.tgz#d4e1eb3ec1f2c5d2a2a0a6e23d199237e8b4bf83"
+  integrity sha512-4Av83DdvAgUQQMfi/w8G01aJshbEZP9ewjmZMpS9t3H+OCZBDvyK4GJPnHGfWiXlArnPbYvR58JB9qF2x9Ds+Q==
   dependencies:
     "@xmldom/xmldom" "^0.7.0"
     escape-html "^1.0.3"
-    node-forge "^0.10.0"
     xpath "0.0.32"
 
 xml-name-validator@^3.0.0:

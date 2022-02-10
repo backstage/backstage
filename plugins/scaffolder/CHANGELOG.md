@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder
 
+## 0.12.2
+
+### Patch Changes
+
+- 33e139e652: Adds a loading bar to the scaffolder task page if the task is still loading. This can happen if it takes a while for a task worker to pick up a task.
+- 6458be3307: Encode the `formData` in the `queryString` using `JSON.stringify` to keep the types in the decoded value
+- 319f4b79a2: The ScaffolderPage can be passed an optional `TaskPageComponent` with a `loadingText` string. It will replace the Loading text in the scaffolder task page.
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+  - @backstage/integration-react@0.1.21
+
 ## 0.12.2-next.0
 
 ### Patch Changes

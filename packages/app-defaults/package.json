@@ -1,7 +1,7 @@
 {
   "name": "@backstage/app-defaults",
   "description": "Provides the default wiring of a Backstage App",
-  "version": "0.1.7-next.0",
+  "version": "0.1.7",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -29,7 +29,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.8.8-next.0",
+    "@backstage/core-components": "^0.8.8",
     "@backstage/core-app-api": "^0.5.2",
     "@backstage/core-plugin-api": "^0.6.0",
     "@backstage/plugin-permission-react": "^0.3.0",
@@ -42,7 +42,7 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.2-next.0",
+    "@backstage/cli": "^0.13.2",
     "@backstage/test-utils": "^0.2.4",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
