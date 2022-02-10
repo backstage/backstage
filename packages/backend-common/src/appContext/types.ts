@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Logger } from 'winston';
-import { CustomErrorBase } from '@backstage/errors/dist';
+import { CustomErrorBase } from '@backstage/errors';
 import { AnyDependencyConfig } from '@backstage/app-context-common';
 
 export type AppContextFactoryOptions = {
