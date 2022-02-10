@@ -55,7 +55,7 @@
     "knex": "^1.0.2",
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "p-limit": "^3.0.2",
     "prom-client": "^14.0.1",
     "uuid": "^8.0.0",
