@@ -68,15 +68,30 @@ export default async (cmd: Command) => {
 
   let findTargetVersion: (name: string) => Promise<string>;
   let releaseManifest: ReleaseManifest;
+  // Specific release specified. Be strict when resolving versions
   if (semver.valid(cmd.release)) {
     releaseManifest = await getManifestByVersion({ version: cmd.release });
     findTargetVersion = createStrictVersionFinder({
       releaseManifest,
     });
   } else {
-    releaseManifest = await getManifestByReleaseLine({
-      releaseLine: cmd.release,
-    });
+    // Release line specified. Be lenient when resolving versions.
+    if (cmd.release === 'next') {
+      const next = await getManifestByReleaseLine({
+        releaseLine: 'next',
+      });
+      const main = await getManifestByReleaseLine({
+        releaseLine: 'main',
+      });
+      // Prefer manifest with the latest release version
+      releaseManifest = semver.gt(next.releaseVersion, main.releaseVersion)
+        ? next
+        : main;
+    } else {
+      releaseManifest = await getManifestByReleaseLine({
+        releaseLine: cmd.release,
+      });
+    }
     findTargetVersion = createVersionFinder({
       releaseLine: cmd.releaseLine,
       releaseManifest,
