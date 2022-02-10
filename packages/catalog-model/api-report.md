@@ -479,6 +479,7 @@ interface ResourceEntityV1alpha1 extends Entity {
     type: string;
     owner: string;
     dependsOn?: string[];
+    dependencyOf?: string[];
     system?: string;
   };
 }
