@@ -794,8 +794,16 @@ describe('bumpBackstageJsonVersion', () => {
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));
 
-    await bumpBackstageJsonVersion('1.4.1');
+    const { log } = await withLogCollector(async () => {
+      await bumpBackstageJsonVersion('1.4.1');
+    });
     expect(await fs.readJson('/backstage.json')).toEqual({ version: '1.4.1' });
+    expect(log).toEqual([
+      'Upgraded from release 0.0.1 to 1.4.1, please review these template changes:',
+      undefined,
+      '  https://backstage.github.io/upgrade-helper/?from=0.0.1&to=1.4.1',
+      undefined,
+    ]);
   });
 
   it("should create backstage.json if doesn't exist", async () => {
@@ -806,8 +814,13 @@ describe('bumpBackstageJsonVersion', () => {
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));
 
-    await bumpBackstageJsonVersion(latest);
+    const { log } = await withLogCollector(async () => {
+      await bumpBackstageJsonVersion(latest);
+    });
     expect(await fs.readJson('/backstage.json')).toEqual({ version: latest });
+    expect(log).toEqual([
+      'Your project is now at version 1.4.1, which has been written to backstage.json',
+    ]);
   });
 });
 
