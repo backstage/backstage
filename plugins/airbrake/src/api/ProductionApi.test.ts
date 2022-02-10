@@ -15,36 +15,44 @@
  */
 
 import { ProductionAirbrakeApi } from './ProductionApi';
-import nock from 'nock';
+import { rest } from 'msw';
 import mockGroupsData from './mock/airbrakeGroupsApiMock.json';
+import { setupServer } from 'msw/node';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 
 describe('The production Airbrake API', () => {
-  let productionApi: ProductionAirbrakeApi;
-
-  beforeEach(() => {
-    productionApi = new ProductionAirbrakeApi('fakeApiKey');
-  });
+  const productionApi = new ProductionAirbrakeApi('fakeApiKey');
+  const worker = setupServer();
+  setupRequestMockHandlers(worker);
 
   it('fetches groups using the provided project ID', async () => {
-    const scope = nock('https://api.airbrake.io')
-      .get('/api/v4/projects/123456/groups?key=fakeApiKey')
-      .reply(200, mockGroupsData);
-    expect(scope.isDone()).toBe(false);
+    worker.use(
+      rest.get(
+        'https://api.airbrake.io/api/v4/projects/123456/groups',
+        (req, res, ctx) => {
+          if (req.url.searchParams.get('key') === 'fakeApiKey') {
+            return res(ctx.status(200), ctx.json(mockGroupsData));
+          }
+          return res(ctx.status(401));
+        },
+      ),
+    );
 
     const groups = await productionApi.fetchGroups('123456');
 
-    expect(scope.isDone()).toBe(true);
     expect(groups).toStrictEqual(mockGroupsData);
   });
 
   it('throws if fetching groups was unsuccessful', async () => {
-    const scope = nock('https://api.airbrake.io')
-      .get('/api/v4/projects/123456/groups?key=fakeApiKey')
-      .reply(500);
-    expect(scope.isDone()).toBe(false);
+    worker.use(
+      rest.get(
+        'https://api.airbrake.io/api/v4/projects/123456/groups',
+        (_, res, ctx) => {
+          return res(ctx.status(500));
+        },
+      ),
+    );
 
     await expect(productionApi.fetchGroups('123456')).rejects.toThrow();
-
-    expect(scope.isDone()).toBe(true);
   });
 });

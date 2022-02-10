@@ -20,6 +20,7 @@ import exampleData from '../../api/mock/airbrakeGroupsApiMock.json';
 import {
   MockErrorApi,
   renderInTestApp,
+  setupRequestMockHandlers,
   TestApiProvider,
 } from '@backstage/test-utils';
 import { createEntity } from '../../api/mock/MockEntity';
@@ -28,10 +29,14 @@ import {
   MockAirbrakeApi,
   ProductionAirbrakeApi,
 } from '../../api';
-import nock from 'nock';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 
 describe('EntityAirbrakeContent', () => {
+  const worker = setupServer();
+  setupRequestMockHandlers(worker);
+
   it('renders all errors sent from Airbrake', async () => {
     const widget = await renderInTestApp(
       <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi()]]}>
@@ -58,10 +63,14 @@ describe('EntityAirbrakeContent', () => {
   });
 
   it('states that an error occurred if the API call fails', async () => {
-    const scope = nock('https://api.airbrake.io')
-      .get('/api/v4/projects/123/groups?key=fakeApiKey')
-      .reply(500);
-    expect(scope.isDone()).toBe(false);
+    worker.use(
+      rest.get(
+        'https://api.airbrake.io/api/v4/projects/123/groups',
+        (_, res, ctx) => {
+          return res(ctx.status(500));
+        },
+      ),
+    );
     const mockErrorApi = new MockErrorApi({ collect: true });
 
     const widget = await renderInTestApp(
@@ -82,6 +91,5 @@ describe('EntityAirbrakeContent', () => {
     expect(mockErrorApi.getErrors()[0].error.message).toStrictEqual(
       'Failed fetching Airbrake groups',
     );
-    expect(scope.isDone()).toBe(true);
   });
 });
