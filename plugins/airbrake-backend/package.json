@@ -20,7 +20,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.10.7-next.0",
+    "@backstage/backend-common": "^0.10.7",
     "@backstage/config": "^0.1.13",
     "@types/express": "*",
     "express": "^4.17.1",
@@ -31,7 +31,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.2-next.0",
+    "@backstage/cli": "^0.13.2",
     "@types/http-proxy-middleware": "^0.19.3",
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.6",
