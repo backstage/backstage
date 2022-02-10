@@ -8,9 +8,9 @@ import express from 'express';
 import { Logger as Logger_2 } from 'winston';
 
 // @public
-export type AirbrakeConfig = {
+export interface AirbrakeConfig {
   apiKey: string;
-};
+}
 
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;

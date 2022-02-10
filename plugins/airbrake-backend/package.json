@@ -39,9 +39,9 @@
   },
   "files": [
     "dist",
-    "src/config/config.d.ts"
+    "config.d.ts"
   ],
-  "configSchema": "src/config/config.d.ts",
+  "configSchema": "config.d.ts",
   "jest": {
     "coverageThreshold": {
       "global": {
