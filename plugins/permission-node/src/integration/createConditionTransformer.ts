@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import {
+  AllOfCriteria,
+  AnyOfCriteria,
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
@@ -25,32 +27,18 @@ import {
   isOrCriteria,
 } from './util';
 
-const nonEmpty = <T>(list: T[]): [T, ...T[]] => {
-  if (list.length === 0) {
-    throw new Error(
-      'Invalid conditions provided. Expected at least one item for `allOf`/`anyOf` criteria but received none.',
-    );
-  }
-
-  return list as [T, ...T[]];
-};
-
 const mapConditions = <TQuery>(
   criteria: PermissionCriteria<PermissionCondition>,
   getRule: (name: string) => PermissionRule<unknown, TQuery>,
 ): PermissionCriteria<TQuery> => {
   if (isAndCriteria(criteria)) {
     return {
-      allOf: nonEmpty(
-        criteria.allOf.map(child => mapConditions(child, getRule)),
-      ),
-    };
+      allOf: criteria.allOf.map(child => mapConditions(child, getRule)),
+    } as AllOfCriteria<TQuery>;
   } else if (isOrCriteria(criteria)) {
     return {
-      anyOf: nonEmpty(
-        criteria.anyOf.map(child => mapConditions(child, getRule)),
-      ),
-    };
+      anyOf: criteria.anyOf.map(child => mapConditions(child, getRule)),
+    } as AnyOfCriteria<TQuery>;
   } else if (isNotCriteria(criteria)) {
     return {
       not: mapConditions(criteria.not, getRule),
