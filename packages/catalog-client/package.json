@@ -32,7 +32,7 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.9.10",
     "@backstage/errors": "^0.2.0",
-    "cross-fetch": "^3.0.6"
+    "cross-fetch": "^3.1.5"
   },
   "devDependencies": {
     "@backstage/cli": "^0.13.2",
