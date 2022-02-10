@@ -1835,14 +1835,7 @@
   dependencies:
     "@date-io/core" "^1.3.13"
 
-"@date-io/luxon@1.x":
-  version "1.3.13"
-  resolved "https://registry.npmjs.org/@date-io/luxon/-/luxon-1.3.13.tgz#68f0134bb38ef486b2ed6df01981f814c633e28a"
-  integrity sha512-9wUrJCNSMZJeYAiH+dbb45oGpnHeFP7TOH/Lt26If47gjFCkjvyINzWx+K5AGsnlP0Qosxc7hkF1yLi6ecutxw==
-  dependencies:
-    "@date-io/core" "^1.3.13"
-
-"@date-io/luxon@^1.3.13":
+"@date-io/luxon@1.x", "@date-io/luxon@^1.3.13":
   version "1.3.13"
   resolved "https://registry.npmjs.org/@date-io/luxon/-/luxon-1.3.13.tgz#68f0134bb38ef486b2ed6df01981f814c633e28a"
   integrity sha512-9wUrJCNSMZJeYAiH+dbb45oGpnHeFP7TOH/Lt26If47gjFCkjvyINzWx+K5AGsnlP0Qosxc7hkF1yLi6ecutxw==
@@ -12330,9 +12323,9 @@ fn.name@1.x.x:
   integrity sha512-GRnmB5gPyJpAhTQdSZTSp9uaPSvl09KoYcMQtsB9rQoOmzs9dH6ffeccH+Z+cv6P68Hu5bC6JjRh4Ah/mHSNRw==
 
 follow-redirects@^1.0.0, follow-redirects@^1.14.0:
-  version "1.14.7"
-  resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.7.tgz#2004c02eb9436eee9a21446a6477debf17e81685"
-  integrity sha512-+hbxoLbFMbRKDwohX8GkTataGqO6Jb7jGwpAlwgy2bIz25XtRm7KEzJM76R1WiNT5SwZkX4Y75SwBolkpmE7iQ==
+  version "1.14.8"
+  resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.8.tgz#016996fb9a11a100566398b1c6839337d7bfa8fc"
+  integrity sha512-1x0S9UVJHsQprFcEC/qnNzBLcIxsjAV905f/UkQxbclCsoTWlacCNOpQa/anodLl2uaEKFhfWOvM2Qg77+15zA==
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -14773,9 +14766,9 @@ istanbul-lib-source-maps@^4.0.0:
     source-map "^0.6.1"
 
 istanbul-reports@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.npmjs.org/istanbul-reports/-/istanbul-reports-3.0.2.tgz#d593210e5000683750cb09fc0644e4b6e27fd53b"
-  integrity sha512-9tZvz7AiR3PEDNGiV9vIouQ/EAcqMXFmkcA1CDFTwOB98OZVDL0PH9glHotf5Ugp6GCOTypfzGWI/OqjWNCRUw==
+  version "3.1.4"
+  resolved "https://registry.npmjs.org/istanbul-reports/-/istanbul-reports-3.1.4.tgz#1b6f068ecbc6c331040aab5741991273e609e40c"
+  integrity sha512-r1/DshN4KSE7xWEknZLLLLDn5CJybV3nw01VTkp6D5jzLuELlcbudfj/eSQFvrKsJuTVCGnePO7ho82Nw9zzfw==
   dependencies:
     html-escaper "^2.0.0"
     istanbul-lib-report "^3.0.0"
