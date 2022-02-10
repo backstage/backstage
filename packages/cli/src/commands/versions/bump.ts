@@ -420,17 +420,32 @@ export async function bumpBackstageJsonVersion(version: string) {
     throw e;
   });
 
-  if (backstageJson?.version === version) {
+  const prevVersion = backstageJson?.version;
+
+  if (prevVersion === version) {
     return;
   }
 
-  console.log(
-    chalk.yellow(
-      typeof backstageJson === 'undefined'
-        ? `Creating ${BACKSTAGE_JSON}`
-        : `Bumping version in ${BACKSTAGE_JSON}`,
-    ),
-  );
+  const { yellow, cyan, green } = chalk;
+  if (prevVersion) {
+    const link = `https://backstage.github.io/upgrade-helper/?from=${prevVersion}&to=${version}`;
+    console.log(
+      yellow(
+        `Upgraded from release ${green(prevVersion)} to ${green(
+          version,
+        )}, please review the app changes:`,
+      ),
+    );
+    console.log();
+    console.log(`  ${cyan(link)}`);
+    console.log();
+  } else {
+    console.log(
+      yellow(
+        `Your project is now at version ${version}, which has been written to ${BACKSTAGE_JSON}`,
+      ),
+    );
+  }
 
   await fs.writeJson(
     backstageJsonPath,
