@@ -24,9 +24,10 @@ import {
 } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import {
+  getBearerTokenFromAuthorizationHeader,
   BackstageIdentityResponse,
   IdentityClient,
-} from '@backstage/plugin-auth-backend';
+} from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   AuthorizeDecision,
@@ -157,7 +158,9 @@ export async function createRouter(
       req: Request<AuthorizeRequest>,
       res: Response<AuthorizeResponse>,
     ) => {
-      const token = IdentityClient.getBearerToken(req.header('authorization'));
+      const token = getBearerTokenFromAuthorizationHeader(
+        req.header('authorization'),
+      );
       const user = token ? await identity.authenticate(token) : undefined;
 
       const parseResult = requestSchema.safeParse(req.body);

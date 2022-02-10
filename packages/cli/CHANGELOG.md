@@ -1,5 +1,29 @@
 # @backstage/cli
 
+## 0.13.2
+
+### Patch Changes
+
+- bbbaa8ed61: The `plugin:diff` command no longer validates the existence of any of the files within `dev/` or `src/`.
+- eaf67f0578: Introduced initial support for an experimental `backstage.role` field in package.json, as well as experimental and hidden `migrate` and `script` sub-commands. We do not recommend usage of any of these additions yet.
+- aeb5c69abb: Introduces a new `--release` parameter to the `backstage-cli versions:bump` command.
+  The release can be either a specific version, for example `0.99.1`, or the latest `main` or `next` release.
+  The default behavior is to bump to the latest `main` release.
+- d59b90852a: The experimental types build enabled by `--experimental-type-build` now runs in a separate worker thread.
+- 50a19ff8dd: The file path printed by the default lint formatter is now relative to the repository root, rather than the individual package.
+- 63181dee79: Tweaked frontend bundling configuration to avoid leaking declarations into global scope.
+- fae2aee878: Removed the `import/no-duplicates` lint rule from the frontend and backend ESLint configurations. This rule is quite expensive to execute and only provides a purely cosmetic benefit, so we opted to remove it from the set of default rules. If you would like to keep this rule you can add it back in your local ESLint configuration:
+
+  ```js
+    'import/no-duplicates': 'warn'
+  ```
+
+- b906f98119: Rather than calling `yarn pack`, the `build-workspace` and `backend-bundle` commands now move files directly whenever possible. This cuts out several `yarn` invocations and speeds the packing process up by several orders of magnitude.
+- d0c71e2aa4: Switched the `lint` command to invoke ESLint directly through its Node.js API rather than spawning a new process.
+- d59b90852a: Introduced an experimental and hidden `repo` sub-command, that contains commands that operate on an entire monorepo rather than individual packages.
+- Updated dependencies
+  - @backstage/release-manifests@0.0.1
+
 ## 0.13.2-next.0
 
 ### Patch Changes

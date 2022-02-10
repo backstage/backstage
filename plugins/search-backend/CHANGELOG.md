@@ -1,5 +1,15 @@
 # @backstage/plugin-search-backend
 
+## 0.4.2
+
+### Patch Changes
+
+- b3f3e42036: Use `getBearerTokenFromAuthorizationHeader` from `@backstage/plugin-auth-node` instead of the deprecated `IdentityClient` method.
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+  - @backstage/plugin-auth-node@0.1.0
+  - @backstage/plugin-permission-node@0.4.3
+
 ## 0.4.2-next.0
 
 ### Patch Changes

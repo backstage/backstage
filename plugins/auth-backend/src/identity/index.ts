@@ -15,7 +15,6 @@
  */
 
 export { createOidcRouter } from './router';
-export { IdentityClient } from './IdentityClient';
 export { TokenFactory } from './TokenFactory';
 export { DatabaseKeyStore } from './DatabaseKeyStore';
 export { MemoryKeyStore } from './MemoryKeyStore';

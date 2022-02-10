@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-bazaar",
-  "version": "0.1.13-next.0",
+  "version": "0.1.13",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -21,14 +21,14 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/catalog-client": "^0.5.5",
+    "@backstage/catalog-client": "^0.6.0",
     "@backstage/catalog-model": "^0.9.10",
-    "@backstage/cli": "^0.13.2-next.0",
-    "@backstage/core-components": "^0.8.8-next.0",
+    "@backstage/cli": "^0.13.2",
+    "@backstage/core-components": "^0.8.8",
     "@backstage/core-plugin-api": "^0.6.0",
-    "@backstage/plugin-catalog": "^0.7.12-next.0",
-    "@backstage/plugin-catalog-react": "^0.6.14-next.0",
-    "@date-io/luxon": "2.x",
+    "@backstage/plugin-catalog": "^0.7.12",
+    "@backstage/plugin-catalog-react": "^0.6.14",
+    "@date-io/luxon": "1.x",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
@@ -44,8 +44,8 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.2-next.0",
-    "@backstage/dev-utils": "^0.2.21-next.0",
+    "@backstage/cli": "^0.13.2",
+    "@backstage/dev-utils": "^0.2.21",
     "@testing-library/jest-dom": "^5.10.1",
     "cross-fetch": "^3.0.6"
   },

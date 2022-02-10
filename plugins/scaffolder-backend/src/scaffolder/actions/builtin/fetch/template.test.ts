@@ -35,7 +35,6 @@ jest.mock('./helpers', () => ({
 
 const realFiles = Object.fromEntries(
   [
-    require.resolve('vm2/lib/fixasync'),
     resolvePackagePath(
       '@backstage/plugin-scaffolder-backend',
       'assets',

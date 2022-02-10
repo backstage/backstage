@@ -1,5 +1,15 @@
 # @backstage/core-components
 
+## 0.8.8
+
+### Patch Changes
+
+- 8d785a0b1b: chore: bump `ansi-regex` from `5.0.1` to `6.0.1`
+- f2dfbd3fb0: Adjust ErrorPage to accept optional supportUrl property to override app support config. Update type of additionalInfo property to be ReactNode to accept both string and component.
+- 19155e0939: Updated React component type declarations to avoid exporting exotic component types.
+- 89c84b9108: chore: fixing typescript errors for `TabbedCard.tsx` for React 17.x
+- d62bdb7a8e: The `ErrorPage` now falls back to using the default support configuration if the `ConfigApi` is not available.
+
 ## 0.8.8-next.0
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.15.24
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 2bd5f24043: fix for the `gitlab:publish` action to use the `oauthToken` key when creating a
+  `Gitlab` client. This only happens if `ctx.input.token` is provided else the key `token` will be used.
+- 898a56578c: Bump `vm2` to version 3.9.6
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/backend-common@0.10.7
+  - @backstage/plugin-catalog-backend@0.21.3
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.11
+
 ## 0.15.24-next.0
 
 ### Patch Changes
