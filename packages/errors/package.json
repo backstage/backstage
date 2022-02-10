@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@backstage/types": "^0.1.1",
-    "cross-fetch": "^3.0.6",
+    "cross-fetch": "^3.1.5",
     "serialize-error": "^8.0.1"
   },
   "devDependencies": {

@@ -63,7 +63,7 @@
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
     "morgan": "^1.10.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "nunjucks": "^3.2.3",
     "octokit": "^1.7.1",
     "octokit-plugin-create-pull-request": "^3.10.0",
