@@ -1440,7 +1440,7 @@
     "@material-ui/lab" "4.0.0-alpha.57"
     react-use "^17.2.4"
 
-"@backstage/plugin-catalog-react@^0.6.13", "@backstage/plugin-catalog-react@^0.6.5", "@backstage/plugin-catalog-react@^0.6.9":
+"@backstage/plugin-catalog-react@^0.6.12", "@backstage/plugin-catalog-react@^0.6.13", "@backstage/plugin-catalog-react@^0.6.5", "@backstage/plugin-catalog-react@^0.6.9":
   version "0.6.13"
   resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-0.6.13.tgz#b325eae501d3edeb8b7caef5d9615f2e632f5430"
   integrity sha512-XBwop7PwAZqfongx3KP6jAJar+MEscLSp8nLuHYX5XxA+suQNiBgi96uO3SEQmvtae+hvsRM7c0WHSxbYiXsDA==
@@ -1835,14 +1835,7 @@
   dependencies:
     "@date-io/core" "^1.3.13"
 
-"@date-io/luxon@1.x":
-  version "1.3.13"
-  resolved "https://registry.npmjs.org/@date-io/luxon/-/luxon-1.3.13.tgz#68f0134bb38ef486b2ed6df01981f814c633e28a"
-  integrity sha512-9wUrJCNSMZJeYAiH+dbb45oGpnHeFP7TOH/Lt26If47gjFCkjvyINzWx+K5AGsnlP0Qosxc7hkF1yLi6ecutxw==
-  dependencies:
-    "@date-io/core" "^1.3.13"
-
-"@date-io/luxon@^1.3.13":
+"@date-io/luxon@1.x", "@date-io/luxon@^1.3.13":
   version "1.3.13"
   resolved "https://registry.npmjs.org/@date-io/luxon/-/luxon-1.3.13.tgz#68f0134bb38ef486b2ed6df01981f814c633e28a"
   integrity sha512-9wUrJCNSMZJeYAiH+dbb45oGpnHeFP7TOH/Lt26If47gjFCkjvyINzWx+K5AGsnlP0Qosxc7hkF1yLi6ecutxw==
