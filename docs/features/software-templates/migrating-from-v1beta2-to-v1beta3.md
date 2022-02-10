@@ -33,8 +33,11 @@ We've also removed a lot of the built in helpers that we shipped with
 The migration path is pretty simple, and we've removed some of the pain points
 from writing the `handlebars` templates too. Let's go through what's new and how
 to upgrade.
+
 ## Add processor
+
 An important change is to add the required processor to your `packages/backend/src/plugins/catalog.ts`
+
 ```diff
 +import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
 
@@ -44,6 +47,7 @@ An important change is to add the required processor to your `packages/backend/s
 +  builder.addProcessor(new ScaffolderEntitiesProcessor());
    const { processingEngine, router } = await builder.build();
 ```
+
 ## `backstage.io/v1beta2` -> `scaffolder.backstage.io/v1beta3`
 
 The most important change is that you'll need to switch over the `apiVersion` in
