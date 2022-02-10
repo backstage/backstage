@@ -351,7 +351,7 @@ export const EntityOrphanWarning: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityPageLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated
 export const EntityPageLayout: {
   ({
     children,
@@ -481,6 +481,6 @@ export type SystemDiagramCardClassKey =
 // src/components/CatalogTable/CatalogTable.d.ts:11:5 - (ae-forgotten-export) The symbol "columnFactories" needs to be exported by the entry point index.d.ts
 // src/components/EntityLayout/EntityLayout.d.ts:43:5 - (ae-forgotten-export) The symbol "EntityLayoutProps" needs to be exported by the entry point index.d.ts
 // src/components/EntityLayout/EntityLayout.d.ts:44:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
-// src/components/EntityPageLayout/EntityPageLayout.d.ts:17:5 - (ae-forgotten-export) The symbol "EntityPageLayoutProps" needs to be exported by the entry point index.d.ts
+// src/components/EntityPageLayout/EntityPageLayout.d.ts:22:5 - (ae-forgotten-export) The symbol "EntityPageLayoutProps" needs to be exported by the entry point index.d.ts
 // src/plugin.d.ts:22:5 - (ae-forgotten-export) The symbol "ColumnBreakpoints" needs to be exported by the entry point index.d.ts
 ```

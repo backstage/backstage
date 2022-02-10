@@ -87,4 +87,4 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       link
     );
   },
-);
+) as (props: EntityRefLinkProps) => JSX.Element;

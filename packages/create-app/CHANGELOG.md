@@ -271,11 +271,18 @@
   }
   ```
 
+The `.fromConfig` of the `DefaultCatalogCollator` also now takes a `tokenManager` as a parameter.
+
+```diff
+-   collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
++   collator: DefaultCatalogCollator.fromConfig(config, { discovery, tokenManager }),
+```
+
 - a0d446c8ec: Replaced EntitySystemDiagramCard with EntityCatalogGraphCard
 
   To make this change to an existing app:
 
-  Add `@backstage/plugin-catalog-graph` as a `dependency` in `packages/app/package.json`
+  Add `@backstage/plugin-catalog-graph` as a `dependency` in `packages/app/package.json` or `cd packages/app && yarn add @backstage/plugin-catalog-graph`.
 
   Apply the following changes to the `packages/app/src/components/catalog/EntityPage.tsx` file:
 
