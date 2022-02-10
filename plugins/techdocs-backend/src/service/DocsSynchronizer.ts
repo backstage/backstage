@@ -24,7 +24,7 @@ import {
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/techdocs-common';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import { PassThrough } from 'stream';
 import * as winston from 'winston';
 import { TechDocsCache } from '../cache';

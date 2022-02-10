@@ -31,7 +31,7 @@ import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 
 jest.mock('../DocsBuilder');
 
-jest.mock('cross-fetch', () => ({
+jest.mock('node-fetch', () => ({
   __esModule: true,
   default: async () => {
     return {
