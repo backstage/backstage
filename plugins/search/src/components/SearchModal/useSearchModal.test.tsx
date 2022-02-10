@@ -30,7 +30,7 @@ describe('useSearchModal', () => {
     },
   );
 
-  it('should properly toggle the state', () => {
+  it('should keep open forever to true once modal is toggled', () => {
     const rendered = renderHook(() => useSearchModal());
     act(() => rendered.result.current.toggleModal());
 
@@ -46,14 +46,17 @@ describe('useSearchModal', () => {
     });
   });
 
-  it('should properly change the state', () => {
+  it('should keep open to false if setOpen(false) is invoked on an initially closed modal', () => {
     const rendered = renderHook(() => useSearchModal());
-
     act(() => rendered.result.current.setOpen(false));
     expect(rendered.result.current.state).toEqual({
       open: false,
       hidden: true,
     });
+  });
+
+  it('should keep open forever to true even when the modal transition from opened to closed', () => {
+    const rendered = renderHook(() => useSearchModal());
 
     act(() => rendered.result.current.setOpen(true));
     expect(rendered.result.current.state).toEqual({
