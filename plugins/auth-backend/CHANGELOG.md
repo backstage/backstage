@@ -1,5 +1,71 @@
 # @backstage/plugin-auth-backend
 
+## 0.10.0
+
+### Minor Changes
+
+- 08fcda13ef: The `callbackUrl` option of `OAuthAdapter` is now required.
+- 6bc86fcf2d: The following breaking changes were made, which may imply specifically needing
+  to make small adjustments in your custom auth providers.
+
+  - **BREAKING**: Moved `IdentityClient`, `BackstageSignInResult`,
+    `BackstageIdentityResponse`, and `BackstageUserIdentity` to
+    `@backstage/plugin-auth-node`.
+  - **BREAKING**: Removed deprecated type `BackstageIdentity`, please use
+    `BackstageSignInResult` from `@backstage/plugin-auth-node` instead.
+
+  While moving over, `IdentityClient` was also changed in the following ways:
+
+  - **BREAKING**: Made `IdentityClient.listPublicKeys` private. It was only used
+    in tests, and should not be part of the API surface of that class.
+  - **BREAKING**: Removed the static `IdentityClient.getBearerToken`. It is now
+    replaced by `getBearerTokenFromAuthorizationHeader` from
+    `@backstage/plugin-auth-node`.
+  - **BREAKING**: Removed the constructor. Please use the `IdentityClient.create`
+    static method instead.
+
+  Since the `IdentityClient` interface is marked as experimental, this is a
+  breaking change without a deprecation period.
+
+  In your auth providers, you may need to update your imports and usages as
+  follows (example code; yours may be slightly different):
+
+  ````diff
+  -import { IdentityClient } from '@backstage/plugin-auth-backend';
+  +import {
+  +  IdentityClient,
+  +  getBearerTokenFromAuthorizationHeader
+  +} from '@backstage/plugin-auth-node';
+
+     // ...
+
+  -  const identity = new IdentityClient({
+  +  const identity = IdentityClient.create({
+       discovery,
+       issuer: await discovery.getExternalBaseUrl('auth'),
+     });```
+
+     // ...
+
+     const token =
+  -     IdentityClient.getBearerToken(req.headers.authorization) ||
+  +     getBearerTokenFromAuthorizationHeader(req.headers.authorization) ||
+        req.cookies['token'];
+  ````
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 3396bc5973: Enabled refresh for the Atlassian provider.
+- 08fcda13ef: Added a new `cookieConfigurer` option to `AuthProviderConfig` that makes it possible to override the default logic for configuring OAuth provider cookies.
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/backend-common@0.10.7
+  - @backstage/plugin-auth-node@0.1.0
+
 ## 0.10.0-next.0
 
 ### Minor Changes

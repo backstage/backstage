@@ -1,5 +1,17 @@
 # @backstage/plugin-todo
 
+## 0.2.0
+
+### Minor Changes
+
+- 323f48704d: **BREAKING**: The `EntityTodoContent` is now a routable extension. This means it must be rendered within a route, but that's most likely already the case for most apps. The mount point `RouteRef` is available via `todoPlugin.routes.entityContent`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+
 ## 0.2.0-next.0
 
 ### Minor Changes

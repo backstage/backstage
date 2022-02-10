@@ -1,5 +1,51 @@
 # example-app
 
+## 0.2.64
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.13.2
+  - @backstage/plugin-todo@0.2.0
+  - @backstage/plugin-newrelic-dashboard@0.1.6
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-scaffolder@0.12.2
+  - @backstage/plugin-search@0.6.2
+  - @backstage/plugin-catalog-react@0.6.14
+  - @backstage/plugin-catalog@0.7.12
+  - @backstage/plugin-catalog-graph@0.2.10
+  - @backstage/plugin-catalog-import@0.8.1
+  - @backstage/plugin-home@0.4.14
+  - @backstage/app-defaults@0.1.7
+  - @backstage/integration-react@0.1.21
+  - @backstage/plugin-airbrake@0.1.3
+  - @backstage/plugin-apache-airflow@0.1.6
+  - @backstage/plugin-api-docs@0.7.2
+  - @backstage/plugin-azure-devops@0.1.14
+  - @backstage/plugin-badges@0.2.22
+  - @backstage/plugin-circleci@0.2.37
+  - @backstage/plugin-cloudbuild@0.2.35
+  - @backstage/plugin-code-coverage@0.1.25
+  - @backstage/plugin-cost-insights@0.11.20
+  - @backstage/plugin-explore@0.3.29
+  - @backstage/plugin-gcp-projects@0.3.17
+  - @backstage/plugin-github-actions@0.4.35
+  - @backstage/plugin-gocd@0.1.4
+  - @backstage/plugin-graphiql@0.2.30
+  - @backstage/plugin-jenkins@0.5.20
+  - @backstage/plugin-kafka@0.2.28
+  - @backstage/plugin-kubernetes@0.5.7
+  - @backstage/plugin-lighthouse@0.2.37
+  - @backstage/plugin-newrelic@0.3.16
+  - @backstage/plugin-pagerduty@0.3.25
+  - @backstage/plugin-rollbar@0.3.26
+  - @backstage/plugin-sentry@0.3.36
+  - @backstage/plugin-shortcuts@0.1.22
+  - @backstage/plugin-tech-insights@0.1.8
+  - @backstage/plugin-tech-radar@0.5.5
+  - @backstage/plugin-techdocs@0.13.3
+  - @backstage/plugin-user-settings@0.3.19
+
 ## 0.2.64-next.0
 
 ### Patch Changes

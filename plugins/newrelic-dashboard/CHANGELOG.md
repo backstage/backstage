@@ -1,5 +1,14 @@
 # @backstage/plugin-newrelic-dashboard
 
+## 0.1.6
+
+### Patch Changes
+
+- 5ca42462b7: Export DashboardSnapshotComponent from new-relic-dashboard-plugin
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+
 ## 0.1.6-next.0
 
 ### Patch Changes
