@@ -31,11 +31,24 @@ import { rest } from 'msw';
 
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({
+  red: (str: string) => str,
   blue: (str: string) => str,
   cyan: (str: string) => str,
   green: (str: string) => str,
   magenta: (str: string) => str,
   yellow: (str: string) => str,
+}));
+
+jest.mock('ora', () => ({
+  __esModule: true,
+  default({ prefixText }: any) {
+    console.log(prefixText);
+    return {
+      start: () => ({
+        succeed: () => {},
+      }),
+    };
+  },
 }));
 
 const REGISTRY_VERSIONS: { [name: string]: string } = {
@@ -177,7 +190,11 @@ describe('bump', () => {
     );
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
-    expect(runObj.run).toHaveBeenCalledWith('yarn', ['install']);
+    expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
 
     const lockfileContents = await fs.readFile('/yarn.lock', 'utf8');
     expect(lockfileContents).toBe(lockfileMockResult);
@@ -296,7 +313,11 @@ describe('bump', () => {
     );
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
-    expect(runObj.run).toHaveBeenCalledWith('yarn', ['install']);
+    expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
 
     const lockfileContents = await fs.readFile('/yarn.lock', 'utf8');
     expect(lockfileContents).toBe(lockfileMockResult);
@@ -398,7 +419,11 @@ describe('bump', () => {
     ]);
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
-    expect(runObj.run).toHaveBeenCalledWith('yarn', ['install']);
+    expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
 
     const packageA = await fs.readJson('/packages/a/package.json');
     expect(packageA).toEqual({
@@ -645,7 +670,11 @@ describe('bump', () => {
     );
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
-    expect(runObj.run).toHaveBeenCalledWith('yarn', ['install']);
+    expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
 
     const lockfileContents = await fs.readFile('/yarn.lock', 'utf8');
     expect(lockfileContents).toEqual(customLockfileMockResult);

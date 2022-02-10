@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
+import ora from 'ora';
 import semver from 'semver';
 import minimatch from 'minimatch';
 import { Command } from 'commander';
@@ -259,21 +260,8 @@ export default async (cmd: Command) => {
         ),
       );
     }
-    console.log();
-    console.log(
-      `Running ${chalk.blue('yarn install')} to install new versions`,
-    );
-    console.log();
-    await run('yarn', ['install'], {
-      env: {
-        FORCE_COLOR: 'true',
-        ...Object.fromEntries(
-          Object.entries(process.env).map(([name, value]) =>
-            name.startsWith('npm_') ? [name, undefined] : [name, value],
-          ),
-        ),
-      },
-    });
+
+    await runYarnInstall();
 
     if (breakingUpdates.size > 0) {
       console.log();
@@ -464,4 +452,33 @@ export async function bumpBackstageJsonVersion(version: string) {
       encoding: 'utf8',
     },
   );
+}
+
+async function runYarnInstall() {
+  const spinner = ora({
+    prefixText: `Running ${chalk.blue('yarn install')} to install new versions`,
+    spinner: 'arc',
+    color: 'green',
+  }).start();
+
+  const installOutput = new Array<Buffer>();
+  try {
+    await run('yarn', ['install'], {
+      env: {
+        FORCE_COLOR: 'true',
+        ...Object.fromEntries(
+          Object.entries(process.env).map(([name, value]) =>
+            name.startsWith('npm_') ? [name, undefined] : [name, value],
+          ),
+        ),
+      },
+      stdoutLogFunc: data => installOutput.push(data),
+      stderrLogFunc: data => installOutput.push(data),
+    });
+    spinner.succeed();
+  } catch (error) {
+    spinner.fail();
+    process.stdout.write(Buffer.concat(installOutput));
+    throw error;
+  }
 }
