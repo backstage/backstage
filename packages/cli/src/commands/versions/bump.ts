@@ -430,7 +430,7 @@ export async function bumpBackstageJsonVersion(version: string) {
       yellow(
         `Upgraded from release ${green(prevVersion)} to ${green(
           version,
-        )}, please review the app changes:`,
+        )}, please review these template changes:`,
       ),
     );
     console.log();
@@ -466,6 +466,9 @@ async function runYarnInstall() {
     await run('yarn', ['install'], {
       env: {
         FORCE_COLOR: 'true',
+        // We filter out all of the npm_* environment variables that are added when
+        // executing through yarn. This works around an issue where these variables
+        // incorrectly override local yarn or npm config in the project directory.
         ...Object.fromEntries(
           Object.entries(process.env).map(([name, value]) =>
             name.startsWith('npm_') ? [name, undefined] : [name, value],
