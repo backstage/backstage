@@ -70,7 +70,7 @@
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
     "yaml": "^1.10.0",
-    "vm2": "^3.9.5"
+    "vm2": "^3.9.6"
   },
   "devDependencies": {
     "@backstage/cli": "^0.13.2-next.0",

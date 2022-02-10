@@ -26,7 +26,6 @@ import { TaskContext, TaskSpec, TaskSecrets } from './types';
 
 const realFiles = Object.fromEntries(
   [
-    require.resolve('vm2/lib/fixasync'),
     resolvePackagePath(
       '@backstage/plugin-scaffolder-backend',
       'assets',
