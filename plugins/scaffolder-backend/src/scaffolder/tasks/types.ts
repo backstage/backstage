@@ -62,6 +62,7 @@ export type SerializedTask = {
   createdAt: string;
   lastHeartbeatAt?: string;
   secrets?: TaskSecrets;
+  createdBy: string | null;
 };
 
 /**
@@ -138,6 +139,7 @@ export interface TaskBroker {
     ) => void,
   ): { unsubscribe: () => void };
   get(taskId: string): Promise<SerializedTask>;
+  list(options?: Partial<SerializedTask>): Promise<SerializedTask[]>;
 }
 
 /**
@@ -181,6 +183,7 @@ export interface TaskStore {
   listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: { taskId: string }[];
   }>;
+  list(options: Partial<SerializedTask>): Promise<SerializedTask[]>;
 
   emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
   listEvents({

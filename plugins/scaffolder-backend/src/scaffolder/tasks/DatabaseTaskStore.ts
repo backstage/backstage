@@ -43,6 +43,7 @@ export type RawDbTaskRow = {
   status: Status;
   last_heartbeat_at?: string;
   created_at: string;
+  created_by: string | null;
   secrets?: string | null;
 };
 
@@ -84,6 +85,32 @@ export class DatabaseTaskStore implements TaskStore {
     this.db = options.database;
   }
 
+  async list(options: Partial<SerializedTask>): Promise<SerializedTask[]> {
+    const results = await this.db<RawDbTaskRow>('tasks')
+      .where({
+        created_by: options.createdBy,
+      })
+      .orderBy('created_at', 'desc')
+      .select();
+
+    return results.map(result => ({
+      id: result.id,
+      spec: JSON.parse(result.spec),
+      status: result.status,
+      createdBy: result.created_by,
+      lastHeartbeatAt:
+        typeof result.last_heartbeat_at === 'string'
+          ? DateTime.fromSQL(result.last_heartbeat_at, {
+              zone: 'UTC',
+            }).toISO()
+          : result.last_heartbeat_at,
+      createdAt:
+        typeof result.created_at === 'string'
+          ? DateTime.fromSQL(result.created_at, { zone: 'UTC' }).toISO()
+          : result.created_at,
+    }));
+  }
+
   async getTask(taskId: string): Promise<SerializedTask> {
     const [result] = await this.db<RawDbTaskRow>('tasks')
       .where({ id: taskId })
@@ -98,8 +125,17 @@ export class DatabaseTaskStore implements TaskStore {
         id: result.id,
         spec,
         status: result.status,
-        lastHeartbeatAt: result.last_heartbeat_at,
-        createdAt: result.created_at,
+        lastHeartbeatAt:
+          typeof result.last_heartbeat_at === 'string'
+            ? DateTime.fromSQL(result.last_heartbeat_at, {
+                zone: 'UTC',
+              }).toISO()
+            : result.last_heartbeat_at,
+        createdAt:
+          typeof result.created_at === 'string'
+            ? DateTime.fromSQL(result.created_at, { zone: 'UTC' }).toISO()
+            : result.created_at,
+        createdBy: result.created_by,
         secrets,
       };
     } catch (error) {
@@ -117,6 +153,7 @@ export class DatabaseTaskStore implements TaskStore {
       spec: JSON.stringify(spec),
       secrets: secrets ? JSON.stringify(secrets) : undefined,
       status: 'open',
+      created_by: ('createdBy' in spec && spec.createdBy) || null,
     });
     return { taskId };
   }
@@ -156,6 +193,7 @@ export class DatabaseTaskStore implements TaskStore {
           status: 'processing',
           lastHeartbeatAt: task.last_heartbeat_at,
           createdAt: task.created_at,
+          createdBy: task.created_by,
           secrets,
         };
       } catch (error) {
