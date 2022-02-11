@@ -27,7 +27,7 @@ export function isDatabaseConflictError(e: unknown) {
 
   return (
     typeof message === 'string' &&
-    (/SQLITE_CONSTRAINT: UNIQUE/.test(message) ||
+    (/SQLITE_CONSTRAINT(?:_UNIQUE)?: UNIQUE/.test(message) ||
       /unique constraint/.test(message))
   );
 }

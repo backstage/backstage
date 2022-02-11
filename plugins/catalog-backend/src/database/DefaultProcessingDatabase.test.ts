@@ -832,7 +832,7 @@ describe('Default Processing Database', () => {
         /*
         config-1 -> location:default/root
         config-2 -> location:default/root
-      */
+        */
         await createLocations(knex, ['location:default/root']);
 
         await insertRefRow(knex, {
@@ -1086,6 +1086,61 @@ describe('Default Processing Database', () => {
               entity_ref: 'component:default/b',
               location_key: 'file:///tmp/b',
               unprocessed_entity: expect.stringContaining('NEVER_CHANGES'),
+            }),
+          ]),
+        );
+      },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should successfully fall back from batch to individual mode on conflicts, %p',
+      async databaseId => {
+        const fakeLogger = {
+          debug: jest.fn(),
+        };
+        const { knex, db } = await createDatabase(
+          databaseId,
+          fakeLogger as any,
+        );
+
+        await createLocations(knex, ['component:default/a']);
+
+        await insertRefRow(knex, {
+          source_key: undefined,
+          target_entity_ref: 'component:default/a',
+        });
+
+        await db.transaction(async tx => {
+          await db.replaceUnprocessedEntities(tx, {
+            type: 'full',
+            sourceKey: 'lols',
+            items: [
+              {
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Component',
+                  metadata: { name: 'a' },
+                  spec: { marker: 'WILL_CHANGE' },
+                } as Entity,
+                locationKey: 'file:///tmp/a',
+              },
+            ],
+          });
+        });
+        expect(fakeLogger.debug).toBeCalledWith(
+          expect.stringMatching(
+            /Fast insert path failed, falling back to slow path/,
+          ),
+        );
+
+        const state = await knex<DbRefreshStateRow>('refresh_state').select();
+        expect(state).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              entity_ref: 'component:default/a',
+              location_key: 'file:///tmp/a',
+              unprocessed_entity: expect.stringContaining('WILL_CHANGE'),
             }),
           ]),
         );
