@@ -74,9 +74,9 @@ export type PermissionCondition<TParams extends unknown[] = unknown[]> = {
 
 /**
  * Utility type to represent an array with 1 or more elements.
- * @public
+ * @ignore
  */
-export type NonEmptyArray<T> = [T, ...T[]];
+type NonEmptyArray<T> = [T, ...T[]];
 
 /**
  * Represnts a logical AND for the provided criteria.
