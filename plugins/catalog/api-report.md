@@ -388,12 +388,6 @@ export const EntitySwitch: {
   }) => null;
 };
 
-// Warning: (ae-forgotten-export) The symbol "SystemDiagramCard" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EntitySystemDiagramCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const EntitySystemDiagramCard: SystemDiagramCard;
-
 // Warning: (ae-missing-release-tag) "FilterContainer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
