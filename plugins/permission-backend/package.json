@@ -30,7 +30,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "winston": "^3.2.1",
     "yn": "^4.0.0",
     "zod": "^3.11.6"
