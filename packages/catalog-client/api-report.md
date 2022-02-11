@@ -32,13 +32,13 @@ export interface CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
   getEntities(
-    request?: CatalogEntitiesRequest,
+    request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogListResponse<Entity>>;
+  ): Promise<GetEntitiesResponse>;
   getEntityAncestors(
-    request: CatalogEntityAncestorsRequest,
+    request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogEntityAncestorsResponse>;
+  ): Promise<GetEntityAncestorsResponse>;
   getEntityByName(
     name: EntityName,
     options?: CatalogRequestOptions,
@@ -84,13 +84,13 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
   getEntities(
-    request?: CatalogEntitiesRequest,
+    request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogListResponse<Entity>>;
+  ): Promise<GetEntitiesResponse>;
   getEntityAncestors(
-    request: CatalogEntityAncestorsRequest,
+    request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogEntityAncestorsResponse>;
+  ): Promise<GetEntityAncestorsResponse>;
   getEntityByName(
     compoundName: EntityName,
     options?: CatalogRequestOptions,
@@ -121,43 +121,60 @@ export class CatalogClient implements CatalogApi {
   ): Promise<void>;
 }
 
-// @public
-export type CatalogEntitiesRequest = {
-  filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
-  fields?: string[] | undefined;
-  offset?: number;
-  limit?: number;
-  after?: string;
-};
+// @public @deprecated (undocumented)
+export type CatalogEntitiesRequest = GetEntitiesRequest;
+
+// @public @deprecated (undocumented)
+export type CatalogEntityAncestorsRequest = GetEntityAncestorsRequest;
+
+// @public @deprecated (undocumented)
+export type CatalogEntityAncestorsResponse = GetEntityAncestorsResponse;
+
+// @public @deprecated (undocumented)
+export type CatalogListResponse<_Entity> = GetEntitiesResponse;
 
 // @public
-export type CatalogEntityAncestorsRequest = {
-  entityRef: string;
-};
-
-// @public
-export type CatalogEntityAncestorsResponse = {
-  rootEntityRef: string;
-  items: {
-    entity: Entity;
-    parentEntityRefs: string[];
-  }[];
-};
-
-// @public
-export type CatalogListResponse<T> = {
-  items: T[];
-};
-
-// @public
-export type CatalogRequestOptions = {
+export interface CatalogRequestOptions {
+  // (undocumented)
   token?: string;
-};
+}
 
 // @public
 export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
+
+// @public
+export interface GetEntitiesRequest {
+  after?: string;
+  fields?: string[] | undefined;
+  filter?:
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>
+    | undefined;
+  limit?: number;
+  offset?: number;
+}
+
+// @public
+export interface GetEntitiesResponse {
+  // (undocumented)
+  items: Entity[];
+}
+
+// @public
+export interface GetEntityAncestorsRequest {
+  // (undocumented)
+  entityRef: string;
+}
+
+// @public
+export interface GetEntityAncestorsResponse {
+  // (undocumented)
+  items: Array<{
+    entity: Entity;
+    parentEntityRefs: string[];
+  }>;
+  // (undocumented)
+  rootEntityRef: string;
+}
 ```

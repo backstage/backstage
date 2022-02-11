@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CatalogListResponse } from '@backstage/catalog-client';
+import { GetEntitiesResponse } from '@backstage/catalog-client';
 import {
   Entity,
   EntityName,
@@ -136,7 +136,7 @@ createDevApp()
         async getEntityByName(name: EntityName): Promise<Entity | undefined> {
           return entities[stringifyEntityRef(name)];
         },
-        async getEntities(): Promise<CatalogListResponse<Entity>> {
+        async getEntities(): Promise<GetEntitiesResponse> {
           return { items: Object.values(entities) };
         },
       } as Partial<CatalogApi> as unknown as CatalogApi;

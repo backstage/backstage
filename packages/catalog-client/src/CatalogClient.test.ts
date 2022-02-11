@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
-import { CATALOG_FILTER_EXISTS, CatalogListResponse } from './types/api';
+import { CATALOG_FILTER_EXISTS, GetEntitiesResponse } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 
 const server = setupServer();
@@ -60,7 +60,7 @@ describe('CatalogClient', () => {
         },
       },
     ];
-    const defaultResponse: CatalogListResponse<Entity> = {
+    const defaultResponse: GetEntitiesResponse = {
       items: defaultServiceResponse.reverse(),
     };
 

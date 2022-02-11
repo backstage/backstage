@@ -19,8 +19,8 @@ import {
   loadIdentityOwnerRefs,
 } from './useEntityOwnership';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { CatalogListResponse } from '@backstage/catalog-client';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { GetEntitiesResponse } from '@backstage/catalog-client';
 import useAsync from 'react-use/lib/useAsync';
 import { useMemo } from 'react';
 
@@ -32,11 +32,10 @@ import { useMemo } from 'react';
  * @public
  *
  * @param allowedKinds - Array of allowed kinds to filter the entities
- * @returns CatalogListResponse<Entity>
  */
 export function useOwnedEntities(allowedKinds?: string[]): {
   loading: boolean;
-  ownedEntities: CatalogListResponse<Entity> | undefined;
+  ownedEntities: GetEntitiesResponse | undefined;
 } {
   const identityApi = useApi(identityApiRef);
   const catalogApi = useApi(catalogApiRef);

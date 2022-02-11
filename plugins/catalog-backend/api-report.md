@@ -8,7 +8,6 @@
 import { Account } from 'aws-sdk/clients/organizations';
 import { BitbucketIntegration } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogEntitiesRequest } from '@backstage/catalog-client';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
@@ -17,6 +16,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
+import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import { IndexableDocument } from '@backstage/search-common';
@@ -509,7 +509,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
     discovery: PluginEndpointDiscovery;
     tokenManager: TokenManager;
     locationTemplate?: string;
-    filter?: CatalogEntitiesRequest['filter'];
+    filter?: GetEntitiesRequest['filter'];
     catalogClient?: CatalogApi;
   });
   // (undocumented)
@@ -524,14 +524,14 @@ export class DefaultCatalogCollator implements DocumentCollator {
   // (undocumented)
   execute(): Promise<CatalogEntityDocument[]>;
   // (undocumented)
-  protected filter?: CatalogEntitiesRequest['filter'];
+  protected filter?: GetEntitiesRequest['filter'];
   // (undocumented)
   static fromConfig(
     _config: Config,
     options: {
       discovery: PluginEndpointDiscovery;
       tokenManager: TokenManager;
-      filter?: CatalogEntitiesRequest['filter'];
+      filter?: GetEntitiesRequest['filter'];
     },
   ): DefaultCatalogCollator;
   // (undocumented)

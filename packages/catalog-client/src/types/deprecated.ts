@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,30 @@
  * limitations under the License.
  */
 
-export { CATALOG_FILTER_EXISTS } from './api';
-export type {
-  AddLocationRequest,
-  AddLocationResponse,
-  CatalogApi,
-  CatalogRequestOptions,
+import {
   GetEntitiesRequest,
   GetEntitiesResponse,
   GetEntityAncestorsRequest,
   GetEntityAncestorsResponse,
 } from './api';
-export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';
-export * from './deprecated';
+
+/**
+ * @public
+ * @deprecated use GetEntitiesRequest instead
+ */
+export type CatalogEntitiesRequest = GetEntitiesRequest;
+/**
+ * @public
+ * @deprecated use GetEntitiesResponse instead
+ */
+export type CatalogListResponse<_Entity> = GetEntitiesResponse;
+/**
+ * @public
+ * @deprecated use GetEntityAncestorsRequest instead
+ */
+export type CatalogEntityAncestorsRequest = GetEntityAncestorsRequest;
+/**
+ * @public
+ * @deprecated use GetEntityAncestorsResponse instead
+ */
+export type CatalogEntityAncestorsResponse = GetEntityAncestorsResponse;

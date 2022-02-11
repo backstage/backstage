@@ -11,14 +11,14 @@ import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogClient } from '@backstage/catalog-client';
-import { CatalogEntitiesRequest } from '@backstage/catalog-client';
-import { CatalogEntityAncestorsRequest } from '@backstage/catalog-client';
-import { CatalogEntityAncestorsResponse } from '@backstage/catalog-client';
-import { CatalogListResponse } from '@backstage/catalog-client';
 import { CatalogRequestOptions } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { GetEntitiesRequest } from '@backstage/catalog-client';
+import { GetEntitiesResponse } from '@backstage/catalog-client';
+import { GetEntityAncestorsRequest } from '@backstage/catalog-client';
+import { GetEntityAncestorsResponse } from '@backstage/catalog-client';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
@@ -76,14 +76,14 @@ export class CatalogClientWrapper implements CatalogApi {
   ): Promise<AddLocationResponse>;
   // (undocumented)
   getEntities(
-    request?: CatalogEntitiesRequest,
+    request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogListResponse<Entity>>;
+  ): Promise<GetEntitiesResponse>;
   // (undocumented)
   getEntityAncestors(
-    request: CatalogEntityAncestorsRequest,
+    request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogEntityAncestorsResponse>;
+  ): Promise<GetEntityAncestorsResponse>;
   // (undocumented)
   getEntityByName(
     compoundName: EntityName,
