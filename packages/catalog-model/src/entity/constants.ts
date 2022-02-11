@@ -25,6 +25,7 @@ export const ENTITY_DEFAULT_NAMESPACE = 'default';
  * The keys of EntityMeta that are auto-generated.
  *
  * @public
+ * @deprecated will be removed in a future release.
  */
 export const ENTITY_META_GENERATED_FIELDS = [
   'uid',
