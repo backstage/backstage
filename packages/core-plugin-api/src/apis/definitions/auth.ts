@@ -492,3 +492,18 @@ export const atlassianAuthApiRef: ApiRef<
 > = createApiRef({
   id: 'core.auth.atlassian',
 });
+
+/**
+ * Provides authentication towards Pagerduty APIs.
+ *
+ * @alpha This API is **EXPERIMENTAL** and might change in the future.
+ * @remarks
+ *
+ * See {@link https://developer.atlassian.com/cloud/jira/platform/scopes-for-connect-and-oauth-2-3LO-apps/}
+ * for a full list of supported scopes.
+ */
+export const pagerdutyAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+> = createApiRef({
+  id: 'core.auth.pagerduty',
+});

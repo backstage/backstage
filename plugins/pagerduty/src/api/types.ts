@@ -16,6 +16,7 @@
 
 import { Incident, ChangeEvent, OnCall, Service } from '../components/types';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { PagerdutyAuth } from '@backstage/core-app-api';
 
 export type TriggerAlarmRequest = {
   integrationKey: string;
@@ -23,6 +24,10 @@ export type TriggerAlarmRequest = {
   description: string;
   userName: string;
 };
+
+export interface PagerDutyUserApi {
+  getServiceById(asdf: string): Promise<Service>;
+}
 
 export interface PagerDutyApi {
   /**
@@ -69,6 +74,10 @@ export type ChangeEventsResponse = {
 
 export type OnCallsResponse = {
   oncalls: OnCall[];
+};
+
+export type PagerDutyUserClientConfig = {
+  pagerdutyAuthApi: PagerdutyAuth;
 };
 
 export type ClientApiConfig = {

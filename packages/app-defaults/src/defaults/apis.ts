@@ -36,6 +36,7 @@ import {
   AtlassianAuth,
   createFetchApi,
   FetchMiddlewares,
+  PagerdutyAuth,
 } from '@backstage/core-app-api';
 
 import {
@@ -61,6 +62,7 @@ import {
   oidcAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
+  pagerdutyAuthApiRef,
 } from '@backstage/core-plugin-api';
 import {
   permissionApiRef,
@@ -294,6 +296,21 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
       return AtlassianAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      });
+    },
+  }),
+  createApiFactory({
+    api: pagerdutyAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
+      return PagerdutyAuth.create({
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),

@@ -314,6 +314,10 @@ auth:
   # session:
   #   secret: custom session secret
   providers:
+    pagerduty:
+      development:
+        clientId: ${AUTH_PAGERDUTY_CLIENT_ID}
+        clientSecret: ${AUTH_PAGERDUTY_CLIENT_SECRET}
     google:
       development:
         clientId: ${AUTH_GOOGLE_CLIENT_ID}

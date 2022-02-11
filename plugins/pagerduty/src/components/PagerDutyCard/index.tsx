@@ -20,7 +20,11 @@ import { Incidents } from '../Incident';
 import { EscalationPolicy } from '../Escalation';
 import useAsync from 'react-use/lib/useAsync';
 import { Alert } from '@material-ui/lab';
-import { pagerDutyApiRef, UnauthorizedError } from '../../api';
+import {
+  pagerDutyApiRef,
+  pagerdutyUserApiRef,
+  UnauthorizedError,
+} from '../../api';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { MissingTokenError } from '../Errors/MissingTokenError';
 import WebIcon from '@material-ui/icons/Web';
@@ -43,8 +47,9 @@ export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY]);
 
 export const PagerDutyCard = () => {
-  const { integrationKey } = usePagerdutyEntity();
+  const { integrationKey, serviceId } = usePagerdutyEntity();
   const api = useApi(pagerDutyApiRef);
+  const userApi = useApi(pagerdutyUserApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const [refreshChangeEvents, setRefreshChangeEvents] =
     useState<boolean>(false);
@@ -67,6 +72,17 @@ export const PagerDutyCard = () => {
     loading,
     error,
   } = useAsync(async () => {
+    if (serviceId) {
+      const svc = await userApi.getServiceById(serviceId);
+      return {
+        id: svc.id,
+        name: svc.name,
+        url: svc.html_url,
+        policyId: svc.escalation_policy.id,
+        policyLink: svc.escalation_policy.html_url,
+      };
+    }
+
     const services = await api.getServiceByIntegrationKey(
       integrationKey as string,
     );

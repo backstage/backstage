@@ -17,6 +17,7 @@
 import { Service, Incident, ChangeEvent, OnCall } from '../components/types';
 import {
   PagerDutyApi,
+  PagerDutyUserApi,
   TriggerAlarmRequest,
   ServicesResponse,
   IncidentsResponse,
@@ -30,12 +31,39 @@ import {
   DiscoveryApi,
   ConfigApi,
 } from '@backstage/core-plugin-api';
+import { api } from '@pagerduty/pdjs';
 
 export class UnauthorizedError extends Error {}
 
 export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
   id: 'plugin.pagerduty.api',
 });
+
+export const pagerdutyUserApiRef = createApiRef<PagerDutyUserApi>({
+  id: 'plugin.pagerduty.userapi',
+});
+
+export class PagerDutyUserClient implements PagerDutyUserApi {
+  private pagerdutyAuthApi: { getAccessToken: () => Promise<string> };
+
+  static fromConfig(opts: {
+    pagerdutyAuthApi: { getAccessToken: () => Promise<string> };
+  }) {
+    return new PagerDutyUserClient(opts.pagerdutyAuthApi);
+  }
+  constructor(pagerdutyAuthApi: { getAccessToken: () => Promise<string> }) {
+    this.pagerdutyAuthApi = pagerdutyAuthApi;
+  }
+
+  async getServiceById(serviceId: string): Promise<Service> {
+    const pagerduty = api({
+      token: await this.pagerdutyAuthApi.getAccessToken(),
+      tokenType: 'bearer',
+    });
+    const service = await pagerduty.get(`/services/${serviceId}`);
+    return Promise.resolve(service.data.service);
+  }
+}
 
 export class PagerDutyClient implements PagerDutyApi {
   static fromConfig(configApi: ConfigApi, discoveryApi: DiscoveryApi) {

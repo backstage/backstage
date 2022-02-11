@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { pagerDutyApiRef, PagerDutyClient } from './api';
+import {
+  pagerDutyApiRef,
+  pagerdutyUserApiRef,
+  PagerDutyClient,
+  PagerDutyUserClient,
+} from './api';
 import {
   createApiFactory,
   createPlugin,
@@ -21,6 +26,7 @@ import {
   discoveryApiRef,
   configApiRef,
   createComponentExtension,
+  pagerdutyAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
@@ -30,6 +36,12 @@ export const rootRouteRef = createRouteRef({
 export const pagerDutyPlugin = createPlugin({
   id: 'pagerduty',
   apis: [
+    createApiFactory({
+      api: pagerdutyUserApiRef,
+      deps: { configApi: configApiRef, pagerdutyAuthApi: pagerdutyAuthApiRef },
+      factory: ({ pagerdutyAuthApi }) =>
+        PagerDutyUserClient.fromConfig({ pagerdutyAuthApi }),
+    }),
     createApiFactory({
       api: pagerDutyApiRef,
       deps: { discoveryApi: discoveryApiRef, configApi: configApiRef },

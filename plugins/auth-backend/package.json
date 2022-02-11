@@ -40,6 +40,7 @@
     "@google-cloud/firestore": "^5.0.2",
     "@types/express": "^4.17.6",
     "@types/passport": "^1.0.3",
+    "@pagerduty/pdjs": "^2.2.4",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",

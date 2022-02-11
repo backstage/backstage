@@ -26,6 +26,7 @@ import {
   microsoftAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
+  pagerdutyAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 type Props = {
@@ -39,6 +40,14 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
         title="Google"
         description="Provides authentication towards Google APIs and identities"
         apiRef={googleAuthApiRef}
+        icon={Star}
+      />
+    )}
+    {configuredProviders.includes('pagerduty') && (
+      <ProviderSettingsItem
+        title="Pagerduty"
+        description="Provides authentication towards Pagerduty APIs"
+        apiRef={pagerdutyAuthApiRef}
         icon={Star}
       />
     )}
