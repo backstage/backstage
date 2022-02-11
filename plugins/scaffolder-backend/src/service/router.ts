@@ -129,6 +129,19 @@ export async function createRouter(
   actionsToRegister.forEach(action => actionRegistry.register(action));
   workers.forEach(worker => worker.start());
 
+  const getUserEntityRefFromToken = (backstageToken: string) => {
+    try {
+      const [_header, payload, _signature] = backstageToken.split('.');
+      const parsedToken = JSON.parse(Buffer.from(payload, 'base64').toString());
+
+      return parsedToken.sub;
+    } catch (e) {
+      logger.warn('Could not parse token from request to create template');
+      logger.debug(e);
+      return null;
+    }
+  };
+
   router
     .get(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
@@ -207,6 +220,8 @@ export async function createRouter(
 
       const baseUrl = getEntityBaseUrl(template);
 
+      const createdBy = token && getUserEntityRefFromToken(token);
+
       const taskSpec: TaskSpec = {
         apiVersion: template.apiVersion,
         steps: template.spec.steps.map((step, index) => ({
@@ -228,6 +243,7 @@ export async function createRouter(
           }),
           baseUrl,
         },
+        createdBy,
       };
 
       const result = await taskBroker.dispatch({
@@ -240,6 +256,22 @@ export async function createRouter(
       });
 
       res.status(201).json({ id: result.taskId });
+    })
+    .get('/v2/tasks', async (req, res) => {
+      const token = getBearerToken(req.headers.authorization);
+      const userEntityRef = token && getUserEntityRefFromToken(token);
+
+      if (!userEntityRef) {
+        throw new InputError(
+          'Could not find a valid user entity ref in the request',
+        );
+      }
+
+      const tasks = await taskBroker.list({
+        createdBy: userEntityRef,
+      });
+
+      res.status(200).json(tasks);
     })
     .get('/v2/tasks/:taskId', async (req, res) => {
       const { taskId } = req.params;

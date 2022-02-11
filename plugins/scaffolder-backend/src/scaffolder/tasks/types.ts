@@ -49,6 +49,7 @@ export type SerializedTask = {
   lastHeartbeatAt?: string;
   createdBy?: string;
   secrets?: TaskSecrets;
+  createdBy: string | null;
 };
 
 /**
@@ -132,6 +133,7 @@ export interface TaskBroker {
     after: number | undefined;
   }): Observable<{ events: SerializedTaskEvent[] }>;
   get(taskId: string): Promise<SerializedTask>;
+  list(options?: Partial<SerializedTask>): Promise<SerializedTask[]>;
 }
 
 /**
@@ -192,6 +194,7 @@ export interface TaskStore {
   listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: { taskId: string }[];
   }>;
+  list(options: Partial<SerializedTask>): Promise<SerializedTask[]>;
 
   emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
   listEvents({
