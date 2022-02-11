@@ -20,7 +20,10 @@
  *       be self-contained.
  *       Using TypeScript is fine as it is transpiled before being stringified.
  */
-export function buildTypeDefinitionsWorker() {
+export async function buildTypeDefinitionsWorker(
+  workerData: any,
+  sendMessage: (message: any) => void,
+) {
   try {
     require('@microsoft/api-extractor');
   } catch (error) {
@@ -31,7 +34,6 @@ export function buildTypeDefinitionsWorker() {
   }
 
   const { dirname } = require('path');
-  const { workerData, parentPort } = require('worker_threads');
   const { entryPoints, workerConfigs, typescriptCompilerFolder } = workerData;
 
   const apiExtractor = require('@microsoft/api-extractor');
@@ -63,7 +65,6 @@ export function buildTypeDefinitionsWorker() {
       return old.call(this, path);
     };
 
-  let success = true;
   let compilerState;
   for (const { extractorOptions, targetTypesDir } of workerConfigs) {
     const extractorConfig = ExtractorConfig.prepare(extractorOptions);
@@ -82,24 +83,15 @@ export function buildTypeDefinitionsWorker() {
       showDiagnostics: false,
       messageCallback: (message: any) => {
         message.handled = true;
-        parentPort.postMessage({ type: 'message', message, targetTypesDir });
+        sendMessage({ message, targetTypesDir });
       },
     });
 
     if (!extractorResult.succeeded) {
-      parentPort.postMessage({
-        type: 'done',
-        error: new Error(
-          `Type definition build completed with ${extractorResult.errorCount} errors` +
-            ` and ${extractorResult.warningCount} warnings`,
-        ),
-      });
-      success = false;
-      break;
+      throw new Error(
+        `Type definition build completed with ${extractorResult.errorCount} errors` +
+          ` and ${extractorResult.warningCount} warnings`,
+      );
     }
-  }
-
-  if (success) {
-    parentPort.postMessage({ type: 'done' });
   }
 }
