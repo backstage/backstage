@@ -197,15 +197,15 @@ describe('runWorkerThreads', () => {
     await runWorkerThreads({
       threadCount: 2,
       worker: async (_data, sendMessage) => {
-        sendMessage('foo');
-        await new Promise(resolve => setTimeout(resolve, 50));
-        sendMessage('bar');
-        await new Promise(resolve => setTimeout(resolve, 50));
-        sendMessage('baz');
+        sendMessage('a');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        sendMessage('b');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        sendMessage('c');
       },
       onMessage: (message: string) => messages.push(message),
     });
 
-    expect(messages).toEqual(['foo', 'foo', 'bar', 'bar', 'baz', 'baz']);
+    expect(messages.sort()).toEqual(['a', 'a', 'b', 'b', 'c', 'c']);
   });
 });
