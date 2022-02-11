@@ -30,6 +30,7 @@ import {
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
+import { MyTaskPage } from './MyTasksPage';
 
 type RouterProps = {
   TemplateCardComponent?:
@@ -90,6 +91,7 @@ export const Router = ({
           </SecretsContextProvider>
         }
       />
+      <Route path="/tasks/me" element={<MyTaskPage />} />
       <Route path="/tasks/:taskId" element={<TaskPageElement />} />
       <Route path="/actions" element={<ActionsPage />} />
     </Routes>
