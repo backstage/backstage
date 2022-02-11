@@ -7,17 +7,11 @@ import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { SerializedError } from '@backstage/errors';
-import * as yup from 'yup';
 
 // @alpha
 export interface AlphaEntity extends Entity {
   status?: EntityStatus;
 }
-
-// @public @deprecated
-export const analyzeLocationSchema: yup.SchemaOf<{
-  location: LocationSpec;
-}>;
 
 // @public
 interface ApiEntityV1alpha1 extends Entity {
@@ -354,18 +348,12 @@ export { LocationEntityV1alpha1 };
 // @public
 export const locationEntityV1alpha1Validator: KindValidator;
 
-// @public @deprecated
-export const locationSchema: yup.SchemaOf<Location_2>;
-
 // @public
 export type LocationSpec = {
   type: string;
   target: string;
   presence?: 'optional' | 'required';
 };
-
-// @public @deprecated
-export const locationSpecSchema: yup.SchemaOf<LocationSpec>;
 
 // @public
 export function makeValidator(overrides?: Partial<Validators>): Validators;

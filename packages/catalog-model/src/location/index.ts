@@ -25,8 +25,3 @@ export {
   getEntitySourceLocation,
 } from './helpers';
 export type { Location, LocationSpec } from './types';
-export {
-  analyzeLocationSchema,
-  locationSchema,
-  locationSpecSchema,
-} from './validation';
