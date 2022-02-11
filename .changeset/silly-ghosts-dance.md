@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs': patch
 ---
 
-Improve overall appearance of higlighted code in docs.
+Improve overall appearance of highlighted code in docs.
