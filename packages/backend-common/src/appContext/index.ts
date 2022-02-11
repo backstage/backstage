@@ -15,5 +15,5 @@
  */
 export { InversifyApplicationContext } from './ApplicationContext';
 export * from './moduleContext';
-export { AppContextManager } from './AppContextManager';
+export { ModuleManager } from './ModuleManager';
 export * from './types';

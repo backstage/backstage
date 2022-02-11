@@ -15,12 +15,19 @@
  */
 
 import {
-  ApplicationContext,
-  Dependency,
+  DependencyDef,
   DependencyConfig,
   TypesToIocDependencies,
+  BackstageModuleOptions,
 } from './types';
 
+/**
+ * A typescript helper function definition to match types when creating a {@link DependencyConfig}
+ *
+ * @param configuration - The actual DependencyConfig shape
+ *
+ * @public
+ */
 export function createDependencyConfig<
   Dep,
   Impl extends Dep,
@@ -32,6 +39,15 @@ export function createDependencyConfig<Dep>(
   instance: Dep,
 ): DependencyConfig<Dep, {}>;
 
+/**
+ * A helper method to construct fully qualified {@link DependencyConfig} object.
+ *
+ * Defaults dependencies to an empty object if omitted.
+ *
+ * @param factory - The actual DependencyConfig shape
+ *
+ * @public
+ */
 export function createDependencyConfig<
   Dep,
   Deps extends { [name in string]: unknown },
@@ -45,7 +61,11 @@ export function createDependencyConfig<
   };
 }
 
-class DependencyHolder<T> implements Dependency<T> {
+/**
+ * A holder class to contain references to type information of a {@link DependencyDef}inition
+ *
+ */
+class DependencyHolder<T> implements DependencyDef<T> {
   constructor(readonly id: symbol) {}
 
   get T(): T {
@@ -57,19 +77,31 @@ class DependencyHolder<T> implements Dependency<T> {
   }
 }
 
-export function createDependencyDefinition<T>(id: symbol): Dependency<T> {
+/**
+ * A helper function to construct typesafe DependencyHolders based on {@link DependencyDef}initions
+ * @param id - A symbol indicating the identifier of the Dependency.
+ *             Should be a fully qualified reference to the package name and the Interface this DependencyDef
+ *             points to. E.g. Symbol.for('@backstage/backend-common.PluginEndpointDiscovery')
+ *
+ * @public
+ */
+export function createDependencyDefinition<T>(id: symbol): DependencyDef<T> {
   return new DependencyHolder<T>(id);
 }
 
-export function createDependencyModule<T>(opts: {
-  id: string;
-  dependencies?: DependencyConfig<unknown, { [k: symbol]: unknown }>[];
-  initialize: (ctx: ApplicationContext) => T;
-}): {
-  id: string;
-  dependencies: DependencyConfig<unknown, { [k: symbol]: unknown }>[];
-  initialize: (ctx: ApplicationContext) => T;
-} {
+/**
+ * A helper function to construct wrap objects for a {@link BackstageModule}.
+ *
+ *
+ * @param opts - A {@link BackstageModuleOptions} object.
+ *               An identifier, a collection of dependencies this module needs and an initialization function
+ *               to instantiate a BackstageModule
+ *
+ * @public
+ */
+export function createDependencyModule<T>(
+  opts: BackstageModuleOptions<T>,
+): BackstageModuleOptions<T> {
   const { id, dependencies, initialize } = opts;
   return dependencies
     ? {
@@ -88,14 +120,14 @@ export function createDependencyModule<T>(opts: {
 }
 
 /**
- * A helper function to encapsulate types when creating dependency definitions.
+ * A helper function to encapsulate id and types when creating collection of dependency definitions.
  *
  * @param opts - id and a keyed collection of dependencies.
- * @returns A collection of dependency definitions.
+ *
  * @public
  */
 export function createDependencyDefinitions<
-  DepDefs extends Record<string, Dependency<any>>,
+  DepDefs extends Record<string, DependencyDef<any>>,
 >(opts: { id: string; definitions: DepDefs }) {
   return opts;
 }

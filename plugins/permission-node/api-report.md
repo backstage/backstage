@@ -9,6 +9,7 @@ import { AuthorizeRequestOptions } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { Config } from '@backstage/config';
+import { DependencyDef } from '@backstage/app-context-common';
 import express from 'express';
 import { Identified } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
@@ -124,6 +125,14 @@ export const makeCreatePermissionRule: <TResource, TQuery>() => <
 >(
   rule: PermissionRule<TResource, TQuery, TParams>,
 ) => PermissionRule<TResource, TQuery, TParams>;
+
+// @public
+export const permissionModuleDefinitions: {
+  id: string;
+  definitions: {
+    permissionAuthorizer: DependencyDef<PermissionAuthorizer>;
+  };
+};
 
 // @public
 export interface PermissionPolicy {

@@ -18,8 +18,13 @@ import {
   createDependencyDefinition,
   createDependencyDefinitions,
 } from '@backstage/app-context-common';
-import { PermissionAuthorizer } from './types';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 
+/**
+ * Dependency definitions the Permission module exposes
+ *
+ * @public
+ */
 export const permissionModuleDefinitions = createDependencyDefinitions({
   id: '@backstage/permission-common',
   definitions: {

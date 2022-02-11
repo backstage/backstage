@@ -22,4 +22,3 @@
 export * from './types';
 export * from './permissions';
 export * from './PermissionClient';
-export * from './moduleContext';

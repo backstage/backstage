@@ -6,6 +6,7 @@
 import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import { Config } from '@backstage/config';
 import { DatabaseManager } from '@backstage/backend-common';
+import { DependencyDef } from '@backstage/app-context-common';
 import { Duration } from 'luxon';
 import { Logger as Logger_2 } from 'winston';
 
@@ -42,4 +43,12 @@ export class TaskScheduler {
     },
   ): TaskScheduler;
 }
+
+// @public
+export const tasksModuleDefinitions: {
+  id: string;
+  definitions: {
+    taskScheduler: DependencyDef<TaskScheduler>;
+  };
+};
 ```

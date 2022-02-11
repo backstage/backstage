@@ -24,7 +24,7 @@
 
 import Router from 'express-promise-router';
 import {
-  AppContextManager,
+  ModuleManager,
   commonModuleDefinitions,
   createServiceBuilder,
   getRootLogger,
@@ -33,6 +33,7 @@ import {
   useHotMemoize,
 } from '@backstage/backend-common';
 import { tasksModuleDefinitions } from '@backstage/backend-tasks';
+import { permissionModuleDefinitions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import { metricsHandler, metricsInit } from './metrics';
@@ -56,13 +57,12 @@ import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
 import { PluginEnvironment } from './types';
 import { rootDependencies } from './rootContext';
-import { permissionModuleDefinitions } from '@backstage/plugin-permission-common';
 
-function makeCreateEnv(config: Config, appContextManager: AppContextManager) {
+function makeCreateEnv(config: Config, moduleManager: ModuleManager) {
   const root = getRootLogger();
 
   return (plugin: string): PluginEnvironment => {
-    const rootApplicationContext = appContextManager.createRootContext();
+    const rootApplicationContext = moduleManager.createRootContext();
 
     const logger = root.child({ type: 'plugin', plugin });
     const databaseManager = rootApplicationContext.get(
@@ -93,7 +93,7 @@ function makeCreateEnv(config: Config, appContextManager: AppContextManager) {
         permissionModuleDefinitions.definitions.permissionAuthorizer,
       ),
       scheduler,
-      appContextManager,
+      moduleManager,
     };
   };
 }
@@ -112,12 +112,12 @@ async function main() {
     logger,
   });
 
-  const appContextManager = AppContextManager.fromConfig({
+  const moduleManager = ModuleManager.fromConfig({
     logger,
     rootDependencies: rootDependencies(config, logger),
   });
 
-  const createEnv = makeCreateEnv(config, appContextManager);
+  const createEnv = makeCreateEnv(config, moduleManager);
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));

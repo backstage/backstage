@@ -8,11 +8,17 @@
 
 import { AbortController as AbortController_2 } from 'node-abort-controller';
 import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
+import { AnyDependencyConfig } from '@backstage/app-context-common';
+import { ApplicationContext } from '@backstage/app-context-common';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
+import { BackstageModule } from '@backstage/app-context-common';
+import { BackstageModuleOptions } from '@backstage/app-context-common';
 import { BitbucketIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import cors from 'cors';
+import { CustomErrorBase } from '@backstage/errors';
+import { DependencyDef } from '@backstage/app-context-common';
 import Docker from 'dockerode';
 import { Duration } from 'luxon';
 import { ErrorRequestHandler } from 'express';
@@ -20,6 +26,7 @@ import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
+import { interfaces } from 'inversify';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
@@ -143,6 +150,18 @@ export type CacheManagerOptions = {
 export const coloredFormat: winston.Logform.Format;
 
 // @public
+export const commonModuleDefinitions: {
+  id: string;
+  definitions: {
+    urlReader: DependencyDef<UrlReader>;
+    tokenManager: DependencyDef<TokenManager>;
+    databaseManager: DependencyDef<DatabaseManager>;
+    cacheManager: DependencyDef<CacheManager>;
+    pluginEndpointDiscovery: DependencyDef<PluginEndpointDiscovery>;
+  };
+};
+
+// @public
 export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
 }
@@ -208,6 +227,9 @@ export class DatabaseManager {
 export type DatabaseManagerOptions = {
   migrations?: PluginDatabaseManager['migrations'];
 };
+
+// @public
+export class DependencyNotBoundError extends CustomErrorBase {}
 
 // @public
 export class DockerContainerRunner implements ContainerRunner {
@@ -354,6 +376,21 @@ export class GitlabUrlReader implements UrlReader {
   toString(): string;
 }
 
+// @public
+export type InversifyAppContextOptions = {
+  dependencies: AnyDependencyConfig[];
+  container?: interfaces.Container;
+};
+
+// @public
+export class InversifyApplicationContext implements ApplicationContext {
+  static fromConfig(
+    opts: InversifyAppContextOptions,
+  ): InversifyApplicationContext;
+  get<T>(dep: DependencyDef<T>): T;
+  getContainer(): interfaces.Container;
+}
+
 export { isChildPath };
 
 // @public
@@ -365,6 +402,27 @@ export function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
 }): Promise<Config>;
+
+// @public
+export class ModuleManager {
+  createModule<T>({
+    id,
+    initialize,
+    dependencies,
+  }: BackstageModuleOptions<T>): BackstageModule<T>;
+  createRootContext(): InversifyApplicationContext;
+  static fromConfig({
+    logger,
+    rootDependencies,
+  }: ModuleManagerFactoryOptions): ModuleManager;
+  getModules(): Map<string, BackstageModule<unknown>>;
+}
+
+// @public
+export type ModuleManagerFactoryOptions = {
+  logger: Logger_2;
+  rootDependencies: AnyDependencyConfig[];
+};
 
 // @public
 export function notFoundHandler(): RequestHandler;

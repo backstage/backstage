@@ -17,7 +17,7 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import {
-  AppContextManager,
+  ModuleManager,
   PluginCacheManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
@@ -37,5 +37,5 @@ export type PluginEnvironment = {
   tokenManager: TokenManager;
   permissions: PermissionAuthorizer;
   scheduler: PluginTaskScheduler;
-  appContextManager: AppContextManager;
+  moduleManager: ModuleManager;
 };

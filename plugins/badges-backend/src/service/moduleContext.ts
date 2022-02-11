@@ -30,6 +30,11 @@ import { BadgeBuilder, DefaultBadgeBuilder } from '../lib';
 import { BadgeFactories } from '../types';
 import { createRouter } from './router';
 
+/**
+ * Dependency definitions the Badges module exposes
+ *
+ * @public
+ */
 export const badgesModuleDefinitions = createDependencyDefinitions({
   id: '@backstage/plugin-badges-backend',
   definitions: {
@@ -42,6 +47,11 @@ export const badgesModuleDefinitions = createDependencyDefinitions({
   },
 });
 
+/**
+ * Module configuration of the badges module.
+ *
+ * @public
+ */
 export const badgesModule = createDependencyModule({
   id: '@backstage/plugin-badges-backend',
   initialize: createRouter,

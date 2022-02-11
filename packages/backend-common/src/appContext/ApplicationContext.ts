@@ -18,13 +18,9 @@ import { Container, interfaces } from 'inversify';
 import {
   AnyDependencyConfig,
   ApplicationContext,
-  Dependency,
+  DependencyDef,
 } from '@backstage/app-context-common';
-
-export type InversifyAppContextOptions = {
-  dependencies: AnyDependencyConfig[];
-  container?: interfaces.Container;
-};
+import { InversifyAppContextOptions } from './types';
 
 const extractDependenciesFromContainer = (
   dependencyConfig: AnyDependencyConfig,
@@ -39,9 +35,20 @@ const extractDependenciesFromContainer = (
   );
 };
 
+/**
+ * A container class to hold IoC containers for individual modules.
+ * Uses Inversify IoC container as the underlying library but exposes accessor to dependencies in a typesafe manner.
+ *
+ * @public
+ */
 export class InversifyApplicationContext implements ApplicationContext {
   private readonly container: interfaces.Container;
 
+  /**
+   * Factory method to instantiate an ApplicationContext
+   *
+   * @param opts - Needed options to construct an ApplicationContext
+   */
   static fromConfig(opts: InversifyAppContextOptions) {
     const { dependencies, container } = opts;
     return new InversifyApplicationContext({
@@ -50,6 +57,12 @@ export class InversifyApplicationContext implements ApplicationContext {
     });
   }
 
+  /**
+   * Private constructor which binds passed dependencies to the passed in container.
+   *
+   * @param opts - A container and its dependencies
+   * @private
+   */
   private constructor(opts: {
     container: interfaces.Container;
     dependencies: AnyDependencyConfig[];
@@ -59,14 +72,29 @@ export class InversifyApplicationContext implements ApplicationContext {
     this.bindDependenciesIfNotBound(dependencies);
   }
 
+  /**
+   * An accessor to retriever the underlying Inversify container
+   */
   getContainer() {
     return this.container;
   }
 
-  get<T>(dep: Dependency<T>) {
+  /**
+   * A typesafe accessor to retrieve individual dependency instances from the underlying IoC container
+   *
+   * @param dep - Dependency definition of the instance to be retrieved
+   */
+  get<T>(dep: DependencyDef<T>) {
     return this.container.get<T>(dep.id);
   }
 
+  /**
+   * A helper method to use structures defined in passed in {@link DependencyConfig}s and bind them to
+   * the IoC container.
+   *
+   * @param configs
+   * @private
+   */
   private bindDependenciesIfNotBound(configs: AnyDependencyConfig[]) {
     configs.forEach(dependencyConfig => {
       // TODO: We are checking binding status naively here.

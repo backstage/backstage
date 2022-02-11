@@ -17,53 +17,55 @@
 import { interfaces } from 'inversify';
 
 /**
- * A options type to be used to construct a Backstage backend plugin that uses ApplicationContext
+ * An options type to be used to construct a Backstage backend modules that use ApplicationContext
  *
  * @public
  */
-export type BoundPluginOptions<T> = {
+export type BackstageModuleOptions<T> = {
   /**
-   * Identifier of the plugin
+   * Identifier of the module
    */
   id: string;
 
   /**
-   * Entrypoint to the plugin.
+   * Entrypoint to the module.
    *
    * A function that receives an ApplicationContext that is constructed to contain dependencies defined
    * as a `dependencies` collection within this options object
    *
-   * @param ctx - Instantiated and bound application context that the plugin entrypoint can use
+   * @param ctx - Instantiated and bound application context that the module entrypoint can use
+   *
+   * @returns An instance created when the entrypoint function is called
    */
   initialize: (ctx: ApplicationContext) => T;
 
   /**
-   * A collection of dependencies this plugin depends on.
+   * A collection of dependencies this module depends on.
    */
   dependencies: AnyDependencyConfig[];
 };
 
 /**
- * A holder for a plugin instance constructed via the AppContextManager with an embedded ApplicationContext
+ * A holder for a module instance constructed via the ModuleManager with an embedded ApplicationContext
  *
  * @public
  */
-export interface BoundPlugin<T> {
+export interface BackstageModule<T> {
   /**
-   * Name of the plugin
+   * Name of the module
    */
   name: string;
 
   /**
-   * Actual instance of the plugin which is returned from the entrypoint.
+   * Actual instance of the module which is returned from the entrypoint.
    * For example: A router returned from createRouter function
    */
   instance: T;
 
   /**
-   * A collection of dependencies that this plugin depends on
+   * A collection of dependencies that this module depends on
    */
-  getDependencies(): Dependency<unknown>[];
+  getDependencies(): DependencyDef<unknown>[];
 }
 
 /**
@@ -82,16 +84,16 @@ export interface ApplicationContext {
    *
    * @param dep - The dependency definition to retrieve
    */
-  get<T>(dep: Dependency<T>): T;
+  get<T>(dep: DependencyDef<T>): T;
 }
 
 /**
- * A helper type to wrap a type with dependencies into a type holding their respective {@link Dependency}s
+ * A helper type to wrap a type with dependencies into a type holding their respective {@link DependencyDef}s
  *
  * @public
  */
 export type TypesToIocDependencies<T> = {
-  [key in keyof T]: Dependency<T[key]>;
+  [key in keyof T]: DependencyDef<T[key]>;
 };
 
 /**
@@ -99,7 +101,7 @@ export type TypesToIocDependencies<T> = {
  *
  * @public
  */
-export type Dependency<T> = {
+export type DependencyDef<T> = {
   id: symbol;
   T: T;
 };
@@ -117,7 +119,7 @@ export type DependencyConfig<
   Dep,
   Deps extends { [name in string]: unknown },
 > = {
-  id: Dependency<Dep>;
+  id: DependencyDef<Dep>;
   dependencies?: TypesToIocDependencies<Deps>;
   factory(deps: Deps): Dep;
 };

@@ -24,8 +24,10 @@ import {
 import { createDependencyConfig } from '@backstage/app-context-common';
 import { Config, configModuleDefinitions } from '@backstage/config';
 import { Logger } from 'winston';
-import { permissionModuleDefinitions } from '@backstage/plugin-permission-common';
-import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+import {
+  ServerPermissionClient,
+  permissionModuleDefinitions,
+} from '@backstage/plugin-permission-node';
 import {
   TaskScheduler,
   tasksModuleDefinitions,

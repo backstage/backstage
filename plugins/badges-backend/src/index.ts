@@ -22,6 +22,5 @@
 
 export * from './badges';
 export * from './lib';
-export * from './service/router';
 export * from './service/moduleContext';
 export * from './types';

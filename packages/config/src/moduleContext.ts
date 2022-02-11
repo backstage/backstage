@@ -20,6 +20,11 @@ import {
 } from '@backstage/app-context-common';
 import { Config } from './types';
 
+/**
+ * Dependency definitions the Config module exposes
+ *
+ * @public
+ */
 export const configModuleDefinitions = createDependencyDefinitions({
   id: '@backstage/config',
   definitions: {

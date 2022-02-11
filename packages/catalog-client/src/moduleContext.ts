@@ -20,6 +20,11 @@ import {
 } from '@backstage/app-context-common';
 import { CatalogApi } from './types';
 
+/**
+ * Dependency definitions the Catalog Client module exposes
+ *
+ * @public
+ */
 export const catalogModuleDefinitions = createDependencyDefinitions({
   id: '@backstage/catalog-client',
   definitions: {

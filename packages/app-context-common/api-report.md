@@ -15,28 +15,27 @@ export type AnyDependencyConfig = DependencyConfig<
 
 // @public
 export interface ApplicationContext {
-  get<T>(dep: Dependency<T>): T;
+  get<T>(dep: DependencyDef<T>): T;
   getContainer(): interfaces.Container;
 }
 
 // @public
-export interface BoundPlugin<T> {
-  getDependencies(): Dependency<unknown>[];
+export interface BackstageModule<T> {
+  getDependencies(): DependencyDef<unknown>[];
   instance: T;
   name: string;
 }
 
 // @public
-export type BoundPluginOptions<T> = {
+export type BackstageModuleOptions<T> = {
   id: string;
   initialize: (ctx: ApplicationContext) => T;
   dependencies: AnyDependencyConfig[];
 };
 
 // Warning: (ae-missing-release-tag) "createDependencyConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-// Warning: (ae-missing-release-tag) "createDependencyConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export function createDependencyConfig<
   Dep,
   Impl extends Dep,
@@ -51,14 +50,14 @@ export function createDependencyConfig<Dep>(
   instance: Dep,
 ): DependencyConfig<Dep, {}>;
 
-// Warning: (ae-missing-release-tag) "createDependencyDefinition" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
 //
-// @public (undocumented)
-export function createDependencyDefinition<T>(id: symbol): Dependency<T>;
+// @public
+export function createDependencyDefinition<T>(id: symbol): DependencyDef<T>;
 
 // @public
 export function createDependencyDefinitions<
-  DepDefs extends Record<string, Dependency<any>>,
+  DepDefs extends Record<string, DependencyDef<any>>,
 >(opts: {
   id: string;
   definitions: DepDefs;
@@ -67,34 +66,10 @@ export function createDependencyDefinitions<
   definitions: DepDefs;
 };
 
-// Warning: (ae-missing-release-tag) "createDependencyModule" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function createDependencyModule<T>(opts: {
-  id: string;
-  dependencies?: DependencyConfig<
-    unknown,
-    {
-      [k: symbol]: unknown;
-    }
-  >[];
-  initialize: (ctx: ApplicationContext) => T;
-}): {
-  id: string;
-  dependencies: DependencyConfig<
-    unknown,
-    {
-      [k: symbol]: unknown;
-    }
-  >[];
-  initialize: (ctx: ApplicationContext) => T;
-};
-
 // @public
-export type Dependency<T> = {
-  id: symbol;
-  T: T;
-};
+export function createDependencyModule<T>(
+  opts: BackstageModuleOptions<T>,
+): BackstageModuleOptions<T>;
 
 // @public
 export type DependencyConfig<
@@ -103,14 +78,20 @@ export type DependencyConfig<
     [name in string]: unknown;
   },
 > = {
-  id: Dependency<Dep>;
+  id: DependencyDef<Dep>;
   dependencies?: TypesToIocDependencies<Deps>;
   factory(deps: Deps): Dep;
 };
 
 // @public
+export type DependencyDef<T> = {
+  id: symbol;
+  T: T;
+};
+
+// @public
 export type TypesToIocDependencies<T> = {
-  [key in keyof T]: Dependency<T[key]>;
+  [key in keyof T]: DependencyDef<T[key]>;
 };
 
 // (No @packageDocumentation comment for this package)

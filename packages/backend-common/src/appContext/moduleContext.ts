@@ -23,6 +23,11 @@ import { TokenManager } from '../tokens';
 import { DatabaseManager } from '../database';
 import { CacheManager } from '../cache';
 
+/**
+ * Common dependency definitions for all Backstage applications
+ *
+ * @public
+ */
 export const commonModuleDefinitions = createDependencyDefinitions({
   id: '@backstage/backend-common',
   definitions: {

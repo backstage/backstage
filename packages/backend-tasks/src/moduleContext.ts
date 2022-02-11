@@ -20,6 +20,11 @@ import {
 } from '@backstage/app-context-common';
 import { TaskScheduler } from './tasks';
 
+/**
+ * Dependency definitions the Tasks module exposes
+ *
+ * @public
+ */
 export const tasksModuleDefinitions = createDependencyDefinitions({
   id: '@backstage/backend-tasks',
   definitions: {

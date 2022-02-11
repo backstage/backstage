@@ -16,10 +16,48 @@
 import { Logger } from 'winston';
 import { CustomErrorBase } from '@backstage/errors';
 import { AnyDependencyConfig } from '@backstage/app-context-common';
+import { interfaces } from 'inversify';
 
-export type AppContextFactoryOptions = {
+/**
+ * Type for options argument passed into the factory method to instantiate a {@link ModuleManager}
+ *
+ * @public
+ */
+export type ModuleManagerFactoryOptions = {
+  /**
+   * A Winston logger impl
+   */
   logger: Logger;
+
+  /**
+   * Common dependencies that are injected to all modules created
+   */
   rootDependencies: AnyDependencyConfig[];
 };
 
+/**
+ * Type for options argument passed into the factory method to instantiate a {@link InversifyApplicationContext}
+ *
+ * @public
+ */
+export type InversifyAppContextOptions = {
+  /**
+   * A collection of dependency configurations this ApplicationContext should hold
+   */
+  dependencies: AnyDependencyConfig[];
+
+  /**
+   * An optional container argument for cases where a predefined, pre-bound, shared container is needed
+   *
+   * Defaults to constructing an isolated new container instance for each AppCtx
+   */
+  container?: interfaces.Container;
+};
+
+/**
+ * Custom error to indicate when needed dependencies are not injectable to an IoC container.
+ * This means that a module is expecting a dependency that is not provided to it during instantiation.
+ *
+ * @public
+ */
 export class DependencyNotBoundError extends CustomErrorBase {}

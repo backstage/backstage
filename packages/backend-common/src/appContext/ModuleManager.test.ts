@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AppContextManager } from './AppContextManager';
+import { ModuleManager } from './ModuleManager';
 import { getVoidLogger } from '../logging';
 import {
   createDependencyConfig,
@@ -42,7 +42,7 @@ const dependantDepDef = createDependencyDefinition<TestInterface2>(
   Symbol.for('@backstage/backend-common.test.TestInterface2'),
 );
 
-describe('AppContextManager', () => {
+describe('ModuleManager', () => {
   const singularDep = createDependencyConfig({
     id: singularDepDef,
     factory: () => ({
@@ -65,38 +65,38 @@ describe('AppContextManager', () => {
 
   describe('Root container', () => {
     it('should be able to create a container for root deps', () => {
-      const ctxMgr = AppContextManager.fromConfig({
+      const moduleMgr = ModuleManager.fromConfig({
         logger: getVoidLogger(),
         rootDependencies: [singularDep],
       });
-      const rootCtx = ctxMgr.createRootContext();
+      const rootCtx = moduleMgr.createRootContext();
       expect(rootCtx.get(singularDepDef)).toBeTruthy();
     });
 
     it('should throw if a dependency is missing', () => {
-      const ctxMgr = AppContextManager.fromConfig({
+      const moduleMgr = ModuleManager.fromConfig({
         logger: getVoidLogger(),
         rootDependencies: [dependantDep],
       });
-      const rootCtx = ctxMgr.createRootContext();
+      const rootCtx = moduleMgr.createRootContext();
       expect(() => rootCtx.get(singularDepDef)).toThrowError(
         'No matching bindings found for serviceIdentifier: Symbol(@backstage/backend-common.test.TestInterface',
       );
     });
 
     it('should bind create root container successfully when all deps provided', () => {
-      const ctxMgr = AppContextManager.fromConfig({
+      const moduleMgr = ModuleManager.fromConfig({
         logger: getVoidLogger(),
         rootDependencies: [dependantDep, singularDep],
       });
-      const rootCtx = ctxMgr.createRootContext();
+      const rootCtx = moduleMgr.createRootContext();
       expect(rootCtx.get(singularDepDef).text()).toEqual('hello');
       expect(rootCtx.get(dependantDepDef).internal().text()).toEqual('hello');
     });
   });
 
   describe('Child contexts', () => {
-    const ctxMgr = AppContextManager.fromConfig({
+    const moduleMgr = ModuleManager.fromConfig({
       logger: getVoidLogger(),
       rootDependencies: [singularDep],
     });
@@ -119,7 +119,7 @@ describe('AppContextManager', () => {
     });
 
     it('Should be able to construct an isolated context for modules', () => {
-      const boundPlugin = ctxMgr.createBoundPlugin({
+      const boundPlugin = moduleMgr.createModule({
         id: 'test plugin',
         initialize(ctx) {
           const modInterface: ModuleInterface = ctx.get(moduleDependantDepDef);
@@ -140,7 +140,7 @@ describe('AppContextManager', () => {
       });
 
       expect(() =>
-        ctxMgr.createBoundPlugin({
+        moduleMgr.createModule({
           id: 'test plugin',
           initialize(_ctx) {},
           dependencies: [moduleDependantDep, secondDep],
@@ -150,9 +150,9 @@ describe('AppContextManager', () => {
       );
     });
     it('should create separate instances for root and children', () => {
-      const rootCtx = ctxMgr.createRootContext();
+      const rootCtx = moduleMgr.createRootContext();
       const singularRoot = rootCtx.get(singularDepDef);
-      ctxMgr.createBoundPlugin({
+      moduleMgr.createModule({
         id: 'test plugin',
         initialize(ctx) {
           expect(singularRoot.text()).toEqual(ctx.get(singularDepDef).text());

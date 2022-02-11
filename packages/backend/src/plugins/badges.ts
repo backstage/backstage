@@ -22,9 +22,9 @@ import {
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin(environment: PluginEnvironment) {
-  const { appContextManager } = environment;
+  const { moduleManager } = environment;
 
-  return appContextManager.createBoundPlugin({
+  return moduleManager.createModule({
     ...badgesModule,
     dependencies: [
       {
