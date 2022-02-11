@@ -38,6 +38,7 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../routes';
+import { MyTaskPage } from './MyTasksPage';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -118,6 +119,7 @@ export const Router = (props: RouterProps) => {
           </SecretsContextProvider>
         }
       />
+      <Route path="/tasks/me" element={<MyTaskPage />} />
       <Route path={scaffolderTaskRouteRef.path} element={<TaskPageElement />} />
       <Route path={actionsRouteRef.path} element={<ActionsPage />} />
       <Route
