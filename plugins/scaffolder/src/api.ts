@@ -98,6 +98,8 @@ export interface ScaffolderApi {
    */
   listActions(): Promise<ListActionsResponse>;
 
+  listTasks(): Promise<ScaffolderTask[]>;
+
   streamLogs(options: { taskId: string; after?: number }): Observable<LogEvent>;
 }
 
@@ -122,6 +124,18 @@ export class ScaffolderClient implements ScaffolderApi {
     this.fetchApi = options.fetchApi ?? { fetch };
     this.scmIntegrationsApi = options.scmIntegrationsApi;
     this.useLongPollingLogs = options.useLongPollingLogs ?? false;
+  }
+
+  async listTasks(): Promise<ScaffolderTask[]> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const url = `${baseUrl}/v2/tasks`;
+
+    const response = await this.fetchApi.fetch(url);
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return await response.json();
   }
 
   async getIntegrationsList(options: { allowedHosts: string[] }) {

@@ -64,6 +64,7 @@ export interface TaskSpecV1beta3 {
   steps: TaskStep[];
   output: { [name: string]: JsonValue };
   metadata?: TemplateMetadata;
+  createdBy: string | null;
 }
 
 /**

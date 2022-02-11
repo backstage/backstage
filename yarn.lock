@@ -3521,6 +3521,25 @@
     react-beautiful-dnd "^13.0.0"
     react-double-scrollbar "0.0.15"
 
+"@material-table/core@^4.3.29":
+  version "4.3.29"
+  resolved "https://registry.npmjs.org/@material-table/core/-/core-4.3.29.tgz#7f60fe4fc191e016d9be663fa437e00b012eae05"
+  integrity sha512-7vz1oc3bo1eSzk450NgpA61xQjlgCBg7q1TDGrB8ZDMyx2NvLRxTyNBtW8JEPLaQLoCWoDFK7F/VHOYRN1fKuQ==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@date-io/date-fns" "^1.3.13"
+    "@material-ui/icons" "^4.11.2"
+    "@material-ui/pickers" "^3.2.10"
+    "@material-ui/styles" "^4.11.4"
+    classnames "^2.2.6"
+    date-fns "^2.16.1"
+    debounce "^1.2.0"
+    fast-deep-equal "^3.1.3"
+    prop-types "^15.7.2"
+    react-beautiful-dnd "^13.0.0"
+    react-double-scrollbar "0.0.15"
+    uuid "^3.4.0"
+
 "@material-ui/core@^4.11.0", "@material-ui/core@^4.11.3", "@material-ui/core@^4.12.1", "@material-ui/core@^4.12.2", "@material-ui/core@^4.9.13":
   version "4.12.3"
   resolved "https://registry.npmjs.org/@material-ui/core/-/core-4.12.3.tgz#80d665caf0f1f034e52355c5450c0e38b099d3ca"
