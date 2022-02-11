@@ -425,7 +425,9 @@ export async function bumpBackstageJsonVersion(version: string) {
 
   const { yellow, cyan, green } = chalk;
   if (prevVersion) {
-    const link = `https://backstage.github.io/upgrade-helper/?from=${prevVersion}&to=${version}`;
+    const from = encodeURIComponent(prevVersion);
+    const to = encodeURIComponent(version);
+    const link = `https://backstage.github.io/upgrade-helper/?from=${from}&to=${to}`;
     console.log(
       yellow(
         `Upgraded from release ${green(prevVersion)} to ${green(
