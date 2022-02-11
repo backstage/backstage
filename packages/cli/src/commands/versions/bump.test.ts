@@ -418,6 +418,109 @@ describe('bump', () => {
     expect(await fs.readJson('/backstage.json')).toEqual({ version: '2.0.0' });
   });
 
+  it('should prefer versions from the highest manifest version when main is not specified', async () => {
+    mockFs({
+      '/yarn.lock': lockfileMock,
+      '/package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+      '/packages/a/package.json': JSON.stringify({
+        name: 'a',
+        dependencies: {
+          '@backstage/core': '^1.0.5',
+        },
+      }),
+      '/packages/b/package.json': JSON.stringify({
+        name: 'b',
+        dependencies: {
+          '@backstage/core': '^1.0.3',
+          '@backstage/theme': '^1.0.0',
+        },
+      }),
+    });
+
+    jest
+      .spyOn(paths, 'resolveTargetRoot')
+      .mockImplementation((...path) => resolvePath('/', ...path));
+    jest.spyOn(runObj, 'runPlain').mockImplementation(async (...[, , , name]) =>
+      JSON.stringify({
+        type: 'inspect',
+        data: {
+          name: name,
+          'dist-tags': {
+            latest: REGISTRY_VERSIONS[name],
+          },
+        },
+      }),
+    );
+    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    worker.use(
+      rest.get(
+        'https://versions.backstage.io/v1/tags/main/manifest.json',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              releaseVersion: '1.0.0',
+              packages: [
+                {
+                  name: '@backstage/theme',
+                  version: '5.0.0',
+                },
+                {
+                  name: '@backstage/create-app',
+                  version: '3.0.0',
+                },
+              ],
+            }),
+          ),
+      ),
+      rest.get(
+        'https://versions.backstage.io/v1/tags/next/manifest.json',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              releaseVersion: '1.0.0-next.1',
+              packages: [
+                {
+                  name: '@backstage/theme',
+                  version: '4.0.0',
+                },
+                {
+                  name: '@backstage/create-app',
+                  version: '2.0.0',
+                },
+              ],
+            }),
+          ),
+      ),
+    );
+    const { log: logs } = await withLogCollector(['log'], async () => {
+      await bump({ pattern: null, release: 'next' } as unknown as Command);
+    });
+    expect(logs.filter(Boolean)).toEqual([
+      'Using default pattern glob @backstage/*',
+      'Checking for updates of @backstage/core',
+      'Checking for updates of @backstage/theme',
+      'Checking for updates of @backstage/theme',
+      'Checking for updates of @backstage/core-api',
+      'Some packages are outdated, updating',
+      'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
+      'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
+      'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
+      'bumping @backstage/theme in b to ^5.0.0',
+      'Creating backstage.json',
+      'Running yarn install to install new versions',
+      '⚠️  The following packages may have breaking changes:',
+      '  @backstage/theme : 1.0.0 ~> 5.0.0',
+      '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
+      'Version bump complete!',
+    ]);
+  });
+
   it('should bump backstage dependencies and dependencies matching pattern glob', async () => {
     const customLockfileMock = `${lockfileMock}
 "@backstage-extra/custom@^1.1.0":
