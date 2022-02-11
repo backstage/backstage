@@ -9,12 +9,12 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogListResponse } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { Context } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
+import { GetEntitiesResponse } from '@backstage/catalog-client';
 import { IconButton } from '@material-ui/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinkProps } from '@backstage/core-components';
@@ -612,7 +612,7 @@ export function useEntityTypeFilter(): EntityTypeReturn;
 // @public
 export function useOwnedEntities(allowedKinds?: string[]): {
   loading: boolean;
-  ownedEntities: CatalogListResponse<Entity> | undefined;
+  ownedEntities: GetEntitiesResponse | undefined;
 };
 
 // Warning: (ae-missing-release-tag) "useOwnUser" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
