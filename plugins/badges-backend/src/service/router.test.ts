@@ -25,7 +25,6 @@ import {
 import {
   CatalogApi,
   catalogModuleDefinitions,
-  CatalogClient,
 } from '@backstage/catalog-client';
 import type { Entity } from '@backstage/catalog-model';
 import {
@@ -36,10 +35,11 @@ import {
 import { createRouter } from './router';
 import { BadgeBuilder } from '../lib';
 import { Container } from 'inversify';
-import { badgesModule } from './moduleContext';
+import { badgesModule, badgesModuleDefinitions } from './moduleContext';
 
 describe('createRouter', () => {
   let app: express.Express;
+
   let badgeBuilder: jest.Mocked<BadgeBuilder>;
   let catalog: jest.Mocked<CatalogApi>;
   let config: Config;
@@ -99,17 +99,16 @@ describe('createRouter', () => {
       .toConstantValue(discovery);
     container
       .bind(catalogModuleDefinitions.definitions.catalogApi.id)
-      .toDynamicValue(
-        ({ container: c }) =>
-          new CatalogClient({
-            discoveryApi: c.get(
-              commonModuleDefinitions.definitions.pluginEndpointDiscovery.id,
-            ),
-          }),
-      );
+      .toConstantValue(catalog);
 
     applicationContext = InversifyApplicationContext.fromConfig({
-      dependencies: badgesModule.dependencies,
+      dependencies: [
+        {
+          id: badgesModuleDefinitions.definitions.badgeBuilder,
+          factory: () => badgeBuilder,
+        },
+        ...badgesModule.dependencies,
+      ],
       container,
     });
 
