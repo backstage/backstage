@@ -71,7 +71,14 @@ export interface CatalogApi {
 
 // @public
 export class CatalogClient implements CatalogApi {
-  constructor(options: { discoveryApi: DiscoveryApi; fetchApi?: FetchApi });
+  constructor(options: {
+    discoveryApi: {
+      getBaseUrl(pluginId: string): Promise<string>;
+    };
+    fetchApi?: {
+      fetch: typeof fetch;
+    };
+  });
   addLocation(
     { type, target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,
@@ -151,16 +158,6 @@ export type CatalogRequestOptions = {
 };
 
 // @public
-export type DiscoveryApi = {
-  getBaseUrl(pluginId: string): Promise<string>;
-};
-
-// @public
 export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
-
-// @public
-export type FetchApi = {
-  fetch: typeof fetch;
-};
 ```
