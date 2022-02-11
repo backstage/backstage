@@ -5319,9 +5319,9 @@
     "@types/ssh2" "*"
 
 "@types/dockerode@^3.2.5", "@types/dockerode@^3.3.0":
-  version "3.3.1"
-  resolved "https://registry.npmjs.org/@types/dockerode/-/dockerode-3.3.1.tgz#4b7e1b3c2b8636c3ef4f2628ca42d1d4bf78811d"
-  integrity sha512-pjEOl3C/N2viC+nU2iEM6ImFcyu/RoLZvfsAGc3xIW2MlyEox+ZtJgPDXCFfFVh8ZNouxCRL673aa2Ywbx20EQ==
+  version "3.3.3"
+  resolved "https://registry.npmjs.org/@types/dockerode/-/dockerode-3.3.3.tgz#993de5d8bd3ecb0b0a9277cccc189e9a74e9fbd1"
+  integrity sha512-DBFTE/wiZKodQhDrdkzLVT3K0X1JO/1fTxPaTQN0jiPNdTOFoPt8LYnuYEzalPgVpZbGEeuJTls7qn6jMvuydg==
   dependencies:
     "@types/docker-modem" "*"
     "@types/node" "*"
