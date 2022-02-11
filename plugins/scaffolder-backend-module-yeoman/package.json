@@ -24,7 +24,7 @@
     "@backstage/plugin-scaffolder-backend": "^0.15.24",
     "@backstage/types": "^0.1.1",
     "winston": "^3.2.1",
-    "yeoman-environment": "^3.6.0"
+    "yeoman-environment": "^3.9.1"
   },
   "devDependencies": {
     "@backstage/backend-common": "^0.10.7",
