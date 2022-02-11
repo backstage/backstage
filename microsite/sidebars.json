@@ -244,6 +244,7 @@
       "auth/auth-backend-classes",
       "auth/glossary"
     ],
+    "Permissions": ["permission/overview"],
     "Deployment": [
       "deployment/index",
       "deployment/docker",
