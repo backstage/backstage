@@ -19,6 +19,7 @@ export interface Config {
   airbrake: {
     /**
      * The API Key to authenticate requests. More details on how to get this here: https://airbrake.io/docs/api/#authentication
+     * @visibility secret
      */
     apiKey: string;
   };
