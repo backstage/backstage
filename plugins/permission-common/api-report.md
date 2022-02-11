@@ -76,9 +76,6 @@ export function isReadPermission(permission: Permission): boolean;
 export function isUpdatePermission(permission: Permission): boolean;
 
 // @public
-export type NonEmptyArray<T> = [T, ...T[]];
-
-// @public
 export type NotCriteria<TQuery> = {
   not: PermissionCriteria<TQuery>;
 };
