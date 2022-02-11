@@ -126,7 +126,7 @@ export type Entity = {
 // @public
 export const ENTITY_DEFAULT_NAMESPACE = 'default';
 
-// @public
+// @public @deprecated
 export const ENTITY_META_GENERATED_FIELDS: readonly [
   'uid',
   'etag',
@@ -148,7 +148,7 @@ export function entityEnvelopeSchemaValidator<
   T extends EntityEnvelope = EntityEnvelope,
 >(schema?: unknown): (data: unknown) => T;
 
-// @public
+// @public @deprecated
 export function entityHasChanges(previous: Entity, next: Entity): boolean;
 
 // @public
@@ -252,13 +252,13 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
   enforce(entity: Entity): Promise<Entity>;
 }
 
-// @public
+// @public @deprecated
 export function generateEntityEtag(): string;
 
-// @public
+// @public @deprecated
 export function generateEntityUid(): string;
 
-// @public
+// @public @deprecated
 export function generateUpdatedEntity(previous: Entity, next: Entity): Entity;
 
 // @public
