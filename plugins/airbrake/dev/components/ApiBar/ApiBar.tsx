@@ -71,12 +71,6 @@ export const ApiBar = () => {
                 value.setProjectId?.(parseInt(e.target.value, 10) || undefined)
               }
             />
-            <TextField
-              label="API Key"
-              variant="outlined"
-              defaultValue={value.apiKey}
-              onChange={e => value.setApiKey?.(e.target.value)}
-            />
           </MuiThemeProvider>
         </div>
       )}

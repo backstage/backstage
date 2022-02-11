@@ -23,9 +23,10 @@ import {
   setupRequestMockHandlers,
   TestApiProvider,
 } from '@backstage/test-utils';
-import { createEntity } from '../../api/mock/MockEntity';
+import { createEntity } from '../../api';
 import {
   airbrakeApiRef,
+  localDiscoveryApi,
   MockAirbrakeApi,
   ProductionAirbrakeApi,
 } from '../../api';
@@ -65,7 +66,7 @@ describe('EntityAirbrakeContent', () => {
   it('states that an error occurred if the API call fails', async () => {
     worker.use(
       rest.get(
-        'https://api.airbrake.io/api/v4/projects/123/groups',
+        'http://localhost:7007/api/airbrake/api/v4/projects/123/groups',
         (_, res, ctx) => {
           return res(ctx.status(500));
         },
@@ -76,7 +77,7 @@ describe('EntityAirbrakeContent', () => {
     const widget = await renderInTestApp(
       <TestApiProvider
         apis={[
-          [airbrakeApiRef, new ProductionAirbrakeApi('fakeApiKey')],
+          [airbrakeApiRef, new ProductionAirbrakeApi(localDiscoveryApi)],
           [errorApiRef, mockErrorApi],
         ]}
       >

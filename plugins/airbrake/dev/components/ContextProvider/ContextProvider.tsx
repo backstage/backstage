@@ -23,23 +23,18 @@ import React, {
 interface ContextInterface {
   projectId?: number;
   setProjectId?: Dispatch<SetStateAction<number | undefined>>;
-  apiKey?: string;
-  setApiKey?: Dispatch<SetStateAction<string>>;
 }
 
 export const Context = React.createContext<ContextInterface>({});
 
 export const ContextProvider = ({ children }: PropsWithChildren<{}>) => {
   const [projectId, setProjectId] = useState<number>();
-  const [apiKey, setApiKey] = useState<string>('');
 
   return (
     <Context.Provider
       value={{
         projectId,
         setProjectId,
-        apiKey,
-        setApiKey,
       }}
     >
       {children}

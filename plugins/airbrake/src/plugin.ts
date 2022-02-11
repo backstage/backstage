@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createApiFactory, createPlugin } from '@backstage/core-plugin-api';
+import {
+  createApiFactory,
+  createPlugin,
+  discoveryApiRef,
+} from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
 import { airbrakeApiRef, ProductionAirbrakeApi } from './api';
@@ -23,8 +27,8 @@ export const airbrakePlugin = createPlugin({
   apis: [
     createApiFactory({
       api: airbrakeApiRef,
-      deps: {},
-      factory: () => new ProductionAirbrakeApi(),
+      deps: { discoveryApi: discoveryApiRef },
+      factory: ({ discoveryApi }) => new ProductionAirbrakeApi(discoveryApi),
     }),
   ],
   routes: {
