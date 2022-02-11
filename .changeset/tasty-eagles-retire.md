@@ -1,5 +1,5 @@
 ---
-'@backstage/catalog-client': minor
+'@backstage/catalog-client': patch
 ---
 
 Deprecated the following types used by the catalog client, and created new
