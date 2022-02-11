@@ -49,7 +49,10 @@ export class CatalogClient implements CatalogApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi; fetchApi?: FetchApi }) {
+  constructor(options: {
+    discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
+    fetchApi?: { fetch: typeof fetch };
+  }) {
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi || { fetch: crossFetch };
   }

@@ -21,7 +21,10 @@ import { Entity, EntityName, Location } from '@backstage/catalog-model';
  *
  * @public
  */
-export const CATALOG_FILTER_EXISTS = Symbol('CATALOG_FILTER_EXISTS');
+export const CATALOG_FILTER_EXISTS = Symbol.for(
+  // Random UUID to ensure no collisions
+  'CATALOG_FILTER_EXISTS_0e15b590c0b343a2bae3e787e84c2111',
+);
 
 /**
  * A request type for retrieving catalog Entities.
