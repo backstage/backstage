@@ -537,7 +537,7 @@ describe('bump', () => {
       'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
       'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/theme in b to ^5.0.0',
-      'Creating backstage.json',
+      'Your project is now at version 1.0.0, which has been written to backstage.json',
       'Running yarn install to install new versions',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 5.0.0',
