@@ -15,7 +15,7 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import express from 'express';
@@ -34,10 +34,13 @@ import {
   disallowReadonlyMode,
   locationInput,
   validateRequestBody,
+  requireRequestBody,
+  setRequiredEntityLocationAnnotations,
 } from './util';
-import { RefreshOptions, LocationService, RefreshService } from './types';
 import { z } from 'zod';
 import { parseEntityFacetParams } from './request/parseEntityFacetParams';
+import { RefreshOptions, LocationService, RefreshService } from './types';
+import { CatalogProcessingOrchestrator } from '../processing/types';
 
 /**
  * Options used by {@link createRouter}.
@@ -48,6 +51,7 @@ export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationAnalyzer?: LocationAnalyzer;
   locationService: LocationService;
+  orchestrator?: CatalogProcessingOrchestrator;
   refreshService?: RefreshService;
   logger: Logger;
   config: Config;
@@ -66,12 +70,12 @@ export async function createRouter(
     entitiesCatalog,
     locationAnalyzer,
     locationService,
+    orchestrator,
     refreshService,
     config,
     logger,
     permissionIntegrationRouter,
   } = options;
-
   const router = Router();
   router.use(express.json());
 
@@ -225,6 +229,21 @@ export async function createRouter(
       const schema = z.object({ location: locationInput });
       const output = await locationAnalyzer.analyzeLocation(schema.parse(body));
       res.status(200).json(output);
+    });
+  }
+
+  if (orchestrator) {
+    router.post('/validate-entity', async (req, res) => {
+      const input = (await requireRequestBody(req)) as Entity;
+      const entity = setRequiredEntityLocationAnnotations(input);
+      const processingResult = await orchestrator.process({
+        entity,
+      });
+      if (!processingResult.ok)
+        return res
+          .status(422)
+          .json(processingResult.errors.map(e => e.message));
+      return res.status(200).send();
     });
   }
 

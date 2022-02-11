@@ -438,6 +438,7 @@ export class CatalogBuilder {
       entitiesCatalog,
       locationAnalyzer,
       locationService,
+      orchestrator,
       refreshService,
       logger,
       config,
