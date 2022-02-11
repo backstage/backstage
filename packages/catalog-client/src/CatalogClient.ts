@@ -22,7 +22,7 @@ import {
   ORIGIN_LOCATION_ANNOTATION,
   parseEntityRef,
   stringifyEntityRef,
-  stringifyLocationReference,
+  stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 import crossFetch from 'cross-fetch';
@@ -310,7 +310,7 @@ export class CatalogClient implements CatalogApi {
     );
     return all
       .map(r => r.data)
-      .find(l => locationCompound === stringifyLocationReference(l));
+      .find(l => locationCompound === stringifyLocationRef(l));
   }
 
   /**
@@ -338,7 +338,7 @@ export class CatalogClient implements CatalogApi {
     );
     return all
       .map(r => r.data)
-      .find(l => locationCompound === stringifyLocationReference(l));
+      .find(l => locationCompound === stringifyLocationRef(l));
   }
 
   /**

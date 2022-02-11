@@ -17,7 +17,7 @@
 import {
   Entity,
   LocationSpec,
-  stringifyLocationReference,
+  stringifyLocationRef,
 } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import yaml from 'yaml';
@@ -32,7 +32,7 @@ export function* parseEntityYaml(
   try {
     documents = yaml.parseAllDocuments(data.toString('utf8')).filter(d => d);
   } catch (e) {
-    const loc = stringifyLocationReference(location);
+    const loc = stringifyLocationRef(location);
     const message = `Failed to parse YAML at ${loc}, ${e}`;
     yield result.generalError(location, message);
     return;
@@ -40,7 +40,7 @@ export function* parseEntityYaml(
 
   for (const document of documents) {
     if (document.errors?.length) {
-      const loc = stringifyLocationReference(location);
+      const loc = stringifyLocationRef(location);
       const message = `YAML error at ${loc}, ${document.errors[0]}`;
       yield result.generalError(location, message);
     } else {

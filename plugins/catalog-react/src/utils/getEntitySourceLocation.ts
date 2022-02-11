@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  parseLocationReference,
+  parseLocationRef,
   SOURCE_LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -38,7 +38,7 @@ export function getEntitySourceLocation(
   }
 
   try {
-    const sourceLocationRef = parseLocationReference(sourceLocation);
+    const sourceLocationRef = parseLocationRef(sourceLocation);
     const integration = scmIntegrationsApi.byUrl(sourceLocationRef.target);
     return {
       locationTargetUrl: sourceLocationRef.target,

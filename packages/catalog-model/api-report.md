@@ -409,6 +409,12 @@ export function parseEntityRef(
 };
 
 // @public
+export function parseLocationRef(ref: string): {
+  type: string;
+  target: string;
+};
+
+// @public @deprecated
 export function parseLocationReference(ref: string): {
   type: string;
   target: string;
@@ -509,6 +515,12 @@ export function stringifyEntityRef(
 ): string;
 
 // @public
+export function stringifyLocationRef(ref: {
+  type: string;
+  target: string;
+}): string;
+
+// @public @deprecated
 export function stringifyLocationReference(ref: {
   type: string;
   target: string;

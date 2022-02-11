@@ -20,8 +20,10 @@ export {
   SOURCE_LOCATION_ANNOTATION,
 } from './annotation';
 export {
-  parseLocationReference,
-  stringifyLocationReference,
   getEntitySourceLocation,
+  parseLocationRef,
+  parseLocationReference,
+  stringifyLocationRef,
+  stringifyLocationReference,
 } from './helpers';
 export type { Location, LocationSpec } from './types';

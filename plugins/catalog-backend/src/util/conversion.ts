@@ -21,7 +21,7 @@ import {
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
   stringifyEntityRef,
-  stringifyLocationReference,
+  stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { createHash } from 'crypto';
 
@@ -45,7 +45,7 @@ export function locationSpecToLocationEntity(
       throw new Error(
         `Parent entity '${stringifyEntityRef(
           parentEntity,
-        )}' of location '${stringifyLocationReference(
+        )}' of location '${stringifyLocationRef(
           location,
         )}' does not have a location annotation`,
       );
@@ -57,14 +57,14 @@ export function locationSpecToLocationEntity(
       throw new Error(
         `Parent entity '${stringifyEntityRef(
           parentEntity,
-        )}' of location '${stringifyLocationReference(
+        )}' of location '${stringifyLocationRef(
           location,
         )}' does not have an origin location annotation`,
       );
     }
     originLocation = maybeOriginLocation;
   } else {
-    ownLocation = stringifyLocationReference(location);
+    ownLocation = stringifyLocationRef(location);
     originLocation = ownLocation;
   }
 
