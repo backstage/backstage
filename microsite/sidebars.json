@@ -210,6 +210,11 @@
           "plugins/add-to-marketplace",
           "plugins/observability"
         ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Permissions",
+        "ids": ["plugins/permissions/index"]
       }
     ],
     "Configuration": [
@@ -244,7 +249,12 @@
       "auth/auth-backend-classes",
       "auth/glossary"
     ],
-    "Permissions": ["permission/overview"],
+    "Permissions": [
+      "permission/overview",
+      "permission/getting-started",
+      "permission/writing-a-policy",
+      "permission/concepts"
+    ],
     "Deployment": [
       "deployment/index",
       "deployment/docker",
