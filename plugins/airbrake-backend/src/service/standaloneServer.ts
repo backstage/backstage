@@ -32,7 +32,7 @@ export interface ServerOptions {
 export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
-  const logger = options.logger.child({ service: 'airbrake-backend-backend' });
+  const logger = options.logger.child({ service: 'airbrake-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
   const airbrakeConfig = extractAirbrakeConfig(config);
   logger.debug('Starting application server...');
@@ -43,7 +43,7 @@ export async function startStandaloneServer(
 
   let service = createServiceBuilder(module)
     .setPort(options.port)
-    .addRouter('/airbrake-backend', router);
+    .addRouter('/api/airbrake', router);
   if (options.enableCors) {
     service = service.enableCors({ origin: 'http://localhost:3000' });
   }
