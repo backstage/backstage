@@ -18,7 +18,7 @@ import {
   Entity,
   EntityName,
   ENTITY_DEFAULT_NAMESPACE,
-  serializeEntityRef,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 
 export function formatEntityRefTitle(
@@ -46,10 +46,10 @@ export function formatEntityRefTitle(
 
   kind = kind.toLocaleLowerCase('en-US');
 
-  return `${serializeEntityRef({
+  return `${stringifyEntityRef({
     kind:
       defaultKind && defaultKind.toLocaleLowerCase('en-US') === kind
-        ? undefined
+        ? ''
         : kind,
     name,
     namespace,
