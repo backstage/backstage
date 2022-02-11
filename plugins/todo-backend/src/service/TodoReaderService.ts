@@ -21,7 +21,7 @@ import {
   SOURCE_LOCATION_ANNOTATION,
   serializeEntityRef,
   Entity,
-  parseLocationReference,
+  parseLocationRef,
 } from '@backstage/catalog-model';
 import { TodoReader } from '../lib';
 import { ListTodosRequest, ListTodosResponse, TodoService } from './types';
@@ -130,7 +130,7 @@ export class TodoReaderService implements TodoService {
     const sourceLocation =
       entity.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION];
     if (sourceLocation) {
-      const parsed = parseLocationReference(sourceLocation);
+      const parsed = parseLocationRef(sourceLocation);
       if (parsed.type !== 'url') {
         throw new InputError(
           `Invalid entity source location type for ${serializeEntityRef(
@@ -143,7 +143,7 @@ export class TodoReaderService implements TodoService {
 
     const location = entity.metadata.annotations?.[LOCATION_ANNOTATION];
     if (location) {
-      const parsed = parseLocationReference(location);
+      const parsed = parseLocationRef(location);
       if (parsed.type !== 'url') {
         throw new InputError(
           `Invalid entity location type for ${serializeEntityRef(

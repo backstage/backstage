@@ -26,36 +26,53 @@ import { LOCATION_ANNOTATION, SOURCE_LOCATION_ANNOTATION } from './annotation';
  * @public
  * @param ref - A string-form location reference, e.g. `'url:https://host'`
  * @returns A location reference, e.g. `{ type: 'url', target: 'https://host' }`
+ * @deprecated use {@link parseLocationRef} instead
  */
-export function parseLocationReference(ref: string): {
+export function parseLocationReference(ref: string) {
+  return parseLocationRef(ref);
+}
+
+/**
+ * Parses a string form location reference.
+ *
+ * @remarks
+ *
+ * Note that the return type is not `LocationSpec`, because we do not want to
+ * conflate the string form with the additional properties of that type.
+ *
+ * @public
+ * @param ref - A string-form location ref, e.g. `'url:https://host'`
+ * @returns A location ref, e.g. `{ type: 'url', target: 'https://host' }`
+ */
+export function parseLocationRef(ref: string): {
   type: string;
   target: string;
 } {
   if (typeof ref !== 'string') {
     throw new TypeError(
-      `Unable to parse location reference '${ref}', unexpected argument ${typeof ref}`,
+      `Unable to parse location ref '${ref}', unexpected argument ${typeof ref}`,
     );
   }
 
   const splitIndex = ref.indexOf(':');
   if (splitIndex < 0) {
     throw new TypeError(
-      `Unable to parse location reference '${ref}', expected '<type>:<target>', e.g. 'url:https://host/path'`,
+      `Unable to parse location ref '${ref}', expected '<type>:<target>', e.g. 'url:https://host/path'`,
     );
   }
 
-  const type = ref.substr(0, splitIndex).trim();
-  const target = ref.substr(splitIndex + 1).trim();
+  const type = ref.substring(0, splitIndex).trim();
+  const target = ref.substring(splitIndex + 1).trim();
 
   if (!type || !target) {
     throw new TypeError(
-      `Unable to parse location reference '${ref}', expected '<type>:<target>', e.g. 'url:https://host/path'`,
+      `Unable to parse location ref '${ref}', expected '<type>:<target>', e.g. 'url:https://host/path'`,
     );
   }
 
   if (type === 'http' || type === 'https') {
     throw new TypeError(
-      `Invalid location reference '${ref}', please prefix it with 'url:', e.g. 'url:${ref}'`,
+      `Invalid location ref '${ref}', please prefix it with 'url:', e.g. 'url:${ref}'`,
     );
   }
 
@@ -73,17 +90,37 @@ export function parseLocationReference(ref: string): {
  * @public
  * @param ref - A location reference, e.g. `{ type: 'url', target: 'https://host' }`
  * @returns A string-form location reference, e.g. `'url:https://host'`
+ * @deprecated use {@link stringifyLocationRef} instead
  */
 export function stringifyLocationReference(ref: {
+  type: string;
+  target: string;
+}): string {
+  return stringifyLocationRef(ref);
+}
+
+/**
+ * Turns a location ref into its string form.
+ *
+ * @remarks
+ *
+ * Note that the input type is not `LocationSpec`, because we do not want to
+ * conflate the string form with the additional properties of that type.
+ *
+ * @public
+ * @param ref - A location ref, e.g. `{ type: 'url', target: 'https://host' }`
+ * @returns A string-form location ref, e.g. `'url:https://host'`
+ */
+export function stringifyLocationRef(ref: {
   type: string;
   target: string;
 }): string {
   const { type, target } = ref;
 
   if (!type) {
-    throw new TypeError(`Unable to stringify location reference, empty type`);
+    throw new TypeError(`Unable to stringify location ref, empty type`);
   } else if (!target) {
-    throw new TypeError(`Unable to stringify location reference, empty target`);
+    throw new TypeError(`Unable to stringify location ref, empty target`);
   }
 
   return `${type}:${target}`;
@@ -114,5 +151,5 @@ export function getEntitySourceLocation(entity: Entity): {
     );
   }
 
-  return parseLocationReference(locationRef);
+  return parseLocationRef(locationRef);
 }

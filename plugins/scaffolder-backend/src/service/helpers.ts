@@ -17,7 +17,7 @@
 import {
   Entity,
   LOCATION_ANNOTATION,
-  parseLocationReference,
+  parseLocationRef,
   SOURCE_LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -67,7 +67,7 @@ export function getEntityBaseUrl(entity: Entity): string | undefined {
     return undefined;
   }
 
-  const { type, target } = parseLocationReference(location);
+  const { type, target } = parseLocationRef(location);
   if (type === 'url') {
     return target;
   } else if (type === 'file') {

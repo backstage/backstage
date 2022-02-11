@@ -21,7 +21,7 @@ import {
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
   SOURCE_LOCATION_ANNOTATION,
-  stringifyLocationReference,
+  stringifyLocationRef,
   VIEW_URL_ANNOTATION,
 } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -58,7 +58,7 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
       });
 
       if (sourceUrl) {
-        sourceLocation = stringifyLocationReference({
+        sourceLocation = stringifyLocationRef({
           type: 'url',
           target: sourceUrl,
         });
@@ -70,9 +70,9 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
         metadata: {
           annotations: pickBy(
             {
-              [LOCATION_ANNOTATION]: stringifyLocationReference(location),
+              [LOCATION_ANNOTATION]: stringifyLocationRef(location),
               [ORIGIN_LOCATION_ANNOTATION]:
-                stringifyLocationReference(originLocation),
+                stringifyLocationRef(originLocation),
               [VIEW_URL_ANNOTATION]: viewUrl,
               [EDIT_URL_ANNOTATION]: editUrl,
               [SOURCE_LOCATION_ANNOTATION]: sourceLocation,
