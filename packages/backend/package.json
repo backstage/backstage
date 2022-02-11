@@ -30,6 +30,7 @@
     "@backstage/catalog-model": "^0.9.10",
     "@backstage/config": "^0.1.13",
     "@backstage/integration": "^0.7.2",
+    "@backstage/plugin-airbrake-backend": "^0.0.0",
     "@backstage/plugin-app-backend": "^0.3.24",
     "@backstage/plugin-auth-backend": "^0.10.0",
     "@backstage/plugin-auth-node": "^0.1.0",
