@@ -31,11 +31,24 @@ import { rest } from 'msw';
 
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({
+  red: (str: string) => str,
   blue: (str: string) => str,
   cyan: (str: string) => str,
   green: (str: string) => str,
   magenta: (str: string) => str,
   yellow: (str: string) => str,
+}));
+
+jest.mock('ora', () => ({
+  __esModule: true,
+  default({ prefixText }: any) {
+    console.log(prefixText);
+    return {
+      start: () => ({
+        succeed: () => {},
+      }),
+    };
+  },
 }));
 
 const REGISTRY_VERSIONS: { [name: string]: string } = {
@@ -177,7 +190,11 @@ describe('bump', () => {
     );
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
-    expect(runObj.run).toHaveBeenCalledWith('yarn', ['install']);
+    expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
 
     const lockfileContents = await fs.readFile('/yarn.lock', 'utf8');
     expect(lockfileContents).toBe(lockfileMockResult);
@@ -273,7 +290,7 @@ describe('bump', () => {
       'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
       'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/theme in b to ^5.0.0',
-      'Creating backstage.json',
+      'Your project is now at version 0.0.1, which has been written to backstage.json',
       'Running yarn install to install new versions',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 5.0.0',
@@ -296,7 +313,11 @@ describe('bump', () => {
     );
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
-    expect(runObj.run).toHaveBeenCalledWith('yarn', ['install']);
+    expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
 
     const lockfileContents = await fs.readFile('/yarn.lock', 'utf8');
     expect(lockfileContents).toBe(lockfileMockResult);
@@ -389,7 +410,7 @@ describe('bump', () => {
       'Some packages are outdated, updating',
       'bumping @backstage/core in a to ^5.0.0',
       'bumping @backstage/core in b to ^5.0.0',
-      'Creating backstage.json',
+      'Your project is now at version 2.0.0, which has been written to backstage.json',
       'Running yarn install to install new versions',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/core : 1.0.3 ~> 5.0.0',
@@ -398,7 +419,11 @@ describe('bump', () => {
     ]);
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
-    expect(runObj.run).toHaveBeenCalledWith('yarn', ['install']);
+    expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
 
     const packageA = await fs.readJson('/packages/a/package.json');
     expect(packageA).toEqual({
@@ -512,7 +537,7 @@ describe('bump', () => {
       'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
       'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/theme in b to ^5.0.0',
-      'Creating backstage.json',
+      'Your project is now at version 1.0.0, which has been written to backstage.json',
       'Running yarn install to install new versions',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 5.0.0',
@@ -645,7 +670,11 @@ describe('bump', () => {
     );
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
-    expect(runObj.run).toHaveBeenCalledWith('yarn', ['install']);
+    expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
 
     const lockfileContents = await fs.readFile('/yarn.lock', 'utf8');
     expect(lockfileContents).toEqual(customLockfileMockResult);
@@ -765,8 +794,16 @@ describe('bumpBackstageJsonVersion', () => {
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));
 
-    await bumpBackstageJsonVersion('1.4.1');
+    const { log } = await withLogCollector(async () => {
+      await bumpBackstageJsonVersion('1.4.1');
+    });
     expect(await fs.readJson('/backstage.json')).toEqual({ version: '1.4.1' });
+    expect(log).toEqual([
+      'Upgraded from release 0.0.1 to 1.4.1, please review these template changes:',
+      undefined,
+      '  https://backstage.github.io/upgrade-helper/?from=0.0.1&to=1.4.1',
+      undefined,
+    ]);
   });
 
   it("should create backstage.json if doesn't exist", async () => {
@@ -777,8 +814,13 @@ describe('bumpBackstageJsonVersion', () => {
       .spyOn(paths, 'resolveTargetRoot')
       .mockImplementation((...path) => resolvePath('/', ...path));
 
-    await bumpBackstageJsonVersion(latest);
+    const { log } = await withLogCollector(async () => {
+      await bumpBackstageJsonVersion(latest);
+    });
     expect(await fs.readJson('/backstage.json')).toEqual({ version: latest });
+    expect(log).toEqual([
+      'Your project is now at version 1.4.1, which has been written to backstage.json',
+    ]);
   });
 });
 
