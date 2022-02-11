@@ -45,7 +45,11 @@ export async function startStandaloneServer(
     .setPort(options.port)
     .addRouter('/api/airbrake', router);
   if (options.enableCors) {
+    logger.info('CORS is enabled, limiting to localhost with port 3000');
     service = service.enableCors({ origin: 'http://localhost:3000' });
+  } else {
+    logger.info('CORS is disabled, allowing all origins');
+    service = service.enableCors({ origin: '*' });
   }
 
   return await service.start().catch(err => {
