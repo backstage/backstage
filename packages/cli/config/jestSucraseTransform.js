@@ -21,58 +21,71 @@ const sucrasePluginPkg = require('@sucrase/jest-plugin/package.json');
 
 const ESM_REGEX = /\b(?:import|export)\b/;
 
-function process(source, filePath) {
-  let transforms;
+function createTransformer(config) {
+  const process = (source, filePath) => {
+    let transforms;
 
-  if (filePath.endsWith('.esm.js')) {
-    transforms = ['imports'];
-  } else if (filePath.endsWith('.js')) {
-    // This is a very rough filter to avoid transforming things that we quickly
-    // can be sure are definitely not ESM modules.
-    if (ESM_REGEX.test(source)) {
-      transforms = ['imports', 'jsx']; // JSX within .js is currently allowed
+    if (filePath.endsWith('.esm.js')) {
+      transforms = ['imports'];
+    } else if (filePath.endsWith('.js')) {
+      // This is a very rough filter to avoid transforming things that we quickly
+      // can be sure are definitely not ESM modules.
+      if (ESM_REGEX.test(source)) {
+        transforms = ['imports', 'jsx']; // JSX within .js is currently allowed
+      }
+    } else if (filePath.endsWith('.jsx')) {
+      transforms = ['jsx', 'imports'];
+    } else if (filePath.endsWith('.ts')) {
+      transforms = ['typescript', 'imports'];
+    } else if (filePath.endsWith('.tsx')) {
+      transforms = ['typescript', 'jsx', 'imports'];
     }
-  } else if (filePath.endsWith('.jsx')) {
-    transforms = ['jsx', 'imports'];
-  } else if (filePath.endsWith('.ts')) {
-    transforms = ['typescript', 'imports'];
-  } else if (filePath.endsWith('.tsx')) {
-    transforms = ['typescript', 'jsx', 'imports'];
-  }
 
-  // Only apply the jest transform to the test files themselves
-  if (transforms && filePath.includes('.test.')) {
-    transforms.push('jest');
-  }
+    // Only apply the jest transform to the test files themselves
+    if (transforms && filePath.includes('.test.')) {
+      transforms.push('jest');
+    }
 
-  if (transforms) {
-    const { code, sourceMap: map } = transform(source, {
-      transforms,
-      filePath,
-      disableESTransforms: true,
-      sourceMapOptions: {
-        compiledFilename: filePath,
-      },
-    });
-    const b64 = Buffer.from(JSON.stringify(map), 'utf8').toString('base64');
-    const suffix = `//# sourceMappingURL=data:application/json;charset=utf-8;base64,${b64}`;
-    return `${code}\n${suffix}`;
-  }
+    if (transforms) {
+      const { code, sourceMap: map } = transform(source, {
+        transforms,
+        filePath,
+        disableESTransforms: true,
+        sourceMapOptions: {
+          compiledFilename: filePath,
+        },
+      });
+      if (config.enableSourceMaps) {
+        const b64 = Buffer.from(JSON.stringify(map), 'utf8').toString('base64');
+        const suffix = `//# sourceMappingURL=data:application/json;charset=utf-8;base64,${b64}`;
+        // Include both inline and object source maps, as inline source maps are
+        // needed for support of some editor integrations.
+        return { code: `${code}\n${suffix}`, map };
+      }
+      // We only return the `map` result if source maps are enabled, as they
+      // have a negative impact on the coverage accuracy.
+      return code;
+    }
 
-  return source;
+    return source;
+  };
+
+  // TODO: contribute something like this to @sucrase/jest-plugin
+  const getCacheKey = sourceText => {
+    return createHash('md5')
+      .update(sourceText)
+      .update(Buffer.alloc(1))
+      .update(sucrasePkg.version)
+      .update(Buffer.alloc(1))
+      .update(sucrasePluginPkg.version)
+      .update(Buffer.alloc(1))
+      .update(JSON.stringify(config))
+      .update(Buffer.alloc(1))
+      .update('1') // increment whenever the transform logic in this file changes
+      .digest('hex');
+  };
+
+  return { process, getCacheKey };
 }
 
-// TODO: contribute something like this to @sucrase/jest-plugin
-function getCacheKey(sourceText) {
-  return createHash('md5')
-    .update(sourceText)
-    .update(Buffer.alloc(1))
-    .update(sucrasePkg.version)
-    .update(Buffer.alloc(1))
-    .update(sucrasePluginPkg.version)
-    .update(Buffer.alloc(1))
-    .update('1') // increment whenever the transform logic in this file changes
-    .digest('hex');
-}
-
-module.exports = { process, getCacheKey };
+module.exports = { createTransformer };

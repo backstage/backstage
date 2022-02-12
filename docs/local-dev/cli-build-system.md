@@ -465,11 +465,35 @@ The overrides in a single `package.json` may for example look like this:
   },
 ```
 
-If you want to configure editor integration for tests we recommend executing the bundled configuration directly with Jest, rather than running through the Yarn test script. For example, with the Jest extension for VS Code, the configuration would look like this:
+If you want to configure editor integration for tests we recommend executing the bundled configuration directly with Jest, rather than running through the Yarn test script. For example, with the Jest extension for VS Code the configuration would look like this:
 
 ```json
 {
   "jest.jestCommandLine": "node_modules/.bin/jest --config node_modules/@backstage/cli/config/jest.js"
+}
+```
+
+If you also want to enable source maps when debugging tests, you can do so by setting the `ENABLE_SOURCE_MAPS` environment variable. For example, a complete launch configuration for VS Code debugging may look like this:
+
+```json
+{
+  "type": "node",
+  "name": "vscode-jest-tests",
+  "request": "launch",
+  "console": "integratedTerminal",
+  "internalConsoleOptions": "neverOpen",
+  "disableOptimisticBPs": true,
+  "program": "${workspaceFolder}/node_modules/.bin/jest",
+  "cwd": "${workspaceFolder}",
+  "env": {
+    "ENABLE_SOURCE_MAPS": "true"
+  },
+  "args": [
+    "--config",
+    "node_modules/@backstage/cli/config/jest.js",
+    "--runInBand",
+    "--watchAll=false"
+  ]
 }
 ```
 
