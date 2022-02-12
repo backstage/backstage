@@ -444,8 +444,9 @@ working directory to the package that the test is in.
 
 Where small customizations are needed, such as setting coverage thresholds or
 support for specific transforms, it is possible to override the Jest
-configuration through the `"jest"` field in `package.json`. These overrides will
-be loaded in from all `package.json` files in the directory ancestry, meaning
+configuration through the `"jest"` field in `package.json`. For a full list of
+options, see the [Jest documentation](https://jestjs.io/docs/en/configuration).
+These overrides will be loaded in from all `package.json` files in the directory ancestry, meaning
 that you can place common configuration in the `package.json` at the root of a
 monorepo. If multiple overrides are found, they will be merged together with
 configuration further down in the directory tree taking precedence.
@@ -462,6 +463,14 @@ The overrides in a single `package.json` may for example look like this:
       }
     }
   },
+```
+
+If you want to configure editor integration for tests we recommend executing the bundled configuration directly with Jest, rather than running through the Yarn test script. For example, with the Jest extension for VS Code, the configuration would look like this:
+
+```json
+{
+  "jest.jestCommandLine": "node_modules/.bin/jest --config node_modules/@backstage/cli/config/jest.js"
+}
 ```
 
 ## Publishing
