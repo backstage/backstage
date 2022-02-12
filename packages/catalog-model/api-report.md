@@ -489,17 +489,6 @@ export class SchemaValidEntityPolicy implements EntityPolicy {
   enforce(entity: Entity): Promise<Entity>;
 }
 
-// @public @deprecated
-export function serializeEntityRef(
-  ref:
-    | Entity
-    | {
-        kind?: string;
-        namespace?: string;
-        name: string;
-      },
-): EntityRef;
-
 // @public
 export const SOURCE_LOCATION_ANNOTATION = 'backstage.io/source-location';
 

@@ -16,12 +16,7 @@
 
 import { ENTITY_DEFAULT_NAMESPACE } from './constants';
 import { Entity } from './Entity';
-import {
-  compareEntityToRef,
-  parseEntityName,
-  parseEntityRef,
-  serializeEntityRef,
-} from './ref';
+import { compareEntityToRef, parseEntityName, parseEntityRef } from './ref';
 
 describe('ref', () => {
   describe('parseEntityName', () => {
@@ -326,64 +321,6 @@ describe('ref', () => {
           { defaultKind: 'x', defaultNamespace: 'y' },
         ),
       ).toThrow(/namespace/);
-    });
-  });
-
-  describe('serializeEntityRef', () => {
-    it('handles partials', () => {
-      expect(
-        serializeEntityRef({ kind: 'a', namespace: 'b', name: 'c' }),
-      ).toEqual('a:b/c');
-      expect(serializeEntityRef({ namespace: 'b', name: 'c' })).toEqual('b/c');
-      expect(serializeEntityRef({ kind: 'a', name: 'c' })).toEqual('a:c');
-      expect(serializeEntityRef({ name: 'c' })).toEqual('c');
-    });
-
-    it('handles entities', () => {
-      const entityWithNamespace: Entity = {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c',
-          namespace: 'd',
-        },
-      };
-      const entityWithoutNamespace: Entity = {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c',
-        },
-      };
-      expect(serializeEntityRef(entityWithNamespace)).toEqual('b:d/c');
-      expect(serializeEntityRef(entityWithoutNamespace)).toEqual('b:c');
-    });
-
-    it('picks the least complex form', () => {
-      expect(
-        serializeEntityRef({ kind: 'a', namespace: 'b', name: 'c' }),
-      ).toEqual('a:b/c');
-      expect(serializeEntityRef({ namespace: 'b', name: 'c' })).toEqual('b/c');
-      expect(serializeEntityRef({ kind: 'a', name: 'c' })).toEqual('a:c');
-      expect(serializeEntityRef({ name: 'c' })).toEqual('c');
-      expect(
-        serializeEntityRef({ kind: 'a:x', namespace: 'b', name: 'c' }),
-      ).toEqual({ kind: 'a:x', namespace: 'b', name: 'c' });
-      expect(
-        serializeEntityRef({ kind: 'a/x', namespace: 'b', name: 'c' }),
-      ).toEqual({ kind: 'a/x', namespace: 'b', name: 'c' });
-      expect(
-        serializeEntityRef({ kind: 'a', namespace: 'b:x', name: 'c' }),
-      ).toEqual({ kind: 'a', namespace: 'b:x', name: 'c' });
-      expect(
-        serializeEntityRef({ kind: 'a', namespace: 'b/x', name: 'c' }),
-      ).toEqual({ kind: 'a', namespace: 'b/x', name: 'c' });
-      expect(
-        serializeEntityRef({ kind: 'a', namespace: 'b', name: 'c:x' }),
-      ).toEqual({ kind: 'a', namespace: 'b', name: 'c:x' });
-      expect(
-        serializeEntityRef({ kind: 'a', namespace: 'b', name: 'c/x' }),
-      ).toEqual({ kind: 'a', namespace: 'b', name: 'c/x' });
     });
   });
 

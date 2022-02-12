@@ -40,7 +40,6 @@ export {
   getEntityName,
   parseEntityName,
   parseEntityRef,
-  serializeEntityRef,
   stringifyEntityRef,
 } from './ref';
 export type { EntityRefContext } from './ref';

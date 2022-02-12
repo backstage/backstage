@@ -19,9 +19,9 @@ import { CatalogApi } from '@backstage/catalog-client';
 import {
   LOCATION_ANNOTATION,
   SOURCE_LOCATION_ANNOTATION,
-  serializeEntityRef,
   Entity,
   parseLocationRef,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { TodoReader } from '../lib';
 import { ListTodosRequest, ListTodosResponse, TodoService } from './types';
@@ -71,7 +71,7 @@ export class TodoReaderService implements TodoService {
     });
     if (!entity) {
       throw new NotFoundError(
-        `Entity not found, ${serializeEntityRef(req.entity)}`,
+        `Entity not found, ${stringifyEntityRef(req.entity)}`,
       );
     }
 
@@ -133,7 +133,7 @@ export class TodoReaderService implements TodoService {
       const parsed = parseLocationRef(sourceLocation);
       if (parsed.type !== 'url') {
         throw new InputError(
-          `Invalid entity source location type for ${serializeEntityRef(
+          `Invalid entity source location type for ${stringifyEntityRef(
             entity,
           )}, got '${parsed.type}'`,
         );
@@ -146,7 +146,7 @@ export class TodoReaderService implements TodoService {
       const parsed = parseLocationRef(location);
       if (parsed.type !== 'url') {
         throw new InputError(
-          `Invalid entity location type for ${serializeEntityRef(
+          `Invalid entity location type for ${stringifyEntityRef(
             entity,
           )}, got '${parsed.type}'`,
         );
@@ -154,7 +154,7 @@ export class TodoReaderService implements TodoService {
       return parsed.target;
     }
     throw new InputError(
-      `No entity location annotation found for ${serializeEntityRef(entity)}`,
+      `No entity location annotation found for ${stringifyEntityRef(entity)}`,
     );
   }
 }
