@@ -36,7 +36,7 @@ import {
   UrlReaders,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';

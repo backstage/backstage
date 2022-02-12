@@ -16,7 +16,8 @@
 
 import React, { ComponentType } from 'react';
 import { Routes, Route, useOutlet } from 'react-router';
-import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';

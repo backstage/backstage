@@ -20,11 +20,14 @@ import {
   UrlReader,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity, TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import {
+  TemplateEntityV1beta2,
+  TemplateEntityV1beta3,
+} from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';

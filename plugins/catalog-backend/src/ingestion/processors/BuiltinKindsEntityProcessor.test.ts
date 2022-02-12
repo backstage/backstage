@@ -21,9 +21,9 @@ import {
   GroupEntity,
   ResourceEntity,
   SystemEntity,
-  TemplateEntityV1beta2,
   UserEntity,
 } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 
 describe('BuiltinKindsEntityProcessor', () => {

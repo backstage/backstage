@@ -15,11 +15,8 @@
  */
 
 import React, { ComponentType } from 'react';
-import {
-  Entity,
-  stringifyEntityRef,
-  TemplateEntityV1beta2,
-} from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import {
   Content,
   ContentHeader,

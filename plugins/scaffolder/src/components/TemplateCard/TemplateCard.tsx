@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Entity,
-  RELATION_OWNED_BY,
-  TemplateEntityV1beta2,
-} from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,

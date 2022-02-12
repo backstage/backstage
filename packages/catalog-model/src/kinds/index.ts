@@ -50,8 +50,6 @@ export type {
   SystemEntityV1alpha1 as SystemEntity,
   SystemEntityV1alpha1,
 } from './SystemEntityV1alpha1';
-export { templateEntityV1beta2Validator } from './TemplateEntityV1beta2';
-export type { TemplateEntityV1beta2 } from './TemplateEntityV1beta2';
 export type { KindValidator } from './types';
 export { userEntityV1alpha1Validator } from './UserEntityV1alpha1';
 export type {

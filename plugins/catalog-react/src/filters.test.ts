@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Entity, TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import { EntityTextFilter } from './filters';
 
 const entities: Entity[] = [

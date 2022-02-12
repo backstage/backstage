@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-import { Entity, JSONSchema } from '@backstage/catalog-model';
+import {
+  Entity,
+  entityKindSchemaValidator,
+  JSONSchema,
+  KindValidator,
+} from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
-import v1beta3Schema from './Template.v1beta3.schema.json';
+import schema from './Template.v1beta2.schema.json';
 
 /**
  * Backstage catalog Template kind Entity. Templates are used by the Scaffolder
  * plugin to create new entities, such as Components.
  *
  * @public
+ * @deprecated Please convert your templates to TemplateEntityV1beta3 on
+ *             apiVersion scaffolder.backstage.io/v1beta3
  */
-export interface TemplateEntityV1beta3 extends Entity {
-  apiVersion: 'scaffolder.backstage.io/v1beta3';
+export interface TemplateEntityV1beta2 extends Entity {
+  apiVersion: 'backstage.io/v1beta2';
   kind: 'Template';
   spec: {
     type: string;
@@ -42,12 +49,30 @@ export interface TemplateEntityV1beta3 extends Entity {
   };
 }
 
+const validator = entityKindSchemaValidator(schema);
+
 /**
- * JSON schema of the Template kind, apiVersion scaffolder.backstage.io/v1beta3.
+ * JSON schema of the Template kind, apiVersion backstage.io/v1beta2.
  *
  * @public
+ * @deprecated Please convert your templates to apiVersion
+ *             scaffolder.backstage.io/v1beta3
  */
-export const templateEntityV1beta3Schema: JSONSchema = v1beta3Schema as Omit<
+export const templateEntityV1beta2Schema: JSONSchema = schema as Omit<
   JSONSchema,
   'examples'
 >;
+
+/**
+ * Entity data validator for {@link TemplateEntityV1beta2}.
+ *
+ * @public
+ * @deprecated Please convert your templates to TemplateEntityV1beta3 on
+ *             apiVersion scaffolder.backstage.io/v1beta3
+ */
+export const templateEntityV1beta2Validator: KindValidator = {
+  // TODO(freben): Emulate the old KindValidator until we fix that type
+  async check(data: Entity) {
+    return validator(data) === data;
+  },
+};

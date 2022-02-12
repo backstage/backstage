@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 
