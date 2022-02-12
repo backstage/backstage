@@ -36,7 +36,6 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { ScmIntegrations } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
@@ -177,7 +176,10 @@ export class AwsS3DiscoveryProcessor implements CatalogProcessor {
 //
 // @public
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
-  constructor(options: { integrations: ScmIntegrations; logger: Logger_2 });
+  constructor(options: {
+    integrations: ScmIntegrationRegistry;
+    logger: Logger_2;
+  });
   // (undocumented)
   static fromConfig(
     config: Config,
@@ -464,7 +466,7 @@ export type CatalogRulesEnforcer = {
 // @public (undocumented)
 export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     reader: UrlReader;
   });
@@ -750,7 +752,7 @@ function generalError(
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });
@@ -773,7 +775,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
 // @alpha
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     orgs: GithubMultiOrgConfig;
     githubCredentialsProvider?: GithubCredentialsProvider;
@@ -828,7 +830,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
 // @public
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });
