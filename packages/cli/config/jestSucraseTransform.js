@@ -46,11 +46,17 @@ function process(source, filePath) {
   }
 
   if (transforms) {
-    return transform(source, {
+    const { code, sourceMap: map } = transform(source, {
       transforms,
       filePath,
       disableESTransforms: true,
-    }).code;
+      sourceMapOptions: {
+        compiledFilename: filePath,
+      },
+    });
+    const b64 = Buffer.from(JSON.stringify(map), 'utf8').toString('base64');
+    const suffix = `//# sourceMappingURL=data:application/json;charset=utf-8;base64,${b64}`;
+    return `${code}\n${suffix}`;
   }
 
   return source;
@@ -64,6 +70,8 @@ function getCacheKey(sourceText) {
     .update(sucrasePkg.version)
     .update(Buffer.alloc(1))
     .update(sucrasePluginPkg.version)
+    .update(Buffer.alloc(1))
+    .update('1') // increment whenever the transform logic in this file changes
     .digest('hex');
 }
 
