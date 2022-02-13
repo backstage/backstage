@@ -71,6 +71,7 @@ export async function command(cmd: Command): Promise<void> {
         // since some lint rules don't respect the cwd of ESLint
         process.cwd = () => fullDir;
 
+        const start = Date.now();
         const eslint = new ESLint({
           cwd: fullDir,
           fix,
@@ -81,7 +82,8 @@ export async function command(cmd: Command): Promise<void> {
         const results = await eslint.lintFiles(['.']);
 
         const count = String(results.length).padStart(3);
-        console.log(`Checked ${count} files in ${relativeDir}`);
+        const time = ((Date.now() - start) / 1000).toFixed(2);
+        console.log(`Checked ${count} files in ${relativeDir} ${time}s`);
 
         if (fix) {
           await ESLint.outputFixes(results);
