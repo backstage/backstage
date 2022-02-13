@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { relative as relativePath, posix as posixPath } from 'path';
 import { getPackages, Package } from '@manypkg/get-packages';
 import { paths } from '../paths';
 import { PackageRole } from '../role';
+import { listChangedFiles } from '../git';
 
 type PackageJSON = Package['packageJson'];
 
@@ -157,5 +159,48 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
     }
 
     return targets;
+  }
+
+  async listChangedPackages(options: { ref: string }) {
+    const changedFiles = await listChangedFiles(options.ref);
+
+    const dirMap = new Map(
+      Array.from(this.values()).map(pkg => [
+        posixPath.normalize(relativePath(paths.targetRoot, pkg.dir)) +
+          posixPath.sep,
+        pkg,
+      ]),
+    );
+    const packageDirs = Array.from(dirMap.keys());
+
+    const result = new Array<PackageGraphNode>();
+    let searchIndex = 0;
+
+    changedFiles.sort();
+    packageDirs.sort();
+
+    for (const packageDir of packageDirs) {
+      // Skip through changes that appear before our package dir
+      while (
+        searchIndex < changedFiles.length &&
+        changedFiles[searchIndex] < packageDir
+      ) {
+        searchIndex += 1;
+      }
+
+      // Check if we arrived at a match, otherwise we move on to the next package dir
+      if (changedFiles[searchIndex]?.startsWith(packageDir)) {
+        searchIndex += 1;
+
+        result.push(dirMap.get(packageDir)!);
+
+        // Skip through the rest of the changed files for the same package
+        while (changedFiles[searchIndex]?.startsWith(packageDir)) {
+          searchIndex += 1;
+        }
+      }
+    }
+
+    return result;
   }
 }
