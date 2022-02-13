@@ -18,17 +18,17 @@ import os from 'os';
 import { ErrorLike } from '@backstage/errors';
 import { Worker } from 'worker_threads';
 
-export const DEFAULT_PARALLELISM = 4;
+const defaultParallelism = Math.ceil(os.cpus().length / 2);
 
-export const PARALLEL_ENV_VAR = 'BACKSTAGE_CLI_BUILD_PARALLEL';
+const PARALLEL_ENV_VAR = 'BACKSTAGE_CLI_BUILD_PARALLEL';
 
 export type ParallelismOption = boolean | string | number | null | undefined;
 
 export function parseParallelismOption(parallel: ParallelismOption): number {
   if (parallel === undefined || parallel === null) {
-    return DEFAULT_PARALLELISM;
+    return defaultParallelism;
   } else if (typeof parallel === 'boolean') {
-    return parallel ? DEFAULT_PARALLELISM : 1;
+    return parallel ? defaultParallelism : 1;
   } else if (typeof parallel === 'number' && Number.isInteger(parallel)) {
     if (parallel < 1) {
       return 1;
