@@ -153,13 +153,14 @@ export type WorkerQueueThreadsOptions<TItem, TResult, TData> = {
 export async function runWorkerQueueThreads<TItem, TResult, TData>(
   options: WorkerQueueThreadsOptions<TItem, TResult, TData>,
 ): Promise<TResult[]> {
+  const items = Array.from(options.items);
   const {
     workerFactory,
     workerData,
-    threadCount = os.cpus().length / 2,
+    threadCount = Math.min(getEnvironmentParallelism(), items.length),
   } = options;
 
-  const iterator = options.items[Symbol.iterator]();
+  const iterator = items[Symbol.iterator]();
   const results = new Array<TResult>();
   let itemIndex = 0;
 
