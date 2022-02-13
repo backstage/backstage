@@ -8,6 +8,7 @@
 '@backstage/plugin-catalog-react': patch
 '@backstage/plugin-explore': patch
 '@backstage/plugin-fossa': patch
+'@backstage/plugin-scaffolder': patch
 '@backstage/plugin-todo-backend': patch
 ---
 
