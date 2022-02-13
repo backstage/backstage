@@ -53,7 +53,10 @@ export function registerScriptCommand(program: CommanderStatic) {
     .command('start')
     .description('Start a package for local development')
     .option(...configOption)
-    .option('--role <name>', 'Run the command with an explicit package role')
+    .option(
+      '--role <name>',
+      'Run the command with an explicit package role [EXPERIMENTAL]',
+    )
     .option('--check', 'Enable type checking and linting if available')
     .option('--inspect', 'Enable debugger in Node.js environments')
     .option(
@@ -65,6 +68,10 @@ export function registerScriptCommand(program: CommanderStatic) {
   command
     .command('build')
     .description('Build a package for production deployment or publishing')
+    .option(
+      '--role <name>',
+      'Run the command with an explicit package role [EXPERIMENTAL]',
+    )
     .option(
       '--minify',
       'Minify the generated code. Does not apply to app or backend packages.',
