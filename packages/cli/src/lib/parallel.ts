@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import os from 'os';
 import { ErrorLike } from '@backstage/errors';
 import { Worker } from 'worker_threads';
 
@@ -137,7 +138,7 @@ export type WorkerQueueThreadsOptions<TItem, TResult, TData> = {
   workerFactory: (data: TData) => (item: TItem) => Promise<TResult>;
   /** Data supplied to each worker factory */
   workerData?: TData;
-  /** Number of threads, defaults to the environment parallelism */
+  /** Number of threads, defaults to half of the number of available CPUs */
   threadCount?: number;
 };
 
@@ -151,7 +152,7 @@ export async function runWorkerQueueThreads<TItem, TResult, TData>(
   const {
     workerFactory,
     workerData,
-    threadCount = getEnvironmentParallelism(),
+    threadCount = os.cpus().length / 2,
   } = options;
 
   const iterator = options.items[Symbol.iterator]();
