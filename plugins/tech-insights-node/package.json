@@ -11,7 +11,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "plugin-backend"
+    "role": "backend-plugin"
   },
   "homepage": "https://backstage.io",
   "repository": {

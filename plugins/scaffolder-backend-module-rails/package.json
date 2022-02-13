@@ -12,7 +12,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "plugin-backend-module"
+    "role": "backend-plugin-module"
   },
   "scripts": {
     "build": "backstage-cli backend:build",

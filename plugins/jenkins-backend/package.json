@@ -12,7 +12,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "plugin-backend"
+    "role": "backend-plugin"
   },
   "configSchema": "config.d.ts",
   "scripts": {
