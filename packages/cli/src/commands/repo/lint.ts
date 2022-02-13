@@ -22,7 +22,12 @@ import { runWorkerQueueThreads } from '../../lib/parallel';
 import { paths } from '../../lib/paths';
 
 export async function command(cmd: Command): Promise<void> {
-  const packages = await PackageGraph.listTargetPackages();
+  let packages = await PackageGraph.listTargetPackages();
+
+  if (cmd.since) {
+    const graph = PackageGraph.fromPackages(packages);
+    packages = await graph.listChangedPackages({ ref: cmd.since });
+  }
 
   // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
   if (cmd.format === 'eslint-formatter-friendly') {

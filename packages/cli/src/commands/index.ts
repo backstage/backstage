@@ -51,6 +51,10 @@ export function registerRepoCommand(program: CommanderStatic) {
       'Lint report output format',
       'eslint-formatter-friendly',
     )
+    .option(
+      '--since <ref>',
+      'Only lint packages that changed since the specified ref',
+    )
     .option('--fix', 'Attempt to automatically fix violations')
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
 }
