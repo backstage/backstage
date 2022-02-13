@@ -17,9 +17,17 @@
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { relative as relativePath } from 'path';
-import { PackageGraph } from '../../lib/monorepo';
+import { PackageGraph, ExtendedPackageJSON } from '../../lib/monorepo';
 import { runWorkerQueueThreads } from '../../lib/parallel';
 import { paths } from '../../lib/paths';
+
+function depCount(pkg: ExtendedPackageJSON) {
+  const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;
+  const devDeps = pkg.devDependencies
+    ? Object.keys(pkg.devDependencies).length
+    : 0;
+  return deps + devDeps;
+}
 
 export async function command(cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
@@ -28,6 +36,10 @@ export async function command(cmd: Command): Promise<void> {
     const graph = PackageGraph.fromPackages(packages);
     packages = await graph.listChangedPackages({ ref: cmd.since });
   }
+
+  // Packages are ordered from most to least number of dependencies, as a
+  // very cheap way of guessing which packages are more likely to be larger.
+  packages.sort((a, b) => depCount(b.packageJson) - depCount(a.packageJson));
 
   // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
   if (cmd.format === 'eslint-formatter-friendly') {
