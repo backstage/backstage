@@ -42,6 +42,17 @@ export function registerRepoCommand(program: CommanderStatic) {
       'Build all packages, including bundled app and backend packages.',
     )
     .action(lazy(() => import('./repo/build').then(m => m.command)));
+
+  command
+    .command('lint')
+    .description('Lint all packages in the project')
+    .option(
+      '--format <format>',
+      'Lint report output format',
+      'eslint-formatter-friendly',
+    )
+    .option('--fix', 'Attempt to automatically fix violations')
+    .action(lazy(() => import('./repo/lint').then(m => m.command)));
 }
 
 export function registerScriptCommand(program: CommanderStatic) {
