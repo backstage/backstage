@@ -135,7 +135,11 @@ export type WorkerQueueThreadsOptions<TItem, TResult, TData> = {
    * note that they are both copied by value into the worker thread, except for
    * types that are explicitly shareable across threads, such as `SharedArrayBuffer`.
    */
-  workerFactory: (data: TData) => (item: TItem) => Promise<TResult>;
+  workerFactory: (
+    data: TData,
+  ) =>
+    | ((item: TItem) => Promise<TResult>)
+    | Promise<(item: TItem) => Promise<TResult>>;
   /** Data supplied to each worker factory */
   workerData?: TData;
   /** Number of threads, defaults to half of the number of available CPUs */
@@ -209,31 +213,39 @@ export async function runWorkerQueueThreads<TItem, TResult, TData>(
 }
 
 function workerQueueThread(
-  workerFuncFactory: (data: unknown) => (item: unknown) => Promise<unknown>,
+  workerFuncFactory: (
+    data: unknown,
+  ) => Promise<(item: unknown) => Promise<unknown>>,
 ) {
   const { parentPort, workerData } = require('worker_threads');
-  const workerFunc = workerFuncFactory(workerData);
 
-  parentPort.on('message', async (message: WorkerThreadMessage) => {
-    if (message.type === 'done') {
-      parentPort.close();
-      return;
-    }
-    if (message.type === 'item') {
-      try {
-        const result = await workerFunc(message.item);
-        parentPort.postMessage({
-          type: 'result',
-          index: message.index,
-          result,
+  Promise.resolve()
+    .then(() => workerFuncFactory(workerData))
+    .then(
+      workerFunc => {
+        parentPort.on('message', async (message: WorkerThreadMessage) => {
+          if (message.type === 'done') {
+            parentPort.close();
+            return;
+          }
+          if (message.type === 'item') {
+            try {
+              const result = await workerFunc(message.item);
+              parentPort.postMessage({
+                type: 'result',
+                index: message.index,
+                result,
+              });
+            } catch (error) {
+              parentPort.postMessage({ type: 'error', error });
+            }
+          }
         });
-      } catch (error) {
-        parentPort.postMessage({ type: 'error', error });
-      }
-    }
-  });
 
-  parentPort.postMessage({ type: 'start' });
+        parentPort.postMessage({ type: 'start' });
+      },
+      error => parentPort.postMessage({ type: 'error', error }),
+    );
 }
 
 export type WorkerThreadsOptions<TResult, TData, TMessage> = {
