@@ -31,8 +31,8 @@ export async function command(cmd: Command): Promise<void> {
 
   switch (role) {
     case 'backend':
-    case 'plugin-backend':
-    case 'plugin-backend-module':
+    case 'backend-plugin':
+    case 'backend-plugin-module':
     case 'node-library':
       return startBackend(options);
     case 'app':
@@ -42,8 +42,8 @@ export async function command(cmd: Command): Promise<void> {
         verifyVersions: true,
       });
     case 'web-library':
-    case 'plugin-frontend':
-    case 'plugin-frontend-module':
+    case 'frontend-plugin':
+    case 'frontend-plugin-module':
       return startFrontend({ entry: 'dev/index', ...options });
     default:
       throw new Error(
