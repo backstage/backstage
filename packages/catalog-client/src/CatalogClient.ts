@@ -36,6 +36,8 @@ import {
   GetEntityAncestorsRequest,
   GetEntityAncestorsResponse,
   Location,
+  GetEntityFacetsRequest,
+  GetEntityFacetsResponse,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { FetchApi } from './types/fetch';
@@ -97,14 +99,13 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesResponse> {
     const { filter = [], fields = [], offset, limit, after } = request ?? {};
-    const filterItems = [filter].flat();
     const params: string[] = [];
 
     // filter param can occur multiple times, for example
     // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
     // the "outer array" defined by `filter` occurrences corresponds to "anyOf" filters
     // the "inner array" defined within a `filter` param corresponds to "allOf" filters
-    for (const filterItem of filterItems) {
+    for (const filterItem of [filter].flat()) {
       const filterParts: string[] = [];
       for (const [key, value] of Object.entries(filterItem)) {
         for (const v of [value].flat()) {
@@ -205,6 +206,47 @@ export class CatalogClient implements CatalogApi {
     if (response.status !== 200) {
       throw new Error(await response.text());
     }
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.getEntityFacets}
+   */
+  async getEntityFacets(
+    request: GetEntityFacetsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntityFacetsResponse> {
+    const { filter = [], facets } = request;
+    const params: string[] = [];
+
+    // filter param can occur multiple times, for example
+    // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
+    // the "outer array" defined by `filter` occurrences corresponds to "anyOf" filters
+    // the "inner array" defined within a `filter` param corresponds to "allOf" filters
+    for (const filterItem of [filter].flat()) {
+      const filterParts: string[] = [];
+      for (const [key, value] of Object.entries(filterItem)) {
+        for (const v of [value].flat()) {
+          if (v === CATALOG_FILTER_EXISTS) {
+            filterParts.push(encodeURIComponent(key));
+          } else if (typeof v === 'string') {
+            filterParts.push(
+              `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
+            );
+          }
+        }
+      }
+
+      if (filterParts.length) {
+        params.push(`filter=${filterParts.join(',')}`);
+      }
+    }
+
+    for (const facet of facets) {
+      params.push(`facet=${encodeURIComponent(facet)}`);
+    }
+
+    const query = params.length ? `?${params.join('&')}` : '';
+    return await this.requestOptional('GET', `/entity-facets${query}`, options);
   }
 
   /**

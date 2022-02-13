@@ -27,11 +27,9 @@ export function useEntityKinds() {
     loading,
     value: kinds,
   } = useAsync(async () => {
-    const entities = await catalogApi
-      .getEntities({ fields: ['kind'] })
-      .then(response => response.items);
-
-    return [...new Set(entities.map(e => e.kind))].sort();
+    return await catalogApi
+      .getEntityFacets({ facets: ['kind'] })
+      .then(response => response.facets.kind?.map(f => f.value).sort() || []);
   });
   return { error, loading, kinds };
 }

@@ -25,6 +25,8 @@ export type {
   GetEntityAncestorsRequest,
   GetEntityAncestorsResponse,
   Location,
+  GetEntityFacetsRequest,
+  GetEntityFacetsResponse,
 } from './api';
-export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';
 export * from './deprecated';
+export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';
