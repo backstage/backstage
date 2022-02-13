@@ -33,7 +33,7 @@ export async function command() {
 
       const roleInfo = getRoleInfo(role);
       const hasStart = !noStartRoles.includes(role);
-      const isBundled = roleInfo.output.includes('bundle');
+      const needsPack = !(roleInfo.output.includes('bundle') || role === 'cli');
 
       const startCmd = ['start'];
       if (packageJson.scripts?.start?.includes('--check')) {
@@ -56,7 +56,7 @@ export async function command() {
         lint: 'backstage-cli script lint',
         test: 'backstage-cli script test',
         clean: 'backstage-cli script clean',
-        ...(!isBundled && {
+        ...(needsPack && {
           postpack: 'backstage-cli script postpack',
           prepack: 'backstage-cli script prepack',
         }),
