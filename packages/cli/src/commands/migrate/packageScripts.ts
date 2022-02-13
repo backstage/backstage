@@ -35,9 +35,24 @@ export async function command() {
       const hasStart = !noStartRoles.includes(role);
       const isBundled = roleInfo.output.includes('bundle');
 
+      const startCmd = ['start'];
+      if (packageJson.scripts?.start?.includes('--check')) {
+        startCmd.push('--check');
+      }
+
+      const buildCmd = ['build'];
+      if (packageJson.scripts?.build?.includes('--minify')) {
+        buildCmd.push('--minify');
+      }
+      if (packageJson.scripts?.build?.includes('--experimental-type-build')) {
+        buildCmd.push('--experimental-type-build');
+      }
+
       const expectedScripts = {
-        ...(hasStart && { start: 'backstage-cli script start' }),
-        build: 'backstage-cli script build',
+        ...(hasStart && {
+          start: `backstage-cli script ${startCmd.join(' ')}`,
+        }),
+        build: `backstage-cli script ${buildCmd.join(' ')}`,
         lint: 'backstage-cli script lint',
         test: 'backstage-cli script test',
         clean: 'backstage-cli script clean',
