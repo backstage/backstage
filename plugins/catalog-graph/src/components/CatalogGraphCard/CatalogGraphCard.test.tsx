@@ -65,6 +65,7 @@ describe('<CatalogGraphCard/>', () => {
       removeLocationById: jest.fn(),
       refreshEntity: jest.fn(),
       getEntityAncestors: jest.fn(),
+      getEntityFacets: jest.fn(),
     };
     apis = TestApiRegistry.from([catalogApiRef, catalog]);
 
