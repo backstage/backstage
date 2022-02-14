@@ -62,25 +62,34 @@ export class CookiecutterRunner {
     values: JsonObject;
     logStream: Writable;
   }): Promise<void> {
-    const templateDir = path.join(workspacePath, 'template');
     const intermediateDir = path.join(workspacePath, 'intermediate');
     await fs.ensureDir(intermediateDir);
     const resultDir = path.join(workspacePath, 'result');
+    const {
+      templateContentsDir,
+      templateDir,
+      imageName,
+      ...valuesForCookieCutterJson
+    } = values;
 
     // First lets grab the default cookiecutter.json file
-    const cookieCutterJson = await this.fetchTemplateCookieCutter(templateDir);
+    const cookieCutterJson = await this.fetchTemplateCookieCutter(
+      templateContentsDir as string,
+    );
 
-    const { imageName, ...valuesForCookieCutterJson } = values;
     const cookieInfo = {
       ...cookieCutterJson,
       ...valuesForCookieCutterJson,
     };
 
-    await fs.writeJSON(path.join(templateDir, 'cookiecutter.json'), cookieInfo);
+    await fs.writeJSON(
+      path.join(templateDir as string, 'cookiecutter.json'),
+      cookieInfo,
+    );
 
     // Directories to bind on container
     const mountDirs = {
-      [templateDir]: '/input',
+      [templateDir as string]: '/input',
       [intermediateDir]: '/output',
     };
 
@@ -91,7 +100,13 @@ export class CookiecutterRunner {
     if (cookieCutterInstalled) {
       await runCommand({
         command: 'cookiecutter',
-        args: ['--no-input', '-o', intermediateDir, templateDir, '--verbose'],
+        args: [
+          '--no-input',
+          '-o',
+          intermediateDir,
+          templateDir as string,
+          '--verbose',
+        ],
         logStream,
       });
     } else {
@@ -233,6 +248,8 @@ export function createFetchCookiecutterAction(options: {
         _copy_without_render: ctx.input.copyWithoutRender,
         _extensions: ctx.input.extensions,
         imageName: ctx.input.imageName,
+        templateDir: templateDir,
+        templateContentsDir: templateContentsDir,
       };
 
       // Will execute the template in ./template and put the result in ./result
