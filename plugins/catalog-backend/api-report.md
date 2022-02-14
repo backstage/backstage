@@ -22,7 +22,7 @@ import { GitHubIntegrationConfig } from '@backstage/integration';
 import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import { Location as Location_2 } from '@backstage/catalog-model';
+import { Location as Location_2 } from '@backstage/catalog-client';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Organizations } from 'aws-sdk';

@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  Location,
-  ORIGIN_LOCATION_ANNOTATION,
-} from '@backstage/catalog-model';
-import { CatalogApi } from '@backstage/catalog-client';
+import { Entity, ORIGIN_LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { CatalogApi, Location } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
 import {
   act,

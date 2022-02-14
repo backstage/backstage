@@ -17,7 +17,6 @@
 import {
   Entity,
   EntityName,
-  Location,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
   parseEntityRef,
@@ -36,6 +35,7 @@ import {
   CatalogRequestOptions,
   GetEntityAncestorsRequest,
   GetEntityAncestorsResponse,
+  Location,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { FetchApi } from './types/fetch';

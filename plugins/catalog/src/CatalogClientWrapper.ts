@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName, Location } from '@backstage/catalog-model';
+import { Entity, EntityName } from '@backstage/catalog-model';
 import {
   AddLocationRequest,
   AddLocationResponse,
@@ -25,6 +25,7 @@ import {
   CatalogRequestOptions,
   GetEntityAncestorsRequest,
   GetEntityAncestorsResponse,
+  Location,
 } from '@backstage/catalog-client';
 import { IdentityApi } from '@backstage/core-plugin-api';
 

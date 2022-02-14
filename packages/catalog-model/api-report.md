@@ -319,7 +319,7 @@ export class KubernetesValidatorFunctions {
   static isValidObjectName(value: unknown): boolean;
 }
 
-// @public
+// @public @deprecated
 type Location_2 = {
   id: string;
 } & LocationSpec;
