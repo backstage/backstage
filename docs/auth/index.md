@@ -56,18 +56,15 @@ allows a single auth backend to serve multiple environments, such as running a
 local frontend against a deployed backend. The provider configuration matching
 the local `auth.environment` setting will be selected.
 
-### Adding the provider to the sign-in page
+## Using an authentication provider for sign-in
 
-After configuring an authentication provider, the `app` frontend package needs a
-small update to show this provider as a login option. The `SignInPage` component
-handles this, and takes either a `provider` or `providers` (array) prop of
-`SignInProviderConfig` definitions.
+If you want to use an authentication provider for sign-in, as opposed to just accessing external resources, you'll need to configure that in the your app as well. This is done by provided a custom `SingInPage` component to the app, which will require the user to sign-in before they can access the app. Note that this is does not block access to the app, which you can read more about [here](./using-auth.md).
 
-These reference the `ApiRef` exported by the provider. Again, an example using
-GitHub that can be adapted to any of the built-in providers:
+If you want to use can use the `SignInPage` component that is provided by `@backstage/core-components`, which takes either a `provider` or `providers` (array) prop of `SignInProviderConfig` definitions. These reference the `ApiRef` exported for the provider.
+
+Again, the following example for GitHub shows the additions needed to `packages/app/src/App.tsx`, and can be adapted to any of the built-in providers:
 
 ```diff
-# packages/app/src/App.tsx
 + import { githubAuthApiRef } from '@backstage/core-plugin-api';
 + import { SignInProviderConfig, SignInPage } from '@backstage/core-components';
 
@@ -78,8 +75,8 @@ GitHub that can be adapted to any of the built-in providers:
 +  apiRef: githubAuthApiRef,
 +};
 +
-const app = createApp({
-  apis,
+ const app = createApp({
+   apis,
 +  components: {
 +    SignInPage: props => (
 +      <SignInPage
@@ -89,15 +86,15 @@ const app = createApp({
 +      />
 +    ),
 +  },
-  bindRoutes({ bind }) {
+   bindRoutes({ bind }) {
 ```
 
 To also allow unauthenticated guest access, use the `providers` prop for
 `SignInPage`:
 
 ```diff
-const app = createApp({
-  apis,
+ const app = createApp({
+   apis,
 +  components: {
 +    SignInPage: props => (
 +      <SignInPage
@@ -106,7 +103,7 @@ const app = createApp({
 +      />
 +    ),
 +  },
-  bindRoutes({ bind }) {
+   bindRoutes({ bind }) {
 ```
 
 ## Adding a custom authentication provider
