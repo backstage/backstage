@@ -58,9 +58,9 @@ the local `auth.environment` setting will be selected.
 
 ## Using an authentication provider for sign-in
 
-If you want to use an authentication provider for sign-in, as opposed to just accessing external resources, you'll need to configure that in the your app as well. This is done by provided a custom `SingInPage` component to the app, which will require the user to sign-in before they can access the app. Note that this is does not block access to the app, which you can read more about [here](./using-auth.md).
+If you want to use an authentication provider for sign-in, as opposed to just accessing external resources, you'll need to configure that in your app as well. This is done by providing a custom `SignInPage` component to the app, which will require the user to sign in before they can access the app. Note that this does not block access to the app, which you can read more about [here](./using-auth.md).
 
-If you want to use can use the `SignInPage` component that is provided by `@backstage/core-components`, which takes either a `provider` or `providers` (array) prop of `SignInProviderConfig` definitions. These reference the `ApiRef` exported for the provider.
+If you want to, you can use the `SignInPage` component that is provided by `@backstage/core-components`, which takes either a `provider` or `providers` (array) prop of `SignInProviderConfig` definitions. These reference the `ApiRef` exported for the provider.
 
 Again, the following example for GitHub shows the additions needed to `packages/app/src/App.tsx`, and can be adapted to any of the built-in providers:
 
@@ -119,7 +119,7 @@ Passport-supported authentication method.
 
 ## Custom ScmAuthApi Implementation
 
-If you are using any custom authentication providers, like for example one for GitHub Enterprise, then you are likely to need a custom implementation of the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi). It is an API used to authenticate towards different SCM systems in a generic way, based what resource is being accessed, and is used for example by the Scaffolder (Software Templates) and Catalog Import plugin.
+If you are using any custom authentication providers, like for example one for GitHub Enterprise, then you are likely to need a custom implementation of the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi). It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed, and is used for example by the Scaffolder (Software Templates) and Catalog Import plugins.
 
 To set up a custom `ScmAuthApi` implementation, you'll need to add an API factory entry to `packages/app/src/apis.ts`. The following example shows an implementation that supports both public GitHub via `githubAuthApi` as well as a GitHub Enterprise installation hosted at `ghe.example.com` via `gheAuthApi`:
 
