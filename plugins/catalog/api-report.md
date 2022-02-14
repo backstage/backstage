@@ -44,7 +44,7 @@ export function AboutCard({ variant }: AboutCardProps): JSX.Element;
 // Warning: (ae-missing-release-tag) "AboutContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const AboutContent: ({ entity }: Props) => JSX.Element;
+export const AboutContent: ({ entity }: Props_2) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "AboutField" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -55,7 +55,7 @@ export const AboutField: ({
   value,
   gridSizes,
   children,
-}: Props_2) => JSX.Element;
+}: Props_3) => JSX.Element;
 
 // @public (undocumented)
 export type BackstageOverrides = Overrides & {
@@ -192,6 +192,12 @@ export type CatalogTableRow = {
     ownedByRelations: EntityName[];
   };
 };
+
+// Warning: (ae-forgotten-export) The symbol "Breakpoint" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "ColumnBreakpoints" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ColumnBreakpoints = Record<Breakpoint, number>;
 
 // Warning: (ae-missing-release-tag) "createMetadataDescriptionColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -334,6 +340,11 @@ export const EntityLinksCard: ({
   variant?: 'gridItem' | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityLinksEmptyState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const EntityLinksEmptyState: () => JSX.Element;
+
 // @public (undocumented)
 export type EntityLinksEmptyStateClassKey = 'code';
 
@@ -432,6 +443,12 @@ export function isNamespace(namespace: string): (entity: Entity) => boolean;
 // @public (undocumented)
 export const isOrphan: (entity: Entity) => boolean;
 
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "LinksGridList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const LinksGridList: ({ items, cols }: Props) => JSX.Element;
+
 // @public (undocumented)
 export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
@@ -476,5 +493,4 @@ export type SystemDiagramCardClassKey =
 // src/components/EntityLayout/EntityLayout.d.ts:43:5 - (ae-forgotten-export) The symbol "EntityLayoutProps" needs to be exported by the entry point index.d.ts
 // src/components/EntityLayout/EntityLayout.d.ts:44:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
 // src/components/EntityPageLayout/EntityPageLayout.d.ts:22:5 - (ae-forgotten-export) The symbol "EntityPageLayoutProps" needs to be exported by the entry point index.d.ts
-// src/plugin.d.ts:22:5 - (ae-forgotten-export) The symbol "ColumnBreakpoints" needs to be exported by the entry point index.d.ts
 ```
