@@ -57,9 +57,21 @@ export class KubernetesBuilder {
 
   public async build() {
     const logger = this.env.logger;
+    const config = this.env.config;
 
     logger.info('Initializing Kubernetes backend');
 
+    if (!config.has('kubernetes')) {
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error('Kubernetes configuration is missing');
+      }
+      logger.warn(
+        'Failed to initialize kubernetes backend: kubernetes config is missing',
+      );
+      return {
+        router: Router(),
+      };
+    }
     const customResources = this.buildCustomResources();
 
     const fetcher = this.fetcher ?? this.buildFetcher();
