@@ -26,14 +26,14 @@ export async function command(cmd: Command): Promise<void> {
 
   if (role === 'app') {
     return buildApp({
-      targetDir: paths.resolveTarget('dist'),
+      targetDir: paths.targetDir,
       configPaths: cmd.config as string[],
       writeStats: Boolean(cmd.stats),
     });
   }
   if (role === 'backend') {
     return buildBackend({
-      targetDir: paths.resolveTarget('dist'),
+      targetDir: paths.targetDir,
       skipBuildDependencies: Boolean(cmd.skipBuildDependencies),
     });
   }
