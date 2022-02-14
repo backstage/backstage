@@ -35,8 +35,9 @@ class AllowAllPermissionPolicy implements PermissionPolicy {
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const { logger, discovery } = env;
+  const { logger, discovery, config } = env;
   return await createRouter({
+    config,
     logger,
     discovery,
     policy: new AllowAllPermissionPolicy(),

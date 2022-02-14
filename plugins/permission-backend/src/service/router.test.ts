@@ -26,6 +26,7 @@ import {
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
 import { createRouter } from './router';
+import { ConfigReader } from '@backstage/config';
 
 const mockApplyConditions: jest.MockedFunction<
   InstanceType<typeof PermissionIntegrationClient>['applyConditions']
@@ -63,6 +64,7 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const router = await createRouter({
+      config: new ConfigReader({ permission: { enabled: true } }),
       logger: getVoidLogger(),
       discovery: {
         getBaseUrl: jest.fn(),
