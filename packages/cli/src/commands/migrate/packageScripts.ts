@@ -19,6 +19,8 @@ import { resolve as resolvePath } from 'path';
 import { PackageGraph } from '../../lib/monorepo';
 import { getRoleFromPackage, getRoleInfo, PackageRole } from '../../lib/role';
 
+const configArgPattern = /--config[=\s][^\s$]+/;
+
 const noStartRoles: PackageRole[] = ['cli', 'common-library'];
 
 export async function command() {
@@ -34,18 +36,38 @@ export async function command() {
       const roleInfo = getRoleInfo(role);
       const hasStart = !noStartRoles.includes(role);
       const needsPack = !(roleInfo.output.includes('bundle') || role === 'cli');
+      const scripts = packageJson.scripts ?? {};
 
       const startCmd = ['start'];
-      if (packageJson.scripts?.start?.includes('--check')) {
+      if (scripts.start?.includes('--check')) {
         startCmd.push('--check');
+      }
+      if (scripts.start?.includes('--config')) {
+        startCmd.push(...(scripts.start.match(configArgPattern) ?? []));
       }
 
       const buildCmd = ['build'];
-      if (packageJson.scripts?.build?.includes('--minify')) {
+      if (scripts.build?.includes('--minify')) {
         buildCmd.push('--minify');
       }
-      if (packageJson.scripts?.build?.includes('--experimental-type-build')) {
+      if (scripts.build?.includes('--experimental-type-build')) {
         buildCmd.push('--experimental-type-build');
+      }
+      if (scripts.build?.includes('--config')) {
+        buildCmd.push(...(scripts.build.match(configArgPattern) ?? []));
+      }
+
+      // For test scripts we keep all existing flags except for --passWithNoTests, since that's now default
+      const testCmd = ['test'];
+      if (scripts.test?.startsWith('backstage-cli test')) {
+        const args = scripts.test
+          .slice('backstage-cli test'.length)
+          .split(' ')
+          .filter(Boolean);
+        if (args.includes('--passWithNoTests')) {
+          args.splice(args.indexOf('--passWithNoTests'), 1);
+        }
+        testCmd.push(...args);
       }
 
       const expectedScripts = {
@@ -54,7 +76,7 @@ export async function command() {
         }),
         build: `backstage-cli script ${buildCmd.join(' ')}`,
         lint: 'backstage-cli script lint',
-        test: 'backstage-cli script test',
+        test: `backstage-cli script ${testCmd.join(' ')}`,
         clean: 'backstage-cli script clean',
         ...(needsPack && {
           postpack: 'backstage-cli script postpack',
@@ -67,7 +89,12 @@ export async function command() {
         (packageJson.scripts = packageJson.scripts || {});
 
       for (const [name, value] of Object.entries(expectedScripts)) {
-        if (currentScripts[name] !== value) {
+        const currentScript = currentScripts[name];
+
+        const isMissing = !currentScript;
+        const isDifferent = currentScript !== value;
+        const isBackstageScript = currentScript?.includes('backstage-cli');
+        if (isMissing || (isDifferent && isBackstageScript)) {
           changed = true;
           currentScripts[name] = value;
         }
