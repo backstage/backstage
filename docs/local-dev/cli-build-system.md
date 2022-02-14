@@ -465,11 +465,18 @@ The overrides in a single `package.json` may for example look like this:
   },
 ```
 
-If you want to configure editor integration for tests we recommend executing the bundled configuration directly with Jest, rather than running through the Yarn test script. For example, with the Jest extension for VS Code the configuration would look like this:
+If you want to configure editor integration for tests we recommend executing the bundled configuration directly with Jest rather than running through the Yarn test script. For example, with the Jest extension for VS Code the configuration would look something like this:
 
-```json
+```jsonc
 {
-  "jest.jestCommandLine": "node_modules/.bin/jest --config node_modules/@backstage/cli/config/jest.js"
+  "jest.jestCommandLine": "node_modules/.bin/jest --config node_modules/@backstage/cli/config/jest.js",
+  // In a large repo like the Backstage main repo you likely want to disable
+  // watch mode and the initial test run too, leaving just manual and perhaps
+  // on-save test runs in place.
+  "jest.autoRun": {
+    "watch": false,
+    "onSave": "test-src-file"
+  }
 }
 ```
 
