@@ -14,13 +14,13 @@
     "role": "node-library"
   },
   "scripts": {
-    "start": "backstage-cli backend:dev",
-    "build": "backstage-cli backend:build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "start": "backstage-cli script start",
+    "build": "backstage-cli script build",
+    "lint": "backstage-cli script lint",
+    "test": "backstage-cli script test",
+    "prepack": "backstage-cli script prepack",
+    "postpack": "backstage-cli script postpack",
+    "clean": "backstage-cli script clean"
   },
   "dependencies": {
     "@backstage/search-common": "^0.2.2",

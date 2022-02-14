@@ -19,9 +19,11 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "nodemon --",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "test:e2e": "yarn start"
+    "lint": "backstage-cli script lint",
+    "test": "backstage-cli script test",
+    "test:e2e": "yarn start",
+    "build": "backstage-cli script build",
+    "clean": "backstage-cli script clean"
   },
   "bin": {
     "e2e-test": "bin/e2e-test"

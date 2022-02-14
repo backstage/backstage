@@ -23,12 +23,12 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "nodemon --",
-    "build": "backstage-cli build --outputs cjs",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
+    "build": "backstage-cli script build",
+    "lint": "backstage-cli script lint",
+    "test": "backstage-cli script test",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "clean": "backstage-cli script clean"
   },
   "bin": {
     "backstage-codemods": "bin/backstage-codemods"

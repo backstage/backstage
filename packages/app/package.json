@@ -92,13 +92,13 @@
     "start-server-and-test": "^1.10.11"
   },
   "scripts": {
-    "start": "backstage-cli app:serve",
-    "build": "backstage-cli app:build",
-    "clean": "backstage-cli clean",
-    "test": "backstage-cli test",
+    "start": "backstage-cli script start",
+    "build": "backstage-cli script build",
+    "clean": "backstage-cli script clean",
+    "test": "backstage-cli script test",
     "test:e2e": "start-server-and-test start http://localhost:3000 cy:dev",
     "test:e2e:ci": "start-server-and-test start http://localhost:3000 cy:run",
-    "lint": "backstage-cli lint",
+    "lint": "backstage-cli script lint",
     "cy:dev": "cypress open",
     "cy:run": "cypress run"
   },

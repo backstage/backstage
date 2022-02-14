@@ -24,12 +24,13 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "build": "backstage-cli build --outputs cjs,types",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli script build",
+    "lint": "backstage-cli script lint",
+    "test": "backstage-cli script test",
+    "prepack": "backstage-cli script prepack",
+    "postpack": "backstage-cli script postpack",
+    "clean": "backstage-cli script clean",
+    "start": "backstage-cli script start"
   },
   "dependencies": {
     "@backstage/backend-common": "^0.10.7",

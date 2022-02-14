@@ -24,10 +24,10 @@
   "types": "",
   "scripts": {
     "start": "nodemon --",
-    "build": "backstage-cli build --outputs cjs",
-    "clean": "backstage-cli clean",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test --testPathIgnorePatterns=src/e2e.test.ts",
+    "build": "backstage-cli script build",
+    "clean": "backstage-cli script clean",
+    "lint": "backstage-cli script lint",
+    "test": "backstage-cli script test --testPathIgnorePatterns=src/e2e.test.ts",
     "test:e2e": "backstage-cli test src/e2e.test.ts",
     "test:e2e:ci": "backstage-cli test --watchAll=false --ci src/e2e.test.ts",
     "prepack": "./scripts/prepack.sh"
