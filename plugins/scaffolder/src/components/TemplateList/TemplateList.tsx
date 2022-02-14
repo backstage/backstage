@@ -87,6 +87,7 @@ export const TemplateList = ({
               <Card
                 key={stringifyEntityRef(template)}
                 template={template as TemplateEntityV1beta2}
+                deprecated={template.apiVersion === 'backstage.io/v1beta2'}
               />
             ))}
         </ItemCardGrid>
