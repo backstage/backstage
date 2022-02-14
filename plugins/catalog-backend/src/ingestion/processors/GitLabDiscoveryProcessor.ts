@@ -16,7 +16,10 @@
 
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrationRegistry,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { Logger } from 'winston';
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
@@ -31,7 +34,7 @@ import {
  * Extracts repositories out of an GitLab instance.
  */
 export class GitLabDiscoveryProcessor implements CatalogProcessor {
-  private readonly integrations: ScmIntegrations;
+  private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
   private readonly cache: CacheClient;
 
@@ -48,7 +51,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   }
 
   private constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     pluginCache: PluginCacheManager;
     logger: Logger;
   }) {

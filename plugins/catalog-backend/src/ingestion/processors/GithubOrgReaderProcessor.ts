@@ -18,6 +18,7 @@ import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   GithubCredentialType,
+  ScmIntegrationRegistry,
   ScmIntegrations,
   GithubCredentialsProvider,
   DefaultGithubCredentialsProvider,
@@ -39,7 +40,7 @@ type GraphQL = typeof graphql;
  * Extracts teams and users out of a GitHub org.
  */
 export class GithubOrgReaderProcessor implements CatalogProcessor {
-  private readonly integrations: ScmIntegrations;
+  private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
@@ -59,7 +60,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
   }
 
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger;
     githubCredentialsProvider?: GithubCredentialsProvider;
   }) {
