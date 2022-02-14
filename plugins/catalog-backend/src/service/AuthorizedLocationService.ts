@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { LocationSpec, Location, Entity } from '@backstage/catalog-model';
+import { Location } from '@backstage/catalog-client';
+import { LocationSpec, Entity } from '@backstage/catalog-model';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import {
   catalogLocationCreatePermission,

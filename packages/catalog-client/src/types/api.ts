@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName, Location } from '@backstage/catalog-model';
+import { Entity, EntityName, LocationSpec } from '@backstage/catalog-model';
 
 /**
  * This symbol can be used in place of a value when passed to filters in e.g.
@@ -150,6 +150,15 @@ export interface GetEntityAncestorsResponse {
 export interface CatalogRequestOptions {
   token?: string;
 }
+
+/**
+ * Entity location for a specific entity.
+ *
+ * @public
+ */
+export type Location = {
+  id: string;
+} & LocationSpec;
 
 /**
  * The request type for {@link CatalogClient.addLocation}.

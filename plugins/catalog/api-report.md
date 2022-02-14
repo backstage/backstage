@@ -22,7 +22,7 @@ import { GetEntityAncestorsResponse } from '@backstage/catalog-client';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
-import { Location as Location_2 } from '@backstage/catalog-model';
+import { Location as Location_2 } from '@backstage/catalog-client';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';

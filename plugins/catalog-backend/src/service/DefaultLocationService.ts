@@ -15,12 +15,12 @@
  */
 import {
   Entity,
-  Location,
   LocationSpec,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { Location } from '@backstage/catalog-client';
 import {
   CatalogProcessingOrchestrator,
   DeferredEntity,

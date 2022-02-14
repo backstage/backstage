@@ -5,7 +5,7 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
-import { Location as Location_2 } from '@backstage/catalog-model';
+import { LocationSpec } from '@backstage/catalog-model';
 
 // @public
 export type AddLocationRequest = {
@@ -177,4 +177,10 @@ export interface GetEntityAncestorsResponse {
   // (undocumented)
   rootEntityRef: string;
 }
+
+// @public
+type Location_2 = {
+  id: string;
+} & LocationSpec;
+export { Location_2 as Location };
 ```
