@@ -116,3 +116,26 @@ Backstage uses [Passport](http://www.passportjs.org/) under the hood, which has
 a wide library of authentication strategies for different providers. See
 [Add authentication provider](add-auth-provider.md) for details on adding a new
 Passport-supported authentication method.
+
+## Custom ScmAuthApi Implementation
+
+If you are using any custom authentication providers, like for example one for GitHub Enterprise, then you are likely to need a custom implementation of the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi). It is an API used to authenticate towards different SCM systems in a generic way, based what resource is being accessed, and is used for example by the Scaffolder (Software Templates) and Catalog Import plugin.
+
+To set up a custom `ScmAuthApi` implementation, you'll need to add an API factory entry to `packages/app/src/apis.ts`. The following example shows an implementation that supports both public GitHub via `githubAuthApi` as well as a GitHub Enterprise installation hosted at `ghe.example.com` via `gheAuthApi`:
+
+```ts
+createApiFactory({
+  api: scmAuthApiRef,
+  deps: {
+    gheAuthApi: gheAuthApiRef,
+    githubAuthApi: githubAuthApiRef,
+  },
+  factory: ({ githubAuthApi, gheAuthApi }) =>
+    ScmAuth.merge(
+      ScmAuth.forGithub(githubAuthApi),
+      ScmAuth.forGithub(gheAuthApi, {
+        host: 'ghe.example.com',
+      }),
+    ),
+});
+```
