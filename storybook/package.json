@@ -19,7 +19,7 @@
     "@storybook/addon-actions": "^6.4.18",
     "@storybook/addon-links": "^6.4.18",
     "@storybook/addon-storysource": "^6.4.18",
-    "@storybook/addons": "^6.4.14",
+    "@storybook/addons": "^6.4.19",
     "@storybook/react": "^6.4.18",
     "storybook-dark-mode": "^1.0.8"
   },
