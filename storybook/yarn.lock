@@ -1310,19 +1310,19 @@
   resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.11.2.tgz#830beaec4b4091a9e9398ac50f865ddea52186b9"
   integrity sha512-92FRmppjjqz29VMJ2dn+xdyXZBrMlE42AV6Kq6BwjWV7CNUW1hs2FtxSNLQE+gJhaZ6AAmYuO9y8dshhcBl7vA==
 
-"@storybook/addon-a11y@^6.4.18":
-  version "6.4.18"
-  resolved "https://registry.npmjs.org/@storybook/addon-a11y/-/addon-a11y-6.4.18.tgz#c61f71cd7b17aff408835ee35e29bf4a0716ece7"
-  integrity sha512-sqsA5pXXKKDsquSXu5KC8WxQ1gg5ZoNIltWRgmJCEt4a0bkGUzn2iz+uW/gbt4NOVWGPXKvmMBLT/q4Q9gb+og==
+"@storybook/addon-a11y@^6.4.19":
+  version "6.4.19"
+  resolved "https://registry.npmjs.org/@storybook/addon-a11y/-/addon-a11y-6.4.19.tgz#fb92840b5559b429afe2f28211440a5b5d1b6fcb"
+  integrity sha512-dG6easap6W4AqyggVZPq8lBrhza8StA8J4eYz/GVdoXINSGtq/casV0rkmY3+SUXhPYux5oGavHo86j5I4Q/0Q==
   dependencies:
-    "@storybook/addons" "6.4.18"
-    "@storybook/api" "6.4.18"
-    "@storybook/channels" "6.4.18"
-    "@storybook/client-logger" "6.4.18"
-    "@storybook/components" "6.4.18"
-    "@storybook/core-events" "6.4.18"
+    "@storybook/addons" "6.4.19"
+    "@storybook/api" "6.4.19"
+    "@storybook/channels" "6.4.19"
+    "@storybook/client-logger" "6.4.19"
+    "@storybook/components" "6.4.19"
+    "@storybook/core-events" "6.4.19"
     "@storybook/csf" "0.0.2--canary.87bc651.0"
-    "@storybook/theming" "6.4.18"
+    "@storybook/theming" "6.4.19"
     axe-core "^4.2.0"
     core-js "^3.8.2"
     global "^4.4.0"
