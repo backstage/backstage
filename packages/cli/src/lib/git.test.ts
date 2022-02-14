@@ -47,8 +47,6 @@ describe('listChangedFiles', () => {
   });
 
   it('should return something', async () => {
-    await expect(listChangedFiles('origin/master')).resolves.toEqual(
-      expect.any(Array),
-    );
+    await expect(listChangedFiles('HEAD')).resolves.toEqual(expect.any(Array));
   });
 });
