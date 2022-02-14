@@ -17,15 +17,14 @@ import React from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import { SidebarItem } from '@backstage/core-components';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { SearchModal } from '../SearchModal';
-import { useSearch } from '../SearchContext';
+import { SearchModal, useSearchModal } from '../SearchModal';
 
 export type SidebarSearchModalProps = {
   icon?: IconComponent;
 };
 
 export const SidebarSearchModal = (props: SidebarSearchModalProps) => {
-  const { open, toggleModal } = useSearch();
+  const { state, toggleModal } = useSearchModal();
   const Icon = props.icon ? props.icon : SearchIcon;
 
   return (
@@ -36,7 +35,7 @@ export const SidebarSearchModal = (props: SidebarSearchModalProps) => {
         text="Search"
         onClick={toggleModal}
       />
-      <SearchModal open={open} toggleModal={toggleModal} />
+      <SearchModal {...state} toggleModal={toggleModal} />
     </>
   );
 };

@@ -19,3 +19,5 @@ export {
   SearchContext,
   useSearch,
 } from './SearchContext';
+
+export type { SearchContextState } from './SearchContext';

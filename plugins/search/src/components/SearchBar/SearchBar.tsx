@@ -169,13 +169,16 @@ export type SearchBarProps = Partial<SearchBarBaseProps>;
 export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
   const { term, setTerm } = useSearch();
 
-  const handleChange = (newValue: string) => {
-    if (onChange) {
-      onChange(newValue);
-    } else {
-      setTerm(newValue);
-    }
-  };
+  const handleChange = useCallback(
+    (newValue: string) => {
+      if (onChange) {
+        onChange(newValue);
+      } else {
+        setTerm(newValue);
+      }
+    },
+    [onChange, setTerm],
+  );
 
   return <SearchBarBase value={term} onChange={handleChange} {...props} />;
 };
