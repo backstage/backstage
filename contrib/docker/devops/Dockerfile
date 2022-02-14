@@ -10,7 +10,7 @@ WORKDIR /tmp
 # update package sources
 # `--virtual` is used to enable removal of these dependencies as a named group
 # - python3: required by node-gyp
-# - g++: reuwired to build @vscode/sqlite3
+# - g++: required to build @vscode/sqlite3
 # - pixman: required by node-canvas
 # - pkgconfig: required by pixman
 # --------------------------------------------
