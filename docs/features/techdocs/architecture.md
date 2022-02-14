@@ -85,6 +85,30 @@ For cloud storage access tokens, `techdocs-backend` only needs a token with Read
 permissions. But in your CI/CD system, there needs to be a token with Write
 permissions to publish the generated docs site files.
 
+## Hybrid build model
+
+One limitation of the [Recommended deployment](#recommended-deployment) is that
+the experience for users requires modifying their CI/CD process to publish
+their TechDocs. For some users, this may be unnecessary, and provides a barrier
+to entry for onboarding users to Backstage. However, a purely local TechDocs
+build restricts TechDocs creators to using the tooling provided in Backstage,
+as well as the plugins and features provided in the Backstage-included `mkdocs`
+installation.
+
+To accommodate both of these use-cases, users can annotate their entities with
+the [`backstage.io/techdocs-skip-build` annotation](../software-catalog/well-known-annotations.md).
+This annotation causes the TechDocs backend to still serve the documentation for
+an entity, but to ignore all requests to build the documentation for an entity.
+This provides users with a choice: accept the default method of building docs as
+implemented by your instance of Backstage, or, annotate your entity and build the
+docs yourself, using whatever customized `mkdocs` settings and plugins you require.
+
+To allow this build model, set `techdocs.builder` to `local` in your `app-config.yaml`,
+and configure your storage as desired. Then have users annotate their entities with
+`backstage.io/techdocs-skip-build: 'true'` to opt out of their TechDocs being built,
+and have those users publish their TechDocs to your chosen storage location, as
+described in the [Recommended deployment](#recommended-deployment) above.
+
 ## FAQs
 
 **Q: Why do you have separate "basic" and "recommended" deployment approaches?**

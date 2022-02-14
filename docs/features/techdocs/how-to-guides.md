@@ -538,3 +538,25 @@ Done! Now you have a support of the following diagrams along with mermaid:
 - `Vega`
 - `Vega-Lite`
 - `WaveDrom`
+
+## How to implement a hybrid TechDocs build model
+
+As described in the [TechDocs Architecture](architecture.md#hybrid-build-model),
+it's possible to balance both ease of use and flexibility when it comes to
+how TechDocs are built. This allows users to choose whether they would like
+Backstage to build their TechDocs for them, or whether they would like to build
+their TechDocs themselves and publish them to somewhere the Backstage can read
+them.
+
+To achieve this hybrid model:
+
+1. In your Backstage instance's `app-config.yaml`, set `techdocs.builder` to
+   `'local'`. This ensures that Backstage will build docs for users who want the
+   'out-of-the-box' experience.
+2. Configure external storage of TechDocs as normal for a production deployment.
+   This allows Backstage to publish documentation to your storage, as well as
+   allowing other users to publish documentation from their CI/CD pipelines.
+3. Have users publish TechDocs to this external storage location from their CI/CD
+   pipelines as normal. Ensure that these users annotate their entities with the
+   `backstage.io/techdocs-skip-build` annotation set to `'true'`. Otherwise, their
+   published docs will be overwritten by Backstage.
