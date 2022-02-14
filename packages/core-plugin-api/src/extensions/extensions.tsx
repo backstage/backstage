@@ -267,6 +267,10 @@ export function createReactExtension<
           | { id?: string }
           | undefined;
 
+        console.log('createReactExtension.expose.pluginId', plugin.getId());
+        console.log('createReactExtension.expose.name', name);
+        console.log('createReactExtension.expose.mountPoint', mountPoint);
+
         return (
           <Suspense fallback={<Progress />}>
             <PluginErrorBoundary app={app} plugin={plugin}>

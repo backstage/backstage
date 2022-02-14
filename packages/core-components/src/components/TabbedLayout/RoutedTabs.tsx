@@ -57,6 +57,7 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
   const { routes } = props;
   const navigate = useNavigate();
   const { index, route, element } = useSelectedSubRoute(routes);
+  // TODO(permissions) batch authorize these routes before rendering tabs. How do we get route ref?
   const headerTabs = useMemo(
     () =>
       routes.map(t => ({
