@@ -1366,7 +1366,7 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@backstage/core-plugin-api@^0.4.0", "@backstage/core-plugin-api@^0.4.1":
+"@backstage/core-plugin-api@^0.4.0":
   version "0.4.1"
   resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-0.4.1.tgz#c0a13504bdfa61ae3d0db96934cd6c32a7574446"
   integrity sha512-IIb7XTcquTPaSIlamMKUgeTs5uLqkKN0Nw32QdTZhKgFkFFVzWC0AwN+henkaMNBZFdGb0ttPzrvNXGj5E6dGg==

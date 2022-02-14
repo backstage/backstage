@@ -28,6 +28,10 @@ export { CatalogTable } from './components/CatalogTable';
 export type { EntityRow as CatalogTableRow } from './components/CatalogTable';
 export * from './components/CatalogTable/columns';
 export * from './components/EntityLayout';
+export {
+  LinksGridList,
+  EntityLinksEmptyState,
+} from './components/EntityLinksCard';
 export * from './components/EntityOrphanWarning';
 export * from './components/EntityProcessingErrorsPanel';
 export * from './components/EntityPageLayout';
@@ -52,6 +56,9 @@ export {
   RelatedEntitiesCard,
 } from './plugin';
 
-export type { EntityLinksEmptyStateClassKey } from './components/EntityLinksCard';
+export type {
+  EntityLinksEmptyStateClassKey,
+  ColumnBreakpoints,
+} from './components/EntityLinksCard';
 export type { SystemDiagramCardClassKey } from './components/SystemDiagramCard';
 export type { DefaultCatalogPageProps } from './components/CatalogPage';
