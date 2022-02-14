@@ -5,6 +5,7 @@ const React = require('react');
 const redirects = {
   'bind-routes':
     '/docs/plugins/composability#binding-external-routes-in-the-app',
+  'scm-auth': '/docs/auth/#custom-scmauthapi-implementation',
 };
 const fallback = '/docs';
 
