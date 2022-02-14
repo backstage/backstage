@@ -97,6 +97,17 @@ describe('createRouter', () => {
       uid: undefined,
     },
   };
+  const entityWithSkipAnnotation = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      uid: '0',
+      name: 'test',
+      annotations: {
+        'backstage.io/techdocs-skip-build': 'true',
+      },
+    },
+  };
 
   const preparers: jest.Mocked<PreparerBuilder> = {
     register: jest.fn(),
@@ -186,6 +197,25 @@ describe('createRouter', () => {
 
         MockedConfigReader.prototype.getString.mockReturnValue('external');
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+        MockDocsSynchronizer.prototype.doCacheSync.mockImplementation(
+          async ({ responseHandler }) =>
+            responseHandler.finish({ updated: false }),
+        );
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .send();
+
+        expect(response.status).toBe(304);
+      });
+
+      it('should not check for an update if the entity has the skip build annotation', async () => {
+        const app = await createApp(outOfTheBoxOptions);
+
+        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        MockCachedEntityLoader.prototype.load.mockResolvedValue(
+          entityWithSkipAnnotation,
+        );
         MockDocsSynchronizer.prototype.doCacheSync.mockImplementation(
           async ({ responseHandler }) =>
             responseHandler.finish({ updated: false }),
