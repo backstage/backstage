@@ -53,7 +53,7 @@ class ScmAuthMux implements ScmAuthApi {
     const provider = this.#providers.find(p => p.isUrlSupported(url));
     if (!provider) {
       throw new Error(
-        `No authentication provider available for access to '${options.url}'`,
+        `No auth provider available for '${options.url}', see https://backstage.io/link?scm-auth`,
       );
     }
 
