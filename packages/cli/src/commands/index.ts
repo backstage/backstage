@@ -96,7 +96,7 @@ export function registerScriptCommand(program: CommanderStatic) {
     )
     .action(lazy(() => import('./build').then(m => m.command)));
 
-  program
+  command
     .command('lint')
     .option(
       '--format <format>',
@@ -107,7 +107,7 @@ export function registerScriptCommand(program: CommanderStatic) {
     .description('Lint a package')
     .action(lazy(() => import('./lint').then(m => m.default)));
 
-  program
+  command
     .command('test')
     .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
     .helpOption(', --backstage-cli-help') // Let Jest handle help
