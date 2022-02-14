@@ -136,7 +136,7 @@ export function registerMigrateCommand(program: CommanderStatic) {
     .description('Migration utilities [EXPERIMENTAL]');
 
   command
-    .command('package-role')
+    .command('package-roles')
     .description(`Add package role field to packages that don't have it`)
     .action(lazy(() => import('./migrate/packageRole').then(m => m.default)));
 
