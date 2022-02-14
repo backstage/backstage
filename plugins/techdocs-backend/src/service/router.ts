@@ -80,6 +80,8 @@ function isOutOfTheBoxOption(
   return (opt as OutOfTheBoxDeploymentOptions).preparers !== undefined;
 }
 
+const skipBuildAnnotation = 'backstage.io/techdocs-skip-build';
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -200,7 +202,10 @@ export async function createRouter(
     // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
     // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
     // of the repository) is responsible for building and publishing documentation to the storage provider
-    if (config.getString('techdocs.builder') !== 'local') {
+    if (
+      config.getString('techdocs.builder') !== 'local' ||
+      entity?.metadata?.annotations?.[skipBuildAnnotation] === 'true'
+    ) {
       // However, if caching is enabled, take the opportunity to check and
       // invalidate stale cache entries.
       if (cache) {
