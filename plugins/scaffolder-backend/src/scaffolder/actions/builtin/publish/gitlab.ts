@@ -31,7 +31,7 @@ export function createPublishGitlabAction(options: {
   return createTemplateAction<{
     repoUrl: string;
     defaultBranch?: string;
-    repoVisibility: 'private' | 'internal' | 'public';
+    repoVisibility?: 'private' | 'internal' | 'public';
     sourcePath?: string;
     token?: string;
   }>({

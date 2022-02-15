@@ -29,7 +29,7 @@ const createBitbucketCloudRepository = async (opts: {
   workspace: string;
   project: string;
   repo: string;
-  description: string;
+  description?: string;
   repoVisibility: 'private' | 'public';
   authorization: string;
 }) => {
@@ -91,7 +91,7 @@ const createBitbucketServerRepository = async (opts: {
   host: string;
   project: string;
   repo: string;
-  description: string;
+  description?: string;
   repoVisibility: 'private' | 'public';
   authorization: string;
   apiBaseUrl?: string;
@@ -200,11 +200,11 @@ export function createPublishBitbucketAction(options: {
 
   return createTemplateAction<{
     repoUrl: string;
-    description: string;
+    description?: string;
     defaultBranch?: string;
-    repoVisibility: 'private' | 'public';
+    repoVisibility?: 'private' | 'public';
     sourcePath?: string;
-    enableLFS: boolean;
+    enableLFS?: boolean;
     token?: string;
   }>({
     id: 'publish:bitbucket',

@@ -15,6 +15,7 @@
  */
 
 import { ContainerRunner, UrlReader } from '@backstage/backend-common';
+import { JsonObject } from '@backstage/types';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   GithubCredentialsProvider,
@@ -47,6 +48,7 @@ import {
   createGithubWebhookAction,
 } from './github';
 import { TemplateFilter } from '../../../lib';
+import { TemplateAction } from '../types';
 
 export const createBuiltinActions = (options: {
   reader: UrlReader;
@@ -55,7 +57,7 @@ export const createBuiltinActions = (options: {
   containerRunner?: ContainerRunner;
   config: Config;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
-}) => {
+}): TemplateAction<JsonObject>[] => {
   const {
     reader,
     integrations,
@@ -126,5 +128,5 @@ export const createBuiltinActions = (options: {
     );
   }
 
-  return actions;
+  return actions as TemplateAction<JsonObject>[];
 };

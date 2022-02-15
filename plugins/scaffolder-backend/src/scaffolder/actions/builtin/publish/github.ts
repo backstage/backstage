@@ -28,9 +28,6 @@ import { Config } from '@backstage/config';
 import { OctokitProvider } from '../github/OctokitProvider';
 import { assertError } from '@backstage/errors';
 
-type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-type Collaborator = { access: Permission; username: string };
-
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -50,8 +47,11 @@ export function createPublishGithubAction(options: {
     defaultBranch?: string;
     sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
-    repoVisibility: 'private' | 'internal' | 'public';
-    collaborators: Collaborator[];
+    repoVisibility?: 'private' | 'internal' | 'public';
+    collaborators?: Array<{
+      username: string;
+      access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+    }>;
     token?: string;
     topics?: string[];
   }>({

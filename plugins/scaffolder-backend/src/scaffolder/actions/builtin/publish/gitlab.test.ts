@@ -45,7 +45,7 @@ describe('publish:gitlab', () => {
   const mockContext = {
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
-      repoVisibility: 'private',
+      repoVisibility: 'private' as const,
     },
     workspacePath: 'lol',
     logger: getVoidLogger(),

@@ -28,12 +28,17 @@ import { ActionContext, TemplateAction } from '../../types';
 import {
   ClientFactoryInput,
   createPublishGithubPullRequestAction,
-  GithubPullRequestActionInput,
   PullRequestCreator,
 } from './githubPullRequest';
 
 const root = os.platform() === 'win32' ? 'C:\\root' : '/root';
 const workspacePath = resolvePath(root, 'my-workspace');
+
+type GithubPullRequestActionInput = ReturnType<
+  typeof createPublishGithubPullRequestAction
+> extends TemplateAction<infer U>
+  ? U
+  : never;
 
 describe('createPublishGithubPullRequestAction', () => {
   let instance: TemplateAction<GithubPullRequestActionInput>;
