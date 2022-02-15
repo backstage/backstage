@@ -13,10 +13,10 @@ A new, bare-bones backend plugin package can be created by issuing the following
 command in your Backstage repository root:
 
 ```sh
-yarn create-plugin --backend
+yarn create-backend-plugin
 ```
 
-Please also see the `--help` flag for the `create-plugin` command for some
+Please also see the `--help` flag for the `create-backend-plugin` command for some
 further options that are available, notably the `--scope` and `--no-private`
 flags that control naming and publishing of the newly created package. Your repo
 root `package.json` will probably also have some default values already set up
@@ -28,7 +28,7 @@ lowercase characters separated by dashes, for example `carmen`, if it's a
 package that adds an integration with a system named Carmen, for example. The
 full NPM package name would then be something like
 `@internal/plugin-carmen-backend`, depending on the other flags passed to the
-`create-plugin` command, and your settings for the `create-plugin` command in
+`create-backend-plugin` command, and your settings for the `create-backend-plugin` command in
 your root `package.json`.
 
 Creating the plugin will take a little while, so be patient. It will helpfully
@@ -48,7 +48,7 @@ This will think for a bit, and then say `Listening on :7007`. In a different
 terminal window, now run
 
 ```sh
-curl localhost:7007/carmen/health
+curl localhost:7007/carmen-backend/health
 ```
 
 This should return `{"status":"ok"}`. Success! Press `Ctrl + c` to kill it
@@ -100,6 +100,8 @@ async function main() {
   // ...
   const carmenEnv = useHotMemoize(module, () => createEnv('carmen'));
   apiRouter.use('/carmen', await carmen(carmenEnv));
+  // ...
+}
 ```
 
 After you start the backend (e.g. using `yarn start-backend` from the repo

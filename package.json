@@ -25,6 +25,7 @@
     "docker-build": "yarn tsc && yarn workspace example-backend build --build-dependencies && yarn workspace example-backend build-image",
     "backstage-create": "backstage-cli create --scope backstage --no-private",
     "create-plugin": "yarn backstage-create --select plugin",
+    "create-backend-plugin": "yarn backstage-create --select backend-plugin",
     "remove-plugin": "backstage-cli remove-plugin",
     "release": "node scripts/prepare-release.js && changeset version && yarn diff --yes && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' && yarn install",
     "prettier:check": "prettier --check .",
