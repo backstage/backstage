@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { ANNOTATION_SOURCE_LOCATION } from '.';
 import { Entity, stringifyEntityRef } from '../entity';
-import { LOCATION_ANNOTATION, SOURCE_LOCATION_ANNOTATION } from './annotation';
+import { ANNOTATION_LOCATION } from './annotation';
 
 /**
  * Parses a string form location reference.
@@ -142,8 +143,8 @@ export function getEntitySourceLocation(entity: Entity): {
   target: string;
 } {
   const locationRef =
-    entity.metadata?.annotations?.[SOURCE_LOCATION_ANNOTATION] ??
-    entity.metadata?.annotations?.[LOCATION_ANNOTATION];
+    entity.metadata?.annotations?.[ANNOTATION_SOURCE_LOCATION] ??
+    entity.metadata?.annotations?.[ANNOTATION_LOCATION];
 
   if (!locationRef) {
     throw new Error(

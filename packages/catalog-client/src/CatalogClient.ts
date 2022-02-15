@@ -15,10 +15,10 @@
  */
 
 import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
   Entity,
   EntityName,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
   parseEntityRef,
   stringifyEntityRef,
   stringifyLocationRef,
@@ -253,7 +253,7 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
     const locationCompound =
-      entity.metadata.annotations?.[ORIGIN_LOCATION_ANNOTATION];
+      entity.metadata.annotations?.[ANNOTATION_ORIGIN_LOCATION];
     if (!locationCompound) {
       return undefined;
     }
@@ -274,7 +274,7 @@ export class CatalogClient implements CatalogApi {
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
-    const locationCompound = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+    const locationCompound = entity.metadata.annotations?.[ANNOTATION_LOCATION];
     if (!locationCompound) {
       return undefined;
     }

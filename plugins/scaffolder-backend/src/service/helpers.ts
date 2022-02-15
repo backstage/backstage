@@ -16,9 +16,9 @@
 
 import {
   Entity,
-  LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
   parseLocationRef,
-  SOURCE_LOCATION_ANNOTATION,
+  ANNOTATION_SOURCE_LOCATION,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError } from '@backstage/errors';
@@ -59,9 +59,9 @@ export async function getWorkingDirectory(
  * For file locations this will return a `file://` URL.
  */
 export function getEntityBaseUrl(entity: Entity): string | undefined {
-  let location = entity.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION];
+  let location = entity.metadata.annotations?.[ANNOTATION_SOURCE_LOCATION];
   if (!location) {
-    location = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+    location = entity.metadata.annotations?.[ANNOTATION_LOCATION];
   }
   if (!location) {
     return undefined;
