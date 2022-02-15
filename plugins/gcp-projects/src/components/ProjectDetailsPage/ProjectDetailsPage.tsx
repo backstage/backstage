@@ -27,7 +27,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import { useAsync } from 'react-hookz';
 import { gcpApiRef } from '../../api';
 
 import {
@@ -61,9 +61,9 @@ const DetailsPage = () => {
   const classes = useStyles();
 
   const {
-    loading,
+    status,
+    result: details,
     error,
-    value: details,
   } = useAsync(
     async () =>
       api.getProject(
@@ -72,7 +72,7 @@ const DetailsPage = () => {
     [location.search],
   );
 
-  if (loading) {
+  if (status === 'loading') {
     return <LinearProgress />;
   } else if (error) {
     return (
