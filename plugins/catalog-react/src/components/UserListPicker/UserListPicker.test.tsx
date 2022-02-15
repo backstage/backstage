@@ -36,6 +36,7 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import { useEntityOwnership } from '../../hooks';
 
 const mockUser: UserEntity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -81,9 +82,9 @@ jest.mock('../../hooks', () => {
   const actual = jest.requireActual('../../hooks');
   return {
     ...actual,
-    useEntityOwnership: () => ({
+    useEntityOwnership: jest.fn(() => ({
       isOwnedEntity: mockIsOwnedEntity,
-    }),
+    })),
     useStarredEntities: () => ({
       isStarredEntity: mockIsStarredEntity,
     }),
@@ -324,6 +325,19 @@ describe('<UserListPicker />', () => {
             mockIsOwnedEntity,
             mockIsStarredEntity,
           ),
+        });
+      });
+
+      it('does not reset the filter while owned entities are loading', () => {
+        const isOwnedEntity = jest.fn(() => false);
+        (useEntityOwnership as jest.Mock).mockReturnValueOnce({
+          loading: true,
+          isOwnedEntity,
+        });
+
+        render(picker({ loading: false }));
+        expect(updateFilters).not.toHaveBeenCalledWith({
+          user: new UserListFilter('all', isOwnedEntity, mockIsStarredEntity),
         });
       });
 
