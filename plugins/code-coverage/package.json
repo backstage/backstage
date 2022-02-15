@@ -52,7 +52,7 @@
     "@testing-library/user-event": "^13.1.8",
     "@types/highlightjs": "^10.1.0",
     "@types/jest": "^26.0.7",
-    "@types/node": "^14.14.32",
+    "@types/node": "^17.0.18",
     "@types/recharts": "^1.8.15",
     "cross-fetch": "^3.1.5",
     "msw": "^0.35.0"

@@ -33,7 +33,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.13.2",
     "@types/jest": "^26.0.7",
-    "@types/node": "^14.14.32",
+    "@types/node": "^17.0.18",
     "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^9.0.1",
     "@types/mock-fs": "^4.13.0",

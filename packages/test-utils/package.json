@@ -53,7 +53,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.13.2-next.0",
     "@types/jest": "^26.0.7",
-    "@types/node": "^14.14.32",
+    "@types/node": "^17.0.18",
     "msw": "^0.35.0"
   },
   "files": [

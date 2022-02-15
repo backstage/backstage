@@ -39,7 +39,7 @@
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.1.8",
     "@types/jest": "^26.0.7",
-    "@types/node": "^14.14.32",
+    "@types/node": "^17.0.18",
     "cross-fetch": "^3.1.5",
     "msw": "^0.35.0"
   },

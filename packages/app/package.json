@@ -80,7 +80,7 @@
     "@testing-library/user-event": "^13.1.8",
     "@types/jest": "^26.0.7",
     "@types/jquery": "^3.3.34",
-    "@types/node": "^14.14.32",
+    "@types/node": "^17.0.18",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
     "cross-env": "^7.0.0",

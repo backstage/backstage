@@ -36,7 +36,7 @@
     "@backstage/test-utils": "^0.2.3",
     "msw": "^0.35.0",
     "@types/jest": "^26.0.7",
-    "@types/node": "^14.14.32"
+    "@types/node": "^17.0.18"
   },
   "files": [
     "dist"
