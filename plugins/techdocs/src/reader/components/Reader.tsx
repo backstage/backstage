@@ -145,6 +145,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
   const isDarkTheme = theme.palette.type === 'dark';
 
   const [sidebars, setSidebars] = useState<HTMLElement[]>();
+  const [tocItems, setHasTocItems] = useState(false);
   const [dom, setDom] = useState<HTMLElement | null>(null);
 
   // sidebar pinned status to be used in computing CSS style injections
@@ -245,9 +246,16 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
           .md-sidebar {  position: fixed; bottom: 100px; width: 20rem; }
           .md-sidebar--secondary { right: 2rem; }
           .md-content { margin-bottom: 50px }
-          .md-footer { position: fixed; bottom: 0px; }
+          .md-footer { 
+            position: fixed;
+            bottom: 0px; 
+            background-color:${theme.palette.background.default}
+          };
           .md-footer-nav__link { width: 20rem;}
-          .md-content { margin-left: 20rem; max-width: calc(100% - 20rem * 2 - 3rem); }
+          .md-content { 
+            margin-left: 20rem; 
+            max-width: ${tocItems ? 'calc(100% - 20rem * 2 - 3rem)' : '100%'}; 
+          }
           .md-typeset { font-size: 1rem; }
           .md-typeset h1, .md-typeset h2, .md-typeset h3 { font-weight: bold; }
           .md-nav { font-size: 1rem; }
@@ -389,6 +397,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
       theme.palette.action.disabledBackground,
       theme.palette.success.main,
       isDarkTheme,
+      tocItems,
       isPinned,
     ],
   );
@@ -441,6 +450,10 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             renderedElement
               .querySelector('.md-nav__title')
               ?.removeAttribute('for');
+            const noTocItems = renderedElement.querySelector(
+              '.md-nav.md-nav--secondary',
+            )?.childElementCount;
+            setHasTocItems(noTocItems && noTocItems > 0 ? true : false);
             setSidebars(
               Array.from(renderedElement.querySelectorAll('.md-sidebar')),
             );
