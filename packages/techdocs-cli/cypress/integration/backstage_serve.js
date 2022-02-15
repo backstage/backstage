@@ -17,8 +17,7 @@
 describe('TechDocs Live Preview - Backstage server', () => {
   it('successfully serves documentation', () => {
     cy.visit(`${Cypress.env('backstageBaseUrl')}/docs/default/component/local`);
-    cy.get('[data-testid="techdocs-content-shadowroot"]').shadow();
-    cy.title('hello mock docs');
+    cy.contains('hello mock docs');
   });
 
   it('successfully navigates to sub page of documentation', () => {
@@ -30,19 +29,22 @@ describe('TechDocs Live Preview - Backstage server', () => {
   });
 
   it('successfully renders all Backstage main elements', () => {
-    cy.get('header');
-    cy.get('header').contains('Live preview environment');
-    cy.get('[data-testid="sidebar-root"]');
-    cy.get('[data-testid="sidebar-root"]').contains('Docs Preview');
+    cy.contains('header', 'Live preview environment');
+    cy.contains('[data-testid="sidebar-root"]', 'Docs Preview');
   });
 
   it('successfully renders all extracted MkDocs main elements', () => {
     // as it gets replaced by Backstage header
-    cy.get('.md-header').should('not.exist');
-    cy.get('.md-main');
-    cy.get('.md-nav');
-    cy.get('.md-sidebar--primary');
-    cy.get('.md-sidebar--secondary');
-    cy.get('.md-footer');
+    cy.get('.md-header').should('have.length', 0);
+    cy.contains(
+      '.md-main',
+      'This is an md file in another docs folder using the MkDocs Monorepo Plugin',
+    );
+    cy.contains('.md-sidebar--primary', 'Home 2');
+    cy.contains(
+      '.md-sidebar--secondary',
+      'This is an md file in another docs folder using the MkDocs Monorepo Plugin',
+    );
+    cy.contains('.md-footer', 'Introduction');
   });
 });

@@ -17,7 +17,7 @@
 describe('TechDocs Live Preview - Mkdocs server', () => {
   it('successfully serves documentation', () => {
     cy.visit(Cypress.env('mkDocsBaseUrl'));
-    cy.title('hello mock docs');
+    cy.contains('hello mock docs');
   });
 
   it('successfully navigates to sub page of documentation', () => {
@@ -29,11 +29,16 @@ describe('TechDocs Live Preview - Mkdocs server', () => {
   });
 
   it('successfully renders all main elements', () => {
-    cy.get('.md-header');
-    cy.get('.md-container');
-    cy.get('.md-nav');
-    cy.get('.md-sidebar--primary');
-    cy.get('.md-sidebar--secondary');
-    cy.get('.md-footer');
+    cy.get('.md-header').should('have.length', 1);
+    cy.contains(
+      '.md-container',
+      'This is an md file in another docs folder using the MkDocs Monorepo Plugin',
+    );
+    cy.contains('.md-sidebar--primary', 'Home 2');
+    cy.contains(
+      '.md-sidebar--secondary',
+      'This is an md file in another docs folder using the MkDocs Monorepo Plugin',
+    );
+    cy.contains('.md-footer', 'Introduction');
   });
 });
