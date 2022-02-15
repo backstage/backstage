@@ -51,6 +51,8 @@
     "@types/lodash": "^4.14.151"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }
