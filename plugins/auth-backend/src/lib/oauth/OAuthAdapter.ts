@@ -18,7 +18,7 @@ import express, { CookieOptions } from 'express';
 import crypto from 'crypto';
 import { URL } from 'url';
 import {
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -271,7 +271,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     const userEntityRef = stringifyEntityRef(
       parseEntityRef(identity.id, {
         defaultKind: 'user',
-        defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+        defaultNamespace: DEFAULT_NAMESPACE,
       }),
     );
     const token = await this.options.tokenIssuer.issueToken({

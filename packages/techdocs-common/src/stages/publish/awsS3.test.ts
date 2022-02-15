@@ -15,7 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
@@ -34,7 +34,7 @@ const getEntityRootDir = (entity: Entity) => {
     metadata: { namespace, name },
   } = entity;
 
-  return path.join(rootDir, namespace || ENTITY_DEFAULT_NAMESPACE, kind, name);
+  return path.join(rootDir, namespace || DEFAULT_NAMESPACE, kind, name);
 };
 
 const logger = getVoidLogger();

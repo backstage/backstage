@@ -16,7 +16,7 @@
 
 import { generatePath } from 'react-router';
 import { ResponseError } from '@backstage/errors';
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { BadgesApi, BadgeSpec } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
@@ -63,7 +63,7 @@ export class BadgesClient implements BadgesApi {
       kind: entity.kind.toLocaleLowerCase('en-US'),
       namespace:
         entity.metadata.namespace?.toLocaleLowerCase('en-US') ??
-        ENTITY_DEFAULT_NAMESPACE,
+        DEFAULT_NAMESPACE,
       name: entity.metadata.name,
     };
   }

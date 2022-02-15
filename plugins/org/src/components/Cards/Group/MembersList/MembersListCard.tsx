@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   GroupEntity,
   UserEntity,
   stringifyEntityRef,
@@ -124,7 +124,7 @@ export const MembersListCard = (_props: {
 
   const displayName = profile?.displayName ?? groupName;
 
-  const groupNamespace = grpNamespace || ENTITY_DEFAULT_NAMESPACE;
+  const groupNamespace = grpNamespace || DEFAULT_NAMESPACE;
 
   const [page, setPage] = React.useState(1);
   const pageChange = (_: React.ChangeEvent<unknown>, pageIndex: number) => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { MouseEvent, useState } from 'react';
@@ -77,7 +77,7 @@ export function useEntityRelationNodesAndEdges({
           title: entity.metadata?.title ?? undefined,
           kind: entity.kind,
           name: entity.metadata.name,
-          namespace: entity.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE,
+          namespace: entity.metadata.namespace ?? DEFAULT_NAMESPACE,
           focused,
           color: focused ? 'secondary' : 'primary',
         };

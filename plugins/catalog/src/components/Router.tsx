@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
   AsyncEntityProvider,
   useEntity,
@@ -61,7 +61,7 @@ const OldEntityRouteRedirect = () => {
   const { optionalNamespaceAndName, '*': rest } = useParams() as any;
   const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
   const namespaceLower =
-    namespace?.toLocaleLowerCase('en-US') ?? ENTITY_DEFAULT_NAMESPACE;
+    namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE;
   const restWithSlash = rest ? `/${rest}` : '';
   return (
     <Navigate

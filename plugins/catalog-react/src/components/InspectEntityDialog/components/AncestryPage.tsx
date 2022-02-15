@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -143,7 +143,7 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
     navigate(
       entityRoute({
         kind: node.kind,
-        namespace: node.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
+        namespace: node.metadata.namespace || DEFAULT_NAMESPACE,
         name: node.metadata.name,
       }),
     );

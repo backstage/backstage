@@ -98,6 +98,9 @@ export { ComponentEntityV1alpha1 };
 export const componentEntityV1alpha1Validator: KindValidator;
 
 // @public
+export const DEFAULT_NAMESPACE = 'default';
+
+// @public
 export class DefaultNamespaceEntityPolicy implements EntityPolicy {
   constructor(namespace?: string);
   // (undocumented)
@@ -133,7 +136,7 @@ export type Entity = {
   relations?: EntityRelation[];
 };
 
-// @public
+// @public @deprecated
 export const ENTITY_DEFAULT_NAMESPACE = 'default';
 
 // @public @deprecated

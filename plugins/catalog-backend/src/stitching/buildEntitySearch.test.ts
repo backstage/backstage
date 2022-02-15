@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { buildEntitySearch, mapToRows, traverse } from './buildEntitySearch';
 
 describe('buildEntitySearch', () => {
@@ -133,7 +133,7 @@ describe('buildEntitySearch', () => {
         {
           entity_id: 'eid',
           key: 'metadata.namespace',
-          value: ENTITY_DEFAULT_NAMESPACE,
+          value: DEFAULT_NAMESPACE,
         },
       ]);
     });
@@ -157,7 +157,7 @@ describe('buildEntitySearch', () => {
         {
           entity_id: 'eid',
           key: 'metadata.namespace',
-          value: ENTITY_DEFAULT_NAMESPACE,
+          value: DEFAULT_NAMESPACE,
         },
         { entity_id: 'eid', key: 'relations.t1', value: 'k:ns/a' },
         { entity_id: 'eid', key: 'relations.t2', value: 'k:ns/b' },
