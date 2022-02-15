@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -159,9 +159,9 @@ describe('JenkinsConfig', () => {
 });
 
 describe('DefaultJenkinsInfoProvider', () => {
-  const mockCatalog: jest.Mocked<CatalogClient> = {
+  const mockCatalog: jest.Mocked<CatalogApi> = {
     getEntityByName: jest.fn(),
-  } as any as jest.Mocked<CatalogClient>;
+  } as any as jest.Mocked<CatalogApi>;
 
   const entityRef: EntityName = {
     kind: 'Component',
