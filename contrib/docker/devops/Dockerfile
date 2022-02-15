@@ -9,7 +9,8 @@ WORKDIR /tmp
 
 # update package sources
 # `--virtual` is used to enable removal of these dependencies as a named group
-# - python: required by node-gyp
+# - python3: required by node-gyp
+# - g++: required to build @vscode/sqlite3
 # - pixman: required by node-canvas
 # - pkgconfig: required by pixman
 # --------------------------------------------
@@ -32,7 +33,8 @@ WORKDIR /tmp
 RUN apk update \
   && apk add --no-cache \
     --virtual ${APK_VIRTUAL_NAME} \
-    python \
+    python3 \
+    g++ \
     pixman \
     pkgconfig \
     alpine-sdk \
@@ -50,6 +52,10 @@ RUN apk update \
 RUN wget -qO- ${VALE_INSTALL_URL} \
     | tar xvz -C /bin vale \
     && chmod +x /bin/vale
+
+# needed for sqlite3 build that needs python
+RUN ln -s /usr/bin/python3 /usr/bin/python && \
+    ln -s /usr/bin/pip3 /usr/bin/pip
 
 RUN mkdir /app
 
