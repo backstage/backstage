@@ -15,8 +15,20 @@
  */
 
 import { getPackages } from '@manypkg/get-packages';
-import { paths } from '../paths';
 import { PackageGraph } from './PackageGraph';
+import { listChangedFiles } from '../git';
+
+jest.mock('../git');
+
+const mockListChangedFiles = listChangedFiles as jest.MockedFunction<
+  typeof listChangedFiles
+>;
+
+jest.mock('../paths', () => ({
+  paths: {
+    targetRoot: '/',
+  },
+}));
 
 const testPackages = [
   {
@@ -53,7 +65,7 @@ const testPackages = [
 
 describe('PackageGraph', () => {
   it('is able to construct a graph from this repo', async () => {
-    const { packages } = await getPackages(paths.ownDir);
+    const { packages } = await getPackages(__dirname);
     const graph = PackageGraph.fromPackages(packages);
     expect(graph.has('@backstage/cli')).toBe(true);
   });
@@ -123,5 +135,25 @@ describe('PackageGraph', () => {
     expect(() => graph.collectPackageNames(['a'], () => ['unknown'])).toThrow(
       `Package 'unknown' not found`,
     );
+  });
+
+  it('lists changed packages', async () => {
+    const graph = PackageGraph.fromPackages(testPackages);
+
+    mockListChangedFiles.mockResolvedValueOnce(
+      [
+        'README.md',
+        'packages/a/src/foo.ts',
+        'packages/a/src/bar.ts',
+        'packages/b/package.json',
+        'packages/f/src/foo.ts',
+        'packages/f/README.md',
+        'plugins/foo/src/index.ts',
+      ].sort(),
+    );
+
+    await expect(
+      graph.listChangedPackages({ ref: 'origin/master' }),
+    ).resolves.toEqual([graph.get('a'), graph.get('b')]);
   });
 });
