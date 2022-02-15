@@ -40,17 +40,6 @@ yarn start
 yarn techdocs-cli:dev [...options]
 ```
 
-### Testing
-
-Running unit tests requires mkdocs to be installed locally:
-
-```sh
-pip install mkdocs
-pip install mkdocs-techdocs-core
-```
-
-Then run `yarn test`.
-
 ### Use an example docs project
 
 We have created an [example documentation project](https://github.com/backstage/techdocs-container/tree/main/mock-docs) and it's shipped with [techdocs-container](https://github.com/backstage/techdocs-container) repository, for the purpose of local development. But you are free to create your own local test site. All it takes is a `docs/index.md` and `mkdocs.yml` in a directory.
@@ -65,4 +54,45 @@ techdocs-cli serve
 
 # To view the raw mkdocs site (without Backstage), use:
 techdocs-cli serve:mkdocs
+```
+
+### Testing
+
+Running unit tests requires mkdocs to be installed locally:
+
+```sh
+pip install mkdocs
+pip install mkdocs-techdocs-core
+```
+
+Then run `yarn test`.
+
+#### Run Cypress tests
+
+Running cypress tests requires you to run the CLI locally against our example docs project
+
+Start by making sure you have the example project locally on your computer
+
+```sh
+git clone https://github.com/backstage/techdocs-container.git
+```
+
+Run the local version of techdocs-cli against the example docs project
+
+```sh
+# From the root of this repository run
+# NOTE: This will build the techdocs-cli-embedded-app and copy the output into the cli dist directory
+yarn build --scope @techdocs/cli
+
+# Navigate to the example project
+cd techdocs-container/mock-docs
+
+# Now execute the techdocs-cli binary
+../../backstage/packages/techdocs-cli/bin/techdocs-cli
+```
+
+Run the cypress tests
+
+```sh
+yarn cypress:open
 ```
