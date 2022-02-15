@@ -6,6 +6,7 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
+import { AbortController as AbortController_2 } from 'node-abort-controller';
 import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
@@ -13,6 +14,7 @@ import { BitbucketIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import cors from 'cors';
 import Docker from 'dockerode';
+import { Duration } from 'luxon';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -145,6 +147,29 @@ export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
 }
 
+// @alpha
+export interface Context {
+  readonly abortSignal: AbortSignal_2;
+  readonly deadline: Date | undefined;
+  value<T = unknown>(key: string): T | undefined;
+}
+
+// @alpha
+export class Contexts {
+  static root(): Context;
+  static withAbort(
+    parentCtx: Context,
+    source: AbortController_2 | AbortSignal_2,
+  ): Context;
+  static withTimeoutDuration(parentCtx: Context, timeout: Duration): Context;
+  static withTimeoutMillis(parentCtx: Context, timeout: number): Context;
+  static withValue(
+    parentCtx: Context,
+    key: string,
+    value: unknown | ((previous: unknown | undefined) => unknown),
+  ): Context;
+}
+
 // @public @deprecated
 export const createDatabase: typeof createDatabaseClient;
 
@@ -152,7 +177,7 @@ export const createDatabase: typeof createDatabaseClient;
 export function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<Knex.Config>,
-): Knex<any, unknown[]>;
+): Knex<any, Record<string, any>[]>;
 
 // @public
 export function createRootLogger(

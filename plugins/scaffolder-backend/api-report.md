@@ -20,7 +20,7 @@ import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
-import { Octokit } from '@octokit/rest';
+import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -299,7 +299,12 @@ export class OctokitProvider {
     githubCredentialsProvider?: GithubCredentialsProvider,
   );
   // Warning: (ae-forgotten-export) The symbol "OctokitIntegration" needs to be exported by the entry point index.d.ts
-  getOctokit(repoUrl: string): Promise<OctokitIntegration>;
+  getOctokit(
+    repoUrl: string,
+    options?: {
+      token?: string;
+    },
+  ): Promise<OctokitIntegration>;
 }
 
 // @public

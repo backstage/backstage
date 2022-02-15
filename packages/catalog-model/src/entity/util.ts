@@ -23,6 +23,7 @@ import { Entity, AlphaEntity } from './Entity';
  *
  * @public
  * @returns A string with enough randomness to uniquely identify an entity
+ * @deprecated use `uuidv4()` instead.
  */
 export function generateEntityUid(): string {
   return uuidv4();
@@ -34,6 +35,7 @@ export function generateEntityUid(): string {
  * @public
  * @returns A string with enough randomness to uniquely identify an entity
  *          revision
+ * @deprecated will be removed in a future release.
  */
 export function generateEntityEtag(): string {
   return Buffer.from(uuidv4(), 'utf8').toString('base64').replace(/[^\w]/g, '');
@@ -55,6 +57,7 @@ export function generateEntityEtag(): string {
  * @public
  * @param previous - The old state of the entity
  * @param next - The new state of the entity
+ * @deprecated will be removed in a future release.
  */
 export function entityHasChanges(previous: Entity, next: Entity): boolean {
   const e1 = lodash.cloneDeep(previous);
@@ -109,6 +112,7 @@ export function entityHasChanges(previous: Entity, next: Entity): boolean {
  * @param previous - The old state of the entity
  * @param next - The new state of the entity
  * @returns An entity with the merged state of both
+ * @deprecated will be removed in a future release.
  */
 export function generateUpdatedEntity(previous: Entity, next: Entity): Entity {
   const { uid, etag, generation } = previous.metadata;

@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName, Location } from '@backstage/catalog-model';
+import { Entity, EntityName } from '@backstage/catalog-model';
 import {
   AddLocationRequest,
   AddLocationResponse,
   CatalogApi,
   CatalogClient,
-  CatalogEntitiesRequest,
-  CatalogListResponse,
+  GetEntitiesRequest,
+  GetEntitiesResponse,
   CatalogRequestOptions,
-  CatalogEntityAncestorsRequest,
-  CatalogEntityAncestorsResponse,
+  GetEntityAncestorsRequest,
+  GetEntityAncestorsResponse,
+  Location,
 } from '@backstage/catalog-client';
 import { IdentityApi } from '@backstage/core-plugin-api';
 
@@ -58,9 +59,9 @@ export class CatalogClientWrapper implements CatalogApi {
   }
 
   async getEntities(
-    request?: CatalogEntitiesRequest,
+    request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogListResponse<Entity>> {
+  ): Promise<GetEntitiesResponse> {
     return await this.client.getEntities(
       request,
       await this.getCredentials(options),
@@ -138,9 +139,9 @@ export class CatalogClientWrapper implements CatalogApi {
   }
 
   async getEntityAncestors(
-    request: CatalogEntityAncestorsRequest,
+    request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogEntityAncestorsResponse> {
+  ): Promise<GetEntityAncestorsResponse> {
     return await this.client.getEntityAncestors(
       request,
       await this.getCredentials(options),

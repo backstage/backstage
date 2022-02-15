@@ -14,7 +14,7 @@
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {
-    "app": "file:../app",
+    "app": "link:../app",
     "@backstage/backend-common": "^{{version '@backstage/backend-common'}}",
     "@backstage/backend-tasks": "^{{version '@backstage/backend-tasks'}}",
     "@backstage/catalog-model": "^{{version '@backstage/catalog-model'}}",
@@ -40,7 +40,7 @@
     "pg": "^8.3.0",
     {{/if}}
     {{#if dbTypeSqlite}}
-    "sqlite3": "^5.0.1",
+    "@vscode/sqlite3": "^5.0.7",
     {{/if}}
     "winston": "^3.2.1"
   },

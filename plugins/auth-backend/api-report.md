@@ -5,12 +5,12 @@
 ```ts
 /// <reference types="node" />
 
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import { BackstageSignInResult } from '@backstage/plugin-auth-node';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { JsonValue } from '@backstage/types';
-import { JSONWebKey } from 'jose';
 import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -128,30 +128,6 @@ export type AwsAlbProviderOptions = {
   };
 };
 
-// @public @deprecated
-export type BackstageIdentity = BackstageSignInResult;
-
-// @public
-export interface BackstageIdentityResponse extends BackstageSignInResult {
-  identity: BackstageUserIdentity;
-}
-
-// @public
-export interface BackstageSignInResult {
-  // @deprecated
-  entity?: Entity;
-  // @deprecated
-  id: string;
-  token: string;
-}
-
-// @public
-export type BackstageUserIdentity = {
-  type: 'user';
-  userEntityRef: string;
-  ownershipEntityRefs: string[];
-};
-
 // Warning: (ae-missing-release-tag) "BitbucketOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -213,6 +189,17 @@ export class CatalogIdentityClient {
   // Warning: (ae-forgotten-export) The symbol "MemberClaimQuery" needs to be exported by the entry point index.d.ts
   resolveCatalogMembership(query: MemberClaimQuery): Promise<string[]>;
 }
+
+// @public
+export type CookieConfigurer = (ctx: {
+  providerId: string;
+  baseUrl: string;
+  callbackUrl: string;
+}) => {
+  domain: string;
+  path: string;
+  secure: boolean;
+};
 
 // Warning: (ae-missing-release-tag) "createAtlassianProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -412,20 +399,6 @@ export type GoogleProviderOptions = {
   };
 };
 
-// Warning: (ae-missing-release-tag) "IdentityClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export class IdentityClient {
-  constructor(options: { discovery: PluginEndpointDiscovery; issuer: string });
-  authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
-  static getBearerToken(
-    authorizationHeader: string | undefined,
-  ): string | undefined;
-  listPublicKeys(): Promise<{
-    keys: JSONWebKey[];
-  }>;
-}
-
 // Warning: (ae-missing-release-tag) "microsoftEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -592,6 +565,7 @@ export type OAuthState = {
   nonce: string;
   env: string;
   origin?: string;
+  scope?: string;
 };
 
 // @public
@@ -734,6 +708,6 @@ export type WebMessageResponse =
 //
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
 // src/providers/aws-alb/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "AwsAlbResult" needs to be exported by the entry point index.d.ts
-// src/providers/github/provider.d.ts:81:5 - (ae-forgotten-export) The symbol "StateEncoder" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:98:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
+// src/providers/github/provider.d.ts:97:5 - (ae-forgotten-export) The symbol "StateEncoder" needs to be exported by the entry point index.d.ts
+// src/providers/types.d.ts:118:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
 ```

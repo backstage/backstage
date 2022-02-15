@@ -34,6 +34,12 @@ export const rootRouteRef = createRouteRef({
   id: 'catalog-import',
 });
 
+/**
+ * A plugin that helps the user in importing projects and YAML files into the
+ * catalog.
+ *
+ * @public
+ */
 export const catalogImportPlugin = createPlugin({
   id: 'catalog-import',
   apis: [
@@ -70,6 +76,11 @@ export const catalogImportPlugin = createPlugin({
   },
 });
 
+/**
+ * The page for importing projects and YAML files into the catalog.
+ *
+ * @public
+ */
 export const CatalogImportPage = catalogImportPlugin.provide(
   createRoutableExtension({
     name: 'CatalogImportPage',

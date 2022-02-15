@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Location, LocationSpec } from '@backstage/catalog-model';
+import { LocationSpec } from '@backstage/catalog-model';
+import { Location } from '@backstage/catalog-client';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';

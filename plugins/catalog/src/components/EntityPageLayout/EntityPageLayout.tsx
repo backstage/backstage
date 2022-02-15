@@ -23,6 +23,7 @@ import {
   EntityRefLinks,
   FavoriteEntity,
   getEntityRelations,
+  InspectEntityDialog,
   UnregisterEntityDialog,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
@@ -123,6 +124,11 @@ type EntityPageLayoutProps = {
   children?: React.ReactNode;
 };
 
+/**
+ * Old entity page, only used by the old router based hierarchies.
+ *
+ * @deprecated Please use CatalogEntityPage instead
+ */
 export const EntityPageLayout = ({
   children,
   UNSTABLE_extraContextMenuItems,
@@ -138,13 +144,12 @@ export const EntityPageLayout = ({
   );
 
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
+  const [inspectionDialogOpen, setInspectionDialogOpen] = useState(false);
   const navigate = useNavigate();
   const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
     navigate('/');
   };
-
-  const showRemovalDialog = () => setConfirmationDialogOpen(true);
 
   return (
     <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
@@ -160,7 +165,8 @@ export const EntityPageLayout = ({
             <EntityContextMenu
               UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
               UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
-              onUnregisterEntity={showRemovalDialog}
+              onUnregisterEntity={() => setConfirmationDialogOpen(true)}
+              onInspectEntity={() => setInspectionDialogOpen(true)}
             />
           </>
         )}
@@ -197,6 +203,11 @@ export const EntityPageLayout = ({
         entity={entity!}
         onConfirm={cleanUpAfterRemoval}
         onClose={() => setConfirmationDialogOpen(false)}
+      />
+      <InspectEntityDialog
+        open={inspectionDialogOpen}
+        entity={entity!}
+        onClose={() => setInspectionDialogOpen(false)}
       />
     </Page>
   );

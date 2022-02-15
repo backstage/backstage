@@ -19,9 +19,9 @@ import {
   EntityPolicy,
   LocationEntity,
   LocationSpec,
-  parseLocationReference,
+  parseLocationRef,
   stringifyEntityRef,
-  stringifyLocationReference,
+  stringifyLocationRef,
 } from '@backstage/catalog-model';
 import {
   assertError,
@@ -119,10 +119,8 @@ export class DefaultCatalogProcessingOrchestrator
       // source-location? - maybe probably doesn't exist yet?
       const context: Context = {
         entityRef: stringifyEntityRef(entity),
-        location: parseLocationReference(getEntityLocationRef(entity)),
-        originLocation: parseLocationReference(
-          getEntityOriginLocationRef(entity),
-        ),
+        location: parseLocationRef(getEntityLocationRef(entity)),
+        originLocation: parseLocationRef(getEntityOriginLocationRef(entity)),
         cache,
         collector,
       };
@@ -149,9 +147,9 @@ export class DefaultCatalogProcessingOrchestrator
           throw new NotAllowedError(
             `Entity ${stringifyEntityRef(
               deferredEntity.entity,
-            )} at ${stringifyLocationReference(
+            )} at ${stringifyLocationRef(
               context.location,
-            )}, originated at ${stringifyLocationReference(
+            )}, originated at ${stringifyLocationRef(
               context.originLocation,
             )}, is not of an allowed kind for that location`,
           );

@@ -1,5 +1,70 @@
 # @backstage/plugin-catalog-react
 
+## 0.6.14
+
+### Patch Changes
+
+- 680e7c7452: Updated `useEntityListProvider` and catalog pickers to respond to external changes to query parameters in the URL, such as two sidebar links that apply different catalog filters.
+- f8633307c4: Added an "inspect" entry in the entity three-dots menu, for lower level catalog
+  insights and debugging.
+- 19155e0939: Updated React component type declarations to avoid exporting exotic component types.
+- 7bb1bde7f6: Minor API cleanups
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/core-components@0.8.8
+
+## 0.6.14-next.0
+
+### Patch Changes
+
+- 680e7c7452: Updated `useEntityListProvider` and catalog pickers to respond to external changes to query parameters in the URL, such as two sidebar links that apply different catalog filters.
+- 7bb1bde7f6: Minor API cleanups
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+
+## 0.6.13
+
+### Patch Changes
+
+- f7257dff6f: The `<Link />` component now accepts a `noTrack` prop, which prevents the `click` event from being captured by the Analytics API. This can be used if tracking is explicitly not warranted, or in order to use custom link tracking in specific situations.
+- 300f8cdaee: Fix bug: previously the filter would be set to "all" on page load, even if the
+  `initiallySelectedFilter` on the `DefaultCatalogPage` was set to something else,
+  or a different query parameter was supplied. Now, the prop and query parameters
+  control the filter as expected. Additionally, after this change any filters
+  which match 0 items will be disabled, and the filter will be reverted to 'all'
+  if they're set on page load.
+- 6acc8f7db7: Add caching to the useEntityPermission hook
+
+  The hook now caches the authorization decision based on the permission + the entity, and returns the cache match value as the default `allowed` value while loading. This helps avoid flicker in UI elements that would be conditionally rendered based on the `allowed` result of this hook.
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+
+## 0.6.13-next.1
+
+### Patch Changes
+
+- f7257dff6f: The `<Link />` component now accepts a `noTrack` prop, which prevents the `click` event from being captured by the Analytics API. This can be used if tracking is explicitly not warranted, or in order to use custom link tracking in specific situations.
+- 300f8cdaee: Fix bug: previously the filter would be set to "all" on page load, even if the
+  `initiallySelectedFilter` on the `DefaultCatalogPage` was set to something else,
+  or a different query parameter was supplied. Now, the prop and query parameters
+  control the filter as expected. Additionally, after this change any filters
+  which match 0 items will be disabled, and the filter will be reverted to 'all'
+  if they're set on page load.
+- 6acc8f7db7: Add caching to the useEntityPermission hook
+
+  The hook now caches the authorization decision based on the permission + the entity, and returns the cache match value as the default `allowed` value while loading. This helps avoid flicker in UI elements that would be conditionally rendered based on the `allowed` result of this hook.
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.1
+
+## 0.6.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+
 ## 0.6.12
 
 ### Patch Changes

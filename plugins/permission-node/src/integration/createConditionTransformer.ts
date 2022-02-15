@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import {
+  AllOfCriteria,
+  AnyOfCriteria,
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
@@ -32,11 +34,11 @@ const mapConditions = <TQuery>(
   if (isAndCriteria(criteria)) {
     return {
       allOf: criteria.allOf.map(child => mapConditions(child, getRule)),
-    };
+    } as AllOfCriteria<TQuery>;
   } else if (isOrCriteria(criteria)) {
     return {
       anyOf: criteria.anyOf.map(child => mapConditions(child, getRule)),
-    };
+    } as AnyOfCriteria<TQuery>;
   } else if (isNotCriteria(criteria)) {
     return {
       not: mapConditions(criteria.not, getRule),

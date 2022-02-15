@@ -46,19 +46,30 @@ const useStyles = makeStyles(
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+/** @public */
 export const EntityLifecyclePicker = () => {
   const classes = useStyles();
   const { updateFilters, backendEntities, filters, queryParameters } =
     useEntityListProvider();
 
-  const queryParamLifecycles = [queryParameters.lifecycles]
-    .flat()
-    .filter(Boolean) as string[];
+  const queryParamLifecycles = useMemo(
+    () => [queryParameters.lifecycles].flat().filter(Boolean) as string[],
+    [queryParameters],
+  );
+
   const [selectedLifecycles, setSelectedLifecycles] = useState(
     queryParamLifecycles.length
       ? queryParamLifecycles
       : filters.lifecycles?.values ?? [],
   );
+
+  // Set selected lifecycles on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    if (queryParamLifecycles.length) {
+      setSelectedLifecycles(queryParamLifecycles);
+    }
+  }, [queryParamLifecycles]);
 
   useEffect(() => {
     updateFilters({

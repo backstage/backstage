@@ -1,7 +1,7 @@
 {
   "name": "@techdocs/cli",
   "description": "Utility CLI for managing TechDocs sites in Backstage.",
-  "version": "0.8.11",
+  "version": "0.8.13",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -21,18 +21,19 @@
   "types": "",
   "scripts": {
     "start": "nodemon --",
-    "build": "./scripts/build.sh",
+    "build": "backstage-cli build --outputs cjs",
     "clean": "backstage-cli clean",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test --testPathIgnorePatterns=src/e2e.test.ts",
     "test:e2e": "backstage-cli test src/e2e.test.ts",
-    "test:e2e:ci": "backstage-cli test --watchAll=false --ci src/e2e.test.ts"
+    "test:e2e:ci": "backstage-cli test --watchAll=false --ci src/e2e.test.ts",
+    "prepack": "./scripts/prepack.sh"
   },
   "bin": {
     "techdocs-cli": "bin/techdocs-cli"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.0",
+    "@backstage/cli": "^0.13.2",
     "@types/commander": "^2.12.2",
     "@types/fs-extra": "^9.0.6",
     "@types/http-proxy": "^1.17.4",
@@ -40,7 +41,7 @@
     "@types/node": "^14.14.32",
     "@types/serve-handler": "^6.1.0",
     "@types/webpack-env": "^1.15.3",
-    "embedded-techdocs-app": "file:../embedded-techdocs-app",
+    "techdocs-cli-embedded-app": "link:../techdocs-cli-embedded-app",
     "find-process": "^1.4.5",
     "nodemon": "^2.0.2",
     "ts-node": "^10.0.0"
@@ -55,10 +56,11 @@
     "ext": "ts"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.10.5",
+    "@backstage/backend-common": "^0.10.7",
     "@backstage/catalog-model": "^0.9.10",
+    "@backstage/cli-common": "^0.1.6",
     "@backstage/config": "^0.1.13",
-    "@backstage/techdocs-common": "^0.11.5",
+    "@backstage/techdocs-common": "^0.11.7",
     "@types/dockerode": "^3.3.0",
     "commander": "^6.1.0",
     "dockerode": "^3.3.1",

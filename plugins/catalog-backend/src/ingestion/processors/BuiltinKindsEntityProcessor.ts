@@ -226,6 +226,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_DEPENDENCY_OF,
       );
       doEmit(
+        resource.spec.dependencyOf,
+        { defaultNamespace: selfRef.namespace },
+        RELATION_DEPENDENCY_OF,
+        RELATION_DEPENDS_ON,
+      );
+      doEmit(
         resource.spec.system,
         { defaultKind: 'System', defaultNamespace: selfRef.namespace },
         RELATION_PART_OF,

@@ -16,11 +16,8 @@
 
 import express from 'express';
 import { Profile as PassportProfile } from 'passport';
-import {
-  RedirectInfo,
-  BackstageSignInResult,
-  ProfileInfo,
-} from '../../providers/types';
+import { BackstageSignInResult } from '@backstage/plugin-auth-node';
+import { RedirectInfo, ProfileInfo } from '../../providers/types';
 
 /**
  * Common options for passport.js-based OAuth providers
@@ -87,6 +84,7 @@ export type OAuthState = {
   nonce: string;
   env: string;
   origin?: string;
+  scope?: string;
 };
 
 export type OAuthStartRequest = express.Request<{}> & {

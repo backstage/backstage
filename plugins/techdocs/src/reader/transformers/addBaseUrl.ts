@@ -84,6 +84,7 @@ export const addBaseUrl = ({
     await Promise.all([
       updateDom<HTMLImageElement>(dom.querySelectorAll('img'), 'src'),
       updateDom<HTMLScriptElement>(dom.querySelectorAll('script'), 'src'),
+      updateDom<HTMLSourceElement>(dom.querySelectorAll('source'), 'src'),
       updateDom<HTMLLinkElement>(dom.querySelectorAll('link'), 'href'),
       updateDom<HTMLAnchorElement>(dom.querySelectorAll('a[download]'), 'href'),
     ]);

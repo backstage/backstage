@@ -18,7 +18,7 @@ import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import {
   Entity,
   getEntitySourceLocation,
-  parseLocationReference,
+  parseLocationRef,
 } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -42,7 +42,7 @@ export const parseReferenceAnnotation = (
     );
   }
 
-  const { type, target } = parseLocationReference(annotation);
+  const { type, target } = parseLocationRef(annotation);
   return {
     type: type as RemoteProtocol,
     target,

@@ -17,7 +17,7 @@
 import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
-  LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -127,7 +127,7 @@ export function AboutCard({ variant }: AboutCardProps) {
     cardContentClass = classes.fullHeightCardContent;
   }
 
-  const entityLocation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+  const entityLocation = entity.metadata.annotations?.[ANNOTATION_LOCATION];
   // Limiting the ability to manually refresh to the less expensive locations
   const allowRefresh =
     entityLocation?.startsWith('url:') || entityLocation?.startsWith('file:');

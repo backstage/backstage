@@ -23,8 +23,8 @@ import {
 } from '../Router';
 import { GithubDeploymentsTable } from './GithubDeploymentsTable/GithubDeploymentsTable';
 import {
-  LOCATION_ANNOTATION,
-  SOURCE_LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
+  ANNOTATION_SOURCE_LOCATION,
 } from '@backstage/catalog-model';
 
 import {
@@ -88,8 +88,8 @@ export const GithubDeploymentsCard = (props: {
   const { last, lastStatuses, columns } = props;
   const { entity } = useEntity();
   const [host] = [
-    entity?.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION],
-    entity?.metadata.annotations?.[LOCATION_ANNOTATION],
+    entity?.metadata.annotations?.[ANNOTATION_SOURCE_LOCATION],
+    entity?.metadata.annotations?.[ANNOTATION_LOCATION],
   ].filter(Boolean);
 
   return !isGithubDeploymentsAvailable(entity) ? (

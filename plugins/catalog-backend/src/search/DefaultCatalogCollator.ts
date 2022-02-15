@@ -28,7 +28,7 @@ import { Config } from '@backstage/config';
 import {
   CatalogApi,
   CatalogClient,
-  CatalogEntitiesRequest,
+  GetEntitiesRequest,
 } from '@backstage/catalog-client';
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
 
@@ -43,7 +43,7 @@ export interface CatalogEntityDocument extends IndexableDocument {
 export class DefaultCatalogCollator implements DocumentCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
-  protected filter?: CatalogEntitiesRequest['filter'];
+  protected filter?: GetEntitiesRequest['filter'];
   protected readonly catalogClient: CatalogApi;
   public readonly type: string = 'software-catalog';
   public readonly visibilityPermission = catalogEntityReadPermission;
@@ -54,7 +54,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
     options: {
       discovery: PluginEndpointDiscovery;
       tokenManager: TokenManager;
-      filter?: CatalogEntitiesRequest['filter'];
+      filter?: GetEntitiesRequest['filter'];
     },
   ) {
     return new DefaultCatalogCollator({
@@ -66,7 +66,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
     discovery: PluginEndpointDiscovery;
     tokenManager: TokenManager;
     locationTemplate?: string;
-    filter?: CatalogEntitiesRequest['filter'];
+    filter?: GetEntitiesRequest['filter'];
     catalogClient?: CatalogApi;
   }) {
     const { discovery, locationTemplate, filter, catalogClient, tokenManager } =

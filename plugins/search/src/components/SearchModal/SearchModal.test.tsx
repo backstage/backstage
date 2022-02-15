@@ -24,7 +24,6 @@ import { rootRouteRef } from '../../plugin';
 import { searchApiRef } from '../../apis';
 
 import { SearchModal } from './SearchModal';
-import { SearchContextProvider } from '../SearchContext';
 
 describe('SearchModal', () => {
   const query = jest.fn().mockResolvedValue({ results: [] });
@@ -34,14 +33,16 @@ describe('SearchModal', () => {
     [searchApiRef, { query }],
   );
 
+  beforeEach(() => {
+    query.mockClear();
+  });
+
   const toggleModal = jest.fn();
 
   it('Should render the Modal correctly', async () => {
     await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
-        <SearchContextProvider>
-          <SearchModal open toggleModal={toggleModal} />
-        </SearchContextProvider>
+        <SearchModal open hidden={false} toggleModal={toggleModal} />
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -51,14 +52,13 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(query).toHaveBeenCalledTimes(1);
   });
 
   it('Calls toggleModal handler', async () => {
     await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
-        <SearchContextProvider>
-          <SearchModal open toggleModal={toggleModal} />
-        </SearchContextProvider>
+        <SearchModal open toggleModal={toggleModal} />
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -66,7 +66,25 @@ describe('SearchModal', () => {
         },
       },
     );
+
+    expect(query).toHaveBeenCalledTimes(1);
     userEvent.keyboard('{esc}');
     expect(toggleModal).toHaveBeenCalledTimes(1);
+  });
+
+  it('should render SearchModal hiding its content', async () => {
+    const { getByTestId } = await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open hidden toggleModal={toggleModal} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    expect(getByTestId('search-bar-next')).toBeInTheDocument();
+    expect(getByTestId('search-bar-next')).not.toBeVisible();
   });
 });

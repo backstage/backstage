@@ -18,14 +18,131 @@ import { assertError } from '@backstage/errors';
 import { CommanderStatic } from 'commander';
 import { exitWithError } from '../lib/errors';
 
-export function registerCommands(program: CommanderStatic) {
-  const configOption = [
-    '--config <path>',
-    'Config files to load instead of app-config.yaml',
-    (opt: string, opts: string[]) => [...opts, opt],
-    Array<string>(),
-  ] as const;
+const configOption = [
+  '--config <path>',
+  'Config files to load instead of app-config.yaml',
+  (opt: string, opts: string[]) => [...opts, opt],
+  Array<string>(),
+] as const;
 
+export function registerRepoCommand(program: CommanderStatic) {
+  const command = program
+    .command('repo [command]', { hidden: true })
+    .description(
+      'Command that run across an entire Backstage project [EXPERIMENTAL]',
+    );
+
+  command
+    .command('build')
+    .description(
+      'Build packages in the project, excluding bundled app and backend packages.',
+    )
+    .option(
+      '--all',
+      'Build all packages, including bundled app and backend packages.',
+    )
+    .action(lazy(() => import('./repo/build').then(m => m.command)));
+}
+
+export function registerScriptCommand(program: CommanderStatic) {
+  const command = program
+    .command('script [command]', { hidden: true })
+    .description('Lifecycle scripts for Backstage packages [EXPERIMENTAL]');
+
+  command
+    .command('start')
+    .description('Start a package for local development')
+    .option(...configOption)
+    .option('--role <name>', 'Run the command with an explicit package role')
+    .option('--check', 'Enable type checking and linting if available')
+    .option('--inspect', 'Enable debugger in Node.js environments')
+    .option(
+      '--inspect-brk',
+      'Enable debugger in Node.js environments, breaking before code starts',
+    )
+    .action(lazy(() => import('./start').then(m => m.command)));
+
+  command
+    .command('build')
+    .description('Build a package for production deployment or publishing')
+    .option(
+      '--minify',
+      'Minify the generated code. Does not apply to app or backend packages.',
+    )
+    .option(
+      '--experimental-type-build',
+      'Enable experimental type build. Does not apply to app or backend packages.',
+    )
+    .option(
+      '--skip-build-dependencies',
+      'Skip the automatic building of local dependencies. Applies to backend packages only.',
+    )
+    .option(
+      '--stats',
+      'If bundle stats are available, write them to the output directory. Applies to app packages only.',
+    )
+    .option(
+      '--config <path>',
+      'Config files to load instead of app-config.yaml. Applies to app packages only.',
+      (opt: string, opts: string[]) => [...opts, opt],
+      Array<string>(),
+    )
+    .action(lazy(() => import('./build').then(m => m.command)));
+
+  program
+    .command('lint')
+    .option(
+      '--format <format>',
+      'Lint report output format',
+      'eslint-formatter-friendly',
+    )
+    .option('--fix', 'Attempt to automatically fix violations')
+    .description('Lint a package')
+    .action(lazy(() => import('./lint').then(m => m.default)));
+
+  program
+    .command('test')
+    .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
+    .helpOption(', --backstage-cli-help') // Let Jest handle help
+    .description('Run tests, forwarding args to Jest, defaulting to watch mode')
+    .action(lazy(() => import('./testCommand').then(m => m.default)));
+
+  command
+    .command('clean')
+    .description('Delete cache directories')
+    .action(lazy(() => import('./clean/clean').then(m => m.default)));
+
+  command
+    .command('prepack')
+    .description('Prepares a package for packaging before publishing')
+    .action(lazy(() => import('./pack').then(m => m.pre)));
+
+  command
+    .command('postpack')
+    .description('Restores the changes made by the prepack command')
+    .action(lazy(() => import('./pack').then(m => m.post)));
+}
+
+export function registerMigrateCommand(program: CommanderStatic) {
+  const command = program
+    .command('migrate [command]', { hidden: true })
+    .description('Migration utilities [EXPERIMENTAL]');
+
+  command
+    .command('package-role')
+    .description(`Add package role field to packages that don't have it`)
+    .action(lazy(() => import('./migrate/packageRole').then(m => m.default)));
+
+  command
+    .command('package-scripts')
+    .description('Set package scripts according to each package role')
+    .action(
+      lazy(() => import('./migrate/packageScripts').then(m => m.command)),
+    );
+}
+
+export function registerCommands(program: CommanderStatic) {
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('app:build')
     .description('Build an app for a production release')
@@ -33,6 +150,7 @@ export function registerCommands(program: CommanderStatic) {
     .option(...configOption)
     .action(lazy(() => import('./app/build').then(m => m.default)));
 
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('app:serve')
     .description('Serve an app for local development')
@@ -40,6 +158,7 @@ export function registerCommands(program: CommanderStatic) {
     .option(...configOption)
     .action(lazy(() => import('./app/serve').then(m => m.default)));
 
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('backend:build')
     .description('Build a backend plugin')
@@ -47,6 +166,7 @@ export function registerCommands(program: CommanderStatic) {
     .option('--experimental-type-build', 'Enable experimental type build')
     .action(lazy(() => import('./backend/build').then(m => m.default)));
 
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('backend:bundle')
     .description('Bundle the backend into a deployment archive')
@@ -56,6 +176,7 @@ export function registerCommands(program: CommanderStatic) {
     )
     .action(lazy(() => import('./backend/bundle').then(m => m.default)));
 
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('backend:dev')
     .description('Start local development server with HMR for the backend')
@@ -104,6 +225,7 @@ export function registerCommands(program: CommanderStatic) {
       lazy(() => import('./create-plugin/createPlugin').then(m => m.default)),
     );
 
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('plugin:build')
     .description('Build a plugin')
@@ -111,6 +233,7 @@ export function registerCommands(program: CommanderStatic) {
     .option('--experimental-type-build', 'Enable experimental type build')
     .action(lazy(() => import('./plugin/build').then(m => m.default)));
 
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('plugin:serve')
     .description('Serves the dev/ folder of a plugin')
@@ -125,14 +248,16 @@ export function registerCommands(program: CommanderStatic) {
     .description('Diff an existing plugin with the creation template')
     .action(lazy(() => import('./plugin/diff').then(m => m.default)));
 
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('build')
     .description('Build a package for publishing')
     .option('--outputs <formats>', 'List of formats to output [types,cjs,esm]')
     .option('--minify', 'Minify the generated code')
     .option('--experimental-type-build', 'Enable experimental type build')
-    .action(lazy(() => import('./build').then(m => m.default)));
+    .action(lazy(() => import('./oldBuild').then(m => m.default)));
 
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('lint')
     .option(
@@ -144,6 +269,7 @@ export function registerCommands(program: CommanderStatic) {
     .description('Lint a package')
     .action(lazy(() => import('./lint').then(m => m.default)));
 
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('test')
     .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
@@ -205,11 +331,20 @@ export function registerCommands(program: CommanderStatic) {
     .description('Print configuration schema')
     .action(lazy(() => import('./config/schema').then(m => m.default)));
 
+  registerRepoCommand(program);
+  registerScriptCommand(program);
+  registerMigrateCommand(program);
+
   program
     .command('versions:bump')
     .option(
       '--pattern <glob>',
       'Override glob for matching packages to upgrade',
+    )
+    .option(
+      '--release <version|next|main>',
+      'Bump to a specific Backstage release line or version',
+      'main',
     )
     .description('Bump Backstage packages to the latest versions')
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
@@ -220,16 +355,19 @@ export function registerCommands(program: CommanderStatic) {
     .description('Check Backstage package versioning')
     .action(lazy(() => import('./versions/lint').then(m => m.default)));
 
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('prepack')
     .description('Prepares a package for packaging before publishing')
     .action(lazy(() => import('./pack').then(m => m.pre)));
 
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('postpack')
     .description('Restores the changes made by the prepack command')
     .action(lazy(() => import('./pack').then(m => m.post)));
 
+  // TODO(Rugvip): Deprecate in favor of script variant
   program
     .command('clean')
     .description('Delete cache directories')

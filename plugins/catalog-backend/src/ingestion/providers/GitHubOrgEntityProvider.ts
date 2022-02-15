@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
   Entity,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -178,8 +178,8 @@ export function withLocations(
     {
       metadata: {
         annotations: {
-          [LOCATION_ANNOTATION]: location,
-          [ORIGIN_LOCATION_ANNOTATION]: location,
+          [ANNOTATION_LOCATION]: location,
+          [ANNOTATION_ORIGIN_LOCATION]: location,
         },
       },
     },

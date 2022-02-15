@@ -11,18 +11,18 @@ import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogClient } from '@backstage/catalog-client';
-import { CatalogEntitiesRequest } from '@backstage/catalog-client';
-import { CatalogEntityAncestorsRequest } from '@backstage/catalog-client';
-import { CatalogEntityAncestorsResponse } from '@backstage/catalog-client';
-import { CatalogListResponse } from '@backstage/catalog-client';
 import { CatalogRequestOptions } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { GetEntitiesRequest } from '@backstage/catalog-client';
+import { GetEntitiesResponse } from '@backstage/catalog-client';
+import { GetEntityAncestorsRequest } from '@backstage/catalog-client';
+import { GetEntityAncestorsResponse } from '@backstage/catalog-client';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
-import { Location as Location_2 } from '@backstage/catalog-model';
+import { Location as Location_2 } from '@backstage/catalog-client';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
@@ -76,14 +76,14 @@ export class CatalogClientWrapper implements CatalogApi {
   ): Promise<AddLocationResponse>;
   // (undocumented)
   getEntities(
-    request?: CatalogEntitiesRequest,
+    request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogListResponse<Entity>>;
+  ): Promise<GetEntitiesResponse>;
   // (undocumented)
   getEntityAncestors(
-    request: CatalogEntityAncestorsRequest,
+    request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogEntityAncestorsResponse>;
+  ): Promise<GetEntityAncestorsResponse>;
   // (undocumented)
   getEntityByName(
     compoundName: EntityName,
@@ -351,7 +351,7 @@ export const EntityOrphanWarning: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityPageLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated
 export const EntityPageLayout: {
   ({
     children,
@@ -387,12 +387,6 @@ export const EntitySwitch: {
     children: ReactNode;
   }) => null;
 };
-
-// Warning: (ae-forgotten-export) The symbol "SystemDiagramCard" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EntitySystemDiagramCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const EntitySystemDiagramCard: SystemDiagramCard;
 
 // Warning: (ae-missing-release-tag) "FilterContainer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -481,6 +475,6 @@ export type SystemDiagramCardClassKey =
 // src/components/CatalogTable/CatalogTable.d.ts:11:5 - (ae-forgotten-export) The symbol "columnFactories" needs to be exported by the entry point index.d.ts
 // src/components/EntityLayout/EntityLayout.d.ts:43:5 - (ae-forgotten-export) The symbol "EntityLayoutProps" needs to be exported by the entry point index.d.ts
 // src/components/EntityLayout/EntityLayout.d.ts:44:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
-// src/components/EntityPageLayout/EntityPageLayout.d.ts:17:5 - (ae-forgotten-export) The symbol "EntityPageLayoutProps" needs to be exported by the entry point index.d.ts
+// src/components/EntityPageLayout/EntityPageLayout.d.ts:22:5 - (ae-forgotten-export) The symbol "EntityPageLayoutProps" needs to be exported by the entry point index.d.ts
 // src/plugin.d.ts:22:5 - (ae-forgotten-export) The symbol "ColumnBreakpoints" needs to be exported by the entry point index.d.ts
 ```

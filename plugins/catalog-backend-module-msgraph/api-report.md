@@ -34,6 +34,15 @@ export function defaultUserTransformer(
 ): Promise<UserEntity | undefined>;
 
 // @public
+export type GroupMember =
+  | (MicrosoftGraph.Group & {
+      '@odata.type': '#microsoft.graph.user';
+    })
+  | (MicrosoftGraph.User & {
+      '@odata.type': '#microsoft.graph.group';
+    });
+
+// @public
 export type GroupTransformer = (
   group: MicrosoftGraph.Group,
   groupPhoto?: string,
@@ -54,7 +63,6 @@ export const MICROSOFT_GRAPH_USER_ID_ANNOTATION = 'graph.microsoft.com/user-id';
 export class MicrosoftGraphClient {
   constructor(baseUrl: string, pca: msal.ConfidentialClientApplication);
   static create(config: MicrosoftGraphProviderConfig): MicrosoftGraphClient;
-  // Warning: (ae-forgotten-export) The symbol "GroupMember" needs to be exported by the entry point index.d.ts
   getGroupMembers(groupId: string): AsyncIterable<GroupMember>;
   // (undocumented)
   getGroupPhoto(groupId: string, sizeId?: string): Promise<string | undefined>;
@@ -141,6 +149,7 @@ export type MicrosoftGraphProviderConfig = {
   clientId: string;
   clientSecret: string;
   userFilter?: string;
+  userExpand?: string[];
   userGroupMemberFilter?: string;
   groupFilter?: string;
 };
@@ -170,6 +179,7 @@ export function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
   tenantId: string,
   options: {
+    userExpand?: string[];
     userFilter?: string;
     userGroupMemberFilter?: string;
     groupFilter?: string;

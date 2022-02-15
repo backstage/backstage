@@ -26,8 +26,8 @@ exports.up = async function up(knex) {
     await knex.schema
       .raw('DROP VIEW location_update_log_latest;')
       .alterTable('location_update_log', table => {
-        table.text('message').alter();
-        table.text('entity_name').nullable().alter();
+        table.text('message').alter({ alterType: true });
+        table.text('entity_name').nullable().alter({ alterType: true });
       }).raw(`
         CREATE VIEW location_update_log_latest AS
         SELECT t1.* FROM location_update_log t1
@@ -53,8 +53,8 @@ exports.down = async function down(knex) {
     await knex.schema
       .raw('DROP VIEW location_update_log_latest;')
       .alterTable('location_update_log', table => {
-        table.string('message').alter();
-        table.string('entity_name').nullable().alter();
+        table.string('message').alter({ alterType: true });
+        table.string('entity_name').nullable().alter({ alterType: true });
       }).raw(`
         CREATE VIEW location_update_log_latest AS
         SELECT t1.* FROM location_update_log t1

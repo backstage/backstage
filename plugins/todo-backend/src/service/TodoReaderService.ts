@@ -17,11 +17,11 @@
 import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
-  LOCATION_ANNOTATION,
-  SOURCE_LOCATION_ANNOTATION,
-  serializeEntityRef,
+  ANNOTATION_LOCATION,
+  ANNOTATION_SOURCE_LOCATION,
   Entity,
-  parseLocationReference,
+  parseLocationRef,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { TodoReader } from '../lib';
 import { ListTodosRequest, ListTodosResponse, TodoService } from './types';
@@ -71,7 +71,7 @@ export class TodoReaderService implements TodoService {
     });
     if (!entity) {
       throw new NotFoundError(
-        `Entity not found, ${serializeEntityRef(req.entity)}`,
+        `Entity not found, ${stringifyEntityRef(req.entity)}`,
       );
     }
 
@@ -128,12 +128,12 @@ export class TodoReaderService implements TodoService {
 
   private getEntitySourceUrl(entity: Entity) {
     const sourceLocation =
-      entity.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION];
+      entity.metadata.annotations?.[ANNOTATION_SOURCE_LOCATION];
     if (sourceLocation) {
-      const parsed = parseLocationReference(sourceLocation);
+      const parsed = parseLocationRef(sourceLocation);
       if (parsed.type !== 'url') {
         throw new InputError(
-          `Invalid entity source location type for ${serializeEntityRef(
+          `Invalid entity source location type for ${stringifyEntityRef(
             entity,
           )}, got '${parsed.type}'`,
         );
@@ -141,12 +141,12 @@ export class TodoReaderService implements TodoService {
       return parsed.target;
     }
 
-    const location = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+    const location = entity.metadata.annotations?.[ANNOTATION_LOCATION];
     if (location) {
-      const parsed = parseLocationReference(location);
+      const parsed = parseLocationRef(location);
       if (parsed.type !== 'url') {
         throw new InputError(
-          `Invalid entity location type for ${serializeEntityRef(
+          `Invalid entity location type for ${stringifyEntityRef(
             entity,
           )}, got '${parsed.type}'`,
         );
@@ -154,7 +154,7 @@ export class TodoReaderService implements TodoService {
       return parsed.target;
     }
     throw new InputError(
-      `No entity location annotation found for ${serializeEntityRef(entity)}`,
+      `No entity location annotation found for ${stringifyEntityRef(entity)}`,
     );
   }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export type LogFunc = (data: Buffer | string) => void;
+export type LogFunc = (data: Buffer) => void;
 export type LogPipe = (dst: NodeJS.WriteStream) => LogFunc;
 
 export type LogOptions = {

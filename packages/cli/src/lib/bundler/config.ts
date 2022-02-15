@@ -93,7 +93,7 @@ export async function createConfig(
   if (checksEnabled) {
     plugins.push(
       new ForkTsCheckerWebpackPlugin({
-        typescript: { configFile: paths.targetTsConfig },
+        typescript: { configFile: paths.targetTsConfig, memoryLimit: 4096 },
       }),
       new ESLintPlugin({
         context: paths.targetPath,

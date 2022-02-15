@@ -48,3 +48,31 @@ jobs:
           git add .
           git commit -am "${{ github.event.inputs.version }}"
           git push
+
+      - name: Dispatch update-helper update
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          # TODO(Rugvip): Remove the create-app dispatch once we've been on the release version for a while
+          script: |
+            console.log('Dispatching upgrade helper sync - release version');
+            await github.rest.actions.createWorkflowDispatch({
+              owner: 'backstage',
+              repo: 'upgrade-helper-diff',
+              workflow_id: 'release.yml',
+              ref: 'master',
+              inputs: {
+                version: require('./backstage/package.json').version,
+              },
+            });
+
+            console.log('Dispatching upgrade helper sync - create-app version');
+            await github.rest.actions.createWorkflowDispatch({
+              owner: 'backstage',
+              repo: 'upgrade-helper-diff',
+              workflow_id: 'release.yml',
+              ref: 'master',
+              inputs: {
+                version: require('./backstage/packages/create-app/package.json').version,
+              },
+            });

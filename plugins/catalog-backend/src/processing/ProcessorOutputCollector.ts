@@ -17,9 +17,9 @@
 import {
   Entity,
   EntityRelationSpec,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
-  stringifyLocationReference,
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+  stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
@@ -82,7 +82,7 @@ export class ProcessorOutputCollector {
         return;
       }
 
-      const location = stringifyLocationReference(i.location);
+      const location = stringifyLocationRef(i.location);
 
       // Note that at this point, we have only validated the envelope part of
       // the entity data. Annotations are not part of that, so we have to be
@@ -98,8 +98,8 @@ export class ProcessorOutputCollector {
             ...entity.metadata,
             annotations: {
               ...annotations,
-              [ORIGIN_LOCATION_ANNOTATION]: originLocation,
-              [LOCATION_ANNOTATION]: location,
+              [ANNOTATION_ORIGIN_LOCATION]: originLocation,
+              [ANNOTATION_LOCATION]: location,
             },
           },
         };

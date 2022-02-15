@@ -107,7 +107,7 @@ const systemPage = (
       </Grid>
     </EntityLayout.Route>
     <EntityLayout.Route path="/diagram" title="Diagram">
-      <EntitySystemDiagramCard />
+      <EntityCatalogGraphCard variant="gridItem" height={400} />
     </EntityLayout.Route>
 
     {/* Adding a new tab to the system view */}

@@ -1,5 +1,47 @@
 # @backstage/plugin-bazaar
 
+## 0.1.13
+
+### Patch Changes
+
+- d674971d3a: Rolling back the `@date-io/luxon` bump as this broke both packages, and we need it for `@material-ui/pickers`
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/cli@0.13.2
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+  - @backstage/plugin-catalog@0.7.12
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.13.2-next.0
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+  - @backstage/plugin-catalog@0.7.12-next.0
+
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+  - @backstage/cli@0.13.1
+  - @backstage/plugin-catalog@0.7.11
+
+## 0.1.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/cli@0.13.1-next.0
+  - @backstage/plugin-catalog@0.7.11-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
 ## 0.1.11
 
 ### Patch Changes

@@ -1,5 +1,47 @@
 # @backstage/core-components
 
+## 0.8.8
+
+### Patch Changes
+
+- 8d785a0b1b: chore: bump `ansi-regex` from `5.0.1` to `6.0.1`
+- f2dfbd3fb0: Adjust ErrorPage to accept optional supportUrl property to override app support config. Update type of additionalInfo property to be ReactNode to accept both string and component.
+- 19155e0939: Updated React component type declarations to avoid exporting exotic component types.
+- 89c84b9108: chore: fixing typescript errors for `TabbedCard.tsx` for React 17.x
+- d62bdb7a8e: The `ErrorPage` now falls back to using the default support configuration if the `ConfigApi` is not available.
+
+## 0.8.8-next.0
+
+### Patch Changes
+
+- 8d785a0b1b: chore: bump `ansi-regex` from `5.0.1` to `6.0.1`
+- f2dfbd3fb0: Adjust ErrorPage to accept optional supportUrl property to override app support config. Update type of additionalInfo property to be ReactNode to accept both string and component.
+- d62bdb7a8e: The `ErrorPage` now falls back to using the default support configuration if the `ConfigApi` is not available.
+
+## 0.8.7
+
+### Patch Changes
+
+- f7257dff6f: The `<Link />` component now accepts a `noTrack` prop, which prevents the `click` event from being captured by the Analytics API. This can be used if tracking is explicitly not warranted, or in order to use custom link tracking in specific situations.
+- 4c773ed25c: Change subtitle of Header style to use palette.bursts.fontColor
+- f465b63b7f: Fix an issue where changes related to the `MobileSidebar` prevented scrolling pages. Additionally improve the menu of the `MobileSidebar` to not overlay the `BottomNavigation`.
+- 064e750a50: Adding hover message to the Gauge and an info icon to the GaugeCard.
+- a681cb9c2f: Make linkTarget configurable for MarkdownContent component
+
+## 0.8.7-next.1
+
+### Patch Changes
+
+- f7257dff6f: The `<Link />` component now accepts a `noTrack` prop, which prevents the `click` event from being captured by the Analytics API. This can be used if tracking is explicitly not warranted, or in order to use custom link tracking in specific situations.
+
+## 0.8.7-next.0
+
+### Patch Changes
+
+- 4c773ed25c: Change subtitle of Header style to use palette.bursts.fontColor
+- f465b63b7f: Fix an issue where changes related to the `MobileSidebar` prevented scrolling pages. Additionally improve the menu of the `MobileSidebar` to not overlay the `BottomNavigation`.
+- a681cb9c2f: Make linkTarget configurable for MarkdownContent component
+
 ## 0.8.6
 
 ### Patch Changes

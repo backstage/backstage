@@ -52,6 +52,7 @@ export function createPublishGithubAction(options: {
     requireCodeOwnerReviews?: boolean;
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
+    token?: string;
     topics?: string[];
   }>({
     id: 'publish:github',
@@ -77,7 +78,8 @@ export function createPublishGithubAction(options: {
             type: 'string',
           },
           requireCodeOwnerReviews: {
-            title:
+            title: 'Require CODEOWNER Reviews?',
+            description:
               'Require an approved review in PR including files with a designated Code Owner',
             type: 'boolean',
           },
@@ -92,7 +94,8 @@ export function createPublishGithubAction(options: {
             description: `Sets the default branch on the repository. The default value is 'master'`,
           },
           sourcePath: {
-            title:
+            title: 'Source Path',
+            description:
               'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
             type: 'string',
           },
@@ -115,6 +118,11 @@ export function createPublishGithubAction(options: {
                 },
               },
             },
+          },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description: 'The token to use for authorization to GitHub',
           },
           topics: {
             title: 'Topics',
@@ -149,26 +157,28 @@ export function createPublishGithubAction(options: {
         defaultBranch = 'master',
         collaborators,
         topics,
+        token: providedToken,
       } = ctx.input;
 
       const { client, token, owner, repo } = await octokitProvider.getOctokit(
         repoUrl,
+        { token: providedToken },
       );
 
-      const user = await client.users.getByUsername({
+      const user = await client.rest.users.getByUsername({
         username: owner,
       });
 
       const repoCreationPromise =
         user.data.type === 'Organization'
-          ? client.repos.createInOrg({
+          ? client.rest.repos.createInOrg({
               name: repo,
               org: owner,
               private: repoVisibility === 'private',
               visibility: repoVisibility,
               description: description,
             })
-          : client.repos.createForAuthenticatedUser({
+          : client.rest.repos.createForAuthenticatedUser({
               name: repo,
               private: repoVisibility === 'private',
               description: description,
@@ -177,7 +187,7 @@ export function createPublishGithubAction(options: {
       const { data: newRepo } = await repoCreationPromise;
       if (access?.startsWith(`${owner}/`)) {
         const [, team] = access.split('/');
-        await client.teams.addOrUpdateRepoPermissionsInOrg({
+        await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
           org: owner,
           team_slug: team,
           owner,
@@ -186,7 +196,7 @@ export function createPublishGithubAction(options: {
         });
         // No need to add access if it's the person who owns the personal account
       } else if (access && access !== owner) {
-        await client.repos.addCollaborator({
+        await client.rest.repos.addCollaborator({
           owner,
           repo,
           username: access,
@@ -200,7 +210,7 @@ export function createPublishGithubAction(options: {
           username: team_slug,
         } of collaborators) {
           try {
-            await client.teams.addOrUpdateRepoPermissionsInOrg({
+            await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
               org: owner,
               team_slug,
               owner,
@@ -218,7 +228,7 @@ export function createPublishGithubAction(options: {
 
       if (topics) {
         try {
-          await client.repos.replaceAllTopics({
+          await client.rest.repos.replaceAllTopics({
             owner,
             repo,
             names: topics.map(t => t.toLowerCase()),

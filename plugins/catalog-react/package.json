@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-catalog-react",
   "description": "A frontend library that helps other Backstage plugins interact with the catalog",
-  "version": "0.6.12",
+  "version": "0.6.14",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -29,9 +29,9 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/catalog-client": "^0.5.5",
+    "@backstage/catalog-client": "^0.6.0",
     "@backstage/catalog-model": "^0.9.10",
-    "@backstage/core-components": "^0.8.6",
+    "@backstage/core-components": "^0.8.8",
     "@backstage/core-plugin-api": "^0.6.0",
     "@backstage/errors": "^0.2.0",
     "@backstage/integration": "^0.7.2",
@@ -42,11 +42,13 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
+    "classnames": "^2.2.6",
     "jwt-decode": "^3.1.0",
     "lodash": "^4.17.21",
     "qs": "^6.9.4",
     "react-router": "6.0.0-beta.0",
     "react-use": "^17.2.4",
+    "yaml": "^1.10.0",
     "zen-observable": "^0.8.15"
   },
   "peerDependencies": {
@@ -54,10 +56,10 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.0",
-    "@backstage/core-app-api": "^0.5.1",
-    "@backstage/plugin-catalog-common": "^0.1.1",
-    "@backstage/test-utils": "^0.2.3",
+    "@backstage/cli": "^0.13.2",
+    "@backstage/core-app-api": "^0.5.2",
+    "@backstage/plugin-catalog-common": "^0.1.2",
+    "@backstage/test-utils": "^0.2.4",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^7.0.2",
@@ -65,7 +67,7 @@
     "@types/jest": "^26.0.7",
     "@types/jwt-decode": "^3.1.0",
     "@types/zen-observable": "^0.8.0",
-    "cross-fetch": "^3.0.6",
+    "cross-fetch": "^3.1.5",
     "react-test-renderer": "^16.13.1"
   },
   "files": [

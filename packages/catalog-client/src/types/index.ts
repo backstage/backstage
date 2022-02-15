@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+export { CATALOG_FILTER_EXISTS } from './api';
 export type {
   AddLocationRequest,
   AddLocationResponse,
   CatalogApi,
-  CatalogEntitiesRequest,
-  CatalogListResponse,
   CatalogRequestOptions,
-  CatalogEntityAncestorsRequest,
-  CatalogEntityAncestorsResponse,
+  GetEntitiesRequest,
+  GetEntitiesResponse,
+  GetEntityAncestorsRequest,
+  GetEntityAncestorsResponse,
+  Location,
 } from './api';
-export type { DiscoveryApi } from './discovery';
-export type { FetchApi } from './fetch';
-export { CATALOG_FILTER_EXISTS } from './api';
 export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';
+export * from './deprecated';

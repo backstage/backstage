@@ -20,7 +20,11 @@ import express, { Router, RequestHandler } from 'express';
 import { RestContext, rest } from 'msw';
 import { setupServer, SetupServerApi } from 'msw/node';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  PermissionCondition,
+  PermissionCriteria,
+} from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
@@ -28,7 +32,7 @@ describe('PermissionIntegrationClient', () => {
   describe('applyConditions', () => {
     let server: SetupServerApi;
 
-    const mockConditions = {
+    const mockConditions: PermissionCriteria<PermissionCondition> = {
       not: {
         allOf: [
           { rule: 'RULE_1', params: [] },

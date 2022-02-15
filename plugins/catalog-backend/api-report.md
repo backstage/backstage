@@ -8,7 +8,6 @@
 import { Account } from 'aws-sdk/clients/organizations';
 import { BitbucketIntegration } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogEntitiesRequest } from '@backstage/catalog-client';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
@@ -17,12 +16,13 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
+import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import { Location as Location_2 } from '@backstage/catalog-model';
+import { Location as Location_2 } from '@backstage/catalog-client';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Organizations } from 'aws-sdk';
@@ -36,7 +36,6 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { ScmIntegrations } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
@@ -177,7 +176,10 @@ export class AwsS3DiscoveryProcessor implements CatalogProcessor {
 //
 // @public
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
-  constructor(options: { integrations: ScmIntegrations; logger: Logger_2 });
+  constructor(options: {
+    integrations: ScmIntegrationRegistry;
+    logger: Logger_2;
+  });
   // (undocumented)
   static fromConfig(
     config: Config,
@@ -464,7 +466,7 @@ export type CatalogRulesEnforcer = {
 // @public (undocumented)
 export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     reader: UrlReader;
   });
@@ -509,7 +511,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
     discovery: PluginEndpointDiscovery;
     tokenManager: TokenManager;
     locationTemplate?: string;
-    filter?: CatalogEntitiesRequest['filter'];
+    filter?: GetEntitiesRequest['filter'];
     catalogClient?: CatalogApi;
   });
   // (undocumented)
@@ -524,14 +526,14 @@ export class DefaultCatalogCollator implements DocumentCollator {
   // (undocumented)
   execute(): Promise<CatalogEntityDocument[]>;
   // (undocumented)
-  protected filter?: CatalogEntitiesRequest['filter'];
+  protected filter?: GetEntitiesRequest['filter'];
   // (undocumented)
   static fromConfig(
     _config: Config,
     options: {
       discovery: PluginEndpointDiscovery;
       tokenManager: TokenManager;
-      filter?: CatalogEntitiesRequest['filter'];
+      filter?: GetEntitiesRequest['filter'];
     },
   ): DefaultCatalogCollator;
   // (undocumented)
@@ -750,7 +752,7 @@ function generalError(
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });
@@ -773,7 +775,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
 // @alpha
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     orgs: GithubMultiOrgConfig;
     githubCredentialsProvider?: GithubCredentialsProvider;
@@ -828,7 +830,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
 // @public
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });

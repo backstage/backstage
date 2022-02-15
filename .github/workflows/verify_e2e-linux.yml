@@ -78,3 +78,5 @@ jobs:
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
           yarn e2e-test run
+        env:
+          BACKSTAGE_TEST_DISABLE_DOCKER: 1
