@@ -70,7 +70,10 @@ export class CommonValidatorFunctions {
 export function compareEntityToRef(
   entity: Entity,
   ref: EntityRef | EntityName,
-  context?: EntityRefContext,
+  context?: {
+    defaultKind?: string;
+    defaultNamespace?: string;
+  },
 ): boolean;
 
 // @public
@@ -215,7 +218,7 @@ export type EntityRef =
       name: string;
     };
 
-// @public
+// @public @deprecated
 export type EntityRefContext = {
   defaultKind?: string;
   defaultNamespace?: string;
@@ -388,7 +391,10 @@ export const ORIGIN_LOCATION_ANNOTATION =
 // @public
 export function parseEntityName(
   ref: EntityRef,
-  context?: EntityRefContext,
+  context?: {
+    defaultKind?: string;
+    defaultNamespace?: string;
+  },
 ): EntityName;
 
 // @public
