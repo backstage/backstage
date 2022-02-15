@@ -2,4 +2,4 @@
 '@backstage/catalog-model': patch
 ---
 
-Deprecates `JSONSchema` export type.
+Deprecated `JSONSchema` export type.
