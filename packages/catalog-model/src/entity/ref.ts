@@ -57,6 +57,7 @@ export function getEntityName(entity: Entity): EntityName {
  * The context of defaults that entity reference parsing happens within.
  *
  * @public
+ * @deprecated type inlined, will be removed in a future release.
  */
 export type EntityRefContext = {
   /** The default kind, if none is given in the reference */
@@ -82,7 +83,12 @@ export type EntityRefContext = {
  */
 export function parseEntityName(
   ref: EntityRef,
-  context: EntityRefContext = {},
+  context: {
+    /** The default kind, if none is given in the reference */
+    defaultKind?: string;
+    /** The default namespace, if none is given in the reference */
+    defaultNamespace?: string;
+  } = {},
 ): EntityName {
   const { kind, namespace, name } = parseEntityRef(ref, {
     defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
@@ -149,7 +155,12 @@ export function parseEntityRef(
  */
 export function parseEntityRef(
   ref: EntityRef,
-  context: EntityRefContext = {},
+  context: {
+    /** The default kind, if none is given in the reference */
+    defaultKind?: string;
+    /** The default namespace, if none is given in the reference */
+    defaultNamespace?: string;
+  } = {},
 ): {
   kind?: string;
   namespace?: string;
@@ -238,7 +249,12 @@ export function stringifyEntityRef(
 export function compareEntityToRef(
   entity: Entity,
   ref: EntityRef | EntityName,
-  context?: EntityRefContext,
+  context?: {
+    /** The default kind, if none is given in the reference */
+    defaultKind?: string;
+    /** The default namespace, if none is given in the reference */
+    defaultNamespace?: string;
+  },
 ): boolean {
   const entityKind = entity.kind;
   const entityNamespace = entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE;
