@@ -18,7 +18,7 @@
 import { Button, LinearProgress, Tooltip, Typography } from '@material-ui/core';
 import React from 'react';
 
-import { useAsync } from 'reach-hookz';
+import { useAsync } from 'react-hookz';
 import { gcpApiRef, Project } from '../../api';
 
 import {
