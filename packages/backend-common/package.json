@@ -25,13 +25,13 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "build": "backstage-cli script build --experimental-type-build",
-    "lint": "backstage-cli script lint",
-    "test": "backstage-cli script test",
-    "prepack": "backstage-cli script prepack",
-    "postpack": "backstage-cli script postpack",
-    "clean": "backstage-cli script clean",
-    "start": "backstage-cli script start"
+    "build": "backstage-cli package build --experimental-type-build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean",
+    "start": "backstage-cli package start"
   },
   "dependencies": {
     "@backstage/cli-common": "^0.1.6",

@@ -43,7 +43,9 @@ function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
   }
 
   if (!targetCmd) {
-    throw new Error(`Could not find script command '${commandPath.join(' ')}'`);
+    throw new Error(
+      `Could not find package command '${commandPath.join(' ')}'`,
+    );
   }
   const cmd = targetCmd;
 
@@ -80,7 +82,7 @@ export async function command(cmd: Command): Promise<void> {
   const apps = new Array<ExtendedPackage>();
   const backends = new Array<ExtendedPackage>();
 
-  const parseBuildScript = createScriptOptionsParser(cmd, ['script', 'build']);
+  const parseBuildScript = createScriptOptionsParser(cmd, ['package', 'build']);
 
   const options = packages.flatMap(pkg => {
     const role =

@@ -10,4 +10,6 @@ Updated the package role definitions by renaming `plugin-frontend` to `frontend-
 
 The `backstage-cli migrate package-scripts` received several tweaks to make it more accurate. It now tries to maintain existing script arguments, like `--config` parameters for `build` and `start` scripts.
 
-The `backstage-cli script build` command set an incorrect target directory for `app` and `backend` packages, which has been fixed.
+The `script` command category has been renamed to `package`.
+
+The `backstage-cli package build` command set an incorrect target directory for `app` and `backend` packages, which has been fixed.

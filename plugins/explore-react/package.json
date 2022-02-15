@@ -24,13 +24,13 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli script build",
-    "lint": "backstage-cli script lint",
-    "test": "backstage-cli script test",
-    "clean": "backstage-cli script clean",
-    "prepack": "backstage-cli script prepack",
-    "postpack": "backstage-cli script postpack",
-    "start": "backstage-cli script start"
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start"
   },
   "dependencies": {
     "@backstage/core-plugin-api": "^0.6.0"

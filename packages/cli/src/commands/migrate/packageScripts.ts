@@ -72,15 +72,15 @@ export async function command() {
 
       const expectedScripts = {
         ...(hasStart && {
-          start: `backstage-cli script ${startCmd.join(' ')}`,
+          start: `backstage-cli package ${startCmd.join(' ')}`,
         }),
-        build: `backstage-cli script ${buildCmd.join(' ')}`,
-        lint: 'backstage-cli script lint',
-        test: `backstage-cli script ${testCmd.join(' ')}`,
-        clean: 'backstage-cli script clean',
+        build: `backstage-cli package ${buildCmd.join(' ')}`,
+        lint: 'backstage-cli package lint',
+        test: `backstage-cli package ${testCmd.join(' ')}`,
+        clean: 'backstage-cli package clean',
         ...(needsPack && {
-          postpack: 'backstage-cli script postpack',
-          prepack: 'backstage-cli script prepack',
+          postpack: 'backstage-cli package postpack',
+          prepack: 'backstage-cli package prepack',
         }),
       };
 

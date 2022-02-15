@@ -42,11 +42,11 @@
     "start-server-and-test": "^1.10.11"
   },
   "scripts": {
-    "start": "backstage-cli script start --config ./app-config.yaml",
-    "build": "backstage-cli script build --config ./app-config.yaml",
-    "clean": "backstage-cli script clean",
-    "test": "backstage-cli script test",
-    "lint": "backstage-cli script lint",
+    "start": "backstage-cli package start --config ./app-config.yaml",
+    "build": "backstage-cli package build --config ./app-config.yaml",
+    "clean": "backstage-cli package clean",
+    "test": "backstage-cli package test",
+    "lint": "backstage-cli package lint",
     "test:e2e": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:dev",
     "test:e2e:ci": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:run",
     "cy:dev": "cypress open",

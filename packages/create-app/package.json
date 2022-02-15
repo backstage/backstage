@@ -24,10 +24,10 @@
     "backstage-create-app": "bin/backstage-create-app"
   },
   "scripts": {
-    "build": "backstage-cli script build",
-    "lint": "backstage-cli script lint",
-    "test": "backstage-cli script test",
-    "clean": "backstage-cli script clean",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
     "prepack": "node scripts/prepack.js",
     "postpack": "node scripts/postpack.js",
     "start": "nodemon --"

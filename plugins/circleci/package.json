@@ -25,14 +25,14 @@
     "circleci"
   ],
   "scripts": {
-    "build": "backstage-cli script build",
-    "lint": "backstage-cli script lint",
-    "test": "backstage-cli script test",
-    "clean": "backstage-cli script clean",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
     "diff": "backstage-cli plugin:diff",
-    "start": "backstage-cli script start",
-    "prepack": "backstage-cli script prepack",
-    "postpack": "backstage-cli script postpack"
+    "start": "backstage-cli package start",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
     "@backstage/catalog-model": "^0.9.10",

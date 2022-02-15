@@ -175,7 +175,7 @@ class PackageJsonHandler {
 
     // Skip diffing package scripts that have been migrated to the new commands
     const hasNewScript = Object.values(targetScripts).some(script =>
-      String(script).includes('backstage-cli script '),
+      String(script).includes('backstage-cli package '),
     );
     if (hasNewScript) {
       return;

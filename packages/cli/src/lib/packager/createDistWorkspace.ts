@@ -142,7 +142,7 @@ export async function createDistWorkspace(
         continue;
       }
 
-      if (!buildScript.startsWith('backstage-cli script build')) {
+      if (!buildScript.startsWith('backstage-cli package build')) {
         console.warn(
           `Ignored ${pkg.packageJson.name} because it has a custom build script, '${buildScript}'`,
         );
@@ -216,7 +216,7 @@ export async function createDistWorkspace(
 const FAST_PACK_SCRIPTS = [
   undefined,
   'backstage-cli prepack',
-  'backstage-cli script prepack',
+  'backstage-cli package prepack',
 ];
 
 async function moveToDistWorkspace(
