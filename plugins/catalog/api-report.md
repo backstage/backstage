@@ -349,22 +349,6 @@ export const EntityListContainer: ({
 // @public
 export const EntityOrphanWarning: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityPageLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated
-export const EntityPageLayout: {
-  ({
-    children,
-    UNSTABLE_extraContextMenuItems,
-    UNSTABLE_contextMenuOptions,
-  }: EntityPageLayoutProps): JSX.Element;
-  Content: (_props: {
-    path: string;
-    title: string;
-    element: JSX.Element;
-  }) => null;
-};
-
 // Warning: (ae-missing-release-tag) "EntityProcessingErrorsPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -452,15 +436,6 @@ export const RelatedEntitiesCard: <T extends Entity>(props: {
   asRenderableEntities: (entities: Entity[]) => T[];
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const Router: ({
-  EntityPage,
-}: {
-  EntityPage?: React_2.ComponentType<{}> | undefined;
-}) => JSX.Element;
-
 // @public (undocumented)
 export type SystemDiagramCardClassKey =
   | 'domainNode'
@@ -475,6 +450,5 @@ export type SystemDiagramCardClassKey =
 // src/components/CatalogTable/CatalogTable.d.ts:11:5 - (ae-forgotten-export) The symbol "columnFactories" needs to be exported by the entry point index.d.ts
 // src/components/EntityLayout/EntityLayout.d.ts:43:5 - (ae-forgotten-export) The symbol "EntityLayoutProps" needs to be exported by the entry point index.d.ts
 // src/components/EntityLayout/EntityLayout.d.ts:44:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
-// src/components/EntityPageLayout/EntityPageLayout.d.ts:22:5 - (ae-forgotten-export) The symbol "EntityPageLayoutProps" needs to be exported by the entry point index.d.ts
 // src/plugin.d.ts:22:5 - (ae-forgotten-export) The symbol "ColumnBreakpoints" needs to be exported by the entry point index.d.ts
 ```
