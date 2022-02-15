@@ -17,7 +17,6 @@
 import {
   Entity,
   entityKindSchemaValidator,
-  JSONSchema,
   KindValidator,
 } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
@@ -50,18 +49,6 @@ export interface TemplateEntityV1beta2 extends Entity {
 }
 
 const validator = entityKindSchemaValidator(schema);
-
-/**
- * JSON schema of the Template kind, apiVersion backstage.io/v1beta2.
- *
- * @public
- * @deprecated Please convert your templates to apiVersion
- *             scaffolder.backstage.io/v1beta3
- */
-export const templateEntityV1beta2Schema: JSONSchema = schema as Omit<
-  JSONSchema,
-  'examples'
->;
 
 /**
  * Entity data validator for {@link TemplateEntityV1beta2}.

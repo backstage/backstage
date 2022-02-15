@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity, JSONSchema } from '@backstage/catalog-model';
+import {
+  Entity,
+  entityKindSchemaValidator,
+  KindValidator,
+} from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
-import v1beta3Schema from './Template.v1beta3.schema.json';
+import schema from './Template.v1beta3.schema.json';
 
 /**
  * Backstage catalog Template kind Entity. Templates are used by the Scaffolder
@@ -42,12 +46,16 @@ export interface TemplateEntityV1beta3 extends Entity {
   };
 }
 
+const validator = entityKindSchemaValidator(schema);
+
 /**
- * JSON schema of the Template kind, apiVersion scaffolder.backstage.io/v1beta3.
+ * Entity data validator for {@link TemplateEntityV1beta3}.
  *
  * @public
  */
-export const templateEntityV1beta3Schema: JSONSchema = v1beta3Schema as Omit<
-  JSONSchema,
-  'examples'
->;
+export const templateEntityV1beta3Validator: KindValidator = {
+  // TODO(freben): Emulate the old KindValidator until we fix that type
+  async check(data: Entity) {
+    return validator(data) === data;
+  },
+};

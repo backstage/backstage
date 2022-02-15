@@ -5,7 +5,6 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { KindValidator } from '@backstage/catalog-model';
 
@@ -87,9 +86,6 @@ export interface TemplateEntityV1beta2 extends Entity {
 }
 
 // @public @deprecated
-export const templateEntityV1beta2Schema: JSONSchema;
-
-// @public @deprecated
 export const templateEntityV1beta2Validator: KindValidator;
 
 // @public
@@ -117,7 +113,7 @@ export interface TemplateEntityV1beta3 extends Entity {
 }
 
 // @public
-export const templateEntityV1beta3Schema: JSONSchema;
+export const templateEntityV1beta3Validator: KindValidator;
 
 // @public
 export type TemplateMetadata = {
