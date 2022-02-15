@@ -19,6 +19,8 @@ export {
   ENTITY_DEFAULT_NAMESPACE,
   ENTITY_META_GENERATED_FIELDS,
   VIEW_URL_ANNOTATION,
+  ANNOTATION_EDIT_URL,
+  ANNOTATION_VIEW_URL,
 } from './constants';
 export type {
   AlphaEntity,

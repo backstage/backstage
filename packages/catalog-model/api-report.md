@@ -14,6 +14,22 @@ export interface AlphaEntity extends Entity {
 }
 
 // @public
+export const ANNOTATION_EDIT_URL = 'backstage.io/edit-url';
+
+// @public
+export const ANNOTATION_LOCATION = 'backstage.io/managed-by-location';
+
+// @public
+export const ANNOTATION_ORIGIN_LOCATION =
+  'backstage.io/managed-by-origin-location';
+
+// @public
+export const ANNOTATION_SOURCE_LOCATION = 'backstage.io/source-location';
+
+// @public
+export const ANNOTATION_VIEW_URL = 'backstage.io/view-url';
+
+// @public
 interface ApiEntityV1alpha1 extends Entity {
   // (undocumented)
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
@@ -105,7 +121,7 @@ export { DomainEntityV1alpha1 };
 // @public
 export const domainEntityV1alpha1Validator: KindValidator;
 
-// @public
+// @public @deprecated
 export const EDIT_URL_ANNOTATION = 'backstage.io/edit-url';
 
 // @public
@@ -325,7 +341,7 @@ type Location_2 = {
 } & LocationSpec;
 export { Location_2 as Location };
 
-// @public
+// @public @deprecated
 export const LOCATION_ANNOTATION = 'backstage.io/managed-by-location';
 
 // @public
@@ -365,7 +381,7 @@ export class NoForeignRootFieldsEntityPolicy implements EntityPolicy {
   enforce(entity: Entity): Promise<Entity>;
 }
 
-// @public
+// @public @deprecated
 export const ORIGIN_LOCATION_ANNOTATION =
   'backstage.io/managed-by-origin-location';
 
@@ -489,7 +505,7 @@ export class SchemaValidEntityPolicy implements EntityPolicy {
   enforce(entity: Entity): Promise<Entity>;
 }
 
-// @public
+// @public @deprecated
 export const SOURCE_LOCATION_ANNOTATION = 'backstage.io/source-location';
 
 // @public
@@ -595,6 +611,6 @@ export type Validators = {
   isValidTag(value: unknown): boolean;
 };
 
-// @public
+// @public @deprecated
 export const VIEW_URL_ANNOTATION = 'backstage.io/view-url';
 ```

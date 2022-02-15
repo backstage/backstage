@@ -17,8 +17,8 @@
 import {
   Entity,
   EntityRelationSpec,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
@@ -98,8 +98,8 @@ export class ProcessorOutputCollector {
             ...entity.metadata,
             annotations: {
               ...annotations,
-              [ORIGIN_LOCATION_ANNOTATION]: originLocation,
-              [LOCATION_ANNOTATION]: location,
+              [ANNOTATION_ORIGIN_LOCATION]: originLocation,
+              [ANNOTATION_LOCATION]: location,
             },
           },
         };

@@ -17,8 +17,8 @@
 import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
-  LOCATION_ANNOTATION,
-  SOURCE_LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
+  ANNOTATION_SOURCE_LOCATION,
   Entity,
   parseLocationRef,
   stringifyEntityRef,
@@ -128,7 +128,7 @@ export class TodoReaderService implements TodoService {
 
   private getEntitySourceUrl(entity: Entity) {
     const sourceLocation =
-      entity.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION];
+      entity.metadata.annotations?.[ANNOTATION_SOURCE_LOCATION];
     if (sourceLocation) {
       const parsed = parseLocationRef(sourceLocation);
       if (parsed.type !== 'url') {
@@ -141,7 +141,7 @@ export class TodoReaderService implements TodoService {
       return parsed.target;
     }
 
-    const location = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+    const location = entity.metadata.annotations?.[ANNOTATION_LOCATION];
     if (location) {
       const parsed = parseLocationRef(location);
       if (parsed.type !== 'url') {

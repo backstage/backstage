@@ -18,8 +18,8 @@ import {
   Entity,
   LocationEntityV1alpha1,
   LocationSpec,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
@@ -40,7 +40,7 @@ export function locationSpecToLocationEntity(
   let originLocation: string;
   if (parentEntity) {
     const maybeOwnLocation =
-      parentEntity.metadata.annotations?.[LOCATION_ANNOTATION];
+      parentEntity.metadata.annotations?.[ANNOTATION_LOCATION];
     if (!maybeOwnLocation) {
       throw new Error(
         `Parent entity '${stringifyEntityRef(
@@ -52,7 +52,7 @@ export function locationSpecToLocationEntity(
     }
     ownLocation = maybeOwnLocation;
     const maybeOriginLocation =
-      parentEntity.metadata.annotations?.[ORIGIN_LOCATION_ANNOTATION];
+      parentEntity.metadata.annotations?.[ANNOTATION_ORIGIN_LOCATION];
     if (!maybeOriginLocation) {
       throw new Error(
         `Parent entity '${stringifyEntityRef(
@@ -74,8 +74,8 @@ export function locationSpecToLocationEntity(
     metadata: {
       name: locationSpecToMetadataName(location),
       annotations: {
-        [LOCATION_ANNOTATION]: ownLocation,
-        [ORIGIN_LOCATION_ANNOTATION]: originLocation,
+        [ANNOTATION_LOCATION]: ownLocation,
+        [ANNOTATION_ORIGIN_LOCATION]: originLocation,
       },
     },
     spec: {

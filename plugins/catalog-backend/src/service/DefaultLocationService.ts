@@ -16,8 +16,8 @@
 import {
   Entity,
   LocationSpec,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Location } from '@backstage/catalog-client';
@@ -112,8 +112,8 @@ export class DefaultLocationService implements LocationService {
         }),
         namespace: 'default',
         annotations: {
-          [LOCATION_ANNOTATION]: `${spec.type}:${spec.target}`,
-          [ORIGIN_LOCATION_ANNOTATION]: `${spec.type}:${spec.target}`,
+          [ANNOTATION_LOCATION]: `${spec.type}:${spec.target}`,
+          [ANNOTATION_ORIGIN_LOCATION]: `${spec.type}:${spec.target}`,
         },
       },
       spec: {

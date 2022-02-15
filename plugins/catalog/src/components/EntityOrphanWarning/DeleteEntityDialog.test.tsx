@@ -16,7 +16,7 @@
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
-import { ORIGIN_LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { screen, waitFor } from '@testing-library/react';
@@ -42,7 +42,7 @@ describe('DeleteEntityDialog', () => {
       name: 'n',
       namespace: 'ns',
       annotations: {
-        [ORIGIN_LOCATION_ANNOTATION]: 'url:http://example.com',
+        [ANNOTATION_ORIGIN_LOCATION]: 'url:http://example.com',
       },
     },
     spec: {},
