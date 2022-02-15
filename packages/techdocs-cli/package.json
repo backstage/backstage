@@ -30,6 +30,7 @@
     "test": "backstage-cli package test --testPathIgnorePatterns=src/e2e.test.ts",
     "test:e2e": "backstage-cli test src/e2e.test.ts",
     "test:e2e:ci": "backstage-cli test --watchAll=false --ci src/e2e.test.ts",
+    "cypress:open": "cypress open",
     "prepack": "./scripts/prepack.sh"
   },
   "bin": {
@@ -44,9 +45,10 @@
     "@types/node": "^14.14.32",
     "@types/serve-handler": "^6.1.0",
     "@types/webpack-env": "^1.15.3",
-    "techdocs-cli-embedded-app": "link:../techdocs-cli-embedded-app",
+    "cypress": "^7.3.0",
     "find-process": "^1.4.5",
     "nodemon": "^2.0.2",
+    "techdocs-cli-embedded-app": "link:../techdocs-cli-embedded-app",
     "ts-node": "^10.0.0"
   },
   "files": [
