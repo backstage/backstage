@@ -23,7 +23,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import React, { useContext, useState } from 'react';
 import { useLocalStorageValue } from '@react-hookz/web';
 import {
-  sidebarConfig,
+  SidebarConfigContext,
+  SidebarConfig,
   SidebarContext,
   SIDEBAR_INTRO_LOCAL_STORAGE,
 } from './config';
@@ -37,51 +38,54 @@ export type SidebarIntroClassKey =
   | 'introDismissText'
   | 'introDismissIcon';
 
-const useStyles = makeStyles<BackstageTheme>(
-  theme => ({
-    introCard: {
-      color: '#b5b5b5',
-      // XXX (@koroeskohr): should I be using a Mui theme variable?
-      fontSize: 12,
-      width: sidebarConfig.drawerWidthOpen,
-      marginTop: 18,
-      marginBottom: 12,
-      paddingLeft: sidebarConfig.iconPadding,
-      paddingRight: sidebarConfig.iconPadding,
+const useStyles = ({sidebarConfig}: { sidebarConfig: SidebarConfig }) => 
+  makeStyles<BackstageTheme>(
+    theme => {
+      return {
+        introCard: {
+          color: '#b5b5b5',
+          // XXX (@koroeskohr): should I be using a Mui theme variable?
+          fontSize: 12,
+          width: sidebarConfig.drawerWidthOpen,
+          marginTop: 18,
+          marginBottom: 12,
+          paddingLeft: sidebarConfig.iconPadding,
+          paddingRight: sidebarConfig.iconPadding,
+        },
+        introDismiss: {
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          marginTop: 12,
+        },
+        introDismissLink: {
+          color: '#dddddd',
+          display: 'flex',
+          alignItems: 'center',
+          marginBottom: 4,
+          '&:hover': {
+            color: theme.palette.linkHover,
+            transition: theme.transitions.create('color', {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.shortest,
+            }),
+          },
+        },
+        introDismissText: {
+          fontSize: '0.7rem',
+          fontWeight: 'bold',
+          textTransform: 'uppercase',
+          letterSpacing: 1,
+        },
+        introDismissIcon: {
+          width: 18,
+          height: 18,
+          marginRight: 12,
+        },
+      };
     },
-    introDismiss: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      marginTop: 12,
-    },
-    introDismissLink: {
-      color: '#dddddd',
-      display: 'flex',
-      alignItems: 'center',
-      marginBottom: 4,
-      '&:hover': {
-        color: theme.palette.linkHover,
-        transition: theme.transitions.create('color', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.shortest,
-        }),
-      },
-    },
-    introDismissText: {
-      fontSize: '0.7rem',
-      fontWeight: 'bold',
-      textTransform: 'uppercase',
-      letterSpacing: 1,
-    },
-    introDismissIcon: {
-      width: 18,
-      height: 18,
-      marginRight: 12,
-    },
-  }),
-  { name: 'BackstageSidebarIntro' },
-);
+    { name: 'BackstageSidebarIntro' },
+  );
 
 type IntroCardProps = {
   text: string;
@@ -96,7 +100,8 @@ type IntroCardProps = {
  */
 
 export function IntroCard(props: IntroCardProps) {
-  const classes = useStyles();
+  const { sidebarConfig } = useContext(SidebarConfigContext);
+  const classes = useStyles({ sidebarConfig })();
   const { text, onClose } = props;
   const handleClose = () => onClose();
 

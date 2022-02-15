@@ -47,9 +47,10 @@ import {
   useResolvedPath,
 } from 'react-router-dom';
 import {
-  sidebarConfig,
   SidebarContext,
+  SidebarConfigContext,
   SidebarItemWithSubmenuContext,
+  SidebarConfig,
 } from './config';
 import {
   SidebarSubmenuItemProps,
@@ -82,128 +83,124 @@ export type SidebarItemClassKey =
   | 'arrows'
   | 'selected';
 
-const useStyles = makeStyles<BackstageTheme>(
-  theme => {
-    const {
-      selectedIndicatorWidth,
-      drawerWidthClosed,
-      drawerWidthOpen,
-      iconContainerWidth,
-    } = sidebarConfig;
-    return {
-      root: {
-        color: theme.palette.navigation.color,
-        display: 'flex',
-        flexFlow: 'row nowrap',
-        alignItems: 'center',
-        height: 48,
-        cursor: 'pointer',
-      },
-      buttonItem: {
-        background: 'none',
-        border: 'none',
-        width: '100%',
-        margin: 0,
-        padding: 0,
-        textAlign: 'inherit',
-        font: 'inherit',
-      },
-      closed: {
-        width: drawerWidthClosed,
-        justifyContent: 'center',
-      },
-      open: {
-        [theme.breakpoints.up('sm')]: {
-          width: drawerWidthOpen,
+const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
+  makeStyles<BackstageTheme>(
+    theme => {
+      return {
+        root: {
+          color: theme.palette.navigation.color,
+          display: 'flex',
+          flexFlow: 'row nowrap',
+          alignItems: 'center',
+          height: 48,
+          cursor: 'pointer',
         },
-      },
-      highlightable: {
-        '&:hover': {
+        buttonItem: {
+          background: 'none',
+          border: 'none',
+          width: '100%',
+          margin: 0,
+          padding: 0,
+          textAlign: 'inherit',
+          font: 'inherit',
+        },
+        closed: {
+          width: sidebarConfig.drawerWidthClosed,
+          justifyContent: 'center',
+        },
+        open: {
+          [theme.breakpoints.up('sm')]: {
+            width: sidebarConfig.drawerWidthOpen,
+          },
+        },
+        highlightable: {
+          '&:hover': {
+            background:
+              theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
+          },
+        },
+        highlighted: {
           background:
             theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
         },
-      },
-      highlighted: {
-        background:
-          theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
-      },
-      label: {
-        // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
-        fontWeight: 'bold',
-        whiteSpace: 'nowrap',
-        lineHeight: 'auto',
-        flex: '3 1 auto',
-        width: '110px',
-        overflow: 'hidden',
-        'text-overflow': 'ellipsis',
-      },
-      iconContainer: {
-        boxSizing: 'border-box',
-        height: '100%',
-        width: iconContainerWidth,
-        marginRight: -theme.spacing(2),
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      searchRoot: {
-        marginBottom: 12,
-      },
-      searchField: {
-        color: '#b5b5b5',
-        fontWeight: 'bold',
-        fontSize: theme.typography.fontSize,
-      },
-      searchFieldHTMLInput: {
-        padding: theme.spacing(2, 0, 2),
-      },
-      searchContainer: {
-        width: drawerWidthOpen - iconContainerWidth,
-      },
-      secondaryAction: {
-        width: theme.spacing(6),
-        textAlign: 'center',
-        marginRight: theme.spacing(1),
-      },
-      closedItemIcon: {
-        width: '100%',
-        justifyContent: 'center',
-      },
-      submenuArrow: {
-        display: 'flex',
-      },
-      expandButton: {
-        background: 'none',
-        border: 'none',
-        color: theme.palette.navigation.color,
-        width: '100%',
-        cursor: 'pointer',
-        position: 'relative',
-        height: 48,
-      },
-      arrows: {
-        position: 'absolute',
-        right: 10,
-      },
-      selected: {
-        '&$root': {
-          borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
-          color: theme.palette.navigation.selectedColor,
+        label: {
+          // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
+          fontWeight: 'bold',
+          whiteSpace: 'nowrap',
+          lineHeight: 'auto',
+          flex: '3 1 auto',
+          width: '110px',
+          overflow: 'hidden',
+          'text-overflow': 'ellipsis',
         },
-        '&$closed': {
-          width: drawerWidthClosed,
+        iconContainer: {
+          boxSizing: 'border-box',
+          height: '100%',
+          width: sidebarConfig.iconContainerWidth,
+          marginRight: -theme.spacing(2),
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         },
-        '& $closedItemIcon': {
-          paddingRight: selectedIndicatorWidth,
+        searchRoot: {
+          marginBottom: 12,
         },
-        '& $iconContainer': {
-          marginLeft: -selectedIndicatorWidth,
+        searchField: {
+          color: '#b5b5b5',
+          fontWeight: 'bold',
+          fontSize: theme.typography.fontSize,
         },
-      },
-    };
-  },
-  { name: 'BackstageSidebarItem' },
-);
+        searchFieldHTMLInput: {
+          padding: theme.spacing(2, 0, 2),
+        },
+        searchContainer: {
+          width:
+            sidebarConfig.drawerWidthOpen - sidebarConfig.iconContainerWidth,
+        },
+        secondaryAction: {
+          width: theme.spacing(6),
+          textAlign: 'center',
+          marginRight: theme.spacing(1),
+        },
+        closedItemIcon: {
+          width: '100%',
+          justifyContent: 'center',
+        },
+        submenuArrow: {
+          display: 'flex',
+        },
+        expandButton: {
+          background: 'none',
+          border: 'none',
+          color: theme.palette.navigation.color,
+          width: '100%',
+          cursor: 'pointer',
+          position: 'relative',
+          height: 48,
+        },
+        arrows: {
+          position: 'absolute',
+          right: 10,
+        },
+        selected: {
+          '&$root': {
+            borderLeft: `solid ${sidebarConfig.selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
+            color: theme.palette.navigation.selectedColor,
+          },
+          '&$closed': {
+            width: sidebarConfig.drawerWidthClosed,
+          },
+          '& $closedItemIcon': {
+            paddingRight: sidebarConfig.selectedIndicatorWidth,
+          },
+          '& $iconContainer': {
+            marginLeft: -sidebarConfig.selectedIndicatorWidth,
+          },
+        },
+      };
+    },
+    { name: 'BackstageSidebarItem' },
+  );
 
 /**
  * Evaluates the routes of the SubmenuItems & nested DropdownItems.
@@ -356,7 +353,8 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     className,
     ...navLinkProps
   } = props;
-  const classes = useStyles();
+  const { sidebarConfig } = useContext(SidebarConfigContext);
+  const classes = useStyles({ sidebarConfig })();
   // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
   // depend on the current location, and at least have it being optionally forced to selected.
   // Still waiting on a Q answered to fine tune the implementation
@@ -429,7 +427,8 @@ const SidebarItemWithSubmenu = ({
 }: SidebarItemBaseProps & {
   children: React.ReactElement<SidebarSubmenuProps>;
 }) => {
-  const classes = useStyles();
+  const { sidebarConfig } = useContext(SidebarConfigContext);
+  const classes = useStyles({ sidebarConfig })();
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const location = useLocation();
   const isActive = useLocationMatch(children, location);
@@ -518,8 +517,9 @@ type SidebarSearchFieldProps = {
 };
 
 export function SidebarSearchField(props: SidebarSearchFieldProps) {
+  const { sidebarConfig } = useContext(SidebarConfigContext);
   const [input, setInput] = useState('');
-  const classes = useStyles();
+  const classes = useStyles({ sidebarConfig })();
   const Icon = props.icon ? props.icon : SearchIcon;
 
   const search = () => {
@@ -647,7 +647,8 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
  * @public
  */
 export const SidebarExpandButton = () => {
-  const classes = useStyles();
+  const { sidebarConfig } = useContext(SidebarConfigContext);
+  const classes = useStyles({ sidebarConfig })();
   const { isOpen, setOpen } = useContext(SidebarContext);
   const isSmallScreen = useMediaQuery<BackstageTheme>(
     theme => theme.breakpoints.down('md'),

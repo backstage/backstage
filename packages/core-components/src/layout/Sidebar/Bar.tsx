@@ -21,7 +21,14 @@ import classnames from 'classnames';
 import React, { useState, useContext, useRef } from 'react';
 import Button from '@material-ui/core/Button';
 
-import { sidebarConfig, SidebarContext } from './config';
+import {
+  makeSidebarConfig,
+  makeSidebarSubmenuConfig,
+  SidebarConfig,
+  SidebarContext,
+  SidebarConfigContext,
+  SubmenuConfig,
+} from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext, useContent } from './Page';
 import { MobileSidebar } from './MobileSidebar';
@@ -29,52 +36,55 @@ import { MobileSidebar } from './MobileSidebar';
 /** @public */
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
 
-const useStyles = makeStyles<BackstageTheme>(
-  theme => ({
-    drawer: {
-      display: 'flex',
-      flexFlow: 'column nowrap',
-      alignItems: 'flex-start',
-      position: 'fixed',
-      left: 0,
-      top: 0,
-      bottom: 0,
-      zIndex: theme.zIndex.appBar,
-      background: theme.palette.navigation.background,
-      overflowX: 'hidden',
-      msOverflowStyle: 'none',
-      scrollbarWidth: 'none',
-      width: sidebarConfig.drawerWidthClosed,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.shortest,
-      }),
-      '& > *': {
-        flexShrink: 0,
-      },
-      '&::-webkit-scrollbar': {
-        display: 'none',
-      },
+const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
+  makeStyles<BackstageTheme>(
+    theme => {
+      return {
+        drawer: {
+          display: 'flex',
+          flexFlow: 'column nowrap',
+          alignItems: 'flex-start',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: theme.zIndex.appBar,
+          background: theme.palette.navigation.background,
+          overflowX: 'hidden',
+          msOverflowStyle: 'none',
+          scrollbarWidth: 'none',
+          width: sidebarConfig.drawerWidthClosed,
+          transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.shortest,
+          }),
+          '& > *': {
+            flexShrink: 0,
+          },
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+        },
+        drawerOpen: {
+          width: sidebarConfig.drawerWidthOpen,
+          transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.shorter,
+          }),
+        },
+        visuallyHidden: {
+          top: 0,
+          position: 'absolute',
+          zIndex: 1000,
+          transform: 'translateY(-200%)',
+          '&:focus': {
+            transform: 'translateY(5px)',
+          },
+        },
+      };
     },
-    drawerOpen: {
-      width: sidebarConfig.drawerWidthOpen,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.shorter,
-      }),
-    },
-    visuallyHidden: {
-      top: 0,
-      position: 'absolute',
-      zIndex: 1000,
-      transform: 'translateY(-200%)',
-      '&:focus': {
-        transform: 'translateY(5px)',
-      },
-    },
-  }),
-  { name: 'BackstageSidebar' },
-);
+    { name: 'BackstageSidebar' },
+  );
 
 enum State {
   Closed,
@@ -84,8 +94,13 @@ enum State {
 
 /** @public */
 export type SidebarProps = {
-  openDelayMs?: number;
-  closeDelayMs?: number;
+  sidebarConfig?: Partial<SidebarConfig>;
+  submenuConfig?: Partial<SubmenuConfig>;
+  disableExpandOnHover?: boolean;
+  children?: React.ReactNode;
+};
+
+export type DesktopSidebarProps = {
   disableExpandOnHover?: boolean;
   children?: React.ReactNode;
 };
@@ -100,14 +115,14 @@ export type SidebarProps = {
  * @returns
  * @internal
  */
-const DesktopSidebar = (props: SidebarProps) => {
-  const {
-    openDelayMs = sidebarConfig.defaultOpenDelayMs,
-    closeDelayMs = sidebarConfig.defaultCloseDelayMs,
-    disableExpandOnHover,
-    children,
-  } = props;
-  const classes = useStyles();
+const DesktopSidebar = (props: DesktopSidebarProps) => {
+  const { sidebarConfig } = useContext(SidebarConfigContext);
+  const { defaultOpenDelayMs: openDelayMs, defaultCloseDelayMs: closeDelayMs } =
+    sidebarConfig;
+
+  const { disableExpandOnHover, children } = props;
+
+  const classes = useStyles({ sidebarConfig })();
   const isSmallScreen = useMediaQuery<BackstageTheme>(
     theme => theme.breakpoints.down('md'),
     { noSsr: true },
@@ -172,12 +187,7 @@ const DesktopSidebar = (props: SidebarProps) => {
   return (
     <div style={{}}>
       <A11ySkipSidebar />
-      <SidebarContext.Provider
-        value={{
-          isOpen,
-          setOpen,
-        }}
-      >
+      <SidebarContext.Provider value={{ isOpen, setOpen }}>
         <div
           className={classes.root}
           data-testid="sidebar-root"
@@ -205,25 +215,31 @@ const DesktopSidebar = (props: SidebarProps) => {
  * @public
  */
 export const Sidebar = (props: SidebarProps) => {
-  const { children, openDelayMs, closeDelayMs, disableExpandOnHover } = props;
+  const sidebarConfig: SidebarConfig = makeSidebarConfig(
+    props.sidebarConfig ?? {},
+  );
+  const submenuConfig: SubmenuConfig = makeSidebarSubmenuConfig(
+    props.submenuConfig ?? {},
+    sidebarConfig,
+  );
+  const { children, disableExpandOnHover } = props;
   const { isMobile } = useContext(SidebarPinStateContext);
 
   return isMobile ? (
     <MobileSidebar>{children}</MobileSidebar>
   ) : (
-    <DesktopSidebar
-      openDelayMs={openDelayMs}
-      closeDelayMs={closeDelayMs}
-      disableExpandOnHover={disableExpandOnHover}
-    >
-      {children}
-    </DesktopSidebar>
+    <SidebarConfigContext.Provider value={{ sidebarConfig, submenuConfig }}>
+      <DesktopSidebar disableExpandOnHover={disableExpandOnHover}>
+        {children}
+      </DesktopSidebar>
+    </SidebarConfigContext.Provider>
   );
 };
 
 function A11ySkipSidebar() {
+  const { sidebarConfig } = useContext(SidebarConfigContext);
   const { focusContent, contentRef } = useContent();
-  const classes = useStyles();
+  const classes = useStyles({ sidebarConfig })();
 
   if (!contentRef?.current) {
     return null;

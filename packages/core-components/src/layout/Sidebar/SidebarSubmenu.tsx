@@ -19,13 +19,13 @@ import classnames from 'classnames';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import {
   SidebarItemWithSubmenuContext,
-  sidebarConfig,
   SidebarContext,
-  submenuConfig,
+  SidebarConfigContext,
+  SubmenuConfig,
 } from './config';
 import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = (props: { left: number }) =>
+const useStyles = (props: { left: number, submenuConfig: SubmenuConfig }) =>
   makeStyles<BackstageTheme>(
     theme => ({
       root: {
@@ -54,8 +54,8 @@ const useStyles = (props: { left: number }) =>
         msOverflowStyle: 'none',
         scrollbarWidth: 'none',
         cursor: 'default',
-        width: submenuConfig.drawerWidthClosed,
-        transitionDelay: `${submenuConfig.defaultOpenDelayMs}ms`,
+        width: props.submenuConfig.drawerWidthClosed,
+        transitionDelay: `${props.submenuConfig.defaultOpenDelayMs}ms`,
         '& > *': {
           flexShrink: 0,
         },
@@ -64,7 +64,7 @@ const useStyles = (props: { left: number }) =>
         },
       },
       drawerOpen: {
-        width: submenuConfig.drawerWidthOpen,
+        width: props.submenuConfig.drawerWidthOpen,
         [theme.breakpoints.down('xs')]: {
           width: '100%',
           position: 'relative',
@@ -104,10 +104,11 @@ export type SidebarSubmenuProps = {
  */
 export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
   const { isOpen } = useContext(SidebarContext);
+  const { sidebarConfig, submenuConfig } = useContext(SidebarConfigContext);
   const left = isOpen
     ? sidebarConfig.drawerWidthOpen
     : sidebarConfig.drawerWidthClosed;
-  const classes = useStyles({ left })();
+  const classes = useStyles({ left, submenuConfig })();
 
   const { isHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);

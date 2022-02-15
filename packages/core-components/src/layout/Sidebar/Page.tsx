@@ -25,39 +25,45 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { sidebarConfig } from './config';
+import { SidebarConfigContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 export type SidebarPageClassKey = 'root';
 
-const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
-  theme => ({
-    root: {
-      width: '100%',
-      transition: 'padding-left 0.1s ease-out',
-      isolation: 'isolate',
-      [theme.breakpoints.up('sm')]: {
-        paddingLeft: ({ isPinned }) =>
-          isPinned
-            ? sidebarConfig.drawerWidthOpen
-            : sidebarConfig.drawerWidthClosed,
-      },
-      [theme.breakpoints.down('xs')]: {
-        paddingBottom: sidebarConfig.mobileSidebarHeight,
-      },
+const useStyles = ({ isPinned }: { isPinned: boolean }) => {
+  const { sidebarConfig } = useContext(SidebarConfigContext);
+
+  return makeStyles<BackstageTheme>(
+    theme => {
+      return {
+        root: {
+          width: '100%',
+          transition: 'padding-left 0.1s ease-out',
+          isolation: 'isolate',
+          [theme.breakpoints.up('sm')]: {
+            paddingLeft: () =>
+              isPinned
+                ? sidebarConfig.drawerWidthOpen
+                : sidebarConfig.drawerWidthClosed,
+          },
+          [theme.breakpoints.down('xs')]: {
+            paddingBottom: sidebarConfig.mobileSidebarHeight,
+          },
+        },
+        content: {
+          zIndex: 0,
+          isolation: 'isolate',
+          '&:focus': {
+            outline: 0,
+          },
+        },
+      };
     },
-    content: {
-      zIndex: 0,
-      isolation: 'isolate',
-      '&:focus': {
-        outline: 0,
-      },
-    },
-  }),
-  { name: 'BackstageSidebarPage' },
-);
+    { name: 'BackstageSidebarPage' },
+  )();
+};
 
 /**
  * Type of `SidebarPinStateContext`
