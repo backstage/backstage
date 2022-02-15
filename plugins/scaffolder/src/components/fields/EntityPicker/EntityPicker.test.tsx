@@ -46,7 +46,7 @@ describe('<EntityPicker />', () => {
     getEntityByName: jest.fn(),
     getEntities: jest.fn(async () => ({ items: entities })),
     addLocation: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
   } as any;
   let Wrapper: React.ComponentType;

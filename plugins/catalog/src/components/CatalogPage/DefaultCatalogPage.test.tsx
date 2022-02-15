@@ -100,7 +100,7 @@ describe('DefaultCatalogPage', () => {
           },
         ] as Entity[],
       }),
-    getLocationByEntity: () =>
+    getLocationByRef: () =>
       Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
     getEntityByName: async entityName => {
       return {

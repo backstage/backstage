@@ -43,16 +43,12 @@ export interface CatalogApi {
     name: EntityName,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
-  getLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location_2 | undefined>;
   getLocationById(
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  getOriginLocationByEntity(
-    entity: Entity,
+  getLocationByRef(
+    locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
   refreshEntity(
@@ -95,16 +91,12 @@ export class CatalogClient implements CatalogApi {
     compoundName: EntityName,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
-  getLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location_2 | undefined>;
   getLocationById(
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  getOriginLocationByEntity(
-    entity: Entity,
+  getLocationByRef(
+    locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
   refreshEntity(

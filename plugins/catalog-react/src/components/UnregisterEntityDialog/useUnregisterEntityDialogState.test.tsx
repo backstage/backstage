@@ -39,7 +39,7 @@ function defer<T>(): { promise: Promise<T>; resolve: (value: T) => void } {
 
 describe('useUnregisterEntityDialogState', () => {
   const catalogApiMock = {
-    getOriginLocationByEntity: jest.fn(),
+    getLocationByRef: jest.fn(),
     getEntities: jest.fn(),
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
@@ -65,9 +65,7 @@ describe('useUnregisterEntityDialogState', () => {
     resolveLocation = deferredLocation.resolve;
     resolveColocatedEntities = deferredColocatedEntities.resolve;
 
-    catalogApiMock.getOriginLocationByEntity.mockReturnValue(
-      deferredLocation.promise,
-    );
+    catalogApiMock.getLocationByRef.mockReturnValue(deferredLocation.promise);
     catalogApiMock.getEntities.mockReturnValue(
       deferredColocatedEntities.promise.then(items => ({ items })),
     );

@@ -38,7 +38,7 @@ describe('<AboutCard />', () => {
     getEntityByName: jest.fn(),
     getEntities: jest.fn(),
     addLocation: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
     refreshEntity: jest.fn(),
   } as any;

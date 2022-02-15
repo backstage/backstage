@@ -15,8 +15,6 @@
  */
 
 import {
-  ANNOTATION_LOCATION,
-  ANNOTATION_ORIGIN_LOCATION,
   Entity,
   EntityName,
   parseEntityRef,
@@ -246,17 +244,12 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
-   * {@inheritdoc CatalogApi.getOriginLocationByEntity}
+   * {@inheritdoc CatalogApi.getLocationByRef}
    */
-  async getOriginLocationByEntity(
-    entity: Entity,
+  async getLocationByRef(
+    locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
-    const locationCompound =
-      entity.metadata.annotations?.[ANNOTATION_ORIGIN_LOCATION];
-    if (!locationCompound) {
-      return undefined;
-    }
     const all: { data: Location }[] = await this.requestRequired(
       'GET',
       '/locations',
@@ -264,28 +257,7 @@ export class CatalogClient implements CatalogApi {
     );
     return all
       .map(r => r.data)
-      .find(l => locationCompound === stringifyLocationRef(l));
-  }
-
-  /**
-   * {@inheritdoc CatalogApi.getLocationByEntity}
-   */
-  async getLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location | undefined> {
-    const locationCompound = entity.metadata.annotations?.[ANNOTATION_LOCATION];
-    if (!locationCompound) {
-      return undefined;
-    }
-    const all: { data: Location }[] = await this.requestRequired(
-      'GET',
-      '/locations',
-      options,
-    );
-    return all
-      .map(r => r.data)
-      .find(l => locationCompound === stringifyLocationRef(l));
+      .find(l => locationRef === stringifyLocationRef(l));
   }
 
   /**
