@@ -245,6 +245,7 @@ export function stringifyEntityRef(
  * @param context - An optional context of default kind and namespace, that apply
  *                to the ref if given
  * @returns True if matching, false otherwise
+ * @deprecated compare using stringifyEntityRef instead.
  */
 export function compareEntityToRef(
   entity: Entity,

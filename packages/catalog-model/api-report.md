@@ -66,7 +66,7 @@ export class CommonValidatorFunctions {
   static isValidUrl(value: unknown): boolean;
 }
 
-// @public
+// @public @deprecated
 export function compareEntityToRef(
   entity: Entity,
   ref: EntityRef | EntityName,
