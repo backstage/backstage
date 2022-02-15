@@ -39,6 +39,7 @@ export type GeneratorConfig = {
   runIn: GeneratorRunInType;
   dockerImage?: string;
   pullImage?: boolean;
+  omitTechdocsCoreMkdocsPlugin?: boolean;
 };
 
 /**

@@ -37,6 +37,11 @@ techdocs:
 
     pullImage: true
 
+    mkdocs:
+      # (Optional)  techdocs.generator.omitTechdocsCoreMkdocsPlugin can be used to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
+      # Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
+      omitTechdocsCorePlugin: false
+
   # techdocs.builder can be either 'local' or 'external.
   # If builder is set to 'local' and you open a TechDocs page, techdocs-backend will try to generate the docs, publish to storage
   # and show the generated docs afterwords. This is the "Basic" setup of the TechDocs Architecture.

@@ -26,11 +26,15 @@ import {
   createOrUpdateMetadata,
   getMkdocsYml,
   patchIndexPreBuild,
-  patchMkdocsYmlPreBuild,
   runCommand,
   storeEtagMetadata,
   validateMkdocsYaml,
 } from './helpers';
+
+import {
+  patchMkdocsYmlPreBuild,
+  pathMkdocsYmlWithTechdocsPlugin,
+} from './mkDocsPatchers';
 import {
   GeneratorBase,
   GeneratorConfig,
@@ -108,6 +112,10 @@ export class TechdocsGenerator implements GeneratorBase {
         this.scmIntegrations,
       );
       await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
+    }
+
+    if (!this.options.omitTechdocsCoreMkdocsPlugin) {
+      await pathMkdocsYmlWithTechdocsPlugin(mkdocsYmlPath, childLogger);
     }
 
     // Directories to bind on container
@@ -207,5 +215,8 @@ export function readGeneratorConfig(
       'docker',
     dockerImage: config.getOptionalString('techdocs.generator.dockerImage'),
     pullImage: config.getOptionalBoolean('techdocs.generator.pullImage'),
+    omitTechdocsCoreMkdocsPlugin: config.getOptionalBoolean(
+      'techdocs.generator.mkdocs.omitTechdocsCorePlugin',
+    ),
   };
 }

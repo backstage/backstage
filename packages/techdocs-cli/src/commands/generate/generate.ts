@@ -39,6 +39,7 @@ export default async function generate(cmd: Command) {
 
   const sourceDir = resolve(cmd.sourceDir);
   const outputDir = resolve(cmd.outputDir);
+  const omitTechdocsCorePlugin = cmd.omitTechdocsCoreMkdocsPlugin;
   const dockerImage = cmd.dockerImage;
   const pullImage = cmd.pull;
 
@@ -55,6 +56,9 @@ export default async function generate(cmd: Command) {
         runIn: cmd.docker ? 'docker' : 'local',
         dockerImage,
         pullImage,
+        mkdocs: {
+          omitTechdocsCorePlugin,
+        },
       },
     },
   });
