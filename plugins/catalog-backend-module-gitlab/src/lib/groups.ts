@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { GroupEntity, stringifyEntityRef } from '@backstage/catalog-model';
+import { trim } from 'lodash';
 import { GitLabClient, paginated } from './client';
 import { getGroupMembers } from './users';
 
@@ -101,7 +102,9 @@ export async function populateChildrenMembers(
       }
     }
     // populate direct members
-    const users = await getGroupMembers(client, String(id), false);
+    const users = await getGroupMembers(client, String(id), {
+      inherited: false,
+    });
     for (const user of users) {
       entity.spec!.members!.push(
         stringifyEntityRef({
@@ -114,7 +117,9 @@ export async function populateChildrenMembers(
     const sharedWithGroups = await getSharedWithGroupsIDs(client, String(id));
     for (const sharedID of sharedWithGroups) {
       // populate direct members
-      const sharedGroupUsers = await getGroupMembers(client, sharedID, false);
+      const sharedGroupUsers = await getGroupMembers(client, sharedID, {
+        inherited: false,
+      });
       for (const user of sharedGroupUsers) {
         entity.spec!.members!.push(
           stringifyEntityRef({
@@ -158,11 +163,14 @@ function mapChildrenToEntityRefs(groupAdjacency: GroupAdjacency) {
   }
 }
 
-export function parseGitLabGroupUrl(url: string): null | string {
-  let path = new URL(url).pathname.substr(1).split('/');
+export function parseGitLabGroupUrl(
+  url: string,
+  baseUrl?: string,
+): null | string {
+  let path = getGroupPathComponents(url, baseUrl);
 
   // handle "/" pathname resulting in an array with the empty string
-  if (path.length === 1 && path[0].length === 0) {
+  if (path.length < 1) {
     return null; // no group path
   }
 
@@ -189,4 +197,34 @@ export function parseGitLabGroupUrl(url: string): null | string {
   }
 
   throw new Error('GitLab group URL is invalid');
+}
+
+export function getGroupPathComponents(
+  url: string,
+  baseUrl?: string,
+): string[] {
+  // split target url into group path components
+  const trimmedPathName = trim(new URL(url).pathname, '/');
+  let path = trimmedPathName ? trimmedPathName.split('/') : [];
+
+  if (baseUrl) {
+    // split base url into path components
+    const trimmedBasePathName = trim(new URL(baseUrl).pathname, '/');
+    const basePath = trimmedBasePathName ? trimmedBasePathName.split('/') : [];
+
+    // ensure base url path components are a subset of the group path
+    if (!basePath.every((component, index) => component === path[index])) {
+      throw new Error(
+        `The GitLab base URL is not a substring of the GitLab target group URL: base: ${baseUrl}, target: ${url}`,
+      );
+    }
+    // remove base url path components from target url group path components
+    path = path.slice(basePath.length);
+  }
+
+  if (path.length === 1 && path[0].length === 0) {
+    path.pop();
+  }
+
+  return path;
 }

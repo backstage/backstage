@@ -35,12 +35,14 @@ export type PagedResponse<T> = {
 };
 
 export class GitLabClient {
+  readonly baseUrl: string;
   private readonly config: GitLabIntegrationConfig;
   private readonly logger: Logger;
 
   constructor(options: { config: GitLabIntegrationConfig; logger: Logger }) {
     this.config = options.config;
     this.logger = options.logger;
+    this.baseUrl = options.config.baseUrl;
   }
 
   /**

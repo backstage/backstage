@@ -15,6 +15,17 @@
  */
 
 export { GitLabClient, paginated } from './client';
+export {
+  readGitLabOrgProviderConfig,
+  groupByIntegrationConfig,
+} from './config';
+export { getInstanceUsers, getGroupMembers, readUsers } from './users';
+
+export type { GitLabOrgProviderConfig } from './config';
 export { parseGitLabGroupUrl, getGroups } from './groups';
-export { getInstanceUsers, getGroupMembers } from './users';
-export type { GitLabProject } from './types';
+export type {
+  GitLabProject,
+  GitLabUserResponse,
+  UserTransformer,
+} from './types';
+export type { UserIngestionOptions } from './users';

@@ -20,6 +20,7 @@ import { readGitLabIntegrationConfig } from '@backstage/integration';
 import { getVoidLogger } from '@backstage/backend-common';
 import { rest } from 'msw';
 import { setupServer, SetupServerApi } from 'msw/node';
+
 import { GitLabClient, paginated } from './client';
 
 const server = setupServer();
@@ -129,6 +130,23 @@ describe('GitLabClient', () => {
         logger: getVoidLogger(),
       });
       expect(client.isSelfManaged()).toBeFalsy();
+    });
+  });
+
+  describe('baseUrl', () => {
+    it('should be a property from the underlying integration config', () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader({
+            host: 'example.com',
+            token: 'test-token',
+            apiBaseUrl: 'https://example.com/subdirectory/api/v4',
+            baseUrl: 'https://example.com/subdirectory',
+          }),
+        ),
+        logger: getVoidLogger(),
+      });
+      expect(client.baseUrl).toEqual('https://example.com/subdirectory');
     });
   });
 

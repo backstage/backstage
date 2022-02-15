@@ -14,68 +14,73 @@
  * limitations under the License.
  */
 import { UserEntity } from '@backstage/catalog-model';
+import { parseGitLabGroupUrl } from './groups';
 import { GitLabClient, paginated } from './client';
+import { GitLabUserResponse, UserTransformer } from './types';
 
-type GroupMember = {
-  id: number;
-  name: string;
-  username: string;
-  state: string;
-  avatar_url: string;
-  web_url: string;
-  access_level: number;
-  created_at: string;
-};
-
-/*
- * Partial GitLab API User Repsonse
+/**
+ * Options to configure GitLab user ingestion.
  *
- * Admin fields are set to optional:
- * https://docs.gitlab.com/ee/api/users.html#for-admins.
+ * @public
  */
-type User = {
-  id: number;
-  name: string;
-  username: string;
-  state: string;
-  avatar_url: string;
-  web_url: string;
-  created_at: string;
-  job_title: string;
-  public_email?: string;
-  email?: string;
-  bot?: boolean;
+export type UserIngestionOptions = {
+  inherited?: boolean;
+  blocked?: boolean;
+  transformer?: UserTransformer;
 };
+
+/**
+ * The default implementation to map a GitLab user response to a User entity.
+ *
+ * @public
+ */
+export async function defaultUserTransformer(
+  user: GitLabUserResponse,
+): Promise<UserEntity | undefined> {
+  if (user.bot) {
+    return undefined;
+  }
+
+  const entity: UserEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'User',
+    metadata: {
+      name: user.username,
+    },
+    spec: {
+      profile: {},
+      memberOf: [],
+    },
+  };
+  if (user.name) entity.spec.profile!.displayName = user.name;
+  if (user.avatar_url) entity.spec.profile!.picture = user.avatar_url;
+  if (user.public_email) entity.spec.profile!.email = user.public_email;
+  if (user.email) entity.spec.profile!.email = user.email;
+
+  return entity;
+}
 
 export async function getGroupMembers(
   client: GitLabClient,
   id: string,
-  inherited?: boolean,
-  blocked?: boolean,
+  options: UserIngestionOptions = {},
 ): Promise<UserEntity[]> {
   const endpoint = `/groups/${encodeURIComponent(id)}/members${
-    inherited ? '/all' : ''
+    options.inherited ? '/all' : ''
   }`;
-  const members = paginated<GroupMember>(
-    options => client.pagedRequest(endpoint, options),
-    { blocked, per_page: 100 },
+  const transformer = options?.transformer ?? defaultUserTransformer;
+  // TODO(minnsoe): perform a second /users/:id request to enrich and match instance users
+  const members = paginated<GitLabUserResponse>(
+    opts => client.pagedRequest(endpoint, opts),
+    { blocked: options.blocked, per_page: 100 },
   );
 
   const memberUserEntities = [];
   for await (const result of members) {
-    const entity: UserEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'User',
-      metadata: {
-        name: result.username,
-      },
-      spec: {
-        profile: {},
-        memberOf: [],
-      },
-    };
-    if (result.name) entity.spec.profile!.displayName = result.name;
-    if (result.avatar_url) entity.spec.profile!.picture = result.avatar_url;
+    const entity = await transformer(result);
+    if (!entity) {
+      continue;
+    }
     memberUserEntities.push(entity);
   }
   return memberUserEntities;
@@ -83,35 +88,53 @@ export async function getGroupMembers(
 
 export async function getInstanceUsers(
   client: GitLabClient,
+  options: UserIngestionOptions = {},
 ): Promise<UserEntity[]> {
-  const users = paginated<User>(
-    options => client.pagedRequest('/users', options),
+  if (!client.isSelfManaged()) {
+    throw new Error(
+      'Getting all GitLab instance users is only supported for self-managed hosts.',
+    );
+  }
+  const transformer = options?.transformer ?? defaultUserTransformer;
+  const users = paginated<GitLabUserResponse>(
+    opts => client.pagedRequest('/users', opts),
     { active: true, per_page: 100 },
   );
-
   const userEntities = [];
   for await (const result of users) {
-    // skip over bot users
-    if (result.bot) {
+    const entity = await transformer(result);
+    if (!entity) {
       continue;
     }
-
-    const entity: UserEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'User',
-      metadata: {
-        name: result.username,
-      },
-      spec: {
-        profile: {},
-        memberOf: [],
-      },
-    };
-    if (result.name) entity.spec.profile!.displayName = result.name;
-    if (result.avatar_url) entity.spec.profile!.picture = result.avatar_url;
-    if (result.public_email) entity.spec.profile!.email = result.public_email;
-    if (result.email) entity.spec.profile!.email = result.email;
     userEntities.push(entity);
   }
   return userEntities;
+}
+
+/**
+ * Read users from a GitLab target and provides User entities.
+ *
+ * @public
+ */
+export async function readUsers(
+  client: GitLabClient,
+  target: string,
+  options: UserIngestionOptions = {},
+): Promise<UserEntity[]> {
+  const baseURL = new URL(client.baseUrl);
+  const targetURL = new URL(target);
+  if (baseURL.host !== targetURL.host) {
+    throw new Error(
+      `The GitLab client (${baseURL.host}) cannot be used for target host (${targetURL.host}).`,
+    );
+  }
+
+  const groupURL = parseGitLabGroupUrl(target, client.baseUrl);
+  if (!groupURL) {
+    return getInstanceUsers(client, options);
+  }
+  return getGroupMembers(client, groupURL, {
+    ...options,
+    inherited: options?.inherited ?? true,
+  });
 }

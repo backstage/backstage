@@ -6,8 +6,12 @@
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
+import { EntityProvider } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
+import { ScmIntegrations } from '@backstage/integration';
+import { UserEntity } from '@backstage/catalog-model';
 
 // @public
 export class GitLabDiscoveryProcessor implements CatalogProcessor {
@@ -15,7 +19,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: Logger_2;
     },
   ): GitLabDiscoveryProcessor;
   // (undocumented)
@@ -27,4 +31,39 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
 }
+
+// @alpha
+export class GitLabOrgEntityProvider implements EntityProvider {
+  constructor(options: {
+    id: string;
+    logger: Logger_2;
+    integrations: ScmIntegrations;
+    providerConfigs: GitLabOrgProviderConfig[];
+  });
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    configRoot: Config,
+    options: {
+      id: string;
+      logger: Logger_2;
+    },
+  ): GitLabOrgEntityProvider;
+  // (undocumented)
+  getProviderName(): string;
+  // (undocumented)
+  read(): Promise<void>;
+}
+
+// Warning: (ae-forgotten-export) The symbol "GitLabUserResponse" needs to be exported by the entry point index.d.ts
+//
+// @public
+export type UserTransformer = (
+  user: GitLabUserResponse,
+) => Promise<UserEntity | undefined>;
+
+// Warnings were encountered during analysis:
+//
+// src/GitLabOrgEntityProvider.d.ts:22:9 - (ae-forgotten-export) The symbol "GitLabOrgProviderConfig" needs to be exported by the entry point index.d.ts
 ```
