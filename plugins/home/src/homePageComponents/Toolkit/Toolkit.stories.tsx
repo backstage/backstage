@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { TemplateBackstageLogoIcon } from '../../templates';
-import { HomePageToolkit } from '../../plugin';
+import { InfoCard } from '@backstage/core-components';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
 import React, { ComponentType } from 'react';
+import { ComponentAccordion } from '../../componentRenderers';
+import { HomePageToolkit } from '../../plugin';
+import { TemplateBackstageLogoIcon } from '../../templates';
 
 export default {
   title: 'Plugins/Home/Components/Toolkit',
@@ -36,5 +38,45 @@ export const Default = () => {
         })}
       />
     </Grid>
+  );
+};
+
+export const InAccordian = () => {
+  const ExpandedComponentAccordion = (props: any) => (
+    <ComponentAccordion expanded {...props} />
+  );
+
+  return (
+    <InfoCard title="Toolkit" noPadding>
+      <Grid item>
+        <HomePageToolkit
+          title="Tools 1"
+          tools={Array(8).fill({
+            url: '#',
+            label: 'link',
+            icon: <TemplateBackstageLogoIcon />,
+          })}
+          Renderer={ExpandedComponentAccordion}
+        />
+        <HomePageToolkit
+          title="Tools 2"
+          tools={Array(8).fill({
+            url: '#',
+            label: 'link',
+            icon: <TemplateBackstageLogoIcon />,
+          })}
+          Renderer={ComponentAccordion}
+        />
+        <HomePageToolkit
+          title="Tools 3"
+          tools={Array(8).fill({
+            url: '#',
+            label: 'link',
+            icon: <TemplateBackstageLogoIcon />,
+          })}
+          Renderer={ComponentAccordion}
+        />
+      </Grid>
+    </InfoCard>
   );
 };

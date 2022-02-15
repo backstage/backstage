@@ -24,6 +24,7 @@ export type ClockConfig = {
 // @public (undocumented)
 export const ComponentAccordion: ({
   title,
+  expanded,
   Content,
   Actions,
   Settings,
@@ -31,6 +32,7 @@ export const ComponentAccordion: ({
   ...childProps
 }: {
   title: string;
+  expanded?: boolean | undefined;
   Content: () => JSX.Element;
   Actions?: (() => JSX.Element) | undefined;
   Settings?: (() => JSX.Element) | undefined;
