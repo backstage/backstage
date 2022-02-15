@@ -20,7 +20,6 @@
  * @packageDocumentation
  */
 
-export { CatalogClientWrapper } from './CatalogClientWrapper';
 export * from './components/AboutCard';
 export * from './components/CatalogKindHeader';
 export * from './components/CatalogResultListItem';
