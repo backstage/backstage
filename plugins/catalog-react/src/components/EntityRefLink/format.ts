@@ -17,7 +17,7 @@
 import {
   Entity,
   EntityName,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 
 export function formatEntityRefTitle(
@@ -39,7 +39,7 @@ export function formatEntityRefTitle(
     name = entityRef.name;
   }
 
-  if (namespace === ENTITY_DEFAULT_NAMESPACE) {
+  if (namespace === DEFAULT_NAMESPACE) {
     namespace = undefined;
   }
 

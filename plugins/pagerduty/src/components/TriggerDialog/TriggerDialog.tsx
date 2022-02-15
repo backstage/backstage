@@ -34,10 +34,7 @@ import {
   alertApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import {
-  ENTITY_DEFAULT_NAMESPACE,
-  parseEntityRef,
-} from '@backstage/catalog-model';
+import { DEFAULT_NAMESPACE, parseEntityRef } from '@backstage/catalog-model';
 
 type Props = {
   showDialog: boolean;
@@ -61,7 +58,7 @@ export const TriggerDialog = ({
       const { userEntityRef } = await identityApi.getBackstageIdentity();
       const { name: userName } = parseEntityRef(userEntityRef, {
         defaultKind: 'User',
-        defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+        defaultNamespace: DEFAULT_NAMESPACE,
       });
       await api.triggerAlarm({
         integrationKey: integrationKey as string,

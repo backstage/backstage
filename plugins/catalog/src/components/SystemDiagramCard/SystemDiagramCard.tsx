@@ -20,7 +20,7 @@ import {
   RELATION_PROVIDES_API,
   RELATION_PART_OF,
   stringifyEntityRef,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   parseEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -92,7 +92,7 @@ function readableEntityName(
 ): string {
   return stringifyEntityRef(ref)
     .toLocaleLowerCase('en-US')
-    .replace(`:${ENTITY_DEFAULT_NAMESPACE}/`, ':')
+    .replace(`:${DEFAULT_NAMESPACE}/`, ':')
     .split(':')[1];
 }
 
@@ -180,7 +180,7 @@ export function SystemDiagramCard() {
         'spec.system': [
           currentSystemName,
           `${
-            entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
+            entity.metadata.namespace || DEFAULT_NAMESPACE
           }/${currentSystemName}`,
         ],
       },

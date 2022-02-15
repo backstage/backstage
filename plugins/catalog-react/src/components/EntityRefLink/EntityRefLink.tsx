@@ -17,7 +17,7 @@
 import {
   Entity,
   EntityName,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 import React, { forwardRef } from 'react';
 import { entityRouteRef } from '../../routes';
@@ -66,8 +66,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
 
     const routeParams = {
       kind,
-      namespace:
-        namespace?.toLocaleLowerCase('en-US') ?? ENTITY_DEFAULT_NAMESPACE,
+      namespace: namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE,
       name,
     };
     const formattedEntityRefTitle = formatEntityRefTitle(entityRef, {

@@ -16,8 +16,8 @@
 
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
   ANNOTATION_LOCATION,
+  DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -107,7 +107,7 @@ export function AboutCard({ variant }: AboutCardProps) {
     href:
       viewTechdocLink &&
       viewTechdocLink({
-        namespace: entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
+        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
         kind: entity.kind,
         name: entity.metadata.name,
       }),

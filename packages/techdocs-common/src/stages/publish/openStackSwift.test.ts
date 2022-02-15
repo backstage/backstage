@@ -18,7 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import {
   Entity,
   EntityName,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -59,7 +59,7 @@ const getEntityRootDir = (entity: Entity) => {
     metadata: { namespace, name },
   } = entity;
 
-  return path.join(rootDir, namespace || ENTITY_DEFAULT_NAMESPACE, kind, name);
+  return path.join(rootDir, namespace || DEFAULT_NAMESPACE, kind, name);
 };
 
 const getPosixEntityRootDir = (entity: Entity) => {
@@ -70,7 +70,7 @@ const getPosixEntityRootDir = (entity: Entity) => {
 
   return path.posix.join(
     '/rootDir',
-    namespace || ENTITY_DEFAULT_NAMESPACE,
+    namespace || DEFAULT_NAMESPACE,
     kind,
     name,
   );

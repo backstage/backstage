@@ -17,7 +17,7 @@ import { GetEntitiesResponse } from '@backstage/catalog-client';
 import {
   Entity,
   EntityName,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
   RELATION_CONSUMES_API,
@@ -117,7 +117,7 @@ const entities = (
       name,
     },
     relations: relations.map(([type, k, n]) => ({
-      target: { kind: k, name: n, namespace: ENTITY_DEFAULT_NAMESPACE },
+      target: { kind: k, name: n, namespace: DEFAULT_NAMESPACE },
       type,
     })),
   };

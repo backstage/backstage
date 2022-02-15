@@ -15,7 +15,7 @@
  */
 
 import {
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   parseEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
@@ -35,7 +35,7 @@ export function useOwnUser(): AsyncState<UserEntity | undefined> {
     return catalogApi.getEntityByName(
       parseEntityRef(identity.userEntityRef, {
         defaultKind: 'User',
-        defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+        defaultNamespace: DEFAULT_NAMESPACE,
       }),
     ) as Promise<UserEntity | undefined>;
   }, [catalogApi, identityApi]);
