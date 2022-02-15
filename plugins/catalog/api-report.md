@@ -5,24 +5,13 @@
 ```ts
 /// <reference types="react" />
 
-import { AddLocationRequest } from '@backstage/catalog-client';
-import { AddLocationResponse } from '@backstage/catalog-client';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogClient } from '@backstage/catalog-client';
-import { CatalogRequestOptions } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
-import { GetEntitiesRequest } from '@backstage/catalog-client';
-import { GetEntitiesResponse } from '@backstage/catalog-client';
-import { GetEntityAncestorsRequest } from '@backstage/catalog-client';
-import { GetEntityAncestorsResponse } from '@backstage/catalog-client';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
-import { Location as Location_2 } from '@backstage/catalog-client';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
@@ -63,63 +52,6 @@ export type BackstageOverrides = Overrides & {
     StyleRules<PluginCatalogComponentsNameToClassKey[Name]>
   >;
 };
-
-// Warning: (ae-missing-release-tag) "CatalogClientWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated
-export class CatalogClientWrapper implements CatalogApi {
-  constructor(options: { client: CatalogClient; identityApi: IdentityApi });
-  // (undocumented)
-  addLocation(
-    request: AddLocationRequest,
-    options?: CatalogRequestOptions,
-  ): Promise<AddLocationResponse>;
-  // (undocumented)
-  getEntities(
-    request?: GetEntitiesRequest,
-    options?: CatalogRequestOptions,
-  ): Promise<GetEntitiesResponse>;
-  // (undocumented)
-  getEntityAncestors(
-    request: GetEntityAncestorsRequest,
-    options?: CatalogRequestOptions,
-  ): Promise<GetEntityAncestorsResponse>;
-  // (undocumented)
-  getEntityByName(
-    compoundName: EntityName,
-    options?: CatalogRequestOptions,
-  ): Promise<Entity | undefined>;
-  // (undocumented)
-  getLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location_2 | undefined>;
-  // (undocumented)
-  getLocationById(
-    id: string,
-    options?: CatalogRequestOptions,
-  ): Promise<Location_2 | undefined>;
-  // (undocumented)
-  getOriginLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location_2 | undefined>;
-  // (undocumented)
-  refreshEntity(
-    entityRef: string,
-    options?: CatalogRequestOptions,
-  ): Promise<void>;
-  // (undocumented)
-  removeEntityByUid(
-    uid: string,
-    options?: CatalogRequestOptions,
-  ): Promise<void>;
-  // (undocumented)
-  removeLocationById(
-    id: string,
-    options?: CatalogRequestOptions,
-  ): Promise<void>;
-}
 
 // Warning: (ae-missing-release-tag) "CatalogEntityPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
