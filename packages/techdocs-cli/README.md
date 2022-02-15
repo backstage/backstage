@@ -96,3 +96,5 @@ Run the cypress tests
 ```sh
 yarn cypress:open
 ```
+
+> If its the first time you run Cypress, it will run a "Verifying Cypress can run" step. This step can result in a "Cypress verification timed out" error. If that is the case, let the verification step run and then run the command again and it should succeed.
