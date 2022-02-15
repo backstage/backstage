@@ -87,8 +87,8 @@ yarn build --scope @techdocs/cli
 # Navigate to the example project
 cd techdocs-container/mock-docs
 
-# Now execute the techdocs-cli binary
-../../backstage/packages/techdocs-cli/bin/techdocs-cli
+# Now execute the techdocs-cli serve command
+../../backstage/packages/techdocs-cli/bin/techdocs-cli serve
 ```
 
 Run the cypress tests
