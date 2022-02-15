@@ -4362,6 +4362,18 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
+"@react-hookz/deep-equal@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/@react-hookz/deep-equal/-/deep-equal-1.0.1.tgz#1e9aad97b964879b54a3909f36f0727befa13e1f"
+  integrity sha512-6k/pU2jNlgYvKOy84vpCAZ8MGVwybvAdjzrh4UicCVOCPxz0LSBws1OE6O5TO4sPHaSw+yLfNzNK8RicGFc1Kw==
+
+"@react-hookz/web@^12.3.0":
+  version "12.3.0"
+  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-12.3.0.tgz#a9a1311a15171a57d68a3db61492f913d4fd455a"
+  integrity sha512-Uujp2RfX/oDEtAbdkV0W/nhiQ5ZYVH+MEq04T7/8TstyiwoIlvsRbEic6c6gQA6sQ/lw93cZ8NP8R7AYjiqDvg==
+  dependencies:
+    "@react-hookz/deep-equal" "^1.0.1"
+
 "@rjsf/core@^3.2.1":
   version "3.2.1"
   resolved "https://registry.npmjs.org/@rjsf/core/-/core-3.2.1.tgz#8a7b24c9a6f01f0ecb093fdfc777172c12b1b009"

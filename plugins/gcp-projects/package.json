@@ -38,7 +38,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "react-router-dom": "6.0.0-beta.0",
-    "react-hookz": "^1.0.12"
+    "@react-hookz/web": "^12.3.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"
