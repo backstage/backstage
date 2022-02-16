@@ -20,7 +20,7 @@ import { Routes, Route } from 'react-router';
 import { buildRouteRef } from '../routes';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowRunsTable } from './WorkflowRunsTable';
-import { GITHUB_ACTIONS_ANNOTATION } from './getProjectName';
+import { GITHUB_ACTIONS_ANNOTATION } from './getProjectNameFromEntity';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
 export const isGithubActionsAvailable = (entity: Entity) =>

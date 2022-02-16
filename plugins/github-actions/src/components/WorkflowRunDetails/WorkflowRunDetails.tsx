@@ -39,7 +39,7 @@ import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { Job, Jobs, Step } from '../../api';
-import { getProjectName } from '../getProjectName';
+import { getProjectNameFromEntity } from '../getProjectNameFromEntity';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
@@ -164,7 +164,7 @@ const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
 
 export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
   const config = useApi(configApiRef);
-  const projectName = getProjectName(entity);
+  const projectName = getProjectNameFromEntity(entity);
 
   // TODO: Get github hostname from metadata annotation
   const hostname = readGitHubIntegrationConfigs(

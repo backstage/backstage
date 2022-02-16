@@ -35,4 +35,4 @@ export {
   isGithubActionsAvailable as isPluginApplicableToEntity,
 } from './components/Router';
 export * from './components/Cards';
-export { GITHUB_ACTIONS_ANNOTATION } from './components/useProjectName';
+export { GITHUB_ACTIONS_ANNOTATION } from './components/getProjectNameFromEntity';

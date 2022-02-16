@@ -24,7 +24,7 @@ import {
 } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import React, { useEffect } from 'react';
-import { GITHUB_ACTIONS_ANNOTATION } from '../useProjectName';
+import { GITHUB_ACTIONS_ANNOTATION } from '../getProjectNameFromEntity';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunsTable } from '../WorkflowRunsTable';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
