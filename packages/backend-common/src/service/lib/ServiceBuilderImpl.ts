@@ -19,7 +19,7 @@ import compression from 'compression';
 import cors from 'cors';
 import express, { Router, ErrorRequestHandler } from 'express';
 import helmet from 'helmet';
-import { ContentSecurityPolicyOptions } from 'helmet/dist/middlewares/content-security-policy';
+import { ContentSecurityPolicyOptions } from 'helmet/dist/types/middlewares/content-security-policy';
 import * as http from 'http';
 import stoppable from 'stoppable';
 import { Logger } from 'winston';
@@ -215,8 +215,17 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       httpsSettings: this.httpsSettings,
       helmetOptions: {
         contentSecurityPolicy: {
+          useDefaults: false,
           directives: applyCspDirectives(this.cspOptions),
         },
+        // These are all disabled in order to maintain backwards compatibility
+        // when bumping helmet v5. We can't enable these by default because
+        // there is no way for users to configure them.
+        // TODO(Rugvip): We should give control of this setup to consumers
+        crossOriginEmbedderPolicy: false,
+        crossOriginOpenerPolicy: false,
+        crossOriginResourcePolicy: false,
+        originAgentCluster: false,
       },
     };
   }
@@ -231,6 +240,11 @@ export function applyCspDirectives(
   // TODO(Rugvip): We currently use non-precompiled AJV for validation in the frontend, which uses eval.
   //               It should be replaced by any other solution that doesn't require unsafe-eval.
   result['script-src'] = ["'self'", "'unsafe-eval'"];
+
+  // TODO(Rugvip): This is removed so that we maintained backwards compatibility
+  //               when bumping to helmet v5, we could remove this as well as
+  //               skip setting `useDefaults: false` in the future.
+  delete result['form-action'];
 
   if (directives) {
     for (const [key, value] of Object.entries(directives)) {
