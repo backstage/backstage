@@ -18,7 +18,7 @@ import { isEqual } from 'lodash';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useDebouncedCallback } from '@react-hookz/web';
+import { useDebouncedEffect } from '@react-hookz/web';
 
 function stringify(queryParams: any): string {
   // Even though these setting don't look nice (e.g. escaped brackets), we should keep
@@ -75,7 +75,7 @@ export function useQueryParamState<T>(
     );
   }, [searchParamsString, setQueryParamState, stateName]);
 
-  useDebouncedCallback(
+  useDebouncedEffect(
     () => {
       const queryString = joinQueryString(
         searchParamsString,
