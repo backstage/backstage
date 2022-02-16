@@ -33,9 +33,9 @@ export interface TaskSpecV1beta2 {
 export interface TaskSpecV1beta3 {
   // (undocumented)
   apiVersion: 'scaffolder.backstage.io/v1beta3';
-  // (undocumented)
+  // @deprecated (undocumented)
   baseUrl?: string;
-  // (undocumented)
+  // @deprecated (undocumented)
   metadata?: TemplateMetadata;
   // (undocumented)
   output: {
@@ -45,6 +45,8 @@ export interface TaskSpecV1beta3 {
   parameters: JsonObject;
   // (undocumented)
   steps: TaskStep[];
+  // (undocumented)
+  templateInfo?: TemplateInfo;
 }
 
 // @public
@@ -116,6 +118,12 @@ export interface TemplateEntityV1beta3 extends Entity {
 export const templateEntityV1beta3Validator: KindValidator;
 
 // @public
+export type TemplateInfo = {
+  name: string;
+  baseUrl?: string;
+};
+
+// @public @deprecated
 export type TemplateMetadata = {
   name: string;
 };

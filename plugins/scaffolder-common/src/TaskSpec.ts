@@ -21,7 +21,7 @@ import { JsonValue, JsonObject } from '@backstage/types';
  * stored in the database.
  *
  * @public
- * @deprecated
+ * @deprecated use templateInfo on the spec instead
  */
 export type TemplateMetadata = {
   name: string;
