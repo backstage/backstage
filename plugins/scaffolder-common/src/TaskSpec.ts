@@ -28,7 +28,7 @@ export type TemplateMetadata = {
 };
 
 /**
- * Information about a template that is stored on the scaffolder Spec
+ * Information about a template that is stored on a task specification
  *
  * @public
  */
