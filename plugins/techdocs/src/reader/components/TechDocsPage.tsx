@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState, ComponentType } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useOutlet } from 'react-router';
 import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import { techdocsApiRef } from '../../api';
-import { TechDocsNotFound } from './TechDocsNotFound';
 import { LegacyTechDocsPage } from './LegacyTechDocsPage';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
 import { EntityName } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useApp } from '@backstage/core-plugin-api';
 import { Page } from '@backstage/core-components';
 
 export type TechDocsPageRenderFunction = ({
@@ -39,13 +38,10 @@ export type TechDocsPageRenderFunction = ({
 
 export type TechDocsPageProps = {
   children?: TechDocsPageRenderFunction | React.ReactNode;
-  NotFoundPage?: ComponentType<{errorMessage: string}>
 };
 
-export const TechDocsPage = ({
-  children,
-  NotFoundPage = TechDocsNotFound,
-}: TechDocsPageProps) => {
+export const TechDocsPage = ({ children }: TechDocsPageProps) => {
+  const NotFoundErrorPage = useApp().getComponents().NotFoundErrorPage;
   const outlet = useOutlet();
 
   const [documentReady, setDocumentReady] = useState<boolean>(false);
@@ -70,9 +66,7 @@ export const TechDocsPage = ({
     setDocumentReady(true);
   }, [setDocumentReady]);
 
-  if (entityMetadataError) {
-    return <NotFoundPage errorMessage={entityMetadataError.message} />;
-  }
+  if (entityMetadataError) return <NotFoundErrorPage />;
 
   if (!children) return outlet || <LegacyTechDocsPage />;
 
