@@ -28,12 +28,6 @@ export type ActionContext<Input extends JsonObject> = {
 
   logger: Logger;
   logStream: Writable;
-
-  /**
-   * User token forwarded from initial request, for use in subsequent api requests
-   * @deprecated use `secrets.backstageToken` instead
-   */
-  token?: string | undefined;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: Input;
