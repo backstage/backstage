@@ -21,18 +21,19 @@ import React from 'react';
 import { EntityLinksEmptyState } from './EntityLinksEmptyState';
 import { LinksGridList } from './LinksGridList';
 import { ColumnBreakpoints } from './types';
-
 import { IconComponent, useApp } from '@backstage/core-plugin-api';
 import { InfoCard } from '@backstage/core-components';
 
-type Props = {
+/** @public */
+export interface EntityLinksCardProps {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
   cols?: ColumnBreakpoints | number;
   variant?: 'gridItem';
-};
+}
 
-export const EntityLinksCard = ({ cols = undefined, variant }: Props) => {
+export function EntityLinksCard(props: EntityLinksCardProps) {
+  const { cols = undefined, variant } = props;
   const { entity } = useEntity();
   const app = useApp();
 
@@ -57,4 +58,4 @@ export const EntityLinksCard = ({ cols = undefined, variant }: Props) => {
       )}
     </InfoCard>
   );
-};
+}

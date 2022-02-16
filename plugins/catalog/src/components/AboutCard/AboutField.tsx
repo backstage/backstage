@@ -36,14 +36,21 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type Props = {
+/**
+ * Props for {@link AboutField}.
+ *
+ * @public
+ */
+export interface AboutFieldProps {
   label: string;
   value?: string;
   gridSizes?: Record<string, number>;
   children?: React.ReactNode;
-};
+}
 
-export const AboutField = ({ label, value, gridSizes, children }: Props) => {
+/** @public */
+export function AboutField(props: AboutFieldProps) {
+  const { label, value, gridSizes, children } = props;
   const classes = useStyles();
 
   const childElements = useElementFilter(children, c => c.getElements());
@@ -65,4 +72,4 @@ export const AboutField = ({ label, value, gridSizes, children }: Props) => {
       {content}
     </Grid>
   );
-};
+}

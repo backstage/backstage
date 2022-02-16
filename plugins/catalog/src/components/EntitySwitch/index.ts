@@ -15,4 +15,5 @@
  */
 
 export { EntitySwitch } from './EntitySwitch';
+export type { EntitySwitchCaseProps } from './EntitySwitch';
 export { isKind, isNamespace, isComponentType } from './conditions';

@@ -35,8 +35,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { createComponentRouteRef } from '../../routes';
-import { CatalogTable } from '../CatalogTable';
-import { EntityRow } from '../CatalogTable/types';
+import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import {
   FilteredEntityLayout,
   EntityListContainer,
@@ -45,20 +44,18 @@ import {
 import { CatalogKindHeader } from '../CatalogKindHeader';
 
 /**
- * DefaultCatalogPageProps
+ * Props for root catalog pages.
+ *
  * @public
  */
-export type DefaultCatalogPageProps = {
+export interface DefaultCatalogPageProps {
   initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<EntityRow>[];
-  actions?: TableProps<EntityRow>['actions'];
-};
+  columns?: TableColumn<CatalogTableRow>[];
+  actions?: TableProps<CatalogTableRow>['actions'];
+}
 
-export const DefaultCatalogPage = ({
-  columns,
-  actions,
-  initiallySelectedFilter = 'owned',
-}: DefaultCatalogPageProps) => {
+export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
+  const { columns, actions, initiallySelectedFilter = 'owned' } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -90,4 +87,4 @@ export const DefaultCatalogPage = ({
       </EntityListProvider>
     </PageWithHeader>
   );
-};
+}

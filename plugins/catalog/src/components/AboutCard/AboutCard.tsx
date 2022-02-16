@@ -72,13 +72,20 @@ const useStyles = makeStyles({
   },
 });
 
-type AboutCardProps = {
+/**
+ * Props for {@link AboutCard}.
+ *
+ * @public
+ */
+export interface AboutCardProps {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
   variant?: InfoCardVariants;
-};
+}
 
-export function AboutCard({ variant }: AboutCardProps) {
+/** @public */
+export function AboutCard(props: AboutCardProps) {
+  const { variant } = props;
   const classes = useStyles();
   const { entity } = useEntity();
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);

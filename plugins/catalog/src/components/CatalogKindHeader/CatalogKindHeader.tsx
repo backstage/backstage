@@ -38,13 +38,18 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-type CatalogKindHeaderProps = {
+/**
+ * Props for {@link CatalogKindHeader}.
+ *
+ * @public
+ */
+export interface CatalogKindHeaderProps {
   initialFilter?: string;
-};
+}
 
-export const CatalogKindHeader = ({
-  initialFilter = 'component',
-}: CatalogKindHeaderProps) => {
+/** @public */
+export function CatalogKindHeader(props: CatalogKindHeaderProps) {
+  const { initialFilter = 'component' } = props;
   const classes = useStyles();
   const { kinds: allKinds = [] } = useEntityKinds();
   const { updateFilters, queryParameters } = useEntityListProvider();
@@ -88,4 +93,4 @@ export const CatalogKindHeader = ({
       ))}
     </Select>
   );
-};
+}

@@ -21,18 +21,19 @@ import { ColumnBreakpoints } from './types';
 import { useDynamicColumns } from './useDynamicColumns';
 import { IconComponent } from '@backstage/core-plugin-api';
 
-export type LinksGridListItem = {
+export interface LinksGridListItem {
   href: string;
   text?: string;
   Icon?: IconComponent;
-};
+}
 
-type Props = {
+interface LinksGridListProps {
   items: LinksGridListItem[];
   cols?: ColumnBreakpoints | number;
-};
+}
 
-export const LinksGridList = ({ items, cols = undefined }: Props) => {
+export function LinksGridList(props: LinksGridListProps) {
+  const { items, cols = undefined } = props;
   const numOfCols = useDynamicColumns(cols);
 
   return (
@@ -44,4 +45,4 @@ export const LinksGridList = ({ items, cols = undefined }: Props) => {
       ))}
     </ImageList>
   );
-};
+}

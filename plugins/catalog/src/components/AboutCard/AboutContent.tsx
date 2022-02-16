@@ -33,11 +33,18 @@ const useStyles = makeStyles({
   },
 });
 
-type Props = {
+/**
+ * Props for {@link AboutContent}.
+ *
+ * @public
+ */
+export interface AboutContentProps {
   entity: Entity;
-};
+}
 
-export const AboutContent = ({ entity }: Props) => {
+/** @public */
+export function AboutContent(props: AboutContentProps) {
+  const { entity } = props;
   const classes = useStyles();
   const isSystem = entity.kind.toLocaleLowerCase('en-US') === 'system';
   const isResource = entity.kind.toLocaleLowerCase('en-US') === 'resource';
@@ -154,4 +161,4 @@ export const AboutContent = ({ entity }: Props) => {
       </AboutField>
     </Grid>
   );
-};
+}
