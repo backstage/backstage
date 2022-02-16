@@ -209,8 +209,8 @@ describe('DefaultWorkflowRunner', () => {
 
       await runner.execute(task);
 
-      expect(fakeActionHandler.mock.calls[0][0].backstageToken).toEqual(
-        fakeToken,
+      expect(fakeActionHandler.mock.calls[0][0].secrets).toEqual(
+        expect.objectContaining({ backstageToken: fakeToken }),
       );
     });
   });
