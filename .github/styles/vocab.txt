@@ -125,9 +125,11 @@ Iain
 img
 incentivised
 Indal
+injectable
 inlined
 inlinehilite
 interop
+Inversify
 JaCoCo
 JavaScript
 Jira
