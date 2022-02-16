@@ -63,7 +63,7 @@ The Airbrake plugin provides connectivity between Backstage and Airbrake (https:
      apiKey: ${AIRBRAKE_API_KEY}
    ```
 
-6. Set an environment variable `AIRBRAKE_API_KEY` with your [API Key](https://airbrake.io/docs/api/#authentication)
+6. Set an environment variable `AIRBRAKE_API_KEY` with your [API key](https://airbrake.io/docs/api/#authentication)
    before starting Backstage backend.
 
 ## Local Development

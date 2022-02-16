@@ -54,7 +54,10 @@ createDevApp()
     element: (
       <ContextProvider>
         <Page themeId="tool">
-          <Header title="Airbrake demo application" subtitle="Real API">
+          <Header
+            title="Airbrake demo application"
+            subtitle="Real API (The Airbrake backend plugin must be running for this to work)"
+          >
             <ApiBar />
           </Header>
           <Content>
