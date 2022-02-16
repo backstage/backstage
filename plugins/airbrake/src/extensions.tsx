@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
+import { useEntity } from '@backstage/plugin-catalog-react';
+import React from 'react';
 import { airbrakePlugin } from './plugin';
-import { ProductionAirbrakeApi } from './api';
+import { createRoutableExtension } from '@backstage/core-plugin-api';
+import { rootRouteRef } from './routes';
 
-describe('catalog', () => {
-  it('should export plugin', () => {
-    expect(airbrakePlugin).toBeDefined();
-  });
-
-  it('should have at least one API, the production API', () => {
-    const apiFactories = Array.from(airbrakePlugin.getApis());
-    expect(apiFactories.length).toBe(1);
-    expect(apiFactories[0].factory({})).toBeInstanceOf(ProductionAirbrakeApi);
-  });
-});
+export const EntityAirbrakeContent = airbrakePlugin.provide(
+  createRoutableExtension({
+    name: 'EntityAirbrakeContent',
+    mountPoint: rootRouteRef,
+    component: () =>
+      import('./components/EntityAirbrakeWidget').then(
+        ({ EntityAirbrakeWidget }) => {
+          return () => {
+            const { entity } = useEntity();
+            return <EntityAirbrakeWidget entity={entity} />;
+          };
+        },
+      ),
+  }),
+);

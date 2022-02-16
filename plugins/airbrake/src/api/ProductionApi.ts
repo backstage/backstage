@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-import { airbrakePlugin } from './plugin';
-import { ProductionAirbrakeApi } from './api';
+import { Groups } from './airbrakeGroups';
+import { AirbrakeApi } from './AirbrakeApi';
 
-describe('catalog', () => {
-  it('should export plugin', () => {
-    expect(airbrakePlugin).toBeDefined();
-  });
+export class ProductionAirbrakeApi implements AirbrakeApi {
+  constructor(private readonly apiKey?: string) {}
 
-  it('should have at least one API, the production API', () => {
-    const apiFactories = Array.from(airbrakePlugin.getApis());
-    expect(apiFactories.length).toBe(1);
-    expect(apiFactories[0].factory({})).toBeInstanceOf(ProductionAirbrakeApi);
-  });
-});
+  async fetchGroups(projectId: string): Promise<Groups> {
+    const apiUrl = `https://api.airbrake.io/api/v4/projects/${projectId}/groups?key=${this.apiKey}`;
+
+    const response = await fetch(apiUrl);
+
+    if (response.status >= 400 && response.status < 600) {
+      throw new Error('Failed fetching Airbrake groups');
+    }
+
+    return (await response.json()) as Groups;
+  }
+}

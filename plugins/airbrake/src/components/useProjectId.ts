@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import { airbrakePlugin } from './plugin';
-import { ProductionAirbrakeApi } from './api';
+import { Entity } from '@backstage/catalog-model';
 
-describe('catalog', () => {
-  it('should export plugin', () => {
-    expect(airbrakePlugin).toBeDefined();
-  });
+export const AIRBRAKE_PROJECT_ID_ANNOTATION = 'airbrake.io/project-id';
 
-  it('should have at least one API, the production API', () => {
-    const apiFactories = Array.from(airbrakePlugin.getApis());
-    expect(apiFactories.length).toBe(1);
-    expect(apiFactories[0].factory({})).toBeInstanceOf(ProductionAirbrakeApi);
-  });
-});
+export const useProjectId = (entity: Entity) => {
+  return entity?.metadata.annotations?.[AIRBRAKE_PROJECT_ID_ANNOTATION] ?? '';
+};

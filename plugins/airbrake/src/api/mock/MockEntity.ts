@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AIRBRAKE_PROJECT_ID_ANNOTATION } from '../../components/useProjectId';
+import { Entity } from '@backstage/catalog-model';
 
-import { airbrakePlugin } from './plugin';
-import { ProductionAirbrakeApi } from './api';
+export const createEntity = (projectId?: number) => {
+  const projectIdString = projectId?.toString();
 
-describe('catalog', () => {
-  it('should export plugin', () => {
-    expect(airbrakePlugin).toBeDefined();
-  });
-
-  it('should have at least one API, the production API', () => {
-    const apiFactories = Array.from(airbrakePlugin.getApis());
-    expect(apiFactories.length).toBe(1);
-    expect(apiFactories[0].factory({})).toBeInstanceOf(ProductionAirbrakeApi);
-  });
-});
+  return {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      annotations: {
+        [AIRBRAKE_PROJECT_ID_ANNOTATION]: projectIdString,
+      },
+      name: projectIdString,
+    },
+  } as Entity;
+};
