@@ -9376,9 +9376,9 @@ create-require@^1.1.0:
   integrity sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
 
 cronstrue@^1.122.0:
-  version "1.123.0"
-  resolved "https://registry.npmjs.org/cronstrue/-/cronstrue-1.123.0.tgz#de622dd8ea07981790f488d3f89a25e6e728ac8b"
-  integrity sha512-hVu9yNYRYr+jj5KET1p7FaBxFwtCHM1ByffP9lZ6yJ6p53u4VEmzH8117v9PUydxWNzc8Eq+sCZEzsKcB3ckiA==
+  version "1.125.0"
+  resolved "https://registry.npmjs.org/cronstrue/-/cronstrue-1.125.0.tgz#8030816d033d00caade9b2a9f9b71e69175bcf42"
+  integrity sha512-qkC5mVbVGuuyBVXmam5anaRtbLcgfBUKajoyZqCdf/XBdgF43PsLSEm8eEi2dsI3YbqDPbLSH2mWNzM1dVqHgQ==
 
 cross-env@^7.0.0:
   version "7.0.3"
