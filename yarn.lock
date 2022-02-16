@@ -15740,9 +15740,9 @@ kleur@^4.0.3:
   integrity sha512-8QADVssbrFjivHWQU7KkMgptGTl6WAcSdlbBPY4uNF+mWr6DGcKrvY2w4FQJoXch7+fKMjj0dRrL75vk3k23OA==
 
 knex@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/knex/-/knex-1.0.2.tgz#1b79273f39f587a631c1a5515482c203d5971781"
-  integrity sha512-RuDKTylj6X/3nYomnsFV8sOdxTcehLHczOd3yrUdULE4pQR8jVlZxYt3vvIU04otJF0Cw9DCtRt05S4PN4kDpw==
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/knex/-/knex-1.0.3.tgz#a5f97aa98e5e036cfd0209a90d53b2a411280e84"
+  integrity sha512-rY1T7cgTQGHAUD9TshMka37bd+SEK+koPXXvZQEIoE8yjJ/E8ShsenaAmr3oaNNzqXuKD/SC0qlYtp7Js8tAXA==
   dependencies:
     colorette "2.0.16"
     commander "^8.3.0"
