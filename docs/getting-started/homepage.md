@@ -138,7 +138,7 @@ Composing a homepage is no different from creating a regular React Component,
 i.e. the App Integrator is free to include whatever content they like. However,
 there are components developed with the homepage in mind. If you are looking
 for components to use when composing your homepage, you can take a look at the
-[collection of Homepage components](https://backstage.io/?path=/story/plugins-home-components)
+[collection of Homepage components](https://backstage.io/storybook?path=/story/plugins-home-components)
 in storybook. If you don't find a component that suits your needs but want to
 contribute, check the
 [Contributing documentation](https://github.com/backstage/backstage/blob/master/plugins/home/README.md#contributing).
