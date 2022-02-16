@@ -181,7 +181,7 @@ describe('DefaultWorkflowRunner', () => {
 
       await runner.execute(task);
 
-      expect(fakeActionHandler.mock.calls[0][0].metadata).toEqual({
+      expect(fakeActionHandler.mock.calls[0][0].templateInfo).toEqual({
         name: templateName,
       });
     });
