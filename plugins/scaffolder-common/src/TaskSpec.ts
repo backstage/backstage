@@ -60,11 +60,15 @@ export interface TaskStep {
  */
 export interface TaskSpecV1beta2 {
   apiVersion: 'backstage.io/v1beta2';
+  /** @deprecated use templateInfo.baseUrl instead */
   baseUrl?: string;
   values: JsonObject;
   steps: TaskStep[];
   output: { [name: string]: string };
+  /** @deprecated use templateInfo instead */
   metadata?: TemplateMetadata;
+
+  templateInfo?: TemplateInfo;
 }
 
 /**
