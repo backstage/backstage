@@ -254,7 +254,7 @@ const LogoFull = () => {
 };
 ```
 
-## Custom Home Page
+## Custom Homepage
 
 In addition to a custom theme, a custom logo, you can also customize the
 homepage of your app. Read the full guide on the [next page](homepage.md).
