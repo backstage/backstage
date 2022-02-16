@@ -61,7 +61,7 @@ describe('debug:log', () => {
     const context = {
       ...mockContext,
       input: {
-        listWorkspace: 'true',
+        listWorkspace: true,
       },
     };
 

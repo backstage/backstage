@@ -51,7 +51,7 @@ describe('publish:bitbucket', () => {
   const mockContext = {
     input: {
       repoUrl: 'bitbucket.org?workspace=workspace&project=project&repo=repo',
-      repoVisibility: 'private',
+      repoVisibility: 'private' as const,
     },
     workspacePath: 'lol',
     logger: getVoidLogger(),

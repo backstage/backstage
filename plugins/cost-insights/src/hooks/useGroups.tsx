@@ -26,10 +26,7 @@ import { MapLoadingToProps, useLoading } from './useLoading';
 import { Group, Maybe } from '../types';
 import { DefaultLoadingAction } from '../utils/loading';
 import { useApi, identityApiRef } from '@backstage/core-plugin-api';
-import {
-  ENTITY_DEFAULT_NAMESPACE,
-  parseEntityRef,
-} from '@backstage/catalog-model';
+import { DEFAULT_NAMESPACE, parseEntityRef } from '@backstage/catalog-model';
 
 type GroupsProviderLoadingProps = {
   dispatchLoadingGroups: (isLoading: boolean) => void;
@@ -66,7 +63,7 @@ export const GroupsProvider = ({ children }: PropsWithChildren<{}>) => {
         const { userEntityRef } = await identityApi.getBackstageIdentity();
         const { name: userId } = parseEntityRef(userEntityRef, {
           defaultKind: 'User',
-          defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+          defaultNamespace: DEFAULT_NAMESPACE,
         });
         const g = await client.getUserGroups(userId);
         setGroups(g);

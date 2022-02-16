@@ -66,11 +66,14 @@ export class CommonValidatorFunctions {
   static isValidUrl(value: unknown): boolean;
 }
 
-// @public
+// @public @deprecated
 export function compareEntityToRef(
   entity: Entity,
   ref: EntityRef | EntityName,
-  context?: EntityRefContext,
+  context?: {
+    defaultKind?: string;
+    defaultNamespace?: string;
+  },
 ): boolean;
 
 // @public
@@ -96,6 +99,9 @@ export { ComponentEntityV1alpha1 };
 
 // @public
 export const componentEntityV1alpha1Validator: KindValidator;
+
+// @public
+export const DEFAULT_NAMESPACE = 'default';
 
 // @public
 export class DefaultNamespaceEntityPolicy implements EntityPolicy {
@@ -133,7 +139,7 @@ export type Entity = {
   relations?: EntityRelation[];
 };
 
-// @public
+// @public @deprecated
 export const ENTITY_DEFAULT_NAMESPACE = 'default';
 
 // @public @deprecated
@@ -215,7 +221,7 @@ export type EntityRef =
       name: string;
     };
 
-// @public
+// @public @deprecated
 export type EntityRefContext = {
   defaultKind?: string;
   defaultNamespace?: string;
@@ -388,7 +394,10 @@ export const ORIGIN_LOCATION_ANNOTATION =
 // @public
 export function parseEntityName(
   ref: EntityRef,
-  context?: EntityRefContext,
+  context?: {
+    defaultKind?: string;
+    defaultNamespace?: string;
+  },
 ): EntityName;
 
 // @public
@@ -548,33 +557,6 @@ export { SystemEntityV1alpha1 };
 
 // @public
 export const systemEntityV1alpha1Validator: KindValidator;
-
-// @public
-export interface TemplateEntityV1beta2 extends Entity {
-  // (undocumented)
-  apiVersion: 'backstage.io/v1beta2';
-  // (undocumented)
-  kind: 'Template';
-  // (undocumented)
-  spec: {
-    type: string;
-    parameters?: JsonObject | JsonObject[];
-    steps: Array<{
-      id?: string;
-      name?: string;
-      action: string;
-      input?: JsonObject;
-      if?: string | boolean;
-    }>;
-    output?: {
-      [name: string]: string;
-    };
-    owner?: string;
-  };
-}
-
-// @public
-export const templateEntityV1beta2Validator: KindValidator;
 
 // @public
 interface UserEntityV1alpha1 extends Entity {

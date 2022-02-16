@@ -23,8 +23,6 @@ import { OctokitProvider } from './OctokitProvider';
 import { emitterEventNames } from '@octokit/webhooks';
 import { assertError } from '@backstage/errors';
 
-type ContentType = 'form' | 'json';
-
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
@@ -45,7 +43,7 @@ export function createGithubWebhookAction(options: {
     webhookSecret?: string;
     events?: string[];
     active?: boolean;
-    contentType?: ContentType;
+    contentType?: 'form' | 'json';
     insecureSsl?: boolean;
     token?: string;
   }>({

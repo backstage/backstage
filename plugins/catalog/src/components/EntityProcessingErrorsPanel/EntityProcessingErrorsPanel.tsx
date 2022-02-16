@@ -19,7 +19,6 @@ import {
   AlphaEntity,
   stringifyEntityRef,
   EntityStatusItem,
-  compareEntityToRef,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -110,10 +109,8 @@ export const EntityProcessingErrorsPanel = () => {
     <>
       {value.items.map((ancestorError, index) => (
         <Box key={index} mb={1}>
-          {!compareEntityToRef(
-            entity,
-            stringifyEntityRef(ancestorError.entity),
-          ) && (
+          {stringifyEntityRef(entity) !==
+            stringifyEntityRef(ancestorError.entity) && (
             <Box p={1}>
               The error below originates from{' '}
               <EntityRefLink entityRef={ancestorError.entity} />

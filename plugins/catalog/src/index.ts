@@ -20,7 +20,6 @@
  * @packageDocumentation
  */
 
-export { CatalogClientWrapper } from './CatalogClientWrapper';
 export * from './components/AboutCard';
 export * from './components/CatalogKindHeader';
 export * from './components/CatalogResultListItem';
@@ -30,11 +29,9 @@ export * from './components/CatalogTable/columns';
 export * from './components/EntityLayout';
 export * from './components/EntityOrphanWarning';
 export * from './components/EntityProcessingErrorsPanel';
-export * from './components/EntityPageLayout';
 export * from './components/EntitySwitch';
 export * from './components/FilteredEntityLayout';
 export * from './overridableComponents';
-export { Router } from './components/Router';
 export {
   CatalogEntityPage,
   CatalogIndexPage,

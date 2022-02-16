@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import {
@@ -99,9 +99,7 @@ const headerProps = (
     entity?.metadata.title ?? paramName ?? entity?.metadata.name ?? '';
   return {
     headerTitle: `${name}${
-      namespace && namespace !== ENTITY_DEFAULT_NAMESPACE
-        ? ` in ${namespace}`
-        : ''
+      namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
     }`,
     headerType: (() => {
       let t = kind.toLocaleLowerCase('en-US');

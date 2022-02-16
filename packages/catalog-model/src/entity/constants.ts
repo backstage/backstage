@@ -18,8 +18,16 @@
  * The namespace that entities without an explicit namespace fall into.
  *
  * @public
+ * @deprecated use {@link DEFAULT_NAMESPACE} instead.
  */
 export const ENTITY_DEFAULT_NAMESPACE = 'default';
+
+/**
+ * The namespace that entities without an explicit namespace fall into.
+ *
+ * @public
+ */
+export const DEFAULT_NAMESPACE = 'default';
 
 /**
  * The keys of EntityMeta that are auto-generated.
