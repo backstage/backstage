@@ -24,7 +24,6 @@ import {
   renderInTestApp,
   wrapInTestApp,
 } from '@backstage/test-utils';
-import { pageTheme } from '@backstage/theme';
 import { SidebarContext } from '@backstage/core-components';
 
 describe('ShortcutItem', () => {
