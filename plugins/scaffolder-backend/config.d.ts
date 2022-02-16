@@ -28,30 +28,5 @@ export interface Config {
      * The commit message used when new components are created.
      */
     defaultCommitMessage?: string;
-    /**
-     * @deprecated Replaced by parameters for the publish:github action
-     */
-    github?: {
-      [key: string]: string;
-    };
-    /**
-     * @deprecated Use the Gitlab integration instead
-     */
-    gitlab?: {
-      api: { [key: string]: string };
-    };
-    /**
-     * @deprecated Use the Azure integration instead
-     */
-    azure?: {
-      baseUrl: string;
-      api: { [key: string]: string };
-    };
-    /**
-     * @deprecated Use the Bitbucket integration instead
-     */
-    bitbucket?: {
-      api: { [key: string]: string };
-    };
   };
 }
