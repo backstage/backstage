@@ -262,24 +262,13 @@ export interface CatalogApi {
   ): Promise<Location | undefined>;
 
   /**
-   * Gets origin location by Entity.
+   * Gets a registered location by its ref.
    *
-   * @param entity - An {@link catalog-model#Entity}.
+   * @param locationRef - A location ref, e.g. "url:https://github.com/..."
    * @param options - Additional options
    */
-  getOriginLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location | undefined>;
-
-  /**
-   * Gets Location by Entity.
-   *
-   * @param entity - An {@link catalog-model#Entity}.
-   * @param options - Additional options
-   */
-  getLocationByEntity(
-    entity: Entity,
+  getLocationByRef(
+    locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined>;
 
