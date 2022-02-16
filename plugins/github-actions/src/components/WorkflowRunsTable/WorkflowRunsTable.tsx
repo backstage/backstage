@@ -29,7 +29,7 @@ import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';
 import { buildRouteRef } from '../../routes';
-import { useProjectName } from '../useProjectName';
+import { getProjectName } from '../getProjectName';
 import { Entity } from '@backstage/catalog-model';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
@@ -157,7 +157,7 @@ export const WorkflowRunsTable = ({
   branch?: string;
 }) => {
   const config = useApi(configApiRef);
-  const projectName = useProjectName(entity);
+  const projectName = getProjectName(entity);
   // TODO: Get github hostname from metadata annotation
   const hostname = readGitHubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],

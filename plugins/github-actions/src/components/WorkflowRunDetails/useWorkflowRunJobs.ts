@@ -37,7 +37,7 @@ export const useWorkflowRunJobs = ({
           repo,
           id: parseInt(id, 10),
         })
-      : Promise.reject(Error('No repo/owner provided'));
+      : Promise.reject(new Error('No repo/owner provided'));
   }, [repo, owner, id]);
   return jobs;
 };
