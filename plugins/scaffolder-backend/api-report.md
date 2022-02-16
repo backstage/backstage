@@ -553,7 +553,6 @@ export class TaskManager implements TaskContext {
 
 // @public
 export type TaskSecrets = Record<string, string> & {
-  token?: string;
   backstageToken?: string;
 };
 
