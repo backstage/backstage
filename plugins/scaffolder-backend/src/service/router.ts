@@ -33,7 +33,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
-import { CatalogEntityClient, TemplateFilter } from '../lib';
+import { TemplateFilter } from '../lib';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
@@ -44,7 +44,7 @@ import {
   TemplateActionRegistry,
 } from '../scaffolder';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
+import { getEntityBaseUrl, getWorkingDirectory, findTemplate } from './helpers';
 
 /**
  * RouterOptions
@@ -93,7 +93,6 @@ export async function createRouter(
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const workingDirectory = await getWorkingDirectory(config, logger);
-  const entityClient = new CatalogEntityClient(catalogClient);
   const integrations = ScmIntegrations.fromConfig(config);
   let taskBroker: TaskBroker;
 
@@ -152,7 +151,9 @@ export async function createRouter(
           );
         }
 
-        const template = await entityClient.findTemplate(name, {
+        const template = await findTemplate({
+          catalogApi: catalogClient,
+          entityRef: { kind, namespace, name },
           token: getBearerToken(req.headers.authorization),
         });
         if (isSupportedTemplate(template)) {
@@ -187,8 +188,14 @@ export async function createRouter(
       const templateName: string = req.body.templateName;
       const values = req.body.values;
       const token = getBearerToken(req.headers.authorization);
-      const template = await entityClient.findTemplate(templateName, {
-        token,
+      const template = await findTemplate({
+        catalogApi: catalogClient,
+        entityRef: {
+          kind: 'template',
+          namespace: 'default',
+          name: templateName,
+        },
+        token: getBearerToken(req.headers.authorization),
       });
 
       let taskSpec: TaskSpec;
