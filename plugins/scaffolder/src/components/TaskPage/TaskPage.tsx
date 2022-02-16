@@ -291,7 +291,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
   const { output } = taskStream;
 
   const handleStartOver = () => {
-    if (!taskStream.task || !taskStream.task?.spec.metadata?.name) {
+    if (!taskStream.task || !taskStream.task?.spec.templateInfo?.name) {
       navigate(generatePath(rootLink()));
     }
 
@@ -306,7 +306,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
           formData: JSON.stringify(formData),
         })}`,
         {
-          templateName: taskStream.task!.spec.metadata!.name,
+          templateName: taskStream.task!.spec.templateInfo!.name,
         },
       ),
     );
