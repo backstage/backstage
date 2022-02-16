@@ -1520,7 +1520,7 @@ css    img    js          mkdocs   sitemap.xml
 
         <div class="md-footer-meta md-typeset">
           <div class="md-footer-meta__inner md-grid">
-            <div class="md-footer-copyright">
+            <div class="md-copyright">
               <div class="md-footer-copyright__highlight">
                 Copyright &copy; 2014
                 <a href="https://twitter.com/_tomchristie">Tom Christie</a>,
