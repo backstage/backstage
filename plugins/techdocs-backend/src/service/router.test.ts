@@ -38,6 +38,7 @@ import {
   RouterOptions,
 } from './router';
 import { TechDocsCache } from '../cache';
+import { DocsBuildStrategy } from './DocsBuildStrategy';
 
 jest.mock('@backstage/catalog-client');
 jest.mock('@backstage/config');
@@ -120,6 +121,9 @@ describe('createRouter', () => {
   const cache: jest.Mocked<PluginCacheManager> = {
     getClient: jest.fn(),
   };
+  const docsBuildStrategy: jest.Mocked<DocsBuildStrategy> = {
+    shouldBuild: jest.fn(),
+  };
   const outOfTheBoxOptions = {
     preparers,
     generators,
@@ -128,6 +132,7 @@ describe('createRouter', () => {
     logger: getVoidLogger(),
     discovery,
     cache,
+    docsBuildStrategy,
   };
   const recommendedOptions = {
     publisher,
@@ -135,6 +140,7 @@ describe('createRouter', () => {
     logger: getVoidLogger(),
     discovery,
     cache,
+    docsBuildStrategy,
   };
 
   beforeEach(() => {
@@ -181,10 +187,10 @@ describe('createRouter', () => {
         expect(response.status).toBe(404);
       });
 
-      it('should not check for an update without local builder', async () => {
+      it('should not check for an update when shouldBuild returns false', async () => {
         const app = await createApp(outOfTheBoxOptions);
 
-        MockedConfigReader.prototype.getString.mockReturnValue('external');
+        docsBuildStrategy.shouldBuild.mockResolvedValue(false);
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doCacheSync.mockImplementation(
           async ({ responseHandler }) =>
@@ -198,10 +204,10 @@ describe('createRouter', () => {
         expect(response.status).toBe(304);
       });
 
-      it('should error if missing builder', async () => {
+      it('should error if build is required and is missing preparer', async () => {
         const app = await createApp(recommendedOptions);
 
-        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        docsBuildStrategy.shouldBuild.mockResolvedValue(true);
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
 
         const response = await request(app)
@@ -219,7 +225,7 @@ describe('createRouter', () => {
       it('should execute synchronization', async () => {
         const app = await createApp(outOfTheBoxOptions);
 
-        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        docsBuildStrategy.shouldBuild.mockResolvedValue(true);
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doSync.mockImplementation(
           async ({ responseHandler }) =>
@@ -244,7 +250,7 @@ describe('createRouter', () => {
       it('should return on updated', async () => {
         const app = await createApp(outOfTheBoxOptions);
 
-        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        docsBuildStrategy.shouldBuild.mockResolvedValue(true);
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doSync.mockImplementation(
           async ({ responseHandler }) => {
@@ -297,10 +303,10 @@ describe('createRouter', () => {
         expect(response.status).toBe(404);
       });
 
-      it('should not check for an update without local builder', async () => {
+      it('should not check for an update when shouldBuild returns false', async () => {
         const app = await createApp(outOfTheBoxOptions);
 
-        MockedConfigReader.prototype.getString.mockReturnValue('external');
+        docsBuildStrategy.shouldBuild.mockResolvedValue(false);
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doCacheSync.mockImplementation(
           async ({ responseHandler }) =>
@@ -322,10 +328,10 @@ data: {"updated":false}
         );
       });
 
-      it('should error if missing builder', async () => {
+      it('should error if build is required and is missing preparer', async () => {
         const app = await createApp(recommendedOptions);
 
-        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        docsBuildStrategy.shouldBuild.mockResolvedValue(true);
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
 
         const response = await request(app)
@@ -348,7 +354,7 @@ data: "Invalid configuration. 'techdocs.builder' was set to 'local' but no 'prep
       it('should execute synchronization', async () => {
         const app = await createApp(outOfTheBoxOptions);
 
-        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        docsBuildStrategy.shouldBuild.mockResolvedValue(true);
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doSync.mockImplementation(
           async ({ responseHandler }) =>
@@ -376,7 +382,7 @@ data: "Invalid configuration. 'techdocs.builder' was set to 'local' but no 'prep
       it('should return an event-stream', async () => {
         const app = await createApp(outOfTheBoxOptions);
 
-        MockedConfigReader.prototype.getString.mockReturnValue('local');
+        docsBuildStrategy.shouldBuild.mockResolvedValue(true);
         MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
         MockDocsSynchronizer.prototype.doSync.mockImplementation(
           async ({ responseHandler }) => {

@@ -35,6 +35,10 @@ import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
+import {
+  DefaultDocsBuildStrategy,
+  DocsBuildStrategy,
+} from './DocsBuildStrategy';
 
 /**
  * All of the required dependencies for running TechDocs in the "out-of-the-box"
@@ -49,6 +53,7 @@ export type OutOfTheBoxDeploymentOptions = {
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
   cache: PluginCacheManager;
+  docsBuildStrategy?: DocsBuildStrategy;
 };
 
 /**
@@ -61,6 +66,7 @@ export type RecommendedDeploymentOptions = {
   discovery: PluginEndpointDiscovery;
   config: Config;
   cache: PluginCacheManager;
+  docsBuildStrategy?: DocsBuildStrategy;
 };
 
 /**
@@ -86,6 +92,8 @@ export async function createRouter(
   const router = Router();
   const { publisher, config, logger, discovery } = options;
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const docsBuildStrategy =
+    options.docsBuildStrategy ?? new DefaultDocsBuildStrategy(config);
 
   // Entities are cached to optimize the /static/docs request path, which can be called many times
   // when loading a single techdocs page.
@@ -200,7 +208,8 @@ export async function createRouter(
     // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
     // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
     // of the repository) is responsible for building and publishing documentation to the storage provider
-    if (config.getString('techdocs.builder') !== 'local') {
+    const shouldBuild = await docsBuildStrategy.shouldBuild(entity);
+    if (!shouldBuild) {
       // However, if caching is enabled, take the opportunity to check and
       // invalidate stale cache entries.
       if (cache) {
