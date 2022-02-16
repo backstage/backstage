@@ -15,9 +15,9 @@ export type TaskSpec = TaskSpecV1beta2 | TaskSpecV1beta3;
 export interface TaskSpecV1beta2 {
   // (undocumented)
   apiVersion: 'backstage.io/v1beta2';
-  // (undocumented)
+  // @deprecated (undocumented)
   baseUrl?: string;
-  // (undocumented)
+  // @deprecated (undocumented)
   metadata?: TemplateMetadata;
   // (undocumented)
   output: {
@@ -25,6 +25,8 @@ export interface TaskSpecV1beta2 {
   };
   // (undocumented)
   steps: TaskStep[];
+  // (undocumented)
+  templateInfo?: TemplateInfo;
   // (undocumented)
   values: JsonObject;
 }

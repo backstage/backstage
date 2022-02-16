@@ -67,7 +67,6 @@ export interface TaskSpecV1beta2 {
   output: { [name: string]: string };
   /** @deprecated use templateInfo instead */
   metadata?: TemplateMetadata;
-
   templateInfo?: TemplateInfo;
 }
 
