@@ -13,3 +13,5 @@ The `backstage-cli migrate package-scripts` received several tweaks to make it m
 The `script` command category has been renamed to `package`.
 
 The `backstage-cli package build` command set an incorrect target directory for `app` and `backend` packages, which has been fixed.
+
+The `backend:bundle` and `repo build` command for the `backend` role was previously ignoring building of bundled packages that had migrated to use package roles and the standard build script, this has now been fixed.
