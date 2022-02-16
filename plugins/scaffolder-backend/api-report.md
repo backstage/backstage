@@ -41,7 +41,6 @@ export type ActionContext<Input extends JsonObject> = {
   baseUrl?: string;
   logger: Logger_2;
   logStream: Writable;
-  token?: string | undefined;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: Input;
@@ -553,7 +552,6 @@ export class TaskManager implements TaskContext {
 
 // @public
 export type TaskSecrets = Record<string, string> & {
-  token?: string;
   backstageToken?: string;
 };
 
