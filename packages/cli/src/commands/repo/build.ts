@@ -23,7 +23,7 @@ import { ExtendedPackage } from '../../lib/monorepo/PackageGraph';
 import { runParallelWorkers } from '../../lib/parallel';
 import { paths } from '../../lib/paths';
 import { detectRoleFromPackage } from '../../lib/role';
-import { buildApp } from '../build/buildApp';
+import { buildFrontend } from '../build/buildFrontend';
 import { buildBackend } from '../build/buildBackend';
 
 function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
@@ -92,7 +92,7 @@ export async function command(cmd: Command): Promise<void> {
       return [];
     }
 
-    if (role === 'app') {
+    if (role === 'frontend') {
       apps.push(pkg);
       return [];
     } else if (role === 'backend') {
@@ -139,7 +139,7 @@ export async function command(cmd: Command): Promise<void> {
           );
           return;
         }
-        await buildApp({
+        await buildFrontend({
           targetDir: pkg.dir,
           configPaths: (buildOptions.config as string[]) ?? [],
           writeStats: Boolean(buildOptions.stats),

@@ -15,7 +15,7 @@
  */
 
 export type PackageRole =
-  | 'app'
+  | 'frontend'
   | 'backend'
   | 'cli'
   | 'web-library'

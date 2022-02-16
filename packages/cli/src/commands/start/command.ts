@@ -35,7 +35,7 @@ export async function command(cmd: Command): Promise<void> {
     case 'backend-plugin-module':
     case 'node-library':
       return startBackend(options);
-    case 'app':
+    case 'frontend':
       return startFrontend({
         ...options,
         entry: 'src/index',

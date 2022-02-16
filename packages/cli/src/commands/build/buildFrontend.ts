@@ -26,7 +26,7 @@ interface BuildAppOptions {
   configPaths: string[];
 }
 
-export async function buildApp(options: BuildAppOptions) {
+export async function buildFrontend(options: BuildAppOptions) {
   const { targetDir, writeStats, configPaths } = options;
   const { name } = await fs.readJson(resolvePath(targetDir, 'package.json'));
   await buildBundle({

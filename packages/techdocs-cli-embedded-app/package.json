@@ -3,7 +3,7 @@
   "version": "0.2.63",
   "private": true,
   "backstage": {
-    "role": "app"
+    "role": "frontend"
   },
   "bundled": true,
   "dependencies": {

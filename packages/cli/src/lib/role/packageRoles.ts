@@ -22,7 +22,7 @@ import { PackageRole, PackageRoleInfo } from './types';
 
 const packageRoleInfos: PackageRoleInfo[] = [
   {
-    role: 'app',
+    role: 'frontend',
     platform: 'web',
     output: ['bundle'],
   },
@@ -147,7 +147,7 @@ export function detectRoleFromPackage(
   const pkg = detectionSchema.parse(pkgJson);
 
   if (pkg.scripts?.start?.includes('app:serve')) {
-    return 'app';
+    return 'frontend';
   }
   if (pkg.scripts?.build?.includes('backend:bundle')) {
     return 'backend';
