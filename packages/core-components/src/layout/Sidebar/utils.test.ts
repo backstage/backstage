@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Location, Path } from 'history';
-import { isLocationMatch } from './utils';
+import { isExternalLink, isLocationMatch } from './utils';
 
 describe('isLocationMatching', () => {
   let currentLocation: Location;
@@ -94,5 +94,17 @@ describe('isLocationMatching', () => {
     };
     toLocation = { pathname: '/catalog', search: '', hash: '' };
     expect(isLocationMatch(currentLocation, toLocation)).toBe(true);
+  });
+});
+
+describe('isExternalLink', () => {
+  beforeEach(() => expect.hasAssertions());
+
+  it('should return true if provided with an external link', () => {
+    expect(isExternalLink('https://backstage.io/')).toEqual(true);
+  });
+
+  it('should return false if provided with a relative link', () => {
+    expect(isExternalLink('catalog')).toEqual(false);
   });
 });

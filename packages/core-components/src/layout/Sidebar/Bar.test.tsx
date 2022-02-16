@@ -47,6 +47,11 @@ async function renderScalableSidebar() {
           <SidebarSubmenu title="Catalog">
             <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
             <SidebarSubmenuItem
+              title="External Link"
+              to="https://backstage.io/"
+              icon={BuildRoundedIcon}
+            />
+            <SidebarSubmenuItem
               title="Misc"
               to="/6"
               icon={AcUnitIcon}
@@ -58,6 +63,10 @@ async function renderScalableSidebar() {
                 {
                   title: 'dropdown item 2',
                   to: '/dropdownitemlink2',
+                },
+                {
+                  title: 'dropdown item 3',
+                  to: 'https://backstage.io/',
                 },
               ]}
             />
@@ -110,6 +119,23 @@ describe('Sidebar', () => {
       expect(screen.getByText('dropdown item 1').closest('a')).toHaveAttribute(
         'href',
         '/dropdownitemlink',
+      );
+    });
+
+    it('Submenu item renders an external link when `to` value is provided', async () => {
+      userEvent.hover(screen.getByTestId('item-with-submenu'));
+      expect(screen.getByText('External Link').closest('a')).toHaveAttribute(
+        'href',
+        'https://backstage.io/',
+      );
+    });
+
+    it('Dropdown item in submenu renders an external link when `to` value is provided', async () => {
+      userEvent.hover(screen.getByTestId('item-with-submenu'));
+      userEvent.click(screen.getByText('Misc'));
+      expect(screen.getByText('dropdown item 3').closest('a')).toHaveAttribute(
+        'href',
+        'https://backstage.io/',
       );
     });
   });

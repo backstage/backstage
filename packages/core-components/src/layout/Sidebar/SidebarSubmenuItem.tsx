@@ -30,6 +30,8 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { SidebarItemWithSubmenuContext } from './config';
 import { isLocationMatch } from './utils';
+import { Link as BackstageLink } from '../../';
+import { isExternalLink } from './utils';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   item: {
@@ -133,6 +135,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const handleClickDropdown = () => {
     setShowDropDown(!showDropDown);
   };
+
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
       const resolvedPath = resolvePath(item.to);
@@ -163,7 +166,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
           <div className={classes.dropdown}>
             {dropdownItems.map((object, key) => (
               <Link
-                component={NavLink}
+                component={isExternalLink(object.to) ? BackstageLink : NavLink}
                 to={object.to}
                 underline="none"
                 className={classes.dropdownItem}
@@ -185,7 +188,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   return (
     <div className={classes.itemContainer}>
       <Link
-        component={NavLink}
+        component={isExternalLink(to) ? BackstageLink : NavLink}
         to={to}
         underline="none"
         className={classnames(
