@@ -29,7 +29,7 @@ import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta2 } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import { TemplateMetadata } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';

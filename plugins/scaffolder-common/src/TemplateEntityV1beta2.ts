@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
+import {
+  Entity,
+  entityKindSchemaValidator,
+  KindValidator,
+} from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
-import type { Entity } from '../entity/Entity';
-import schema from '../schema/kinds/Template.v1beta2.schema.json';
-import { ajvCompiledJsonSchemaValidator } from './util';
+import schema from './Template.v1beta2.schema.json';
 
 /**
- * Backstage catalog Template kind Entity. Templates are used by the Scaffolder plugin to create new Components.
+ * Backstage catalog Template kind Entity. Templates are used by the Scaffolder
+ * plugin to create new entities, such as Components.
  *
  * @public
+ * @deprecated Please convert your templates to TemplateEntityV1beta3 on
+ *             apiVersion scaffolder.backstage.io/v1beta3
  */
 export interface TemplateEntityV1beta2 extends Entity {
   apiVersion: 'backstage.io/v1beta2';
@@ -42,10 +48,18 @@ export interface TemplateEntityV1beta2 extends Entity {
   };
 }
 
+const validator = entityKindSchemaValidator(schema);
+
 /**
- * {@link KindValidator} for {@link TemplateEntityV1beta2}.
+ * Entity data validator for {@link TemplateEntityV1beta2}.
  *
  * @public
+ * @deprecated Please convert your templates to TemplateEntityV1beta3 on
+ *             apiVersion scaffolder.backstage.io/v1beta3
  */
-export const templateEntityV1beta2Validator =
-  ajvCompiledJsonSchemaValidator(schema);
+export const templateEntityV1beta2Validator: KindValidator = {
+  // TODO(freben): Emulate the old KindValidator until we fix that type
+  async check(data: Entity) {
+    return validator(data) === data;
+  },
+};

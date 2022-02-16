@@ -20,11 +20,15 @@ import {
   UrlReader,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity, TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import {
+  TemplateEntityV1beta2,
+  TemplateEntityV1beta3,
+} from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
@@ -190,9 +194,18 @@ export async function createRouter(
       let taskSpec: TaskSpec;
 
       if (isSupportedTemplate(template)) {
+        if (template.apiVersion === 'backstage.io/v1beta2') {
+          logger.warn(
+            `Scaffolding ${stringifyEntityRef(
+              template,
+            )} with deprecated apiVersion ${
+              template.apiVersion
+            }. Please migrate the template to backstage.io/v1beta3. https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3`,
+          );
+        }
+
         for (const parameters of [template.spec.parameters ?? []].flat()) {
           const result = validate(values, parameters);
-
           if (!result.valid) {
             res.status(400).json({ errors: result.errors });
             return;
