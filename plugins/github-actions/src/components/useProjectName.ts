@@ -13,15 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import useAsync from 'react-use/lib/useAsync';
 import { Entity } from '@backstage/catalog-model';
 
 export const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
-export const useProjectName = (entity: Entity) => {
-  const { value, loading, error } = useAsync(async () => {
-    return entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '';
-  });
-  return { value, loading, error };
-};
+export const useProjectName = (entity: Entity) =>
+  entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '';

@@ -170,22 +170,19 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
   const hostname = readGitHubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
-  const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
+  const [owner, repo] = (projectName && projectName.split('/')) || [];
   const details = useWorkflowRunsDetails({ hostname, owner, repo });
   const jobs = useWorkflowRunJobs({ hostname, owner, repo });
 
-  const error = projectName.error || (projectName.value && details.error);
-  const loading = projectName.loading || details.loading || !details.value;
-
   const classes = useStyles();
 
-  if (error && error.message) {
+  if (details.error && details.error.message) {
     return (
       <Typography variant="h6" color="error">
-        Failed to load build, {error.message}
+        Failed to load build, {details.error.message}
       </Typography>
     );
-  } else if (loading) {
+  } else if (details.loading) {
     return <LinearProgress />;
   }
   return (

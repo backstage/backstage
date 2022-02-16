@@ -83,7 +83,7 @@ export const WorkflowRunLogs = ({
   const hostname = readGitHubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
-  const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
+  const [owner, repo] = (projectName && projectName.split('/')) || [];
   const jobLogs = useDownloadWorkflowRunLogs({
     hostname,
     owner,
