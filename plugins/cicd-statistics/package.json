@@ -11,6 +11,9 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -21,12 +24,13 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean",
+    "start": "backstage-cli package start"
   },
   "devDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",

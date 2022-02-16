@@ -6,6 +6,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "backstage": {
+    "role": "cli"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -18,10 +21,10 @@
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "scripts": {
-    "build": "backstage-cli build --outputs cjs",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "clean": "backstage-cli clean",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
     "start": "nodemon --"
   },
   "bin": {
