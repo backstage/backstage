@@ -56,7 +56,7 @@ export async function startStandaloneServer(
 
   logger.debug('Creating application...');
 
-  const router = await createRouter(applicationContext);
+  const router = await createRouter({ ctx: applicationContext });
 
   let service = createServiceBuilder(module)
     .setPort(options.port)

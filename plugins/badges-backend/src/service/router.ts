@@ -21,24 +21,74 @@ import {
   PluginEndpointDiscovery,
   commonModuleDefinitions,
 } from '@backstage/backend-common';
-import { catalogModuleDefinitions } from '@backstage/catalog-client';
-import { configModuleDefinitions } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
-import { BadgeContext } from '../types';
-import { badgesModuleDefinitions } from './moduleContext';
+import {
+  CatalogApi,
+  CatalogClient,
+  catalogModuleDefinitions,
+} from '@backstage/catalog-client';
+import { Config, configModuleDefinitions } from '@backstage/config';
+import { InputError, NotFoundError } from '@backstage/errors';
+import { BadgeBuilder, DefaultBadgeBuilder } from '../lib';
+import { BadgeContext, BadgeFactories } from '../types';
 import { ApplicationContext } from '@backstage/app-context-common';
+import { badgesModuleDefinitions } from './moduleContext';
 
+export interface RouterOptions {
+  badgeBuilder?: BadgeBuilder;
+  badgeFactories?: BadgeFactories;
+  catalog?: CatalogApi;
+  config?: Config;
+  discovery?: PluginEndpointDiscovery;
+  ctx?: ApplicationContext;
+}
+
+function unpackOptions(options: RouterOptions) {
+  const { ctx } = options;
+
+  if (ctx) {
+    return {
+      discovery: ctx.get(
+        commonModuleDefinitions.definitions.pluginEndpointDiscovery,
+      ),
+      catalog: ctx.get(catalogModuleDefinitions.definitions.catalogApi),
+      config: ctx.get(configModuleDefinitions.definitions.config),
+      badgeBuilder: ctx.get(badgesModuleDefinitions.definitions.badgeBuilder),
+    };
+  }
+
+  // To support legacy instantiation
+  let discovery: PluginEndpointDiscovery;
+  if (options.discovery) {
+    discovery = options.discovery;
+  } else {
+    throw new InputError('No discovery dependency provided to Badges plugin');
+  }
+
+  let config: Config;
+  if (options.config) {
+    config = options.config;
+  } else {
+    throw new InputError('No config dependency provided to Badges plugin');
+  }
+  const catalog =
+    options.catalog || new CatalogClient({ discoveryApi: discovery });
+  const badgeFactories = options.badgeFactories || {};
+  const badgeBuilder =
+    options.badgeBuilder || new DefaultBadgeBuilder(badgeFactories);
+
+  return { discovery, config, catalog, badgeBuilder };
+}
+
+/**
+ * @deprecated Prefer using the initialize function with a module context instead.
+ *
+ * @param options - Router options object containing needed dependencies to construct this module
+ *                  Prefer omitting everything apart from ApplicationContext, which is bound with needed deps.
+ */
 export async function createRouter(
-  ctx: ApplicationContext,
+  options: RouterOptions,
 ): Promise<express.Router> {
-  const catalog = ctx.get(catalogModuleDefinitions.definitions.catalogApi);
-  const badgeBuilder = ctx.get(
-    badgesModuleDefinitions.definitions.badgeBuilder,
-  );
-  const discovery = ctx.get(
-    commonModuleDefinitions.definitions.pluginEndpointDiscovery,
-  );
-  const config = ctx.get(configModuleDefinitions.definitions.config);
+  const { catalog, badgeBuilder, discovery, config } = unpackOptions(options);
 
   const router = Router();
 

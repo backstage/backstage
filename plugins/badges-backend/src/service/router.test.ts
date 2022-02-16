@@ -112,7 +112,7 @@ describe('createRouter', () => {
       container,
     });
 
-    const router = await createRouter(applicationContext);
+    const router = await createRouter({ ctx: applicationContext });
     app = express().use(router);
   });
 
@@ -121,7 +121,7 @@ describe('createRouter', () => {
   });
 
   it('works', async () => {
-    const router = await createRouter(applicationContext);
+    const router = await createRouter({ ctx: applicationContext });
     expect(router).toBeDefined();
   });
 

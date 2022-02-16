@@ -25,10 +25,20 @@ import {
   createDependencyDefinitions,
   createDependencyModule,
   createDependencyDefinition,
+  ApplicationContext,
 } from '@backstage/app-context-common';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib';
 import { BadgeFactories } from '../types';
 import { createRouter } from './router';
+
+/**
+ * Wrapper around legacy `createRouter` function, so we can keep backwards compatibility
+ *
+ * @param ctx - ApplicationContext
+ */
+const initialize = (ctx: ApplicationContext) => {
+  return createRouter({ ctx });
+};
 
 /**
  * Dependency definitions the Badges module exposes
@@ -54,7 +64,7 @@ export const badgesModuleDefinitions = createDependencyDefinitions({
  */
 export const badgesModule = createDependencyModule({
   id: '@backstage/plugin-badges-backend',
-  initialize: createRouter,
+  initialize,
   dependencies: [
     createDependencyConfig({
       id: catalogModuleDefinitions.definitions.catalogApi,
