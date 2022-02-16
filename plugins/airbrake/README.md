@@ -51,7 +51,7 @@ The Airbrake plugin provides connectivity between Backstage and Airbrake (https:
      });
 
      const service = createServiceBuilder(module)
-       // ...
+       // ... Add the airbrakeRouter here
        .addRouter('/api/airbrake', airbrakeRouter);
    }
    ```
@@ -63,10 +63,13 @@ The Airbrake plugin provides connectivity between Backstage and Airbrake (https:
      apiKey: ${AIRBRAKE_API_KEY}
    ```
 
-6. Set an environment variable `AIRBRAKE_API_KEY` with your [API Key](https://airbrake.io/docs/api/#authentication) before starting Backstage backend.
+6. Set an environment variable `AIRBRAKE_API_KEY` with your [API Key](https://airbrake.io/docs/api/#authentication)
+   before starting Backstage backend.
 
-## Getting started
+## Local Development
 
-You can serve the plugin in isolation by running `yarn start` in the plugin directory. This method of serving the plugin
-provides quicker iteration speed and a faster startup and hot reloads. It is only meant for local development, and the
-setup for it can be found inside the [/dev](./dev) directory.
+Start this plugin in standalone mode by running `yarn start`. This method of serving the plugin provides quicker
+iteration speed and a faster startup and hot reloads. It is only meant for local development, and the setup for it can
+be found inside the [/dev](./dev) directory.
+
+> A mock API will be used to run it in standalone. If you want to talk to the real API [follow the instructions to start up Airbrake Backend in standalone](../airbrake-backend/README.md#local-development).
