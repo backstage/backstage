@@ -76,28 +76,28 @@ describe('fs:rename', () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { files: undefined },
+        input: { files: undefined } as any,
       }),
     ).rejects.toThrow(/files must be an Array/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { files: {} },
+        input: { files: {} } as any,
       }),
     ).rejects.toThrow(/files must be an Array/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { files: '' },
+        input: { files: '' } as any,
       }),
     ).rejects.toThrow(/files must be an Array/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { files: null },
+        input: { files: null } as any,
       }),
     ).rejects.toThrow(/files must be an Array/);
   });
@@ -106,21 +106,21 @@ describe('fs:rename', () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { files: ['old.md'] },
+        input: { files: ['old.md'] } as any,
       }),
     ).rejects.toThrow(/each file must have a from and to property/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { files: [{ from: 'old.md' }] },
+        input: { files: [{ from: 'old.md' }] } as any,
       }),
     ).rejects.toThrow(/each file must have a from and to property/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { files: [{ to: 'new.md' }] },
+        input: { files: [{ to: 'new.md' }] } as any,
       }),
     ).rejects.toThrow(/each file must have a from and to property/);
   });

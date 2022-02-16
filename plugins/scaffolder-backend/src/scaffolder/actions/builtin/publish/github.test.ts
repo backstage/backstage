@@ -52,7 +52,7 @@ describe('publish:github', () => {
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
       description: 'description',
-      repoVisibility: 'private',
+      repoVisibility: 'private' as const,
       access: 'owner/blam',
     },
     workspacePath: 'lol',
