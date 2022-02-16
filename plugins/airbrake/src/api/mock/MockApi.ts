@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-import { airbrakePlugin } from './plugin';
-import { ProductionAirbrakeApi } from './api';
+import { Groups } from '../airbrakeGroups';
+import { AirbrakeApi } from '../AirbrakeApi';
+import mockGroupsData from './airbrakeGroupsApiMock.json';
 
-describe('catalog', () => {
-  it('should export plugin', () => {
-    expect(airbrakePlugin).toBeDefined();
-  });
+export class MockAirbrakeApi implements AirbrakeApi {
+  waitTimeInMillis: number;
 
-  it('should have at least one API, the production API', () => {
-    const apiFactories = Array.from(airbrakePlugin.getApis());
-    expect(apiFactories.length).toBe(1);
-    expect(apiFactories[0].factory({})).toBeInstanceOf(ProductionAirbrakeApi);
-  });
-});
+  constructor(waitTimeInMillis = 10) {
+    this.waitTimeInMillis = waitTimeInMillis;
+  }
+
+  fetchGroups(): Promise<Groups> {
+    return new Promise(resolve => {
+      setTimeout(() => resolve(mockGroupsData), this.waitTimeInMillis);
+    });
+  }
+}

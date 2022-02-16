@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-import { airbrakePlugin } from './plugin';
-import { ProductionAirbrakeApi } from './api';
-
-describe('catalog', () => {
-  it('should export plugin', () => {
-    expect(airbrakePlugin).toBeDefined();
-  });
-
-  it('should have at least one API, the production API', () => {
-    const apiFactories = Array.from(airbrakePlugin.getApis());
-    expect(apiFactories.length).toBe(1);
-    expect(apiFactories[0].factory({})).toBeInstanceOf(ProductionAirbrakeApi);
-  });
-});
+export * from './mock';
+export type { AirbrakeApi } from './AirbrakeApi';
+export { airbrakeApiRef } from './AirbrakeApi';
+export type { Groups } from './airbrakeGroups';
+export { ProductionAirbrakeApi } from './ProductionApi';

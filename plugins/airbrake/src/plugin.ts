@@ -13,27 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createPlugin,
-  createRoutableExtension,
-} from '@backstage/core-plugin-api';
+import { createApiFactory, createPlugin } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
+import { airbrakeApiRef, ProductionAirbrakeApi } from './api';
 
 export const airbrakePlugin = createPlugin({
   id: 'airbrake',
+  apis: [
+    createApiFactory({
+      api: airbrakeApiRef,
+      deps: {},
+      factory: () => new ProductionAirbrakeApi(),
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },
 });
-
-export const EntityAirbrakeContent = airbrakePlugin.provide(
-  createRoutableExtension({
-    name: 'EntityAirbrakeContent',
-    component: () =>
-      import('./components/EntityAirbrakeContent/EntityAirbrakeContent').then(
-        m => m.EntityAirbrakeContent,
-      ),
-    mountPoint: rootRouteRef,
-  }),
-);
