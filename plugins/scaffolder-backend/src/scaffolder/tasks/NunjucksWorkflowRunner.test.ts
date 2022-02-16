@@ -176,7 +176,7 @@ describe('DefaultWorkflowRunner', () => {
             input: { foo: 1 },
           },
         ],
-        metadata: { name: templateName },
+        templateInfo: { name: templateName },
       });
 
       await runner.execute(task);
