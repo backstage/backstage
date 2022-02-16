@@ -182,7 +182,7 @@ describe('createRouter', () => {
         spec: {} as any,
         status: 'completed',
         createdAt: '',
-        secrets: { token: 'secret' },
+        secrets: { backstageToken: 'secret' },
       });
 
       const response = await request(app).get(`/v2/tasks/a-random-id`);
