@@ -88,7 +88,7 @@ export function getEntityBaseUrl(entity: Entity): string | undefined {
 
 /**
  * Will use the provided CatalogApi to go find the template entity ref that is provided with and additional token
- * Returns the first matching template
+ * Returns the first matching template, throws a NotFoundError or ConflictError if 0 or multiple templates are found.
  */
 export async function findTemplate({
   entityRef,
@@ -99,7 +99,10 @@ export async function findTemplate({
   token?: string;
   catalogApi: CatalogApi;
 }): Promise<TemplateEntityV1beta3 | TemplateEntityV1beta2> {
-  const parsedEntityRef = parseEntityRef(entityRef);
+  const parsedEntityRef = parseEntityRef(entityRef, {
+    defaultKind: 'template',
+    defaultNamespace: 'default',
+  });
   const { items } = await catalogApi.getEntities(
     {
       filter: {

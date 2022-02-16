@@ -191,8 +191,6 @@ export async function createRouter(
       const template = await findTemplate({
         catalogApi: catalogClient,
         entityRef: {
-          kind: 'template',
-          namespace: 'default',
           name: templateName,
         },
         token: getBearerToken(req.headers.authorization),
