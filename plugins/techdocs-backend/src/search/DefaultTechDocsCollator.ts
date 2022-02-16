@@ -31,7 +31,11 @@ import { Logger } from 'winston';
 import pLimit from 'p-limit';
 import { Config } from '@backstage/config';
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import {
+  CatalogApi,
+  CatalogClient,
+  GetEntitiesRequest,
+} from '@backstage/catalog-client';
 import { TechDocsDocument } from '@backstage/techdocs-common';
 
 interface MkSearchIndexDoc {
@@ -50,6 +54,7 @@ export type TechDocsCollatorOptions = {
   logger: Logger;
   tokenManager: TokenManager;
   locationTemplate?: string;
+  filter?: GetEntitiesRequest['filter'];
   catalogClient?: CatalogApi;
   parallelismLimit?: number;
   legacyPathCasing?: boolean;
@@ -88,6 +93,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
       parallelismLimit,
       discovery,
       tokenManager,
+      filter,
       catalogClient,
       locationTemplate,
       logger,
@@ -99,6 +105,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
       catalogClient ?? new CatalogClient({ discoveryApi: discovery })
     ).getEntities(
       {
+        filter,
         fields: [
           'kind',
           'namespace',
