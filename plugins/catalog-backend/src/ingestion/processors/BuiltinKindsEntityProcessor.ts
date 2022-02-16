@@ -46,11 +46,13 @@ import {
   resourceEntityV1alpha1Validator,
   SystemEntity,
   systemEntityV1alpha1Validator,
-  TemplateEntityV1beta2,
-  templateEntityV1beta2Validator,
   UserEntity,
   userEntityV1alpha1Validator,
 } from '@backstage/catalog-model';
+import {
+  TemplateEntityV1beta2,
+  templateEntityV1beta2Validator,
+} from '@backstage/plugin-scaffolder-common';
 import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
@@ -224,6 +226,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         { defaultNamespace: selfRef.namespace },
         RELATION_DEPENDS_ON,
         RELATION_DEPENDENCY_OF,
+      );
+      doEmit(
+        resource.spec.dependencyOf,
+        { defaultNamespace: selfRef.namespace },
+        RELATION_DEPENDENCY_OF,
+        RELATION_DEPENDS_ON,
       );
       doEmit(
         resource.spec.system,

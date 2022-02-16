@@ -7,7 +7,7 @@ import { AuthorizeDecision } from '@backstage/plugin-permission-common';
 import { AuthorizeQuery } from '@backstage/plugin-permission-common';
 import { AuthorizeRequestOptions } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-backend';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { Config } from '@backstage/config';
 import express from 'express';
 import { Identified } from '@backstage/plugin-permission-common';

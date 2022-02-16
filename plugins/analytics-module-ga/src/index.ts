@@ -15,4 +15,4 @@
  */
 
 export { analyticsModuleGA } from './plugin';
-export { GoogleAnalytics } from './apis/implementations/AnalyticsApi';
+export * from './apis/implementations/AnalyticsApi';

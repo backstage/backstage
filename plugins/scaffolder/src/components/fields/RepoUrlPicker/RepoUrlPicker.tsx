@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import { useApi } from '@backstage/core-plugin-api';
-import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import {
+  scmIntegrationsApiRef,
+  scmAuthApiRef,
+} from '@backstage/integration-react';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { GithubRepoPicker } from './GithubRepoPicker';
 import { GitlabRepoPicker } from './GitlabRepoPicker';
@@ -24,10 +27,21 @@ import { FieldExtensionComponentProps } from '../../../extensions';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
 import { RepoUrlPickerState } from './types';
+import useDebounce from 'react-use/lib/useDebounce';
+import { useTemplateSecrets } from '../../secrets';
 
 export interface RepoUrlPickerUiOptions {
   allowedHosts?: string[];
   allowedOwners?: string[];
+  requestUserCredentials?: {
+    secretsKey: string;
+    additionalScopes?: {
+      github?: string[];
+      gitlab?: string[];
+      bitbucket?: string[];
+      azure?: string[];
+    };
+  };
 }
 
 export const RepoUrlPicker = (
@@ -38,7 +52,8 @@ export const RepoUrlPicker = (
     parseRepoPickerUrl(formData),
   );
   const integrationApi = useApi(scmIntegrationsApiRef);
-
+  const scmAuthApi = useApi(scmAuthApiRef);
+  const { setSecret } = useTemplateSecrets();
   const allowedHosts = useMemo(
     () => uiSchema?.['ui:options']?.allowedHosts ?? [],
     [uiSchema],
@@ -64,6 +79,42 @@ export const RepoUrlPicker = (
       setState(prevState => ({ ...prevState, ...newState }));
     },
     [setState],
+  );
+
+  useDebounce(
+    async () => {
+      const { requestUserCredentials } = uiSchema?.['ui:options'] ?? {};
+
+      if (
+        !requestUserCredentials ||
+        !(state.host && state.owner && state.repoName)
+      ) {
+        return;
+      }
+
+      const [host, owner, repoName] = [
+        state.host,
+        state.owner,
+        state.repoName,
+      ].map(encodeURIComponent);
+
+      // user has requested that we use the users credentials
+      // so lets grab them using the scmAuthApi and pass through
+      // any additional scopes from the ui:options
+      const { token } = await scmAuthApi.getCredentials({
+        url: `https://${host}/${owner}/${repoName}`,
+        additionalScope: {
+          repoWrite: true,
+          customScopes: requestUserCredentials.additionalScopes,
+        },
+      });
+
+      // set the secret using the key provided in the the ui:options for use
+      // in the templating the manifest with ${{ secrets[secretsKey] }}
+      setSecret({ [requestUserCredentials.secretsKey]: token });
+    },
+    500,
+    [state, uiSchema],
   );
 
   const hostType =

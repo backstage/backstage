@@ -5,7 +5,7 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
-import { Location as Location_2 } from '@backstage/catalog-model';
+import { LocationSpec } from '@backstage/catalog-model';
 
 // @public
 export type AddLocationRequest = {
@@ -32,13 +32,13 @@ export interface CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
   getEntities(
-    request?: CatalogEntitiesRequest,
+    request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogListResponse<Entity>>;
+  ): Promise<GetEntitiesResponse>;
   getEntityAncestors(
-    request: CatalogEntityAncestorsRequest,
+    request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogEntityAncestorsResponse>;
+  ): Promise<GetEntityAncestorsResponse>;
   getEntityByName(
     name: EntityName,
     options?: CatalogRequestOptions,
@@ -71,19 +71,26 @@ export interface CatalogApi {
 
 // @public
 export class CatalogClient implements CatalogApi {
-  constructor(options: { discoveryApi: DiscoveryApi; fetchApi?: FetchApi });
+  constructor(options: {
+    discoveryApi: {
+      getBaseUrl(pluginId: string): Promise<string>;
+    };
+    fetchApi?: {
+      fetch: typeof fetch;
+    };
+  });
   addLocation(
     { type, target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
   getEntities(
-    request?: CatalogEntitiesRequest,
+    request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogListResponse<Entity>>;
+  ): Promise<GetEntitiesResponse>;
   getEntityAncestors(
-    request: CatalogEntityAncestorsRequest,
+    request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogEntityAncestorsResponse>;
+  ): Promise<GetEntityAncestorsResponse>;
   getEntityByName(
     compoundName: EntityName,
     options?: CatalogRequestOptions,
@@ -114,53 +121,66 @@ export class CatalogClient implements CatalogApi {
   ): Promise<void>;
 }
 
-// @public
-export type CatalogEntitiesRequest = {
-  filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
-  fields?: string[] | undefined;
-  offset?: number;
-  limit?: number;
-  after?: string;
-};
+// @public @deprecated (undocumented)
+export type CatalogEntitiesRequest = GetEntitiesRequest;
+
+// @public @deprecated (undocumented)
+export type CatalogEntityAncestorsRequest = GetEntityAncestorsRequest;
+
+// @public @deprecated (undocumented)
+export type CatalogEntityAncestorsResponse = GetEntityAncestorsResponse;
+
+// @public @deprecated (undocumented)
+export type CatalogListResponse<_Entity> = GetEntitiesResponse;
 
 // @public
-export type CatalogEntityAncestorsRequest = {
-  entityRef: string;
-};
-
-// @public
-export type CatalogEntityAncestorsResponse = {
-  root: EntityName;
-  items: {
-    entity: Entity;
-    parents: EntityName[];
-  }[];
-};
-
-// @public
-export type CatalogListResponse<T> = {
-  items: T[];
-};
-
-// @public
-export type CatalogRequestOptions = {
+export interface CatalogRequestOptions {
+  // (undocumented)
   token?: string;
-};
-
-// @public
-export type DiscoveryApi = {
-  getBaseUrl(pluginId: string): Promise<string>;
-};
+}
 
 // @public
 export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
 
 // @public
-export type FetchApi = {
-  fetch: typeof fetch;
-};
+export interface GetEntitiesRequest {
+  after?: string;
+  fields?: string[] | undefined;
+  filter?:
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>
+    | undefined;
+  limit?: number;
+  offset?: number;
+}
+
+// @public
+export interface GetEntitiesResponse {
+  // (undocumented)
+  items: Entity[];
+}
+
+// @public
+export interface GetEntityAncestorsRequest {
+  // (undocumented)
+  entityRef: string;
+}
+
+// @public
+export interface GetEntityAncestorsResponse {
+  // (undocumented)
+  items: Array<{
+    entity: Entity;
+    parentEntityRefs: string[];
+  }>;
+  // (undocumented)
+  rootEntityRef: string;
+}
+
+// @public
+type Location_2 = {
+  id: string;
+} & LocationSpec;
+export { Location_2 as Location };
 ```

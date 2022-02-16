@@ -24,17 +24,20 @@ import {
   Divider,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
+import TextTruncate from 'react-text-truncate';
 
 type Props = {
   icon?: ReactNode;
   secondaryAction?: ReactNode;
   result: IndexableDocument;
+  lineClamp?: number;
 };
 
 export const DefaultResultListItem = ({
   result,
   icon,
   secondaryAction,
+  lineClamp = 5,
 }: Props) => {
   return (
     <Link to={result.location}>
@@ -43,7 +46,14 @@ export const DefaultResultListItem = ({
         <ListItemText
           primaryTypographyProps={{ variant: 'h6' }}
           primary={result.title}
-          secondary={result.text}
+          secondary={
+            <TextTruncate
+              line={lineClamp}
+              truncateText="…"
+              text={result.text}
+              element="span"
+            />
+          }
         />
         {secondaryAction && <Box alignItems="flex-end">{secondaryAction}</Box>}
       </ListItem>

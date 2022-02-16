@@ -22,7 +22,7 @@ import type { Transformer } from './transformer';
  */
 export const copyToClipboard = (): Transformer => {
   return dom => {
-    Array.from(dom.querySelectorAll('code')).forEach(codeElem => {
+    Array.from(dom.querySelectorAll('pre > code')).forEach(codeElem => {
       const button = document.createElement('button');
       const toBeCopied = codeElem.textContent || '';
       button.className = 'md-clipboard md-icon';

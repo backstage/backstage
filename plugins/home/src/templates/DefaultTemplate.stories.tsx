@@ -14,20 +14,38 @@
  * limitations under the License.
  */
 
-import {TemplateBackstageLogo} from './TemplateBackstageLogo';
-import {TemplateBackstageLogoIcon} from './TemplateBackstageLogoIcon';
-import { HomePageToolkit, HomePageCompanyLogo } from '../plugin';
-import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { TemplateBackstageLogo } from './TemplateBackstageLogo';
+import { TemplateBackstageLogoIcon } from './TemplateBackstageLogoIcon';
+import {
+  HomePageToolkit,
+  HomePageCompanyLogo,
+  HomePageStarredEntities,
+} from '../plugin';
+import { wrapInTestApp, TestApiProvider, MockStorageApi} from '@backstage/test-utils';
 import { Content, Page, InfoCard } from '@backstage/core-components';
+import {
+  starredEntitiesApiRef,
+  entityRouteRef,
+  DefaultStarredEntitiesApi
+} from '@backstage/plugin-catalog-react';
 import {
   HomePageSearchBar,
   SearchContextProvider,
   searchApiRef,
-  searchPlugin
+  searchPlugin,
 } from '@backstage/plugin-search';
 import { Grid, makeStyles } from '@material-ui/core';
-import React, { ComponentType} from 'react';
+import React, { ComponentType } from 'react';
 
+const mockStorageApi = MockStorageApi.create();
+mockStorageApi
+  .forBucket('starredEntities')
+  .set('entityRefs', [
+    'component:default/example-starred-entity',
+    'component:default/example-starred-entity-2',
+    'component:default/example-starred-entity-3',
+    'component:default/example-starred-entity-4'
+  ]);
 
 export default {
   title: 'Plugins/Home/Templates',
@@ -35,13 +53,26 @@ export default {
     (Story: ComponentType<{}>) =>
       wrapInTestApp(
         <>
-          <TestApiProvider apis={[[searchApiRef, {query: () => Promise.resolve({results: []})}]]}>
-              <Story />
+          <TestApiProvider
+            apis={[
+              [
+                starredEntitiesApiRef,
+                new DefaultStarredEntitiesApi({
+                  storageApi: mockStorageApi,
+                }),
+              ],
+              [searchApiRef, { query: () => Promise.resolve({ results: [] }) }],
+            ]}
+          >
+            <Story />
           </TestApiProvider>
         </>,
         {
-          mountedRoutes: {'/hello-company': searchPlugin.routes.root }
-        }
+          mountedRoutes: {
+            '/hello-company': searchPlugin.routes.root,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
       ),
   ],
 };
@@ -82,20 +113,17 @@ export const DefaultTemplate = () => {
           <Grid container justifyContent="center" spacing={6}>
             <HomePageCompanyLogo
               className={container}
-              logo={<TemplateBackstageLogo classes={{svg, path}} />}
+              logo={<TemplateBackstageLogo classes={{ svg, path }} />}
             />
             <Grid container item xs={12} alignItems="center" direction="row">
               <HomePageSearchBar
-                classes={{root: classes.searchBar}}
+                classes={{ root: classes.searchBar }}
                 placeholder="Search"
               />
             </Grid>
             <Grid container item xs={12}>
               <Grid item xs={12} md={6}>
-                <InfoCard title="Composable Section">
-                  {/* placeholder for content */}
-                  <div style={{ height: 210 }} />
-                </InfoCard>
+                <HomePageStarredEntities />
               </Grid>
               <Grid item xs={12} md={6}>
                 <HomePageToolkit

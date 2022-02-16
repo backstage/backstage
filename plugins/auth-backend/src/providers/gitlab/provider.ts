@@ -236,7 +236,10 @@ export const createGitlabProvider = (
       const clientSecret = envConfig.getString('clientSecret');
       const audience = envConfig.getOptionalString('audience');
       const baseUrl = audience || 'https://gitlab.com';
-      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+      const callbackUrl =
+        customCallbackUrl ||
+        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
@@ -272,6 +275,7 @@ export const createGitlabProvider = (
         disableRefresh: false,
         providerId,
         tokenIssuer,
+        callbackUrl,
       });
     });
 };

@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  Location,
-  ORIGIN_LOCATION_ANNOTATION,
-} from '@backstage/catalog-model';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogApi, Location } from '@backstage/catalog-client';
+import { Entity, ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { catalogApiRef } from '../../api';
 import {
   act,
@@ -83,7 +79,7 @@ describe('useUnregisterEntityDialogState', () => {
         name: 'n',
         namespace: 'ns',
         annotations: {
-          [ORIGIN_LOCATION_ANNOTATION]: 'url:https://example.com',
+          [ANNOTATION_ORIGIN_LOCATION]: 'url:https://example.com',
         },
       },
       spec: {},
@@ -117,7 +113,7 @@ describe('useUnregisterEntityDialogState', () => {
   });
 
   it('chooses the bootstrap path when necessary', async () => {
-    entity.metadata.annotations![ORIGIN_LOCATION_ANNOTATION] =
+    entity.metadata.annotations![ANNOTATION_ORIGIN_LOCATION] =
       'bootstrap:bootstrap';
 
     let rendered: RenderHookResult<unknown, UseUnregisterEntityDialogState>;
@@ -141,7 +137,7 @@ describe('useUnregisterEntityDialogState', () => {
   });
 
   it('chooses only-delete when there was no location annotation', async () => {
-    delete entity.metadata.annotations![ORIGIN_LOCATION_ANNOTATION];
+    delete entity.metadata.annotations![ANNOTATION_ORIGIN_LOCATION];
 
     let rendered: RenderHookResult<unknown, UseUnregisterEntityDialogState>;
     act(() => {

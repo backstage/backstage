@@ -2,16 +2,16 @@
 
 ## Overview
 
-This plugin displays Splunk On-Call, formerly VictorOps, information about an entity.
+This plugin displays Splunk On-Call (formerly VictorOps) information associated with an entity.
 
-There is a way to trigger an new incident directly to specific users or/and specific teams.
+It also provides the ability to trigger new incidents to specific users and/or specific teams from within Backstage.
 
-This plugin requires that entities are annotated with a team name. See more further down in this document.
+This plugin requires that entities feature either a `splunk.com/on-call-team` or a `splunk.com/on-call-routing-key` annotation. See below for further details.
 
 This plugin provides:
 
 - A list of incidents
-- A way to trigger a new incident to specific users or/and teams
+- A way to trigger a new incident to specific users and/or teams
 - A way to acknowledge/resolve an incident
 - Information details about the persons on-call
 
@@ -47,7 +47,7 @@ const overviewContent = (
 
 ## Client configuration
 
-In order to be able to perform certain action (create-acknowledge-resolve an action), you need to provide a REST Endpoint.
+In order to be able to perform certain actions (create-acknowledge-resolve an action), you need to provide a REST Endpoint.
 
 To enable the REST Endpoint integration you can go on https://portal.victorops.com/ inside Integrations > 3rd Party Integrations > REST – Generic.
 You can now copy the URL to notify: `<SPLUNK_ON_CALL_REST_ENDPOINT>/$routing_key`
@@ -76,12 +76,22 @@ In addition, to make certain API calls (trigger-resolve-acknowledge an incident)
 
 ### Adding your team name to the entity annotation
 
-The information displayed for each entity is based on the team name.
-If you want to use this plugin for an entity, you need to label it with the below annotation:
+The information displayed for each entity is based on either an associated team name or an associated routing key.
+
+To use this plugin for an entity, the entity must be labeled with either a `splunk.com/on-call-team` or a `splunk.com/on-call-routing-key` annotation.
+
+For example, by specifying a `splunk.com/on-call-team`, the plugin displays Splunk On-Call data associated with the specified team:
 
 ```yaml
 annotations:
-  splunk.com/on-call-team': <SPLUNK_ON_CALL_TEAM_NAME>
+  splunk.com/on-call-team: <SPLUNK_ON_CALL_TEAM_NAME>
+```
+
+Alternatively, by specifying a `splunk.com/on-call-routing-key`, the plugin displays Splunk On-Call data associated with _each_ of the teams associated with the specified routing key:
+
+```yaml
+annotations:
+  splunk.com/on-call-routing-key: <SPLUNK_ON_CALL_ROUTING_KEY>
 ```
 
 ### Create the Routing Key

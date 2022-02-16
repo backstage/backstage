@@ -35,6 +35,7 @@ import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FeatureFlagsApi } from '@backstage/core-plugin-api';
 import { FeatureFlagsSaveOptions } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { githubAuthApiRef } from '@backstage/core-plugin-api';
 import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -379,25 +380,11 @@ export type FlatRoutesProps = {
 };
 
 // @public
-export class GithubAuth implements OAuthApi, SessionApi {
+export class GithubAuth {
   // (undocumented)
-  static create(options: OAuthApiCreateOptions): GithubAuth;
-  // (undocumented)
-  getAccessToken(scope?: string, options?: AuthRequestOptions): Promise<string>;
-  // (undocumented)
-  getBackstageIdentity(
-    options?: AuthRequestOptions,
-  ): Promise<BackstageIdentityResponse | undefined>;
-  // (undocumented)
-  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
-  // (undocumented)
+  static create(options: OAuthApiCreateOptions): typeof githubAuthApiRef.T;
+  // @deprecated (undocumented)
   static normalizeScope(scope?: string): Set<string>;
-  // (undocumented)
-  sessionState$(): Observable<SessionState>;
-  // (undocumented)
-  signIn(): Promise<void>;
-  // (undocumented)
-  signOut(): Promise<void>;
 }
 
 // @public @deprecated

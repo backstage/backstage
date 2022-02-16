@@ -1,5 +1,37 @@
 # @backstage/plugin-gocd
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
 ## 0.1.2
 
 ### Patch Changes

@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Entity,
-  RELATION_OWNED_BY,
-  TemplateEntityV1beta2,
-} from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,
@@ -123,7 +120,8 @@ const DeprecationWarning = () => {
 
   const Title = (
     <Typography style={{ padding: 10, maxWidth: 300 }}>
-      This template syntax is deprecated. Click for more info.
+      This template uses a syntax that has been deprecated, and should be
+      migrated to a newer syntax. Click for more info.
     </Typography>
   );
 
@@ -131,7 +129,7 @@ const DeprecationWarning = () => {
     <div className={styles.deprecationIcon}>
       <Tooltip title={Title}>
         <Link
-          href="https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2"
+          href="https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3"
           className={styles.link}
         >
           <WarningIcon />

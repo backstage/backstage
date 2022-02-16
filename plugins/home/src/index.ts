@@ -26,6 +26,7 @@ export {
   HomePageRandomJoke,
   HomePageToolkit,
   HomePageCompanyLogo,
+  HomePageStarredEntities,
   ComponentAccordion,
   ComponentTabs,
   ComponentTab,

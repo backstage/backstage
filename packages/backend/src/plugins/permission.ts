@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IdentityClient } from '@backstage/plugin-auth-backend';
+import { IdentityClient } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
@@ -35,12 +35,13 @@ class AllowAllPermissionPolicy implements PermissionPolicy {
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const { logger, discovery } = env;
+  const { logger, discovery, config } = env;
   return await createRouter({
+    config,
     logger,
     discovery,
     policy: new AllowAllPermissionPolicy(),
-    identity: new IdentityClient({
+    identity: IdentityClient.create({
       discovery,
       issuer: await discovery.getExternalBaseUrl('auth'),
     }),

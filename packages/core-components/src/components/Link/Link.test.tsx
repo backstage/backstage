@@ -76,6 +76,33 @@ describe('<Link />', () => {
     });
   });
 
+  it('does not capture click when noTrack is set', async () => {
+    const linkText = 'Navigate!';
+    const analyticsApi = new MockAnalyticsApi();
+    const customOnClick = jest.fn();
+
+    const { getByText } = render(
+      wrapInTestApp(
+        <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
+          <Link to="/test" onClick={customOnClick} noTrack>
+            {linkText}
+          </Link>
+        </TestApiProvider>,
+      ),
+    );
+
+    fireEvent.click(getByText(linkText));
+
+    // Analytics event should have been fired.
+    await waitFor(() => {
+      // Custom onClick handler should have been fired.
+      expect(customOnClick).toHaveBeenCalled();
+
+      // But there should be no analytics event.
+      expect(analyticsApi.getEvents()).toHaveLength(0);
+    });
+  });
+
   describe('isExternalUri', () => {
     it.each([
       [true, 'http://'],

@@ -47,23 +47,35 @@ function sortEntities(entities: Array<EntityName | Entity>) {
   );
 }
 
-type Props = {
+/**
+ * Props for {@link EntityListComponent}.
+ *
+ * @public
+ */
+export interface EntityListComponentProps {
   locations: Array<{ target: string; entities: (Entity | EntityName)[] }>;
   locationListItemIcon: (target: string) => React.ReactElement;
   collapsed?: boolean;
   firstListItem?: React.ReactElement;
   onItemClick?: (target: string) => void;
   withLinks?: boolean;
-};
+}
 
-export const EntityListComponent = ({
-  locations,
-  collapsed = false,
-  locationListItemIcon,
-  onItemClick,
-  firstListItem,
-  withLinks = false,
-}: Props) => {
+/**
+ * Shows a result list of entities.
+ *
+ * @public
+ */
+export const EntityListComponent = (props: EntityListComponentProps) => {
+  const {
+    locations,
+    collapsed = false,
+    locationListItemIcon,
+    onItemClick,
+    firstListItem,
+    withLinks = false,
+  } = props;
+
   const app = useApp();
   const classes = useStyles();
 

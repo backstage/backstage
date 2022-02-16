@@ -8,7 +8,7 @@ See [techdocs-cli usage docs](https://backstage.io/docs/features/techdocs/cli).
 
 ## Development
 
-NOTE: When we build `techdocs-cli` it copies the output `embedded-techdocs-app`
+NOTE: When we build `techdocs-cli` it copies the output `techdocs-cli-embedded-app`
 bundle into the `packages/techdocs-cli/dist` which is then published with the
 `@techdocs/cli` npm package.
 
@@ -16,7 +16,7 @@ bundle into the `packages/techdocs-cli/dist` which is then published with the
 
 ```sh
 # From the root of this repository run
-# NOTE: This will build the embedded-techdocs-app and copy the output into the cli dist directory
+# NOTE: This will build the techdocs-cli-embedded-app and copy the output into the cli dist directory
 yarn build --scope @techdocs/cli
 
 # Now execute the binary
@@ -26,14 +26,14 @@ packages/techdocs-cli/bin/techdocs-cli
 export PATH=/path/to/backstage/packages/techdocs-cli/bin:$PATH
 ```
 
-If you want to test live test changes to the `packages/embedded-techdocs-app`
+If you want to test live test changes to the `packages/techdocs-cli-embedded-app`
 you can serve the app and run the CLI using the following commands:
 
 ```sh
-# Open a shell to the embedded-techdocs-app directory
-cd packages/embedded-techdocs-app
+# Open a shell to the techdocs-cli-embedded-app directory
+cd packages/techdocs-cli-embedded-app
 
-# Run the embedded-techdocs-app using dev mode
+# Run the techdocs-cli-embedded-app using dev mode
 yarn start
 
 # In another shell use the techdocs-cli from the root of this repo

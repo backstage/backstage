@@ -5,24 +5,13 @@
 ```ts
 /// <reference types="react" />
 
-import { AddLocationRequest } from '@backstage/catalog-client';
-import { AddLocationResponse } from '@backstage/catalog-client';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogClient } from '@backstage/catalog-client';
-import { CatalogEntitiesRequest } from '@backstage/catalog-client';
-import { CatalogEntityAncestorsRequest } from '@backstage/catalog-client';
-import { CatalogEntityAncestorsResponse } from '@backstage/catalog-client';
-import { CatalogListResponse } from '@backstage/catalog-client';
-import { CatalogRequestOptions } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
-import { Location as Location_2 } from '@backstage/catalog-model';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
@@ -63,63 +52,6 @@ export type BackstageOverrides = Overrides & {
     StyleRules<PluginCatalogComponentsNameToClassKey[Name]>
   >;
 };
-
-// Warning: (ae-missing-release-tag) "CatalogClientWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated
-export class CatalogClientWrapper implements CatalogApi {
-  constructor(options: { client: CatalogClient; identityApi: IdentityApi });
-  // (undocumented)
-  addLocation(
-    request: AddLocationRequest,
-    options?: CatalogRequestOptions,
-  ): Promise<AddLocationResponse>;
-  // (undocumented)
-  getEntities(
-    request?: CatalogEntitiesRequest,
-    options?: CatalogRequestOptions,
-  ): Promise<CatalogListResponse<Entity>>;
-  // (undocumented)
-  getEntityAncestors(
-    request: CatalogEntityAncestorsRequest,
-    options?: CatalogRequestOptions,
-  ): Promise<CatalogEntityAncestorsResponse>;
-  // (undocumented)
-  getEntityByName(
-    compoundName: EntityName,
-    options?: CatalogRequestOptions,
-  ): Promise<Entity | undefined>;
-  // (undocumented)
-  getLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location_2 | undefined>;
-  // (undocumented)
-  getLocationById(
-    id: string,
-    options?: CatalogRequestOptions,
-  ): Promise<Location_2 | undefined>;
-  // (undocumented)
-  getOriginLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location_2 | undefined>;
-  // (undocumented)
-  refreshEntity(
-    entityRef: string,
-    options?: CatalogRequestOptions,
-  ): Promise<void>;
-  // (undocumented)
-  removeEntityByUid(
-    uid: string,
-    options?: CatalogRequestOptions,
-  ): Promise<void>;
-  // (undocumented)
-  removeLocationById(
-    id: string,
-    options?: CatalogRequestOptions,
-  ): Promise<void>;
-}
 
 // Warning: (ae-missing-release-tag) "CatalogEntityPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -349,22 +281,6 @@ export const EntityListContainer: ({
 // @public
 export const EntityOrphanWarning: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityPageLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const EntityPageLayout: {
-  ({
-    children,
-    UNSTABLE_extraContextMenuItems,
-    UNSTABLE_contextMenuOptions,
-  }: EntityPageLayoutProps): JSX.Element;
-  Content: (_props: {
-    path: string;
-    title: string;
-    element: JSX.Element;
-  }) => null;
-};
-
 // Warning: (ae-missing-release-tag) "EntityProcessingErrorsPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -387,12 +303,6 @@ export const EntitySwitch: {
     children: ReactNode;
   }) => null;
 };
-
-// Warning: (ae-forgotten-export) The symbol "SystemDiagramCard" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EntitySystemDiagramCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const EntitySystemDiagramCard: SystemDiagramCard;
 
 // Warning: (ae-missing-release-tag) "FilterContainer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -458,15 +368,6 @@ export const RelatedEntitiesCard: <T extends Entity>(props: {
   asRenderableEntities: (entities: Entity[]) => T[];
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const Router: ({
-  EntityPage,
-}: {
-  EntityPage?: React_2.ComponentType<{}> | undefined;
-}) => JSX.Element;
-
 // @public (undocumented)
 export type SystemDiagramCardClassKey =
   | 'domainNode'
@@ -481,6 +382,5 @@ export type SystemDiagramCardClassKey =
 // src/components/CatalogTable/CatalogTable.d.ts:11:5 - (ae-forgotten-export) The symbol "columnFactories" needs to be exported by the entry point index.d.ts
 // src/components/EntityLayout/EntityLayout.d.ts:43:5 - (ae-forgotten-export) The symbol "EntityLayoutProps" needs to be exported by the entry point index.d.ts
 // src/components/EntityLayout/EntityLayout.d.ts:44:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
-// src/components/EntityPageLayout/EntityPageLayout.d.ts:17:5 - (ae-forgotten-export) The symbol "EntityPageLayoutProps" needs to be exported by the entry point index.d.ts
 // src/plugin.d.ts:22:5 - (ae-forgotten-export) The symbol "ColumnBreakpoints" needs to be exported by the entry point index.d.ts
 ```

@@ -18,7 +18,7 @@ import { SpawnOptionsWithoutStdio, spawn } from 'child_process';
 import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
 import { Git } from '@backstage/backend-common';
-import { Octokit } from '@octokit/rest';
+import { Octokit } from 'octokit';
 import { assertError } from '@backstage/errors';
 
 export type RunCommandOptions = {
@@ -58,7 +58,9 @@ export const runCommand = async ({
 
     process.on('close', code => {
       if (code !== 0) {
-        return reject(`Command ${command} failed, exit code: ${code}`);
+        return reject(
+          new Error(`Command ${command} failed, exit code: ${code}`),
+        );
       }
       return resolve();
     });
@@ -139,7 +141,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
 }: BranchProtectionOptions): Promise<void> => {
   const tryOnce = async () => {
     try {
-      await client.repos.updateBranchProtection({
+      await client.rest.repos.updateBranchProtection({
         mediaType: {
           /**
            * 👇 we need this preview because allowing a custom

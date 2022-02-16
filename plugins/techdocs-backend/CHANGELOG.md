@@ -1,5 +1,48 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.13.3
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/backend-common@0.10.7
+  - @backstage/techdocs-common@0.11.7
+
+## 0.13.3-next.0
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+  - @backstage/techdocs-common@0.11.7-next.0
+
+## 0.13.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@0.1.2
+  - @backstage/backend-common@0.10.6
+  - @backstage/techdocs-common@0.11.6
+
+## 0.13.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@0.1.2-next.0
+  - @backstage/backend-common@0.10.6-next.0
+  - @backstage/techdocs-common@0.11.6-next.0
+
 ## 0.13.1
 
 ### Patch Changes

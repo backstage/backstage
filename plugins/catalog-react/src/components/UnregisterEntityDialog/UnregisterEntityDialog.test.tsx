@@ -19,7 +19,7 @@ jest.mock('./useUnregisterEntityDialogState');
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { UnregisterEntityDialog } from './UnregisterEntityDialog';
-import { ORIGIN_LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { CatalogClient } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
 import { entityRouteRef } from '../../routes';
@@ -55,7 +55,7 @@ describe('UnregisterEntityDialog', () => {
       name: 'n',
       namespace: 'ns',
       annotations: {
-        [ORIGIN_LOCATION_ANNOTATION]: 'url:http://example.com',
+        [ANNOTATION_ORIGIN_LOCATION]: 'url:http://example.com',
       },
     },
     spec: {},

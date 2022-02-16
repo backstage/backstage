@@ -17,10 +17,29 @@
 import { Command } from 'commander';
 import path from 'path';
 import openBrowser from 'react-dev-utils/openBrowser';
+import { findPaths } from '@backstage/cli-common';
 import HTTPServer from '../../lib/httpServer';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
 import { LogFunc, waitForSignal } from '../../lib/run';
 import { createLogger } from '../../lib/utility';
+
+function findPreviewBundlePath(): string {
+  try {
+    return path.join(
+      path.dirname(require.resolve('techdocs-cli-embedded-app/package.json')),
+      'dist',
+    );
+  } catch {
+    // If the techdocs-cli-embedded-app package is not available it means we're
+    // running a published package. For published packages the preview bundle is
+    // copied to dist/embedded-app be the prepack script.
+    //
+    // This can be tested by running `yarn pack` and extracting the resulting tarball into a directory.
+    // Within the extracted directory, run `npm install --only=prod`.
+    // Once that's done you can test the CLI in any directory using `node <tmp-dir>/package <command>`.
+    return findPaths(__dirname).resolveOwn('dist/embedded-app');
+  }
+}
 
 export default async function serve(cmd: Command) {
   const logger = createLogger({ verbose: cmd.verbose });
@@ -91,16 +110,9 @@ export default async function serve(cmd: Command) {
     );
   }
 
-  // Run the embedded-techdocs Backstage app
-  const techdocsPreviewBundlePath = path.join(
-    path.dirname(require.resolve('@techdocs/cli/package.json')),
-    'dist',
-    'techdocs-preview-bundle',
-  );
-
   const port = isDevMode ? backstageBackendPort : backstagePort;
   const httpServer = new HTTPServer(
-    techdocsPreviewBundlePath,
+    findPreviewBundlePath(),
     port,
     cmd.mkdocsPort,
     cmd.verbose,

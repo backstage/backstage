@@ -18,7 +18,11 @@ import { Entity, EntityName } from '@backstage/catalog-model';
 import { useReducer } from 'react';
 import { AnalyzeResult } from '../api';
 
-// the configuration of the stepper
+/**
+ * The configuration of the stepper.
+ *
+ * @public
+ */
 export type ImportFlows =
   | 'unknown'
   | 'single-location'
@@ -28,7 +32,11 @@ export type ImportFlows =
 // the available states of the stepper
 type ImportStateTypes = 'analyze' | 'prepare' | 'review' | 'finish';
 
-// result of the prepare state
+/**
+ * Result of the prepare state.
+ *
+ * @public
+ */
 export type PrepareResult =
   | {
       type: 'locations';

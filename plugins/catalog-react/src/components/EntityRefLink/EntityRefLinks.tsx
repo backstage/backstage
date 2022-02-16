@@ -13,16 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity, EntityName } from '@backstage/catalog-model';
 import React from 'react';
 import { EntityRefLink } from './EntityRefLink';
 import { LinkProps } from '@backstage/core-components';
 
+/**
+ * Props for {@link EntityRefLink}.
+ *
+ * @public
+ */
 export type EntityRefLinksProps = {
   entityRefs: (Entity | EntityName)[];
   defaultKind?: string;
 } & Omit<LinkProps, 'to'>;
 
+/**
+ * Shows a list of clickable links to entities.
+ *
+ * @public
+ */
 export const EntityRefLinks = ({
   entityRefs,
   defaultKind,

@@ -24,21 +24,20 @@ import { InputError } from '@backstage/errors';
 import { parseRepoUrl } from './util';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 
-export type GitlabMergeRequestActionInput = {
-  projectid: string;
-  repoUrl: string;
-  title: string;
-  description: string;
-  branchName: string;
-  targetPath: string;
-};
-
 export const createPublishGitlabMergeRequestAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
   const { integrations } = options;
 
-  return createTemplateAction<GitlabMergeRequestActionInput>({
+  return createTemplateAction<{
+    projectid: string;
+    repoUrl: string;
+    title: string;
+    description: string;
+    branchName: string;
+    targetPath: string;
+    token?: string;
+  }>({
     id: 'publish:gitlab:merge-request',
     schema: {
       input: {
@@ -75,6 +74,11 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Repository Subdirectory',
             description: 'Subdirectory of repository to apply changes to',
           },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description: 'The token to use for authorization to GitLab',
+          },
         },
       },
       output: {
@@ -107,13 +111,16 @@ export const createPublishGitlabMergeRequestAction = (options: {
         );
       }
 
-      if (!integrationConfig.config.token) {
+      if (!integrationConfig.config.token && !ctx.input.token) {
         throw new InputError(`No token available for host ${host}`);
       }
 
+      const token = ctx.input.token ?? integrationConfig.config.token!;
+      const tokenType = ctx.input.token ? 'oauthToken' : 'token';
+
       const api = new Gitlab({
         host: integrationConfig.config.baseUrl,
-        token: integrationConfig.config.token,
+        [tokenType]: token,
       });
 
       const fileRoot = ctx.workspacePath;

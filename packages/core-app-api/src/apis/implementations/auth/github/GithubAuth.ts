@@ -14,35 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  AuthRequestOptions,
-  BackstageIdentityResponse,
-  OAuthApi,
-  ProfileInfo,
-  SessionApi,
-  SessionState,
-} from '@backstage/core-plugin-api';
-import { Observable } from '@backstage/types';
-import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
-import {
-  AuthSessionStore,
-  RefreshingAuthSessionManager,
-  StaticAuthSessionManager,
-} from '../../../../lib/AuthSessionManager';
-import { OptionalRefreshSessionManagerMux } from '../../../../lib/AuthSessionManager/OptionalRefreshSessionManagerMux';
-import { SessionManager } from '../../../../lib/AuthSessionManager/types';
+import { githubAuthApiRef } from '@backstage/core-plugin-api';
+import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
-import { GithubSession, githubSessionSchema } from './types';
-
-export type GithubAuthResponse = {
-  providerInfo: {
-    accessToken: string;
-    scope: string;
-    expiresInSeconds?: number;
-  };
-  profile: ProfileInfo;
-  backstageIdentity: BackstageIdentityResponse;
-};
 
 const DEFAULT_PROVIDER = {
   id: 'github',
@@ -55,8 +29,8 @@ const DEFAULT_PROVIDER = {
  *
  * @public
  */
-export default class GithubAuth implements OAuthApi, SessionApi {
-  static create(options: OAuthApiCreateOptions) {
+export default class GithubAuth {
+  static create(options: OAuthApiCreateOptions): typeof githubAuthApiRef.T {
     const {
       discoveryApi,
       environment = 'development',
@@ -65,96 +39,18 @@ export default class GithubAuth implements OAuthApi, SessionApi {
       defaultScopes = ['read:user'],
     } = options;
 
-    const connector = new DefaultAuthConnector({
+    return OAuth2.create({
       discoveryApi,
-      environment,
+      oauthRequestApi,
       provider,
-      oauthRequestApi: oauthRequestApi,
-      sessionTransform(res: GithubAuthResponse): GithubSession {
-        return {
-          ...res,
-          providerInfo: {
-            accessToken: res.providerInfo.accessToken,
-            scopes: GithubAuth.normalizeScope(res.providerInfo.scope),
-            expiresAt: res.providerInfo.expiresInSeconds
-              ? new Date(Date.now() + res.providerInfo.expiresInSeconds * 1000)
-              : undefined,
-          },
-        };
-      },
+      environment,
+      defaultScopes,
     });
-
-    const refreshingSessionManager = new RefreshingAuthSessionManager({
-      connector,
-      defaultScopes: new Set(defaultScopes),
-      sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
-      sessionShouldRefresh: (session: GithubSession) => {
-        const { expiresAt } = session.providerInfo;
-        if (!expiresAt) {
-          return false;
-        }
-        const expiresInSec = (expiresAt.getTime() - Date.now()) / 1000;
-        return expiresInSec < 60 * 5;
-      },
-    });
-
-    const staticSessionManager = new AuthSessionStore<GithubSession>({
-      manager: new StaticAuthSessionManager({
-        connector,
-        defaultScopes: new Set(defaultScopes),
-        sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
-      }),
-      storageKey: `${provider.id}Session`,
-      schema: githubSessionSchema,
-      sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
-    });
-
-    const sessionManagerMux = new OptionalRefreshSessionManagerMux({
-      refreshingSessionManager,
-      staticSessionManager,
-      sessionCanRefresh: session =>
-        session.providerInfo.expiresAt !== undefined,
-    });
-
-    return new GithubAuth(sessionManagerMux);
   }
 
-  private constructor(
-    private readonly sessionManager: SessionManager<GithubSession>,
-  ) {}
-
-  async signIn() {
-    await this.getAccessToken();
-  }
-
-  async signOut() {
-    await this.sessionManager.removeSession();
-  }
-
-  sessionState$(): Observable<SessionState> {
-    return this.sessionManager.sessionState$();
-  }
-
-  async getAccessToken(scope?: string, options?: AuthRequestOptions) {
-    const session = await this.sessionManager.getSession({
-      ...options,
-      scopes: GithubAuth.normalizeScope(scope),
-    });
-    return session?.providerInfo.accessToken ?? '';
-  }
-
-  async getBackstageIdentity(
-    options: AuthRequestOptions = {},
-  ): Promise<BackstageIdentityResponse | undefined> {
-    const session = await this.sessionManager.getSession(options);
-    return session?.backstageIdentity;
-  }
-
-  async getProfile(options: AuthRequestOptions = {}) {
-    const session = await this.sessionManager.getSession(options);
-    return session?.profile;
-  }
-
+  /**
+   * @deprecated This method is deprecated and will be removed in a future release.
+   */
   static normalizeScope(scope?: string): Set<string> {
     if (!scope) {
       return new Set();

@@ -34,6 +34,11 @@ import { getGithubIntegrationConfig } from './GitHub';
 import { trimEnd } from 'lodash';
 import { getBranchName, getCatalogFilename } from '../components/helpers';
 
+/**
+ * The default implementation of the {@link CatalogImportApi}.
+ *
+ * @public
+ */
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
@@ -142,17 +147,14 @@ the component will become available.\n\nFor more information, read an \
     };
   }
 
-  async submitPullRequest({
-    repositoryUrl,
-    fileContent,
-    title,
-    body,
-  }: {
+  async submitPullRequest(options: {
     repositoryUrl: string;
     fileContent: string;
     title: string;
     body: string;
   }): Promise<{ link: string; location: string }> {
+    const { repositoryUrl, fileContent, title, body } = options;
+
     const ghConfig = getGithubIntegrationConfig(
       this.scmIntegrationsApi,
       repositoryUrl,
@@ -172,9 +174,7 @@ the component will become available.\n\nFor more information, read an \
   }
 
   // TODO: this could be part of the catalog api
-  private async generateEntityDefinitions({
-    repo,
-  }: {
+  private async generateEntityDefinitions(options: {
     repo: string;
   }): Promise<PartialEntity[]> {
     const { token } = await this.identityApi.getCredentials();
@@ -187,7 +187,7 @@ the component will become available.\n\nFor more information, read an \
         },
         method: 'POST',
         body: JSON.stringify({
-          location: { type: 'url', target: repo },
+          location: { type: 'url', target: options.repo },
         }),
       },
     ).catch(e => {
@@ -204,12 +204,7 @@ the component will become available.\n\nFor more information, read an \
   }
 
   // TODO: this response should better be part of the analyze-locations response and scm-independent / implemented per scm
-  private async checkGitHubForExistingCatalogInfo({
-    url,
-    owner,
-    repo,
-    githubIntegrationConfig,
-  }: {
+  private async checkGitHubForExistingCatalogInfo(options: {
     url: string;
     owner: string;
     repo: string;
@@ -220,6 +215,8 @@ the component will become available.\n\nFor more information, read an \
       entities: EntityName[];
     }>
   > {
+    const { url, owner, repo, githubIntegrationConfig } = options;
+
     const { token } = await this.scmAuthApi.getCredentials({ url });
     const octo = new Octokit({
       auth: token,
@@ -269,15 +266,7 @@ the component will become available.\n\nFor more information, read an \
   }
 
   // TODO: extract this function and implement for non-github
-  private async submitGitHubPrToRepo({
-    owner,
-    repo,
-    title,
-    body,
-    fileContent,
-    repositoryUrl,
-    githubIntegrationConfig,
-  }: {
+  private async submitGitHubPrToRepo(options: {
     owner: string;
     repo: string;
     title: string;
@@ -286,6 +275,16 @@ the component will become available.\n\nFor more information, read an \
     repositoryUrl: string;
     githubIntegrationConfig: GitHubIntegrationConfig;
   }): Promise<{ link: string; location: string }> {
+    const {
+      owner,
+      repo,
+      title,
+      body,
+      fileContent,
+      repositoryUrl,
+      githubIntegrationConfig,
+    } = options;
+
     const { token } = await this.scmAuthApi.getCredentials({
       url: repositoryUrl,
       additionalScope: {

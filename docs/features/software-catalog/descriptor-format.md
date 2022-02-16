@@ -1121,6 +1121,17 @@ This field is optional.
 | [`Component`](#kind-component)          | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
 | [`Resource`](#kind-resource)            | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
 
+### `spec.dependencyOf` [optional]
+
+An array of [entity references](references.md#string-references) to the
+components and resources that the resource is a dependency of, e.g. `artist-lookup`.
+This field is optional.
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                            |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| [`Component`](#kind-component)          | Same as this entity, typically `default`   | [`dependencyOf`, and reverse `dependsOn`](well-known-relations.md#dependson-and-dependencyof) |
+| [`Resource`](#kind-resource)            | Same as this entity, typically `default`   | [`dependencyOf`, and reverse `dependsOn`](well-known-relations.md#dependson-and-dependencyof) |
+
 ## Kind: System
 
 Describes the following entity kind:

@@ -51,6 +51,10 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
   //
   // (undocumented)
   getOnCallUsers(): Promise<OnCall[]>;
+  // Warning: (ae-forgotten-export) The symbol "RoutingKey" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  getRoutingKeys(): Promise<RoutingKey[]>;
   // Warning: (ae-forgotten-export) The symbol "Team" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)

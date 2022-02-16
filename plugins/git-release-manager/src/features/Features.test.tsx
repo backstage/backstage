@@ -55,7 +55,7 @@ describe('Features', () => {
 
     expect(getByTestId(TEST_IDS.info.info)).toMatchInlineSnapshot(`
       <div
-        class="MuiBox-root MuiBox-root-9"
+        class="MuiBox-root MuiBox-root-10"
         data-testid="grm--info"
       >
         <h6

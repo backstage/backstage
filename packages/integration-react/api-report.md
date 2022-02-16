@@ -29,6 +29,7 @@ export class ScmAuth implements ScmAuthApi {
         ProfileInfoApi &
         BackstageIdentityApi &
         SessionApi;
+      bitbucket: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
     }
   >;
   static forAuthApi(
@@ -82,6 +83,12 @@ export const scmAuthApiRef: ApiRef<ScmAuthApi>;
 export interface ScmAuthTokenOptions extends AuthRequestOptions {
   additionalScope?: {
     repoWrite?: boolean;
+    customScopes?: {
+      github?: string[];
+      azure?: string[];
+      bitbucket?: string[];
+      gitlab?: string[];
+    };
   };
   url: string;
 }

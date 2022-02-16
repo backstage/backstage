@@ -227,7 +227,10 @@ export const createOneLoginProvider = (
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
       const issuer = envConfig.getString('issuer');
-      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+      const callbackUrl =
+        customCallbackUrl ||
+        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
@@ -258,6 +261,7 @@ export const createOneLoginProvider = (
         disableRefresh: false,
         providerId,
         tokenIssuer,
+        callbackUrl,
       });
     });
 };

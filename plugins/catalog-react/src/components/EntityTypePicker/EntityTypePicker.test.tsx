@@ -151,4 +151,38 @@ describe('<EntityTypePicker/>', () => {
       type: new EntityTypeFilter(['tool']),
     });
   });
+
+  it('responds to external queryParameters changes', async () => {
+    const updateFilters = jest.fn();
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { type: 'service' },
+          }}
+        >
+          <EntityTypePicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      type: new EntityTypeFilter(['service']),
+    });
+    rendered.rerender(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { type: 'tool' },
+          }}
+        >
+          <EntityTypePicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      type: new EntityTypeFilter(['tool']),
+    });
+  });
 });

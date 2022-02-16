@@ -240,7 +240,10 @@ export const createOAuth2Provider = (
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
-      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+      const callbackUrl =
+        customCallbackUrl ||
+        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
       const authorizationUrl = envConfig.getString('authorizationUrl');
       const tokenUrl = envConfig.getString('tokenUrl');
       const scope = envConfig.getOptionalString('scope');
@@ -288,6 +291,7 @@ export const createOAuth2Provider = (
         disableRefresh,
         providerId,
         tokenIssuer,
+        callbackUrl,
       });
     });
 };

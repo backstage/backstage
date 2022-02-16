@@ -17,6 +17,7 @@
 import express from 'express';
 import { Logger } from 'winston';
 import { AuthenticationError } from '@backstage/errors';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import {
   AuthHandler,
   SignInResolver,
@@ -26,7 +27,6 @@ import {
 } from '../types';
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { JWT } from 'jose';
-import { IdentityClient } from '../../identity';
 import { TokenIssuer } from '../../identity/types';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 
@@ -156,7 +156,7 @@ export class Oauth2ProxyAuthProvider<JWTPayload>
 
   private getResult(req: express.Request): OAuth2ProxyResult<JWTPayload> {
     const authHeader = req.header(OAUTH2_PROXY_JWT_HEADER);
-    const jwt = IdentityClient.getBearerToken(authHeader);
+    const jwt = getBearerTokenFromAuthorizationHeader(authHeader);
 
     if (!jwt) {
       throw new AuthenticationError(

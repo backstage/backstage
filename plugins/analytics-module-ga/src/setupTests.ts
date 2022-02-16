@@ -15,3 +15,20 @@
  */
 import '@testing-library/jest-dom';
 import 'cross-fetch/polyfill';
+
+// eslint-disable-next-line no-restricted-imports
+import { TextEncoder } from 'util';
+
+// Mock browser crypto.subtle.digest method for sha-256 hashing.
+Object.defineProperty(global.self, 'crypto', {
+  value: {
+    subtle: {
+      digest: (_algo: string, data: Uint8Array): ArrayBuffer => data.buffer,
+    },
+  },
+});
+
+// Also used in browser-based APIs for hashing.
+Object.defineProperty(global.self, 'TextEncoder', {
+  value: TextEncoder,
+});

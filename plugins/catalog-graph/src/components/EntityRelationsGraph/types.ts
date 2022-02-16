@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { DependencyGraphTypes } from '@backstage/core-components';
 import { MouseEventHandler } from 'react';
 
 /**
- * Additional Data for entities
+ * Additional Data for entities.
+ *
+ * @public
  */
 export type EntityEdgeData = {
   /**
@@ -40,6 +43,8 @@ export type EntityEdge = DependencyGraphTypes.DependencyEdge<EntityEdgeData>;
 
 /**
  * Additional data for Entity Node
+ *
+ * @public
  */
 export type EntityNodeData = {
   /**

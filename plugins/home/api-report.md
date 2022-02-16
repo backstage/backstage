@@ -113,6 +113,13 @@ export const HomePageRandomJoke: (
   },
 ) => JSX.Element;
 
+// @public
+export const HomePageStarredEntities: (
+  props: ComponentRenderer & {
+    title?: string | undefined;
+  },
+) => JSX.Element;
+
 // Warning: (ae-forgotten-export) The symbol "ToolkitContentProps" needs to be exported by the entry point index.d.ts
 //
 // @public

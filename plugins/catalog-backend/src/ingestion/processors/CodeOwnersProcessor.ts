@@ -17,7 +17,10 @@
 import { UrlReader } from '@backstage/backend-common';
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrationRegistry,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { Logger } from 'winston';
 import { findCodeOwnerByTarget } from './codeowners';
 import { CatalogProcessor } from './types';
@@ -35,7 +38,7 @@ const ALLOWED_LOCATION_TYPES = [
 ];
 
 export class CodeOwnersProcessor implements CatalogProcessor {
-  private readonly integrations: ScmIntegrations;
+  private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
   private readonly reader: UrlReader;
 
@@ -52,7 +55,7 @@ export class CodeOwnersProcessor implements CatalogProcessor {
   }
 
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger;
     reader: UrlReader;
   }) {

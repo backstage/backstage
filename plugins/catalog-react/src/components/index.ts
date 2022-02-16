@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export * from './EntityKindPicker';
 export * from './EntityLifecyclePicker';
 export * from './EntityOwnerPicker';
@@ -22,5 +23,6 @@ export * from './EntityTable';
 export * from './EntityTagPicker';
 export * from './EntityTypePicker';
 export * from './FavoriteEntity';
+export * from './InspectEntityDialog';
 export * from './UnregisterEntityDialog';
 export * from './UserListPicker';

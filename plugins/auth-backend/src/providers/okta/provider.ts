@@ -276,7 +276,10 @@ export const createOktaProvider = (
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
       const audience = envConfig.getString('audience');
-      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+      const callbackUrl =
+        customCallbackUrl ||
+        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
       // This is a safe assumption as `passport-okta-oauth` uses the audience
       // as the base for building the authorization, token, and user info URLs.
@@ -322,6 +325,7 @@ export const createOktaProvider = (
         disableRefresh: false,
         providerId,
         tokenIssuer,
+        callbackUrl,
       });
     });
 };

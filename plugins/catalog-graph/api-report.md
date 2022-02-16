@@ -95,8 +95,6 @@ export const EntityCatalogGraphCard: ({
 // @public
 export type EntityEdge = DependencyGraphTypes.DependencyEdge<EntityEdgeData>;
 
-// Warning: (ae-missing-release-tag) "EntityEdgeData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type EntityEdgeData = {
   relations: string[];
@@ -106,8 +104,6 @@ export type EntityEdgeData = {
 // @public
 export type EntityNode = DependencyGraphTypes.DependencyNode<EntityNodeData>;
 
-// Warning: (ae-missing-release-tag) "EntityNodeData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type EntityNodeData = {
   name: string;

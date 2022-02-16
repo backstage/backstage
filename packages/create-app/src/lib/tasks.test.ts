@@ -208,6 +208,6 @@ describe('templatingTask', () => {
     // backend dependencies include `sqlite3` from `context.SQLite`
     expect(
       fs.readFileSync('templatedApp/packages/backend/package.json', 'utf-8'),
-    ).toContain('"sqlite3"');
+    ).toContain('sqlite3"');
   });
 });

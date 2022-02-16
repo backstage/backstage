@@ -98,6 +98,7 @@ describe('GithubAuthProvider', () => {
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
           scope: 'read:scope',
+          expiresInSeconds: 3600,
         },
         profile: {
           email: 'jimmymarkum@gmail.com',
@@ -143,6 +144,7 @@ describe('GithubAuthProvider', () => {
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
           scope: 'read:scope',
+          expiresInSeconds: 3600,
         },
         profile: {
           displayName: 'Jimmy Markum',
@@ -186,6 +188,7 @@ describe('GithubAuthProvider', () => {
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
           scope: 'read:scope',
+          expiresInSeconds: 3600,
         },
         profile: {
           displayName: 'jimmymarkum',
@@ -230,6 +233,7 @@ describe('GithubAuthProvider', () => {
           accessToken:
             'ajakljsdoiahoawxbrouawucmbawe.awkxjemaneasdxwe.sodijxqeqwexeqwxe',
           scope: 'read:user',
+          expiresInSeconds: 3600,
         },
         profile: {
           displayName: 'Dave Boyle',
@@ -316,7 +320,7 @@ describe('GithubAuthProvider', () => {
         ],
       });
 
-      const result = await provider.refresh({} as any);
+      const result = await provider.refresh({ scope: 'actual-scope' } as any);
 
       expect(result).toEqual({
         response: {
@@ -332,11 +336,65 @@ describe('GithubAuthProvider', () => {
           providerInfo: {
             accessToken: 'a.b.c',
             expiresInSeconds: 123,
-            scope: 'read_user',
+            scope: 'actual-scope',
           },
         },
         refreshToken: 'dont-forget-to-send-refresh',
       });
+
+      mockRefreshToken.mockRestore();
+      mockUserProfile.mockRestore();
+    });
+
+    it('should use access token as refresh token', async () => {
+      const mockUserProfile = jest.spyOn(
+        helpers,
+        'executeFetchUserProfileStrategy',
+      ) as unknown as jest.MockedFunction<() => Promise<PassportProfile>>;
+
+      mockUserProfile.mockResolvedValueOnce({
+        id: 'mockid',
+        username: 'mockuser',
+        provider: 'github',
+        displayName: 'Mocked User',
+        emails: [
+          {
+            value: 'mockuser@gmail.com',
+          },
+        ],
+      });
+
+      const result = await provider.refresh({
+        refreshToken: 'access-token.le-token',
+        scope: 'the-scope',
+      } as any);
+
+      expect(mockUserProfile).toHaveBeenCalledTimes(1);
+      expect(mockUserProfile).toHaveBeenCalledWith(
+        expect.anything(),
+        'le-token',
+      );
+      expect(result).toEqual({
+        response: {
+          backstageIdentity: {
+            id: 'mockuser',
+            token: 'token-for-user:default/mockuser',
+          },
+          profile: {
+            displayName: 'Mocked User',
+            email: 'mockuser@gmail.com',
+            picture: undefined,
+          },
+          providerInfo: {
+            accessToken: 'le-token',
+            expiresInSeconds: 3600,
+            scope: 'the-scope',
+          },
+        },
+        refreshToken: 'access-token.le-token',
+      });
+
+      mockUserProfile.mockRestore();
     });
   });
 });

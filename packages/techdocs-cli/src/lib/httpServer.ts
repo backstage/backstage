@@ -71,10 +71,18 @@ export default class HTTPServer {
             response.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
 
             request.url = forwardPath;
-            return proxy.web(request, response);
+            proxy.web(request, response);
+            return;
           }
 
-          return serveHandler(request, response, {
+          // This endpoint is used by the frontend to detect where the backend is running.
+          if (request.url === '/.detect') {
+            response.setHeader('Content-Type', 'text/plain');
+            response.end('techdocs-cli-server');
+            return;
+          }
+
+          serveHandler(request, response, {
             public: this.backstageBundleDir,
             trailingSlash: true,
             rewrites: [{ source: '**', destination: 'index.html' }],

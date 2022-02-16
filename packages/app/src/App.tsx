@@ -86,6 +86,8 @@ import * as plugins from './plugins';
 
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
+import { PermissionedRoute } from '@backstage/plugin-permission-react';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 
 const app = createApp({
   apis,
@@ -140,7 +142,11 @@ const routes = (
     >
       {entityPage}
     </Route>
-    <Route path="/catalog-import" element={<CatalogImportPage />} />
+    <PermissionedRoute
+      path="/catalog-import"
+      permission={catalogEntityCreatePermission}
+      element={<CatalogImportPage />}
+    />
     <Route
       path="/catalog-graph"
       element={

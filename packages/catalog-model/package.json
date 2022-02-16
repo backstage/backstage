@@ -35,15 +35,13 @@
     "@backstage/errors": "^0.2.0",
     "@backstage/types": "^0.1.1",
     "@types/json-schema": "^7.0.5",
-    "@types/yup": "^0.29.13",
     "ajv": "^7.0.3",
     "json-schema": "^0.4.0",
     "lodash": "^4.17.21",
-    "uuid": "^8.0.0",
-    "yup": "^0.32.9"
+    "uuid": "^8.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.0",
+    "@backstage/cli": "^0.13.2-next.0",
     "@types/jest": "^26.0.7",
     "@types/lodash": "^4.14.151",
     "yaml": "^1.9.2"

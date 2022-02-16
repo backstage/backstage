@@ -16,7 +16,10 @@
 
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrationRegistry,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { Logger } from 'winston';
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
@@ -37,7 +40,7 @@ import { codeSearch } from './azure';
  *    target: https://dev.azure.com/org/project/_git/repo
  **/
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
-  private readonly integrations: ScmIntegrations;
+  private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
@@ -49,7 +52,10 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
     });
   }
 
-  constructor(options: { integrations: ScmIntegrations; logger: Logger }) {
+  constructor(options: {
+    integrations: ScmIntegrationRegistry;
+    logger: Logger;
+  }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
   }

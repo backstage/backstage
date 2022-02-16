@@ -29,6 +29,7 @@ describe('UserSummary Test', () => {
     kind: 'User',
     metadata: {
       name: 'calum.leavy',
+      description: 'Super awesome human',
     },
     spec: {
       profile: {
@@ -73,5 +74,6 @@ describe('UserSummary Test', () => {
       'href',
       '/catalog/default/group/ExampleGroup',
     );
+    expect(rendered.getByText('Super awesome human')).toBeInTheDocument();
   });
 });

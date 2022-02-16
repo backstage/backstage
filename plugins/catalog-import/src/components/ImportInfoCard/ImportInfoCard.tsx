@@ -21,15 +21,27 @@ import React from 'react';
 import { catalogImportApiRef } from '../../api';
 import { useCatalogFilename } from '../../hooks';
 
-type Props = {
+/**
+ * Props for {@link ImportInfoCard}.
+ *
+ * @public
+ */
+export interface ImportInfoCardProps {
   exampleLocationUrl?: string;
   exampleRepositoryUrl?: string;
-};
+}
 
-export const ImportInfoCard = ({
-  exampleLocationUrl = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
-  exampleRepositoryUrl = 'https://github.com/backstage/backstage',
-}: Props) => {
+/**
+ * Shows information about the import process.
+ *
+ * @public
+ */
+export const ImportInfoCard = (props: ImportInfoCardProps) => {
+  const {
+    exampleLocationUrl = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+    exampleRepositoryUrl = 'https://github.com/backstage/backstage',
+  } = props;
+
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
   const catalogImportApi = useApi(catalogImportApiRef);

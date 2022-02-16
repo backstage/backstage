@@ -71,4 +71,31 @@ describe('addLinkClickListener', () => {
 
     expect(fn).toHaveBeenCalledTimes(0);
   });
+
+  it('does not call onClick when a link has a download attribute', async () => {
+    const fn = jest.fn();
+    const shadowDom = await createTestShadowDom(
+      `
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <a download href="http://localhost:3000/file.pdf">Download</a>
+        </body>
+      </html>
+    `,
+      {
+        preTransformers: [],
+        postTransformers: [
+          addLinkClickListener({
+            baseUrl: 'http://localhost:3000',
+            onClick: fn,
+          }),
+        ],
+      },
+    );
+
+    shadowDom.querySelector('a')?.click();
+
+    expect(fn).toHaveBeenCalledTimes(0);
+  });
 });

@@ -131,6 +131,17 @@ const formatInitialData = (value: any) => {
   });
 };
 
+export const getObjectsAtPath = (
+  curData: CoverageTableRow | undefined,
+  path: string[],
+): CoverageTableRow[] | undefined => {
+  let data = curData?.files;
+  for (const fragment of path) {
+    data = data?.find(d => d.path === fragment)?.files;
+  }
+  return data;
+};
+
 export const FileExplorer = () => {
   const { entity } = useEntity();
   const [curData, setCurData] = useState<CoverageTableRow | undefined>();
@@ -175,14 +186,10 @@ export const FileExplorer = () => {
     }
   };
 
-  const moveUpIntoPath = (path: string) => {
-    const pathArray = path.split('/').filter(p => p.length);
-    let data = curData?.files;
-    pathArray.forEach(p => {
-      data = data?.find(d => d.path === p)?.files;
-    });
-    setCurPath(path);
-    setTableData(data);
+  const moveUpIntoPath = (idx: number) => {
+    const path = curPath.split('/').slice(0, idx + 1);
+    setCurPath(path.join('/'));
+    setTableData(getObjectsAtPath(curData, path.slice(1)));
   };
 
   const columns: TableColumn<CoverageTableRow>[] = [
@@ -270,8 +277,8 @@ export const FileExplorer = () => {
                   color: `${idx !== lastPathElementIndex && 'lightblue'}`,
                   cursor: `${idx !== lastPathElementIndex && 'pointer'}`,
                 }}
-                onKeyDown={() => moveUpIntoPath(pathElement)}
-                onClick={() => moveUpIntoPath(pathElement)}
+                onKeyDown={() => moveUpIntoPath(idx)}
+                onClick={() => moveUpIntoPath(idx)}
               >
                 {pathElement || 'root'}
               </div>

@@ -17,8 +17,11 @@
 export {
   EDIT_URL_ANNOTATION,
   ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   ENTITY_META_GENERATED_FIELDS,
   VIEW_URL_ANNOTATION,
+  ANNOTATION_EDIT_URL,
+  ANNOTATION_VIEW_URL,
 } from './constants';
 export type {
   AlphaEntity,
@@ -40,7 +43,6 @@ export {
   getEntityName,
   parseEntityName,
   parseEntityRef,
-  serializeEntityRef,
   stringifyEntityRef,
 } from './ref';
 export type { EntityRefContext } from './ref';

@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import {
@@ -39,13 +39,14 @@ import {
   EntityRefLinks,
   FavoriteEntity,
   getEntityRelations,
+  InspectEntityDialog,
   UnregisterEntityDialog,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
 import { Box, TabProps } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router';
+import React, { useContext, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 
 type SubRoute = {
@@ -98,9 +99,7 @@ const headerProps = (
     entity?.metadata.title ?? paramName ?? entity?.metadata.name ?? '';
   return {
     headerTitle: `${name}${
-      namespace && namespace !== ENTITY_DEFAULT_NAMESPACE
-        ? ` in ${namespace}`
-        : ''
+      namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
     }`,
     headerType: (() => {
       let t = kind.toLocaleLowerCase('en-US');
@@ -177,6 +176,7 @@ export const EntityLayout = ({
 }: EntityLayoutProps) => {
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
+  const location = useLocation();
   const routes = useElementFilter(
     children,
     elements =>
@@ -212,13 +212,21 @@ export const EntityLayout = ({
   );
 
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
+  const [inspectionDialogOpen, setInspectionDialogOpen] = useState(false);
   const navigate = useNavigate();
   const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
+    setInspectionDialogOpen(false);
     navigate('/');
   };
 
-  const showRemovalDialog = () => setConfirmationDialogOpen(true);
+  // Make sure to close the dialog if the user clicks links in it that navigate
+  // to another entity.
+  useEffect(() => {
+    setConfirmationDialogOpen(false);
+    setInspectionDialogOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
 
   return (
     <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
@@ -233,7 +241,8 @@ export const EntityLayout = ({
             <EntityContextMenu
               UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
               UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
-              onUnregisterEntity={showRemovalDialog}
+              onUnregisterEntity={() => setConfirmationDialogOpen(true)}
+              onInspectEntity={() => setInspectionDialogOpen(true)}
             />
           </>
         )}
@@ -266,6 +275,11 @@ export const EntityLayout = ({
         entity={entity!}
         onConfirm={cleanUpAfterRemoval}
         onClose={() => setConfirmationDialogOpen(false)}
+      />
+      <InspectEntityDialog
+        open={inspectionDialogOpen}
+        entity={entity!}
+        onClose={() => setInspectionDialogOpen(false)}
       />
     </Page>
   );

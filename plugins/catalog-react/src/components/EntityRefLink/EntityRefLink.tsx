@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   Entity,
   EntityName,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 import React, { forwardRef } from 'react';
 import { entityRouteRef } from '../../routes';
@@ -25,6 +26,11 @@ import { Link, LinkProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Tooltip } from '@material-ui/core';
 
+/**
+ * Props for {@link EntityRefLink}.
+ *
+ * @public
+ */
 export type EntityRefLinkProps = {
   entityRef: Entity | EntityName;
   defaultKind?: string;
@@ -32,6 +38,11 @@ export type EntityRefLinkProps = {
   children?: React.ReactNode;
 } & Omit<LinkProps, 'to'>;
 
+/**
+ * Shows a clickable link to an entity.
+ *
+ * @public
+ */
 export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
   (props, ref) => {
     const { entityRef, defaultKind, title, children, ...linkProps } = props;
@@ -55,8 +66,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
 
     const routeParams = {
       kind,
-      namespace:
-        namespace?.toLocaleLowerCase('en-US') ?? ENTITY_DEFAULT_NAMESPACE,
+      namespace: namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE,
       name,
     };
     const formattedEntityRefTitle = formatEntityRefTitle(entityRef, {
@@ -76,4 +86,4 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       link
     );
   },
-);
+) as (props: EntityRefLinkProps) => JSX.Element;

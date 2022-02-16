@@ -15,9 +15,9 @@
  */
 
 import {
+  ANNOTATION_SOURCE_LOCATION,
   Entity,
-  parseLocationReference,
-  SOURCE_LOCATION_ANNOTATION,
+  parseLocationRef,
 } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
@@ -31,14 +31,14 @@ export function getEntitySourceLocation(
   scmIntegrationsApi: ScmIntegrationRegistry,
 ): EntitySourceLocation | undefined {
   const sourceLocation =
-    entity.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION];
+    entity.metadata.annotations?.[ANNOTATION_SOURCE_LOCATION];
 
   if (!sourceLocation) {
     return undefined;
   }
 
   try {
-    const sourceLocationRef = parseLocationReference(sourceLocation);
+    const sourceLocationRef = parseLocationRef(sourceLocation);
     const integration = scmIntegrationsApi.byUrl(sourceLocationRef.target);
     return {
       locationTargetUrl: sourceLocationRef.target,

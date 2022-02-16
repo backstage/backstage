@@ -1,0 +1,12 @@
+---
+blank_issues_enabled: false
+contact_links:
+  - about: 'Please ask and answer usage questions in GitHub Discussions'
+    name: Question
+    url: 'https://github.com/backstage/backstage/discussions'
+  - about: 'Alternatively, you can use the Backstage Community Discord'
+    name: Chat
+    url: 'https://discord.gg/MUpMjP2'
+  - about: 'Please check the FAQ before filing new issues'
+    name: 'Backstage FAQ'
+    url: 'https://backstage.io/docs/FAQ'

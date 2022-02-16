@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { InputBase, TemplateAction } from './types';
+import { JsonObject } from '@backstage/types';
 import { ConflictError, NotFoundError } from '@backstage/errors';
+import { TemplateAction } from './types';
 
 export class TemplateActionRegistry {
   private readonly actions = new Map<string, TemplateAction<any>>();
 
-  register<Parameters extends InputBase>(action: TemplateAction<Parameters>) {
+  register<TInput extends JsonObject>(action: TemplateAction<TInput>) {
     if (this.actions.has(action.id)) {
       throw new ConflictError(
         `Template action with ID '${action.id}' has already been registered`,
@@ -29,7 +30,7 @@ export class TemplateActionRegistry {
     this.actions.set(action.id, action);
   }
 
-  get(actionId: string): TemplateAction<any> {
+  get(actionId: string): TemplateAction<JsonObject> {
     const action = this.actions.get(actionId);
     if (!action) {
       throw new NotFoundError(
@@ -39,7 +40,7 @@ export class TemplateActionRegistry {
     return action;
   }
 
-  list(): TemplateAction<any>[] {
+  list(): TemplateAction<JsonObject>[] {
     return [...this.actions.values()];
   }
 }

@@ -44,3 +44,5 @@ jobs:
       - name: techdocs-cli e2e test
         working-directory: packages/techdocs-cli
         run: yarn test:e2e:ci
+        env:
+          BACKSTAGE_TEST_DISABLE_DOCKER: 1

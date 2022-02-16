@@ -161,4 +161,34 @@ describe('<EntityLifecyclePicker/>', () => {
       lifecycles: undefined,
     });
   });
+
+  it('responds to external queryParameters changes', () => {
+    const updateFilters = jest.fn();
+    const rendered = render(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { lifecycles: ['experimental'] },
+        }}
+      >
+        <EntityLifecyclePicker />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      lifecycles: new EntityLifecycleFilter(['experimental']),
+    });
+    rendered.rerender(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { lifecycles: ['production'] },
+        }}
+      >
+        <EntityLifecyclePicker />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      lifecycles: new EntityLifecycleFilter(['production']),
+    });
+  });
 });

@@ -37,6 +37,7 @@ export function createGithubActionsDispatchAction(options: {
     workflowId: string;
     branchOrTagName: string;
     workflowInputs?: { [key: string]: string };
+    token?: string;
   }>({
     id: 'github:actions:dispatch',
     description:
@@ -68,18 +69,31 @@ export function createGithubActionsDispatchAction(options: {
               'Inputs keys and values to send to GitHub Action configured on the workflow file. The maximum number of properties is 10. ',
             type: 'object',
           },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description: 'The GITHUB_TOKEN to use for authorization to GitHub',
+          },
         },
       },
     },
     async handler(ctx) {
-      const { repoUrl, workflowId, branchOrTagName, workflowInputs } =
-        ctx.input;
+      const {
+        repoUrl,
+        workflowId,
+        branchOrTagName,
+        workflowInputs,
+        token: providedToken,
+      } = ctx.input;
 
       ctx.logger.info(
         `Dispatching workflow ${workflowId} for repo ${repoUrl} on ${branchOrTagName}`,
       );
 
-      const { client, owner, repo } = await octokitProvider.getOctokit(repoUrl);
+      const { client, owner, repo } = await octokitProvider.getOctokit(
+        repoUrl,
+        { token: providedToken },
+      );
 
       await client.rest.actions.createWorkflowDispatch({
         owner,

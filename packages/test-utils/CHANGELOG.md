@@ -1,5 +1,19 @@
 # @backstage/test-utils
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.5.2
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.5.2-next.0
+
 ## 0.2.3
 
 ### Patch Changes

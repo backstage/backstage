@@ -1,5 +1,37 @@
 # @backstage/plugin-kubernetes
 
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+
+## 0.5.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+
+## 0.5.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
 ## 0.5.5
 
 ### Patch Changes
@@ -81,7 +113,7 @@
   ## Backwards incompatible changes
 
   If your Kubernetes distribution does not have the [metrics server](https://github.com/kubernetes-sigs/metrics-server) installed,
-  you will need to set the `skipMetricsLookup` config flag to `false`.
+  you will need to set the `skipMetricsLookup` config flag to `true`.
 
   See the [configuration docs](https://backstage.io/docs/features/kubernetes/configuration) for more details.
 

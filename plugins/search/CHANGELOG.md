@@ -1,5 +1,39 @@
 # @backstage/plugin-search
 
+## 0.6.2
+
+### Patch Changes
+
+- faf49ba82f: Modify modal search to clamp result length to 5 rows.
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- faf49ba82f: Modify modal search to clamp result length to 5 rows.
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
 ## 0.6.0
 
 ### Minor Changes

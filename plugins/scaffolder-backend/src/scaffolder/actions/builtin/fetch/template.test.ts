@@ -27,15 +27,20 @@ import { ScmIntegrations } from '@backstage/integration';
 import { PassThrough } from 'stream';
 import { fetchContents } from './helpers';
 import { ActionContext, TemplateAction } from '../../types';
-import { createFetchTemplateAction, FetchTemplateInput } from './template';
+import { createFetchTemplateAction } from './template';
 
 jest.mock('./helpers', () => ({
   fetchContents: jest.fn(),
 }));
 
+type FetchTemplateInput = ReturnType<
+  typeof createFetchTemplateAction
+> extends TemplateAction<infer U>
+  ? U
+  : never;
+
 const realFiles = Object.fromEntries(
   [
-    require.resolve('vm2/lib/fixasync'),
     resolvePackagePath(
       '@backstage/plugin-scaffolder-backend',
       'assets',

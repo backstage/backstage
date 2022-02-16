@@ -45,6 +45,7 @@ const useStyles = makeStyles(
   },
 );
 
+/** @public */
 export const EntitySearchBar = () => {
   const classes = useStyles();
 

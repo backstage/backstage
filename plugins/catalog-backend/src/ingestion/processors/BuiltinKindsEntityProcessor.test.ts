@@ -21,9 +21,9 @@ import {
   GroupEntity,
   ResourceEntity,
   SystemEntity,
-  TemplateEntityV1beta2,
   UserEntity,
 } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 
 describe('BuiltinKindsEntityProcessor', () => {
@@ -251,13 +251,14 @@ describe('BuiltinKindsEntityProcessor', () => {
           type: 'database',
           owner: 'o',
           dependsOn: ['Component:c', 'Resource:r'],
+          dependencyOf: ['Component:d'],
           system: 's',
         },
       };
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(8);
+      expect(emit).toBeCalledTimes(10);
       expect(emit).toBeCalledWith({
         type: 'relation',
         relation: {
@@ -323,6 +324,23 @@ describe('BuiltinKindsEntityProcessor', () => {
           source: { kind: 'Resource', namespace: 'default', name: 'n' },
           type: 'partOf',
           target: { kind: 'System', namespace: 'default', name: 's' },
+        },
+      });
+
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'n' },
+          type: 'dependencyOf',
+          target: { kind: 'Component', namespace: 'default', name: 'd' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'd' },
+          type: 'dependsOn',
+          target: { kind: 'Resource', namespace: 'default', name: 'n' },
         },
       });
     });

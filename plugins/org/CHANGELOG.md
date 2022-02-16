@@ -1,5 +1,40 @@
 # @backstage/plugin-org
 
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- ef86143c16: Added `relations.memberof` filter to the catalog api call in `MemberListCard` to avoid fetching all the User entity kinds from catalog-backend.
+- 64cbca7839: The description from `metadata.description` will now show as the `subheader` on the UserProfileCard in the same way as the GroupProfileCard
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- ef86143c16: Added `relations.memberof` filter to the catalog api call in `MemberListCard` to avoid fetching all the User entity kinds from catalog-backend.
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
 ## 0.4.0
 
 ### Minor Changes

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-jest.mock('@octokit/rest');
+jest.mock('octokit');
 import { TemplateAction } from '../../types';
 import { createGithubActionsDispatchAction } from './githubActionsDispatch';
 
@@ -54,7 +54,7 @@ describe('github:actions:dispatch', () => {
     createTemporaryDirectory: jest.fn(),
   };
 
-  const { mockGithubClient } = require('@octokit/rest');
+  const { mockGithubClient } = require('octokit');
 
   beforeEach(() => {
     jest.resetAllMocks();

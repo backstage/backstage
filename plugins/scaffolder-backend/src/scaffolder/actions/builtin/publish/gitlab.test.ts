@@ -45,7 +45,7 @@ describe('publish:gitlab', () => {
   const mockContext = {
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
-      repoVisibility: 'private',
+      repoVisibility: 'private' as const,
     },
     workspacePath: 'lol',
     logger: getVoidLogger(),
@@ -94,6 +94,28 @@ describe('publish:gitlab', () => {
         },
       }),
     ).rejects.toThrow(/No token available for host/);
+  });
+
+  it('should work when there is a token provided through ctx.input', async () => {
+    mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'hosted.gitlab.com?repo=bob&owner=owner',
+        token: 'token',
+      },
+    });
+
+    expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith('owner');
+    expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
+      namespace_id: 1234,
+      name: 'bob',
+      visibility: 'private',
+    });
   });
 
   it('should call the correct Gitlab APIs when the owner is an organization', async () => {

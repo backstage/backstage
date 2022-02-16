@@ -1,5 +1,40 @@
 # @backstage/plugin-splunk-on-call
 
+## 0.3.22
+
+### Patch Changes
+
+- c17be55ffb: Add Splunk On-Call plugin support for a `splunk.com/on-call-routing-key` annotation. If the `splunk.com/on-call-routing-key` is provided, the plugin displays a Splunk On-Call card for each of the teams associated with the routing key.
+- 6c6d1c6439: Correct spelling of 'Acknowledge' in tooltip.
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+
+## 0.3.22-next.0
+
+### Patch Changes
+
+- 6c6d1c6439: Correct spelling of 'Acknowledge' in tooltip.
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+
+## 0.3.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+
+## 0.3.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
 ## 0.3.20
 
 ### Patch Changes

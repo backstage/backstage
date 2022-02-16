@@ -26,7 +26,7 @@ const privatePackages = new Set([
   'example-backend',
   'e2e-test',
   'storybook',
-  'embedded-techdocs-app',
+  'techdocs-cli-embedded-app',
 ]);
 
 async function main() {

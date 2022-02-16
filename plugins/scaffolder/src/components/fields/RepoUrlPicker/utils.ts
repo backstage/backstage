@@ -44,22 +44,22 @@ export function serializeRepoPickerUrl(data: RepoUrlPickerState) {
 export function parseRepoPickerUrl(
   url: string | undefined,
 ): RepoUrlPickerState {
-  let host = undefined;
-  let owner = undefined;
-  let repoName = undefined;
-  let organization = undefined;
-  let workspace = undefined;
-  let project = undefined;
+  let host = '';
+  let owner = '';
+  let repoName = '';
+  let organization = '';
+  let workspace = '';
+  let project = '';
 
   try {
     if (url) {
       const parsed = new URL(`https://${url}`);
       host = parsed.host;
-      owner = parsed.searchParams.get('owner') || undefined;
-      repoName = parsed.searchParams.get('repo') || undefined;
-      organization = parsed.searchParams.get('organization') || undefined;
-      workspace = parsed.searchParams.get('workspace') || undefined;
-      project = parsed.searchParams.get('project') || undefined;
+      owner = parsed.searchParams.get('owner') || '';
+      repoName = parsed.searchParams.get('repo') || '';
+      organization = parsed.searchParams.get('organization') || '';
+      workspace = parsed.searchParams.get('workspace') || '';
+      project = parsed.searchParams.get('project') || '';
     }
   } catch {
     /* ok */

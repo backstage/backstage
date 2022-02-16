@@ -15,9 +15,16 @@
  */
 
 import { airbrakePlugin } from './plugin';
+import { ProductionAirbrakeApi } from './api';
 
 describe('catalog', () => {
   it('should export plugin', () => {
     expect(airbrakePlugin).toBeDefined();
+  });
+
+  it('should have at least one API, the production API', () => {
+    const apiFactories = Array.from(airbrakePlugin.getApis());
+    expect(apiFactories.length).toBe(1);
+    expect(apiFactories[0].factory({})).toBeInstanceOf(ProductionAirbrakeApi);
   });
 });

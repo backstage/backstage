@@ -34,20 +34,32 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type Props = {
+/**
+ * Props for {@link ImportStepper}.
+ *
+ * @public
+ */
+export interface ImportStepperProps {
   initialUrl?: string;
   generateStepper?: (
     flow: ImportFlows,
     defaults: StepperProvider,
   ) => StepperProvider;
   variant?: InfoCardVariants;
-};
+}
 
-export const ImportStepper = ({
-  initialUrl,
-  generateStepper = defaultGenerateStepper,
-  variant,
-}: Props) => {
+/**
+ * The stepper that holds the different import stages.
+ *
+ * @public
+ */
+export const ImportStepper = (props: ImportStepperProps) => {
+  const {
+    initialUrl,
+    generateStepper = defaultGenerateStepper,
+    variant,
+  } = props;
+
   const catalogImportApi = useApi(catalogImportApiRef);
   const classes = useStyles();
   const state = useImportState({ initialUrl });

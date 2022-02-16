@@ -130,8 +130,13 @@ export const UserListPicker = ({
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-  const { filters, updateFilters, backendEntities, queryParameters } =
-    useEntityListProvider();
+  const {
+    filters,
+    updateFilters,
+    backendEntities,
+    queryParameters,
+    loading: loadingBackendEntities,
+  } = useEntityListProvider();
 
   // Remove group items that aren't in availableFilters and exclude
   // any now-empty groups.
@@ -149,7 +154,10 @@ export const UserListPicker = ({
     .filter(({ items }) => !!items.length);
 
   const { isStarredEntity } = useStarredEntities();
-  const { isOwnedEntity } = useEntityOwnership();
+  const { isOwnedEntity, loading: loadingEntityOwnership } =
+    useEntityOwnership();
+
+  const loading = loadingBackendEntities || loadingEntityOwnership;
 
   // Static filters; used for generating counts of potentially unselected kinds
   const ownedFilter = useMemo(
@@ -161,18 +169,58 @@ export const UserListPicker = ({
     [isOwnedEntity, isStarredEntity],
   );
 
+  const queryParamUserFilter = useMemo(
+    () => [queryParameters.user].flat()[0],
+    [queryParameters],
+  );
+
+  const [selectedUserFilter, setSelectedUserFilter] = useState(
+    queryParamUserFilter ?? initialFilter,
+  );
+
   // To show proper counts for each section, apply all other frontend filters _except_ the user
   // filter that's controlled by this picker.
-  const [entitiesWithoutUserFilter, setEntitiesWithoutUserFilter] =
-    useState(backendEntities);
-  const totalOwnedUserEntities = entitiesWithoutUserFilter.filter(entity =>
-    ownedFilter.filterEntity(entity),
-  ).length;
-  const [selectedUserFilter, setSelectedUserFilter] = useState(
-    totalOwnedUserEntities > 0
-      ? [queryParameters.user].flat()[0] ?? initialFilter
-      : 'all',
+  const entitiesWithoutUserFilter = useMemo(
+    () =>
+      backendEntities.filter(
+        reduceEntityFilters(
+          compact(Object.values({ ...filters, user: undefined })),
+        ),
+      ),
+    [filters, backendEntities],
   );
+
+  const filterCounts = useMemo<Record<string, number>>(
+    () => ({
+      all: entitiesWithoutUserFilter.length,
+      starred: entitiesWithoutUserFilter.filter(entity =>
+        starredFilter.filterEntity(entity),
+      ).length,
+      owned: entitiesWithoutUserFilter.filter(entity =>
+        ownedFilter.filterEntity(entity),
+      ).length,
+    }),
+    [entitiesWithoutUserFilter, starredFilter, ownedFilter],
+  );
+
+  // Set selected user filter on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    if (queryParamUserFilter) {
+      setSelectedUserFilter(queryParamUserFilter as UserListFilterKind);
+    }
+  }, [queryParamUserFilter]);
+
+  useEffect(() => {
+    if (
+      !loading &&
+      !!selectedUserFilter &&
+      selectedUserFilter !== 'all' &&
+      filterCounts[selectedUserFilter] === 0
+    ) {
+      setSelectedUserFilter('all');
+    }
+  }, [loading, filterCounts, selectedUserFilter, setSelectedUserFilter]);
 
   useEffect(() => {
     updateFilters({
@@ -185,26 +233,6 @@ export const UserListPicker = ({
         : undefined,
     });
   }, [selectedUserFilter, isOwnedEntity, isStarredEntity, updateFilters]);
-
-  useEffect(() => {
-    const filterFn = reduceEntityFilters(
-      compact(Object.values({ ...filters, user: undefined })),
-    );
-    setEntitiesWithoutUserFilter(backendEntities.filter(filterFn));
-  }, [filters, backendEntities]);
-
-  function getFilterCount(id: UserListFilterKind) {
-    switch (id) {
-      case 'owned':
-        return totalOwnedUserEntities;
-      case 'starred':
-        return entitiesWithoutUserFilter.filter(entity =>
-          starredFilter.filterEntity(entity),
-        ).length;
-      default:
-        return entitiesWithoutUserFilter.length;
-    }
-  }
 
   return (
     <Card className={classes.root}>
@@ -223,6 +251,8 @@ export const UserListPicker = ({
                   onClick={() => setSelectedUserFilter(item.id)}
                   selected={item.id === filters.user?.value}
                   className={classes.menuItem}
+                  disabled={filterCounts[item.id] === 0}
+                  data-testid={`user-picker-${item.id}`}
                 >
                   {item.icon && (
                     <ListItemIcon className={classes.listIcon}>
@@ -230,15 +260,10 @@ export const UserListPicker = ({
                     </ListItemIcon>
                   )}
                   <ListItemText>
-                    <Typography
-                      variant="body1"
-                      data-testid={`user-picker-${item.id}`}
-                    >
-                      {item.label}
-                    </Typography>
+                    <Typography variant="body1">{item.label}</Typography>
                   </ListItemText>
                   <ListItemSecondaryAction>
-                    {getFilterCount(item.id) ?? '-'}
+                    {filterCounts[item.id] ?? '-'}
                   </ListItemSecondaryAction>
                 </MenuItem>
               ))}

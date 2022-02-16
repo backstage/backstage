@@ -17,7 +17,8 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
-import type { Entity, LocationSpec, Location } from '@backstage/catalog-model';
+import type { Location } from '@backstage/catalog-client';
+import type { Entity, LocationSpec } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
 import { EntitiesCatalog } from '../catalog';

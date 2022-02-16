@@ -53,6 +53,7 @@ type TemplateContext = {
   steps: {
     [stepName: string]: { output: { [outputName: string]: JsonValue } };
   };
+  secrets?: Record<string, string>;
 };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
@@ -231,8 +232,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           const action = this.options.actionRegistry.get(step.action);
           const { taskLogger, streamLogger } = createStepLogger({ task, step });
 
+          // Secrets are only passed when templating the input to actions for security reasons
           const input =
-            (step.input && this.render(step.input, context, renderTemplate)) ??
+            (step.input &&
+              this.render(
+                step.input,
+                { ...context, secrets: task.secrets ?? {} },
+                renderTemplate,
+              )) ??
             {};
 
           if (action.schema?.input) {

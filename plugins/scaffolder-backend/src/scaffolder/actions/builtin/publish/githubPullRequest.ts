@@ -24,7 +24,7 @@ import {
 } from '@backstage/integration';
 import { zipObject } from 'lodash';
 import { createTemplateAction } from '../../createTemplateAction';
-import { Octokit } from '@octokit/rest';
+import { Octokit } from 'octokit';
 import { InputError, CustomErrorBase } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import globby from 'globby';
@@ -48,21 +48,13 @@ export type PullRequestCreatorConstructor = (
   octokit: Octokit,
 ) => PullRequestCreator;
 
-export type GithubPullRequestActionInput = {
-  title: string;
-  branchName: string;
-  description: string;
-  repoUrl: string;
-  targetPath?: string;
-  sourcePath?: string;
-};
-
 export type ClientFactoryInput = {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
   host: string;
   owner: string;
   repo: string;
+  token?: string;
 };
 
 export const defaultClientFactory = async ({
@@ -71,11 +63,20 @@ export const defaultClientFactory = async ({
   owner,
   repo,
   host = 'github.com',
+  token: providedToken,
 }: ClientFactoryInput): Promise<PullRequestCreator> => {
   const integrationConfig = integrations.github.byHost(host)?.config;
+  const OctokitPR = Octokit.plugin(createPullRequest);
 
   if (!integrationConfig) {
     throw new InputError(`No integration for host ${host}`);
+  }
+
+  if (providedToken) {
+    return new OctokitPR({
+      auth: providedToken,
+      baseUrl: integrationConfig.apiBaseUrl,
+    });
   }
 
   const credentialsProvider =
@@ -94,8 +95,6 @@ export const defaultClientFactory = async ({
     );
   }
 
-  const OctokitPR = Octokit.plugin(createPullRequest);
-
   return new OctokitPR({
     auth: token,
     baseUrl: integrationConfig.apiBaseUrl,
@@ -113,7 +112,15 @@ export const createPublishGithubPullRequestAction = ({
   githubCredentialsProvider,
   clientFactory = defaultClientFactory,
 }: CreateGithubPullRequestActionOptions) => {
-  return createTemplateAction<GithubPullRequestActionInput>({
+  return createTemplateAction<{
+    title: string;
+    branchName: string;
+    description: string;
+    repoUrl: string;
+    targetPath?: string;
+    sourcePath?: string;
+    token?: string;
+  }>({
     id: 'publish:github:pull-request',
     schema: {
       input: {
@@ -151,6 +158,11 @@ export const createPublishGithubPullRequestAction = ({
             title: 'Repository Subdirectory',
             description: 'Subdirectory of repository to apply changes to',
           },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description: 'The token to use for authorization to GitHub',
+          },
         },
       },
       output: {
@@ -173,6 +185,7 @@ export const createPublishGithubPullRequestAction = ({
         description,
         targetPath,
         sourcePath,
+        token: providedToken,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -189,7 +202,9 @@ export const createPublishGithubPullRequestAction = ({
         host,
         owner,
         repo,
+        token: providedToken,
       });
+
       const fileRoot = sourcePath
         ? resolveSafeChildPath(ctx.workspacePath, sourcePath)
         : ctx.workspacePath;

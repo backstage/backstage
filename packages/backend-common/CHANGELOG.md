@@ -1,5 +1,52 @@
 # @backstage/backend-common
 
+## 0.10.7
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 599f3dfa83: chore(deps-dev): bump `@types/concat-stream` from 1.6.1 to 2.0.0
+- c3868458d8: Removed unnecessary `get-port` dependency
+- 04398e946e: Bump `selfsigned` to 2.0.0
+
+## 0.10.7-next.0
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 599f3dfa83: chore(deps-dev): bump `@types/concat-stream` from 1.6.1 to 2.0.0
+- c3868458d8: Removed unnecessary `get-port` dependency
+
+## 0.10.6
+
+### Patch Changes
+
+- 50d039577a: Added a `Context` type for the backend, that can propagate an abort signal, a
+  deadline, and contextual values through the call stack. The main entrypoint is
+  the `Contexts` utility class that provides a root context creator and commonly
+  used decorators.
+
+  These are marked as `@alpha` for now, and are therefore only accessible via
+  `@backstage/backend-common/alpha`.
+
+## 0.10.6-next.0
+
+### Patch Changes
+
+- 50d039577a: Added a `Context` type for the backend, that can propagate an abort signal, a
+  deadline, and contextual values through the call stack. The main entrypoint is
+  the `Contexts` utility class that provides a root context creator and commonly
+  used decorators.
+
+  These are marked as `@alpha` for now, and are therefore only accessible via
+  `@backstage/backend-common/alpha`.
+
 ## 0.10.5
 
 ### Patch Changes

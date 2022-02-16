@@ -15,8 +15,8 @@
  */
 
 import {
-  CatalogEntitiesRequest,
-  CatalogListResponse,
+  GetEntitiesRequest,
+  GetEntitiesResponse,
 } from '@backstage/catalog-client';
 import { Entity, GroupEntity, UserEntity } from '@backstage/catalog-model';
 import {
@@ -110,15 +110,15 @@ const items = [
 ] as Entity[];
 
 const getEntitiesMock = (
-  request?: CatalogEntitiesRequest,
-): Promise<CatalogListResponse<Entity>> => {
+  request?: GetEntitiesRequest,
+): Promise<GetEntitiesResponse> => {
   const filterKinds =
     !Array.isArray(request?.filter) && Array.isArray(request?.filter?.kind)
       ? request?.filter?.kind ?? []
       : []; // we expect the request to be like { filter: { kind: ['API','System'], .... }. If changed in OwnerShipCard, let's change in also here
   return Promise.resolve({
     items: items.filter(item => filterKinds.find(k => k === item.kind)),
-  } as CatalogListResponse<Entity>);
+  } as GetEntitiesResponse);
 };
 
 describe('OwnershipCard', () => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-jest.mock('@octokit/rest');
+jest.mock('octokit');
 
 import { createGithubWebhookAction } from './githubWebhook';
 import {
@@ -65,7 +65,7 @@ describe('github:repository:webhook:create', () => {
     createTemporaryDirectory: jest.fn(),
   };
 
-  const { mockGithubClient } = require('@octokit/rest');
+  const { mockGithubClient } = require('octokit');
 
   it('should call the githubApi for creating repository Webhook', async () => {
     const repoUrl = 'github.com?repo=repo&owner=owner';
@@ -75,7 +75,7 @@ describe('github:repository:webhook:create', () => {
     });
     await action.handler(ctx);
 
-    expect(mockGithubClient.repos.createWebhook).toHaveBeenCalledWith({
+    expect(mockGithubClient.rest.repos.createWebhook).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
       events: ['push'],
@@ -97,7 +97,7 @@ describe('github:repository:webhook:create', () => {
       },
     });
 
-    expect(mockGithubClient.repos.createWebhook).toHaveBeenCalledWith({
+    expect(mockGithubClient.rest.repos.createWebhook).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
       events: ['push'],
@@ -118,7 +118,7 @@ describe('github:repository:webhook:create', () => {
       },
     });
 
-    expect(mockGithubClient.repos.createWebhook).toHaveBeenCalledWith({
+    expect(mockGithubClient.rest.repos.createWebhook).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
       events: ['push', 'pull_request'],
@@ -139,7 +139,7 @@ describe('github:repository:webhook:create', () => {
       },
     });
 
-    expect(mockGithubClient.repos.createWebhook).toHaveBeenCalledWith({
+    expect(mockGithubClient.rest.repos.createWebhook).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
       events: ['push'],
@@ -160,7 +160,7 @@ describe('github:repository:webhook:create', () => {
       },
     });
 
-    expect(mockGithubClient.repos.createWebhook).toHaveBeenCalledWith({
+    expect(mockGithubClient.rest.repos.createWebhook).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
       events: ['push'],
@@ -181,7 +181,7 @@ describe('github:repository:webhook:create', () => {
       },
     });
 
-    expect(mockGithubClient.repos.createWebhook).toHaveBeenCalledWith({
+    expect(mockGithubClient.rest.repos.createWebhook).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
       events: ['push'],
@@ -202,7 +202,7 @@ describe('github:repository:webhook:create', () => {
       },
     });
 
-    expect(mockGithubClient.repos.createWebhook).toHaveBeenCalledWith({
+    expect(mockGithubClient.rest.repos.createWebhook).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
       events: ['push'],

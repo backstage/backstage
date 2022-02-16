@@ -26,9 +26,7 @@ import { UnpackNestedValue } from 'react-hook-form';
 import { UseFormProps } from 'react-hook-form';
 import { UseFormReturn } from 'react-hook-form';
 
-// Warning: (ae-missing-release-tag) "AnalyzeResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type AnalyzeResult =
   | {
       type: 'locations';
@@ -45,26 +43,36 @@ export type AnalyzeResult =
       generatedEntities: PartialEntity[];
     };
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "AutocompleteTextField" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const AutocompleteTextField: <TFieldValue extends string>({
-  name,
-  options,
-  required,
-  errors,
-  rules,
-  loading,
-  loadingText,
-  helperText,
-  errorHelperText,
-  textFieldProps,
-}: Props_5<TFieldValue>) => JSX.Element;
+// @public
+export const AutocompleteTextField: <TFieldValue extends string>(
+  props: AutocompleteTextFieldProps<TFieldValue>,
+) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "CatalogImportApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export interface AutocompleteTextFieldProps<TFieldValue extends string> {
+  // (undocumented)
+  errorHelperText?: string;
+  // (undocumented)
+  errors?: FieldErrors;
+  // (undocumented)
+  helperText?: React_2.ReactNode;
+  // (undocumented)
+  loading?: boolean;
+  // (undocumented)
+  loadingText?: string;
+  // (undocumented)
+  name: TFieldValue;
+  // (undocumented)
+  options: string[];
+  // (undocumented)
+  required?: boolean;
+  // (undocumented)
+  rules?: React_2.ComponentProps<typeof Controller>['rules'];
+  // (undocumented)
+  textFieldProps?: Omit<TextFieldProps, 'required' | 'fullWidth'>;
+}
+
+// @public
 export interface CatalogImportApi {
   // (undocumented)
   analyzeUrl(url: string): Promise<AnalyzeResult>;
@@ -85,14 +93,10 @@ export interface CatalogImportApi {
   }>;
 }
 
-// Warning: (ae-missing-release-tag) "catalogImportApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const catalogImportApiRef: ApiRef<CatalogImportApi>;
 
-// Warning: (ae-missing-release-tag) "CatalogImportClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class CatalogImportClient implements CatalogImportApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
@@ -110,12 +114,7 @@ export class CatalogImportClient implements CatalogImportApi {
     body: string;
   }>;
   // (undocumented)
-  submitPullRequest({
-    repositoryUrl,
-    fileContent,
-    title,
-    body,
-  }: {
+  submitPullRequest(options: {
     repositoryUrl: string;
     fileContent: string;
     title: string;
@@ -126,14 +125,10 @@ export class CatalogImportClient implements CatalogImportApi {
   }>;
 }
 
-// Warning: (ae-missing-release-tag) "CatalogImportPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const CatalogImportPage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "catalogImportPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 const catalogImportPlugin: BackstagePlugin<
   {
     importPage: RouteRef<undefined>;
@@ -143,9 +138,7 @@ const catalogImportPlugin: BackstagePlugin<
 export { catalogImportPlugin };
 export { catalogImportPlugin as plugin };
 
-// Warning: (ae-forgotten-export) The symbol "ImportFlows" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "StepperProvider" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "defaultGenerateStepper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export function defaultGenerateStepper(
@@ -153,98 +146,221 @@ export function defaultGenerateStepper(
   defaults: StepperProvider,
 ): StepperProvider;
 
-// Warning: (ae-missing-release-tag) "DefaultImportPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const DefaultImportPage: () => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EntityListComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const EntityListComponent: ({
-  locations,
-  collapsed,
-  locationListItemIcon,
-  onItemClick,
-  firstListItem,
-  withLinks,
-}: Props) => JSX.Element;
-
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "ImportInfoCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const ImportInfoCard: ({
-  exampleLocationUrl,
-  exampleRepositoryUrl,
-}: Props_2) => JSX.Element;
-
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "ImportStepper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const ImportStepper: ({
-  initialUrl,
-  generateStepper,
-  variant,
-}: Props_3) => JSX.Element;
-
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "PreparePullRequestForm" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export const PreparePullRequestForm: <
+export const EntityListComponent: (
+  props: EntityListComponentProps,
+) => JSX.Element;
+
+// @public
+export interface EntityListComponentProps {
+  // (undocumented)
+  collapsed?: boolean;
+  // (undocumented)
+  firstListItem?: React_2.ReactElement;
+  // (undocumented)
+  locationListItemIcon: (target: string) => React_2.ReactElement;
+  // (undocumented)
+  locations: Array<{
+    target: string;
+    entities: (Entity | EntityName)[];
+  }>;
+  // (undocumented)
+  onItemClick?: (target: string) => void;
+  // (undocumented)
+  withLinks?: boolean;
+}
+
+// @public
+export type ImportFlows =
+  | 'unknown'
+  | 'single-location'
+  | 'multiple-locations'
+  | 'no-location';
+
+// @public
+export const ImportInfoCard: (props: ImportInfoCardProps) => JSX.Element;
+
+// @public
+export interface ImportInfoCardProps {
+  // (undocumented)
+  exampleLocationUrl?: string;
+  // (undocumented)
+  exampleRepositoryUrl?: string;
+}
+
+// Warning: (ae-forgotten-export) The symbol "State" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "ImportState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ImportState = State & {
+  activeFlow: ImportFlows;
+  activeStepNumber: number;
+  analysisUrl?: string;
+  onGoBack?: () => void;
+  onReset: () => void;
+};
+
+// @public
+export const ImportStepper: (props: ImportStepperProps) => JSX.Element;
+
+// @public
+export interface ImportStepperProps {
+  // (undocumented)
+  generateStepper?: (
+    flow: ImportFlows,
+    defaults: StepperProvider,
+  ) => StepperProvider;
+  // (undocumented)
+  initialUrl?: string;
+  // (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public
+export const PreparePullRequestForm: <TFieldValues extends Record<string, any>>(
+  props: PreparePullRequestFormProps<TFieldValues>,
+) => JSX.Element;
+
+// @public
+export type PreparePullRequestFormProps<
   TFieldValues extends Record<string, any>,
->({
-  defaultValues,
-  onSubmit,
-  render,
-}: Props_6<TFieldValues>) => JSX.Element;
+> = Pick<UseFormProps<TFieldValues>, 'defaultValues'> & {
+  onSubmit: SubmitHandler<TFieldValues>;
+  render: (
+    props: Pick<
+      UseFormReturn<TFieldValues>,
+      'formState' | 'register' | 'control' | 'setValue'
+    > & {
+      values: UnpackNestedValue<TFieldValues>;
+    },
+  ) => React_2.ReactNode;
+};
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "PreviewCatalogInfoComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const PreviewCatalogInfoComponent: ({
-  repositoryUrl,
-  entities,
-  classes,
-}: Props_7) => JSX.Element;
-
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "PreviewPullRequestComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const PreviewPullRequestComponent: ({
-  title,
-  description,
-  classes,
-}: Props_8) => JSX.Element;
-
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "StepInitAnalyzeUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export const StepInitAnalyzeUrl: ({
-  onAnalysis,
-  analysisUrl,
-  disablePullRequest,
-  exampleLocationUrl,
-}: Props_4) => JSX.Element;
+export type PrepareResult =
+  | {
+      type: 'locations';
+      locations: Array<{
+        exists?: boolean;
+        target: string;
+        entities: EntityName[];
+      }>;
+    }
+  | {
+      type: 'repository';
+      url: string;
+      integrationType: string;
+      pullRequest: {
+        url: string;
+      };
+      locations: Array<{
+        target: string;
+        entities: EntityName[];
+      }>;
+    };
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "StepPrepareCreatePullRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const StepPrepareCreatePullRequest: ({
-  analyzeResult,
-  onPrepare,
-  onGoBack,
-  renderFormFields,
-}: Props_9) => JSX.Element;
+// @public
+export const PreviewCatalogInfoComponent: (
+  props: PreviewCatalogInfoComponentProps,
+) => JSX.Element;
+
+// @public
+export interface PreviewCatalogInfoComponentProps {
+  // (undocumented)
+  classes?: {
+    card?: string;
+    cardContent?: string;
+  };
+  // (undocumented)
+  entities: Entity[];
+  // (undocumented)
+  repositoryUrl: string;
+}
+
+// @public
+export const PreviewPullRequestComponent: (
+  props: PreviewPullRequestComponentProps,
+) => JSX.Element;
+
+// @public
+export interface PreviewPullRequestComponentProps {
+  // (undocumented)
+  classes?: {
+    card?: string;
+    cardContent?: string;
+  };
+  // (undocumented)
+  description: string;
+  // (undocumented)
+  title: string;
+}
+
+// @public
+export const StepInitAnalyzeUrl: (
+  props: StepInitAnalyzeUrlProps,
+) => JSX.Element;
+
+// @public
+export interface StepInitAnalyzeUrlProps {
+  // (undocumented)
+  analysisUrl?: string;
+  // (undocumented)
+  disablePullRequest?: boolean;
+  // (undocumented)
+  exampleLocationUrl?: string;
+  // (undocumented)
+  onAnalysis: (
+    flow: ImportFlows,
+    url: string,
+    result: AnalyzeResult,
+    opts?: {
+      prepareResult?: PrepareResult;
+    },
+  ) => void;
+}
+
+// @public
+export const StepPrepareCreatePullRequest: (
+  props: StepPrepareCreatePullRequestProps,
+) => JSX.Element;
+
+// @public
+export interface StepPrepareCreatePullRequestProps {
+  // (undocumented)
+  analyzeResult: Extract<
+    AnalyzeResult,
+    {
+      type: 'repository';
+    }
+  >;
+  // (undocumented)
+  onGoBack?: () => void;
+  // (undocumented)
+  onPrepare: (
+    result: PrepareResult,
+    opts?: {
+      notRepeatable?: boolean;
+    },
+  ) => void;
+  // Warning: (ae-forgotten-export) The symbol "FormData" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  renderFormFields: (
+    props: Pick<
+      UseFormReturn<FormData_2>,
+      'register' | 'setValue' | 'formState'
+    > & {
+      values: UnpackNestedValue<FormData_2>;
+      groups: string[];
+      groupsLoading: boolean;
+    },
+  ) => React_2.ReactNode;
+}
 
 // Warnings were encountered during analysis:
 //
-// src/api/CatalogImportApi.d.ts:15:5 - (ae-forgotten-export) The symbol "PartialEntity" needs to be exported by the entry point index.d.ts
+// src/api/CatalogImportApi.d.ts:25:5 - (ae-forgotten-export) The symbol "PartialEntity" needs to be exported by the entry point index.d.ts
 ```

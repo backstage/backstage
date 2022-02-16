@@ -29,6 +29,7 @@ export const optimization = (
     minimizer: [
       new ESBuildMinifyPlugin({
         target: 'es2019',
+        format: 'iife',
       }),
     ],
     runtimeChunk: 'single',

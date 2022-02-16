@@ -53,7 +53,12 @@ type FormData = {
   useCodeowners: boolean;
 };
 
-type Props = {
+/**
+ * Props for {@link StepPrepareCreatePullRequest}.
+ *
+ * @public
+ */
+export interface StepPrepareCreatePullRequestProps {
   analyzeResult: Extract<AnalyzeResult, { type: 'repository' }>;
   onPrepare: (
     result: PrepareResult,
@@ -71,7 +76,7 @@ type Props = {
       groupsLoading: boolean;
     },
   ) => React.ReactNode;
-};
+}
 
 export function generateEntities(
   entities: PartialEntity[],
@@ -93,12 +98,16 @@ export function generateEntities(
   }));
 }
 
-export const StepPrepareCreatePullRequest = ({
-  analyzeResult,
-  onPrepare,
-  onGoBack,
-  renderFormFields,
-}: Props) => {
+/**
+ * Prepares a pull request.
+ *
+ * @public
+ */
+export const StepPrepareCreatePullRequest = (
+  props: StepPrepareCreatePullRequestProps,
+) => {
+  const { analyzeResult, onPrepare, onGoBack, renderFormFields } = props;
+
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const catalogImportApi = useApi(catalogImportApiRef);

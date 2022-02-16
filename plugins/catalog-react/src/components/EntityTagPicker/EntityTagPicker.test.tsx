@@ -149,4 +149,34 @@ describe('<EntityTagPicker/>', () => {
       tags: undefined,
     });
   });
+
+  it('responds to external queryParameters changes', () => {
+    const updateFilters = jest.fn();
+    const rendered = render(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { tags: ['tag1'] },
+        }}
+      >
+        <EntityTagPicker />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      tags: new EntityTagFilter(['tag1']),
+    });
+    rendered.rerender(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { tags: ['tag2'] },
+        }}
+      >
+        <EntityTagPicker />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      tags: new EntityTagFilter(['tag2']),
+    });
+  });
 });

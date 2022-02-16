@@ -15,4 +15,4 @@
  */
 
 export { EntityTypePicker } from './EntityTypePicker';
-export type { EntityTypeFilterProps } from './EntityTypePicker';
+export type { EntityTypePickerProps } from './EntityTypePicker';

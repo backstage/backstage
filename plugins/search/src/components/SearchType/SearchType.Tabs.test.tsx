@@ -33,7 +33,6 @@ describe('SearchType.Tabs', () => {
     term: '',
     types: [],
     filters: {},
-    toggleModal: jest.fn(),
     setTerm: jest.fn(),
     setTypes: jest.fn(),
     setFilters: jest.fn(),

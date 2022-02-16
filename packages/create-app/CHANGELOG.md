@@ -1,5 +1,320 @@
 # @backstage/create-app
 
+## 0.4.19
+
+### Patch Changes
+
+- 22f4ecb0e6: Switched the `file:` dependency for a `link:` dependency in the `backend` package. This makes sure that the `app` package is linked in rather than copied.
+
+  To apply this update to an existing app, make the following change to `packages/backend/package.json`:
+
+  ```diff
+     "dependencies": {
+  -    "app": "file:../app",
+  +    "app": "link:../app",
+       "@backstage/backend-common": "^{{version '@backstage/backend-common'}}",
+  ```
+
+- 1dd5a02e91: **BREAKING:** Updated `knex` to major version 1, which also implies changing out
+  the underlying `sqlite` implementation.
+
+  The old `sqlite3` NPM library has been abandoned by its maintainers, which has
+  led to unhandled security reports and other issues. Therefore, in the `knex` 1.x
+  release line they have instead switched over to the [`@vscode/sqlite3`
+  library](https://github.com/microsoft/vscode-node-sqlite3) by default, which is
+  actively maintained by Microsoft.
+
+  This means that as you update to this version of Backstage, there are two
+  breaking changes that you will have to address in your own repository:
+
+  ## Bumping `knex` itself
+
+  All `package.json` files of your repo that used to depend on a 0.x version of
+  `knex`, should now be updated to depend on the 1.x release line. This applies in
+  particular to `packages/backend`, but may also occur in backend plugins or
+  libraries.
+
+  ```diff
+  -    "knex": "^0.95.1",
+  +    "knex": "^1.0.2",
+  ```
+
+  Almost all existing database code will continue to function without modification
+  after this bump. The only significant difference that we discovered in the main
+  repo, is that the `alter()` function had a slightly different signature in
+  migration files. It now accepts an object with `alterType` and `alterNullable`
+  fields that clarify a previous grey area such that the intent of the alteration
+  is made explicit. This is caught by `tsc` and your editor if you are using the
+  `@ts-check` and `@param` syntax in your migration files
+  ([example](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/migrations/20220116144621_remove_legacy.js#L17)),
+  which we strongly recommend.
+
+  See the [`knex` documentation](https://knexjs.org/#Schema-alter) for more
+  information about the `alter` syntax.
+
+  Also see the [`knex` changelog](https://knexjs.org/#changelog) for information
+  about breaking changes in the 1.x line; if you are using `RETURNING` you may
+  want to make some additional modifications in your code.
+
+  ## Switching out `sqlite3`
+
+  All `package.json` files of your repo that used to depend on `sqlite3`, should
+  now be updated to depend on `@vscode/sqlite3`. This applies in particular to
+  `packages/backend`, but may also occur in backend plugins or libraries.
+
+  ```diff
+  -    "sqlite3": "^5.0.1",
+  +    "@vscode/sqlite3": "^5.0.7",
+  ```
+
+  These should be functionally equivalent, except that the new library will have
+  addressed some long standing problems with old transitive dependencies etc.
+
+## 0.4.19-next.0
+
+### Patch Changes
+
+- 22f4ecb0e6: Switched the `file:` dependency for a `link:` dependency in the `backend` package. This makes sure that the `app` package is linked in rather than copied.
+
+  To apply this update to an existing app, make the following change to `packages/backend/package.json`:
+
+  ```diff
+     "dependencies": {
+  -    "app": "file:../app",
+  +    "app": "link:../app",
+       "@backstage/backend-common": "^{{version '@backstage/backend-common'}}",
+  ```
+
+- 1dd5a02e91: **BREAKING:** Updated `knex` to major version 1, which also implies changing out
+  the underlying `sqlite` implementation.
+
+  The old `sqlite3` NPM library has been abandoned by its maintainers, which has
+  led to unhandled security reports and other issues. Therefore, in the `knex` 1.x
+  release line they have instead switched over to the [`@vscode/sqlite3`
+  library](https://github.com/microsoft/vscode-node-sqlite3) by default, which is
+  actively maintained by Microsoft.
+
+  This means that as you update to this version of Backstage, there are two
+  breaking changes that you will have to address in your own repository:
+
+  ## Bumping `knex` itself
+
+  All `package.json` files of your repo that used to depend on a 0.x version of
+  `knex`, should now be updated to depend on the 1.x release line. This applies in
+  particular to `packages/backend`, but may also occur in backend plugins or
+  libraries.
+
+  ```diff
+  -    "knex": "^0.95.1",
+  +    "knex": "^1.0.2",
+  ```
+
+  Almost all existing database code will continue to function without modification
+  after this bump. The only significant difference that we discovered in the main
+  repo, is that the `alter()` function had a slightly different signature in
+  migration files. It now accepts an object with `alterType` and `alterNullable`
+  fields that clarify a previous grey area such that the intent of the alteration
+  is made explicit. This is caught by `tsc` and your editor if you are using the
+  `@ts-check` and `@param` syntax in your migration files
+  ([example](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/migrations/20220116144621_remove_legacy.js#L17)),
+  which we strongly recommend.
+
+  See the [`knex` documentation](https://knexjs.org/#Schema-alter) for more
+  information about the `alter` syntax.
+
+  Also see the [`knex` changelog](https://knexjs.org/#changelog) for information
+  about breaking changes in the 1.x line; if you are using `RETURNING` you may
+  want to make some additional modifications in your code.
+
+  ## Switching out `sqlite3`
+
+  All `package.json` files of your repo that used to depend on `sqlite3`, should
+  now be updated to depend on `@vscode/sqlite3`. This applies in particular to
+  `packages/backend`, but may also occur in backend plugins or libraries.
+
+  ```diff
+  -    "sqlite3": "^5.0.1",
+  +    "@vscode/sqlite3": "^5.0.7",
+  ```
+
+  These should be functionally equivalent, except that the new library will have
+  addressed some long standing problems with old transitive dependencies etc.
+
+## 0.4.18
+
+### Patch Changes
+
+- 5bd0ce9e62: chore(deps): bump `inquirer` from 7.3.3 to 8.2.0
+- f27f5197e2: Apply the fix from `0.4.16`, which is part of the `v0.65.1` release of Backstage.
+- 2687029a67: Update backend-to-backend auth link in configuration file comment
+- 24ef62048c: Adds missing `/catalog-graph` route to `<CatalogGraphPage/>`.
+
+  To fix this problem for a recently created app please update your `app/src/App.tsx`
+
+  ```diff
+  + import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
+
+   ... omitted ...
+
+    </Route>
+      <Route path="/settings" element={<UserSettingsPage />} />
+  +   <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    </FlatRoutes>
+  ```
+
+- ba59832aed: Permission the `catalog-import` route
+
+  The following changes are **required** if you intend to add permissions to your existing app.
+
+  Use the `PermissionedRoute` for `CatalogImportPage` instead of the normal `Route`:
+
+  ```diff
+  // packages/app/src/App.tsx
+  ...
+  + import { PermissionedRoute } from '@backstage/plugin-permission-react';
+  + import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+
+  ...
+
+  - <Route path="/catalog-import" element={<CatalogImportPage />} />
+  + <PermissionedRoute
+  +   path="/catalog-import"
+  +   permission={catalogEntityCreatePermission}
+  +   element={<CatalogImportPage />}
+  + />
+  ```
+
+- cef64b1561: Added `tokenManager` as a required property for the auth-backend `createRouter` function. This dependency is used to issue server tokens that are used by the `CatalogIdentityClient` when looking up users and their group membership during authentication.
+
+  These changes are **required** to `packages/backend/src/plugins/auth.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+    database,
+    config,
+    discovery,
+  + tokenManager,
+  }: PluginEnvironment): Promise<Router> {
+    return await createRouter({
+      logger,
+      config,
+      database,
+      discovery,
+  +   tokenManager,
+    });
+  }
+  ```
+
+- e39d88bd84: Switched the `app` dependency in the backend to use a file target rather than version.
+
+  To apply this change to an existing app, make the following change to `packages/backend/package.json`:
+
+  ```diff
+     "dependencies": {
+  -    "app": "0.0.0",
+  +    "app": "file:../app",
+  ```
+
+## 0.4.18-next.1
+
+### Patch Changes
+
+- 5bd0ce9e62: chore(deps): bump `inquirer` from 7.3.3 to 8.2.0
+- ba59832aed: Permission the `catalog-import` route
+
+  The following changes are **required** if you intend to add permissions to your existing app.
+
+  Use the `PermissionedRoute` for `CatalogImportPage` instead of the normal `Route`:
+
+  ```diff
+  // packages/app/src/App.tsx
+  ...
+  + import { PermissionedRoute } from '@backstage/plugin-permission-react';
+  + import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+
+  ...
+
+  - <Route path="/catalog-import" element={<CatalogImportPage />} />
+  + <PermissionedRoute
+  +   path="/catalog-import"
+  +   permission={catalogEntityCreatePermission}
+  +   element={<CatalogImportPage />}
+  + />
+  ```
+
+## 0.4.18-next.0
+
+### Patch Changes
+
+- f27f5197e2: Apply the fix from `0.4.16`, which is part of the `v0.65.1` release of Backstage.
+- 2687029a67: Update backend-to-backend auth link in configuration file comment
+- 24ef62048c: Adds missing `/catalog-graph` route to `<CatalogGraphPage/>`.
+
+  To fix this problem for a recently created app please update your `app/src/App.tsx`
+
+  ```diff
+  + import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
+
+   ... omitted ...
+
+    </Route>
+      <Route path="/settings" element={<UserSettingsPage />} />
+  +   <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    </FlatRoutes>
+  ```
+
+- cef64b1561: Added `tokenManager` as a required property for the auth-backend `createRouter` function. This dependency is used to issue server tokens that are used by the `CatalogIdentityClient` when looking up users and their group membership during authentication.
+
+  These changes are **required** to `packages/backend/src/plugins/auth.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+    database,
+    config,
+    discovery,
+  + tokenManager,
+  }: PluginEnvironment): Promise<Router> {
+    return await createRouter({
+      logger,
+      config,
+      database,
+      discovery,
+  +   tokenManager,
+    });
+  }
+  ```
+
+- e39d88bd84: Switched the `app` dependency in the backend to use a file target rather than version.
+
+  To apply this change to an existing app, make the following change to `packages/backend/package.json`:
+
+  ```diff
+     "dependencies": {
+  -    "app": "0.0.0",
+  +    "app": "file:../app",
+  ```
+
+## 0.4.16
+
+### Patch Changes
+
+- c945cd9f7e: Adds missing `/catalog-graph` route to `<CatalogGraphPage/>`.
+
+  To fix this problem for a recently created app please update your `app/src/App.tsx`
+
+  ```diff
+  + import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
+
+   ... omitted ...
+
+    </Route>
+      <Route path="/settings" element={<UserSettingsPage />} />
+  +   <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    </FlatRoutes>
+  ```
+
 ## 0.4.15
 
 ### Patch Changes
@@ -26,11 +341,18 @@
   }
   ```
 
+The `.fromConfig` of the `DefaultCatalogCollator` also now takes a `tokenManager` as a parameter.
+
+```diff
+-   collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
++   collator: DefaultCatalogCollator.fromConfig(config, { discovery, tokenManager }),
+```
+
 - a0d446c8ec: Replaced EntitySystemDiagramCard with EntityCatalogGraphCard
 
   To make this change to an existing app:
 
-  Add `@backstage/catalog-graph-plugin` as a `dependency` in `packages/app/package.json`
+  Add `@backstage/plugin-catalog-graph` as a `dependency` in `packages/app/package.json` or `cd packages/app && yarn add @backstage/plugin-catalog-graph`.
 
   Apply the following changes to the `packages/app/src/components/catalog/EntityPage.tsx` file:
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApiHolder, configApiRef } from '@backstage/core-plugin-api';
 
 export type SupportItemLink = {
   url: string;
@@ -50,8 +50,9 @@ const DEFAULT_SUPPORT_CONFIG: SupportConfig = {
 };
 
 export function useSupportConfig(): SupportConfig {
-  const config = useApi(configApiRef);
-  const supportConfig = config.getOptionalConfig('app.support');
+  const apiHolder = useApiHolder();
+  const config = apiHolder.get(configApiRef);
+  const supportConfig = config?.getOptionalConfig('app.support');
 
   if (!supportConfig) {
     return DEFAULT_SUPPORT_CONFIG;

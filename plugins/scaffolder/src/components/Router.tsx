@@ -16,11 +16,13 @@
 
 import React, { ComponentType } from 'react';
 import { Routes, Route, useOutlet } from 'react-router';
-import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
+import { SecretsContextProvider } from './secrets/SecretsContext';
 
 import {
   FieldExtensionOptions,
@@ -34,6 +36,7 @@ type RouterProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
+  TaskPageComponent?: ComponentType<{}>;
   groups?: Array<{
     title?: string;
     titleComponent?: React.ReactNode;
@@ -41,8 +44,13 @@ type RouterProps = {
   }>;
 };
 
-export const Router = ({ TemplateCardComponent, groups }: RouterProps) => {
+export const Router = ({
+  TemplateCardComponent,
+  TaskPageComponent,
+  groups,
+}: RouterProps) => {
   const outlet = useOutlet();
+  const TaskPageElement = TaskPageComponent || TaskPage;
 
   const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
@@ -77,9 +85,13 @@ export const Router = ({ TemplateCardComponent, groups }: RouterProps) => {
       />
       <Route
         path="/templates/:templateName"
-        element={<TemplatePage customFieldExtensions={fieldExtensions} />}
+        element={
+          <SecretsContextProvider>
+            <TemplatePage customFieldExtensions={fieldExtensions} />
+          </SecretsContextProvider>
+        }
       />
-      <Route path="/tasks/:taskId" element={<TaskPage />} />
+      <Route path="/tasks/:taskId" element={<TaskPageElement />} />
       <Route path="/actions" element={<ActionsPage />} />
     </Routes>
   );

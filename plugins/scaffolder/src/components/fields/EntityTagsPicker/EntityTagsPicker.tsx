@@ -16,7 +16,7 @@
 import React, { useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import useEffectOnce from 'react-use/lib/useEffectOnce';
-import { CatalogEntitiesRequest } from '@backstage/catalog-client';
+import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { Entity, makeValidator } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -40,7 +40,7 @@ export const EntityTagsPicker = ({
   const kinds = uiSchema['ui:options']?.kinds as string[];
 
   const { loading, value: existingTags } = useAsync(async () => {
-    const tagsRequest: CatalogEntitiesRequest = { fields: ['metadata.tags'] };
+    const tagsRequest: GetEntitiesRequest = { fields: ['metadata.tags'] };
     if (kinds) {
       tagsRequest.filter = { kind: kinds };
     }

@@ -1,5 +1,33 @@
 # @backstage/techdocs-common
 
+## 0.11.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+
+## 0.11.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
+## 0.11.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6
+
+## 0.11.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6-next.0
+
 ## 0.11.5
 
 ### Patch Changes

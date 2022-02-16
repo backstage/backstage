@@ -142,6 +142,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
   const techdocsSanitizer = useApi(configApiRef);
   const { namespace = '', kind = '', name = '' } = entityRef;
   const { state, path, content: rawPage } = useTechDocsReader();
+  const isDarkTheme = theme.palette.type === 'dark';
 
   const [sidebars, setSidebars] = useState<HTMLElement[]>();
   const [dom, setDom] = useState<HTMLElement | null>(null);
@@ -218,6 +219,27 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             --md-code-bg-color: ${theme.palette.background.paper};
             --md-accent-fg-color: ${theme.palette.primary.main};
             --md-default-fg-color--lightest: ${theme.palette.textVerySubtle};
+          }
+          .codehilite .gd, .highlight .gd { 
+            background-color: ${isDarkTheme ? 'rgba(248,81,73,0.65)' : '#fdd'};
+          }
+          .codehilite .gi, .highlight .gi {
+            background-color: ${isDarkTheme ? 'rgba(46,160,67,0.65)' : '#dfd'};
+          }
+          .highlight .kd {
+            color: ${isDarkTheme ? '#4aaaf7' : '#3b78e7'};
+          }
+           .highlight .k {
+            color: ${isDarkTheme ? '#4aaaf7' : '#3b78e7'};
+          }
+          .highlight .nx {
+            color: ${isDarkTheme ? '#ff53a3' : '#ec407a'};
+          }
+          .highlight .s1 {
+            color: ${isDarkTheme ? '#1cad46' : 'rgb(13, 144, 79)'};
+          }
+          .highlight .kt {
+            color: ${isDarkTheme ? '#4aaaf7' : '#3e61a2'};
           }
           .md-main__inner { margin-top: 0; }
           .md-sidebar {  position: fixed; bottom: 100px; width: 20rem; }
@@ -351,21 +373,22 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
         }),
       ]),
     [
+      techdocsSanitizer,
+      techdocsStorageApi,
       kind,
       name,
       namespace,
       scmIntegrationsApi,
-      techdocsStorageApi,
-      techdocsSanitizer,
-      theme.palette.action.disabledBackground,
-      theme.palette.background.default,
-      theme.palette.background.paper,
-      theme.palette.primary.main,
-      theme.palette.success.main,
-      theme.palette.text.primary,
-      theme.palette.textSubtle,
-      theme.palette.textVerySubtle,
       theme.typography.fontFamily,
+      theme.palette.text.primary,
+      theme.palette.primary.main,
+      theme.palette.background.paper,
+      theme.palette.background.default,
+      theme.palette.textVerySubtle,
+      theme.palette.textSubtle,
+      theme.palette.action.disabledBackground,
+      theme.palette.success.main,
+      isDarkTheme,
       isPinned,
     ],
   );

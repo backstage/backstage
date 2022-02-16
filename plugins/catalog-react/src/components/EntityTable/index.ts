@@ -13,4 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export { EntityTable } from './EntityTable';
+export type { EntityTableProps } from './EntityTable';

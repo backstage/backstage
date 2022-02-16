@@ -213,6 +213,7 @@ describe('Refresh integration', () => {
 
       await engine.stop();
     },
+    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -264,6 +265,7 @@ describe('Refresh integration', () => {
 
       await engine.stop();
     },
+    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -323,5 +325,6 @@ describe('Refresh integration', () => {
 
       await engine.stop();
     },
+    60_000,
   );
 });

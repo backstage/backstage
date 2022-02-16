@@ -35,6 +35,25 @@ export interface Config {
         scriptSrc?: string;
 
         /**
+         * Controls how the identityApi is used when sending data to GA:
+         *
+         * - `disabled`: (Default) Explicitly prevents a user's identity from
+         *   being used when capturing events in GA.
+         * - `optional`: Pageviews and hits are forwarded to GA as they happen
+         *   and only include user identity metadata once known. Guarantees
+         *   that hits are captured for all sessions, even if no sign in
+         *   occurs, but may result in dropped hits in User ID views.
+         * - `required`: All pageviews and hits are deferred until an identity
+         *   is known. Guarantees that all data sent to GA correlates to a user
+         *   identity, but prevents GA from receiving events for sessions in
+         *   which a user does not sign in. An `identityApi` instance must be
+         *   passed during instantiation when set to this value.
+         *
+         * @visibility frontend
+         */
+        identity?: 'disabled' | 'optional' | 'required';
+
+        /**
          * Whether or not to log analytics debug statements to the console.
          * Defaults to false.
          *

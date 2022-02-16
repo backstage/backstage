@@ -89,12 +89,15 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
   let selectedTabContent: ReactNode;
   if (!value) {
     React.Children.map(children, (child, index) => {
-      if (index === selectedIndex) selectedTabContent = child?.props.children;
+      if (React.isValidElement(child) && index === selectedIndex) {
+        selectedTabContent = child?.props.children;
+      }
     });
   } else {
     React.Children.map(children, child => {
-      if (child?.props.value === value)
+      if (React.isValidElement(child) && child?.props.value === value) {
         selectedTabContent = child?.props.children;
+      }
     });
   }
 

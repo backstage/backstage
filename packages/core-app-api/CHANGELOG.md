@@ -1,5 +1,21 @@
 # @backstage/core-app-api
 
+## 0.5.2
+
+### Patch Changes
+
+- 40775bd263: Switched out the `GithubAuth` implementation to use the common `OAuth2` implementation. This relies on the simultaneous change in `@backstage/plugin-auth-backend` that enabled access token storage in cookies rather than the current solution that's based on `LocalStorage`.
+
+  > **NOTE:** Make sure you upgrade the `auth-backend` deployment before or at the same time as you deploy this change.
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- 40775bd263: Switched out the `GithubAuth` implementation to use the common `OAuth2` implementation. This relies on the simultaneous change in `@backstage/plugin-auth-backend` that enabled access token storage in cookies rather than the current solution that's based on `LocalStorage`.
+
+  > **NOTE:** Make sure you upgrade the `auth-backend` deployment before or at the same time as you deploy this change.
+
 ## 0.5.1
 
 ### Patch Changes
