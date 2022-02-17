@@ -102,42 +102,32 @@ export type CatalogReactUserListPickerClassKey =
 export const catalogRouteRef: RouteRef<undefined>;
 
 // @public (undocumented)
-function createDomainColumn<T extends Entity>(): TableColumn<T>;
-
-// @public (undocumented)
-function createEntityRefColumn<T extends Entity>(options: {
-  defaultKind?: string;
-}): TableColumn<T>;
-
-// @public (undocumented)
-function createEntityRelationColumn<T extends Entity>({
-  title,
-  relation,
-  defaultKind,
-  filter: entityFilter,
-}: {
-  title: string;
-  relation: string;
-  defaultKind?: string;
-  filter?: {
-    kind: string;
-  };
-}): TableColumn<T>;
-
-// @public (undocumented)
-function createMetadataDescriptionColumn<T extends Entity>(): TableColumn<T>;
-
-// @public (undocumented)
-function createOwnerColumn<T extends Entity>(): TableColumn<T>;
-
-// @public (undocumented)
-function createSpecLifecycleColumn<T extends Entity>(): TableColumn<T>;
-
-// @public (undocumented)
-function createSpecTypeColumn<T extends Entity>(): TableColumn<T>;
-
-// @public (undocumented)
-function createSystemColumn<T extends Entity>(): TableColumn<T>;
+export const columnFactories: Readonly<{
+  createEntityRefColumn<T extends Entity>(options: {
+    defaultKind?: string;
+  }): TableColumn<T>;
+  createEntityRelationColumn<T_1 extends Entity>({
+    title,
+    relation,
+    defaultKind,
+    filter: entityFilter,
+  }: {
+    title: string;
+    relation: string;
+    defaultKind?: string | undefined;
+    filter?:
+      | {
+          kind: string;
+        }
+      | undefined;
+  }): TableColumn<T_1>;
+  createOwnerColumn<T_2 extends Entity>(): TableColumn<T_2>;
+  createDomainColumn<T_3 extends Entity>(): TableColumn<T_3>;
+  createSystemColumn<T_4 extends Entity>(): TableColumn<T_4>;
+  createMetadataDescriptionColumn<T_5 extends Entity>(): TableColumn<T_5>;
+  createSpecLifecycleColumn<T_6 extends Entity>(): TableColumn<T_6>;
+  createSpecTypeColumn<T_7 extends Entity>(): TableColumn<T_7>;
+}>;
 
 // @public (undocumented)
 export type DefaultEntityFilters = {
@@ -329,24 +319,38 @@ export type EntitySourceLocation = {
   integrationType?: string;
 };
 
-// Warning: (ae-missing-release-tag) "EntityTable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export function EntityTable<T extends Entity>(
-  props: EntityTableProps<T>,
-): JSX.Element;
-
-// @public (undocumented)
-export namespace EntityTable {
-  var // Warning: (ae-forgotten-export) The symbol "columnFactories" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    columns: typeof columnFactories;
-  var // (undocumented)
-    systemEntityColumns: TableColumn<SystemEntity>[];
-  var // (undocumented)
-    componentEntityColumns: TableColumn<ComponentEntity>[];
-}
+export const EntityTable: {
+  <T extends Entity>(props: EntityTableProps<T>): JSX.Element;
+  columns: Readonly<{
+    createEntityRefColumn<T_1 extends Entity>(options: {
+      defaultKind?: string | undefined;
+    }): TableColumn<T_1>;
+    createEntityRelationColumn<T_2 extends Entity>({
+      title,
+      relation,
+      defaultKind,
+      filter: entityFilter,
+    }: {
+      title: string;
+      relation: string;
+      defaultKind?: string | undefined;
+      filter?:
+        | {
+            kind: string;
+          }
+        | undefined;
+    }): TableColumn<T_2>;
+    createOwnerColumn<T_3 extends Entity>(): TableColumn<T_3>;
+    createDomainColumn<T_4 extends Entity>(): TableColumn<T_4>;
+    createSystemColumn<T_5 extends Entity>(): TableColumn<T_5>;
+    createMetadataDescriptionColumn<T_6 extends Entity>(): TableColumn<T_6>;
+    createSpecLifecycleColumn<T_7 extends Entity>(): TableColumn<T_7>;
+    createSpecTypeColumn<T_8 extends Entity>(): TableColumn<T_8>;
+  }>;
+  systemEntityColumns: TableColumn<SystemEntity>[];
+  componentEntityColumns: TableColumn<ComponentEntity>[];
+};
 
 // @public
 export interface EntityTableProps<T extends Entity> {
