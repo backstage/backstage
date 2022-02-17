@@ -1,5 +1,14 @@
 # @backstage/search-common
 
+## 0.2.4
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/types@0.1.3
+  - @backstage/plugin-permission-common@0.5.1
+
 ## 0.2.3
 
 ### Patch Changes

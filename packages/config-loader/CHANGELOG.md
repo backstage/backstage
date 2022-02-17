@@ -1,5 +1,16 @@
 # @backstage/config-loader
 
+## 0.9.5
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/cli-common@0.1.8
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/types@0.1.3
+
 ## 0.9.4
 
 ### Patch Changes

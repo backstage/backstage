@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.1.8
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+
 ## 0.1.7
 
 ### Patch Changes

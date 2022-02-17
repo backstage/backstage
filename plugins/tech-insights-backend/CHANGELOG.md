@@ -1,5 +1,19 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.2.6
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/plugin-tech-insights-common@0.2.3
+  - @backstage/plugin-tech-insights-node@0.2.4
+
 ## 0.2.5
 
 ### Patch Changes

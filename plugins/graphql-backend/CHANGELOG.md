@@ -1,5 +1,15 @@
 # @backstage/plugin-graphql-backend
 
+## 0.1.16
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/plugin-catalog-graphql@0.3.3
+
 ## 0.1.15
 
 ### Patch Changes
