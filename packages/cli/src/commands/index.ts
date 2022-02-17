@@ -27,7 +27,7 @@ const configOption = [
 
 export function registerRepoCommand(program: CommanderStatic) {
   const command = program
-    .command('repo [command]', { hidden: true })
+    .command('project [command]', { hidden: true })
     .description(
       'Command that run across an entire Backstage project [EXPERIMENTAL]',
     );
@@ -41,7 +41,7 @@ export function registerRepoCommand(program: CommanderStatic) {
       '--all',
       'Build all packages, including bundled app and backend packages.',
     )
-    .action(lazy(() => import('./repo/build').then(m => m.command)));
+    .action(lazy(() => import('./project/build').then(m => m.command)));
 
   command
     .command('lint')
@@ -56,7 +56,7 @@ export function registerRepoCommand(program: CommanderStatic) {
       'Only lint packages that changed since the specified ref',
     )
     .option('--fix', 'Attempt to automatically fix violations')
-    .action(lazy(() => import('./repo/lint').then(m => m.command)));
+    .action(lazy(() => import('./project/lint').then(m => m.command)));
 }
 
 export function registerScriptCommand(program: CommanderStatic) {
