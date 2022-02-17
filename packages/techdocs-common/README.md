@@ -39,7 +39,7 @@ Currently the build process is split up in these three stages.
 - Generators
 - Publishers
 
-Preparers read your entity data and creates a working directory with your documentation source code. For example if you have set your `backstage.io/techdocs-ref` to `github:https://github.com/backstage/backstage.git` it will clone that repository to a temp folder and pass that on to the generator.
+Preparers read your entity data and creates a working directory with your documentation source code. For example if you have set your `backstage.io/techdocs-ref` to `url:https://github.com/backstage/backstage.git` it will clone that repository to a temp folder and pass that on to the generator.
 
 Generators takes the prepared source and runs the `techdocs-container` on it. It then passes on the output folder of that build to the publisher.
 

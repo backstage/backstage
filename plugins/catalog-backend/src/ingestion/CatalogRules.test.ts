@@ -35,11 +35,11 @@ const entity = {
 
 const location: Record<string, LocationSpec> = {
   x: {
-    type: 'github',
+    type: 'url',
     target: 'https://github.com/a/b/blob/master/x.yaml',
   },
   y: {
-    type: 'github',
+    type: 'url',
     target: 'https://github.com/a/b/blob/master/y.yaml',
   },
   z: {
@@ -180,7 +180,7 @@ describe('DefaultCatalogRulesEnforcer', () => {
             rules: [{ allow: ['user'] }],
             locations: [
               {
-                type: 'github',
+                type: 'url',
                 target: 'https://github.com/a/b/blob/master/x.yaml',
                 rules: [
                   {
@@ -204,7 +204,7 @@ describe('DefaultCatalogRulesEnforcer', () => {
       const enforcer = DefaultCatalogRulesEnforcer.fromConfig(
         new ConfigReader({
           catalog: {
-            rules: [{ allow: ['Group'], locations: [{ type: 'github' }] }],
+            rules: [{ allow: ['Group'], locations: [{ type: 'url' }] }],
           },
         }),
       );

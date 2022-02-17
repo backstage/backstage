@@ -28,7 +28,7 @@ const getBaseUrl = (
   }
 
   const location = parseLocationRef(host);
-  if (location.type !== 'github' && location.type !== 'url') {
+  if (location.type !== 'url') {
     return 'https://api.github.com';
   }
 

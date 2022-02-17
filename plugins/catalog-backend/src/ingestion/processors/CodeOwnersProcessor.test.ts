@@ -27,7 +27,7 @@ const mockCodeOwnersText = () => `
 describe('CodeOwnersProcessor', () => {
   const mockLocation = ({
     basePath = '',
-    type = 'github',
+    type = 'url',
   } = {}): LocationSpec => ({
     type,
     target: `https://github.com/backstage/backstage/blob/master/${basePath}catalog-info.yaml`,

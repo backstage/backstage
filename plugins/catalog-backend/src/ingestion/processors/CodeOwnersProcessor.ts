@@ -27,15 +27,7 @@ import { CatalogProcessor } from './types';
 
 const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];
 
-const ALLOWED_LOCATION_TYPES = [
-  'url',
-  'azure/api',
-  'bitbucket/api',
-  'github',
-  'github/api',
-  'gitlab',
-  'gitlab/api',
-];
+const ALLOWED_LOCATION_TYPES = ['url'];
 
 export class CodeOwnersProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
