@@ -22,7 +22,7 @@ import { TableProps } from '@backstage/core-components';
 import { TabProps } from '@material-ui/core';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function AboutCard(props: AboutCardProps): JSX.Element;
 
 // @public

@@ -83,7 +83,10 @@ export interface AboutCardProps {
   variant?: InfoCardVariants;
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please use EntityAboutCard instead
+ */
 export function AboutCard(props: AboutCardProps) {
   const { variant } = props;
   const classes = useStyles();
