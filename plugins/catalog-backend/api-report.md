@@ -580,11 +580,6 @@ export type DeferredEntity = {
   locationKey?: string;
 };
 
-// Warning: (ae-missing-release-tag) "durationText" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export function durationText(startTimestamp: [number, number]): string;
-
 // @public (undocumented)
 export type EntitiesCatalog = {
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
