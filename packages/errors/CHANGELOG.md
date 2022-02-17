@@ -1,5 +1,13 @@
 # @backstage/errors
 
+## 0.2.2
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/types@0.1.3
+
 ## 0.2.1
 
 ### Patch Changes

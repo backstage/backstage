@@ -1,5 +1,13 @@
 # @backstage/integration
 
+## 0.7.4
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/config@0.1.15
+
 ## 0.7.3
 
 ### Patch Changes
