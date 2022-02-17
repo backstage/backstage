@@ -3,6 +3,8 @@ accessors
 addon
 addons
 Airbrake
+Airbrakes
+airbrake
 Anddddd
 Apdex
 api
