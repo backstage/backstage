@@ -101,17 +101,14 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
 
     for (const file of files) {
       emit(
-        results.location(
-          {
-            type: 'url',
-            target: `${baseUrl}/${org}/${project}/_git/${file.repository.name}?path=${file.path}`,
-            presence: 'optional',
-          },
+        results.location({
+          type: 'url',
+          target: `${baseUrl}/${org}/${project}/_git/${file.repository.name}?path=${file.path}`,
           // Not all locations may actually exist, since the user defined them as a wildcard pattern.
           // Thus, we emit them as optional and let the downstream processor find them while not outputting
           // an error if it couldn't.
-          true,
-        ),
+          presence: 'optional',
+        }),
       );
     }
 

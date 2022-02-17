@@ -430,7 +430,7 @@ export type CatalogProcessorErrorResult = {
 export type CatalogProcessorLocationResult = {
   type: 'location';
   location: LocationSpec;
-  optional: boolean;
+  optional?: boolean;
 };
 
 // Warning: (ae-missing-release-tag) "CatalogProcessorParser" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -903,7 +903,7 @@ function inputError(
 // @public (undocumented)
 function location_2(
   newLocation: LocationSpec,
-  optional: boolean,
+  optional?: boolean,
 ): CatalogProcessorResult;
 
 // Warning: (ae-missing-release-tag) "LocationAnalyzer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

@@ -48,7 +48,7 @@ export class StaticLocationProcessor implements StaticLocationProcessor {
     }
 
     for (const staticLocation of this.staticLocations) {
-      emit(result.location(staticLocation, false));
+      emit(result.location(staticLocation));
     }
 
     return true;
