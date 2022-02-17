@@ -24,23 +24,26 @@ import {
   RouterOptions,
 } from './router';
 import { AirbrakeConfig, extractAirbrakeConfig } from '../config';
+import * as winston from 'winston';
 
 describe('createRouter', () => {
   let app: express.Express;
   let airbrakeConfig: AirbrakeConfig;
+  let voidLogger: winston.Logger;
 
   beforeEach(async () => {
     jest.resetAllMocks();
 
+    voidLogger = getVoidLogger();
     const config = new ConfigReader({
       airbrake: {
         apiKey: 'fakeApiKey',
       },
     });
-    airbrakeConfig = extractAirbrakeConfig(config);
+    airbrakeConfig = extractAirbrakeConfig(config, voidLogger);
 
     const router = await createRouter({
-      logger: getVoidLogger(),
+      logger: voidLogger,
       airbrakeConfig,
     });
     app = express().use(router);
@@ -58,7 +61,7 @@ describe('createRouter', () => {
   describe('GET /api', () => {
     it('appends the API Key properly with no other url parameters', () => {
       const options: RouterOptions = {
-        logger: getVoidLogger(),
+        logger: voidLogger,
         airbrakeConfig,
       };
       const pathRewrite = generateAirbrakePathRewrite(options) as (
@@ -72,7 +75,7 @@ describe('createRouter', () => {
 
     it('appends the API Key properly despite there being other URL parameters', () => {
       const options: RouterOptions = {
-        logger: getVoidLogger(),
+        logger: voidLogger,
         airbrakeConfig,
       };
       const pathRewrite = generateAirbrakePathRewrite(options) as (
