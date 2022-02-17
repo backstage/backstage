@@ -223,6 +223,7 @@ const NO_WARNING_PACKAGES = [
   'plugins/catalog-backend-module-msgraph',
   'plugins/catalog-common',
   'plugins/catalog-graph',
+  'plugins/catalog-react',
   'plugins/permission-backend',
   'plugins/permission-common',
   'plugins/permission-node',

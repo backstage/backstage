@@ -21,6 +21,7 @@ import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 // TODO(Rugvip): Move these route refs back to the catalog plugin once we're all ported to using external routes
 /**
  * @deprecated Use an `ExternalRouteRef` instead, which can point to `catalogPlugin.routes.catalogIndex`.
+ * @public
  */
 export const rootRoute = createRouteRef({
   id: 'catalog',
@@ -28,6 +29,7 @@ export const rootRoute = createRouteRef({
 
 /**
  * @deprecated Use an `ExternalRouteRef` instead, which can point to `catalogPlugin.routes.catalogIndex`.
+ * @public
  */
 export const catalogRouteRef = rootRoute;
 
@@ -39,6 +41,7 @@ export const catalogRouteRef = rootRoute;
  *
  * If you want to replace the `EntityPage` from `@backstage/catalog-plugin` in your app,
  * you need to use the `entityRouteRef` as the mount point instead of your own.
+ * @public
  */
 export const entityRouteRef = getOrCreateGlobalSingleton(
   'catalog:entity-route-ref',
@@ -51,11 +54,14 @@ export const entityRouteRef = getOrCreateGlobalSingleton(
 
 /**
  * @deprecated use `entityRouteRef` instead.
+ * @public
  */
 export const entityRoute = entityRouteRef;
 
-// Utility function to get suitable route params for entityRoute, given an
-// entity instance
+/**
+ * Utility function to get suitable route params for entityRoute, given an
+ * @public
+ */
 export function entityRouteParams(entity: Entity) {
   return {
     kind: entity.kind.toLocaleLowerCase('en-US'),

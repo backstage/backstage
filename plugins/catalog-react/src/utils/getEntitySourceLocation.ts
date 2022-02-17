@@ -21,11 +21,13 @@ import {
 } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
+/** @public */
 export type EntitySourceLocation = {
   locationTargetUrl: string;
   integrationType?: string;
 };
 
+/** @public */
 export function getEntitySourceLocation(
   entity: Entity,
   scmIntegrationsApi: ScmIntegrationRegistry,

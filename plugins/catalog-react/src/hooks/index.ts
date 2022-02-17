@@ -21,6 +21,7 @@ export {
   AsyncEntityProvider,
 } from './useEntity';
 export type {
+  EntityLoadingStatus,
   EntityProviderProps,
   AsyncEntityProviderProps,
 } from './useEntity';
@@ -30,8 +31,12 @@ export {
   EntityListProvider,
   useEntityListProvider,
 } from './useEntityListProvider';
-export type { DefaultEntityFilters } from './useEntityListProvider';
+export type {
+  DefaultEntityFilters,
+  EntityListContextProps,
+} from './useEntityListProvider';
 export { useEntityTypeFilter } from './useEntityTypeFilter';
+export type { EntityTypeReturn } from './useEntityTypeFilter';
 export { useEntityKinds } from './useEntityKinds';
 export { useOwnUser } from './useOwnUser';
 export { useRelatedEntities } from './useRelatedEntities';

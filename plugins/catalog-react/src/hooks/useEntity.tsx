@@ -32,7 +32,8 @@ import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { catalogApiRef } from '../api';
 import { useEntityCompoundName } from './useEntityCompoundName';
 
-type EntityLoadingStatus = {
+/** @public */
+export type EntityLoadingStatus = {
   entity?: Entity;
   loading: boolean;
   error?: Error;
@@ -133,6 +134,7 @@ const CompatibilityProvider = ({
 };
 EntityContext.Provider = CompatibilityProvider as Provider<EntityLoadingStatus>;
 
+/** @public */
 export const useEntityFromUrl = (): EntityLoadingStatus => {
   const { kind, namespace, name } = useEntityCompoundName();
   const navigate = useNavigate();

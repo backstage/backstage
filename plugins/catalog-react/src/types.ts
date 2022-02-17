@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 
+/** @public */
 export type EntityFilter = {
   /**
    * Get filters to add to the catalog-backend request. These are a dot-delimited field with
@@ -43,4 +44,5 @@ export type EntityFilter = {
   toQueryValue?: () => string | string[];
 };
 
+/** @public */
 export type UserListFilterKind = 'owned' | 'starred' | 'all';

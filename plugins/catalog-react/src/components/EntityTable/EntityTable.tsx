@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core';
 import React, { ReactNode } from 'react';
-import * as columnFactories from './columns';
+import { columnFactories } from './columns';
 import { componentEntityColumns, systemEntityColumns } from './presets';
 import { Table, TableColumn } from '@backstage/core-components';
 
@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
  *
  * @public
  */
-export function EntityTable<T extends Entity>(props: EntityTableProps<T>) {
+export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
   const {
     entities,
     title,
@@ -85,7 +85,7 @@ export function EntityTable<T extends Entity>(props: EntityTableProps<T>) {
       data={entities}
     />
   );
-}
+};
 
 EntityTable.columns = columnFactories;
 

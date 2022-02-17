@@ -15,29 +15,22 @@
  */
 
 import { ComponentEntity, SystemEntity } from '@backstage/catalog-model';
-import {
-  createDomainColumn,
-  createEntityRefColumn,
-  createMetadataDescriptionColumn,
-  createOwnerColumn,
-  createSpecLifecycleColumn,
-  createSpecTypeColumn,
-  createSystemColumn,
-} from './columns';
+import { columnFactories } from './columns';
+
 import { TableColumn } from '@backstage/core-components';
 
 export const systemEntityColumns: TableColumn<SystemEntity>[] = [
-  createEntityRefColumn({ defaultKind: 'system' }),
-  createDomainColumn(),
-  createOwnerColumn(),
-  createMetadataDescriptionColumn(),
+  columnFactories.createEntityRefColumn({ defaultKind: 'system' }),
+  columnFactories.createDomainColumn(),
+  columnFactories.createOwnerColumn(),
+  columnFactories.createMetadataDescriptionColumn(),
 ];
 
 export const componentEntityColumns: TableColumn<ComponentEntity>[] = [
-  createEntityRefColumn({ defaultKind: 'component' }),
-  createSystemColumn(),
-  createOwnerColumn(),
-  createSpecTypeColumn(),
-  createSpecLifecycleColumn(),
-  createMetadataDescriptionColumn(),
+  columnFactories.createEntityRefColumn({ defaultKind: 'component' }),
+  columnFactories.createSystemColumn(),
+  columnFactories.createOwnerColumn(),
+  columnFactories.createSpecTypeColumn(),
+  columnFactories.createSpecLifecycleColumn(),
+  columnFactories.createMetadataDescriptionColumn(),
 ];

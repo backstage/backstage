@@ -21,6 +21,7 @@ import { catalogApiRef } from '../api';
 
 const BATCH_SIZE = 20;
 
+/** @public */
 export function useRelatedEntities(
   entity: Entity,
   { type, kind }: { type?: string; kind?: string },
