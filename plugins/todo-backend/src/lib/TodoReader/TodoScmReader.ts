@@ -41,14 +41,13 @@ const excludedExtensions = [
 ];
 const MAX_FILE_SIZE = 200000;
 
-const excludeFolders = ['vendor'];
-
 /** @public */
 export type TodoScmReaderOptions = {
   logger: Logger;
   reader: UrlReader;
   integrations: ScmIntegrations;
   parser?: TodoParser;
+  filePathFilter?: (filePath: string) => boolean;
 };
 
 type CacheItem = {
@@ -62,6 +61,7 @@ export class TodoScmReader implements TodoReader {
   private readonly reader: UrlReader;
   private readonly parser: TodoParser;
   private readonly integrations: ScmIntegrations;
+  private readonly filePathFilter: (filePath: string) => boolean;
 
   private readonly cache = new Map<string, CacheItem>();
   private readonly inFlightReads = new Map<string, Promise<CacheItem>>();
@@ -81,6 +81,7 @@ export class TodoScmReader implements TodoReader {
     this.reader = options.reader;
     this.parser = options.parser ?? createTodoParser();
     this.integrations = options.integrations;
+    this.filePathFilter = options.filePathFilter ?? (() => true);
   }
 
   async readTodos(options: ReadTodosOptions): Promise<ReadTodosResult> {
@@ -91,7 +92,12 @@ export class TodoScmReader implements TodoReader {
     }
 
     const cacheItem = this.cache.get(url);
-    const newRead = this.doReadTodos({ url }, cacheItem?.etag).catch(error => {
+    const filePathFilter = this.filePathFilter;
+    const newRead = this.doReadTodos(
+      { url },
+      filePathFilter,
+      cacheItem?.etag,
+    ).catch(error => {
       if (cacheItem && error.name === 'NotModifiedError') {
         return cacheItem;
       }
@@ -110,13 +116,11 @@ export class TodoScmReader implements TodoReader {
 
   private async doReadTodos(
     options: ReadTodosOptions,
+    filePathFilter: (filePath: string) => boolean,
     etag?: string,
   ): Promise<CacheItem> {
     const { url } = options;
-    const filePathFilter = (filePath: string): boolean => {
-      const splitPath = filePath.split('/');
-      return !excludeFolders.some(r => splitPath.includes(r));
-    };
+
     const tree = await this.reader.readTree(url, {
       etag,
       filter(filePath, info) {

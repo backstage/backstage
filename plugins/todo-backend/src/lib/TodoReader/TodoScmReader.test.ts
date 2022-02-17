@@ -190,23 +190,18 @@ describe('TodoScmReader', () => {
     );
   });
 
-  it('should filter out exclude folders', async () => {
+  it('should not filter out exclude folders', async () => {
     const reader = mockReader();
+    const filePathFilter = jest.fn(() => true);
+
     const todoReader = new TodoScmReader({
       logger: getVoidLogger(),
       reader,
       integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+      filePathFilter,
     });
     reader.readTree.mockResolvedValueOnce({
       files: async () => [
-        {
-          content: async () => Buffer.from('// TODO: my-todo', 'utf8'),
-          path: 'vendor/another-file.go',
-        },
-        {
-          content: async () => Buffer.from('// TODO: my-todo', 'utf8'),
-          path: 'test/vendor/another-file.go',
-        },
         {
           content: async () => Buffer.from('// TODO: my-todo', 'utf8'),
           path: 'my-folder/my-file.js',
@@ -219,22 +214,6 @@ describe('TodoScmReader', () => {
       }),
     ).resolves.toEqual({
       items: [
-        {
-          text: 'my-todo',
-          tag: 'TODO',
-          lineNumber: 1,
-          repoFilePath: 'vendor/another-file.go',
-          viewUrl:
-            'https://github.com/backstage/backstage/vendor/another-file.go#L1',
-        },
-        {
-          text: 'my-todo',
-          tag: 'TODO',
-          lineNumber: 1,
-          repoFilePath: 'test/vendor/another-file.go',
-          viewUrl:
-            'https://github.com/backstage/backstage/test/vendor/another-file.go#L1',
-        },
         {
           text: 'my-todo',
           tag: 'TODO',
@@ -255,10 +234,55 @@ describe('TodoScmReader', () => {
     );
     // Filter function should filter out exclude folders
     const filterFunc = reader.readTree.mock.calls[0][1]!.filter!;
-    expect(filterFunc('another-file.go')).toBe(true);
-    expect(filterFunc('vendor/another-file.go')).toBe(false);
-    expect(filterFunc('test/vendor/another-file.go')).toBe(false);
     expect(filterFunc('my-file.js')).toBe(true);
     expect(filterFunc('my-folder/my-file.js')).toBe(true);
+  });
+
+  it('should  filter out exclude folders', async () => {
+    const reader = mockReader();
+    const filePathFilter = jest.fn(() => false);
+
+    const todoReader = new TodoScmReader({
+      logger: getVoidLogger(),
+      reader,
+      integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+      filePathFilter,
+    });
+    reader.readTree.mockResolvedValueOnce({
+      files: async () => [
+        {
+          content: async () => Buffer.from('// TODO: my-todo', 'utf8'),
+          path: 'my-folder/my-file.js',
+        },
+      ],
+    } as ReadTreeResponse);
+    await expect(
+      todoReader.readTodos({
+        url: 'https://github.com/backstage/backstage/catalog-info.yaml',
+      }),
+    ).resolves.toEqual({
+      items: [
+        {
+          text: 'my-todo',
+          tag: 'TODO',
+          lineNumber: 1,
+          repoFilePath: 'my-folder/my-file.js',
+          viewUrl:
+            'https://github.com/backstage/backstage/my-folder/my-file.js#L1',
+        },
+      ],
+    });
+    expect(reader.readTree).toHaveBeenCalledTimes(1);
+    expect(reader.readTree).toHaveBeenCalledWith(
+      'https://github.com/backstage/backstage/catalog-info.yaml',
+      {
+        etag: undefined,
+        filter: expect.any(Function),
+      },
+    );
+    // Filter function should filter out exclude folders
+    const filterFunc = reader.readTree.mock.calls[0][1]!.filter!;
+    expect(filterFunc('my-file.js')).toBe(false);
+    expect(filterFunc('my-folder/my-file.js')).toBe(false);
   });
 });
