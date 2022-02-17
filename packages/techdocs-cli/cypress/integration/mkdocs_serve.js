@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-describe('TechDocs Live Preview - Mkdocs server', () => {
+/// <reference types="cypress" />
+describe('TechDocs Live Preview - MkDocs Serve', () => {
   it('successfully serves documentation', () => {
     cy.visit(Cypress.env('mkDocsBaseUrl'));
     cy.contains('hello mock docs');
@@ -30,15 +30,19 @@ describe('TechDocs Live Preview - Mkdocs server', () => {
 
   it('successfully renders all main elements', () => {
     cy.get('.md-header').should('have.length', 1);
+    cy.get('.md-main').should('have.length', 1);
     cy.contains(
-      '.md-container',
+      '.md-main',
       'This is an md file in another docs folder using the MkDocs Monorepo Plugin',
     );
-    cy.contains('.md-sidebar--primary', 'Home 2');
-    cy.contains(
-      '.md-sidebar--secondary',
-      'This is an md file in another docs folder using the MkDocs Monorepo Plugin',
-    );
-    cy.contains('.md-footer', 'Introduction');
+    cy.get('.md-sidebar.md-sidebar--primary').should('have.length', 1);
+    cy.get('.md-sidebar.md-sidebar--primary').should('have.length', 1);
+    cy.get('.md-footer').should('have.length', 1);
+  });
+
+  it('toMatchImageSnapshot - MkDocs Page', () => {
+    cy.visit(Cypress.env('mkDocsBaseUrl')).then(() => {
+      cy.document().toMatchImageSnapshot();
+    });
   });
 });

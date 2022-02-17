@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-describe('TechDocs Live Preview - Backstage server', () => {
+/// <reference types="cypress" />
+describe('TechDocs Live Preview - Backstage Serve', () => {
   it('successfully serves documentation', () => {
     cy.visit(`${Cypress.env('backstageBaseUrl')}/docs/default/component/local`);
     cy.contains('hello mock docs');
@@ -30,21 +30,29 @@ describe('TechDocs Live Preview - Backstage server', () => {
 
   it('successfully renders all Backstage main elements', () => {
     cy.contains('header', 'Live preview environment');
-    cy.contains('[data-testid="sidebar-root"]', 'Docs Preview');
+    cy.get('[data-testid="sidebar-root"]')
+      .children()
+      .should('have.length.gt', 0);
   });
 
   it('successfully renders all extracted MkDocs main elements', () => {
     // as it gets replaced by Backstage header
     cy.get('.md-header').should('have.length', 0);
+    cy.get('.md-main').should('have.length', 1);
     cy.contains(
       '.md-main',
       'This is an md file in another docs folder using the MkDocs Monorepo Plugin',
     );
-    cy.contains('.md-sidebar--primary', 'Home 2');
-    cy.contains(
-      '.md-sidebar--secondary',
-      'This is an md file in another docs folder using the MkDocs Monorepo Plugin',
-    );
-    cy.contains('.md-footer', 'Introduction');
+    cy.get('.md-sidebar.md-sidebar--primary').should('have.length', 1);
+    cy.get('.md-sidebar.md-sidebar--primary').should('have.length', 1);
+    cy.get('.md-footer').should('have.length', 1);
+  });
+
+  it('toMatchImageSnapshot - Backstage TechDocs Page', () => {
+    cy.visit(
+      `${Cypress.env('backstageBaseUrl')}/docs/default/component/local`,
+    ).then(() => {
+      cy.document().toMatchImageSnapshot();
+    });
   });
 });

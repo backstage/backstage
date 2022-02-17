@@ -46,6 +46,7 @@
     "@types/serve-handler": "^6.1.0",
     "@types/webpack-env": "^1.15.3",
     "cypress": "^7.3.0",
+    "cypress-plugin-snapshots": "^1.4.4",
     "find-process": "^1.4.5",
     "nodemon": "^2.0.2",
     "techdocs-cli-embedded-app": "link:../techdocs-cli-embedded-app",
