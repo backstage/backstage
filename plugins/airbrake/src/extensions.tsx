@@ -20,6 +20,11 @@ import { airbrakePlugin } from './plugin';
 import { createRoutableExtension } from '@backstage/core-plugin-api';
 import { rootRouteRef } from './routes';
 
+/**
+ * This is the widget that shows up on a component page
+ *
+ * @public
+ */
 export const EntityAirbrakeContent = airbrakePlugin.provide(
   createRoutableExtension({
     name: 'EntityAirbrakeContent',

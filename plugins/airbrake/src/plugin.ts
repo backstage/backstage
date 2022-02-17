@@ -22,6 +22,11 @@ import {
 import { rootRouteRef } from './routes';
 import { airbrakeApiRef, ProductionAirbrakeApi } from './api';
 
+/**
+ * The Airbrake plugin instance
+ *
+ * @public
+ */
 export const airbrakePlugin = createPlugin({
   id: 'airbrake',
   apis: [

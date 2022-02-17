@@ -13,5 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * The Airbrake plugin provides connectivity between Backstage and Airbrake (https://airbrake.io/).
+ *
+ * @packageDocumentation
+ */
+
 export { airbrakePlugin } from './plugin';
 export { EntityAirbrakeContent } from './extensions';
