@@ -170,7 +170,8 @@ export class BazaarClient implements BazaarApi {
       {
         method: 'DELETE',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
+      },
+    );
   }
 
   async getProjects(): Promise<any> {
