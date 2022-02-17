@@ -888,8 +888,6 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     _optional: boolean,
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
-  // (undocumented)
-  updateLastActivity(): Promise<string | undefined>;
 }
 
 // Warning: (ae-missing-release-tag) "inputError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
