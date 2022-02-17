@@ -86,13 +86,12 @@ splunkOnCall:
   readOnly: true
 
 proxy:
-  # ...
   '/splunk-on-call':
     target: https://api.victorops.com/api-public
     headers:
       X-VO-Api-Id: ${SPLUNK_ON_CALL_API_ID}
       X-VO-Api-Key: ${SPLUNK_ON_CALL_API_KEY}
-    # prohibit non-GET requests from the /splunk-on-call proxy
+    # prohibit the `/splunk-on-call` proxy endpoint from servicing non-GET requests
     allowedMethods: ['GET']
 ```
 
