@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { parseEntityRef } from '@backstage/catalog-model';
 import {
   Content,
   ErrorPage,
@@ -291,8 +292,9 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
   const { output } = taskStream;
 
   const handleStartOver = () => {
-    if (!taskStream.task || !taskStream.task?.spec.templateInfo?.name) {
+    if (!taskStream.task || !taskStream.task?.spec.templateInfo?.entityRef) {
       navigate(generatePath(rootLink()));
+      return;
     }
 
     const formData =
@@ -300,13 +302,17 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
         ? taskStream.task!.spec.values
         : taskStream.task!.spec.parameters;
 
+    const { name } = parseEntityRef(
+      taskStream.task!.spec.templateInfo?.entityRef,
+    );
+
     navigate(
       generatePath(
         `${rootLink()}/templates/:templateName?${qs.stringify({
           formData: JSON.stringify(formData),
         })}`,
         {
-          templateName: taskStream.task!.spec.templateInfo!.name,
+          templateName: name,
         },
       ),
     );

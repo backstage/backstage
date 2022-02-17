@@ -75,7 +75,10 @@ describe('fetch:template', () => {
   const logger = getVoidLogger();
 
   const mockContext = (inputPatch: Partial<FetchTemplateInput> = {}) => ({
-    templateInfo: { baseUrl: 'base-url', name: 'test' },
+    templateInfo: {
+      baseUrl: 'base-url',
+      entityRef: 'template:default/test-template',
+    },
     input: {
       url: './skeleton',
       targetPath: './target',

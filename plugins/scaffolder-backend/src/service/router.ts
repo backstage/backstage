@@ -188,12 +188,15 @@ export async function createRouter(
     })
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
+      const { kind, namespace } = { kind: 'template', namespace: 'default' };
       const values = req.body.values;
       const token = getBearerToken(req.headers.authorization);
       const template = await findTemplate({
         catalogApi: catalogClient,
         entityRef: {
           name: templateName,
+          kind,
+          namespace,
         },
         token: getBearerToken(req.headers.authorization),
       });
@@ -234,7 +237,11 @@ export async function createRouter(
           metadata: { name: template.metadata?.name },
 
           templateInfo: {
-            name: template.metadata?.name,
+            entityRef: stringifyEntityRef({
+              kind,
+              namespace,
+              name: template.metadata?.name,
+            }),
             baseUrl,
           },
         };

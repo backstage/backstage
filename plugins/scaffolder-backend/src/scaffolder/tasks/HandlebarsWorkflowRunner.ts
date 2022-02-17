@@ -244,7 +244,7 @@ export class HandlebarsWorkflowRunner implements WorkflowRunner {
               stepOutputs[name] = value;
             },
             // deprecated in favor of templateInfo
-            metadata: task.spec.templateInfo,
+            metadata: task.spec.metadata,
             templateInfo: task.spec.templateInfo,
           });
 
