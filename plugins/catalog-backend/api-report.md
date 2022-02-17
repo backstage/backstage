@@ -1128,7 +1128,7 @@ export interface RouterOptions {
 
 // Warning: (ae-missing-release-tag) "runPeriodically" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export function runPeriodically(fn: () => any, delayMs: number): () => void;
 
 // Warning: (ae-missing-release-tag) "StaticLocationProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
