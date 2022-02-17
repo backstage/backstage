@@ -1,5 +1,14 @@
 # @backstage/catalog-client
 
+## 0.7.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/catalog-model@0.10.1
+  - @backstage/errors@0.2.2
+
 ## 0.7.0
 
 ### Minor Changes

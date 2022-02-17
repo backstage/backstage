@@ -1,5 +1,15 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.2.8
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/search-common@0.2.4
+  - @backstage/plugin-search-backend-node@0.4.7
+
 ## 0.2.7
 
 ### Patch Changes

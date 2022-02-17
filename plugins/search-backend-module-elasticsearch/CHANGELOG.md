@@ -1,5 +1,14 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.0.10
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/config@0.1.15
+  - @backstage/search-common@0.2.4
+
 ## 0.0.9
 
 ### Patch Changes
