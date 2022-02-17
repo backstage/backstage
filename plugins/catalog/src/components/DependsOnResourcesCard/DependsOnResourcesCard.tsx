@@ -23,11 +23,13 @@ import {
   resourceEntityColumns,
 } from '../RelatedEntitiesCard';
 
-type Props = {
+/** @public */
+export interface DependsOnResourcesCardProps {
   variant?: 'gridItem';
-};
+}
 
-export const DependsOnResourcesCard = ({ variant = 'gridItem' }: Props) => {
+export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
+  const { variant = 'gridItem' } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
@@ -40,4 +42,4 @@ export const DependsOnResourcesCard = ({ variant = 'gridItem' }: Props) => {
       asRenderableEntities={asResourceEntities}
     />
   );
-};
+}

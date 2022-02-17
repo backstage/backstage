@@ -30,7 +30,8 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 
-type Props<T extends Entity> = {
+/** @public */
+export type RelatedEntitiesCardProps<T extends Entity> = {
   variant?: 'gridItem';
   title: string;
   columns: TableColumn<T>[];
@@ -53,7 +54,9 @@ type Props<T extends Entity> = {
  *
  * @public
  */
-export const RelatedEntitiesCard = <T extends Entity>(props: Props<T>) => {
+export function RelatedEntitiesCard<T extends Entity>(
+  props: RelatedEntitiesCardProps<T>,
+) {
   const {
     variant = 'gridItem',
     title,
@@ -103,4 +106,4 @@ export const RelatedEntitiesCard = <T extends Entity>(props: Props<T>) => {
       entities={asRenderableEntities(entities || [])}
     />
   );
-};
+}

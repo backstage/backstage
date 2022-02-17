@@ -28,8 +28,8 @@ import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
 import React, { useMemo } from 'react';
-import * as columnFactories from './columns';
-import { EntityRow } from './types';
+import { columnFactories } from './columns';
+import { CatalogTableRow } from './types';
 import {
   CodeSnippet,
   Table,
@@ -38,16 +38,23 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 
-type CatalogTableProps = {
-  columns?: TableColumn<EntityRow>[];
-  actions?: TableProps<EntityRow>['actions'];
-};
+/**
+ * Props for {@link CatalogTable}.
+ *
+ * @public
+ */
+export interface CatalogTableProps {
+  columns?: TableColumn<CatalogTableRow>[];
+  actions?: TableProps<CatalogTableRow>['actions'];
+}
 
-export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
+/** @public */
+export const CatalogTable = (props: CatalogTableProps) => {
+  const { columns, actions } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityListProvider();
 
-  const defaultColumns: TableColumn<EntityRow>[] = useMemo(
+  const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(
     () => [
       columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
       columnFactories.createSystemColumn(),
@@ -77,7 +84,7 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
     );
   }
 
-  const defaultActions: TableProps<EntityRow>['actions'] = [
+  const defaultActions: TableProps<CatalogTableRow>['actions'] = [
     ({ entity }) => {
       const url = getEntityMetadataViewUrl(entity);
       return {
@@ -148,7 +155,7 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
   const showPagination = rows.length > 20;
 
   return (
-    <Table<EntityRow>
+    <Table<CatalogTableRow>
       isLoading={loading}
       columns={columns || defaultColumns}
       options={{
