@@ -29,6 +29,10 @@ import {
 const glob = promisify(g);
 
 export class FileReaderProcessor implements CatalogProcessor {
+  getProcessorName(): string {
+    return 'FileReaderProcessor';
+  }
+
   async readLocation(
     location: LocationSpec,
     optional: boolean,

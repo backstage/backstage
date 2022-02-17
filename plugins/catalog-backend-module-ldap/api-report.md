@@ -137,6 +137,8 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
     },
   ): LdapOrgReaderProcessor;
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   readLocation(
     location: LocationSpec,
     _optional: boolean,

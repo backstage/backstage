@@ -81,6 +81,9 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
       region: AWS_ORGANIZATION_REGION,
     }); // Only available in us-east-1
   }
+  getProcessorName(): string {
+    return 'AwsOrganizationCloudAccountProcessor';
+  }
 
   normalizeName(name: string): string {
     return name

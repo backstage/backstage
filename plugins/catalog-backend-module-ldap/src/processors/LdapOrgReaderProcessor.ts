@@ -69,6 +69,10 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
     this.userTransformer = options.userTransformer;
   }
 
+  getProcessorName(): string {
+    return 'LdapOrgReaderProcessor';
+  }
+
   async readLocation(
     location: LocationSpec,
     _optional: boolean,

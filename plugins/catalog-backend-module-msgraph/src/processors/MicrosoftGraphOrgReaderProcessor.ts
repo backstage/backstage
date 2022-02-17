@@ -73,6 +73,9 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     this.groupTransformer = options.groupTransformer;
     this.organizationTransformer = options.organizationTransformer;
   }
+  getProcessorName(): string {
+    return 'MicrosoftGraphOrgReaderProcessor';
+  }
 
   async readLocation(
     location: LocationSpec,

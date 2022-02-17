@@ -432,6 +432,8 @@ export const runCommand: ({
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   postProcessEntity(
     entity: Entity,
     _location: LocationSpec,

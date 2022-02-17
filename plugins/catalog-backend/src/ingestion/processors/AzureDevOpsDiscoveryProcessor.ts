@@ -60,6 +60,10 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
     this.logger = options.logger;
   }
 
+  getProcessorName(): string {
+    return 'AzureDevOpsDiscoveryProcessor';
+  }
+
   async readLocation(
     location: LocationSpec,
     _optional: boolean,

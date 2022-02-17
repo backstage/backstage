@@ -24,9 +24,8 @@ import { JsonValue } from '@backstage/types';
 export type CatalogProcessor = {
   /**
    * A unique identifier for the Catalog Processor.
-   * It's strongly recommended to implement getProcessorName as this method will be required in the future.
    */
-  getProcessorName?(): string;
+  getProcessorName(): string;
 
   /**
    * Reads the contents of a location.

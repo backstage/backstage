@@ -34,6 +34,10 @@ import {
 
 /** @public */
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
+  getProcessorName(): string {
+    return 'ScaffolderEntitiesProcessor';
+  }
+
   private readonly validators = [templateEntityV1beta3Validator];
 
   async validateEntityKind(entity: Entity): Promise<boolean> {

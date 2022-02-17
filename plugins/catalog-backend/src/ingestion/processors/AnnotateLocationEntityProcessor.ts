@@ -35,6 +35,10 @@ type Options = {
 export class AnnotateLocationEntityProcessor implements CatalogProcessor {
   constructor(private readonly options: Options) {}
 
+  getProcessorName(): string {
+    return 'AnnotateLocationEntityProcessor';
+  }
+
   async preProcessEntity(
     entity: Entity,
     location: LocationSpec,

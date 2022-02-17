@@ -70,6 +70,9 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
     this.logger = options.logger;
   }
+  getProcessorName(): string {
+    return 'GithubOrgReaderProcessor';
+  }
 
   async readLocation(
     location: LocationSpec,

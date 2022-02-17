@@ -21,7 +21,11 @@ class MyProcessor implements CatalogProcessor {
   getProcessorName = () => 'my-processor';
 }
 
-class OtherProcessor implements CatalogProcessor {}
+class OtherProcessor implements CatalogProcessor {
+  getProcessorName(): string {
+    return 'OtherProcessor';
+  }
+}
 
 describe('ProcessorCacheManager', () => {
   const myProcessor = new MyProcessor();

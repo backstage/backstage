@@ -73,6 +73,9 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       options.githubCredentialsProvider ||
       DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
   }
+  getProcessorName(): string {
+    return 'GithubDiscoveryProcessor';
+  }
 
   async readLocation(
     location: LocationSpec,
