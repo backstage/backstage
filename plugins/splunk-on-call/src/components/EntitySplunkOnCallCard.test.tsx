@@ -53,12 +53,26 @@ const mockSplunkOnCallApi: Partial<SplunkOnCallClient> = {
 const configApi: ConfigApi = new ConfigReader({
   splunkOnCall: {
     eventsRestEndpoint: 'EXAMPLE_REST_ENDPOINT',
+    readOnly: false,
+  },
+});
+
+const readOnlyConfigApi: ConfigApi = new ConfigReader({
+  splunkOnCall: {
+    eventsRestEndpoint: 'EXAMPLE_REST_ENDPOINT',
+    readOnly: true,
   },
 });
 
 const apis = TestApiRegistry.from(
   [splunkOnCallApiRef, mockSplunkOnCallApi],
   [configApiRef, configApi],
+  [alertApiRef, {}],
+);
+
+const readOnlyApis = TestApiRegistry.from(
+  [splunkOnCallApiRef, mockSplunkOnCallApi],
+  [configApiRef, readOnlyConfigApi],
   [alertApiRef, {}],
 );
 
@@ -124,6 +138,32 @@ describe('SplunkOnCallCard', () => {
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('Create Incident')).toBeInTheDocument();
+    await waitFor(
+      () => expect(getByText('Nice! No incidents found!')).toBeInTheDocument(),
+      { timeout: 2000 },
+    );
+    expect(getByText('Empty escalation policy')).toBeInTheDocument();
+  });
+
+  it('does not render a "Create incident" link in read only mode', async () => {
+    mockSplunkOnCallApi.getUsers = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCKED_USER]);
+    mockSplunkOnCallApi.getTeams = jest
+      .fn()
+      .mockImplementation(async () => [MOCK_TEAM_NO_INCIDENTS]);
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={readOnlyApis}>
+          <EntityProvider entity={mockEntityNoIncidents}>
+            <EntitySplunkOnCallCard />
+          </EntityProvider>
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    expect(() => getByText('Create Incident')).toThrow();
     await waitFor(
       () => expect(getByText('Nice! No incidents found!')).toBeInTheDocument(),
       { timeout: 2000 },

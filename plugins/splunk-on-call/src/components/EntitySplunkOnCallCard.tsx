@@ -124,7 +124,9 @@ export const EntitySplunkOnCallCard = () => {
     : undefined;
 
   const eventsRestEndpoint =
-    config.getOptionalString('splunkOnCall.eventsRestEndpoint') || null;
+    config.getOptionalString('splunkOnCall.eventsRestEndpoint') || true;
+
+  const readOnly = config.getOptionalBoolean('splunkOnCall.readOnly') || false;
 
   const handleRefresh = useCallback(() => {
     setRefreshIncidents(x => !x);
@@ -218,7 +220,11 @@ export const EntitySplunkOnCallCard = () => {
 
     return (
       <>
-        <Incidents team={teamName} refreshIncidents={refreshIncidents} />
+        <Incidents
+          readOnly={readOnly}
+          team={teamName}
+          refreshIncidents={refreshIncidents}
+        />
         {usersHashMap && team && (
           <EscalationPolicy team={teamName} users={usersHashMap} />
         )}
@@ -259,7 +265,7 @@ export const EntitySplunkOnCallCard = () => {
               </Typography>,
               <HeaderIconLinkRow
                 key="incident_trigger"
-                links={[serviceLink, triggerLink]}
+                links={!readOnly ? [serviceLink, triggerLink] : [serviceLink]}
               />,
             ]}
           />
