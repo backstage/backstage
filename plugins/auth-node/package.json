@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-node",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -23,16 +23,16 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.10.7",
-    "@backstage/catalog-model": "^0.9.10",
-    "@backstage/config": "^0.1.13",
-    "@backstage/errors": "^0.2.0",
+    "@backstage/backend-common": "^0.10.8",
+    "@backstage/catalog-model": "^0.10.0",
+    "@backstage/config": "^0.1.14",
+    "@backstage/errors": "^0.2.1",
     "jose": "^1.27.1",
     "node-fetch": "^2.6.7",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.2",
+    "@backstage/cli": "^0.14.0",
     "msw": "^0.35.0",
     "uuid": "^8.0.0"
   },

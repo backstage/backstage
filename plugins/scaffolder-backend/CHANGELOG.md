@@ -1,5 +1,39 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.16.0
+
+### Minor Changes
+
+- 661594bf43: **BREAKING**: Updated `TemplateAction` and related types to have its type parameter extend `JsonObject` instead of `InputBase`. The `createTemplateAction` has also been updated to pass through the `TInput` type parameter to the return type, meaning the `TemplateAction` retains its type. This can lead to breakages during type checking especially within tests.
+- 8db2b671c6: **BREAKING**: `ctx.token` is now `ctx.secrets.backstageToken` in Actions. Please update any of your Actions that might call out to Backstage API's with this token.
+- 5a1594330e: **BREAKING** - Removed the `CatalogEntityClient` export. This is no longer provider by this package,
+  but you can implement one pretty simply yourself using the `CatalogApi` and applying filters to fetch templates.
+- 7d3471db94: Remove the previously deprecated `scaffolder.provider` config for all providers.
+  This config is no longer used anywhere, and adopters should use [`integrations` config](https://backstage.io/docs/integrations) instead.
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- 3e59f90b51: Fix error handling of the `runCommand` helper to return `Error`
+  instance.
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 216725b434: Updated to use new names for `parseLocationRef` and `stringifyLocationRef`
+- e72d371296: Use `TemplateEntityV1beta2` from `@backstage/plugin-scaffolder-common` instead
+  of `@backstage/catalog-model`.
+- 1433045c08: Removed unused `helmet` dependency.
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@0.2.0
+  - @backstage/plugin-catalog-backend@0.21.4
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.2.0
+
 ## 0.15.24
 
 ### Patch Changes

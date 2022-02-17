@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-react
 
+## 0.6.15
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 538ca90790: Use updated type names from `@backstage/catalog-client`
+- edbc03814a: Replace usage of `serializeEntityRef` with `stringifyEntityRef`
+- 244d24ebc4: Import `Location` from the `@backstage/catalog-client` package.
+- deaf6065db: Adapt to the new `CatalogApi.getLocationByRef`
+- 216725b434: Updated to use new names for `parseLocationRef` and `stringifyLocationRef`
+- e72d371296: Use `TemplateEntityV1beta2` from `@backstage/plugin-scaffolder-common` instead
+  of `@backstage/catalog-model`.
+- 98d1aa1ea1: Fix CatalogPage showing all components when owned filter was pre-selected
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- Updated dependencies
+  - @backstage/catalog-client@0.7.0
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/plugin-permission-common@0.5.0
+  - @backstage/plugin-permission-react@0.3.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/types@0.1.2
+  - @backstage/version-bridge@0.1.2
+
 ## 0.6.14
 
 ### Patch Changes
