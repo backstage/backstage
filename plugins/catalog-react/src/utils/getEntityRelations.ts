@@ -18,6 +18,7 @@ import { Entity, EntityName } from '@backstage/catalog-model';
 
 /**
  * Get the related entity references.
+ * @public
  */
 export function getEntityRelations(
   entity: Entity | undefined,

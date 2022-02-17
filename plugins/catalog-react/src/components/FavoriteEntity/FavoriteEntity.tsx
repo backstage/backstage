@@ -21,7 +21,10 @@ import StarBorder from '@material-ui/icons/StarBorder';
 import React, { ComponentProps } from 'react';
 import { useStarredEntity } from '../../hooks/useStarredEntity';
 
-type Props = ComponentProps<typeof IconButton> & { entity: Entity };
+/** @public */
+export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
+  entity: Entity;
+};
 
 const YellowStar = withStyles({
   root: {
@@ -29,17 +32,20 @@ const YellowStar = withStyles({
   },
 })(Star);
 
+/** @public */
 export const favoriteEntityTooltip = (isStarred: boolean) =>
   isStarred ? 'Remove from favorites' : 'Add to favorites';
 
+/** @public */
 export const favoriteEntityIcon = (isStarred: boolean) =>
   isStarred ? <YellowStar /> : <StarBorder />;
 
 /**
  * IconButton for showing if a current entity is starred and adding/removing it from the favorite entities
  * @param props - MaterialUI IconButton props extended by required `entity` prop
+ * @public
  */
-export const FavoriteEntity = (props: Props) => {
+export const FavoriteEntity = (props: FavoriteEntityProps) => {
   const { toggleStarredEntity, isStarredEntity } = useStarredEntity(
     props.entity,
   );

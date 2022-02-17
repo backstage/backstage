@@ -25,6 +25,7 @@ import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
 /**
  * Get the catalog User entity (if any) that matches the logged-in user.
+ * @public
  */
 export function useOwnUser(): AsyncState<UserEntity | undefined> {
   const catalogApi = useApi(catalogApiRef);

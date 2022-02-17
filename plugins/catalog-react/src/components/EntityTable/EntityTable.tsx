@@ -22,7 +22,7 @@ import { componentEntityColumns, systemEntityColumns } from './presets';
 import { Table, TableColumn } from '@backstage/core-components';
 
 /**
- * Props for {@link EntityTable}.
+ * Props for {@link (EntityTable:function)}.
  *
  * @public
  */

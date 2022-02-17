@@ -25,6 +25,7 @@ import { getEntityRelations } from './getEntityRelations';
 
 /**
  * Get the related entity references.
+ * @public
  */
 export function isOwnerOf(owner: Entity, owned: Entity) {
   const possibleOwners = new Set(

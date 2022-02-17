@@ -22,7 +22,8 @@ import { catalogApiRef } from '../api';
 import { useEntityListProvider } from './useEntityListProvider';
 import { EntityTypeFilter } from '../filters';
 
-type EntityTypeReturn = {
+/** @public */
+export type EntityTypeReturn = {
   loading: boolean;
   error?: Error;
   availableTypes: string[];
@@ -33,6 +34,7 @@ type EntityTypeReturn = {
 /**
  * A hook built on top of `useEntityListProvider` for enabling selection of valid `spec.type` values
  * based on the selected EntityKindFilter.
+ * @public
  */
 export function useEntityTypeFilter(): EntityTypeReturn {
   const catalogApi = useApi(catalogApiRef);
