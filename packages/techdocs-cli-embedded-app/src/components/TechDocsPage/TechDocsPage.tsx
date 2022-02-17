@@ -24,7 +24,7 @@ import React, {
 
 import { Theme, makeStyles } from '@material-ui/core';
 
-import { ThemeProvider, Toolbar, Tooltip, IconButton } from '@material-ui/core';
+import { ThemeProvider, Box, Tooltip, IconButton } from '@material-ui/core';
 import LightIcon from '@material-ui/icons/Brightness7';
 import DarkIcon from '@material-ui/icons/Brightness4';
 
@@ -40,6 +40,11 @@ import {
 } from '@backstage/plugin-techdocs';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  headerIcon: {
+    color: theme.palette.common.white,
+    width: '32px',
+    height: '32px',
+  },
   content: {
     backgroundColor: theme.palette.background.default,
   },
@@ -90,6 +95,34 @@ const TechdocsThemeProvider: FC = ({ children }) => {
 
 const useTechDocsTheme = () => useContext(TechDocsThemeContext);
 
+const TechDocsThemeToggle = () => {
+  const classes = useStyles();
+  const { theme, toggleTheme } = useTechDocsTheme();
+
+  const themes = {
+    [Themes.LIGHT]: {
+      icon: DarkIcon,
+      title: 'Dark theme',
+    },
+    [Themes.DARK]: {
+      icon: LightIcon,
+      title: 'Light theme',
+    },
+  };
+
+  const { title, icon: Icon } = themes[theme];
+
+  return (
+    <Box display="flex" alignItems="center" mr={2}>
+      <Tooltip title={title} arrow>
+        <IconButton size="small" onClick={toggleTheme}>
+          <Icon className={classes.headerIcon} />
+        </IconButton>
+      </Tooltip>
+    </Box>
+  );
+};
+
 const TechDocsPageContent = ({
   onReady,
   entityRef,
@@ -98,26 +131,9 @@ const TechDocsPageContent = ({
   onReady: () => void;
 }) => {
   const classes = useStyles();
-  const { theme, toggleTheme } = useTechDocsTheme();
-
-  const themes = {
-    [Themes.LIGHT]: {
-      icon: <LightIcon />,
-      title: 'Dark theme',
-    },
-    [Themes.DARK]: {
-      icon: <DarkIcon />,
-      title: 'Light theme',
-    },
-  };
 
   return (
     <Content className={classes.content} data-testid="techdocs-content">
-      <Toolbar className={classes.contentToolbar}>
-        <Tooltip title={themes[theme].title} arrow>
-          <IconButton onClick={toggleTheme}>{themes[theme].icon}</IconButton>
-        </Tooltip>
-      </Toolbar>
       <Reader onReady={onReady} entityRef={entityRef} withSearch={false} />
     </Content>
   );
@@ -136,7 +152,9 @@ const DefaultTechDocsPage = () => {
           <TechDocsPageHeader
             entityRef={entityRef}
             techDocsMetadata={techDocsMetadata}
-          />
+          >
+            <TechDocsThemeToggle />
+          </TechDocsPageHeader>
           <TechDocsPageContent entityRef={entityRef} onReady={onReady} />
         </>
       )}

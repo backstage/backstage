@@ -16,6 +16,7 @@ import { EntityName } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { LocationSpec } from '@backstage/catalog-model';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
@@ -265,16 +266,17 @@ export const TechDocsPageHeader: ({
   entityRef,
   entityMetadata,
   techDocsMetadata,
+  children,
 }: TechDocsPageHeaderProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "TechDocsPageHeaderProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type TechDocsPageHeaderProps = {
+export type TechDocsPageHeaderProps = PropsWithChildren<{
   entityRef: EntityName;
   entityMetadata?: TechDocsEntityMetadata;
   techDocsMetadata?: TechDocsMetadata;
-};
+}>;
 
 // Warning: (ae-missing-release-tag) "TechDocsPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

@@ -33,7 +33,6 @@ import {
   lighten,
   alpha,
 } from '@material-ui/core';
-import { red, pink, green, purple, yellow } from '@material-ui/core/colors';
 
 import { EntityName } from '@backstage/catalog-model';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
@@ -70,8 +69,8 @@ type Props = {
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   searchBar: {
-    marginLeft: '20rem',
-    maxWidth: 'calc(100% - 20rem * 2 - 3rem)',
+    marginLeft: '16rem',
+    maxWidth: 'calc(100% - 16rem * 2)',
     marginTop: theme.spacing(1),
     '@media screen and (max-width: 76.1875em)': {
       marginLeft: '10rem',
@@ -235,20 +234,26 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
           :host {
             /* FONT */
             --md-default-fg-color: ${theme.palette.text.primary};
+            --md-default-fg-color--light: ${theme.palette.text.secondary};
+            --md-default-fg-color--lighter: ${lighten(
+              theme.palette.text.secondary,
+              0.7,
+            )};
+            --md-default-fg-color--lightest: ${lighten(
+              theme.palette.text.secondary,
+              0.3,
+            )};
 
             /* BACKGROUND */
             --md-default-bg-color:${theme.palette.background.default};
-            --md-default-bg-color--light: ${lighten(
-              theme.palette.text.primary,
+            --md-default-bg-color--light: ${theme.palette.background.paper};
+            --md-default-bg-color--lighter: ${lighten(
+              theme.palette.background.paper,
               0.7,
             )};
-            --md-default-bg-color--lighter: ${lighten(
-              theme.palette.text.primary,
-              0.3,
-            )};
             --md-default-bg-color--lightest: ${lighten(
-              theme.palette.text.primary,
-              0.12,
+              theme.palette.background.paper,
+              0.3,
             )};
 
             /* PRIMARY */
@@ -269,7 +274,9 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             --md-shadow-z2: ${theme.shadows[2]};
             --md-shadow-z3: ${theme.shadows[3]};
 
-            /* ICON */
+            /* EXTENSIONS */
+            --md-admonition-fg-color: var(--md-default-fg-color);
+            --md-admonition-bg-color: var(--md-default-bg-color);
             /* Admonitions and others are using SVG masks to define icons. These masks are defined as CSS variables. */
             --md-admonition-icon--note: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>');
             --md-admonition-icon--abstract: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 5h16v2H4V5m0 4h16v2H4V9m0 4h16v2H4v-2m0 4h10v2H4v-2z"/></svg>');
@@ -284,7 +291,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             --md-admonition-icon--example: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 13v-2h14v2H7m0 6v-2h14v2H7M7 7V5h14v2H7M3 8V5H2V4h2v4H3m-1 9v-1h3v4H2v-1h2v-.5H3v-1h1V17H2m2.25-7a.75.75 0 01.75.75c0 .2-.08.39-.21.52L3.12 13H5v1H2v-.92L4 11H2v-1h2.25z"/></svg>');
             --md-admonition-icon--quote: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 17h3l2-4V7h-6v6h3M6 17h3l2-4V7H5v6h3l-2 4z"/></svg>');
             --md-footnotes-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 7v4H5.83l3.58-3.59L8 6l-6 6 6 6 1.41-1.42L5.83 13H21V7h-2z"/></svg>');
-            --md-details-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>');
+            --md-details-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>');
             --md-tasklist-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>');
             --md-tasklist-icon--checked: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>');
             --md-nav-icon--prev: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>');
@@ -303,11 +310,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             /* CODE */
             --md-code-fg-color: ${theme.palette.text.primary};
             --md-code-bg-color: ${theme.palette.background.paper};
-            --md-code-hl-color: ${alpha(yellow[500], 0.5)};
-            --md-code-hl-number-color: ${red[500]};
-            --md-code-hl-string-color: ${green[500]};
-            --md-code-hl-special-color: ${pink[500]};
-            --md-code-hl-constant-color: ${purple[500]};
+            --md-code-hl-color: ${alpha(theme.palette.warning.main, 0.5)};
             --md-code-hl-keyword-color: ${
               isDarkTheme
                 ? theme.palette.primary.light
@@ -318,6 +321,16 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
                 ? theme.palette.secondary.light
                 : theme.palette.secondary.dark
             };
+            --md-code-hl-string-color: ${
+              isDarkTheme
+                ? theme.palette.success.light
+                : theme.palette.success.dark
+            };
+            --md-code-hl-number-color: ${
+              isDarkTheme ? theme.palette.error.light : theme.palette.error.dark
+            };
+            --md-code-hl-constant-color: var(--md-code-hl-function-color);
+            --md-code-hl-special-color: var(--md-code-hl-function-color);
             --md-code-hl-name-color: var(--md-code-fg-color);
             --md-code-hl-comment-color: var(--md-default-fg-color--light);
             --md-code-hl-generic-color: var(--md-default-fg-color--light);
@@ -350,7 +363,14 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
           @media screen and (max-width: 76.1875em) {
             :host > * {
               /* TYPESET */
-              --md-typeset-font-size: .8rem;
+              --md-typeset-font-size: .9rem;
+            }
+          }
+
+          @media screen and (max-width: 600px) {
+            :host > * {
+              /* TYPESET */
+              --md-typeset-font-size: .7rem;
             }
           }
           `,
@@ -376,9 +396,16 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             }
 
             .md-nav {
-              font-size: ${theme.typography.body1.fontSize};
+              font-size: calc(var(--md-typeset-font-size) * 0.9);
             }
-            .md-nav
+            .md-nav__icon {
+              width: auto !important;
+              height: auto !important;
+            }
+            .md-nav__icon:after {
+              width: 20px !important;
+              height: 20px !important;
+            }
 
             .md-main__inner {
               margin-top: 0;
@@ -387,15 +414,15 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             .md-sidebar {
               position: fixed;
               bottom: 100px;
-              width: 20rem;
+              width: 16rem;
             }
             .md-sidebar--secondary {
-              right: 2rem;
+              right: ${theme.spacing(3)}px;
             }
             
             .md-content {
-              max-width: calc(100% - 20rem * 2 - 3rem);
-              margin-left: 20rem;
+              max-width: calc(100% - 16rem * 2);
+              margin-left: 16rem;
               margin-bottom: 50px;
             }
             
@@ -407,38 +434,62 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
               background-color: unset;
             }
             .md-footer-nav__link {
-              width: 20rem;
+              width: 16rem;
             }
 
             .md-dialog {
               background-color: unset;
             }
-
+            
             @media screen and (max-width: 76.1875em) {
               .md-nav {
-                transition: none !important
-                background-color: ${theme.palette.background.default};
+                transition: none !important;
+                background-color: var(--md-default-bg-color)
               }
-
               .md-nav--primary .md-nav__title {
                 cursor: auto;
+                color: var(--md-default-fg-color);
+                font-weight: 700;
                 white-space: normal;
                 line-height: 1rem;
                 height: auto;
+                display: flex;
+                flex-flow: column;
+                row-gap: 1.6rem;
+                padding: 1.2rem .8rem .8rem;
+                background-color: var(--md-default-bg-color);
               }
-              .md-nav--primary > .md-nav__title [for="none"] {
-                padding-top: 0;
+              .md-nav--primary .md-nav__title~.md-nav__list {
+                box-shadow: none;
+              }
+              .md-nav--primary .md-nav__title ~ .md-nav__list > :first-child {
+                border-top: none;
               }
               .md-nav--primary .md-nav__title .md-nav__button {
                 display: none;
               }
-              
-              .md-sidebar--secondary {
-                display: none;
+              .md-nav--primary .md-nav__title .md-nav__icon {
+                color: var(--md-default-fg-color);
+                position: static;
+                height: auto;
+                margin: 0 0 0 -0.2rem;
               }
+              .md-nav--primary > .md-nav__title [for="none"] {
+                padding-top: 0;
+              }
+              .md-nav--primary .md-nav__item {
+                border-top: none;
+              }
+              .md-nav--primary :is(.md-nav__title,.md-nav__item) {
+                font-size : var(--md-typeset-font-size);
+              }
+
               .md-sidebar--primary {
-                width: 10rem;
+                width: 10rem !important;
                 left: ${isPinned ? '242px' : '72px'} !important;
+              }
+              .md-sidebar--secondary:not([hidden]) {
+                display: none;
               }
 
               .md-content {
@@ -453,6 +504,12 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
               .md-footer-nav__link {
                 /* footer links begin to overlap at small sizes without setting width */
                 width: 50%;
+              }
+            }
+
+            @media screen and (max-width: 600px) {
+              .md-sidebar--primary {
+                left: 1rem !important;
               }
             }
           `,
@@ -480,6 +537,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
               };
               return style.concat(`
                 .md-typeset ${heading} {
+                  color: var(--md-default-fg-color);
                   line-height: ${lineHeight};
                   font-family: ${fontFamily};
                   font-weight: ${fontWeight};
@@ -493,17 +551,30 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             }
             
             .md-typeset details {
-              font-size: var(--md-typeset-font-size);
+              font-size: var(--md-typeset-font-size) !important;
+            }
+            .md-typeset details summary {
+              padding-left: 2.5rem !important;
+            }
+            .md-typeset details summary:before,
+            .md-typeset details summary:after {
+              top: 50% !important;
+              width: 20px !important;
+              height: 20px !important;
+              transform: rotate(0deg) translateY(-50%) !important;
+            }
+            .md-typeset details[open] > summary:after {
+              transform: rotate(90deg) translateX(-50%) !important;
             }
             
             .md-typeset blockquote {
-              color: ${theme.palette.textSubtle};
-              border-left: 0.2rem solid ${theme.palette.textVerySubtle};
+              color: var(--md-default-fg-color--light);
+              border-left: 0.2rem solid var(--md-default-fg-color--light);
             }
 
             .md-typeset table:not([class]) {
               font-size: var(--md-typeset-font-size);
-              border: 1px solid ${theme.palette.text.primary};
+              border: 1px solid var(--md-default-fg-color);
               border-bottom: none;
               border-collapse: collapse;
             }
@@ -511,7 +582,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
               font-weight: bold;
             }
             .md-typeset table:not([class]) td, .md-typeset table:not([class]) th {
-              border-bottom: 1px solid ${theme.palette.text.primary};
+              border-bottom: 1px solid var(--md-default-fg-color);
             }
 
             .md-typeset pre > code::-webkit-scrollbar-thumb {
@@ -529,9 +600,9 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
               Disable CSS animations on link colors as they lead to issues in dark mode.
               The dark mode color theme is applied later and theirfore there is always an animation from light to dark mode when navigation between pages.
             */
-           .md-dialog, .md-nav__link, .md-footer__link, .md-typeset a, .md-typeset a::before, .md-typeset .headerlink {
-             transition: none;
-           }
+            .md-dialog, .md-nav__link, .md-footer__link, .md-typeset a, .md-typeset a::before, .md-typeset .headerlink {
+              transition: none;
+            }
           `,
         }),
         injectCss({
@@ -589,12 +660,22 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
               background-color: ${theme.palette.action.disabledBackground};
             }
             .task-list-control [type="checkbox"]:checked + .task-list-indicator:before {
-              background-color: ${theme.palette.success.main};
+             background-color: ${theme.palette.success.main};
             }
 
             /* ADMONITION */
             .admonition {
-              font-size: var(--md-typeset-font-size);
+              font-size: var(--md-typeset-font-size) !important;
+            }
+            .admonition .admonition-title {
+              padding-left: 2.5rem !important;
+            }
+
+            .admonition .admonition-title:before {
+              top: 50% !important;
+              width: 20px !important;
+              height: 20px !important;
+              transform: translateY(-50%) !important;
             }
           `,
         }),
@@ -603,33 +684,12 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
       kind,
       name,
       namespace,
-      isDarkTheme,
-      isPinned,
       scmIntegrationsApi,
       techdocsSanitizer,
       techdocsStorageApi,
-      theme.shadows,
-      theme.typography,
-      theme.palette.divider,
-      theme.palette.text.primary,
-      theme.palette.textVerySubtle,
-      theme.palette.background.paper,
-      theme.palette.background.default,
-      theme.palette.textSubtle,
-      theme.palette.primary.main,
-      theme.palette.primary.dark,
-      theme.palette.primary.light,
-      theme.palette.primary.contrastText,
-      theme.palette.secondary.dark,
-      theme.palette.secondary.light,
-      theme.palette.error.dark,
-      theme.palette.error.light,
-      theme.palette.success.main,
-      theme.palette.success.dark,
-      theme.palette.success.light,
-      theme.palette.warning.dark,
-      theme.palette.warning.light,
-      theme.palette.action.disabledBackground,
+      theme,
+      isDarkTheme,
+      isPinned,
     ],
   );
 
