@@ -142,9 +142,10 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     return true;
   }
 
-  async updateLastActivity(): Promise<string | undefined> {
-    const lastActivity = await this.cache.get('last-activity');
-    await this.cache.set('last-activity', new Date().toISOString());
+  private async updateLastActivity(): Promise<string | undefined> {
+    const cacheKey = `processors/${this.getProcessorName()}/last-activity`;
+    const lastActivity = await this.cache.get(cacheKey);
+    await this.cache.set(cacheKey, new Date().toISOString());
     return lastActivity as string | undefined;
   }
 }
