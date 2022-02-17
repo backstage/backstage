@@ -1,5 +1,13 @@
 # @backstage/config
 
+## 0.1.15
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/types@0.1.3
+
 ## 0.1.14
 
 ### Patch Changes

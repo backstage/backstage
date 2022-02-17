@@ -1,5 +1,16 @@
 # @backstage/plugin-app-backend
 
+## 0.3.26
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/config-loader@0.9.5
+  - @backstage/types@0.1.3
+
 ## 0.3.25
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.2.4
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/catalog-model@0.10.1
+
 ## 0.2.3
 
 ### Patch Changes
