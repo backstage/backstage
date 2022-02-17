@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.16.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+  - @backstage/types@0.1.3
+  - @backstage/plugin-catalog-backend@0.21.5
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.2.1
+  - @backstage/plugin-scaffolder-common@0.2.1
+
 ## 0.16.0
 
 ### Minor Changes

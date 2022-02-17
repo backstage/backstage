@@ -1,5 +1,17 @@
 # @backstage/plugin-permission-node
 
+## 0.5.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/plugin-auth-node@0.1.2
+  - @backstage/plugin-permission-common@0.5.1
+
 ## 0.5.0
 
 ### Minor Changes

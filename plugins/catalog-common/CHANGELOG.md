@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-common
 
+## 0.1.4
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.5.1
+
 ## 0.1.3
 
 ### Patch Changes
