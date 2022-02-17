@@ -2,7 +2,6 @@
   "name": "@backstage/config",
   "description": "Config API used by Backstage core, backend, and CLI",
   "version": "0.1.14",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",

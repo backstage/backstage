@@ -24,9 +24,9 @@
   },
   "dependencies": {
     "@backstage/search-common": "^0.2.3",
-    "winston": "^3.2.1",
+    "@types/lunr": "^2.3.3",
     "lunr": "^2.3.9",
-    "@types/lunr": "^2.3.3"
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/backend-common": "^0.10.8",

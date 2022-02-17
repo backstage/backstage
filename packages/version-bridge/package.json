@@ -2,7 +2,6 @@
   "name": "@backstage/version-bridge",
   "description": "Utilities used by @backstage packages to support multiple concurrent versions",
   "version": "0.1.2",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",

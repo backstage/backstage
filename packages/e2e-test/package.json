@@ -25,9 +25,7 @@
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean"
   },
-  "bin": {
-    "e2e-test": "bin/e2e-test"
-  },
+  "bin": "bin/e2e-test",
   "devDependencies": {
     "@backstage/cli-common": "^0.1.1",
     "@backstage/errors": "^0.2.0",

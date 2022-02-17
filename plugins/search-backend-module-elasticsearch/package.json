@@ -23,10 +23,10 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@acuris/aws-es-connection": "^2.2.0",
     "@backstage/config": "^0.1.14",
     "@backstage/search-common": "^0.2.3",
     "@elastic/elasticsearch": "7.13.0",
-    "@acuris/aws-es-connection": "^2.2.0",
     "aws-sdk": "^2.948.0",
     "elastic-builder": "^2.16.0",
     "lodash": "^4.17.21",
