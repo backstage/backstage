@@ -107,7 +107,7 @@ describe('LegacyWorkflowRunner', () => {
       ],
       output: {},
       values: {},
-      templateInfo: { name: templateName },
+      templateInfo: { entityRef: `template:default/${templateName}` },
     });
 
     await runner.execute(task);

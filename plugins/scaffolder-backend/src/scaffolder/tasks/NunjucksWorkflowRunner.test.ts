@@ -176,7 +176,7 @@ describe('DefaultWorkflowRunner', () => {
             input: { foo: 1 },
           },
         ],
-        templateInfo: { name: templateName },
+        templateInfo: { entityRef: `template:default/${templateName}` },
       });
 
       await runner.execute(task);
