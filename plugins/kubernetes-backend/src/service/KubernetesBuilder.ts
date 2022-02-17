@@ -45,12 +45,12 @@ export interface KubernetesEnvironment {
 
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
-  clusterDetails?: ClusterDetails[];
-  clusterSupplier?: KubernetesClustersSupplier;
-  customResources?: CustomResource[];
-  fetcher?: KubernetesFetcher;
-  objectsProvider?: KubernetesObjectsProvider;
-  serviceLocator?: KubernetesServiceLocator;
+  clusterDetails: ClusterDetails[];
+  clusterSupplier: KubernetesClustersSupplier;
+  customResources: CustomResource[];
+  fetcher: KubernetesFetcher;
+  objectsProvider: KubernetesObjectsProvider;
+  serviceLocator: KubernetesServiceLocator;
 }>;
 
 export class KubernetesBuilder {
@@ -80,7 +80,7 @@ export class KubernetesBuilder {
       );
       return {
         router: Router(),
-      };
+      } as unknown as KubernetesBuilderReturn;
     }
     const customResources = this.buildCustomResources();
 
