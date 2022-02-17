@@ -311,7 +311,7 @@ export { GroupEntityV1alpha1 };
 // @public
 export const groupEntityV1alpha1Validator: KindValidator;
 
-// @public
+// @public @deprecated
 export type JSONSchema = JSONSchema7 & {
   [key in string]?: JsonValue;
 };
@@ -557,33 +557,6 @@ export { SystemEntityV1alpha1 };
 
 // @public
 export const systemEntityV1alpha1Validator: KindValidator;
-
-// @public
-export interface TemplateEntityV1beta2 extends Entity {
-  // (undocumented)
-  apiVersion: 'backstage.io/v1beta2';
-  // (undocumented)
-  kind: 'Template';
-  // (undocumented)
-  spec: {
-    type: string;
-    parameters?: JsonObject | JsonObject[];
-    steps: Array<{
-      id?: string;
-      name?: string;
-      action: string;
-      input?: JsonObject;
-      if?: string | boolean;
-    }>;
-    output?: {
-      [name: string]: string;
-    };
-    owner?: string;
-  };
-}
-
-// @public
-export const templateEntityV1beta2Validator: KindValidator;
 
 // @public
 interface UserEntityV1alpha1 extends Entity {

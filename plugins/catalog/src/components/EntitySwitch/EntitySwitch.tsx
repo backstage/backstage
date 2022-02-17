@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import React from 'react';
 import {
   attachComponentData,
   useApiHolder,
@@ -27,34 +27,38 @@ import useAsync from 'react-use/lib/useAsync';
 
 const ENTITY_SWITCH_KEY = 'core.backstage.entitySwitch';
 
-const EntitySwitchCase = (_: {
+/** @public */
+export interface EntitySwitchCaseProps {
   if?: (
     entity: Entity,
     context: { apis: ApiHolder },
   ) => boolean | Promise<boolean>;
-  children: ReactNode;
-}) => null;
+  children: React.ReactNode;
+}
 
-attachComponentData(EntitySwitchCase, ENTITY_SWITCH_KEY, true);
+const EntitySwitchCaseComponent = (_props: EntitySwitchCaseProps) => null;
 
-type SwitchCase = {
+attachComponentData(EntitySwitchCaseComponent, ENTITY_SWITCH_KEY, true);
+
+interface EntitySwitchCase {
   if?: (
     entity: Entity,
     context: { apis: ApiHolder },
   ) => boolean | Promise<boolean>;
   children: JSX.Element;
-};
+}
 
 type SwitchCaseResult = {
   if: boolean | Promise<boolean>;
   children: JSX.Element;
 };
 
-export const EntitySwitch = ({ children }: PropsWithChildren<{}>) => {
+/** @public */
+export const EntitySwitch = (props: { children: React.ReactNode }) => {
   const { entity } = useEntity();
   const apis = useApiHolder();
   const results = useElementFilter(
-    children,
+    props.children,
     collection =>
       collection
         .selectByComponentData({
@@ -64,7 +68,7 @@ export const EntitySwitch = ({ children }: PropsWithChildren<{}>) => {
         .getElements()
         .flatMap<SwitchCaseResult>((element: React.ReactElement) => {
           const { if: condition, children: elementsChildren } =
-            element.props as SwitchCase;
+            element.props as EntitySwitchCase;
           return [
             {
               if: condition?.(entity, { apis }) ?? true,
@@ -110,4 +114,4 @@ function AsyncEntitySwitch({ results }: { results: SwitchCaseResult[] }) {
   return value;
 }
 
-EntitySwitch.Case = EntitySwitchCase;
+EntitySwitch.Case = EntitySwitchCaseComponent;

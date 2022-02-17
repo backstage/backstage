@@ -25,9 +25,10 @@ import {
   useTheme,
 } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import React, { useState, PropsWithChildren } from 'react';
+import React, { useState } from 'react';
 
-export const FilterContainer = ({ children }: PropsWithChildren<{}>) => {
+/** @public */
+export function FilterContainer(props: { children: React.ReactNode }) {
   const isMidSizeScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('md'),
   );
@@ -59,13 +60,13 @@ export const FilterContainer = ({ children }: PropsWithChildren<{}>) => {
           >
             Filters
           </Typography>
-          {children}
+          {props.children}
         </Box>
       </Drawer>
     </>
   ) : (
     <Grid item lg={2}>
-      {children}
+      {props.children}
     </Grid>
   );
-};
+}

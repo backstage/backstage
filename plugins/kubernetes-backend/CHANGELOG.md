@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.4.8
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 0107c9aa08: chore(deps): bump `helmet` from 4.4.1 to 5.0.2
+- fb09a59a3f: Fixed a potential issue in AWS token encoding, where they might not always be properly converted to URL-safe base64.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/errors@0.2.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/plugin-kubernetes-common@0.2.3
+
 ## 0.4.7
 
 ### Patch Changes

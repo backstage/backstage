@@ -1,7 +1,7 @@
 {
   "name": "@backstage/release-manifests",
   "description": "Helper library for receiving release manifests",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": false,
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -10,6 +10,9 @@
     "main": "dist/index.cjs.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "common-library"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -22,18 +25,18 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "build": "backstage-cli build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean"
   },
   "dependencies": {
     "cross-fetch": "^3.1.5"
   },
   "devDependencies": {
-    "@backstage/test-utils": "^0.2.3",
+    "@backstage/test-utils": "^0.2.5",
     "msw": "^0.35.0",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.14.32"

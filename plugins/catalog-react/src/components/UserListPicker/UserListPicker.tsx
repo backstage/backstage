@@ -118,15 +118,15 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
   ];
 }
 
-type UserListPickerProps = {
+/** @public */
+export type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
   availableFilters?: UserListFilterKind[];
 };
 
-export const UserListPicker = ({
-  initialFilter,
-  availableFilters,
-}: UserListPickerProps) => {
+/** @public */
+export const UserListPicker = (props: UserListPickerProps) => {
+  const { initialFilter, availableFilters } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';

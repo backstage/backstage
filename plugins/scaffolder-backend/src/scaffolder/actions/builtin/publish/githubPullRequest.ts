@@ -48,16 +48,6 @@ export type PullRequestCreatorConstructor = (
   octokit: Octokit,
 ) => PullRequestCreator;
 
-export type GithubPullRequestActionInput = {
-  title: string;
-  branchName: string;
-  description: string;
-  repoUrl: string;
-  targetPath?: string;
-  sourcePath?: string;
-  token?: string;
-};
-
 export type ClientFactoryInput = {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
@@ -122,7 +112,15 @@ export const createPublishGithubPullRequestAction = ({
   githubCredentialsProvider,
   clientFactory = defaultClientFactory,
 }: CreateGithubPullRequestActionOptions) => {
-  return createTemplateAction<GithubPullRequestActionInput>({
+  return createTemplateAction<{
+    title: string;
+    branchName: string;
+    description: string;
+    repoUrl: string;
+    targetPath?: string;
+    sourcePath?: string;
+    token?: string;
+  }>({
     id: 'publish:github:pull-request',
     schema: {
       input: {

@@ -22,7 +22,8 @@
         "label": "App configuration",
         "ids": [
           "getting-started/configure-app-with-plugins",
-          "getting-started/app-custom-theme"
+          "getting-started/app-custom-theme",
+          "getting-started/homepage"
         ]
       },
       "getting-started/keeping-backstage-updated",

@@ -23,11 +23,13 @@ import {
   resourceEntityHelpLink,
 } from '../RelatedEntitiesCard';
 
-type Props = {
+/** @public */
+export interface HasResourcesCardProps {
   variant?: 'gridItem';
-};
+}
 
-export const HasResourcesCard = ({ variant = 'gridItem' }: Props) => {
+export function HasResourcesCard(props: HasResourcesCardProps) {
+  const { variant = 'gridItem' } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
@@ -40,4 +42,4 @@ export const HasResourcesCard = ({ variant = 'gridItem' }: Props) => {
       emptyHelpLink={resourceEntityHelpLink}
     />
   );
-};
+}

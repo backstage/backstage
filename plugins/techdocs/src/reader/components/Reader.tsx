@@ -270,7 +270,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
           }
           .md-typeset table:not([class]) th { font-weight: bold; }
           .md-typeset .admonition, .md-typeset details {
-            font-size: 1rem;
+            font-size: inherit;
           }
           
           /* style the checkmarks of the task list */

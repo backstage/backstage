@@ -20,16 +20,20 @@ import {
   UrlReader,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity, TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import {
+  TemplateEntityV1beta2,
+  TemplateEntityV1beta3,
+} from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
-import { CatalogEntityClient, TemplateFilter } from '../lib';
+import { TemplateFilter } from '../lib';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
@@ -40,7 +44,7 @@ import {
   TemplateActionRegistry,
 } from '../scaffolder';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
+import { getEntityBaseUrl, getWorkingDirectory, findTemplate } from './helpers';
 
 /**
  * RouterOptions
@@ -89,7 +93,6 @@ export async function createRouter(
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const workingDirectory = await getWorkingDirectory(config, logger);
-  const entityClient = new CatalogEntityClient(catalogClient);
   const integrations = ScmIntegrations.fromConfig(config);
   let taskBroker: TaskBroker;
 
@@ -148,7 +151,9 @@ export async function createRouter(
           );
         }
 
-        const template = await entityClient.findTemplate(name, {
+        const template = await findTemplate({
+          catalogApi: catalogClient,
+          entityRef: { kind, namespace, name },
           token: getBearerToken(req.headers.authorization),
         });
         if (isSupportedTemplate(template)) {
@@ -183,16 +188,29 @@ export async function createRouter(
       const templateName: string = req.body.templateName;
       const values = req.body.values;
       const token = getBearerToken(req.headers.authorization);
-      const template = await entityClient.findTemplate(templateName, {
-        token,
+      const template = await findTemplate({
+        catalogApi: catalogClient,
+        entityRef: {
+          name: templateName,
+        },
+        token: getBearerToken(req.headers.authorization),
       });
 
       let taskSpec: TaskSpec;
 
       if (isSupportedTemplate(template)) {
+        if (template.apiVersion === 'backstage.io/v1beta2') {
+          logger.warn(
+            `Scaffolding ${stringifyEntityRef(
+              template,
+            )} with deprecated apiVersion ${
+              template.apiVersion
+            }. Please migrate the template to backstage.io/v1beta3. https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3`,
+          );
+        }
+
         for (const parameters of [template.spec.parameters ?? []].flat()) {
           const result = validate(values, parameters);
-
           if (!result.valid) {
             res.status(400).json({ errors: result.errors });
             return;

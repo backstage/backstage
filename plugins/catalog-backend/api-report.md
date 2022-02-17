@@ -580,11 +580,6 @@ export type DeferredEntity = {
   locationKey?: string;
 };
 
-// Warning: (ae-missing-release-tag) "durationText" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export function durationText(startTimestamp: [number, number]): string;
-
 // @public (undocumented)
 export type EntitiesCatalog = {
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
@@ -1133,12 +1128,12 @@ export interface RouterOptions {
 
 // Warning: (ae-missing-release-tag) "runPeriodically" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export function runPeriodically(fn: () => any, delayMs: number): () => void;
 
 // Warning: (ae-missing-release-tag) "StaticLocationProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class StaticLocationProcessor implements StaticLocationProcessor {
   constructor(staticLocations: LocationSpec[]);
   // (undocumented)

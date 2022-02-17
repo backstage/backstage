@@ -246,7 +246,7 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
-   * {@inheritdoc CatalogApi.getOriginLocationByEntity}
+   * @deprecated please use getLocationByRef instead
    */
   async getOriginLocationByEntity(
     entity: Entity,
@@ -268,7 +268,7 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
-   * {@inheritdoc CatalogApi.getLocationByEntity}
+   * @deprecated please use getLocationByRef instead
    */
   async getLocationByEntity(
     entity: Entity,
@@ -286,6 +286,23 @@ export class CatalogClient implements CatalogApi {
     return all
       .map(r => r.data)
       .find(l => locationCompound === stringifyLocationRef(l));
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.getLocationByRef}
+   */
+  async getLocationByRef(
+    locationRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<Location | undefined> {
+    const all: { data: Location }[] = await this.requestRequired(
+      'GET',
+      '/locations',
+      options,
+    );
+    return all
+      .map(r => r.data)
+      .find(l => locationRef === stringifyLocationRef(l));
   }
 
   /**

@@ -15,11 +15,8 @@
  */
 
 import React, { ComponentType } from 'react';
-import {
-  Entity,
-  stringifyEntityRef,
-  TemplateEntityV1beta2,
-} from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import {
   Content,
   ContentHeader,
@@ -90,6 +87,7 @@ export const TemplateList = ({
               <Card
                 key={stringifyEntityRef(template)}
                 template={template as TemplateEntityV1beta2}
+                deprecated={template.apiVersion === 'backstage.io/v1beta2'}
               />
             ))}
         </ItemCardGrid>

@@ -49,19 +49,20 @@ export async function buildBackend(options: BuildBackendOptions) {
 
     // We built the target backend package using the regular build process, but the result of
     // that has now been packed into the dist workspace, so clean up the dist dir.
-    await fs.remove(targetDir);
-    await fs.mkdir(targetDir);
+    const distDir = resolvePath(targetDir, 'dist');
+    await fs.remove(distDir);
+    await fs.mkdir(distDir);
 
     // Move out skeleton.tar.gz before we create the main bundle, no point having that included up twice.
     await fs.move(
       resolvePath(tmpDir, SKELETON_FILE),
-      resolvePath(targetDir, SKELETON_FILE),
+      resolvePath(distDir, SKELETON_FILE),
     );
 
     // Create main bundle.tar.gz, with some tweaks to make it more likely hit Docker build cache.
     await tar.create(
       {
-        file: resolvePath(targetDir, BUNDLE_FILE),
+        file: resolvePath(distDir, BUNDLE_FILE),
         cwd: tmpDir,
         portable: true,
         noMtime: true,

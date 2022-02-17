@@ -1,5 +1,13 @@
 # @backstage/plugin-search-backend-node
 
+## 0.4.6
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/search-common@0.2.3
+
 ## 0.4.5
 
 ### Patch Changes

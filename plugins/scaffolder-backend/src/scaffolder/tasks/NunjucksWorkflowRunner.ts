@@ -258,17 +258,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           const tmpDirs = new Array<string>();
           const stepOutput: { [outputName: string]: JsonValue } = {};
 
-          if (!task.spec.metadata) {
-            console.warn(
-              'DEPRECATION NOTICE: metadata is undefined. metadata will be required in the future.',
-            );
-          }
-
           await action.handler({
             baseUrl: task.spec.baseUrl,
             input,
-            // this token is deprecated, and will be removed in favour of secrets.backstageToken instead.
-            token: task.secrets?.token,
             secrets: task.secrets ?? {},
             logger: taskLogger,
             logStream: streamLogger,

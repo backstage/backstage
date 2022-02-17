@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.1.7
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+
 ## 0.1.6
 
 ### Patch Changes

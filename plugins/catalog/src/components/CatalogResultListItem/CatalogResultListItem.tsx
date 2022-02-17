@@ -24,6 +24,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
+import { IndexableDocument } from '@backstage/search-common';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -36,7 +37,19 @@ const useStyles = makeStyles({
   },
 });
 
-export const CatalogResultListItem = ({ result }: any) => {
+/**
+ * Props for {@link CatalogResultListItem}.
+ *
+ * @public
+ */
+export interface CatalogResultListItemProps {
+  result: IndexableDocument;
+}
+
+/** @public */
+export function CatalogResultListItem(props: CatalogResultListItemProps) {
+  const result = props.result as any;
+
   const classes = useStyles();
   return (
     <Link to={result.location}>
@@ -57,4 +70,4 @@ export const CatalogResultListItem = ({ result }: any) => {
       <Divider component="li" />
     </Link>
   );
-};
+}

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import os from 'os';
 import {
   parseParallelismOption,
   getEnvironmentParallelism,
@@ -22,6 +23,8 @@ import {
   runWorkerThreads,
 } from './parallel';
 
+const defaultParallelism = Math.ceil(os.cpus().length / 2);
+
 describe('parseParallelismOption', () => {
   it('coerces false no parallelism', () => {
     expect(parseParallelismOption(false)).toBe(1);
@@ -29,10 +32,10 @@ describe('parseParallelismOption', () => {
   });
 
   it('coerces true or undefined to default parallelism', () => {
-    expect(parseParallelismOption(true)).toBe(4);
-    expect(parseParallelismOption('true')).toBe(4);
-    expect(parseParallelismOption(undefined)).toBe(4);
-    expect(parseParallelismOption(null)).toBe(4);
+    expect(parseParallelismOption(true)).toBe(defaultParallelism);
+    expect(parseParallelismOption('true')).toBe(defaultParallelism);
+    expect(parseParallelismOption(undefined)).toBe(defaultParallelism);
+    expect(parseParallelismOption(null)).toBe(defaultParallelism);
   });
 
   it('coerces number string to number', () => {
@@ -52,13 +55,13 @@ describe('getEnvironmentParallelism', () => {
     expect(getEnvironmentParallelism()).toBe(2);
 
     process.env.BACKSTAGE_CLI_BUILD_PARALLEL = 'true';
-    expect(getEnvironmentParallelism()).toBe(4);
+    expect(getEnvironmentParallelism()).toBe(defaultParallelism);
 
     process.env.BACKSTAGE_CLI_BUILD_PARALLEL = 'false';
     expect(getEnvironmentParallelism()).toBe(1);
 
     delete process.env.BACKSTAGE_CLI_BUILD_PARALLEL;
-    expect(getEnvironmentParallelism()).toBe(4);
+    expect(getEnvironmentParallelism()).toBe(defaultParallelism);
   });
 });
 
@@ -70,6 +73,7 @@ describe('runParallelWorkers', () => {
 
     const work = runParallelWorkers({
       items: [0, 1, 2, 3, 4],
+      parallelismSetting: 4,
       parallelismFactor: 0.5, // 2 at a time
       worker: async item => {
         started.push(item);

@@ -23,6 +23,7 @@
  * @param delayMs - The delay between a completed function invocation and the
  *                next.
  * @returns A function that, when called, stops the invocation loop.
+ * @deprecated use \@backstage/backend-tasks package instead.
  */
 export function runPeriodically(fn: () => any, delayMs: number): () => void {
   let cancel: () => void;

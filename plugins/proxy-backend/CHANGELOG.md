@@ -1,5 +1,14 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.19
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/config@0.1.14
+
 ## 0.2.18
 
 ### Patch Changes

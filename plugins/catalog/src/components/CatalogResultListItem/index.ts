@@ -15,3 +15,4 @@
  */
 
 export { CatalogResultListItem } from './CatalogResultListItem';
+export type { CatalogResultListItemProps } from './CatalogResultListItem';

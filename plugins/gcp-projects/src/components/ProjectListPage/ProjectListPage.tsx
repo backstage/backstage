@@ -18,7 +18,7 @@
 import { Button, LinearProgress, Tooltip, Typography } from '@material-ui/core';
 import React from 'react';
 
-import useAsync from 'react-use/lib/useAsync';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 import { gcpApiRef, Project } from '../../api';
 
 import {
@@ -58,9 +58,12 @@ const labels = (
 const PageContents = () => {
   const api = useApi(gcpApiRef);
 
-  const { loading, error, value } = useAsync(() => api.listProjects());
+  const [{ status, result, error }, { execute }] = useAsync(() =>
+    api.listProjects(),
+  );
+  useMountEffect(execute);
 
-  if (loading) {
+  if (status === 'loading') {
     return <LinearProgress />;
   } else if (error) {
     return (
@@ -108,7 +111,7 @@ const PageContents = () => {
           },
         ]}
         data={
-          value?.map((project: Project) => ({
+          result?.map((project: Project) => ({
             id: project.projectId,
             name: project.name,
             projectNumber: project?.projectNumber || 'Error',

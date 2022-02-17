@@ -22,6 +22,7 @@ import {
   ListItemText,
 } from '@material-ui/core';
 import React from 'react';
+import { useToolkit, Tool } from './Context';
 
 const useStyles = makeStyles(theme => ({
   toolkit: {
@@ -49,12 +50,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type Tool = {
-  label: string;
-  url: string;
-  icon: React.ReactNode;
-};
-
 /**
  * Props for Toolkit content component {@link Content}.
  *
@@ -71,10 +66,12 @@ export type ToolkitContentProps = {
  */
 export const Content = (props: ToolkitContentProps) => {
   const classes = useStyles();
+  const toolkit = useToolkit();
+  const tools = toolkit?.tools ?? props.tools;
 
   return (
     <List className={classes.toolkit}>
-      {props.tools.map((tool: Tool) => (
+      {tools.map((tool: Tool) => (
         <Link key={tool.url} to={tool.url} className={classes.tool}>
           <ListItemIcon className={classes.icon}>{tool.icon}</ListItemIcon>
           <ListItemText

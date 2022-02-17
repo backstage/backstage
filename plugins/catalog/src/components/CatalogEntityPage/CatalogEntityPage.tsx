@@ -21,8 +21,11 @@ import {
   AsyncEntityProvider,
 } from '@backstage/plugin-catalog-react';
 
-export const CatalogEntityPage = () => (
-  <AsyncEntityProvider {...useEntityFromUrl()}>
-    <Outlet />
-  </AsyncEntityProvider>
-);
+/** @public */
+export function CatalogEntityPage() {
+  return (
+    <AsyncEntityProvider {...useEntityFromUrl()}>
+      <Outlet />
+    </AsyncEntityProvider>
+  );
+}

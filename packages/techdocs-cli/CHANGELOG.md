@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 0.8.14
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-model@0.10.0
+  - @backstage/cli-common@0.1.7
+  - @backstage/config@0.1.14
+  - @backstage/techdocs-common@0.11.8
+
 ## 0.8.13
 
 ### Patch Changes

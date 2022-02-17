@@ -1,5 +1,14 @@
 # @backstage/errors
 
+## 0.2.1
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/types@0.1.2
+
 ## 0.2.0
 
 ### Minor Changes
